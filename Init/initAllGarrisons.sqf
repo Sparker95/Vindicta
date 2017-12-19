@@ -25,14 +25,14 @@ private _gar = objNull;
 	{
 		if(_type == LOC_TYPE_base) exitWith
 		{
-			/*
+
 			//Static weapons
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_stat_HMG_high, 1],
 				[T_VEH, T_VEH_stat_GMG_high, 1]
 			], G_GT_veh_static, util_turrets] call loc_fnc_addUnits;
-*/
+
 			//Tracked and wheeled vehicles
 			[_loc, _gar,
 			[
@@ -43,7 +43,7 @@ private _gar = objNull;
 				[T_VEH, T_VEH_MRAP_GMG, 1],
 				[T_VEH, T_VEH_truck_inf, 2]
 			],G_GT_veh_non_static, util_tracked_wheeled] call loc_fnc_addUnits;
-/*
+
 			//Sentries in buildings
 			[_loc, _gar,
 			[
@@ -58,28 +58,30 @@ private _gar = objNull;
 				[T_GROUP_inf_rifle_squad, G_GT_idle, 1],
 				[T_GROUP_inf_sentry, G_GT_patrol, 1]
 			], util_infantry] call loc_fnc_addGroups;
-*/
+
 
 			//Tracked and wheeled vehicles
+
 /*
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_IFV, 1]
 			],G_GT_veh_non_static, 0.25] call loc_fnc_addUnits;
-*/
+			*/
+
 
 		};
 
 		if(_type == LOC_TYPE_outpost) exitWith
 		{
 			//Static weapons
-/*
+
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_stat_HMG_high, 3],
 				[T_VEH, T_VEH_stat_GMG_high, 1]
 			], G_GT_veh_static, util_turrets] call loc_fnc_addUnits;
-*/
+
 			//Tracked and wheeled vehicles
 			[_loc, _gar,
 			[
@@ -88,7 +90,7 @@ private _gar = objNull;
 				//[T_VEH, T_VEH_APC, 1],
 				//[T_VEH, T_VEH_IFV, 1]
 			],G_GT_veh_non_static, util_tracked_wheeled] call loc_fnc_addUnits;
-/*
+
 			//Sentries in buildings
 			[_loc, _gar,
 			[
@@ -103,7 +105,7 @@ private _gar = objNull;
 				[T_GROUP_inf_sentry, G_GT_patrol, 1],
 				[T_GROUP_inf_rifle_squad, G_GT_idle, 1]
 			], util_infantry] call loc_fnc_addGroups;
-*/
+
 		};
 
 	};
