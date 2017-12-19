@@ -13,7 +13,7 @@ while{true} do
 	if(visibleMap) then
 	{
 		_hcGroups = hcSelected player;
-		//diag_log format ["HC selected groups: %1", _hcGroups];
+		diag_log format ["HC selected groups: %1", _hcGroups];
 		if(count _hcGroups > 0) then
 		{
 			[clientOwner, _hcGroups] remoteExecCall ["ui_fnc_updateGroupDataServer", 2];

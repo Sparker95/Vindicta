@@ -233,7 +233,7 @@ class reinf_req_group_0: RscControlsGroup
 			y = 1.5 * GUI_GRID_H;
 			w = 8 * GUI_GRID_W;
 			h = 1 * GUI_GRID_H;
-			action = "'APC' call compile preprocessfilelinenumbers 'UI\reinfRequestbuttonPressed.sqf';";
+			action = "'apc' call compile preprocessfilelinenumbers 'UI\reinfRequestbuttonPressed.sqf';";
 		};
 		class button_2: RscButton
 		{
@@ -243,6 +243,7 @@ class reinf_req_group_0: RscControlsGroup
 			y = 2.5 * GUI_GRID_H;
 			w = 8 * GUI_GRID_W;
 			h = 1 * GUI_GRID_H;
+			action = "'ifv' call compile preprocessfilelinenumbers 'UI\reinfRequestbuttonPressed.sqf';";
 		};
 		class button_3: RscButton
 		{
@@ -252,6 +253,7 @@ class reinf_req_group_0: RscControlsGroup
 			y = 3.5 * GUI_GRID_H;
 			w = 8 * GUI_GRID_W;
 			h = 1 * GUI_GRID_H;
+			action = "'mrap' call compile preprocessfilelinenumbers 'UI\reinfRequestbuttonPressed.sqf';";
 		};
 		class button_4: RscButton
 		{

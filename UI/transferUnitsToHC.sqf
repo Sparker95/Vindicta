@@ -35,6 +35,6 @@ _groupID = _returnArray select 0;
 _group = [_garDst, _groupID] call gar_fnc_getGroup;
 _groupHandle = _group select 1;
 
-//diag_log format ["Move request done!"];
+diag_log format ["transferUnitsToHC.sqf: moveGroup request done!"];
 
 [_groupHandle] remoteExecCall ["ui_fnc_requestReinfClient", _owner];

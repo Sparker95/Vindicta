@@ -2,8 +2,11 @@
 #include "defineCommonGrids.hpp"
 
 private _loc = player getVariable ["ui_selectedLocation", objNull];
+diag_log format ["Player pushed reinforcement request button: %1", _this];
+[clientOwner, _loc, _this] remoteExecCall ["ui_fnc_requestReinfServer", 2];
 
-//[clientOwner, _loc, _this] remoteExecCall ["ui_fnc_requestReinfServer", 2];
+/*
+//TODO Code to show listbox with extra options
 
 disableSerialization;
 
@@ -24,6 +27,7 @@ _ctrlListbox ctrlCommit 0.0;
 }forEach ["Item 0\newline", "Item 1", "Item 2"];
 
 _ctrlListbox ctrlShow true;
+*/
 
 [_loc] spawn
 {
