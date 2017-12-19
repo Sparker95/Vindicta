@@ -1,0 +1,17 @@
+Location holds data of a specific place like base, roadblock or anything of that kind that has a position and various units assigned to it.
+
+A location should solve these tasks:
+When to spawn or despawn the garrison associated with it?
+What positions are available for spawning vehicles, helicopters, planes, infantry? We should be able to define these positions both manually and procedurally.
+
+Location needs to do these things:
+
+Initialize its garrison.
+
+Check conditions for spawning/despawning garrison (conditions are yet to be determined).
+
+Spawn and despawn its garrison.
+
+A location should be able to split its garrison in order to provide support to another location, for example, to send a QRF somewhere or to send supplies somewhere.
+
+A location shouldn't care when to provide support or QRF, it should receive such commands from another higher entity such as a commander.

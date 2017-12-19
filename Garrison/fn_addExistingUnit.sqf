@@ -1,0 +1,26 @@
+//todo remove this function. It's not needed.
+/*
+Used to add an existing unit to garrison when moving a unit from one garrison to another. This functions shouldn't be accessed publicly. If you want to move a unit between garrisons, use fn_moveUnit.
+
+_unitFullData structure:
+[_catID, _subcatID, _classID, _objectHandle]
+_objectHandle is _objNull for not spawned units.
+*/
+
+#include "garrison.hpp"
+
+params ["_lo", "_unitFullData", ["_debug", true]];
+
+private _queue = _lo getVariable ["g_threadQueue", []];
+_queue pushBack [G_R_ADD_EXISTING_UNIT, _unitFullData];
+
+private _hThread = _lo getVariable ["g_threadHandle", nil];
+if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it
+{
+	[_lo, 10, true] call gar_fnc_startThread;
+};
+
+//Return value - request ID
+private _rID = _lo getVariable ["g_assignRequestID", 0];
+_lo setVariable ["g_assignRequestID", _rID+1];
+_rID
