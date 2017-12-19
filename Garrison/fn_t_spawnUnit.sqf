@@ -139,7 +139,7 @@ switch(_catID) do
 		_spawnPos = _spawnPosAndDir select [0, 3]; //Because it also returns the direction as 4th element inside the array
 		_direction = _spawnPosAndDir select 3;
 		//_objectHandle = _class createVehicle _spawnPos;
-		_objectHandle = createVehicle [_class, _spawnPos, [], 0, ""];
+		_objectHandle = createVehicle [_class, _spawnPos, [], 0, "NONE"];
 		_objectHandle allowDamage false;
 		[_objectHandle] spawn {sleep 3; (_this select 0) allowDamage true;};
 	};
