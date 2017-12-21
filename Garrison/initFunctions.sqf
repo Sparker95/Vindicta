@@ -21,9 +21,9 @@ gar_fnc_stopThread = compile preprocessFileLineNumbers "Garrison\fn_stopThread.s
 gar_fnc_getUnit = compile preprocessFileLineNumbers "Garrison\fn_getUnit.sqf";
 gar_fnc_getGroup = compile preprocessFileLineNumbers "Garrison\fn_getGroup.sqf";
 
-gar_fnc_setAlertState = compile preprocessFileLineNumbers "Garrison\fn_setAlertState.sqf";
+//gar_fnc_startAIThread = compile preprocessFileLineNumbers "Garrison\fn_startAIThread.sqf";
 
-//Functions called only from the thread:
+//Functions called only from the thread
 gar_fnc_t_spawnGarrison = compile preprocessFileLineNumbers "Garrison\fn_t_spawnGarrison.sqf";
 gar_fnc_t_despawnGarrison = compile preprocessFileLineNumbers "Garrison\fn_t_despawnGarrison.sqf";
 gar_fnc_t_spawnUnit = compile preprocessFileLineNumbers "Garrison\fn_t_spawnUnit.sqf";
@@ -37,7 +37,13 @@ gar_fnc_t_removeGroup = compile preprocessFileLineNumbers "Garrison\fn_t_removeG
 //gar_fnc_t_moveUnit = compile preprocessFileLineNumbers "Garrison\fn_t_moveUnit.sqf";
 gar_fnc_t_moveGroup = compile preprocessFileLineNumbers "Garrison\fn_t_moveGroup.sqf";
 gar_fnc_t_assignVehicleRoles = compile preprocessFileLineNumbers "Garrison\fn_t_assignVehicleRoles.sqf";
-gar_fnc_t_setAlertState = compile preprocessFileLineNumbers "Garrison\fn_t_setAlertState.sqf";
+
+/*
+gar_fnc_t_startAIThread = compile preprocessFileLineNumbers "Garrison\fn_t_startAIThread.sqf";
+gar_fnc_t_stopAIThread = compile preprocessFileLineNumbers "Garrison\fn_t_stopAIThread.sqf";
+gar_fnc_t_startEnemiesThread = compile preprocessFileLineNumbers "Garrison\fn_t_startEnemiesThread.sqf";
+gar_fnc_t_stopEnemiesThread = compile preprocessFileLineNumbers "Garrison\fn_t_stopEnemiesThread.sqf";
+*/
 
 //Event handlers
 gar_fnc_EH_killed = compile preprocessFileLineNumbers "Garrison\fn_EH_killed.sqf";
@@ -45,9 +51,7 @@ gar_fnc_EH_handleDamage = compile preprocessFileLineNumbers "Garrison\fn_EH_hand
 
 //General functions
 call compile preprocessFileLineNumbers "Garrison\generalFunctions.sqf";
-
-//Auxiliary functions
-gar_fnc_aux_getFullCrew = compile preprocessFileLineNumbers "Garrison\fn_aux_getFullCrew.sqf";
-gar_fnc_aux_getTurrets = compile preprocessFileLineNumbers "Garrison\fn_aux_getTurrets.sqf";
-
 gar_fnc_requestDone = compile preprocessFileLineNumbers "Garrison\fn_requestDone.sqf";
+
+//Other functions
+gar_fnc_reportSpottedEnemies = compile preprocessFileLineNumbers "Garrison\fn_reportSpottedEnemies.sqf";

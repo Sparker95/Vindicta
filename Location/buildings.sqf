@@ -1,5 +1,5 @@
 /*
-Building positions suitable for for specific roles.
+Building positions suitable for specific roles.
 
 Each building position is structered:
 	[_buildingPosID, _direction]

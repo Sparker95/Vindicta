@@ -55,3 +55,15 @@ loc_fnc_getName =
 	private _return = _loc getVariable ["l_name", "ERROR: No location"];
 	_return
 };
+
+loc_fnc_setAlertStateInternal =
+{
+	params ["_loc", "_alertState"];
+	_loc setVariable ["l_alertStateInternal", _alertState, false];
+};
+
+loc_fnc_setAlertStateExternal =
+{
+	params ["_loc", "_alertState"];
+	_loc setVariable ["l_alertStateExternal", _alertState, false];
+};

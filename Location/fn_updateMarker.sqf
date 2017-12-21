@@ -14,9 +14,9 @@ private _alertStateText = "x";
 private _as = _loc getVariable ["l_alertState", 0];
 switch (_as) do
 {
-	case G_AS_safe: {_alertStateText = "SAFE ";};
-	case G_AS_aware: {_alertStateText = "AWARE ";};
-	case G_AS_combat: {_alertStateText = "COMBAT ";};
+	case LOC_AS_safe: {_alertStateText = "SAFE ";};
+	case LOC_AS_aware: {_alertStateText = "AWARE ";};
+	case LOC_AS_combat: {_alertStateText = "COMBAT ";};
 };
 
 //Side

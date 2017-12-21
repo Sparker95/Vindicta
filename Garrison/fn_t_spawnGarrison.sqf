@@ -8,7 +8,7 @@ private _side = _lo getVariable ["g_side", nil];
 
 if(isNil "_side") exitWith
 {
-	diag_log format ["fn_t_idle_adding_unit.sqf: garrison: %1, error: wrong side: %2", _lo getVariable ["g_name", ""], _side];
+	diag_log format ["fn_t_spawnGarrison.sqf: garrison: %1, error: wrong side: %2", _lo getVariable ["g_name", ""], _side];
 };
 
 //Initialize some variables
@@ -18,7 +18,6 @@ private _cat = [];
 private _subcat = [];
 private _catSize = 0;
 private _unit = [];
-private _template = _lo getVariable ["g_template", []];
 private _pos = getPos player; //Todo: assign position to spawned units
 private _objectHandle = objNull;
 private _groups = _lo getVariable ["g_groups", []];
@@ -30,7 +29,7 @@ _catID = T_VEH;
 _cat = _lo getVariable ["g_veh", nil];
 if(isNil "_cat") exitWith
 {
-	diag_log format ["fn_t_idle_adding_unit.sqf: garrison: %1, error: vehicle garrison not initialized.", _lo getVariable ["g_name", ""]];
+	diag_log format ["fn_t_spawnGarrison.sqf: garrison: %1, error: vehicle garrison not initialized.", _lo getVariable ["g_name", ""]];
 };
 
 _catSize = T_VEH_SIZE;
@@ -51,7 +50,7 @@ _cat = _lo getVariable ["g_inf", nil];
 _subcatID = 0;
 if(isNil "_cat") exitWith
 {
-	diag_log format ["fn_t_idle_adding_unit.sqf: garrison: %1, error: infantry garrison not initialized.", _lo getVariable ["g_name", ""]];
+	diag_log format ["fn_t_spawnGarrison.sqf: garrison: %1, error: infantry garrison not initialized.", _lo getVariable ["g_name", ""]];
 };
 
 _catSize = T_INF_SIZE;
@@ -65,6 +64,10 @@ while {_subcatID < _catSize} do
 	_subcatID = _subcatID + 1;
 };
 
-//Set the alert state to spawned units
-private _alertState = _lo getVariable ["g_alertState", 0];
-[_lo, _alertState, true, true] call gar_fnc_t_setAlertState; // [..., ..., _spawned, _justSpawned]
+//Spawn drones
+//todo ...
+
+//Start a script to handle spotted enemies
+/*
+[_lo] call gar_fnc_t_startEnemiesThread;
+*/

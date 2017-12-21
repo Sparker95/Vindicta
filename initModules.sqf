@@ -10,6 +10,9 @@ tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 //a = [classesNATO, T_VEH, T_VEH_default] call t_fnc_select;
 //[classesNATO] call t_fnc_checkNil;
 
+//Initialize misc functions
+call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
+
 //Initialize garrison
 call compile preprocessFileLineNumbers "Garrison\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Garrison\initVariablesServer.sqf";

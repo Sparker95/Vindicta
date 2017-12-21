@@ -18,11 +18,11 @@ private _vehCfg = configFIle >> "CfgVehicles" >> _vehicleName;
 
 private _n_driver = getNumber (_vehCfg >> "hasDriver");
 
-private _copilotTurrets = [_vehicleName, 1, 0] call gar_fnc_aux_getTurrets;
+private _copilotTurrets = [_vehicleName, 1, 0] call misc_fnc_getTurrets;
 
-private _stdTurrets = [_vehicleName, 0, 0] call gar_fnc_aux_getTurrets;
+private _stdTurrets = [_vehicleName, 0, 0] call misc_fnc_getTurrets;
 
-private _psgTurrets = [_vehicleName, 0, 1] call gar_fnc_aux_getTurrets;
+private _psgTurrets = [_vehicleName, 0, 1] call misc_fnc_getTurrets;
 
 private _n_cargo = getNumber (_vehCfg >> "transportSoldier");
 

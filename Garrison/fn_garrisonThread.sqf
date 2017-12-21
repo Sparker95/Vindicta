@@ -1,11 +1,7 @@
 /*
 The thread for managing actions with garrison objects.
-The core of it is a state machine with two major state:
-	IDLE - the default state when we launch the thread or when garrison is despawned.
-	SPAWNED - the state when the garrison has been spawned.
-	STOPPING - assign this state to the _state variable and the thread will terminate at next iteration.
 
-When the state machine is in IDLE or SPAWNED state, it processes incoming requests through the _queue variable. The queue is here because we want to process things in sequential synchronous order. Especially it is needed when we modify the garrison array. It should be modified by one script in non-parallel manner because we don't want to damage it.
+The queue is here because we want to process things in sequential synchronous order. Especially it is needed when we modify the garrison array. It should be modified by one script in non-parallel manner because we don't want to damage it.
 
 _workTime - the time during which the thread will work, in seconds. After that the thread will self-terminate.
 */
@@ -152,13 +148,44 @@ while {_run} do
 				_requestReturn set [0, _groupID];
 			};
 
+			/*
+			//todo delete this
+			case G_R_START_AI_THREAD:
+			{
+				_requestData = _request select 1;
+				if(_spawned) then
+				{
+					[_lo, _requestData] call gar_fnc_t_startAIThread;
+				}
+				else
+				{
+					diag_log format ["fn_garrisonThread.sqf: garrison: %1, error: request to start AI thread for despawned garrison", _lo getVariable ["g_name", ""]];
+				};
+			};
+			
+			case G_R_STOP_AI_THREAD:
+			{
+				if(_spawned) then
+				{
+					[_lo, _requestData] call gar_fnc_t_stopAIThread;
+				}
+				else
+				{
+					diag_log format ["fn_garrisonThread.sqf: garrison: %1, error: request to stop AI thread for despawned garrison", _lo getVariable ["g_name", ""]];
+				};
+			};
+			*/
+			
 			//Request to set the alert state of the garrison
+			/*
+			//todo: remove this piece of code
 			case G_R_SET_ALERT_STATE:
 			{
 				_requestData = _request select 1;
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, setting new alert state: %2", _lo getVariable ["g_name", ""], _requestData];};
 				[_lo, _requestData, _spawned, false] call gar_fnc_t_setAlertState; // [..., ..., _spawned, _justSpawned]
 			};
+			*/
 
 			//Unknown request, probably an error
 			default

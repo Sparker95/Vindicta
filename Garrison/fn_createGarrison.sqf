@@ -80,7 +80,6 @@ _lo setVariable ["g_drone", _subcat, false];
 
 //==== Initialize the template for the garrison ====
 
-_lo setVariable ["g_template", []]; //todo maybe template isn't even needed here?
 _lo setVariable ["g_side", WEST];
 
 //==== Initialize groups for the garrison ====
@@ -89,16 +88,21 @@ _lo setVariable ["g_groups", []];
 
 //==== Initialize other variables for the garrison ====
 
-_lo setVariable ["g_spawned", false, false];
-_lo setVariable ["g_active", false, false]; //Means that it can or can't spawn other garrison
-_lo setVariable ["g_threadHandle", scriptNull, false];
-_lo setVariable ["g_threadQueue", [], false]; //Message queue to pass requests
-_lo setVariable ["g_name", "Noname garrison", false]; //Name of this garrison
-_lo setVariable ["g_unitIDCounter", 0]; //Counter for unitID. Each time a new unit or group is added this counter will be increased so that we have unique unit ID's for units and groups.
-_lo setVariable ["g_location", objNull]; //The location where from to request spawn positions
-_lo setVariable ["g_alertState", G_AS_none]; //By default there is no alert state
-_lo setVariable ["g_assignRequestID", 0]; //Counter used for IDs assigned to requests
-_lo setVariable ["g_execRequestID", 0]; //Counter used for IDs of executed requests
+_lo setVariable ["g_spawned", false, false];			//Indicates if the garrison is spawned or not
+_lo setVariable ["g_active", false, false];				//Means that it can or can't spawn other garrison
+_lo setVariable ["g_threadHandle", scriptNull, false];			//Handle to the garrison thread
+_lo setVariable ["g_AIThreadHandle", scriptNull, false];		//Handle to an AI script running for this garrison
+_lo setVariable ["g_enemiesThreadHandle", scriptNull, false];	//Handle to a script handling spotted enemies
+_lo setVariable ["g_threadQueue", [], false];			//Message queue to pass requests
+_lo setVariable ["g_name", "Noname garrison", false];	//Name of this garrison
+_lo setVariable ["g_unitIDCounter", 0, false];			//Counter for unitID generator
+_lo setVariable ["g_location", objNull, false];			//The location where to request spawn positions from
+_lo setVariable ["g_assignRequestID", 0, false];		//Counter used for IDs assigned to requests
+_lo setVariable ["g_execRequestID", 0, false];			//Counter used for IDs of executed requests
+_lo setVariable ["g_enemiesObjects", [], false]; 		//Enemies spotted by this garrison
+_lo setVariable ["g_enemiesPos", [], false]; 			//Perceived positions of enemies spotted by this garrison
+//_lo setVariable ["g_enemiesTime", 0, false];			//The time when enemies were reported last time
+_lo setVariable ["g_manageAlertState", false, false];	//Send requests to associated location to change alert state
 
 //Return the logic object
 _lo

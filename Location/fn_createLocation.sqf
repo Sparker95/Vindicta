@@ -16,7 +16,9 @@ _o setVariable ["l_inf_capacity", 0, false]; //Maximum capacity for infantry
 //_o setVariable ["l_side", _side];
 _o setVariable ["l_type", _type, false]; //Type of this location. See initVariablesServer.sqf for possible types.
 _o setVariable ["l_thread", nil, false]; //Thread handle for for this location
-_o setVariable ["l_alertState", G_AS_safe]; //The alert state of all garrisons
+_o setVariable ["l_alertState", LOC_AS_safe]; //The alert state of this location
+_o setVariable ["l_alertStateInternal", LOC_AS_safe]; //The alert state reported by enemy management thread
+_o setVariable ["l_alertStateExternal", LOC_AS_safe]; //The alert state set by higher level modules
 
 //=== Initialize the border type ====
 _o setVariable ["l_borderType", 0]; //0 is circle, 1 is rectangle
@@ -33,7 +35,7 @@ private _g_main = [] call gar_fnc_createGarrison;
 [_g_main, _name + ": main gar."] call gar_fnc_setName;
 [_g_main, _o] call gar_fnc_setLocation;
 //[_g_main] call gar_fnc_startThread; //todo don't need to start the thread manually any more
-[_g_main, G_AS_safe] call gar_fnc_setAlertState;
+//[_g_main, G_AS_safe] call gar_fnc_setAlertState;
 _o setVariable ["l_garrison_main", _g_main, false];
 _o setVariable ["l_template_main", []]; //Template for the main garrison
 _o setVariable ["l_garrison_civ", objNull]; //todo civilian garrisons

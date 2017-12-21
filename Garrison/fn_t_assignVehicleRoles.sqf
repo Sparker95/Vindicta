@@ -59,7 +59,7 @@ while {_i < _count} do
 		_vehUnit = [_lo, _unitData] call gar_fnc_getUnit; //Get vehicle's data from the garrison array
 		_vehHandle = _vehUnit select 1; //Get vehicle object handle
 		_class = _vehUnit select 0;
-		private _fullCrew = [_class] call gar_fnc_aux_getFullCrew;
+		private _fullCrew = [_class] call misc_fnc_getFullCrew;
 		//diag_log format ["vehicle: %1 fullcrew: %2", _vehUnitData, _fullCrew];
 		private _np = _fullCrew select 0; //Number of drivers or pilots
 		private _t = (_fullCrew select 1) + (_fullCrew select 2); //Copilot and all other turrets

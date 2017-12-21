@@ -152,7 +152,7 @@ private _typesWithCrew = [];
 	if (_catID == T_VEH) then //If adding a vehicle, also add its crew
 	{
 		private _crewClass = "";
-		private _fullCrew = [_class] call gar_fnc_aux_getFullCrew;
+		private _fullCrew = [_class] call misc_fnc_getFullCrew;
 		//diag_log format ["Vehicle: %1 crew: %2", _unitClassName, _fullCrew];
 		private _np = _fullCrew select 0; //Number of pilots or drivers
 		private _ncp = count (_fullCrew select 1); //number of copilots

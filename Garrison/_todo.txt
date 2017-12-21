@@ -1,0 +1,3 @@
+Functions to implement:
+set enemy data
+start AI script

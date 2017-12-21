@@ -11,7 +11,6 @@ private _subcat = [];
 //private _class = "";
 private _catSize = 0;
 private _unit = [];
-//private _template = _lo getVariable ["g_template", []];
 //private _pos = getPos player; //Temporary
 private _objectHandle = objNull;
 private _groups = _lo getVariable ["g_groups", []];
@@ -55,3 +54,6 @@ while {_subCatID < _catSize} do
 };
 
 //Delete all drones
+
+//Stop the enemies thread
+//[_lo] call gar_fnc_t_stopEnemiesThread;

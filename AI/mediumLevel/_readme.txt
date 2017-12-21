@@ -1,0 +1,1 @@
+Medium level AI scripts operate with all groups of specified garrison. These scripts can call low level AI scripts.

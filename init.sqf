@@ -14,14 +14,14 @@ if(isServer) then
 	HCGarrisonWEST = [] call gar_fnc_createGarrison;
 	[HCGarrisonWEST, "HC WEST"] call gar_fnc_setName;
 	[HCGarrisonWEST, WEST] call gar_fnc_setSide;
-	[HCGarrisonWEST, G_AS_none] call gar_fnc_setAlertState;
-	[HCGarrisonWEST] call gar_fnc_spawnGarrison;
+	//[HCGarrisonWEST, G_AS_none] call gar_fnc_setAlertState;
+	//[HCGarrisonWEST] call gar_fnc_spawnGarrison;
 
 	HCGarrisonEAST = [] call gar_fnc_createGarrison;
 	[HCGarrisonEAST, "HC EAST"] call gar_fnc_setName;
 	[HCGarrisonEAST, EAST] call gar_fnc_setSide;
-	[HCGarrisonEAST, G_AS_none] call gar_fnc_setAlertState;
-	[HCGarrisonEAST] call gar_fnc_spawnGarrison;
+	//[HCGarrisonEAST, G_AS_none] call gar_fnc_setAlertState;
+	//[HCGarrisonEAST] call gar_fnc_spawnGarrison;
 
 	publicVariable "allLocations";
 };

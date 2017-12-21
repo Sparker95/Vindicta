@@ -16,12 +16,6 @@ G_GT_veh_non_static = 2; //Non-static vehicles and their crew
 G_GT_building_sentry = 3; //Infantry inside buildings in firing positions like snipers/marksmen/sharpshooters
 G_GT_patrol = 4; //Patrols that are walking around
 
-//Alert states
-G_AS_none = 0; //AIs are handled by non-garrison AI script, like when they are on combat mission.
-G_AS_safe = 1;
-G_AS_aware = 2;
-G_AS_combat = 3;
-
 //Vehicle roles
 G_VR_driver = 0;
 G_VR_turret = 1;

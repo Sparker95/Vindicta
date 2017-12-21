@@ -28,4 +28,12 @@ private _newUnitData = [];
 //Assign vehicle roles
 [_lo, _groupID, _spawned, true, true, false] call gar_fnc_t_assignVehicleRoles;
 
+/*
+if (_spawned) then
+{
+	[_lo] call gar_fnc_t_stopEnemiesThread;
+	[_lo] call gar_fnc_t_startEnemiesThread;
+};
+*/
+
 _groupID
