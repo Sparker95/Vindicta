@@ -25,6 +25,12 @@ loc_fnc_insideBorder = compile preprocessFileLineNumbers "Location\fn_insideBord
 loc_fnc_isPosSafe = compile preprocessFileLineNumbers "Location\fn_isPosSafe.sqf";
 loc_fnc_boundingBoxReal = compile preprocessFileLineNumbers "Location\fn_boundingBoxReal.sqf";
 
-//todo remove this function
+//todo redo the markers
 loc_fnc_setMarker = compile preprocessFileLineNumbers "Location\fn_setMarker.sqf";
 loc_fnc_updateMarker = compile preprocessFileLineNumbers "Location\fn_updateMarker.sqf";
+
+//Functions to change AI scripts
+loc_fnc_restartEnemiesScript	= compile preprocessFileLineNumbers "Location\fn_restartEnemiesScript.sqf";
+loc_fnc_stopEnemiesScript		= compile preprocessFileLineNumbers "Location\fn_stopEnemiesScript.sqf";
+loc_fnc_restartAlertStateScript	= compile preprocessFileLineNumbers "Location\fn_restartAlertStateScript.sqf";
+loc_fnc_stopAlertStateScript	= compile preprocessFileLineNumbers "Location\fn_stopAlertStateScript.sqf";

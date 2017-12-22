@@ -8,7 +8,10 @@ _workTime - the time during which the thread will work, in seconds. After that t
 
 #include "garrison.hpp"
 
-params ["_lo", "_workTime", ["_debug", true]];
+params ["_lo", "_workTime", ["_debug", false]];
+
+//Override debug output
+_debug = false;
 
 private _run = true;
 private _request = [];

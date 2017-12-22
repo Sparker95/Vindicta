@@ -145,7 +145,7 @@ T_GROUP_inf_recon_team		= 10;
 T_GROUP_inf_sentry			= 11;
 T_GROUP_inf_sniper_team		= 12;
 
-//Subcategories sorted by their placement type
+//Subcategories sorted by their PLacement type
 T_PL_tracked_wheeled = //Tracked and wheeled vehicles
 [
 	[T_VEH, T_VEH_car_unarmed],
