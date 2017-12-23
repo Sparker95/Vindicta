@@ -154,9 +154,9 @@ private _typesWithCrew = [];
 		private _crewClass = "";
 		private _fullCrew = [_class] call misc_fnc_getFullCrew;
 		//diag_log format ["Vehicle: %1 crew: %2", _unitClassName, _fullCrew];
-		private _np = _fullCrew select 0; //Number of pilots or drivers
-		private _ncp = count (_fullCrew select 1); //number of copilots
-		private _nt = count (_fullCrew select 2); //Number of turrets
+		private _np = _fullCrew select 0;			//Number of pilots or drivers
+		private _ncp = count (_fullCrew select 1);	//number of copilots
+		private _nt = count (_fullCrew select 2);	//Number of turrets
 		call //Check what kind of crew is needed for this vehicle
 		{
 			if(_subcatID in T_VEH_need_crew) exitWith //Some armored vehicle needs crewmen

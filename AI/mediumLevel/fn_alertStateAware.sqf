@@ -15,17 +15,17 @@ private _hGsPatrol = [];
 private _hGsSentry = [];
 
 //Groups with casual behaviour
-_hGsCasual append ([_gar, G_GT_idle] call gar_fnc_getGroupHandles);
+_hGsCasual append ([_gar, G_GT_idle] call gar_fnc_findGroupHandles);
 
 //Groups with casual crew behaviour
-_hGsCasualCrew append ([_gar, G_GT_veh_static] call gar_fnc_getGroupHandles);
-_hGsCasualCrew append ([_gar, G_GT_veh_non_static] call gar_fnc_getGroupHandles);
+_hGsCasualCrew append ([_gar, G_GT_veh_static] call gar_fnc_findGroupHandles);
+_hGsCasualCrew append ([_gar, G_GT_veh_non_static] call gar_fnc_findGroupHandles);
 
 //Groups with patrol behaviour
-_hGsPatrol append ([_gar, G_GT_patrol] call gar_fnc_getGroupHandles);
+_hGsPatrol append ([_gar, G_GT_patrol] call gar_fnc_findGroupHandles);
 
 //Sentries
-_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_getGroupHandles);
+_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_findGroupHandles);
 
 //Set behaviours
 {_x setBehaviour "SAFE";} forEach _hGsCasual;

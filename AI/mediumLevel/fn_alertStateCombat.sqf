@@ -14,15 +14,15 @@ private _hGsGetIn = [];
 private _hGsSentry = [];
 
 //Groups that need to regroup
-_hGsRegroup append ([_gar, G_GT_idle] call gar_fnc_getGroupHandles);
-_hGsRegroup append ([_gar, G_GT_patrol] call gar_fnc_getGroupHandles);
+_hGsRegroup append ([_gar, G_GT_idle] call gar_fnc_findGroupHandles);
+_hGsRegroup append ([_gar, G_GT_patrol] call gar_fnc_findGroupHandles);
 
 //Groups that need to board their vehicles
-_hGsGetIn append ([_gar, G_GT_veh_static] call gar_fnc_getGroupHandles);
-_hGsGetIn append ([_gar, G_GT_veh_non_static] call gar_fnc_getGroupHandles);
+_hGsGetIn append ([_gar, G_GT_veh_static] call gar_fnc_findGroupHandles);
+_hGsGetIn append ([_gar, G_GT_veh_non_static] call gar_fnc_findGroupHandles);
 
 //Sentries
-_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_getGroupHandles);
+_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_findGroupHandles);
 
 //Set behaviours
 {_x setBehaviour "COMBAT";} forEach _hGsRegroup;

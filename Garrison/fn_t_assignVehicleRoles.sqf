@@ -48,6 +48,7 @@ while {_i < _count} do
 
  //Find vehicles in this group and assign roles
 _i = 0;
+private _j = 0;
 while {_i < _count} do
 {
 	_unitData = (_groupUnits select _i) select 0;
@@ -65,14 +66,14 @@ while {_i < _count} do
 		private _t = (_fullCrew select 1) + (_fullCrew select 2); //Copilot and all other turrets
 		private _ct = (_fullCrew select 3); //Cargo turrets
 		private _c = _fullCrew select 4; //Cargo
-		private _j = _i + 1;
+		//private _j = _i + 1;
 		//Find driver if it's needed
 		if(_np != 0) then
 		{
 			while {_j < _count} do
 			{
 				_unitData = (_groupUnits select _j) select 0;
-				diag_log format ["_groupUnits: %1", _groupUnits];
+				//diag_log format ["_groupUnits: %1", _groupUnits];
 				if(_unitData select 0 == T_INF && _unitData select 2 != -1) exitWith //Alive driver found
 				{
 					_infUnit = [_lo, _unitData, 0] call gar_fnc_getUnit;

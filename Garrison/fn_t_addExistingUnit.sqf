@@ -2,7 +2,7 @@
 Used inside the thread to add an existing unit to a garrison.
 
 _unitFullData structure:
-[_catID, _subcatID, _classID, _objectHandle, _groupID]
+[_catID, _subcatID, _class, _objectHandle, _groupID]
 _objectHandle is _objNull for not spawned units.
 
 Return value: new unit's ID
@@ -12,7 +12,7 @@ params ["_lo", "_unitFullData", "_spawned", ["_debug", true]];
 
 private _catID = _unitFullData select 0;
 private _subcatID = _unitFullData select 1;
-private _classID = _unitFullData select 2;
+private _class = _unitFullData select 2;
 private _objectHandle = _unitFullData select 3;
 private _groupID = _unitFullData select 4;
 
@@ -28,7 +28,7 @@ if(!([_template, _catID, _subcatID, _classID] call t_fnc_isValid)) exitWith {
 //Check if the specified group exists
 private _group = [_lo, _groupID] call gar_fnc_getGroup;
 
-if(_group isEqualTo []) exitWIth
+if(_group isEqualTo []) exitWith
 {
 	diag_log format ["fn_t_addExistingUnit.sqf: garrison: %1, specified group not found: %2", _lo getVariable ["g_name", ""], _groupID];
 };
@@ -56,7 +56,7 @@ _lo setVariable ["g_unitIDCounter", _unitID + 1];
 
 //Add the unit
 private _subCat = _cat select _subcatID;
-_subCat pushBack [_classID, _objectHandle, _unitID, _groupID];
+_subCat pushBack [_class, _objectHandle, _unitID, _groupID];
 
 //Add the unit to its group
 private _groupUnits = _group select 0;

@@ -34,6 +34,9 @@ g_group - an array of arrays like:
 	_groupHandle - object of type Group if group has been spawned or grpNull if group isn't spawned
 	_groupID - the ID of the group
 	_groupType - the type of the groop. See initVariablesServer for group types.
+	
+	Groups can be pure infantry or they can have a vehicle.
+	In case that the a group has a vehicle, group's units will be assigned to this vehicle when spawned.
 */
 
 private _lo = groupLogic createUnit ["LOGIC", [0, 0, 0], [], 0, "NONE"]; //logic object

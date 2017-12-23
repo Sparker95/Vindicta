@@ -11,7 +11,7 @@ _workTime - the time during which the thread will work, in seconds. After that t
 params ["_lo", "_workTime", ["_debug", false]];
 
 //Override debug output
-_debug = false;
+//_debug = false;
 
 private _run = true;
 private _request = [];
@@ -82,15 +82,12 @@ while {_run} do
 			};
 
 			//Request to add an existing unit
-			//todo remove this piece of code
-			/*
 			case G_R_ADD_EXISTING_UNIT:
 			{
 				_requestData = _request select 1;
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, adding existing unit: %2", _lo getVariable ["g_name", ""], _requestData];};
 				[_lo, _requestData, _spawned] call gar_fnc_t_addExistingUnit;
 			};
-			*/
 
 			//Request to add an existing group
 			case G_R_ADD_EXISTING_GROUP:
@@ -150,7 +147,26 @@ while {_run} do
 				private _groupID = [_lo, _requestData, _spawned] call gar_fnc_t_moveGroup;
 				_requestReturn set [0, _groupID];
 			};
+			
+			//Request to move a unit to another group
+			case G_R_JOIN_GROUP:
+			{
+				_requestData = _request select 1;
+				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, moving unit: %2 to group: %3", _lo getVariable ["g_name", ""], (_requestData select 0),  (_requestData select 1)];};
+				[_lo, _requestData, _spawned] call gar_fnc_t_joinGroup;
+			};
 
+			case G_R_ASSIGN_VEHICLE_ROLES:
+			{
+				_requestData = _request select 1;
+				private _gID = _requestData select 0; //Group ID
+				private _ad = _requestData select 1; //Assign drivers
+				private _at = _requestData select 2; //Assign turrets
+				private _ap = _requestData select 3; //Assign passengers
+				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, assign veh. roles, group: %2, drv: %3, tur: %4, pas: %5", _lo getVariable ["g_name", ""], _gID, _ad, _at, _ap];};
+				[_lo, _gID, _spawned, _ad, _at, _ap] call gar_fnc_t_assignVehicleRoles;
+			};
+			
 			/*
 			//todo delete this
 			case G_R_START_AI_THREAD:

@@ -1,29 +1,20 @@
+//Init one garrison
 player allowDamage false;
 call compile preprocessFileLineNumbers "initModules.sqf";
 
-lo0 = [] call gar_fnc_createGarrison;
-[lo0, WEST] call gar_fnc_setSide;
-[lo0, "GAR_0"] call gar_fnc_setName;
-[lo0, [0, 0, 0]] call gar_fnc_setPos;
-[lo0, tNATO] call gar_fnc_setTemplate;
-[lo0] call gar_fnc_startThread;
-[lo0, T_INF, T_INF_SL, -1] call gar_fnc_addNewUnit;
-[lo0, T_INF, T_INF_GL, -1] call gar_fnc_addNewUnit;
-[lo0, T_INF, T_INF_rifleman, -1] call gar_fnc_addNewUnit;
+loc0 = [getpos player, "temp loc", LOC_TYPE_outpost] call loc_fnc_createLocation;
+[loc0, 20] call loc_fnc_setBorderCircle;
 
-lo1 = [] call gar_fnc_createGarrison;
-[lo1, WEST] call gar_fnc_setSide;
-[lo1, "GAR_1"] call gar_fnc_setName;
-[lo1, [50, 0, 0]] call gar_fnc_setPos;
-[lo1, tNATO] call gar_fnc_setTemplate;
-[lo1] call gar_fnc_startThread;
-[lo1, T_INF, T_INF_crew, -1] call gar_fnc_addNewUnit;
-[lo1, T_INF, T_INF_pilot, -1] call gar_fnc_addNewUnit;
-[lo1, T_INF, T_INF_pilot_heli, -1] call gar_fnc_addNewUnit;
+gar0 = [] call gar_fnc_createGarrison;
+[gar0, WEST] call gar_fnc_setSide;
+[gar0, "GAR_0"] call gar_fnc_setName;
+[gar0, tNATO] call gar_fnc_setTemplate;
+[gar0, loc0] call gar_fnc_setLocation;
+[gar0, tNATO, T_GROUP_inf_sentry, -1, G_GT_patrol, [], true] call gar_fnc_addNewGroup;
+[gar0, tNATO, T_GROUP_inf_sentry, -1, G_GT_patrol, [], true] call gar_fnc_addNewGroup;
+[gar0] call gar_fnc_spawnGarrison;
 
-[lo0] call gar_fnc_spawnGarrison;
-[lo1] call gar_fnc_spawnGarrison;
-//[lo0, lo1, [0,1,0]] call gar_fnc_moveUnit;
+[gar0, [0,4,1], 3] call gar_fnc_joinGroup;
 
 
 //////////////////////////////////////////////

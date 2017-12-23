@@ -1,9 +1,9 @@
-//todo remove this function. It's not needed.
 /*
-Used to add an existing unit to garrison when moving a unit from one garrison to another. This functions shouldn't be accessed publicly. If you want to move a unit between garrisons, use fn_moveUnit.
+Used to add an existing unit to garrison when moving a unit from one garrison to another.
+Normally units should only be transfered in groups, but we have vehicles as an exclusion.
 
 _unitFullData structure:
-[_catID, _subcatID, _classID, _objectHandle]
+[_catID, _subcatID, _class, _objectHandle]
 _objectHandle is _objNull for not spawned units.
 */
 

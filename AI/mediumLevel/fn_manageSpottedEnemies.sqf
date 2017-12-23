@@ -20,7 +20,7 @@ private _newAS = LOC_AS_safe;
 
 private _side = [_gar] call gar_fnc_getSide;
 private _groupsData = []; //[_groupHandle, _behaviour, timer]
-private _hGs = [_gar, -1] call gar_fnc_getGroupHandles; //Get group handles of the garrison
+private _hGs = [_gar, -1] call gar_fnc_findGroupHandles; //Get group handles of the garrison
 {
 	_groupsData pushback [_x, behaviour (leader _x), 0];
 }forEach _hGs;
