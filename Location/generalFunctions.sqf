@@ -67,3 +67,9 @@ loc_fnc_setAlertStateExternal =
 	params ["_loc", "_alertState"];
 	_loc setVariable ["l_alertStateExternal", _alertState, false];
 };
+
+loc_fnc_setForceSpawnTimer =
+{
+	params ["_loc", "_value"];
+	_loc setVariable ["l_forceSpawnTimer", _value, false];
+};

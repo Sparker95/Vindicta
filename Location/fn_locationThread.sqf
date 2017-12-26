@@ -18,13 +18,20 @@ sleep (random _sleepInterval);
 private _gar = [_loc] call loc_fnc_getMainGarrison;
 private _side = [_gar] call gar_fnc_getSide;
 
+private _forceSpawnTimer = _loc getVariable ["l_forceSpawnTimer", 0];
+
 while {true} do
 {
 	sleep _sleepInterval;
+	_forceSpawnTimer = _loc getVariable ["l_forceSpawnTimer", 0];
+	_forceSpawnTimer = _forceSpawnTimer - _sleepInterval;
+	_loc setVariable ["l_forceSpawnTimer", _forceSpawnTimer, false];
+	
 	//diag_log format ["fn_locationThread.sqf: location: %1, simulation: %2", _name, simulationEnabled _loc];
 	if(_spawned) then
 	{
-		if({_x distance _loc < _distanceSpawn && (side _x != _side || (isPlayer _x))} count allUnits == 0) then //If garrison must be despawned
+		if({_x distance _loc < _distanceSpawn && (side _x != _side || (isPlayer _x))} count allUnits == 0 &&
+			_forceSpawnTimer <= 0) then //If garrison must be despawned
 		{
 			[_loc] call loc_fnc_stopAlertStateScript;
 			[_loc] call loc_fnc_stopEnemiesScript;
@@ -39,7 +46,8 @@ while {true} do
 	}
 	else //If not spawned
 	{
-		if({_x distance _loc < _distanceSpawn && ((side _x != _side) || (isPlayer _x))} count allUnits > 0) then //If garrison needs to be spawned
+		if({_x distance _loc < _distanceSpawn && ((side _x != _side) || (isPlayer _x))} count allUnits > 0 ||
+			_forceSpawnTimer > 0) then //If garrison needs to be spawned
 		{
 			[_loc] call loc_fnc_spawnAllGarrisons;
 			waitUntil //Wait until the garrison has spawned
@@ -56,7 +64,7 @@ while {true} do
 	};
 	
 	//Check alert state
-	//todo Implement alert state cool-down
+	//todo Implement alert state cool-down and proper switching
 	private _ASInt = _loc getVariable ["l_alertStateInternal", 0];
 	private _ASExt = _loc getVariable ["l_alertStateExternal", 0];
 	private _ASReq = selectMax [_ASInt, _ASExt]; //Required new alert state. Just max of them for now.

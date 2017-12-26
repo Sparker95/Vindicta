@@ -4,10 +4,10 @@ Sets the border type of location as circle with defined radius.
 
 params ["_loc", "_radius"];
 
-_loc setVariable ["l_borderType", 0, false];
-_loc setVariable ["l_borderData", _radius, false];
+_loc setVariable ["l_borderType", 0, true];
+_loc setVariable ["l_borderData", _radius, true];
 
-_return = _loc setVariable ["l_boundingRadius", _radius];
+_loc setVariable ["l_boundingRadius", _radius, true];
 
 //==== Add patrol waypoints ====
 /*
@@ -36,4 +36,4 @@ while {_i < 8} do
 	"Sign_Arrow_Large_Pink_F" createVehicle (_pos);
 	//
 };
-_loc setVariable ["l_patrol_wp", _wp]; //An array with points between which patrols should walk
+_loc setVariable ["l_patrol_wp", _wp, false]; //An array with points between which patrols should walk

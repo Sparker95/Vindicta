@@ -1,0 +1,2 @@
+If you want to add support for a mod with extra units, these variables should be updated:
+mortarClassnames in Sense/initVariablesServer.sqf

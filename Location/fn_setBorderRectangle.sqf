@@ -4,10 +4,10 @@ Sets the border type of location as rectangle with a, b, direction, like in mark
 
 params ["_loc", "_a", "_b", "_dir"];
 
-_loc setVariable ["l_borderType", 1, false];
-_loc setVariable ["l_borderData", [_a, _b, _dir], false];
+_loc setVariable ["l_borderType", 1, true];
+_loc setVariable ["l_borderData", [_a, _b, _dir], true];
 private _radius = sqrt(_a*_a + _b*_b);
-_loc setVariable ["l_boundingRadius", _radius, false];
+_loc setVariable ["l_boundingRadius", _radius, true];
 
 // Add patrol waypoints
 /*
@@ -81,4 +81,4 @@ while {_i < 8} do
 	//
 };
 
-_loc setVariable ["l_patrol_wp", _wp]; //An array with points between which patrols should walk
+_loc setVariable ["l_patrol_wp", _wp, false]; //An array with points between which patrols should walk

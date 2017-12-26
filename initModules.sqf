@@ -26,3 +26,7 @@ call compile preprocessFileLineNumbers "AI\initFunctions.sqf";
 
 //Initialize UI functions
 call compile preprocessFileLineNumbers "UI\initFunctions.sqf";
+
+//Initialize sense modules
+call compile preprocessFileLineNumbers "Sense\initVariablesServer.sqf";
+call compile preprocessFileLineNumbers "Sense\initFunctions.sqf";

@@ -1,0 +1,1 @@
+call compile preprocessFileLineNumbers "Sense\fire.sqf"; 
