@@ -141,7 +141,7 @@ switch(_catID) do
 		//_objectHandle = _class createVehicle _spawnPos;
 		_objectHandle = createVehicle [_class, _spawnPos, [], 0, "NONE"];
 		_objectHandle allowDamage false;
-		[_objectHandle] spawn {sleep 3; (_this select 0) allowDamage true;};
+		[_objectHandle] spawn {sleep 1; (_this select 0) allowDamage true;};
 	};
 };
 _objectHandle setDir _direction;

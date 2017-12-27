@@ -101,9 +101,9 @@ if(_found) then //If the spawn position has been found
 else
 {
 	//Provide default spawn position
-	private _r = 15; //0.5 * (_o getVariable ["l_radius", 0]);
+	private _r = (0.7 * (_o getVariable ["l_boundingRadius", 0])) min 150;
 	_return = ((getPos _o) vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0]) + [0];
-	diag_log format ["fn_getSpawnPosition.sqf: warning: spawn position not defined for this type or maximum amount was reached: %1. Returning default position.", [_catID, _subcatID, _groupType]];
+	//diag_log format ["fn_getSpawnPosition.sqf: warning: spawn position not defined for this type or maximum amount was reached: %1. Returning default position.", [_catID, _subcatID, _groupType]];
 };
 
 _return

@@ -128,11 +128,11 @@ while {true} do
 		{
 			_timeReportCounter = _timeReportCounter - _timeReport;
 			
+			_reportArrayID = (_reportArrayID + 1) mod 2; //Switch between 0, 1, 0, 1, ...
 			_allTargetsReportObjects set [_reportArrayID, []];
 			_allTargetsReportPos set [_reportArrayID, []];				
 			private _reportArrayObjects = _allTargetsReportObjects select _reportArrayID;
 			private _reportArrayPos = _allTargetsReportPos select _reportArrayID;
-			_reportArrayID = (_reportArrayID + 1) mod 2; //Switch between 0, 1, 0, 1, ...
 			
 			//Find new enemies
 			{
@@ -144,8 +144,10 @@ while {true} do
 					private _age = _x select 5; //Target age
 					//diag_log format ["side: %1 obj: %2 age: %3", _s, _o, _age];
 					//Check only enemies older than some threshold
-					if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age > _timeReport) ) then 
+					if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age > _timeReport) // &&
+					//	(_hG knowsAbout _o) > 0) then 
 					{
+						//diag_log format ["  %1 knows about %2: %3", _hG, _o, _hG knowsAbout _o];
 						if ((_reportArrayObjects pushBackUnique _o) != -1) then
 						{
 							_reportArrayPos pushBack (_x select 4);

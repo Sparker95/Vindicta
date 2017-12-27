@@ -9,4 +9,5 @@ _lo setVariable ["g_enemiesObjects", _enemiesObjects];
 _lo setVariable ["g_enemiesPos", _enemiesPos];
 
 if(_debug) then {diag_log format ["fn_reportSpottedEnemies.sqf: garrison: %1, reported enemies: %2", _lo getVariable ["g_name", ""], _enemiesObjects];};
+if(_debug) then {diag_log format ["fn_reportSpottedEnemies.sqf: garrison: %1, reported pos: %2", _lo getVariable ["g_name", ""], _enemiesPos];};
 //_lo setVariable ["g_enemiesTime", ];

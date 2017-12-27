@@ -14,7 +14,7 @@ private _radius = [_loc] call loc_fnc_getBoundingRadius;
 //Find campfires
 private _pos = getPos _loc;
 private _campfires = (_pos nearObjects ["Campfire_burning_F", 2*_radius]) + (_pos nearObjects ["FirePlace_burning_F", 2*_radius]) + (_pos nearObjects ["Land_Campfire_F", 2*_radius]) + (_pos nearObjects ["Land_FirePlace_F", 2*_radius]);
-diag_log format ["Number of campfires: %1", count _campfires];
+//diag_log format ["Number of campfires: %1", count _campfires];
 if(_maxRadius < _radius) then //Check radius
 {
 	_radius = _maxRadius;

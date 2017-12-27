@@ -31,3 +31,7 @@ if(isServer) then
 UI_fnc_onMapSingleClick =
 compile preprocessfilelinenumbers "UI\onMapSingleClick.sqf";
 onMapSingleClick {call UI_fnc_onMapSingleClick;};
+
+
+///
+[player] call sense_fnc_initUnitFireMonitor;
