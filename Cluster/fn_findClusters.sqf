@@ -1,0 +1,62 @@
+/*
+This function groups provided clusters into bigger clusters according to provided maximum distance.
+
+Parameters:
+_clusters - array with clusters
+_md - Maximum Distance between clusters
+
+Returns: array with new bigger clusters.
+*/
+
+/*
+Performance results:
+data size - exec. time
+12 - 1.3 ms
+20 - 3.5 ms
+50 - 15.6 ms
+100 - 61 ms
+200 - 250 ms
+*/
+
+//#define DEBUG
+
+params ["_clusters", "_md"];
+
+private _c = count _clusters;
+
+for "_i" from 0 to _c do
+{
+	for "_j" from 0 to _c do
+	{
+		_ci = _clusters select _i;
+		_cj = _clusters select _j;
+		//If we have different clusters, and if both clusteres have not been removed
+		if (_i != _j &&
+			{count _ci > 0} &&
+			{count _cj > 0}) then
+		{
+			#ifdef DEBUG
+			diag_log format ["Checking clusters: %1 %2", _i, _j];
+			#endif
+			_d = [_ci, _cj] call cluster_fnc_distance;
+			//If the clusters are close, merge them
+			if (_d < _md) then
+			{
+				[_ci, _cj] call cluster_fnc_merge;
+				//Mark the second cluster as inactive
+				_clusters set [_j, []];
+			};
+		};
+	};
+};
+
+//Produce output array
+private _out = [];
+{
+	//Add only active clusters
+	if (count _x > 0) then
+	{
+		_out pushBack _x;
+	};
+} forEach _clusters;
+_out

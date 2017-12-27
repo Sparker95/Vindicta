@@ -144,7 +144,7 @@ while {true} do
 					private _age = _x select 5; //Target age
 					//diag_log format ["side: %1 obj: %2 age: %3", _s, _o, _age];
 					//Check only enemies older than some threshold
-					if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age > _timeReport) // &&
+					if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age > _timeReport)) then // &&
 					//	(_hG knowsAbout _o) > 0) then 
 					{
 						//diag_log format ["  %1 knows about %2: %3", _hG, _o, _hG knowsAbout _o];
