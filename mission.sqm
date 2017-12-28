@@ -8,7 +8,7 @@ class EditorData
 	toggles=97;
 	class ItemIDProvider
 	{
-		nextID=1439;
+		nextID=1441;
 	};
 	class MarkerIDProvider
 	{
@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={1781.8678,57.675034,5893.9868};
-		dir[]={0.089313097,-0.63327408,0.76875848};
-		up[]={0.073081151,0.77392691,0.6290428};
-		aside[]={0.99331939,0,-0.11540218};
+		pos[]={1788.3436,26.4739,5952.5684};
+		dir[]={0.070121884,-0.86941981,0.48908094};
+		up[]={0.12339122,0.49407247,0.86062002};
+		aside[]={0.9898808,-4.976755e-009,-0.14192401};
 	};
 };
 binarizationWanted=0;
@@ -64,7 +64,8 @@ addons[]=
 	"A3_Weapons_F_Pistols_P07",
 	"rhsusf_c_troops",
 	"rhsusf_c_weapons",
-	"rhs_c_weapons"
+	"rhs_c_weapons",
+	"A3_Weapons_F_Ammoboxes"
 };
 class AddonsMetaData
 {
@@ -328,7 +329,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=135;
+		items=136;
 		class Item0
 		{
 			dataType="Object";
@@ -891,7 +892,7 @@ class Mission
 			};
 			id=1078;
 			type="B_HMG_01_high_F";
-			atlOffset=5.7220459e-006;
+			atlOffset=0.051876068;
 		};
 		class Item35
 		{
@@ -908,7 +909,7 @@ class Mission
 			};
 			id=1079;
 			type="B_HMG_01_high_F";
-			atlOffset=4.7683716e-006;
+			atlOffset=0.051662445;
 		};
 		class Item36
 		{
@@ -925,7 +926,7 @@ class Mission
 			};
 			id=1080;
 			type="B_HMG_01_high_F";
-			atlOffset=-9.5367432e-007;
+			atlOffset=-0.0001411438;
 		};
 		class Item37
 		{
@@ -3093,7 +3094,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={1792.1219,5.5014391,5961.7012};
+						position[]={1791.4489,5.5014391,5962.1758};
 					};
 					side="West";
 					flags=7;
@@ -3320,6 +3321,45 @@ class Mission
 			{
 			};
 			id=1430;
+		};
+		class Item135
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={1792.746,6.2898083,5967.5698};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				init="call{0 = [""AmmoboxInit"",[this,true]] spawn BIS_fnc_arsenal;}";
+			};
+			id=1439;
+			type="Box_East_AmmoVeh_F";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ammoBox";
+					expression="[_this,_value] call bis_fnc_initAmmoBox;";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="[[[[],[]],[[],[]],[[],[]],[[],[]]],true]";
+						};
+					};
+				};
+				nAttributes=1;
+			};
 		};
 	};
 	class Connections

@@ -45,6 +45,9 @@ sense_fnc_mortarFired_eh =
 	a location, the location is spawned.
 	*/
 	params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
+	
+	diag_log format [" allvariables: %1", allVariables _projectile];
+	
 	if((_ammo isKindOf "GrenadeBase") || (_ammo isKindOf "BulletBase")) then //If it's some kind of machinegun attached to the artillery
 	{
 		private _hit = getNumber (configFile >> "cfgAmmo" >> _ammo >> "hit");
@@ -98,7 +101,7 @@ sense_fnc_mortarFired_eh =
 				_vz = (velocity _projectile) select 2;
 				_h = (getPosATL _projectile) select 2;
 				_t = -(_h/_vz);
-				if(_t < 5) then {true}
+				if(_t < 8) then {true}
 				else {sleep 0.2; false};
 			};
 		};
@@ -280,10 +283,16 @@ sense_fnc_unitFireMonitor =
 	This script monitors how many shots the unit has made during current iteration.
 	If unit has made audible gun shots, data is being sent to nearby locations.
 	*/
-	params ["_unit", "_st"]; //unit, sleep time
-	while {(!isNull _unit) && (alive _unit)} do
+	params ["_unit", "_st", "_ut"]; //unit, sleep time, unit type
+	scopeName "main";
+	private _silenced = false;
+	while {!isNull _unit} do
 	{
+		if(!alive _unit) then //If the unit is dead, terminate the script
+		{breakTo "main"};
+		
 		sleep _st;
+		
 		//Read how many shots have been fired by the unit Normalize them by the sleep time to get fires per second.
 		//Reset the counters
 		private _cl = (_unit getVariable ["s_firedLight", 0])/_st; //Counter for light weapons
@@ -306,8 +315,11 @@ sense_fnc_unitFireMonitor =
 			//todo check only locations of enemy side			
 			if(_cl > 0) then
 			{
-				[_unit, _dl, 0, _cl] call sense_fnc_sendSoundToLocations;
-				//diag_log format ["Light: %1", _cl];
+				if(!_silenced) then //Check if the weapon is silenced
+				{
+					[_unit, _dl, 0, _cl] call sense_fnc_sendSoundToLocations;
+					//diag_log format ["Light: %1", _cl];
+				};
 			};
 			if(_cm > 0) then
 			{
@@ -325,6 +337,12 @@ sense_fnc_unitFireMonitor =
 				//diag_log format ["Artillery: %1", _ca];
 			};
 		};
+		
+		//If unit is infantry, check if it's using silenced weapon
+		if(_ut == 0) then
+		{
+			_silenced = _unit call misc_fnc_currentWeaponSilenced;
+		};
 	};
 };
 
@@ -340,11 +358,13 @@ sense_fnc_initUnitFireMonitor =
 	_unit setVariable ["s_firedArtillery", 0, false]; //Artillery
 	private _sleepInterval = 3;
 	private _eh = _unit getVariable ["s_firedEh", -1];
+	private _unitType = 0; //0 - inf, 1 - veh, 2 - mortar
 	if(_eh == -1) then
 	{
 		if(_unit isKindOf "man") then
 		{
 			_eh = _unit addEventHandler ["Fired", {_this spawn sense_fnc_infFired_eh}];
+			_unitType = 0;
 		}
 		else
 		{
@@ -352,14 +372,16 @@ sense_fnc_initUnitFireMonitor =
 			if((_unit isKindOf "StaticMortar") || ((typeof _unit) in mortarClassnames)) then
 			{
 				_eh = _unit addEventHandler ["Fired", {_this spawn sense_fnc_mortarFired_eh}];
+				_unitType = 2;
 			}
 			else
 			{
 				_eh = _unit addEventHandler ["Fired", {_this spawn sense_fnc_vehFired_eh}];
+				_unitType = 1;
 			};
 		};
 		_unit setVariable ["s_firedEh", _eh];
-		private _hScript = [_unit, _sleepInterval] spawn sense_fnc_unitFireMonitor;
+		private _hScript = [_unit, _sleepInterval, _unitType] spawn sense_fnc_unitFireMonitor;
 		_unit setVariable ["s_hFireMonitor", _hScript, false];
 	}
 	else

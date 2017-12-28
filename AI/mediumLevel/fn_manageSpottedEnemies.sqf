@@ -9,6 +9,8 @@ _extraParams: [_loc, _handleAlertState]
 	_handleAlertState - bool - if true, this script will be handling the alert state of the garrison.
 */
 
+//todo remove double buffer switching! It makes no sense.
+
 params ["_scriptObject", "_extraParams"];
 
 private _gar = _scriptObject getVariable ["AI_garrison", objNull];

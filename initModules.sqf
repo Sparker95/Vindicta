@@ -1,8 +1,10 @@
 //Just a quick file to initialize the modules already made in needed order
 
 //Initialize the group for logic objects
-groupLogic = createGroup sideLogic;
-
+if(isNil "groupLogic") then
+{
+	groupLogic = createGroup sideLogic;
+};
 
 //Initialize templates
 call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
