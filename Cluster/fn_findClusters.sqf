@@ -1,11 +1,16 @@
 /*
 This function groups provided clusters into bigger clusters according to provided maximum distance.
 
+!!! WARNING !!!
+This function modifies the initial array.
+
 Parameters:
 _clusters - array with clusters
 _md - Maximum Distance between clusters
 
 Returns: array with new bigger clusters.
+
+Author: Sparker 12.2017
 */
 
 /*
@@ -24,9 +29,15 @@ params ["_clusters", "_md"];
 
 private _c = count _clusters;
 
-for "_i" from 0 to _c do
+if(_c < 2) exitWith
 {
-	for "_j" from 0 to _c do
+	private _out = +_clusters;
+	_out
+};
+
+for "_i" from 0 to _c-1 do
+{
+	for "_j" from 0 to _c-1 do
 	{
 		_ci = _clusters select _i;
 		_cj = _clusters select _j;

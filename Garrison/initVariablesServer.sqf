@@ -1,13 +1,4 @@
 //call compile preprocessFileLineNumbers "Garrison\initVariablesServer.sqf";
-if(isNil "groupLogic") then
-{
-	groupLogic = createGroup sideLogic;
-}
-else
-{
-	deleteGroup groupLogic;
-	groupLogic = createGroup sideLogic;
-};
 
 //Group types are global because they are als accessed by other modules
 G_GT_idle = 0; //Group which is doing nothing specific at the location now. Probably a reserve non-structured infantry squad or a vehicle without assigned crew.

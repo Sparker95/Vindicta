@@ -8,6 +8,7 @@ add inits here until it's so fucked up, then redo it all over again
 call compile preprocessFileLineNumbers "initModules.sqf";
 if(isServer) then
 {
+	call compile preprocessFileLineNumbers "Init\initHQ.sqf";
 	allLocations = call compile preprocessFileLineNumbers "Init\createAllLocations.sqf";
 	[allLocations] call compile preprocessFileLineNumbers "Init\initAllGarrisons.sqf";
 

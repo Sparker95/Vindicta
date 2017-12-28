@@ -156,7 +156,7 @@ while {true} do
 				} forEach _nt;
 			} forEach _hGs;
 			//diag_log format ["reporting: %1", _reportArrayObjects];
-			[_gar, _reportArrayObjects, _reportArrayPos, true] call gar_fnc_reportSpottedEnemies;
+			[_gar, _reportArrayObjects, _reportArrayPos, false] call gar_fnc_reportSpottedEnemies;
 			if (count _reportArrayObjects > 0) then
 			{
 				//Handle new alert state

@@ -1,5 +1,6 @@
 /*
 This function handles gunfire sounds produced by other units.
+The main intention for now is to change alert states.
 
 _weaponType:
 	0 - light weapons

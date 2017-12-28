@@ -115,3 +115,14 @@ cluster_fnc_merge =
 	_array = _c1 select 4;
 	_array append (_c2 select 4);
 };
+
+cluster_fnc_getCenter =
+{
+	/*
+	Get the center of the cluster
+	*/
+	params ["_c"];
+	private _cx = 0.5*((_c select 0) + (_c select 2));
+	private _cy = 0.5*((_c select 1) + (_c select 3));
+	[_cx, _cy]
+};

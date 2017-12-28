@@ -35,5 +35,6 @@ loc_fnc_stopEnemiesScript		= compile preprocessFileLineNumbers "Location\fn_stop
 loc_fnc_restartAlertStateScript	= compile preprocessFileLineNumbers "Location\fn_restartAlertStateScript.sqf";
 loc_fnc_stopAlertStateScript	= compile preprocessFileLineNumbers "Location\fn_stopAlertStateScript.sqf";
 
-//
+//Functions to handle different things
 loc_fnc_handleGunfireSounds = compile preprocessFileLineNumbers "Location\fn_handleGunfireSounds.sqf";
+loc_fnc_handleArtilleryFire = compile preprocessFileLineNumbers "Location\fn_handleArtilleryFire.sqf";

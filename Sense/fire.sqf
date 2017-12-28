@@ -75,6 +75,7 @@ sense_fnc_mortarFired_eh =
 	}
 	else //Otherwise it's either a rocket(MLRS) or a shell
 	{
+		private _posLaunch = getPosWorld _unit;
 		//diag_log format ["==== Mortar fire detected!"];
 		private _c = _unit getVariable "s_firedArtillery";
 		_c = _c + 1;
@@ -117,9 +118,8 @@ sense_fnc_mortarFired_eh =
 		} forEach allLocations;
 		if(!isNull _loc) then
 		{
-			diag_log format ["pre-spawning location!"];
-			//Spawn the location for some time
-			[_loc, 120] remoteExec["loc_fnc_setForceSpawnTimer", 2]; //Execute it at the server 
+			diag_log format ["Mortar shell incoming to location!"];
+			[_loc, _posLaunch, false] remoteExec["loc_fnc_handleArtilleryFire", 2];
 		};
 		
 		//Wait until the explosion
@@ -137,10 +137,7 @@ sense_fnc_mortarFired_eh =
 		} forEach allLocations;
 		if(!isNull _loc) then
 		{
-			//Spawn the location for some time
-			[_loc, 120] remoteExec["loc_fnc_setForceSpawnTimer", 2]; //Execute it at the server
-			
-			
+			[_loc, _posLaunch, true] remoteExec["loc_fnc_handleArtilleryFire", 2];
 		};
 	};
 };
