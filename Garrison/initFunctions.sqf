@@ -54,4 +54,4 @@ call compile preprocessFileLineNumbers "Garrison\generalFunctions.sqf";
 gar_fnc_requestDone = compile preprocessFileLineNumbers "Garrison\fn_requestDone.sqf";
 
 //Other functions
-gar_fnc_reportSpottedEnemies = compile preprocessFileLineNumbers "Garrison\fn_reportSpottedEnemies.sqf";
+//gar_fnc_reportSpottedEnemies = compile preprocessFileLineNumbers "Garrison\fn_reportSpottedEnemies.sqf";

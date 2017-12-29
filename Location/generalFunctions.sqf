@@ -73,3 +73,10 @@ loc_fnc_setForceSpawnTimer =
 	params ["_loc", "_value"];
 	_loc setVariable ["l_forceSpawnTimer", _value, false];
 };
+
+loc_fnc_getEnemiesScriptHandle =
+{
+	params ["_loc"];
+	private _return = _loc getVariable ["l_oAIEnemiesScript", objNull];
+	_return
+};

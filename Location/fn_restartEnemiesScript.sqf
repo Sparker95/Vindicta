@@ -17,6 +17,7 @@ if(!isNull _oEnemiesScript) then //Check if another script is already running
 };
 _oEnemiesScript = [_gar, "AI_fnc_manageSpottedEnemies", [_loc, true]]
 								call AI_fnc_startMediumLevelScript;
+//Later we will need to access this object to get data from the AI managing script
 _loc setVariable ["l_oAIEnemiesScript", _oEnemiesScript, false];
 
 //Release the mutex
