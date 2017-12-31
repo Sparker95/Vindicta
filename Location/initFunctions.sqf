@@ -36,5 +36,5 @@ loc_fnc_restartAlertStateScript	= compile preprocessFileLineNumbers "Location\fn
 loc_fnc_stopAlertStateScript	= compile preprocessFileLineNumbers "Location\fn_stopAlertStateScript.sqf";
 
 //Functions to handle different things
-loc_fnc_handleGunfireSounds = compile preprocessFileLineNumbers "Location\fn_handleGunfireSounds.sqf";
+loc_fnc_handleSound = compile preprocessFileLineNumbers "Location\fn_handleSound.sqf";
 loc_fnc_handleArtilleryFire = compile preprocessFileLineNumbers "Location\fn_handleArtilleryFire.sqf";

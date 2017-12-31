@@ -10,6 +10,7 @@ AI_fnc_alertStateCombat = compile preprocessFileLineNumbers "AI\mediumLevel\fn_a
 
 //Script for managing spotted enemies
 AI_fnc_manageSpottedEnemies = compile preprocessFileLineNumbers "AI\mediumLevel\fn_manageSpottedEnemies.sqf";
+call compile preprocessFileLineNumbers "AI\mediumLevel\manageSpottedEnemies.sqf";
 
 //Scripts to start/stop medium level scripts
 AI_fnc_startMediumLevelScript = compile preprocessFileLineNumbers "AI\fn_startMediumLevelScript.sqf";

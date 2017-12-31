@@ -15,6 +15,7 @@ params ["_scriptObject", "_extraParams"];
 
 //Initialize the variable synchronously, in case it will be accessed by other modules right after script starts
 _scriptObject setVariable ["AI_spottedEnemies", [], false];
+_scriptObject setVariable ["AI_requestedAS", LOC_AS_safe, false];
 
 private _hScript = [_scriptObject, _extraParams] spawn
 {
@@ -194,12 +195,8 @@ private _hScript = [_scriptObject, _extraParams] spawn
 			_combatPrev = false;
 		};
 		
-		//If needed, send requests to change alert state to the location
-		if (_handleAlertState) then
-		{
-			//Send data to the location object
-			[_loc, _newAS] call loc_fnc_setAlertStateInternal;
-		};
+		//Update the requested alert state
+		_scriptObject setVariable ["AI_requestedAS", _newAS];
 	};
 };
 

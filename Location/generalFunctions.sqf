@@ -56,6 +56,7 @@ loc_fnc_getName =
 	_return
 };
 
+/*
 loc_fnc_setAlertStateInternal =
 {
 	params ["_loc", "_alertState"];
@@ -67,6 +68,7 @@ loc_fnc_setAlertStateExternal =
 	params ["_loc", "_alertState"];
 	_loc setVariable ["l_alertStateExternal", _alertState, false];
 };
+*/
 
 loc_fnc_setForceSpawnTimer =
 {

@@ -30,3 +30,5 @@ _loc setVariable ["l_oAIAlertStateScript", _oAlertStateScript, false];
 
 //Release the mutex
 _loc setVariable ["l_AIScriptsMutex", 0, false];
+
+_oAlertStateScript

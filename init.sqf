@@ -6,11 +6,18 @@ add inits here until it's so fucked up, then redo it all over again
 //==== Locations initialization
 //player allowDamage false;
 call compile preprocessFileLineNumbers "initModules.sqf";
+diag_log "==== 0";
 if(isServer) then
 {
-	call compile preprocessFileLineNumbers "Init\initHQ.sqf";
+diag_log "==== 1";
 	allLocations = call compile preprocessFileLineNumbers "Init\createAllLocations.sqf";
+	diag_log "==== 2";
 	[allLocations] call compile preprocessFileLineNumbers "Init\initAllGarrisons.sqf";
+diag_log "==== 3";
+	
+	//Init some HQ modules
+	call (compile (preprocessFileLineNumbers "Init\initHQ.sqf"));
+diag_log "==== 4";
 
 	HCGarrisonWEST = [] call gar_fnc_createGarrison;
 	[HCGarrisonWEST, "HC WEST"] call gar_fnc_setName;
@@ -25,6 +32,7 @@ if(isServer) then
 	[HCGarrisonEAST] call gar_fnc_spawnGarrison;
 
 	publicVariable "allLocations";
+	diag_log "==== 5";
 };
 
 
@@ -32,7 +40,3 @@ if(isServer) then
 UI_fnc_onMapSingleClick =
 compile preprocessfilelinenumbers "UI\onMapSingleClick.sqf";
 onMapSingleClick {call UI_fnc_onMapSingleClick;};
-
-
-///
-[player] call sense_fnc_initUnitFireMonitor;

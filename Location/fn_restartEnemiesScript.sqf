@@ -22,3 +22,5 @@ _loc setVariable ["l_oAIEnemiesScript", _oEnemiesScript, false];
 
 //Release the mutex
 _loc setVariable ["l_AIScriptsMutex", 0, false];
+
+_oEnemiesScript

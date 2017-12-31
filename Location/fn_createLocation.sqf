@@ -20,8 +20,8 @@ _o setVariable ["l_oAIAlertStateScript", objNull, false];	//Object returned by a
 _o setVariable ["l_oAIEnemiesScript", objNull, false];		//Object returned by a call to AI_fnc_startMediumLevelScript
 _o setVariable ["l_AIScriptsMutex", 0, false];				//A mutex to synchronize starts/stops of AI sripts 
 _o setVariable ["l_alertState", LOC_AS_safe, false]; //The alert state of this location
-_o setVariable ["l_alertStateInternal", LOC_AS_safe, false]; //The alert state reported by enemy management thread
-_o setVariable ["l_alertStateExternal", LOC_AS_safe, false]; //The alert state set by higher level modules
+//_o setVariable ["l_alertStateInternal", LOC_AS_safe, false]; //The alert state reported by enemy management thread
+//_o setVariable ["l_alertStateExternal", LOC_AS_safe, false]; //The alert state set by higher level modules
 _o setVariable ["l_forceSpawnTimer", 0, false]; //When the timer is above zero, the location is forced to spawned
 
 //=== Initialize the border type ====

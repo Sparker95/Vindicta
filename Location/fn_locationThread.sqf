@@ -20,6 +20,8 @@ private _side = [_gar] call gar_fnc_getSide;
 
 private _forceSpawnTimer = _loc getVariable ["l_forceSpawnTimer", 0];
 
+private _oEnemiesScript = objNull;
+
 while {true} do
 {
 	sleep _sleepInterval;
@@ -35,6 +37,7 @@ while {true} do
 		{
 			[_loc] call loc_fnc_stopAlertStateScript;
 			[_loc] call loc_fnc_stopEnemiesScript;
+			_oEnemiesScript = objNull;
 			[_loc] call loc_fnc_despawnAllGarrisons;
 			waitUntil //Wait until the garrison has spawned
 			{
@@ -56,7 +59,7 @@ while {true} do
 				[_gar] call gar_fnc_isSpawned
 			};
 			//Start enemies management script
-			[_loc] call loc_fnc_restartEnemiesScript;
+			_oEnemiesScript = [_loc] call loc_fnc_restartEnemiesScript;
 			//Start alert state script
 			[_loc] call loc_fnc_restartAlertStateScript;
 			_spawned = true;
@@ -65,14 +68,17 @@ while {true} do
 	
 	//Check alert state
 	//todo Implement alert state cool-down and proper switching
-	private _ASInt = _loc getVariable ["l_alertStateInternal", 0];
-	private _ASExt = _loc getVariable ["l_alertStateExternal", 0];
+	private _ASInt = if(_spawned) then
+	{_oEnemiesScript call AI_fnc_getRequestedAlertState;}
+	else
+	{LOC_AS_safe};
+	private _ASExt = 0; //todo also request alert state from the headquarters
 	private _ASReq = selectMax [_ASInt, _ASExt]; //Required new alert state. Just max of them for now.
 	if(_ASReq != _alertState) then //If it's needed to change the alert state
 	{
 		_alertState = _ASReq;
 		_loc setVariable ["l_alertState", _ASReq];
-		if(_spawned) then //If spawned, start a new script
+		if(_spawned) then //If spawned, start a new AI alert state script
 		{
 			diag_log format ["Location: %1 switching to new alert state: %2", _name, _ASReq];
 			[_loc] call loc_fnc_restartAlertStateScript;
