@@ -3,7 +3,7 @@
 
 //These constants help classify the amount of sound produced by ammo based on its hit value from cfgAmmo.
 #define S_HIT_LIGHT		1	//Light is everything above 1
-#define S_HIT_MEDIUM	25	//Medium is everything above 25
+#define S_HIT_MEDIUM	23	//Medium is everything above 25
 #define S_HIT_HEAVY		200	//Heavy is everything above 200
 
 //Types of sounds:

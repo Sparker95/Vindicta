@@ -6,18 +6,13 @@ add inits here until it's so fucked up, then redo it all over again
 //==== Locations initialization
 //player allowDamage false;
 call compile preprocessFileLineNumbers "initModules.sqf";
-diag_log "==== 0";
 if(isServer) then
 {
-diag_log "==== 1";
 	allLocations = call compile preprocessFileLineNumbers "Init\createAllLocations.sqf";
-	diag_log "==== 2";
 	[allLocations] call compile preprocessFileLineNumbers "Init\initAllGarrisons.sqf";
-diag_log "==== 3";
 	
 	//Init some HQ modules
 	call (compile (preprocessFileLineNumbers "Init\initHQ.sqf"));
-diag_log "==== 4";
 
 	HCGarrisonWEST = [] call gar_fnc_createGarrison;
 	[HCGarrisonWEST, "HC WEST"] call gar_fnc_setName;
@@ -32,7 +27,6 @@ diag_log "==== 4";
 	[HCGarrisonEAST] call gar_fnc_spawnGarrison;
 
 	publicVariable "allLocations";
-	diag_log "==== 5";
 };
 
 

@@ -1,39 +1,84 @@
 //todo add separate artillery radars for sides!
 
-diag_log "======== HQ INIT STARTED!";
-globalArtilleryRadar = [] call sense_fnc_createArtilleryRadar;
-//diag_log "======== HQ INIT DONE!";
-globalSoundMonitor = [] call sense_fnc_createSoundMonitor;
-diag_log "======== HQ INIT DONE!";
+globalArtilleryRadar = [] call sense_fnc_artilleryRadar_create;
+globalSoundMonitor = [] call sense_fnc_soundMonitor_create;
 
-fn_highScript =
+fn_highLevelScript =
 {
-	private _counter = 0;
+	private _counterSounds = 0;
+	private _counterArtClusters = 0;
 	while {true} do
 	{
-		sleep 2;
-		private _sounds = [globalSoundMonitor, true] call sense_fnc_processSoundMonitor;
+		sleep 5;
+		
+		//Sound monitor
+		[globalSoundMonitor] call sense_fnc_soundMonitor_process;
+		private _soundClusters = [globalSoundMonitor] call sense_fnc_soundMonitor_getActiveClusters;
+		//Delete previous markers
+		private _i = 0;
+		while {_i < _counterSounds} do
+		{
+			private _name = format["soundCluster_%1", _i];
+			deleteMarkerLocal _name;
+			_i = _i + 1;
+		};
+		_counterSounds = 0;
 		//Create markers
 		{
-			private _name = format["sound_%1", _counter];
+			diag_log format ["Active sound cluster: %1", _x];
+			
+			private _name = format["soundCluster_%1", _counterSounds];
+			deleteMarkerLocal _name;
+			_counterSounds = _counterSounds + 1;
+			private _c = _x select 0; //Cluster
 			//deleteMarkerLocal _name;
-			_counter = _counter + 1;
 			private _mrk = createMarkerLocal [_name,
-					[	_x select 0,
-						_x select 1,
+					[	0.5*((_c select 0) + (_c select 2)),
+						0.5*((_c select 1) + (_c select 3)),
 						0]];
-			private _width = _x select 2;
-			private _height = _x select 2;
+			private _width = 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
+			private _height = 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
+			_mrk setMarkerShapeLocal "RECTANGLE";
+			_mrk setMarkerBrushLocal "SolidFull";
+			_mrk setMarkerSizeLocal [_width, _height];
+			_mrk setMarkerColorLocal "ColorGreen";
+			_mrk setMarkerAlphaLocal 0.4;
+		} forEach _soundClusters;
+		
+
+		private _batteries = [globalArtilleryRadar] call sense_fnc_artilleryRadar_getActiveClusters;
+		//Remove previous markers and create new ones
+		for [{_i = 0}, {_i < count _batteries}, {_i = _i + 1}] do
+		{
+			//Marker for the calculated launch site center
+			private _name = format ["battery_center_%1", _i];
+			deleteMarkerLocal _name;
+			private _avgPos = _batteries select _i select 1;
+			private _mrk = createMarkerLocal [_name, [_avgPos select 0, _avgPos select 1, 0]];
+			_mrk setMarkerTypeLocal "hd_destroy";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerText (format ["N:%1 time:%2", (_batteries select _i) select 2, (_batteries select _i) select 3]);
+			
+			//Marker for the launch site border
+			_name = format ["battery_%1", _i];
+			deleteMarkerLocal _name;
+			private _c = _batteries select _i select 0;
+			_mrk = createMarkerLocal [_name,
+					[	0.5*((_c select 0) + (_c select 2)),
+						0.5*((_c select 1) + (_c select 3)),
+						0]];
+			private _width = 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
+			private _height = 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
 			_mrk setMarkerShapeLocal "RECTANGLE";
 			_mrk setMarkerBrushLocal "SolidFull";
 			_mrk setMarkerSizeLocal [_width, _height];
 			_mrk setMarkerColorLocal "ColorRed";
-			_mrk setMarkerAlphaLocal 0.1;
-		} forEach _sounds;
+			_mrk setMarkerAlphaLocal 0.3;
+		};	
 	};
 };
 
-_null = [] spawn fn_highScript;
+_null = [] spawn fn_highLevelScript;
 
 
 diag_log "======== HQ INIT EXIT!";

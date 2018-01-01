@@ -1,8 +1,16 @@
 /*
 This function groups provided clusters into bigger clusters according to provided maximum distance.
 
+!!!!!!!!!!!!!!!
 !!! WARNING !!!
-This function modifies the initial array.
+!!!!!!!!!!!!!!!
+
+This function modifies the initial array!
+Make a copy of your initial array if you still need it after calling the function.
+
+!!!!!!!!!!!!!!!
+!!! WARNING !!!
+!!!!!!!!!!!!!!!
 
 Parameters:
 _clusters - array with clusters
