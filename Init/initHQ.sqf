@@ -4,6 +4,18 @@ globalArtilleryRadar = [] call sense_fnc_artilleryRadar_create;
 globalSoundMonitor = [] call sense_fnc_soundMonitor_create;
 globalEnemyMonitor = [] call sense_fnc_enemyMonitor_create;
 
+artilleryRadarEast = [] call sense_fnc_artilleryRadar_create;
+soundMonitorEast = [] call sense_fnc_soundMonitor_create;
+enemyMonitorEast = [] call sense_fnc_enemyMonitor_create;
+
+artilleryRadarWest = [] call sense_fnc_artilleryRadar_create;
+soundMonitorWest = [] call sense_fnc_soundMonitor_create;
+enemyMonitorWest= [] call sense_fnc_enemyMonitor_create;
+
+artilleryRadarInd = [] call sense_fnc_artilleryRadar_create;
+soundMonitorInd = [] call sense_fnc_soundMonitor_create;
+enemyMonitorInd = [] call sense_fnc_enemyMonitor_create;
+
 fn_highLevelScript =
 {
 	private _counterSounds = 0;

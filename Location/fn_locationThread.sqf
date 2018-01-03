@@ -69,25 +69,50 @@ while {true} do
 	};
 	
 	//Check alert state
-	//todo Implement alert state cool-down and proper switching
+	//Internal alert state
 	private _ASInt = if(_spawned) then
 	{_oEnemiesScript call AI_fnc_getRequestedAlertState;}
 	else
 	{LOC_AS_safe};
-	private _ASExt = 0; //todo also request alert state from the headquarters
-	private _ASReq = selectMax [_ASInt, _ASExt]; //Required new alert state. Just max of them for now.
-	if(_ASReq != _alertState) then //If it's needed to change the alert state
+	private _ASSound = _loc getVariable ["l_alertStateSound", LOC_AS_safe];
+	_loc setVariable ["l_alertStateSound", LOC_AS_safe, false];
+	//External alert state
+	private _ASExt = LOC_AS_safe; //todo also request alert state from the headquarters
+	//Required new alert state
+	private _ASReq = selectMax [_ASInt, _ASExt, _ASSound]; //Required new alert state. Just max of them for now.
+	//Switch to new alert state if needed
+	if(_ASReq != _alertState) then
 	{
-		_alertState = _ASReq;
-		_loc setVariable ["l_alertState", _ASReq];
-		if(_spawned) then //If spawned, start a new AI alert state script
+		private _changeAS = false;
+		if(_ASReq < _alertState) then
 		{
-			diag_log format ["Location: %1 switching to new alert state: %2", _name, _ASReq];
-			[_loc] call loc_fnc_restartAlertStateScript;
+			private _t = _loc getVariable ["l_alertStateTimer", 0];
+			_t = _t - _sleepInterval;
+			_loc setVariable ["l_alertStateTimer", _t, 0];
+			if (_t < 0) then
+			{
+				_changeAS = true;
+			};
+		}
+		else
+		{
+			_changeAS = true;
 		};
 		
-		//Update the map
-		//todo redo the map update system
-		[_loc] call loc_fnc_updateMarker;
+		if(_changeAS) then
+		{
+			_alertState = _ASReq;
+			_loc setVariable ["l_alertState", _ASReq];
+			if(_spawned) then //If spawned, start a new AI alert state script
+			{
+				private _txt = format ["Location: %1 switching to new alert state: %2", _name, _ASReq];
+				diag_log _txt;
+				systemChat _txt;
+				[_loc] call loc_fnc_restartAlertStateScript;
+			};
+			//Update the map
+			//todo redo the map update system
+			[_loc] call loc_fnc_updateMarker;
+		};
 	};
 };

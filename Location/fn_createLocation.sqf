@@ -9,20 +9,19 @@ private _o = "Sign_Arrow_Large_Pink_F" createVehicle _pos;
 hideObjectGlobal _o;
 
 //==== Initialize general variables ====
-_o setVariable ["l_st", [], false]; //Spawn types array
-_o setVariable ["l_flag", [], false]; //todo add support for the flag The position of the flag if it should be here or [] if it doesn here
-_o setVariable ["l_name", _name, true]; //The name of this location. Mainly for debug reasons.
-_o setVariable ["l_inf_capacity", 0, false]; //Maximum capacity for infantry
+_o setVariable ["l_st", [], false];							//Spawn types array
+_o setVariable ["l_flag", [], false];						//todo add support for the flag The position of the flag if it should be here or [] if it doesn here
+_o setVariable ["l_name", _name, true];						//The name of this location. Mainly for debug reasons.
+_o setVariable ["l_inf_capacity", 0, false];				//Maximum capacity for infantry
 //_o setVariable ["l_side", _side];
-_o setVariable ["l_type", _type, true]; //Type of this location. See initVariablesServer.sqf for possible types.
-_o setVariable ["l_thread", nil, false]; //Thread handle for for this location
+_o setVariable ["l_type", _type, true];						//Type of this location. See initVariablesServer.sqf for possible types.
+_o setVariable ["l_thread", nil, false];					//Thread handle for for this location
 _o setVariable ["l_oAIAlertStateScript", objNull, false];	//Object returned by a call to AI_fnc_startMediumLevelScript
 _o setVariable ["l_oAIEnemiesScript", objNull, false];		//Object returned by a call to AI_fnc_startMediumLevelScript
 _o setVariable ["l_AIScriptsMutex", 0, false];				//A mutex to synchronize starts/stops of AI sripts 
-_o setVariable ["l_alertState", LOC_AS_safe, false]; //The alert state of this location
-//_o setVariable ["l_alertStateInternal", LOC_AS_safe, false]; //The alert state reported by enemy management thread
-//_o setVariable ["l_alertStateExternal", LOC_AS_safe, false]; //The alert state set by higher level modules
-_o setVariable ["l_forceSpawnTimer", 0, false]; //When the timer is above zero, the location is forced to spawned
+_o setVariable ["l_alertState", LOC_AS_safe, false];		//The alert state of this location
+_o setVariable ["l_alertStateSound", LOC_AS_safe, false];	//Alert state resulting from hearing sounds
+_o setVariable ["l_forceSpawnTimer", 0, false];				//When the timer is above zero, the location is forced to spawned
 
 //=== Initialize the border type ====
 _o setVariable ["l_borderType", 0, false]; //0 is circle, 1 is rectangle

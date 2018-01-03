@@ -95,6 +95,12 @@ private _hScript = [_scriptObject, _extraParams] spawn
 		//Check spotted enemies
 		if(_combat) then
 		{
+			//If previous state is not combat, reset the counters
+			if(!_combatPrev) then
+			{
+				_timeReportCounter = 0;
+				_timeRevealCouunter = 0;
+			};
 			//Check if it's time to reveal enemies to other squads
 			_timeRevealCounter = _timeRevealCounter + _timeSleep;
 			if (_timeRevealCounter >= _timeReveal) then
@@ -105,9 +111,10 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				{
 					_hG = _x select 0;
 					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], _timeReveal];
-					{
+					{ //forEach _nt
 						private _s = _x select 2; //Side of the target
 						private _age = _x select 5; //Target age is the time that has passed since the last time the group has actually seen the enemy unit. Values lower than 0 mean that they see the enemy right now
+						//diag_log format ["Age of target %1: %2", _x select 1, _age];
 						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age <= _timeReveal)) then //If target's side is enemy
 						{
 							_allTargets pushBack [_x select 1, _hG knowsAbout (_x select 1), _x select 4, _x select 5];
@@ -127,15 +134,13 @@ private _hScript = [_scriptObject, _extraParams] spawn
 						}forEach _allTargets;
 						_i = _i + 1;
 					} forEach _groupsData;
-					
-					//Handle new alert state
-					_newAS = LOC_AS_combat;
 				};
-				
+				_newAS = LOC_AS_combat;
 			};
 
 			//Check if it's time to report enemies to garrison object
 			_timeReportCounter = _timeReportCounter + _timeSleep;
+			diag_log format ["Location is in combat state for %1 seconds", _timeReportCounter];
 			if(_timeReportCounter >= _timeReport) then
 			{
 				_timeReportCounter = _timeReportCounter - _timeReport;
@@ -151,13 +156,13 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				//Find enemies
 				{ //forEach _groupsData
 					_hG = _x select 0;
-					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0]; //Any age enemies are fine
+					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 600]; //Any age enemies are fine
 					{ //forEach _nt
 						private _o = _x select 1;
 						private _s = _x select 2; //Side of the target
 						private _age = _x select 5; //Target age
 						//TODO add a check for knowsAbout, because sometimes these fools think they know about enemy while they have no way to see it (like when they report artillery cannon that has killed their comrade from 10km away)
-						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && ((leader _hG) knowsAbout _o != 1.5)) then
+						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT])) then
 						{
 							//Check if the reported object already exists
 							private _pos = _x select 4;
@@ -185,7 +190,7 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				diag_log format ["Report pos: %1", _reportPos];
 				diag_log format ["Report age: %1", _reportAge];
 				*/
-				
+				diag_log format ["Reported objects: %1", _reportObjects];
 				//Wait until the arrays have been released (see manageSpottedEnemies.sqf)
 				waitUntil {(_scriptObject getVariable ["AI_reportArraysMutex", 0]) == 0};
 				//Lock the mutex
@@ -199,13 +204,11 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				
 				//diag_log format ["reporting: %1", _reportArrayObjects];
 				//[_gar, _reportArrayObjects, _reportArrayPos, false] call gar_fnc_reportSpottedEnemies;
-				/*
-				if (count _reportArrayObjects > 0) then
+				if (count _reportObjects > 0) then
 				{
 					//Handle new alert state
 					_newAS = LOC_AS_combat;
 				};
-				*/
 			};
 			_combatPrev = true;
 		}
