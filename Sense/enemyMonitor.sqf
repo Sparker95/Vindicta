@@ -153,6 +153,18 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	_enemyMonitor setVariable ["s_enemyPos", _enemyPos, false];
 	_enemyMonitor setVariable ["s_enemyAge", _enemyAge, false];
 	
+	//Make clusters from individual enemies
+	//First convert all the positions into tiny clusters
+	private _smallClusters = [];
+	for "_i" from 0 to ((count _enemyObjects) - 1) do
+	{
+		private _pos = _enemyPos select _i;
+		private _newCluster = [_pos select 0, _pos select 1, _pos select 0, _pos select 1, _i] call cluster_fnc_newCluster;
+		_smallClusters pushBack _newCluster;
+	};
+	//Find bigger clusters from smaller clusters
+	private _clusters = [_smallClusters, 300] call cluster_fnc_findClusters;
+	
 	//Return value
-	[_enemyObjects, _enemyPos, _enemyAge]
+	[_enemyObjects, _enemyPos, _enemyAge, _clusters]
 };

@@ -214,6 +214,7 @@ sense_fnc_soundMonitor_process =
 		//If the unit hasn't been removed from the array
 
 		private _silenced = _unit getVariable ["s_silenced", false];
+		//diag_log format ["Silenced: %1", s_silenced];
 		//Read how many shots have been fired by the unit. Normalize them by the sleep time to get fires per second.
 		//Reset the counters
 		private _cl = (_unit getVariable ["s_firedLight", 0]); // /_dt; //Counter for light weapons
@@ -226,7 +227,7 @@ sense_fnc_soundMonitor_process =
 		_unit setVariable ["s_firedArtillery", 0];
 		
 		//If the unit has produced any sound
-		if(_cl > 0 || _cm > 0 || _ch > 0 || _ca > 0) then
+		if((_cl > 0 || _cm > 0 || _ch > 0 || _ca > 0) && !_silenced) then
 		{			
 			private	_countST = [_cl, _cm, _ch, _ca]; //Count of sound types: light, med., heavy, art.
 			diag_log format ["sense_fnc_processSoundMonitor: sounds produced by unit %1: %2", _unit, _countST];
@@ -289,9 +290,11 @@ sense_fnc_soundMonitor_process =
 		{
 			[_unit, _soundMonitor] call sense_fnc_soundMonitor_removeUnit;
 			_active = false;
+		}
+		else
+		{
+			_i = _i + 1;
 		};
-		
-		_i = _i + 1;
 	};
 	_soundMonitor setVariable ["s_locatedSounds", _locatedSounds, false]; 
 };
