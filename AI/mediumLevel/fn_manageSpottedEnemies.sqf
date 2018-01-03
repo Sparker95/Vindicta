@@ -14,7 +14,10 @@ _extraParams: [_loc, _handleAlertState]
 params ["_scriptObject", "_extraParams"];
 
 //Initialize the variable synchronously, in case it will be accessed by other modules right after script starts
-_scriptObject setVariable ["AI_spottedEnemies", [], false];
+_scriptObject setVariable ["AI_reportObjects", [], false];
+_scriptObject setVariable ["AI_reportPos", [], false];
+_scriptObject setVariable ["AI_reportAge", [], false];
+_scriptObject setVariable ["AI_reportArraysMutex", 0, false]; //Mutex is needed to exclude arrays being accessed while they are being updated
 _scriptObject setVariable ["AI_requestedAS", LOC_AS_safe, false];
 
 private _hScript = [_scriptObject, _extraParams] spawn
@@ -58,7 +61,7 @@ private _hScript = [_scriptObject, _extraParams] spawn
 		private _NGroups = count _groupsData;
 		while {_i < _NGroups} do
 		{
-			_hG = _hGs select _i; //Group handle
+			_hG = (_groupsData select _i) select 0; //Group handle
 			
 			//Check if the group has been totally destroyed
 			private _alive = true;
@@ -100,17 +103,17 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				_allTargets = [];
 				//Find new enemies
 				{
-					_hG = _x;
+					_hG = _x select 0;
 					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], _timeReveal];
 					{
 						private _s = _x select 2; //Side of the target
-						private _age = _x select 5; //Target age
+						private _age = _x select 5; //Target age is the time that has passed since the last time the group has actually seen the enemy unit. Values lower than 0 mean that they see the enemy right now
 						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age <= _timeReveal)) then //If target's side is enemy
 						{
 							_allTargets pushBack [_x select 1, _hG knowsAbout (_x select 1), _x select 4, _x select 5];
 						};
 					} forEach _nt;
-				} forEach _hGs;
+				} forEach _groupsData;
 				
 				//Reveal enemies to other squads
 				if (count _allTargets > 0) then
@@ -118,12 +121,12 @@ private _hScript = [_scriptObject, _extraParams] spawn
 					diag_log format ["fn_manageSpottedEnemies.sqf: revealing targets: %1", _allTargets];
 					_i = 0;
 					{
-						private _hG = _x;
+						private _hG = _x select 0;
 						{
 							_hG reveal [_x select 0, _x select 1];
 						}forEach _allTargets;
 						_i = _i + 1;
-					} forEach _hGs;
+					} forEach _groupsData;
 					
 					//Handle new alert state
 					_newAS = LOC_AS_combat;
@@ -140,37 +143,69 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				_reportArrayID = (_reportArrayID + 1) mod 2; //Switch between 0, 1, 0, 1, ...
 				_allTargetsReportObjects set [_reportArrayID, []];
 				_allTargetsReportPos set [_reportArrayID, []];				
-				private _reportArrayObjects = _allTargetsReportObjects select _reportArrayID;
-				private _reportArrayPos = _allTargetsReportPos select _reportArrayID;
 				
-				//Find new enemies
-				{
-					_hG = _x;
+				private _reportObjects = []; //Objects to report
+				private _reportPos = []; //Positions of corresponding objects
+				private _reportAge = []; //Age of corresponding objects
+				
+				//Find enemies
+				{ //forEach _groupsData
+					_hG = _x select 0;
 					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0]; //Any age enemies are fine
-					{
+					{ //forEach _nt
 						private _o = _x select 1;
 						private _s = _x select 2; //Side of the target
 						private _age = _x select 5; //Target age
-						//diag_log format ["side: %1 obj: %2 age: %3", _s, _o, _age];
-						//Check only enemies older than some threshold
-						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age > _timeReport)) then // &&
-						//	(_hG knowsAbout _o) > 0) then 
+						//TODO add a check for knowsAbout, because sometimes these fools think they know about enemy while they have no way to see it (like when they report artillery cannon that has killed their comrade from 10km away)
+						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && ((leader _hG) knowsAbout _o != 1.5)) then
 						{
-							//diag_log format ["  %1 knows about %2: %3", _hG, _o, _hG knowsAbout _o];
-							if ((_reportArrayObjects pushBackUnique _o) != -1) then
+							//Check if the reported object already exists
+							private _pos = _x select 4;
+							private _index = _reportObjects find _o;
+							if (_index != -1) then
 							{
-								_reportArrayPos pushBack (_x select 4);
+								//Check if the age reported by this group is lower than the age reported before
+								if(_age < (_reportAge select _index)) then
+								{
+									_reportPos set [_index, _pos];
+									_reportAge set [_index, _age];
+								};
+							}
+							else
+							{
+								_reportObjects pushBack _o;
+								_reportPos pushBack _pos;
+								_reportAge pushBack _age;
 							};
 						};
 					} forEach _nt;
-				} forEach _hGs;
+				} forEach _groupsData;
+				/*
+				diag_log format ["Report objects: %1", _reportObjects];
+				diag_log format ["Report pos: %1", _reportPos];
+				diag_log format ["Report age: %1", _reportAge];
+				*/
+				
+				//Wait until the arrays have been released (see manageSpottedEnemies.sqf)
+				waitUntil {(_scriptObject getVariable ["AI_reportArraysMutex", 0]) == 0};
+				//Lock the mutex
+				_scriptObject setVariable ["AI_reportArraysMutex", 1, false];
+				//Update the arrays
+				_scriptObject setVariable ["AI_reportObjects", _reportObjects, false];
+				_scriptObject setVariable ["AI_reportPos", _reportPos, false];
+				_scriptObject setVariable ["AI_reportAge", _reportAge, false];
+				//Unlock the mutex
+				_scriptObject setVariable ["AI_reportArraysMutex", 0, false];
+				
 				//diag_log format ["reporting: %1", _reportArrayObjects];
 				//[_gar, _reportArrayObjects, _reportArrayPos, false] call gar_fnc_reportSpottedEnemies;
+				/*
 				if (count _reportArrayObjects > 0) then
 				{
 					//Handle new alert state
 					_newAS = LOC_AS_combat;
 				};
+				*/
 			};
 			_combatPrev = true;
 		}

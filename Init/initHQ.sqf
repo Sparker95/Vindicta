@@ -2,15 +2,18 @@
 
 globalArtilleryRadar = [] call sense_fnc_artilleryRadar_create;
 globalSoundMonitor = [] call sense_fnc_soundMonitor_create;
+globalEnemyMonitor = [] call sense_fnc_enemyMonitor_create;
 
 fn_highLevelScript =
 {
 	private _counterSounds = 0;
 	private _counterArtClusters = 0;
+	private _counterEnemies = 0;
 	while {true} do
 	{
-		sleep 5;
+		sleep 1.5;
 		
+		//==== Sound Monitor ====
 		//Sound monitor
 		[globalSoundMonitor] call sense_fnc_soundMonitor_process;
 		private _soundClusters = [globalSoundMonitor] call sense_fnc_soundMonitor_getActiveClusters;
@@ -45,7 +48,7 @@ fn_highLevelScript =
 			_mrk setMarkerAlphaLocal 0.4;
 		} forEach _soundClusters;
 		
-
+		//==== Artillery Radar ====
 		private _batteries = [globalArtilleryRadar] call sense_fnc_artilleryRadar_getActiveClusters;
 		//Remove previous markers and create new ones
 		for [{_i = 0}, {_i < count _batteries}, {_i = _i + 1}] do
@@ -74,7 +77,30 @@ fn_highLevelScript =
 			_mrk setMarkerSizeLocal [_width, _height];
 			_mrk setMarkerColorLocal "ColorRed";
 			_mrk setMarkerAlphaLocal 0.3;
-		};	
+		};
+		
+		//==== Enemy monitor ====
+		private _e = globalEnemyMonitor call sense_fnc_enemyMonitor_getActiveClusters;
+		diag_log format ["Global enemies: %1", _e select 0];
+		diag_log format ["Global enemies pos: %1", _e select 1];
+		diag_log format ["Global enemies age: %1", _e select 2];
+		
+		//Create markers
+		for [{_i = 0}, {_i < _counterEnemies}, {_i = _i + 1}] do
+		{
+			private _name = format ["enemy_%1", _i];
+			deleteMarkerLocal _name;
+		};
+		_counterEnemies = count (_e select 0);
+		for [{_i = 0}, {_i < _counterEnemies}, {_i = _i + 1}] do
+		{
+			//Marker for the calculated launch site center
+			private _name = format ["enemy_%1", _i];
+			private _mrk = createMarkerLocal [_name, (_e select 1) select _i];
+			_mrk setMarkerTypeLocal "mil_box";
+			_mrk setMarkerColorLocal "ColorRed";
+			_mrk setMarkerText (format ["%1", (_e select 2) select _i]);
+		};
 	};
 };
 

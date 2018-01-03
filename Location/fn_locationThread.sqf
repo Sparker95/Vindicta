@@ -7,7 +7,7 @@ params ["_loc", ["_debug", true]];
 
 private _alertState = _loc getVariable ["l_alertState", LOC_AS_safe];
 
-private _distanceSpawn = 900;
+private _distanceSpawn = 1300;
 private _distanceDespawn = _distanceSpawn + 100;
 private _sleepInterval = 0.5;
 
@@ -36,6 +36,7 @@ while {true} do
 			_forceSpawnTimer <= 0) then //If garrison must be despawned
 		{
 			[_loc] call loc_fnc_stopAlertStateScript;
+			[globalEnemyMonitor, _oEnemiesScript] call sense_fnc_enemyMonitor_removeScript;
 			[_loc] call loc_fnc_stopEnemiesScript;
 			_oEnemiesScript = objNull;
 			[_loc] call loc_fnc_despawnAllGarrisons;
@@ -60,6 +61,7 @@ while {true} do
 			};
 			//Start enemies management script
 			_oEnemiesScript = [_loc] call loc_fnc_restartEnemiesScript;
+			[globalEnemyMonitor, _oEnemiesScript] call sense_fnc_enemyMonitor_addScript;
 			//Start alert state script
 			[_loc] call loc_fnc_restartAlertStateScript;
 			_spawned = true;

@@ -78,7 +78,7 @@ sense_fnc_soundMonitor_addUnit =
 	Return value:
 		nothing
 	*/
-	params ["_unit", "_soundMonitor"];
+	params ["_soundMonitor", "_unit"];
 	_unit setVariable ["s_firedLight", 0, false]; //Counter for light weapons, like rifles ad handguns
 	_unit setVariable ["s_firedMedium", 0, false]; //12mm and above
 	_unit setVariable ["s_firedHeavy", 0, false]; //Above 40mm or so
@@ -146,7 +146,7 @@ sense_fnc_soundMonitor_removeUnit =
 	Return value:
 		success - bool, if the operation was completed successfully
 	*/
-	params ["_unit", "_soundMonitor"];
+	params ["_soundMonitor", "_unit"];
 	private _units = _soundMonitor getVariable ["s_units", []];
 	private _id = _units find _unit;
 	if (_id != -1) exitWith
