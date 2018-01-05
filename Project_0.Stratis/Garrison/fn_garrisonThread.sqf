@@ -11,7 +11,7 @@ _workTime - the time during which the thread will work, in seconds. After that t
 params ["_lo", "_workTime", ["_debug", false]];
 
 //Override debug output
-_debug = false;
+//_debug = false;
 
 private _run = true;
 private _request = [];

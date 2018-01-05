@@ -4,9 +4,7 @@ The gathered information is also stored in garrison's special variable to be rea
 
 parameters:
 _gar - the garrison object where the data on reported enemies will be sent.
-_extraParams: [_loc, _handleAlertState]
-	_loc - the location object where requests to change alert state will be sent.
-	_handleAlertState - bool - if true, this script will be handling the alert state of the garrison.
+_extraParams: nothing
 */
 
 //todo remove double buffer switching! It makes no sense.
@@ -26,8 +24,6 @@ private _hScript = [_scriptObject, _extraParams] spawn
 	private _gar = _scriptObject getVariable ["AI_garrison", objNull];
 
 	//Read extra parameters
-	private _loc = _extraParams select 0;
-	private _handleAlertState = _extraParams select 1;
 	private _newAS = LOC_AS_safe;
 
 	private _side = [_gar] call gar_fnc_getSide;

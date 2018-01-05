@@ -48,34 +48,6 @@ gar_fnc_getLocation =
 	_return
 };
 
-gar_fnc_setManageAlertState = 
-{
-	/*
-	Sets if the location will send requests to change its alert state to its location
-	*/
-	params ["_lo", "_manageAlertState"];
-	_lo setVariable ["g_manageAlertState", _manageAlertState];
-};
-
-/*
-Templates should not be attached to garrisons.
-gar_fnc_setTemplate =
-{
-	
-	//Sets the template array of this garrison. By default no template is specified.
-	
-	params ["_lo", "_template"];
-	_lo setVariable ["g_template", _template];
-};
-
-gar_fnc_getTemplate =
-{
-	params ["_lo"];
-	private _return = _lo getVariable ["g_template", []];
-	_return
-};
-*/
-
 gar_fnc_isSpawned =
 {
 	params ["_lo"];
@@ -209,6 +181,36 @@ gar_fnc_countUnits =
 	_count
 };
 
+gar_fnc_findGroups =
+{
+	/*
+	Used to find groups of given group type in garrison's database.
+	_groupType can be -1 if you need to get all the groups.
+	
+	Parameters:
+		[_gar, _groupType]
+	
+	Return value:
+		an array of:
+		[_groupID] - for each found group
+		or [] if nothing found
+	*/
+	params ["_lo", ["_groupType", -1]];
+	private _gt = 0;
+	private _gid = 0;
+	private _groups = _lo getVariable ["g_groups", []];
+	private _groupsReturn = [];
+	{
+		_gt = _x select 3; //Group type
+		_gid = _x select 2; //Group ID
+		if((_groupType == -1) || (_groupType == _gt)) then
+		{
+			_groupsReturn pushBack _gid;
+		};
+	}forEach _groups;
+	_groupsReturn
+};
+
 gar_fnc_findGroupHandles =
 {
 	/*
@@ -228,6 +230,16 @@ gar_fnc_findGroupHandles =
 		};
 	}forEach _groups;
 	_hGs
+};
+
+gar_fnc_getGroupHandle =
+{
+	/*
+	Returns the group handle of specified group.
+	*/
+	params ["_lo", "_groupID"];
+	private _group = [_lo, _groupID, 0] call gar_fnc_getGroup;
+	_group select G_GROUP_HANDLE
 };
 
 gar_fnc_getGroup =
@@ -300,6 +312,26 @@ gar_fnc_getGroupUnits =
 	_return
 };
 
+gar_fnc_getUnitGroupID =
+{
+	/*
+	Returns the group ID of the unit with specified _unitData
+	*/
+	params ["_lo", "_unitData"];
+	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
+	_unit select G_UNIT_GROUP_ID
+};
+
+gar_fnc_getUnitHandle =
+{
+	/*
+	Returns the handle of the unit with specified _unitData
+	*/
+	params ["_lo", "_unitData"];
+	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
+	_unit select 1
+};
+
 gar_fnc_getUnit =
 {
 	/*
@@ -368,16 +400,4 @@ gar_fnc_getUnit =
 			[_foundUnit, [_subcat, _i]]
 		};
 	};
-};
-
-gar_fnc_getSpottedEnemies =
-{
-	params ["_lo"];
-	private _spawned = _lo getVariable ["g_spawned"];
-	private _return = [];
-	if (_spawned) then
-	{
-		_return = _lo getVariable ["g_enemies"];
-	};
-	_return
 };

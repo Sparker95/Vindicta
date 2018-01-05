@@ -5,6 +5,7 @@ This function restarts the script that handles spotted enemies.
 params ["_loc"];
 
 waitUntil {(_loc getVariable ["l_AIScriptsMutex", 0]) == 0};
+private _gar = _loc getVariable ["l_garrison_main", objNull];
 
 //Lock the mutex
 _loc setVariable ["l_AIScriptsMutex", 1, false];
