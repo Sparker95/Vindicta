@@ -94,9 +94,9 @@ fn_highLevelScript =
 		
 		//==== Enemy monitor ====
 		private _e = globalEnemyMonitor call sense_fnc_enemyMonitor_getActiveClusters;
-		diag_log format ["Global enemies: %1", _e select 0];
-		diag_log format ["Global enemies pos: %1", _e select 1];
-		diag_log format ["Global enemies age: %1", _e select 2];
+		//diag_log format ["Global enemies: %1", _e select 0];
+		//diag_log format ["Global enemies pos: %1", _e select 1];
+		//diag_log format ["Global enemies age: %1", _e select 2];
 		
 		//Create markers
 		for [{_i = 0}, {_i < _counterEnemies}, {_i = _i + 1}] do
@@ -115,7 +115,7 @@ fn_highLevelScript =
 			_mrk setMarkerText (format ["%1", (_e select 2) select _i]);
 		};
 		//Rectangles for clusters
-		diag_log format ["_counterEnemiesClusters: %1", _counterEnemiesClusters];
+		//diag_log format ["_counterEnemiesClusters: %1", _counterEnemiesClusters];
 		for [{_i = 0}, {_i < _counterEnemiesClusters}, {_i = _i + 1}] do
 		{
 			private _name = format ["enemyCluster_%1", _i];
@@ -124,7 +124,7 @@ fn_highLevelScript =
 		};
 		private _eclusters = _e select 3;
 		_counterEnemiesClusters = count _eclusters;
-		diag_log format ["Clusters with enemies: %1", _eclusters];
+		//diag_log format ["Clusters with enemies: %1", _eclusters];
 		for [{_i = 0}, {_i < _counterEnemiesClusters}, {_i = _i + 1}] do
 		{
 			_name = format ["enemyCluster_%1", _i];

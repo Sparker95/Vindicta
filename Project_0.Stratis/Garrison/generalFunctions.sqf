@@ -65,7 +65,7 @@ gar_fnc_findUnits =
 	[_catID, _subcatID, _unitID] - for each found unit to satisfy this criteria
 	or [] if nothing found
 	*/
-	params ["_lo", "_catID", "_subcatID", ["_debug", true]];
+	params [["_lo", objNull, [objNull]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_debug", true]];
 
 	private _cat = [];
 	switch (_catID) do
@@ -108,7 +108,7 @@ gar_fnc_countUnits =
 	return value: number
 	*/
 
-	params ["_lo", "_types", "_groupType"];
+	params [["_lo", objNull, [objNull]], ["_types", [], [[]]], "_groupType"];
 
 	private _count = 0;
 	private _searchInf = false;
@@ -195,7 +195,7 @@ gar_fnc_findGroups =
 		[_groupID] - for each found group
 		or [] if nothing found
 	*/
-	params ["_lo", ["_groupType", -1]];
+	params [["_lo", objNull, [objNull]], ["_groupType", -1, [0]]];
 	private _gt = 0;
 	private _gid = 0;
 	private _groups = _lo getVariable ["g_groups", []];
@@ -216,7 +216,7 @@ gar_fnc_findGroupHandles =
 	/*
 	Returns group handles of groups having specific group type, or any group type if _groupType = -1;
 	*/
-	params ["_lo", ["_groupType", -1]];
+	params [["_lo", objNull, [objNull]], ["_groupType", -1, [0]]];
 	private _hGs = [];
 	private _hG = grpNull;
 	private _gt = 0;
@@ -237,7 +237,7 @@ gar_fnc_getGroupHandle =
 	/*
 	Returns the group handle of specified group.
 	*/
-	params ["_lo", "_groupID"];
+	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
 	private _group = [_lo, _groupID, 0] call gar_fnc_getGroup;
 	_group select G_GROUP_HANDLE
 };
@@ -245,7 +245,7 @@ gar_fnc_getGroupHandle =
 gar_fnc_getGroup =
 {
 	/*
-	Get the group with specified __groupID.
+	Get the group with specified _groupID.
 
 	Parameters:
 	_returnType:
@@ -255,7 +255,7 @@ gar_fnc_getGroup =
 		_groupIndex = -1 if group not found
 	*/
 
-	params ["_lo", "_groupID", ["_returnType", 0]];
+	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]], ["_returnType", 0]];
 
 	private _groups = _lo getVariable ["g_groups", []];
 
@@ -299,7 +299,7 @@ gar_fnc_getGroupUnits =
 	Returns the list of units in group specified by groupID.
 	The units are returned as an array: [_catID, _subcatID, _unitID]
 	*/
-	params ["_lo", "_groupID"];
+	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
 	private _group = [_lo, _groupID, 0] call gar_fnc_getGroup;
 	private _groupUnits = _group select G_GROUP_UNITS;
 	private _return = [];
@@ -312,12 +312,19 @@ gar_fnc_getGroupUnits =
 	_return
 };
 
+gar_fnc_getGroupAliveUnits =
+{
+	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
+	private _units = [_lo, _groupID] call gar_fnc_getGroupUnits;
+	_units select {(_x select 2) != -1}
+};
+
 gar_fnc_getUnitGroupID =
 {
 	/*
 	Returns the group ID of the unit with specified _unitData
 	*/
-	params ["_lo", "_unitData"];
+	params [["_lo", objNull, [objNull]], ["_unitData", [0, 0, 0], [[]]]];
 	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
 	_unit select G_UNIT_GROUP_ID
 };
@@ -346,7 +353,7 @@ gar_fnc_getUnit =
 
 	*/
 
-	params ["_lo", "_unitData", ["_returnType", 0]];
+	params [["_lo", objNull, [objNull]], ["_unitData", [0, 0, 0], [[]]], ["_returnType", 0]];
 
 	private _catID = _unitData select 0;
 	private _subcatID = _unitData select 1;

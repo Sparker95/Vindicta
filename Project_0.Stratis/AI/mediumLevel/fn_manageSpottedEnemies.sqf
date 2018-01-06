@@ -3,7 +3,6 @@ This script checks for spotted enemies among all groups and shares the infomatio
 The gathered information is also stored in garrison's special variable to be read by other modules.
 
 parameters:
-_gar - the garrison object where the data on reported enemies will be sent.
 _extraParams: nothing
 */
 

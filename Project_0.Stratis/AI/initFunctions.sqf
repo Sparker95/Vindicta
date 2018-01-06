@@ -8,6 +8,9 @@ AI_fnc_alertStateSafe = compile preprocessFileLineNumbers "AI\mediumLevel\fn_ale
 AI_fnc_alertStateAware = compile preprocessFileLineNumbers "AI\mediumLevel\fn_alertStateAware.sqf";
 AI_fnc_alertStateCombat = compile preprocessFileLineNumbers "AI\mediumLevel\fn_alertStateCombat.sqf";
 
+//Other medium level scripts
+AI_fnc_landConvoy = compile preprocessFileLineNumbers "AI\mediumLevel\fn_landConvoy.sqf";
+
 //Script for managing spotted enemies
 AI_fnc_manageSpottedEnemies = compile preprocessFileLineNumbers "AI\mediumLevel\fn_manageSpottedEnemies.sqf";
 call compile preprocessFileLineNumbers "AI\mediumLevel\manageSpottedEnemies.sqf";
