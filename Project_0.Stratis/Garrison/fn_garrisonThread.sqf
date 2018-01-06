@@ -211,7 +211,7 @@ while {_run} do
 			{
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, error: unknown request: %2. Terminating thread.", _lo getVariable ["g_name", ""], _request];};
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, state: stopping thread.", _lo getVariable ["g_name", ""]];};
-							_lo setVariable ["g_threadHandle", nil];
+							_lo setVariable ["g_threadHandle", scriptNull];
 				_run = false;
 			};
 		};

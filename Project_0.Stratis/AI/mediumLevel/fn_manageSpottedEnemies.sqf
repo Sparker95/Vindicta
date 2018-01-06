@@ -110,7 +110,7 @@ private _hScript = [_scriptObject, _extraParams] spawn
 						private _s = _x select 2; //Side of the target
 						private _age = _x select 5; //Target age is the time that has passed since the last time the group has actually seen the enemy unit. Values lower than 0 mean that they see the enemy right now
 						//diag_log format ["Age of target %1: %2", _x select 1, _age];
-						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age <= _timeReveal)) then //If target's side is enemy
+						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT, sideUnknown]) && (_age <= _timeReveal)) then //If target's side is enemy
 						{
 							_allTargets pushBack [_x select 1, _hG knowsAbout (_x select 1), _x select 4, _x select 5];
 						};
@@ -151,7 +151,8 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				//Find enemies
 				{ //forEach _groupsData
 					_hG = _x select 0;
-					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 600]; //Any age enemies are fine
+					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0]; //Any age enemies are fine
+					//diag_log format ["_nt: %1", _nt];
 					{ //forEach _nt
 						private _o = _x select 1;
 						private _s = _x select 2; //Side of the target

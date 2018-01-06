@@ -52,7 +52,7 @@ private _queue = _lo getVariable ["g_threadQueue", []];
 private _newUnitData = [_catID, _subcatID, _class, _groupID];
 _queue pushBack [G_R_ADD_NEW_UNIT, _newUnitData, _returnArray];
 
-private _hThread = _lo getVariable ["g_threadHandle", nil];
+private _hThread = _lo getVariable ["g_threadHandle", scriptNull];
 if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it
 {
 	[_lo, 10, true] call gar_fnc_startThread;

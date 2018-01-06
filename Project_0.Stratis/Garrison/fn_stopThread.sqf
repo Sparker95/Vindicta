@@ -6,7 +6,7 @@ Puts a stop-request to the garrison thread queue
 
 params ["_lo", ["_debug", true]];
 
-private _hThread = _lo getVariable ["g_threadHandle", nil];
+private _hThread = _lo getVariable ["g_threadHandle", scriptNull];
 if(!(isNil "_hThread")) then
 {
 	private _queue = _lo getVariable ["g_threadQueue", []];

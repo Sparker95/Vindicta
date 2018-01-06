@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={2410.1687,144.34496,3503.7849};
-		dir[]={0.24650341,-0.61512214,0.74895322};
-		up[]={0.19232313,0.78839016,0.58433706};
-		aside[]={0.94990969,1.7163256e-007,-0.312644};
+		pos[]={2501.1631,127.54204,3425.7219};
+		dir[]={-0.42982563,-0.72653127,0.53616834};
+		up[]={-0.45445898,0.68708974,0.56689537};
+		aside[]={0.78026867,3.8498547e-007,0.62551147};
 	};
 };
 binarizationWanted=0;
@@ -63,13 +63,17 @@ addons[]=
 	"rhsusf_c_troops",
 	"A3_Props_F_Exp_Military_Camps",
 	"A3_Structures_F_Mil_Shelters",
-	"A3_Structures_F_Exp_Military_Camonets"
+	"A3_Structures_F_Exp_Military_Camonets",
+	"A3_Weapons_F_Rifles_MX",
+	"A3_Weapons_F_Mark_Rifles_MX",
+	"A3_Weapons_F_Mark_Acc",
+	"A3_Weapons_F_Launchers_Titan"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=27;
+		items=28;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -254,6 +258,13 @@ class AddonsMetaData
 		{
 			className="A3_Structures_F_Exp";
 			name="Arma 3 Apex - Buildings and Structures";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item27
+		{
+			className="A3_Weapons_F_Mark";
+			name="Arma 3 Marksmen - Weapons and Accessories";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -3513,16 +3524,136 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2446.054,49.73135,3592.114};
+						position[]={2499.7573,124.73569,3427.4277};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
 						isPlayer=1;
+						class Inventory
+						{
+							class primaryWeapon
+							{
+								name="arifle_MX_SW_F";
+								flashlight="acc_pointer_IR";
+								underBarrel="bipod_01_F_snd";
+								class primaryMuzzleMag
+								{
+									name="100Rnd_65x39_caseless_mag";
+									ammoLeft=100;
+								};
+							};
+							class secondaryWeapon
+							{
+								name="launch_B_Titan_short_F";
+								flashlight="acc_pointer_IR";
+							};
+							class handgun
+							{
+								name="hgun_P07_F";
+								class primaryMuzzleMag
+								{
+									name="16Rnd_9x21_Mag";
+									ammoLeft=16;
+								};
+							};
+							class uniform
+							{
+								typeName="U_B_CombatUniform_mcam_tshirt";
+								isBackpack=0;
+								class MagazineCargo
+								{
+									items=4;
+									class Item0
+									{
+										name="HandGrenade";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item1
+									{
+										name="SmokeShell";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item2
+									{
+										name="SmokeShellGreen";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item3
+									{
+										name="Chemlight_green";
+										count=1;
+										ammoLeft=1;
+									};
+								};
+								class ItemCargo
+								{
+									items=1;
+									class Item0
+									{
+										name="FirstAidKit";
+										count=1;
+									};
+								};
+							};
+							class vest
+							{
+								typeName="V_PlateCarrier2_rgr";
+								isBackpack=0;
+								class MagazineCargo
+								{
+									items=3;
+									class Item0
+									{
+										name="100Rnd_65x39_caseless_mag";
+										count=5;
+										ammoLeft=100;
+									};
+									class Item1
+									{
+										name="16Rnd_9x21_Mag";
+										count=2;
+										ammoLeft=16;
+									};
+									class Item2
+									{
+										name="Chemlight_green";
+										count=1;
+										ammoLeft=1;
+									};
+								};
+							};
+							class backpack
+							{
+								typeName="B_Carryall_khk";
+								isBackpack=1;
+								class MagazineCargo
+								{
+									items=1;
+									class Item0
+									{
+										name="Titan_AT";
+										count=3;
+										ammoLeft=1;
+									};
+								};
+							};
+							map="ItemMap";
+							compass="ItemCompass";
+							watch="ItemWatch";
+							radio="ItemRadio";
+							goggles="G_Combat";
+							hmd="NVGoggles";
+							headgear="H_HelmetB_grass";
+						};
 					};
 					id=1761;
 					type="B_soldier_AR_F";
+					atlOffset=-7.6293945e-006;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3590,6 +3721,7 @@ class Mission
 			{
 			};
 			id=1760;
+			atlOffset=-7.6293945e-006;
 		};
 	};
 	class Connections

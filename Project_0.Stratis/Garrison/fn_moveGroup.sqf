@@ -10,7 +10,7 @@ params ["_lo_src", "_lo_dst", "_groupID", ["_returnArray", []], ["_debug", true]
 private _queue = _lo_src getVariable ["g_threadQueue", []];
 _queue pushBack [G_R_MOVE_GROUP, [_lo_dst, _groupID], _returnArray];
 
-private _hThread = _lo_src getVariable ["g_threadHandle", nil];
+private _hThread = _lo_src getVariable ["g_threadHandle", scriptNull];
 if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it
 {
 	[_lo_src, 10, true] call gar_fnc_startThread;

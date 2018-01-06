@@ -9,7 +9,7 @@ params ["_lo", "_groupID", "_assignDrivers", "_assignTurrets", "_assignPassenger
 private _queue = _lo getVariable ["g_threadQueue", []];
 _queue pushBack [G_R_ASSIGN_VEHICLE_ROLES, [_groupID, _assignDrivers, _assignTurrets, _assignPassengers]];
 
-private _hThread = _lo getVariable ["g_threadHandle", nil];
+private _hThread = _lo getVariable ["g_threadHandle", scriptNull];
 if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it
 {
 	[_lo, 10, true] call gar_fnc_startThread;

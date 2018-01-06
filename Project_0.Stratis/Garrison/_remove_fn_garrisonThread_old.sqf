@@ -131,7 +131,7 @@ while {_run} do
 	    case G_S_STOPPING: //Stop the thread
 	    {
 	    	if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, state: stopping thread.", _lo getVariable ["g_name", ""]];};
-			_lo setVariable ["g_threadHandle", nil];
+			_lo setVariable ["g_threadHandle", scriptNull];
 	    	_run = false;
 	    };
 

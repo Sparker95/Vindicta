@@ -332,11 +332,13 @@ gar_fnc_getUnitGroupID =
 gar_fnc_getUnitHandle =
 {
 	/*
-	Returns the handle of the unit with specified _unitData
+	Returns the handle of the unit with specified _unitData.
+	
+	Return value: units' object handle or objNull if the unit is not found.
 	*/
 	params ["_lo", "_unitData"];
 	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
-	_unit select 1
+	if(count _unit == 0) then {objNull} else {_unit select 1};
 };
 
 gar_fnc_getUnit =

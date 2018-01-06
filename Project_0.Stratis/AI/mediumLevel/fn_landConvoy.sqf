@@ -14,48 +14,79 @@ _extraParams:
 
 params ["_scriptObject", "_extraParams"];
 
-private _hScript = [_scriptObject, _extraParams] spawn
+convoy_fnc_getUnitHandles =
+{
+	//A function that helps manage _armedVehGroups and _unarmedVehGroups
+	params ["_vehData", "_gar", "_getCrew", "_getPassengers"];
+	private _unitHandles = [];
+
+	private _vehUnitData = _vehData select 0;
+	private _crewUnitData = if(_getCrew) then {_vehData select 1;} else {[]};
+	private _infGroupID = _vehData select 2;
+	private _vehHandle = [_gar, _vehUnitData] call gar_fnc_getUnitHandle;
+	private _infUnitData = if(_infGroupID != -1 && _getPassengers) then
+	{[_gar, _infGroupID] call gar_fnc_getGroupAliveUnits;}
+	else {[];};
+	
+	{
+		private _hInf = [_gar, _x] call gar_fnc_getUnitHandle;
+		if(!(_hInf isEqualTo objNull)) then
+		{
+			_unitHandles pushBack _hInf;
+		};
+	} forEach (_crewUnitData+_infUnitData);
+
+	_unitHandles
+};
+
+//Reorganize the convoy garrison
+_extraParams params ["_armedVehGroups", "_unarmedVehGroups", "_destPos"];
+#ifdef DEBUG
+	diag_log format ["AI_fnc_landConvoy.sqf: _armedVehGroups: %1, _unarmedVehGroups: %2", _armedVehGroups, _unarmedVehGroups];
+#endif
+//Read other things
+private _gar = _scriptObject getVariable ["AI_garrison", objNull];
+
+//Merge the vehicle groups into one VEHICLE-MEGA-GROUP!
+//Create a new group
+private _rarray = [];
+private _rid = [_gar, G_GT_veh_non_static, _rarray] call gar_fnc_addNewEmptyGroup;
+waitUntil {sleep 0.01; [_gar, _rid] call gar_fnc_requestDone};
+private _vehGroupID = _rarray select 0;
+
+//Fill arrays and move vehicles and their crew to the new group
+private _armedVehArray =[]; //[]
+private _unarmedVehArray = []; //[]
+{ // forEach _armedVehGroups
+	private _groupUnits = ([_gar, _x select 0] call gar_fnc_getGroupUnits);
+	private	_vehUnitData = _groupUnits select 0;
+	private _crewUnitData = _groupUnits - [_vehUnitData];
+	private _infGroupID = _x select 1;
+	_armedVehArray pushBack [_vehUnitData, _crewUnitData, _infGroupID];
+	{ //forEach _groupUnits;
+		[_gar, _x, _vehGroupID, false] call gar_fnc_joinGroup;
+	} forEach _groupUnits;
+} forEach _armedVehGroups;
+{ // forEach _unarmedVehGroups
+	private _groupUnits = ([_gar, _x select 0] call gar_fnc_getGroupUnits);
+	private	_vehUnitData = _groupUnits select 0;
+	private _crewUnitData = _groupUnits - [_vehUnitData];
+	private _infGroupID = _x select 1;
+	_unarmedVehArray pushBack [_vehUnitData, _crewUnitData, _infGroupID];
+	{ //forEach _groupUnits;
+		_rid = [_gar, _x, _vehGroupID, false] call gar_fnc_joinGroup;
+	} forEach _groupUnits;
+} forEach _unarmedVehGroups;
+//Wait until the last request is finished
+waitUntil {sleep 0.01; [_gar, _rid] call gar_fnc_requestDone};
+
+//Spawn a script
+private _hScript = [_scriptObject, _vehGroupID, _armedVehArray, _unarmedVehArray, _destPos] spawn
 {
 	//Read input parameters
-	params ["_scriptObject", "_extraParams"];
-	_extraParams params ["_armedVehGroups", "_unarmedVehGroups", "_destPos"];
-	#ifdef DEBUG
-		diag_log format ["AI_fnc_landConvoy.sqf: _armedVehGroups: %1, _unarmedVehGroups: %2", _armedVehGroups, _unarmedVehGroups];
-	#endif
+	params ["_scriptObject", "_vehGroupID", "_armedVehArray", "_unarmedVehArray", "_destPos"];
 	
-	//Read other things
 	private _gar = _scriptObject getVariable ["AI_garrison", objNull];
-	
-	//Merge the vehicle groups into one VEHICLE-MEGA-GROUP!
-	//Create a new group
-	private _rarray = [];
-	private _rid = [_gar, G_GT_veh_non_static, _rarray] call gar_fnc_addNewEmptyGroup;
-	waitUntil {sleep 0.01; [_gar, _rid] call gar_fnc_requestDone};
-	private _vehGroupID = _rarray select 0;
-	
-	//Fill arrays and move vehicles and their crew to the new group
-	private _armedVehArray =[]; //[]
-	private _unarmedVehArray = []; //[]
-	{ // forEach _armedVehGroups
-		private _groupUnits = ([_gar, _x select 0] call gar_fnc_getGroupUnits);
-		private	_vehUnitData = _groupUnits select 0;
-		private _crewUnitData = _groupUnits - [_vehUnitData];
-		private _infGroupID = _x select 1;
-		_armedVehArray pushBack [_vehUnitData, _crewUnitData, _infGroupID];
-		{ //forEach _groupUnits;
-			[_gar, _x, _vehGroupID, false] call gar_fnc_joinGroup;
-		} forEach _groupUnits;
-	} forEach _armedVehGroups;
-	{ // forEach _unarmedVehGroups
-		private _groupUnits = ([_gar, _x select 0] call gar_fnc_getGroupUnits);
-		private	_vehUnitData = _groupUnits select 0;
-		private _crewUnitData = _groupUnits - [_vehUnitData];
-		private _infGroupID = _x select 1;
-		_unarmedVehArray pushBack [_vehUnitData, _crewUnitData, _infGroupID];
-		{ //forEach _groupUnits;
-			[_gar, _x, _vehGroupID, false] call gar_fnc_joinGroup;
-		} forEach _groupUnits;
-	} forEach _unarmedVehGroups;
 	
 	#ifdef DEBUG
 		diag_log format ["AI_fnc_landConvoy.sqf: _armedVehArray: %1, _unarmedVehArray: %2", _armedVehArray, _unarmedVehArray];
@@ -76,29 +107,21 @@ private _hScript = [_scriptObject, _extraParams] spawn
 					diag_log format ["AI_fnc_landConvoy: entered MOUNT state"];
 					_stateChanged = false;
 				};
-				//Order vehicle crew and infantry to get in	
-				private _vehGroupHandle = [_gar, _vehGroupID] call gar_fnc_getGroupHandle;				
+				
+				//Order the crew to get in
 				private _infAndCrewHandles = [];
-				{ //forEach _vehArray;
-					private _vehUnitData = _x select 0;
-					private _crewUnitData = _x select 1;
-					private _infGroupID = _x select 2;
-					private _vehHandle = [_gar, _vehUnitData] call gar_fnc_getUnitHandle;
-					private _infUnitData = if(_infGroupID != -1) then {[_gar, _infGroupID] call gar_fnc_getGroupUnits;}
-					else {[];};
-					
+				{
+					private _crewHandles = [_x, _gar, true, false] call convoy_fnc_getUnitHandles;
+					private _passHandles = [_x, _gar, false, true] call convoy_fnc_getUnitHandles;
+					private _vehHandle = [_gar, _x select 0] call gar_fnc_getUnitHandle;
 					{
-						private _crewHandle = [_gar, _x] call gar_fnc_getUnitHandle;
-						_crewHandle doFollow (leader _vehGroupHandle);
-						_infAndCrewHandles pushBack _crewHandle;
-					} forEach _crewUnitData;
-					{
-						private _hInf = [_gar, _x] call gar_fnc_getUnitHandle;
-						_infAndCrewHandles pushBack _hInf;
-						_hInf assignAsCargo _vehHandle;
-					} forEach _infUnitData;
-				} forEach (_armedVehArray + _unarmedVehArray);				
+						_x assignAsCargo _vehHandle;
+					} forEach _passHandles;
+					_infAndCrewHandles append _crewHandles;
+					_infAndCrewHandles append _passHandles;
+				} forEach (_armedVehArray + _unarmedVehArray);
 				_infAndCrewHandles orderGetIn true;
+				
 				//Check if all the infantry has boarded their vehicles
 				private _infAndCrewInVehHandles = _infAndCrewHandles select {!(vehicle _x isEqualTo _x)};
 				diag_log format ["AI_fnc_landConvoy: waiting for units to get in: %1 / %2", count _infAndCrewInVehHandles, count _infAndCrewHandles];
@@ -130,6 +153,7 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				{
 					diag_log format ["AI_fnc_landConvoy: entered MOVE state"];
 					private _vehGroupHandle = [_gar, _vehGroupID] call gar_fnc_getGroupHandle;
+					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					while {(count (waypoints _vehGroupHandle)) > 0} do
 					{
 						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
@@ -165,24 +189,24 @@ private _hScript = [_scriptObject, _extraParams] spawn
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					_stateChanged = false;
-				};
-				//Order units to dismount
-				private _infHandles = [];
-				{ //forEach _unarmedVehArray;
-					//Driver: stop and dismount
-					private _crewUnitData = _x select 1;
+					//Order drivers of unarmed vehicles to stop and dismount
+					private _infAndCrewHandles = [];
 					{
-						private _driverHandle = [_gar, _x] call gar_fnc_getUnitHandle;
-						doStop _driverHandle;
-						[_driverHandle] orderGetIn false;
-						_infHandles pushBack _driverHandle;
-					} forEach _crewUnitData;
-					//Infantry: dismount
-					private _infGroupID = _x select 2;
-					private _infGroupHandle = [_gar, _infGroupID] call gar_fnc_getGroupHandle;		
-					(units _infGroupHandle) orderGetIn false;
-					_infHandles append (units _infGroupHandle);
-				} forEach _unarmedVehArray;	
+						private _crewHandles = [_x, _gar, true, false] call convoy_fnc_getUnitHandles;
+						doStop _crewHandles;
+					} forEach _unarmedVehArray;
+				};
+				
+				//Order infantry units to dismount
+				private _infHandles = [];
+				{ //Dismount passengers of unarmed vehicles
+					_infHandles append ([_x, _gar, false, true] call convoy_fnc_getUnitHandles);
+				} forEach _armedVehArray;
+				{ //Dismount drivers and passengers of unarmed vehicles
+					_infHandles append ([_x, _gar, true, true] call convoy_fnc_getUnitHandles);
+				} forEach _unarmedVehArray;
+				_infHandles orderGetIn false;
+
 				//Check if all the infantry has dismounted
 				private _infOnFootHandles = _infHandles select {(vehicle _x) isEqualTo _x};
 				diag_log format ["AI_fnc_landConvoy: waiting for units to get out: %1 / %2", count _infOnFootHandles, count _infHandles];

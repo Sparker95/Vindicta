@@ -28,7 +28,7 @@ else
 private _queue = _lo getVariable ["g_threadQueue", []];
 _queue pushBack [G_R_REMOVE_UNIT, _unitData];
 
-private _hThread = _lo getVariable ["g_threadHandle", nil];
+private _hThread = _lo getVariable ["g_threadHandle", scriptNull];
 if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it
 {
 	[_lo, 10, true] call gar_fnc_startThread;
