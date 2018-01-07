@@ -105,7 +105,9 @@ private _hScript = [_scriptObject, _vehGroupID, _armedVehArray, _unarmedVehArray
 				if (_stateChanged) then
 				{
 					diag_log format ["AI_fnc_landConvoy: entered MOUNT state"];
-					_stateChanged = false;
+					//Order drivers of unarmed vehicles to stop so that infantry can mount
+					private _vehGroupHandle = [_gar, _vehGroupID] call gar_fnc_getGroupHandle;
+					doStop (units _vehGroupHandle);
 				};
 				
 				//Order the crew to get in
@@ -163,16 +165,40 @@ private _hScript = [_scriptObject, _vehGroupID, _armedVehArray, _unarmedVehArray
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					_stateChanged = false;
+					//Set convoy separation
+					{
+						private _vehHandle = [_gar, _x select 0] call gar_fnc_getUnitHandle;
+						_vehHandle limitSpeed 666666;
+						_vehHandle setConvoySeparation 35;
+					} forEach (_armedVehArray + _unarmedVehArray);
+					//Limit the speed of the leading vehicle
+					(vehicle (leader _vehGroupHandle)) limitSpeed 40; //Speed in km/h
 				};
+				//Check that all the units are inside their vehicles
+				private _infAndCrewHandles = [];
+				{
+					_infAndCrewHandles append ([_x, _gar, true, true] call convoy_fnc_getUnitHandles);
+				} forEach (_armedVehArray + _unarmedVehArray);
+				private _infAndCrewInVehHandles = _infAndCrewHandles select {!(vehicle _x isEqualTo _x)};				
+				//Check the behaviour of the group
 				private _vehGroupHandle = [_gar, _vehGroupID] call gar_fnc_getGroupHandle;
 				private _beh = behaviour (leader _vehGroupHandle);
 				#ifdef DEBUG
 					diag_log format ["AI_fnc_landConvoy.sqf: behaviour: %1", _beh];
 				#endif
-				if (_beh == "COMBAT") then
+				call
 				{
-					_state = "DISMOUNT";
-					_stateChanged = true;
+					if (_beh == "COMBAT") exitWith
+					{
+						_state = "DISMOUNT";
+						_stateChanged = true;
+					};
+					if(count _infAndCrewInVehHandles != count _infAndCrewHandles) exitWith
+					{
+						//Just why the hell did you jump out???
+						_state = "MOUNT";
+						_stateChanged = true;
+					};
 				};
 			};
 			case "DISMOUNT":
@@ -189,7 +215,7 @@ private _hScript = [_scriptObject, _vehGroupID, _armedVehArray, _unarmedVehArray
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					_stateChanged = false;
-					//Order drivers of unarmed vehicles to stop and dismount
+					//Order drivers of unarmed vehicles to stop
 					private _infAndCrewHandles = [];
 					{
 						private _crewHandles = [_x, _gar, true, false] call convoy_fnc_getUnitHandles;

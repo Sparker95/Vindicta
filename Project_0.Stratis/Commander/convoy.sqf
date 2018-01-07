@@ -112,6 +112,10 @@ private _unarmedVehGroups = [];
 	_unarmedVehGroups pushBack [_x, _infGroupIDs select _foreachindex];
 } forEach _unarmedVehGroupIDs;
 
+//Restart the AI scripts for the initial location
+_locFrom call loc_fnc_restartEnemiesScript;
+_locFrom call loc_fnc_restartAlertStateScript;
+
 //Start the AI_fnc_landConvoy script
 diag_log format ["convoy.sqf: _armedVehGroups: %1, _unarmedVehGroups: %2", _armedVehGroups, _unarmedVehGroups];
 private _extraParams =  [_armedVehGroups, _unarmedVehGroups, getPos _locTo];

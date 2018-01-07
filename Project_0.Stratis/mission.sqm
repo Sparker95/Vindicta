@@ -8,7 +8,7 @@ class EditorData
 	toggles=97;
 	class ItemIDProvider
 	{
-		nextID=1762;
+		nextID=1764;
 	};
 	class MarkerIDProvider
 	{
@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={2501.1631,127.54204,3425.7219};
-		dir[]={-0.42982563,-0.72653127,0.53616834};
-		up[]={-0.45445898,0.68708974,0.56689537};
-		aside[]={0.78026867,3.8498547e-007,0.62551147};
+		pos[]={2099.1594,116.07748,3482.4243};
+		dir[]={-0.60712248,-0.69386566,0.38724792};
+		up[]={-0.58499742,0.72010338,0.37313563};
+		aside[]={0.53776485,-7.8231096e-008,0.84309995};
 	};
 };
 binarizationWanted=0;
@@ -64,10 +64,8 @@ addons[]=
 	"A3_Props_F_Exp_Military_Camps",
 	"A3_Structures_F_Mil_Shelters",
 	"A3_Structures_F_Exp_Military_Camonets",
-	"A3_Weapons_F_Rifles_MX",
-	"A3_Weapons_F_Mark_Rifles_MX",
-	"A3_Weapons_F_Mark_Acc",
-	"A3_Weapons_F_Launchers_Titan"
+	"A3_Weapons_F_LongRangeRifles_M320",
+	"A3_Weapons_F_Mark_LongRangeRifles_M320"
 };
 class AddonsMetaData
 {
@@ -884,7 +882,7 @@ class Mission
 			};
 			id=1078;
 			type="B_HMG_01_high_F";
-			atlOffset=5.7220459e-006;
+			atlOffset=0.051876068;
 		};
 		class Item34
 		{
@@ -901,7 +899,7 @@ class Mission
 			};
 			id=1079;
 			type="B_HMG_01_high_F";
-			atlOffset=4.7683716e-006;
+			atlOffset=0.051662445;
 		};
 		class Item35
 		{
@@ -918,7 +916,7 @@ class Mission
 			};
 			id=1080;
 			type="B_HMG_01_high_F";
-			atlOffset=-9.5367432e-007;
+			atlOffset=-0.0001411438;
 		};
 		class Item36
 		{
@@ -3518,36 +3516,32 @@ class Mission
 			side="West";
 			class Entities
 			{
-				items=1;
+				items=2;
 				class Item0
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2499.7573,124.73569,3427.4277};
+						position[]={2439.9861,124.43166,3398.584};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
+						init="call{[this] spawn" \n "{" \n "params [""_unit""];" \n "waitUntil {sleep 0.1; !(isNil ""globalSoundMonitor"")};" \n "[globalSoundMonitor, _unit] call sense_fnc_soundMonitor_addUnit;" \n "};}";
+						description="WEST Convoy ambush #1";
 						isPlayer=1;
 						class Inventory
 						{
 							class primaryWeapon
 							{
-								name="arifle_MX_SW_F";
-								flashlight="acc_pointer_IR";
-								underBarrel="bipod_01_F_snd";
+								name="srifle_LRR_F";
+								optics="optic_LRPS";
 								class primaryMuzzleMag
 								{
-									name="100Rnd_65x39_caseless_mag";
-									ammoLeft=100;
+									name="7Rnd_408_Mag";
+									ammoLeft=7;
 								};
-							};
-							class secondaryWeapon
-							{
-								name="launch_B_Titan_short_F";
-								flashlight="acc_pointer_IR";
 							};
 							class handgun
 							{
@@ -3557,6 +3551,10 @@ class Mission
 									name="16Rnd_9x21_Mag";
 									ammoLeft=16;
 								};
+							};
+							class binocular
+							{
+								name="Rangefinder";
 							};
 							class uniform
 							{
@@ -3609,36 +3607,21 @@ class Mission
 									items=3;
 									class Item0
 									{
-										name="100Rnd_65x39_caseless_mag";
-										count=5;
-										ammoLeft=100;
-									};
-									class Item1
-									{
 										name="16Rnd_9x21_Mag";
 										count=2;
 										ammoLeft=16;
 									};
-									class Item2
+									class Item1
 									{
 										name="Chemlight_green";
 										count=1;
 										ammoLeft=1;
 									};
-								};
-							};
-							class backpack
-							{
-								typeName="B_Carryall_khk";
-								isBackpack=1;
-								class MagazineCargo
-								{
-									items=1;
-									class Item0
+									class Item2
 									{
-										name="Titan_AT";
-										count=3;
-										ammoLeft=1;
+										name="7Rnd_408_Mag";
+										count=6;
+										ammoLeft=7;
 									};
 								};
 							};
@@ -3653,7 +3636,189 @@ class Mission
 					};
 					id=1761;
 					type="B_soldier_AR_F";
-					atlOffset=-7.6293945e-006;
+					atlOffset=7.6293945e-006;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="allowDamage";
+							expression="_this allowdamage _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"BOOL"
+										};
+									};
+									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male06ENG";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1;
+								};
+							};
+						};
+						nAttributes=3;
+					};
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2441.8779,124.96358,3398.874};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						init="call{[this] spawn" \n "{" \n "params [""_unit""];" \n "waitUntil {sleep 0.1; !(isNil ""globalSoundMonitor"")};" \n "[globalSoundMonitor, _unit] call sense_fnc_soundMonitor_addUnit;" \n "};}";
+						description="WEST Convoy ambush #1";
+						isPlayable=1;
+						class Inventory
+						{
+							class primaryWeapon
+							{
+								name="srifle_LRR_F";
+								optics="optic_LRPS";
+								class primaryMuzzleMag
+								{
+									name="7Rnd_408_Mag";
+									ammoLeft=7;
+								};
+							};
+							class handgun
+							{
+								name="hgun_P07_F";
+								class primaryMuzzleMag
+								{
+									name="16Rnd_9x21_Mag";
+									ammoLeft=16;
+								};
+							};
+							class binocular
+							{
+								name="Rangefinder";
+							};
+							class uniform
+							{
+								typeName="U_B_CombatUniform_mcam_tshirt";
+								isBackpack=0;
+								class MagazineCargo
+								{
+									items=4;
+									class Item0
+									{
+										name="HandGrenade";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item1
+									{
+										name="SmokeShell";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item2
+									{
+										name="SmokeShellGreen";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item3
+									{
+										name="Chemlight_green";
+										count=1;
+										ammoLeft=1;
+									};
+								};
+								class ItemCargo
+								{
+									items=1;
+									class Item0
+									{
+										name="FirstAidKit";
+										count=1;
+									};
+								};
+							};
+							class vest
+							{
+								typeName="V_PlateCarrier2_rgr";
+								isBackpack=0;
+								class MagazineCargo
+								{
+									items=3;
+									class Item0
+									{
+										name="16Rnd_9x21_Mag";
+										count=2;
+										ammoLeft=16;
+									};
+									class Item1
+									{
+										name="Chemlight_green";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item2
+									{
+										name="7Rnd_408_Mag";
+										count=6;
+										ammoLeft=7;
+									};
+								};
+							};
+							map="ItemMap";
+							compass="ItemCompass";
+							watch="ItemWatch";
+							radio="ItemRadio";
+							goggles="G_Combat";
+							hmd="NVGoggles";
+							headgear="H_HelmetB_grass";
+						};
+					};
+					id=1763;
+					type="B_soldier_AR_F";
+					atlOffset=0.025985718;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3721,7 +3886,7 @@ class Mission
 			{
 			};
 			id=1760;
-			atlOffset=-7.6293945e-006;
+			atlOffset=7.6293945e-006;
 		};
 	};
 	class Connections

@@ -200,11 +200,13 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				
 				//diag_log format ["reporting: %1", _reportArrayObjects];
 				//[_gar, _reportArrayObjects, _reportArrayPos, false] call gar_fnc_reportSpottedEnemies;
+				/*
 				if (count _reportObjects > 0) then
 				{
 					//Handle new alert state
-					_newAS = LOC_AS_combat;
 				};
+				_newAS = LOC_AS_combat;
+				*/
 			};
 			_combatPrev = true;
 		}
@@ -221,9 +223,10 @@ private _hScript = [_scriptObject, _extraParams] spawn
 			if(_timeReportCounter > _timeReport) then
 			{
 				_timeReportCounter = _timeReportCounter - _timeReport;
-				//Report no enemies to garrison object
-				//[_gar, [], []] call gar_fnc_reportSpottedEnemies;
-				//Request to change the location's alert state
+				//Report no enemies
+				_scriptObject setVariable ["AI_reportObjects", [], false];
+				_scriptObject setVariable ["AI_reportPos", [], false];
+				_scriptObject setVariable ["AI_reportAge", [], false];
 				_newAS = LOC_AS_safe;
 			};
 			_combatPrev = false;

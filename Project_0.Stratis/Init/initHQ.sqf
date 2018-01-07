@@ -35,7 +35,7 @@ fn_highLevelScript =
 		while {_i < _counterSounds} do
 		{
 			private _name = format["soundCluster_%1", _i];
-			deleteMarkerLocal _name;
+			deletemarker _name;
 			_i = _i + 1;
 		};
 		_counterSounds = 0;
@@ -44,21 +44,21 @@ fn_highLevelScript =
 			diag_log format ["Active sound cluster: %1", _x];
 			
 			private _name = format["soundCluster_%1", _counterSounds];
-			deleteMarkerLocal _name;
+			deletemarker _name;
 			_counterSounds = _counterSounds + 1;
 			private _c = _x select 0; //Cluster
-			//deleteMarkerLocal _name;
-			private _mrk = createMarkerLocal [_name,
+			//deletemarker _name;
+			private _mrk = createMarker [_name,
 					[	0.5*((_c select 0) + (_c select 2)),
 						0.5*((_c select 1) + (_c select 3)),
 						0]];
 			private _width = 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
 			private _height = 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
-			_mrk setMarkerShapeLocal "RECTANGLE";
-			_mrk setMarkerBrushLocal "SolidFull";
-			_mrk setMarkerSizeLocal [_width, _height];
-			_mrk setMarkerColorLocal "ColorGreen";
-			_mrk setMarkerAlphaLocal 0.4;
+			_mrk setMarkerShape "RECTANGLE";
+			_mrk setMarkerBrush "SolidFull";
+			_mrk setMarkerSize [_width, _height];
+			_mrk setMarkerColor "ColorGreen";
+			_mrk setMarkerAlpha 0.4;
 		} forEach _soundClusters;
 		
 		//==== Artillery Radar ====
@@ -68,28 +68,28 @@ fn_highLevelScript =
 		{
 			//Marker for the calculated launch site center
 			private _name = format ["battery_center_%1", _i];
-			deleteMarkerLocal _name;
+			deletemarker _name;
 			private _avgPos = _batteries select _i select 1;
-			private _mrk = createMarkerLocal [_name, [_avgPos select 0, _avgPos select 1, 0]];
-			_mrk setMarkerTypeLocal "hd_destroy";
-			_mrk setMarkerColorLocal "ColorRed";
+			private _mrk = createMarker [_name, [_avgPos select 0, _avgPos select 1, 0]];
+			_mrk setMarkerType "hd_destroy";
+			_mrk setMarkerColor "ColorRed";
 			_mrk setMarkerText (format ["N:%1 time:%2", (_batteries select _i) select 2, (_batteries select _i) select 3]);
 			
 			//Marker for the launch site border
 			_name = format ["battery_%1", _i];
-			deleteMarkerLocal _name;
+			deleteMarker _name;
 			private _c = _batteries select _i select 0;
-			_mrk = createMarkerLocal [_name,
+			_mrk = createMarker [_name,
 					[	0.5*((_c select 0) + (_c select 2)),
 						0.5*((_c select 1) + (_c select 3)),
 						0]];
 			private _width = 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
 			private _height = 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
-			_mrk setMarkerShapeLocal "RECTANGLE";
-			_mrk setMarkerBrushLocal "SolidFull";
-			_mrk setMarkerSizeLocal [_width, _height];
-			_mrk setMarkerColorLocal "ColorRed";
-			_mrk setMarkerAlphaLocal 0.3;
+			_mrk setMarkerShape "RECTANGLE";
+			_mrk setMarkerBrush "SolidFull";
+			_mrk setMarkerSize [_width, _height];
+			_mrk setMarkerColor "ColorRed";
+			_mrk setMarkerAlpha 0.3;
 		};
 		
 		//==== Enemy monitor ====
@@ -102,16 +102,16 @@ fn_highLevelScript =
 		for [{_i = 0}, {_i < _counterEnemies}, {_i = _i + 1}] do
 		{
 			private _name = format ["enemy_%1", _i];
-			deleteMarkerLocal _name;
+			deletemarker _name;
 		};
 		_counterEnemies = count (_e select 0);
 		for [{_i = 0}, {_i < _counterEnemies}, {_i = _i + 1}] do
 		{
 			//Marker for the calculated launch site center
 			private _name = format ["enemy_%1", _i];
-			private _mrk = createMarkerLocal [_name, (_e select 1) select _i];
-			_mrk setMarkerTypeLocal "mil_box";
-			_mrk setMarkerColorLocal "ColorBlue";
+			private _mrk = createmarker [_name, (_e select 1) select _i];
+			_mrk setMarkerType "mil_box";
+			_mrk setMarkerColor "ColorBlue";
 			_mrk setMarkerText (format ["%1", (_e select 2) select _i]);
 		};
 		//Rectangles for clusters
@@ -120,7 +120,7 @@ fn_highLevelScript =
 		{
 			private _name = format ["enemyCluster_%1", _i];
 			diag_log format ["deleting cluster: %1"];
-			deleteMarkerLocal _name;
+			deleteMarker _name;
 		};
 		private _eclusters = _e select 3;
 		_counterEnemiesClusters = count _eclusters;
@@ -129,17 +129,17 @@ fn_highLevelScript =
 		{
 			_name = format ["enemyCluster_%1", _i];
 			private _c = _eclusters select _i;
-			_mrk = createMarkerLocal [_name,
+			_mrk = createMarker [_name,
 					[	0.5*((_c select 0) + (_c select 2)),
 						0.5*((_c select 1) + (_c select 3)),
 						0]];
 			private _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
 			private _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
-			_mrk setMarkerShapeLocal "RECTANGLE";
-			_mrk setMarkerBrushLocal "SolidFull";
-			_mrk setMarkerSizeLocal [_width, _height];
-			_mrk setMarkerColorLocal "ColorBlue";
-			_mrk setMarkerAlphaLocal 0.3;
+			_mrk setMarkerShape "RECTANGLE";
+			_mrk setMarkerBrush "SolidFull";
+			_mrk setMarkerSize [_width, _height];
+			_mrk setMarkerColor "ColorBlue";
+			_mrk setMarkerAlpha 0.3;
 		};
 	};
 };

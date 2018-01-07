@@ -25,7 +25,15 @@ if(!isNull _oAlertStateScript) then //Check if another script is already running
 {
 	[_oAlertStateScript] call AI_fnc_stopMediumLevelScript;
 };
-_oAlertStateScript = [_gar, _newScriptName, [_loc, true]] call AI_fnc_startMediumLevelScript;
+private _spawned = _gar call gar_fnc_isSpawned;
+if (_spawned) then
+{
+	_oAlertStateScript = [_gar, _newScriptName, [_loc, true]] call AI_fnc_startMediumLevelScript;
+}
+else
+{
+	_oAlertStateScript = objNull;
+};
 _loc setVariable ["l_oAIAlertStateScript", _oAlertStateScript, false];
 
 //Release the mutex
