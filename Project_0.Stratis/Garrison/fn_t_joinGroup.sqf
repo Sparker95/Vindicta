@@ -32,7 +32,7 @@ private _oldGroupUnits = if(_oldGroup isEqualTo []) then {[]} else {_oldGroup se
 private _newGroup = [_lo, _newGroupID, 0] call gar_fnc_getGroup;
 private _newGroupUnits = _newGroup select G_GROUP_UNITS;
 
-//Change old group?
+//Change old group? We don't change the old group only for vehicles that didn't have a group. Because only vehicles are allowed to have no group.
 private _changeOldGroup = if(_oldGroupID == -1 && _catID == T_VEH) then {false} else {true};
 
 if (((count _oldGroup) == 0 && _catID != T_VEH) || ((count _newGroup) == 0) || ((count _unit) == 0))
@@ -113,6 +113,11 @@ if(_changeOldGroup) then
 	{
 		_oldGroupUnits deleteAt _index; //Delete unit's data from group array
 		//Check if the last unit was removed from original group
-		//I think it's not needed
+		if(count _oldGroupUnits == 0) then
+		{
+			private _groupIndex = [_lo, _oldGroupID, 1] call gar_fnc_getGroup;
+			private _groups = _lo getVariable "g_groups";
+			_groups deleteAt _groupIndex;
+		};
 	};
 };
