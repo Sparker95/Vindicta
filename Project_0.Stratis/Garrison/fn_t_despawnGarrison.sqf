@@ -1,6 +1,9 @@
 /*
 Used inside the thread to despawn units.
 */
+
+#include "garrison.hpp"
+
 params ["_lo"];
 
 //Initialize some variables

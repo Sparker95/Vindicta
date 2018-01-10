@@ -1,6 +1,9 @@
 /*
 Used inside the thread to spawn units.
 */
+
+#include "garrison.hpp"
+
 params ["_lo", ["_debug", true]];
 
 //Get side

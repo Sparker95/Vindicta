@@ -1,6 +1,12 @@
 /*
 Used inside the garrison thread to move a unit from one garrison to another
+
+Parameters:
+	_lo - from where to move unit
+	_requestData: [_lo_dst, _unitData]
+
 */
+#include "garrison.hpp"
 
 params ["_lo", "_requestData"];
 
@@ -44,11 +50,19 @@ if(_i == _count) exitWIth //Error: unit with this ID not found
 	diag_log format ["fn_t_moveUnit.sqf: garrison: %1, unit not found: %2", _lo getVariable ["g_name", ""], _unitData];
 };
 
-private _objectHandle = _unit select 1;
-private _classID = _unit select 0;
+private _objectHandle = _unit select G_UNIT_HANDLE;
+private _className = _unit select G_UNIT_CLASSNAME;
+private _groupID = _unit select G_UNIT_GROUP_ID;
+//Check if the unit we are trying to move doesn't have a group. Only vehicles might be without group.
+if (_groupID != -1) exitWith
+{
+	diag_log format ["fn_t_moveUnit.sqf: garrison: %1, error: attempt to move unit %2 without its group", _lo getVariable ["g_name", ""], _unitData];
+};
+
 //First remove the unit from source garrison
 //Note that a thread-function is used here, so it will remove the unit from garrison right now
 [_lo, _unitData] call gar_fnc_t_removeUnit;
 //Then add the unit to the destination garrison
 //Note that a non-thread function is used here, it will only add the request to the queue, the actual addition of the unit will happen later
-[_lo_dst, [_catID, _subcatID, _classID, _objectHandle]] call gar_fnc_addExistingUnit;
+private _rid = [_lo_dst, [_catID, _subcatID, _className, _objectHandle, -1]] call gar_fnc_addExistingUnit;
+waitUntil {[_lo_dst, _rid] call gar_fnc_requestDone};

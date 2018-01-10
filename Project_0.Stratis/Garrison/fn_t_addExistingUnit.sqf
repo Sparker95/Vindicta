@@ -8,6 +8,8 @@ _objectHandle is _objNull for not spawned units.
 Return value: new unit's ID
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_unitFullData", "_spawned", ["_debug", true]];
 
 private _catID = _unitFullData select 0;
@@ -26,11 +28,14 @@ if(!([_template, _catID, _subcatID, _classID] call t_fnc_isValid)) exitWith {
 */
 
 //Check if the specified group exists
-private _group = [_lo, _groupID] call gar_fnc_getGroup;
-
-if(_group isEqualTo []) exitWith
+private _group = [];
+if(_groupID != -1) then
 {
-	diag_log format ["fn_t_addExistingUnit.sqf: garrison: %1, specified group not found: %2", _lo getVariable ["g_name", ""], _groupID];
+	_group = [_lo, _groupID] call gar_fnc_getGroup;
+	if(_group isEqualTo []) exitWith
+	{
+		diag_log format ["fn_t_addExistingUnit.sqf: garrison: %1, specified group not found: %2", _lo getVariable ["g_name", ""], _groupID];
+	};
 };
 
 private _cat = [];
@@ -58,9 +63,12 @@ _lo setVariable ["g_unitIDCounter", _unitID + 1];
 private _subCat = _cat select _subcatID;
 _subCat pushBack [_class, _objectHandle, _unitID, _groupID];
 
-//Add the unit to its group
-private _groupUnits = _group select 0;
-_groupUnits pushBack [[_catID, _subcatID, _unitID], []]; //todo note that assigned vehicle array is lost
+//Add the unit to its group if it has a group
+if(_groupID != -1) then
+{
+	private _groupUnits = _group select G_GROUP_UNITS;
+	_groupUnits pushBack [[_catID, _subcatID, _unitID], []]; //todo note that assigned vehicle array is lost
+};
 
 if(_spawned) then //If we are adding the unit to an already spawned garrison
 {

@@ -3,6 +3,8 @@ Used inside the thread to spawn one unit.
 First the unit's assigned group is checked. If it's not created with createGroup, it's created here.
 */
 
+#include "garrison.hpp"
+
 //todo Remove _pos parameter, it's not needed
 
 params ["_lo", "_pos", "_unitData"];

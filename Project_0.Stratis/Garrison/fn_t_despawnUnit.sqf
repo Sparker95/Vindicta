@@ -1,6 +1,9 @@
 /*
 Used inside the thread to despawn one unit
 */
+
+#include "garrison.hpp"
+
 params ["_lo", "_unitData"];
 
 private _unit = [_lo, _unitData, 0] call gar_fnc_getUnit;

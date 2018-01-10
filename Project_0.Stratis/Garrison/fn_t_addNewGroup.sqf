@@ -6,6 +6,8 @@ _newGroupData is an array with units' [catID, subcatID, class]
 Return value: _groupID - the ID of the new group
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_newGroupData", "_spawned", ["_debug", true]];
 
 private _newGroupUnits = _newGroupData select 0;

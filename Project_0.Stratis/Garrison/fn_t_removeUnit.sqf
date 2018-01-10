@@ -2,6 +2,8 @@
 Used inside the garrison thread to remove unit from the garrison array
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_unitData", ["_debug", true]];
 
 private _unitArrayAndIndex = [_lo, _unitData, 2] call gar_fnc_getUnit; //Get unit's array and [_subcat, _index]

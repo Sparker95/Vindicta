@@ -49,7 +49,7 @@ while {true} do
 		if({_x distance _loc < _distanceSpawn && ((side _x != _side) || (isPlayer _x))} count allUnits > 0 ||
 			_forceSpawnTimer > 0) then //If garrison needs to be spawned
 		{
-			//[_loc] call loc_fnc_spawnAllGarrisons;
+			[_loc] call loc_fnc_spawnAllGarrisons;
 			waitUntil //Wait until the garrison has spawned
 			{
 				sleep _sleepInterval;

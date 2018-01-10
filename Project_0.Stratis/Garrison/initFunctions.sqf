@@ -10,7 +10,7 @@ gar_fnc_addNewUnit = compile preprocessFileLineNumbers "Garrison\fn_addNewUnit.s
 gar_fnc_addNewGroup = compile preprocessFileLineNumbers "Garrison\fn_addNewGroup.sqf";
 gar_fnc_addNewEmptyGroup = compile preprocessFileLineNumbers "Garrison\fn_addNewEmptyGroup.sqf";
 gar_fnc_removeUnit = compile preprocessFileLineNumbers "Garrison\fn_removeUnit.sqf";
-//gar_fnc_moveUnit = compile preprocessFileLineNumbers "Garrison\fn_moveUnit.sqf"; //You shouldn't move units without group
+gar_fnc_moveUnit = compile preprocessFileLineNumbers "Garrison\fn_moveUnit.sqf";
 gar_fnc_moveGroup = compile preprocessFileLineNumbers "Garrison\fn_moveGroup.sqf";
 gar_fnc_joinGroup = compile preprocessFileLineNumbers "Garrison\fn_joinGroup.sqf";
 
@@ -19,6 +19,9 @@ gar_fnc_startThread = compile preprocessFileLineNumbers "Garrison\fn_startThread
 gar_fnc_stopThread = compile preprocessFileLineNumbers "Garrison\fn_stopThread.sqf";
 
 gar_fnc_assignVehicleRoles = compile preprocessFileLineNumbers "Garrison\fn_assignVehicleRoles.sqf";
+
+gar_fnc_mergeGarrisons = compile preprocessFileLineNumbers "Garrison\fn_mergeGarrisons.sqf";
+gar_fnc_t_mergeGarrisons = compile preprocessFileLineNumbers "Garrison\fn_t_mergeGarrisons.sqf";
 
 //gar_fnc_startAIThread = compile preprocessFileLineNumbers "Garrison\fn_startAIThread.sqf";
 
@@ -33,7 +36,7 @@ gar_fnc_t_addNewGroup = compile preprocessFileLineNumbers "Garrison\fn_t_addNewG
 gar_fnc_t_addExistingGroup = compile preprocessFileLineNumbers "Garrison\fn_t_addExistingGroup.sqf";
 gar_fnc_t_removeUnit = compile preprocessFileLineNumbers "Garrison\fn_t_removeUnit.sqf";
 gar_fnc_t_removeGroup = compile preprocessFileLineNumbers "Garrison\fn_t_removeGroup.sqf";
-//gar_fnc_t_moveUnit = compile preprocessFileLineNumbers "Garrison\fn_t_moveUnit.sqf";
+gar_fnc_t_moveUnit = compile preprocessFileLineNumbers "Garrison\fn_t_moveUnit.sqf";
 gar_fnc_t_moveGroup = compile preprocessFileLineNumbers "Garrison\fn_t_moveGroup.sqf";
 gar_fnc_t_joinGroup = compile preprocessFileLineNumbers "Garrison\fn_t_joinGroup.sqf";
 gar_fnc_t_assignVehicleRoles = compile preprocessFileLineNumbers "Garrison\fn_t_assignVehicleRoles.sqf";

@@ -7,6 +7,8 @@ _newUnitData is structured like this:
 Return value: _unitID - the ID of the new unit
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_newUnitData", "_spawned", ["_debug", true]];
 
 private _catID = _newUnitData select 0;

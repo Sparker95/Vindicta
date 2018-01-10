@@ -55,6 +55,31 @@ gar_fnc_isSpawned =
 	_return
 };
 
+gar_fnc_getAllUnits =
+{
+	/*
+	Returns all the unitDatas of all the units in the garrison.
+	*/
+	params ["_lo"];
+	private _categories = [_lo getVariable "g_inf", _lo getVariable "g_veh", _lo getVariable "g_drone"];
+	private _catSizes = [T_INF_size, T_VEH_size, T_DRONE_size];
+	private _returnUnitDatas = [];
+	for "_catID" from 0 to 2 do
+	{
+		for "_subcatID" from 0 to ((_catSizes select _catID) - 1) do
+		{
+			private _units = _categories select _catID select _subcatID;
+			for "_i" from 0 to ((count _units) - 1) do
+			{
+				private _unit = _units select _i;
+				private _unitID = _unit select G_UNIT_ID;
+				_returnUnitDatas pushBack [_catID, _subcatID, _unitID];
+			};
+		};
+	};
+	_returnUnitDatas
+};
+
 gar_fnc_findUnits =
 {
 	/*

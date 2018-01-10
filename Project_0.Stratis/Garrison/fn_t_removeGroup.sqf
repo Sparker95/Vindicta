@@ -2,6 +2,8 @@
 Used inside the thread to remove a group and all its units from the garrison.
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_groupID"];
 
 private _groupData = [_lo, _groupID, 2] call gar_fnc_getGroup;

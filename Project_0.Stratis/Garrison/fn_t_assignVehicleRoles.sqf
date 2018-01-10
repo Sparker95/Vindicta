@@ -3,6 +3,8 @@ Used inside the garrison thread to assign or unassign vehicle roles for spawned 
 _groupUnits - unitData array of the group array in g_groups
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_groupID", "_spawned", "_assignDrivers", "_assignTurrets", "_assignPassengers"];
 
 //diag_log format ["fn_t_assignVehicleRoles: assign drivers: %1, assign turrets: %2", _assignDrivers, _assignTurrets];

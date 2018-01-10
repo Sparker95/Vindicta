@@ -48,6 +48,10 @@ _extraParams params ["_armedVehGroups", "_unarmedVehGroups", "_destPos"];
 //Read other things
 private _gar = _scriptObject getVariable ["AI_garrison", objNull];
 
+//Set variables of the object
+_scriptObject setVariable ["AI_convoyState", "MOUNT", false];
+_scriptObject setVariable ["AI_destPosChanged", false, false];
+
 //Merge the vehicle groups into one VEHICLE-MEGA-GROUP!
 //Create a new group
 private _rarray = [];
@@ -123,13 +127,17 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 	while {true} do
 	{
 		sleep 2;
+		if(_stateChanged) then
+		{
+			_scriptObject setVariable ["AI_convoyState", _state, false]; //Update the state variable
+		};
 		switch (_state) do
 		{
 			case "MOUNT":
 			{
 				if (_stateChanged) then
 				{
-					diag_log format ["AI_fnc_landConvoy: entered MOUNT state"];
+					diag_log "AI_fnc_landConvoy: entered MOUNT state";
 					//Order drivers of unarmed vehicles to stop so that infantry can mount
 					doStop (units _vehGroupHandle);
 					_stateChanged = false;
@@ -186,16 +194,25 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 			};
 			case "MOVE":
 			{
+				//If the convoy was requested to change its destination
+				if (_scriptObject getVariable "AI_destPosChanged") then
+				{
+					//Then set the _stateChanged flag to force add new waypoint
+					_destPos = _scriptObject getVariable "AI_newDestPos";
+					diag_log format ["AI_fnc_landConvoy: destination position has been changed to: %1", _destPos];
+					_scriptObject setVariable ["AI_destPosChanged", false, false];
+					_stateChanged = true;
+				};
 				if (_stateChanged) then
 				{
-					diag_log format ["AI_fnc_landConvoy: entered MOVE state"];
+					diag_log "AI_fnc_landConvoy: entered MOVE state";
 					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					while {(count (waypoints _vehGroupHandle)) > 0} do
 					{
 						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
 					};
 					//Add new waypoint
-					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 100, 0, "Destination"];
+					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					//Set convoy separation
@@ -208,25 +225,33 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					//Limit the speed of the leading vehicle
 					(vehicle (leader _vehGroupHandle)) limitSpeed 40; //Speed in km/h
 					_stateChanged = false;
-				};
-				//Check that all the units are inside their vehicles
-				private _infAndCrewHandles = [];
-				{
-					_infAndCrewHandles append ([_x, true, true] call convoy_fnc_getUnitHandles);
-				} forEach (_armedVehArray + _unarmedVehArray);
-				private _infAndCrewInVehHandles = _infAndCrewHandles select {!(vehicle _x isEqualTo _x)};				
-				//Check the behaviour of the group
-				private _beh = behaviour (leader _vehGroupHandle);
-				#ifdef DEBUG
-					diag_log format ["AI_fnc_landConvoy.sqf: behaviour: %1", _beh];
-				#endif
+				};				
+				
+				//Change state if needed
 				call
 				{
+					//Check if the convoy has arrived
+					if (((leader _vehGroupHandle) distance2D _destPos) < 50) then //Are we there yet??
+					{
+						_state = "ARRIVAL";
+						_stateChanged = true;
+					};
+					//Check the behaviour of the group
+					private _beh = behaviour (leader _vehGroupHandle);
+					#ifdef DEBUG
+						diag_log format ["AI_fnc_landConvoy.sqf: behaviour: %1", _beh];
+					#endif
 					if (_beh == "COMBAT") exitWith
 					{
 						_state = "DISMOUNT";
 						_stateChanged = true;
 					};
+					//Check that all the units are inside their vehicles
+					private _infAndCrewHandles = [];
+					{
+						_infAndCrewHandles append ([_x, true, true] call convoy_fnc_getUnitHandles);
+					} forEach (_armedVehArray + _unarmedVehArray);
+					private _infAndCrewInVehHandles = _infAndCrewHandles select {!(vehicle _x isEqualTo _x)};
 					if(count _infAndCrewInVehHandles != count _infAndCrewHandles) exitWith
 					{
 						//Just why the hell did you jump out???
@@ -235,6 +260,7 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 						#endif
 						_state = "MOUNT";
 						_stateChanged = true;
+						//TODO if the moron driver has flipped his vehicle over(yes, they can), unflip it
 					};
 				};
 			};
@@ -287,7 +313,7 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 			{
 				if (_stateChanged) then
 				{
-					diag_log format ["AI_fnc_landConvoy: entered COMBAT state"];
+					diag_log "AI_fnc_landConvoy: entered COMBAT state";
 					_stateChanged = false;
 				};
 				private _beh = behaviour (leader _vehGroupHandle);
@@ -297,6 +323,25 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 				if (_beh == "AWARE") then
 				{
 					_state = "MOUNT";
+					_stateChanged = true;
+				};
+			};
+			case "ARRIVAL":
+			{
+				if (_stateChanged) then
+				{
+					diag_log format ["AI_fnc_landConvoy: entered ARRIVAL state"];
+					{
+						private _vehHandle = _x select 0;
+						_vehHandle setConvoySeparation 10; //Make them stay a bit closer when they arrive
+					} forEach (_armedVehArray + _unarmedVehArray);
+					_stateChanged = false;
+				};
+				//From now, the only way to do something else is to set a new destination, then the general part of FSM will start running again
+				if (_scriptObject getVariable "AI_destPosChanged") then
+				{
+					diag_log format ["AI_fnc_landConvoy: convoy has arrived but was assigned a new destination", _destPos];
+					_state = "MOVE";
 					_stateChanged = true;
 				};
 			};

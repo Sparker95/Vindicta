@@ -38,11 +38,11 @@ private _gar = objNull;
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_truck_inf, 2],
-				//[T_VEH, T_VEH_MBT, 1],
-				//[T_VEH, T_VEH_APC, 1],
-				[T_VEH, T_VEH_IFV, 1]
-				//[T_VEH, T_VEH_MRAP_HMG, 1],
-				//[T_VEH, T_VEH_MRAP_GMG, 1]
+				[T_VEH, T_VEH_MBT, 1],
+				[T_VEH, T_VEH_APC, 1],
+				[T_VEH, T_VEH_IFV, 1],
+				[T_VEH, T_VEH_MRAP_HMG, 1],
+				[T_VEH, T_VEH_MRAP_GMG, 1]
 			],G_GT_veh_non_static, util_tracked_wheeled] call loc_fnc_addUnits;
 
 			
@@ -86,6 +86,7 @@ private _gar = objNull;
 			], G_GT_veh_static, util_turrets] call loc_fnc_addUnits;
 
 			//Tracked and wheeled vehicles
+			/*
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_MRAP_HMG, 2],
@@ -93,6 +94,7 @@ private _gar = objNull;
 				//[T_VEH, T_VEH_APC, 1],
 				//[T_VEH, T_VEH_IFV, 1]
 			],G_GT_veh_non_static, util_tracked_wheeled] call loc_fnc_addUnits;
+			*/
 
 			//Sentries in buildings
 			[_loc, _gar,

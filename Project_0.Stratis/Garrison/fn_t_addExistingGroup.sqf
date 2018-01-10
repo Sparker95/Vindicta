@@ -2,6 +2,8 @@
 Used inside the garrison thread to add an existing group.
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_requestData", "_spawned"];
 
 private _unitsFullData = _requestData select 0;
@@ -48,10 +50,6 @@ private _unitFullData = [];
 	};
 } forEach _oldGroupUnits;
 
-//Set the alert state again
-//private _as = _lo getVariable ["g_alertState", 0];
-//[_lo, _as, _spawned, false] call gar_fnc_t_setAlertState;
-
 //Assign vehicle roles again
 //todo transfer vehicle roles instaead of asigning them
 //Assign vehicle roles
@@ -64,14 +62,5 @@ if(_spawned && !(_groupHandle isEqualTo grpNull)) then
 	_groupHandle setVariable ["g_groupID", _groupID, false];
 	_groupHandle setVariable ["g_group", _group, false];
 };
-
-//Restart the garrison thread
-/*
-if (_spawned) then
-{
-	[_lo] call gar_fnc_t_stopEnemiesThread;
-	[_lo] call gar_fnc_t_startEnemiesThread;
-};
-*/
 
 _groupID

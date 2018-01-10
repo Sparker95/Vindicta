@@ -1,14 +1,13 @@
 /*
-This functions stops any AI thread running for this garrison.
+Merges one garrison into another garrison. So, all groups get transfered.
 */
 
 #include "garrison.hpp"
 
-params ["_lo"];
+params ["_lo", "_garDst"];
 
-//Add it to the queue
 private _queue = _lo getVariable ["g_threadQueue", []];
-_queue pushBack [G_R_STOP_AI_SCRIPT];
+_queue pushBack [G_R_MERGE_GARRISONS, _garDst];
 
 private _hThread = _lo getVariable ["g_threadHandle", scriptNull];
 if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it

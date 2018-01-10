@@ -2,6 +2,8 @@
 Used inside the thread to start an AI script for specified garrison.
 */
 
+#include "garrison.hpp"
+
 params ["_lo", "_scriptName"];
 
 //Check if another script is already running

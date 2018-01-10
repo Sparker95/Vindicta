@@ -72,7 +72,7 @@ private _i = 0;
 	_groupType = _x select 1;
 	_classID = _x select 3;
 	_amount = (_capacity * (_x select 2)) / (_x select 4); //_capacity*_proportion / _amountOfUnitsInGroup
-	_amountInt = floor _amount;
+	_amountInt = floor _amount; //How many groups will surely added
 	_chance = _amount - _amountInt; //The chance that an extra group will be added.
 	if((random 1) < _chance) then
 	{

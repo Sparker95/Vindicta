@@ -39,6 +39,8 @@ g_group - an array of arrays like:
 	In case that the a group has a vehicle, group's units will be assigned to this vehicle when spawned.
 */
 
+#include "garrison.hpp"
+
 private _lo = groupLogic createUnit ["LOGIC", [0, 0, 0], [], 0, "NONE"]; //logic object
 
 //==== Initialize infantry garrison ====

@@ -11,7 +11,7 @@ _workTime - the time during which the thread will work, in seconds. After that t
 params ["_lo", "_workTime", ["_debug", false]];
 
 //Override debug output
-//_debug = false;
+_debug = true;
 
 private _run = true;
 private _request = [];
@@ -128,15 +128,12 @@ while {_run} do
 			};
 
 			//Request to move a unit from this garrison to another one
-			//todo remove this piece of code
-			/*
 			case G_R_MOVE_UNIT:
 			{
 				_requestData = _request select 1;
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, moving unit to garrison: %2", _lo getVariable ["g_name", ""], (_requestData select 0) getVariable ["g_name", ""]];};
 				[_lo, _requestData] call gar_fnc_t_moveUnit;
 			};
-			*/
 
 			//Request to move a group from this garrison to another one
 			case G_R_MOVE_GROUP:
@@ -144,8 +141,18 @@ while {_run} do
 				_requestData = _request select 1;
 				_requestReturn = _request select 2;
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, moving a group to garrison: %2", _lo getVariable ["g_name", ""], (_requestData select 0) getVariable ["g_name", ""]];};
-				private _groupID = [_lo, _requestData, _spawned] call gar_fnc_t_moveGroup;
+				private _groupID = [_lo, _requestData] call gar_fnc_t_moveGroup;
 				_requestReturn set [0, _groupID];
+			};
+			
+			//Request to merge this garrison to another garrison
+			case G_R_MERGE_GARRISONS:
+			{
+				_requestData = _request select 1; //The destination garrison object
+				if(_debug) then {
+					diag_log format ["fn_garrisonThread.sqf: garrison: %1, merging into garrison: %2", _lo getVariable ["g_name", ""], _requestData getVariable ["g_name", "error: name not found!"]];
+				};
+				[_lo, _requestData] call gar_fnc_t_mergeGarrisons;
 			};
 			
 			//Request to move a unit to another group
