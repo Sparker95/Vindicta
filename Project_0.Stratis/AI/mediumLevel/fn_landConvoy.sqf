@@ -16,30 +16,6 @@ _extraParams:
 
 params ["_scriptObject", "_extraParams"];
 
-convoy_fnc_getUnitHandles =
-{
-	//A function that helps manage _armedVehGroups and _unarmedVehGroups
-	params ["_vehData", "_getCrew", "_getPassengers"];
-
-	private _vehHandle = _vehData select 0;
-	private _crewHandles = [];
-	private _infHandles = [];
-	//Check if the vehicle can actually move
-	if(canMove _vehHandle) then
-	{
-		_crewHandles = if(_getCrew) then {_vehData select 1} else {[]};
-		_infHandles = if(_getPassengers) then {units(_vehData select 2)} else {[]};
-	}
-	else
-	{
-		_crewHandles = [];
-		_infHandles = [];
-	};
-	private _unitHandles = _crewHandles + _infHandles;
-	
-	_unitHandles
-};
-
 //Reorganize the convoy garrison
 _extraParams params ["_armedVehGroups", "_unarmedVehGroups", "_destPos"];
 #ifdef DEBUG
@@ -112,6 +88,55 @@ _vehGroupHandle deleteGroupWhenEmpty false; //If all crew dies, inf groups might
 //Spawn a script
 private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehArray, _destPos] spawn
 {
+	//==== Some fonctions ====
+	_getUnitHandles =
+	{
+		/*
+		A function that helps manage _armedVehGroups and _unarmedVehGroups.
+		It is only used from the fn_landConvoy.
+		*/
+		params ["_vehData", "_getCrew", "_getPassengers"];
+
+		private _vehHandle = _vehData select 0;
+		private _crewHandles = [];
+		private _infHandles = [];
+		//Check if the vehicle can actually move
+		if(canMove _vehHandle) then
+		{
+			_crewHandles = if(_getCrew) then {_vehData select 1} else {[]};
+			_infHandles = if(_getPassengers) then {units(_vehData select 2)} else {[]};
+		}
+		else
+		{
+			_crewHandles = [];
+			_infHandles = [];
+		};
+		private _unitHandles = _crewHandles + _infHandles;
+		
+		_unitHandles
+	};
+
+	_getMaxSeparation =
+	{
+		params ["_vehGroupHandle"];
+		//Ger vehicles in formation order
+		private _allVehicles = [];
+		{
+			_allVehicles pushBackUnique (vehicle _x);
+		} forEach (formationMembers (leader _vehGroupHandle));
+		//Get the max separation
+		private _dMax = 0;
+		private _c = count _allVehicles;
+		for "_i" from 0 to (_c - 2) do
+		{
+			_d = (_allVehicles select _i) distance (_allVehicles select (_i + 1));
+			if (_d > _dMax) then {_dMax = _d;};
+		};
+		_dMax
+	};
+	//=================================
+	
+	
 	//Read input parameters
 	params ["_scriptObject", "_vehGroupHandle", "_armedVehArray", "_unarmedVehArray", "_destPos"];
 	
@@ -124,6 +149,9 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 	//We need the power of the Finite State Machine!
 	private _state = "MOUNT";
 	private _stateChanged = true;
+	private _speedMax = 60; //Maximum speed for the convoy
+	private _speedLimit = 20; //The initial speed limit
+	private _separation = 27; //Convoy separation in meters
 	while {true} do
 	{
 		sleep 2;
@@ -146,8 +174,8 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 				//Order the crew to get in
 				private _infAndCrewHandles = [];
 				{
-					private _crewHandles = [_x, true, false] call convoy_fnc_getUnitHandles;
-					private _passHandles = [_x, false, true] call convoy_fnc_getUnitHandles;
+					private _crewHandles = [_x, true, false] call _getUnitHandles;
+					private _passHandles = [_x, false, true] call _getUnitHandles;
 					private _vehHandle = _x select 0;
 					if(count _passHandles > 0) then
 					{
@@ -219,13 +247,37 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					{
 						private _vehHandle = _x select 0;
 						_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
-						_vehHandle setConvoySeparation 35;
+						_vehHandle setConvoySeparation _separation;
 						_vehHandle forceFollowRoad true;
 					} forEach (_armedVehArray + _unarmedVehArray);
 					//Limit the speed of the leading vehicle
-					(vehicle (leader _vehGroupHandle)) limitSpeed 40; //Speed in km/h
+					(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit; //Speed in km/h
 					_stateChanged = false;
-				};				
+				};
+				
+				//Check the separation of the convoy
+				private _sCur = [_vehGroupHandle] call _getMaxSeparation; //The current maximum separation between vehicles
+				//diag_log format ["Current separation: %1", _sCur];
+				if(_sCur > 1.7*_separation) then
+				{
+					//We are driving too fast!
+					if(_speedLimit > 15) then
+					{
+						_speedLimit = _speedLimit - 3;
+						(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit;
+						//diag_log format ["Slowing down! New speed: %1", _speedLimit];
+					};
+				}
+				else
+				{
+						//We are driving too slow!
+						if(_speedLimit < _speedMax) then
+						{
+							_speedLimit = _speedLimit + 2;
+							(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit;
+							//diag_log format ["Accelerating! New speed: %1", _speedLimit];
+						};
+				};
 				
 				//Change state if needed
 				call
@@ -249,7 +301,7 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					//Check that all the units are inside their vehicles
 					private _infAndCrewHandles = [];
 					{
-						_infAndCrewHandles append ([_x, true, true] call convoy_fnc_getUnitHandles);
+						_infAndCrewHandles append ([_x, true, true] call _getUnitHandles);
 					} forEach (_armedVehArray + _unarmedVehArray);
 					private _infAndCrewInVehHandles = _infAndCrewHandles select {!(vehicle _x isEqualTo _x)};
 					if(count _infAndCrewInVehHandles != count _infAndCrewHandles) exitWith
@@ -283,7 +335,7 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 						_vehHandle forceFollowRoad false;
 						if(!isNull (_x select 2)) then //If this vehicle is carrying an infantry group
 						{
-							private _crewHandles = [_x, true, false] call convoy_fnc_getUnitHandles;
+							private _crewHandles = [_x, true, false] call _getUnitHandles;
 							doStop _crewHandles;
 						};
 					} forEach (_unarmedVehArray + _armedVehArray);
@@ -292,10 +344,10 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 				//Order infantry units to dismount
 				private _infHandles = [];
 				{ //Dismount passengers of armed vehicles
-					_infHandles append ([_x, false, true] call convoy_fnc_getUnitHandles);
+					_infHandles append ([_x, false, true] call _getUnitHandles);
 				} forEach _armedVehArray;
 				{ //Dismount drivers and passengers of unarmed vehicles
-					_infHandles append ([_x, true, true] call convoy_fnc_getUnitHandles);
+					_infHandles append ([_x, true, true] call _getUnitHandles);
 				} forEach _unarmedVehArray;
 				_infHandles orderGetIn false;
 
