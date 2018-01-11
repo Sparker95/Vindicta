@@ -94,4 +94,5 @@ else //If we are adding unit to despawned garrison
 	};
 };
 
-_unitID
+//Return value
+[_catID, _subcatID, _unitID]

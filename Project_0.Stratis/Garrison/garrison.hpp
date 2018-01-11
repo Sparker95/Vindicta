@@ -14,6 +14,7 @@ These numbers are used in the garrison thread.
 #define G_R_MERGE_GARRISONS			52
 #define G_R_JOIN_GROUP				60
 #define G_R_ASSIGN_VEHICLE_ROLES	70
+#define G_R_RESET_UNIT_POS			71
 
 //#define G_S_IDLE				0
 //#define G_S_STOPPING			1

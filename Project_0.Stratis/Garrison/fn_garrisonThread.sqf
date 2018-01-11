@@ -85,8 +85,10 @@ while {_run} do
 			case G_R_ADD_EXISTING_UNIT:
 			{
 				_requestData = _request select 1;
+				_returnArray = _request select 2;
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, adding existing unit: %2", _lo getVariable ["g_name", ""], _requestData];};
-				[_lo, _requestData, _spawned] call gar_fnc_t_addExistingUnit;
+				private _unitData = [_lo, _requestData, _spawned] call gar_fnc_t_addExistingUnit;
+				_returnArray set [0, _unitData];
 			};
 
 			//Request to add an existing group
@@ -172,6 +174,13 @@ while {_run} do
 				private _ap = _requestData select 3; //Assign passengers
 				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, assign veh. roles, group: %2, drv: %3, tur: %4, pas: %5", _lo getVariable ["g_name", ""], _gID, _ad, _at, _ap];};
 				[_lo, _gID, _spawned, _ad, _at, _ap] call gar_fnc_t_assignVehicleRoles;
+			};
+			
+			case G_R_RESET_UNIT_POS:
+			{
+				_requestData = _request select 1; //Unitdata
+				if(_debug) then {diag_log format ["fn_garrisonThread.sqf: garrison: %1, resetting unit's position: %2", _lo getVariable ["g_name", ""], _requestData];};
+				[_lo, _requestData, _spawned] call gar_fnc_t_resetUnitPos;
 			};
 			
 			/*

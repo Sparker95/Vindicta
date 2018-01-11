@@ -5,14 +5,17 @@ Normally units should only be transfered in groups, but we have vehicles as an e
 _unitFullData structure:
 [_catID, _subcatID, _class, _objectHandle]
 _objectHandle is _objNull for not spawned units.
+
+Parameters:
+	_returnArray - the array where the unit's new unitData will be after the request has been executed
 */
 
 #include "garrison.hpp"
 
-params ["_lo", "_unitFullData", ["_debug", true]];
+params ["_lo", "_unitFullData", ["_returnArray", []], ["_debug", true]];
 
 private _queue = _lo getVariable ["g_threadQueue", []];
-_queue pushBack [G_R_ADD_EXISTING_UNIT, _unitFullData];
+_queue pushBack [G_R_ADD_EXISTING_UNIT, _unitFullData, _returnArray];
 
 private _hThread = _lo getVariable ["g_threadHandle", scriptNull];
 if(_hThread isEqualTo scriptNull) then //If the thread isn't running, start it
