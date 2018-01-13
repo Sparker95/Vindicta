@@ -4,6 +4,12 @@ AI_fnc_getConvoyState =
 	_so getVariable "AI_convoyState";
 };
 
+AI_fnc_getConvoyArrived =
+{
+	params ["_so"];
+	_so getVariable "AI_convoyArrived";
+};
+
 AI_fnc_setConvoyDestination =
 {
 	//Use it to change convoy's destination before it has arrived

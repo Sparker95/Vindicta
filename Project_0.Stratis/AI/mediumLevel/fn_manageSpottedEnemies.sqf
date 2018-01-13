@@ -107,12 +107,14 @@ private _hScript = [_scriptObject, _extraParams] spawn
 					_hG = _x select 0;
 					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], _timeReveal];
 					{ //forEach _nt
-						private _s = _x select 2; //Side of the target
+						//private _s = _x select 2; //PERCEIVED Side of the target
+						private _o = _x select 1;
+						private _s = side _o; //ACTUAL Side of the target
 						private _age = _x select 5; //Target age is the time that has passed since the last time the group has actually seen the enemy unit. Values lower than 0 mean that they see the enemy right now
 						//diag_log format ["Age of target %1: %2", _x select 1, _age];
-						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT, sideUnknown]) && (_age <= _timeReveal)) then //If target's side is enemy
+						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT]) && (_age <= _timeReveal)) then //If target's side is enemy
 						{
-							_allTargets pushBack [_x select 1, _hG knowsAbout (_x select 1), _x select 4, _x select 5];
+							_allTargets pushBack [_o, _hG knowsAbout _o, _x select 4, _x select 5];
 						};
 					} forEach _nt;
 				} forEach _groupsData;
@@ -155,7 +157,8 @@ private _hScript = [_scriptObject, _extraParams] spawn
 					//diag_log format ["_nt: %1", _nt];
 					{ //forEach _nt
 						private _o = _x select 1;
-						private _s = _x select 2; //Side of the target
+						//private _s = _x select 2; //PERCEIVED Side of the target
+						private _s = side _o; //ACTUAL Side of the target
 						private _age = _x select 5; //Target age
 						//TODO add a check for knowsAbout, because sometimes these fools think they know about enemy while they have no way to see it (like when they report artillery cannon that has killed their comrade from 10km away)
 						if(_s != _side && (_s in [EAST, WEST, INDEPENDENT])) then

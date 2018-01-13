@@ -141,5 +141,10 @@ private _bdir = 0; //Building direction
 		{
 			deleteVehicle _object;
 		};
+		
+		if(_object isKindOf "Helipad_base_F") then //Landing pads for helicopters
+		{
+			[_o, T_PL_helicopters, (getPosATL _object) + [direction _object], [G_GT_idle, G_GT_veh_non_static], false] call loc_fnc_addSpawnPosition;
+		};
 	};
 }forEach _no;

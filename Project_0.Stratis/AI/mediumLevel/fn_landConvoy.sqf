@@ -25,8 +25,12 @@ _extraParams params ["_armedVehGroups", "_unarmedVehGroups", "_destPos"];
 private _gar = _scriptObject getVariable ["AI_garrison", objNull];
 
 //Set variables of the object
+//The state variable of the convoy FSM
 _scriptObject setVariable ["AI_convoyState", "MOUNT", false];
+//The flag used to signal the state machine that dest pos has been changed externally
 _scriptObject setVariable ["AI_destPosChanged", false, false];
+//The flag used to signal the external script that the convoy has reached its destination
+_scriptObject setVariable ["AI_convoyArrived", false, false];
 
 //Merge the vehicle groups into one VEHICLE-MEGA-GROUP!
 //Create a new group
@@ -88,7 +92,7 @@ _vehGroupHandle deleteGroupWhenEmpty false; //If all crew dies, inf groups might
 //Spawn a script
 private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehArray, _destPos] spawn
 {
-	//==== Some fonctions ====
+	//==== Some functions ====
 	_getUnitHandles =
 	{
 		/*
@@ -229,12 +233,15 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					_destPos = _scriptObject getVariable "AI_newDestPos";
 					diag_log format ["AI_fnc_landConvoy: destination position has been changed to: %1", _destPos];
 					_scriptObject setVariable ["AI_destPosChanged", false, false];
+					_scriptObject setVariable ["AI_convoyArrived", true, false]; //Reset the arrived status
 					_stateChanged = true;
 				};
 				if (_stateChanged) then
 				{
 					diag_log "AI_fnc_landConvoy: entered MOVE state";
 					units _vehGroupHandle doFollow (leader _vehGroupHandle);
+					/*
+					//Delete previous waypoints
 					while {(count (waypoints _vehGroupHandle)) > 0} do
 					{
 						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
@@ -243,12 +250,14 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
+					*/
+					_vehGroupHandle move _destPos;
 					//Set convoy separation
 					{
 						private _vehHandle = _x select 0;
 						_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
 						_vehHandle setConvoySeparation _separation;
-						_vehHandle forceFollowRoad true;
+						//_vehHandle forceFollowRoad true; //Disable it for now, otherwise they might not find obvious paths around smth on the road
 					} forEach (_armedVehArray + _unarmedVehArray);
 					//Limit the speed of the leading vehicle
 					(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit; //Speed in km/h
@@ -279,15 +288,16 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 						};
 				};
 				
+				//Check if the convoy has arrived
+				if (((leader _vehGroupHandle) distance2D _destPos) < 50) then //Are we there yet??
+				{
+					_scriptObject setVariable ["AI_convoyArrived", true, false];
+					_stateChanged = true;
+				};
+				
 				//Change state if needed
 				call
 				{
-					//Check if the convoy has arrived
-					if (((leader _vehGroupHandle) distance2D _destPos) < 50) then //Are we there yet??
-					{
-						_state = "ARRIVAL";
-						_stateChanged = true;
-					};
 					//Check the behaviour of the group
 					private _beh = behaviour (leader _vehGroupHandle);
 					#ifdef DEBUG
@@ -321,6 +331,8 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 				if (_stateChanged) then
 				{
 					diag_log format ["AI_fnc_landConvoy: entered DISMOUNT state"];
+					//Delete previous waypoints
+					/*
 					while {(count (waypoints _vehGroupHandle)) > 0} do
 					{
 						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
@@ -328,17 +340,19 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 15, 0, "Hold"];
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
-					_stateChanged = false;
+					*/
+					_vehGroupHandle move (getPos leader _vehGroupHandle);
 					//Order drivers of all vehicles to stop
 					{
 						private _vehHandle = _x select 0;						
-						_vehHandle forceFollowRoad false;
+						//_vehHandle forceFollowRoad false;
 						if(!isNull (_x select 2)) then //If this vehicle is carrying an infantry group
 						{
 							private _crewHandles = [_x, true, false] call _getUnitHandles;
 							doStop _crewHandles;
 						};
 					} forEach (_unarmedVehArray + _armedVehArray);
+					_stateChanged = false;
 				};
 				
 				//Order infantry units to dismount
@@ -375,25 +389,6 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 				if (_beh == "AWARE") then
 				{
 					_state = "MOUNT";
-					_stateChanged = true;
-				};
-			};
-			case "ARRIVAL":
-			{
-				if (_stateChanged) then
-				{
-					diag_log format ["AI_fnc_landConvoy: entered ARRIVAL state"];
-					{
-						private _vehHandle = _x select 0;
-						_vehHandle setConvoySeparation 10; //Make them stay a bit closer when they arrive
-					} forEach (_armedVehArray + _unarmedVehArray);
-					_stateChanged = false;
-				};
-				//From now, the only way to do something else is to set a new destination, then the general part of FSM will start running again
-				if (_scriptObject getVariable "AI_destPosChanged") then
-				{
-					diag_log format ["AI_fnc_landConvoy: convoy has arrived but was assigned a new destination", _destPos];
-					_state = "MOVE";
 					_stateChanged = true;
 				};
 			};

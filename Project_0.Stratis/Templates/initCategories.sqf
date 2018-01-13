@@ -184,7 +184,7 @@ T_PL_HMG_GMG_low = //Low GMGs and low HMGs, including drones
 	[T_DRONE, T_DRONE_stat_GMG_low]
 ];
 
-T_PL_helicopters = //ALl helicopters including drones
+T_PL_helicopters = //All helicopters including drones
 [
 	[T_VEH, T_VEH_heli_light],
 	[T_VEH, T_VEH_heli_heavy],

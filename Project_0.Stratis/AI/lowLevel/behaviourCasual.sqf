@@ -142,7 +142,8 @@ while {true} do
 				//Select a random position for these two guys
 				private _posX = (_pos select 0) - _radius +  (random (2*_radius));
 				private _posY = (_pos select 1) - _radius +  (random (2*_radius));
-				while {surfaceIsWater [_posX, _posY] || !([_loc, [_posX, _posY, 0]] call loc_fnc_insideBorder)} do
+				//Find new position that is inside the border, not on water and not on a road
+				while {surfaceIsWater [_posX, _posY] || !([_loc, [_posX, _posY, 0]] call loc_fnc_insideBorder) || (isOnRoad [_posX, _posY, 0])} do
 				{
 					_posX = (_pos select 0) - _radius +  (random (2*_radius));
 					_posY = (_pos select 1) - _radius +  (random (2*_radius));
@@ -195,6 +196,18 @@ while {true} do
 	if(count _freeUnits > 0) then
 	{
 		private _man = selectRandom _freeUnits;
+		private _pos = getPos _man;
+		//Select a random position
+		private _radius0 = 6;
+		private _posX = (_pos select 0) - _radius0 +  (random (2*_radius0));
+		private _posY = (_pos select 1) - _radius0 +  (random (2*_radius0));
+		//Find new position that is inside the border, not on water and not on a road
+		while {surfaceIsWater [_posX, _posY] || !([_loc, [_posX, _posY, 0]] call loc_fnc_insideBorder) || (isOnRoad [_posX, _posY, 0])} do
+		{
+			_radius0 = 2*_radius0;
+			_posX = (_pos select 0) - _radius0 +  (random (2*_radius0));
+			_posY = (_pos select 1) - _radius0 +  (random (2*_radius0));
+		};
 		_man doMove ((getPos _man) vectorAdd [-6 + random 12, -6 + random 12, 0]);
 	};
 
@@ -210,6 +223,6 @@ while {true} do
 		};
 	} forEach _freeUnits;
 	*/
-	sleep 15 + (random 15);
+	sleep (15 + (random 15));
 	_counter = _counter + 1;
 };

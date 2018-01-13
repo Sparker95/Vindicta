@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=1794;
+		nextID=1812;
 	};
 	class MarkerIDProvider
 	{
@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={2433.6218,126.7258,3450.4275};
-		dir[]={-0.85419828,-0.42454249,0.30020475};
-		up[]={-0.40053323,0.90540558,0.14076573};
-		aside[]={0.3315677,1.7881393e-007,0.94343877};
+		pos[]={2444.6724,227.55132,3387.2976};
+		dir[]={-0.20982723,-0.80776262,0.55092931};
+		up[]={-0.28749782,0.5895071,0.75486803};
+		aside[]={0.9345296,3.0135561e-007,0.35592297};
 	};
 };
 binarizationWanted=0;
@@ -3638,6 +3638,7 @@ class Mission
 					};
 					id=1761;
 					type="B_soldier_AR_F";
+					atlOffset=-7.6293945e-006;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3705,6 +3706,7 @@ class Mission
 			{
 			};
 			id=1760;
+			atlOffset=-7.6293945e-006;
 		};
 		class Item126
 		{
