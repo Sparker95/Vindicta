@@ -20,7 +20,7 @@ if(!isNull _oEnemiesScript) then //Check if another script is already running
 private _spawned = _gar call gar_fnc_isSpawned;
 if (_spawned) then
 {
-	_oEnemiesScript = [_gar, "AI_fnc_manageSpottedEnemies", [_loc, true]]
+	_oEnemiesScript = [[_gar], "AI_fnc_manageSpottedEnemies", [_loc, true]]
 									call AI_fnc_startMediumLevelScript;
 	[globalEnemyMonitor, _oEnemiesScript] call sense_fnc_enemyMonitor_addScript;
 }

@@ -28,7 +28,7 @@ if(!isNull _oAlertStateScript) then //Check if another script is already running
 private _spawned = _gar call gar_fnc_isSpawned;
 if (_spawned) then
 {
-	_oAlertStateScript = [_gar, _newScriptName, [_loc, true]] call AI_fnc_startMediumLevelScript;
+	_oAlertStateScript = [[_gar], _newScriptName, [_loc, true]] call AI_fnc_startMediumLevelScript;
 }
 else
 {

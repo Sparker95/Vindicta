@@ -119,12 +119,12 @@ _locFrom call loc_fnc_restartAlertStateScript;
 //Start the AI_fnc_landConvoy script
 diag_log format ["convoy.sqf: _armedVehGroups: %1, _unarmedVehGroups: %2", _armedVehGroups, _unarmedVehGroups];
 private _extraParams =  [_armedVehGroups, _unarmedVehGroups, getPos _locTo];
-private _oConvoyScript = [_garConvoy, "AI_fnc_landConvoy", _extraParams] call AI_fnc_startMediumLevelScript;
+private _oConvoyScript = [[_garConvoy], "AI_fnc_landConvoy", _extraParams] call AI_fnc_startMediumLevelScript;
 //TODO For debug
 goConvoyScript = _oConvoyScript;
 
 //Start enemies script
-private _oEnemiesScript = [_garConvoy, "AI_fnc_manageSpottedEnemies", []]
+private _oEnemiesScript = [[_garConvoy], "AI_fnc_manageSpottedEnemies", []]
 								call AI_fnc_startMediumLevelScript;
 [globalEnemyMonitor, _oEnemiesScript] call sense_fnc_enemyMonitor_addScript;
 
