@@ -8,7 +8,7 @@ private _hScript = [_scriptObject, _params] spawn
 {
 	params ["_scriptObject", "_params"];
 
-	private _gar = _scriptObject getVariable ["AI_garrison", objNull];
+	private _gars = _scriptObject getVariable ["AI_garrisons", objNull];
 
 	private _loc = _params select 0;
 	private _isAnybodyWatching = _params select 1;
@@ -18,25 +18,29 @@ private _hScript = [_scriptObject, _params] spawn
 	private _hGsPatrol = [];
 	private _hGsSentry = [];
 
-	//Groups with casual behaviour
-	_hGsCasual append ([_gar, G_GT_idle] call gar_fnc_findGroupHandles);
-	_hGsCasual append ([_gar, G_GT_veh_static] call gar_fnc_findGroupHandles);
-	_hGsCasual append ([_gar, G_GT_veh_non_static] call gar_fnc_findGroupHandles);
-
-	//Groups with patrol behaviour
-	_hGsPatrol append ([_gar, G_GT_patrol] call gar_fnc_findGroupHandles);
-	//diag_log format ["Patrol groups: %1", _hGsPatrol];
-	private _countPatrol = count _hGsPatrol;
-	private _countPatrol = ceil (0.3*_countPatrol); //Roughly 30% of patrol squads will be on patrol duty, rounded up so that there's at least one on patrol.
-	while {(count _hGsPatrol) != _countPatrol} do //Move one group to 'casual' array until desired amount of patrol groups is left
+	for "_i" from 0 to ((count _gars) - 1) do
 	{
-		_hGsCasual pushBack (_hGsPatrol select 0);
-		_hGsPatrol deleteAt 0;
+		private _gar = _gars select _i;
+		//Groups with casual behaviour
+		_hGsCasual append ([_gar, G_GT_idle] call gar_fnc_findGroupHandles);
+		_hGsCasual append ([_gar, G_GT_veh_static] call gar_fnc_findGroupHandles);
+		_hGsCasual append ([_gar, G_GT_veh_non_static] call gar_fnc_findGroupHandles);
+
+		//Groups with patrol behaviour
+		_hGsPatrol append ([_gar, G_GT_patrol] call gar_fnc_findGroupHandles);
+		//diag_log format ["Patrol groups: %1", _hGsPatrol];
+		private _countPatrol = count _hGsPatrol;
+		private _countPatrol = ceil (0.3*_countPatrol); //Roughly 30% of patrol squads will be on patrol duty, rounded up so that there's at least one on patrol.
+		while {(count _hGsPatrol) != _countPatrol} do //Move one group to 'casual' array until desired amount of patrol groups is left
+		{
+			_hGsCasual pushBack (_hGsPatrol select 0);
+			_hGsPatrol deleteAt 0;
+		};
+
+		//Sentries
+		_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_findGroupHandles);
 	};
-
-	//Sentries
-	_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_findGroupHandles);
-
+		
 	//Set behaviours
 	{_x setBehaviour "SAFE";} forEach _hGsCasual;
 	{_x setBehaviour "SAFE";} forEach _hGsPatrol;

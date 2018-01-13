@@ -1,0 +1,62 @@
+Tasks
+
+Goals:
+Make a system that lets chain behaviours of garrisons in a flexible manner.
+Make an abstraction of one garrison performing a specific task.
+Make tasks compatible with leaves of behaviour trees, if they will be required in the future.
+
+
+Things you can do with tasks:
+	- Add a task to the top/bottom of queue
+	- Remove a task from the queue
+	- Set active task
+	
+States of tasks
+Task can return one of these states: (like behaviour trees)
+	- Success
+	- Failure
+	- Running
+
+Task can return the reason of failure:
+	- No vehicles available to perform the task
+	- Units died
+	- The destination location is currently under attack
+
+Execution order
+Tasks at the bottom at the queue are executed first.
+Next task is executed if the previous one returns 'Success' state.
+If the task returns 'Failure' state, request help from somewhere else???
+After the task has been executed
+
+Examples of tasks:
+Provide transport - one garrison provides transport to another garrison.
+	Parameters: - the garrison which receives transport.
+	Completion conditions: the garrison being transported is still alive and has been delivered to the location.
+	Failure conditions: the garrison being transported dies or there are no more vehicles that can provide transport.
+	Examples:
+		- a convoy garrison carries troops or cargo to a different location
+		- a convoy delivers boxes somewhere
+		- a helicopter provides air transport to infantry/vehicle
+		
+Get transport - one garrison gets transport service from another garrison.
+	Parameters: - the garrison that provides transport
+	Completion conditions: the garrison being transported has been delivered by a corresponding 'Provide transport' task.
+	Failure conditions: the corresponding 'provide transport' task has been failed.
+	Examples: a garrison with troops needs to be delivered somewhere.
+	
+Attack location - a garrison secures specified area from enemies.
+	Parameters: - the position to secure.
+	Completion conditions: area secured and no enemies found for XXX seconds.
+	Failure conditions: withdrawal or death of the garrison.
+	
+Perform a single fire mission - a garrison(a group of artillery units) provides fire support
+	Parameters:
+	Completion ocnditions:
+	Failure conditions:
+	Examples:
+	
+Join garrison - a garrison fully joins another garrison
+	Parameters:
+	Completion conditions:
+	Failure conditions:
+	Examples: reinforcements join garrison of a military base

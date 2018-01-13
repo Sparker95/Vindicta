@@ -6,7 +6,7 @@ _extraParams:
 		_armedVehGroups - array of [_vehUnitData, _crewUnitData, _infGroupID] per every vehicle that can shoot with crew:
 			_vehGroupID - _groupID of the vehicle group
 			_infGroupID - the groupID of the infantry this vehicle is carrying, or -1 if it carries no inf. groups
-		_unarmedVehGroups - the sama as _armedVehArray but for vehicles that can't shoot (trucks, ...)
+		_unarmedVehGroups - the same as _armedVehArray but for vehicles that can't shoot (trucks, ...)
 		_destPos - the position of the destination
 		
 	//TODO: add management of killed units and damaged vehicles. Add reallocation of units from a broken vehicle to a new one.
@@ -22,7 +22,7 @@ _extraParams params ["_armedVehGroups", "_unarmedVehGroups", "_destPos"];
 	diag_log format ["AI_fnc_landConvoy.sqf: _armedVehGroups: %1, _unarmedVehGroups: %2", _armedVehGroups, _unarmedVehGroups];
 #endif
 //Read other things
-private _gar = _scriptObject getVariable ["AI_garrison", objNull];
+private _gar = (_scriptObject getVariable ["AI_garrisons", objNull]) select 0;
 
 //Set variables of the object
 //The state variable of the convoy FSM
@@ -143,8 +143,6 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 	
 	//Read input parameters
 	params ["_scriptObject", "_vehGroupHandle", "_armedVehArray", "_unarmedVehArray", "_destPos"];
-	
-	private _gar = _scriptObject getVariable ["AI_garrison", objNull];
 	
 	#ifdef DEBUG
 		diag_log format ["AI_fnc_landConvoy.sqf: _armedVehArray: %1, _unarmedVehArray: %2", _armedVehArray, _unarmedVehArray];

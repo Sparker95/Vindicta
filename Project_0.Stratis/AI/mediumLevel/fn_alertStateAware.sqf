@@ -7,7 +7,7 @@ params ["_scriptObject", "_params"];
 private _hScript = [_scriptObject, _params] spawn
 {
 	params ["_scriptObject", "_params"];
-	private _gar = _scriptObject getVariable ["AI_garrison", objNull];
+	private _gars = _scriptObject getVariable ["AI_garrisons", objNull];
 
 	private _loc = _params select 0;
 	private _isAnybodyWatching = _params select 1;
@@ -16,20 +16,24 @@ private _hScript = [_scriptObject, _params] spawn
 	private _hGsCasualCrew = [];
 	private _hGsPatrol = [];
 	private _hGsSentry = [];
+	
+	for "_i" from 0 to ((count _gars) - 1) do
+	{
+		private _gar = _gars select _i;
+		//Groups with casual behaviour
+		_hGsCasual append ([_gar, G_GT_idle] call gar_fnc_findGroupHandles);
 
-	//Groups with casual behaviour
-	_hGsCasual append ([_gar, G_GT_idle] call gar_fnc_findGroupHandles);
+		//Groups with casual crew behaviour
+		_hGsCasualCrew append ([_gar, G_GT_veh_static] call gar_fnc_findGroupHandles);
+		_hGsCasualCrew append ([_gar, G_GT_veh_non_static] call gar_fnc_findGroupHandles);
 
-	//Groups with casual crew behaviour
-	_hGsCasualCrew append ([_gar, G_GT_veh_static] call gar_fnc_findGroupHandles);
-	_hGsCasualCrew append ([_gar, G_GT_veh_non_static] call gar_fnc_findGroupHandles);
+		//Groups with patrol behaviour
+		_hGsPatrol append ([_gar, G_GT_patrol] call gar_fnc_findGroupHandles);
 
-	//Groups with patrol behaviour
-	_hGsPatrol append ([_gar, G_GT_patrol] call gar_fnc_findGroupHandles);
-
-	//Sentries
-	_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_findGroupHandles);
-
+		//Sentries
+		_hGsSentry append ([_gar, G_GT_building_sentry] call gar_fnc_findGroupHandles);
+	};
+	
 	//Set behaviours
 	{_x setBehaviour "SAFE";} forEach _hGsCasual;
 	{_x setBehaviour "SAFE";} forEach _hGsCasualCrew;

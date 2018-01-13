@@ -20,17 +20,21 @@ _scriptObject setVariable ["AI_requestedAS", LOC_AS_safe, false];
 private _hScript = [_scriptObject, _extraParams] spawn
 {
 	params ["_scriptObject", "_extraParams"];
-	private _gar = _scriptObject getVariable ["AI_garrison", objNull];
+	private _gars = _scriptObject getVariable ["AI_garrisons", objNull];
 
 	//Read extra parameters
 	private _newAS = LOC_AS_safe;
 
-	private _side = [_gar] call gar_fnc_getSide;
+	private _side = [_gars select 0] call gar_fnc_getSide;
 	private _groupsData = []; //[_groupHandle, _behaviour, timer]
-	private _hGs = [_gar, -1] call gar_fnc_findGroupHandles; //Get group handles of the garrison
+	//Get group handles of all the garrisons
+	private _hGs = [];
+	{
+		_hGs append ([_x, -1] call gar_fnc_findGroupHandles); 
+	} forEach _gars;
 	{
 		_groupsData pushback [_x, behaviour (leader _x), 0];
-	}forEach _hGs;
+	} forEach _hGs;
 
 	private _timeReveal = 5; //Time(in seconds) a group can be in combat mode before revealing its enemy to whole garrison.
 	private _timeRevealCounter = 0;
@@ -202,14 +206,6 @@ private _hScript = [_scriptObject, _extraParams] spawn
 				_scriptObject setVariable ["AI_reportArraysMutex", 0, false];
 				
 				//diag_log format ["reporting: %1", _reportArrayObjects];
-				//[_gar, _reportArrayObjects, _reportArrayPos, false] call gar_fnc_reportSpottedEnemies;
-				/*
-				if (count _reportObjects > 0) then
-				{
-					//Handle new alert state
-				};
-				_newAS = LOC_AS_combat;
-				*/
 			};
 			_combatPrev = true;
 		}
