@@ -34,9 +34,4 @@ All the actions with garrison must work regardless of garrison's state. That is,
 
 TODO list:
 - Add group management (restructure existing groups)
-- Add group types for group management
-Possible group types:
-- Non-static vehicle and its crew(tank, APC, MRAP, assault boat, helicopter, airplane)
-- Static vehicle(s) and its/their crew
-- Sniper/marksman/sharpshooter sentries for watchtowers
-- Ground patrol
+- Add group types for group management - done

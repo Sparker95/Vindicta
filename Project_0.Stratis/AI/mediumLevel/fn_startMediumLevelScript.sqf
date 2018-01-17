@@ -18,8 +18,8 @@ We CALL the medium level script, not SPAWN it. Inside the script being called, t
 This way we can do necessary initialization before returning the script handle.
 */
 _scriptObject setVariable ["AI_garrisons", _gars];
+_scriptObject setVariable ["AI_hScripts", [], false];
 private _scriptHandle = [_scriptObject, _extraParams] call (call compile _scriptName);
 //Every time a new script is spawned, it should be added to this array
-_scriptObject setVariable ["AI_hScripts", [_scriptHandle], false];
 
 _scriptObject

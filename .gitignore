@@ -1,1 +1,5 @@
 ~Project_0.Stratis
+*.tproj
+.project
+.sqdev
+.settings

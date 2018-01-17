@@ -5,6 +5,9 @@ This script self-terminates right after start.
 
 params ["_scriptObject", "_groups", "_waypoints", ["_isAnybodyWatching", true]];
 
+//Register this script if it will be terminated
+[_scriptObject, _thisScript, _groups, "AI_fnc_deleteAllWaypoints"] call AI_fnc_registerScriptHandle;
+
 private _group = grpNull;
 private _wp = [];
 private _i = 0;

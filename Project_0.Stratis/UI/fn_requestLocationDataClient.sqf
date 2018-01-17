@@ -31,7 +31,7 @@ _c = _c + 1;
 
 //Helicopters
 _IDC_COUNTER = _IDC_COUNTER + 1;
-_count = [_gar, T_PL_helicopters, -1] call gar_fnc_countUnits;
+//_count = [_gar, T_PL_helicopters, -1] call gar_fnc_countUnits;
 (_displayMap displayCtrl _IDC_COUNTER) ctrlSetText (format ["%1x Helicopter", _dataArray select _c]);
 _c = _c + 1;
 

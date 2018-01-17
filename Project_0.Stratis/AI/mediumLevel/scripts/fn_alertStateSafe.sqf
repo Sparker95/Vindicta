@@ -52,10 +52,11 @@ private _hScript = [_scriptObject, _params] spawn
 	//diag_log format ["Casual groups: %1", _hGsCasual];
 	//diag_log format ["Patrol groups: %1", _hGsPatrol];
 	private _scriptHandle = [_scriptObject, _hGsCasual, _loc, 200, _isAnybodyWatching] spawn AI_fnc_behaviourCasual;
-	[_scriptObject, _scriptHandle] call AI_fnc_registerScriptHandle;
+	//[_scriptObject, _scriptHandle] call AI_fnc_registerScriptHandle;
 
 	_scriptHandle = [_scriptObject, _hGsPatrol, _patrolWaypoints, _isAnybodyWatching] spawn AI_fnc_behaviourPatrol;
-	[_scriptObject, _scriptHandle] call AI_fnc_registerScriptHandle;
 };
+
+[_scriptObject, _hScript, [], ""] call AI_fnc_registerScriptHandle;
 
 _hScript

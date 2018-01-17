@@ -246,7 +246,7 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 						private _vehHandle = _x select 0;
 						_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
 						_vehHandle setConvoySeparation _separation;
-						_vehHandle forceFollowRoad true;
+						//_vehHandle forceFollowRoad true;
 					} forEach (_armedVehArray + _unarmedVehArray);
 					//Limit the speed of the leading vehicle
 					(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit; //Speed in km/h
@@ -330,7 +330,7 @@ private _hScript = [_scriptObject, _vehGroupHandle, _armedVehArray, _unarmedVehA
 					//Order drivers of all vehicles to stop
 					{
 						private _vehHandle = _x select 0;						
-						_vehHandle forceFollowRoad false;
+						//_vehHandle forceFollowRoad false;
 						if(!isNull (_x select 2)) then //If this vehicle is carrying an infantry group
 						{
 							private _crewHandles = [_x, true, false] call _getUnitHandles;

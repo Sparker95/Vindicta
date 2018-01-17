@@ -4,6 +4,8 @@ Makes units of _groups walk around vehicles they are assigned to
 
 params ["_scriptObject", "_groups", ["_isAnybodyWatching", true]];
 
+[_scriptObject, _thisScript, [], ""] call AI_fnc_registerScriptHandle;
+
 if (count _groups == 0) exitWith {};
 
 //sleep 4;
@@ -56,5 +58,5 @@ while {true} do
 			_manMove doMove ((((getPos _veh) select [0, 2]) + [0]) vectorAdd [-8 + random 16, -8 + random 16, 0]); //Walk around his vehicle
 		};
 	//} forEach _unitsWalk;
-	sleep 5+(random 5);
+	sleep (5+(random 5));
 };

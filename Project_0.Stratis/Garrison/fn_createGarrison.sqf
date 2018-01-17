@@ -104,10 +104,11 @@ _lo setVariable ["g_unitIDCounter", 0, false];			//Counter for unitID generator
 _lo setVariable ["g_location", objNull, false];			//The location where to request spawn positions from
 _lo setVariable ["g_assignRequestID", 0, false];		//Counter used for IDs assigned to requests
 _lo setVariable ["g_execRequestID", 0, false];			//Counter used for IDs of executed requests
-_lo setVariable ["g_enemiesObjects", [], false]; 		//Enemies spotted by this garrison
-_lo setVariable ["g_enemiesPos", [], false]; 			//Perceived positions of enemies spotted by this garrison
+//_lo setVariable ["g_enemiesObjects", [], false]; 		//Enemies spotted by this garrison
+//_lo setVariable ["g_enemiesPos", [], false]; 			//Perceived positions of enemies spotted by this garrison
 //_lo setVariable ["g_enemiesTime", 0, false];			//The time when enemies were reported last time
-_lo setVariable ["g_manageAlertState", false, false];	//Send requests to associated location to change alert state
+//_lo setVariable ["g_manageAlertState", false, false];	//Send requests to associated location to change alert state //TOD
+_lo setVariable ["g_cargo", [], false];					//The garrisons this garrison is carrying as cargo
 
 //Return the logic object
 _lo

@@ -62,4 +62,6 @@ private _hScript = [_scriptObject, _params] spawn
 	} forEach _hGsGetIn;
 };
 
+[_scriptObject, _hScript, [], ""] call AI_fnc_registerScriptHandle;
+
 _hScript

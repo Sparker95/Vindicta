@@ -1,7 +1,8 @@
 /*
 This function moves a unit from one group to another.
 
-_unitData - the unitData of the unit
+_unitData - the unitData of the unit OR
+_unitData - ARRAY with unitData of units
 _groupID - the group ID of the group to join.
 _keepOldStructure - keep the structure of the group which is being abandoned.
 */

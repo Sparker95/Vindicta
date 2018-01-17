@@ -233,5 +233,5 @@ private _hScript = [_scriptObject, _extraParams] spawn
 	};
 };
 
-//Return script handle
+[_scriptObject, _hScript, [], ""] call AI_fnc_registerScriptHandle;
 _hScript

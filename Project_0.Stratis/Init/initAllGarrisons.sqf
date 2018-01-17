@@ -6,7 +6,7 @@ params ["_locations"];
 
 //Global coefficients for various unit types
 util_tracked_wheeled = 1.0; //1.0;
-util_infantry = 0.5; //1.0;
+util_infantry = 1; //1.0;
 util_helicopters = 0.5; //1.0;
 util_planes = 0.5; //1.0;
 util_turrets = 0.5; //1.0;
