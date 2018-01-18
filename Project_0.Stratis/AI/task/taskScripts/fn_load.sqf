@@ -77,7 +77,7 @@ while {!_end} do
 		[_garTransport, _garCargo] call AI_fnc_assignInfantryCargo;
 		_allInfantryHandles orderGetIn true;
 		#ifdef DEBUG
-		{
+		{ //If debug, move them in their vehicle fast
 			private _vr = assignedVehicleRole _x;
 			private _v = assignedVehicle _x;
 			[_v, _x, _vr] call BIS_fnc_moveIn;

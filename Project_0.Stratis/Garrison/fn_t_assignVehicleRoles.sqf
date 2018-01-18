@@ -188,11 +188,15 @@ while {_i < _count} do
 
 //Updated code: first find drivers, then find turrets, then find passengers
 private _j = 0; //Counter for the infantry units
+#ifdef DEBUG
 diag_log format ["==== Assigning vehicle roles. Amounf of units: %1", _count];
+#endif
 //Assign drivers
 if(_assignDrivers) then
 {
+	#ifdef DEBUG
 	diag_log "==== Assigning drivers";
+	#endif
 	_i = 0;
 	while {_i < _count} do
 	{
@@ -280,7 +284,9 @@ if (_assignTurrets) then
 				while {_j < _count} do
 				{
 					_unitData = (_groupUnits select _j) select 0;
+					#ifdef DEBUG
 					diag_log format ["====    Checking unit: %1, j:%2", _unitData, _j];
+					#endif
 					if(_unitData select 0 == T_INF && _unitData select 2 != -1) exitWith //Alive unit found
 					{
 						#ifdef DEBUG

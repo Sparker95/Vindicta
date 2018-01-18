@@ -13,11 +13,19 @@ private _scriptHandles = [];
 	private _scriptHandle = _x select 0;
 	private _params = _x select 1;
 	private _stopScriptName = _x select 2;
-	//If there has been assigned a script to be called before script termination, call it
-	if (_stopScriptName != "") then
+	if (_stopScriptName isEqualType "") then
 	{
-		//diag_log format ["       params: %1  script name: %2", _params, _stopScriptName];
-		[_params] call (call compile _stopScriptName);
+		//If there has been assigned a script to be called before script termination, call it
+		if (_stopScriptName != "") then
+		{
+			//diag_log format ["       params: %1  script name: %2", _params, _stopScriptName];
+			_params call (call compile _stopScriptName);
+		};
+	}
+	else
+	{
+		//Otherwise it was CODE
+		_params call  _stopScriptName;
 	};
 	terminate _scriptHandle;
 	_scriptHandles pushBack _scriptHandle;

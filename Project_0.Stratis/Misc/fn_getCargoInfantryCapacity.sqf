@@ -22,7 +22,7 @@ if(_vehArray isEqualType objNull) then
 	_vehArray = [_vehArray];
 };
 
-diag_log format ["===== vehArray: %1", _vehArray];
+//diag_log format ["===== vehArray: %1", _vehArray];
 
 //Now we consider only loading of infantry
 private _nCargoSeats = 0;

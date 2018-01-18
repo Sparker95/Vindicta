@@ -44,9 +44,9 @@ else
 {
 	switch (_transportType) do
 	{
-		case 1: //
+		case 1: //A land convoy
 		{
-			private _state = "MOUNT";
+			//private _state = "MOUNT";
 			private _hScript = _to call AI_fnc_task_move_landConvoy;
 			_to setVariable ["AI_hScript", _hScript, false];
 		};

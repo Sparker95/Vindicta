@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=1957;
+		nextID=1961;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=9;
+		nextID=10;
 	};
 	class Camera
 	{
-		pos[]={1891.3539,46.924667,5830.6865};
-		dir[]={0.098253839,-0.68548453,0.7214635};
-		up[]={0.092502147,0.72808212,0.67922336};
-		aside[]={0.99087709,7.5506978e-007,-0.13494734};
+		pos[]={1860.1136,37.790596,5651.374};
+		dir[]={-0.19898976,-0.72860187,-0.6554324};
+		up[]={-0.21166877,0.68492377,-0.6971935};
+		aside[]={-0.95689851,-2.4138717e-007,0.29051504};
 	};
 };
 binarizationWanted=0;
@@ -67,13 +67,14 @@ addons[]=
 	"A3_Soft_F_Offroad_01",
 	"A3_Armor_F_Gamma_APC_Wheeled_03",
 	"A3_Soft_F_Beta_MRAP_03",
-	"A3_Characters_F_Exp"
+	"A3_Characters_F_Exp",
+	"A3_Characters_F_Mark"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=25;
+		items=26;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -247,6 +248,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item25
+		{
+			className="A3_Characters_F_Mark";
+			name="Arma 3 Marksmen - Characters and Clothing";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 class DynamicSimulation
@@ -317,7 +325,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=151;
+		items=152;
 		class Item0
 		{
 			dataType="Object";
@@ -863,7 +871,7 @@ class Mission
 			};
 			id=1078;
 			type="B_HMG_01_high_F";
-			atlOffset=0.051876068;
+			atlOffset=5.7220459e-006;
 		};
 		class Item34
 		{
@@ -880,7 +888,7 @@ class Mission
 			};
 			id=1079;
 			type="B_HMG_01_high_F";
-			atlOffset=0.051662445;
+			atlOffset=4.7683716e-006;
 		};
 		class Item35
 		{
@@ -897,7 +905,7 @@ class Mission
 			};
 			id=1080;
 			type="B_HMG_01_high_F";
-			atlOffset=-0.0001411438;
+			atlOffset=-9.5367432e-007;
 		};
 		class Item36
 		{
@@ -3742,7 +3750,6 @@ class Mission
 					flags=7;
 					class Attributes
 					{
-						isPlayer=1;
 					};
 					id=1956;
 					type="B_soldier_LAT_F";
@@ -3813,6 +3820,116 @@ class Mission
 			{
 			};
 			id=1955;
+		};
+		class Item151
+		{
+			dataType="Group";
+			side="East";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={1848.118,5.5014391,5624.7168};
+					};
+					side="East";
+					flags=7;
+					class Attributes
+					{
+						isPlayer=1;
+						stance="Down";
+					};
+					id=1960;
+					type="O_ghillie_lsh_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="allowDamage";
+							expression="_this allowdamage _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"BOOL"
+										};
+									};
+									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male01PER";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.01;
+								};
+							};
+						};
+						class Attribute3
+						{
+							property="face";
+							expression="_this setface _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="";
+								};
+							};
+						};
+						nAttributes=4;
+					};
+				};
+			};
+			class Attributes
+			{
+			};
+			id=1959;
 		};
 	};
 	class Connections

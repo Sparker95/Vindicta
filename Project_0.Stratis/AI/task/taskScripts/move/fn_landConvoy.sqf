@@ -68,45 +68,29 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 		_garCargo = _garsCargo select 0;
 	};
 	
-	//Get array of infantry units from the cargo garrison
+	//Common variables
 	private _allInfantryHandles = [];
-	{
-		_allInfantryHandles pushBack ([_garCargo, _x] call gar_fnc_getUnitHandle);
-	} forEach (_garCargo call gar_fnc_getAllUnits);
-
-	//Get array of infantry units from transport garrison
-	{
-		//If it's not a vehicle crew group
-		if([_garTransport, _x] call gar_fnc_getGroupType != G_GT_veh_non_static) then
-		{
-			{
-				_allInfantryHandles pushBack ([_garTransport, _x] call gar_fnc_getUnitHandle);
-			} forEach ([_garTransport, _x] call gar_fnc_getGroupAliveUnits);
-		};
-	} forEach ([_garTransport] call gar_fnc_getAllGroups);
-	
-	//Get array with all infantry groups
-	private _allInfantryGroupHandles = [];
-	{
-		_allInfantryGroupHandles pushBackUnique (group _x);
-	} forEach _allInfantryHandles;
-	
+	private _allHumanHandles = [];
 	
 	//We need the power of the Finite State Machine!
-	private _state = "MOUNT";
+	private _state = "INIT";
 	private _stateChanged = true;
 	private _speedMax = 60; //Maximum speed for the convoy
-	private _speedLimit = 20; //The initial speed limit
+	private _speedLimit = 40; //The initial speed limit
 	private _separation = 18; //Convoy separation in meters
 	private _run = true;
+	private _nCrew = count units _vehGroupHandle;
+	private _nCrewPrev = _nCrew;
 	while {_run} do
 	{
 		sleep 2;
 		//Update common variables
 		_allInfantryHandles = _allInfantryHandles select {alive _x};
+		_allHumanHandles = (_allInfantryHandles + ((units _vehGroupHandle) select {alive _x}));
 		private _allVehiclesCanMove = ((count _vehArray) == ({canMove _x} count _vehArray));
 		_vehArray = _vehArray select {canMove _x};
-		private _allHumanHandles = (_allInfantryHandles + (units _vehGroupHandle)) select {alive _x};
+		_nCrewPrev = _nCrew;
+		_nCrew = {alive _x} count (units _vehGroupHandle);
 		if(_stateChanged) then
 		{
 			_to setVariable ["AI_convoyState", _state, false]; //Update the state variable
@@ -114,20 +98,62 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 		
 		switch (_state) do
 		{
-			case "STOP":
+			case "INIT":
 			{
+				diag_log "AI_fnc_task_move_landConvoy: entered INIT state";				
+				//Try to find a new driver for the vehicle
+				diag_log "INFO: fn_landConvoy.sqf: reorganizing crew";
+				[_garTransport, [_garTransport] + _garsCargo] call AI_fnc_formVehicleGroup;
 				
+				//Update common variables
+				_allInfantryHandles = [];
+				_allHumanHandles = (_allInfantryHandles + ((units _vehGroupHandle) select {alive _x}));
+				{
+					_allInfantryHandles pushBack ([_garCargo, _x] call gar_fnc_getUnitHandle);
+				} forEach (_garCargo call gar_fnc_getAllUnits);
+				//Get array of infantry units from transport garrison
+				{
+					//If it's not a vehicle crew group
+					if(([_garTransport, _x] call gar_fnc_getGroupType) != G_GT_veh_non_static) then
+					{
+						{
+							_allInfantryHandles pushBack ([_garTransport, _x] call gar_fnc_getUnitHandle);
+						} forEach ([_garTransport, _x] call gar_fnc_getGroupAliveUnits);
+					};
+				} forEach ([_garTransport] call gar_fnc_getAllGroups);
+				
+				//If we still can't find drivers, remove the vehicle from convoy
+				if(!(_vehArray call AI_fnc_landConvoy_allVehiclesHaveDrivers)) then
+				{
+					diag_log "ERROR: fn_landConvoy.sqf: Convoy doesn't have enough drivers for all the vehicles!";
+				};
+				
+				switch (behaviour leader _vehGroupHandle) do
+				{
+					case "COMBAT":
+					{
+						_state = "COMBAT";
+						_stateChanged = true;
+					};
+					default
+					{
+						_state = "MOUNT";
+						_stateChanged = true;
+					};
+				};
 			};
+			
 			case "MOUNT":
 			{
 				if (_stateChanged) then
 				{
 					diag_log "AI_fnc_task_move_landConvoy: entered MOUNT state";
 					//Order drivers of unarmed vehicles to stop so that infantry can mount
+					_vehGroupHandle call AI_fnc_deleteAllWaypoints;
+					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 15, 0, "Hold"];
+					_wp0 setWaypointType "MOVE";
+					_vehGroupHandle setCurrentWaypoint _wp0;
 					doStop (units _vehGroupHandle);
-					{
-						_x setBehaviour "AWARE";
-					} forEach _allInfantryGroupHandles;
 					_stateChanged = false;
 				};
 				
@@ -149,11 +175,10 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					};
 					
 					//Check if all the vehicles have a driver assigned
-					if(!(_vehArray call AI_fnc_landConvoy_allVehiclesHaveDrivers)) exitWith
+					if(_nCrew != _nCrewPrev) exitWith
 					{
-						//Try to find a new driver for the vehicle
-						//If can't find driver, remove the vehicle from convoy
-							//If can't carry the cargo any more, the task is failed
+						_state = "DISMOUNT_ALL";
+						_stateChanged = true;
 					};
 					
 					//Check if the cargo is still fine
@@ -175,8 +200,45 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 						_stateChanged = true;
 					};
 				};
-
 			};
+			
+			case "DISMOUNT_ALL":
+			{
+				if (_stateChanged) then
+				{
+					diag_log format ["AI_fnc_task_move_landConvoy: entered DISMOUNT_ALL state"];
+					_vehGroupHandle call AI_fnc_deleteAllWaypoints;
+					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 15, 0, "Hold"];
+					_wp0 setWaypointType "MOVE";
+					_vehGroupHandle setCurrentWaypoint _wp0;
+					_stateChanged = false;
+				};
+				
+				//Order all units to dismount
+				_allHumanHandles orderGetIn false;
+
+				//Check if all the infantry has dismounted
+				private _nHumansOnFoot = {vehicle _x == _x} count _allHumanHandles;
+				diag_log format ["AI_fnc_task_move_landConvoy: waiting for units to get out: %1 / %2", _nHumansOnFoot, count _allHumanHandles];
+				if(count _allHumanHandles == _nHumansOnFoot) then
+				{
+					//Switch to "COMBAT" state
+					switch (behaviour leader _vehGroupHandle) do
+					{
+						case "COMBAT":
+						{
+							_state = "COMBAT";
+							_stateChanged = true;
+						};
+						default
+						{
+							_state = "INIT";
+							_stateChanged = true;
+						};
+					};
+				};
+			};
+			
 			case "MOVE":
 			{
 				//If the convoy was requested to change its destination
@@ -232,6 +294,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				//Check the separation of the convoy
 				private _sCur = [_vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
 				diag_log format [">>> Current separation: %1", _sCur];
+				/*
 				if(_sCur > 1.9*_separation) then
 				{
 					//We are driving too fast!
@@ -252,6 +315,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 							diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
 						};
 				};
+				*/
 				
 				//Change state if needed
 				call
@@ -266,6 +330,14 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 						_state = "DISMOUNT";
 						_stateChanged = true;
 					};
+					
+					//Check if all the vehicles have a driver assigned OR some crew has veen killed
+					if(_nCrew != _nCrewPrev) exitWith
+					{
+						_state = "DISMOUNT_ALL";
+						_stateChanged = true;
+					};
+					
 					//Check that all the units are inside their vehicles
 					private _nHumansInVeh = {vehicle _x != _x} count _allHumanHandles;
 					if(count _allHumanHandles != _nHumansInVeh) exitWith
@@ -280,15 +352,13 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					};
 				};
 			};
+			
 			case "DISMOUNT":
 			{
 				if (_stateChanged) then
 				{
 					diag_log format ["AI_fnc_task_move_landConvoy: entered DISMOUNT state"];
-					while {(count (waypoints _vehGroupHandle)) > 0} do
-					{
-						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
-					};
+					_vehGroupHandle call AI_fnc_deleteAllWaypoints;
 					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 15, 0, "Hold"];
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
@@ -343,7 +413,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				#endif
 				if (_beh == "AWARE") then
 				{
-					_state = "MOUNT";
+					_state = "INIT";
 					_stateChanged = true;
 				};
 			};

@@ -2,8 +2,11 @@
 This function deletes all waypoints of groups.
 */
 
-params ["_hGs"]; //Handles of groups
-
+private _hGs = _this; //Array with handles of groups
+if(_hGs isEqualType grpNull) then
+{
+	_hGs = [_hGs];
+};
 {
 	//Delete previous waypoints
 	while {(count (waypoints _x)) > 0} do

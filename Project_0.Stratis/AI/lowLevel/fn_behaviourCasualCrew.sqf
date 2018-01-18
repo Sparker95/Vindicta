@@ -4,7 +4,14 @@ Makes units of _groups walk around vehicles they are assigned to
 
 params ["_scriptObject", "_groups", ["_isAnybodyWatching", true]];
 
-[_scriptObject, _thisScript, [], ""] call AI_fnc_registerScriptHandle;
+[_scriptObject, _thisScript, _groups,
+{
+	{
+		_x setBehaviour "AWARE";
+		_x setSpeedMode "NORMAL";
+	}foreach _groups;
+}
+] call AI_fnc_registerScriptHandle;
 
 if (count _groups == 0) exitWith {};
 
