@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=1961;
+		nextID=1965;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=10;
+		nextID=11;
 	};
 	class Camera
 	{
-		pos[]={1860.1136,37.790596,5651.374};
-		dir[]={-0.19898976,-0.72860187,-0.6554324};
-		up[]={-0.21166877,0.68492377,-0.6971935};
-		aside[]={-0.95689851,-2.4138717e-007,0.29051504};
+		pos[]={1668.6897,27.149536,4961.9893};
+		dir[]={-0.57885551,-0.4905811,-0.65141779};
+		up[]={-0.32590503,0.87136191,-0.36675844};
+		aside[]={-0.74754548,-9.3132257e-008,0.66427457};
 	};
 };
 binarizationWanted=0;
@@ -3744,15 +3744,15 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={1908.743,5.5014391,5868.3516};
+						position[]={1923.3293,5.5014391,5878.5186};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
 					};
-					id=1956;
-					type="B_soldier_LAT_F";
+					id=1962;
+					type="B_HeavyGunner_F";
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3789,7 +3789,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="Male04ENG";
+									value="Male09ENG";
 								};
 							};
 						};
@@ -3808,7 +3808,7 @@ class Mission
 											"SCALAR"
 										};
 									};
-									value=1.03;
+									value=1;
 								};
 							};
 						};
@@ -3819,7 +3819,7 @@ class Mission
 			class Attributes
 			{
 			};
-			id=1955;
+			id=1961;
 		};
 		class Item151
 		{
@@ -3833,17 +3833,17 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={1848.118,5.5014391,5624.7168};
+						position[]={1659.9392,21.687088,4949.4214};
 					};
 					side="East";
-					flags=7;
+					flags=3;
 					class Attributes
 					{
 						isPlayer=1;
-						stance="Down";
 					};
-					id=1960;
-					type="O_ghillie_lsh_F";
+					id=1964;
+					type="O_Soldier_AT_F";
+					atlOffset=13.21565;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3880,7 +3880,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="Male01PER";
+									value="Male02PER";
 								};
 							};
 						};
@@ -3899,37 +3899,19 @@ class Mission
 											"SCALAR"
 										};
 									};
-									value=1.01;
+									value=1;
 								};
 							};
 						};
-						class Attribute3
-						{
-							property="face";
-							expression="_this setface _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="";
-								};
-							};
-						};
-						nAttributes=4;
+						nAttributes=3;
 					};
 				};
 			};
 			class Attributes
 			{
 			};
-			id=1959;
+			id=1963;
+			atlOffset=13.21565;
 		};
 	};
 	class Connections

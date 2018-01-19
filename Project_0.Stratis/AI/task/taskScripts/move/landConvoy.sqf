@@ -38,3 +38,14 @@ AI_fnc_landConvoy_allVehiclesHaveDrivers =
 	};
 	_return
 };
+
+AI_fnc_landConvoy_removeVehicles =
+{
+	params ["_garTransport", "_vehToRemove"];
+	private _rid = 0;
+	{
+		private _unitData = _x call gar_fnc_getUnitData;
+		_rid = [_garTransport, gGarbageGarrison, _unitData, -1] call gar_fnc_moveUnit;
+	} forEach _vehToRemove;
+	waitUntil {[_garTransport, _rid] call gar_fnc_requestDone;};
+};

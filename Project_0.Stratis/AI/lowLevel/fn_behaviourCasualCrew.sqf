@@ -6,6 +6,7 @@ params ["_scriptObject", "_groups", ["_isAnybodyWatching", true]];
 
 [_scriptObject, _thisScript, _groups,
 {
+	private _groups = _this;
 	{
 		_x setBehaviour "AWARE";
 		_x setSpeedMode "NORMAL";

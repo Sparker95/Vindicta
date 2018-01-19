@@ -26,6 +26,12 @@ if(isServer) then
 	//[HCGarrisonEAST, G_AS_none] call gar_fnc_setAlertState;
 	[HCGarrisonEAST] call gar_fnc_spawnGarrison;
 
+	//Global garrison for garbage collection
+	gGarbageGarrison = [] call gar_fnc_createGarrison;
+	[gGarbageGarrison, "Garbage"] call gar_fnc_setName;
+	[gGarbageGarrison, WEST] call gar_fnc_setSide;
+	[gGarbageGarrison] call gar_fnc_spawnGarrison;
+
 	publicVariable "allLocations";
 };
 

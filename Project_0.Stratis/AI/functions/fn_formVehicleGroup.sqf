@@ -179,7 +179,7 @@ if(_nCrewToAdd != 0) then
 		private _infGroupID = -1;
 		if (count _infGroupIDs == 0) then
 		{
-			_rid = [_garTransport, G_GT_idle, _rarray] call gar_fnc_createNewEmptyGroup;
+			_rid = [_garTransport, G_GT_idle, _rarray] call gar_fnc_addNewEmptyGroup;
 			waitUntil {[_garTransport, _rid] call gar_fnc_requestDone};
 			_infGroupID = _rarray select 0;
 		}

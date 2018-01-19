@@ -88,7 +88,6 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 		_allInfantryHandles = _allInfantryHandles select {alive _x};
 		_allHumanHandles = (_allInfantryHandles + ((units _vehGroupHandle) select {alive _x}));
 		private _allVehiclesCanMove = ((count _vehArray) == ({canMove _x} count _vehArray));
-		_vehArray = _vehArray select {canMove _x};
 		_nCrewPrev = _nCrew;
 		_nCrew = {alive _x} count (units _vehGroupHandle);
 		if(_stateChanged) then
@@ -96,14 +95,13 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 			_to setVariable ["AI_convoyState", _state, false]; //Update the state variable
 		};
 		
+		//Check states
 		switch (_state) do
 		{
+			//==== The initial state ====
 			case "INIT":
 			{
-				diag_log "AI_fnc_task_move_landConvoy: entered INIT state";				
-				//Try to find a new driver for the vehicle
-				diag_log "INFO: fn_landConvoy.sqf: reorganizing crew";
-				[_garTransport, [_garTransport] + _garsCargo] call AI_fnc_formVehicleGroup;
+				diag_log "AI_fnc_task_move_landConvoy: entered INIT state";
 				
 				//Update common variables
 				_allInfantryHandles = [];
@@ -122,27 +120,83 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					};
 				} forEach ([_garTransport] call gar_fnc_getAllGroups);
 				
-				//If we still can't find drivers, remove the vehicle from convoy
-				if(!(_vehArray call AI_fnc_landConvoy_allVehiclesHaveDrivers)) then
+				//Remove non functional vehicles from the convoy
+				private _vehToRemove = _vehArray select {!canMove _x};
+				if (count _vehToRemove != 0) then
 				{
-					diag_log "ERROR: fn_landConvoy.sqf: Convoy doesn't have enough drivers for all the vehicles!";
+					_vehArray = _vehArray - _vehToRemove;
+					diag_log format ["INFO: fn_landConvoy.sqf: removing vehicles that can't move: %1", _vehToRemove];
+					[_garTransport, _vehToRemove] call AI_fnc_landConvoy_removeVehicles;
 				};
 				
-				switch (behaviour leader _vehGroupHandle) do
+				//Try to find crew for all vehicles
+				diag_log "INFO: fn_landConvoy.sqf: reorganizing crew";
+				[_garTransport, [_garTransport] + _garsCargo] call AI_fnc_formVehicleGroup;
+				
+				//Remove vehicles without a driver from the convoy
+				private _vehToRemove = _vehArray select {!alive (assignedDriver _x)};
+				if (count _vehToRemove != 0) then
 				{
-					case "COMBAT":
+					_vehArray = _vehArray - _vehToRemove;
+					diag_log format ["INFO: fn_landConvoy.sqf: removing vehicles without drivers: %1", _vehToRemove];
+					[_garTransport, _vehToRemove] call AI_fnc_landConvoy_removeVehicles;
+				};
+				
+				call
+				{
+					//Check if the cargo is still fine
+					if(!isNull _garCargo && (_garCargo call gar_fnc_countAllUnits) == 0) exitWith
 					{
-						_state = "COMBAT";
-						_stateChanged = true;
+						//We've lost all cargo!
+						_to setVariable ["AI_taskState", "FAILURE"];
+						_to setVariable ["AI_failReason", "NO_CARGO"];
+						_run = false; //Stop the loop
 					};
-					default
+					
+					//Check if the convoy has been destroyed
+					if(count _vehArray == 0) exitWith
 					{
-						_state = "MOUNT";
-						_stateChanged = true;
+						_to setVariable ["AI_taskState", "FAILURE"];
+						_to setVariable ["AI_failReason", "NO_TRANSPORT"];
+						_run = false; //Stop the loop
+					};
+					
+					//Check if everything has been destroyed
+					if((_garTransport call gar_fnc_countAllUnits) == 0) exitWith
+					{
+						_to setVariable ["AI_taskState", "FAILURE"];
+						_to setVariable ["AI_failReason", "DESTROYED"];
+						_run = false; //Stop the loop
+					};
+					
+					//Check if cargo can still be transported
+					if(!isNull _garCargo) then
+					{
+						if(!([_garTransport, [_garCargo]] call gar_fnc_canLoadCargo)) exitWith
+						{
+							_to setVariable ["AI_taskState", "FAILURE"];
+							_to setVariable ["AI_failReason", "NO_TRANSPORT"];
+							_run = false;
+						}
+					};
+					
+					switch (behaviour leader _vehGroupHandle) do
+					{
+						case "COMBAT":
+						{
+							_state = "COMBAT";
+							_stateChanged = true;
+						};
+						default
+						{
+							_state = "MOUNT";
+							_stateChanged = true;
+						};
 					};
 				};
 			};
 			
+			//==== State for mounting vehicles ====
 			case "MOUNT":
 			{
 				if (_stateChanged) then
@@ -157,6 +211,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					_stateChanged = false;
 				};
 				
+				//Reassign infantry units as cargo every tick to resolve conflicts
 				[_garTransport, _garCargo] call AI_fnc_assignInfantryCargo;
 				_allHumanHandles orderGetIn true;
 				
@@ -174,20 +229,12 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 						_stateChanged = true;
 					};
 					
-					//Check if all the vehicles have a driver assigned
-					if(_nCrew != _nCrewPrev) exitWith
+					//Check if crew composition has changed
+					//or if some vehicles are not operational any more
+					if(_nCrew != _nCrewPrev || ({!canMove _x} count _vehArray != 0)) exitWith
 					{
 						_state = "DISMOUNT_ALL";
 						_stateChanged = true;
-					};
-					
-					//Check if the cargo is still fine
-					if(!isNull _garCargo && (_garCargo call gar_fnc_countAllUnits) == 0) then
-					{
-						//We've lost all cargo!
-						_to setVariable ["AI_taskState", "FAILURE"];
-						_to setVariable ["AI_failReason", "NO_CARGO"];
-						_run = false; //Stop the loop
 					};
 					
 					//Check if all the infantry has boarded their vehicles
@@ -331,10 +378,10 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 						_stateChanged = true;
 					};
 					
-					//Check if all the vehicles have a driver assigned OR some crew has veen killed
-					if(_nCrew != _nCrewPrev) exitWith
+					//Check if crew composition has been changed
+					if(_nCrew != _nCrewPrev || ({!canMove _x} count _vehArray != 0)) exitWith
 					{
-						_state = "DISMOUNT_ALL";
+						_state = "DISMOUNT_ALL"; //Dismount then reorganize
 						_stateChanged = true;
 					};
 					
@@ -411,8 +458,9 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				#ifdef DEBUG
 					diag_log format ["AI_fnc_task_move_landConvoy.sqf: behaviour: %1", _beh];
 				#endif
-				if (_beh == "AWARE") then
+				if (_beh == "AWARE" || _beh == "ERROR") then //ERROR behaviour - when there is noone in the group
 				{
+					//Switch to INIT state to recheck the composition in case of losses
 					_state = "INIT";
 					_stateChanged = true;
 				};

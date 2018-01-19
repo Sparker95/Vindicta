@@ -442,6 +442,15 @@ gar_fnc_getUnitHandle =
 	if(count _unit == 0) then {objNull} else {_unit select 1};
 };
 
+gar_fnc_getUnitData =
+{
+	/*
+	Gets unitData of an alive unit
+	*/
+	params ["_unitHandle"];
+	_unitHandle getVariable "g_unitData"
+};
+
 gar_fnc_getUnitClassname =
 {
 	/*

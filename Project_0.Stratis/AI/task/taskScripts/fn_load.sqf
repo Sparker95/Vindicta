@@ -49,7 +49,7 @@ while {!_end} do
 	if(!([_garTransport, [_garCargo]] call gar_fnc_canLoadCargo)) exitWith
 	{
 		_to setVariable ["AI_taskState", "FAILURE"];
-		_to setVariable ["AI_failReason", "CANT_LOAD"];
+		_to setVariable ["AI_failReason", "NO_TRANSPORT"];
 	};
 	
 	//Check if all the cargo units have been loaded

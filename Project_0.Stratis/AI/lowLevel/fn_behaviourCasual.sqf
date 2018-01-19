@@ -10,7 +10,16 @@ _params:
 
 params ["_scriptObject", "_groups", "_loc", "_maxRadius", ["_isAnybodyWatching", true]];
 
-[_scriptObject, _thisScript, [], ""] call AI_fnc_registerScriptHandle;
+[_scriptObject, _thisScript, _groups,
+{
+	private _groups = _this;
+	{
+		_x setBehaviour "AWARE";
+		_x setSpeedMode "NORMAL";
+		(units _x) doFollow (leader _x);
+	}foreach _groups;
+}
+] call AI_fnc_registerScriptHandle;
 
 private _radius = [_loc] call loc_fnc_getBoundingRadius;
 //Find campfires
