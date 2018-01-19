@@ -14,7 +14,7 @@ Disassemble & put into inventory	- static weapons + any vehicles. Or just disass
 
 #include "..\..\..\Garrison\garrison.hpp"
 
-//#define DEBUG
+#define DEBUG
 
 params ["_to"];
 

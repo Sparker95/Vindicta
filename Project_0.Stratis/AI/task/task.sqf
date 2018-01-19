@@ -29,7 +29,7 @@ AI_fnc_task_create =
 		};
 		case "UNLOAD":
 		{
-			
+			_taskScriptName = "AI_fnc_task_unload";
 		};
 		case "GET_UNLOADED":
 		{
@@ -41,7 +41,7 @@ AI_fnc_task_create =
 		};
 		case "MERGE":
 		{
-			
+			_taskScriptName = "AI_fnc_task_merge";
 		};
 	};
 	if(_taskScriptName == "") exitWith
@@ -79,6 +79,12 @@ AI_fnc_task_getState =
 {
 	params ["_to"];
 	_to getVariable "AI_taskState"
+};
+
+AI_fnc_task_getFailureReason =
+{
+	params ["_to"];
+	_to getVariable "AI_failReason"
 };
 
 AI_fnc_task_start =

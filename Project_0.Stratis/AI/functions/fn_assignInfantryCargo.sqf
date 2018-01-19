@@ -4,7 +4,12 @@ Takes all infantry units from _garCargo and assigns them as cargo of all vehicle
 
 #include "..\..\Garrison\garrison.hpp"
 
-params ["_garTransport", "_garCargo"];
+params ["_garTransport", "_garsCargo"];
+
+if (_garsCargo isEqualType objNull) then
+{
+	_garsCargo = [_garsCargo];
+};
 
 //Some general variables
 private _rarray = [];
@@ -20,8 +25,11 @@ private _allVehicleHandles = [];
 //Get array of infantry units from the cargo garrison
 private _allInfantryHandles = [];
 {
-	_allInfantryHandles pushBack ([_garCargo, _x] call gar_fnc_getUnitHandle);
-} forEach (_garCargo call gar_fnc_getAllUnits);
+	private _garCargo = _x;
+	{
+		_allInfantryHandles pushBack ([_garCargo, _x] call gar_fnc_getUnitHandle);
+	} forEach (_garCargo call gar_fnc_getAllUnits);
+} forEach _garsCargo;
 
 //Get array of infantry units from transport garrison
 {

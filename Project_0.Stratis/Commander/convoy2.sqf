@@ -47,6 +47,7 @@ private _oEnemiesScript = [[_garConvoy], "AI_fnc_manageSpottedEnemies", []]
 */
 
 //Add tasks
+
 //==== LOAD task ====
 private _oTaskLoad = [_garTransport, "LOAD", [_garCargo], "Load task"] call AI_fnc_task_create;
 taskLoad = _oTaskLoad;
@@ -58,11 +59,40 @@ waitUntil
 	sleep 1;
 	(_oTaskLoad call AI_fnc_task_getState == "SUCCESS")
 };
+diag_log "======== LOAD TASK DONE ========";
+
+//==== UNLOAD task ====
+private _oTaskUnload = [_garTransport, "UNLOAD", [], "Unload task"] call AI_fnc_task_create;
+taskUnload = _oTaskUnload;
+_oTaskUnload call AI_fnc_task_start;
+waitUntil
+{
+	sleep 1;
+	(_oTaskUnload call AI_fnc_task_getState == "SUCCESS")
+};
+diag_log "======== UNLOAD TASK DONE ========";
+
 
 //==== MOVE task ====
 private _oTaskMove = [_garTransport, "MOVE", [[1525, 4960, 0]], "Move task"] call AI_fnc_task_create;
 taskMove = _oTaskMove;
 _oTaskMove call AI_fnc_task_start;
+waitUntil
+{
+	sleep 1;
+	(_oTaskMove call AI_fnc_task_getState == "SUCCESS")
+};
+
+//==== MERGE task ====
+private _oTaskMerge = [_garCargo, "MERGE", [_garCargo_old], "Merge task"] call AI_fnc_task_create;
+taskMerge = _oTaskMerge;
+_oTaskMerge call AI_fnc_task_merge;
+waitUntil
+{
+	sleep 1;
+	(_oTaskMerge call AI_fnc_task_getState == "SUCCESS")
+};
+diag_log "======== MERGE TASK DONE ========";
 
 //The end!
 diag_log "convoy2.sqf: exit!";

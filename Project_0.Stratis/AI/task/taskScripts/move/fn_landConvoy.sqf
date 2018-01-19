@@ -29,10 +29,10 @@ else
 
 
 //Form a single group for vehicles
-[_garTransport, _garCargo] call AI_fnc_formVehicleGroup;
+[_garTransport, _garsCargo] call AI_fnc_formVehicleGroup;
 
 //Assign all infantry as cargo
-[_garTransport, _garCargo] call AI_fnc_assignInfantryCargo;
+[_garTransport, _garsCargo] call AI_fnc_assignInfantryCargo;
 
 private _vehGroupID = (_garTransport call gar_fnc_getAllGroups) select 0;
 
@@ -99,6 +99,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 		switch (_state) do
 		{
 			//==== The initial state ====
+			//Reorganize the vehicle group and its crew
 			case "INIT":
 			{
 				diag_log "AI_fnc_task_move_landConvoy: entered INIT state";
@@ -144,12 +145,13 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				
 				call
 				{
-					//Check if the cargo is still fine
+					//Check if the cargo has been destroyed
 					if(!isNull _garCargo && (_garCargo call gar_fnc_countAllUnits) == 0) exitWith
 					{
 						//We've lost all cargo!
 						_to setVariable ["AI_taskState", "FAILURE"];
 						_to setVariable ["AI_failReason", "NO_CARGO"];
+						[_garTransport, _garCargo] call gar_fnc_removeCargoGarrison;
 						_run = false; //Stop the loop
 					};
 					
@@ -158,6 +160,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					{
 						_to setVariable ["AI_taskState", "FAILURE"];
 						_to setVariable ["AI_failReason", "NO_TRANSPORT"];
+						[_garTransport, _garCargo] call gar_fnc_removeCargoGarrison;
 						_run = false; //Stop the loop
 					};
 					
@@ -166,6 +169,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					{
 						_to setVariable ["AI_taskState", "FAILURE"];
 						_to setVariable ["AI_failReason", "DESTROYED"];
+						[_garTransport, _garCargo] call gar_fnc_removeCargoGarrison;
 						_run = false; //Stop the loop
 					};
 					
@@ -176,6 +180,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 						{
 							_to setVariable ["AI_taskState", "FAILURE"];
 							_to setVariable ["AI_failReason", "NO_TRANSPORT"];
+							[_garTransport, _garCargo] call gar_fnc_removeCargoGarrison;
 							_run = false;
 						}
 					};
@@ -212,7 +217,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				};
 				
 				//Reassign infantry units as cargo every tick to resolve conflicts
-				[_garTransport, _garCargo] call AI_fnc_assignInfantryCargo;
+				[_garTransport, _garsCargo] call AI_fnc_assignInfantryCargo;
 				_allHumanHandles orderGetIn true;
 				
 				//==== Check transition conditions ====
@@ -303,7 +308,6 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				if (_stateChanged) then
 				{
 					diag_log "AI_fnc_task_move_landConvoy: entered MOVE state";
-					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					while {(count (waypoints _vehGroupHandle)) > 0} do
 					{
 						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
@@ -312,6 +316,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
+					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					//Set convoy separation
 					{
 						private _vehHandle = _x;
