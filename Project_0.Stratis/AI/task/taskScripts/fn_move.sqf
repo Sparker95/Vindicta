@@ -3,6 +3,17 @@ This is the move task script.
 
 Parameters:
 	_to - the task object
+	
+Task parameters:
+[_dest]
+_dest - the destination. It may be one of several types:
+	ARRAY - destination position [x, y, z]
+	OBJECT - destination location
+
+Success conditions:
+	Depending on the type of _dest, conditions are different.
+	ARRAY - leader must be inside the radius
+	Location OBJECT - leader must be inside the location territory
 */
 
 params ["_to"]; //Task object

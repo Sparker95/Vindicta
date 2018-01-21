@@ -43,6 +43,10 @@ AI_fnc_task_create =
 		{
 			_taskScriptName = "AI_fnc_task_merge";
 		};
+		case "SAD":
+		{
+			_taskScriptName = "AI_fnc_task_SAD";
+		};
 	};
 	if(_taskScriptName == "") exitWith
 	{

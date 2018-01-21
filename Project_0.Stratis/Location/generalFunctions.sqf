@@ -1,3 +1,10 @@
+loc_fnc_isLocation =
+{
+	params [["_loc", objNull, [objNull]]];
+	private _name = _loc getVariable ["l_name", nil];
+	if (isNil "_name") then	{ false } else { true };
+};
+
 loc_fnc_getType =
 {
 	/*

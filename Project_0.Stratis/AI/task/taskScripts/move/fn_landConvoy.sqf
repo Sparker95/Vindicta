@@ -15,19 +15,6 @@ private _garCargo = if(count _garsCargo > 0) then
 else
 { objNull };
 
-private _taskParams = _to getVariable "AI_taskParams";
-_taskParams params ["_dest"];
-private _destPos = [];
-if (_dest isEqualType []) then
-{
-	_destPos = _dest;
-}
-else
-{
-	_destPos = getPos _dest;
-};
-
-
 //Form a single group for vehicles
 [_garTransport, _garsCargo] call AI_fnc_formVehicleGroup;
 
@@ -49,7 +36,7 @@ private _vehGroupHandle = [_garTransport, _vehGroupID] call gar_fnc_getGroupHand
 _vehGroupHandle deleteGroupWhenEmpty false; //If all crew dies, inf groups might take their seats
 
 //Spawn a script
-private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
+private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 {	
 	//An aux function to get separation between vehicles in a convoy
 
@@ -58,6 +45,17 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 
 	//Read input parameters
 	params ["_to", "_vehArray", "_vehGroupHandle", "_destPos"];
+	
+	//Read task parameters
+	private _taskParams = _to getVariable "AI_taskParams";
+	_taskParams params ["_dest"];
+	private _destPos = _dest;
+	private _destType = 0;
+	if (_dest isEqualType objNull) then
+	{ //Destination is a location
+		_destPos = getPos _dest;
+		_destType = 1;
+	};
 	
 	//Read some variables
 	private _garTransport = _to getVariable "AI_garrison";
@@ -315,6 +313,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 					//Add new waypoint
 					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
 					_wp0 setWaypointType "MOVE";
+					_wp0 setWaypointCompletionRadius 20;
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					//Set convoy separation
@@ -332,7 +331,18 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				};
 				
 				//Check if the convoy has arrived
-				if (((leader _vehGroupHandle) distance2D _destPos) < 100) then //Are we there yet??
+				private _arrived = false;
+				if (_destType == 1) then
+				{ //Destination's type is a location
+					if ([_dest, leader _vehGroupHandle] call loc_fnc_insideBorder) then //Check if the convoy is at the territory of the location
+					{ _arrived = true; };
+				}
+				else
+				{ //Destination's type is coordinates
+					if (((leader _vehGroupHandle) distance2D _destPos) < 50) then //Are we there yet??
+					{ _arrived = true; };
+				};
+				if(_arrived) then
 				{
 					diag_log format ["AI_fnc_task_move_landConvoy: convoy has arrived"];
 					{
@@ -344,8 +354,8 @@ private _hScript = [_to, _vehArray, _vehGroupHandle, _destPos] spawn
 				};
 				
 				//Check the separation of the convoy
-				private _sCur = [_vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
-				diag_log format [">>> Current separation: %1", _sCur];
+				//private _sCur = [_vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
+				//diag_log format [">>> Current separation: %1", _sCur];
 				/*
 				if(_sCur > 1.9*_separation) then
 				{

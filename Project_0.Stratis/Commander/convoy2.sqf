@@ -1,3 +1,10 @@
+/*
+_locTransport = (alllocations select 8);
+_locCargo = (alllocations select 7);
+[_locTransport, _locCargo, (alllocations select 9)] spawn compile preprocessfilelinenumbers "Commander\convoy2.sqf";
+*/
+
+
 params ["_locTransport", "_locCargo", "_locTo"];
 
 private _garTransport_old = _locTransport call loc_fnc_getMainGarrison;
@@ -61,6 +68,17 @@ waitUntil
 };
 diag_log "======== LOAD TASK DONE ========";
 
+//==== MOVE task ====
+private _oTaskMove = [_garTransport, "MOVE", [_locTo], "Move task"] call AI_fnc_task_create;
+taskMove = _oTaskMove;
+_oTaskMove call AI_fnc_task_start;
+waitUntil
+{
+	sleep 1;
+	(_oTaskMove call AI_fnc_task_getState == "SUCCESS")
+};
+diag_log "======== MOVE TASK DONE ========";
+
 //==== UNLOAD task ====
 private _oTaskUnload = [_garTransport, "UNLOAD", [], "Unload task"] call AI_fnc_task_create;
 taskUnload = _oTaskUnload;
@@ -72,9 +90,19 @@ waitUntil
 };
 diag_log "======== UNLOAD TASK DONE ========";
 
+//==== MERGE task ====
+private _oTaskMerge = [_garCargo, "MERGE", [_locTo], "Merge task"] call AI_fnc_task_create;
+taskMerge = _oTaskMerge;
+_oTaskMerge call AI_fnc_task_merge;
+waitUntil
+{
+	sleep 1;
+	(_oTaskMerge call AI_fnc_task_getState == "SUCCESS")
+};
+diag_log "======== MERGE TASK DONE ========";
 
 //==== MOVE task ====
-private _oTaskMove = [_garTransport, "MOVE", [[1525, 4960, 0]], "Move task"] call AI_fnc_task_create;
+private _oTaskMove = [_garTransport, "MOVE", [getPos _locTransport], "Move task"] call AI_fnc_task_create;
 taskMove = _oTaskMove;
 _oTaskMove call AI_fnc_task_start;
 waitUntil
@@ -82,9 +110,10 @@ waitUntil
 	sleep 1;
 	(_oTaskMove call AI_fnc_task_getState == "SUCCESS")
 };
+diag_log "======== MOVE TASK DONE ========";
 
 //==== MERGE task ====
-private _oTaskMerge = [_garCargo, "MERGE", [_garCargo_old], "Merge task"] call AI_fnc_task_create;
+private _oTaskMerge = [_garTransport, "MERGE", [_locTransport], "Merge task"] call AI_fnc_task_create;
 taskMerge = _oTaskMerge;
 _oTaskMerge call AI_fnc_task_merge;
 waitUntil

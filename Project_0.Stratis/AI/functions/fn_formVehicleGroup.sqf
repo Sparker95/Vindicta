@@ -153,7 +153,7 @@ if(_nCrewToAdd != 0) then
 			private _unitData = _freeCrewArray select _index select 1;
 			if(_gar isEqualTo _garTransport) then //If the available unit is in garTransport, make it join the group
 			{ //Join group
-				[_garTransport, _unitData, _vehGroupID] call gar_fnc_joinGroup;
+				[_garTransport, _unitData, _vehGroupID, true] call gar_fnc_joinGroup;
 			}
 			else
 			{ //Move unit into _garTransport

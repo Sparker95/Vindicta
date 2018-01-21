@@ -4,6 +4,13 @@ Functions like set- or get-value stay here.
 
 #include "garrison.hpp"
 
+gar_fnc_isGarrison =
+{
+	params [["_lo", objNull, [objNull]]];
+	private _name = _lo getVariable ["g_name", nil];
+	if (isNil "_name") then	{ false } else { true };
+};
+
 gar_fnc_setName =
 {
 	/*
