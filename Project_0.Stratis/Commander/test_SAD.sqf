@@ -1,4 +1,9 @@
-params ["_loc", "_target"];
+/*
+_locAttack = (alllocations select 0);
+[_locAttack, [3500, 2700, 0], 450] spawn compile preprocessfilelinenumbers "Commander\test_SAD.sqf";
+*/
+
+params ["_loc", "_target", "_radius"];
 
 private _gar = _loc call loc_fnc_getMainGarrison;
 
@@ -32,7 +37,7 @@ private _oEnemiesScript = [[_garAttack], "AI_fnc_manageSpottedEnemies", []]
 //Add tasks
 
 //==== MOVE task ====
-private _oTaskMove = [_garAttack, "MOVE", [_target], "Move task"] call AI_fnc_task_create;
+private _oTaskMove = [_garAttack, "MOVE", [_target, _radius], "Move task"] call AI_fnc_task_create;
 taskMove = _oTaskMove;
 _oTaskMove call AI_fnc_task_start;
 waitUntil
@@ -43,7 +48,7 @@ waitUntil
 diag_log "======== MOVE TASK DONE ========";
 
 //==== ATTACK task ====
-private _oTaskSAD = [_garAttack, "SAD", [_target, 120, 300], "SAD task"] call AI_fnc_task_create;
+private _oTaskSAD = [_garAttack, "SAD", [_target, _radius, 300], "SAD task"] call AI_fnc_task_create;
 taskSAD = _oTaskSAD;
 _oTaskSAD call AI_fnc_task_start;
 waitUntil

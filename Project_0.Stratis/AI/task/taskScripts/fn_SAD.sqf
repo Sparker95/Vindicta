@@ -20,6 +20,7 @@ private _allVehicleHandles = [];
 private _allHumanHandles = [];
 private _allInfantryHandles = [];
 private _allGroupHandles = [];
+private _allVehGroupHandles = [];
 
 //Get array of infantry units from transport garrison
 {
@@ -30,6 +31,10 @@ private _allGroupHandles = [];
 		{
 			_allInfantryHandles pushBack ([_gar, _x] call gar_fnc_getUnitHandle);
 		} forEach ([_gar, _x] call gar_fnc_getGroupAliveUnits);
+	}
+	else
+	{
+		_allVehGroupHandles pushBack ([_gar, _x] call gar_fnc_getGroupHandle);
 	};
 } forEach (_gar call gar_fnc_getAllGroups);
 
@@ -56,13 +61,28 @@ for "_i" from 0 to ((count _allVehicleHandles) - 1) do
 	};
 };
 
+//Delete all previous waypoints
+_allVehGroupHandles call AI_fnc_deleteAllWaypoints;
+
+//Order vehicles with troops to dismount
+{
+	private _wp0 = _x addWaypoint [getPos leader _x, 15, 0, "Hold"];
+	_wp0 setWaypointType "MOVE";
+	_x setCurrentWaypoint _wp0;
+} forEach _allVehGroupHandles;
+
 //Infantry, dismount!
 _allInfantryHandles orderGetIn false;
+{
+	unassignVehicle _x;
+} forEach _allInfantryHandles;
+
+sleep 10;
 
 //Make some waypoints for groups
 _allGroupHandles call AI_fnc_deleteAllWaypoints;
 {
-	private _wp0 = _x addWaypoint [_targetPos, _searchRadius, 0, "MOVE start wp"];
+	private _wp0 = _x addWaypoint [_targetPos, 0, 0, "MOVE start wp"];
 	_wp0 setWaypointCompletionRadius 0.2*_searchRadius;
 	_wp0 setWaypointType "SAD";
 	//Generate random waypoints

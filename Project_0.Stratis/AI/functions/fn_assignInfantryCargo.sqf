@@ -45,7 +45,6 @@ private _allInfantryHandles = [];
 //diag_log format ["======= All infantry cargo: %1", _allInfantryHandles];
 private _nCargoInfantry = count _allInfantryHandles;
 
-//For each vehicle create a new group for its cargo
 private _nextInfID = 0;
 for "_i" from ((count _allVehicles) - 1) to 0 step -1 do
 {

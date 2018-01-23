@@ -9,6 +9,7 @@ Task parameters:
 _dest - the destination. It may be one of several types:
 	ARRAY - destination position [x, y, z]
 	OBJECT - destination location
+_radius - the completion radius for this task
 
 Success conditions:
 	Depending on the type of _dest, conditions are different.

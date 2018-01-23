@@ -4,6 +4,9 @@ Script for managing units in a convoy
 
 #define DEBUG
 
+#define STUCK_TIMER_LIMIT 30
+#define SLEEP_INTERVAL 2
+
 params ["_to"];
 
 private _garTransport = _to getVariable "AI_garrison";
@@ -48,7 +51,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	
 	//Read task parameters
 	private _taskParams = _to getVariable "AI_taskParams";
-	_taskParams params ["_dest"];
+	_taskParams params ["_dest", "_compRadius"];
 	private _destPos = _dest;
 	private _destType = 0;
 	if (_dest isEqualType objNull) then
@@ -74,14 +77,15 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	private _state = "INIT";
 	private _stateChanged = true;
 	private _speedMax = 60; //Maximum speed for the convoy
-	private _speedLimit = 40; //The initial speed limit
-	private _separation = 18; //Convoy separation in meters
+	private _speedLimit = 20; //The initial speed limit
+	private _separation = 18; //Convoy needed separation in meters
 	private _run = true;
 	private _nCrew = count units _vehGroupHandle;
 	private _nCrewPrev = _nCrew;
+	private _stuckTimer = 0; //Timer showing for how long the convoy has been stuck
 	while {_run} do
 	{
-		sleep 2;
+		sleep SLEEP_INTERVAL;
 		//Update common variables
 		_allInfantryHandles = _allInfantryHandles select {alive _x};
 		_allHumanHandles = (_allInfantryHandles + ((units _vehGroupHandle) select {alive _x}));
@@ -339,7 +343,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				}
 				else
 				{ //Destination's type is coordinates
-					if (((leader _vehGroupHandle) distance2D _destPos) < 50) then //Are we there yet??
+					if (((leader _vehGroupHandle) distance2D _destPos) < _compRadius) then //Are we there yet??
 					{ _arrived = true; };
 				};
 				if(_arrived) then
@@ -354,9 +358,10 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				};
 				
 				//Check the separation of the convoy
-				//private _sCur = [_vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
-				//diag_log format [">>> Current separation: %1", _sCur];
-				/*
+				private _sCur = [_vehArray, vehicle leader _vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
+				#ifdef DEBUG
+				diag_log format [">>> Current separation: %1", _sCur];
+				#endif
 				if(_sCur > 1.9*_separation) then
 				{
 					//We are driving too fast!
@@ -364,7 +369,9 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					{
 						_speedLimit = _speedLimit - 3;
 						(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit;
+						#ifdef DEBUG
 						diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
+						#endif
 					};
 				}
 				else
@@ -374,10 +381,32 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 						{
 							_speedLimit = _speedLimit + 3.5;
 							(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit;
+							#ifdef DEBUG
 							diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
+							#endif
 						};
 				};
-				*/
+				
+				//Check if the convoy has stuck
+				if(speed leader _vehGroupHandle < 3) then
+				{
+					_stuckTimer = _stuckTimer + SLEEP_INTERVAL;
+					#ifdef DEBUG
+					diag_log format ["fn_landCOnvoy.sqf: convoy has been static for %1 seconds!", _stuckTimer];
+					#endif
+					if(_stuckTimer > STUCK_TIMER_LIMIT) then
+					{
+						#ifdef DEBUG
+						diag_log format ["fn_landCOnvoy.sqf: Convoy has stuck! Selecting a new leader!", _stuckTimer];
+						#endif
+						_vehGroupHandle selectLeader (selectRandom units _vehGroupHandle);
+						_stuckTimer = 0;
+					};
+				}
+				else
+				{
+					_stuckTimer = 0;
+				};
 				
 				//Change state if needed
 				call

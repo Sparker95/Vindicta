@@ -5,18 +5,22 @@ Some auxiliary functions needed for operation of landConvoy
 AI_fnc_landConvoy_getMaxSeparation =
 {
 	//Gets the maximum separation between vehicles in convoy
-	params ["_vehGroupHandle"];
-	//Get vehicles in formation order
-	private _allVehicles = [];
+	params ["_allVehicles", "_vehLead"];
+	diag_log format ["All vehicles: %1", _allVehicles];
+	diag_log format ["Lead vehicle: %1", _vehLead];
+	private _vehArraySort = [];
 	{
-		_allVehicles pushBackUnique (vehicle _x);
-	} forEach (formationMembers (leader _vehGroupHandle));
+		_vehArraySort pushBack [_x distance _vehLead, _x];
+	} forEach _allVehicles;
+	diag_log format ["Unsorted array: %1", _vehArraySort];
+	_vehArraySort sort true; //Ascending
+	diag_log format ["Sorted array: %1", _vehArraySort];
 	//Get the max separation
 	private _dMax = 0;
 	private _c = count _allVehicles;
 	for "_i" from 0 to (_c - 2) do
 	{
-		_d = (_allVehicles select _i) distance (_allVehicles select (_i + 1));
+		_d = (_vehArraySort select _i select 1) distance (_vehArraySort select (_i + 1) select 1);
 		if (_d > _dMax) then {_dMax = _d;};
 	};
 	_dMax

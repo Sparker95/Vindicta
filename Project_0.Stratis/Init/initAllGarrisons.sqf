@@ -79,30 +79,33 @@ private _gar = objNull;
 		{
 			//Static weapons
 
+			/*
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_stat_HMG_high, 3],
 				[T_VEH, T_VEH_stat_GMG_high, 1]
 			], G_GT_veh_static, util_turrets] call loc_fnc_addUnits;
+			*/
 
 			//Tracked and wheeled vehicles
 
 			[_loc, _gar,
 			[
-				[T_VEH, T_VEH_MRAP_HMG, 2],
-				[T_VEH, T_VEH_truck_inf, 1]
+				[T_VEH, T_VEH_MRAP_HMG, 1],
+				[T_VEH, T_VEH_truck_inf, 1],
 				//[T_VEH, T_VEH_APC, 1],
-				//[T_VEH, T_VEH_IFV, 1]
+				[T_VEH, T_VEH_IFV, 1]
 			],G_GT_veh_non_static, util_tracked_wheeled] call loc_fnc_addUnits;
 			
 
 			//Sentries in buildings
+			/*
 			[_loc, _gar,
 			[
 				[T_INF, T_INF_LMG, 4],
 				[T_INF, T_INF_AT, 1]
 			],G_GT_building_sentry, util_building_sentries] call loc_fnc_addUnits;
-
+			*/
 
 			//Infantry
 			[_loc, _gar,
