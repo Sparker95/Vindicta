@@ -24,7 +24,9 @@ private _allVehGroupHandles = [];
 
 //Get array of infantry units from transport garrison
 {
-	_allGroupHandles pushBack ([_gar, _x] call gar_fnc_getGroupHandle);
+	private _groupHandle = [_gar, _x] call gar_fnc_getGroupHandle;
+	_allGroupHandles pushBack _grouphandle;
+	_groupHandle setBehaviour "AWARE"; //Set behaviour
 	//If it's not a vehicle crew group
 	if(([_gar, _x] call gar_fnc_getGroupType) != G_GT_veh_non_static) then
 	{
@@ -44,9 +46,10 @@ private _allVehGroupHandles = [];
 } forEach ([_gar, T_INF, -1] call gar_fnc_findUnits);
 
 //Get array with all vehicles
-//Get array with all humans
 {
-	_allVehicleHandles pushBack ([_gar, _x] call gar_fnc_getUnitHandle);
+	private _vehHandle = [_gar, _x] call gar_fnc_getUnitHandle;
+	_vehHandle limitSpeed 666666; //Unlimited speed
+	_allVehicleHandles pushBack _vehHandle;
 } forEach ([_gar, T_VEH, -1] call gar_fnc_findUnits);
 
 //Find crew of vehicles that can't shoot

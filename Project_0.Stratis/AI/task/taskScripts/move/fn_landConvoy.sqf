@@ -4,7 +4,12 @@ Script for managing units in a convoy
 
 #define DEBUG
 
-#define STUCK_TIMER_LIMIT 30
+//How much time has to pass until a new leader is assigned
+#define STUCK_TIMER_LIMIT		30
+//How much time has to pass until units get teleported into their vehicles
+#define MOUNT_TIMER_LIMIT		10
+#define DISMOUNT_TIMER_LIMIT	40
+//Sleep interval
 #define SLEEP_INTERVAL 2
 
 params ["_to"];
@@ -70,8 +75,8 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	};
 	
 	//Common variables
-	private _allInfantryHandles = [];
-	private _allHumanHandles = [];
+	private _allHumanHandles = []; //All humans
+	private _allCrew = []; //All crew members
 	
 	//We need the power of the Finite State Machine!
 	private _state = "INIT";
@@ -82,13 +87,16 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	private _run = true;
 	private _nCrew = count units _vehGroupHandle;
 	private _nCrewPrev = _nCrew;
-	private _stuckTimer = 0; //Timer showing for how long the convoy has been stuck
+	private _timer = 0; //Timer showing for how long the convoy has been stuck
+	private _t = time;
+	private _dt = 0;
 	while {_run} do
 	{
+		_dt = time - _t;
+		_t = time;
 		sleep SLEEP_INTERVAL;
 		//Update common variables
-		_allInfantryHandles = _allInfantryHandles select {alive _x};
-		_allHumanHandles = (_allInfantryHandles + ((units _vehGroupHandle) select {alive _x}));
+		_allHumanHandles = _allHumanHandles select {alive _x};
 		private _allVehiclesCanMove = ((count _vehArray) == ({canMove _x} count _vehArray));
 		_nCrewPrev = _nCrew;
 		_nCrew = {alive _x} count (units _vehGroupHandle);
@@ -106,23 +114,6 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 			{
 				diag_log "AI_fnc_task_move_landConvoy: entered INIT state";
 				
-				//Update common variables
-				_allInfantryHandles = [];
-				_allHumanHandles = (_allInfantryHandles + ((units _vehGroupHandle) select {alive _x}));
-				{
-					_allInfantryHandles pushBack ([_garCargo, _x] call gar_fnc_getUnitHandle);
-				} forEach (_garCargo call gar_fnc_getAllUnits);
-				//Get array of infantry units from transport garrison
-				{
-					//If it's not a vehicle crew group
-					if(([_garTransport, _x] call gar_fnc_getGroupType) != G_GT_veh_non_static) then
-					{
-						{
-							_allInfantryHandles pushBack ([_garTransport, _x] call gar_fnc_getUnitHandle);
-						} forEach ([_garTransport, _x] call gar_fnc_getGroupAliveUnits);
-					};
-				} forEach ([_garTransport] call gar_fnc_getAllGroups);
-				
 				//Remove non functional vehicles from the convoy
 				private _vehToRemove = _vehArray select {!canMove _x};
 				if (count _vehToRemove != 0) then
@@ -135,6 +126,19 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				//Try to find crew for all vehicles
 				diag_log "INFO: fn_landConvoy.sqf: reorganizing crew";
 				[_garTransport, [_garTransport] + _garsCargo] call AI_fnc_formVehicleGroup;
+				
+				//Update common variables
+				_allHumanHandles = [];
+				{
+					_allHumanHandles pushBack ([_garCargo, _x] call gar_fnc_getUnitHandle);
+				} forEach ([_garCargo, T_INF, -1] call gar_fnc_findUnits);
+				//Get array of infantry units from transport garrison
+				{
+					_allHumanHandles pushBack ([_garTransport, _x] call gar_fnc_getUnitHandle);
+				} forEach ([_garTransport, T_INF, -1] call gar_fnc_findUnits);
+				_allCrew = units _vehGroupHandle;
+				_nCrew = count units _vehGroupHandle;
+				_nCrewPrev = _nCrew;
 				
 				//Remove vehicles without a driver from the convoy
 				private _vehToRemove = _vehArray select {!alive (assignedDriver _x)};
@@ -215,12 +219,28 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					doStop (units _vehGroupHandle);
+					_timer = 0;
 					_stateChanged = false;
 				};
 				
 				//Reassign infantry units as cargo every tick to resolve conflicts
 				[_garTransport, _garsCargo] call AI_fnc_assignInfantryCargo;
 				_allHumanHandles orderGetIn true;
+				
+				//Check if someone has got stuck somewhere and can't get in
+				_timer = _timer + _dt;
+				#ifdef DEBUG
+				diag_log format ["fn_landConvoy.sqf: MOUNT state timer: %1", _timer];
+				#endif
+				if (_timer > MOUNT_TIMER_LIMIT) then
+				{
+					//For fuck's sake why did you get stuck??
+					private _humansOnFoot =  _allHumanHandles select {vehicle _x isEqualTo _x};
+					#ifdef DEBUG
+					diag_log format ["fn_landConvoy.sqf: teleporting infantry into vehicles: %1", _humansOnFoot];
+					#endif
+					_humansOnFoot call AI_fnc_moveInAssigned;
+				};
 				
 				//==== Check transition conditions ====
 				call
@@ -240,6 +260,10 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					//or if some vehicles are not operational any more
 					if(_nCrew != _nCrewPrev || ({!canMove _x} count _vehArray != 0)) exitWith
 					{
+						#ifdef DEBUG
+						diag_log format ["fn_landConvoy.sqf: _nCrewPrev: %1, _nCrew: %2, _nVehCantMove: %3",
+						                 	_nCrewPrev, _nCrew, {!canMove _x} count _vehArray];
+						#endif
 						_state = "DISMOUNT_ALL";
 						_stateChanged = true;
 					};
@@ -266,10 +290,26 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_wp0 setWaypointType "MOVE";
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					_stateChanged = false;
+					_timer = 0;
 				};
 				
 				//Order all units to dismount
+				{unassignVehicle _x;} forEach _allHumanHandles;
 				_allHumanHandles orderGetIn false;
+				
+				//Check if someone has got stuck somewhere and can't get out
+				_timer = _timer + _dt;
+				#ifdef DEBUG
+				diag_log format ["fn_landConvoy.sqf: DISMOUNT_ALL state timer: %1", _timer];
+				#endif
+				if (_timer > DISMOUNT_TIMER_LIMIT) then
+				{
+					private _humansOnFoot =  _allHumanHandles select {vehicle _x isEqualTo _x};
+					#ifdef DEBUG
+					diag_log format ["fn_landConvoy.sqf: force dismounting all humans!", _humansOnFoot];
+					#endif
+					{moveOut _x;} forEach _allHumanHandles;
+				};
 
 				//Check if all the infantry has dismounted
 				private _nHumansOnFoot = {vehicle _x == _x} count _allHumanHandles;
@@ -332,6 +372,8 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_stateChanged = false;
 					//Set behaviour
 					_vehGroupHandle setBehaviour "SAFE";
+					//Reset the timer
+					_timer = 0;
 				};
 				
 				//Check if the convoy has arrived
@@ -388,25 +430,34 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				};
 				
 				//Check if the convoy has stuck
-				if(speed leader _vehGroupHandle < 3) then
+				if(speed leader _vehGroupHandle < 6) then
 				{
-					_stuckTimer = _stuckTimer + SLEEP_INTERVAL;
+					_timer = _timer + _dt;
 					#ifdef DEBUG
-					diag_log format ["fn_landCOnvoy.sqf: convoy has been static for %1 seconds!", _stuckTimer];
+					diag_log format ["fn_landCOnvoy.sqf: convoy has been static for %1 seconds!", _timer];
 					#endif
-					if(_stuckTimer > STUCK_TIMER_LIMIT) then
+					if(_timer > STUCK_TIMER_LIMIT) then
 					{
 						#ifdef DEBUG
-						diag_log format ["fn_landCOnvoy.sqf: Convoy has stuck! Selecting a new leader!", _stuckTimer];
+						diag_log format ["fn_landCOnvoy.sqf: Convoy has stuck! Selecting a new leader!", _timer];
 						#endif
-						_vehGroupHandle selectLeader (selectRandom units _vehGroupHandle);
-						_stuckTimer = 0;
+						_vehGroupHandle selectLeader (selectRandom (units _vehGroupHandle));
+						_timer = 0;
 					};
 				}
 				else
 				{
-					_stuckTimer = 0;
+					_timer = 0;
 				};
+				
+				//Debug
+				#ifdef DEBUG
+				private _allCrewGroups = [];
+				{
+					_allCrewGroups pushBack (group _x);
+				} forEach _allCrew;
+				diag_log format ["All crew groups: %1", _allCrewGroups];
+				#endif
 				
 				//Change state if needed
 				call
@@ -425,6 +476,10 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					//Check if crew composition has been changed
 					if(_nCrew != _nCrewPrev || ({!canMove _x} count _vehArray != 0)) exitWith
 					{
+						#ifdef DEBUG
+						diag_log format ["fn_landConvoy.sqf: _nCrewPrev: %1, _nCrew: %2, _nVehCantMove: %3",
+						                 	_nCrewPrev, _nCrew, {!canMove _x} count _vehArray];
+						#endif
 						_state = "DISMOUNT_ALL"; //Dismount then reorganize
 						_stateChanged = true;
 					};
@@ -462,6 +517,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 						};
 					} forEach _vehArray;
 					_stateChanged = false;
+					_timer = 0;
 				};
 				
 				//Order infantry units to dismount
@@ -477,7 +533,22 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 						_humansToDismount append (_allHumanHandles select {assignedVehicle _x isEqualTo _vehHandle});
 					};
 				};
+				{unassignVehicle _x;} forEach _humansToDismount; //Unassign their vehicles so that they don't use them in fight
 				_humansToDismount orderGetIn false;
+				
+				//Check if someone has got stuck somewhere and can't dismount
+				_timer = _timer + _dt;
+				#ifdef DEBUG
+				diag_log format ["fn_landConvoy.sqf: DISMOUNT_ALL state timer: %1", _timer];
+				#endif
+				if (_timer > DISMOUNT_TIMER_LIMIT) then
+				{
+					private _humansOnFoot =  _allHumanHandles select {vehicle _x isEqualTo _x};
+					#ifdef DEBUG
+					diag_log format ["fn_landConvoy.sqf: force dismounting infantry!", _humansOnFoot];
+					#endif
+					{moveOut _x;} forEach _humansToDismount;
+				};
 
 				//Check if all the infantry has dismounted
 				private _nHumansOnFoot = {vehicle _x == _x} count _humansToDismount;

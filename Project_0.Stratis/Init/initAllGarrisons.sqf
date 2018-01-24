@@ -91,7 +91,7 @@ private _gar = objNull;
 
 			[_loc, _gar,
 			[
-				[T_VEH, T_VEH_MRAP_HMG, 1],
+				//[T_VEH, T_VEH_MRAP_HMG, 1],
 				[T_VEH, T_VEH_truck_inf, 1],
 				//[T_VEH, T_VEH_APC, 1],
 				[T_VEH, T_VEH_IFV, 1]

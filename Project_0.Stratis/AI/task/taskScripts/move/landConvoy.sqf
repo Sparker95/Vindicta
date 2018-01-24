@@ -6,15 +6,15 @@ AI_fnc_landConvoy_getMaxSeparation =
 {
 	//Gets the maximum separation between vehicles in convoy
 	params ["_allVehicles", "_vehLead"];
-	diag_log format ["All vehicles: %1", _allVehicles];
-	diag_log format ["Lead vehicle: %1", _vehLead];
+	//diag_log format ["All vehicles: %1", _allVehicles];
+	//diag_log format ["Lead vehicle: %1", _vehLead];
 	private _vehArraySort = [];
 	{
 		_vehArraySort pushBack [_x distance _vehLead, _x];
 	} forEach _allVehicles;
-	diag_log format ["Unsorted array: %1", _vehArraySort];
+	//diag_log format ["Unsorted array: %1", _vehArraySort];
 	_vehArraySort sort true; //Ascending
-	diag_log format ["Sorted array: %1", _vehArraySort];
+	//diag_log format ["Sorted array: %1", _vehArraySort];
 	//Get the max separation
 	private _dMax = 0;
 	private _c = count _allVehicles;

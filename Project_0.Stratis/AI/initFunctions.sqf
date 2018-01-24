@@ -27,6 +27,8 @@ AI_fnc_registerScriptHandle = compile preprocessFileLineNumbers "AI\mediumLevel\
 AI_fnc_assignInfantryCargo = compile preprocessFileLineNumbers "AI\functions\fn_assignInfantryCargo.sqf";
 AI_fnc_deleteAllWaypoints = compile preprocessFileLineNumbers "AI\functions\fn_deleteAllWaypoints.sqf";
 AI_fnc_formVehicleGroup = compile preprocessFileLineNumbers "AI\functions\fn_formVehicleGroup.sqf";
+AI_fnc_moveInAssigned = compile preprocessFileLineNumbers "AI\functions\fn_moveInAssigned.sqf";
+
 
 //Tasks
 call compile preprocessFileLineNumbers "AI\task\initFunctions.sqf";

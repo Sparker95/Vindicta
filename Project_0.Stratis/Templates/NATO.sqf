@@ -29,6 +29,7 @@ _inf set [T_INF_medic, ["B_medic_F"]];	//
 _inf set [T_INF_engineer, ["B_engineer_F"]];	//
 //_inf set [T_INF_ammo, ["B_soldier_A_F"]];	//
 _inf set [T_INF_crew, ["B_crew_F"]];	//
+//_inf set [T_INF_crew, ["B_Soldier_F"]];	//
 _inf set [T_INF_pilot, ["B_Pilot_F"]];	//
 _inf set [T_INF_pilot_heli, ["B_helicrew_F"]];	//
 //_inf set [T_INF_survivor, [""]];	//
