@@ -89,7 +89,7 @@ _allGroupHandles call AI_fnc_deleteAllWaypoints;
 	_wp0 setWaypointCompletionRadius 0.2*_searchRadius;
 	_wp0 setWaypointType "SAD";
 	//Generate random waypoints
-	private _i = 0;
+	private _i = 1;
 	while {_i < 10} do
 	{
 		private _wp = _x addWaypoint [_targetPos, _searchRadius, _i, "MOVE wp"];

@@ -28,7 +28,7 @@ AI_fnc_assignInfantryCargo = compile preprocessFileLineNumbers "AI\functions\fn_
 AI_fnc_deleteAllWaypoints = compile preprocessFileLineNumbers "AI\functions\fn_deleteAllWaypoints.sqf";
 AI_fnc_formVehicleGroup = compile preprocessFileLineNumbers "AI\functions\fn_formVehicleGroup.sqf";
 AI_fnc_moveInAssigned = compile preprocessFileLineNumbers "AI\functions\fn_moveInAssigned.sqf";
-
+AI_fnc_rejoinGarrisonGroup = compile preprocessFileLineNumbers "AI\functions\fn_rejoinGarrisonGroup.sqf";
 
 //Tasks
 call compile preprocessFileLineNumbers "AI\task\initFunctions.sqf";

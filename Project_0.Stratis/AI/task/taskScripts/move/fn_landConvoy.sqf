@@ -7,8 +7,8 @@ Script for managing units in a convoy
 //How much time has to pass until a new leader is assigned
 #define STUCK_TIMER_LIMIT		30
 //How much time has to pass until units get teleported into their vehicles
-#define MOUNT_TIMER_LIMIT		10
-#define DISMOUNT_TIMER_LIMIT	40
+#define MOUNT_TIMER_LIMIT		50
+#define DISMOUNT_TIMER_LIMIT	30
 //Sleep interval
 #define SLEEP_INTERVAL 2
 
@@ -122,6 +122,15 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					diag_log format ["INFO: fn_landConvoy.sqf: removing vehicles that can't move: %1", _vehToRemove];
 					[_garTransport, _vehToRemove] call AI_fnc_landConvoy_removeVehicles;
 				};
+				
+				//Repair broken squads (for some reason units might leave their squads into empty squads)
+				private _n = (_garTransport call AI_fnc_rejoinGarrisonGroup);
+				#ifdef DEBUG
+				if(_n > 0) then
+				{
+					diag_log format ["INFO: fn_landConvoy.sqf: %1 units have rejoined their group", _n];
+				};
+				#endif
 				
 				//Try to find crew for all vehicles
 				diag_log "INFO: fn_landConvoy.sqf: reorganizing crew";
