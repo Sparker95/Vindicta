@@ -32,3 +32,6 @@ AI_fnc_rejoinGarrisonGroup = compile preprocessFileLineNumbers "AI\functions\fn_
 
 //Tasks
 call compile preprocessFileLineNumbers "AI\task\initFunctions.sqf";
+
+//Missions
+call compile preprocessFileLineNumbers "AI\mission\initFunctions.sqf";

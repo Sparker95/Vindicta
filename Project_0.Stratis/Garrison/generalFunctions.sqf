@@ -20,6 +20,12 @@ gar_fnc_setName =
 	_lo setVariable ["g_name", _name];
 };
 
+gar_fnc_getName =
+{
+	params ["_lo"];
+	_lo getVariable "g_name";
+};
+
 gar_fnc_setSide =
 {
 	/*
@@ -32,7 +38,7 @@ gar_fnc_setSide =
 gar_fnc_getSide =
 {
 	params ["_lo"];
-	private _return = _lo getVariable ["g_side", []];
+	private _return = _lo getVariable "g_side";
 	_return
 };
 
@@ -43,6 +49,8 @@ gar_fnc_setLocation =
 	*/
 	params ["_lo", "_location"];
 	_lo setVariable ["g_location", _location];
+	//Set garrison's position
+	_lo setPos (getPos _location);
 };
 
 gar_fnc_getLocation =
@@ -198,7 +206,7 @@ gar_fnc_countUnits =
 	/*
 	Counts units that have their [_catID, _subcatID] in _types and have specified _groupType.
 	_types - array of:
-		[_catID, _subcatID]
+		[_catID, _subcatID], _subcatID can be -1 if it doesn't matter
 	_groupType - the group type, or:
 		-1 to ignore _groupType.
 	return value: number
@@ -240,20 +248,27 @@ gar_fnc_countUnits =
 	{
 		_catID = _x select 0;
 		_subcatID = _x select 1;
+		private _cat = [];
 		switch (_catID) do //Get the units in this subcategory
 		{
 			case T_INF:
-			{
-				_subcat = _g_inf select _subcatID;
-			};
+			{ _cat = _g_inf; };
 			case T_VEH:
-			{
-				_subcat = _g_veh select _subcatID;
-			};
+			{_cat = _g_veh; };
 			case T_DRONE:
+			{ _cat = _g_drone; };
+		};
+		//If _subcatID is not -1
+		if (_subcatID != -1) then
+		{
+			_subcat = _cat select _subcatID;
+		}
+		else
+		{
+			_subcat = [];
 			{
-				_subcat = _g_drone select _subcatID;
-			};
+				_subcat append _x;
+			} forEach _cat;
 		};
 		//Count only units that have specified groupType or ignore the group type
 		if(_groupType == -1) then //If groupType is ignored, just count units in this subcategory
@@ -596,4 +611,45 @@ gar_fnc_getCargoGarrisons =
 	params [["_lo", objNull, [objNull]]];
 	if(isNull _lo) exitWith {[]};
 	_lo getVariable "g_cargo"
+};
+
+//Manipulating the registered/assigned missions
+gar_fnc_registerMission =
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	private _gm = _gar getVariable "g_mRegistered";
+	_gm pushBack _mo;
+};
+
+gar_fnc_unregisterMission =
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	private _gm = _gar getVariable "g_mRegistered";
+	_gm = _gm - [_mo];
+	_gar setVariable ["g_mRegistered", _gm, false];
+};
+
+gar_fnc_getRegisteredMissions =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar getVariable "g_mRegistered"
+};
+
+//Assigned mission
+gar_fnc_assignMission = 
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", _mo, false];
+};
+
+gar_fnc_getAssignedMission =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar getVariable "g_mAssigned"
+};
+
+gar_fnc_unassignMission =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", objNull, false];
 };

@@ -1,0 +1,1 @@
+call compile preprocessFileLineNumbers "AI\mission\initVariablesServer.sqf";

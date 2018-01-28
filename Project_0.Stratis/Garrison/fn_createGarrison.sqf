@@ -109,6 +109,11 @@ _lo setVariable ["g_execRequestID", 0, false];			//Counter used for IDs of execu
 //_lo setVariable ["g_enemiesTime", 0, false];			//The time when enemies were reported last time
 //_lo setVariable ["g_manageAlertState", false, false];	//Send requests to associated location to change alert state //TOD
 _lo setVariable ["g_cargo", [], false];					//The garrisons this garrison is carrying as cargo
+_lo setVariable ["g_mRegistered", [], false];			//Array with missions this garrison is registered to
+_lo setVariable ["g_mAssigned", objNull, false];		//The mission this garrison is assigned to
+
+//Push to the global garrison array
+allGarrisons pushBack _lo;
 
 //Return the logic object
 _lo

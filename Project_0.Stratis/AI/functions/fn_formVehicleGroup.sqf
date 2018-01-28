@@ -6,7 +6,7 @@ If there are more crew units in the vehicle group than needed, they will be move
 
 As a result, in case of success, there should be a a single group with vehicles and their crew capable of moving and fighting. 
 
-_garsDrivers will supply drivers for vehicles if they are not assigned yet.
+_garsCrew will supply drivers for vehicles if they are not assigned yet.
 
 Parameters:
 _garsCrew - array of garrisons which can donate crew for vehicles, or a single garrison. It can also include _garTransport.
