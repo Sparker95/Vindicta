@@ -4,3 +4,4 @@ t_fnc_select = compile preprocessfilelinenumbers "Templates\fn_select.sqf";
 t_fnc_checkNil = compile preprocessfilelinenumbers "Templates\fn_checkNil.sqf";
 t_fnc_find = compile preprocessfilelinenumbers "Templates\fn_find.sqf";
 t_fnc_isValid = compile preprocessfilelinenumbers "Templates\fn_isValid.sqf";
+t_fnc_getEfficiency = compile preprocessFileLineNumbers "Templates\fn_getEfficiency.sqf";
