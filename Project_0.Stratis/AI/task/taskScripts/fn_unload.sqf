@@ -1,6 +1,8 @@
 #include "..\..\..\Garrison\garrison.hpp"
 
 #define DEBUG
+#define SLEEP_TIME 2
+#define SLEEP_RESOLUTION 0.1
 
 params ["_to"];
 
@@ -18,9 +20,8 @@ _garCargo = _garsCargo select 0;
 
 //Now wait until the infantry dismounts the vehicles
 private _run = true;
-while {_run} do
+while {_run && (_to getVariable "AI_run")} do
 {
-	sleep 2;
 	//Check if all the cargo units have dissappeared?
 	private _allCargoUnitHandles = _garCargo call gar_fnc_getAllUnitHandles;
 	if(count _allCargoUnitHandles == 0) exitWith
@@ -48,5 +49,17 @@ while {_run} do
 			moveOut _x;
 			#endif
 		} forEach _allCargoUnitHandles;
+	};
+	
+	if (_run) then
+	{
+		//Update time variable
+		_t = time + SLEEP_TIME;
+		//SLeep and check if it's ordered to stop the thread
+		waitUntil
+		{
+			sleep SLEEP_RESOLUTION;
+			(time > _t) || (!(_to getVariable "AI_run"))
+		};
 	};
 };

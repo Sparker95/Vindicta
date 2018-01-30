@@ -93,7 +93,7 @@ diag_log "======== UNLOAD TASK DONE ========";
 //==== MERGE task ====
 private _oTaskMerge = [_garCargo, "MERGE", [_locTo], "Merge task"] call AI_fnc_task_create;
 taskMerge = _oTaskMerge;
-_oTaskMerge call AI_fnc_task_merge;
+_oTaskMerge call AI_fnc_task_start;
 waitUntil
 {
 	sleep 1;
@@ -115,7 +115,7 @@ diag_log "======== MOVE TASK DONE ========";
 //==== MERGE task ====
 private _oTaskMerge = [_garTransport, "MERGE", [_locTransport], "Merge task"] call AI_fnc_task_create;
 taskMerge = _oTaskMerge;
-_oTaskMerge call AI_fnc_task_merge;
+_oTaskMerge call AI_fnc_task_start;
 waitUntil
 {
 	sleep 1;

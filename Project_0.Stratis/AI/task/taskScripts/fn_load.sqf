@@ -14,6 +14,8 @@ Disassemble & put into inventory	- static weapons + any vehicles. Or just disass
 
 #include "..\..\..\Garrison\garrison.hpp"
 
+#define SLEEP_TIME 2
+#define SLEEP_RESOLUTION 0.01
 #define DEBUG
 
 params ["_to"];
@@ -33,10 +35,10 @@ if(!([_garTransport, [_garCargo]] call gar_fnc_canLoadCargo)) exitWith
 [_garTransport, _garCargo] call AI_fnc_formVehicleGroup;
 
 //Now wait until the infantry boards the vehicles
-private _end = false;
-while {!_end} do
-{
-	sleep 2;
+private _run = true;
+private _t = time;
+while {_run && (_to getVariable "AI_run")} do
+{	
 	//Check if all the cargo units have dissappeared?
 	private _allCargoUnitHandles = _garCargo call gar_fnc_getAllUnitHandles;
 	if(count _allCargoUnitHandles == 0) exitWith
@@ -68,7 +70,7 @@ while {!_end} do
 	{
 		_to setVariable ["AI_taskState", "SUCCESS"];
 		[_garTransport, _garCargo] call gar_fnc_addCargoGarrison;
-		_end = true;
+		_run = false;
 	}
 	else
 	{
@@ -83,5 +85,17 @@ while {!_end} do
 			[_v, _x, _vr] call BIS_fnc_moveIn;
 		} forEach _allInfantryHandles;
 		#endif
+	};
+	
+	if(_run) then
+	{
+		//Update time variable
+		_t = time + SLEEP_TIME;
+		//SLeep and check if it's ordered to stop the thread
+		waitUntil
+		{
+			sleep SLEEP_RESOLUTION;
+			(time > _t) || (!(_to getVariable "AI_run"))
+		};
 	};
 };

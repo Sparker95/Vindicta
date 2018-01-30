@@ -73,6 +73,7 @@ AI_fnc_task_create =
 	#endif
 	//Create the task object
 	private _to = groupLogic createUnit ["LOGIC", [9, 9, 9], [], 0, "NONE"]; //Create a logic object
+	allTasks pushBack _to;
 	_to setVariable ["AI_taskState", "IDLE", false];
 	_to setVariable ["AI_name", _taskName, false];					//Name of this task for debug purposes
 	_to setVariable ["AI_hScript", scriptNull, false];				//Handle of the script spawned to process this task
@@ -81,6 +82,7 @@ AI_fnc_task_create =
 	_to setVariable ["AI_garrison", _gar, false];					//The garrison for which this task is started
 	_to setVariable ["AI_taskParams", _taskParams, false]; 			//Parameters to be passed to the script
 	_to setVariable ["AI_failReason", "", false];					//The reason why the task has failed
+	_to setVariable ["AI_run", false, false];						//This flag is set to false to request the task thread to stop
 	
 	//Return value
 	_to
@@ -89,12 +91,13 @@ AI_fnc_task_create =
 AI_fnc_task_delete =
 {
 	params ["_to"];
-	if(isNull _to) exitWith
+	if(isNull _to) then
 	{
 		diag_log "WARNING: AI_fnc_task_delete: task is objNull!";
 	};
 	//private _state = _to getVariable "AI_taskState";
-	_to call AI_fnc_task_stop; //Stop the thread if it's still running
+	_to call AI_fnc_task_stop; //Stop the thread if it's still running	
+	allTasks = allTasks - [_to];
 	deleteVehicle _to;
 };
 
@@ -119,7 +122,8 @@ AI_fnc_task_start =
 	_to setVariable ["AI_taskState", "RUNNING", false];
 	//Get variables
 	private _taskScriptName = _to getVariable "AI_taskScriptName";
-	//Spawn the script
+	//Spawn the script	
+	_to setVariable ["AI_run", true, false];
 	private _hScript = [_to] spawn (call compile _taskScriptName);
 	//Set the script handler
 	_to setVariable ["AI_hScript", _hScript, false];
@@ -135,6 +139,19 @@ AI_fnc_task_stop =
 	*/
 	params ["_to"];
 	if(isNull _to) exitWith {};
+	//Terminate the script in case it wasn't terminated
+	private _hScript = _to getVariable "AI_hScript";
+	_to setVariable ["AI_hScript", scriptNull, false];
+	_to setVariable ["AI_run", false, false]; //Notify the script that it must terminate
+	if(!scriptDone _hScript) then
+	{
+		if(canSuspend) then
+		{ //Wait until the script self-terminates
+			waitUntil {scriptDone _hScript};
+		};
+		//diag_log format ["AI_fnc_task_stop: task: %1, warning: task script was terminated by AI_fnc_task_stop!", _to getVeriable "AI_name"];
+	};	
+	//Run the stop function
 	private _stopFunctionName = _to getVariable "AI_stopFunctionName";
 	if(_stopFunctionName == "") then
 	{
@@ -144,18 +161,6 @@ AI_fnc_task_stop =
 	{
 		//Call the stop function
 		call (call compile _stopFunctionName);
-	};
-	//Terminate the script in case it wasn't terminated
-	private _hScript = _to getVariable "AI_hScript";
-	_to setVariable ["AI_hScript", scriptNull, false];
-	if(!scriptDone _hScript) then
-	{
-		terminate _hScript;
-		if(canSuspend) then
-		{
-			waitUntil {scriptDone _hScript};
-		};
-		//diag_log format ["AI_fnc_task_stop: task: %1, warning: task script was terminated by AI_fnc_task_stop!", _to getVeriable "AI_name"];
 	};
 	//Set garrison variable
 	private _gar = _to getVariable "AI_garrison";

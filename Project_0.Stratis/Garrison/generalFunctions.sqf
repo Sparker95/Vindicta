@@ -686,16 +686,16 @@ gar_fnc_getAssignedMission =
 };
 
 //Mission thread handle
-gar_fnc_setMissionThreadHandle =
+gar_fnc_setMissionScriptObject =
 {
-	params [["_gar", objNull, [objNull]], ["_hScript", scriptNull, [scriptNull]]];
-	_gar setVariable ["g_missionThreadHandle", _hScript, false];
+	params [["_gar", objNull, [objNull]], ["_so", objNull, [objNull]]];
+	_gar setVariable ["g_soMission", _so, false];
 };
 
-gar_fnc_getMissionThreadHandle=
+gar_fnc_getMissionScriptObject =
 {
 	params [["_gar", objNull, [objNull]]];
-	_gar getVariable "g_missionThreadHandle"
+	_gar getVariable "g_soMission"
 };
 
 //Manipulating the task object assigned to this garrison

@@ -42,3 +42,6 @@ call compile preprocessFileLineNumbers "Sense\initFunctions.sqf";
 
 //Initialize cluster module
 call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
+
+//Initialize script objects
+call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";

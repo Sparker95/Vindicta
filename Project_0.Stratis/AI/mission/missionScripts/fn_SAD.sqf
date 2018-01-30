@@ -21,7 +21,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: mission %1 entered INIT state", _m getVariable "AI_m_name"];
+			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered INIT state", _m getVariable "AI_m_name"];
 			#endif
 			//Switch state
 			_stateChanged = true;
@@ -34,7 +34,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: mission %1 entered MOVE state", _m getVariable "AI_m_name"];
+			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered MOVE state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Read mission parameters
@@ -75,7 +75,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: mission %1 entered SAD state", _m getVariable "AI_m_name"];
+			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered SAD state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Stop previous task
@@ -87,9 +87,9 @@ switch (_state) do
 			_mParams params ["_target"];
 			
 			//Create new task
-			private _oTaskSAD = [_gar, "SAD", [_target, 200, 666666666], "SAD, SAD mission"] call AI_fnc_task_create; //target, radius, time
-			taskSAD = _oTaskSAD;
-			_oTaskSAD call AI_fnc_task_start;
+			_oTask = [_gar, "SAD", [_target, 200, 666666666], "SAD, SAD mission"] call AI_fnc_task_create; //target, radius, time
+			//taskSAD = _oTaskSAD;
+			_oTask call AI_fnc_task_start;
 		};
 	};
 };

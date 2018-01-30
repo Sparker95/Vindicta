@@ -5,6 +5,9 @@ Task parameters:
 	["_target", "_searchRadius", "_timeout"];
 */
 
+#define SLEEP_TIME 2
+#define SLEEP_RESOLUTION 0.1
+
 params ["_to"]; //Task object
 
 //Initialize variables
@@ -108,14 +111,14 @@ _allGroupHandles call AI_fnc_deleteAllWaypoints;
 
 private _run = true;
 private _t = time;
+private _tPrev = time;
 private _timeSafe = 0;
 //Start a loop
-while {_run} do
+while {_run && (_to getVariable "AI_run")} do
 {
-	sleep 2;
 	//Time spent since previous iteration
-	_dt = time - _t;
-	_t = time;
+	_dt = time - _tPrev;
+	_tPrev = time;
 	
 	//Check if all the units have been destroyed
 	if ({alive _x} count _allHumanHandles == 0) exitWith
@@ -148,4 +151,16 @@ while {_run} do
 			_run = false;
 		};
 	};
-};
+	
+	if(_run) then
+	{
+		//Update time variable
+		_t = time + SLEEP_TIME;
+		//SLeep and check if it's ordered to stop the thread
+		waitUntil
+		{
+			sleep SLEEP_RESOLUTION;
+			(time > _t) || (!(_to getVariable "AI_run"))
+		};
+	};
+}; //while

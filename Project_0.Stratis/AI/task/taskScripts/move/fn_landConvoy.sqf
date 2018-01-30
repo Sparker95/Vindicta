@@ -10,7 +10,8 @@ Script for managing units in a convoy
 #define MOUNT_TIMER_LIMIT		50
 #define DISMOUNT_TIMER_LIMIT	30
 //Sleep interval
-#define SLEEP_INTERVAL 2
+#define SLEEP_RESOLUTION 0.01
+#define SLEEP_TIME 2
 
 params ["_to"];
 
@@ -49,11 +50,6 @@ _vehGroupHandle deleteGroupWhenEmpty false; //If all crew dies, inf groups might
 //Spawn a script
 private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 {	
-	//An aux function to get separation between vehicles in a convoy
-
-	
-	//Function to check if we need to 
-
 	//Read input parameters
 	params ["_to", "_vehArray", "_vehGroupHandle"];
 	
@@ -94,12 +90,13 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	private _nCrewPrev = _nCrew;
 	private _timer = 0; //Timer showing for how long the convoy has been stuck
 	private _t = time;
+	private _tPrev = time;
 	private _dt = 0;
-	while {_run} do
+	while {_run && (_to getVariable "AI_run")} do
 	{
-		_dt = time - _t;
-		_t = time;
-		sleep SLEEP_INTERVAL;
+		//Time spent since previous execution
+		_dt = time - _tPrev;
+		_tPrev = time;
 		//Update common variables
 		_allHumanHandles = _allHumanHandles select {alive _x};
 		private _allVehiclesCanMove = ((count _vehArray) == ({canMove _x} count _vehArray));
@@ -246,7 +243,9 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				#ifdef DEBUG
 				diag_log format ["fn_landConvoy.sqf: MOUNT state timer: %1", _timer];
 				#endif
-				if (_timer > MOUNT_TIMER_LIMIT) then
+				private _nHumansInVeh = {vehicle _x != _x} count _allHumanHandles;
+				//Only teleport them when someone has already boarded the vehicle
+				if (_timer > MOUNT_TIMER_LIMIT && (_nHumansInVeh > ceil 0.5*(count _allHumanHandles) )) then
 				{
 					//For fuck's sake why did you get stuck??
 					private _humansOnFoot =  _allHumanHandles select {vehicle _x isEqualTo _x};
@@ -283,7 +282,6 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					};
 					
 					//Check if all the infantry has boarded their vehicles
-					private _nHumansInVeh = {vehicle _x != _x} count _allHumanHandles;
 					diag_log format ["AI_fnc_task_move_landConvoy: waiting for units to get in: %1 / %2", _nHumansInVeh, count _allHumanHandles];
 					if(count _allHumanHandles == _nHumansInVeh ) exitWith
 					{
@@ -596,9 +594,21 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_stateChanged = true;
 				};
 			};
+		}; //switch
+		
+		if (_run) then
+		{
+			//Update time variable
+			_t = time + SLEEP_TIME;
+			//SLeep and check if it's ordered to stop the thread
+			waitUntil
+			{
+				sleep SLEEP_RESOLUTION;
+				(time > _t) || (!(_to getVariable "AI_run"))
+			};
 		};
-	};
-};
+	}; //while
+}; //spawn
 
 //Return the script handle
 _hScript
