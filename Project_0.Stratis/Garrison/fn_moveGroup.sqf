@@ -1,5 +1,7 @@
 /*
 Used to move a group from one garrison to another.
+
+_returnArray - the groupID of the new group will be written here.
 */
 
 #include "garrison.hpp"

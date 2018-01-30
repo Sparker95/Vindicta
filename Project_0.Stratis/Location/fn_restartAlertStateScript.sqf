@@ -7,6 +7,8 @@ params ["_loc"];
 
 waitUntil {(_loc getVariable ["l_AIScriptsMutex", 0]) == 0};
 
+diag_log format ["fn_restartAlertStateScript.sqf: restarting AI scripts of location: %1", _loc getVariable "l_name"];
+
 //Lock the mutex
 _loc setVariable ["l_AIScriptsMutex", 1, false];
 

@@ -60,7 +60,7 @@ private _chat =
 	(_men select 0) lookAt (_men select 1);
 	(_men select 1) lookAt (_men select 0);
 	doStop _men;
-	sleep 120 + (random 120);
+	sleep (120 + (random 120));
 	{
 		_x setVariable ["casualFree", true];
 	} forEach _men;
@@ -97,7 +97,7 @@ private _chat_campfire =
 		};
 		sleep 1;
 		if(random 1 < 0.666) then {_man action ["sitDown", _man];};
-		sleep 60 + (random 120); //Let him stay at the campfire for some time
+		sleep (60 + (random 120)); //Let him stay at the campfire for some time
 	};
 	_man setVariable ["casualFree", true];
 	_man lookAt objNull;
@@ -201,7 +201,7 @@ while {true} do
 		};
 	} forEach _freeUnits;
 	*/
-	sleep 15 + (random 15);
+	sleep (15 + (random 15));
 	_counter = _counter + 1;
 };
 

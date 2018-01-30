@@ -230,3 +230,6 @@ T_PL_inf_main = //Main infantry (excluding recon and divers)
 	[T_INF, T_INF_survivor],
 	[T_INF, T_INF_unarmed]
 ];
+
+//Transport vehicles (those that can potentially carry cargo)
+T_canLoadCargo = [];

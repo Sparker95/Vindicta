@@ -1,5 +1,6 @@
 /*
-This function assigns vehicles in specified group to units in the same group
+This function implements the standard vehicle role assignment for specified group of the garrison.
+So, for all vehicles in the group there will be assigned drivers, gunners and passengers - if specified in parameters;
 */
 
 #include "garrison.hpp"

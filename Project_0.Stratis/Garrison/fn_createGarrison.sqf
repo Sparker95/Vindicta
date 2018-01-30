@@ -95,19 +95,25 @@ _lo setVariable ["g_groups", []];
 
 _lo setVariable ["g_spawned", false, false];			//Indicates if the garrison is spawned or not
 _lo setVariable ["g_active", false, false];				//Means that it can or can't spawn other garrison
-_lo setVariable ["g_threadHandle", scriptNull, false];			//Handle to the garrison thread
-_lo setVariable ["g_AIThreadHandle", scriptNull, false];		//Handle to an AI script running for this garrison
-_lo setVariable ["g_enemiesThreadHandle", scriptNull, false];	//Handle to a script handling spotted enemies
+_lo setVariable ["g_threadHandle", scriptNull, false];	//Handle to the garrison thread
 _lo setVariable ["g_threadQueue", [], false];			//Message queue to pass requests
+_lo setVariable ["g_soMission", objNull, false];		//Script object for mission thread
+_lo setVariable ["g_oTask", objNull, false];			//The task object this garrison is doing
 _lo setVariable ["g_name", "Noname garrison", false];	//Name of this garrison
 _lo setVariable ["g_unitIDCounter", 0, false];			//Counter for unitID generator
 _lo setVariable ["g_location", objNull, false];			//The location where to request spawn positions from
 _lo setVariable ["g_assignRequestID", 0, false];		//Counter used for IDs assigned to requests
 _lo setVariable ["g_execRequestID", 0, false];			//Counter used for IDs of executed requests
-_lo setVariable ["g_enemiesObjects", [], false]; 		//Enemies spotted by this garrison
-_lo setVariable ["g_enemiesPos", [], false]; 			//Perceived positions of enemies spotted by this garrison
+//_lo setVariable ["g_enemiesObjects", [], false]; 		//Enemies spotted by this garrison
+//_lo setVariable ["g_enemiesPos", [], false]; 			//Perceived positions of enemies spotted by this garrison
 //_lo setVariable ["g_enemiesTime", 0, false];			//The time when enemies were reported last time
-_lo setVariable ["g_manageAlertState", false, false];	//Send requests to associated location to change alert state
+//_lo setVariable ["g_manageAlertState", false, false];	//Send requests to associated location to change alert state //TOD
+_lo setVariable ["g_cargo", [], false];					//The garrisons this garrison is carrying as cargo
+_lo setVariable ["g_mRegistered", [], false];			//Array with missions this garrison is registered to
+_lo setVariable ["g_mAssigned", objNull, false];		//The mission this garrison is assigned to
+
+//Push to the global garrison array
+allGarrisons pushBack _lo;
 
 //Return the logic object
 _lo

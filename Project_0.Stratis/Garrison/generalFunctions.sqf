@@ -4,6 +4,13 @@ Functions like set- or get-value stay here.
 
 #include "garrison.hpp"
 
+gar_fnc_isGarrison =
+{
+	params [["_lo", objNull, [objNull]]];
+	private _name = _lo getVariable ["g_name", nil];
+	if (isNil "_name") then	{ false } else { true };
+};
+
 gar_fnc_setName =
 {
 	/*
@@ -11,6 +18,12 @@ gar_fnc_setName =
 	*/
 	params ["_lo", "_name"];
 	_lo setVariable ["g_name", _name];
+};
+
+gar_fnc_getName =
+{
+	params ["_lo"];
+	_lo getVariable "g_name";
 };
 
 gar_fnc_setSide =
@@ -25,7 +38,7 @@ gar_fnc_setSide =
 gar_fnc_getSide =
 {
 	params ["_lo"];
-	private _return = _lo getVariable ["g_side", []];
+	private _return = _lo getVariable "g_side";
 	_return
 };
 
@@ -36,6 +49,8 @@ gar_fnc_setLocation =
 	*/
 	params ["_lo", "_location"];
 	_lo setVariable ["g_location", _location];
+	//Set garrison's position
+	_lo setPos (getPos _location);
 };
 
 gar_fnc_getLocation =
@@ -60,7 +75,9 @@ gar_fnc_getAllUnits =
 	/*
 	Returns all the unitDatas of all the units in the garrison.
 	*/
-	params ["_lo"];
+	params [["_lo", objNull, [objNull]]];
+	if (isNull _lo) exitWith {[]};
+	
 	private _categories = [_lo getVariable "g_inf", _lo getVariable "g_veh", _lo getVariable "g_drone"];
 	private _catSizes = [T_INF_size, T_VEH_size, T_DRONE_size];
 	private _returnUnitDatas = [];
@@ -80,18 +97,61 @@ gar_fnc_getAllUnits =
 	_returnUnitDatas
 };
 
+gar_fnc_getAllUnitHandles =
+{
+	/*
+	Returns all the unit handles of all the units in the garrison.
+	*/
+	params [["_lo", objNull, [objNull]]];
+	if (isNull _lo) exitWith {[]};
+	private _categories = [_lo getVariable "g_inf", _lo getVariable "g_veh", _lo getVariable "g_drone"];
+	private _catSizes = [T_INF_size, T_VEH_size, T_DRONE_size];
+	private _return = [];
+	for "_catID" from 0 to 2 do
+	{
+		for "_subcatID" from 0 to ((_catSizes select _catID) - 1) do
+		{
+			private _units = _categories select _catID select _subcatID;
+			for "_i" from 0 to ((count _units) - 1) do
+			{
+				private _unit = _units select _i;
+				_return pushBack (_unit select G_UNIT_HANDLE);
+			};
+		};
+	};
+	_return
+};
+
+gar_fnc_countAllUnits =
+{
+	params [["_lo", objNull, [objNull]]];
+	if (isNull _lo) exitWith {0};
+	private _categories = [_lo getVariable "g_inf", _lo getVariable "g_veh", _lo getVariable "g_drone"];
+	private _catSizes = [T_INF_size, T_VEH_size, T_DRONE_size];
+	private _return = 0;
+	for "_catID" from 0 to 2 do
+	{
+		for "_subcatID" from 0 to ((_catSizes select _catID) - 1) do
+		{
+			_return = _return + (count (_categories select _catID select _subcatID));
+		};
+	};
+	_return
+};
+
 gar_fnc_findUnits =
 {
 	/*
-	Used to find a unit with given category, subcategory and classID in garrison's database.
-	_classID can be -1 if you don't care which exactly class it is.
+	Used to find a unit with given category, subcategory in garrison's database.
+	_subcatID can be -1 if you don't care which exactly subcategory it is.
 	Return value:
 	an array of:
 	[_catID, _subcatID, _unitID] - for each found unit to satisfy this criteria
 	or [] if nothing found
 	*/
 	params [["_lo", objNull, [objNull]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_debug", true]];
-
+	if (isNull _lo) exitWith {[]};
+	
 	private _cat = [];
 	switch (_catID) do
 	{
@@ -108,16 +168,35 @@ gar_fnc_findUnits =
 			_cat = _lo getVariable ["g_drone", []];
 		};
 	};
-	private _subcat = _cat select _subcatID;
-	private _count = count _subcat;
-	private _i = 0;
-	private _unit = [];
 	private _return = [];
-	while{_i < _count} do
+	if (_subcatID != -1) then
 	{
-		_unit = _subcat select _i;
-		_return pushBack [_catID, _subcatID, _unit select 2];
-		_i = _i + 1;
+		private _subcat = _cat select _subcatID;
+		private _count = count _subcat;
+		private _i = 0;
+		private _unit = [];
+		while{_i < _count} do
+		{
+			_unit = _subcat select _i;
+			_return pushBack [_catID, _subcatID, _unit select 2];
+			_i = _i + 1;
+		};
+	}
+	else
+	{
+		for "_i" from 0 to ((count _cat) - 1) do
+		{
+			private _subcat = _cat select _i;
+			private _count = count _subcat;
+			private _j = 0;
+			private _unit = [];
+			while{_j < _count} do
+			{
+				_unit = _subcat select _j;
+				_return pushBack [_catID, _i, _unit select 2];
+				_j = _j + 1;
+			};
+		};
 	};
 	_return
 };
@@ -127,13 +206,14 @@ gar_fnc_countUnits =
 	/*
 	Counts units that have their [_catID, _subcatID] in _types and have specified _groupType.
 	_types - array of:
-		[_catID, _subcatID]
+		[_catID, _subcatID], _subcatID can be -1 if it doesn't matter
 	_groupType - the group type, or:
 		-1 to ignore _groupType.
 	return value: number
 	*/
 
 	params [["_lo", objNull, [objNull]], ["_types", [], [[]]], "_groupType"];
+	if (isNull _lo) exitWith {0};
 
 	private _count = 0;
 	private _searchInf = false;
@@ -168,20 +248,27 @@ gar_fnc_countUnits =
 	{
 		_catID = _x select 0;
 		_subcatID = _x select 1;
+		private _cat = [];
 		switch (_catID) do //Get the units in this subcategory
 		{
 			case T_INF:
-			{
-				_subcat = _g_inf select _subcatID;
-			};
+			{ _cat = _g_inf; };
 			case T_VEH:
-			{
-				_subcat = _g_veh select _subcatID;
-			};
+			{_cat = _g_veh; };
 			case T_DRONE:
+			{ _cat = _g_drone; };
+		};
+		//If _subcatID is not -1
+		if (_subcatID != -1) then
+		{
+			_subcat = _cat select _subcatID;
+		}
+		else
+		{
+			_subcat = [];
 			{
-				_subcat = _g_drone select _subcatID;
-			};
+				_subcat append _x;
+			} forEach _cat;
 		};
 		//Count only units that have specified groupType or ignore the group type
 		if(_groupType == -1) then //If groupType is ignored, just count units in this subcategory
@@ -206,6 +293,14 @@ gar_fnc_countUnits =
 	_count
 };
 
+gar_fnc_getAllGroups =
+{
+	params [["_lo", objNull, [objNull]]];
+	if (isNull _lo) exitWith {[]};
+	private _groups = [_lo, -1] call gar_fnc_findGroups;
+	_groups
+};
+
 gar_fnc_findGroups =
 {
 	/*
@@ -221,6 +316,7 @@ gar_fnc_findGroups =
 		or [] if nothing found
 	*/
 	params [["_lo", objNull, [objNull]], ["_groupType", -1, [0]]];
+	if (isNull _lo) exitWith {[]};
 	private _gt = 0;
 	private _gid = 0;
 	private _groups = _lo getVariable ["g_groups", []];
@@ -242,6 +338,7 @@ gar_fnc_findGroupHandles =
 	Returns group handles of groups having specific group type, or any group type if _groupType = -1;
 	*/
 	params [["_lo", objNull, [objNull]], ["_groupType", -1, [0]]];
+	if (isNull _lo) exitWith {[]};
 	private _hGs = [];
 	private _hG = grpNull;
 	private _gt = 0;
@@ -263,8 +360,20 @@ gar_fnc_getGroupHandle =
 	Returns the group handle of specified group.
 	*/
 	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
+	if (isNull _lo) exitWith {grpNull};
 	private _group = [_lo, _groupID, 0] call gar_fnc_getGroup;
 	_group select G_GROUP_HANDLE
+};
+
+gar_fnc_getGroupType =
+{
+	/*
+	Returns the group type of specified group.
+	*/
+	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
+	if (isNull _lo) exitWith {-1};
+	private _group = [_lo, _groupID, 0] call gar_fnc_getGroup;
+	_group select G_GROUP_TYPE
 };
 
 gar_fnc_getGroup =
@@ -281,7 +390,15 @@ gar_fnc_getGroup =
 	*/
 
 	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]], ["_returnType", 0]];
-
+	if (isNull _lo) exitWith
+	{
+		switch (_returnType) do
+		{
+			case 0: {[]};
+			case 1: {-1};
+			case 2: {[[], -1]};
+		};
+	};
 	private _groups = _lo getVariable ["g_groups", []];
 
 	private _group = [];
@@ -325,6 +442,8 @@ gar_fnc_getGroupUnits =
 	The units are returned as an array: [_catID, _subcatID, _unitID]
 	*/
 	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
+	if (isNull _lo) exitWith {[]};
+	
 	private _group = [_lo, _groupID, 0] call gar_fnc_getGroup;
 	private _groupUnits = _group select G_GROUP_UNITS;
 	private _return = [];
@@ -340,6 +459,8 @@ gar_fnc_getGroupUnits =
 gar_fnc_getGroupAliveUnits =
 {
 	params [["_lo", objNull, [objNull]], ["_groupID", 0, [0]]];
+	if (isNull _lo) exitWith {[]};
+	
 	private _units = [_lo, _groupID] call gar_fnc_getGroupUnits;
 	_units select {(_x select 2) != -1}
 };
@@ -350,6 +471,8 @@ gar_fnc_getUnitGroupID =
 	Returns the group ID of the unit with specified _unitData
 	*/
 	params [["_lo", objNull, [objNull]], ["_unitData", [0, 0, 0], [[]]]];
+	if (isNull _lo) exitWith {-1};
+	
 	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
 	_unit select G_UNIT_GROUP_ID
 };
@@ -362,8 +485,31 @@ gar_fnc_getUnitHandle =
 	Return value: units' object handle or objNull if the unit is not found.
 	*/
 	params ["_lo", "_unitData"];
+	if (isNull _lo) exitWith {objNull};
 	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
 	if(count _unit == 0) then {objNull} else {_unit select 1};
+};
+
+gar_fnc_getUnitData =
+{
+	/*
+	Gets unitData of an alive unit
+	*/
+	params ["_unitHandle"];
+	_unitHandle getVariable ["g_unitData", []];
+};
+
+gar_fnc_getUnitClassname =
+{
+	/*
+	Returns the handle of the unit with specified _unitData.
+	
+	Return value: units' object handle or objNull if the unit is not found.
+	*/
+	params ["_lo", "_unitData"];
+	if (isNull _lo) exitWith {""};
+	private _unit = [_lo, _unitData] call gar_fnc_getUnit;
+	if(count _unit == 0) then {objNull} else {_unit select G_UNIT_CLASSNAME};
 };
 
 gar_fnc_getUnit =
@@ -381,7 +527,15 @@ gar_fnc_getUnit =
 	*/
 
 	params [["_lo", objNull, [objNull]], ["_unitData", [0, 0, 0], [[]]], ["_returnType", 0]];
-
+	if (isNull _lo) exitWith
+	{
+		switch (_returnType) do
+		{
+			case 0: {[]};
+			case 1: {[[], -1]};
+			case 2: {[[], [[], -1]]};
+		};
+	};
 	private _catID = _unitData select 0;
 	private _subcatID = _unitData select 1;
 	private _unitID = _unitData select 2;
@@ -434,4 +588,125 @@ gar_fnc_getUnit =
 			[_foundUnit, [_subcat, _i]]
 		};
 	};
+};
+
+//Manipulating the array of cargo garrisons
+gar_fnc_addCargoGarrison =
+{
+	params [["_lo", objNull, [objNull]], ["_gCargo", objNull, [objNull]]];
+	private _cargoGarrisons = _lo getVariable "g_cargo";
+	_cargoGarrisons pushBackUnique _gCargo;
+};
+
+gar_fnc_removeCargoGarrison =
+{
+	params [["_lo", objNull, [objNull]], ["_gCargo", objNull, [objNull]]];
+	private _cargoGarrisons = _lo getVariable "g_cargo";
+	_cargoGarrisons = _cargoGarrisons - [_gCargo];
+	_lo setVariable ["g_cargo", _cargoGarrisons, false];
+};
+
+gar_fnc_getCargoGarrisons =
+{
+	params [["_lo", objNull, [objNull]]];
+	if(isNull _lo) exitWith {[]};
+	_lo getVariable "g_cargo"
+};
+
+//Manipulating the registered/assigned missions
+/*
+gar_fnc_registerMission =
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	private _gm = _gar getVariable "g_mRegistered";
+	_gm pushBack _mo;
+};
+
+gar_fnc_unregisterMission =
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	private _gm = _gar getVariable "g_mRegistered";
+	_gm = _gm - [_mo];
+	_gar setVariable ["g_mRegistered", _gm, false];
+};
+
+gar_fnc_getRegisteredMissions =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar getVariable "g_mRegistered"
+};
+*/
+
+//Assigned mission
+
+/*
+gar_fnc_assignMission = 
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", _mo, false];
+	//Start a thread to monitor the execution of a task
+	private _hScript = _gar getVariable "g_missionThreadHandle";
+	if (scriptDone _hScript) then //If it's scriptNull OR if the previous script has been terminated
+	{
+		_hScript = _gar spawn AI_fnc_mission_garrisonThread;
+		_gar setVariable ["g_missionThreadHandle", _hScript, false];
+	};
+};
+*/
+
+/*
+gar_fnc_unassignMission =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", objNull, false];
+	//Terminate the script
+	private _hScript = _gar getVariable "g_missionThreadHandle";
+	if(!scriptDone _hScript) then
+	{
+		terminate _hScript;
+		if (canSuspend) then
+		{
+			waitUntil { scriptDone _hScript};
+		};
+	};
+	_gar setVariable ["g_missionThreadHandle", scriptNull, false];
+};
+*/
+
+gar_fnc_setAssignedMission = 
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", _mo, false];
+};
+
+gar_fnc_getAssignedMission =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar getVariable "g_mAssigned"
+};
+
+//Mission thread handle
+gar_fnc_setMissionScriptObject =
+{
+	params [["_gar", objNull, [objNull]], ["_so", objNull, [objNull]]];
+	_gar setVariable ["g_soMission", _so, false];
+};
+
+gar_fnc_getMissionScriptObject =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar getVariable "g_soMission"
+};
+
+//Manipulating the task object assigned to this garrison
+gar_fnc_setTask =
+{
+	params ["_gar", "_to"];
+	_gar setVariable ["g_oTask", _to];
+};
+
+gar_fnc_getTask =
+{
+	params ["_gar"];
+	_gar getVariable ["g_oTask", objNull]
 };

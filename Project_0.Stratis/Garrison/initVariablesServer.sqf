@@ -12,3 +12,6 @@ G_VR_driver = 0;
 G_VR_turret = 1;
 G_VR_cargo_turret = 2;
 G_VR_cargo = 3;
+
+//Global variable
+allGarrisons = [];

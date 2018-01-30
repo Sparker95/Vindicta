@@ -10,6 +10,8 @@ if(isNil "groupLogic") then
 call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
 call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
+call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
+
 //Initialize the NATO template
 tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
 tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
@@ -29,6 +31,7 @@ call compile preprocessFileLineNumbers "Location\initVariablesServer.sqf";
 
 //Initialize AI scripts
 call compile preprocessFileLineNumbers "AI\initFunctions.sqf";
+call compile preprocessFileLineNumbers "AI\initVariablesServer.sqf";
 
 //Initialize UI functions
 call compile preprocessFileLineNumbers "UI\initFunctions.sqf";
@@ -39,3 +42,6 @@ call compile preprocessFileLineNumbers "Sense\initFunctions.sqf";
 
 //Initialize cluster module
 call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
+
+//Initialize script objects
+call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";

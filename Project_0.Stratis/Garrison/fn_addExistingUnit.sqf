@@ -3,7 +3,7 @@ Used to add an existing unit to garrison when moving a unit from one garrison to
 Normally units should only be transfered in groups, but we have vehicles as an exclusion.
 
 _unitFullData structure:
-[_catID, _subcatID, _class, _objectHandle]
+[_catID, _subcatID, _class, _objectHandle, _destGroupID]
 _objectHandle is _objNull for not spawned units.
 
 Parameters:

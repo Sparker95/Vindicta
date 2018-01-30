@@ -1,5 +1,5 @@
 /*
-Used inside the garrison thread to move a unit from one garrison to another
+Used inside the garrison thread to move a unit from this garrison to another
 
 Parameters:
 	_lo - from where to move unit
@@ -10,8 +10,7 @@ Parameters:
 
 params ["_lo", "_requestData"];
 
-private _lo_dst = _requestData select 0;
-private _unitData = _requestData select 1;
+_requestData params ["_lo_dst", "_unitData", "_destGroupID"];
 
 private _catID = _unitData select 0;
 private _subcatID = _unitData select 1;
@@ -53,10 +52,15 @@ if(_i == _count) exitWIth //Error: unit with this ID not found
 private _objectHandle = _unit select G_UNIT_HANDLE;
 private _className = _unit select G_UNIT_CLASSNAME;
 private _groupID = _unit select G_UNIT_GROUP_ID;
-//Check if the unit we are trying to move doesn't have a group. Only vehicles might be without group.
-if (_groupID != -1) exitWith
+//Check if the destination group doesn't exist
+//private _destGroupIndex = -1;
+//if(_destGroupID != -1) then
+//{
+	private _destGroupIndex = [_lo_dst, _destGroupID, 1] call gar_fnc_getGroup; //Get only the index
+//};
+if (_destGroupID != -1 && _destGroupIndex == -1) exitWith //If the dest group is specified but not foound
 {
-	diag_log format ["fn_t_moveUnit.sqf: garrison: %1, error: attempt to move unit %2 without its group", _lo getVariable ["g_name", ""], _unitData];
+	diag_log format ["fn_t_moveUnit.sqf: garrison: %1, error: attempt to move unit %2 to non-existing group %3", _lo getVariable ["g_name", ""], _unitData, _destGroupID];
 };
 
 //First remove the unit from source garrison
@@ -64,5 +68,5 @@ if (_groupID != -1) exitWith
 [_lo, _unitData] call gar_fnc_t_removeUnit;
 //Then add the unit to the destination garrison
 //Note that a non-thread function is used here, it will only add the request to the queue, the actual addition of the unit will happen later
-private _rid = [_lo_dst, [_catID, _subcatID, _className, _objectHandle, -1]] call gar_fnc_addExistingUnit;
+private _rid = [_lo_dst, [_catID, _subcatID, _className, _objectHandle, _destGroupID]] call gar_fnc_addExistingUnit;
 waitUntil {[_lo_dst, _rid] call gar_fnc_requestDone};

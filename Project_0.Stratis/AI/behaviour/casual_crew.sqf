@@ -60,5 +60,5 @@ while {true} do
 			_manMove doMove ((((getPos _veh) select [0, 2]) + [0]) vectorAdd [-8 + random 16, -8 + random 16, 0]); //Walk around his vehicle
 		};
 	//} forEach _unitsWalk;
-	sleep 5+(random 5);
+	sleep (5+(random 5));
 };

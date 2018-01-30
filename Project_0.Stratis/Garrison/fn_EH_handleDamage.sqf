@@ -21,9 +21,11 @@ private _instigator = _this select 6; //: Object - Person who pulled the trigger
 if ((side _source == side _unit) && /*(_projectile == "") &&*/ (isNull _instigator)) then
 {
 	0
-}
+};
+/*
 else
 {
 	//diag_log format ["fn_EH_handleDamage.sqf: _unit: %1, _hitSelection: %2, _damage: %3, _source: %4, _projectile: %5, _hitPartIndex: %6, _instigator: %7, _hitPoint_ %8", _unit, _hitSelection, _damage, _source, _projectile, _hitPartIndex, _instigator, _hitPoint];
-	_damage
+	//damage //If no value is returned, the default damage processing will be done.
 };
+*/

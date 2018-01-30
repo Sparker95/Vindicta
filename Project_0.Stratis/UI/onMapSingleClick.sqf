@@ -45,7 +45,7 @@ else
 
 diag_log format ["onMapSingleClick: selected location: %1", [_selectedLocation] call loc_fnc_getName];
 
-private _return;
+private _return = false;
 if(_selectedLocation isEqualTo objNull) then //User didn't click on any base, don't show the menu then
 {
 	_ctrlGroup ctrlShow false;
