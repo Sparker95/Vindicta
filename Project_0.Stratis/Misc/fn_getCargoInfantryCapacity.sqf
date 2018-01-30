@@ -17,7 +17,7 @@
 
 private _vehArray = _this;
 
-if(_vehArray isEqualType objNull) then
+if(!(_vehArray isEqualType [])) then
 {
 	_vehArray = [_vehArray];
 };

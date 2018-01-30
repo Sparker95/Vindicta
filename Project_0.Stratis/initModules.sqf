@@ -31,6 +31,7 @@ call compile preprocessFileLineNumbers "Location\initVariablesServer.sqf";
 
 //Initialize AI scripts
 call compile preprocessFileLineNumbers "AI\initFunctions.sqf";
+call compile preprocessFileLineNumbers "AI\initVariablesServer.sqf";
 
 //Initialize UI functions
 call compile preprocessFileLineNumbers "UI\initFunctions.sqf";

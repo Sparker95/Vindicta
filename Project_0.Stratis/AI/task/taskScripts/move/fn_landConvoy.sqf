@@ -24,12 +24,14 @@ else
 { objNull };
 
 //Form a single group for vehicles
-[_garTransport, _garsCargo] call AI_fnc_formVehicleGroup;
+[_garTransport, [_garTransport] + _garsCargo] call AI_fnc_formVehicleGroup;
 
 //Assign all infantry as cargo
 [_garTransport, _garsCargo] call AI_fnc_assignInfantryCargo;
 
-private _vehGroupID = (_garTransport call gar_fnc_getAllGroups) select 0;
+private _vehGroupID = ([_garTransport, G_GT_veh_non_static] call gar_fnc_findGroups) select 0;
+
+diag_log format ["====== land convoy: veh group ID: %1", _vehGroupID];
 
 //Find all the vehicles
 private _vehArray = [];
@@ -41,6 +43,7 @@ private _vehArray = [];
 } forEach (_garTransport call gar_fnc_getAllUnits);
 
 private _vehGroupHandle = [_garTransport, _vehGroupID] call gar_fnc_getGroupHandle;
+diag_log format ["====== land convoy: veh group handle: %1", _vehGroupHandle];
 _vehGroupHandle deleteGroupWhenEmpty false; //If all crew dies, inf groups might take their seats
 
 //Spawn a script
@@ -52,7 +55,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	//Function to check if we need to 
 
 	//Read input parameters
-	params ["_to", "_vehArray", "_vehGroupHandle", "_destPos"];
+	params ["_to", "_vehArray", "_vehGroupHandle"];
 	
 	//Read task parameters
 	private _taskParams = _to getVariable "AI_taskParams";
@@ -64,6 +67,8 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 		_destPos = getPos _dest;
 		_destType = 1;
 	};
+	
+	diag_log format ["==== land convoy destPos: %1", _destPos];
 	
 	//Read some variables
 	private _garTransport = _to getVariable "AI_garrison";
@@ -359,15 +364,17 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				if (_stateChanged) then
 				{
 					diag_log "AI_fnc_task_move_landConvoy: entered MOVE state";
-					while {(count (waypoints _vehGroupHandle)) > 0} do
-					{
-						deleteWaypoint [_vehGroupHandle, ((waypoints _vehGroupHandle) select 0) select 1];
-					};
+					_vehGroupHandle call AI_fnc_deleteAllWaypoints;
 					//Add new waypoint
 					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
 					_wp0 setWaypointType "MOVE";
 					_wp0 setWaypointCompletionRadius 20;
 					_vehGroupHandle setCurrentWaypoint _wp0;
+					
+					{
+						diag_log format [" ===== waypoint: %1 pos: %2", _x, waypointPosition _x];
+					} forEach (waypoints _vehGroupHandle);
+					
 					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					//Set convoy separation
 					{

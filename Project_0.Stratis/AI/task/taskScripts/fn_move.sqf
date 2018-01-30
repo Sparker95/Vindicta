@@ -5,7 +5,7 @@ Parameters:
 	_to - the task object
 	
 Task parameters:
-[_dest]
+[_dest, _radius]
 _dest - the destination. It may be one of several types:
 	ARRAY - destination position [x, y, z]
 	OBJECT - destination location

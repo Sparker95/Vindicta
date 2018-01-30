@@ -1,3 +1,19 @@
+/*
+call compile preprocessFileLineNumbers "AI\mission\initFunctions.sqf";
+["SAD", WEST, 10, [[4100, 4600, 0]], "Attack mission"] call AI_fnc_mission_create;
+_m = allMissions select 0;
+_g = (alllocations select 1) call loc_fnc_getMainGarrison;
+[_m, _g] call AI_fnc_mission_calculateEfficiency;
+true spawn AI_fnc_mission_missionMonitor;
+*/
+
+/*
+Mission types:
+	SAD
+		parameters:
+			_target - Pos ARRAY or Location OBJECT
+*/
+
 #define DEBUG
 
 AI_fnc_mission_create =
@@ -5,14 +21,15 @@ AI_fnc_mission_create =
 	/*
 	Creates a new mission object
 	*/
-	params ["_type", "_pos", "_side", "_requirements", ["_name", "Noname mission"]];
-	private _mo = groupLogic createUnit ["LOGIC", _pos, [], 0, "NONE"]; //Create a logic object
+	params ["_type", "_side", "_requirements", "_extraParams", ["_name", "Noname mission"]];
+	private _mo = groupLogic createUnit ["LOGIC", [10, 10, 10], [], 0, "NONE"]; //Create a logic object
 	_mo setVariable ["AI_m_type", _type, false];
 	_mo setVariable ["AI_m_state", "IDLE", false];
+	_mo setVariable ["AI_m_params", _extraParams];
 	_mo setVariable ["AI_m_name", _name, false];
 	_mo setVariable ["AI_m_rGarrisons", [], false]; //Array with registered garrisons
 	_mo setVariable ["AI_m_aGarrisons", [], false]; //Array with assigned garrisons
-	_mo setVariable ["AI_m_requirements", [], false]; //Requirements to register for this mission
+	_mo setVariable ["AI_m_requirements", _requirements, false]; //Requirements to register for this mission
 	_mo setVariable ["AI_m_side", _side, false]; //Side of the mission
 	allMissions pushBack _mo;
 	//Return value
@@ -23,6 +40,18 @@ AI_fnc_mission_getSide =
 {
 	params ["_mo"];
 	_mo getVariable "AI_m_side"
+};
+
+AI_fnc_mission_getType =
+{
+	params ["_mo"];
+	_mo getVariable "AI_m_type";
+};
+
+AI_fnc_mission_getName =
+{
+	params ["_mo"];
+	_mo getVariable "AI_m_name";
 };
 
 AI_fnc_mission_delete =
@@ -47,14 +76,25 @@ AI_fnc_mission_start =
 	params ["_mo"];
 	
 	//Check which garrisons have registered for the mission
-	private _gRegistered = +(_mo getVariable "AI_m_gRegistered");
-	if(count _gRegistered > 0) then //If there is someone able to do the mission
+	private _rGarrisons = +(_mo getVariable "AI_m_rGarrisons");
+	if(count _rGarrisons > 0) then //If there is someone able to do the mission
 	{
+		#ifdef DEBUG
+		diag_log format ["AI_fnc_mission_start: starting mission: %1", _mo getVariable "AI_m_name"];
+		#endif
 		//Sort the registered garrison array in descending order
-		_gRegistered sort false;
+		_rGarrisons sort false;
 		//Pick the most suitable garrison
-		private _gar = _gRegistered select 0;
+		private _gar = _rGarrisons select 0 select 0;
 		[_mo, _gar] call AI_fnc_mission_assignGarrison;
+		//Set mission state
+		_mo setVariable ["AI_m_state", "RUNNING"];
+		//Unregister the garrison from all missions
+		{
+			[_x, _gar] call AI_fnc_mission_unregisterGarrison;
+		} forEach allMissions;
+		//Unregister all garrisons from this mission
+		_mo setVariable ["AI_m_rGarrisons", [], false];
 	}
 	else //Do nothing
 	{
@@ -68,6 +108,13 @@ AI_fnc_mission_stop =
 	Stops a mission
 	*/
 	params ["_mo"];
+	//Find all garrisons currently running this mission
+	private _gars = _mo getVariable "AI_m_aGarrisons";
+	{
+		_x call AI_fnc_mission_unassignGarrison;
+	} forEach _gars;
+	//Set mission state
+	_mo setVariable ["AI_m_state", "IDLE", false];
 };
 
 AI_fnc_mission_assignGarrison =
@@ -109,7 +156,7 @@ AI_fnc_mission_assignGarrison =
 	
 	//Move infantry units into the new group
 	private _j = _mRequirements;
-	while {(count _allInfUnits) > 0 && _j > -1} do
+	while {(count _allInfUnits) > 0 && _j > 0} do
 	{
 		private _unitData = _allInfUnits select ((count _allInfUnits) - 1);
 		_rid = [_gar, _unitData, _infGroupID, true] call gar_fnc_joinGroup;
@@ -119,10 +166,10 @@ AI_fnc_mission_assignGarrison =
 	waitUntil {[_gar, _rid] call gar_fnc_requestDone};
 	
 	//Move the infantry group into the new garrison
-	_rid = [_gar, _garMission, _infGroupID] call gar_fnc_moveGroup;
+	_rid = [_gar, _garMission, _infGroupID, []] call gar_fnc_moveGroup;
 	
 	//Allocate transport vehicles for the infantry
-	private _allVehUnits = [_gar, T_INF, -1] call gar_fnc_findUnits;
+	private _allVehUnits = [_gar, T_VEH, -1] call gar_fnc_findUnits;
 	private _cargoCapacity = 0;
 	private _i = 0;
 	private _nVehicles = count _allVehUnits;
@@ -139,7 +186,7 @@ AI_fnc_mission_assignGarrison =
 			if (_vehGroupID == -1) then
 			{
 				//If vehicle doesn't have a group, just move it to the other garrison
-				_rid = [_gar, _garMission, _unitData] call gar_fnc_moveUnit;
+				_rid = [_gar, _garMission, _unitData, -1] call gar_fnc_moveUnit;
 			}
 			else
 			{
@@ -147,6 +194,7 @@ AI_fnc_mission_assignGarrison =
 				_rid = [_gar, _garMission, _vehGroupID] call gar_fnc_moveGroup;
 			};
 		};
+		_cargoCapacity = _cargoCapacity + _cc;
 		_i = _i + 1;
 	};
 	waitUntil {[_gar, _rid] call gar_fnc_requestDone};
@@ -162,16 +210,46 @@ AI_fnc_mission_assignGarrison =
 		_loc call loc_fnc_restartAlertStateScript;
 	};
 	
-	private _gAssigned = _mo getVariable "AI_m_gAssigned";
-	_gAssigned pushBack _garMission;
-	[_garMission, _mo] call gar_fnc_assignMission;
+	#ifdef DEBUG
+	diag_log format ["AI_fnc_mission_assignGarrison: garrison %1 has been assigned for mission: %2",
+		_garMission call gar_fnc_getName, _mo getVariable "AI_m_name"];
+	#endif
+	
+	//Store the garrison object into array
+	private _aGarrisons = _mo getVariable "AI_m_aGarrisons"; //Assigned garrisons
+	_aGarrisons pushBack _garMission;
+	
+	//Start a mission thread for this garrison
+	private _hScript = _garMission call gar_fnc_getMissionThreadHandle;
+	if (scriptDone _hScript) then //If it's scriptNull OR if the previous script has been terminated
+	{
+		_hScript = _garMission spawn AI_fnc_mission_garrisonThread;
+		[_gar, _hScript] call gar_fnc_setMissionThreadHandle;
+	};
+	[_garMission, _mo] call gar_fnc_setAssignedMission;
 };
 
 AI_fnc_mission_unassignGarrison =
 {
 	/*
-	Unassigns garrisons fromw the task.
+	Unassigns garrisons from the task.
 	*/
+	params ["_mo", "_gar"];
+	private _gm = _gar call gar_fnc_getAssignedMission;
+	if(_gm isEqualTo _mo) then
+	{
+		//_gar call gar_fnc_unassignMission;
+		[_gm, objNull] call gar_fnc_setAssignedMission;
+		private _aGarrisons = _mo getVariable "AI_m_aGarrisons"; //Assigned garrisons
+		_aGarrisons  = _aGarrisons - [_gar];
+		_mo setVariable ["AI_m_aGarrisons", _aGarrisons, false];
+	};
+};
+
+AI_fnc_mission_getAssignedGarrisons =
+{
+	params ["_mo"];
+	_mo getVariable "AI_m_aGarrisons";
 };
 
 AI_fnc_mission_registerGarrison =
@@ -182,12 +260,25 @@ AI_fnc_mission_registerGarrison =
 	params ["_mo", "_gar", "_efficiency"];
 	private _rGars = _mo getVariable "AI_m_rGarrisons";
 	_rGars pushBack [_gar, _efficiency];
+	
+	#ifdef DEBUG
+	diag_log format ["AI_fnc_mission_registerGarrison: garrison %1 has been registered for mission: %2, efficiency: %3",
+		_gar call gar_fnc_getName, _mo getVariable "AI_m_name", _efficiency];
+	#endif
 };
 
-AI_fnc_mission_getRegistered_garrisons =
+AI_fnc_mission_getRegisteredGarrisons =
 {
+	/*
+	Returns an array of all garrisons assigned to this mission, without efficiency.
+	*/
 	params ["_mo"];
-	_mo getVariable "AI_m_gRegistered"
+	private _g = _mo getVariable "AI_m_rGarrisons";
+	private _return = [];
+	{
+		_return pushBack (_x select 0); //Structure is: [_garrison, _efficiency]
+	} forEach _g;
+	_return
 };
 
 AI_fnc_mission_unregisterGarrison =
@@ -198,7 +289,7 @@ AI_fnc_mission_unregisterGarrison =
 	params ["_mo", "_gar"];
 	private _rGars = _mo getVariable "AI_m_rGarrisons";
 	private _rGarsFound = _rGars select {_x select 0 isEqualTo _gar};
-	if(!_rGarsFound isEqualTo []) then //If some registered garrison has been found
+	if(!(_rGarsFound isEqualTo [])) then //If some registered garrison has been found
 	{
 		_rGars = _rGars - _rGarsFound;
 	};

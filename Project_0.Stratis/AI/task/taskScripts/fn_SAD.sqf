@@ -1,5 +1,8 @@
 /*
 Search and destroy task.
+
+Task parameters:
+	["_target", "_searchRadius", "_timeout"];
 */
 
 params ["_to"]; //Task object

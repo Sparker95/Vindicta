@@ -614,6 +614,7 @@ gar_fnc_getCargoGarrisons =
 };
 
 //Manipulating the registered/assigned missions
+/*
 gar_fnc_registerMission =
 {
 	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
@@ -634,9 +635,45 @@ gar_fnc_getRegisteredMissions =
 	params [["_gar", objNull, [objNull]]];
 	_gar getVariable "g_mRegistered"
 };
+*/
 
 //Assigned mission
+
+/*
 gar_fnc_assignMission = 
+{
+	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", _mo, false];
+	//Start a thread to monitor the execution of a task
+	private _hScript = _gar getVariable "g_missionThreadHandle";
+	if (scriptDone _hScript) then //If it's scriptNull OR if the previous script has been terminated
+	{
+		_hScript = _gar spawn AI_fnc_mission_garrisonThread;
+		_gar setVariable ["g_missionThreadHandle", _hScript, false];
+	};
+};
+*/
+
+/*
+gar_fnc_unassignMission =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar setVariable ["g_mAssigned", objNull, false];
+	//Terminate the script
+	private _hScript = _gar getVariable "g_missionThreadHandle";
+	if(!scriptDone _hScript) then
+	{
+		terminate _hScript;
+		if (canSuspend) then
+		{
+			waitUntil { scriptDone _hScript};
+		};
+	};
+	_gar setVariable ["g_missionThreadHandle", scriptNull, false];
+};
+*/
+
+gar_fnc_setAssignedMission = 
 {
 	params [["_gar", objNull, [objNull]], ["_mo", objNull, [objNull]]];
 	_gar setVariable ["g_mAssigned", _mo, false];
@@ -648,8 +685,28 @@ gar_fnc_getAssignedMission =
 	_gar getVariable "g_mAssigned"
 };
 
-gar_fnc_unassignMission =
+//Mission thread handle
+gar_fnc_setMissionThreadHandle =
+{
+	params [["_gar", objNull, [objNull]], ["_hScript", scriptNull, [scriptNull]]];
+	_gar setVariable ["g_missionThreadHandle", _hScript, false];
+};
+
+gar_fnc_getMissionThreadHandle=
 {
 	params [["_gar", objNull, [objNull]]];
-	_gar setVariable ["g_mAssigned", objNull, false];
+	_gar getVariable "g_missionThreadHandle"
+};
+
+//Manipulating the task object assigned to this garrison
+gar_fnc_setTask =
+{
+	params ["_gar", "_to"];
+	_gar setVariable ["g_oTask", _to];
+};
+
+gar_fnc_getTask =
+{
+	params ["_gar"];
+	_gar getVariable ["g_oTask", objNull]
 };
