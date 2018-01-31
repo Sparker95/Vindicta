@@ -1,0 +1,1 @@
+cmr_fnc_senseMonitor = compile preprocessFileLineNumbers "Commander\fn_senseMonitor.sqf";

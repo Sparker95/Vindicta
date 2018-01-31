@@ -89,14 +89,18 @@ _allInfantryHandles orderGetIn false;
 sleep 10;
 
 //Make some waypoints for groups
+//Set group combat modes
 _allGroupHandles call AI_fnc_deleteAllWaypoints;
 {
+	//Set combat mode
+	_x setCombatMode "RED";
+	//Add waypoints
 	private _wp0 = _x addWaypoint [_targetPos, 0, 0, "MOVE start wp"];
 	_wp0 setWaypointCompletionRadius 0.2*_searchRadius;
 	_wp0 setWaypointType "SAD";
 	//Generate random waypoints
 	private _i = 1;
-	while {_i < 10} do
+	while {_i < 6} do
 	{
 		private _wp = _x addWaypoint [_targetPos, _searchRadius, _i, "MOVE wp"];
 		_wp setWaypointCompletionRadius 0.2*_searchRadius;

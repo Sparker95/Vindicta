@@ -16,6 +16,7 @@ artilleryRadarInd = [] call sense_fnc_artilleryRadar_create;
 soundMonitorInd = [] call sense_fnc_soundMonitor_create;
 enemyMonitorInd = [] call sense_fnc_enemyMonitor_create;
 
+/*
 fn_highLevelScript =
 {
 	private _counterSounds = 0;
@@ -143,8 +144,10 @@ fn_highLevelScript =
 		};
 	};
 };
+*/
 
-_null = [] spawn fn_highLevelScript;
+//_null = [] spawn fn_highLevelScript;
 
-
-diag_log "======== HQ INIT EXIT!";
+[enemyMonitorEast, EAST] spawn cmr_fnc_senseMonitor;
+[enemyMonitorWest, WEST] spawn cmr_fnc_senseMonitor;
+[enemyMonitorInd, INDEPENDENT] spawn cmr_fnc_senseMonitor;

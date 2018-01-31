@@ -3,6 +3,9 @@ These functions are related to enemy monitor.
 The purpose of enemy monitor is to gather data from AI/medium/manageSpottedEnemies scripts.
 */
 
+//forget time in seconds
+#define FORGET_TIME 300
+
 sense_fnc_enemyMonitor_create =
 {
 	/*
@@ -76,6 +79,14 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	private _enemyPos = _enemyMonitor getVariable ["s_enemyPos", []];
 	private _enemyAge = _enemyMonitor getVariable ["s_enemyAge", []];
 	
+	//Remove scripts which have terminated
+	private _scriptObjectsNull = _scriptObjects select {isNull _x};
+	if (count _scriptObjectsNull > 0) then
+	{
+		_scriptObjects = _scriptObjects - _scriptObjectsNull;
+		_enemyMonitor setVariable ["s_scriptObjects", _scriptObjects, false];
+	};
+	
 	//Remove dead objects and null-objects
 	private _i = 0;
 	private _count = count _enemyObjects;
@@ -96,9 +107,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	{ //forEach _scriptObjects;
 		private _scriptObject = _x;
 		private _a = _scriptObject call AI_fnc_getReportedEnemies;
-		private _newObjects = _a select 0;
-		private _newPos = _a select 1;
-		private _newAge = _a select 2;
+		_a params ["_newObjects", "_newPos", "_newAge"];
 		{ //forEach _newObjects;
 			private _o = _x;
 			if(alive _o && !(isNull _o)) then
@@ -134,7 +143,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	{
 		private _age = _enemyAge select _i;
 		_age = _age + _dt;
-		if ((_enemyAge select _i) > 300) then
+		if (_age > FORGET_TIME) then
 		{
 			_enemyObjects deleteAt _i;
 			_enemyPos deleteAt _i;

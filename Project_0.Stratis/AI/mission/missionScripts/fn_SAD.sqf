@@ -84,10 +84,10 @@ switch (_state) do
 			
 			//Read mission parameters
 			private _mParams = _m getVariable "AI_m_params";
-			_mParams params ["_target"];
+			_mParams params ["_target", ["_searchRadius", 200]];
 			
 			//Create new task
-			_oTask = [_gar, "SAD", [_target, 200, 666666666], "SAD, SAD mission"] call AI_fnc_task_create; //target, radius, time
+			_oTask = [_gar, "SAD", [_target, _searchRadius, 666666666], "SAD, SAD mission"] call AI_fnc_task_create; //target, radius, time
 			//taskSAD = _oTaskSAD;
 			_oTask call AI_fnc_task_start;
 		};

@@ -53,3 +53,21 @@ AI_fnc_landConvoy_removeVehicles =
 	} forEach _vehToRemove;
 	waitUntil {[_garTransport, _rid] call gar_fnc_requestDone;};
 };
+
+AI_fnc_landConvoy_arrived =
+{
+	//Checks if the convoy has arrived
+	params ["_vehGroupHandle", "_compRadius", "_dest", "_destType"];
+	private _arrived = false;
+	if (_destType == 1) then
+	{ //Destination's type is a location
+		if ([_dest, leader _vehGroupHandle] call loc_fnc_insideBorder) then //Check if the convoy is at the territory of the location
+		{ _arrived = true; };
+	}
+	else
+	{ //Destination's type is coordinates
+		if (((leader _vehGroupHandle) distance2D _dest) < _compRadius) then //Are we there yet??
+		{ _arrived = true; };
+	};
+	_arrived
+};

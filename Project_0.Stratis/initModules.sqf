@@ -37,8 +37,8 @@ call compile preprocessFileLineNumbers "AI\initVariablesServer.sqf";
 call compile preprocessFileLineNumbers "UI\initFunctions.sqf";
 
 //Initialize sense module
-call compile preprocessFileLineNumbers "Sense\initVariablesServer.sqf";
 call compile preprocessFileLineNumbers "Sense\initFunctions.sqf";
+call compile preprocessFileLineNumbers "Sense\initVariablesServer.sqf";
 
 //Initialize cluster module
 call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";

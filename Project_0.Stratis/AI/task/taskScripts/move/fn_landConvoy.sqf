@@ -3,6 +3,7 @@ Script for managing units in a convoy
 */
 
 #define DEBUG
+//#define DEBUG_FORMATION
 
 //How much time has to pass until a new leader is assigned
 #define STUCK_TIMER_LIMIT		30
@@ -191,7 +192,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					};
 					
 					//Check if cargo can still be transported
-					if(!isNull _garCargo) then
+					if(!isNull _garCargo) exitWith
 					{
 						if(!([_garTransport, [_garCargo]] call gar_fnc_canLoadCargo)) exitWith
 						{
@@ -200,6 +201,14 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 							[_garTransport, _garCargo] call gar_fnc_removeCargoGarrison;
 							_run = false;
 						}
+					};
+					
+					//Check if the convoy has arrived
+					if([_vehGroupHandle, _compRadius, _dest, _destType] call AI_fnc_landConvoy_arrived) exitWith
+					{
+						diag_log format ["AI_fnc_task_move_landConvoy: convoy has arrived before MOVE!"];
+						_to setVariable ["AI_taskState", "SUCCESS", false];
+						_run = false; //Stop the loop
 					};
 					
 					switch (behaviour leader _vehGroupHandle) do
@@ -369,9 +378,9 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_wp0 setWaypointCompletionRadius 20;
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					
-					{
+					/*{
 						diag_log format [" ===== waypoint: %1 pos: %2", _x, waypointPosition _x];
-					} forEach (waypoints _vehGroupHandle);
+					} forEach (waypoints _vehGroupHandle); */
 					
 					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					//Set convoy separation
@@ -390,32 +399,16 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_timer = 0;
 				};
 				
-				//Check if the convoy has arrived
-				private _arrived = false;
-				if (_destType == 1) then
-				{ //Destination's type is a location
-					if ([_dest, leader _vehGroupHandle] call loc_fnc_insideBorder) then //Check if the convoy is at the territory of the location
-					{ _arrived = true; };
-				}
-				else
-				{ //Destination's type is coordinates
-					if (((leader _vehGroupHandle) distance2D _destPos) < _compRadius) then //Are we there yet??
-					{ _arrived = true; };
-				};
-				if(_arrived) then
+				//Update position of the garrison
+				private _leaderPos = getPos leader _vehGroupHandle;
+				_garTransport setPos _leaderPos;
 				{
-					diag_log format ["AI_fnc_task_move_landConvoy: convoy has arrived"];
-					{
-						private _vehHandle = _x;
-						_vehHandle setConvoySeparation 10; //Make them stay a bit closer when they arrive
-					} forEach _vehArray;
-					_to setVariable ["AI_taskState", "SUCCESS", false];
-					_run = false; //Stop the loop
-				};
+					_x setPos _leaderPos;
+				} forEach _garsCargo;
 				
 				//Check the separation of the convoy
 				private _sCur = [_vehArray, vehicle leader _vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
-				#ifdef DEBUG
+				#ifdef DEBUG_FORMATION
 				diag_log format [">>> Current separation: %1", _sCur];
 				#endif
 				if(_sCur > 1.9*_separation) then
@@ -425,7 +418,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					{
 						_speedLimit = _speedLimit - 3;
 						(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit;
-						#ifdef DEBUG
+						#ifdef DEBUG_FORMATION
 						diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
 						#endif
 					};
@@ -437,7 +430,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 						{
 							_speedLimit = _speedLimit + 3.5;
 							(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit;
-							#ifdef DEBUG
+							#ifdef DEBUG_FORMATION
 							diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
 							#endif
 						};
@@ -465,6 +458,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				};
 				
 				//Debug
+				/*
 				#ifdef DEBUG
 				private _allCrewGroups = [];
 				{
@@ -472,10 +466,24 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				} forEach _allCrew;
 				diag_log format ["All crew groups: %1", _allCrewGroups];
 				#endif
+				*/
 				
 				//Change state if needed
 				call
 				{
+					//Check if the convoy has arrived
+					private _arrived = [_vehGroupHandle, _compRadius, _dest, _destType] call AI_fnc_landConvoy_arrived;
+					if(_arrived) then
+					{
+						diag_log format ["AI_fnc_task_move_landConvoy: convoy has arrived"];
+						{
+							private _vehHandle = _x;
+							_vehHandle setConvoySeparation 10; //Make them stay a bit closer when they arrive
+						} forEach _vehArray;
+						_to setVariable ["AI_taskState", "SUCCESS", false];
+						_run = false; //Stop the loop
+					};
+					
 					//Check the behaviour of the group
 					private _beh = behaviour (leader _vehGroupHandle);
 					#ifdef DEBUG
