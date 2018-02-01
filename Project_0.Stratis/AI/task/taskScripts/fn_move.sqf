@@ -37,6 +37,7 @@ private _allUnits = _gar call gar_fnc_getAllUnits;
 private _allUnitHandles = [];
 private _transportType = 0;
 private _countMen = 0;
+private _hScript = scriptNull;
 for "_i" from 0 to ((count _allUnits) - 1) do
 {
 	private _unitData = _allUnits select _i;
@@ -59,13 +60,13 @@ else
 		case 1: //A land convoy
 		{
 			//private _state = "MOUNT";
-			private _hScript = _to call AI_fnc_task_move_landConvoy;
-			_to setVariable ["AI_hScript", _hScript, false];
+			_hScript = _to call AI_fnc_task_move_landConvoy;
 		};
 	};
 };
 
 //Read the array of cargo garrisons this garrison has to transport
+/*
 private _cargoGarrisons = _gar call gar_fnc_getCargoGarrisons;
 private _cargoGroupIDs = [];
 for "_i" from 0 to ((count _cargoGarrisons) - 1) do
@@ -74,3 +75,7 @@ for "_i" from 0 to ((count _cargoGarrisons) - 1) do
 	private _gar0 = _cargoGarrisons select _i;
 	
 };
+*/
+
+//Return script handle to scriptObject_start
+_hScript

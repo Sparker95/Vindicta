@@ -93,7 +93,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 	private _t = time;
 	private _tPrev = time;
 	private _dt = 0;
-	while {_run && (_to getVariable "AI_run")} do
+	while {_run && (_to getVariable "so_run")} do
 	{
 		//Time spent since previous execution
 		_dt = time - _tPrev;
@@ -612,7 +612,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 			waitUntil
 			{
 				sleep SLEEP_RESOLUTION;
-				(time > _t) || (!(_to getVariable "AI_run"))
+				(time > _t) || (!(_to getVariable "so_run"))
 			};
 		};
 	}; //while
