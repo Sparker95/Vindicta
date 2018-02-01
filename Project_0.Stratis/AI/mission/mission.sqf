@@ -22,7 +22,9 @@ AI_fnc_mission_create =
 	Creates a new mission object
 	*/
 	params ["_type", "_side", "_requirements", "_extraParams", ["_name", "Noname mission"]];
-	private _mo = groupLogic createUnit ["LOGIC", [10, 10, 10], [], 0, "NONE"]; //Create a logic object
+	//private _mo = groupLogic createUnit ["LOGIC", [10, 10, 10], [], 0, "NONE"]; //Create a logic object
+	private _mo = "Sign_Arrow_Large_Pink_F" createVehicle [10, 10, 10];
+	hideObjectGlobal _mo;
 	_mo setVariable ["AI_m_type", _type, false];
 	_mo setVariable ["AI_m_state", "IDLE", false];
 	_mo setVariable ["AI_m_params", _extraParams];

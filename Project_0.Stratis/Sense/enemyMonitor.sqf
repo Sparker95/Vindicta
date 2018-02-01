@@ -16,7 +16,9 @@ sense_fnc_enemyMonitor_create =
 	Return value: enemyMonitor object.
 	*/
 	//Create a logic object
-	private _o = groupLogic createUnit ["LOGIC", [55, 55, 55], [], 0, "NONE"];
+	//private _o = groupLogic createUnit ["LOGIC", [55, 55, 55], [], 0, "NONE"];
+	private _o = "Sign_Arrow_Large_Pink_F" createVehicle [5, 5, 5];
+	hideObjectGlobal _o;
 	_o setVariable ["s_scriptObjects", []]; //Script objects
 	_o setVariable ["s_enemyObjects", [], false]; //Known objects(enemies)
 	_o setVariable ["s_enemyPos", [], false]; //Positions of known objects

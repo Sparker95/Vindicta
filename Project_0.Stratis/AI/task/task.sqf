@@ -72,7 +72,9 @@ AI_fnc_task_create =
 	diag_log format ["INFO: AI_fnc_task_create: created task: %1, type: %2, for garrison: %3", _taskName, _taskType, _gar call gar_fnc_getName];
 	#endif
 	//Create the task object
-	private _to = groupLogic createUnit ["LOGIC", [9, 9, 9], [], 0, "NONE"]; //Create a logic object
+	//private _to = groupLogic createUnit ["LOGIC", [9, 9, 9], [], 0, "NONE"]; //Create a logic object
+	private _to = "Sign_Arrow_Large_Pink_F" createVehicle [9, 9, 9];
+	hideObjectGlobal _to;
 	allTasks pushBack _to;
 	_to setVariable ["AI_taskState", "IDLE", false];
 	_to setVariable ["AI_name", _taskName, false];					//Name of this task for debug purposes

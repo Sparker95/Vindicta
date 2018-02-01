@@ -56,7 +56,9 @@ sense_fnc_soundMonitor_create =
 	*/
 	
 	//Create a logic object
-	private _o = groupLogic createUnit ["LOGIC", [55, 55, 55], [], 0, "NONE"];
+	//private _o = groupLogic createUnit ["LOGIC", [55, 55, 55], [], 0, "NONE"];
+	private _o = "Sign_Arrow_Large_Pink_F" createVehicle [4, 4, 4];
+	hideObjectGlobal _o;
 	_o setVariable ["s_units", [], false]; //Units this sound monitor will be checking
 	//_o setVariable ["s_hearingObjects", [], false]; //Objects that can hear the units. Now these are locations, but this might change
 	_o setVariable ["s_hearingObjects", allLocations, false]; //todo add a func. to set the hearing objects

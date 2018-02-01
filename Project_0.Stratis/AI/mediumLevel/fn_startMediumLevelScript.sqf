@@ -11,7 +11,9 @@ params ["_gars", "_scriptName", "_extraParams"];
 
 diag_log format ["Starting AI script: %1", _scriptName];
 
-private _scriptObject = groupLogic createUnit ["LOGIC", [6, 6, 6], [], 0, "NONE"]; //logic object
+//private _scriptObject = groupLogic createUnit ["LOGIC", [6, 6, 6], [], 0, "NONE"]; //logic object
+private _scriptObject = "Sign_Arrow_Large_Pink_F" createVehicle [6, 6, 6];
+hideObjectGlobal _scriptObject;
 
 /*
 We CALL the medium level script, not SPAWN it. Inside the script being called, there is initialization, then a script is being SPAWNED and being returned to _scriptHandle.

@@ -7,7 +7,9 @@ sense_fnc_artilleryRadar_create =
 	/*
 	This function creates the artillery radar object. Typically one per side/faction.
 	*/
-	private _o = groupLogic createUnit ["LOGIC", [77, 77, 77], [], 0, "NONE"];
+	//private _o = groupLogic createUnit ["LOGIC", [77, 77, 77], [], 0, "NONE"];
+	private _o = "Sign_Arrow_Large_Pink_F" createVehicle [7, 7, 7];
+	hideObjectGlobal _o;
 	
 	//Array with clusters of spotted launch sites of mortar shells
 	//A new element per every spotted mortar shell.

@@ -41,7 +41,9 @@ g_group - an array of arrays like:
 
 #include "garrison.hpp"
 
-private _lo = groupLogic createUnit ["LOGIC", [0, 0, 0], [], 0, "NONE"]; //logic object
+//private _lo = groupLogic createUnit ["LOGIC", [0, 0, 0], [], 0, "NONE"]; //logic object
+private _lo = "Sign_Arrow_Large_Pink_F" createVehicle [0, 0, 0];
+hideObjectGlobal _lo;
 
 //==== Initialize infantry garrison ====
 _subcat = [];

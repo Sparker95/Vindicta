@@ -6,7 +6,9 @@ Script object is an object associated with a running script which provides an in
 scriptObject_fnc_create =
 {
 	params ["_scriptName", "_extraParams"];
-	private _so = groupLogic createUnit ["LOGIC", [12, 12, 12], [], 0, "NONE"]; //logic object
+	//private _so = groupLogic createUnit ["LOGIC", [12, 12, 12], [], 0, "NONE"]; //logic object
+	private _so = "Sign_Arrow_Large_Pink_F" createVehicle [12, 12, 12];
+	hideObjectGlobal _so;
 	_so setVariable ["so_scriptName", _scriptName, false];
 	_so setVariable ["so_extraParams", _extraParams, false];
 	_so setVariable ["so_scriptHandle", scriptNull, false];
