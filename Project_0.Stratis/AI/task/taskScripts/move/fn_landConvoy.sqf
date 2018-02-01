@@ -254,7 +254,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				#endif
 				private _nHumansInVeh = {vehicle _x != _x} count _allHumanHandles;
 				//Only teleport them when someone has already boarded the vehicle
-				if (_timer > MOUNT_TIMER_LIMIT && (_nHumansInVeh > ceil 0.5*(count _allHumanHandles) )) then
+				if (_timer > MOUNT_TIMER_LIMIT && (_nHumansInVeh > ceil (0.5*(count _allHumanHandles)) )) then
 				{
 					//For fuck's sake why did you get stuck??
 					private _humansOnFoot =  _allHumanHandles select {vehicle _x isEqualTo _x};
@@ -375,6 +375,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					//Add new waypoint
 					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
 					_wp0 setWaypointType "MOVE";
+					_wp0 setWaypointBehaviour "SAFE";
 					_wp0 setWaypointCompletionRadius 20;
 					_vehGroupHandle setCurrentWaypoint _wp0;
 					
@@ -395,6 +396,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_stateChanged = false;
 					//Set behaviour
 					_vehGroupHandle setBehaviour "SAFE";
+					_vehGroupHandle setBehaviour "GREEN"; //Hold fire and keep formation
 					//Reset the timer
 					_timer = 0;
 				};
@@ -543,6 +545,8 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				};
 				
 				//Order infantry units to dismount
+				private _humansToDismount = _allHumanHandles - _allCrew;
+				/*
 				private _humansToDismount = [];
 				//Order drivers of vehicles without gunners to dismount
 				for "_i" from 0 to ((count _vehArray) - 1) do
@@ -555,6 +559,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 						_humansToDismount append (_allHumanHandles select {assignedVehicle _x isEqualTo _vehHandle});
 					};
 				};
+				*/
 				{unassignVehicle _x;} forEach _humansToDismount; //Unassign their vehicles so that they don't use them in fight
 				_humansToDismount orderGetIn false;
 				

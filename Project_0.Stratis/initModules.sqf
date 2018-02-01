@@ -7,10 +7,8 @@ if(isNil "groupLogic") then
 };
 
 //Initialize templates
-call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
-call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
-call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
+call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
 
 //Initialize the NATO template
 tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
