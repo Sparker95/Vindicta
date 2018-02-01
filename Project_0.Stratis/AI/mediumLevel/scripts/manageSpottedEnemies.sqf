@@ -25,3 +25,9 @@ AI_fnc_getRequestedAlertState =
 	params ["_so"]; //script object
 	_so getVariable ["AI_requestedAS", 0]
 };
+
+AI_fnc_mediumLevel_getSide =
+{
+	params ["_so"];
+	_so getVariable "AI_side";
+};

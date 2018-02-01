@@ -14,11 +14,11 @@ globalEnemyMonitor = [] call sense_fnc_enemyMonitor_create;
 
 sense_artilleryRadarEast = [] call sense_fnc_artilleryRadar_create;
 sense_soundMonitorEast = [] call sense_fnc_soundMonitor_create;
-sense_sense_enemyMonitorEast = [] call sense_fnc_enemyMonitor_create;
+sense_enemyMonitorEast = [] call sense_fnc_enemyMonitor_create;
 
 sense_artilleryRadarWest = [] call sense_fnc_artilleryRadar_create;
 sense_soundMonitorWest = [] call sense_fnc_soundMonitor_create;
-sense_sense_enemyMonitorWest= [] call sense_fnc_enemyMonitor_create;
+sense_enemyMonitorWest= [] call sense_fnc_enemyMonitor_create;
 
 sense_artilleryRadarInd = [] call sense_fnc_artilleryRadar_create;
 sense_soundMonitorInd = [] call sense_fnc_soundMonitor_create;

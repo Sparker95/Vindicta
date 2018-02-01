@@ -8,6 +8,8 @@ params ["_pos", "_name", "_type"];
 private _o = "Sign_Arrow_Large_Pink_F" createVehicle _pos;
 hideObjectGlobal _o;
 
+allLocations pushBack _o;
+
 //==== Initialize general variables ====
 _o setVariable ["l_st", [], false];							//Spawn types array
 _o setVariable ["l_flag", [], false];						//todo add support for the flag The position of the flag if it should be here or [] if it doesn here

@@ -22,3 +22,5 @@ LOC_AS_none = 0;
 LOC_AS_safe = 1;
 LOC_AS_aware = 2;
 LOC_AS_combat = 3;
+
+allLocations = [];

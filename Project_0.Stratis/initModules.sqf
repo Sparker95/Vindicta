@@ -45,3 +45,6 @@ call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
 
 //Initialize script objects
 call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";
+
+//Initialize commander scripts
+call compile preprocessFileLineNumbers "Commander\initFunctions.sqf";

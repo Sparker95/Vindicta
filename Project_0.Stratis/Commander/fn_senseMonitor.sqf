@@ -39,7 +39,7 @@ while {true} do
 		private _name = format ["enemy_%1", _i];
 		private _mrk = createmarker [_name, (_e select 1) select _i];
 		_mrk setMarkerType "mil_box";
-		_mrk setMarkerColor "ColorBlue";
+		_mrk setMarkerColor _colorEnemy;
 		_mrk setMarkerText (format ["%1", (_e select 2) select _i]);
 	};
 	//Rectangles for clusters

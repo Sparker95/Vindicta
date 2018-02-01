@@ -10,8 +10,11 @@ waitUntil {(_loc getVariable ["l_AIScriptsMutex", 0]) == 0};
 //Lock the mutex
 _loc setVariable ["l_AIScriptsMutex", 1, false];
 
-//Stop the AI script
+//Remove the script
 private _oEnemiesScript = _loc getVariable ["l_oAIEnemiesScript", objNull];
+_oEnemiesScript call sense_fnc_enemyMonitor_removeScript;
+
+//Stop the AI script
 if(!isNull _oEnemiesScript) then //Check if another script is already running
 {
 	[_oEnemiesScript] call AI_fnc_stopMediumLevelScript;

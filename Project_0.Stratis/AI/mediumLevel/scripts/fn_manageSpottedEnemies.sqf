@@ -8,9 +8,14 @@ _extraParams: nothing
 
 //todo remove double buffer switching! It makes no sense.
 
+#define SLEEP_TIME 5
+
 params ["_scriptObject", "_extraParams"];
 
 //Initialize the variable synchronously, in case it will be accessed by other modules right after script starts
+private _gars = _scriptObject getVariable ["AI_garrisons", objNull];
+private _side = (_gars select 0) call gar_fnc_getSide;
+_scriptObject setVariable ["AI_side", _side, false];
 _scriptObject setVariable ["AI_reportObjects", [], false];
 _scriptObject setVariable ["AI_reportPos", [], false];
 _scriptObject setVariable ["AI_reportAge", [], false];
@@ -43,21 +48,42 @@ private _hScript = [_scriptObject, _extraParams] spawn
 	private _timeReportCounter = 0;
 	private _reportArrayID = 0;
 	private _allTargetsReportObjects = [[], []];
-	private _allTargetsReportpos = [[], []];
+	private _allTargetsReportPos = [[], []];
 
 
 	private _combatPrev = false; //Combat mode at previous iteration
 	while {true} do
 	{
-		sleep _timeSleep;
+		sleep SLEEP_TIME;
 		
-		private _i = 0;
 		private _setNewAS = false;
 		private _allTargets = []; //Array of objects
 		private _allTargetsKnowsAbout = [];
 		private _combat = false; //Is any squad in combat mode?
 		private _nt = []; //NearTargets
+		//Update array with groups
+		private _hGsCur = []; //Get groups currently present in the garrisons
+		{ _hGsCur append ([_x, -1] call gar_fnc_findGroupHandles); } forEach _gars;
+		private _hGsPrev = _groupsData apply {_x select 0}; //Group handles
+		//Remove groups which are no longer in the garrisons
+		private _hGsRemove = _hGsPrev - _hGsCur; //Array with groups to remove
+		if (count _hGsRemove > 0) then
+		{			
+			private _groupsDataRemove = _groupsData select {(_x select 0) in _hGsRemove};
+			_groupsData = _groupsData - _groupsDataRemove;
+		};
+		//Add new groups
+		private _hGsAdd = _hGsCur - _hGsPrev;
+		if (count _hGsAdd > 0) then
+		{
+			{
+				_groupsData pushback [_x, behaviour (leader _x), 0];
+			} forEach _hGsAdd;
+		};
 		private _NGroups = count _groupsData;
+		
+		//Check group behaviours
+		private _i = 0;
 		while {_i < _NGroups} do
 		{
 			_hG = (_groupsData select _i) select 0; //Group handle

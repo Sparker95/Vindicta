@@ -35,8 +35,21 @@ sense_fnc_enemyMonitor_addScript =
 	
 	Return value: nothing
 	*/
-	params ["_enemyMonitor", "_scriptObject"];
-	private _scriptObjects = _enemyMonitor getVariable ["s_scriptObjects", []];
+	params ["_scriptObject"];
+	private _em = objNull; //Enemy monitor
+	private _side = CIVILIAN;
+	private _side = _scriptObject call AI_fnc_mediumLevel_getSide;
+	switch (_side) do
+	{
+		case EAST: {_em = sense_enemyMonitorEast; };
+		case WEST: {_em = sense_enemyMonitorWEST; };
+		case INDEPENDENT: {_em = sense_enemyMonitorInd; };		
+	};
+	if (isNull _em) exitWith
+	{
+		diag_log format ["ERROR: sense_fnc_enemyMonitor_addScript: wrong side: %1", _side];
+	};
+	private _scriptObjects = _em getVariable ["s_scriptObjects", []];
 	_scriptObjects pushBack _scriptObject;
 };
 
@@ -49,8 +62,20 @@ sense_fnc_enemyMonitor_removeScript =
 	
 	Return value: success - bool, if the operation was completed successfully
 	*/
-	params ["_enemyMonitor", "_scriptObject"];
-	private _scriptObjects = _enemyMonitor getVariable ["s_scriptObjects", []];
+	params ["_scriptObject"];
+	private _side = _scriptObject call AI_fnc_mediumLevel_getSide;
+	private _em = objNull;
+	switch (_side) do
+	{
+		case EAST: {_em = sense_enemyMonitorEast; };
+		case WEST: {_em = sense_enemyMonitorWEST; };
+		case INDEPENDENT: {_em = sense_enemyMonitorInd; };		
+	};
+	if (isNull _em) exitWith
+	{
+		diag_log format ["ERROR: sense_fnc_enemyMonitor_addScript: wrong side: %1", _side];
+	};
+	private _scriptObjects = _em getVariable ["s_scriptObjects", []];
 	private _id = _scriptObjects find _scriptObject;
 	if (_id != -1) exitWith
 	{
@@ -80,12 +105,14 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	private _enemyAge = _enemyMonitor getVariable ["s_enemyAge", []];
 	
 	//Remove scripts which have terminated
+	/*
 	private _scriptObjectsNull = _scriptObjects select {isNull _x};
 	if (count _scriptObjectsNull > 0) then
 	{
 		_scriptObjects = _scriptObjects - _scriptObjectsNull;
 		_enemyMonitor setVariable ["s_scriptObjects", _scriptObjects, false];
 	};
+	*/
 	
 	//Remove dead objects and null-objects
 	private _i = 0;

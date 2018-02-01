@@ -148,6 +148,6 @@ fn_highLevelScript =
 
 //_null = [] spawn fn_highLevelScript;
 
-[enemyMonitorEast, EAST] spawn cmr_fnc_senseMonitor;
-[enemyMonitorWest, WEST] spawn cmr_fnc_senseMonitor;
-[enemyMonitorInd, INDEPENDENT] spawn cmr_fnc_senseMonitor;
+[sense_enemyMonitorEast, EAST] spawn cmr_fnc_senseMonitor;
+[sense_enemyMonitorWest, WEST] spawn cmr_fnc_senseMonitor;
+[sense_enemyMonitorInd, INDEPENDENT] spawn cmr_fnc_senseMonitor;
