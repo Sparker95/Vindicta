@@ -15,6 +15,8 @@ T_EFF_aMedium =	5;
 T_EFF_aArmor =	6;
 T_EFF_aAir =	7;
 
+T_EFF_null = 	[0, 0, 0, 0, 0, 0, 0, 0]; //Empty vector with efficiency
+
 
 private _eff = [];
 

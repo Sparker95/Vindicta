@@ -496,7 +496,7 @@ gar_fnc_getUnitData =
 	Gets unitData of an alive unit
 	*/
 	params ["_unitHandle"];
-	_unitHandle getVariable ["g_unitData", []];
+	_unitHandle getVariable ["g_unitData", [0, 0, 0]]
 };
 
 gar_fnc_getUnitClassname =

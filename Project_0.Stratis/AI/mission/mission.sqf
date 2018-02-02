@@ -10,11 +10,14 @@ true spawn AI_fnc_mission_missionMonitor;
 /*
 Mission types:
 	SAD
-		parameters:
+		requirements: [_efficiency]
+			_efficiency - the efficiency vector required to perform the task
+		parameters: [_target]
 			_target - Pos ARRAY or Location OBJECT
 */
 
 #define DEBUG
+#define DEBUG_MARKERS
 
 AI_fnc_mission_create =
 {
@@ -22,7 +25,6 @@ AI_fnc_mission_create =
 	Creates a new mission object
 	*/
 	params ["_type", "_side", "_requirements", "_extraParams", ["_name", "Noname mission"]];
-	//private _mo = groupLogic createUnit ["LOGIC", [10, 10, 10], [], 0, "NONE"]; //Create a logic object
 	private _mo = "Sign_Arrow_Large_Pink_F" createVehicle [10, 10, 10];
 	hideObjectGlobal _mo;
 	_mo setVariable ["AI_m_type", _type, false];
@@ -34,6 +36,7 @@ AI_fnc_mission_create =
 	_mo setVariable ["AI_m_requirements", _requirements, false]; //Requirements to register for this mission
 	_mo setVariable ["AI_m_side", _side, false]; //Side of the mission
 	allMissions pushBack _mo;
+	
 	//Return value
 	_mo
 };
@@ -47,13 +50,25 @@ AI_fnc_mission_getSide =
 AI_fnc_mission_getType =
 {
 	params ["_mo"];
-	_mo getVariable "AI_m_type";
+	_mo getVariable "AI_m_type"
+};
+
+AI_fnc_mission_getRequirements =
+{
+	params ["_mo"];
+	_mo getVariable "AI_m_requirements"
 };
 
 AI_fnc_mission_getName =
 {
 	params ["_mo"];
-	_mo getVariable "AI_m_name";
+	_mo getVariable "AI_m_name"
+};
+
+AI_fnc_mission_getState =
+{
+	params ["_mo"];
+	_mo getVariable "AI_m_state"
 };
 
 AI_fnc_mission_delete =

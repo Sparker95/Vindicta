@@ -6,7 +6,7 @@ Script for managing units in a convoy
 //#define DEBUG_FORMATION
 
 //How much time has to pass until a new leader is assigned
-#define STUCK_TIMER_LIMIT		30
+#define STUCK_TIMER_LIMIT		25
 //How much time has to pass until units get teleported into their vehicles
 #define MOUNT_TIMER_LIMIT		50
 #define DISMOUNT_TIMER_LIMIT	30
@@ -235,9 +235,8 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					diag_log "AI_fnc_task_move_landConvoy: entered MOUNT state";
 					//Order drivers of unarmed vehicles to stop so that infantry can mount
 					_vehGroupHandle call AI_fnc_deleteAllWaypoints;
-					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 15, 0, "Hold"];
+					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 5];
 					_wp0 setWaypointType "MOVE";
-					_vehGroupHandle setCurrentWaypoint _wp0;
 					doStop (units _vehGroupHandle);
 					_timer = 0;
 					_stateChanged = false;
@@ -373,17 +372,23 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					diag_log "AI_fnc_task_move_landConvoy: entered MOVE state";
 					_vehGroupHandle call AI_fnc_deleteAllWaypoints;
 					//Add new waypoint
-					private _wp0 = _vehGroupHandle addWaypoint [_destPos, 0, 0, "Destination"]; //[center, radius, index, name]
+					/*
+					private _wp0 = _vehGroupHandle addWaypoint [getPos leader _vehGroupHandle, 15, 0, ""];
 					_wp0 setWaypointType "MOVE";
-					_wp0 setWaypointBehaviour "SAFE";
 					_wp0 setWaypointCompletionRadius 20;
 					_vehGroupHandle setCurrentWaypoint _wp0;
+					*/
+					
+					units _vehGroupHandle doFollow (leader _vehGroupHandle);
+					private _wp1 = _vehGroupHandle addWaypoint [_destPos, 2]; // 0, "Destination"]; //[center, radius, index, name]
+					_wp1 setWaypointType "MOVE";
+					_wp1 setWaypointCompletionRadius 20;
+					//_vehGroupHandle setCurrentWaypoint _wp1;
 					
 					/*{
 						diag_log format [" ===== waypoint: %1 pos: %2", _x, waypointPosition _x];
 					} forEach (waypoints _vehGroupHandle); */
 					
-					units _vehGroupHandle doFollow (leader _vehGroupHandle);
 					//Set convoy separation
 					{
 						private _vehHandle = _x;
@@ -393,12 +398,12 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					} forEach _vehArray;
 					//Limit the speed of the leading vehicle
 					(vehicle (leader _vehGroupHandle)) limitSpeed _speedLimit; //Speed in km/h
-					_stateChanged = false;
 					//Set behaviour
 					_vehGroupHandle setBehaviour "SAFE";
 					_vehGroupHandle setBehaviour "GREEN"; //Hold fire and keep formation
 					//Reset the timer
 					_timer = 0;
+					_stateChanged = false;
 				};
 				
 				//Update position of the garrison
@@ -451,6 +456,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 						diag_log format ["fn_landCOnvoy.sqf: Convoy has stuck! Selecting a new leader!", _timer];
 						#endif
 						_vehGroupHandle selectLeader (selectRandom (units _vehGroupHandle));
+						_stateChanged = true; //Reenter this state to reset the waypoints
 						_timer = 0;
 					};
 				}

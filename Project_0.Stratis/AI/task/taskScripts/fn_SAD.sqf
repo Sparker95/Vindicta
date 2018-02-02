@@ -92,29 +92,46 @@ private _hScript = _to spawn
 	sleep 10;
 	
 	//Make some waypoints for groups
-	//Set group combat modes
 	_allGroupHandles call AI_fnc_deleteAllWaypoints;
+	//Vehicle waypoints
+	{
+		private _g = _x;
+		_g setCombatMode "RED";
+		private _dirStart = _targetPos getDir (leader _g);
+		//Add waypoints around the area
+		for "_i" from 0 to 11 do
+		{
+			private _pos = _targetPos getPos [(12-_i)*0.8*_searchRadius/12, _dirStart + (_i*360/6)];
+			private _wp = _g addWaypoint [_pos, 60];
+			_wp setWaypointCompletionRadius (0.2*_searchRadius);
+			_wp setWaypointType "MOVE";
+		};
+		//Add a cycle waypoint
+		private _wpcycle = _x addWaypoint [_targetPos getPos [0.8*_searchRadius, _dirStart], 0];
+		_wpcycle setWaypointType "CYCLE";
+	} forEach _allVehGroupHandles;
+	//Infantry waypoints
 	{
 		//Set combat mode
 		_x setCombatMode "RED";
 		//Add waypoints
-		private _wp0 = _x addWaypoint [_targetPos, 0, 0, "MOVE start wp"];
+		private _wp0 = _x addWaypoint [_targetPos, 0];
 		_wp0 setWaypointCompletionRadius 0.2*_searchRadius;
 		_wp0 setWaypointType "SAD";
 		//Generate random waypoints
 		private _i = 1;
 		while {_i < 6} do
 		{
-			private _wp = _x addWaypoint [_targetPos, _searchRadius, _i, "MOVE wp"];
+			private _wp = _x addWaypoint [_targetPos, _searchRadius];
 			_wp setWaypointCompletionRadius 0.2*_searchRadius;
 			_wp setWaypointType "SAD";
 			_i = _i + 1;
 		};
 		//Finally add a cycle waypoint
-		private _wpcycle = _x addWaypoint [waypointPosition _wp0, 0, _i, "Cycle wp"];
+		private _wpcycle = _x addWaypoint [waypointPosition _wp0, 0];
 		_wpcycle setWaypointType "CYCLE";
 		_x setCurrentWaypoint _wp0;
-	} forEach _allGroupHandles;
+	} forEach (_allGroupHandles - _allVehGroupHandles);
 	
 	private _run = true;
 	private _t = time;

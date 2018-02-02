@@ -6,7 +6,7 @@ params ["_locations"];
 
 //Global coefficients for various unit types
 util_tracked_wheeled = 1.0; //1.0;
-util_infantry = 1.0; //1.0;
+util_infantry = 0.7; //1.0;
 util_helicopters = 0.5; //1.0;
 util_planes = 0.5; //1.0;
 util_turrets = 0.5; //1.0;
@@ -93,8 +93,8 @@ private _gar = objNull;
 			[
 				//[T_VEH, T_VEH_MRAP_HMG, 1],
 				//[T_VEH, T_VEH_truck_inf, 1]
-				[T_VEH, T_VEH_APC, 1]
-				//[T_VEH, T_VEH_IFV, 1]
+				//[T_VEH, T_VEH_APC, 1]
+				[T_VEH, T_VEH_IFV, 1]
 			],G_GT_veh_non_static, util_tracked_wheeled] call loc_fnc_addUnits;
 			
 

@@ -3,8 +3,10 @@ These functions are related to enemy monitor.
 The purpose of enemy monitor is to gather data from AI/medium/manageSpottedEnemies scripts.
 */
 
+//Minimum distance between enemies until they are treated as a single cluster
+#define DISTANCE_MIN 500
 //forget time in seconds
-#define FORGET_TIME 300
+#define FORGET_TIME 600
 
 sense_fnc_enemyMonitor_create =
 {
@@ -24,6 +26,8 @@ sense_fnc_enemyMonitor_create =
 	_o setVariable ["s_enemyPos", [], false]; //Positions of known objects
 	_o setVariable ["s_enemyAge", [], false]; //Age of known objects
 	_o setVariable ["s_time", time, false]; //The time is used to update age of known threats
+	_o setVariable ["s_clusters", [], false];	//Array with clusters: [[cluster_0, ID_0], [cluster_1, ID_1], ...]
+	_o setVariable ["s_nextClusterID", 0, false]; //Counter for generating new IDs for clusters
 	//Return value
 	_o
 };
@@ -197,12 +201,86 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	for "_i" from 0 to ((count _enemyObjects) - 1) do
 	{
 		private _pos = _enemyPos select _i;
-		private _newCluster = [_pos select 0, _pos select 1, _pos select 0, _pos select 1, _i] call cluster_fnc_newCluster;
+		private _newCluster = [_pos select 0, _pos select 1, _pos select 0, _pos select 1, _enemyObjects select _i] call cluster_fnc_newCluster;
 		_smallClusters pushBack _newCluster;
 	};
+	
 	//Find bigger clusters from smaller clusters
-	private _clusters = [_smallClusters, 300] call cluster_fnc_findClusters;
+	private _clustersNew = [_smallClusters, DISTANCE_MIN] call cluster_fnc_findClusters;
+	_clustersNew = _clustersNew apply {[_x, -1, 0]}; //Add a cluster ID and time
+	
+	//Compare new clusters with old clusters
+	private _clustersOld = _enemyMonitor getVariable "s_clusters";
+	//How much old and new clusters resemble each other
+	private _affinity = []; // [_affinity, _oldIndex, _newIndex]
+	private _cc = count _clustersNew;
+	for "_i" from 0 to ((count _clustersOld) - 1) do
+	{
+		for "_j" from 0 to (_cc-1) do
+		{
+			//Calculate affinity: how many units from old clusters are present in the new cluster
+			private _a = count ((_clustersOld select _i select 0 select 4) arrayIntersect (_clustersNew select _j select 0 select 4));
+			if (_a > 0) then {
+				_affinity pushBack [_a, _i, _j];
+			};
+		};
+	};
+	//Assign IDs to clusters
+	_affinity sort false; //Descending order
+	for "_i" from 0 to ((count _affinity) - 1) do {
+		private _indexOld = _affinity select _i select 1;
+		private _indexNew = _affinity select _i select 2;
+		private _IDOld = _clustersOld select _indexOld select 1;
+		private _IDNew = _clustersNew select _indexNew select 1;
+		if (_IDNew == -1 && _IDOld != -1) then { //If the new ID isn't assigned and the old ID hasn't been used
+			//Transfer the ID from old cluster to new cluster
+			(_clustersNew select _indexNew) set [1, _IDOld];
+			(_clustersOld select _indexOld) set [1, -1];
+			//Transfer the time of the cluster
+			private _timeOld = _clustersOld select _indexOld select 2;
+			(_clustersNew select _indexNew) set [2, _timeOld];
+		};
+	};
+	//Make new IDs for clusters without IDs
+	private _nextClusterID = _enemyMonitor getVariable "s_nextClusterID";
+	for "_i" from 0 to ((count _clustersNew) - 1) do {
+		private _clusterAndID = _clustersNew select _i;
+		private _ID = _clusterAndID select 1;
+		if (_ID == -1) then { //If the ID hasn't been assigned
+			//Make new ID
+			_clusterAndID set [1, _nextClusterID];
+			_nextClusterID = _nextClusterID + 1;
+		};
+	};
+	_enemyMonitor setVariable ["s_nextClusterID", _nextClusterID, false];
+	//Store the clusters
+	_enemyMonitor setVariable ["s_clusters", _clustersNew, false];
+	
+	//Increase the time of each cluster
+	for "_i" from 0 to ((count _clustersNew) - 1) do {
+		private _c = _clustersNew select _i;
+		private _time = _c select 2;
+		_time = _time + _dt;
+		_c set [2, _time];
+	};
+	
+	//Calculate enemy efficiencies
+	private _efficiencies = [];
+	for "_i" from 0 to ((count _clustersNew) - 1) do
+	{
+		private _c = _clustersNew select _i select 0;
+		private _uhs = _c select 4; //Unit handles in this cluster
+		private _eff = T_EFF_null;
+		//Sum efficiencies of all enemies inside the cluster
+		for "_j" from 0 to ((count _uhs) - 1) do
+		{
+			private _uh = _uhs select _j; //Unit handle
+			private _ue = (_uh call gar_fnc_getUnitData) call T_fnc_getEfficiency; 
+			_eff = [_eff, _ue] call BIS_fnc_vectorAdd; 
+		};
+		_efficiencies pushBack _eff;
+	};
 	
 	//Return value
-	[_enemyObjects, _enemyPos, _enemyAge, _clusters]
+	[_enemyObjects, _enemyPos, _enemyAge, _clustersNew, _efficiencies]
 };
