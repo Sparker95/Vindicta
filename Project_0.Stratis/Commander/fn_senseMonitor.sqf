@@ -50,9 +50,10 @@ private _counterMissions = 0;
 while {true} do
 {
 	//==== Enemy monitor ====
+	
+	private _e = _enemyMonitor call sense_fnc_enemyMonitor_getActiveClusters;
 	#ifdef DEBUG_ENEMIES
 		private _t = time;
-		private _e = _enemyMonitor call sense_fnc_enemyMonitor_getActiveClusters;
 		diag_log format ["==== TIME SPENT: %1 ms", (time - _t)*1000];
 		//diag_log format ["Global enemies: %1", _e select 0];
 		//diag_log format ["Global enemies pos: %1", _e select 1];
@@ -98,6 +99,9 @@ while {true} do
 			private _c = _eclustersAndIDs select _i select 0;
 			private _cID = _eclustersAndIDs select _i select 1;
 			private _cTime = _eclustersAndIDs select _i select 2;
+			private _cGars = _eclustersAndIDs select _i select 3; //Garrisons that report this cluster
+			//Get names of garrisons
+			private _cGarsNames = _cGars apply {_x call gar_fnc_getName};
 			private _cCenter = _c call cluster_fnc_getCenter;
 			_mrk = createMarker [_name, _cCenter];
 			private _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
@@ -113,9 +117,14 @@ while {true} do
 			_mrk = createMarker [_name, _cCenter];
 			_mrk setMarkerType "mil_dot";
 			_mrk setMarkerColor _colorEnemy;
-			_mrk setMarkerText format ["ID: %1, T: %2, E: %3", _cID, round _cTime, _eff]; //ID: efficiency
+			_mrk setMarkerText format ["ID: %1, T: %2, E: %3, G: %4", _cID, round _cTime, _eff, _cGarsNames]; //ID: efficiency
 		};
 	#endif
+	
+	//==== Generate missions for spotted enemies ====
+	private _eClusters = _e select 3; //[_enemyObjects, _enemyPos, _enemyAge, _clusters, _efficiencies]
+	//_clusters: [_cluster, ,cluster ID, time, reportedBy garrisons array]
+	//
 	
 	#ifdef DEBUG_MISSIONS
 		//Draw markers for missions

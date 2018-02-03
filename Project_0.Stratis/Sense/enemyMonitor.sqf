@@ -21,13 +21,14 @@ sense_fnc_enemyMonitor_create =
 	//private _o = groupLogic createUnit ["LOGIC", [55, 55, 55], [], 0, "NONE"];
 	private _o = "Sign_Arrow_Large_Pink_F" createVehicle [5, 5, 5];
 	hideObjectGlobal _o;
-	_o setVariable ["s_scriptObjects", []]; //Script objects
-	_o setVariable ["s_enemyObjects", [], false]; //Known objects(enemies)
-	_o setVariable ["s_enemyPos", [], false]; //Positions of known objects
-	_o setVariable ["s_enemyAge", [], false]; //Age of known objects
-	_o setVariable ["s_time", time, false]; //The time is used to update age of known threats
-	_o setVariable ["s_clusters", [], false];	//Array with clusters: [[cluster_0, ID_0], [cluster_1, ID_1], ...]
-	_o setVariable ["s_nextClusterID", 0, false]; //Counter for generating new IDs for clusters
+	_o setVariable ["s_scriptObjects", []];				//Script objects
+	_o setVariable ["s_enemyObjects", [], false];		//Known objects(enemies)
+	_o setVariable ["s_enemyPos", [], false];			//Positions of known objects
+	_o setVariable ["s_enemyAge", [], false];			//Age of known objects
+	_o setVariable ["s_enemyReportedBy", [], false];	//Garrisons that have reported enemies
+	_o setVariable ["s_time", time, false];				//The time is used to update age of known threats
+	_o setVariable ["s_clusters", [], false];			//Array with clusters: [[cluster_0, ID_0], [cluster_1, ID_1], ...]
+	_o setVariable ["s_nextClusterID", 0, false];		//Counter for generating new IDs for clusters
 	//Return value
 	_o
 };
@@ -107,6 +108,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	
 	private _scriptObjects = _enemyMonitor getVariable ["s_scriptObjects", []];	
 	private _enemyObjects = _enemyMonitor getVariable ["s_enemyObjects", []];
+	private _enemyReportedBy = _enemyMonitor getVariable ["s_enemyReportedBy", []];
 	private _enemyPos = _enemyMonitor getVariable ["s_enemyPos", []];
 	private _enemyAge = _enemyMonitor getVariable ["s_enemyAge", []];
 	
@@ -119,21 +121,26 @@ sense_fnc_enemyMonitor_getActiveClusters =
 		_enemyMonitor setVariable ["s_scriptObjects", _scriptObjects, false];
 	};
 	*/
-	
-	//Remove dead objects and null-objects
+
+	//Remove enemies which haven't been seen for too long, or dead or non existant
 	private _i = 0;
 	private _count = count _enemyObjects;
 	while {_i < _count} do
 	{
+		private _age = _enemyAge select _i;
 		private _o = _enemyObjects select _i;
-		if ((isNull _o) || !(alive _o)) then
-		{
+		_age = _age + _dt;
+		if ((_age > FORGET_TIME) || (isNull _o) || !(alive _o)) then {
 			_enemyObjects deleteAt _i;
 			_enemyPos deleteAt _i;
-			_enemyAge deleteAt _i;
+			_enemyAge deleteAt _i;			
+			_enemyReportedBy deleteAt _i;
 			_count = _count - 1;
 		}
-		else {_i = _i + 1;};
+		else {
+			_enemyAge set [_i, _age];
+			_i = _i + 1;
+		};
 	};
 	
 	//Update database of known enemies
@@ -149,49 +156,32 @@ sense_fnc_enemyMonitor_getActiveClusters =
 				private _age = _newAge select _forEachIndex;
 				private _pos = _newPos select _forEachIndex;
 				//Check if the new reported object is already known
-				if (_indexOld != -1) then
-				{
-					if(_age < (_enemyAge select _indexOld)) then
-					{
+				if (_indexOld != -1) then {
+					if(_age < (_enemyAge select _indexOld)) then {
 						//Update data on known position and age
 						_enemyPos set [_indexOld, _pos];
 						_enemyAge set [_indexOld, _age];
+						//Old reported-by array PLUS the garrisons that report this enemy
+						private _erbyNew = (_enemyReportedBy select _indexOld) + (_scriptObject call AI_fnc_mediumLevel_getGarrisons);
+						_erbyNew = _erbyNew arrayIntersect _erbyNew; //Find unique elements
+						_enemyReportedBy set [_indexOld, _erbyNew];
 					};
 				}
-				else
-				{
+				else {
 					//Add the threat to the array
 					_enemyObjects pushBack _o;
 					_enemyPos pushBack _pos;
 					_enemyAge pushBack _age;
+					//Get garrisons report this enemy
+					_enemyReportedBy pushBack (_scriptObject call AI_fnc_mediumLevel_getGarrisons);
 				};
 			};
 		} forEach _newObjects;
 	} forEach _scriptObjects;
 	
-	//Update age of known threats and remove objects that have age above threshold
-	private _i = 0;
-	private _count = count _enemyObjects;
-	while {_i < _count} do
-	{
-		private _age = _enemyAge select _i;
-		_age = _age + _dt;
-		if (_age > FORGET_TIME) then
-		{
-			_enemyObjects deleteAt _i;
-			_enemyPos deleteAt _i;
-			_enemyAge deleteAt _i;
-			_count = _count - 1;
-		}
-		else
-		{
-			_enemyAge set [_i, _age];
-			_i = _i + 1;
-		};
-	};
-	
 	//Update database arrays of the enemyMonitor object
 	_enemyMonitor setVariable ["s_enemyObjects", _enemyObjects, false];
+	_enemyMonitor setVariable ["s_enemyReportedBy", _enemyReportedBy, false];
 	_enemyMonitor setVariable ["s_enemyPos", _enemyPos, false];
 	_enemyMonitor setVariable ["s_enemyAge", _enemyAge, false];
 	
@@ -207,7 +197,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	
 	//Find bigger clusters from smaller clusters
 	private _clustersNew = [_smallClusters, DISTANCE_MIN] call cluster_fnc_findClusters;
-	_clustersNew = _clustersNew apply {[_x, -1, 0]}; //Add a cluster ID and time
+	_clustersNew = _clustersNew apply {[_x, -1, 0, []]}; //Add a cluster ID, time, reportedBy
 	
 	//Compare new clusters with old clusters
 	private _clustersOld = _enemyMonitor getVariable "s_clusters";
@@ -242,17 +232,29 @@ sense_fnc_enemyMonitor_getActiveClusters =
 		};
 	};
 	//Make new IDs for clusters without IDs
+	//Find which garrisons this cluster is reported by
 	private _nextClusterID = _enemyMonitor getVariable "s_nextClusterID";
 	for "_i" from 0 to ((count _clustersNew) - 1) do {
-		private _clusterAndID = _clustersNew select _i;
-		private _ID = _clusterAndID select 1;
+		//Assign new IDs
+		private _cluster = _clustersNew select _i;
+		private _ID = _cluster select 1;
 		if (_ID == -1) then { //If the ID hasn't been assigned
 			//Make new ID
-			_clusterAndID set [1, _nextClusterID];
+			_cluster set [1, _nextClusterID];
 			_nextClusterID = _nextClusterID + 1;
 		};
+		//Find garrisons that report this cluster
+		private _rBy = [];
+		private _uhs = _cluster select 0 select 4; //Unit handles
+		for "_j" from 0 to ((count _uhs) - 1) do {
+			private _uid = _enemyObjects find (_uhs select _j); //Unit's ID in the enemyObjects array
+			_rBy append (_enemyReportedBy select _uid);
+		};	
+		//Find unique elements
+		_cluster set [3, _rBy arrayIntersect _rBy];
 	};
 	_enemyMonitor setVariable ["s_nextClusterID", _nextClusterID, false];
+	
 	//Store the clusters
 	_enemyMonitor setVariable ["s_clusters", _clustersNew, false];
 	
@@ -276,7 +278,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 		{
 			private _uh = _uhs select _j; //Unit handle
 			private _ue = (_uh call gar_fnc_getUnitData) call T_fnc_getEfficiency; 
-			_eff = [_eff, _ue] call BIS_fnc_vectorAdd; 
+			_eff = [_eff, _ue] call BIS_fnc_vectorAdd;
 		};
 		_efficiencies pushBack _eff;
 	};

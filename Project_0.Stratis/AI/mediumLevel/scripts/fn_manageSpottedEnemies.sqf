@@ -25,7 +25,7 @@ _scriptObject setVariable ["AI_requestedAS", LOC_AS_safe, false];
 private _hScript = [_scriptObject, _extraParams] spawn
 {
 	params ["_scriptObject", "_extraParams"];
-	private _gars = _scriptObject getVariable ["AI_garrisons", objNull];
+	private _gars = _scriptObject getVariable ["AI_garrisons", []];
 
 	//Read extra parameters
 	private _newAS = LOC_AS_safe;

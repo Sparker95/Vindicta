@@ -31,3 +31,9 @@ AI_fnc_mediumLevel_getSide =
 	params ["_so"];
 	_so getVariable "AI_side";
 };
+
+AI_fnc_mediumLevel_getGarrisons =
+{
+	params ["_so"];
+	_so getVariable ["AI_garrisons", []];
+};
