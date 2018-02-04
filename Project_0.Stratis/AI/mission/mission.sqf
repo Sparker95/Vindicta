@@ -82,6 +82,8 @@ AI_fnc_mission_delete =
 	{
 		diag_log "AI_fnc_mission_delete: error: mission is objNull!";
 	};
+	//Stop the mission
+	_mo call AI_fnc_mission_stop;
 	deleteVehicle _mo;
 };
 
@@ -125,6 +127,7 @@ AI_fnc_mission_stop =
 	Stops a mission
 	*/
 	params ["_mo"];
+	if( isNull _mo) exitWith {};
 	//Find all garrisons currently running this mission
 	private _gars = _mo getVariable "AI_m_aGarrisons";
 	{
@@ -137,7 +140,7 @@ AI_fnc_mission_stop =
 AI_fnc_mission_unassignGarrison =
 {
 	/*
-	Unassigns garrisons from the task.
+	Unassigns garrison from the mission.
 	*/
 	params ["_mo", "_gar"];
 	private _mission = _gar call gar_fnc_getAssignedMission;

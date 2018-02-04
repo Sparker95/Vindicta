@@ -3,6 +3,7 @@ This thread monitors the execution of a mission by a specific garrison.
 */
 
 #define DEBUG
+#define DEBUG_MARKER
 #define SLEEP_TIME 3
 #define SLEEP_RESOLUTION 0.2
 
@@ -14,10 +15,12 @@ private _hScript = [_so, _extraParams] spawn
 	
 	//Read extra parameters
 	_extraParams params ["_gar"];
+	private _side = _gar call gar_fnc_getSide;
 	
 	//Get mission assigned to this garrison
 	private _mo = _gar call gar_fnc_getAssignedMission; //Mission object
 	private _moPrev = _mo;
+	private _moNullPrev = isNull _mo;
 	
 	//Variables for internal state machines
 	//private _mChanged = true;
@@ -28,14 +31,33 @@ private _hScript = [_so, _extraParams] spawn
 	diag_log format ["INFO: mission\fn_garrisonThread.sqf: started thread for garrison: %1", _gar call gar_fnc_getName];
 	#endif
 	
+	//Draw marker
+	#ifdef DEBUG_MARKER
+		private _colorFriendly = "ColorEAST";
+		private _markerType = "flag_CSAT";
+		switch (_side) do {
+			case EAST: { _colorFriendly = "ColorEAST"; _markerType = "flag_CSAT"; };
+			case WEST: { _colorFriendly = "ColorWEST"; _markerType = "flag_NATO"; };
+			case INDEPENDENT: {	_colorFriendly = "ColorGUER"; _markerType = "flag_AAF";};
+		};
+		private _name = format ["mGarrison_%1", _gar];
+		private _mrk = createmarker [_name, getPos _gar];
+		_mrk setMarkerType _markerType; //Section marker
+		_mrk setMarkerColor _colorFriendly;
+		_mrk setMarkerAlpha 1.0;
+		_mrk setMarkerText (format ["Mis. type: %1, state: %2",
+			_mo call AI_fnc_mission_getType, _stateArray]);
+	#endif
+	
 	private _t = time;
 	private _type = "";
 	private _run = true;
 	while {_run && _so getVariable "so_run"} do
 	{
 		_mo = _gar call gar_fnc_getAssignedMission;
-		//Check if the garrison was assigned a new mission
-		if (!(_mo isEqualTo _moPrev)) then
+		//Check if the garrison was assigned a new mission or has switched to no mission
+		private _moNull = isNull _mo;
+		if (!(_mo isEqualTo _moPrev) || ((_moNull && (!_moNullPrev)) || ((!_moNull) && _moNullPrev)) ) then
 		{
 			_stateArray = ["INIT", true, ""];
 			#ifdef DEBUG
@@ -43,10 +65,14 @@ private _hScript = [_so, _extraParams] spawn
 			#endif
 		}; //Reset the state array to begin from start
 		_moPrev = _mo;
+		_moNullPrev = isNull _mo;
 		
 		//If there is no mission assigned
-		if (isNull _mo) then { _type = "NOTHING"; } else
-		{ _type = _mo getVariable ["AI_m_type", "ERROR"]; };
+		if (isNull _mo) then {
+			_type = "NOTHING";
+		} else {
+			_type = _mo getVariable ["AI_m_type", "ERROR"];
+		};
 		
 		switch (_type) do
 		{
@@ -97,6 +123,13 @@ private _hScript = [_so, _extraParams] spawn
 			};
 		}; //switch
 		
+		//Update the marker
+		#ifdef DEBUG_MARKER
+			private _name = format ["mGarrison_%1", _gar];
+			_name setMarkerPos (getPos _gar);
+			_mrk setMarkerText (format ["Mis. type: %1, %2", _type, _stateArray]);
+		#endif
+		
 		if (_run) then
 		{
 			//Update time variable
@@ -109,6 +142,13 @@ private _hScript = [_so, _extraParams] spawn
 			};
 		};
 	}; //while
+	
+	//Time to terminate the script
+	//Delete the marker
+	#ifdef DEBUG_MARKER
+		private _name = format ["mGarrison_%1", _gar];
+		deleteMarker _name;
+	#endif
 }; //spawn
 
 _hScript

@@ -46,7 +46,7 @@ switch (_side) do
 private _counterEnemies = 0;
 private _counterEnemiesClusters = 0;
 private _counterMissions = 0;
-private _clustersMissions = [];
+private _clusterDatabase = [];
 
 while {true} do
 {
@@ -74,8 +74,8 @@ while {true} do
 			private _mrk = createmarker [_name, (_e select 1) select _i];
 			_mrk setMarkerType "mil_box";
 			_mrk setMarkerColor _colorEnemy;
-			_mrk setMarkerAlpha 0.4;
-			_mrk setMarkerText (format ["%1", round ((_e select 2) select _i)]);
+			_mrk setMarkerAlpha 0.5;
+			_mrk setMarkerText (format ["%1", round ((_e select 2) select _i)]); //Enemy age
 		};
 		//Rectangles for clusters
 		//diag_log format ["_counterEnemiesClusters: %1", _counterEnemiesClusters];
@@ -126,7 +126,9 @@ while {true} do
 	//_e: [_enemyObjects, _enemyPos, _enemyAge, _clusters, _efficiencies]
 	//_clusters: [0: _cluster, 1: cluster ID, 2: time, 3: reportedBy garrisons array]
 	private _eClusters = _e select 3; //
+	private _eClusterIDs = _eClusters apply {_x select 1};
 	private _cEfficiencies = _e select 4;
+	private _clusterIDsWithMissions = _clusterDatabase apply {_x select 0};
 	for "_i" from 0 to ((count _eClusters) - 1) do
 	{
 		private _clusterStruct = _eClusters select 0;
@@ -134,7 +136,7 @@ while {true} do
 		private _cID = _clusterStruct select 1;
 		private _cTime = _clusterStruct select 2; //Time passed since the cluster was spotted initially
 		//If this cluster is old enough and doesn't have a mission
-		if (_cTime > 30 && !(_cID in _clustersMissions)) then {
+		if (_cTime > 30 && !(_cID in _clusterIDsWithMissions)) then {
 			private _cEff = _cEfficiencies select _i;
 			//Generate a new mission
 			private _requirements = [_cEff];
@@ -145,9 +147,25 @@ while {true} do
 			private _mPos = ((_centerPos + [0]) vectorAdd [0, 20, 0]) vectorAdd [random 10, random 10, 0];
 			private _mName = format ["SAD Mission, cID: %1", _cID];
 			private _mParams = [_mPos, _searchRadius max 200]; //Mission parameters
-			["SAD", _side, _requirements, _mParams, _mName] call AI_fnc_mission_create;
+			private _mo = ["SAD", _side, _requirements, _mParams, _mName] call AI_fnc_mission_create;
 			//true spawn AI_fnc_mission_missionMonitor;
-			_clustersMissions pushBack _cID;
+			_clusterDatabase pushBack [_cID, _mo];
+		};
+	};
+	//Delete missions for clusters which are no longer spotted
+	private _i = 0;
+	private _count = count _clusterDatabase;
+	while {_i < _count} do {
+		private _cIDAndMission = _clusterDatabase select _i;
+		//Check if the cluster with mission assigned is not spotted any more
+		private _cID = _cIDAndMission select 0;
+		if (! (_cID in _eClusterIDs)) then { //Delete the mission
+			private _mo = _cIDAndMission select 1;
+			_mo call AI_fnc_mission_delete;
+			_clusterDatabase deleteAt _i;
+			_count = _count - 1;
+		} else {
+			_i = _i + 1;
 		};
 	};
 	//

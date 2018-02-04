@@ -136,8 +136,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 			_enemyAge deleteAt _i;			
 			_enemyReportedBy deleteAt _i;
 			_count = _count - 1;
-		}
-		else {
+		} else {
 			_enemyAge set [_i, _age];
 			_i = _i + 1;
 		};
@@ -168,12 +167,15 @@ sense_fnc_enemyMonitor_getActiveClusters =
 					};
 				}
 				else {
-					//Add the threat to the array
-					_enemyObjects pushBack _o;
-					_enemyPos pushBack _pos;
-					_enemyAge pushBack _age;
-					//Get garrisons report this enemy
-					_enemyReportedBy pushBack (_scriptObject call AI_fnc_mediumLevel_getGarrisons);
+					//Check if the age is below the forget time
+					if (_age < FORGET_TIME) then {
+						//Add the threat to the array
+						_enemyObjects pushBack _o;
+						_enemyPos pushBack _pos;
+						_enemyAge pushBack _age;
+						//Get garrisons report this enemy
+						_enemyReportedBy pushBack (_scriptObject call AI_fnc_mediumLevel_getGarrisons);
+					};
 				};
 			};
 		} forEach _newObjects;

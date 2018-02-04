@@ -99,6 +99,10 @@ switch (_mType) do
 			_loc call loc_fnc_restartEnemiesScript;
 			_loc call loc_fnc_restartAlertStateScript;
 		};
+		//Start enemyMonitor script for the new garrison
+		_oEnemiesScript = [[_garMission], "AI_fnc_manageSpottedEnemies", []]
+								call AI_fnc_startMediumLevelScript;
+		_oEnemiesScript call sense_fnc_enemyMonitor_addScript;
 		
 		#ifdef DEBUG
 		diag_log format ["AI_fnc_mission_assignGarrison: garrison %1 has been assigned for mission: %2",
