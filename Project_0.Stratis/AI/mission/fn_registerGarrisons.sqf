@@ -14,12 +14,15 @@ for "_i" from 0 to ((count _garrisons) - 1) do
 	{
 		for "_j" from 0 to ((count _missions) - 1) do
 		{
-			private _m = _missions select _j;	
-			//Calculate efficiency
-			private _e = [_m, _gar] call AI_fnc_mission_calculateEfficiency;
-			if (_e > 0) then //If the garrison can do the mission
-			{
-				[_m, _gar, _e] call AI_fnc_mission_registerGarrison;
+			private _m = _missions select _j;
+			//Check if the mission is not started yet
+			if ((_m call AI_fnc_mission_getState) == "IDLE") then {
+				//Calculate efficiency
+				private _e = [_m, _gar] call AI_fnc_mission_calculateEfficiency;
+				if (_e > 0) then //If the garrison can do the mission
+				{
+					[_m, _gar, _e] call AI_fnc_mission_registerGarrison;
+				};
 			};
 		};
 	};

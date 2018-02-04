@@ -43,7 +43,7 @@ switch (_mType) do
 		} forEach _infGroupIDs;
 		
 		//Move infantry units into the new group
-		private _nInf = _effReq select T_EFF_soft; //Test
+		private _nInf = (1.5*(_effReq select T_EFF_soft)) max 4; //Test
 		private _j = _nInf;
 		while {(count _allInfUnits) > 0 && _j > 0} do
 		{

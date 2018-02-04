@@ -12,7 +12,7 @@ Mission types:
 	SAD
 		requirements: [_efficiency]
 			_efficiency - the efficiency vector required to perform the task
-		parameters: [_target]
+		parameters: [_target, _searchRadius]
 			_target - Pos ARRAY or Location OBJECT
 */
 

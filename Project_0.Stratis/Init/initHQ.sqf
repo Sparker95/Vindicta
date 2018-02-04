@@ -151,3 +151,6 @@ fn_highLevelScript =
 [sense_enemyMonitorEast, EAST] spawn cmr_fnc_senseMonitor;
 [sense_enemyMonitorWest, WEST] spawn cmr_fnc_senseMonitor;
 [sense_enemyMonitorInd, INDEPENDENT] spawn cmr_fnc_senseMonitor;
+
+//Assign all garrisons to missions
+false spawn AI_fnc_mission_missionMonitor;

@@ -17,7 +17,7 @@ for "_i" from 0 to ((count _missions) - 1) do
 	#ifdef DEBUG
 	diag_log format ["AI_fnc_mission_startMissions: registered garrisons: %1", _gRegistered];
 	#endif
-	if (count _gRegistered > 0) then
+	if (count _gRegistered > 0 && ((_m call AI_fnc_mission_getState) == "IDLE")) then
 	{
 		//Start the mission
 		_m call AI_fnc_mission_start;

@@ -46,6 +46,7 @@ private _hScript = _to spawn
 		else
 		{
 			_allVehGroupHandles pushBack ([_gar, _x] call gar_fnc_getGroupHandle);
+			_groupHandle setVariable ["AI_task_SAD_WP_added", false, false];
 		};
 	} forEach (_gar call gar_fnc_getAllGroups);
 	
@@ -78,7 +79,7 @@ private _hScript = _to spawn
 	
 	//Order vehicles with troops to dismount
 	{
-		private _wp0 = _x addWaypoint [getPos leader _x, 15, 0, "Hold"];
+		private _wp0 = _x addWaypoint [getPos leader _x, 15];
 		_wp0 setWaypointType "MOVE";
 		_x setCurrentWaypoint _wp0;
 	} forEach _allVehGroupHandles;
@@ -96,13 +97,16 @@ private _hScript = _to spawn
 	//Vehicle waypoints
 	{
 		private _g = _x;
+		//Order get in
+		(units _g) orderGetIn true;
+		_g allowFleeing 0;
 		_g setCombatMode "RED";
 		private _dirStart = _targetPos getDir (leader _g);
 		//Add waypoints around the area
 		for "_i" from 0 to 11 do
 		{
-			private _pos = _targetPos getPos [(12-_i)*0.8*_searchRadius/12, _dirStart + (_i*360/6)];
-			private _wp = _g addWaypoint [_pos, 60];
+			private _pos = _targetPos getPos [(12-_i)*(_searchRadius+300)/12, _dirStart + (_i*360/6)];
+			private _wp = _g addWaypoint [_pos vectorAdd [0, 0, 1], 60];
 			_wp setWaypointCompletionRadius (0.2*_searchRadius);
 			_wp setWaypointType "MOVE";
 		};
@@ -114,17 +118,18 @@ private _hScript = _to spawn
 	{
 		//Set combat mode
 		_x setCombatMode "RED";
+		_x allowFleeing 0;
 		//Add waypoints
 		private _wp0 = _x addWaypoint [_targetPos, 0];
 		_wp0 setWaypointCompletionRadius 0.2*_searchRadius;
-		_wp0 setWaypointType "SAD";
+		_wp0 setWaypointType "MOVE";
 		//Generate random waypoints
 		private _i = 1;
 		while {_i < 6} do
 		{
 			private _wp = _x addWaypoint [_targetPos, _searchRadius];
 			_wp setWaypointCompletionRadius 0.2*_searchRadius;
-			_wp setWaypointType "SAD";
+			_wp setWaypointType "MOVE";
 			_i = _i + 1;
 		};
 		//Finally add a cycle waypoint

@@ -46,6 +46,7 @@ switch (_side) do
 private _counterEnemies = 0;
 private _counterEnemiesClusters = 0;
 private _counterMissions = 0;
+private _clustersMissions = [];
 
 while {true} do
 {
@@ -122,8 +123,33 @@ while {true} do
 	#endif
 	
 	//==== Generate missions for spotted enemies ====
-	private _eClusters = _e select 3; //[_enemyObjects, _enemyPos, _enemyAge, _clusters, _efficiencies]
-	//_clusters: [_cluster, ,cluster ID, time, reportedBy garrisons array]
+	//_e: [_enemyObjects, _enemyPos, _enemyAge, _clusters, _efficiencies]
+	//_clusters: [0: _cluster, 1: cluster ID, 2: time, 3: reportedBy garrisons array]
+	private _eClusters = _e select 3; //
+	private _cEfficiencies = _e select 4;
+	for "_i" from 0 to ((count _eClusters) - 1) do
+	{
+		private _clusterStruct = _eClusters select 0;
+		private _c = _clusterStruct select 0;
+		private _cID = _clusterStruct select 1;
+		private _cTime = _clusterStruct select 2; //Time passed since the cluster was spotted initially
+		//If this cluster is old enough and doesn't have a mission
+		if (_cTime > 30 && !(_cID in _clustersMissions)) then {
+			private _cEff = _cEfficiencies select _i;
+			//Generate a new mission
+			private _requirements = [_cEff];
+			private _centerPos = _c call cluster_fnc_getCenter;			
+			private _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
+			private _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
+			private _searchRadius = sqrt (_width^2 + _height^2);
+			private _mPos = ((_centerPos + [0]) vectorAdd [0, 20, 0]) vectorAdd [random 10, random 10, 0];
+			private _mName = format ["SAD Mission, cID: %1", _cID];
+			private _mParams = [_mPos, _searchRadius max 200]; //Mission parameters
+			["SAD", _side, _requirements, _mParams, _mName] call AI_fnc_mission_create;
+			//true spawn AI_fnc_mission_missionMonitor;
+			_clustersMissions pushBack _cID;
+		};
+	};
 	//
 	
 	#ifdef DEBUG_MISSIONS

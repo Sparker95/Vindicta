@@ -43,8 +43,9 @@ switch (_mType) do
 		T_EFF_aArmor =	6;
 		T_EFF_aAir =	7;
 		*/
+		private _nInf = (1.5*(_effReq select T_EFF_soft)) max 4;
 		private _canDestroy = false;
-		if ((_eff select T_EFF_aSoft) >= (_effReq select T_EFF_soft) &&
+		if ((_eff select T_EFF_aSoft) >= _nInf &&
 			(_eff select T_EFF_aMedium) >= (_effReq select T_EFF_medium) &&
 			(_eff select T_EFF_aArmor) >= (_effReq select T_EFF_armor) &&
 			(_eff select T_EFF_aAir) >= (_effReq select T_EFF_air)) then {
@@ -75,7 +76,7 @@ switch (_mType) do
 		#endif
 		
 		//Calculate score
-		if (_canDestroy && (_cargoCapacity > (_effReq select T_EFF_soft)) ) then
+		if (_canDestroy && (_cargoCapacity > _nInf) ) then
 		{
 			if (_d < 10000) then {
 				_score = (10000 - _d); //Now just make a simple calculation based on distance

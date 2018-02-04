@@ -59,8 +59,11 @@ private _hScript = [_so, _extraParams] spawn
 					//Houston, we have a problem!
 					private _state = _stateArray select 0;
 					#ifdef DEBUG
-					diag_log format ["INFO: mission\fn_garrisonThread.sqf: mission %1, task failed, state: %2, reason: %3", _m getVariable "AI_m_name", _state, _reason];
+					diag_log format ["INFO: mission\fn_garrisonThread.sqf: mission %1, task failed, state: %2, reason: %3", _mo getVariable "AI_m_name", _state, _fReason];
 					#endif
+					//Try to RTB
+					_type = "NOTHING";
+					[_mo, _gar] call AI_fnc_mission_unassignGarrison;
 				};
 			};
 			

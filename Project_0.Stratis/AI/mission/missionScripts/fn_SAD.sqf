@@ -39,13 +39,14 @@ switch (_state) do
 			
 			//Read mission parameters
 			private _mParams = _m getVariable "AI_m_params";
-			_mParams params ["_target"];
+			_mParams params ["_target", "_searchRadius"];
 			
 			//Stop previous task (if it exists)
 			_oTask call AI_fnc_task_delete;
 			
 			//Create the new task
-			_oTask = [_gar, "MOVE", [_target, 500], "Move, SAD mission"] call AI_fnc_task_create;
+			//						 _target, distance until the task is complete
+			_oTask = [_gar, "MOVE", [_target, _searchRadius+400], "Move, SAD mission"] call AI_fnc_task_create;
 			_oTask call AI_fnc_task_start;
 			
 			_stateChanged = false;
@@ -64,7 +65,9 @@ switch (_state) do
 				};
 				case "FAILURE":
 				{
-					_failureReason = _oTask call AI_fnc_task_getFailureReason;
+					//_failureReason = _oTask call AI_fnc_task_getFailureReason;
+					_state = "SAD";
+					_stateChanged = true;
 				};
 			};
 		};
@@ -84,7 +87,7 @@ switch (_state) do
 			
 			//Read mission parameters
 			private _mParams = _m getVariable "AI_m_params";
-			_mParams params ["_target", ["_searchRadius", 200]];
+			_mParams params ["_target", "_searchRadius"];
 			
 			//Create new task
 			_oTask = [_gar, "SAD", [_target, _searchRadius, 666666666], "SAD, SAD mission"] call AI_fnc_task_create; //target, radius, time
