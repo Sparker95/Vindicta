@@ -70,6 +70,36 @@ gar_fnc_isSpawned =
 	_return
 };
 
+gar_fnc_getVehicleCrew =
+{
+	/*
+	Returns units assigned as crew to this vehicle
+	*/
+	params [["_lo", objNull, [objNull]], ["_vehUnitData", [0, 0, 0], [[]]]];
+	private _groupID = [_lo, _vehUnitData] call gar_fnc_getUnitGroupID;
+	
+	//If the vehicle has no group
+	if (_groupID == -1) exitWith {
+		[]
+	};
+	
+	private _group = [_lo, _groupID] call gar_fnc_getGroup;
+	private _groupUnits = _group select G_GROUP_UNITS;
+	private _return = [];
+	for "_i" from 0 to ((count _groupUnits) - 1) do {
+		private _unitArray = _groupUnits select _i;
+		private _vehRole = _unitArray select 1;
+		private _assignedVeh = _vehRole select 0;
+		if (_assignedVeh isEqualTo _vehUnitData) then {
+			private _unitData = _unitArray select 0;
+			_return pushBack _unitData;
+		};
+	};
+	
+	//Return
+	_return
+};
+
 gar_fnc_getAllUnits =
 {
 	/*
