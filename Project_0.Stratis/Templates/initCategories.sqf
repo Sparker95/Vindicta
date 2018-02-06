@@ -233,3 +233,18 @@ T_PL_inf_main = //Main infantry (excluding recon and divers)
 
 //Transport vehicles (those that can potentially carry cargo)
 T_canLoadCargo = [];
+
+//All static units
+T_static = [
+	[T_VEH, T_VEH_stat_HMG_high],
+	[T_VEH, T_VEH_stat_GMG_high],
+	[T_VEH, T_VEH_stat_HMG_low],
+	[T_VEH, T_VEH_stat_GMG_low],
+	[T_VEH, T_VEH_stat_AA],
+	[T_VEH, T_VEH_stat_AT],
+	[T_VEH, T_VEH_stat_mortar_light],
+	[T_VEH, T_VEH_stat_mortar_heavy],
+	[T_DRONE, T_DRONE_stat_HMG_low],
+	[T_DRONE, T_DRONE_stat_GMG_low],
+	[T_DRONE, T_DRONE_stat_AA]
+];

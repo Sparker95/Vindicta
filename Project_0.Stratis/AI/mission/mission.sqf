@@ -1,10 +1,6 @@
 /*
-call compile preprocessFileLineNumbers "AI\mission\initFunctions.sqf";
-["SAD", WEST, 10, [[4100, 4600, 0]], "Attack mission"] call AI_fnc_mission_create;
-_m = allMissions select 0;
-_g = (alllocations select 1) call loc_fnc_getMainGarrison;
-[_m, _g] call AI_fnc_mission_calculateEfficiency;
-true spawn AI_fnc_mission_missionMonitor;
+call compile preprocessFileLineNumbers "AI\mission\initFunctions.sqf"; 
+["SAD", WEST, [[0, 0, 3, 0, 0, 0, 0, 0], [[], 0, 0, [objNull], [objNull]]], [[4100, 4600, 0], 300], "Attack mission"] call AI_fnc_mission_create;
 */
 
 /*
@@ -104,8 +100,9 @@ AI_fnc_mission_start =
 		//Sort the registered garrison array in descending order
 		_rGarrisons sort false;
 		//Pick the most suitable garrison
-		private _gar = _rGarrisons select 0 select 0;
-		[_mo, _gar] call AI_fnc_mission_assignGarrison;
+		private _gar = _rGarrisons select 0 select 1;
+		private _extraParams = _rGarrisons select 0 select 2;
+		[_mo, _gar, _extraParams] call AI_fnc_mission_assignGarrison;
 		//Set mission state
 		_mo setVariable ["AI_m_state", "RUNNING"];
 		//Unregister the garrison from all missions
@@ -165,9 +162,9 @@ AI_fnc_mission_registerGarrison =
 	/*
 	Registers a garrison to a mission
 	*/
-	params ["_mo", "_gar", "_efficiency"];
+	params ["_mo", "_gar", "_efficiency", "_extraParams"];
 	private _rGars = _mo getVariable "AI_m_rGarrisons";
-	_rGars pushBack [_gar, _efficiency];
+	_rGars pushBack [_efficiency, _gar, _extraParams];
 	
 	#ifdef DEBUG
 	diag_log format ["AI_fnc_mission_registerGarrison: garrison %1 has been registered for mission: %2, efficiency: %3",
@@ -200,5 +197,21 @@ AI_fnc_mission_unregisterGarrison =
 	if(!(_rGarsFound isEqualTo [])) then //If some registered garrison has been found
 	{
 		_rGars = _rGars - _rGarsFound;
+	};
+};
+
+AI_fnc_mission_unregisterAllGarrisons = {
+	/*
+	Accepts an array of missions or a single mission and resets its registered garrisons array.
+	*/
+	private _missions = _this;
+	
+	if (_missions isEqualType objNull) then {
+		_missions = [_missions];
+	};
+	
+	for "_i" from 0 to ((count _missions) - 1) do {
+		private _mo = _missions select _i;
+		_mo setVariable ["AI_m_rGarrisons", [], false]
 	};
 };

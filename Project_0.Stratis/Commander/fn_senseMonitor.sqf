@@ -2,6 +2,8 @@
 This thread takes data from sense objects and displays it on the map
 */
 
+#define GENERATE_MISSION_DELAY 30
+
 #define TIME_SLEEP 5
 
 #define DEBUG_MISSIONS
@@ -115,7 +117,7 @@ while {true} do
 			//Marker for the cluster ID and efficiency
 			private _eff = _efficiencies select _i; //Vector with total efficiency of the cluster
 			_name = format [_mrkEnemyClusterEffName, _i];
-			_mrk = createMarker [_name, _cCenter];
+			_mrk = createMarker [_name, (_cCenter + [0]) vectorAdd [10, 10, 0]];
 			_mrk setMarkerType "mil_dot";
 			_mrk setMarkerColor _colorEnemy;
 			_mrk setMarkerText format ["ID: %1, T: %2, E: %3, G: %4", _cID, round _cTime, _eff, _cGarsNames]; //ID: efficiency
@@ -131,15 +133,18 @@ while {true} do
 	private _clusterIDsWithMissions = _clusterDatabase apply {_x select 0};
 	for "_i" from 0 to ((count _eClusters) - 1) do
 	{
-		private _clusterStruct = _eClusters select 0;
+		private _clusterStruct = _eClusters select _i;
 		private _c = _clusterStruct select 0;
 		private _cID = _clusterStruct select 1;
 		private _cTime = _clusterStruct select 2; //Time passed since the cluster was spotted initially
-		//If this cluster is old enough and doesn't have a mission
-		if (_cTime > 30 && !(_cID in _clusterIDsWithMissions)) then {
+		private _cGarrisons = _clusterStruct select 4;
+		//If this cluster is old enough and doesn't have a mission assigned to it
+		//And if there are no static garrisons in this cluster
+		if (_cTime > GENERATE_MISSION_DELAY && !(_cID in _clusterIDsWithMissions) && 
+			({_x call gar_fnc_isStatic} count _cGarrisons == 0)) then {
 			private _cEff = _cEfficiencies select _i;
 			//Generate a new mission
-			private _requirements = [_cEff];
+			private _requirements = [_cEff, _clusterStruct];
 			private _centerPos = _c call cluster_fnc_getCenter;			
 			private _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
 			private _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
@@ -193,7 +198,7 @@ while {true} do
 			_mrk setMarkerColor _colorFriendly;
 			_mrk setMarkerAlpha 1.0;
 			_mrk setMarkerText (format ["Mission: %1, %2, %3",
-				_m call AI_fnc_mission_getType, _m call AI_fnc_mission_getRequirements, _m call AI_fnc_mission_getState]);
+				_m call AI_fnc_mission_getType, (_m call AI_fnc_mission_getRequirements) select 0, _m call AI_fnc_mission_getState]);
 		};
 	#endif
 

@@ -1,6 +1,10 @@
 /*
 These functions are related to enemy monitor.
 The purpose of enemy monitor is to gather data from AI/medium/manageSpottedEnemies scripts.
+
+Return value:
+[_enemyObjects, _enemyPos, _enemyAge, _clustersNew, _efficiencies]
+_clustersNew: [0:cluster, 1:cluster ID, 2:time, 3:reportedBy, 4:garrisons]
 */
 
 //Minimum distance between enemies until they are treated as a single cluster
@@ -199,7 +203,7 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	
 	//Find bigger clusters from smaller clusters
 	private _clustersNew = [_smallClusters, DISTANCE_MIN] call cluster_fnc_findClusters;
-	_clustersNew = _clustersNew apply {[_x, -1, 0, []]}; //Add a cluster ID, time, reportedBy
+	_clustersNew = _clustersNew apply {[_x, -1, 0, [], []]}; //[0:cluster, 1:cluster ID, 2:time, 3:reportedBy, 4:garrisons]
 	
 	//Compare new clusters with old clusters
 	private _clustersOld = _enemyMonitor getVariable "s_clusters";
@@ -268,20 +272,27 @@ sense_fnc_enemyMonitor_getActiveClusters =
 		_c set [2, _time];
 	};
 	
-	//Calculate enemy efficiencies
+	//Calculate enemy efficiencies of clusters
+	//Calculate garrisons in each clusters
 	private _efficiencies = [];
 	for "_i" from 0 to ((count _clustersNew) - 1) do
 	{
-		private _c = _clustersNew select _i select 0;
+		private _clusterStruct = _clustersNew select _i;
+		private _c = _clusterStruct select 0;
 		private _uhs = _c select 4; //Unit handles in this cluster
 		private _eff = T_EFF_null;
+		private _garrisons = [];
 		//Sum efficiencies of all enemies inside the cluster
 		for "_j" from 0 to ((count _uhs) - 1) do
 		{
+			//Sum efficiencies
 			private _uh = _uhs select _j; //Unit handle
 			private _ue = (_uh call gar_fnc_getUnitData) call T_fnc_getEfficiency; 
 			_eff = [_eff, _ue] call BIS_fnc_vectorAdd;
+			//Find garrisons in this cluster
+			_garrisons pushBackUnique (_uh call gar_fnc_getUnitGarrison);
 		};
+		_clusterStruct set [4, _garrisons];
 		_efficiencies pushBack _eff;
 	};
 	

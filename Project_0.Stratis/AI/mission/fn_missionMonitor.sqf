@@ -21,8 +21,11 @@ while {true} do
 	diag_log format ["fn_missionMonitor.sqf: _garWest: %1", _garWest];
 	diag_log format ["fn_missionMonitor.sqf: _misWest: %1", _misWest];
 	
+	_misEast call AI_fnc_mission_unregisterAllGarrisons;
 	[_misEast, _garEast] call AI_fnc_mission_registerGarrisons;
 	[_misEast, _garEast] call AI_fnc_mission_startMissions;
+	
+	_misWest call AI_fnc_mission_unregisterAllGarrisons;
 	[_misWest, _garWest] call AI_fnc_mission_registerGarrisons;
 	[_misWest, _garWest] call AI_fnc_mission_startMissions;
 	

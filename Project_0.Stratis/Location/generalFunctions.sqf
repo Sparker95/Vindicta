@@ -89,3 +89,9 @@ loc_fnc_getEnemiesScriptHandle =
 	private _return = _loc getVariable ["l_oAIEnemiesScript", objNull];
 	_return
 };
+
+loc_fnc_getAlertState =
+{
+	params ["_loc"];
+	_loc getVariable ["l_alertState", LOC_AS_none];
+};

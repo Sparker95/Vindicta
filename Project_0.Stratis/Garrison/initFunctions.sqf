@@ -2,6 +2,7 @@
 
 //Functions that can be used by external modules in the mission
 gar_fnc_createGarrison = compile preprocessFileLineNumbers "Garrison\fn_createGarrison.sqf";
+gar_fnc_deleteGarrison = compile preprocessFileLineNumbers "Garrison\fn_deleteGarrison.sqf";
 
 gar_fnc_spawnGarrison = compile preprocessFileLineNumbers "Garrison\fn_spawnGarrison.sqf";
 gar_fnc_t_spawnGarrison = compile preprocessFileLineNumbers "Garrison\fn_t_spawnGarrison.sqf";

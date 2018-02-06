@@ -28,7 +28,7 @@ _eff_inf set [T_INF_SL,				[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_TL,				[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_officer,		[1,		0,		0,		0,		1,		0,		0,		0]];
 //									[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
-_eff_inf set [T_INF_GL,				[1,		0,		0,		0,		2,		0,		0,		0]];
+_eff_inf set [T_INF_GL,				[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_rifleman,		[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_marksman,		[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_sniper,			[1,		0,		0,		0,		1,		0,		0,		0]];
@@ -38,10 +38,10 @@ _eff_inf set [T_INF_exp,			[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_ammo,			[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_LAT,			[1,		0,		0,		0,		1,		1,		1,		0]];
 //									[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
-_eff_inf set [T_INF_AT,				[1,		0,		0,		0,		1,		2,		2,		0]];
+_eff_inf set [T_INF_AT,				[1,		0,		0,		0,		1,		1.9,	2,		0]];
 _eff_inf set [T_INF_AA,				[1,		0,		0,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_LMG,			[1,		0,		0,		0,		2,		0,		0,		0]];
-_eff_inf set [T_INF_HMG,			[1,		0,		0,		0,		2,		0,		0,		0]];
+_eff_inf set [T_INF_LMG,			[1,		0,		0,		0,		1,		0,		0,		0]];
+_eff_inf set [T_INF_HMG,			[1,		0,		0,		0,		1,		0,		0,		0]];
 //									[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 _eff_inf set [T_INF_medic,			[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_engineer,		[1,		0,		0,		0,		1,		0,		0,		0]];
@@ -81,7 +81,7 @@ _eff_veh set [T_VEH_MRAP_GMG,				[0,		1,		0,		0,		5,		2,		0,		0]];
 _eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		1,		0]];
 _eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		1,		0]];
 //											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
-_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		2,		0]];
+_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0]];
 _eff_veh set [T_VEH_MRLS,					[0,		0,		1,		0,		0,		0,		0,		0]];
 _eff_veh set [T_VEH_SPA,					[0,		0,		1,		0,		0,		0,		0,		0]];
 _eff_veh set [T_VEH_SPAA,					[0,		0,		1,		0,		0,		0,		0,		6]];

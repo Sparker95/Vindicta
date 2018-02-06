@@ -108,6 +108,13 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 			_to setVariable ["AI_convoyState", _state, false]; //Update the state variable
 		};
 		
+		//Update position of the garrison
+		private _leaderPos = getPos leader _vehGroupHandle;
+		_garTransport setPos _leaderPos;
+		{
+			_x setPos _leaderPos;
+		} forEach _garsCargo;
+		
 		//Check states
 		switch (_state) do
 		{
@@ -406,13 +413,6 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					_stateChanged = false;
 				};
 				
-				//Update position of the garrison
-				private _leaderPos = getPos leader _vehGroupHandle;
-				_garTransport setPos _leaderPos;
-				{
-					_x setPos _leaderPos;
-				} forEach _garsCargo;
-				
 				//Check the separation of the convoy
 				private _sCur = [_vehArray, vehicle leader _vehGroupHandle] call AI_fnc_landConvoy_getMaxSeparation; //The current maximum separation between vehicles
 				#ifdef DEBUG_FORMATION
@@ -448,12 +448,12 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				{
 					_timer = _timer + _dt;
 					#ifdef DEBUG
-					diag_log format ["fn_landCOnvoy.sqf: convoy has been static for %1 seconds!", _timer];
+					diag_log format ["fn_landConvoy.sqf: convoy has been static for %1 seconds!", _timer];
 					#endif
 					if(_timer > STUCK_TIMER_LIMIT) then
 					{
 						#ifdef DEBUG
-						diag_log format ["fn_landCOnvoy.sqf: Convoy has stuck! Selecting a new leader!", _timer];
+						diag_log format ["fn_landConvoy.sqf: Convoy has stuck! Selecting a new leader!", _timer];
 						#endif
 						_vehGroupHandle selectLeader (selectRandom (units _vehGroupHandle));
 						_stateChanged = true; //Reenter this state to reset the waypoints

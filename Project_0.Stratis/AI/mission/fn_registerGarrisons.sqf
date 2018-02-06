@@ -9,8 +9,8 @@ params ["_missions", "_garrisons"];
 for "_i" from 0 to ((count _garrisons) - 1) do
 {
 	private _gar = _garrisons select _i;
-	//Check if the garrison is not doing any missions now
-	if(isNull (_gar call gar_fnc_getAssignedMission)) then
+	//Check if the garrison is not doing any missions now and is located at its base
+	if((isNull (_gar call gar_fnc_getAssignedMission)) && (_gar call gar_fnc_isStatic)) then
 	{
 		for "_j" from 0 to ((count _missions) - 1) do
 		{
@@ -18,10 +18,11 @@ for "_i" from 0 to ((count _garrisons) - 1) do
 			//Check if the mission is not started yet
 			if ((_m call AI_fnc_mission_getState) == "IDLE") then {
 				//Calculate efficiency
-				private _e = [_m, _gar] call AI_fnc_mission_calculateEfficiency;
-				if (_e > 0) then //If the garrison can do the mission
-				{
-					[_m, _gar, _e] call AI_fnc_mission_registerGarrison;
+				private _eAndUnits = [_m, _gar] call AI_fnc_mission_calculateEfficiency;
+				private _e = _eAndUnits select 0;
+				private _units = _eAndUnits select 1;
+				if (_e > 0) then { //If the garrison can do the mission
+					[_m, _gar, _e, [_units]] call AI_fnc_mission_registerGarrison;
 				};
 			};
 		};

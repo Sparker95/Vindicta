@@ -105,7 +105,7 @@ private _hScript = _to spawn
 		//Add waypoints around the area
 		for "_i" from 0 to 11 do
 		{
-			private _pos = _targetPos getPos [(12-_i)*(_searchRadius+300)/12, _dirStart + (_i*360/6)];
+			private _pos = _targetPos getPos [(12-_i)*(_searchRadius+100)/12, _dirStart + (_i*360/6)];
 			private _wp = _g addWaypoint [_pos vectorAdd [0, 0, 1], 60];
 			_wp setWaypointCompletionRadius (0.2*_searchRadius);
 			_wp setWaypointType "MOVE";

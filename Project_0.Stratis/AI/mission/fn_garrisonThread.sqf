@@ -52,6 +52,7 @@ private _hScript = [_so, _extraParams] spawn
 	private _t = time;
 	private _type = "";
 	private _run = true;
+	private _deleteSO = false;
 	while {_run && _so getVariable "so_run"} do
 	{
 		_mo = _gar call gar_fnc_getAssignedMission;
@@ -107,12 +108,12 @@ private _hScript = [_so, _extraParams] spawn
 			{
 				_stateArray = [_gar, _stateArray, true] call AI_fnc_mission_moveAndMerge; //[..., ..., true] = RTB
 				private _state = _stateArray select 0;
-				if(_state == "SUCCESS") then //Time to terminate this garrison because it's empty
-				{
+				if(_state == "SUCCESS") then { //Time to terminate this garrison because it's empty
 					#ifdef DEBUG
 					diag_log format ["INFO: mission\fn_garrisonThread.sqf: garrison %1 returned to base!", _gar call gar_fnc_getName];
 					#endif
 					_run = false;
+					_deleteSO = true;
 				};
 			};
 			
@@ -149,6 +150,12 @@ private _hScript = [_so, _extraParams] spawn
 		private _name = format ["mGarrison_%1", _gar];
 		deleteMarker _name;
 	#endif
+	//Delete the script object
+	if (_deleteSO) then {
+		diag_log "INFO: fn_garrisonThread.sqf: Deleting the scriptObject!";
+		[_so, false] call scriptObject_fnc_delete;
+		diag_log "INFO: fn_garrisonThread.sqf: scriptObject deleted!";
+	};
 }; //spawn
 
 _hScript

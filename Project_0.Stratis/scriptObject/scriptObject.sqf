@@ -20,9 +20,17 @@ scriptObject_fnc_create =
 
 scriptObject_fnc_delete =
 {
-	params ["_so"];
+	/*
+	Deletes the script object.
+	
+	_stopScript - if true, the function will wait until the script has terminated.
+		Must be FALSE to delete the script object from the scriptObject's thread.
+	*/
+	params ["_so", ["_stopScript", true]];
 	if (isNull _so) exitWith {};
-	_so call scriptObject_fnc_stop;
+	if (_stopScript) then {
+		_so call scriptObject_fnc_stop;
+	};
 	deleteVehicle _so;
 };
 

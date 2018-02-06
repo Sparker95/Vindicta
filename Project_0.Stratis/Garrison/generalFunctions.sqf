@@ -11,6 +11,14 @@ gar_fnc_isGarrison =
 	if (isNil "_name") then	{ false } else { true };
 };
 
+gar_fnc_isStatic =
+{
+	//Checks if this garrison is static(attached to a location)
+	params ["_gar"];
+	private _loc = _gar getVariable ["g_location", objNull];
+	if (_gar distance _loc < 0.1) then { true } else { false };
+};
+
 gar_fnc_setName =
 {
 	/*
@@ -527,6 +535,12 @@ gar_fnc_getUnitData =
 	*/
 	params ["_unitHandle"];
 	_unitHandle getVariable ["g_unitData", [0, 0, 0]]
+};
+
+gar_fnc_getUnitGarrison =
+{
+	params ["_uh"];
+	_uh getVariable ["g_garrison", objNull]
 };
 
 gar_fnc_getUnitClassname =
