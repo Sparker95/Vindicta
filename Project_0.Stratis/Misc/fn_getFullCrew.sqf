@@ -2,7 +2,7 @@
 Used to determine which crew this vehicle can have.
 
 return value:
-[_pilot, _copilot, _stdTurrets, _psgTurrets, _nCargo]
+[_pilot, _copilot, _stdTurrets]
 	0: _n_driver - 0 or 1, if there's a driver(pilot) or not
 	1: _copilotTurrets - copilot's turret path
 	2: _stdTurrets - standard(with AI inside by default) turret paths excluding the copilot turret.

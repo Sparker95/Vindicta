@@ -6,7 +6,7 @@ params ["_locations"];
 
 //Global coefficients for various unit types
 util_tracked_wheeled = 1.0; //1.0;
-util_infantry = 1.0; //1.0;
+util_infantry = 0.5; //1.0;
 util_helicopters = 0.5; //1.0;
 util_planes = 0.5; //1.0;
 util_turrets = 0.5; //1.0;
@@ -79,19 +79,17 @@ private _gar = objNull;
 		{
 			//Static weapons
 
-			/*
 			[_loc, _gar,
 			[
 				[T_VEH, T_VEH_stat_HMG_high, 3],
 				[T_VEH, T_VEH_stat_GMG_high, 1]
 			], G_GT_veh_static, util_turrets] call loc_fnc_addUnits;
-			*/
 
 			//Tracked and wheeled vehicles
 
 			[_loc, _gar,
 			[
-				//[T_VEH, T_VEH_MRAP_HMG, 1],
+				[T_VEH, T_VEH_MRAP_HMG, 2],
 				[T_VEH, T_VEH_truck_inf, 1]
 				//[T_VEH, T_VEH_APC, 1],
 				//[T_VEH, T_VEH_IFV, 1]
@@ -99,13 +97,12 @@ private _gar = objNull;
 			
 
 			//Sentries in buildings
-			/*
 			[_loc, _gar,
 			[
 				[T_INF, T_INF_LMG, 4],
 				[T_INF, T_INF_AT, 1]
 			],G_GT_building_sentry, util_building_sentries] call loc_fnc_addUnits;
-			*/
+
 
 			//Infantry
 			[_loc, _gar,

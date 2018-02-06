@@ -16,8 +16,6 @@ private _catID = _units select 0 select 0;
 private _subcatID = _units select 0 select 1;
 private _maxCapacity = [_loc, _catID, _subcatID, _groupType] call loc_fnc_getMaxCapacity;
 private _capacity = _maxCapacity * _occupyCoef;
-if(_capacity == 0) exitWith {};
-
 private _singleGroup = false; //If units will be added as one group
 if(_catID == T_INF || ([_catID, _subcatID] in T_PL_HMG_GMG_high) || ([_catID, _subcatID] in T_PL_HMG_GMG_low)) then
 {

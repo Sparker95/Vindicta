@@ -21,5 +21,5 @@ private _count = count _allUnitDatas;
 for "_i" from 0 to (_count - 1) do
 {
 	private _unitData = _allUnitDatas select _i;
-	[_garThis, [_garDst, _unitData, -1]] call gar_fnc_t_moveUnit;
+	[_garThis, [_garDst, _unitData]] call gar_fnc_t_moveUnit;
 };

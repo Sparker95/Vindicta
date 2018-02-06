@@ -57,7 +57,6 @@ gar_fnc_EH_handleDamage = compile preprocessFileLineNumbers "Garrison\fn_EH_hand
 gar_fnc_garrisonThread = compile preprocessFileLineNumbers "Garrison\fn_garrisonThread.sqf";
 gar_fnc_startThread = compile preprocessFileLineNumbers "Garrison\fn_startThread.sqf";
 gar_fnc_stopThread = compile preprocessFileLineNumbers "Garrison\fn_stopThread.sqf";
-gar_fnc_canLoadCargo = compile preprocessFileLineNumbers "Garrison\fn_canLoadCargo.sqf";
 
 call compile preprocessFileLineNumbers "Garrison\generalFunctions.sqf";
 gar_fnc_requestDone = compile preprocessFileLineNumbers "Garrison\fn_requestDone.sqf";

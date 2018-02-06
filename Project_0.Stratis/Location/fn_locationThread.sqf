@@ -7,7 +7,7 @@ params ["_loc", ["_debug", true]];
 
 private _alertState = _loc getVariable ["l_alertState", LOC_AS_safe];
 
-private _distanceSpawn = 700;
+private _distanceSpawn = 1300;
 private _distanceDespawn = _distanceSpawn + 100;
 private _sleepInterval = 0.5;
 

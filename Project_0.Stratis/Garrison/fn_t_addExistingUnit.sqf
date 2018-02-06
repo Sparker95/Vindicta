@@ -29,14 +29,12 @@ if(!([_template, _catID, _subcatID, _classID] call t_fnc_isValid)) exitWith {
 
 //Check if the specified group exists
 private _group = [];
-private _createNewGroup = false; //TODO add the creation of a new group!!
 if(_groupID != -1) then
 {
 	_group = [_lo, _groupID] call gar_fnc_getGroup;
-	if(_group isEqualTo []) then
+	if(_group isEqualTo []) exitWith
 	{
 		diag_log format ["fn_t_addExistingUnit.sqf: garrison: %1, specified group not found: %2", _lo getVariable ["g_name", ""], _groupID];
-		_createNewGroup = true;
 	};
 };
 
@@ -85,18 +83,6 @@ if(_spawned) then //If we are adding the unit to an already spawned garrison
 		_objectHandle setVariable ["g_garrison", _lo, false]; //The garrison this unit is assitiated with
 		private _unitData = _objectHandle getVariable ["g_unitData", []];
 		_unitData set [2, _unitID]; //Set unit's ID
-		//Make the unit join the destination group, if it has a group
-		if(_groupID != -1) then
-		{
-			private _groupHandle = _group select G_GROUP_HANDLE;
-			if(isNull _groupHandle) then
-			{
-				private _side = _lo getVariable ["g_side", WEST];
-				_groupHandle = createGroup [_side, true];
-				_group set [G_GROUP_HANDLE, _groupHandle];
-			};
-			[_objectHandle] join _groupHandle;
-		};
 	};
 }
 else //If we are adding unit to despawned garrison

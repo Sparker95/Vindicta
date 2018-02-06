@@ -1,8 +1,0 @@
-profile = Admin;
-exportDirectory = C:\Users\Admin\Documents\Arma 3 - Other Profiles\Sparker\missions;
-autoExport = false;
-terrain = Stratis;
-
-
-@ignore "link.sqdev"
-@ignore ".project"
