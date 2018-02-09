@@ -97,10 +97,12 @@ gar_fnc_getVehicleCrew =
 	for "_i" from 0 to ((count _groupUnits) - 1) do {
 		private _unitArray = _groupUnits select _i;
 		private _vehRole = _unitArray select 1;
-		private _assignedVeh = _vehRole select 0;
-		if (_assignedVeh isEqualTo _vehUnitData) then {
-			private _unitData = _unitArray select 0;
-			_return pushBack _unitData;
+		if (! (_vehRole isEqualTo [])) then {
+			private _assignedVeh = _vehRole select 0;
+			if (_assignedVeh isEqualTo _vehUnitData) then {
+				private _unitData = _unitArray select 0;
+				_return pushBack _unitData;
+			};
 		};
 	};
 	

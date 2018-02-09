@@ -2,6 +2,8 @@
 
 */
 
+#include "..\mission.hpp"
+
 #define DEBUG
 
 params ["_gar", "_stateArray"];
@@ -23,9 +25,18 @@ switch (_state) do
 			#ifdef DEBUG
 			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered INIT state", _m getVariable "AI_m_name"];
 			#endif
+			
+			//Read mission parameters
+			private _mParams = _m getVariable "AI_m_params";
+			_mParams params ["_target", "_searchRadius"];
+			
 			//Switch state
+			if ((_gar distance _target) > (_searchRadius + DISTANCE_DISMOUNT)) then { //Is it far away?
+				_state = "MOVE";
+			} else {
+				_state = "SAD"; //If it's close then swithch to SAD mode instantly
+			};
 			_stateChanged = true;
-			_state = "MOVE";
 		};
 	};
 	
@@ -46,7 +57,7 @@ switch (_state) do
 			
 			//Create the new task
 			//						 _target, distance until the task is complete
-			_oTask = [_gar, "MOVE", [_target, _searchRadius+400], "Move, SAD mission"] call AI_fnc_task_create;
+			_oTask = [_gar, "MOVE", [_target, _searchRadius+DISTANCE_DISMOUNT], "Move, SAD mission"] call AI_fnc_task_create;
 			_oTask call AI_fnc_task_start;
 			
 			_stateChanged = false;

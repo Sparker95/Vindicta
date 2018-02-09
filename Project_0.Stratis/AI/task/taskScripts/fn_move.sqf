@@ -50,8 +50,8 @@ for "_i" from 0 to ((count _allUnits) - 1) do
 };
 if (_countMen > 0 && _transportType == 0) then //Only infantry
 {
-	diag_log format ["fn_move: task: %1, detected move behaviour: INFANTRY", _to getVariable "AI_name"];
-	
+	diag_log format ["fn_move: task: %1, detected move type: INFANTRY", _to getVariable "AI_name"];
+	_hScript = _to call AI_fnc_task_move_infantry;
 }
 else
 {

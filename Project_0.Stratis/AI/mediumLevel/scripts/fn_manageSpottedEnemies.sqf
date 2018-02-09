@@ -199,7 +199,7 @@ private _hScript = [_scriptObject, _extraParams] spawn
 							if (_index != -1) then
 							{
 								//Check if the age reported by this group is lower than the age reported before
-								if(_age < (_reportAge select _index)) then
+								if(_age <= (_reportAge select _index)) then
 								{
 									_reportPos set [_index, _pos];
 									_reportAge set [_index, _age];

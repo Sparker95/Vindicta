@@ -151,7 +151,7 @@ while {true} do
 			private _searchRadius = sqrt (_width^2 + _height^2);
 			private _mPos = ((_centerPos + [0]) vectorAdd [0, 20, 0]) vectorAdd [random 10, random 10, 0];
 			private _mName = format ["SAD Mission, cID: %1", _cID];
-			private _mParams = [_mPos, _searchRadius max 200]; //Mission parameters
+			private _mParams = [_mPos, _searchRadius max 100]; //Mission parameters
 			private _mo = ["SAD", _side, _requirements, _mParams, _mName] call AI_fnc_mission_create;
 			//true spawn AI_fnc_mission_missionMonitor;
 			_clusterDatabase pushBack [_cID, _mo];

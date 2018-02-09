@@ -260,7 +260,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 				#endif
 				private _nHumansInVeh = {vehicle _x != _x} count _allHumanHandles;
 				//Only teleport them when someone has already boarded the vehicle
-				if (_timer > MOUNT_TIMER_LIMIT && (_nHumansInVeh > ceil (0.5*(count _allHumanHandles)) )) then
+				if (_timer > MOUNT_TIMER_LIMIT && (_nHumansInVeh >= ceil (0.5*(count _allHumanHandles)) )) then
 				{
 					//For fuck's sake why did you get stuck??
 					private _humansOnFoot =  _allHumanHandles select {vehicle _x isEqualTo _x};

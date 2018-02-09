@@ -3,6 +3,8 @@ This function decides which units to take for a mission.
 Return value: array with unitData of units to take for a mission, or empty array if units can't be allocated.
 */
 
+#include "mission.hpp"
+
 #define DEBUG
 #define ANTI_SOFT_MIN 4
 
@@ -10,6 +12,7 @@ params ["_mo", "_gar"];
 
 private _mType = _mo getVariable "AI_m_type";
 private _mRequirements = _mo getVariable "AI_m_requirements";
+private _mParams = _mo getVariable "AI_m_params";
 private _score = 0;
 private _unitsPlanned = [];
 
@@ -24,6 +27,7 @@ switch (_mType) do {
 		#endif
 
 		_mRequirements params ["_effReq"]; // "_clusterStruct"];
+		_mParams params ["_target", "_searchRadius"];
 		//Make an array with all units and their efficiencies
 		private _unitEffArray = []; //Array of [0:_number, 1:_effVector, 2:_unitData]
 		//Find infantry
@@ -151,47 +155,49 @@ switch (_mType) do {
 			#endif
 		};
 		
-		//==== Find transport for infantry ====
-		//Find capacity of already added vehicles
-		private _cargoInfCapacity = 0;
-		{
-			private _classname = [_gar, _x] call gar_fnc_getUnitClassname;
-			_cargoInfCapacity = _cargoInfCapacity + (_classname call misc_fnc_getCargoInfantryCapacity);
-		} forEach (_unitsPlanned select {_x select 0 == T_veh});
-		//Do we need more vehicles?
-		private _noTransport = false;
-		if (_cargoInfCapacity < _nInfPlanned) then {
-			//Find more vehicles
-			_cargoInfCapacityExtra = _nInfPlanned - _cargoInfCapacity; //How many extra cargo seats needed
-			private _fv = ([_gar, T_VEH, -1] call gar_fnc_findUnits) - _unitsPlanned; //Free vehicles
-			private _fvArray = _fv apply {[([_gar, _x] call gar_fnc_getUnitClassName) call misc_fnc_getCargoInfantryCapacity, _x]}; //[_number, _cargoCapacity, _unitData]
-			//Can the extra vehicles carry the infantry?
-			private _fvCapacity = 0;
-			for "_i" from 0 to ((count _fvArray) - 1) do	{
-				_fvCapacity = _fvCapacity + (_fvArray select _i select 0);
-			};
-			if (_fvCapacity < _cargoInfCapacityExtra) then {
-				_unitsPlanned = [];
-			} else {
-				_fvArray sort false; //Descending
-				while {_cargoInfCapacityExtra > 0 && (count _fvArray > 0)} do {
-					//Find vehicles that can fully cover the extra needed capacity
-					private _fvEnoughCapacity = _fvArray select {_x select 0 > _cargoInfCapacityExtra};
-					if (count _fvEnoughCapacity == 0) then {
-						//If there are no such vehicles, take the one with biggest cargo capacity
-						_cargoInfCapacityExtra = _cargoInfCapacityExtra - (_fvArray select 0 select 0);
-						_unitsPlanned pushBack (_fvArray select 0 select 1);
-						_fvArray deleteAt 0;
-					} else {
-						//If there are vehicles that can fully carry infantry, select the one with minimum capacity
-						_fvEnoughCapacity sort true; //Ascending
-						_cargoInfCapacityExtra = _cargoInfCapacityExtra - (_fvEnoughCapacity select 0 select 0);
-						_unitsPlanned pushBack (_fvEnoughCapacity select 0 select 1);
-						_fvEnoughCapacity deleteAt 0;
-					};
+		//==== Find transport for infantry if needed ====
+		if ((_gar distance _target) > (_searchRadius + DISTANCE_DISMOUNT)) then {
+			//Find capacity of already added vehicles
+			private _cargoInfCapacity = 0;
+			{
+				private _classname = [_gar, _x] call gar_fnc_getUnitClassname;
+				_cargoInfCapacity = _cargoInfCapacity + (_classname call misc_fnc_getCargoInfantryCapacity);
+			} forEach (_unitsPlanned select {_x select 0 == T_veh});
+			//Do we need more vehicles?
+			private _noTransport = false;
+			if (_cargoInfCapacity < _nInfPlanned) then {
+				//Find more vehicles
+				_cargoInfCapacityExtra = _nInfPlanned - _cargoInfCapacity; //How many extra cargo seats needed
+				private _fv = ([_gar, T_VEH, -1] call gar_fnc_findUnits) - _unitsPlanned; //Free vehicles
+				private _fvArray = _fv apply {[([_gar, _x] call gar_fnc_getUnitClassName) call misc_fnc_getCargoInfantryCapacity, _x]}; //[_number, _cargoCapacity, _unitData]
+				//Can the extra vehicles carry the infantry?
+				private _fvCapacity = 0;
+				for "_i" from 0 to ((count _fvArray) - 1) do	{
+					_fvCapacity = _fvCapacity + (_fvArray select _i select 0);
 				};
-				if (_cargoInfCapacityExtra > 0) then {
+				if (_fvCapacity < _cargoInfCapacityExtra) then {
 					_unitsPlanned = [];
+				} else {
+					_fvArray sort false; //Descending
+					while {_cargoInfCapacityExtra > 0 && (count _fvArray > 0)} do {
+						//Find vehicles that can fully cover the extra needed capacity
+						private _fvEnoughCapacity = _fvArray select {_x select 0 > _cargoInfCapacityExtra};
+						if (count _fvEnoughCapacity == 0) then {
+							//If there are no such vehicles, take the one with biggest cargo capacity
+							_cargoInfCapacityExtra = _cargoInfCapacityExtra - (_fvArray select 0 select 0);
+							_unitsPlanned pushBack (_fvArray select 0 select 1);
+							_fvArray deleteAt 0;
+						} else {
+							//If there are vehicles that can fully carry infantry, select the one with minimum capacity
+							_fvEnoughCapacity sort true; //Ascending
+							_cargoInfCapacityExtra = _cargoInfCapacityExtra - (_fvEnoughCapacity select 0 select 0);
+							_unitsPlanned pushBack (_fvEnoughCapacity select 0 select 1);
+							_fvEnoughCapacity deleteAt 0;
+						};
+					};
+					if (_cargoInfCapacityExtra > 0) then {
+						_unitsPlanned = [];
+					};
 				};
 			};
 		};
