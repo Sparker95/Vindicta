@@ -1,5 +1,6 @@
 //todo add separate artillery radars for sides!
 
+/*
 globalArtilleryRadar = [] call sense_fnc_artilleryRadar_create;
 globalSoundMonitor = [] call sense_fnc_soundMonitor_create;
 globalEnemyMonitor = [] call sense_fnc_enemyMonitor_create;
@@ -15,6 +16,7 @@ enemyMonitorWest= [] call sense_fnc_enemyMonitor_create;
 artilleryRadarInd = [] call sense_fnc_artilleryRadar_create;
 soundMonitorInd = [] call sense_fnc_soundMonitor_create;
 enemyMonitorInd = [] call sense_fnc_enemyMonitor_create;
+*/
 
 /*
 fn_highLevelScript =
@@ -148,9 +150,9 @@ fn_highLevelScript =
 
 //_null = [] spawn fn_highLevelScript;
 
-[sense_enemyMonitorEast, EAST] spawn cmr_fnc_senseMonitor;
-[sense_enemyMonitorWest, WEST] spawn cmr_fnc_senseMonitor;
-[sense_enemyMonitorInd, INDEPENDENT] spawn cmr_fnc_senseMonitor;
+[sense_enemyMonitorEast, sense_soundMonitorEast, EAST] spawn cmr_fnc_senseMonitor;
+[sense_enemyMonitorWest, sense_soundMonitorWest, WEST] spawn cmr_fnc_senseMonitor;
+[sense_enemyMonitorInd, sense_soundMonitorInd, INDEPENDENT] spawn cmr_fnc_senseMonitor;
 
 //Assign all garrisons to missions
 false spawn AI_fnc_mission_missionMonitor;

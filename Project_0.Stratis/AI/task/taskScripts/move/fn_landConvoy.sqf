@@ -408,6 +408,7 @@ private _hScript = [_to, _vehArray, _vehGroupHandle] spawn
 					//Set behaviour
 					_vehGroupHandle setBehaviour "SAFE";
 					_vehGroupHandle setBehaviour "GREEN"; //Hold fire and keep formation
+					_vehGroupHandle setFormation "COLUMN";
 					//Reset the timer
 					_timer = 0;
 					_stateChanged = false;

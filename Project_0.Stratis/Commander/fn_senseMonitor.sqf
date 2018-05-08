@@ -9,7 +9,7 @@ This thread takes data from sense objects and displays it on the map
 #define DEBUG_MISSIONS
 #define DEBUG_ENEMIES
 
-params ["_enemyMonitor", "_side"];
+params ["_enemyMonitor", "_soundMonitor", "_side"];
 
 private _colorEnemy = "ColorEAST";
 private _colorFriendly = "ColorEAST";
@@ -46,6 +46,7 @@ switch (_side) do
 };
 
 private _counterEnemies = 0;
+private _counterSounds = 0;
 private _counterEnemiesClusters = 0;
 private _counterMissions = 0;
 private _clusterDatabase = [];
@@ -201,6 +202,41 @@ while {true} do
 				_m call AI_fnc_mission_getType, (_m call AI_fnc_mission_getRequirements) select 0, _m call AI_fnc_mission_getState]);
 		};
 	#endif
+	
+	
+	// ==== Sound monitor ====
+	_soundMonitor call sense_fnc_soundMonitor_process;
+	private _soundClusters = [_soundMonitor] call sense_fnc_soundMonitor_getActiveClusters;
+	//Delete previous markers
+	private _i = 0;
+	while {_i < _counterSounds} do
+	{
+		private _name = format["soundCluster_%1", _i];
+		deletemarker _name;
+		_i = _i + 1;
+	};
+	_counterSounds = 0;
+	//Create markers
+	{
+		diag_log format ["Active sound cluster: %1", _x];
+		
+		private _name = format["soundCluster_%1", _counterSounds];
+		deletemarker _name;
+		_counterSounds = _counterSounds + 1;
+		private _c = _x select 0; //Cluster
+		//deletemarker _name;
+		private _mrk = createMarker [_name,
+				[	0.5*((_c select 0) + (_c select 2)),
+					0.5*((_c select 1) + (_c select 3)),
+					0]];
+		private _width = 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
+		private _height = 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [_width, _height];
+		_mrk setMarkerColor "ColorGreen";
+		_mrk setMarkerAlpha 0.4;
+	} forEach _soundClusters;
 
 	sleep SLEEP_TIME;
 };
