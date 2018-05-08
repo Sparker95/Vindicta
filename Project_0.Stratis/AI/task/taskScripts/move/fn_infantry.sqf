@@ -16,7 +16,8 @@ private _hScript = [_to] spawn
 	private _taskParams = _to getVariable "AI_taskParams";
 	_taskParams params ["_dest", "_compRadius"];
 	private _destPos = _dest;
-	if (_destPos isEqualType objNull) then { _destPos = getPos _dest; };
+	private _destType = 0; //0 - position, 1 - coordinates
+	if (_destPos isEqualType objNull) then { _destPos = getPos _dest; _destType = 1;};
 	private _gar = _to getVariable "AI_garrison";
 	
 	//Find all groups and units
@@ -30,7 +31,7 @@ private _hScript = [_to] spawn
 		private _g = _hgs select _i;
 		private _wp0 = _g addWaypoint [_destPos, 10];
 		_wp0 setWaypointType "MOVE";
-		_wp0 setWaypointCombatMode "AWARE";
+		//_wp0 setWaypointBehaviour "AWARE";
 		_wp0 setWaypointCombatmode "GREEN";
 	};
 	
@@ -48,9 +49,16 @@ private _hScript = [_to] spawn
 		
 		//Check if we have arrived
 		private _arrived = false;
-		if ({(leader _x) distance _dest < _compRadius} count _hgs == count _hgs) then {
-			_to setVariable ["AI_taskState", "SUCCESS", false];
-			_run = false;
+		if (_destType == 0) then { //Position
+			if ({(leader _x) distance _dest < _compRadius} count _hgs == count _hgs) then {
+				_to setVariable ["AI_taskState", "SUCCESS", false];
+				_run = false;
+			};
+		} else { //Location
+			if ({[_dest, leader _x] call loc_fnc_insideBorder} count _hgs == count _hgs) then {
+				_to setVariable ["AI_taskState", "SUCCESS", false];
+				_run = false;
+			};
 		};
 		
 		if (_run) then

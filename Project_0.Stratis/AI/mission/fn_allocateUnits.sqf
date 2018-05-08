@@ -1,6 +1,11 @@
 /*
 This function decides which units to take for a mission.
-Return value: array with unitData of units to take for a mission, or empty array if units can't be allocated.
+Return value: [_unitsPlanned, _transportMode]
+_unitsPlanned - array with unitData of units to take for a mission, or empty array if units can't be allocated.
+_transportMode - string which indicated how this garrison is going to transport itself. Can be one of:
+	"INFANTRY" - only infantry
+	"LAND_VEHICLES" - ground vehicles
+	"HELICOPTER" - helicopters
 */
 
 #include "mission.hpp"
@@ -15,17 +20,10 @@ private _mRequirements = _mo getVariable "AI_m_requirements";
 private _mParams = _mo getVariable "AI_m_params";
 private _score = 0;
 private _unitsPlanned = [];
-
-#ifdef DEBUG
-diag_log "== Allocate units was called!";
-#endif
+private _transportMode = "";
 
 switch (_mType) do {
 	case "SAD": {
-		#ifdef DEBUG
-		diag_log "== SAD mission type was detected!";
-		#endif
-
 		_mRequirements params ["_effReq"]; // "_clusterStruct"];
 		_mParams params ["_target", "_searchRadius"];
 		//Make an array with all units and their efficiencies
@@ -49,7 +47,7 @@ switch (_mType) do {
 		private _nInfPlanned = 0; //Amount of infantry units assigned
 		
 		#ifdef DEBUG
-		diag_log format ["== available units: %1", _unitEffArray];
+		//diag_log format ["== available units: %1", _unitEffArray];
 		#endif
 		
 		//==== Check air and anti-air ====
@@ -77,13 +75,13 @@ switch (_mType) do {
 			};
 		};
 		#ifdef DEBUG
-		diag_log format ["== Added a-armor: %1", _unitsPlanned];
+		diag_log format ["<AI_MISSION> INFO: fn_allocateUnits: Added a-armor: %1", _unitsPlanned];
 		#endif
 		//Check if the requirements are satisfied
 		if (_effAArmor < _effReqAArmor) exitWith {
 			_unitsPlanned = [];
 			#ifdef DEBUG
-			diag_log "== Anti-armor requirement not satisfied!";
+			diag_log "<AI_MISSION> INFO: fn_allocateUnits: Anti-armor requirement not satisfied!";
 			#endif
 		};
 		
@@ -108,13 +106,13 @@ switch (_mType) do {
 			};
 		};
 		#ifdef DEBUG
-		diag_log format ["== Added a-medium: %1", _unitsPlanned];
+		diag_log format ["<AI_MISSION> INFO: fn_allocateUnits: Added a-medium: %1", _unitsPlanned];
 		#endif
 		//Check if the requirements are satisfied
 		if (_effAMedium < _effReqAMedium) exitWith {
 			_unitsPlanned = [];
 			#ifdef DEBUG
-			diag_log "== Anti-medium requirement not satisfied!";
+			diag_log "<AI_MISSION> INFO: fn_allocateUnits: Anti-medium requirement not satisfied!";
 			#endif
 		};
 		
@@ -145,13 +143,13 @@ switch (_mType) do {
 			};
 		};
 		#ifdef DEBUG
-		diag_log format ["== Added a-soft: %1", _unitsPlanned];
+		diag_log format ["<AI_MISSION> INFO: fn_allocateUnits: Added a-soft: %1", _unitsPlanned];
 		#endif
 		//Check if the requirements are satisfied
 		if (_effASoft < _effReqASoft) exitWith {
 			_unitsPlanned = [];
 			#ifdef DEBUG
-			diag_log "== Anti-soft requirement not satisfied!";
+			diag_log "<AI_MISSION> INFO: fn_allocateUnits: Anti-soft requirement not satisfied!";
 			#endif
 		};
 		
@@ -176,7 +174,7 @@ switch (_mType) do {
 					_fvCapacity = _fvCapacity + (_fvArray select _i select 0);
 				};
 				if (_fvCapacity < _cargoInfCapacityExtra) then {
-					_unitsPlanned = [];
+					_transportMode = "INFANTRY";
 				} else {
 					_fvArray sort false; //Descending
 					while {_cargoInfCapacityExtra > 0 && (count _fvArray > 0)} do {
@@ -195,21 +193,38 @@ switch (_mType) do {
 							_fvEnoughCapacity deleteAt 0;
 						};
 					};
+					//Double-check if there are enough vehicles
 					if (_cargoInfCapacityExtra > 0) then {
-						_unitsPlanned = [];
+						//Still not enough vehicles found for some reason
+						_transportMode = "INFANTRY";
+					} else {
+						//Enough vehicles found
+						_transportMode = "LAND_VEHICLES";
 					};
 				};
+			} else { //if (_cargoInfCapacity < _nInfPlanned) then {
+				//No more transport vehicles required
+				_transportMode = "LAND_VEHICLES";
 			};
-		};
+		} else {
+			//Extra transport for infantry is not required
+			//Check if there are vehicles in the garrison
+			if ( ( {_x select 0 != T_INF} count _unitsPlanned ) != 0) then {
+				_transportMode = "LAND_VEHICLES";
+			} else {
+				//There are only infantry units assigned
+				_transportMode = "INFANTRY";
+			};
+		}; //if ((_gar distance _target) > (_searchRadius + DISTANCE_DISMOUNT)) then {
 	};
 };
 
 #ifdef DEBUG
-diag_log format ["== Returning: %1", _unitsPlanned];
+diag_log format ["<AI_MISSION> INFO: fn_allocateUnits: Return value: %1",[_unitsPlanned, _transportMode]];
 #endif
 
 //Return
-_unitsPlanned
+[_unitsPlanned, _transportMode]
 
 /*
 T_EFF_soft =	0;

@@ -82,7 +82,7 @@ switch (_mType) do
 		//[_garMission, objNull] call gar_fnc_setLocation;
 		
 		#ifdef DEBUG
-		diag_log format ["AI_fnc_mission_assignGarrison: garrison %1 has been assigned for mission: %2",
+		diag_log format ["<AI_MISSION> INFO: AI_fnc_mission_assignGarrison: garrison %1 has been assigned for mission: %2",
 			_garMission call gar_fnc_getName, _mo getVariable "AI_m_name"];
 		#endif
 		

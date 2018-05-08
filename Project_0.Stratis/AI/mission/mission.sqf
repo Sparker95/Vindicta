@@ -76,7 +76,7 @@ AI_fnc_mission_delete =
 	allMissions = allMissions - [_mo];
 	if(isNull _mo) exitWith
 	{
-		diag_log "AI_fnc_mission_delete: error: mission is objNull!";
+		diag_log "<AI_MISSION> ERROR: AI_fnc_mission_delete: error: mission is objNull!";
 	};
 	//Stop the mission
 	_mo call AI_fnc_mission_stop;
@@ -94,11 +94,11 @@ AI_fnc_mission_start =
 	private _rGarrisons = +(_mo getVariable "AI_m_rGarrisons");
 	if(count _rGarrisons > 0) then //If there is someone able to do the mission
 	{
-		#ifdef DEBUG
-		diag_log format ["AI_fnc_mission_start: starting mission: %1", _mo getVariable "AI_m_name"];
-		#endif
 		//Sort the registered garrison array in descending order
 		_rGarrisons sort false;
+		#ifdef DEBUG
+		diag_log format ["<AI_MISSION> INFO: AI_fnc_mission_start: starting mission: %1. Garrison: %2", _mo getVariable "AI_m_name", _rGarrisons select 0];
+		#endif
 		//Pick the most suitable garrison
 		private _gar = _rGarrisons select 0 select 1;
 		private _extraParams = _rGarrisons select 0 select 2;
@@ -114,7 +114,7 @@ AI_fnc_mission_start =
 	}
 	else //Do nothing
 	{
-		diag_log format ["mission.sqf: ERROR: no garrison registered for mission: %1", _mo getVariable "AI_m_name"];
+		diag_log format ["<AI_MISSION> INFO: mission.sqf: ERROR: no garrison registered for mission: %1", _mo getVariable "AI_m_name"];
 	};
 };
 
@@ -167,7 +167,7 @@ AI_fnc_mission_registerGarrison =
 	_rGars pushBack [_efficiency, _gar, _extraParams];
 	
 	#ifdef DEBUG
-	diag_log format ["AI_fnc_mission_registerGarrison: garrison %1 has been registered for mission: %2, efficiency: %3",
+	diag_log format ["<AI_MISSION> INFO: AI_fnc_mission_registerGarrison: garrison %1 has been registered for mission: %2, efficiency: %3",
 		_gar call gar_fnc_getName, _mo getVariable "AI_m_name", _efficiency];
 	#endif
 };
@@ -181,7 +181,7 @@ AI_fnc_mission_getRegisteredGarrisons =
 	private _g = _mo getVariable "AI_m_rGarrisons";
 	private _return = [];
 	{
-		_return pushBack (_x select 0); //Structure is: [_garrison, _efficiency]
+		_return pushBack (_x select 1); //Structure is: [_efficiency, _gar, _extraParams]
 	} forEach _g;
 	_return
 };

@@ -731,7 +731,7 @@ gar_fnc_getAssignedMission =
 	_gar getVariable "g_mAssigned"
 };
 
-//Mission thread handle
+//Mission scriptObject
 gar_fnc_setMissionScriptObject =
 {
 	params [["_gar", objNull, [objNull]], ["_so", objNull, [objNull]]];
@@ -742,6 +742,19 @@ gar_fnc_getMissionScriptObject =
 {
 	params [["_gar", objNull, [objNull]]];
 	_gar getVariable "g_soMission"
+};
+
+//Enenemy scriptObject
+gar_fnc_setEnemyScriptObject =
+{
+	params [["_gar", objNull, [objNull]], ["_so", objNull, [objNull]]];
+	_gar setVariable ["g_soEnemy", _so, false];
+};
+
+gar_fnc_getEnemyScriptObject =
+{
+	params [["_gar", objNull, [objNull]]];
+	_gar getVariable "g_soEnemy"
 };
 
 //Manipulating the task object assigned to this garrison

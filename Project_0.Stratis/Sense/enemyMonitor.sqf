@@ -299,3 +299,41 @@ sense_fnc_enemyMonitor_getActiveClusters =
 	//Return value
 	[_enemyObjects, _enemyPos, _enemyAge, _clustersNew, _efficiencies]
 };
+
+sense_fnc_enemyMonitor_queryObjects = {
+	/*
+	Searches for enemies located less then _radius away from _pos
+	Parameters:
+		_gar - if the object is reported by this garrison, it will ot be returned
+		_side - only objects known to this side will be returned
+		_maxAge - maximum age of object
+		_pos - center of the search area
+		_radius - radius of the search area
+	*/
+	params ["_gar", "_side", "_maxAge", "_pos", "_radius"];
+	//Get the enemy monitor object of this side
+	private _em = objNull;
+	switch (_side) do {
+		case EAST: {_em = sense_enemyMonitorEast; };
+		case WEST: {_em = sense_enemyMonitorWEST; };
+		case INDEPENDENT: {_em = sense_enemyMonitorInd; };		
+	};
+	if (isNull _em) exitWith {
+		diag_log format ["<SENSE> ERROR: sense_fnc_enemyMonitor_queryObjects, unknown side: %1", _side];
+	};
+	private _enemyObjects = +(_em getVariable "s_enemyObjects");			//Known objects(enemies)
+	diag_log format ["==== enemy objects: %1", _enemyObjects];
+	private _enemyPos = +(_em getVariable "s_enemyPos");					//Positions of known objects
+	private _enemyAge = +(_em getVariable "s_enemyAge");					//Age of known objects
+	private _enemyReportedBy = +(_em getVariable "s_enemyReportedBy");	//Garrisons that have reported enemies
+	private _return = [];
+	for "_i" from 0 to ((count _enemyObjects) - 1) do {
+		if (	( ((_enemyPos select _i) distance2D _pos) < _radius ) &&	//If it's within range
+				( (_enemyAge select _i) < _maxAge ) &&						//If it's new enough
+				(! (_gar in (_enemyReportedBy select _i))) ) then {			//If it's not known by _gar yet
+				_return pushBack (_enemyObjects select _i);
+		};
+	};
+	
+	_return
+};

@@ -16,10 +16,10 @@ while {true} do
 	private _garWest = allGarrisons select {_x call gar_fnc_getSide == WEST};
 	private _misWest = allMissions select {_x call AI_fnc_mission_getSide == WEST};
 	
-	diag_log format ["fn_missionMonitor.sqf: _garEast: %1", _garEast];
-	diag_log format ["fn_missionMonitor.sqf: _misEast: %1", _misEast];
-	diag_log format ["fn_missionMonitor.sqf: _garWest: %1", _garWest];
-	diag_log format ["fn_missionMonitor.sqf: _misWest: %1", _misWest];
+	diag_log format ["<AI_MISSION> INFO: fn_missionMonitor.sqf: _garEast: %1", _garEast];
+	diag_log format ["<AI_MISSION> INFO: fn_missionMonitor.sqf: _misEast: %1", _misEast];
+	diag_log format ["<AI_MISSION> INFO: fn_missionMonitor.sqf: _garWest: %1", _garWest];
+	diag_log format ["<AI_MISSION> INFO: fn_missionMonitor.sqf: _misWest: %1", _misWest];
 	
 	_misEast call AI_fnc_mission_unregisterAllGarrisons;
 	[_misEast, _garEast] call AI_fnc_mission_registerGarrisons;

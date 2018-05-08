@@ -20,7 +20,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: fn_moveAndMerge.sqf: mission %1 entered INIT state, RTB: %2", _m getVariable "AI_m_name", _RTB];
+			diag_log format ["<AI_MISSION> INFO: fn_moveAndMerge.sqf: mission %1 entered INIT state, RTB: %2", _m getVariable "AI_m_name", _RTB];
 			#endif
 			//Switch state
 			_stateChanged = true;
@@ -33,7 +33,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: fn_moveAndMerge.sqf: mission %1 entered MOVE state", _m getVariable "AI_m_name"];
+			diag_log format ["<AI_MISSION> INFO: fn_moveAndMerge.sqf: mission %1 entered MOVE state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Get the destination
@@ -81,7 +81,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: fn_moveAndMerge.sqf: mission %1 entered MERGE state", _m getVariable "AI_m_name"];
+			diag_log format ["<AI_MISSION> INFO: fn_moveAndMerge.sqf: mission %1 entered MERGE state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Stop previous task

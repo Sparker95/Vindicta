@@ -66,20 +66,33 @@ switch (_mType) do
 			
 			if (_canDestroy) then {				
 				//Try to plan the mission (preallocate units)
-				_unitsAllocated = [_mo, _gar] call AI_fnc_mission_allocateUnits;
+				([_mo, _gar] call AI_fnc_mission_allocateUnits) params ["_unitsAllocatedLocal", "_transportMode"];
+				_unitsAllocated = _unitsAllocatedLocal; //Because _unitsAllocatedLocal is actually private and won't leave this scope
 				
 				//Calculate score
+				/*
+				Speed of vehicles:
+				Man - 3.7 m/s
+				Zamak - 14 m/s
+				*/
 				if (count _unitsAllocated != 0) then {
-					if (_d < 10000) then {
-						_score = (10000 - _d); //Now just make a simple calculation based on distance
+					private _t = 0;
+					//Speed depends on transport mode
+					switch (_transportMode) do {
+						case "INFANTRY": { _t = _d / 3.7;};
+						case "LAND_VEHICLES": { _t = 60 + (1.4*_d / 14)}; //Mount time + coefficient*move_time
+						case "HELICOPTERS": { _t = 90 + (_d / 90); };
+					};
+					
+					if (_t < 600) then {
+						_score = (600 - _t);
 					};
 				};
 				#ifdef DEBUG
-				diag_log format ["INFO: fn_calculateEfficiency: garrison: %1, _eff: %2, _effReq: %3, _canDestroy: %4, _d: %5, _canSeeTarget: %6",
+				diag_log format ["<AI_MISSION> INFO: fn_calculateEfficiency: garrison: %1, _eff: %2, _effReq: %3, _canDestroy: %4, _d: %5, _canSeeTarget: %6",
 					_gar call gar_fnc_getName, _eff, _effReq, _canDestroy, _d, _canSeeTarget];
-				diag_log format ["INFO: fn_calculateEfficiency: _score: %1, _unitsAllocated: %2",
+				diag_log format ["<AI_MISSION> INFO: fn_calculateEfficiency: _score: %1, _unitsAllocated: %2",
 					_score, _unitsAllocated];
-				
 				diag_log "";
 				#endif
 			};

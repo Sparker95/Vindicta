@@ -23,7 +23,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered INIT state", _m getVariable "AI_m_name"];
+			diag_log format ["<AI_MISSION> INFO: mission\fn_SAD.sqf: mission %1 entered INIT state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Read mission parameters
@@ -45,7 +45,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered MOVE state", _m getVariable "AI_m_name"];
+			diag_log format ["<AI_MISSION> INFO: mission\fn_SAD.sqf: mission %1 entered MOVE state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Read mission parameters
@@ -89,7 +89,7 @@ switch (_state) do
 		if (_stateChanged) then
 		{
 			#ifdef DEBUG
-			diag_log format ["INFO: mission\fn_SAD.sqf: mission %1 entered SAD state", _m getVariable "AI_m_name"];
+			diag_log format ["<AI_MISSION> INFO: mission\fn_SAD.sqf: mission %1 entered SAD state", _m getVariable "AI_m_name"];
 			#endif
 			
 			//Stop previous task

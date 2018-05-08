@@ -186,6 +186,9 @@ private _hScript = _to spawn
 			};
 		};
 		
+		//Update position of the garrison
+		_gar setPos (getPos leader (_allGroupHandles select 0));
+		
 		if(_run) then
 		{
 			//Update time variable

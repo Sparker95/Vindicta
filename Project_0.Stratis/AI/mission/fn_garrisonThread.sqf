@@ -28,7 +28,7 @@ private _hScript = [_so, _extraParams] spawn
 	//private _moPrev = _gar call gar_fnc_getAssignedMission;
 	
 	#ifdef DEBUG
-	diag_log format ["INFO: mission\fn_garrisonThread.sqf: started thread for garrison: %1", _gar call gar_fnc_getName];
+	diag_log format ["<AI_MISSION> INFO: fn_garrisonThread.sqf: started thread for garrison: %1", _gar call gar_fnc_getName];
 	#endif
 	
 	//Draw marker
@@ -62,7 +62,7 @@ private _hScript = [_so, _extraParams] spawn
 		{
 			_stateArray = ["INIT", true, ""];
 			#ifdef DEBUG
-			diag_log format ["INFO: mission\fn_garrisonThread.sqf: garrison %1 switched mission to: %2!", _gar call gar_fnc_getName, _mo getVariable "AI_m_name"];
+			diag_log format ["<AI_MISSION> INFO: fn_garrisonThread.sqf: garrison %1 switched mission to: %2!", _gar call gar_fnc_getName, _mo getVariable "AI_m_name"];
 			#endif
 		}; //Reset the state array to begin from start
 		_moPrev = _mo;
@@ -86,7 +86,7 @@ private _hScript = [_so, _extraParams] spawn
 					//Houston, we have a problem!
 					private _state = _stateArray select 0;
 					#ifdef DEBUG
-					diag_log format ["INFO: mission\fn_garrisonThread.sqf: mission %1, task failed, state: %2, reason: %3", _mo getVariable "AI_m_name", _state, _fReason];
+					diag_log format ["<AI_MISSION> INFO: fn_garrisonThread.sqf: mission %1, task failed, state: %2, reason: %3", _mo getVariable "AI_m_name", _state, _fReason];
 					#endif
 					//Try to RTB
 					_type = "NOTHING";
@@ -110,7 +110,7 @@ private _hScript = [_so, _extraParams] spawn
 				private _state = _stateArray select 0;
 				if(_state == "SUCCESS") then { //Time to terminate this garrison because it's empty
 					#ifdef DEBUG
-					diag_log format ["INFO: mission\fn_garrisonThread.sqf: garrison %1 returned to base!", _gar call gar_fnc_getName];
+					diag_log format ["<AI_MISSION> INFO: fn_garrisonThread.sqf: garrison %1 returned to base!", _gar call gar_fnc_getName];
 					#endif
 					_run = false;
 					_deleteSO = true;
@@ -119,7 +119,7 @@ private _hScript = [_so, _extraParams] spawn
 			
 			default
 			{
-				diag_log format ["ERROR: mission\fn_garrisonThread.sqf: mission: %1, garrison: %2, unknown type: %3",
+				diag_log format ["<AI_MISSION> ERROR: fn_garrisonThread.sqf: mission: %1, garrison: %2, unknown type: %3",
 					_mo getVariable "AI_m_name", _gar call gar_fnc_getName, _type];
 			};
 		}; //switch
@@ -152,9 +152,9 @@ private _hScript = [_so, _extraParams] spawn
 	#endif
 	//Delete the script object
 	if (_deleteSO) then {
-		diag_log "INFO: fn_garrisonThread.sqf: Deleting the scriptObject!";
+		//diag_log "INFO: fn_garrisonThread.sqf: Deleting the scriptObject!";
 		[_so, false] call scriptObject_fnc_delete;
-		diag_log "INFO: fn_garrisonThread.sqf: scriptObject deleted!";
+		//diag_log "INFO: fn_garrisonThread.sqf: scriptObject deleted!";
 	};
 }; //spawn
 

@@ -19,8 +19,7 @@ for "_i" from 0 to ((count _garrisons) - 1) do
 			if ((_m call AI_fnc_mission_getState) == "IDLE") then {
 				//Calculate efficiency
 				private _eAndUnits = [_m, _gar] call AI_fnc_mission_calculateEfficiency;
-				private _e = _eAndUnits select 0;
-				private _units = _eAndUnits select 1;
+				_eAndUnits params ["_e", "_units"];
 				if (_e > 0) then { //If the garrison can do the mission
 					[_m, _gar, _e, [_units]] call AI_fnc_mission_registerGarrison;
 				};

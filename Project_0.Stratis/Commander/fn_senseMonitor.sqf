@@ -4,7 +4,7 @@ This thread takes data from sense objects and displays it on the map
 
 #define GENERATE_MISSION_DELAY 30
 
-#define TIME_SLEEP 5
+#define SLEEP_TIME 5
 
 #define DEBUG_MISSIONS
 #define DEBUG_ENEMIES
@@ -202,5 +202,5 @@ while {true} do
 		};
 	#endif
 
-	sleep TIME_SLEEP;
+	sleep SLEEP_TIME;
 };
