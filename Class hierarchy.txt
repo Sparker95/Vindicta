@@ -1,0 +1,68 @@
+[BaseObject] // object with basic functionality: set/get variables, call methods
+------------------------------
+    [ScriptObject]
+    ------------------------------
+    [GameObject] // BaseObject with name, message receiving capabilities and process function
+    -name
+    -displayName
+    -messageQueue[]
+    -messageCounter
+    +setName()
+    +getName()
+    +setDisplayName()
+    +getDisplayName()
+    +mid = sendMessage() // Add something to the message queue. Returns message ID.
+    +messageProcessed(mid)
+    ------------------------------
+        [Manager] // Container for objects associated with it to process their message queues and call update() of objects
+        -objects[] // Array with objects
+        -objectsQueued // Objects that have something in the queue
+        -script // Script handle of the script which calls this manager's update() method. Initialized by constructor.
+        +update() // Checks message queue of all objects added to it
+        +addObject() // Add an object
+        +deleteObject() // Delete an object from this manager
+        ------------------------------
+            [ManagerGarrison]
+            update()
+            ------------------------------
+            [ManagerLocation]
+            update()
+            ------------------------------
+        [Location]
+        +update() // 
+        ------------------------------
+        [Garrison]
+        +constructor(manager)
+        +update() // Check message queue of this garrison
+        +all functions must check the thread they are called from
+        ------------------------------
+        [Goal]
+        ------------------------------
+            [GoalAtomic]
+            ------------------------------
+            [GoalComposite]
+            ------------------------------            
+        [Sense]
+        +update()
+        +getData()
+        ------------------------------
+            [SenseUnits]
+            +addUnit()
+            ------------------------------
+                [SenseGunfire]
+                +getActiveClusters()
+                ------------------------------
+                    [SenseArtillery]
+                    ------------------------------
+            [SenseGroups]
+            +addGroup()
+            ------------------------------
+            [SenseGarrisons]
+            +addGarrison()
+            ------------------------------
+                [SenseKnowsAbout]
+                ------------------------------
+        [Commander]
+        ------------------------------
+        [EventDispatcher]
+        ------------------------------
