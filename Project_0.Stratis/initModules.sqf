@@ -19,6 +19,7 @@ tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 
+/*
 //Initialize garrison
 call compile preprocessFileLineNumbers "Garrison\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Garrison\initVariablesServer.sqf";
@@ -46,3 +47,10 @@ call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";
 
 //Initialize commander scripts
 call compile preprocessFileLineNumbers "Commander\initFunctions.sqf";
+*/
+
+//Initialize OOP_Light
+call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+
+//Initialize Unit class
+call compile preprocessFileLineNumbers "Unit\Unit.sqf";

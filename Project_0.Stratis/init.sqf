@@ -5,6 +5,9 @@ add inits here until it's so fucked up, then redo it all over again
 
 //==== Locations initialization
 //player allowDamage false;
+/*
+
+// Old init code
 call compile preprocessFileLineNumbers "initModules.sqf";
 if(isServer) then
 {
@@ -40,3 +43,6 @@ if(isServer) then
 UI_fnc_onMapSingleClick =
 compile preprocessfilelinenumbers "UI\onMapSingleClick.sqf";
 onMapSingleClick {call UI_fnc_onMapSingleClick;};
+*/
+
+call compile preprocessFileLineNumbers "initModules.sqf";
