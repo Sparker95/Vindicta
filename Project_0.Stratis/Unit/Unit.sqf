@@ -1,12 +1,14 @@
 /*
+Unit class.
+A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.
 
+Author: Sparker
+10.06.2018
 */
 
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
-
-#define UNIT_CLASS_NAME "Unit"
 
 CLASS(UNIT_CLASS_NAME, "")
 	VARIABLE("data");
@@ -18,7 +20,7 @@ CLASS(UNIT_CLASS_NAME, "")
 					
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]];
-		
+
 		//Check argument validity
 		private _valid = false;
 		//Check template
@@ -36,6 +38,11 @@ CLASS(UNIT_CLASS_NAME, "")
 		//Check group
 		if(_group == "" && _catID == T_INF) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 		
+		//Add this unit to a group
+		if(_group != "") then {
+			CALL_METHOD(_group, "addUnit", [_thisObject]);
+		};
+		
 		//If a random class was requested to be added
 		private _class = "";
 		if(_classID == -1) then {
@@ -51,6 +58,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data set [DATA_ID_SUBCAT, _subcatID];
 		_data set [DATA_ID_CLASS_NAME, _class];
 		_data set [DATA_ID_MUTEX, MUTEX_NEW()];
+		_data set [DATA_ID_GROUP, _group];
 		SET_MEM(_thisObject, "data", _data);
 		
 		//Push the new object into the array with all units
@@ -127,10 +135,11 @@ CLASS(UNIT_CLASS_NAME, "")
 			private _group = _data select DATA_ID_GROUP;
 			
 			//Perform object creation
+			private _catID = _data select DATA_ID_CAT;
 			switch(_catID) do {
 				case T_INF: {
-					private _groupHandle = CALL_METHOD(_group, "getSpawnedGroupHandle", []);
-					_objectHandle = _groupHandle createUnit [_class, _pos, [], 10, "FORM"];
+					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
+					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 				};
 				case T_VEH: {
@@ -138,7 +147,7 @@ CLASS(UNIT_CLASS_NAME, "")
 				case T_DRONE: {
 				};
 			};
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned") };
+			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
 			_data set [DATA_ID_OBJECT_HANDLE, _objectHandle];
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
@@ -165,10 +174,8 @@ CLASS(UNIT_CLASS_NAME, "")
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
 			deleteVehicle _objectHandle;
 			private _group = _data select DATA_ID_GROUP;
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned") };
+			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", []) };
 			_data set [DATA_ID_OBJECT_HANDLE, objNull];
-			_objectHandle setDir _dir;
-			_objectHandle setPos _pos;
 		};		
 		//Unlock the mutex
 		MUTEX_UNLOCK(_mutex);

@@ -27,7 +27,7 @@
 // ----------------------------------------------------------------------
 
 //Enables checks for member accesses at runtime
-//#define OOP_ASSERT
+#define OOP_ASSERT
 
 /*
 #ifdef OOP_ASSERT
@@ -111,6 +111,11 @@
 	#define GET_STATIC_MEM(classNameStr, memNameStr) FORCE_GET_STATIC_MEM(classNameStr, memNameStr)
 	#define GET_METHOD(classNameStr, methodNameStr) FORCE_GET_METHOD(classNameStr, methodNameStr)
 #endif
+
+#define SET_VAR(a, b, c) SET_MEM(a, b, c)
+#define SET_STATIC_VAR(a, b, c) SET_STATIC_MEM(a, b, c)
+#define GET_VAR(a, b) GET_MEM(a, b)
+#define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
 
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |

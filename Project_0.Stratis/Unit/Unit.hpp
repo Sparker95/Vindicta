@@ -14,3 +14,6 @@
 
 //							 0, 1,  2,       3,  4, 5,  6,  7
 #define DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", []]
+
+//Class name of Unit class, in case I need to rename it everywhere
+#define UNIT_CLASS_NAME "Unit"

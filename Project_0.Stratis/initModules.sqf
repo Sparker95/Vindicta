@@ -54,3 +54,6 @@ call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
 //Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
+
+//Initialize Group class
+call compile preprocessFileLineNumbers "Group\Group.sqf";
