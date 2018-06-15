@@ -2,17 +2,19 @@
 ------------------------------
     [ScriptObject]
     ------------------------------
-    [GameObject] // BaseObject with name, message receiving capabilities and process function
-    -name
-    -displayName
-    -messageQueue[]
-    -messageCounter
-    +setName()
-    +getName()
-    +setDisplayName()
-    +getDisplayName()
-    +mid = sendMessage() // Add something to the message queue. Returns message ID.
-    +messageProcessed(mid)
+    [MessageLoop] // Container for objects associated with it to process their message queues and call update() of objects
+    -objects[] // Array with objects
+    -script // Script handle of the script which calls this manager's update() method. Initialized by constructor.
+	-messageQueue
+	-msgID // Counter for messages
+	+addObject() // Adds object to the list
+	+msgID = postMessage() // Posts message into the message queue, returns message id.
+	+messageProcessed(reqID) // Returns true if a posted message has been processed
+    ------------------------------
+    [MessageReceiver] // Object with message handling capabilities
+    +handled=handleMessage() // Does processing of message by this object
+    -getMessageLoop() // Returns the MessageLoop object which does message processing
+    +postMessage() // Posts message into the MessageLoop of this object
     ------------------------------
     	[Unit]
     	-catID
@@ -35,7 +37,7 @@
     		[UnitVehicle]
     		-crew
     		+assignCrew()
-    		+assignedCrew() // Returnes list of units assigned as crew of this vehicle
+    		+assignedCrew() // Returns list of units assigned as crew of this vehicle
     		------------------------------
     		[UnitDrone]
     		------------------------------
@@ -47,21 +49,6 @@
     		-groupHandle
     		-handleUnitKilled
     	------------------------------
-        [Manager] // Container for objects associated with it to process their message queues and call update() of objects
-        -objects[] // Array with objects
-        -objectsQueued // Objects that have something in the queue
-        -script // Script handle of the script which calls this manager's update() method. Initialized by constructor.
-        +update() // Checks message queue of all objects added to it
-        +addObject() // Add an object
-        +deleteObject() // Delete an object from this manager
-        ------------------------------
-            [ManagerGarrison]
-            update()
-            ------------------------------
-            [ManagerLocation]
-            update()
-            ------------------------------
-        
         [Location]
         +update() // 
         ------------------------------

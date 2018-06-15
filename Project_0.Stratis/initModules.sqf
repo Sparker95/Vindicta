@@ -52,6 +52,12 @@ call compile preprocessFileLineNumbers "Commander\initFunctions.sqf";
 //Initialize OOP_Light
 call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
+//Initialize MessageReceiver class
+call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
+
+//Initialize MessageLoop class
+call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
+
 //Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 

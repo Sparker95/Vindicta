@@ -60,7 +60,7 @@
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + classNameStr + STATIC_SEPARATOR + memNameStr)
 
 //String name of a method
-#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) (OOP_PREFIX + classNameStr + METHOD_SEPARATOR + methodNameStr)
+#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) (classNameStr + METHOD_SEPARATOR + methodNameStr)
 
 //String name of a special member
 #define CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + classNameStr + SPECIAL_SEPARATOR + memNameStr)
@@ -124,6 +124,7 @@
 //Same performance for small functions
 //#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
 #define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
 #define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
 
 // -----------------------------------------------------
