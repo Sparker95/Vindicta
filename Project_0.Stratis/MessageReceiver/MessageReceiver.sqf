@@ -8,23 +8,35 @@ Author: Sparker
 */
 
 #include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
 
 CLASS("MessageReceiver", "")
 
 	METHOD("getMessageLoop") { //Derived classes must implement this method
+		gMsgLoop //temp		
 	} ENDMETHOD;
 	
+	/*
+	Derived classes can implement this method like this:
+	switch(_msgType) do {
+		case "DO_STUFF": {...}
+		case "DO_OTHER_STUFF" : {...}
+		default: {return baseClass::handleMessage(msg);}
+	}
+	*/
 	METHOD("handleMessage") { //Derived classes must implement this method
+		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		diag_log format ["[MessageReceiver] handleMessage: %1", _msg];
 	} ENDMETHOD;
 	
 	// Posts a message into the MessageLoop of this object
 	METHOD("postMessage") {
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		private _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
-		private _args = [_thisObject, _msg];
-		private _msgID = CALL_METHOD(_messageLoop, "postMessage", _args);
+		_msg set [MESSAGE_ID_DESTINATION, _thisObject]; //In case message sender forgot to set the destination
+		private _msgID = CALL_METHOD(_messageLoop, "postMessage", [_msg]);
 		//Return message ID value
-		_msgID;
+		_msgID
 	} ENDMETHOD;
 	
 ENDCLASS;

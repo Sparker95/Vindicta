@@ -7,9 +7,9 @@ Author: Sparker
 15.06.2018
 */
 
-#define MSG_ID_DESTINATION 0
-#define MSG_ID_SOURCE 1
-#define MSG_ID_TYPE 2
-#define MSG_ID_DATA	3
+#define MESSAGE_ID_DESTINATION 0
+#define MESSAGE_ID_SOURCE 1
+#define MESSAGE_ID_TYPE 2
+#define MESSAGE_ID_DATA	3
 
-#define MSG_NEW() ["", "", "", 0]
+#define MESSAGE_NEW() ["", "", "", 0]

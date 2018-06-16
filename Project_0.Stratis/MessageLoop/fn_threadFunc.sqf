@@ -19,8 +19,9 @@ while {true} do {
 	while {(count _msgQueue) > 0} do {
 		//Get a message from the front
 		private _msg = _msgQueue select 0;
+		diag_log format ["[MessageLoop] message in queue: %1", _msg];
 		//Get destination object
-		private _dest = _msg select MSG_ID_DESTINATION;
+		private _dest = _msg select MESSAGE_ID_DESTINATION;
 		//Call handleMessage
 		CALL_METHOD(_dest, "handleMessage", [_msg]);
 		//Delete the message

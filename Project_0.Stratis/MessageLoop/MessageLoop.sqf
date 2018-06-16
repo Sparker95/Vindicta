@@ -24,7 +24,7 @@ CLASS("MessageLoop", "")
 	//Counter for messages processed by the function
 	VARIABLE("msgDoneID");
 	//Mutex for accessing the message queue
-	//VARIABLE("mutex");
+	VARIABLE("mutex");
 	
 	//Adds object to the object list
 	METHOD("addObject") {
@@ -33,6 +33,7 @@ CLASS("MessageLoop", "")
 	
 	//Adds a message into the message queue
 	METHOD("postMessage") {
+		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]] ];
 		//If multiple threads want to push into the queue at the same time
 		private _mutex = GET_VAR(_thisObject, "mutex");
@@ -45,6 +46,8 @@ CLASS("MessageLoop", "")
 		SET_VAR(_thisObject, "msgPostID", _ID + 1);
 		
 		if (canSuspend) then { MUTEX_UNLOCK(_mutex); };
+		//Return the message ID
+		_ID
 	} ENDMETHOD;
 	
 	//MessageLoop can also handle messages directed to it.
@@ -61,6 +64,14 @@ CLASS("MessageLoop", "")
 		false
 	} ENDMETHOD;
 	
+	//Returns whether the message with specified _msgID has been processed
+	METHOD("messageDone") {
+		params [ ["_thisObject", "", [""]], ["_msgID", 0, [0]] ];
+		private _doneID = GET_VAR(_thisObject, "msgDoneID");
+		private _return = _doneID > _msgID;
+		_return
+	} ENDMETHOD;
+	
 	//Constructor
 	//Spawn a script which will be checking messages
 	METHOD("new") {
@@ -68,7 +79,7 @@ CLASS("MessageLoop", "")
 		SET_VAR(_thisObject, "msgQueue", []);
 		SET_VAR(_thisObject, "objects", []);
 		SET_VAR(_thisObject, "msgPostID", 0);
-		SET_VAR(_thisObject, "msgProcessID", 0);
+		SET_VAR(_thisObject, "msgDoneID", 0);
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;		
 		SET_VAR(_thisObject, "scriptHandle", _scriptHandle);	
 		SET_VAR(_thisObject, "mutex", MUTEX_NEW());
