@@ -20,10 +20,11 @@ CLASS(GROUP_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params ["_thisObject", "_side"];
+		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GT_IDLE, [GT_IDLE]]];
 		private _data = DATA_DEFAULT;
-		_data set [DATA_ID_SIDE, _side];
-		_data set [DATA_ID_MUTEX, MUTEX_NEW()];
+		_data set [GROUP_DATA_ID_SIDE, _side];
+		_data set [GROUP_DATA_ID_GROUP_TYPE, ]
+		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
 		SET_VAR(_thisObject, "data", _data);
 	} ENDMETHOD;
 	
@@ -32,55 +33,55 @@ CLASS(GROUP_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [["_thisObject", "", [""]]];
 		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                           A D D U N I T                            |
+	// |                           A D D   U N I T                            |
 	// ----------------------------------------------------------------------
 	
 	METHOD("addUnit") {
-		params ["_thisObject", "_unit"];
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select GROUP_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
-		private _unitList = _data select DATA_ID_UNIT_LIST;
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList pushBackUnique _unit;
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                        R E M O V E U N I T                         |
+	// |                        R E M O V E   U N I T                         |
 	// ----------------------------------------------------------------------
 	
 	METHOD("removeUnit") {
-		params ["_thisObject", "_unit"];
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select GROUP_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
-		private _unitList = _data select DATA_ID_UNIT_LIST;
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList = _unitList - [_unit];
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                         G E T U N I T S                            |
+	// |                         G E T   U N I T S                            |
 	// ----------------------------------------------------------------------
 	
 	METHOD("getUnits") {
-		params ["_thisObject"];
+		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select GROUP_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
-		private _unitList = _data select DATA_ID_UNIT_LIST;
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		private _return = +_unitList;
 		MUTEX_UNLOCK(_mutex);
 		_return
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                  G E T G R O U P H A N D L E                       |
+	// |                  G E T   G R O U P   H A N D L E                       |
 	// ----------------------------------------------------------------------
 	
 	/*
@@ -88,16 +89,16 @@ CLASS(GROUP_CLASS_NAME, "")
 	*/
 	
 	METHOD("getGroupHandle") {
-		params ["_thisObject"];
+		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select GROUP_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
-		private _groupHandle = _data select DATA_ID_GROUP_HANDLE;
+		private _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
 		if (isNull _groupHandle) then { //Check if the group has been spawned
-			private _side = _data select DATA_ID_SIDE;
+			private _side = _data select GROUP_DATA_ID_SIDE;
 			//Spawn the group
 			_groupHandle = createGroup [_side, true]; //side, delete when empty
-			_data set [DATA_ID_GROUP_HANDLE, _groupHandle];
+			_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
 		};
 		MUTEX_UNLOCK(_mutex);
 		_groupHandle
@@ -108,7 +109,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 
 	METHOD("handleUnitKilled") {
-		params ["_thisObject"];
+		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
 	
 	
@@ -117,7 +118,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 
 	METHOD("handleUnitDespawned") {
-		params ["_thisObject", "_unit"];
+		params [["_thisObject", "", [""]], "_unit"];
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -125,7 +126,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 
 	METHOD("handleUnitSpawned") {
-		params ["_thisObject", "_unit"];
+		params [["_thisObject", "", [""]], "_unit"];
 	} ENDMETHOD;
 	
 ENDCLASS;

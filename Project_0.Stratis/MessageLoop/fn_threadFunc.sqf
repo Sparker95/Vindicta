@@ -6,6 +6,7 @@ It checks for messages in the loop and calls handleMessages of objects.
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
+#include "..\CriticalSection\CriticalSection.hpp"
 
 params [ ["_thisObject", "", [""]] ];
 
@@ -30,8 +31,8 @@ while {true} do {
 	
 	//By now the queue must be empty.
 	//Make msgDoneID equal to msgPostID in case something went wrong.
-	MUTEX_LOCK(_mutex);
+	CRITICAL_SECTION_START
 	private _msgPostID = GET_VAR(_thisObject, "msgPostID");
 	SET_VAR(_thisObject, "msgDoneID", _msgPostID);
-	MUTEX_UNLOCK(_mutex);
+	CRITICAL_SECTION_END
 };

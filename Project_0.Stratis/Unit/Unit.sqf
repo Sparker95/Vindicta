@@ -38,11 +38,6 @@ CLASS(UNIT_CLASS_NAME, "")
 		//Check group
 		if(_group == "" && _catID == T_INF) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 		
-		//Add this unit to a group
-		if(_group != "") then {
-			CALL_METHOD(_group, "addUnit", [_thisObject]);
-		};
-		
 		//If a random class was requested to be added
 		private _class = "";
 		if(_classID == -1) then {
@@ -54,16 +49,21 @@ CLASS(UNIT_CLASS_NAME, "")
 		
 		//Create the data array
 		private _data = DATA_DEFAULT;
-		_data set [DATA_ID_CAT, _catID];
-		_data set [DATA_ID_SUBCAT, _subcatID];
-		_data set [DATA_ID_CLASS_NAME, _class];
-		_data set [DATA_ID_MUTEX, MUTEX_NEW()];
-		_data set [DATA_ID_GROUP, _group];
+		_data set [UNIT_DATA_ID_CAT, _catID];
+		_data set [UNIT_DATA_ID_SUBCAT, _subcatID];
+		_data set [UNIT_DATA_ID_CLASS_NAME, _class];
+		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
+		_data set [UNIT_DATA_ID_GROUP, _group];
 		SET_MEM(_thisObject, "data", _data);
 		
 		//Push the new object into the array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
 		_allArray pushBack _thisObject;
+		
+		//Add this unit to a group
+		if(_group != "") then {
+			CALL_METHOD(_group, "addUnit", [_thisObject]);
+		};
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -71,12 +71,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("delete") {
-		params["_thisObject"];
+		params[["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
 		//Delete this unit from the physical world
-		private _objectHandle = _data select DATA_ID_OBJECT_HANDLE;
+		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!(isNull _objectHandle)) then {
 			deleteVehicle _objectHandle;
 		};
@@ -89,28 +89,29 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                             I S V A L I D                          |
+	// |                             I S   V A L I D                          |
 	// ----------------------------------------------------------------------
 	
 	//Checks if the created unit is valid(check the constructor code)
 	//After creating a new unit, make sure it's valid before adding it to other objects
 	METHOD("isValid") {
-		params ["_thisObject"];
+		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
+		if (isNil "_data") exitWith {false}
 		//Return true if the data array is of the correct size
 		( (count _data) == DATA_SIZE)
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                         I S S P A W N E D                          |
+	// |                         I S   S P A W N E D                          |
 	// ----------------------------------------------------------------------
 	
 	//Returns true if the unit is spawned
 	METHOD("isSpawned") {
-		params ["_thisObject"];
-		private _mutex = _data select DATA_ID_MUTEX;
+		params [["_thisObject", "", [""]]];
+		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
-		private _return = !( isNull (_data select DATA_ID_OBJECT_HANDLE));
+		private _return = !( isNull (_data select UNIT_DATA_ID_OBJECT_HANDLE));
 		MUTEX_UNLOCK(_mutex);
 		_return
 	} ENDMETHOD;
@@ -120,22 +121,22 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("spawn") {
-		params ["_thisObject", "_pos", "_dir"];
+		params [["_thisObject", "", [""]], "_pos", "_dir"];
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		
 		//Lock the mutex
 		MUTEX_LOCK(_mutex);
 		
 		//Unpack more data...
-		private _objectHandle = _data select DATA_ID_OBJECT_HANDLE;
+		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _objectHandle) then { //If it's not spawned yet
-			private _className = _data select DATA_ID_CLASS_NAME;
-			private _group = _data select DATA_ID_GROUP;
+			private _className = _data select UNIT_DATA_ID_CLASS_NAME;
+			private _group = _data select UNIT_DATA_ID_GROUP;
 			
 			//Perform object creation
-			private _catID = _data select DATA_ID_CAT;
+			private _catID = _data select UNIT_DATA_ID_CAT;
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
@@ -148,7 +149,7 @@ CLASS(UNIT_CLASS_NAME, "")
 				};
 			};
 			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
-			_data set [DATA_ID_OBJECT_HANDLE, _objectHandle];
+			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		};		
@@ -161,33 +162,51 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("despawn") {
-		params ["_thisObject"];
+		params [["_thisObject", "", [""]]];
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
-		private _mutex = _data select DATA_ID_MUTEX;
+		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		
 		//Lock the mutex
 		MUTEX_LOCK(_mutex);
 		
 		//Unpack more data...
-		private _objectHandle = _data select DATA_ID_OBJECT_HANDLE;
+		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
 			deleteVehicle _objectHandle;
-			private _group = _data select DATA_ID_GROUP;
+			private _group = _data select UNIT_DATA_ID_GROUP;
 			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", []) };
-			_data set [DATA_ID_OBJECT_HANDLE, objNull];
+			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		};		
 		//Unlock the mutex
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                    H A N D L E U N I T K I L L E D                 |
+	// |                    S E T   V E H I C L E   R O L E                 |
+	// ----------------------------------------------------------------------
+	// Assigns the unit to a vehicle with specified vehicle role
+	METHOD("setVehicleRole") {
+		params [["_thisObject", "", [""]], "_vehicle", "_vehicleRole"];
+	};
+	
+	// ----------------------------------------------------------------------
+	// |                    G E T   V E H I C L E   C R E W                 |
+	// ----------------------------------------------------------------------
+	// Returns the units assigned to this vehicle
+	METHOD("getVehicleCrew") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_MEM(_thisObject, "data");
+		_data select UNIT_DATA_ID_VEHICLE_CREW
+	};	
+	
+	// ----------------------------------------------------------------------
+	// |                    H A N D L E   U N I T   K I L L E D             |
 	// ----------------------------------------------------------------------
 	
 	//Called by event dispatcher	
-	METHOD("handleKilled") {
-		params ["_thisObject"];
+	METHOD("handleDestroyed") {
+		params [["_thisObject", "", [""]]];
 		//Oh no, Johny is down! What should we do?
 	} ENDMETHOD;
 	

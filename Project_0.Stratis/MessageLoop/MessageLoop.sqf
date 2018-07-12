@@ -42,7 +42,7 @@ CLASS("MessageLoop", "")
 		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]] ];
 		
 		//Start critical section
-		// Nothing must interrupt the message pushing into the queue
+		// Nothing must interrupt the message pushing into the queue, even event handlers
 		CRITICAL_SECTION_START
 		
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");

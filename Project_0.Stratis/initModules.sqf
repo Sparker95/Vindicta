@@ -49,17 +49,17 @@ call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";
 call compile preprocessFileLineNumbers "Commander\initFunctions.sqf";
 */
 
-//Initialize OOP_Light
+// Initialize OOP_Light
 call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
-//Initialize MessageReceiver class
+// Initialize MessageReceiver class
 call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
 
-//Initialize MessageLoop class
+// Initialize MessageLoop class
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
-//Initialize Unit class
+// Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 
-//Initialize Group class
+// Initialize Group class
 call compile preprocessFileLineNumbers "Group\Group.sqf";
