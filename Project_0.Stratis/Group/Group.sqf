@@ -1,6 +1,6 @@
 /*
 Group class.
-Group class isis a set of Units. A group can have men, vehicles and drones.
+Group class is a set of Units. A group can have men, vehicles and drones.
 
 Author: Sparker
 11.06.2018

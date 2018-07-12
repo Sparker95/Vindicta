@@ -8,6 +8,9 @@ Author: Sparker
 
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
+#include "..\CriticalSection\CriticalSection.hpp"
+
+#define DEBUG
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
@@ -33,11 +36,14 @@ CLASS("MessageLoop", "")
 	
 	//Adds a message into the message queue
 	METHOD("postMessage") {
+		#ifdef DEBUG
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
+		#endif
 		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]] ];
-		//If multiple threads want to push into the queue at the same time
-		private _mutex = GET_VAR(_thisObject, "mutex");
-		if (canSuspend) then { MUTEX_LOCK(_mutex); };
+		
+		//Start critical section
+		// Nothing must interrupt the message pushing into the queue
+		CRITICAL_SECTION_START
 		
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
@@ -45,7 +51,9 @@ CLASS("MessageLoop", "")
 		private _ID = GET_VAR(_thisObject, "msgPostID");
 		SET_VAR(_thisObject, "msgPostID", _ID + 1);
 		
-		if (canSuspend) then { MUTEX_UNLOCK(_mutex); };
+		// Stop critical section
+		CRITICAL_SECTION_END
+		
 		//Return the message ID
 		_ID
 	} ENDMETHOD;
