@@ -5,9 +5,10 @@
 #define GROUP_DATA_ID_GROUP_HANDLE	2
 #define GROUP_DATA_ID_MUTEX			3
 #define GROUP_DATA_ID_TYPE			4
+#define GROUP_DATA_ID_GARRISON		5
 
-//				     		  0,        1,       2,  3, 4
-#define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0]
+//				     		  0,        1,       2,  3, 4,  5
+#define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0, ""]
 
 // Group types
 // Used to aid in spawn position selection

@@ -10,7 +10,7 @@ Author: Sparker
 #include "..\Mutex\Mutex.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 
-#define DEBUG
+//#define DEBUG
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
@@ -43,12 +43,13 @@ CLASS("MessageLoop", "")
 		
 		//Start critical section
 		// Nothing must interrupt the message pushing into the queue, even event handlers
+		private _ID = -1; // Because we can't return a variable from a critical section
 		CRITICAL_SECTION_START
 		
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
 		//Increase the posted msg ID counter
-		private _ID = GET_VAR(_thisObject, "msgPostID");
+		_ID = GET_VAR(_thisObject, "msgPostID");
 		SET_VAR(_thisObject, "msgPostID", _ID + 1);
 		
 		// Stop critical section

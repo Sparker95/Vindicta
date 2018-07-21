@@ -48,7 +48,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		};
 		
 		//Create the data array
-		private _data = DATA_DEFAULT;
+		private _data = UNIT_DATA_DEFAULT;
 		_data set [UNIT_DATA_ID_CAT, _catID];
 		_data set [UNIT_DATA_ID_SUBCAT, _subcatID];
 		_data set [UNIT_DATA_ID_CLASS_NAME, _class];
@@ -75,11 +75,16 @@ CLASS(UNIT_CLASS_NAME, "")
 		private _data = GET_MEM(_thisObject, "data");
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
+		
 		//Delete this unit from the physical world
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!(isNull _objectHandle)) then {
 			deleteVehicle _objectHandle;
 		};
+		
+		// Remove the unit from its group
+		private _group = _data select UNIT_DATA_ID_GROUP;
+		CALL_METHOD(_group, "removeUnit", [_thisObject]);
 		
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
@@ -89,7 +94,7 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                             I S   V A L I D                          |
+	// |                             I S   V A L I D                        |
 	// ----------------------------------------------------------------------
 	
 	//Checks if the created unit is valid(check the constructor code)
@@ -97,13 +102,13 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD("isValid") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
-		if (isNil "_data") exitWith {false}
+		if (isNil "_data") exitWith {false};
 		//Return true if the data array is of the correct size
-		( (count _data) == DATA_SIZE)
+		( (count _data) == UNIT_DATA_SIZE)
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                         I S   S P A W N E D                          |
+	// |                         I S   S P A W N E D                        |
 	// ----------------------------------------------------------------------
 	
 	//Returns true if the unit is spawned
@@ -175,7 +180,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
 			deleteVehicle _objectHandle;
 			private _group = _data select UNIT_DATA_ID_GROUP;
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", []) };
+			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		};		
 		//Unlock the mutex
@@ -188,7 +193,35 @@ CLASS(UNIT_CLASS_NAME, "")
 	// Assigns the unit to a vehicle with specified vehicle role
 	METHOD("setVehicleRole") {
 		params [["_thisObject", "", [""]], "_vehicle", "_vehicleRole"];
-	};
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                   S E T / G E T   G A R R I S O N                  |
+	// ----------------------------------------------------------------------
+	// Sets the garrison of this unit (use Garrison::addUnit to add a unit to a garrison)
+	METHOD("setGarrison") {
+		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		private _data = GET_VAR(_thisObject, "data");
+		_data set [UNIT_DATA_ID_GARRISON, _garrison];
+	} ENDMETHOD;
+	
+	// Returns the garrison of this unit
+	METHOD("getGarrison") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_GARRISON
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                        G E T   G R O U P                           |
+	// ----------------------------------------------------------------------
+	
+	// Returns the group of this unit
+	METHOD("getGroup") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_GROUP
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    G E T   V E H I C L E   C R E W                 |
@@ -198,7 +231,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
 		_data select UNIT_DATA_ID_VEHICLE_CREW
-	};	
+	} ENDMETHOD;	
 	
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   U N I T   K I L L E D             |
@@ -210,6 +243,14 @@ CLASS(UNIT_CLASS_NAME, "")
 		//Oh no, Johny is down! What should we do?
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                       G E T   D E B U G   D A T A                  |
+	// ----------------------------------------------------------------------
+	// Returns data which is meant to be shown in debug messages to help find errors
+	METHOD("getDebugData") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "data")
+	} ENDMETHOD;
 	
 ENDCLASS;
 

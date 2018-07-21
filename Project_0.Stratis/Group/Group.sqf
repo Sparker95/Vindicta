@@ -20,10 +20,10 @@ CLASS(GROUP_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GT_IDLE, [GT_IDLE]]];
-		private _data = DATA_DEFAULT;
+		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
+		private _data = GROUP_DATA_DEFAULT;
 		_data set [GROUP_DATA_ID_SIDE, _side];
-		_data set [GROUP_DATA_ID_GROUP_TYPE, ]
+		_data set [GROUP_DATA_ID_TYPE, _groupType];
 		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
 		SET_VAR(_thisObject, "data", _data);
 	} ENDMETHOD;
@@ -38,7 +38,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                           A D D   U N I T                            |
+	// |                           A D D   U N I T                          |
 	// ----------------------------------------------------------------------
 	
 	METHOD("addUnit") {
@@ -52,7 +52,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                        R E M O V E   U N I T                         |
+	// |                        R E M O V E   U N I T                       |
 	// ----------------------------------------------------------------------
 	
 	METHOD("removeUnit") {
@@ -66,7 +66,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                         G E T   U N I T S                            |
+	// |                         G E T   U N I T S                          |
 	// ----------------------------------------------------------------------
 	
 	METHOD("getUnits") {
@@ -81,7 +81,7 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                  G E T   G R O U P   H A N D L E                       |
+	// |                  G E T   G R O U P   H A N D L E                   |
 	// ----------------------------------------------------------------------
 	
 	/*
@@ -105,7 +105,29 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                    H A N D L E U N I T K I L L E D                 |
+	// |                     S E T / G E T   G A R R I S O N                |
+	// ----------------------------------------------------------------------
+	// Sets the garrison of this garrison (use Garrison::addGroup to add a group to a garrison)
+	METHOD("setGarrison") {
+		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		private _data = GET_VAR(_thisObject, "data");
+		_data set [GROUP_DATA_ID_GARRISON, _garrison];
+		
+		// Set the garrison of all units in this group
+		private _units = _data select GROUP_DATA_ID_UNITS;
+		{ CALL_METHOD(_x, "setGarrison", [_thisObject]); } forEach _units;
+	} ENDMETHOD;
+	
+	// Returns the garrison of this group
+	METHOD("getGarrison") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select GROUP_DATA_ID_GARRISON
+	} ENDMETHOD;
+	
+	
+	// ----------------------------------------------------------------------
+	// |                 H A N D L E   U N I T   K I L L E D                |
 	// ----------------------------------------------------------------------
 
 	METHOD("handleUnitKilled") {
@@ -114,15 +136,15 @@ CLASS(GROUP_CLASS_NAME, "")
 	
 	
 	// ----------------------------------------------------------------------
-	// |                    H A N D L E U N I T K I L L E D                 |
+	// |              H A N D L E   U N I T   D E S P A W N E D             |
 	// ----------------------------------------------------------------------
 
 	METHOD("handleUnitDespawned") {
-		params [["_thisObject", "", [""]], "_unit"];
+		params [["_thisObject", "", [""]], ["_unit", "", [""]] ];
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                  H A N D L E U N I T S P A W N E D                 |
+	// |                 H A N D L E   U N I T   S P A W N E D              |
 	// ----------------------------------------------------------------------
 
 	METHOD("handleUnitSpawned") {

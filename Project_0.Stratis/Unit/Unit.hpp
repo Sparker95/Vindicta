@@ -16,7 +16,7 @@
 #define UNIT_DATA_SIZE				11
 
 //								 0, 1,  2,       3,  4, 5,  6,  7, 8,		    9, 10
-#define UNIT_DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", [], VR_DEFAULT, [], ""]
+#define UNIT_DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", [], UNIT_VR_DEFAULT, [], ""]
 
 //Class name of Unit class, in case I need to rename it everywhere
 #define UNIT_CLASS_NAME "Unit"
@@ -34,4 +34,4 @@
 // Vehicle role array structure is: [vehicleRole, turretPath]
 #define UNIT_VR_ID_ROLE			0
 #define UNIT_VR_ID_TURRET_PATH	1
-#define UNIT_VR_DEFAULT			[VR_NONE]
+#define UNIT_VR_DEFAULT			[UNIT_VR_NONE]

@@ -1,5 +1,7 @@
 //Just a quick file to initialize the modules already made in needed order
 
+#include "OOP_Light\OOP_Light.h"
+
 //Initialize the group for logic objects
 if(isNil "groupLogic") then
 {
@@ -55,6 +57,9 @@ call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 // Initialize MessageReceiver class
 call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
 
+// Initialize MessageReceiverEx class
+call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf";
+
 // Initialize MessageLoop class
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
@@ -63,3 +68,9 @@ call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 
 // Initialize Group class
 call compile preprocessFileLineNumbers "Group\Group.sqf";
+
+// Initialize Garrison class
+call compile preprocessFileLineNumbers "Garrison\Garrison.sqf";
+
+gMessageLoopMain = NEW("MessageLoop", []);
+

@@ -125,7 +125,7 @@
 //#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
 #define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
 #define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
-#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (extraParams) call GET_METHOD(classNameStr, methodNameStr)
 
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |

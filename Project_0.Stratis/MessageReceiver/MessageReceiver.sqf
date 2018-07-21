@@ -13,7 +13,7 @@ Author: Sparker
 CLASS("MessageReceiver", "")
 
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		gMsgLoop //temp		
+		"ERROR_NO_MESSAGE_LOOP"
 	} ENDMETHOD;
 	
 	/*
@@ -37,6 +37,15 @@ CLASS("MessageReceiver", "")
 		private _msgID = CALL_METHOD(_messageLoop, "postMessage", [_msg]);
 		//Return message ID value
 		_msgID
+	} ENDMETHOD;
+	
+	// Suspends until the message has been processed
+	METHOD("waitUntilMessageDone") {
+		params [ ["_thisObject", "", [""]] , ["_msgID", 0, [0]] ];
+		private _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
+		waitUntil {
+			CALL_METHOD(_messageLoop, "messageDone", [_msgID]);
+		};
 	} ENDMETHOD;
 	
 ENDCLASS;
