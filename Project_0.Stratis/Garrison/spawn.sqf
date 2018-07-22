@@ -8,7 +8,9 @@ params [["_thisObject", "", [""]]];
 
 private _spawned = GET_VAR(_thisObject, "spawned");
 
-if (_spawned) exitWith { diag_log "[Garrison::spawn] Error: Can't spawn a garrison which is already spawned"; };
+if (_spawned) exitWith {
+	diag_log format ["[Garrison::spawn] Error: Can't spawn a garrison which is already spawned: %1", GET_VAR(_thisObject, "debugName")];
+};
 
 // Set spawned flag
 SET_VAR(_thisObject, "spawned", true);

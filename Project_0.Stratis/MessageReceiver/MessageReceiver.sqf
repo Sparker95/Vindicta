@@ -44,6 +44,7 @@ CLASS("MessageReceiver", "")
 		params [ ["_thisObject", "", [""]] , ["_msgID", 0, [0]] ];
 		private _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
 		waitUntil {
+			//diag_log "Waiting...";
 			CALL_METHOD(_messageLoop, "messageDone", [_msgID]);
 		};
 	} ENDMETHOD;

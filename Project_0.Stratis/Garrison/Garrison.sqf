@@ -13,6 +13,12 @@ CLASS("Garrison", "MessageReceiverEx")
 	VARIABLE("groups");
 	VARIABLE("spawned");
 	VARIABLE("side");
+	VARIABLE("debugName");
+	
+	METHOD("setDebugName") {
+		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
+		SET_VAR(_thisObject, "debugName", _debugName);
+	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -24,6 +30,7 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "groups", []);
 		SET_VAR(_thisObject, "spawned", false);
 		SET_VAR(_thisObject, "side", WEST);
+		SET_VAR(_thisObject, "debugName", "");
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -36,6 +43,7 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "groups", nil);	
 		SET_VAR(_thisObject, "spawned", nil);
 		SET_VAR(_thisObject, "side", nil);
+		SET_VAR(_thisObject, "debugName", nil);
 	} ENDMETHOD;
 	
 	// Returns the message loop this object is attached to

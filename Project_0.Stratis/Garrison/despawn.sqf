@@ -8,7 +8,8 @@ params [["_thisObject", "", [""]]];
 
 private _spawned = GET_VAR(_thisObject, "spawned");
 
-if (!_spawned) exitWith { diag_log "[Garrison::despawn] Error: Can't despawn a garrison which is not spawned"; };
+if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't despawn a garrison which is not spawned: %1",
+	GET_VAR(_thisObject, "debugName")]; };
 
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
