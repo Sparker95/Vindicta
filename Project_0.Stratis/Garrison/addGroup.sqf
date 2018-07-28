@@ -2,7 +2,7 @@
 Adds an existing group to this garrison
 */
 
-#include "..\Garrison\Garrison.hpp"
+//#include "..\Garrison\Garrison.hpp"
 #include "..\Message\Message.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 

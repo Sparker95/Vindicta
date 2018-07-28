@@ -46,3 +46,8 @@ onMapSingleClick {call UI_fnc_onMapSingleClick;};
 */
 
 call compile preprocessFileLineNumbers "initModules.sqf";
+
+#include "OOP_Light\OOP_Light.h"
+
+diag_log "-------- calling initWorld!";
+call compile preprocessFileLineNumbers "Init\initWorld.sqf";

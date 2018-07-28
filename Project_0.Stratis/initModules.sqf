@@ -72,5 +72,7 @@ call compile preprocessFileLineNumbers "Group\Group.sqf";
 // Initialize Garrison class
 call compile preprocessFileLineNumbers "Garrison\Garrison.sqf";
 
-gMessageLoopMain = NEW("MessageLoop", []);
+// Initialize Location class
+call compile preprocessFileLineNumbers "Location\Location.sqf";
 
+gMessageLoopMain = NEW("MessageLoop", []);

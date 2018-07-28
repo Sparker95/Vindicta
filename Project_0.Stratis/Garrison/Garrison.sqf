@@ -15,6 +15,10 @@ CLASS("Garrison", "MessageReceiverEx")
 	VARIABLE("side");
 	VARIABLE("debugName");
 	
+	// ----------------------------------------------------------------------
+	// |                 S E T   D E B U G   N A M E                        |
+	// ----------------------------------------------------------------------
+	
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
 		SET_VAR(_thisObject, "debugName", _debugName);

@@ -89,6 +89,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
 		_allArray = _allArray - [_thisObject];
+		SET_STATIC_MEM(UNIT_CLASS_NAME, "all", _allArray);
 		MUTEX_UNLOCK(_mutex);
 		SET_MEM(_thisObject, "data", nil);
 	} ENDMETHOD;
