@@ -88,7 +88,7 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD_FILE("setBorder", "Location\setBorder.sqf");
 	
 	// Checks if given position is inside the border
-	METHOD_FILE("inBorder", "Location\inBorder.sqf");
+	METHOD_FILE("isInBorder", "Location\isInBorder.sqf");
 	
 	// Initializes the location from editor-plased objects
 	METHOD_FILE("initFromEditor", "Location\initFromEditor.sqf");
@@ -96,6 +96,16 @@ CLASS("Location", "MessageReceiverEx")
 	// Adds a spawn position
 	METHOD_FILE("addSpawnPos", "Location\addSpawnPos.sqf");
 	
+	// Gets a spawn position to spawn some unit
+	METHOD_FILE("getSpawnPos", "Location\getSpawnPos.sqf");
+	
+	// Returns how many units of this type and group type this location can hold
+	METHOD_FILE("getunitCapacity", "Location\getUnitCapacity.sqf");
+	
+	// Checks if given position is safe to spawn a vehicle here
+	STATIC_METHOD_FILE("isPosSafe", "Location\isPosSafe.sqf");
+	
+	// 
 	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
 ENDCLASS;
 

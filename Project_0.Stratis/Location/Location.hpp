@@ -1,9 +1,9 @@
 
 // Spawn Positions
 // [_pos, _dir, _building]
-#define LOCATION_SP_ID_POS
-#define LOCATION_SP_ID_DIR
-#define LOCATION_SP_ID_BUILDING
+#define LOCATION_SP_ID_POS		0
+#define LOCATION_SP_ID_DIR		1
+#define LOCATION_SP_ID_BUILDING	2
 
 #define LOCATION_SP_DEFAULT [[], 0, objNull]
 

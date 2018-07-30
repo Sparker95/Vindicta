@@ -22,3 +22,6 @@
 #define GROUP_TYPE_BUILDING_SENTRY	3
 //Patrols that are walking around
 #define GROUP_TYPE_PATROL			4
+
+// Array with all group types
+#define GROUP_TYPE_ALL [0, 1, 2, 3, 4]

@@ -442,7 +442,7 @@ Location\fn_getSpawnPosition.sqf
 	[24,8]:warning:Variable "_ignoreGT" not used
 Location\fn_initSpawnPositions.sqf
 	[6,15]:warning:Variable "_debug" not used
-Location\fn_isPosSafe.sqf
+Location\fn_isisPosSafe.sqf
 	[13,8]:warning:Variable "_bz" not used
 Location\fn_locationThread.sqf
 	[4,17]:warning:Variable "_debug" not used

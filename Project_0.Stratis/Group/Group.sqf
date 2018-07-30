@@ -151,4 +151,26 @@ CLASS(GROUP_CLASS_NAME, "")
 		params [["_thisObject", "", [""]], "_unit"];
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |         C R E A T E   U N I T S   F R O M   T E M P L A T E        |
+	// ----------------------------------------------------------------------
+	
+	// Creates units from template and adds them to this given group
+	// Returns amount of units added
+	METHOD("createUnitsFromTemplate") {
+		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_subcatID", 0, [0]]];
+		private _groupData = [_template, _subcatID, -1] call t_fnc_selectGroup;
+		
+		// Create every unit and add it to this group
+		{
+			private _catID = _x select 0;
+			private _subcatID = _x select 1;
+			private _classID = _x select 2;
+			private _args = [_template, _catID, _subcatID, _classID, _thisObject];
+			NEW("Unit", _args);
+		} forEach _groupData;
+		
+		(count _groupData)
+	} ENDMETHOD;
+	
 ENDCLASS;
