@@ -21,14 +21,15 @@ CLASS("TimerService", "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_resolution", 0, [0]]];
 		SET_VAR(_thisObject, "timers", []);
-		SET_VAR(_thisObject, "resolution", 0.5);
+		SET_VAR(_thisObject, "resolution", _resolution);
 		private _mutex = MUTEX_NEW();
-		SET_VAR(_thisObject, "mutex", [_mutex]);
+		SET_VAR(_thisObject, "mutex", _mutex);
 		
 		// Create a thread for this TimerService
 		private _hThread = [_thisObject] spawn TimerService_fnc_threadFunc;
+		SET_VAR(_thisObject, "scriptHandle", _hThread);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -59,7 +60,7 @@ CLASS("TimerService", "")
 	METHOD("addTimer") {
 		params [["_thisObject", "", [""]], ["_timer", "", [""]]];
 		private _timers = GET_VAR(_thisObject, "timers");
-		private _timerDereferenced = CALL_METHOD(_timer, "dereference");
+		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
 		_timers pushBackUnique _timerDereferenced;
 	} ENDMETHOD;
 

@@ -8,7 +8,7 @@ Author: Sparker 31.07.2018
 #include "..\Message\Message.hpp"
 #include "Timer.hpp"
 
-CLASS("MyClass", "")
+CLASS("Timer", "")
 
 	VARIABLE("data");
 	
@@ -24,6 +24,7 @@ CLASS("MyClass", "")
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]] ];
+		//diag_log format ["[Timer::New] _this: %1", _this];
 		// Fill the data array
 		private _data = TIMER_DATA_DEFAULT;
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
@@ -31,8 +32,10 @@ CLASS("MyClass", "")
 		_data set [TIMER_DATA_ID_MESSAGE, _message];
 		_data set [TIMER_DATA_ID_MESSAGE_RECEIVER, _messageReceiver];
 		_data set [TIMER_DATA_ID_TIMER_SERVICE, _messageReceiver];
-		_data set [TIMER_DATA_ID_MESSAGE_LOOP, CALL_METHOD(_mesageReceiver, "getMessageLoop", [])];
+		private _msgLoop = CALL_METHOD(_messageReceiver, "getMessageLoop", []);
+		_data set [TIMER_DATA_ID_MESSAGE_LOOP, _msgLoop];
 		SET_VAR(_thisObject, "data", _data);
+		//diag_log format ["[Timer] Info: %1 data: %2, _msgLoop: %3", _thisObject, _data, _msgLoop];
 		// Add this timer to the timer service
 		CALL_METHOD(_timerService, "addTimer", [_thisObject]);
 	} ENDMETHOD;
@@ -47,5 +50,19 @@ CLASS("MyClass", "")
 		private _timerService = _data select TIMER_DATA_ID_TIMER_SERVICE;
 		CALL_METHOD(_timerService, "removeTimer", [_thisObject]);
 	} ENDMETHOD;
+	
+	METHOD("setInterval") {
+		params [["_thisObject", "", [""]], ["_interval", 0, [0]]];
+		private _data = GET_VAR(_thisObject, _data);
+		_data set [TIMER_DATA_ID_INTERVAL, _interval];
+	} ENDMETHOD;
 
+	// ----------------------------------------------------------------------
+	// |                    G E T   D A T A   A R R A Y                     |
+	// ----------------------------------------------------------------------
+	// Internal function meant to be used only by TimerService
+	METHOD("getDataArray") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "data")
+	} ENDMETHOD;
 ENDCLASS;

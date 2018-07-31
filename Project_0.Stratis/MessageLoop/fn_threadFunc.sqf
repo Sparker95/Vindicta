@@ -14,13 +14,17 @@ private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 private _mutex = GET_VAR(_thisObject, "mutex");
 //private _objects = GET_VAR(_thisObject, "objects");
 
+//#define DEBUG
+
 while {true} do {
 	//Do we have anything in the queue?
 	waitUntil {	(count _msgQueue) > 0 };
 	while {(count _msgQueue) > 0} do {
 		//Get a message from the front
 		private _msg = _msgQueue select 0;
-		diag_log format ["[MessageLoop] message in queue: %1", _msg];
+		#ifdef DEBUG
+		diag_log format ["[MessageLoop] Info: message in queue: %1", _msg];
+		#endif
 		//Get destination object
 		private _dest = _msg select MESSAGE_ID_DESTINATION;
 		//Call handleMessage

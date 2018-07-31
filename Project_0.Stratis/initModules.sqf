@@ -81,4 +81,7 @@ call compile preprocessFileLineNumbers "Timer\Timer.sqf";
 // Initialize TimerService class
 call compile preprocessFileLineNumbers "TimerService\TimerService.sqf";
 
+// Initialize DebugPrinter class
+call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
+
 gMessageLoopMain = NEW("MessageLoop", []);
