@@ -100,7 +100,7 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD_FILE("getSpawnPos", "Location\getSpawnPos.sqf");
 	
 	// Returns how many units of this type and group type this location can hold
-	METHOD_FILE("getunitCapacity", "Location\getUnitCapacity.sqf");
+	METHOD_FILE("getUnitCapacity", "Location\getUnitCapacity.sqf");
 	
 	// Checks if given position is safe to spawn a vehicle here
 	STATIC_METHOD_FILE("isPosSafe", "Location\isPosSafe.sqf");

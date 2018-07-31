@@ -75,4 +75,10 @@ call compile preprocessFileLineNumbers "Garrison\Garrison.sqf";
 // Initialize Location class
 call compile preprocessFileLineNumbers "Location\Location.sqf";
 
+// Initialize Timer class
+call compile preprocessFileLineNumbers "Timer\Timer.sqf";
+
+// Initialize TimerService class
+call compile preprocessFileLineNumbers "TimerService\TimerService.sqf";
+
 gMessageLoopMain = NEW("MessageLoop", []);

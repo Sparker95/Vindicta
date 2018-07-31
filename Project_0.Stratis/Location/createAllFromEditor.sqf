@@ -40,6 +40,8 @@ private _loc = objNull;
 			};
 		};
 		
+		/*
+		
 		// Create a new location
 		private _args = [_mrkPos];
 		private _loc = NEW("Location", _args);
@@ -95,6 +97,8 @@ private _loc = objNull;
 			_cInf = [_garMilMain, T_GROUP_inf_rifle_squad, _cInf] call _addInfGroup;			
 			_i = _i + 1;
 		};
+		
+		*/
 		
 	};
 } forEach allMapMarkers;

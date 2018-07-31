@@ -7,7 +7,7 @@ Author: Sparker 31.07.2018
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 
-TimerService_fnc_threadFunc = compile preprocessFileLineNumbers "fn_threadFunc.sqf";
+TimerService_fnc_threadFunc = compile preprocessFileLineNumbers "TimerService\fn_threadFunc.sqf";
 
 CLASS("TimerService", "")
 
