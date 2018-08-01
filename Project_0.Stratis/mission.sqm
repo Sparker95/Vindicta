@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=46;
+		nextID=48;
 	};
 	class Camera
 	{
@@ -1953,7 +1953,7 @@ class Mission
 			};
 			id=1397;
 			type="B_MRAP_01_hmg_F";
-			atlOffset=-2.8133392e-005;
+			atlOffset=-0.00021076202;
 		};
 		class Item95
 		{

@@ -5,8 +5,10 @@ Author: Sparker 28.07.2018
 */
 
 #include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+#include "Location.hpp"
 
-CLASS("Location", "MessageReceiverEx")
+CLASS("Location", "MessageReceiver")
 
 	VARIABLE("debugName");
 	VARIABLE("garrisonCiv");
@@ -17,6 +19,8 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
 	VARIABLE("pos"); // Position of this location
 	VARIABLE("spawnPosTypes"); // Array with spawn positions types
+	VARIABLE("spawnState"); // Is this location spawned or not
+	VARIABLE("timer"); // Timer object which generates messages for this location
 	STATIC_VARIABLE("all");
 	
 	// ----------------------------------------------------------------------
@@ -35,6 +39,11 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]] ];
 		
+		// Check existance of neccessary global objects
+		if (isNil "gTimerServiceMain") exitWith {"[MessageLoop] Error: global timer service doesn't exist!";};
+		if (isNil "gMessageLoopLocation") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
+		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
+		
 		SET_VAR(_thisObject, "debugName", "noname");
 		SET_VAR(_thisObject, "garrisonCiv", "");
 		SET_VAR(_thisObject, "garrisonMilAA", "");
@@ -44,6 +53,17 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR(_thisObject, "borderPatrolWaypoints", []);
 		SET_VAR(_thisObject, "pos", _pos);
 		SET_VAR(_thisObject, "spawnPosTypes", []);
+		SET_VAR(_thisObject, "spawnState", 0);
+		
+		// Create timer object
+		private _msg = MESSAGE_NEW();
+		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+		_msg set [MESSAGE_ID_SOURCE, ""];
+		_msg set [MESSAGE_ID_DATA, 0];
+		_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
+		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
+		private _timer = NEW("Timer", _args);
+		SET_VAR(_thisObject, "timer", _timer);
 		
 		//Push the new object into the array with all units
 		private _allArray = GET_STATIC_VAR("Location", "all");
@@ -67,6 +87,11 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR(_thisObject, "pos", nil);
 		SET_VAR(_thisObject, "spawnPosTypes", nil);
 		
+		// Remove the timer
+		private _timer = GET_VAR(_thisObject, "timer");
+		DELETE(_timer);
+		SET_VAR(_thisObject, "timer", nil);
+		
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray = _allArray - [_thisObject];
@@ -83,7 +108,19 @@ CLASS("Location", "MessageReceiverEx")
 		_return
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                  G E T   M E S S A G E   L O O P                   |
+	// ----------------------------------------------------------------------
+	
+	METHOD("getMessageLoop") { //Derived classes must implement this method
+		gMessageLoopLocation
+	} ENDMETHOD;
+	
 	// File-based methods
+	
+	// Handles messages
+	METHOD_FILE("handleMessage", "Location\handleMessage.sqf");
+	
 	// Sets border parameters
 	METHOD_FILE("setBorder", "Location\setBorder.sqf");
 	

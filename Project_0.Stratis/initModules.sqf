@@ -84,4 +84,5 @@ call compile preprocessFileLineNumbers "TimerService\TimerService.sqf";
 // Initialize DebugPrinter class
 call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
 
-gMessageLoopMain = NEW("MessageLoop", []);
+// Initialize LocationUnitArrayprovider class
+call compile preprocessFileLineNumbers "LocationUnitArrayProvider\LocationUnitArrayProvider.sqf";

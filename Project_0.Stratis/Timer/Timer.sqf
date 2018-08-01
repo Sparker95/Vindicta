@@ -51,10 +51,15 @@ CLASS("Timer", "")
 		CALL_METHOD(_timerService, "removeTimer", [_thisObject]);
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                       S E T   I N T E R V A L                      |
+	// ----------------------------------------------------------------------
+	
 	METHOD("setInterval") {
 		params [["_thisObject", "", [""]], ["_interval", 0, [0]]];
-		private _data = GET_VAR(_thisObject, _data);
+		private _data = GET_VAR(_thisObject, "data");
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
+		_data set [TIMER_DATA_ID_TIME_NEXT, time+_interval];
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

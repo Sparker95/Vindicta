@@ -13,3 +13,11 @@ Author: Sparker
 #define MESSAGE_ID_DATA	3
 
 #define MESSAGE_NEW() ["", "", "", 0]
+
+/*
+Code to set all parameters:
+_msg set [MESSAGE_ID_DESTINATION, ...];
+_msg set [MESSAGE_ID_SOURCE, ""];
+_msg set [MESSAGE_ID_DATA, ...];
+_msg set [MESSAGE_ID_TYPE, ...];
+*/

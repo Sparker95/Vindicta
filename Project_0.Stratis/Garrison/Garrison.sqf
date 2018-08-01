@@ -30,6 +30,10 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
+		
+		// Check existance of neccessary global objects
+		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global main message loop doesn't exist!";};
+		
 		SET_VAR(_thisObject, "units", []);
 		SET_VAR(_thisObject, "groups", []);
 		SET_VAR(_thisObject, "spawned", false);
@@ -53,6 +57,14 @@ CLASS("Garrison", "MessageReceiverEx")
 	// Returns the message loop this object is attached to
 	METHOD("getMessageLoop") {
 		gMessageLoopMain
+	} ENDMETHOD;
+	
+	// Getting values
+	
+	// getSide
+	METHOD("getSide") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "side")
 	} ENDMETHOD;
 	
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx

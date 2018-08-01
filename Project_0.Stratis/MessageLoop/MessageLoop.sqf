@@ -28,6 +28,13 @@ CLASS("MessageLoop", "")
 	VARIABLE("msgDoneID");
 	//Mutex for accessing the message queue
 	VARIABLE("mutex");
+	//Debug name to help read debug printouts
+	VARIABLE("debugName");
+	
+	METHOD("setDebugName") {
+		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
+		SET_VAR(_thisObject, "debugName", _debugName);
+	} ENDMETHOD;	
 	
 	//Adds object to the object list
 	METHOD("addObject") {
@@ -84,7 +91,7 @@ CLASS("MessageLoop", "")
 	//Constructor
 	//Spawn a script which will be checking messages
 	METHOD("new") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ ["_thisObject", "", [""]] ];		
 		SET_VAR(_thisObject, "msgQueue", []);
 		SET_VAR(_thisObject, "objects", []);
 		SET_VAR(_thisObject, "msgPostID", 0);

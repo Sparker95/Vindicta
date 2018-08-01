@@ -40,19 +40,20 @@ private _loc = objNull;
 			};
 		};
 		
-		/*
 		
 		// Create a new location
 		private _args = [_mrkPos];
 		private _loc = NEW("Location", _args);
 		
+		
 		// Initialize the new location
-		CALL_METHOD(_loc, "initFromEditor", [_mrk]);
+		//CALL_METHOD(_loc, "initFromEditor", [_mrk]);
 		
 		// Set debug name
 		private _debugName = format ["fromMarker_%1", _mrk];
 		CALL_METHOD(_loc, "setDebugName", [_debugName]);
 		
+		/*
 		// Output the capacity of this garrison
 		// Infantry capacity
 		private _args = [T_INF, [GROUP_TYPE_IDLE]];

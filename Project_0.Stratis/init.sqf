@@ -45,9 +45,32 @@ compile preprocessfilelinenumbers "UI\onMapSingleClick.sqf";
 onMapSingleClick {call UI_fnc_onMapSingleClick;};
 */
 
+#include "OOP_Light\OOP_Light.h"
+#include "Message\Message.hpp"
+
 call compile preprocessFileLineNumbers "initModules.sqf";
 
-#include "OOP_Light\OOP_Light.h"
+// Init global objects
+// Main timer service
+gTimerServiceMain = NEW("TimerService", [0.5]); // timer resolution
 
-diag_log "-------- calling initWorld!";
+// Main message loop for garrisons
+gMessageLoopMain = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
+
+// Message loop for locations
+gMessageLoopLocation = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
+
+// Location unit array provider
+gLUAP = NEW("LocationUnitArrayProvider", []);
+// Create a timer for gLUAP
+private _msg = MESSAGE_NEW();
+_msg set [MESSAGE_ID_DESTINATION, gLUAP];
+_msg set [MESSAGE_ID_SOURCE, ""];
+_msg set [MESSAGE_ID_DATA, 666];
+_msg set [MESSAGE_ID_TYPE, 666];
+private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+private _LUAPTimer = NEW("Timer", _args);
+
 call compile preprocessFileLineNumbers "Init\initWorld.sqf";
