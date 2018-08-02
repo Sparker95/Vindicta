@@ -8,9 +8,10 @@ Author: Sparker 29.07.2018
 */
 
 #include "..\OOP_Light\OOP_Light.h"
+#include "..\Group\Group.hpp"
 #include "Location.hpp"
 
-params [["_thisObject", "", [""]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]] ];
+params [["_thisObject", "", [""]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
 
 //First try to find it in building spawn positions
 private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
@@ -107,7 +108,7 @@ if(_found) then {//If the spawn position has been found
 	//Provide default spawn position
 	private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
 	private _locPos = GET_VAR(_thisObject, "pos");
-	_return = (_locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0]) + [0];
+	_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
 	//diag_log format ["fn_getSpawnPosition.sqf: warning: spawn position not defined for this type or maximum amount was reached: %1. Returning default position.", [_catID, _subcatID, _groupType]];
 };
 

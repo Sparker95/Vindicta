@@ -14,6 +14,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	VARIABLE("spawned");
 	VARIABLE("side");
 	VARIABLE("debugName");
+	VARIABLE("location");
 	
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -65,6 +66,12 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("getSide") {
 		params [["_thisObject", "", [""]]];
 		GET_VAR(_thisObject, "side")
+	} ENDMETHOD;
+	
+	// Sets the location of this garrison
+	METHOD("setLocation") {
+		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
+		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx

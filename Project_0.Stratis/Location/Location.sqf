@@ -116,6 +116,13 @@ CLASS("Location", "MessageReceiver")
 		gMessageLoopLocation
 	} ENDMETHOD;
 	
+	// Adding garrisons
+	METHOD("setGarrisonMilitaryMain") {
+		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
+		CALL_METHOD(_garrison, "setLocation", [_thisObject]);
+	} ENDMETHOD;
+	
 	// File-based methods
 	
 	// Handles messages

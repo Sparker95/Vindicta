@@ -28,7 +28,10 @@ switch (_msgType) do {
 					diag_log format ["[Location] Info: spawning %1", GET_VAR(_thisObject, "debugName")];
 					
 					// Spawn it now
-					if (_garMilMain != "") then {CALL_METHOD(_garMilMain, "spawn", []);};
+					if (_garMilMain != "") then {
+						private _args = ["spawn", [], []];
+						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
+					};
 					// Set timer interval
 					CALL_METHOD(_timer, "setInterval", [5]);
 					
@@ -37,7 +40,7 @@ switch (_msgType) do {
 					// Set timer interval
 					private _dstToThreshold = _dstMin - _dstSpawn;
 					private _interval = (_dstToThreshold / _speedMax) max 1;
-					diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "debugName"), _dstMin];
+					//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "debugName"), _dstMin];
 					CALL_METHOD(_timer, "setInterval", [_interval]);
 				};
 			};
@@ -46,7 +49,11 @@ switch (_msgType) do {
 					diag_log format ["[Location] Info: despawning %1", GET_VAR(_thisObject, "debugName")];
 					
 					// Despawn it
-					if (_garMilMain != "") then {CALL_METHOD(_garMilMain, "despawn", []);};
+					if (_garMilMain != "") then {
+						private _args = ["despawn", [], []];
+						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
+					
+					};
 					
 					SET_VAR(_thisObject, "spawnState", 0);
 				};

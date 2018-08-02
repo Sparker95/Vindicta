@@ -17,7 +17,7 @@ for "_i" from 0 to _count do
 		private _unitClassification = [_template, _unitClassName] call t_fnc_find;
 		if(!(_unitClassification isEqualTo [])) then { //If the unit's classname was found
 			private _newUnitData = _unitClassification select 0;
-			_types pushback ((_newUnitData select [0, 2]) + [_unitClassName]);
+			_types pushback _newUnitData;
 		} else {
 			diag_log format ["[Template] Error: fn_convertConfigGroup.sqf: unit class name was not found in template: %1", _unitClassName];
 		};

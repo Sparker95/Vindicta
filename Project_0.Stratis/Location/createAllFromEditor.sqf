@@ -47,17 +47,17 @@ private _loc = objNull;
 		
 		
 		// Initialize the new location
-		//CALL_METHOD(_loc, "initFromEditor", [_mrk]);
+		CALL_METHOD(_loc, "initFromEditor", [_mrk]);
 		
 		// Set debug name
 		private _debugName = format ["fromMarker_%1", _mrk];
 		CALL_METHOD(_loc, "setDebugName", [_debugName]);
 		
-		/*
+		
 		// Output the capacity of this garrison
 		// Infantry capacity
 		private _args = [T_INF, [GROUP_TYPE_IDLE]];
-		private _cInf = CALL_METHOD(_loc, "getunitCapacity", _args);
+		private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
 		
 		// Wheeled and tracked vehicle capacity
 		_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
@@ -66,13 +66,14 @@ private _loc = objNull;
 		// Static HMG capacity
 		private _args = [T_PL_HMG_GMG_high, GROUP_TYPE_ALL];
 		private _cHMGGMG = CALL_METHOD(_loc, "getUnitCapacity", _args);
-		diag_log format ["--- Location: %1, infantry capacity: %2, ground vehicle capacity: %3, HMG and GMG capacity: %4",
+		diag_log format ["[Location::createAllFromEditor] Info: Location: %1, infantry capacity: %2, ground vehicle capacity: %3, HMG and GMG capacity: %4",
 			_debugName, _cInf, _cVehGround, _cHMGGMG];
 		
 		// Add the main garrison to this location
 		private _garMilMain = NEW("Garrison", [_side]);
+		CALL_METHOD(_loc, "setGarrisonMilitaryMain", [_garMilMain]);
 		
-		// Add default units to the garrison
+		// Add default units to the garrison		
 		
 		// ==== Add infantry ====
 		private _addInfGroup = {
@@ -84,22 +85,22 @@ private _loc = objNull;
 			_capacity = _capacity - _nAdded;
 			_capacity
 		};
-		
+		/*
 		// Add sentry infantry groups
 		private _i = 0;
 		while {_cInf > 0 && _i < 3} do {
 			_cInf = [_garMilMain, T_GROUP_inf_sentry, _cInf] call _addInfGroup;			
 			_i = _i + 1;
 		};
-		
+		*/
 		// Add default infantry groups
 		private _i = 0;
-		while {_cInf > 0 && _i < 2} do {
+		while {_cInf > 0 && _i < 1} do {
 			_cInf = [_garMilMain, T_GROUP_inf_rifle_squad, _cInf] call _addInfGroup;			
 			_i = _i + 1;
 		};
 		
-		*/
+		
 		
 	};
 } forEach allMapMarkers;

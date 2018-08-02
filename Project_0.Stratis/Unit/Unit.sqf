@@ -225,6 +225,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                   G E T   M A I N   D A T A                        |
+	// ----------------------------------------------------------------------
+	
+	// Returns [_catID, _subcatID, _className] of this unit
+	METHOD("getMainData") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                    G E T   V E H I C L E   C R E W                 |
 	// ----------------------------------------------------------------------
 	// Returns the units assigned to this vehicle
@@ -232,7 +243,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
 		_data select UNIT_DATA_ID_VEHICLE_CREW
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   U N I T   K I L L E D             |

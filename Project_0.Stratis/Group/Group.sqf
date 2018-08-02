@@ -81,6 +81,16 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                         G E T   T Y P E                            |
+	// ----------------------------------------------------------------------
+	
+	METHOD("getType") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select GROUP_DATA_ID_TYPE
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                  G E T   G R O U P   H A N D L E                   |
 	// ----------------------------------------------------------------------
 	
@@ -166,7 +176,7 @@ CLASS(GROUP_CLASS_NAME, "")
 			private _catID = _x select 0;
 			private _subcatID = _x select 1;
 			private _classID = _x select 2;
-			private _args = [_template, _catID, _subcatID, _classID, _thisObject];
+			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
 			NEW("Unit", _args);
 		} forEach _groupData;
 		
