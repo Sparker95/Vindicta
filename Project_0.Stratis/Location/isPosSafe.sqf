@@ -61,11 +61,10 @@ private _t = ""; //type of object
 //diag_log format ["fn_isPosSafe: line intersections: %1", _o];
 while {_i < _c} do
 {
-	_t = typeOf (_o select _i);
+	private _obj = _o select _i;
 	//diag_log format ["type: %1", _t];
-	if ((_t isKindOf ["allVehicles", configFile >> "cfgVehicles"]) &&
-	    (!(_t isKindOf ["man", configFile >> "cfgVehicles"]))) exitWith
-    {
+	if ( (_obj isKindOf "allVehicles") &&
+	    (!(_obj isKindOf "Man")) ) exitWith {
     	_good = false;
     };
     _i = _i + 1;
@@ -93,8 +92,8 @@ _i = 0;
 _c = count _o;
 private _t = ""; //type of object
 while {_i < _c && _good} do {
-	_t = typeOf (_o select _i);
-	if (!(_t isKindOf ["man", configFile >> "allVehicles"])) then {
+	private _obj = _o select _i;
+	if (!(_obj isKindOf "Man")) then {
     	_good = false;
     };
     _i = _i + 1;

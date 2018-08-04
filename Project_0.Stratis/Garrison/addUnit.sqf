@@ -6,7 +6,7 @@ Adds an existing unit to this garrison
 #include "..\Message\Message.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 
-params[["_thisObject", "", [""]], ["_unit", [], [[]]] ];
+params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 
 // Check if the unit is already in a garrison
 private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
@@ -25,6 +25,3 @@ if (_unitGroup != "") exitWith {
 private _units = GET_VAR(_thisObject, "units");
 _units pushBack _unit;
 CALL_METHOD(_unit, "setGarrison", [_thisObject]);
-
-
-

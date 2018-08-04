@@ -21,6 +21,7 @@ CLASS("Location", "MessageReceiver")
 	VARIABLE("spawnPosTypes"); // Array with spawn positions types
 	VARIABLE("spawnState"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
+	VARIABLE("capacityInf"); // Infantry capacity
 	STATIC_VARIABLE("all");
 	
 	// ----------------------------------------------------------------------
@@ -54,6 +55,7 @@ CLASS("Location", "MessageReceiver")
 		SET_VAR(_thisObject, "pos", _pos);
 		SET_VAR(_thisObject, "spawnPosTypes", []);
 		SET_VAR(_thisObject, "spawnState", 0);
+		SET_VAR(_thisObject, "capacityInf", 0);
 		
 		// Create timer object
 		private _msg = MESSAGE_NEW();
@@ -86,6 +88,8 @@ CLASS("Location", "MessageReceiver")
 		SET_VAR(_thisObject, "borderPatrolWaypoints", nil);
 		SET_VAR(_thisObject, "pos", nil);
 		SET_VAR(_thisObject, "spawnPosTypes", nil);
+		SET_VAR(_thisObject, "capacityInf", nil);
+		
 		
 		// Remove the timer
 		private _timer = GET_VAR(_thisObject, "timer");
@@ -140,6 +144,12 @@ CLASS("Location", "MessageReceiver")
 	// Adds a spawn position
 	METHOD_FILE("addSpawnPos", "Location\addSpawnPos.sqf");
 	
+	// Adds multiple spawn positions from a building
+	METHOD_FILE("addSpawnPosFromBuilding", "Location\addSpawnposFromBuilding.sqf");
+	
+	// Calculates infantry capacity based on buildings at this location
+	METHOD_FILE("calculateInfantryCapacity", "Location\calculateInfantryCapacity.sqf");
+	
 	// Gets a spawn position to spawn some unit
 	METHOD_FILE("getSpawnPos", "Location\getSpawnPos.sqf");
 	
@@ -149,8 +159,13 @@ CLASS("Location", "MessageReceiver")
 	// Checks if given position is safe to spawn a vehicle here
 	STATIC_METHOD_FILE("isPosSafe", "Location\isPosSafe.sqf");
 	
+	
+	
 	// 
 	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
 ENDCLASS;
 
 SET_STATIC_VAR("Location", "all", []);
+
+// Initialize arrays with building types
+call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";

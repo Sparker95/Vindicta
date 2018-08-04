@@ -66,8 +66,13 @@ private _loc = objNull;
 		// Static HMG capacity
 		private _args = [T_PL_HMG_GMG_high, GROUP_TYPE_ALL];
 		private _cHMGGMG = CALL_METHOD(_loc, "getUnitCapacity", _args);
-		diag_log format ["[Location::createAllFromEditor] Info: Location: %1, infantry capacity: %2, ground vehicle capacity: %3, HMG and GMG capacity: %4",
-			_debugName, _cInf, _cVehGround, _cHMGGMG];
+		
+		// Building sentry capacity
+		private _args = [T_INF, [GROUP_TYPE_BUILDING_SENTRY]];
+		private _cBuildingSentry = CALL_METHOD(_loc, "getUnitCapacity", _args);
+		
+		diag_log format ["[Location::createAllFromEditor] Info: Location: %1, infantry capacity: %2, ground vehicle capacity: %3, HMG and GMG capacity: %4, building sentry capacity: %5",
+			_debugName, _cInf, _cVehGround, _cHMGGMG, _cBuildingSentry];
 		
 		// Add the main garrison to this location
 		private _garMilMain = NEW("Garrison", [_side]);
@@ -77,30 +82,107 @@ private _loc = objNull;
 		
 		// ==== Add infantry ====
 		private _addInfGroup = {
-			params ["_gar", "_subcatID", "_capacity"];
+			params ["_template", "_gar", "_subcatID", "_capacity"];
 			private _args = [_template, _subcatID];
+			private _side = CALL_METHOD(_gar, "getSide", []);
 			private _newGroup = NEW("Group", [_side]);
 			private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", _args);
 			CALL_METHOD(_gar, "addGroup", [_newGroup]);
 			_capacity = _capacity - _nAdded;
 			_capacity
 		};
-		/*
+		
+		// Adds a group with single vehicle and crew for it
+		private _addVehGroup = {
+			params ["_template", "_gar", "_catID", "_subcatID", "_classID"];
+			private _side = CALL_METHOD(_gar, "getSide", []);
+			private _newGroup = NEW("Group", [_side]);
+			private _args = [_template, _catID, _subcatID, -1, _newGroup]; // ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
+			private _newUnit = NEW("Unit", _args);
+			// Create crew for the vehicle
+			CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
+			// Add the group to the garrison
+			CALL_METHOD(_gar, "addGroup", [_newGroup]);			
+		};
+		
 		// Add sentry infantry groups
 		private _i = 0;
 		while {_cInf > 0 && _i < 3} do {
-			_cInf = [_garMilMain, T_GROUP_inf_sentry, _cInf] call _addInfGroup;			
+			_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf] call _addInfGroup;			
 			_i = _i + 1;
 		};
-		*/
+		
 		// Add default infantry groups
 		private _i = 0;
 		while {_cInf > 0 && _i < 1} do {
-			_cInf = [_garMilMain, T_GROUP_inf_rifle_squad, _cInf] call _addInfGroup;			
+			_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf] call _addInfGroup;			
 			_i = _i + 1;
 		};
 		
+		// Add building sentries
+		
+		private _args = [_side, GROUP_TYPE_BUILDING_SENTRY];
+		private _sentryGroup = NEW("Group", _args);
+		while {_cBuildingSentry > 0} do {
+			private _variants = [T_INF_marksman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_LMG];
+			private _args = [_template, 0, selectrandom _variants, -1, _sentryGroup];
+			private _newUnit = NEW("Unit", _args);
+			_cBuildingSentry = _cBuildingSentry - 1;
+		};
+		CALL_METHOD(_garMilMain, "addGroup", [_sentryGroup]);
 		
 		
+		// Add default vehicles
+		// Some trucks
+		private _i = 0;
+		while {_cVehGround > 0 && _i < 2} do {
+			private _args = [_template, T_VEH, T_VEH_truck_inf, -1, ""];
+			private _newUnit = NEW("Unit", _args);
+			if (CALL_METHOD(_newUnit, "isValid", [])) then {
+				CALL_METHOD(_garMilMain, "addUnit", [_newUnit]);
+				_cVehGround = _cVehGround - 1;
+			} else {
+				DELETE(_newUnit);
+			};
+			_i = _i + 1;
+		};
+		
+		// Some MRAPs
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_MRAP_HMG, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_MRAP_GMG, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		
+		// Some APCs and IFVs
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_APC, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_IFV, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		
+		// Some tanks
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_MBT, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		
+		// Static weapons
+		private _args = [_side, GROUP_TYPE_VEH_STATIC];
+		private _staticGroup = NEW("Group", _args);
+		while {_cHMGGMG > 0} do {
+			private _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high];
+			private _args = [_template, T_VEH, selectrandom _variants, -1, _staticGroup];
+			private _newUnit = NEW("Unit", _args);
+			CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
+			_cHMGGMG = _cHMGGMG - 1;
+		};
+		CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);		
 	};
 } forEach allMapMarkers;

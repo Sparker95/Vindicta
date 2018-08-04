@@ -62,19 +62,32 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 			//Find the first free spawn position
 			{
 				private _posArray = _x;
+				
+				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
+					diag_log format ["Checking position for HMG/GMG: %1 ...", _posArray];
+				};
+				
 				private _pos = _posArray select LOCATION_SP_ID_POS;
 				private _dir = _posArray select LOCATION_SP_ID_DIR;
 				// Check if given position is safe to spawn the unit here
 				private _args = [_pos, _dir, _className];
 				private _posFree = CALL_STATIC_METHOD("Location", "isPosSafe", _args);
 				if(_posFree) exitWith {
+					if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
+						diag_log "Position is free!";
+					};
+				
 					_posReturn = _pos;
 					_dirReturn = _dir;
 					_found = true;
 					private _nextFreePosID = _stCurrent select LOCATION_SPT_ID_COUNTER;
 					_stCurrent set [LOCATION_SPT_ID_COUNTER, _nextFreePosID + 1]; //Increment the counter, although it doesn't matter here
 				};
-			} forEach (_stCurrent select 1);
+				
+				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
+					diag_log "Position is occupied!";
+				};
+			} forEach (_stCurrent select LOCATION_SPT_ID_SPAWN_POS);
 		};
 		_i = _i + 1;
 	};
@@ -109,7 +122,7 @@ if(_found) then {//If the spawn position has been found
 	private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
 	private _locPos = GET_VAR(_thisObject, "pos");
 	_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
-	//diag_log format ["fn_getSpawnPosition.sqf: warning: spawn position not defined for this type or maximum amount was reached: %1. Returning default position.", [_catID, _subcatID, _groupType]];
+	diag_log format ["[Location::getSpawnPos] Warning: spawn position not for unit: %1. Returning default position.", [_catID, _subcatID, _groupType]];
 };
 
 _return

@@ -27,7 +27,7 @@ if (_unitTypes isEqualType 0) then {
 	
 	// Basic infantry capacity is not based on spawn positions but rather on buildings added to this location
 	if (_catID == T_INF && (GROUP_TYPE_IDLE in _groupTypes) || (GROUP_TYPE_PATROL in _groupTypes)) then {
-		_capacity = 10; //todo add buildings!
+		_capacity = GET_VAR(_thisObject, "capacityInf");
 	} else 	{
 		{
 			private _spt = _x;

@@ -34,7 +34,7 @@ CLASS(UNIT_CLASS_NAME, "")
 				_valid = true;
 			};
 		};
-		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []); };
+		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);  diag_log format ["[Unit::new] Error: created invalid unit: %1", _this] };
 		//Check group
 		if(_group == "" && _catID == T_INF) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 		
@@ -146,10 +146,15 @@ CLASS(UNIT_CLASS_NAME, "")
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
+					diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
+					
+					_objectHandle disableAI "PATH";
+					_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 				};
 				case T_VEH: {
+					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
 				};
 				case T_DRONE: {
 				};
@@ -227,7 +232,6 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                   G E T   M A I N   D A T A                        |
 	// ----------------------------------------------------------------------
-	
 	// Returns [_catID, _subcatID, _className] of this unit
 	METHOD("getMainData") {
 		params [["_thisObject", "", [""]]];
@@ -263,6 +267,9 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]]];
 		GET_VAR(_thisObject, "data")
 	} ENDMETHOD;
+	
+	// File based methods
+	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
 	
 ENDCLASS;
 

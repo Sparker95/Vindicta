@@ -38,7 +38,7 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "units", []);
 		SET_VAR(_thisObject, "groups", []);
 		SET_VAR(_thisObject, "spawned", false);
-		SET_VAR(_thisObject, "side", WEST);
+		SET_VAR(_thisObject, "side", _side);
 		SET_VAR(_thisObject, "debugName", "");
 	} ENDMETHOD;
 	

@@ -48,7 +48,11 @@ onMapSingleClick {call UI_fnc_onMapSingleClick;};
 #include "OOP_Light\OOP_Light.h"
 #include "Message\Message.hpp"
 
+diag_log "Init.sqf: Calling initModules...";
+
 call compile preprocessFileLineNumbers "initModules.sqf";
+
+diag_log "Init.sqf: Creating global objects...";
 
 // Init global objects
 // Main timer service
@@ -73,4 +77,8 @@ _msg set [MESSAGE_ID_TYPE, 666];
 private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 private _LUAPTimer = NEW("Timer", _args);
 
+diag_log "Init.sqf: Calling initWorld...";
+
 call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+
+diag_log "Init.sqf: Init done!";

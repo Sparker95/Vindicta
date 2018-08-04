@@ -68,6 +68,11 @@ private _bdir = 0; //Building direction
 			CALL_METHOD(_thisObject, "addSpawnPos", _args);
 			deleteVehicle _object;
 		};
+		
+		// Process buildings
+		if (_type isKindOf "House") then {
+			CALL_METHOD(_thisObject, "addSpawnPosFromBuilding", [_object]);
+		};
 
 		if(_type == "Flag_BI_F") then {
 			//Probably add support for the flag later
@@ -82,3 +87,5 @@ private _bdir = 0; //Building direction
 		};
 	};
 }forEach _no;
+
+CALL_METHOD(_thisObject, "calculateInfantryCapacity", []);
