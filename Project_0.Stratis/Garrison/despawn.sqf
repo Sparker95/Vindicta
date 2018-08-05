@@ -41,3 +41,9 @@ private _groups = GET_VAR(_thisObject, "groups");
 } forEach _groups;
 
 // Despawn single units
+{
+	private _unit = _x;
+	if (CALL_METHOD(_x, "getGroup", []) == "") then {
+		CALL_METHOD(_unit, "despawn", []);
+	};
+} forEach _units;

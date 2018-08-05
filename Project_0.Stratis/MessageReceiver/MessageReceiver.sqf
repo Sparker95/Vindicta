@@ -12,8 +12,16 @@ Author: Sparker
 
 CLASS("MessageReceiver", "")
 
-	METHOD("getMessageLoop") { //Derived classes must implement this method
+	METHOD("getMessageLoop") { //Derived classes must implement this method if they need to receive messages
 		""
+	} ENDMETHOD;
+	
+	// Delete method must be called by the thread(message loop) which owns this object
+	METHOD("delete") {
+		params [ ["_thisObject", "", [""]] ];
+		private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
+		// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
+		CALLM(_msgLoop, "deleteReceiverMessages", [_thisObject]);
 	} ENDMETHOD;
 	
 	/*

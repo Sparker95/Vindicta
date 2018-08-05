@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2281;
+		nextID=2283;
 	};
 	class MarkerIDProvider
 	{
@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={3000.2178,203.30907,1901.7375};
-		dir[]={-0.094847299,-0.75143641,-0.65300924};
-		up[]={-0.1080121,0.6597966,-0.74364644};
-		aside[]={-0.98965204,-3.8614962e-007,0.14374305};
+		pos[]={2990.7913,175.76599,1881.262};
+		dir[]={-0.0845998,-0.24595167,-0.96562731};
+		up[]={-0.021470563,0.96927112,-0.24506517};
+		aside[]={-0.99622411,-9.8138116e-008,0.087280169};
 	};
 };
 binarizationWanted=0;
@@ -49,14 +49,13 @@ addons[]=
 	"A3_Weapons_F_Ammoboxes",
 	"A3_Armor_F_Gamma_APC_Wheeled_03",
 	"A3_Soft_F_Beta_MRAP_03",
-	"A3_Modules_F_Curator_Curator",
-	"A3_Characters_F_Mark"
+	"A3_Modules_F_Curator_Curator"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=17;
+		items=16;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -166,13 +165,6 @@ class AddonsMetaData
 		{
 			className="A3_Modules_F_Curator";
 			name="Arma 3 Zeus Update - Scripted Modules";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
-		class Item16
-		{
-			className="A3_Characters_F_Mark";
-			name="Arma 3 Marksmen - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -2766,101 +2758,6 @@ class Mission
 		};
 		class Item128
 		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=1;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2985.5256,171.39462,1866.8505};
-						angles[]={0,3.0543263,0};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
-						init="call{[this] spawn" \n "{" \n "params [""_unit""];" \n "waitUntil {sleep 0.1; !(isNil ""sense_soundMonitorEast"")};" \n "[sense_soundMonitorEast, _unit] call sense_fnc_soundMonitor_addUnit;" \n "};}";
-						name="mainGuy";
-						isPlayer=1;
-					};
-					id=1962;
-					type="B_HeavyGunner_F";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="allowDamage";
-							expression="_this allowdamage _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"BOOL"
-										};
-									};
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male09ENG";
-								};
-							};
-						};
-						class Attribute2
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1;
-								};
-							};
-						};
-						nAttributes=3;
-					};
-				};
-			};
-			class Attributes
-			{
-				name="mainGroup";
-				formation="LINE";
-			};
-			id=1961;
-		};
-		class Item129
-		{
 			dataType="Object";
 			class PositionInfo
 			{
@@ -2900,7 +2797,7 @@ class Mission
 				nAttributes=1;
 			};
 		};
-		class Item130
+		class Item129
 		{
 			dataType="Object";
 			class PositionInfo
@@ -2984,7 +2881,7 @@ class Mission
 				nAttributes=1;
 			};
 		};
-		class Item131
+		class Item130
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3068,7 +2965,7 @@ class Mission
 				nAttributes=1;
 			};
 		};
-		class Item132
+		class Item131
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3085,7 +2982,7 @@ class Mission
 			type="B_MBT_01_arty_F";
 			atlOffset=-0.18900013;
 		};
-		class Item133
+		class Item132
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3101,7 +2998,7 @@ class Mission
 			id=2267;
 			type="Land_Campfire_F";
 		};
-		class Item134
+		class Item133
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3118,7 +3015,7 @@ class Mission
 			type="Land_Campfire_F";
 			atlOffset=-0.0038757324;
 		};
-		class Item135
+		class Item134
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3133,7 +3030,7 @@ class Mission
 			type="B_Mortar_01_F";
 			atlOffset=0.26724243;
 		};
-		class Item136
+		class Item135
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3149,6 +3046,37 @@ class Mission
 			id=2278;
 			type="B_Mortar_01_F";
 			atlOffset=-0.00091552734;
+		};
+		class Item136
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2990.1433,171.3549,1873.8085};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						isPlayer=1;
+					};
+					id=2282;
+					type="B_Survivor_F";
+					atlOffset=1.5258789e-005;
+				};
+			};
+			class Attributes
+			{
+			};
+			id=2281;
+			atlOffset=1.5258789e-005;
 		};
 	};
 	class Connections
