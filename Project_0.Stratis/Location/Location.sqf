@@ -7,6 +7,7 @@ Author: Sparker 28.07.2018
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "Location.hpp"
+#include "..\MessageTypes.hpp"
 
 CLASS("Location", "MessageReceiver")
 

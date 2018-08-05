@@ -1,6 +1,7 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "location.hpp"
+#include "..\MessageTypes.hpp"
 
 params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 

@@ -63,5 +63,30 @@ CLASS("TimerService", "")
 		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
 		_timers pushBackUnique _timerDereferenced;
 	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                      R E M O V E   T I M E R                       |
+	// ----------------------------------------------------------------------
+	// Removes timer from the timer array of this timer service
+	METHOD("removeTimer") {
+		params [["_thisObject", "", [""]], ["_timer", "", [""]]];
+		private _timers = GET_VAR(_thisObject, "timers");
+		private _timerDereferenced = CALL_METHOD(_timer, "getDataArray", []);
+		
+		// Lock the mutex. We don't want to manipulate the timer array while it's being accessed by TimerService thread function.
+		private _mutex = GETV(_thisObject, "mutex");
+		MUTEX_LOCK(_mutex);
+		
+		// Check if the timer exists in the array
+		private _index = _timers find _timerDereferenced;
+		if (_index == -1) exitWith { diag_log format ["[TimerService::removeTimer] Error: timer not found: %1", _timerDereferenced]; };
+		
+		// Such a timer has been found, delete it
+		_timers deleteAt _index;
+		//SETV(_thisObject, "timers", _timers);
+		
+		// Unlock the mutex
+		MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
 
 ENDCLASS;

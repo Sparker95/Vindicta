@@ -86,3 +86,12 @@ call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
 
 // Initialize LocationUnitArrayprovider class
 call compile preprocessFileLineNumbers "LocationUnitArrayProvider\LocationUnitArrayProvider.sqf";
+
+// Initialize Goal class
+call compile preprocessFileLineNumbers "Goal\Goal.sqf";
+
+// Initialize GoalComposite class
+call compile preprocessFileLineNumbers "GoalComposite\GoalComposite.sqf";
+
+// Initialize GoalCompositeSerial class
+call compile preprocessFileLineNumbers "GoalCompositeSerial\GoalCompositeSerial.sqf";

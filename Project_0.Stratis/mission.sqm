@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=52;
+		nextID=54;
 	};
 	class Camera
 	{
@@ -3131,7 +3131,7 @@ class Mission
 			};
 			id=2277;
 			type="B_Mortar_01_F";
-			atlOffset=0.2678833;
+			atlOffset=0.26724243;
 		};
 		class Item136
 		{
@@ -3148,6 +3148,7 @@ class Mission
 			};
 			id=2278;
 			type="B_Mortar_01_F";
+			atlOffset=-0.00091552734;
 		};
 	};
 	class Connections

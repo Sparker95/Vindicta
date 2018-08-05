@@ -77,6 +77,10 @@ _msg set [MESSAGE_ID_TYPE, 666];
 private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 private _LUAPTimer = NEW("Timer", _args);
 
+// Message loop for garrison goals
+gMessageLoopGarrisonGoals = NEW("MessageLoop", []);
+
+
 diag_log "Init.sqf: Calling initWorld...";
 
 call compile preprocessFileLineNumbers "Init\initWorld.sqf";

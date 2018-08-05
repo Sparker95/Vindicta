@@ -1,0 +1,5 @@
+// States of a goal
+#define GOAL_STATE_ACTIVE		0
+#define GOAL_STATE_INACTIVE		1
+#define GOAL_STATE_COMPLETED	2
+#define GOAL_STATE_FAILED		3

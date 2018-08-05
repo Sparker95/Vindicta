@@ -150,8 +150,8 @@ CLASS(UNIT_CLASS_NAME, "")
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 					
-					_objectHandle disableAI "PATH";
-					_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
+					//_objectHandle disableAI "PATH";
+					//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 				};
 				case T_VEH: {
 					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];

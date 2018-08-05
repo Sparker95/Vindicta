@@ -20,7 +20,3 @@
 #define LOCATION_SPT_ID_COUNTER		3
 
 #define LOCATION_SPT_DEFAULT [[], [], [], 0]
-
-
-// Messages
-#define LOCATION_MESSAGE_PROCESS 1

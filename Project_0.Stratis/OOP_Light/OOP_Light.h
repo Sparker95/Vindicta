@@ -117,6 +117,12 @@
 #define GET_VAR(a, b) GET_MEM(a, b)
 #define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
 
+// Shortened variants of macros
+#define SETV(a, b, c) SET_VAR(a, b, c)
+#define SETSV(a, b, c) SET_STATIC_VAR(a, b, c)
+#define GETV(a, b) GET_VAR(a, b)
+#define GETSV(a, b) GET_STATIC_V(a, b)
+
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
 // -----------------------------------------------------
@@ -126,6 +132,11 @@
 #define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
 #define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
 #define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (extraParams) call GET_METHOD(classNameStr, methodNameStr)
+
+// Shortened variants of macros
+#define CALLM(a, b, c) CALL_METHOD(a, b, c)
+#define CALLCM(a, b, c) CALL_CLASS_METHOD(a, b, c)
+#define CALLSM(a, b, c) CALL_STATIC_METHOD(a, b, c)
 
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |

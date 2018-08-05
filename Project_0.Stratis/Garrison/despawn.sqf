@@ -3,6 +3,8 @@ Despawns the whole garrison
 */
 
 #include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
 
 params [["_thisObject", "", [""]]];
 
@@ -13,6 +15,17 @@ if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't des
 
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
+
+// Delete the goal object
+private _goal = GETV(_thisObject, "goal");
+if (_goal != "") then {
+	private _msg = MESSAGE_NEW();
+	_msg set [MESSAGE_ID_DESTINATION, _goal];
+	_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_DELETE];
+	private _msgID = CALLM(_goal, "postMessage", [_msg]);
+	CALLM(_goal, "waitUntilMessageDone", [_msgID]);
+	SETV(_thisObject, "goal", "");
+};
 
 private _units = GET_VAR(_thisObject, "units");
 private _groups = GET_VAR(_thisObject, "groups");

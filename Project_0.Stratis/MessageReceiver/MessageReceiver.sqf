@@ -13,7 +13,7 @@ Author: Sparker
 CLASS("MessageReceiver", "")
 
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		"ERROR_NO_MESSAGE_LOOP"
+		""
 	} ENDMETHOD;
 	
 	/*
@@ -27,12 +27,14 @@ CLASS("MessageReceiver", "")
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		diag_log format ["[MessageReceiver] handleMessage: %1", _msg];
+		false // message not handled
 	} ENDMETHOD;
 	
 	// Posts a message into the MessageLoop of this object
 	METHOD("postMessage") {
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		private _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
+		if (_messageLoop == "") exitWith { diag_log format ["[MessageReceiver:postMessage] Error: %1 is not assigned to a message loop", _thisObject];};
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject]; //In case message sender forgot to set the destination
 		private _msgID = CALL_METHOD(_messageLoop, "postMessage", [_msg]);
 		//Return message ID value
