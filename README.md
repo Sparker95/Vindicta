@@ -9,7 +9,10 @@ It is a mission for ARMA III. The goal of this project is to make a guerrilla wa
 * Implement high level AI easier to control by player and more responsive to actions of enemy side.
 
 ## Current state of development
-Mainly done:
+Currently rewriting all the code with OOP-Light (https://github.com/Sparker95/OOP-Light) in the development-OOP branch.
+OOP should help produce manageable code and help implement complex event-driven systems needed for functioning of key components of the scenario.
+
+Mainly done in the old (non-OOP) code:
 * Basic generation of some types of locations (bases, outposts, etc.)
 * Garrison caching
 * Structure of AI command and some basic functions. AI controlled bases can respond to threats and provide help to other bases.
