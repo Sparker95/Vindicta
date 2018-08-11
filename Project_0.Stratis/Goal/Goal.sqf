@@ -86,7 +86,7 @@ CLASS("Goal", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("setAutonomous") {
-		params [["_thisObject", "", [""]], ["_timerPeriod", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_timerPeriod", 1, [1]] ];
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
 		_msg set [MESSAGE_ID_SOURCE, ""];

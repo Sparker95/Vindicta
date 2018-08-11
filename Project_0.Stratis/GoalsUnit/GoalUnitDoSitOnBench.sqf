@@ -17,11 +17,11 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_entity", "", [""]], ["_bench", [], [[]]], ["_sitDuration", 0, [0]], ["_pointID", 0, [0]]];
-		SETV(_thisObject, "destPos", _destPos);
+		params [["_thisObject", "", [""]], ["_entity", "", [""]], ["_bench", "", [""]], ["_sitDuration", 0, [0]], ["_pointID", 0, [0]]];
+		SETV(_thisObject, "bench", _bench);
 		SETV(_thisObject, "pointID", _pointID);
 		SETV(_thisObject, "sitDuration", _sitDuration);
-		SETV(_thisObject, "timeCompleted", [time + _sitDuration]);
+		SETV(_thisObject, "timeCompleted", (time + _sitDuration));
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -75,9 +75,12 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 		CALLM(_thisObject, "activateIfInactive", []);		
 		
 		// Check if we have been sitting enough
-		private _timeCompleted = GETV(_thisObject, "timeCOmpleted");
+		private _timeCompleted = GETV(_thisObject, "timeCompleted");
 		if (time > _timeCompleted) then {
 			SETV(_thisObject, "state", GOAL_STATE_COMPLETED);
+			GOAL_STATE_COMPLETED
+		} else {
+			GOAL_STATE_FAILED
 		};
 	} ENDMETHOD;
 	
@@ -87,9 +90,15 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
-		if (CALLM(_thisObject, "isActive", [])) then {
-			// Get back on your fit!
-			
+		private _state = GETV(_thisObject, "state");
+		if (_state == GOAL_STATE_ACTIVE || _state == GOAL_STATE_COMPLETED) then {
+			// Get back on your feet!
+			private _entity = GETV(_thisObject, "entity");
+			CALLM(_entity, "doGetUpFromBench", []);
+			// Move forward a little
+			private _unitObject = CALLM(_entity, "getObjectHandle", []);
+			private _posMoveTo = _unitObject getPos [2.5, direction _unitObject];
+			CALLM(_entity, "doMoveInf", [_posMoveTo]);
 		};
 	} ENDMETHOD;
 

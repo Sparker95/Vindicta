@@ -5,10 +5,11 @@ Makes this unit sit on bench
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Unit\Unit.hpp"
 
-params [["_thisObject", "", [""]], ["_bench", [], [[]]], ["_pointID", 0, [0]] ];
+params [["_thisObject", "", [""]], ["_bench", "", [""]], ["_pointID", 0, [0]] ];
 
 // Get information about this point
-private _pointData = CALLM(_bench, "getPointData", [_pointID]);
+private _args = [_thisObject, _pointID];
+private _pointData = CALLM(_bench, "getPointData", _args);
 if (count _pointData > 0) then {
 	// Get variables
 	_pointData params ["_offset", "_animation", "_dir"];
@@ -17,10 +18,11 @@ if (count _pointData > 0) then {
 	private _benchObject = CALLM(_bench, "getObject", []);
 	
 	// Perform actions
-	_unitObject switchMove _animation; 
-	_unitObject attachTo [_benchObject, _offset]; 
+	_unitObject disableCollisionWith _benchObject;
+	_unitObject attachTo [_benchObject, _offset];
 	detach _unitObject;
 	_unitObject setDir _dir; 
+	_unitObject switchMove _animation;
 	_unitObject disableAI "MOVE";
 	
 	true // Sit successfull

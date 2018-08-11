@@ -45,7 +45,8 @@ CLASS("GoalComposite", "Goal")
 	METHOD("addSubgoal") {
 		params [["_thisObject", "", [""]], ["_subgoal", "", [""]] ];
 		private _subgoals = GETV(_thisObject, "subgoals");
-		private _newSubgoals = [_subgoal] append _subgoals;
+		private _newSubgoals = [_subgoal];
+		_newSubgoals append _subgoals;
 		SETV(_thisObject, "subgoals", _newSubgoals);
 	} ENDMETHOD;
 	

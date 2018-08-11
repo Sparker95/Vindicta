@@ -219,6 +219,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                        G E T   O B J E C T   H A N D L E           |
+	// ----------------------------------------------------------------------
+	
+	// Returns the group of this unit
+	METHOD("getObjectHandle") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_OBJECT_HANDLE
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                        G E T   G R O U P                           |
 	// ----------------------------------------------------------------------
 	
@@ -273,6 +284,7 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
 	METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
 	METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
+	METHOD_FILE("doGetUpFromBench", "Unit\doGetUpFromBench.sqf");
 	METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
 	
 ENDCLASS;

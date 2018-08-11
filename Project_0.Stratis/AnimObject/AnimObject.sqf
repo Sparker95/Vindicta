@@ -51,13 +51,13 @@ CLASS("AnimObject", "MessageReceiver")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                     G E T   F R E E   P O I N T                    |
-	// |                                                                    |
-	// |  Returns ID and position(int world space) of a free point at this  |
-	// | object. If there is no free position, [] is returned               |
+	// |                     G E T   F R E E   P O I N T                    
+	// |                                                                    
+	// |  Returns ID and position(in world space) where the bot must move to play the animation of a free point at this
+	// | object. If there is no free position, [] is returned               
 	// ----------------------------------------------------------------------
 	METHOD("getFreePoint") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		params [ ["_thisObject", "", [""]] ];
 		private _units = GETV(_thisObject, "units");
 		private _pointCountM1 = GETV(_thisObject, "pointCount") - 1;
 		private _freePointIDs = [];
@@ -74,12 +74,25 @@ CLASS("AnimObject", "MessageReceiver")
 		
 		// Return point coordinates
 		private _object = GETV(_thisObject, "object");
-		private _points = GETV(_thisObject, "points");
-		private _pointOffset = _points select _pointID;
-		private _posWorld = _object modelToWorld _pointOffset;
+		private _movePosOffset = CALLM(_thisObject, "getPointMovePosOffset", [_pointID]);
+		private _posWorld = _object modelToWorld _movePosOffset;
 		private _return = [_pointID, _posWorld];
 		
 		_return
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
+	// |                                                                    
+	// |  Internal function to get the position where the unit must move to
+	// | before actually playing the animation. Inherited classes must implement this!
+	// ----------------------------------------------------------------------
+	
+	METHOD("getPointMovePosOffset") {
+		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
+		private _points = GETV(_thisObject, "points");
+		private _pointOffset = _points select _pointID;
+		_pointOffset
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

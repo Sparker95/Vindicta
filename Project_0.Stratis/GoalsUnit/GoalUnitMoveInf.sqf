@@ -36,14 +36,14 @@ CLASS("GoalUnitMoveInf", "Goal")
 		private _entity = GETV(_thisObject, "entity");
 		private _destPos = GETV(_thisObject, "destPos");
 		CALLM(_entity, "doMoveInf", [_destPos]);
-		SETV(_entity, "state", GOAL_STATE_ACTIVE);
+		SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                          P R O C E S S                             |
 	// ----------------------------------------------------------------------
 
-	METHOD("process") {
+	METHOD("process") {			
 		params [["_thisObject", "", [""]]];
 		CALLM(_thisObject, "activateIfInactive", []);		
 		
@@ -52,11 +52,15 @@ CLASS("GoalUnitMoveInf", "Goal")
 		// Check if we have arrived
 		private _entity = GETV(_thisObject, "entity");
 		private _destPos = GETV(_thisObject, "destPos");
-		private _distance = CALLM(_entity, "distance", _destPos);
-		if (_distance < 1) then { // Are we there yet???
+		private _distance = CALLM(_entity, "distance", [_destPos]);
+		if (_distance < 2.2) then { // Are we there yet???
 			// We have arrived!
 			SETV(_thisObject, "state", GOAL_STATE_COMPLETED);
 			//CALLM(_thisObject, "terminate", []);
+			
+			GOAL_STATE_COMPLETED // return
+		} else {
+			GOAL_STATE_ACTIVE
 		};
 	} ENDMETHOD;
 	

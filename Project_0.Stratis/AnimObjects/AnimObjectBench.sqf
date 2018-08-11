@@ -6,6 +6,8 @@ A bench where a unit can sit at
 
 CLASS("AnimObjectBench", "AnimObject")
 	
+	STATIC_VARIABLE("animations");
+	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -13,7 +15,7 @@ CLASS("AnimObjectBench", "AnimObject")
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
-		private _args = [[0.7, 0.08, -0.5], [-0.7, 0.08, -0.5]];
+		private _args = [[0.5, -0.08, -1], [-0.5, -0.08, -1]];
 		SETV(_thisObject, "points", _args);
 		
 		private _args = ["", ""];
@@ -21,8 +23,8 @@ CLASS("AnimObjectBench", "AnimObject")
 		
 		SETV(_thisObject, "pointCount", 2);
 		
-		private _args = ["HubSittingChairB_move1"];
-		SETV(_thisObject, "animations", _args);
+		private _animations = GET_STATIC_VAR("AnimObjectBench", "animations");
+		SETV(_thisObject, "animations", _animations);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -40,4 +42,28 @@ CLASS("AnimObjectBench", "AnimObject")
 		[_points select _pointID, selectRandom _animations, _dir]
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
+	// |                                                                    
+	// |  Internal function to get the position where the unit must move to
+	// | before actually playing the animation. Inherited classes must implement this!
+	// ----------------------------------------------------------------------
+	
+	METHOD("getPointMovePosOffset") {
+		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
+		private _points = GETV(_thisObject, "points");
+		private _pointOffset = _points select _pointID;
+		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0];
+		_pointMoveOffset
+	} ENDMETHOD;
+	
 ENDCLASS;
+
+private _animations = ["HubSittingChairA_idle1", "HubSittingChairA_idle2", "HubSittingChairA_idle3",
+						 "HubSittingChairA_move1",
+						 "HubSittingChairB_idle1", "HubSittingChairB_idle2", "HubSittingChairB_idle3",
+						 "HubSittingChairB_move1",
+						 "HubSittingChairC_idle1", "HubSittingChairC_idle2", "HubSittingChairC_idle3",
+						 "InBaseMoves_SittingRifle1", "InBaseMoves_SittingRifle2"
+						 ];
+SET_STATIC_VAR("AnimObjectBench", "animations", _animations);

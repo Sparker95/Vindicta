@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.08726646;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=610;
+	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2289;
+		nextID=2296;
 	};
 	class MarkerIDProvider
 	{
@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={2417.0952,11.468052,1137.4364};
-		dir[]={0.76457626,-0.63011819,0.13647699};
-		up[]={0.62040931,0.77644122,0.11074393};
-		aside[]={0.17574218,3.8836151e-007,-0.98456001};
+		pos[]={2407.6504,24.521276,1128.6194};
+		dir[]={0.59607816,-0.73183078,0.33049151};
+		up[]={0.64002728,0.68150109,0.35485825};
+		aside[]={0.48491856,1.9773142e-006,-0.87461245};
 	};
 };
 binarizationWanted=0;
@@ -239,8 +239,8 @@ class Mission
 		forecastLightnings=0.1;
 		year=2035;
 		day=28;
-		hour=13;
-		minute=37;
+		hour=19;
+		minute=-26;
 		startFogDecay=0.014;
 		forecastFogDecay=0.014;
 	};
@@ -3067,7 +3067,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2422.0095,2.8216593,1138.576};
+						position[]={2419.7109,2.1940851,1128.4038};
 						angles[]={0,1.3962634,0};
 					};
 					side="West";
@@ -3078,12 +3078,14 @@ class Mission
 					};
 					id=2282;
 					type="B_Survivor_F";
+					atlOffset=1.3828278e-005;
 				};
 			};
 			class Attributes
 			{
 			};
 			id=2281;
+			atlOffset=1.3828278e-005;
 		};
 		class Item137
 		{
@@ -3091,6 +3093,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={2423.0701,3.7151933,1144.35};
+				angles[]={0,2.146755,0};
 			};
 			side="Empty";
 			flags=5;
@@ -3248,6 +3251,7 @@ class Mission
 			};
 			id=2286;
 			type="Land_Bench_01_F";
+			atlOffset=2.3841858e-007;
 		};
 	};
 	class Connections
