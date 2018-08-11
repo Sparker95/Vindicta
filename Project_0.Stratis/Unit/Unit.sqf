@@ -270,6 +270,10 @@ CLASS(UNIT_CLASS_NAME, "")
 	
 	// File based methods
 	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
+	METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
+	METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
+	METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
+	METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
 	
 ENDCLASS;
 

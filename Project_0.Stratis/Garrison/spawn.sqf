@@ -45,7 +45,7 @@ private _loc = GET_VAR(_thisObject, "location");
 } forEach _units;
 
 // Create a goal object for this garrison
-private _args = [gMessageLoopGarrisonGoals, _thisObject, true]; // entity, autonomous
+private _args = [_thisObject]; // entity
 private _newGoal = NEW("GoalComposite", _args);
-// CALLM(_newGoal, "setMessageLoop", [gMessageLoopGarrisonGoals]); // Set message loop of this garrison because it must receive timer messages
+CALLM(_newGoal, "setAutonomous", [3]); // timer interval
 SETV(_thisObject, "goal", _newGoal);

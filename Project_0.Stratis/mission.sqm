@@ -5,10 +5,10 @@ class EditorData
 	angleGridStep=0.08726646;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=609;
+	toggles=610;
 	class ItemIDProvider
 	{
-		nextID=2283;
+		nextID=2289;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=54;
+		nextID=55;
 	};
 	class Camera
 	{
-		pos[]={2990.7913,175.76599,1881.262};
-		dir[]={-0.0845998,-0.24595167,-0.96562731};
-		up[]={-0.021470563,0.96927112,-0.24506517};
-		aside[]={-0.99622411,-9.8138116e-008,0.087280169};
+		pos[]={2417.0952,11.468052,1137.4364};
+		dir[]={0.76457626,-0.63011819,0.13647699};
+		up[]={0.62040931,0.77644122,0.11074393};
+		aside[]={0.17574218,3.8836151e-007,-0.98456001};
 	};
 };
 binarizationWanted=0;
@@ -49,13 +49,14 @@ addons[]=
 	"A3_Weapons_F_Ammoboxes",
 	"A3_Armor_F_Gamma_APC_Wheeled_03",
 	"A3_Soft_F_Beta_MRAP_03",
-	"A3_Modules_F_Curator_Curator"
+	"A3_Modules_F_Curator_Curator",
+	"A3_Structures_F_EPC_Civ_Accessories"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=16;
+		items=17;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -168,6 +169,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item16
+		{
+			className="A3_Structures_F_EPC";
+			name="Arma 3 Win Episode - Buildings and Structures";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 class DynamicSimulation
@@ -238,7 +246,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=137;
+		items=140;
 		class Item0
 		{
 			dataType="Object";
@@ -3059,7 +3067,8 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2990.1433,171.3549,1873.8085};
+						position[]={2422.0095,2.8216593,1138.576};
+						angles[]={0,1.3962634,0};
 					};
 					side="West";
 					flags=7;
@@ -3069,14 +3078,176 @@ class Mission
 					};
 					id=2282;
 					type="B_Survivor_F";
-					atlOffset=1.5258789e-005;
 				};
 			};
 			class Attributes
 			{
 			};
 			id=2281;
-			atlOffset=1.5258789e-005;
+		};
+		class Item137
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2423.0701,3.7151933,1144.35};
+			};
+			side="Empty";
+			flags=5;
+			class Attributes
+			{
+				name="bench_0";
+			};
+			id=2283;
+			type="Land_Bench_01_F";
+		};
+		class Item138
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=2;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2436.333,3.0245149,1141.4541};
+						angles[]={0,3.4906588,0};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						name="guy_0";
+					};
+					id=2285;
+					type="B_soldier_M_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male05ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.01;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2432.363,2.9718924,1140.828};
+						angles[]={0,3.0543261,0};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						name="guy_1";
+					};
+					id=2288;
+					type="B_recon_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male01ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.02;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+			};
+			class Attributes
+			{
+			};
+			id=2284;
+		};
+		class Item139
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2432.8049,3.9828024,1111.98};
+				angles[]={0,1.3962634,0};
+			};
+			side="Empty";
+			flags=5;
+			class Attributes
+			{
+				name="bench_1";
+			};
+			id=2286;
+			type="Land_Bench_01_F";
 		};
 	};
 	class Connections

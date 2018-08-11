@@ -1,0 +1,1 @@
+call compile preprocessFileLineNumbers "AnimObjects\AnimObjectBench.sqf";

@@ -36,8 +36,8 @@ CLASS("Garrison", "MessageReceiverEx")
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		
 		// Check existance of neccessary global objects
-		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global main message loop doesn't exist!";};
-		if (isNil "gMessageLoopGarrisonGoals") exitWith { diag_log "[MessageLoop] Error: global garrison goal message loop doesn't exist!"; };
+		if (isNil "gMessageLoopMain") exitWith {"[Garrison] Error: global main message loop doesn't exist!";};
+		if (isNil "gMessageLoopGoal") exitWith { diag_log "[Garrison] Error: global garrison goal message loop doesn't exist!"; };
 		
 		SET_VAR(_thisObject, "units", []);
 		SET_VAR(_thisObject, "groups", []);

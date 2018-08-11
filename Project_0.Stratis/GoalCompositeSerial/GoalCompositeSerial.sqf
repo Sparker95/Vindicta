@@ -42,7 +42,7 @@ CLASS("GoalCompositeSerial", "GoalComposite")
 			_subgoals deleteAt 0;
 		};
 		
-		//if any subgoals remain, process the one at the front of the list
+		// if any subgoals remain, process the one at the front of the list
 		private _statusOfSubgoals = GOAL_STATE_COMPLETED; // If there will be no subgoals to process, return COMPLETED
 		if (count _subgoals > 0) then {
 			private _subgoalFront = _subgoals select 0;

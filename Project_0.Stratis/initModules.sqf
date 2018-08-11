@@ -95,3 +95,14 @@ call compile preprocessFileLineNumbers "GoalComposite\GoalComposite.sqf";
 
 // Initialize GoalCompositeSerial class
 call compile preprocessFileLineNumbers "GoalCompositeSerial\GoalCompositeSerial.sqf";
+
+// Initialize Goal inherited classes
+call compile preprocessFileLineNumbers "GoalsGarrison\initClasses.sqf";
+call compile preprocessFileLineNumbers "GoalsGroup\initClasses.sqf";
+call compile preprocessFileLineNumbers "GoalsUnit\initClasses.sqf";
+
+// Initialize AnimObject class
+call compile preprocessFileLineNumbers "AnimObject\AnimObject.sqf";
+
+// Initialize AnimObject inherited classes
+call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";

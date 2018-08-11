@@ -11,12 +11,14 @@
 #define UNIT_DATA_ID_MUTEX			7
 #define UNIT_DATA_ID_VEHICLE_ROLE	8
 #define UNIT_DATA_ID_VEHICLE_CREW	9
-#define UNIT_DATA_ID_VEHICLE		10 // Vehicle assigned to this unit
+// Vehicle assigned to this unit
+#define UNIT_DATA_ID_VEHICLE		10
+#define UNIT_DATA_ID_GOAL			11
 
-#define UNIT_DATA_SIZE				11
+#define UNIT_DATA_SIZE				12
 
-//								 0, 1,  2,       3,  4, 5,  6,  7, 8,		    9, 10
-#define UNIT_DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", [], UNIT_VR_DEFAULT, [], ""]
+//								 0, 1,  2,       3,  4, 5,  6,  7,               8,	9, 10, 11
+#define UNIT_DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", [], UNIT_VR_DEFAULT, 0, "", ""]
 
 //Class name of Unit class, in case I need to rename it everywhere
 #define UNIT_CLASS_NAME "Unit"

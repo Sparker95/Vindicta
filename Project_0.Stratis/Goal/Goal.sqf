@@ -29,27 +29,16 @@ CLASS("Goal", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_msgLoop", "", [""]], ["_entity", "", [""]], ["_autonomous", false, [false]]];
+		params [["_thisObject", "", [""]], ["_entity", "", [""]] ];
 		
 		if (isNil "gTimerServiceMain") exitWith { diag_log "[Goal::new] Error: main timer service doesnt't exist!"; };
+		if (isNil "gMessageLoopGoal") exitWith { diag_log "[Goal::new] Error: global goal message loop doesn't exist!"; };
 		
 		SET_VAR(_thisObject, "entity", _entity);
 		SET_VAR(_thisObject, "state", GOAL_STATE_INACTIVE); // Default state
-		SETV(_thisObject, "msgLoop", _msgLoop);
+		SETV(_thisObject, "msgLoop", gMessageLoopGoal);
 		
-		// If the goal is autonomous, create a timer for it
-		if (_autonomous) then {
-			private _msg = MESSAGE_NEW();
-			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
-			_msg set [MESSAGE_ID_SOURCE, ""];
-			_msg set [MESSAGE_ID_DATA, 0];
-			_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_PROCESS];
-			private _args = [_thisObject, 3, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
-			private _timer = NEW("Timer", _args);
-			SETV(_thisObject, "timer", _timer);
-		} else {
-			SETV(_thisObject, "timer", ""); // No timer for this goal!
-		};
+		SETV(_thisObject, "timer", ""); // No timer for this goal until it has been made autonomous
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -83,12 +72,30 @@ CLASS("Goal", "MessageReceiver")
 	// | Sets the message loop for this goal                                |
 	// ----------------------------------------------------------------------
 	
-	/* // Don't think I need it now anyway
 	METHOD("setMessageLoop") {
 		params [["_thisObject", "", [""]], ["_msgLoop", "", [""]] ];
 		SETV(_thisObject, "msgLoop", _msgLoop);
 	} ENDMETHOD;
-	*/
+	
+	// ----------------------------------------------------------------------
+	// |                   S E T   A U T O N O M O U S                      |
+	// |                                                                    |
+	// |  Sets the goal to autonomous mode                                  |
+	// |  Autonomous goals have a timer which generate a message to call    |
+	// | the goal's process method                                          |
+	// ----------------------------------------------------------------------
+	
+	METHOD("setAutonomous") {
+		params [["_thisObject", "", [""]], ["_timerPeriod", "", [""]] ];
+		private _msg = MESSAGE_NEW();
+		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+		_msg set [MESSAGE_ID_SOURCE, ""];
+		_msg set [MESSAGE_ID_DATA, 0];
+		_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_PROCESS];
+		private _args = [_thisObject, _timerPeriod, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+		private _timer = NEW("Timer", _args);
+		SETV(_thisObject, "timer", _timer);
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                      H A N D L E   M E S S A G E                   |

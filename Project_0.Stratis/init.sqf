@@ -78,11 +78,11 @@ private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interv
 private _LUAPTimer = NEW("Timer", _args);
 
 // Message loop for garrison goals
-gMessageLoopGarrisonGoals = NEW("MessageLoop", []);
+gMessageLoopGoal = NEW("MessageLoop", []);
 
 
 diag_log "Init.sqf: Calling initWorld...";
 
-call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+//call compile preprocessFileLineNumbers "Init\initWorld.sqf";
 
 diag_log "Init.sqf: Init done!";
