@@ -108,7 +108,7 @@ CLASS("Goal", "MessageReceiver")
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		private _msgType = _msg select MESSAGE_ID_TYPE;
 		if (_msgType == GOAL_MESSAGE_PROCESS) exitWith {
-			diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
+			//diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
 			CALLM(_thisObject, "process", []);
 			true // message handled
 		};
@@ -129,8 +129,9 @@ CLASS("Goal", "MessageReceiver")
 		params [["_thisObject", "", [""]]];
 		private _state = GETV(_thisObject, "state");
 		if (_state == GOAL_STATE_INACTIVE) then {
-			CALLM(_thisObject, "activate", []);
+			_state = CALLM(_thisObject, "activate", []);
 		};
+		_state
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -163,6 +164,8 @@ CLASS("Goal", "MessageReceiver")
 	// hierarchy.
 	/* virtual */ METHOD("addSubgoal") { diag_log "[Goal::addSubgoal] Error: can't add a subgoal to an atomic goal!"; } ENDMETHOD;
 	
+	// Returns the list of subgoals (for debug purposes)
+	/* virtual */ METHOD("getSubgoals") { [] } ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                         S T A T E   C H E C K S                    |

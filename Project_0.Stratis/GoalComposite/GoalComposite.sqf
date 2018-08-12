@@ -51,6 +51,16 @@ CLASS("GoalComposite", "Goal")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                          G E T   S U B G O A L S                   |
+	// |                                                                    
+	// | Returns the list of subgoals (for debug purposes)
+	// ----------------------------------------------------------------------
+	METHOD("getSubgoals") {
+		params [["_thisObject", "", [""]]];
+		GETV(_thisObject, "subgoals")
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                   D E L E T E   A L L   S U B G O A L S            |
 	// ----------------------------------------------------------------------
 	

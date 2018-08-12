@@ -16,7 +16,7 @@ Author: Sparker 10.08.2018
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 
-CLASS("AnimObject", "MessageReceiver")
+CLASS("AnimObject", "")
 
 	VARIABLE("object"); // Object the AnimObject is attached to
 	
@@ -70,7 +70,7 @@ CLASS("AnimObject", "MessageReceiver")
 		if (count _freePointIDs == 0) exitWith { [] };
 		
 		// Select a random point
-		private _pointID = selectRandom _freePointIDs;
+		private _pointID = _freePointIDs select 0; //selectRandom _freePointIDs;
 		
 		// Return point coordinates
 		private _object = GETV(_thisObject, "object");
@@ -128,7 +128,8 @@ CLASS("AnimObject", "MessageReceiver")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |          G E T   P O I N T   D A T A  I N T E R N A L              
+	// |          G E T   P O I N T   D A T A  I N T E R N A L 
+	// |             
 	// | Internal function which is called by getPointData and returns the point data.
 	// | Inherited classes must implement this.
 	// ----------------------------------------------------------------------
@@ -140,27 +141,19 @@ CLASS("AnimObject", "MessageReceiver")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                 H A N D L E   M E S S A G E                        |
-	// |                                                                    |
-	// | Call this method from the handleMessage of inherited classes       |
+	// |                 P O I N T   I S   F R E E                          
+	// |                                                                    
+	// | Notifies the AnimObject that the position is now not occupied any more
 	// ----------------------------------------------------------------------
-	METHOD("handleMessage") {
-		params [["_thisObject", "", [""]], ["_msg", [], [[]]] ];
-		private _msgType = _msg select MESSAGE_ID_TYPE;
-		if (_msgType == ANIM_OBJECT_MESSAGE_POS_FREE) then {
-			private _unit = _msg select MESSAGE_ID_SOURCE; // The unit that has sent the message
-			private _units = GETV(_thisObject, "units");
-			private _unitID = _units find _unit;
-			if (_unitID != -1) then { // If the object has been found
-				_units set [_unitID, ""];
-			};
-			true // message handled
-		} else {
-			false // message not handled
-		};
+	METHOD("pointIsFree") {
+		params [["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
+		private _units = GETV(_thisObject, "units");
+		_units set [_pointID, ""];
 	} ENDMETHOD;
 	
-	// Get object
+	// ----------------------------------------------------------------------------
+	// |                    G E T   O B J E C T
+	// ----------------------------------------------------------------------------
 	METHOD("getObject") {
 		params [["_thisObject", "", [""]] ];
 		GETV(_thisObject, "object")

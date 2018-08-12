@@ -56,9 +56,11 @@ CLASS("GoalUnitSitOnBench", "GoalCompositeSerial")
 			CALLM(_thisObject, "addSubgoal", [_goalMove]);
 			
 			SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
+			GOAL_STATE_ACTIVE
 		} else {
 			// The bench is already occupied!
 			SETV(_thisObject, "state", GOAL_STATE_FAILED);
+			GOAL_STATE_FAILED
 		};		
 	} ENDMETHOD;
 	

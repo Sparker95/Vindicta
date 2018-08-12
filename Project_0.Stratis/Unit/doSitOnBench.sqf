@@ -4,6 +4,8 @@ Makes this unit sit on bench
 
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Unit\Unit.hpp"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
 
 params [["_thisObject", "", [""]], ["_bench", "", [""]], ["_pointID", 0, [0]] ];
 
@@ -14,38 +16,38 @@ if (count _pointData > 0) then {
 	// Get variables
 	_pointData params ["_offset", "_animation", "_dir"];
 	private _data = GETV(_thisObject, "data");
-	private _unitObject = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+	private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 	private _benchObject = CALLM(_bench, "getObject", []);
 	
 	// Perform actions
-	_unitObject disableCollisionWith _benchObject;
-	_unitObject attachTo [_benchObject, _offset];
-	detach _unitObject;
-	_unitObject setDir _dir; 
-	_unitObject switchMove _animation;
-	_unitObject disableAI "MOVE";
+	_objectHandle disableCollisionWith _benchObject;
+	_objectHandle attachTo [_benchObject, _offset];
+	detach _objectHandle;
+	_objectHandle setDir _dir; 
+	_objectHandle switchMove _animation;
+	_objectHandle disableAI "MOVE";
+	_objectHandle disableAI "ANIM";
+	
+	// Spawn a script to make the unit jump on his feet quickly
+	private _hScript = [_thisObject, _objectHandle, _bench, _pointID] spawn { 
+		params ["_unit", "_objectHandle", "_bench", "_pointID"];
+		waitUntil {sleep 0.05; (behaviour _objectHandle) == "COMBAT" || (!alive _objectHandle) };
+		
+		// Are you still OK?		
+		if (alive _objectHandle) then { CALLM(_unit, "doGetUpFromBench", []); };		
+		
+		// Send a message to the goal of this unit
+		private _data = GETV(_unit, "data");
+		private _goal = _data select UNIT_DATA_ID_GOAL;
+		private _msg = MESSAGE_NEW();
+		_msg set [MESSAGE_ID_DESTINATION, _goal];
+		_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_ANIMATION_INTERRUPTED];
+		CALLM(_goal, "postMessage", [_msg]);
+	 };
+	
+	_objectHandle setVariable ["unit_hScriptBench", _hScript];
 	
 	true // Sit successfull
 } else {
 	false // Failed to sit here
 };
-
-/*
-private _unit = guy;   
-private _bench = bench_0; 
-private _newDir = ( (getDir _bench) + 180 );    
-_unit switchMove "HubSittingChairB_move1";
-private _offset = [0.7, 0.08, -0.5];  
-_unit attachTo [_bench, _offset]; 
-detach _unit;
-_unit setDir _newDir; 
-_unit disableAI "MOVE";  
-  
-[_unit, _newDir] spawn { 
-	params ["_unit", "_newDir"];  
-	waitUntil {(behaviour _unit) == "COMBAT" || (!alive _unit) };
-	_unit enableAI "ALL"; 
-	_unit setDir _newDir;  
-	_unit switchMove "AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow"; // Jump back on your feet!
- };
-*/

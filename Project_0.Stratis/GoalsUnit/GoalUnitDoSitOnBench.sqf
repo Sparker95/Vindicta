@@ -57,12 +57,15 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 				SETV(_thisObject, "timeCompleted", (time + _sitDuration));
 			
 				SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
+				GOAL_STATE_ACTIVE
 			} else {
 				SETV(_thisObject, "state", GOAL_STATE_FAILED);
+				GOAL_STATE_FAILED
 			};
 		} else {
 			// Someone has occupied the desired sit point!
 			SETV(_thisObject, "state", GOAL_STATE_FAILED);
+			GOAL_STATE_FAILED
 		};
 	} ENDMETHOD;
 	
@@ -72,16 +75,21 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		CALLM(_thisObject, "activateIfInactive", []);		
+		private _state = CALLM(_thisObject, "activateIfInactive", []);		
 		
-		// Check if we have been sitting enough
-		private _timeCompleted = GETV(_thisObject, "timeCompleted");
-		if (time > _timeCompleted) then {
-			SETV(_thisObject, "state", GOAL_STATE_COMPLETED);
-			GOAL_STATE_COMPLETED
-		} else {
-			GOAL_STATE_FAILED
+		if (_state != GOAL_STATE_FAILED) then {
+			// Check if we have been sitting enough
+			private _timeCompleted = GETV(_thisObject, "timeCompleted");
+			if (time > _timeCompleted) then {
+				SETV(_thisObject, "state", GOAL_STATE_COMPLETED);
+				_state = GOAL_STATE_COMPLETED;
+			} else {
+				SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
+				_state = GOAL_STATE_ACTIVE;
+			};
 		};
+		
+		_state
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -95,10 +103,11 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 			// Get back on your feet!
 			private _entity = GETV(_thisObject, "entity");
 			CALLM(_entity, "doGetUpFromBench", []);
-			// Move forward a little
-			private _unitObject = CALLM(_entity, "getObjectHandle", []);
-			private _posMoveTo = _unitObject getPos [2.5, direction _unitObject];
-			CALLM(_entity, "doMoveInf", [_posMoveTo]);
+			
+			// Notify the bench that this seat is now free
+			private _bench = GETV(_thisObject, "bench");
+			private _pointID = GETV(_thisObject, "pointID");
+			CALLM(_bench, "pointIsFree", [_pointID]);
 		};
 	} ENDMETHOD;
 

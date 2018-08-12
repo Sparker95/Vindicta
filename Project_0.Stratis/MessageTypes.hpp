@@ -10,6 +10,9 @@
 #define GOAL_MESSAGE_PROCESS	20
 // Send this message to a goal so that it deletes itself
 #define GOAL_MESSAGE_DELETE		21
+//  Send it to a goal which was handling an animation, like sitting on a bench or
+// by a campfire, when a bot has been interrupted, for example by spotting an enemy
+#define GOAL_MESSAGE_ANIMATION_INTERRUPTED 22
 
 // AnimObject messages
 // Sent by a unit when he has freed a position with any reason

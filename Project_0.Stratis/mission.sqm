@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2296;
+		nextID=2305;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=55;
+		nextID=58;
 	};
 	class Camera
 	{
-		pos[]={2407.6504,24.521276,1128.6194};
-		dir[]={0.59607816,-0.73183078,0.33049151};
-		up[]={0.64002728,0.68150109,0.35485825};
-		aside[]={0.48491856,1.9773142e-006,-0.87461245};
+		pos[]={2392.2681,20.305792,1149.0001};
+		dir[]={0.43452048,-0.46851221,-0.76935601};
+		up[]={0.23042446,0.883443,-0.40798751};
+		aside[]={-0.87081051,3.981404e-008,-0.49181399};
 	};
 };
 binarizationWanted=0;
@@ -246,7 +246,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=140;
+		items=139;
 		class Item0
 		{
 			dataType="Object";
@@ -3057,38 +3057,6 @@ class Mission
 		};
 		class Item136
 		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=1;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2419.7109,2.1940851,1128.4038};
-						angles[]={0,1.3962634,0};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
-						isPlayer=1;
-					};
-					id=2282;
-					type="B_Survivor_F";
-					atlOffset=1.3828278e-005;
-				};
-			};
-			class Attributes
-			{
-			};
-			id=2281;
-			atlOffset=1.3828278e-005;
-		};
-		class Item137
-		{
 			dataType="Object";
 			class PositionInfo
 			{
@@ -3104,138 +3072,7 @@ class Mission
 			id=2283;
 			type="Land_Bench_01_F";
 		};
-		class Item138
-		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=2;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2436.333,3.0245149,1141.4541};
-						angles[]={0,3.4906588,0};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
-						name="guy_0";
-					};
-					id=2285;
-					type="B_soldier_M_F";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male05ENG";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1.01;
-								};
-							};
-						};
-						nAttributes=2;
-					};
-				};
-				class Item1
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2432.363,2.9718924,1140.828};
-						angles[]={0,3.0543261,0};
-					};
-					side="West";
-					flags=5;
-					class Attributes
-					{
-						name="guy_1";
-					};
-					id=2288;
-					type="B_recon_F";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male01ENG";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1.02;
-								};
-							};
-						};
-						nAttributes=2;
-					};
-				};
-			};
-			class Attributes
-			{
-			};
-			id=2284;
-		};
-		class Item139
+		class Item137
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3252,6 +3089,38 @@ class Mission
 			id=2286;
 			type="Land_Bench_01_F";
 			atlOffset=2.3841858e-007;
+		};
+		class Item138
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2414.6218,3.0199454,1152.5829};
+						angles[]={0,2.3561945,0};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						isPlayer=1;
+					};
+					id=2304;
+					type="B_officer_F";
+					atlOffset=-3.0994415e-006;
+				};
+			};
+			class Attributes
+			{
+			};
+			id=2303;
+			atlOffset=-3.0994415e-006;
 		};
 	};
 	class Connections

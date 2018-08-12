@@ -37,6 +37,7 @@ CLASS("GoalUnitMoveInf", "Goal")
 		private _destPos = GETV(_thisObject, "destPos");
 		CALLM(_entity, "doMoveInf", [_destPos]);
 		SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
+		GOAL_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

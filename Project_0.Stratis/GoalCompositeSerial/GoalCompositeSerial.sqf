@@ -62,5 +62,35 @@ CLASS("GoalCompositeSerial", "GoalComposite")
 		// return
 		_statusOfSubgoals
 	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                      H A N D L E   M E S S A G E                   |
+	// |                                                                    |
+	// | Forwards the message to frontmost subgoal
+	// ----------------------------------------------------------------------
+	
+	METHOD("handleMessage") { //Derived classes must implement this method
+		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		private _msgHandled = CALL_CLASS_METHOD("Goal", _thisObject, "handleMessage", [_msg]);
+		if (!_msgHandled) then {
+			private _msgHandled = CALLM(_thisObject, "forwardMessageToFrontSubgoal", [_msg]);
+			_msgHandled // return
+		} else {
+			true // message handled
+		};
+	} ENDMETHOD;
+	
+	// -----------------------------------------------------------------------------------------------
+	//                F O R W A R D   M E S S A G E   T O   F R O N T   S U B G O A L
+	//
+	// passes the message to the goal at the front of the queue
+	// -----------------------------------------------------------------------------------------------
+	
+	METHOD("forwardMessageToFrontSubgoal") {
+		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		private _subgoals = GETV(_thisObject, "subgoals");
+		private _subgoalFront = _subgoals select 0;
+		CALLM(_subgoalFront, "handleMessage", [_msg]);
+	} ENDMETHOD;
 
 ENDCLASS;

@@ -159,6 +159,10 @@ CLASS(UNIT_CLASS_NAME, "")
 				case T_DRONE: {
 				};
 			};
+			
+			// Set variable of the object
+			_objectHandle setVariable ["unit", _thisObject];
+			
 			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 			_objectHandle setDir _dir;
@@ -188,6 +192,10 @@ CLASS(UNIT_CLASS_NAME, "")
 			private _group = _data select UNIT_DATA_ID_GROUP;
 			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
+			
+			// Make sure we terminate the bench script
+			private _hScriptBench = _objectHandle getVariable ["unit_hScriptBench", scriptNull];
+			if (!isNull _hScriptBench) then {terminate _hScriptBench;};
 		};		
 		//Unlock the mutex
 		MUTEX_UNLOCK(_mutex);
@@ -241,6 +249,22 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                   S E T / G E T   G O A L
+	// | Sets the goal value of this unit. It doesn't mean that the unit will pursue this goal.
+	// ----------------------------------------------------------------------
+	METHOD("setGoal") {
+		params [["_thisObject", "", [""]], ["_goal", "", [""]] ];
+		private _data = GET_VAR(_thisObject, "data");
+		_data set [UNIT_DATA_ID_GOAL, _goal];
+	} ENDMETHOD;
+	
+	METHOD("getGoal") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_GOAL
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                   G E T   M A I N   D A T A                        |
 	// ----------------------------------------------------------------------
 	// Returns [_catID, _subcatID, _className] of this unit
@@ -277,6 +301,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD("getDebugData") {
 		params [["_thisObject", "", [""]]];
 		GET_VAR(_thisObject, "data")
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |         G E T   U N I T   F R O M   O B J E C T   H A N D L E
+	// |
+	// |  Gets the unit object of this object handle
+	// | If this object is not associated with a unit, returns ""
+	// ----------------------------------------------------------------------
+	STATIC_METHOD("getUnitFromObjectHandle") {
+		params [ ["_objectHandle", objNull, [objNull]] ];
+		_objectHandle getVariable ["unit", ""]
 	} ENDMETHOD;
 	
 	// File based methods
