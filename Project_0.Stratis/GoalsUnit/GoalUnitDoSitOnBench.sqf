@@ -4,6 +4,8 @@ An atomic goal for a unit to sit on a bench for some duration of time.
 
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Goal\Goal.hpp"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
 
 CLASS("GoalUnitDoSitOnBench", "Goal")
 
@@ -109,6 +111,28 @@ CLASS("GoalUnitDoSitOnBench", "Goal")
 			private _pointID = GETV(_thisObject, "pointID");
 			CALLM(_bench, "pointIsFree", [_pointID]);
 		};
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                      H A N D L E   M E S S A G E                   |
+	// |                                                                    |
+	// | This goal accepts only GOAL_MESSAGE_ANIMATION_INTERRUPTED message and base class messages
+	// ----------------------------------------------------------------------
+	METHOD("handleMessage") { //Derived classes must implement this method
+		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		private _msgType = _msg select MESSAGE_ID_TYPE;
+		
+		private _msgHandled = false;
+		if (_msgType == GOAL_MESSAGE_ANIMATION_INTERRUPTED) then {
+			diag_log "------------- Animation was interrupted!";
+			// The animation was interrupted, so we must set this goal to failed state
+			SETV(_thisObject, "state", GOAL_STATE_FAILED);
+			_msgHandled = true // message has been handled
+		} else {
+			// Pass message to handleMessage of the base class
+			_msgHandled = CALL_CLASS_METHOD("Goal", "handleMessage", [_msg]);
+		};
+		_msgHandled
 	} ENDMETHOD;
 
 ENDCLASS;

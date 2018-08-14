@@ -1,10 +1,10 @@
 /*
-A bench where a unit can sit at
+A vehicle and animations to 'repair' it.
 */
 
 #include "..\OOP_Light\OOP_Light.h"
 
-CLASS("AnimObjectBench", "AnimObject")
+CLASS("AnimObjectGroundVehicle", "AnimObject")
 	
 	STATIC_VARIABLE("animations");
 	
@@ -13,17 +13,19 @@ CLASS("AnimObjectBench", "AnimObject")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_object", objNull, [objNull]]];
 		
-		private _args = [[0.5, -0.08, -1], [-0.5, -0.08, -1]];
+		private _width = [_object] call misc_fnc_getVehicleWidth;
+		private _args = [	[-_width, -1.5, 0], [-_width, 0, 0], [-_width, 1.5, 0],
+							[_width, -1.5, 0], [_width, 0, 0], [_width, 1.5, 0] ];
 		SETV(_thisObject, "points", _args);
 		
-		private _args = ["", ""];
+		private _args = ["", "", "", "", "", ""];
 		SETV(_thisObject, "units", _args);
 		
-		SETV(_thisObject, "pointCount", 2);
+		SETV(_thisObject, "pointCount", 6);
 		
-		private _animations = GET_STATIC_VAR("AnimObjectBench", "animations");
+		private _animations = GET_STATIC_VAR("AnimObjectGroundVehicle", "animations");
 		SETV(_thisObject, "animations", _animations);
 	} ENDMETHOD;
 	
@@ -38,8 +40,15 @@ CLASS("AnimObjectBench", "AnimObject")
 		private _animations = GETV(_thisObject, "animations");
 		private _points = GETV(_thisObject, "points");
 		private _bench = GETV(_thisObject, "object");
-		private _dir = (getDir _bench) + 180;
-		[_points select _pointID, selectRandom _animations, _dir]
+		private _dir = 0;
+		if (_pointID < 3) then {
+			_dir = (getDir _bench) + 90;
+		} else {
+			_dir = (getDir _bench) - 90;
+		};
+		private _offset = _points select _pointID;
+		//_offset set [1, (_offset select 1) - 0.5 + (random 1) ]; // Randomize the coordinate along the vehicle
+		[_offset, selectRandom _animations, _dir]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -48,7 +57,7 @@ CLASS("AnimObjectBench", "AnimObject")
 	// |  Internal function to get the position where the unit must move to, in model coordinates
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
-	
+	/*
 	METHOD("getPointMovePosOffset") {
 		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
 		private _points = GETV(_thisObject, "points");
@@ -56,14 +65,9 @@ CLASS("AnimObjectBench", "AnimObject")
 		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0];
 		_pointMoveOffset
 	} ENDMETHOD;
+	*/
 	
 ENDCLASS;
 
-private _animations = ["HubSittingChairA_idle1", "HubSittingChairA_idle2", "HubSittingChairA_idle3",
-						 "HubSittingChairA_move1",
-						 "HubSittingChairB_idle1", "HubSittingChairB_idle2", "HubSittingChairB_idle3",
-						 "HubSittingChairB_move1",
-						 "HubSittingChairC_idle1", "HubSittingChairC_idle2", "HubSittingChairC_idle3",
-						 "InBaseMoves_SittingRifle1", "InBaseMoves_SittingRifle2"
-						 ];
-SET_STATIC_VAR("AnimObjectBench", "animations", _animations);
+private _animations = ["InBaseMoves_repairVehiclePne", "InBaseMoves_assemblingVehicleErc", "InBaseMoves_repairVehicleKnl"];
+SET_STATIC_VAR("AnimObjectGroundVehicle", "animations", _animations);

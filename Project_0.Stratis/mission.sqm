@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2305;
+		nextID=2319;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=58;
+		nextID=60;
 	};
 	class Camera
 	{
-		pos[]={2392.2681,20.305792,1149.0001};
-		dir[]={0.43452048,-0.46851221,-0.76935601};
-		up[]={0.23042446,0.883443,-0.40798751};
-		aside[]={-0.87081051,3.981404e-008,-0.49181399};
+		pos[]={2383.6868,8.9558907,1140.3877};
+		dir[]={0.96141839,-0.27181184,0.044806648};
+		up[]={0.27167875,0.96231878,0.012661158};
+		aside[]={0.046556938,1.5221303e-008,-0.99900651};
 	};
 };
 binarizationWanted=0;
@@ -50,13 +50,14 @@ addons[]=
 	"A3_Armor_F_Gamma_APC_Wheeled_03",
 	"A3_Soft_F_Beta_MRAP_03",
 	"A3_Modules_F_Curator_Curator",
-	"A3_Structures_F_EPC_Civ_Accessories"
+	"A3_Structures_F_EPC_Civ_Accessories",
+	"A3_Soft_F_Gamma_Truck_01"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=17;
+		items=18;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -176,6 +177,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item17
+		{
+			className="A3_Soft_F_Gamma";
+			name="Arma 3 - Unarmored Land Vehicles";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 class DynamicSimulation
@@ -246,7 +254,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=139;
+		items=140;
 		class Item0
 		{
 			dataType="Object";
@@ -3102,8 +3110,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2414.6218,3.0199454,1152.5829};
-						angles[]={0,2.3561945,0};
+						position[]={2403.9937,1.6021335,1138.2544};
 					};
 					side="West";
 					flags=7;
@@ -3111,16 +3118,34 @@ class Mission
 					{
 						isPlayer=1;
 					};
-					id=2304;
-					type="B_officer_F";
-					atlOffset=-3.0994415e-006;
+					id=2310;
+					type="B_engineer_F";
+					atlOffset=-4.8875809e-006;
 				};
 			};
 			class Attributes
 			{
 			};
-			id=2303;
-			atlOffset=-3.0994415e-006;
+			id=2309;
+			atlOffset=-4.8875809e-006;
+		};
+		class Item139
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2410.7764,4.2063699,1141.6208};
+				angles[]={6.2631841,4.7996554,0.069882989};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				name="vehicle_0";
+			};
+			id=2311;
+			type="B_Truck_01_box_F";
+			atlOffset=-1.1920929e-007;
 		};
 	};
 	class Connections

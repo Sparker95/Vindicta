@@ -94,15 +94,15 @@ CLASS("MessageLoop", "")
 		params [ ["_thisObject", "", [""]], ["_msgReceiver", "", [""]] ];
 		private _msgQueue = GETV(_thisObject, "msgQueue");
 		
-		diag_log format ["Deleting message receiver: %1", _msgReceiver];
-		diag_log format ["Message queue: %1", _msgQueue];
+		//diag_log format ["Deleting message receiver: %1", _msgReceiver];
+		//diag_log format ["Message queue: %1", _msgQueue];
 		
 		private _i = 0;
 		while {  _i < (count _msgQueue)} do {
 			private _msg = _msgQueue select _i;
 			if ( (_msg select MESSAGE_ID_DESTINATION) == _msgReceiver) then { // If found a message directed to thi receiver
 				_msgQueue deleteAt _i;
-				diag_log format ["=========== Deleted a message: %1", _msg];
+				//diag_log format ["=========== Deleted a message: %1", _msg];
 			} else {
 				_i = _i + 1;
 			};

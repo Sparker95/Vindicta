@@ -5,3 +5,4 @@ misc_fnc_currentWeaponSilenced = compile preprocessFileLineNumbers "Misc\fn_curr
 misc_fnc_getCargoInfantryCapacity = compile preprocessFileLineNumbers "Misc\fn_getCargoInfantryCapacity.sqf";
 misc_fnc_vectorMoreOrEqual = compile preprocessFileLineNumbers "Misc\fn_vectorMoreOrEqual.sqf";
 misc_fnc_boundingBoxReal = compile preprocessFileLineNumbers "Misc\fn_boundingBoxReal.sqf";
+misc_fnc_getVehicleWidth = compile preprocessFileLineNumbers "Misc\fn_getVehicleWidth.sqf";

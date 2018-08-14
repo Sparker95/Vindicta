@@ -7,7 +7,10 @@ This script will be displaying the goals of unit you are looking at.
 
 [] spawn {
 
-goalDebugNextCtrlID = 6666;
+#define GOAL_DEBUG_NEXT_CTRL_ID_START 6666
+#define GOAL_DEBUG_MAX_COUNT 10
+
+goalDebugNextCtrlID = GOAL_DEBUG_NEXT_CTRL_ID_START;
 goalDebugs = [];
 
 // update the position of controls each frame
@@ -25,6 +28,15 @@ addMissionEventHandler ["EachFrame", {
 
 waitUntil { ! isNull findDisplay 46 };
 
+// Remove previous controls
+for "_ctrlID" from GOAL_DEBUG_NEXT_CTRL_ID_START to (GOAL_DEBUG_NEXT_CTRL_ID_START + GOAL_DEBUG_MAX_COUNT) do {
+	private _ctrl = (findDisplay 46) displayCtrl _ctrlID;
+	if (_ctrl != controlNull) then { ctrlDelete _ctrl; };
+};
+
+// Remove previous event handlers
+(findDisplay 46) displayRemoveAllEventHandlers "KeyDown";
+
 	(findDisplay 46) displayAddEventHandler ["KeyDown", {
 		params ["_control", "_key", "_shift", "_ctrl", "_alt"];
 			if (_key == 20) then { // T button
@@ -38,8 +50,8 @@ waitUntil { ! isNull findDisplay 46 };
 						// Is cursorObject a unit?
 						if (_unit != "") then {
 							private _goal = CALLM(_unit, "getGoal", []);
-							// Does the unit have a goal?
-							if (_goal != "") then {
+							// Does the unit have a goal? Did we exceed max amount of debug controls?
+							if (_goal != "" && ((count goalDebugs) < GOAL_DEBUG_MAX_COUNT)) then {
 								// Create a control
 								private _ctrl = (findDisplay 46) ctrlCreate ["RscStructuredText", goalDebugNextCtrlID];
 								_ctrl ctrlSetPosition [0.0, 0.0, 0.6, 0.4];

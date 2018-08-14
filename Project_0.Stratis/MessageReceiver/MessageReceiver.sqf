@@ -34,6 +34,7 @@ CLASS("MessageReceiver", "")
 	*/
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		// Please leave your message ...
 		diag_log format ["[MessageReceiver] handleMessage: %1", _msg];
 		false // message not handled
 	} ENDMETHOD;

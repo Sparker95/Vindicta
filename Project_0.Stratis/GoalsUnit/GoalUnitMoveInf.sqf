@@ -4,6 +4,7 @@ A goal for an infantry unit to move to some place.
 
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Goal\Goal.hpp"
+#include "..\Message\Message.hpp"
 
 CLASS("GoalUnitMoveInf", "Goal")
 
@@ -64,6 +65,22 @@ CLASS("GoalUnitMoveInf", "Goal")
 			GOAL_STATE_ACTIVE
 		};
 	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                      H A N D L E   M E S S A G E                   |
+	// |                                                                    |
+	// ----------------------------------------------------------------------
+	/*
+	// If we don't redefine this method, the default one will be called anyway
+	METHOD("handleMessage") {
+		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		//private _msgType = _msg select MESSAGE_ID_TYPE;
+				
+		// Pass message to handleMessage of the base class
+		private _msgHandled = CALL_CLASS_METHOD("Goal", "handleMessage", [_msg]);
+		_msgHandled
+	} ENDMETHOD;
+	*/
 	
 	// ----------------------------------------------------------------------
 	// |                        T E R M I N A T E                           |

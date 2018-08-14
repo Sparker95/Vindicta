@@ -10,6 +10,8 @@ Author: Sparker
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 
+Unit_fnc_EH_killed = compile preprocessFileLineNumbers "Unit\EH_killed.sqf";
+
 CLASS(UNIT_CLASS_NAME, "")
 	VARIABLE("data");
 	STATIC_VARIABLE("all");
@@ -146,7 +148,7 @@ CLASS(UNIT_CLASS_NAME, "")
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
-					diag_log format ["---- Received group of side: %1", side _groupHandle];
+					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 					
@@ -162,6 +164,9 @@ CLASS(UNIT_CLASS_NAME, "")
 			
 			// Set variable of the object
 			_objectHandle setVariable ["unit", _thisObject];
+			
+			// Set event handlers of the object
+			_objectHandle addEventHandler ["Killed", Unit_fnc_EH_killed];
 			
 			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
@@ -320,6 +325,7 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
 	METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
 	METHOD_FILE("doGetUpFromBench", "Unit\doGetUpFromBench.sqf");
+	METHOD_FILE("doAnimRepairVehicle", "Unit\doAnimRepairVehicle.sqf");
 	METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
 	
 ENDCLASS;

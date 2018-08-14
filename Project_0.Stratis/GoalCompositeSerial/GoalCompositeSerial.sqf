@@ -18,7 +18,10 @@ CLASS("GoalCompositeSerial", "GoalComposite")
 	
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		private _state = CALLM(_thisObject, "processSubgoals", []);
+		private _state = GETV(_thisObject, "state");
+		if (_state != GOAL_STATE_FAILED) then {
+			_state = CALLM(_thisObject, "processSubgoals", []);
+		};
 		SETV(_thisObject, "state", _state);
 	} ENDMETHOD;
 	
@@ -31,11 +34,11 @@ CLASS("GoalCompositeSerial", "GoalComposite")
 		params [["_thisObject", "", [""]]];
 		private _subgoals = GETV(_thisObject, "subgoals");
 		
-		// remove all completed and failed goals from the front of the subgoal list
+		// remove all completed goals from the front of the subgoal list
 		while {count _subgoals > 0} do {
 			private _subgoalFront = _subgoals select 0;
 			private _state = GETV(_subgoalFront, "state");
-			if (_state != GOAL_STATE_COMPLETED && _state != GOAL_STATE_FAILED) exitWith {};
+			if (_state != GOAL_STATE_COMPLETED /*&& _state != GOAL_STATE_FAILED*/) exitWith {};
 			// The front goal is in either COMPLETED or FAILED state, so we must delete it
 			CALLM(_subgoalFront, "terminate", []);
 			DELETE(_subgoalFront);
@@ -71,13 +74,17 @@ CLASS("GoalCompositeSerial", "GoalComposite")
 	
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		// Forward the message to base class Goal message handler
 		private _msgHandled = CALL_CLASS_METHOD("Goal", _thisObject, "handleMessage", [_msg]);
+		// Did the default handler handle the message?
 		if (!_msgHandled) then {
-			private _msgHandled = CALLM(_thisObject, "forwardMessageToFrontSubgoal", [_msg]);
-			_msgHandled // return
+			// Forward the message to the frond subgoal
+			_msgHandled = CALLM(_thisObject, "forwardMessageToFrontSubgoal", [_msg]);
 		} else {
-			true // message handled
+			// That was a strange message!
+			_msgHandled = false; // message not handled
 		};
+		_msgHandled // return
 	} ENDMETHOD;
 	
 	// -----------------------------------------------------------------------------------------------

@@ -70,24 +70,28 @@ CLASS("GoalUnitSitOnBench", "GoalCompositeSerial")
 
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		CALLM(_thisObject, "activateIfInactive", []);
+		private _state = GETV(_thisObject, "state");
+		if (_state != GOAL_STATE_FAILED) then {
+			CALLM(_thisObject, "activateIfInactive", []);
+			_state = CALLM(_thisObject, "processSubgoals", []);
+		};
+		
 		
 		// Check if the desired position is still free
 		//private _bench = GETV(_thisObject, "bench");
 		//private _pointID = GETV(_thisObject, "pointID");
 		//if ( CALLM(_bench, "isPointFree", [_pointID]) ) then {
-			// Process subgoals
-			private _state = CALLM(_thisObject, "processSubgoals", []);
-			SETV(_thisObject, "state", _state);
+			// Process subgoal
 			
-			_state // return the state
+			//_state // return the state
 		//} else {
 		//	// Make the goal inactive so that it replans itself at the next update step
 		//	CALLM(_thisObject, "deleteAllSubgoals", []);
 		//	SETV(_thisObject, "state", GOAL_STATE_INACTIVE)
 		//	GOAL_STATE_INACTIVE
 		//};
-		
+		SETV(_thisObject, "state", _state);
+		_state
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

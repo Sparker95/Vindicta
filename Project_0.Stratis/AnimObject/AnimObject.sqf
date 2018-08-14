@@ -70,7 +70,7 @@ CLASS("AnimObject", "")
 		if (count _freePointIDs == 0) exitWith { [] };
 		
 		// Select a random point
-		private _pointID = _freePointIDs select 0; //selectRandom _freePointIDs;
+		private _pointID = selectRandom _freePointIDs; //selectRandom _freePointIDs;
 		
 		// Return point coordinates
 		private _object = GETV(_thisObject, "object");
@@ -84,7 +84,7 @@ CLASS("AnimObject", "")
 	// ----------------------------------------------------------------------
 	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
 	// |                                                                    
-	// |  Internal function to get the position where the unit must move to
+	// |  Internal function to get the position where the unit must move to, in model coordinates
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
 	

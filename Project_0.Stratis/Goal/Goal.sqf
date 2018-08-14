@@ -107,18 +107,29 @@ CLASS("Goal", "MessageReceiver")
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		private _msgType = _msg select MESSAGE_ID_TYPE;
-		if (_msgType == GOAL_MESSAGE_PROCESS) exitWith {
-			//diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
-			CALLM(_thisObject, "process", []);
-			true // message handled
+		private _msgHandled = false;
+		
+		switch (_msgType) do {
+			case MESSAGE_UNIT_DESTROYED: {
+				diag_log "[Goal::handleMessage] Info: unit was destroyed";
+				SETV(_thisObject, "state", GOAL_STATE_FAILED);
+				_msgHandled = true; // message handled
+			};
+		
+			case GOAL_MESSAGE_PROCESS: {
+				//diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
+				CALLM(_thisObject, "process", []);
+				_msgHandled = true; // message handled
+			};
+		
+			case GOAL_MESSAGE_DELETE: {
+				CALLM(_thisObject, "terminate", []);
+				DELETE(_thisObject);
+				_msgHandled = true; // message handled
+			};
 		};
 		
-		if (_msgType == GOAL_MESSAGE_DELETE) exitWith {
-			CALLM(_thisObject, "terminate", []);
-			DELETE(_thisObject);
-			true // message handled
-		};
-		false // message not handled
+		_msgHandled
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
