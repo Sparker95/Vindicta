@@ -323,9 +323,11 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
 	METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
 	METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
-	METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
-	METHOD_FILE("doGetUpFromBench", "Unit\doGetUpFromBench.sqf");
-	METHOD_FILE("doAnimRepairVehicle", "Unit\doAnimRepairVehicle.sqf");
+	//METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
+	//METHOD_FILE("doGetUpFromBench", "Unit\doGetUpFromBench.sqf");
+	//METHOD_FILE("doAnimRepairVehicle", "Unit\doAnimRepairVehicle.sqf");
+	METHOD_FILE("doInteractAnimObject", "Unit\doInteractAnimObject.sqf");
+	METHOD_FILE("doStopInteractAnimObject", "Unit\doStopInteractAnimObject.sqf");
 	METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
 	
 ENDCLASS;

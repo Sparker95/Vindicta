@@ -53,8 +53,11 @@ CLASS("AnimObject", "")
 	// ----------------------------------------------------------------------
 	// |                     G E T   F R E E   P O I N T                    
 	// |                                                                    
-	// |  Returns ID and position(in world space) where the bot must move to play the animation of a free point at this
-	// | object. If there is no free position, [] is returned               
+	// |  Returns ID and position (in model space) where the bot must move to play the animation of a free point at this
+	// | object. If there is no free position, [] is returned
+	// |  Return:
+	// |  [_pointID, _movePosOffset]
+	// |   _movePosOffset - position in MODEL coordinates       
 	// ----------------------------------------------------------------------
 	METHOD("getFreePoint") {
 		params [ ["_thisObject", "", [""]] ];
@@ -75,24 +78,10 @@ CLASS("AnimObject", "")
 		// Return point coordinates
 		private _object = GETV(_thisObject, "object");
 		private _movePosOffset = CALLM(_thisObject, "getPointMovePosOffset", [_pointID]);
-		private _posWorld = _object modelToWorld _movePosOffset;
-		private _return = [_pointID, _posWorld];
+		//private _posWorld = _object modelToWorld _movePosOffset;
+		private _return = [_pointID, _movePosOffset];
 		
 		_return
-	} ENDMETHOD;
-	
-	// ----------------------------------------------------------------------
-	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
-	// |                                                                    
-	// |  Internal function to get the position where the unit must move to, in model coordinates
-	// | before actually playing the animation. Inherited classes must implement this!
-	// ----------------------------------------------------------------------
-	
-	METHOD("getPointMovePosOffset") {
-		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
-		private _points = GETV(_thisObject, "points");
-		private _pointOffset = _points select _pointID;
-		_pointOffset
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -108,10 +97,11 @@ CLASS("AnimObject", "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                   G E T   P O I N T   D A T A                      |
-	// |                                                                    |
-	// | Returns the data of this point: attachTo offset, animation, etc    |
-	// | Return value: [_offset, _animation] or [] if the point is occupied |
+	// |                   G E T   P O I N T   D A T A                      
+	// |                                                                    
+	// | Returns the data of this point: offset, animation, etc
+	// | Return value: [_offset, _animation, _dir] or [] if the point is occupied
+	// | _offset, _dir - offset position and direction in MODEL coordinates
 	// ----------------------------------------------------------------------
 	METHOD("getPointData") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]], ["_pointID", 0, [0]]];
@@ -125,19 +115,6 @@ CLASS("AnimObject", "")
 		} else {
 			[]
 		};
-	} ENDMETHOD;
-	
-	// ----------------------------------------------------------------------
-	// |          G E T   P O I N T   D A T A  I N T E R N A L 
-	// |             
-	// | Internal function which is called by getPointData and returns the point data.
-	// | Inherited classes must implement this.
-	// ----------------------------------------------------------------------
-	METHOD("getPointDataInternal") {
-		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
-		private _animations = GETV(_thisObject, "animations");
-		private _points = GETV(_thisObject, "points");
-		[_points select _pointID, selectRandom _animations]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -157,6 +134,43 @@ CLASS("AnimObject", "")
 	METHOD("getObject") {
 		params [["_thisObject", "", [""]] ];
 		GETV(_thisObject, "object")
+	} ENDMETHOD;
+	
+	
+	
+	
+	// =============================================================================
+	// | V I R T U A L   M E T H O D S   F O R   I N H E R I T E D   C L A S S E S |
+	// =============================================================================
+	
+	// ----------------------------------------------------------------------
+	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
+	// |                                                                    
+	// |  Internal function to get the position where the unit must move to, in model coordinates
+	// | before actually playing the animation. Inherited classes must implement this!
+	// ----------------------------------------------------------------------
+	
+	METHOD("getPointMovePosOffset") {
+		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
+		private _points = GETV(_thisObject, "points");
+		private _pointOffset = _points select _pointID;
+		_pointOffset
+	} ENDMETHOD;	
+	
+	// ----------------------------------------------------------------------
+	// |          G E T   P O I N T   D A T A  I N T E R N A L 
+	// |             
+	// | Internal function which is called by getPointData and returns the point data.
+	// | Inherited classes must implement this.
+	// | Return value: [_pos, _dir, _animation, _animationOut]
+	// ----------------------------------------------------------------------
+	METHOD("getPointDataInternal") {
+		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
+		private _animations = GETV(_thisObject, "animations");
+		private _animationsOut = GETV(_thisObject, "animationsOut");
+		private _points = GETV(_thisObject, "points");
+		private _id = floor (random (count _animations));
+		[_points select _pointID, 0, _animations select _id, ""]; // "" animation will cause the unit erase all animations by default
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -4,9 +4,12 @@ A bench where a unit can sit at
 
 #include "..\OOP_Light\OOP_Light.h"
 
-CLASS("AnimObjectBench", "AnimObject")
+#define THIS_CLASS_NAME "AnimObjectBench"
+
+CLASS(THIS_CLASS_NAME, "AnimObject")
 	
 	STATIC_VARIABLE("animations");
+	STATIC_VARIABLE("points");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -15,7 +18,7 @@ CLASS("AnimObjectBench", "AnimObject")
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
-		private _args = [[0.5, -0.08, -1], [-0.5, -0.08, -1]];
+		private _args = GET_STATIC_VAR(THIS_CLASS_NAME, "points");
 		SETV(_thisObject, "points", _args);
 		
 		private _args = ["", ""];
@@ -23,7 +26,7 @@ CLASS("AnimObjectBench", "AnimObject")
 		
 		SETV(_thisObject, "pointCount", 2);
 		
-		private _animations = GET_STATIC_VAR("AnimObjectBench", "animations");
+		private _animations = GET_STATIC_VAR(THIS_CLASS_NAME, "animations");
 		SETV(_thisObject, "animations", _animations);
 	} ENDMETHOD;
 	
@@ -37,9 +40,8 @@ CLASS("AnimObjectBench", "AnimObject")
 		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
 		private _animations = GETV(_thisObject, "animations");
 		private _points = GETV(_thisObject, "points");
-		private _bench = GETV(_thisObject, "object");
-		private _dir = (getDir _bench) + 180;
-		[_points select _pointID, selectRandom _animations, _dir]
+		// pos, direction, animation, animationOut
+		[_points select _pointID, 180, selectRandom _animations, "AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow"]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -66,4 +68,7 @@ private _animations = ["HubSittingChairA_idle1", "HubSittingChairA_idle2", "HubS
 						 "HubSittingChairC_idle1", "HubSittingChairC_idle2", "HubSittingChairC_idle3",
 						 "InBaseMoves_SittingRifle1", "InBaseMoves_SittingRifle2"
 						 ];
-SET_STATIC_VAR("AnimObjectBench", "animations", _animations);
+SET_STATIC_VAR(THIS_CLASS_NAME, "animations", _animations);
+
+private _points = [[0.5, -0.08, -1], [-0.5, -0.08, -1]];
+SET_STATIC_VAR(THIS_CLASS_NAME, "points", _points);
