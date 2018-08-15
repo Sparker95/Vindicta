@@ -9,14 +9,16 @@ A goal for an infantry unit to move to some place.
 CLASS("GoalUnitMoveInf", "Goal")
 
 	VARIABLE("destPos");
+	VARIABLE("radius");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_entity", "", [""]], ["_destPos", [], [[]]]];
+		params [["_thisObject", "", [""]], ["_entity", "", [""]], ["_destPos", [], [[]]], ["_completionRadius", 0, [0]]];
 		SETV(_thisObject, "destPos", _destPos);
+		SETV(_thisObject, "radius", _completionRadius);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -37,7 +39,7 @@ CLASS("GoalUnitMoveInf", "Goal")
 		private _entity = GETV(_thisObject, "entity");
 		private _destPos = GETV(_thisObject, "destPos");
 		CALLM(_entity, "doMoveInf", [_destPos]);
-		diag_log format ["===== Moving inf to pos: %1", _destPos];
+		//diag_log format ["===== Moving inf to pos: %1", _destPos];
 		SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
 		GOAL_STATE_ACTIVE
 	} ENDMETHOD;
@@ -56,7 +58,8 @@ CLASS("GoalUnitMoveInf", "Goal")
 		private _entity = GETV(_thisObject, "entity");
 		private _destPos = GETV(_thisObject, "destPos");
 		private _distance = CALLM(_entity, "distance", [_destPos]);
-		if (_distance < 2.2) then { // Are we there yet???
+		private _radius = GETV(_thisObject, "radius");
+		if (_distance < _radius) then { // Are we there yet???
 			// We have arrived!
 			SETV(_thisObject, "state", GOAL_STATE_COMPLETED);
 			//CALLM(_thisObject, "terminate", []);

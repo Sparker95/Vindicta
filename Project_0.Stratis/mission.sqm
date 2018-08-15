@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2320;
+		nextID=2322;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=61;
+		nextID=62;
 	};
 	class Camera
 	{
-		pos[]={2395.7893,28.1334,1135.5027};
-		dir[]={0.66957653,-0.67400342,0.312424};
-		up[]={0.61085981,0.73867524,0.28502637};
-		aside[]={0.42287368,8.9104287e-007,-0.90629321};
+		pos[]={2378.3857,37.126984,1125.4095};
+		dir[]={0.59333849,-0.80505371,-0.0095504727};
+		up[]={0.80499005,0.59318358,-0.012958202};
+		aside[]={-0.016098261,1.9569561e-006,-0.99997801};
 	};
 };
 binarizationWanted=0;
@@ -51,13 +51,15 @@ addons[]=
 	"A3_Soft_F_Beta_MRAP_03",
 	"A3_Modules_F_Curator_Curator",
 	"A3_Structures_F_EPC_Civ_Accessories",
-	"A3_Soft_F_Gamma_Truck_01"
+	"A3_Soft_F_Gamma_Truck_01",
+	"A3_Soft_F_Exp_LSV_02",
+	"A3_Armor_F_Beta_APC_Tracked_02"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=18;
+		items=19;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -184,6 +186,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item18
+		{
+			className="A3_Soft_F_Exp";
+			name="Arma 3 Apex - Unarmored Land Vehicles";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 class DynamicSimulation
@@ -254,7 +263,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=140;
+		items=142;
 		class Item0
 		{
 			dataType="Object";
@@ -3104,13 +3113,13 @@ class Mission
 			side="West";
 			class Entities
 			{
-				items=2;
+				items=1;
 				class Item0
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2414.1331,2.4087036,1143.5394};
+						position[]={2408.2739,1.6346238,1118.9935};
 						angles[]={0,1.134464,0};
 					};
 					side="West";
@@ -3121,22 +3130,6 @@ class Mission
 					};
 					id=2310;
 					type="B_engineer_F";
-				};
-				class Item1
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2411.5339,1.977608,1143.489};
-					};
-					side="West";
-					flags=5;
-					class Attributes
-					{
-					};
-					id=2319;
-					type="B_support_AMG_F";
-					atlOffset=1.4305115e-005;
 				};
 			};
 			class Attributes
@@ -3149,8 +3142,8 @@ class Mission
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={2415.7361,4.4544773,1134.7678};
-				angles[]={6.2506976,4.7996554,0.042473838};
+				position[]={2415.7358,4.4545155,1134.7679};
+				angles[]={6.2507048,4.7996554,0.042481314};
 			};
 			side="Empty";
 			flags=4;
@@ -3160,7 +3153,43 @@ class Mission
 			};
 			id=2311;
 			type="B_Truck_01_box_F";
-			atlOffset=-0.0010447502;
+			atlOffset=-0.0010001659;
+		};
+		class Item140
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2416.5911,3.6468878,1123.2181};
+				angles[]={0.0075011365,4.7996559,0.052451372};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				name="vehicle_1";
+			};
+			id=2320;
+			type="O_LSV_02_AT_F";
+			atlOffset=-0.0012996197;
+		};
+		class Item141
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2415.3572,4.4502826,1111.5205};
+				angles[]={6.2806959,4.712389,0.034984674};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+				name="vehicle_2";
+			};
+			id=2321;
+			type="O_APC_Tracked_02_cannon_F";
+			atlOffset=-0.00040864944;
 		};
 	};
 	class Connections

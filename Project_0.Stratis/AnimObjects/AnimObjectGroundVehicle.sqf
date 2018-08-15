@@ -15,9 +15,13 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_object", objNull, [objNull]]];
 		
+		private _objectHandle = GETV(_thisObject, "object");
 		private _width = [_object] call misc_fnc_getVehicleWidth;
-		private _args = [	[-_width, -1.5, 0], [-_width, 0, 0], [-_width, 1.5, 0],
-							[_width, -1.5, 0], [_width, 0, 0], [_width, 1.5, 0] ];
+		// Compensate the Z coordinate of the vehicle, because [0,0,0] of the vehicle model is above the ground
+		private _vehCenter = _objectHandle modelToWorld [0,0,0];
+		private _centerHeight = _vehCenter select 2;
+		private _args = [	[-_width, -1.5, -_centerHeight], [-_width, 0, -_centerHeight], [-_width, 1.5, -_centerHeight],
+							[_width, -1.5, -_centerHeight], [_width, 0, -_centerHeight], [_width, 1.5, -_centerHeight] ];
 		SETV(_thisObject, "points", _args);
 		
 		private _args = ["", "", "", "", "", ""];
@@ -39,7 +43,6 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
 		private _animations = GETV(_thisObject, "animations");
 		private _points = GETV(_thisObject, "points");
-		private _bench = GETV(_thisObject, "object");
 		private _dir = 0;
 		if (_pointID < 3) then {
 			_dir = 90;
@@ -47,6 +50,7 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 			_dir = -90;
 		};
 		private _offset = _points select _pointID;
+
 		_offset set [1, (_offset select 1) - 0.5 + (random 1) ]; // Randomize the coordinate along the vehicle
 		// pos offset, animation, animation out, walk out dir, walk out distance
 		[_offset, _dir, selectRandom _animations, "", 0, 0]
@@ -58,15 +62,12 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 	// |  Internal function to get the position where the unit must move to, in model coordinates
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
-	/*
-	METHOD("getPointMovePosOffset") {
+	METHOD("getPointMoveOffset") {
 		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
 		private _points = GETV(_thisObject, "points");
 		private _pointOffset = _points select _pointID;
-		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0];
-		_pointMoveOffset
+		[_pointOffset, 6] // For vehicles completion radius is quite large
 	} ENDMETHOD;
-	*/
 	
 ENDCLASS;
 

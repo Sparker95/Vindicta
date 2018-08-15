@@ -42,7 +42,7 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 		private _animObject = GETV(_thisObject, "animObject");
 		private _pointIDAndPosOffset = CALLM(_animObject, "getFreePoint", []);
 		if (count _pointIDAndPosOffset > 0) then {
-			_pointIDAndPosOffset params ["_pointID", "_posOffset"];
+			_pointIDAndPosOffset params ["_pointID", "_posOffset", "_radius"];
 			SETV(_thisObject, "pointID", _pointID);
 			
 			// Add a goal to play the animation
@@ -62,7 +62,7 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 			private _arrow = "Sign_Arrow_Large_F" createVehicle _posMoveTo;
 			_arrow setPos _posMoveTo;
 			
-			private _args = [_entity, _pos];
+			private _args = [_entity, _pos, _radius];
 			private _goalMove = NEW("GoalUnitMoveInf", _args);
 			CALLM(_thisObject, "addSubgoal", [_goalMove]);
 			

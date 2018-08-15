@@ -52,12 +52,12 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 	// | before actually playing the animation. Inherited classes must implement this!
 	// ----------------------------------------------------------------------
 	
-	METHOD("getPointMovePosOffset") {
+	METHOD("getPointMoveOffset") {
 		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
 		private _points = GETV(_thisObject, "points");
 		private _pointOffset = _points select _pointID;
-		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0];
-		_pointMoveOffset
+		private _pointMoveOffset = _pointOffset vectorAdd [0, -1.4, 0]; // For bench, unit must walk to a place in front of it
+		[_pointMoveOffset, 1.8]
 	} ENDMETHOD;
 	
 ENDCLASS;

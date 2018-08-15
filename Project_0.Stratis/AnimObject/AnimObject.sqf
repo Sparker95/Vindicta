@@ -77,9 +77,9 @@ CLASS("AnimObject", "")
 		
 		// Return point coordinates
 		private _object = GETV(_thisObject, "object");
-		private _movePosOffset = CALLM(_thisObject, "getPointMovePosOffset", [_pointID]);
+		private _movePosOffsetAndRadius = CALLM(_thisObject, "getPointMoveOffset", [_pointID]);
 		//private _posWorld = _object modelToWorld _movePosOffset;
-		private _return = [_pointID, _movePosOffset];
+		private _return = [_pointID] + _movePosOffsetAndRadius;
 		
 		_return
 	} ENDMETHOD;
@@ -144,17 +144,19 @@ CLASS("AnimObject", "")
 	// =============================================================================
 	
 	// ----------------------------------------------------------------------
-	// |             G E T    P O I N T   M O V E   P O S   O F F S E T
+	// |             G E T    P O I N T   M O V E   O F F S E T
 	// |                                                                    
 	// |  Internal function to get the position where the unit must move to, in model coordinates
 	// | before actually playing the animation. Inherited classes must implement this!
+	// | Return value:
+	// | [_posOffset, _completionRadius]
 	// ----------------------------------------------------------------------
 	
-	METHOD("getPointMovePosOffset") {
+	METHOD("getPointMoveOffset") {
 		params [ ["_thisObject", "", [""]], ["_pointID", 0, [0]] ];
 		private _points = GETV(_thisObject, "points");
 		private _pointOffset = _points select _pointID;
-		_pointOffset
+		[_pointOffset, 1.8]
 	} ENDMETHOD;	
 	
 	// ----------------------------------------------------------------------
@@ -162,7 +164,7 @@ CLASS("AnimObject", "")
 	// |             
 	// | Internal function which is called by getPointData and returns the point data.
 	// | Inherited classes must implement this.
-	// | Return value: [_pos, _dir, _animation, _animationOut]
+	// | Return value: [_pos, _dir, _animation, _animationOut, _walkOutDir, _walkOutDistance]
 	// ----------------------------------------------------------------------
 	METHOD("getPointDataInternal") {
 		params [["_thisObject", "", [""]], ["_pointID", 0, [0]]];
