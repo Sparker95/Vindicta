@@ -100,7 +100,7 @@ CLASS("AnimObject", "")
 	// |                   G E T   P O I N T   D A T A                      
 	// |                                                                    
 	// | Returns the data of this point: offset, animation, etc
-	// | Return value: [_offset, _animation, _dir] or [] if the point is occupied
+	// | Return value: [_offset, _animation, _dir, _walkOutDir, _walkOutDistance] or [] if the point is occupied
 	// | _offset, _dir - offset position and direction in MODEL coordinates
 	// ----------------------------------------------------------------------
 	METHOD("getPointData") {
@@ -170,7 +170,7 @@ CLASS("AnimObject", "")
 		private _animationsOut = GETV(_thisObject, "animationsOut");
 		private _points = GETV(_thisObject, "points");
 		private _id = floor (random (count _animations));
-		[_points select _pointID, 0, _animations select _id, ""]; // "" animation will cause the unit erase all animations by default
+		[_points select _pointID, 0, _animations select _id, "", 0, 0]; // "" animation will cause the unit erase all animations by default
 	} ENDMETHOD;
 
 ENDCLASS;

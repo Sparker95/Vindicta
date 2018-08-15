@@ -41,7 +41,8 @@ CLASS(THIS_CLASS_NAME, "AnimObject")
 		private _animations = GETV(_thisObject, "animations");
 		private _points = GETV(_thisObject, "points");
 		// pos, direction, animation, animationOut
-		[_points select _pointID, 180, selectRandom _animations, "AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow"]
+		// pos offset, animation, animation out, walk out dir, walk out distance
+		[_points select _pointID, 180, selectRandom _animations, "AcrgPknlMstpSnonWnonDnon_AmovPercMstpSrasWrflDnon_getOutLow", 0, 2]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

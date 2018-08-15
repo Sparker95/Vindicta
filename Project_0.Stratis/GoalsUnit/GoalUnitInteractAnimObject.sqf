@@ -56,7 +56,12 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 			private _animObjectHandle = CALLM(_animObject, "getObject", []);
 			private _pos = _animObjectHandle modelToWorld _posOffset;
 			//private _dir = _dir + (direction _animObjectHandle);
-			private _posMoveTo = [_pos select 0, _pos select 1, _pos select 2 + 1];
+			private _posMoveTo = [_pos select 0, _pos select 1, 0];
+			
+			// Test arrow
+			private _arrow = "Sign_Arrow_Large_F" createVehicle _posMoveTo;
+			_arrow setPos _posMoveTo;
+			
 			private _args = [_entity, _pos];
 			private _goalMove = NEW("GoalUnitMoveInf", _args);
 			CALLM(_thisObject, "addSubgoal", [_goalMove]);

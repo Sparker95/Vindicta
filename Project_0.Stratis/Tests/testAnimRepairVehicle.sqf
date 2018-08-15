@@ -31,47 +31,37 @@ CALLM(_unit_4, "spawn", _args);
 CALLM(_unit_5, "spawn", _args);
 //CALLM(_unit_2, "spawn", _args);
 
-// Initialize the bench object
+// Initialize the animObject
 private _vehicle = NEW("AnimObjectGroundVehicle", [_vehicleObject]);
 
-// Make the unit sit on the bench
 
-private _args = [_vehicle, 0];
-CALLM(_unit_0, "doAnimRepairVehicle", _args);
-
-private _args = [_vehicle, 1];
-CALLM(_unit_1, "doAnimRepairVehicle", _args);
-
-private _args = [_vehicle, 2];
-CALLM(_unit_2, "doAnimRepairVehicle", _args);
-
-private _args = [_vehicle, 3];
-CALLM(_unit_3, "doAnimRepairVehicle", _args);
-
-private _args = [_vehicle, 4];
-CALLM(_unit_4, "doAnimRepairVehicle", _args);
-
-private _args = [_vehicle, 5];
-CALLM(_unit_5, "doAnimRepairVehicle", _args);
-
-/*
-// Add the goals to the units to sit on the bench
-private _args = [_unit_0, _bench, 40];
-private _goal_0 = NEW("GoalUnitSitOnBench", _args);
+// Add the goals to the units
+private _args = [_unit_0, _vehicle, 30];
+private _goal_0 = NEW("GoalUnitInteractAnimObject", _args);
 CALLM(_unit_0, "setGoal", [_goal_0]);
 CALLM(_goal_0, "setAutonomous", [1]);
 
-sleep 4;
-
-private _args = [_unit_1, _bench, 40];
-private _goal_1 = NEW("GoalUnitSitOnBench", _args);
+private _args = [_unit_1, _vehicle, 30];
+private _goal_1 = NEW("GoalUnitInteractAnimObject", _args);
 CALLM(_unit_1, "setGoal", [_goal_1]);
 CALLM(_goal_1, "setAutonomous", [1]);
-*/
 
-//sleep 2;
-/*
-private _args = [_unit_2, _bench, 40];
-private _goal_2 = NEW("GoalUnitSitOnBench", _args);
+private _args = [_unit_2, _vehicle, 30];
+private _goal_2 = NEW("GoalUnitInteractAnimObject", _args);
+CALLM(_unit_2, "setGoal", [_goal_2]);
 CALLM(_goal_2, "setAutonomous", [1]);
-*/
+
+private _args = [_unit_3, _vehicle, 30];
+private _goal_3 = NEW("GoalUnitInteractAnimObject", _args);
+CALLM(_unit_3, "setGoal", [_goal_3]);
+CALLM(_goal_3, "setAutonomous", [1]);
+
+private _args = [_unit_4, _vehicle, 30];
+private _goal_4 = NEW("GoalUnitInteractAnimObject", _args);
+CALLM(_unit_4, "setGoal", [_goal_4]);
+CALLM(_goal_4, "setAutonomous", [1]);
+
+private _args = [_unit_5, _vehicle, 30];
+private _goal_5 = NEW("GoalUnitInteractAnimObject", _args);
+CALLM(_unit_5, "setGoal", [_goal_5]);
+CALLM(_goal_5, "setAutonomous", [1]);

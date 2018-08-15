@@ -42,13 +42,14 @@ CLASS("AnimObjectGroundVehicle", "AnimObject")
 		private _bench = GETV(_thisObject, "object");
 		private _dir = 0;
 		if (_pointID < 3) then {
-			_dir = (getDir _bench) + 90;
+			_dir = 90;
 		} else {
-			_dir = (getDir _bench) - 90;
+			_dir = -90;
 		};
 		private _offset = _points select _pointID;
-		//_offset set [1, (_offset select 1) - 0.5 + (random 1) ]; // Randomize the coordinate along the vehicle
-		[_offset, selectRandom _animations, _dir]
+		_offset set [1, (_offset select 1) - 0.5 + (random 1) ]; // Randomize the coordinate along the vehicle
+		// pos offset, animation, animation out, walk out dir, walk out distance
+		[_offset, _dir, selectRandom _animations, "", 0, 0]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

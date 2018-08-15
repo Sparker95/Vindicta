@@ -13,6 +13,8 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 	VARIABLE("pointID");
 	VARIABLE("animDuration");
 	VARIABLE("animationOut");
+	VARIABLE("walkOutDir");
+	VARIABLE("walkOutDistance");
 	VARIABLE("timeCompleted"); // The time when this goal will be completed
 	
 	// ----------------------------------------------------------------------
@@ -26,6 +28,8 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 		SETV(_thisObject, "animDuration", _animDuration);
 		SETV(_thisObject, "animationOut", ""); // Actual value will be retrieved on goal activation
 		SETV(_thisObject, "timeCompleted", (time + _animDuration));
+		SETV(_thisObject, "walkOutDir", 0);
+		SETV(_thisObject, "walkOutDistance", 0); // 0 means no walking out from animation
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -54,7 +58,10 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 		private _pointData = CALLM(_animObject, "getPointData", _args); // pointData: ["_posOffset", "_dir", "_animation", "_animationOut"]
 		if ( count _pointData > 0 ) then {
 			// Parse point data
-			_pointData params ["_posOffset", "_dir", "_animation", "_animationOut"];
+			_pointData params ["_posOffset", "_dir", "_animation", "_animationOut", "_walkOutDir", "_walkOutDistance"];
+			// Store some data
+			SETV(_thisObject, "walkOutDir", _walkOutDir);
+			SETV(_thisObject, "walkOutDistance", _walkOutDistance);
 			private _objectHandle = CALLM(_animObject, "getObject", []);
 			// Convert model to world
 			_dir = _dir + (direction _objectHandle);
@@ -114,7 +121,9 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 			private _animationOut = GETV(_thisObject, "animationOut");
 			// Get back on your feet!
 			private _entity = GETV(_thisObject, "entity");
-			private _args = [_animationOut, 0, 2];
+			private _walkOutDir = GETV(_thisObject, "walkOutDir");
+			private _walkOutDistance = GETV(_thisObject, "walkOutDistance");
+			private _args = [_animationOut, _walkOutDir, _walkOutDistance];
 			CALLM(_entity, "doStopInteractAnimObject", _args);
 			
 			// Notify the animObject that this seat is now free

@@ -37,6 +37,7 @@ CLASS("GoalUnitMoveInf", "Goal")
 		private _entity = GETV(_thisObject, "entity");
 		private _destPos = GETV(_thisObject, "destPos");
 		CALLM(_entity, "doMoveInf", [_destPos]);
+		diag_log format ["===== Moving inf to pos: %1", _destPos];
 		SETV(_thisObject, "state", GOAL_STATE_ACTIVE);
 		GOAL_STATE_ACTIVE
 	} ENDMETHOD;
