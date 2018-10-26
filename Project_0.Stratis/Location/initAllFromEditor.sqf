@@ -1,0 +1,3 @@
+/*
+Checks the game world for predefined game objects and markers and creates locations from them.
+*/

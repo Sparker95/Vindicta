@@ -1,0 +1,89 @@
+[BaseObject] // object with basic functionality: set/get variables, call methods
+------------------------------
+    [ScriptObject]
+    ------------------------------
+    [MessageLoop] // Container for objects associated with it to process their message queues and call update() of objects
+    -objects[] // Array with objects
+    -script // Script handle of the script which calls this manager's update() method. Initialized by constructor.
+	-messageQueue
+	-msgID // Counter for messages
+	+addObject() // Adds object to the list
+	+msgID = postMessage() // Posts message into the message queue, returns message id.
+	+messageProcessed(reqID) // Returns true if a posted message has been processed
+    ------------------------------
+    [MessageReceiver] // Object with message handling capabilities
+    +handled=handleMessage() // Does processing of message by this object
+    -getMessageLoop() // Returns the MessageLoop object which does message processing
+    +postMessage() // Posts message into the MessageLoop of this object
+    ------------------------------
+    	[Unit]
+    	-catID
+    	-subcatID
+    	-className
+    	-objectHandle
+    	-garrison
+    	-owner
+    	-group
+    	+new(catID, subcatID, classID)
+    	+spawn(pos, dir)
+    	+handleKilled
+    	------------------------------
+    		[UnitMan]
+    		-assignedVehicle
+    		-assignedVehicleRole
+    		+assignVehicle(vehicle, role, turret)
+    		
+    		------------------------------
+    		[UnitVehicle]
+    		-crew
+    		+assignCrew()
+    		+assignedCrew() // Returns list of units assigned as crew of this vehicle
+    		------------------------------
+    		[UnitDrone]
+    		------------------------------
+    	[Group]
+    		-men
+    		-vehicles
+    		-drones
+    		-side
+    		-groupHandle
+    		-handleUnitKilled
+    	------------------------------
+        [Location]
+        +update() // 
+        ------------------------------
+        [Garrison]
+        +constructor(manager)
+        +update() // Check message queue of this garrison
+        +all functions must check the thread they are called from
+        ------------------------------
+        [Goal]
+        ------------------------------
+            [GoalAtomic]
+            ------------------------------
+            [GoalComposite]
+            ------------------------------            
+        [Sense]
+        +update()
+        +getData()
+        ------------------------------
+            [SenseUnits]
+            +addUnit()
+            ------------------------------
+                [SenseGunfire]
+                +getActiveClusters()
+                ------------------------------
+                    [SenseArtillery]
+                    ------------------------------
+            [SenseGroups]
+            +addGroup()
+            ------------------------------
+            [SenseGarrisons]
+            +addGarrison()
+            ------------------------------
+                [SenseKnowsAbout]
+                ------------------------------
+        [Commander]
+        ------------------------------
+        [EventDispatcher]
+        ------------------------------

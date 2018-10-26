@@ -5,6 +5,9 @@ add inits here until it's so fucked up, then redo it all over again
 
 //==== Locations initialization
 //player allowDamage false;
+/*
+
+// Old init code
 call compile preprocessFileLineNumbers "initModules.sqf";
 if(isServer) then
 {
@@ -40,3 +43,46 @@ if(isServer) then
 UI_fnc_onMapSingleClick =
 compile preprocessfilelinenumbers "UI\onMapSingleClick.sqf";
 onMapSingleClick {call UI_fnc_onMapSingleClick;};
+*/
+
+#include "OOP_Light\OOP_Light.h"
+#include "Message\Message.hpp"
+
+diag_log "Init.sqf: Calling initModules...";
+
+call compile preprocessFileLineNumbers "initModules.sqf";
+
+diag_log "Init.sqf: Creating global objects...";
+
+// Init global objects
+// Main timer service
+gTimerServiceMain = NEW("TimerService", [0.5]); // timer resolution
+
+// Main message loop for garrisons
+gMessageLoopMain = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
+
+// Message loop for locations
+gMessageLoopLocation = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
+
+// Location unit array provider
+gLUAP = NEW("LocationUnitArrayProvider", []);
+// Create a timer for gLUAP
+private _msg = MESSAGE_NEW();
+_msg set [MESSAGE_ID_DESTINATION, gLUAP];
+_msg set [MESSAGE_ID_SOURCE, ""];
+_msg set [MESSAGE_ID_DATA, 666];
+_msg set [MESSAGE_ID_TYPE, 666];
+private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+private _LUAPTimer = NEW("Timer", _args);
+
+// Message loop for garrison goals
+gMessageLoopGoal = NEW("MessageLoop", []);
+
+
+diag_log "Init.sqf: Calling initWorld...";
+
+//call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+
+diag_log "Init.sqf: Init done!";

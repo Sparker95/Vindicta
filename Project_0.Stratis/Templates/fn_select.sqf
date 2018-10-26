@@ -2,6 +2,9 @@
 Select a class from a subcategory from a category from a template array
 parameters:
 return value: array with classnames, nil if value not found
+
+_subcatID can be -1 for a random class
+
 */
 
 params ["_template", "_catID", "_subcatID", "_classID"];
@@ -32,7 +35,11 @@ else
 		}
 		else
 		{
-			_class = _subcat select _classID;
+			if (_classID != -1) then {
+				_class = _subcat select _classID;
+			} else {
+				_class = selectRandom _subcat;
+			};
 			if(isNil "_class") then
 			{
 				diag_log format ["fn_select.sqf: Template: class not found: %1 in subcategory: %2 in category: %3", _classID, _subcatID, _catID];

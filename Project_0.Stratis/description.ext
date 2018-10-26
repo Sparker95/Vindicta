@@ -8,13 +8,14 @@ OnLoadMission = "Project_0";
 allowFunctionsLog = 1;
 enableDebugConsole = 2;
 
+/*
 respawn = "BASE";
 respawnDelay = 30;
 respawnVehicleDelay = 120;
 respawnDialog = 1;
 aiKills = 0;
 disabledAI=1;
-Saving = 0;
+Saving = 1;
 showCompass=1;
 showRadio=1;
 showGPS=1;
@@ -23,6 +24,7 @@ showBinocular=1;
 showNotepad=1;
 showWatch=1;
 debriefing=1;
+*/
 
 //showGroupIndicator = 1;
 
