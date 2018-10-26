@@ -17,6 +17,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 	VARIABLE("walkOutDistance");
 	VARIABLE("timeCompleted"); // The time when this goal will be completed
 	VARIABLE("hScript"); // Handle to a script which will be spawned
+	VARIABLE("objectHandle");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -32,6 +33,8 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 		SETV(_thisObject, "walkOutDir", 0);
 		SETV(_thisObject, "walkOutDistance", 0); // 0 means no walking out from animation
 		SETV(_thisObject, "hScript", scriptNull);
+		private _oh = CALLM(_entity, "getObjectHandle", []);
+		SETV(_thisObject, "objectHandle", _oh);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -57,7 +60,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 		
 		// Get variables
 		private _entity = GETV(_thisObject, "entity");
-		private _entityObjectHandle = CALLM(_entity, "getObjectHandle", []);
+		private _entityObjectHandle = GETV(_thisObject, "objectHandle");
 		private _animObject = GETV(_thisObject, "animObject");
 		private _pointID = GETV(_thisObject, "pointID");
 		
@@ -88,6 +91,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 			_entityObjectHandle setDir _dir;
 			
 			// Spawn a script to monitor the behaviour of this unit
+			/*
 			private _hScript = [_thisObject] spawn { 
 				params ["_thisObject"];
 				private _entity = GETV(_thisObject, "entity");
@@ -108,6 +112,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 				};		
 		 	};
 		 	SETV(_thisObject, "hScript", _hScript);
+		 	*/
 		 	
 			
 			//if (_animSuccessfull) then {
@@ -133,7 +138,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		private _state = CALLM(_thisObject, "activateIfInactive", []);		
+		private _state = CALLM(_thisObject, "activateIfInactive", []);
 		
 		if (_state != GOAL_STATE_FAILED) then {
 			// Check if we have been playing the animation for enough time
@@ -158,12 +163,19 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 		params [["_thisObject", "", [""]]];
 		
 		// Terminate the script
+		/*
 		private _hScript = GETV(_thisObject, "hScript");
 		if (!scriptDone _hScript) then { terminate _hScript; };
+		*/
 		
 		private _state = GETV(_thisObject, "state");
 		if (_state == GOAL_STATE_ACTIVE || _state == GOAL_STATE_COMPLETED) then {
-			CALLM(_thisObject, "stopInteraction", []);
+			
+			// Play the animation if the unit is alive
+			private _oh = GETV(_thisObject, "objectHandle");
+			if (alive _oh) then {
+				CALLM(_thisObject, "stopInteraction", []);
+			};
 			
 			// Notify the animObject that this seat is now free
 			private _animObject = GETV(_thisObject, "animObject");
@@ -202,8 +214,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 	// ---------------------------------------------------------------------------
 	METHOD("startInteraction") {
 		params [ ["_thisObject", "", [""]] ];
-		private _entity = GETV(_thisObject, "entity");
-		private _objectHandle = CALLM(_entity, "getObjectHandle");
+		private _objectHandle = GETV(_thisObject, "objectHandle");
 		
 		// Perform actions on this soldier
 		_objectHandle switchMove _animation;
@@ -224,8 +235,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 		private _animationOut = GETV(_thisObject, "animationOut");
 		
 		// Switch animation, enable AI
-		private _entity = GETV(_thisObject, "entity");
-		private _objectHandle = CALLM(_entity, "getObjectHandle", []);
+		private _objectHandle = GETV(_thisObject, "objectHandle");
 		_objectHandle enableAI "ALL";
 		_objectHandle switchMove _animationOut;
 		

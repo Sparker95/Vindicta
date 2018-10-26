@@ -10,6 +10,7 @@ CLASS("GoalUnitMoveInf", "Goal")
 
 	VARIABLE("destPos");
 	VARIABLE("radius");
+	VARIABLE("objectHandle");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -18,7 +19,8 @@ CLASS("GoalUnitMoveInf", "Goal")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_entity", "", [""]], ["_destPos", [], [[]]], ["_completionRadius", 0, [0]]];
 		SETV(_thisObject, "destPos", _destPos);
-		SETV(_thisObject, "radius", _completionRadius);
+		SETV(_thisObject, "radius", _completionRadius);		private _oh = CALLM(_entity, "getObjectHandle", []);
+		SETV(_thisObject, "objectHandle", _oh);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

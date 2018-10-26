@@ -12,6 +12,7 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 	VARIABLE("animObject"); // Bench is derived from AnimObject
 	VARIABLE("pointID"); // The ID of the point where the unit is going to sit at
 	VARIABLE("animDuration"); // How many seconds the bot will be sitting on the bench until the task is completed
+	VARIABLE("objectHandle");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -21,6 +22,8 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 		params [["_thisObject", "", [""]], ["_entity", "", [""]], ["_animObject", "", [""]], ["_animDuration", 0, [0]]];
 		SETV(_thisObject, "animObject", _animObject);
 		SETV(_thisObject, "animDuration", _animDuration);
+		private _oh = CALLM(_entity, "getObjectHandle", []);
+		SETV(_thisObject, "objectHandle", _oh);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -84,7 +87,15 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 		private _state = GETV(_thisObject, "state");
 		if (_state != GOAL_STATE_FAILED) then {
 			CALLM(_thisObject, "activateIfInactive", []);
-			_state = CALLM(_thisObject, "processSubgoals", []);
+			
+			// Check if the unit is still in safe state
+			private _entity = GETV(_thisObject, "entity");		
+			if (CALLM(_entity, "getBehaviour", []) == "COMBAT") then {
+				_state = GOAL_STATE_FAILED;
+				CALLM(_thisObject, "deleteAllSubgoals", []);
+			} else {
+				_state = CALLM(_thisObject, "processSubgoals", []);
+			};
 		};
 		
 		SETV(_thisObject, "state", _state);
@@ -97,8 +108,8 @@ CLASS("GoalUnitInteractAnimObject", "GoalCompositeSerial")
 
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
-		private _entity = GETV(_thisObject, "entity");
-		CALLM(_entity, "doStopInf");
+		//private _entity = GETV(_thisObject, "entity");
+		//CALLM(_entity, "doStopInf");
 	} ENDMETHOD;
 
 ENDCLASS;

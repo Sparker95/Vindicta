@@ -329,6 +329,8 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD_FILE("doInteractAnimObject", "Unit\doInteractAnimObject.sqf");
 	METHOD_FILE("doStopInteractAnimObject", "Unit\doStopInteractAnimObject.sqf");
 	METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
+	METHOD_FILE("getBehaviour", "Unit\getBehaviour.sqf");
+	METHOD_FILE("isAlive", "Unit\isAlive.sqf");
 	
 ENDCLASS;
 

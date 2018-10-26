@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2322;
+		nextID=2324;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=62;
+		nextID=64;
 	};
 	class Camera
 	{
-		pos[]={2378.3857,37.126984,1125.4095};
-		dir[]={0.59333849,-0.80505371,-0.0095504727};
-		up[]={0.80499005,0.59318358,-0.012958202};
-		aside[]={-0.016098261,1.9569561e-006,-0.99997801};
+		pos[]={2586.1628,55.821251,1035.0751};
+		dir[]={-0.93953383,-0.32401854,0.11202018};
+		up[]={-0.3219206,0.9460054,0.038383055};
+		aside[]={0.11840529,-7.1700197e-007,0.99306661};
 	};
 };
 binarizationWanted=0;
@@ -53,13 +53,20 @@ addons[]=
 	"A3_Structures_F_EPC_Civ_Accessories",
 	"A3_Soft_F_Gamma_Truck_01",
 	"A3_Soft_F_Exp_LSV_02",
-	"A3_Armor_F_Beta_APC_Tracked_02"
+	"A3_Armor_F_Beta_APC_Tracked_02",
+	"A3_Weapons_F_LongRangeRifles_DMR_01",
+	"A3_Weapons_F_Acc",
+	"A3_Weapons_F_Exp",
+	"A3_Weapons_F_Mark_Acc",
+	"A3_Weapons_F",
+	"A3_Weapons_F_Pistols_Rook40",
+	"A3_Weapons_F_Items"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=19;
+		items=21;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -193,6 +200,20 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item19
+		{
+			className="A3_Weapons_F_Exp";
+			name="Arma 3 Apex - Weapons and Accessories";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item20
+		{
+			className="A3_Weapons_F_Mark";
+			name="Arma 3 Marksmen - Weapons and Accessories";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 class DynamicSimulation
@@ -263,7 +284,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=142;
+		items=143;
 		class Item0
 		{
 			dataType="Object";
@@ -3126,7 +3147,6 @@ class Mission
 					flags=7;
 					class Attributes
 					{
-						isPlayer=1;
 					};
 					id=2310;
 					type="B_engineer_F";
@@ -3190,6 +3210,178 @@ class Mission
 			id=2321;
 			type="O_APC_Tracked_02_cannon_F";
 			atlOffset=-0.00040864944;
+		};
+		class Item142
+		{
+			dataType="Group";
+			side="East";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2577.6946,48.186424,1034.6183};
+						angles[]={0,5.3232546,0};
+					};
+					side="East";
+					flags=7;
+					class Attributes
+					{
+						isPlayer=1;
+						stance="Middle";
+						class Inventory
+						{
+							class primaryWeapon
+							{
+								name="srifle_DMR_01_F";
+								optics="optic_DMS";
+								muzzle="muzzle_snds_B_snd_F";
+								underBarrel="bipod_02_F_blk";
+								class primaryMuzzleMag
+								{
+									name="10Rnd_762x54_Mag";
+									ammoLeft=10;
+								};
+							};
+							class handgun
+							{
+								name="hgun_Rook40_F";
+								class primaryMuzzleMag
+								{
+									name="16Rnd_9x21_Mag";
+									ammoLeft=16;
+								};
+							};
+							class uniform
+							{
+								typeName="U_O_CombatUniform_ocamo";
+								isBackpack=0;
+								class MagazineCargo
+								{
+									items=1;
+									class Item0
+									{
+										name="10Rnd_762x54_Mag";
+										count=3;
+										ammoLeft=10;
+									};
+								};
+								class ItemCargo
+								{
+									items=1;
+									class Item0
+									{
+										name="FirstAidKit";
+										count=1;
+									};
+								};
+							};
+							class vest
+							{
+								typeName="V_TacVest_khk";
+								isBackpack=0;
+								class MagazineCargo
+								{
+									items=6;
+									class Item0
+									{
+										name="10Rnd_762x54_Mag";
+										count=6;
+										ammoLeft=10;
+									};
+									class Item1
+									{
+										name="16Rnd_9x21_Mag";
+										count=2;
+										ammoLeft=16;
+									};
+									class Item2
+									{
+										name="HandGrenade";
+										count=2;
+										ammoLeft=1;
+									};
+									class Item3
+									{
+										name="SmokeShell";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item4
+									{
+										name="SmokeShellRed";
+										count=1;
+										ammoLeft=1;
+									};
+									class Item5
+									{
+										name="Chemlight_red";
+										count=2;
+										ammoLeft=1;
+									};
+								};
+							};
+							map="ItemMap";
+							compass="ItemCompass";
+							watch="ItemWatch";
+							radio="ItemRadio";
+							hmd="NVGoggles_OPFOR";
+							headgear="H_HelmetO_ocamo";
+						};
+					};
+					id=2323;
+					type="O_soldier_M_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male02PER";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.02;
+								};
+							};
+						};
+						nAttributes=2;
+					};
+				};
+			};
+			class Attributes
+			{
+			};
+			id=2322;
 		};
 	};
 	class Connections

@@ -56,7 +56,7 @@ diag_log "Init.sqf: Creating global objects...";
 
 // Init global objects
 // Main timer service
-gTimerServiceMain = NEW("TimerService", [0.5]); // timer resolution
+gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 
 // Main message loop for garrisons
 gMessageLoopMain = NEW("MessageLoop", []);
@@ -83,6 +83,6 @@ gMessageLoopGoal = NEW("MessageLoop", []);
 
 diag_log "Init.sqf: Calling initWorld...";
 
-//call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+call compile preprocessFileLineNumbers "Init\initWorld.sqf";
 
 diag_log "Init.sqf: Init done!";
