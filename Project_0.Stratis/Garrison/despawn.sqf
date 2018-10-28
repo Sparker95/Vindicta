@@ -16,15 +16,15 @@ if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't des
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
 
-// Delete the goal object
-private _goal = GETV(_thisObject, "goal");
-if (_goal != "") then {
+// Delete the action object
+private _action = GETV(_thisObject, "action");
+if (_action != "") then {
 	private _msg = MESSAGE_NEW();
-	_msg set [MESSAGE_ID_DESTINATION, _goal];
-	_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_DELETE];
-	private _msgID = CALLM(_goal, "postMessage", [_msg]);
-	CALLM(_goal, "waitUntilMessageDone", [_msgID]);
-	SETV(_thisObject, "goal", "");
+	_msg set [MESSAGE_ID_DESTINATION, _action];
+	_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
+	private _msgID = CALLM(_action, "postMessage", [_msg]);
+	CALLM(_action, "waitUntilMessageDone", [_msgID]);
+	SETV(_thisObject, "action", "");
 };
 
 private _units = GET_VAR(_thisObject, "units");

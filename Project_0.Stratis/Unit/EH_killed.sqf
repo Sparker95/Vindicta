@@ -18,11 +18,11 @@ if (_unit != "") then {
 	_msg set [MESSAGE_ID_DESTINATION, _unit];
 	_msg set [MESSAGE_ID_TYPE, MESSAGE_UNIT_DESTROYED];
 
-	// Did the unit have a goal?
-	private _goal = CALLM(_unit, "getGoal", []);
-	if (_goal != "") then {
-		// Send a message to the goal
-		//diag_log "Sent a message to the goal!";
-		CALLM(_goal, "postMessage", [_msg]);
+	// Did the unit have a action?
+	private _action = CALLM(_unit, "getAction", []);
+	if (_action != "") then {
+		// Send a message to the action
+		//diag_log "Sent a message to the action!";
+		CALLM(_action, "postMessage", [_msg]);
 	};
 };

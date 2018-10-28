@@ -87,19 +87,19 @@ call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
 // Initialize LocationUnitArrayprovider class
 call compile preprocessFileLineNumbers "LocationUnitArrayProvider\LocationUnitArrayProvider.sqf";
 
-// Initialize Goal class
-call compile preprocessFileLineNumbers "Goal\Goal.sqf";
+// Initialize Action class
+call compile preprocessFileLineNumbers "GOAP\Action\Goal.sqf";
 
-// Initialize GoalComposite class
-call compile preprocessFileLineNumbers "GoalComposite\GoalComposite.sqf";
+// Initialize ActionComposite class
+call compile preprocessFileLineNumbers "GOAP\ActionComposite\GoalComposite.sqf";
 
-// Initialize GoalCompositeSerial class
-call compile preprocessFileLineNumbers "GoalCompositeSerial\GoalCompositeSerial.sqf";
+// Initialize ActionCompositeSerial class
+call compile preprocessFileLineNumbers "GOAP\ActionCompositeSerial\GoalCompositeSerial.sqf";
 
-// Initialize Goal inherited classes
-call compile preprocessFileLineNumbers "GoalsGarrison\initClasses.sqf";
-call compile preprocessFileLineNumbers "GoalsGroup\initClasses.sqf";
-call compile preprocessFileLineNumbers "GoalsUnit\initClasses.sqf";
+// Initialize Action inherited classes
+//call compile preprocessFileLineNumbers "GoalsGarrison\initClasses.sqf";
+//call compile preprocessFileLineNumbers "GoalsGroup\initClasses.sqf";
+//call compile preprocessFileLineNumbers "GoalsUnit\initClasses.sqf";
 
 // Initialize AnimObject class
 call compile preprocessFileLineNumbers "AnimObject\AnimObject.sqf";

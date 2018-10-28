@@ -6,7 +6,7 @@
 #define GROUP_DATA_ID_MUTEX			3
 #define GROUP_DATA_ID_TYPE			4
 #define GROUP_DATA_ID_GARRISON		5
-#define GROUP_DATA_ID_GOAL			6
+#define GROUP_DATA_ID_ACTION		6
 
 //				     		  0,        1,       2,  3, 4,  5,  6
 #define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0, "", ""]

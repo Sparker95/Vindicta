@@ -1,15 +1,15 @@
 /*
-The composite goal class. It is a base class for GoalCompositeSerial and GoalCompositeParallel.
+The composite goal class. It is a base class for ActionCompositeSerial and ActionCompositeParallel.
 
 Based on source from "Programming Game AI by Example" by Mat Buckland: http://www.ai-junkie.com/books/toc_pgaibe.html
 
 Author: Sparker 05.08.2018
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Goal\Goal.hpp"
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\Action\Action.hpp"
 
-CLASS("GoalComposite", "Goal")
+CLASS("ActionComposite", "Action")
 
 	VARIABLE("subgoals"); // Array with subgoals
 	
@@ -19,7 +19,7 @@ CLASS("GoalComposite", "Goal")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
-		SETV(_thisObject, "subgoals", []);
+		SETV(_thisObject, "subactions", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -29,50 +29,50 @@ CLASS("GoalComposite", "Goal")
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		
-		// Delete all subgoals
-		CALLM(_thisObject, "deleteAllSubgoals", []);
+		// Delete all subactions
+		CALLM(_thisObject, "deleteAllSubactions", []);
 	} ENDMETHOD;
 	
 	
-	// Serial and Parallel composite goals implement this method differently
-	/*virtual*/ METHOD("processSubgoals") {	} ENDMETHOD;
+	// Serial and Parallel composite actions implement this method differently
+	/*virtual*/ METHOD("processSubactions") {	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                          A D D   S U B G O A L                     |
 	// |                                                                    |
-	// | Adds a subgoal to the front of the subgoal array                   |
+	// | Adds a subaction to the front of the subaction array                   |
 	// ----------------------------------------------------------------------
-	METHOD("addSubgoal") {
-		params [["_thisObject", "", [""]], ["_subgoal", "", [""]] ];
-		private _subgoals = GETV(_thisObject, "subgoals");
-		private _newSubgoals = [_subgoal];
-		_newSubgoals append _subgoals;
-		SETV(_thisObject, "subgoals", _newSubgoals);
+	METHOD("addSubaction") {
+		params [["_thisObject", "", [""]], ["_subaction", "", [""]] ];
+		private _subactions = GETV(_thisObject, "subactions");
+		private _newSubactions = [_subaction];
+		_newSubactions append _subactions;
+		SETV(_thisObject, "subactions", _newSubactions);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                          G E T   S U B G O A L S                   |
 	// |                                                                    
-	// | Returns the list of subgoals (for debug purposes)
+	// | Returns the list of subactions (for debug purposes)
 	// ----------------------------------------------------------------------
-	METHOD("getSubgoals") {
+	METHOD("getSubactions") {
 		params [["_thisObject", "", [""]]];
-		GETV(_thisObject, "subgoals")
+		GETV(_thisObject, "subactions")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                   D E L E T E   A L L   S U B G O A L S            |
 	// ----------------------------------------------------------------------
 	
-	METHOD("deleteAllSubgoals") {
+	METHOD("deleteAllSubactions") {
 		params [["_thisObject", "", [""]]];
-		// Regardless if the goal is serial or parallel, terminate and delete all subgoals
-		private _subgoals = GETV(_thisObject, "subgoals");
+		// Regardless if the action is serial or parallel, terminate and delete all subactions
+		private _subactions = GETV(_thisObject, "subactions");
 		{
 			CALLM(_x, "terminate", []);
 			DELETE(_x);
-		} forEach _subgoals;
-		SETV(_thisObject, "subgoals", []);
+		} forEach _subactions;
+		SETV(_thisObject, "subactions", []);
 	} ENDMETHOD;
 
 ENDCLASS;

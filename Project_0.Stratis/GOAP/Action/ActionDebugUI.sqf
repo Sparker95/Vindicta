@@ -1,17 +1,17 @@
 /*
-This script will be displaying the goals of unit you are looking at.
+This script will be displaying the actions of unit you are looking at.
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Goal\Goal.hpp"
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\Action\Action.hpp"
 
 [] spawn {
 
-#define GOAL_DEBUG_NEXT_CTRL_ID_START 6666
-#define GOAL_DEBUG_MAX_COUNT 10
+#define ACTION_DEBUG_NEXT_CTRL_ID_START 6666
+#define ACTION_DEBUG_MAX_COUNT 10
 
-goalDebugNextCtrlID = GOAL_DEBUG_NEXT_CTRL_ID_START;
-goalDebugs = [];
+actionDebugNextCtrlID = ACTION_DEBUG_NEXT_CTRL_ID_START;
+actionDebugs = [];
 
 // update the position of controls each frame
 addMissionEventHandler ["EachFrame", {
@@ -23,13 +23,13 @@ addMissionEventHandler ["EachFrame", {
 		_posScreen set [0, (_posScreen select 0) - 0.15];
 		_ctrl ctrlSetPosition _posScreen;		
 		_ctrl ctrlCommit 0;
-	} forEach goalDebugs;
+	} forEach actionDebugs;
 }];
 
 waitUntil { ! isNull findDisplay 46 };
 
 // Remove previous controls
-for "_ctrlID" from GOAL_DEBUG_NEXT_CTRL_ID_START to (GOAL_DEBUG_NEXT_CTRL_ID_START + GOAL_DEBUG_MAX_COUNT) do {
+for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID_START + ACTION_DEBUG_MAX_COUNT) do {
 	private _ctrl = (findDisplay 46) displayCtrl _ctrlID;
 	if (_ctrl != controlNull) then { ctrlDelete _ctrl; };
 };
@@ -42,18 +42,18 @@ for "_ctrlID" from GOAL_DEBUG_NEXT_CTRL_ID_START to (GOAL_DEBUG_NEXT_CTRL_ID_STA
 			if (_key == 20) then { // T button
 				if (!_ctrl) then { // T without Ctrl
 					//diag_log "Pressed T key!!";
-					private _ctrlID = cursorObject getVariable ["goalDebugCtrlID", -1];				
+					private _ctrlID = cursorObject getVariable ["actionDebugCtrlID", -1];				
 					// Do we already have a control for this unit?
 					if (_ctrlID == -1) then {
 						// No we don't have a control for this unit
 						private _unit = [cursorObject] call unit_fnc_getUnitFromObjectHandle;
 						// Is cursorObject a unit?
 						if (_unit != "") then {
-							private _goal = CALLM(_unit, "getGoal", []);
-							// Does the unit have a goal? Did we exceed max amount of debug controls?
-							if (_goal != "" && ((count goalDebugs) < GOAL_DEBUG_MAX_COUNT)) then {
+							private _action = CALLM(_unit, "getAction", []);
+							// Does the unit have a action? Did we exceed max amount of debug controls?
+							if (_action != "" && ((count actionDebugs) < ACTION_DEBUG_MAX_COUNT)) then {
 								// Create a control
-								private _ctrl = (findDisplay 46) ctrlCreate ["RscStructuredText", goalDebugNextCtrlID];
+								private _ctrl = (findDisplay 46) ctrlCreate ["RscStructuredText", actionDebugNextCtrlID];
 								_ctrl ctrlSetPosition [0.0, 0.0, 0.6, 0.4];
 								_ctrl ctrlSetBackgroundColor [0.0, 0.0, 0.0, 0.4];
 								_ctrl ctrlSetTextColor [1, 1, 1, 1];
@@ -62,48 +62,48 @@ for "_ctrlID" from GOAL_DEBUG_NEXT_CTRL_ID_START to (GOAL_DEBUG_NEXT_CTRL_ID_STA
 								_ctrl ctrlSetText "Text goes here...";
 								_ctrl ctrlCommit 0;
 							
-								goalDebugs pushBack [_unit, goalDebugNextCtrlID, cursorObject];
+								actionDebugs pushBack [_unit, actionDebugNextCtrlID, cursorObject];
 								
 								// Set variable
-								cursorObject setVariable ["goalDebugCtrlID", goalDebugNextCtrlID];
-								goalDebugNextCtrlID = goalDebugNextCtrlID + 1;							
+								cursorObject setVariable ["actionDebugCtrlID", actionDebugNextCtrlID];
+								actionDebugNextCtrlID = actionDebugNextCtrlID + 1;							
 							};
 						};
 					} else {
 						// Yes we have a control for this unit
 						// Delete this control
 						private _unit = [cursorObject] call unit_fnc_getUnitFromObjectHandle;
-						goalDebugs = goalDebugs - [_unit, _ctrlID, cursorObject];
+						actionDebugs = actionDebugs - [_unit, _ctrlID, cursorObject];
 						private _ctrl = (findDisplay 46) displayCtrl _ctrlID;
 						if (_ctrl != controlNull) then { ctrlDelete _ctrl; };
-						cursorObject setVariable ["goalDebugCtrlID", nil];
+						cursorObject setVariable ["actionDebugCtrlID", nil];
 					};
 				} else { // Ctrl+T
-					while {count goalDebugs > 0} do {
-						private _ctrlID = goalDebugs select 0 select 1;
+					while {count actionDebugs > 0} do {
+						private _ctrlID = actionDebugs select 0 select 1;
 						private _ctrl = (findDisplay 46) displayCtrl _ctrlID;
 						if (_ctrl != controlNull) then { ctrlDelete _ctrl; };
-						goalDebugs deleteAt 0;
+						actionDebugs deleteAt 0;
 					};
 				};
 			};
 		}];
 
-	// Function for retrieving the text of subgoal tree
-	_appendSubgoalTree = {
-		params ["_goal", "_text", "_level"];
-		private _state = GETV(_goal, "state");
-		private _stateText = GOAL_STATE_TEXT_ARRAY select _state;
+	// Function for retrieving the text of subaction tree
+	_appendSubactionTree = {
+		params ["_action", "_text", "_level"];
+		private _state = GETV(_action, "state");
+		private _stateText = ACTION_STATE_TEXT_ARRAY select _state;
 		_text = _text + "\n";
 		for "_i" from 0 to _level do {
 			_text = _text + "  ";
 		};
-		_text = _text + _goal + ": " + _stateText;
+		_text = _text + _action + ": " + _stateText;
 		_level = _level + 1;
-		private _subgoals = CALLM(_goal, "getSubgoals", []);
+		private _subactions = CALLM(_action, "getSubactions", []);
 		{
-			_text = [_x, _text, _level] call _appendSubgoalTree;
-		} forEach _subgoals;
+			_text = [_x, _text, _level] call _appendSubactionTree;
+		} forEach _subactions;
 		
 		_text
 	};
@@ -115,35 +115,35 @@ for "_ctrlID" from GOAL_DEBUG_NEXT_CTRL_ID_START to (GOAL_DEBUG_NEXT_CTRL_ID_STA
 		{
 			private _unit = _x select 0;
 			private _ctrlID = _x select 1;
-			private _goal = CALLM(_unit, "getGoal", []);
+			private _action = CALLM(_unit, "getAction", []);
 			private _text = _unit;
-			if (_goal != "") then {
-				// Make a string with the whole goal tree
-				_text = [_goal, _text, 0] call _appendSubgoalTree;
+			if (_action != "") then {
+				// Make a string with the whole action tree
+				_text = [_action, _text, 0] call _appendSubactionTree;
 			};
 			private _ctrl = (findDisplay 46) displayCtrl _ctrlID;			
 			_ctrl ctrlSetText _text;
 			_ctrl ctrlCommit 0;
-		} forEach goalDebugs;
+		} forEach actionDebugs;
 	};
 
 
 	/*
-	private _goal = "";
+	private _action = "";
 	private _unit = "";
 	while {true} do {
 		sleep 0.1;
 		
 		private _unitNew = [cursorObject] call unit_fnc_getUnitFromObjectHandle;
 		if (_unitNew != "") then {
-			// Get unit's goal
+			// Get unit's action
 			_unit = _unitNew;
-			private _goalNew = CALLM(_unit, "getGoal", []);
-			if (_goalNew != "") then {_goal = _goalNew; };
+			private _actionNew = CALLM(_unit, "getAction", []);
+			if (_actionNew != "") then {_action = _actionNew; };
 		};
-		if (_goal != "") then {
-			// Make a string with the whole goal tree
-			private _text = [_goal, _unit, 0] call _appendSubgoalTree;
+		if (_action != "") then {
+			// Make a string with the whole action tree
+			private _text = [_action, _unit, 0] call _appendSubactionTree;
 			hint _text;
 		};
 	};

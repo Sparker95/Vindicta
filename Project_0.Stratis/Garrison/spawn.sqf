@@ -45,7 +45,9 @@ private _loc = GET_VAR(_thisObject, "location");
 } forEach _units;
 
 // Create a goal object for this garrison
+/*
 private _args = [_thisObject]; // entity
 private _newGoal = NEW("GoalComposite", _args);
 CALLM(_newGoal, "setAutonomous", [3]); // timer interval
 SETV(_thisObject, "goal", _newGoal);
+*/

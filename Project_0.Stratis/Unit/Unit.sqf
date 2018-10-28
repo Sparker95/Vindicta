@@ -257,16 +257,16 @@ CLASS(UNIT_CLASS_NAME, "")
 	// |                   S E T / G E T   G O A L
 	// | Sets the goal value of this unit. It doesn't mean that the unit will pursue this goal.
 	// ----------------------------------------------------------------------
-	METHOD("setGoal") {
-		params [["_thisObject", "", [""]], ["_goal", "", [""]] ];
+	METHOD("setAction") {
+		params [["_thisObject", "", [""]], ["_action", "", [""]] ];
 		private _data = GET_VAR(_thisObject, "data");
-		_data set [UNIT_DATA_ID_GOAL, _goal];
+		_data set [UNIT_DATA_ID_ACTION, _action];
 	} ENDMETHOD;
 	
-	METHOD("getGoal") {
+	METHOD("getAction") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		_data select UNIT_DATA_ID_GOAL
+		_data select UNIT_DATA_ID_ACTION
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

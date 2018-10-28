@@ -10,12 +10,12 @@
 
 // Goal messages
 // This message is sent to the goal by a timer to make it call its process method
-#define GOAL_MESSAGE_PROCESS	120
+#define ACTION_MESSAGE_PROCESS	120
 // Send this message to a goal so that it deletes itself
-#define GOAL_MESSAGE_DELETE		121
+#define ACTION_MESSAGE_DELETE		121
 //  Send it to a goal which was handling an animation, like sitting on a bench or
 // by a campfire, when a bot has been interrupted, for example by spotting an enemy
-#define GOAL_MESSAGE_ANIMATION_INTERRUPTED 122
+#define ACTION_MESSAGE_ANIMATION_INTERRUPTED 122
 
 // AnimObject messages
 // Sent by a unit when he has freed a position with any reason

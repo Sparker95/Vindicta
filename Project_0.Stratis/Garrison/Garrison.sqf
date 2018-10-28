@@ -17,7 +17,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	VARIABLE("side");
 	VARIABLE("debugName");
 	VARIABLE("location");
-	VARIABLE("goal"); // Top level goal of this garrison
+	VARIABLE("action"); // Top level action of this garrison
 	
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -37,14 +37,14 @@ CLASS("Garrison", "MessageReceiverEx")
 		
 		// Check existance of neccessary global objects
 		if (isNil "gMessageLoopMain") exitWith {"[Garrison] Error: global main message loop doesn't exist!";};
-		if (isNil "gMessageLoopGoal") exitWith { diag_log "[Garrison] Error: global garrison goal message loop doesn't exist!"; };
+		if (isNil "gMessageLoopAction") exitWith { diag_log "[Garrison] Error: global garrison action message loop doesn't exist!"; };
 		
 		SET_VAR(_thisObject, "units", []);
 		SET_VAR(_thisObject, "groups", []);
 		SET_VAR(_thisObject, "spawned", false);
 		SET_VAR(_thisObject, "side", _side);
 		SET_VAR(_thisObject, "debugName", "");
-		SET_VAR(_thisObject, "goal", "");
+		SET_VAR(_thisObject, "action", "");
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -59,15 +59,15 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "side", nil);
 		SET_VAR(_thisObject, "debugName", nil);
 		
-		// Delete the goal object of this garrison
-		private _goal = GET_VAR(_thisObject, "goal");
-		if (_goal != "") then {
-			// Since garrison's goals are processed in another thread, we must wait until the thread properly terminates this goal.
+		// Delete the action object of this garrison
+		private _action = GET_VAR(_thisObject, "action");
+		if (_action != "") then {
+			// Since garrison's actions are processed in another thread, we must wait until the thread properly terminates this action.
 			private _msg = MESSAGE_NEW();
-			_msg set [MESSAGE_ID_DESTINATION, _goal];
-			_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_DELETE];
-			private _msgID = CALLM(_goal, "postMessage", _msg);
-			CALLM(_goal, "waitUntilMessageDone", [_msgID]);
+			_msg set [MESSAGE_ID_DESTINATION, _action];
+			_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
+			private _msgID = CALLM(_action, "postMessage", _msg);
+			CALLM(_action, "waitUntilMessageDone", [_msgID]);
 		};
 	} ENDMETHOD;
 	

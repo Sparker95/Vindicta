@@ -5,12 +5,12 @@ Based on source from "Programming Game AI by Example" by Mat Buckland: http://ww
 Author: Sparker 05.08.2018
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "Goal.hpp"
-#include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "Action.hpp"
+#include "..\..\Message\Message.hpp"
+#include "..\..\MessageTypes.hpp"
 
-CLASS("Goal", "MessageReceiver")
+CLASS("Action", "MessageReceiver")
 
 	VARIABLE("entity"); // The entity that owns this goal: unit, group, garrison, etc
 	VARIABLE("state"); // Status of this goal
@@ -35,7 +35,7 @@ CLASS("Goal", "MessageReceiver")
 		if (isNil "gMessageLoopGoal") exitWith { diag_log "[Goal::new] Error: global goal message loop doesn't exist!"; };
 		
 		SET_VAR(_thisObject, "entity", _entity);
-		SET_VAR(_thisObject, "state", GOAL_STATE_INACTIVE); // Default state
+		SET_VAR(_thisObject, "state", ACTION_STATE_INACTIVE); // Default state
 		SETV(_thisObject, "msgLoop", gMessageLoopGoal);
 		
 		SETV(_thisObject, "timer", ""); // No timer for this goal until it has been made autonomous
@@ -91,7 +91,7 @@ CLASS("Goal", "MessageReceiver")
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
 		_msg set [MESSAGE_ID_SOURCE, ""];
 		_msg set [MESSAGE_ID_DATA, 0];
-		_msg set [MESSAGE_ID_TYPE, GOAL_MESSAGE_PROCESS];
+		_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_PROCESS];
 		private _args = [_thisObject, _timerPeriod, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		SETV(_thisObject, "timer", _timer);
@@ -112,17 +112,17 @@ CLASS("Goal", "MessageReceiver")
 		switch (_msgType) do {
 			case MESSAGE_UNIT_DESTROYED: {
 				diag_log "[Goal::handleMessage] Info: unit was destroyed";
-				SETV(_thisObject, "state", GOAL_STATE_FAILED);
+				SETV(_thisObject, "state", ACTION_STATE_FAILED);
 				_msgHandled = true; // message handled
 			};
 		
-			case GOAL_MESSAGE_PROCESS: {
+			case ACTION_MESSAGE_PROCESS: {
 				//diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
 				CALLM(_thisObject, "process", []);
 				_msgHandled = true; // message handled
 			};
 		
-			case GOAL_MESSAGE_DELETE: {
+			case ACTION_MESSAGE_DELETE: {
 				CALLM(_thisObject, "terminate", []);
 				DELETE(_thisObject);
 				_msgHandled = true; // message handled
@@ -139,7 +139,7 @@ CLASS("Goal", "MessageReceiver")
 	METHOD("activateIfInactive") {
 		params [["_thisObject", "", [""]]];
 		private _state = GETV(_thisObject, "state");
-		if (_state == GOAL_STATE_INACTIVE) then {
+		if (_state == ACTION_STATE_INACTIVE) then {
 			_state = CALLM(_thisObject, "activate", []);
 		};
 		_state
@@ -152,7 +152,7 @@ CLASS("Goal", "MessageReceiver")
 	METHOD("reactivateIfFailed") {
 		params [["_thisObject", "", [""]]];
 		private _state = GETV(_thisObject, "state");
-		if (_state == GOAL_STATE_FAILED) then {
+		if (_state == ACTION_STATE_FAILED) then {
 			CALLM(_thisObject, "activate", []);
 		};
 	} ENDMETHOD;
@@ -186,21 +186,21 @@ CLASS("Goal", "MessageReceiver")
 	
 	METHOD("isCompleted") {
 		params [ ["_thisObject", "", [""]] ];
-		private _state = GETV(_thisObject, "state"); _state == GOAL_STATE_COMPLETED
+		private _state = GETV(_thisObject, "state"); _state == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 	
 	METHOD("isActive") {
 		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == GOAL_STATE_ACTIVE
+		(GETV(_thisObject, "state")) == ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	METHOD("isInactive") {
 		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == GOAL_STATE_INACTIVE
+		(GETV(_thisObject, "state")) == ACTION_STATE_INACTIVE
 	} ENDMETHOD;
 	
 	METHOD("isFailed") {
 		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == GOAL_STATE_COMPLETED
+		(GETV(_thisObject, "state")) == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 ENDCLASS;
