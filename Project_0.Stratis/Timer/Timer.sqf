@@ -29,7 +29,7 @@ CLASS("Timer", "")
 		private _data = TIMER_DATA_DEFAULT;
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
 		_data set [TIMER_DATA_ID_TIME_NEXT, time+_interval];
-		_data set [TIMER_DATA_ID_MESSAGE, _message];
+		_data set [TIMER_DATA_ID_MESSAGE, +_message];
 		_data set [TIMER_DATA_ID_MESSAGE_RECEIVER, _messageReceiver];
 		_data set [TIMER_DATA_ID_TIMER_SERVICE, _timerService];
 		private _msgLoop = CALL_METHOD(_messageReceiver, "getMessageLoop", []);
