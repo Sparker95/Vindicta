@@ -2,6 +2,18 @@
 Timer is an object which posts a message into another object with specified time interval.
 
 Author: Sparker 31.07.2018
+
+Usage template:
+
+private _msg = MESSAGE_NEW();
+_msg set [MESSAGE_ID_DESTINATION, ***];
+_msg set [MESSAGE_ID_SOURCE, ""];
+_msg set [MESSAGE_ID_DATA, ***];
+_msg set [MESSAGE_ID_TYPE, ***];
+private _args = [__destination__, __interval__, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+private _timer = NEW("Timer", _args);
+
+
 */
 
 #include "..\OOP_Light\OOP_Light.h"

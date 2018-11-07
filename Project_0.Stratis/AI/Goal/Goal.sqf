@@ -2,7 +2,7 @@
 */
 
 #include "..\..\OOP_Light\OOP_Light.h"
-#include "..\WorldProperty\WorldProperty.h"
+#include "..\WorldState\WorldState.hpp"
 
 CLASS("Goal", "MessageReceiver")
 
@@ -13,7 +13,7 @@ CLASS("Goal", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ];
+		params [["_thisObject", "", [""]] ];
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -38,4 +38,4 @@ CLASS("Goal", "MessageReceiver")
 
 ENDCLASS;
 
-SET_STATIC_VAR(_thisObject, "worldState", []);
+SET_STATIC_VAR("Goal", "worldState", []);

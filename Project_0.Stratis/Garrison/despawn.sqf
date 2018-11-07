@@ -6,6 +6,8 @@ Despawns the whole garrison
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 
+#define pr private
+
 params [["_thisObject", "", [""]]];
 
 private _spawned = GET_VAR(_thisObject, "spawned");
@@ -16,7 +18,10 @@ if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't des
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
 
+
+
 // Delete the action object
+/*
 private _action = GETV(_thisObject, "action");
 if (_action != "") then {
 	private _msg = MESSAGE_NEW();
@@ -26,6 +31,11 @@ if (_action != "") then {
 	CALLM(_action, "waitUntilMessageDone", [_msgID]);
 	SETV(_thisObject, "action", "");
 };
+*/
+
+// Delete the AI object
+pr _AI = GETV(_thisObject, "AI");
+DELETE(_AI);
 
 private _units = GET_VAR(_thisObject, "units");
 private _groups = GET_VAR(_thisObject, "groups");

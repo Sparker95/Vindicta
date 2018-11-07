@@ -116,7 +116,7 @@
 	}
 	-agent // Pointer to the unit which holds this AI object
 	-sensorsChanged = updateSensors() // Update values of all sensors, according to their settings, returns true if any of them have changed
-	-goal = calculateMostRelevantGoal() // Calculates relevance of all goals(internal and external) and chooses the most relevant
+	-goal = getMostRelevantGoal() // Calculates relevance of all goals(internal and external) and chooses the most relevant
 	-currentGoal // The current goal
 	-currentAction // The current action
 	-goalExtHigh // Goal suggested to this Agent by a high level AI

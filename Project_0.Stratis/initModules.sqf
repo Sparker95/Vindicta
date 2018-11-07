@@ -87,22 +87,12 @@ call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
 // Initialize LocationUnitArrayprovider class
 call compile preprocessFileLineNumbers "LocationUnitArrayProvider\LocationUnitArrayProvider.sqf";
 
-// Initialize Action class
-call compile preprocessFileLineNumbers "GOAP\Action\Goal.sqf";
-
-// Initialize ActionComposite class
-call compile preprocessFileLineNumbers "GOAP\ActionComposite\GoalComposite.sqf";
-
-// Initialize ActionCompositeSerial class
-call compile preprocessFileLineNumbers "GOAP\ActionCompositeSerial\GoalCompositeSerial.sqf";
-
-// Initialize Action inherited classes
-//call compile preprocessFileLineNumbers "GoalsGarrison\initClasses.sqf";
-//call compile preprocessFileLineNumbers "GoalsGroup\initClasses.sqf";
-//call compile preprocessFileLineNumbers "GoalsUnit\initClasses.sqf";
-
 // Initialize AnimObject class
 call compile preprocessFileLineNumbers "AnimObject\AnimObject.sqf";
 
 // Initialize AnimObject inherited classes
 call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
+
+// Initialize AI classes
+call compile preprocessFileLineNumbers "AI\initClasses.sqf";
+

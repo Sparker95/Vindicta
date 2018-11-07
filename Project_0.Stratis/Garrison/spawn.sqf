@@ -4,6 +4,8 @@ Spawns the whole garrison
 
 #include "..\OOP_Light\OOP_Light.h"
 
+#define pr private
+
 params [["_thisObject", "", [""]]];
 
 private _spawned = GET_VAR(_thisObject, "spawned");
@@ -43,6 +45,11 @@ private _loc = GET_VAR(_thisObject, "location");
 		CALL_METHOD(_unit, "spawn", _posAndDir);
 	};
 } forEach _units;
+
+// Create an AI brain of this garrison and start it
+pr _AI = NEW("AIGarrison", [_thisObject]);
+SETV(_thisObject, "AI", _AI);
+CALLM(_AI, "start", []); // Let's start the party! \o/
 
 // Create a goal object for this garrison
 /*

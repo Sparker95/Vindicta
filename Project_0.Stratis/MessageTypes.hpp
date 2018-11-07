@@ -20,3 +20,6 @@
 // AnimObject messages
 // Sent by a unit when he has freed a position with any reason
 #define ANIM_OBJECT_MESSAGE_POS_FREE	200
+
+// AI messages
+#define AI_MESSAGE_PROCESS 500

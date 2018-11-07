@@ -8,6 +8,7 @@ Garrison typically is located in one area and is performing one task.
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
+#include "..\GlobalAssert.hpp"
 
 CLASS("Garrison", "MessageReceiverEx")
 
@@ -17,7 +18,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	VARIABLE("side");
 	VARIABLE("debugName");
 	VARIABLE("location");
-	VARIABLE("action"); // Top level action of this garrison
+	//VARIABLE("action"); // Top level action of this garrison
+	VARIABLE("AI"); // The AI brain of this garrison
 	
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -36,15 +38,15 @@ CLASS("Garrison", "MessageReceiverEx")
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		
 		// Check existance of neccessary global objects
-		if (isNil "gMessageLoopMain") exitWith {"[Garrison] Error: global main message loop doesn't exist!";};
-		if (isNil "gMessageLoopAction") exitWith { diag_log "[Garrison] Error: global garrison action message loop doesn't exist!"; };
+		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 		
 		SET_VAR(_thisObject, "units", []);
 		SET_VAR(_thisObject, "groups", []);
 		SET_VAR(_thisObject, "spawned", false);
 		SET_VAR(_thisObject, "side", _side);
 		SET_VAR(_thisObject, "debugName", "");
-		SET_VAR(_thisObject, "action", "");
+		//SET_VAR(_thisObject, "action", "");
+		SETV(_thisObject, "AI", "");
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2324;
+		nextID=2394;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=64;
+		nextID=65;
 	};
 	class Camera
 	{
-		pos[]={2586.1628,55.821251,1035.0751};
-		dir[]={-0.93953383,-0.32401854,0.11202018};
-		up[]={-0.3219206,0.9460054,0.038383055};
-		aside[]={0.11840529,-7.1700197e-007,0.99306661};
+		pos[]={3007.8994,193.13939,1894.804};
+		dir[]={-0.58049643,-0.66727197,-0.46694526};
+		up[]={-0.52000946,0.74475974,-0.41829214};
+		aside[]={-0.62683862,-2.8661452e-007,0.77927476};
 	};
 };
 binarizationWanted=0;
@@ -53,20 +53,13 @@ addons[]=
 	"A3_Structures_F_EPC_Civ_Accessories",
 	"A3_Soft_F_Gamma_Truck_01",
 	"A3_Soft_F_Exp_LSV_02",
-	"A3_Armor_F_Beta_APC_Tracked_02",
-	"A3_Weapons_F_LongRangeRifles_DMR_01",
-	"A3_Weapons_F_Acc",
-	"A3_Weapons_F_Exp",
-	"A3_Weapons_F_Mark_Acc",
-	"A3_Weapons_F",
-	"A3_Weapons_F_Pistols_Rook40",
-	"A3_Weapons_F_Items"
+	"A3_Armor_F_Beta_APC_Tracked_02"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=21;
+		items=19;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -200,20 +193,6 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item19
-		{
-			className="A3_Weapons_F_Exp";
-			name="Arma 3 Apex - Weapons and Accessories";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
-		class Item20
-		{
-			className="A3_Weapons_F_Mark";
-			name="Arma 3 Marksmen - Weapons and Accessories";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
 	};
 };
 class DynamicSimulation
@@ -284,7 +263,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=143;
+		items=142;
 		class Item0
 		{
 			dataType="Object";
@@ -3130,35 +3109,6 @@ class Mission
 		};
 		class Item138
 		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=1;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2408.2739,1.6346238,1118.9935};
-						angles[]={0,1.134464,0};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
-					};
-					id=2310;
-					type="B_engineer_F";
-				};
-			};
-			class Attributes
-			{
-			};
-			id=2309;
-		};
-		class Item139
-		{
 			dataType="Object";
 			class PositionInfo
 			{
@@ -3169,31 +3119,33 @@ class Mission
 			flags=4;
 			class Attributes
 			{
+				health=0.37914568;
 				name="vehicle_0";
 			};
 			id=2311;
 			type="B_Truck_01_box_F";
 			atlOffset=-0.0010001659;
 		};
-		class Item140
+		class Item139
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={2416.5911,3.6468878,1123.2181};
-				angles[]={0.0075011365,4.7996559,0.052451372};
+				position[]={2416.5911,3.6471887,1123.2186};
+				angles[]={0.0075049158,4.7996554,0.052447144};
 			};
 			side="Empty";
 			flags=4;
 			class Attributes
 			{
+				health=0.21613275;
 				name="vehicle_1";
 			};
 			id=2320;
 			type="O_LSV_02_AT_F";
-			atlOffset=-0.0012996197;
+			atlOffset=-0.0010000467;
 		};
-		class Item141
+		class Item140
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3211,10 +3163,10 @@ class Mission
 			type="O_APC_Tracked_02_cannon_F";
 			atlOffset=-0.00040864944;
 		};
-		class Item142
+		class Item141
 		{
 			dataType="Group";
-			side="East";
+			side="West";
 			class Entities
 			{
 				items=1;
@@ -3223,165 +3175,24 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2577.6946,48.186424,1034.6183};
-						angles[]={0,5.3232546,0};
+						position[]={2991.8445,171.28839,1879.2792};
 					};
-					side="East";
+					side="West";
 					flags=7;
 					class Attributes
 					{
 						isPlayer=1;
-						stance="Middle";
-						class Inventory
-						{
-							class primaryWeapon
-							{
-								name="srifle_DMR_01_F";
-								optics="optic_DMS";
-								muzzle="muzzle_snds_B_snd_F";
-								underBarrel="bipod_02_F_blk";
-								class primaryMuzzleMag
-								{
-									name="10Rnd_762x54_Mag";
-									ammoLeft=10;
-								};
-							};
-							class handgun
-							{
-								name="hgun_Rook40_F";
-								class primaryMuzzleMag
-								{
-									name="16Rnd_9x21_Mag";
-									ammoLeft=16;
-								};
-							};
-							class uniform
-							{
-								typeName="U_O_CombatUniform_ocamo";
-								isBackpack=0;
-								class MagazineCargo
-								{
-									items=1;
-									class Item0
-									{
-										name="10Rnd_762x54_Mag";
-										count=3;
-										ammoLeft=10;
-									};
-								};
-								class ItemCargo
-								{
-									items=1;
-									class Item0
-									{
-										name="FirstAidKit";
-										count=1;
-									};
-								};
-							};
-							class vest
-							{
-								typeName="V_TacVest_khk";
-								isBackpack=0;
-								class MagazineCargo
-								{
-									items=6;
-									class Item0
-									{
-										name="10Rnd_762x54_Mag";
-										count=6;
-										ammoLeft=10;
-									};
-									class Item1
-									{
-										name="16Rnd_9x21_Mag";
-										count=2;
-										ammoLeft=16;
-									};
-									class Item2
-									{
-										name="HandGrenade";
-										count=2;
-										ammoLeft=1;
-									};
-									class Item3
-									{
-										name="SmokeShell";
-										count=1;
-										ammoLeft=1;
-									};
-									class Item4
-									{
-										name="SmokeShellRed";
-										count=1;
-										ammoLeft=1;
-									};
-									class Item5
-									{
-										name="Chemlight_red";
-										count=2;
-										ammoLeft=1;
-									};
-								};
-							};
-							map="ItemMap";
-							compass="ItemCompass";
-							watch="ItemWatch";
-							radio="ItemRadio";
-							hmd="NVGoggles_OPFOR";
-							headgear="H_HelmetO_ocamo";
-						};
 					};
-					id=2323;
-					type="O_soldier_M_F";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male02PER";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1.02;
-								};
-							};
-						};
-						nAttributes=2;
-					};
+					id=2393;
+					type="B_Competitor_F";
+					atlOffset=-1.5258789e-005;
 				};
 			};
 			class Attributes
 			{
 			};
-			id=2322;
+			id=2392;
+			atlOffset=-1.5258789e-005;
 		};
 	};
 	class Connections
