@@ -92,8 +92,10 @@
         [EventDispatcher]
         ------------------------------
 		
-		
-		
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	// = = = = = = = = =   A I   C L A S S E S   = = = = = = = = =
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	
 	class AI : MessageReceiver
 	+process() // Called every update interval
 	{
@@ -135,8 +137,47 @@
 	class Action : MessageReceiver
 	+- Just everything that I copied from the book
 	
+	class Goal
+	+static getGoalWorldState
+	+virtual static getPlan(agent)
+	{
+		// Typically we just call the planner here
+		// However some goals are so simple so we can just return a pre-made plan here, for instance for goals of soldiers
+	}
+	
 	class Agent // It can be a Unit or a Group or a Garrison
 	+static getGoalsInternal() // Returns a list of goals this Agent can choose from
 	+static getActionsInternal() // Returns a list of actions this Agent can use
 	+subagents = getSubagents() // Returns an array of subagents of this agent
 	-AI // An object of AI class, which is only created when the Agent gets spawned
+	
+	class Sensor
+	-agent // The agent that owns this sensor
+	+update() // Updates the sensor
+	{
+		//Can either set values of WorldState
+		//Or do something else
+	}
+	
+	class WorldStateProperty
+	-key // An integer having any positive value starting from 0
+	-value
+	-type(optional) // Don't really need type because every variable in SQF has a type already
+	
+	class WorldState
+	+WorldState(nProperties) // Must specify the amount of properties when you create it
+	-properties[] // Array with WorldStateProperties
+	-propertyExists[] // Array with 0 and 1, representing if this property exists in the world state
+	+value = getWSProperty(key)
+	+setWSProperty(key, value)
+	{
+		propertyExists[key] = 1;
+		properties[key].setValue(value);
+	}
+	+clearWSProperty(key) {propertyExists[key] = 0;}
+	+getWSPropertyExists(key) // Returns true or false depending if this property exists
+	
+	class WorldStateGarrison : WorldState
+	class WorldStateGroup : WorldState
+	
+	
