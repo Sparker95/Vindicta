@@ -138,6 +138,8 @@
 #define CALLCM(a, b, c) CALL_CLASS_METHOD(a, b, c)
 #define CALLSM(a, b, c) CALL_STATIC_METHOD(a, b, c)
 
+#define GETM(objNameStr, methodNameStr) GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
 // -----------------------------------------------------

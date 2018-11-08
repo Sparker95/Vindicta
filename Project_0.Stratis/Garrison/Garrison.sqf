@@ -112,5 +112,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	// Move unit between garrisons
 	METHOD_FILE("moveUnit", "Garrison\moveUnit.sqf");
+	
+	// Find units with specific type
+	METHOD_FILE("findUnits", "Garrison\findUnits.sqf");
 
 ENDCLASS;

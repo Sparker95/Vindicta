@@ -81,6 +81,11 @@ CLASS("AI", "MessageReceiver")
 		if (count agent.getSubagents > 0)
 			{ _x.AI.process(); } forEach subagents;
 		*/
+		// Update all sensors
+		CALLM(_thisObject, "updateSensors", []);
+		
+		//Calculate most relevant goal
+		//pr _goalNew = CALLM(_thisObject, )
 		
 		diag_log "AI:Process was called here!";
 		
@@ -111,7 +116,17 @@ CLASS("AI", "MessageReceiver")
 	
 	METHOD("updateSensors") {
 		params [["_thisObject", "", [""]]];
-		
+		pr _sensors = GETV(_thisObject, "sensors");
+		{
+			pr _sensor = _x;
+			// Update the sensor if it's time to update it
+			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
+			if (time > _timeNextUpdate) then {
+				CALLM(_sensor, "update", []);
+				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
+				SETV(_sensor, "timeNextUpdate", time + _interval);
+			};
+		} forEach _sensors;
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

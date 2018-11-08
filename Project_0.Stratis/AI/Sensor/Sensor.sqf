@@ -14,22 +14,17 @@ Author: Sparker 08.11.2018
 
 CLASS("Sensor", "MessageReceiver")
 
-	VARIABLE("agent"); // Pointer to the unit which holds this AI object
-	VARIABLE("currentAction"); // The current action
-	VARIABLE("currentGoal"); // The current goal
-	VARIABLE("goalExtHigh"); // Goal suggested to this Agent by a high level AI
-	VARIABLE("goalExtMedium"); // Goal suggested to this Agent by a medium level AI
-	VARIABLE("goalExtLow"); // Goal suggested to this Agent by a low level AIVARIABLE("worldState"); // The world state relative to this Agent
-	VARIABLE("worldState"); // The world state relative to this Agent
-	VARIABLE("timer"); // The timer of this object
+	VARIABLE("AI"); // Pointer to the unit which holds this AI object
+	VARIABLE("timeNextUpdate");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
-		SETV(_thisObject, "agent", _agent);
+		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		SETV(_thisObject, "AI", _AI);
+		SETV(_thisObject, "timeNextUpdate", 0);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -46,9 +41,18 @@ CLASS("Sensor", "MessageReceiver")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	METHOD("update") {
-		params [["_thisObject", "", [""]]];
-		
+	/* virtual */ METHOD("update") {
+		// Do nothing by default
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                   G E T  U P D A T E   I N T E R V A L
+	// | Must return the desired update rate of this sensor
+	// ----------------------------------------------------------------------
+	
+	/* virtual */ METHOD("getUpdateInterval") {
+		params [ ["_thisObject", "", [""]]];
+		10
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -63,5 +67,7 @@ CLASS("Sensor", "MessageReceiver")
 			default {false}; // Message not handled
 		};
 	} ENDMETHOD;
+	
+	
 	
 ENDCLASS;

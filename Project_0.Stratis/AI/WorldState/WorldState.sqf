@@ -41,7 +41,7 @@ ws_getPropertyValue = {
 };
 
 ws_setPropertyValue = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_value", 0, [0, "", objNull]]];
+	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_value", 0, [0, "", objNull, true]]];
 	pr _prop = _WS select WS_ID_WSP select _key;
 	_prop set [WSP_ID_KEY, _key];
 	_prop set [WSP_ID_VALUE, _value];
