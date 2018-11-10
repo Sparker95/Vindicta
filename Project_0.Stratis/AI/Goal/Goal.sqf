@@ -6,14 +6,17 @@
 
 CLASS("Goal", "MessageReceiver")
 
-	STATIC_VARIABLE("worldState"); // Array of world properties
+	STATIC_VARIABLE("desiredWorldState"); // Array of world properties
+	
+	
+	// We don't need NEW and DELETE because goals don't need to be instantiated
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]] ];
+		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -25,17 +28,19 @@ CLASS("Goal", "MessageReceiver")
 		
 	} ENDMETHOD;
 	
+	
+	
 	// ----------------------------------------------------------------------
-	// |            C A L C U L A T E   D E S I R E A B I L I T Y           |
+	// |            C A L C U L A T E   R E L E V A N C E
 	// ----------------------------------------------------------------------
-	// Calculates desireability to choose this goal for a given _agent
+	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
-	/* virtual */ STATIC_METHOD("calculateDesireability") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+	/* virtual */ STATIC_METHOD("calculateRelevance") {
+		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		0 // Return desireability
 	} ENDMETHOD;
 
 ENDCLASS;
 
-SET_STATIC_VAR("Goal", "worldState", []);
+SET_STATIC_VAR("Goal", "desiredWorldState", []);

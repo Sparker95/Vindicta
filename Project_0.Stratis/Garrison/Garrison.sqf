@@ -92,6 +92,22 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                            G O A P                             
+	// ----------------------------------------------------------------------
+	
+	// It should return the goals this garrison might be willing to achieve
+	METHOD("getPossibleGoals") {
+		["goalGarrisonRelax", "goalGarrisonRepairAllVehicles"]
+	} ENDMETHOD;
+	
+	METHOD("getPossibleActions") {
+		["actionGarrisonRelax", "actionGarrisonRepairAllVehicles"]
+	} ENDMETHOD;
+	
+	
+	// ======================================= FILES ==============================================
+	
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx
 	METHOD_FILE("handleMessageEx", "Garrison\handleMessageEx.sqf");
 	

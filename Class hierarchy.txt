@@ -146,8 +146,8 @@
 	}
 	
 	class Agent // It can be a Unit or a Group or a Garrison
-	+static getGoalsInternal() // Returns a list of goals this Agent can choose from
-	+static getActionsInternal() // Returns a list of actions this Agent can use
+	+static getPossibleGoals() // Returns a list of goals this Agent can choose from
+	+static getPossibleActions() // Returns a list of actions this Agent can use
 	+subagents = getSubagents() // Returns an array of subagents of this agent
 	-AI // An object of AI class, which is only created when the Agent gets spawned
 	

@@ -52,14 +52,17 @@ CLASS("SensorGarrisonHealth", "Sensor")
 		pr _vehicles = [_gar, [[T_VEH, -1], [T_DRONE, -1]]] call GETM(_gar, "findUnits");
 		//diag_log format ["Found vehicles: %1", _vehicles];
 		pr _allVehRepaired = true;
+		pr _allVehCanMove = true;
 		{ // for each vehicles
 			pr _oh = CALLM(_x, "getObjectHandle", []);
 			//diag_log format ["Vehicle: %1, can move: %2", _oh, canMove _oh];
-			if (getDammage _oh > 0.2 || !canMove _oh) exitWith {_allVehRepaired = false;};
+			if (getDammage _oh > 0.2) then {_allVehRepaired = false;};
+			if (!canMove _oh) then {_allVehCanMove = false;};
 		} forEach _vehicles;
 		[_worldState, WSP_GAR_ALL_VEHICLES_REPAIRED, _allVehRepaired] call ws_setPropertyValue;
+		[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, _allVehCanMove] call ws_setPropertyValue;
 		
-		diag_log format ["SensorGarrisonHealth: %1 %2 %3 %4", _medicAvailable, _engineerAvailable, _allSoldiersHealed, _allVehRepaired];
+		diag_log format ["SensorGarrisonHealth: medics:%1 engineer:%2 allHealed:%3 allVehRepaired:%4 allVehCanMove:%5", _medicAvailable, _engineerAvailable, _allSoldiersHealed, _allVehRepaired, _allVehCanMove];
 		
 	} ENDMETHOD;
 	

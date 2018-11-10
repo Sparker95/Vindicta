@@ -1,0 +1,31 @@
+/*
+Goal for a garrison to relax
+*/
+
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\WorldState\WorldState.hpp"
+#include "garrisonWorldStateProperties.hpp"
+
+#define pr private
+
+CLASS("GoalGarrisonRelax", "Goal")
+
+	STATIC_VARIABLE("desiredWorldState"); // Array of world properties
+	
+	// ----------------------------------------------------------------------
+	// |            C A L C U L A T E   R E L E V A N C E
+	// ----------------------------------------------------------------------
+	// Calculates desireability to choose this goal for a given _AI
+	// Inherited classes must implement this
+	
+	STATIC_METHOD("calculateRelevance") {
+		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+			1 // Always some small non-zero relevance for the relax goal
+		};
+	} ENDMETHOD;
+
+ENDCLASS;
+
+pr _ws = [WSP_GAR_COUNT] call ws_new;
+
+SET_STATIC_VAR("Goal", "desiredWorldState", [WSP_GAR_COUNT]);
