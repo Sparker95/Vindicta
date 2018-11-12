@@ -62,6 +62,10 @@ gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 gMessageLoopMain = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
 
+// Message loop for group AI
+gMessageLoopGroupAI = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopGroupAI, "setDebugName", ["Group AI thread"]);
+
 // Message loop for locations
 gMessageLoopLocation = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);

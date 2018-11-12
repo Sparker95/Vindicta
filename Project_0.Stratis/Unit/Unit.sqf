@@ -195,12 +195,12 @@ CLASS(UNIT_CLASS_NAME, "")
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
 			deleteVehicle _objectHandle;
 			private _group = _data select UNIT_DATA_ID_GROUP;
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
+			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 			
 			// Make sure we terminate the bench script
-			private _hScriptBench = _objectHandle getVariable ["unit_hScriptBench", scriptNull];
-			if (!isNull _hScriptBench) then {terminate _hScriptBench;};
+			//private _hScriptBench = _objectHandle getVariable ["unit_hScriptBench", scriptNull];
+			//if (!isNull _hScriptBench) then {terminate _hScriptBench;};
 		};		
 		//Unlock the mutex
 		MUTEX_UNLOCK(_mutex);

@@ -14,6 +14,10 @@ Author: Sparker
 
 #define MESSAGE_NEW() ["", "", "", 0]
 
+// Creates a short message which only has destination and type
+#define MESSAGE_NEW_SHORT(dest, type) [dest, "", type, 0]
+
+
 /*
 Code to set all parameters:
 _msg set [MESSAGE_ID_DESTINATION, ...];

@@ -105,6 +105,11 @@ CLASS("AI", "MessageReceiver")
 				true
 			};
 			
+			case AI_MESSAGE_DELETE: {
+				DELETE(_thisObject);
+				true
+			};
+			
 			default {false}; // Message not handled
 		};
 	} ENDMETHOD;

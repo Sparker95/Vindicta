@@ -24,15 +24,7 @@ private _loc = GET_VAR(_thisObject, "location");
 // Spawn groups
 {
 	private _group = _x;
-	private _groupType = CALL_METHOD(_group, "getType", []);
-	private _groupUnits = CALL_METHOD(_group, "getUnits", []);
-	{
-		private _unit = _x;
-		private _unitData = CALL_METHOD(_unit, "getMainData", []);
-		private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-		private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-		CALL_METHOD(_unit, "spawn", _posAndDir);
-	} forEach _groupUnits;
+	CALLM(_group, "spawn", [_loc]);
 } forEach _groups;
 
 // Spawn single units

@@ -18,21 +18,6 @@ if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't des
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
 
-
-
-// Delete the action object
-/*
-private _action = GETV(_thisObject, "action");
-if (_action != "") then {
-	private _msg = MESSAGE_NEW();
-	_msg set [MESSAGE_ID_DESTINATION, _action];
-	_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
-	private _msgID = CALLM(_action, "postMessage", [_msg]);
-	CALLM(_action, "waitUntilMessageDone", [_msgID]);
-	SETV(_thisObject, "action", "");
-};
-*/
-
 // Delete the AI object
 pr _AI = GETV(_thisObject, "AI");
 DELETE(_AI);
@@ -43,11 +28,7 @@ private _groups = GET_VAR(_thisObject, "groups");
 // Despawn groups
 {
 	private _group = _x;
-	private _groupUnits = CALL_METHOD(_group, "getUnits", []);
-	{
-		private _unit = _x;
-		CALL_METHOD(_unit, "despawn", []);
-	} forEach _groupUnits;
+	CALLM(_group, "despawn");
 } forEach _groups;
 
 // Despawn single units

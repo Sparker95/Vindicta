@@ -23,3 +23,4 @@
 
 // AI messages
 #define AI_MESSAGE_PROCESS 500
+#define AI_MESSAGE_DELETE 501
