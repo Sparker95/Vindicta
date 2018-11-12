@@ -234,7 +234,7 @@ CLASS(GROUP_CLASS_NAME, "")
 		
 		// Delete the group handle
 		pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-		if (count units _groupHandle > 0) {
+		if (count units _groupHandle > 0) then {
 			diag_log format ["[Group] Error: group is not empty at despawning: %1. Units remaining: %2", _data, units _groupHandle];
 		} else {			
 			deleteGroup _groupHandle;
