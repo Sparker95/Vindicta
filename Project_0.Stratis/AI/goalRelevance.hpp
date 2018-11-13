@@ -1,0 +1,26 @@
+// Relevance levels
+
+
+// Relevance from 200 and beyond is for goals supplied by higher agents
+#define GOAL_RELEVANCE_BIAS_HIGHER	200
+
+// Relevance of own goals
+#define GOAL_RELEVANCE_BIAS_SELF	100
+
+// Releavance of goals supplied by lower agents
+#define GOAL_RELEVANCE_BIAS_LOWER	0
+
+// ============== Universal goals ===============
+
+// ============== Garrison goals ================
+#define GOAL_RELEVANCE_GARRISON_REPAIR_ALL_VEHICLES (GOAL_RELEVANCE_BIAS_SELF+10)
+#define GOAL_RELEVANCE_GARRISON_RELAX (GOAL_RELEVANCE_BIAS_LOWER+1)
+
+
+
+// =============== Group goals ==================
+#define GOAL_RELEVANCE_GROUP_RELAX (GOAL_RELEVANCE_BIAS_SELF+1)
+
+
+// =============== Unit goals ===================
+#define GOAL_RELEVANCE_UNIT_RELAX (GOAL_RELEVANCE_BIAS_SELF+1)

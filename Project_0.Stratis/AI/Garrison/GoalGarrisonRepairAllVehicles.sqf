@@ -5,6 +5,7 @@ Goal for a garrison to repair all its vehicles
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\WorldState\WorldState.hpp"
 #include "garrisonWorldStateProperties.hpp"
+#include "..\goalRelevance.hpp"
 
 #define pr private
 
@@ -19,7 +20,7 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [["_AI", "", [""]]];
 		
 		// Check world state properties
 		// Return high desireability if we need repairs and an engineer is available
@@ -27,7 +28,9 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 		if ( ([_ws, WSP_GAR_ALL_VEHICLES_REPAIRED, false] call ws_propertyExistsAndEquals ||
 			[_ws, WSP_GAR_ALL_VEHICLES_CAN_MOVE, false] call ws_propertyExistsAndEquals ) &&
 			[_ws, WSP_GAR_ENGINEER_AVAILABLE, true] call ws_propertyExistsAndEquals) then {
-			100
+			
+			// Return relevance
+			GOAL_RELEVANCE_GARRISON_REPAIR_ALL_VEHICLES
 		} else {
 			0
 		};

@@ -207,6 +207,7 @@ CLASS(GROUP_CLASS_NAME, "")
 		// Create an AI for this group
 		pr _AI = NEW("AIGroup", [_thisObject]);
 		_data set [GROUP_DATA_ID_AI, _AI];
+		CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
 		CALLM(_AI, "start", []); // Kick start it
 	} ENDMETHOD;
 	
@@ -242,5 +243,33 @@ CLASS(GROUP_CLASS_NAME, "")
 		_data set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
 	} ENDMETHOD;
 	
+	
+	// ========================= AI-related =====================================
+	
+	// ----------------------------------------------------------------------
+	// |         G E T   S U B A G E N T S
+	// | Returns the list of agents which have an AI object which must be processed through its process method
+	// ----------------------------------------------------------------------
+	METHOD("getSubagents") {
+		params [["_thisObject", "", [""]]];
+		
+		// Get all units
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		
+		// Return only units which actually have an AI object (soldiers and drones)
+		pr _return = _unitList select {
+			CALLM(_x, "isInfantry", [])
+		};
+		_return
+	} ENDMETHOD;
+	
+	METHOD("getPossibleGoals") {
+		[]
+	} ENDMETHOD;
+	
+	METHOD("getPossibleActions") {
+		[]
+	} ENDMETHOD;
 	
 ENDCLASS;

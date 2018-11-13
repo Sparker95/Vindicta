@@ -10,6 +10,8 @@ Author: Sparker
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 
+#define pr private
+
 Unit_fnc_EH_killed = compile preprocessFileLineNumbers "Unit\EH_killed.sqf";
 
 CLASS(UNIT_CLASS_NAME, "")
@@ -154,6 +156,12 @@ CLASS(UNIT_CLASS_NAME, "")
 					
 					//_objectHandle disableAI "PATH";
 					//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
+					
+					// Create an AI object of the unit
+					pr _AI = NEW("AIUnit", [_thisObject]);
+					_data set [UNIT_DATA_ID_AI, _AI];
+					// Don't start the brain, because its process method will be called by
+					// its group's AI brain
 				};
 				case T_VEH: {
 					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
@@ -168,7 +176,7 @@ CLASS(UNIT_CLASS_NAME, "")
 			// Set event handlers of the object
 			_objectHandle addEventHandler ["Killed", Unit_fnc_EH_killed];
 			
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
+			//if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
@@ -254,22 +262,6 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                   S E T / G E T   G O A L
-	// | Sets the goal value of this unit. It doesn't mean that the unit will pursue this goal.
-	// ----------------------------------------------------------------------
-	METHOD("setAction") {
-		params [["_thisObject", "", [""]], ["_action", "", [""]] ];
-		private _data = GET_VAR(_thisObject, "data");
-		_data set [UNIT_DATA_ID_ACTION, _action];
-	} ENDMETHOD;
-	
-	METHOD("getAction") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
-		_data select UNIT_DATA_ID_ACTION
-	} ENDMETHOD;
-	
-	// ----------------------------------------------------------------------
 	// |                   G E T   M A I N   D A T A                        |
 	// ----------------------------------------------------------------------
 	// Returns [_catID, _subcatID, _className] of this unit
@@ -319,7 +311,53 @@ CLASS(UNIT_CLASS_NAME, "")
 		_objectHandle getVariable ["unit", ""]
 	} ENDMETHOD;
 	
-	// File based methods
+	// ----------------------------------------------------------------------
+	// | I S   I N F A N T R Y   /   V E H I C L E   /   D R O N E
+	// | Returns true if the unit is of specified type
+	// ----------------------------------------------------------------------
+	
+	METHOD("isInfantry") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_INF
+	} ENDMETHOD;
+
+	METHOD("isVehicle") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_VEH
+	} ENDMETHOD;
+	
+	METHOD("isDrone") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_DRONE
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                            G O A P                             
+	// ----------------------------------------------------------------------	
+	
+	METHOD("getSubagents") {
+		[] // A single unit has no subagents
+	} ENDMETHOD;
+	
+	// Returns the AI object of this unit
+	METHOD("getAI") {
+		params [["_thisObject", "", [""]]];
+		pr _data = GET_MEM(_thisObject, "data");
+		_data select UNIT_DATA_ID_AI
+	} ENDMETHOD;
+	
+	METHOD("getPossibleGoals") {
+		[]
+	} ENDMETHOD;
+	
+	METHOD("getPossibleActions") {
+		[]
+	} ENDMETHOD;
+	
+	// ================= File based methods ======================
 	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
 	METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
 	METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");

@@ -105,6 +105,11 @@ CLASS("Garrison", "MessageReceiverEx")
 		["actionGarrisonRelax", "actionGarrisonRepairAllVehicles"]
 	} ENDMETHOD;
 	
+	METHOD("getSubagents") {
+		[] // Empty array, because the subagents of garrison (groups) are processed in a separate thread
+		// In case we decide to process groups in the same thread as garrison, we can return the groups here
+	} ENDMETHOD;
+	
 	
 	// ======================================= FILES ==============================================
 	

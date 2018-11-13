@@ -68,7 +68,7 @@ CLASS("Timer", "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("setInterval") {
-		params [["_thisObject", "", [""]], ["_interval", 0, [0]]];
+		params [["_thisObject", "", [""]], ["_interval", 1, [0]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
 		_data set [TIMER_DATA_ID_TIME_NEXT, time+_interval];

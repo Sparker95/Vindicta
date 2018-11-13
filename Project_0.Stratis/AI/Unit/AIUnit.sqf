@@ -7,12 +7,12 @@ Author: Sparker 12.11.2018
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
-#include "groupWorldStateProperties.hpp"
+#include "unitWorldStateProperties.hpp"
 #include "..\..\GlobalAssert.hpp"
 
 #define pr private
 
-CLASS("AIGroup", "AI")
+CLASS("AIUnit", "AI")
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];

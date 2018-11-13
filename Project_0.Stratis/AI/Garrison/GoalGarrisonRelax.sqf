@@ -5,6 +5,7 @@ Goal for a garrison to relax
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\WorldState\WorldState.hpp"
 #include "garrisonWorldStateProperties.hpp"
+#include "..\goalRelevance.hpp"
 
 #define pr private
 
@@ -19,9 +20,8 @@ CLASS("GoalGarrisonRelax", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
-			1 // Always some small non-zero relevance for the relax goal
-		};
+		params [["_AI", "", [""]]];
+			GOAL_RELEVANCE_GARRISON_RELAX // Always some small non-zero relevance for the relax goal
 	} ENDMETHOD;
 
 ENDCLASS;
