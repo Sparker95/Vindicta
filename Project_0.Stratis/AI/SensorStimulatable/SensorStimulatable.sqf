@@ -1,8 +1,7 @@
 /*
-Sensor class
-It abstracts the abilities of an agent to receive information from the external world
+A stimulatable sensor class.
 
-Author: Sparker 08.11.2018
+Author: Sparker 23.11.2018
 */
 
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -11,21 +10,15 @@ Author: Sparker 08.11.2018
 #include "..\..\GlobalAssert.hpp"
 #include "..\stimulusTypes.hpp"
 
-#define pr private
-
-CLASS("Sensor", "MessageReceiver")
-
-	VARIABLE("AI"); // Pointer to the unit which holds this AI object
-	STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by
+CLASS("SensorStimulatable", "Sensor")
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
-		SETV(_thisObject, "AI", _AI);
-		SETV(_thisObject, "timeNextUpdate", 0);
+		params [["_thisObject", "", [""]]];
+		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -38,22 +31,19 @@ CLASS("Sensor", "MessageReceiver")
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
-	// |                              U P D A T E
-	// | Updates the state of this sensor
+	// |                            S T I M U L A T E
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
-		// Do nothing by default
-	} ENDMETHOD;
-	
-	// ----------------------------------------------------------------------
-	// |                   G E T  U P D A T E   I N T E R V A L
-	// | Must return the desired update rate of this sensor
-	// ----------------------------------------------------------------------
-	
-	/* virtual */ METHOD("getUpdateInterval") {
-		params [ ["_thisObject", "", [""]]];
-		10
+	METHOD("stimulate") {
+		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
+		
+		// Check distance
+		
+		// Do sensor-specific complex check
+		if (! (CALLM(_thisObject, "doComplexCheck", []))) exitWith {};
+		
+		// Create world fact
+		CALLM(_thisObject, "createWorldFact", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -63,22 +53,26 @@ CLASS("Sensor", "MessageReceiver")
 	
 	/* virtual */ METHOD("getStimulusTypes") {
 		[]
-	} ENDMETHOD;	
-	
-	
-	// ----------------------------------------------------------------------
-	// |                    H A N D L E   M E S S A G E
-	// | 
-	// ----------------------------------------------------------------------
-	
-	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
-		pr _msgType = _msg select MESSAGE_ID_TYPE;
-		switch (_msgType) do {	
-			default {false}; // Message not handled
-		};
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                           C R E A T E   W O R L D   F A C T
+	// | Creates a world fact specific to this sensor
+	// ----------------------------------------------------------------------
 	
+	/*virtual*/ METHOD("createWorldFact") {
+		params [["_thisObject", "", [""]]];
+	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                          D O   C O M P L E X  C H E C K
+	// | Performs complex sensor-specific check to determine if the sensor is sensitive to the stimulus
+	// ----------------------------------------------------------------------
+	
+	/*virtual*/ METHOD("doComplexCheck") {
+		params [["_thisObject", "", [""]], ["_AI", "ERROR_NO_AI", [""]]];
+		// Return true by default
+		true				
+	} ENDMETHOD;
+
 ENDCLASS;

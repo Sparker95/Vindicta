@@ -9,6 +9,7 @@ Author: Sparker 08.11.2018
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "garrisonWorldStateProperties.hpp"
+#include "..\stimulusTypes.hpp"
 
 #define pr private
 

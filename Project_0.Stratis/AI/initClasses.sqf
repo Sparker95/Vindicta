@@ -10,8 +10,11 @@ call compile preprocessFileLineNumbers "AI\AI\AI.sqf";
 call compile preprocessFileLineNumbers "AI\Goal\Goal.sqf";
 
 call compile preprocessFileLineNumbers "AI\Sensor\Sensor.sqf";
+call compile preprocessFileLineNumbers "AI\SensorStimulatable\SensorStimulatable.sqf";
 
 call compile preprocessFileLineNumbers "AI\WorldState\WorldState.sqf";
+
+call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 
 
 // Garrison AI classes

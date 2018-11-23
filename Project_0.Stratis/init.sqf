@@ -66,6 +66,13 @@ CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
 gMessageLoopGroupAI = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopGroupAI, "setDebugName", ["Group AI thread"]);
 
+// Message loop for Stimulus Manager
+gMessageLoopStimulusManager = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopStimulusManager, "setDebugName", ["Stimulus Manager thread"]);
+
+// Global Stimulus Manager
+gStimulusManager = NEW("StimulusManager", []);
+
 // Message loop for locations
 gMessageLoopLocation = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);

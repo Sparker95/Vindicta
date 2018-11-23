@@ -41,6 +41,7 @@ switch (_msgType) do {
 					// Set timer interval
 					private _dstToThreshold = _dstMin - _dstSpawn;
 					private _interval = (_dstToThreshold / _speedMax) max 1;
+					private _interval = 2; // todo override this
 					//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "debugName"), _dstMin];
 					CALL_METHOD(_timer, "setInterval", [_interval]);
 				};

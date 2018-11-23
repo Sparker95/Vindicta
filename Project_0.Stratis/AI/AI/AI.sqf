@@ -9,20 +9,24 @@ Author: Sparker 07.11.2018
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
+#include "..\Stimulus\Stimulus.hpp"
 
 #define pr private
 
 #define AI_TIMER_SERVICE gTimerServiceMain
+#define STIMULUS_MANAGER gStimulusManager
 
-CLASS("AI", "MessageReceiver")
+CLASS("AI", "MessageReceiverEx")
 
 	VARIABLE("agent"); // Pointer to the unit which holds this AI object
 	VARIABLE("currentAction"); // The current action
 	VARIABLE("currentGoal"); // The current goal
 	VARIABLE("goalsExternal"); // Goal suggested to this Agent by another agent
 	VARIABLE("worldState"); // The world state relative to this Agent
+	VARIABLE("worldFacts"); // Array with world facts
 	VARIABLE("timer"); // The timer of this object
 	VARIABLE("processInterval"); // The update interval for the timer, in seconds
+	VARIABLE("sensorStimulusTypes"); // Array with stimulus types of the sensors of this AI object
 	VARIABLE("sensors"); // Array with sensors
 	
 	// ----------------------------------------------------------------------
@@ -34,6 +38,7 @@ CLASS("AI", "MessageReceiver")
 		
 		// Make sure the required global objects exist
 		ASSERT_GLOBAL_OBJECT(AI_TIMER_SERVICE);
+		ASSERT_GLOBAL_OBJECT(STIMULUS_MANAGER);
 		
 		SETV(_thisObject, "agent", _agent);
 		SETV(_thisObject, "currentAction", "");
@@ -41,9 +46,15 @@ CLASS("AI", "MessageReceiver")
 		SETV(_thisObject, "goalsExternal", []);
 		pr _ws = [1] call ws_new; // todo WorldState size must depend on the agent
 		SETV(_thisObject, "worldState", _ws);
+		SETV(_thisObject, "worldFacts", []);
 		SETV(_thisObject, "sensors", []);
+		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
 		SETV(_thisObject, "processInterval", 10);
+		
+		// Add this AI to the stimulus manager
+		CALLM(STIMULUS_MANAGER, "addSensingAI", [_thisObject]);
+		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -54,6 +65,9 @@ CLASS("AI", "MessageReceiver")
 		params [["_thisObject", "", [""]]];
 		// Stop the AI if it is currently running
 		CALLM(_thisObject, "stop", []);
+		
+		// Remove this AI from the stimulus manager
+		CALLM(STIMULUS_MANAGER, "removeSensingAI", [_thisObject]);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -89,7 +103,8 @@ CLASS("AI", "MessageReceiver")
 		
 		//Calculate most relevant goal
 		pr _goalNewAndParameter = CALLM(_thisObject, "getMostRelevantGoal", []);
-		_goalNewAndParameter params ["_goalClassName", "_goalParameter"];
+		_goalNewAndParameter params ["_goalClassName", "_goalParameter", "_goalBias", "_goalSource"]; // Goal class name, bias, parameter, source
+		if (count _goalNewAndParameter == 0) then {_goalClassName = "<none>";};
 		diag_log format ["  most relevant goal: %1", _goalClassName];
 		
 		// Call process method of subagents
@@ -108,7 +123,7 @@ CLASS("AI", "MessageReceiver")
 	// | 
 	// ----------------------------------------------------------------------
 	
-	METHOD("handleMessage") { //Derived classes must implement this method
+	METHOD("handleMessageEx") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 		switch (_msgType) do {
@@ -124,6 +139,39 @@ CLASS("AI", "MessageReceiver")
 			
 			default {false}; // Message not handled
 		};
+	} ENDMETHOD;
+	
+	
+	
+	
+	
+	
+	
+	// ------------------------------------------------------------------------------------------------------
+	// -------------------------------------------- S E N S O R S -------------------------------------------
+	// ------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	// ----------------------------------------------------------------------
+	// |                A D D   S E N S O R
+	// | Adds a given sensor to the AI object
+	// ----------------------------------------------------------------------
+	
+	METHOD("addSensor") {
+		params [["_thisObject", "", [""]], ["_sensor", "ERROR_NO_SENSOR", [""]]];
+		// Add the sensor to the sensor list
+		pr _sensors = GETV(_thisObject, "sensors");
+		_sensors pushBackUnique _sensor;
+		
+		// Check the stimulus types this sensor responds to
+		pr _stimTypesSensor = CALLM(_sensor, "getStimulusTypes", []);
+		pr _stimTypesThis = GETV(_thisObject, "sensorStimulusTypes");
+		// Add the stimulus types to the stimulus type array
+		{
+			_stimTypesThis pushBackUnique _x;
+		} forEach _stimTypesSensor;
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -147,6 +195,37 @@ CLASS("AI", "MessageReceiver")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                    H A N D L E   S T I M U L U S
+	// | Handles external stimulus.
+	// ----------------------------------------------------------------------
+	
+	METHOD("handleStimulus") {
+		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
+		pr _type = _stimulus select STIMULUS_ID_TYPE;
+		pr _sensors = GETV(_thisObject, "sensors");
+		{
+			pr _stimTypes = CALLM(_x, "getStimulusTypes", []);
+			if (_type in _stimTypes) then {
+				CALLM(_x, "stimulate", [_stimulus]);
+			};
+		} foreach _sensors;
+	} ENDMETHOD;	
+	
+	
+	
+	
+	
+	
+	
+	
+	// ------------------------------------------------------------------------------------------------------
+	// -------------------------------------------- G O A L S -----------------------------------------------
+	// ------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
+	// ----------------------------------------------------------------------
 	// |                G E T   M O S T   R E L E V A N T   G O A L
 	// | Return value: [goal, parameter]
 	// | 
@@ -160,9 +239,8 @@ CLASS("AI", "MessageReceiver")
 		// Get the list of goals available to this agent
 		pr _possibleGoals = CALLM(_agent, "getPossibleGoals", []);
 		pr _relevanceMax = -1000;
-		pr _mostRelevantGoal = "";
-		pr _mostRelevantGoalParameter = 0;
-		_possibleGoals = _possibleGoals apply {[_x, 0, 0]}; // Goal class name, bias, parameter
+		pr _mostRelevantGoal = [];
+		_possibleGoals = _possibleGoals apply {[_x, 0, 0, _thisObject]}; // Goal class name, bias, parameter, source
 		{
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
@@ -172,13 +250,13 @@ CLASS("AI", "MessageReceiver")
 			
 			if (_relevance > _relevanceMax) then {
 				_relevanceMax = _relevance;
-				_mostRelevantGoal = _goalClassName;
-				_mostRelevantGoalParameter = _x select 2;
+				_mostRelevantGoal = _x;
 			};
 		} forEach _possibleGoals;
 		
 		// Return
-		[_mostRelevantGoal, _mostRelevantGoalParameter]
+		pr _return = +_mostRelevantGoal; // Make a deep copy
+		_return
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -190,10 +268,10 @@ CLASS("AI", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], "_parameter"];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], "_parameter", ["_source", "ERROR_NO_SOURCE", [""]] ];
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBack [_goalClassName, _parameter, _bias];
+		_goalsExternal pushBack [_goalClassName, _parameter, _bias, _source];
 		
 	} ENDMETHOD;
 	
@@ -219,6 +297,18 @@ CLASS("AI", "MessageReceiver")
 		
 	} ENDMETHOD;
 	
+	
+	
+	
+	
+	
+	// ------------------------------------------------------------------------------------------------------
+	// -------------------------------------------- A C T I O N S -------------------------------------------
+	// ------------------------------------------------------------------------------------------------------
+	
+	
+	
+	
 	// ----------------------------------------------------------------------
 	// |                S E T   C U R R E N T   A C T I O N
 	// |
@@ -243,6 +333,17 @@ CLASS("AI", "MessageReceiver")
 		params [["_thisObject", "", [""]]];
 		// Put your A* implementation here
 	} ENDMETHOD;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
 	
 	// ----------------------------------------------------------------------
 	// |                S T A R T
@@ -277,6 +378,8 @@ CLASS("AI", "MessageReceiver")
 			DELETE(_timer);
 		};
 	} ENDMETHOD;
+	
+	
 	
 	// ----------------------------------------------------------------------
 	// |               S E T   P R O C E S S   I N T E R V A L
