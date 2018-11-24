@@ -8,6 +8,7 @@
 #define GOAL_RELEVANCE_BIAS_SELF	100
 
 // Releavance of goals supplied by lower agents
+// If a goal returns this relevance, it is ignored
 #define GOAL_RELEVANCE_BIAS_LOWER	0
 
 // ============== Universal goals ===============
@@ -23,4 +24,5 @@
 
 
 // =============== Unit goals ===================
+#define GOAL_RELEVANCE_UNIT_SALUTE (GOAL_RELEVANCE_BIAS_SELF+10)
 #define GOAL_RELEVANCE_UNIT_RELAX (GOAL_RELEVANCE_BIAS_SELF+1)

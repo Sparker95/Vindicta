@@ -1,3 +1,8 @@
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "Action.hpp"
+#include "..\..\Message\Message.hpp"
+#include "..\..\MessageTypes.hpp"
+
 /*
 The atomic goal class.
 Based on source from "Programming Game AI by Example" by Mat Buckland: http://www.ai-junkie.com/books/toc_pgaibe.html
@@ -5,23 +10,20 @@ Based on source from "Programming Game AI by Example" by Mat Buckland: http://ww
 Author: Sparker 05.08.2018
 */
 
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "Action.hpp"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
+#define pr private
 
 CLASS("Action", "MessageReceiver")
 
-	VARIABLE("entity"); // The entity that owns this goal: unit, group, garrison, etc
+	VARIABLE("AI"); // The AI object this action is attached to
 	VARIABLE("state"); // Status of this goal
-	VARIABLE("msgLoop"); // Message loop of this goal, if this goal needs to receive any messages
+	//VARIABLE("msgLoop"); // Message loop of this goal, if this goal needs to receive any messages
 	VARIABLE("timer"); // The timer which will be sending messages to this goal so that it calls its process method
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// |                                                                    |
 	// | Arguments:                                                         |
-	// |  _entity - The entity that owns this goal: unit, group, garrison ..|
+	// |  _AI - The AI object that owns this goal                           |
 	// |  _autonomous - if true, a timer will be created to call the        |
 	// |   process method of this goal periodically.                        |
 	// |   If false, this goal is assumed to be a subgoal and it will not   |
@@ -29,14 +31,12 @@ CLASS("Action", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_entity", "", [""]] ];
-		
-		if (isNil "gTimerServiceMain") exitWith { diag_log "[Goal::new] Error: main timer service doesnt't exist!"; };
-		if (isNil "gMessageLoopGoal") exitWith { diag_log "[Goal::new] Error: global goal message loop doesn't exist!"; };
-		
-		SET_VAR(_thisObject, "entity", _entity);
+		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+	
+		SET_VAR(_thisObject, "AI", _AI);
 		SET_VAR(_thisObject, "state", ACTION_STATE_INACTIVE); // Default state
-		SETV(_thisObject, "msgLoop", gMessageLoopGoal);
+		//pr _msgLoop = CALLM("AI", "getMessageLoop");
+		//SETV(_thisObject, "msgLoop", _msgLoop);
 		
 		SETV(_thisObject, "timer", ""); // No timer for this goal until it has been made autonomous
 	} ENDMETHOD;
@@ -63,7 +63,11 @@ CLASS("Action", "MessageReceiver")
 	
 	METHOD("getMessageLoop") {
 		params [ ["_thisObject", "", [""]] ];
-		GETV(_thisObject, "msgLoop")
+		pr _AI = GETV(_thisObject, "AI");
+		pr _msgLoop = CALLM(_AI, "getMessageLoop", []);
+		//diag_log format ["[Action:getMessageLoop] Action: %1, Returned message loop: %2", _thisObject, _msgLoop];		
+		//ade_dumpCallstack;
+		_msgLoop
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -72,10 +76,12 @@ CLASS("Action", "MessageReceiver")
 	// | Sets the message loop for this goal                                |
 	// ----------------------------------------------------------------------
 	
+	/*
 	METHOD("setMessageLoop") {
 		params [["_thisObject", "", [""]], ["_msgLoop", "", [""]] ];
 		SETV(_thisObject, "msgLoop", _msgLoop);
 	} ENDMETHOD;
+	*/
 	
 	// ----------------------------------------------------------------------
 	// |                   S E T   A U T O N O M O U S                      |
@@ -110,11 +116,12 @@ CLASS("Action", "MessageReceiver")
 		private _msgHandled = false;
 		
 		switch (_msgType) do {
-			case MESSAGE_UNIT_DESTROYED: {
+			
+			/*case MESSAGE_UNIT_DESTROYED: {
 				diag_log "[Goal::handleMessage] Info: unit was destroyed";
 				SETV(_thisObject, "state", ACTION_STATE_FAILED);
 				_msgHandled = true; // message handled
-			};
+			};*/
 		
 			case ACTION_MESSAGE_PROCESS: {
 				//diag_log format ["[Goal::handleMessage] Info: Calling process method...", _msg];
@@ -127,6 +134,7 @@ CLASS("Action", "MessageReceiver")
 				DELETE(_thisObject);
 				_msgHandled = true; // message handled
 			};
+			
 		};
 		
 		_msgHandled
@@ -173,10 +181,10 @@ CLASS("Action", "MessageReceiver")
 	// a Goal is atomic and cannot aggregate subgoals yet we must implement
 	// this method to provide the uniform interface required for the goal
 	// hierarchy.
-	/* virtual */ METHOD("addSubgoal") { diag_log "[Goal::addSubgoal] Error: can't add a subgoal to an atomic goal!"; } ENDMETHOD;
+	/* virtual */ METHOD("addSubaction") { diag_log "[Goal::addSubgoal] Error: can't add a subgoal to an atomic goal!"; } ENDMETHOD;
 	
 	// Returns the list of subgoals (for debug purposes)
-	/* virtual */ METHOD("getSubgoals") { [] } ENDMETHOD;
+	/* virtual */ METHOD("getSubactions") { [] } ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                         S T A T E   C H E C K S                    |

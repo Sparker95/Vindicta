@@ -1,15 +1,16 @@
-/*
-AI base class.
-
-Author: Sparker 07.11.2018
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
+#include "..\goalRelevance.hpp"
+
+/*
+AI base class.
+
+Author: Sparker 07.11.2018
+*/
 
 #define pr private
 
@@ -21,6 +22,8 @@ CLASS("AI", "MessageReceiverEx")
 	VARIABLE("agent"); // Pointer to the unit which holds this AI object
 	VARIABLE("currentAction"); // The current action
 	VARIABLE("currentGoal"); // The current goal
+	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
+	VARIABLE("currentGoalParameter"); // The parameter of the current goal
 	VARIABLE("goalsExternal"); // Goal suggested to this Agent by another agent
 	VARIABLE("worldState"); // The world state relative to this Agent
 	VARIABLE("worldFacts"); // Array with world facts
@@ -43,6 +46,8 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "agent", _agent);
 		SETV(_thisObject, "currentAction", "");
 		SETV(_thisObject, "currentGoal", "");
+		SETV(_thisObject, "currentGoalSource", "");
+		SETV(_thisObject, "currentGoalParameter", 0);
 		SETV(_thisObject, "goalsExternal", []);
 		pr _ws = [1] call ws_new; // todo WorldState size must depend on the agent
 		SETV(_thisObject, "worldState", _ws);
@@ -53,7 +58,8 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "processInterval", 10);
 		
 		// Add this AI to the stimulus manager
-		CALLM(STIMULUS_MANAGER, "addSensingAI", [_thisObject]);
+		pr _args = ["addSensingAI", [_thisObject]];
+		CALLM(STIMULUS_MANAGER, "postMethodAsync", _args);
 		
 	} ENDMETHOD;
 	
@@ -67,7 +73,22 @@ CLASS("AI", "MessageReceiverEx")
 		CALLM(_thisObject, "stop", []);
 		
 		// Remove this AI from the stimulus manager
-		CALLM(STIMULUS_MANAGER, "removeSensingAI", [_thisObject]);
+		pr _args = ["removeSensingAI", [_thisObject]];
+		CALLM(STIMULUS_MANAGER, "postMethodSync", _args);
+		
+		// Delete all sensors
+		pr _sensors = GETV(_thisObject, "sensors");
+		{
+			DELETE(_x);
+		} forEach _sensors;
+		
+		// Delete the current action
+		pr _action = GETV(_thisObject, "currentAction");
+		if (_action != "") then {
+			CALLM(_action, "terminate", []);
+			DELETE(_action);
+		};
+		
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -78,7 +99,7 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		diag_log format ["AI:Process is called for AI: %1", _thisObject];
+		//diag_log format ["AI:Process is called for AI: %1", _thisObject];
 		
 		pr _agent = GETV(_thisObject, "agent");
 		
@@ -98,14 +119,71 @@ CLASS("AI", "MessageReceiverEx")
 		if (count agent.getSubagents > 0)
 			{ _x.AI.process(); } forEach subagents;
 		*/
+		
 		// Update all sensors
 		CALLM(_thisObject, "updateSensors", []);
 		
+		// Update all world facts (delete old facts)
+		CALLM(_thisObject, "updateWorldFacts", []);
+		
 		//Calculate most relevant goal
-		pr _goalNewAndParameter = CALLM(_thisObject, "getMostRelevantGoal", []);
-		_goalNewAndParameter params ["_goalClassName", "_goalParameter", "_goalBias", "_goalSource"]; // Goal class name, bias, parameter, source
-		if (count _goalNewAndParameter == 0) then {_goalClassName = "<none>";};
-		diag_log format ["  most relevant goal: %1", _goalClassName];
+		pr _goalNewArray = CALLM(_thisObject, "getMostRelevantGoal", []);
+		
+		// If we have chosen some goal
+		if (count _goalNewArray != 0) then {
+			_goalNewArray params ["_goalClassName", "_goalParameter", "_goalBias", "_goalSource"]; // Goal class name, bias, parameter, source
+			//diag_log format ["  most relevant goal: %1", _goalClassName];
+			
+			// Check if the new goal is the same as the current goal
+			pr _currentGoal = GETV(_thisObject, "currentGoal");
+			pr _currentGoalSource = GETV(_thisObject, "currentGoalSource");
+			pr _currentGoalParameter = GETV(_thisObject, "currentGoalParameter");
+			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameter isEqualTo _goalParameter) then {
+				
+			} else {
+				// We have a new goal! Time to replan.
+				SETV(_thisObject, "currentGoal", _goalClassName);
+				SETV(_thisObject, "currentGoalSource", _goalSource);
+				SETV(_thisObject,"currentGoalParameter", _goalParameter);
+				diag_log format ["[AI:Process] AI: %1, new goal: %2", _thisObject, _goalClassName];
+				
+				// Make a new Action Plan
+				// First check if the goal assumes a predefined plan
+				pr _newAction = CALL_STATIC_METHOD(_goalClassName, "createPredefinedAction", [_thisObject]);
+				if (_newAction != "") then {
+				} else {
+					// todo run planner
+				};
+				
+				// Set a new action
+				SETV(_thisObject, "currentAction", _newAction);
+			};
+		} else {
+			// We don't pursue a goal any more
+			
+			// End the previous goal if we had it
+			pr _currentGoal = GETV(_thisObject, "currentGoal");
+			if (_currentGoal != "") then {
+				diag_log format ["[AI:Process] AI: %1 ending the current goal: %2", _thisObject, _currentGoal];
+				SETV(_thisObject, "currentGoal", "");
+				
+				// Terminate the current action
+				pr _currentAction = GETV(_thisObject, "currentAction");
+				if (_currentAction != "") then {
+					CALLM(_currentAction, "terminate", []);
+					DELETE(_currentAction);
+					SETV(_thisObject, "currentAction", "");
+				};
+			};
+			
+			//diag_log format ["  most relevant goal: %1", _goalClassName];
+		};
+		
+		// Process the current action if we have it
+		pr _currentAction = GETV(_thisObject, "currentAction");
+		if (_currentAction != "") then {
+			CALLM(_currentAction, "process", []);
+		};
 		
 		// Call process method of subagents
 		pr _subagents = CALLM(_agent, "getSubagents", []);
@@ -176,7 +254,7 @@ CLASS("AI", "MessageReceiverEx")
 	
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   S E N S O R S
-	// | Update values of all sensors, according to their settings, returns true if any of them have changed
+	// | Update values of all sensors, according to their settings
 	// ----------------------------------------------------------------------
 	
 	METHOD("updateSensors") {
@@ -186,7 +264,8 @@ CLASS("AI", "MessageReceiverEx")
 			pr _sensor = _x;
 			// Update the sensor if it's time to update it
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
-			if (time > _timeNextUpdate) then {
+			// If timeNextUpdate is 0, we never update this sensor
+			if (_timeNextUpdate != 0 && time > _timeNextUpdate) then {
 				CALLM(_sensor, "update", []);
 				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
 				SETV(_sensor, "timeNextUpdate", time + _interval);
@@ -245,7 +324,7 @@ CLASS("AI", "MessageReceiverEx")
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
 			pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
-			diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
+			//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
 			_relevance = _relevance + _bias;
 			
 			if (_relevance > _relevanceMax) then {
@@ -254,9 +333,13 @@ CLASS("AI", "MessageReceiverEx")
 			};
 		} forEach _possibleGoals;
 		
-		// Return
-		pr _return = +_mostRelevantGoal; // Make a deep copy
-		_return
+		// Return the most relevant goal if its relevance is above 0
+		if (_relevanceMax > GOAL_RELEVANCE_BIAS_LOWER) exitWith {
+			pr _return = +_mostRelevantGoal; // Make a deep copy
+			_return
+		};
+		
+		[]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -337,13 +420,76 @@ CLASS("AI", "MessageReceiverEx")
 	
 	
 	
+	// ------------------------------------------------------------------------------------------------------
+	// -------------------------------------------- W O R L D   F A C T S -----------------------------------
+	// ------------------------------------------------------------------------------------------------------
 	
+	// Adds a world fact
+	METHOD("addWorldFact") {
+		params [["_thisObject", "", [""]], ["_fact", [], [[]]]];
+		pr _facts = GETV(_thisObject, "worldFacts");
+		_facts pushBack _fact;
+	} ENDMETHOD;
 	
+	// Finds a world fact that matches a query
+	// Returns the found world fact or nil if nothing was found
+	METHOD("findWorldFact") {
+		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
+		pr _facts = GETV(_thisObject, "worldFacts");
+		pr _i = 0;
+		pr _c = count _facts;
+		pr _return = nil;
+		while {_i < _c} do {
+			pr _fact = _facts select _i;
+			if ([_fact, _query] call wf_fnc_matchesQuery) exitWith {_return = _fact;};
+			_i = _i + 1;
+		};
+		if (!isNil "_return") then {_return} else {nil};
+	} ENDMETHOD;
 	
+	// Finds all world facts that match a query
+	// Returns array with facts that satisfy criteria or []
+	METHOD("findWorldFacts") {
+		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
+		pr _facts = GETV(_thisObject, "worldFacts");
+		pr _i = 0;
+		pr _c = count _facts;
+		pr _return = [];
+		while {_i < _c} do {
+			pr _fact = _facts select _i;
+			if ([_fact, _query] call wf_fnc_matchesQuery) then {_return pushBack _fact;};
+			_i = _i + 1;
+		};
+		_return
+	} ENDMETHOD;
 	
+	// Deletes all facts that match query
+	METHOD("deleteWorldFacts") {
+		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
+		pr _facts = GETV(_thisObject, "worldFacts");
+		pr _i = 0;
+		while {_i < count _facts} do {
+			pr _fact = _facts select _i;
+			if ([_fact, _query] call wf_fnc_matchesQuery) then {_facts deleteAt _i} else {_i = _i + 1;};
+		};
+	} ENDMETHOD;
 	
-
-	
+	// Maintains the array of world facts
+	// Deletes world facts that have exceeded their lifetime
+	METHOD("updateWorldFacts") {
+		params [["_thisObject", "", [""]]];
+		pr _facts = GETV(_thisObject, "worldFacts");
+		pr _i = 0;
+		while {_i < count _facts} do {
+			pr _fact = _facts select _i;
+			if ([_fact] call wf_fnc_hasExpired) then {
+				diag_log format ["[AI:updateWorldFacts] AI: %1, deleted world fact: %2", _thisObject, _fact];
+				_facts deleteAt _i;
+			} else {
+				_i = _i + 1;
+			};
+		};
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                S T A R T

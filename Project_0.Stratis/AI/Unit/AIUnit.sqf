@@ -25,13 +25,8 @@ CLASS("AIUnit", "AI")
 		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
 		
 		// Initialize sensors
-		/*
-		pr _sensors = [];
-		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
-		_sensors pushBack _sensorHealth;
-		
-		SETV(_thisObject, "sensors", _sensors);
-		*/
+		pr _sensorSalute = NEW("SensorUnitSalute", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorSalute]);
 		
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;

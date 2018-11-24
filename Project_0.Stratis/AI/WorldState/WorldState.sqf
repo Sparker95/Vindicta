@@ -30,7 +30,7 @@ ws_new = {
 	pr _array_WSPE = []; // Array of WorldPropertyExists flags
 	_i = 0;
 	while {_i < _size} do {
-		_array_WSPE set [_i, 0]; // By default all world properties don't exist
+		_array_WSPE set [_i, false]; // By default all world properties don't exist
 		_i = _i + 1;
 	};
 	

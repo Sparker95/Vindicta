@@ -123,6 +123,17 @@
 #define GETV(a, b) GET_VAR(a, b)
 #define GETSV(a, b) GET_STATIC_V(a, b)
 
+// todo add macros to check object validity
+/*
+#define IS_VALID(objNameStr)
+private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	//Check if it's an object
+	if(isNil "_classNameStr") exitWith {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		false;
+	};
+*/
+
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
 // -----------------------------------------------------

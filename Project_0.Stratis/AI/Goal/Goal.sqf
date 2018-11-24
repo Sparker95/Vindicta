@@ -4,7 +4,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\WorldState\WorldState.hpp"
 
-CLASS("Goal", "MessageReceiver")
+CLASS("Goal", "")
 
 	STATIC_VARIABLE("desiredWorldState"); // Array of world properties
 	
@@ -39,6 +39,18 @@ CLASS("Goal", "MessageReceiver")
 	/* virtual */ STATIC_METHOD("calculateRelevance") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		0 // Return desireability
+	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |            C R E A T E   P R E D E F I N E D   A C T I O N
+	// ----------------------------------------------------------------------
+	// If this goal has doesn't support planner and supports a predefined plan, this method must
+	// create an Action and return it.
+	// Otherwise it must return ""
+	
+	/* virtual */ STATIC_METHOD("createPredefinedAction") {
+		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		"" // Return nothing by default
 	} ENDMETHOD;
 
 ENDCLASS;

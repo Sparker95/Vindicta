@@ -11,7 +11,7 @@ Author: Sparker 05.08.2018
 
 CLASS("ActionComposite", "Action")
 
-	VARIABLE("subgoals"); // Array with subgoals
+	VARIABLE("subactions"); // Array with subactions
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |

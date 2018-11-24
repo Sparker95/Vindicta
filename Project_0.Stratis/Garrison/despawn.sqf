@@ -21,6 +21,7 @@ SET_VAR(_thisObject, "spawned", false);
 // Delete the AI object
 pr _AI = GETV(_thisObject, "AI");
 DELETE(_AI);
+SETV(_thisObject, "AI", "");
 
 private _units = GET_VAR(_thisObject, "units");
 private _groups = GET_VAR(_thisObject, "groups");

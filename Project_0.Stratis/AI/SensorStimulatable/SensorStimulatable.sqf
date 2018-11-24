@@ -40,7 +40,7 @@ CLASS("SensorStimulatable", "Sensor")
 		// Check distance
 		
 		// Do sensor-specific complex check
-		if (! (CALLM(_thisObject, "doComplexCheck", []))) exitWith {};
+		if (! (CALLM(_thisObject, "doComplexCheck", [_stimulus]))) exitWith {};
 		
 		// Create world fact
 		CALLM(_thisObject, "createWorldFact", []);
@@ -61,7 +61,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("createWorldFact") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -70,7 +70,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_AI", "ERROR_NO_AI", [""]]];
+		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		// Return true by default
 		true				
 	} ENDMETHOD;

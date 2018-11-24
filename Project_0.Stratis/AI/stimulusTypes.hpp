@@ -2,3 +2,7 @@
 //#define STIMULUS_TYPE_NONE	0
 
 #define STIMULUS_TYPE_SOUND 1
+
+
+// Someone has saluted to the unit
+#define STIMULUS_TYPE_UNIT_SALUTE	100

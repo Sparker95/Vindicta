@@ -58,6 +58,8 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
+		diag_log format ["[StimulusManager:handleStimulus] stimulus: %1", _stimulus];
+		
 		pr _AIs = GETV(_thisObject, "sensingAIs");
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
 		pr _pos = _stimulus select STIMULUS_ID_POS;
@@ -65,6 +67,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 			// Check if this AI can respond to this stimulus
 			pr _AI = _x;
 			
+			pr _distance = 666666;
 			pr _canSense = call {
 				scopeName "s";
 				
@@ -76,15 +79,17 @@ CLASS("StimulusManager", "MessageReceiverEx")
 				if ((_pos select 0) != 0) then { // If the source position is [0, 0, 0] then it is ignored
 					pr _agent = GETV(_AI, "agent");
 					pr _agentPos = CALLM(_agent, "getPos", []);
-					if ((_pos distance _agentPos) > (_stimulus select STIMULUS_ID_RANGE)) then {false breakOut "s";};
+					_distance = _pos distance _agentPos;
+					if (_distance > (_stimulus select STIMULUS_ID_RANGE)) then {false breakOut "s";};
 				};
 				
 				true
 			};
 			
 			if (_canSense) then {
+				diag_log format ["[StimulusManager:handleStimulus] can be sensed by AI: %1, distance: %2", _AI, _distance];
 				// Make the AI handle the stimulus
-				pr _args = ["handleStimulus", +_stimulus];
+				pr _args = ["handleStimulus", [+_stimulus]];
 				CALLM(_AI, "postMethodAsync", _args); // We call the method asynchronously because it is in another thread
 			};
 		} forEach _AIs;

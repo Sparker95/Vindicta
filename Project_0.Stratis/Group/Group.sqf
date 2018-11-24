@@ -204,6 +204,10 @@ CLASS(GROUP_CLASS_NAME, "")
 			CALL_METHOD(_unit, "spawn", _posAndDir);
 		} forEach _groupUnits;
 		
+		// Set group default behaviour
+		pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		_groupHandle setBehaviour "SAFE";
+		
 		// Create an AI for this group
 		pr _AI = NEW("AIGroup", [_thisObject]);
 		_data set [GROUP_DATA_ID_AI, _AI];

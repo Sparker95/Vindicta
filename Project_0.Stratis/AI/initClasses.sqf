@@ -14,6 +14,8 @@ call compile preprocessFileLineNumbers "AI\SensorStimulatable\SensorStimulatable
 
 call compile preprocessFileLineNumbers "AI\WorldState\WorldState.sqf";
 
+call compile preprocessFileLineNumbers "AI\WorldFact\WorldFact.sqf";
+
 call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 
 
@@ -28,3 +30,6 @@ call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 
 // Unit AI classes
 call compile preprocessFileLineNumbers "AI\Unit\AIUnit.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSalute.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\SensorUnitSalute.sqf";

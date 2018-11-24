@@ -1,0 +1,1 @@
+#define WF_TYPE_UNIT_SALUTED_BY		10

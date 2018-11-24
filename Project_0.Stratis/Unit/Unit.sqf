@@ -9,6 +9,8 @@ Author: Sparker
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
 
 #define pr private
 
@@ -80,11 +82,8 @@ CLASS(UNIT_CLASS_NAME, "")
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
 		
-		//Delete this unit from the physical world
-		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-		if (!(isNull _objectHandle)) then {
-			deleteVehicle _objectHandle;
-		};
+		//Despawn this unit if it was spawned
+		CALLM(_thisObject, "despawn", []);
 		
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
@@ -201,14 +200,19 @@ CLASS(UNIT_CLASS_NAME, "")
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
+			// Stop AI, sensors, etc
+			pr _AI = _data select UNIT_DATA_ID_AI;
+			pr _msg = MESSAGE_NEW();
+			MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
+			pr _msgID = CALLM(_AI, "postMessage", [_msg]);
+			CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+			_data set [UNIT_DATA_ID_AI, ""];
+			
+			// Delete the vehicle
 			deleteVehicle _objectHandle;
 			private _group = _data select UNIT_DATA_ID_GROUP;
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
-			
-			// Make sure we terminate the bench script
-			//private _hScriptBench = _objectHandle getVariable ["unit_hScriptBench", scriptNull];
-			//if (!isNull _hScriptBench) then {terminate _hScriptBench;};
 		};		
 		//Unlock the mutex
 		MUTEX_UNLOCK(_mutex);
@@ -350,12 +354,29 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	METHOD("getPossibleGoals") {
-		[]
+		["GoalUnitSalute"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {
-		[]
+		["ActionUnitSaluteget"]
 	} ENDMETHOD;
+	
+	
+	
+	
+	
+	// --------------------- Generic functions -----------------
+	METHOD("getPos") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		getPos _oh
+	} ENDMETHOD;
+	
+	
+	
+	
+	
 	
 	// ================= File based methods ======================
 	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");

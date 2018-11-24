@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2395;
+		nextID=2398;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=69;
+		nextID=71;
 	};
 	class Camera
 	{
-		pos[]={2984.2571,176.49036,1871.8354};
-		dir[]={0.69058448,-0.34880137,0.6337924};
-		up[]={0.2571038,0.93717116,0.23596464};
-		aside[]={0.67621613,-1.0787044e-006,-0.73681206};
+		pos[]={2998.3853,180.52901,1884.0591};
+		dir[]={-0.56379509,-0.70469159,-0.43105659};
+		up[]={-0.55988133,0.70948184,-0.42806867};
+		aside[]={-0.60742843,-9.2072878e-007,0.7944802};
 	};
 };
 binarizationWanted=0;
@@ -247,7 +247,7 @@ class Mission
 	class Intel
 	{
 		timeOfChanges=1800.0002;
-		startWeather=0;
+		startWeather=0.17966041;
 		startWind=0.1;
 		startWaves=0.1;
 		forecastWeather=0;
@@ -256,8 +256,8 @@ class Mission
 		forecastLightnings=0.1;
 		year=2035;
 		day=28;
-		hour=19;
-		minute=-26;
+		hour=18;
+		minute=-14;
 		startFogDecay=0.014;
 		forecastFogDecay=0.014;
 	};
@@ -3175,7 +3175,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2991.8445,171.28839,1879.2792};
+						position[]={2992.896,171.28368,1880.615};
 					};
 					side="West";
 					flags=7;
@@ -3183,16 +3183,56 @@ class Mission
 					{
 						isPlayer=1;
 					};
-					id=2393;
-					type="B_Competitor_F";
-					atlOffset=-1.5258789e-005;
+					id=2395;
+					type="B_soldier_AAR_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male02ENG";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.04;
+								};
+							};
+						};
+						nAttributes=2;
+					};
 				};
 			};
 			class Attributes
 			{
 			};
 			id=2392;
-			atlOffset=-1.5258789e-005;
 		};
 	};
 	class Connections

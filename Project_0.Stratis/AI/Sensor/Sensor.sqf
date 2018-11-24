@@ -17,6 +17,7 @@ CLASS("Sensor", "MessageReceiver")
 
 	VARIABLE("AI"); // Pointer to the unit which holds this AI object
 	STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by
+	VARIABLE("timeNextUpdate");
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -49,11 +50,12 @@ CLASS("Sensor", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	// |                   G E T  U P D A T E   I N T E R V A L
 	// | Must return the desired update rate of this sensor
+	// | If it returns 0, the sensor will not be updated
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
 		params [ ["_thisObject", "", [""]]];
-		10
+		0
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
