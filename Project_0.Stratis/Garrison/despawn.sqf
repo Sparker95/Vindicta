@@ -29,7 +29,7 @@ private _groups = GET_VAR(_thisObject, "groups");
 // Despawn groups
 {
 	private _group = _x;
-	CALLM(_group, "despawn");
+	CALLM(_group, "despawn", []);
 } forEach _groups;
 
 // Despawn single units

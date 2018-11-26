@@ -1,3 +1,9 @@
+#include "Group.hpp"
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Mutex\Mutex.hpp"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
+
 /*
 Group class.
 Group class is a set of Units. A group can have men, vehicles and drones.
@@ -5,12 +11,6 @@ Group class is a set of Units. A group can have men, vehicles and drones.
 Author: Sparker
 11.06.2018
 */
-
-#include "Group.hpp"
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Mutex\Mutex.hpp"
-#include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
 
 #define pr private
 
@@ -234,7 +234,7 @@ CLASS(GROUP_CLASS_NAME, "")
 		// Despawn everything
 		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 		{
-			CALL_METHOD(_unit, "despawn", []);
+			CALL_METHOD(_x, "despawn", []);
 		} forEach _groupUnits;
 		
 		// Delete the group handle
