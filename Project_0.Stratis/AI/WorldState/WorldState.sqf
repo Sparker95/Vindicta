@@ -97,7 +97,11 @@ ws_toString = {
 	pr _strOut = "[";
 	for "_i" from 0 to (count _properties) do {
 		if ((_propTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists, add it to the string array
-			_strOut = _strOut + format ["%1:%2 ", _i, _properties select _i]; // Key, Value
+			if ((_propTypes select _i) == WSP_TYPE_PARAMETER)  then { // If it's a parameter
+				_strOut = _strOut + format ["%1:<p%2>  ", _i, _properties select _i]; // Key, Value
+			} else {
+				_strOut = _strOut + format ["%1:%2  ", _i, _properties select _i]; // Key, Value
+			};
 		};
 	};
 	_strOut = _strOut + "]";
@@ -119,20 +123,20 @@ _parameterValue - value that must be specified, or 0
 ws_connectionParameters = {
 	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
 	
-	pr _len = count _wsA;
-	
 	// Unpack the arrays
 	pr _AProps = _wsA select WS_ID_WSP;
 	pr _APropTypes = _wsA select WS_ID_WSPT;
 	pr _BProps = _wsB select WS_ID_WSP;
 	pr _BPropTypes = _wsB select WS_ID_WSPT;
 	
+	pr _len = count _AProps;
+	
 	pr _connected = false;
 	pr _parameterID = -1;
 	pr _parameterValue = 0;
 	
 	// Check all properties
-	for "_i" from 0 to _len do {
+	for "_i" from 0 to (_len-1) do {
 		scopeName "s";
 		if ((_BPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {			// If property exists in B AND
 			if ((_APropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {		// If property exists in A
@@ -140,13 +144,14 @@ ws_connectionParameters = {
 				// If property in A is a parameter which can affect a property in B
 				if ((_APropTypes select _i) == WSP_TYPE_PARAMETER) then {
 					_connected = true;
-					_parameterID = _i;
+					_parameterID = _aProps select _i;
 					_parameterValue = _BProps select _i;
 					breakOut "s";
 				};
 				
 				// OR If both properties are equal
 				if ( (_BProps select _i) isEqualTo (_AProps select _i) ) then {
+					_connected = true;
 				 	breakOut "s";
 				};
 			};
@@ -164,7 +169,6 @@ Returns number of unsatisfied properties between world state A and B
 ws_getNumUnsatisfiedProps = {
 	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
 	
-	pr _len = count _wsA;
 	pr _num = 0;
 	
 	// Unpack the arrays
@@ -173,18 +177,66 @@ ws_getNumUnsatisfiedProps = {
 	pr _BProps = _wsB select WS_ID_WSP;
 	pr _BPropTypes = _wsB select WS_ID_WSPT;
 	
-	for "_i" from 0 to _len do {
+	pr _len = count _AProps;
+	
+	for "_i" from 0 to (_len-1) do {
 		if ((_APropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists in A
 		
 			// If this property doesn't exist in B
 			if ((_BPropTypes select _i) == WSP_TYPE_DOES_NOT_EXIST) then {
 				_num = _num + 1;
+			} else {
+				// If property values are different
+				if ( ! ((_BProps select _i) isEqualTo (_AProps select _i)) ) then {
+				 	_num = _num + 1;
+				};
 			};
-			
-			// If property values are different
-			if ( ! ((_BProps select _i) isEqualTo (_AProps select _i)) ) then {
-			 	_num = _num + 1;
-			};
+		};
+	};
+	
+	// Return
+	_num
+};
+
+// Erases properties in _wsA which are affected by properties in _wsB world state
+// Modifies the original _wsA array, returns nothing
+ws_substract = {
+	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
+	
+	// Unpack the arrays
+	pr _AProps = _wsA select WS_ID_WSP;
+	pr _APropTypes = _wsA select WS_ID_WSPT;
+	pr _BPropTypes = _wsB select WS_ID_WSPT;
+	
+	pr _len = count _AProps;
+	
+	for "_i" from 0 to (_len - 1) do {
+		if ((_BPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If property exists in B
+			// Erase the corresponding property in A
+			_AProps set [_i, 0];
+			_APropTypes set [_i, WSP_TYPE_DOES_NOT_EXIST];
+		};
+	};
+};
+
+// Adds _wsB to _wsA, modifying _wsA
+// By adding B to A, we override properties in A which exist in B by values from B
+ws_add = {
+	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
+	
+	// Unpack the arrays
+	pr _AProps = _wsA select WS_ID_WSP;
+	pr _APropTypes = _wsA select WS_ID_WSPT;
+	pr _BProps = _wsB select WS_ID_WSP;
+	pr _BPropTypes = _wsB select WS_ID_WSPT;
+	
+	pr _len = count _AProps;
+	
+	for "_i" from 0 to (_len - 1) do {
+		if ((_BPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {
+			// Copy values and types
+			_AProps set [_i, _BProps select _i];
+			_APropTypes set [_i, _BPropTypes select _i];
 		};
 	};
 };

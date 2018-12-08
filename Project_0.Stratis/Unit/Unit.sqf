@@ -361,7 +361,7 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {
-		["ActionUnitSaluteget"]
+		["ActionUnitSalute"]
 	} ENDMETHOD;
 	
 	

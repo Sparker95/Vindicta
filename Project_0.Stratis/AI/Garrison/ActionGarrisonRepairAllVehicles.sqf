@@ -63,7 +63,7 @@ CLASS(THIS_ACTION_NAME, "Action")
 		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
 		
 		// Return cost
-		0
+		1
 	} ENDMETHOD;
 
 ENDCLASS;

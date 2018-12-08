@@ -61,10 +61,10 @@ CLASS(THIS_ACTION_NAME, "Action")
 	
 	// Calculates cost of this action
 	STATIC_METHOD("getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		//params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
 		
 		// Return cost
-		0
+		5
 	} ENDMETHOD;
 
 ENDCLASS;

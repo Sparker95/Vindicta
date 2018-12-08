@@ -6,6 +6,7 @@
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "..\goalRelevance.hpp"
+#include "AI.hpp"
 
 /*
 AI base class.
@@ -553,5 +554,206 @@ CLASS("AI", "MessageReceiverEx")
 			CALLM(_timer, "setInterval", [_interval]);
 		};
 	} ENDMETHOD;
+	
+	
+	
+	
+	
+	
+	
+	/* ------------------------------------------------------------------------------------------------------------
+		   ###                    ###    ##        ######    #######  ########  #### ######## ##     ## ##     ## 
+		  ## ##    ##   ##       ## ##   ##       ##    ##  ##     ## ##     ##  ##     ##    ##     ## ###   ### 
+		 ##   ##    ## ##       ##   ##  ##       ##        ##     ## ##     ##  ##     ##    ##     ## #### #### 
+		##     ## #########    ##     ## ##       ##   #### ##     ## ########   ##     ##    ######### ## ### ## 
+		#########   ## ##      ######### ##       ##    ##  ##     ## ##   ##    ##     ##    ##     ## ##     ## 
+		##     ##  ##   ##     ##     ## ##       ##    ##  ##     ## ##    ##   ##     ##    ##     ## ##     ## 
+		##     ##              ##     ## ########  ######    #######  ##     ## ####    ##    ##     ## ##     ##
+		
+		https://en.wikipedia.org/wiki/A*_search_algorithm
+		
+	---------------------------------------------------------------------------------------------------------------*/
+	/*
+	Performs backwards search of actions to connect current world state and goal world state, starting search from goal world state.
+	*/
+	
+	#define ASTAR_DEBUG
+	
+	STATIC_METHOD("AStar") {
+		params [["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"] ];
+		
+		// Copy the array of possible actions becasue we are going to modify it
+		pr _availableActions = +_possibleActions;
+		
+		#ifdef ASTAR_DEBUG
+		diag_log "";
+		diag_log "[AI:AStar] Info: ---------- Starting A* ----------";
+		diag_log format ["[AI:AStar] Info: currentWS: %1,  goalWS: %2,  possibleActions: %3", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _possibleActions];
+		#endif
+		
+		// Set of nodes already evaluated
+		pr _closeSet = [];
+		
+		// Set of discovered nodes to evaluate
+		pr _goalNode = ASTAR_NODE_NEW(_goalWS);
+		_goalNode set [ASTAR_NODE_ID_F, [_goalWS, _currentWS] call ws_getNumUnsatisfiedProps]; // Calculate heuristic for the goal node
+		//ade_dumpCallstack;
+		pr _openSet = [_goalNode];
+		
+		// Main loop of the algorithm
+		pr _path = []; // Return value of the algorithm
+		pr _count = 10; // A safety counter, in case it freezes.
+		while {count _openSet > 0 && _count > 0} do {
+			
+			// Set current node to the node in open set with lowest f value
+			pr _node = _openSet select 0;
+			pr _lowestF = _openSet select 0 select ASTAR_NODE_ID_F;
+			{
+				pr _f = _x select ASTAR_NODE_ID_F;
+				if (_f < _lowestF) then {
+					_lowestF = _f;
+					_node = _x;
+				};
+			} forEach _openSet;
+			
+			// Debug output
+			// Print the node we currently analyze
+			#ifdef ASTAR_DEBUG
+				diag_log "";
+				diag_log "[AI:AStar] Info: Open set:";
+				// Print the open and closed set
+				{
+					pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_x]);
+					diag_log ("  " + _nodeString);
+				} forEach _openSet;
+				
+				// Print the selected node
+				pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_node]);
+				diag_log format ["[AI:AStar] Info: Analyzing node: %1", _nodeString];
+			#endif
+			
+			// Remove the current node from the open set, add it to the close set
+			_openSet deleteAt (_openSet find _node);
+			_closeSet pushBack _node;
+			
+			// World state of this node
+			pr _nodeWS = _node select ASTAR_NODE_ID_WS;
+			
+			// Terminate if we have reached the current world state
+			if (([_nodeWS, _currentWS] call ws_getNumUnsatisfiedProps) == 0) exitWith {
+				#ifdef ASTAR_DEBUG
+					diag_log "[AI:AStar] Info: Reached current state!";
+				#endif
+				
+				// Recunstruct path
+				pr _n = _node;
+				while {true} do {
+					_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETER];
+					if ((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) exitWith{};
+					_n = _n select ASTAR_NODE_ID_NEXT_NODE;
+				};
+			};
+			
+			// Discover neighbour nodes of this node
+			// We can reach neighbour nodes only through available actions
+			
+			// Debug text
+			#ifdef ASTAR_DEBUG
+				diag_log format ["[AI:AStar] Info: Discovered neighbours:", _nodeString];
+			#endif
+			
+			pr _usedActions = [];
+			{ // forEach _availableActions;
+				pr _effects = GET_STATIC_VAR(_x, "effects");
+				pr _connParams = [_effects, _nodeWS] call ws_connectionParameters;
+				_connParams params ["_connected", "_parameterID", "_parameterValue"];
+				
+				// If there is connection, create a new node
+				if (_connected) then {
+					// Calculate world state before executing this action
+					// It depends on action effects, preconditions and world state of current node
+					pr _preconditions = (GET_STATIC_VAR(_x, "preconditions"));
+					pr _effects = GET_STATIC_VAR(_x, "effects");
+					pr _WSBeforeAction = +_nodeWS;
+					[_WSBeforeAction, _effects] call ws_substract;
+					[_WSBeforeAction, _preconditions] call ws_add;					
+					
+					pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
+					_n set [ASTAR_NODE_ID_ACTION, _x];
+					_n set [ASTAR_NODE_ID_ACTION_PARAMETER, _parameterValue];
+					_n set [ASTAR_NODE_ID_NEXT_NODE, _node];
+					
+					// Calculate H, G and F values of the new node
+					
+					// Calculate G value
+					// G = G(_node) + cost of this action
+					pr _args = [_AI, _preconditions, _nodeWS];
+					pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
+					pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
+					_n set [ASTAR_NODE_ID_G, _g];
+					
+					// Calculate F and H values
+					// F = G + Heuristic
+					// We need to store H only for debug
+					pr _h = [_WSBeforeAction, _currentWS] call ws_getNumUnsatisfiedProps;
+					pr _f = _g + _h;
+					_n set [ASTAR_NODE_ID_H, _h];
+					_n set [ASTAR_NODE_ID_F, _f];
+					
+					// Add the new node to the open set
+					_openSet pushBack _n;
+					
+					// Remove the action from action list, we don't want to use it many times
+					_usedActions pushBack _x;
+					
+					// Print debug text: neighbour node
+					#ifdef ASTAR_DEBUG
+						pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_n]);
+						diag_log ("  " + _nodeString);
+					#endif
+				};
+			} forEach _availableActions;
+			
+			// Remove the action from action list, we don't want to use it many times
+			//_availableActions = _availableActions - _usedActions;
+			
+			_count = _count - 1;
+		}; // while {}
+		
+		#ifdef ASTAR_DEBUG
+			diag_log format ["[AI:AStar] Info: Generated plan: %1", _path];
+		#endif
+		
+		// Return the reconstructed path
+		_path
+	} ENDMETHOD;
+	
+	// Converts an A* node to string for debug purposes
+	STATIC_METHOD("AStarNodeToString") {
+		params [["_node", [], [[]]]];
+		
+		// Next field might be a node or a special number indicating that next node doesn't exist (i.e. for a goal node)
+		
+		pr _nextNodeStr = "";
+		if ((_node select ASTAR_NODE_ID_NEXT_NODE) isEqualTo ASTAR_NODE_DOES_NOT_EXIST) then {
+			_nextNodeStr = "<no node>";
+		} else {
+			_nextNodeStr = (_node select ASTAR_NODE_ID_NEXT_NODE) select ASTAR_NODE_ID_ACTION;
+		};
+		
+		// Convert world state to string
+		pr _str = format ["[ WS: %1  Action: %2(%3)  H: %4  G: %5  F: %6  Next: %7 ]",
+			[_node select ASTAR_NODE_ID_WS] call ws_toString,
+			_node select ASTAR_NODE_ID_ACTION,
+			_node select ASTAR_NODE_ID_ACTION_PARAMETER,
+			_node select ASTAR_NODE_ID_H,
+			_node select ASTAR_NODE_ID_G,
+			_node select ASTAR_NODE_ID_F,
+			_nextNodeStr];
+		
+		// Return
+		_str
+	} ENDMETHOD;
+	
 	
 ENDCLASS;
