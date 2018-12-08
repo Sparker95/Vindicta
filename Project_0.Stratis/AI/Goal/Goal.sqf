@@ -6,7 +6,7 @@
 
 CLASS("Goal", "")
 
-	STATIC_VARIABLE("desiredWorldState"); // Array of world properties
+	STATIC_VARIABLE("effects"); // Array of world properties
 	
 	
 	// We don't need NEW and DELETE because goals don't need to be instantiated
@@ -55,4 +55,4 @@ CLASS("Goal", "")
 
 ENDCLASS;
 
-SET_STATIC_VAR("Goal", "desiredWorldState", []);
+SET_STATIC_VAR("Goal", "effects", []);

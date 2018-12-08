@@ -19,6 +19,10 @@ CLASS("Action", "MessageReceiver")
 	//VARIABLE("msgLoop"); // Message loop of this goal, if this goal needs to receive any messages
 	VARIABLE("timer"); // The timer which will be sending messages to this goal so that it calls its process method
 	
+	// Inherited actions should implement if planner is supposed to be used for them:
+	//STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
+	//STATIC_VARIABLE("effects"); // World state after the action ahs been executed
+	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// |                                                                    |
@@ -211,4 +215,23 @@ CLASS("Action", "MessageReceiver")
 		params [["_thisObject", "", [""]]];
 		(GETV(_thisObject, "state")) == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
+	
+	
+	// --------------------- GOAP-related methods -----------------------
+	
+	// ----------------------------------------------------------------------
+	// |                         G E T   C O S T                            |
+	// |                                                                    |
+	// | Returns the cost of taking this action in current situation        |
+	// ----------------------------------------------------------------------
+	
+	// Returns cost of this action
+	// Takes the AI object as parameter, start and end world state
+	STATIC_METHOD("getCost") {
+		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		
+		// Return
+		0
+	} ENDMETHOD;
+	
 ENDCLASS;

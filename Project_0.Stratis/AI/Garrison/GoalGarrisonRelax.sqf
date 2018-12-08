@@ -11,7 +11,7 @@ Goal for a garrison to relax
 
 CLASS("GoalGarrisonRelax", "Goal")
 
-	STATIC_VARIABLE("desiredWorldState"); // Array of world properties
+	STATIC_VARIABLE("effects"); // Array of world properties
 	
 	// ----------------------------------------------------------------------
 	// |            C A L C U L A T E   R E L E V A N C E
@@ -28,4 +28,4 @@ ENDCLASS;
 
 pr _ws = [WSP_GAR_COUNT] call ws_new;
 
-SET_STATIC_VAR("Goal", "desiredWorldState", [WSP_GAR_COUNT]);
+SET_STATIC_VAR("Goal", "effects", _ws);

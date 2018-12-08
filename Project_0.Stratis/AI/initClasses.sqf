@@ -22,8 +22,16 @@ call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 // Garrison AI classes
 call compile preprocessFileLineNumbers "AI\Garrison\AIGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonHealth.sqf";
+
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrew.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountInfantry.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMounted.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveDismounted.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRepairAllVehicles.sqf";
+
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRepairAllVehicles.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMove.sqf";
 
 // Group AI classes
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";

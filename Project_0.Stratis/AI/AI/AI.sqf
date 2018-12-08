@@ -1,6 +1,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
+#include "..\Action\Action.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
@@ -139,7 +140,7 @@ CLASS("AI", "MessageReceiverEx")
 			pr _currentGoalSource = GETV(_thisObject, "currentGoalSource");
 			pr _currentGoalParameter = GETV(_thisObject, "currentGoalParameter");
 			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameter isEqualTo _goalParameter) then {
-				
+				// We have the same goal. Do nothing.
 			} else {
 				// We have a new goal! Time to replan.
 				SETV(_thisObject, "currentGoal", _goalClassName);
@@ -182,7 +183,17 @@ CLASS("AI", "MessageReceiverEx")
 		// Process the current action if we have it
 		pr _currentAction = GETV(_thisObject, "currentAction");
 		if (_currentAction != "") then {
-			CALLM(_currentAction, "process", []);
+			pr _actionState = CALLM(_currentAction, "process", []);
+			switch (_actionState) do {
+				case ACTION_STATE_COMPLETED : {
+					// Mark the current goal as completed?
+				};
+				
+				case ACTION_STATE_FAILED : {
+					// Probably we should replan our goal at the next iteration
+					SETV(_thisObject, "currentGoal", "");
+				};
+			};
 		};
 		
 		// Call process method of subagents

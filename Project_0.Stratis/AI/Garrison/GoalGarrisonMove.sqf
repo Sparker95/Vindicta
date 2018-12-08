@@ -1,5 +1,5 @@
 /*
-Goal for a garrison to repair all its vehicles
+Goal for a garrison to move somewhere
 */
 
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -9,7 +9,7 @@ Goal for a garrison to repair all its vehicles
 
 #define pr private
 
-CLASS("GoalGarrisonRepairAllVehicles", "Goal")
+CLASS("GoalGarrisonMove", "Goal")
 
 	STATIC_VARIABLE("effects"); // Array of world properties
 	
@@ -22,18 +22,9 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 	STATIC_METHOD("calculateRelevance") {
 		params [["_AI", "", [""]]];
 		
-		// Check world state properties
-		// Return high desireability if we need repairs and an engineer is available
-		pr _ws = GETV(_AI, "worldState");
-		if ( ([_ws, WSP_GAR_ALL_VEHICLES_REPAIRED, false] call ws_propertyExistsAndEquals ||
-			[_ws, WSP_GAR_ALL_VEHICLES_CAN_MOVE, false] call ws_propertyExistsAndEquals ) &&
-			[_ws, WSP_GAR_ENGINEER_AVAILABLE, true] call ws_propertyExistsAndEquals) then {
-			
-			// Return relevance
-			GOAL_RELEVANCE_GARRISON_REPAIR_ALL_VEHICLES
-		} else {
-			0
-		};
+		// Return relevance
+		GOAL_RELEVANCE_GARRISON_MOVE
+
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -1,6 +1,6 @@
 // States of a goal
 #define ACTION_STATE_ACTIVE		0
-#define ACTION_STATE_INACTIVE		1
+#define ACTION_STATE_INACTIVE	1
 #define ACTION_STATE_COMPLETED	2
 #define ACTION_STATE_FAILED		3
 
