@@ -59,21 +59,13 @@ CLASS(THIS_ACTION_NAME, "Action")
 	} ENDMETHOD;
 	
 	// Calculates cost of this action
+	/*
 	STATIC_METHOD("getCost") {
-		//params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		//params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
 		
 		// Return cost
 		2
 	} ENDMETHOD;
+	*/
 
 ENDCLASS;
-
-// Set effects and preconditions
-pr _wsPre = [WSP_GAR_COUNT] call ws_new;
-[_wsPre, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
-[_wsPre, WSP_GAR_ALL_CREW_MOUNTED, true] call ws_setPropertyValue;
-SET_STATIC_VAR(THIS_ACTION_NAME, "preconditions", _wsPre); // World state
-
-pr _wsEff = [WSP_GAR_COUNT] call ws_new;
-[_wsEff, WSP_GAR_POSITION, 0] call ws_setPropertyParameterID; // This action takes position from parameter 0
-SET_STATIC_VAR(THIS_ACTION_NAME, "effects", _wsEff); // World state

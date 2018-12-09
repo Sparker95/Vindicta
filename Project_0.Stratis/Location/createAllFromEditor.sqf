@@ -7,6 +7,9 @@ Author: Sparker 28.07.2018
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
 
+
+params [ ["_thisClass", "", [""]] ];
+
 private _radius = 0;
 private _loc = objNull;
 {

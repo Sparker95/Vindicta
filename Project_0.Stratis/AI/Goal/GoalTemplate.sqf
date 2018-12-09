@@ -30,7 +30,7 @@ CLASS("MyGoal", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [["_AI", "", [""]]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
 		
 	} ENDMETHOD;
 	
@@ -42,7 +42,7 @@ CLASS("MyGoal", "Goal")
 	// Otherwise it must return ""
 	
 	/* virtual */ STATIC_METHOD("createPredefinedAction") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [ ["_thisClass", "", [""]], ["_thisObject", "", [""]], ["_AI", "", [""]]];
 		"" // Return nothing by default
 	} ENDMETHOD;
 

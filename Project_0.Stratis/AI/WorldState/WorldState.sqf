@@ -240,3 +240,32 @@ ws_add = {
 		};
 	};
 };
+
+// Applies parameters to the world state
+// Warning: currently supports only one parameter
+// Returns true if supplied parameter was applied
+ws_applyParameter = {
+	params [["_wsA", [], [[]]], "_parameter" ];
+	
+	if (isNil "_parameter") exitWith { false };
+	
+	pr _AProps = _wsA select WS_ID_WSP;
+	pr _APropTypes = _wsA select WS_ID_WSPT;
+	
+	pr _len = count _AProps;
+	pr _parameterApplied = false;
+	
+	for "_i" from 0 to (_len - 1) do {
+		if ((_BPropTypes select _i) == WSP_TYPE_PARAMETER) then { // If it's a parameter
+			pr _parameterID = _AProps select _i;
+			if (_parameterID > 0) then {
+				diag_log format ["[WorldState::applyParameter] Error: More than one parameter is not supported. World State: %1", [_wsA] call ws_toString];
+			} else {
+				[_wsA, _i, _parameter] call ws_setPropertyValue;
+				_parameterApplied = true;
+			};
+		};
+	};
+	
+	_parameterApplied
+};

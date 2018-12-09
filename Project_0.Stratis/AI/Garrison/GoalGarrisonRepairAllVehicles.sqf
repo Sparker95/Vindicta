@@ -20,7 +20,7 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 	// Inherited classes must implement this
 	
 	STATIC_METHOD("calculateRelevance") {
-		params [["_AI", "", [""]]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
 		
 		// Check world state properties
 		// Return high desireability if we need repairs and an engineer is available
@@ -37,9 +37,3 @@ CLASS("GoalGarrisonRepairAllVehicles", "Goal")
 	} ENDMETHOD;
 
 ENDCLASS;
-
-pr _ws = [WSP_GAR_COUNT] call ws_new;
-[_ws, WSP_GAR_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
-[_ws, WSP_GAR_ALL_VEHICLES_CAN_MOVE, true] call ws_setPropertyValue;
-
-SET_STATIC_VAR("Goal", "effects", _ws);

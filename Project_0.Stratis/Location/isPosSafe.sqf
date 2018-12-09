@@ -7,7 +7,7 @@ _posAndDir - [_x, _y, _z, _dir], in format positionATL
 Author: Sparker 29.07.2018
 */
 
-params [["_pos", [], [[]]], ["_dir", 0, [0]], ["_className", "", [""]] ];
+params [ ["_thisClass", "", [""]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_className", "", [""]] ];
 
 private _bb = [_className] call misc_fnc_boundingBoxReal;
 private _bx = _bb select 1 select 0; //width

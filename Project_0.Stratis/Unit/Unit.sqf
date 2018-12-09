@@ -314,7 +314,7 @@ CLASS(UNIT_CLASS_NAME, "")
 	// | If this object is not associated with a unit, returns ""
 	// ----------------------------------------------------------------------
 	STATIC_METHOD("getUnitFromObjectHandle") {
-		params [ ["_objectHandle", objNull, [objNull]] ];
+		params [ ["_thisClass", "", [""]], ["_objectHandle", objNull, [objNull]] ];
 		_objectHandle getVariable ["unit", ""]
 	} ENDMETHOD;
 	

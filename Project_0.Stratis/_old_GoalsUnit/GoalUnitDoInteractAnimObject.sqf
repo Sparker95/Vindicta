@@ -231,7 +231,7 @@ CLASS("GoalUnitDoInteractAnimObject", "Goal")
 	//  Stops the animation by playing another animation
 	// ---------------------------------------------------------------------------
 	STATIC_METHOD("stopInteraction") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ ["_thisClass", "", [""]], ["_thisObject", "", [""]] ];
 		private _animationOut = GETV(_thisObject, "animationOut");
 		
 		// Switch animation, enable AI

@@ -18,6 +18,7 @@ call compile preprocessFileLineNumbers "AI\WorldFact\WorldFact.sqf";
 
 call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 
+call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
 
 // Garrison AI classes
 call compile preprocessFileLineNumbers "AI\Garrison\AIGarrison.sqf";
@@ -28,10 +29,14 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountInfantry.
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveDismounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRepairAllVehicles.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRelax.sqf";
 
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRepairAllVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMove.sqf";
+
+// Create a database with costs, effects, preconditions, etc
+call compile preprocessFileLineNumbers "AI\Garrison\initDatabase.sqf";
 
 // Group AI classes
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";

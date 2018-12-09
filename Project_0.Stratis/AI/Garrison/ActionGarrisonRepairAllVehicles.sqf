@@ -25,11 +25,12 @@ CLASS(THIS_ACTION_NAME, "Action")
 	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
 	
 	// ------------ N E W ------------
-	
+	/*
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _a);
+		SETV(_thisObject, "AI", _AI);
 	} ENDMETHOD;
+	*/
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
@@ -57,23 +58,5 @@ CLASS(THIS_ACTION_NAME, "Action")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
-	
-	// Calculates cost of this action
-	STATIC_METHOD("getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		
-		// Return cost
-		1
-	} ENDMETHOD;
 
 ENDCLASS;
-
-// Set effects and preconditions
-pr _wsPre = [WSP_GAR_COUNT] call ws_new;
-[_wsPre, WSP_GAR_ENGINEER_AVAILABLE, true] call ws_setPropertyValue;
-[_wsPre, WSP_GAR_ALL_VEHICLES_REPAIRED, false] call ws_setPropertyValue;
-SET_STATIC_VAR(THIS_ACTION_NAME, "preconditions", _wsPre); // World state
-
-pr _wsEff = [WSP_GAR_COUNT] call ws_new;
-[_wsEff, WSP_GAR_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
-SET_STATIC_VAR(THIS_ACTION_NAME, "effects", _wsEff); // World state

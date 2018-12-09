@@ -18,6 +18,7 @@ CLASS("Action", "MessageReceiver")
 	VARIABLE("state"); // Status of this goal
 	//VARIABLE("msgLoop"); // Message loop of this goal, if this goal needs to receive any messages
 	VARIABLE("timer"); // The timer which will be sending messages to this goal so that it calls its process method
+	STATIC_VARIABLE("cost"); // Cost of this action, if getCost returns a static number
 	
 	// Inherited actions should implement if planner is supposed to be used for them:
 	//STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
@@ -222,16 +223,19 @@ CLASS("Action", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	// |                         G E T   C O S T                            |
 	// |                                                                    |
-	// | Returns the cost of taking this action in current situation        |
+	// | Returns the cost of taking this action in current situation
+	// | By default it returns the value of "cost" static variable
+	// | You can redefine it for inherited action if the returned cost needs to depend on something
 	// ----------------------------------------------------------------------
 	
 	// Returns cost of this action
 	// Takes the AI object as parameter, start and end world state
 	STATIC_METHOD("getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
 		
-		// Return
-		0
+		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
+		// Return static cost
+		_cost
 	} ENDMETHOD;
 	
 ENDCLASS;

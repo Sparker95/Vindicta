@@ -24,8 +24,8 @@ pr _actions = ["ActionGarrisonMountCrew",
 
 // Fill world states						
 pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
-[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, true] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_POSITION, getPos player] call ws_setPropertyValue;
 
 pr _wsGoal = [WSP_GAR_COUNT] call ws_new;

@@ -331,7 +331,7 @@ CLASS("AI", "MessageReceiverEx")
 		pr _possibleGoals = CALLM(_agent, "getPossibleGoals", []);
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
-		_possibleGoals = _possibleGoals apply {[_x, 0, 0, _thisObject]}; // Goal class name, bias, parameter, source
+		_possibleGoals = _possibleGoals apply {[_x, 0, nil, _thisObject]}; // Goal class name, bias, parameter, source
 		{
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
@@ -363,7 +363,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], "_parameter", ["_source", "ERROR_NO_SOURCE", [""]] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameter", nil], ["_source", "ERROR_NO_SOURCE", [""]] ];
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		_goalsExternal pushBack [_goalClassName, _parameter, _bias, _source];
@@ -580,7 +580,7 @@ CLASS("AI", "MessageReceiverEx")
 	#define ASTAR_DEBUG
 	
 	STATIC_METHOD("AStar") {
-		params [["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"] ];
+		params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"] ];
 		
 		// Copy the array of possible actions becasue we are going to modify it
 		pr _availableActions = +_possibleActions;
@@ -715,6 +715,7 @@ CLASS("AI", "MessageReceiverEx")
 			} forEach _availableActions;
 			
 			// Remove the action from action list, we don't want to use it many times
+			// Disabled it because it prevents discovery of useful nodes
 			//_availableActions = _availableActions - _usedActions;
 			
 			_count = _count - 1;
@@ -730,7 +731,7 @@ CLASS("AI", "MessageReceiverEx")
 	
 	// Converts an A* node to string for debug purposes
 	STATIC_METHOD("AStarNodeToString") {
-		params [["_node", [], [[]]]];
+		params [ ["_thisClass", "", [""]], ["_node", [], [[]]]];
 		
 		// Next field might be a node or a special number indicating that next node doesn't exist (i.e. for a goal node)
 		

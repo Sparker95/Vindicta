@@ -10,12 +10,12 @@
 #include "garrisonWorldStateProperties.hpp"
 
 /*
-Everyone moves on foot
+Relax action
 */
 
 #define pr private
 
-#define THIS_ACTION_NAME "ActionGarrisonMoveDismounted"
+#define THIS_ACTION_NAME "ActionGarrisonRelax"
 
 CLASS(THIS_ACTION_NAME, "Action")
 
@@ -25,11 +25,12 @@ CLASS(THIS_ACTION_NAME, "Action")
 	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
 	
 	// ------------ N E W ------------
-	
+	/*
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _a);
+		SETV(_thisObject, "AI", _AI);
 	} ENDMETHOD;
+	*/
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
@@ -57,17 +58,5 @@ CLASS(THIS_ACTION_NAME, "Action")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
-	
-	
-	// Calculates cost of this action
-	/*
-	// We inherit standard getCost for now
-	STATIC_METHOD("getCost") {
-		//params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		
-		// Return cost
-		5
-	} ENDMETHOD;
-	*/
 
 ENDCLASS;
