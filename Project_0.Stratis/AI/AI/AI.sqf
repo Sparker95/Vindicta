@@ -713,7 +713,7 @@ CLASS("AI", "MessageReceiverEx")
 						// F = G + Heuristic
 						// We need to store H only for debug
 						pr _h = [_WSBeforeAction, _currentWS] call ws_getNumUnsatisfiedProps;
-						pr _f = _g; // + _h;
+						pr _f = _g + _h;
 						_n set [ASTAR_NODE_ID_H, _h];
 						_n set [ASTAR_NODE_ID_F, _f];
 						

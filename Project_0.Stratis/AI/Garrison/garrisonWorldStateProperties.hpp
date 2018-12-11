@@ -49,11 +49,14 @@
 // Cargo position
 #define WSP_GAR_CARGO_POSITION							16
 
+// Vehicles position
+#define WSP_GAR_VEHICLES_POSITION						17
+
 // Cargo
-#define WSP_GAR_CARGO									17
-#define WSP_GAR_HAS_CARGO								18
+#define WSP_GAR_CARGO									18
+#define WSP_GAR_HAS_CARGO								19
 
 // Side
 
 // Total amount of properties
-#define WSP_GAR_COUNT									19
+#define WSP_GAR_COUNT									20

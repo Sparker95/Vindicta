@@ -50,14 +50,16 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // Move mounted
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,	true]]] call AI_misc_fnc_setActionPreconditions;
-["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_POSITION,	0,	true]]] 		call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
+["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_POSITION,	0,	true],
+											[WSP_GAR_VEHICLES_POSITION,	0,	true]]] call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 // Move mounted cargo
 ["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 												[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
 												[WSP_GAR_HAS_CARGO,				true]]] 		call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_POSITION,	0,	true], 
-												[WSP_GAR_CARGO_POSITION,	0,	true]]] 		call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
+												[WSP_GAR_CARGO_POSITION,	0,	true],
+												[WSP_GAR_VEHICLES_POSITION,	0,	true]]] 		call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 
 // Move dismounted
@@ -67,7 +69,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 // Load cargo
 ["ActionGarrisonLoadCargo", _s,			[	[WSP_GAR_HAS_CARGO,	false],
-											[WSP_GAR_POSITION, [1, 1, 1]]]]	call AI_misc_fnc_setActionPreconditions;
+											[WSP_GAR_VEHICLES_POSITION, [1, 1, 1]]]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonLoadCargo", _s,			[	[WSP_GAR_HAS_CARGO, true]]]		call AI_misc_fnc_setActionEffects;
 
 // Unload cargo
