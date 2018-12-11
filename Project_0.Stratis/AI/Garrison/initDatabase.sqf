@@ -21,10 +21,13 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonRelax", _s,				[]] call AI_misc_fnc_setGoalEffects;
 
-["GoalGarrisonMove", _s,				[]] call AI_misc_fnc_setGoalEffects;
+["GoalGarrisonMove", _s,				[[WSP_GAR_POSITION, "g_pos", true]]] call AI_misc_fnc_setGoalEffects;
 
 ["GoalGarrisonRepairAllVehicles", _s, [	[WSP_GAR_ALL_VEHICLES_REPAIRED, true],
 										[WSP_GAR_ALL_VEHICLES_CAN_MOVE, true]]] call AI_misc_fnc_setGoalEffects;
+										
+["GoalGarrisonMoveCargo", _s,			[[WSP_GAR_CARGO_POSITION, "g_cargoPos", true],
+										[WSP_GAR_HAS_CARGO, false]]] call AI_misc_fnc_setGoalEffects;
 
 
 // ---- Predefined actions of goals ----
@@ -50,27 +53,28 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // Move mounted
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,	true]]] call AI_misc_fnc_setActionPreconditions;
-["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_POSITION,	0,	true],
-											[WSP_GAR_VEHICLES_POSITION,	0,	true]]] call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
+["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_POSITION,	"a_pos",	true],
+											[WSP_GAR_VEHICLES_POSITION,	"a_pos",	true]]] call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 // Move mounted cargo
 ["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 												[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
 												[WSP_GAR_HAS_CARGO,				true]]] 		call AI_misc_fnc_setActionPreconditions;
-["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_POSITION,	0,	true], 
-												[WSP_GAR_CARGO_POSITION,	0,	true],
-												[WSP_GAR_VEHICLES_POSITION,	0,	true]]] 		call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
+["ActionGarrisonMoveMountedCargo", _s,		[	[WSP_GAR_POSITION,	"a_pos",	true], 
+												[WSP_GAR_CARGO_POSITION,	"a_pos",	true],
+												[WSP_GAR_VEHICLES_POSITION,	"a_pos",	true]]] 		call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 
 // Move dismounted
 ["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_ALL_CREW_MOUNTED,		false],
 											[WSP_GAR_ALL_INFANTRY_MOUNTED,	false]]] call AI_misc_fnc_setActionPreconditions;
-["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_POSITION,	0,	true]]]			call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
+["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_POSITION,	"a_pos",	true]]]			call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 // Load cargo
 ["ActionGarrisonLoadCargo", _s,			[	[WSP_GAR_HAS_CARGO,	false],
 											[WSP_GAR_VEHICLES_POSITION, [1, 1, 1]]]]	call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonLoadCargo", _s,			[	[WSP_GAR_HAS_CARGO, true]]]		call AI_misc_fnc_setActionEffects;
+["ActionGarrisonLoadCargo", 			["g_cargo"]] call AI_misc_fnc_setActionParametersFromGoal;
 
 // Unload cargo
 ["ActionGarrisonUnloadCurrentCargo", _s,	[	[WSP_GAR_HAS_CARGO,	true]]]		call AI_misc_fnc_setActionPreconditions;

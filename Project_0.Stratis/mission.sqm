@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=78;
+		nextID=79;
 	};
 	class Camera
 	{
@@ -761,7 +761,7 @@ class Mission
 			};
 			id=1078;
 			type="B_HMG_01_high_F";
-			atlOffset=5.7220459e-006;
+			atlOffset=0.051876068;
 		};
 		class Item31
 		{
@@ -778,7 +778,7 @@ class Mission
 			};
 			id=1079;
 			type="B_HMG_01_high_F";
-			atlOffset=4.7683716e-006;
+			atlOffset=0.051662445;
 		};
 		class Item32
 		{
@@ -795,7 +795,7 @@ class Mission
 			};
 			id=1080;
 			type="B_HMG_01_high_F";
-			atlOffset=-9.5367432e-007;
+			atlOffset=-0.0001411438;
 		};
 		class Item33
 		{

@@ -2,7 +2,7 @@
 
 #define ASTAR_NODE_ID_WS				0
 #define ASTAR_NODE_ID_ACTION			1
-#define ASTAR_NODE_ID_ACTION_PARAMETER	2
+#define ASTAR_NODE_ID_ACTION_PARAMETERS	2
 #define ASTAR_NODE_ID_G					3
 #define ASTAR_NODE_ID_F					4
 #define ASTAR_NODE_ID_H					5

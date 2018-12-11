@@ -26,7 +26,7 @@ AI_misc_fnc_setGoalEffects = {
 	{
 		_x params ["_key", "_value", ["_isParameter", false]];
 		if (_isParameter) then {
-			[_ws, _key, _value] call ws_setPropertyParameterID;
+			[_ws, _key, _value] call ws_setPropertyGoalParameterTag;
 		} else {
 			[_ws, _key, _value] call ws_setPropertyValue;
 		};
@@ -46,7 +46,7 @@ AI_misc_fnc_setActionEffects = {
 	{
 		_x params ["_key", "_value", ["_isParameter", false]];
 		if (_isParameter) then {
-			[_ws, _key, _value] call ws_setPropertyParameterID;
+			[_ws, _key, _value] call ws_setPropertyActionParameterTag;
 		} else {
 			[_ws, _key, _value] call ws_setPropertyValue;
 		};
@@ -66,7 +66,7 @@ AI_misc_fnc_setActionPreconditions = {
 	{
 		_x params ["_key", "_value", ["_isParameter", false]];
 		if (_isParameter) then {
-			[_ws, _key, _value] call ws_setPropertyParameterID;
+			[_ws, _key, _value] call ws_setPropertyActionParameterTag;
 		} else {
 			[_ws, _key, _value] call ws_setPropertyValue;
 		};
@@ -74,6 +74,15 @@ AI_misc_fnc_setActionPreconditions = {
 	
 	// Set static variable for the goal
 	SET_STATIC_VAR(_actionClass, "preconditions", _ws);
+};
+
+AI_misc_fnc_setActionParametersFromGoal = {
+	params [["_actionClass", "", [""]], ["_goalParameterTagsArray", [], [[]]]];
+	pr _parameters = [];
+	{
+		_parameters pushBack [_x, nil];
+	} forEach _goalParameterTagsArray;
+	SET_STATIC_VAR(_actionClass, "parameters", _parameters);
 };
 
 AI_misc_fnc_setActionCost = {
