@@ -602,8 +602,8 @@ CLASS("AI", "MessageReceiverEx")
 		
 		// Main loop of the algorithm
 		pr _path = []; // Return value of the algorithm
-		pr _count = 10; // A safety counter, in case it freezes.
-		while {count _openSet > 0 && _count > 0} do {
+		pr _count = 0; // A safety counter, in case it freezes.
+		while {count _openSet > 0 && _count < 60} do {
 			
 			// Set current node to the node in open set with lowest f value
 			pr _node = _openSet select 0;
@@ -620,7 +620,7 @@ CLASS("AI", "MessageReceiverEx")
 			// Print the node we currently analyze
 			#ifdef ASTAR_DEBUG
 				diag_log "";
-				diag_log "[AI:AStar] Info: Open set:";
+				diag_log format ["[AI:AStar] Info: Step: %1,  Open set:", _count];
 				// Print the open and closed set
 				{
 					pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_x]);
@@ -638,6 +638,7 @@ CLASS("AI", "MessageReceiverEx")
 			
 			// World state of this node
 			pr _nodeWS = _node select ASTAR_NODE_ID_WS;
+			pr _nodeAction = _node select ASTAR_NODE_ID_ACTION;
 			
 			// Terminate if we have reached the current world state
 			if (([_nodeWS, _currentWS] call ws_getNumUnsatisfiedProps) == 0) exitWith {
@@ -659,17 +660,23 @@ CLASS("AI", "MessageReceiverEx")
 			
 			// Debug text
 			#ifdef ASTAR_DEBUG
-				diag_log format ["[AI:AStar] Info: Discovered neighbours:", _nodeString];
+				diag_log format ["[AI:AStar] Info: Discovering neighbours:", _nodeString];
 			#endif
 			
-			pr _usedActions = [];
 			{ // forEach _availableActions;
 				pr _effects = GET_STATIC_VAR(_x, "effects");
-				pr _connParams = [_effects, _nodeWS] call ws_connectionParameters;
+				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
+				pr _connParams = [_preconditions, _effects, _nodeWS] call ws_isActionSuitable;
 				_connParams params ["_connected", "_parameterID", "_parameterValue"];
 				
 				// If there is connection, create a new node
 				if (_connected) then {
+					#ifdef ASTAR_DEBUG
+					//	diag_log format ["[AI:AStar] Info: Connected world states: action: %1,  effects: %2,  WS:  %3", _x, [_effects] call ws_toString, [_nodeWS] call ws_toString];
+					#endif
+					
+					
+					// Find which node this action came from
 					// Calculate world state before executing this action
 					// It depends on action effects, preconditions and world state of current node
 					pr _preconditions = (GET_STATIC_VAR(_x, "preconditions"));
@@ -678,39 +685,82 @@ CLASS("AI", "MessageReceiverEx")
 					[_WSBeforeAction, _effects] call ws_substract;
 					[_WSBeforeAction, _preconditions] call ws_add;					
 					
-					pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
-					_n set [ASTAR_NODE_ID_ACTION, _x];
-					_n set [ASTAR_NODE_ID_ACTION_PARAMETER, _parameterValue];
-					_n set [ASTAR_NODE_ID_NEXT_NODE, _node];
-					
-					// Calculate H, G and F values of the new node
-					
-					// Calculate G value
-					// G = G(_node) + cost of this action
-					pr _args = [_AI, _preconditions, _nodeWS];
-					pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
-					pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
-					_n set [ASTAR_NODE_ID_G, _g];
-					
-					// Calculate F and H values
-					// F = G + Heuristic
-					// We need to store H only for debug
-					pr _h = [_WSBeforeAction, _currentWS] call ws_getNumUnsatisfiedProps;
-					pr _f = _g + _h;
-					_n set [ASTAR_NODE_ID_H, _h];
-					_n set [ASTAR_NODE_ID_F, _f];
-					
-					// Add the new node to the open set
-					_openSet pushBack _n;
-					
-					// Remove the action from action list, we don't want to use it many times
-					_usedActions pushBack _x;
-					
-					// Print debug text: neighbour node
-					#ifdef ASTAR_DEBUG
-						pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_n]);
-						diag_log ("  " + _nodeString);
-					#endif
+					// Check if this world state is in close set already
+					pr _possibleAction = _x;
+					if ( (_closeSet findIf { /* ((_x select ASTAR_NODE_ID_ACTION) isEqualTo _possibleAction) && */ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction) }) != -1) then {
+						// Print debug text
+						#ifdef ASTAR_DEBUG
+							diag_log format ["  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x];
+						#endif
+					} else {
+						pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
+						_n set [ASTAR_NODE_ID_ACTION, _x];
+						_n set [ASTAR_NODE_ID_ACTION_PARAMETER, _parameterValue];
+						_n set [ASTAR_NODE_ID_NEXT_NODE, _node];
+						
+						
+						
+						// Calculate H, G and F values of the new node
+						
+						// Calculate G value
+						// G = G(_node) + cost of this action
+						pr _args = [_AI, _preconditions, _nodeWS];
+						pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
+						pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
+						_n set [ASTAR_NODE_ID_G, _g];
+						
+						// Calculate F and H values
+						// F = G + Heuristic
+						// We need to store H only for debug
+						pr _h = [_WSBeforeAction, _currentWS] call ws_getNumUnsatisfiedProps;
+						pr _f = _g; // + _h;
+						_n set [ASTAR_NODE_ID_H, _h];
+						_n set [ASTAR_NODE_ID_F, _f];
+						
+						// If node is not in open set
+						pr _foundID = _openSet findIf { /* ( (_x select ASTAR_NODE_ID_ACTION) == _possibleAction) &&*/ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction)};
+						if (_foundID == -1) then {
+							
+							// New node is not in open set
+							// Add the new node to the open set
+							_openSet pushBack _n;
+							
+							// Print debug text: neighbour node
+							#ifdef ASTAR_DEBUG
+								pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_n]);
+								diag_log ("  New node:            " + _nodeString);
+							#endif
+						} else {
+						
+							// New discovered node is in open set already
+							pr _nodeOpen = _openSet select _foundID;
+							
+							// Check if the new node has lower score than existing node
+							if (_g < (_nodeOpen select ASTAR_NODE_ID_G)) then {
+								// If we can come to neighbour node faster through current node, than through another node, update this data
+								_nodeOpen set [ASTAR_NODE_ID_ACTION, _x];
+								_nodeOpen set [ASTAR_NODE_ID_ACTION_PARAMETER, _parameterValue];
+								_nodeOpen set [ASTAR_NODE_ID_G, _g];
+								_nodeOpen set [ASTAR_NODE_ID_F, _f];
+								_nodeOpen set [ASTAR_NODE_ID_H, _h];
+								_nodeOpen set [ASTAR_NODE_ID_NEXT_NODE, _node];
+								
+								// Print debug text
+								#ifdef ASTAR_DEBUG
+									pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
+									//        "  Found in close set:  "
+									diag_log format ["  Updated in open set: %1", _nodeString];
+								#endif
+							} else {
+								
+								// Print debug text
+								#ifdef ASTAR_DEBUG
+									pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
+									diag_log format ["  Found in open set:   %1", _nodeString];
+								#endif
+							};
+						};
+					};
 				};
 			} forEach _availableActions;
 			
@@ -718,8 +768,8 @@ CLASS("AI", "MessageReceiverEx")
 			// Disabled it because it prevents discovery of useful nodes
 			//_availableActions = _availableActions - _usedActions;
 			
-			_count = _count - 1;
-		}; // while {}
+			_count = _count + 1;
+		};
 		
 		#ifdef ASTAR_DEBUG
 			diag_log format ["[AI:AStar] Info: Generated plan: %1", _path];

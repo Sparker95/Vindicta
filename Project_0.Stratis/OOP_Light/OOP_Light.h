@@ -247,6 +247,7 @@ VARIABLE(OOP_PARENT_STR);
 #define NEW(classNameStr, extraParams) [] call { \
 CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
 private _oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
+if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0);	_oop_nextID = 0;}; \
 SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
 private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
 FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \

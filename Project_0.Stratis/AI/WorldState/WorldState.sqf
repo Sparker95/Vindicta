@@ -108,28 +108,31 @@ ws_toString = {
 	
 	// Return
 	_strOut
+	//str _WS
 };
 
-/* Returns how two world states are connected
+/* Checks if an action with given effects and preconditions can be used to satisfy some goal.
 
-World states A and B are connected if any properties in A are equal to properties in B,
-or if a property in A is an action/goal parameter which affects an existing property in B.
+An action can be applied if any properties in effects are equal to properties in goal,
+or if a property in effects is a parameter which affects an existing property in goal.
+
+BUT preconditions of an action must not be in conflict with the goal.
 
 Return value: [_connected, _parameterID, _parameterValue]
 _connected - bool
 _parameterID - parameter ID that must be specific for goal/action, or -1 if nothing has to be specified
 _parameterValue - value that must be specified, or 0
 */
-ws_connectionParameters = {
-	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
+ws_isActionSuitable = {
+	params [["_preconditions", [], [[]]], ["_effects", [], [[]]], ["_wsGoal", [], [[]]] ];
 	
 	// Unpack the arrays
-	pr _AProps = _wsA select WS_ID_WSP;
-	pr _APropTypes = _wsA select WS_ID_WSPT;
-	pr _BProps = _wsB select WS_ID_WSP;
-	pr _BPropTypes = _wsB select WS_ID_WSPT;
+	pr _effectsProps = _effects select WS_ID_WSP;
+	pr _effectsPropTypes = _effects select WS_ID_WSPT;
+	pr _goalProps = _wsGoal select WS_ID_WSP;
+	pr _goalPropTypes = _wsGoal select WS_ID_WSPT;
 	
-	pr _len = count _AProps;
+	pr _len = count _effectsProps;
 	
 	pr _connected = false;
 	pr _parameterID = -1;
@@ -138,25 +141,54 @@ ws_connectionParameters = {
 	// Check all properties
 	for "_i" from 0 to (_len-1) do {
 		scopeName "s";
-		if ((_BPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {			// If property exists in B AND
-			if ((_APropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {		// If property exists in A
+		if ((_goalPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {			// If property exists in B AND
+			if ((_effectsPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {		// If property exists in A
 			
 				// If property in A is a parameter which can affect a property in B
-				if ((_APropTypes select _i) == WSP_TYPE_PARAMETER) then {
+				if ((_effectsPropTypes select _i) == WSP_TYPE_PARAMETER) then {
 					_connected = true;
-					_parameterID = _aProps select _i;
-					_parameterValue = _BProps select _i;
+					_parameterID = _effectsProps select _i;
+					_parameterValue = _goalProps select _i;
 					breakOut "s";
 				};
 				
 				// OR If both properties are equal
-				if ( (_BProps select _i) isEqualTo (_AProps select _i) ) then {
+				if ( (_goalProps select _i) isEqualTo (_effectsProps select _i) ) then {
 					_connected = true;
 				 	breakOut "s";
 				};
 			};
 		};
 	};
+	
+	// Check if preconditions and goal are in conflict
+	// They are in conflict if a property in precondition is different from corresponding  property in goal
+	
+	if (_connected) then {
+	
+		// Unpack it again ...
+		pr _preProps = _preconditions select WS_ID_WSP;
+		pr _prePropTypes = _preconditions select WS_ID_WSPT;
+		
+		for "_i" from 0 to (_len-1) do {
+			scopeName "s";
+			// If action requires some property which also exists in goal
+			if (((_prePropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) && ((_goalPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST)) then {
+				// If both properties are different
+				if (!((_preProps select _i) isEqualTo (_goalProps select _i))) then {
+					// If action doesn't change this property while still requires it
+					if ((_effectsPropTypes select _i) == WSP_TYPE_DOES_NOT_EXIST) then {
+						
+						_connected = false;
+						_parameterID = -1;
+						_parameterValue = 0;
+						breakOut "s";
+					};
+				};
+			};
+		};
+	};
+	
 	
 	// Return
 	[_connected, _parameterID, _parameterValue]

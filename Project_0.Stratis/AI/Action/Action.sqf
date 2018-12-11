@@ -21,8 +21,8 @@ CLASS("Action", "MessageReceiver")
 	STATIC_VARIABLE("cost"); // Cost of this action, if getCost returns a static number
 	
 	// Inherited actions should implement if planner is supposed to be used for them:
-	//STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
-	//STATIC_VARIABLE("effects"); // World state after the action ahs been executed
+	STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
+	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |

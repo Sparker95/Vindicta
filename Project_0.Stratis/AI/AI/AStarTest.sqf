@@ -19,8 +19,15 @@ Author: Sparker 08.12.2018
 pr _actions = ["ActionGarrisonMountCrew",
 						"ActionGarrisonMountInfantry",
 						"ActionGarrisonMoveMounted",
+						"ActionGarrisonMoveMountedCargo",
 						"ActionGarrisonMoveDismounted",
-						"ActionGarrisonRepairAllVehicles"];
+						"ActionGarrisonRepairAllVehicles",
+						"ActionGarrisonLoadCargo",
+						"ActionGarrisonUnloadCurrentCargo"];
+
+/*
+
+// Goal: move somewhere
 
 // Fill world states						
 pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
@@ -30,6 +37,25 @@ pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
 
 pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
 [_wsGoal, WSP_GAR_POSITION, [6, 6, 6]] call ws_setPropertyValue;
+
+// Run A*
+pr _args = [_wsCurrent, _wsGoal, _actions];
+CALL_STATIC_METHOD("AI", "AStar", _args);
+
+*/
+
+// Goal: transport cargo
+// Fill world states						
+pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
+[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_POSITION, getPos player] call ws_setPropertyValue;
+
+pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
+[_wsGoal, WSP_GAR_CARGO_POSITION, [6, 6, 6]] call ws_setPropertyValue;
+[_wsGoal, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
+
 
 // Run A*
 pr _args = [_wsCurrent, _wsGoal, _actions];

@@ -9,7 +9,7 @@ Goal for a garrison to move somewhere
 
 #define pr private
 
-CLASS("GoalGarrisonMove", "Goal")
+CLASS("GoalGarrisonMoveCargo", "Goal")
 
 	// ----------------------------------------------------------------------
 	// |            C A L C U L A T E   R E L E V A N C E

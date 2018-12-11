@@ -14,9 +14,7 @@ Template of an Action class
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
-CLASS("MyAction", "Action")
+CLASS("ActionGarrisonLoadCargo", "Action")
 
 	VARIABLE("AI");
 	
@@ -54,15 +52,4 @@ CLASS("MyAction", "Action")
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
 	
-	
-	// Calculates cost of this action
-	/*
-	STATIC_METHOD( ["_thisClass", "", [""]], "getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		
-		// Return cost
-		0
-	} ENDMETHOD;
-	*/
-
 ENDCLASS;

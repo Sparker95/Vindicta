@@ -7,24 +7,28 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "garrisonWorldStateProperties.hpp"
 
 /*
-Template of an Action class
+Garrison moves on available vehicles
 */
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
+#define THIS_ACTION_NAME "ActionGarrisonMoveMountedCargo"
 
-CLASS("MyAction", "Action")
+CLASS(THIS_ACTION_NAME, "Action")
 
 	VARIABLE("AI");
+	
+	STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
+	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _AI);
+		SETV(_thisObject, "AI", _a);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -54,14 +58,13 @@ CLASS("MyAction", "Action")
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
 	
-	
 	// Calculates cost of this action
 	/*
-	STATIC_METHOD( ["_thisClass", "", [""]], "getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+	STATIC_METHOD("getCost") {
+		//params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
 		
 		// Return cost
-		0
+		2
 	} ENDMETHOD;
 	*/
 
