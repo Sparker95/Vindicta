@@ -109,7 +109,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	METHOD("removeSensingAI") {
 		params [["_thisObject", "", [""]], ["_AI", "ERROR_NO_AI", [""]] ];
 		pr _sensingAIs = GETV(_thisObject, "sensingAIs");
-		_sensingAIs deleteAt (_sensingAIs find "_AI");
+		_sensingAIs deleteAt (_sensingAIs find _AI);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
