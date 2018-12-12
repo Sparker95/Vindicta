@@ -53,3 +53,9 @@ player addEventHandler ["AnimChanged", {
 		CALLM(gStimulusManager, "postMethodAsync", _args);
 	};
 }];
+
+
+// Create a suspiciousness monitor for player
+NEW("suspiciousnessMonitor", [player]);
+// Create a group monitor for east side
+NEW("groupMonitor", [EAST]);

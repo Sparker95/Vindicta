@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={2976.3064,179.799,1863.701};
-		dir[]={0.48140174,-0.60446417,0.63473755};
-		up[]={0.36532769,0.7965591,0.48169252};
-		aside[]={0.79677099,6.0931779e-007,-0.60429186};
+		pos[]={2411.9993,26.849838,1199.4984};
+		dir[]={-0.30225337,-0.53543943,-0.78868526};
+		up[]={-0.1916613,0.84449017,-0.50011218};
+		aside[]={-0.93380994,1.2350501e-006,0.35787022};
 	};
 };
 binarizationWanted=0;
@@ -761,7 +761,7 @@ class Mission
 			};
 			id=1078;
 			type="B_HMG_01_high_F";
-			atlOffset=0.051876068;
+			atlOffset=5.7220459e-006;
 		};
 		class Item31
 		{
@@ -778,7 +778,7 @@ class Mission
 			};
 			id=1079;
 			type="B_HMG_01_high_F";
-			atlOffset=0.051662445;
+			atlOffset=4.7683716e-006;
 		};
 		class Item32
 		{
@@ -795,7 +795,7 @@ class Mission
 			};
 			id=1080;
 			type="B_HMG_01_high_F";
-			atlOffset=-0.0001411438;
+			atlOffset=-9.5367432e-007;
 		};
 		class Item33
 		{
@@ -3169,7 +3169,7 @@ class Mission
 			side="East";
 			class Entities
 			{
-				items=4;
+				items=3;
 				class Item0
 				{
 					dataType="Object";
@@ -3222,18 +3222,6 @@ class Mission
 					id=2402;
 					type="O_Soldier_GL_F";
 				};
-				class Item3
-				{
-					dataType="Waypoint";
-					position[]={2468.3569,2.750082,1163.535};
-					speed="NORMAL";
-					class Effects
-					{
-					};
-					showWP="NEVER";
-					id=2404;
-					type="Move";
-				};
 			};
 			class Attributes
 			{
@@ -3252,7 +3240,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2978.5337,171.40143,1869.5356};
+						position[]={2407.4939,3.9548855,1178.8768};
 					};
 					side="West";
 					flags=7;
@@ -3262,12 +3250,75 @@ class Mission
 					};
 					id=2406;
 					type="B_officer_F";
+					atlOffset=-4.529953e-006;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="allowDamage";
+							expression="_this allowdamage _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"BOOL"
+										};
+									};
+									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male11ENG";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=0.94999999;
+								};
+							};
+						};
+						nAttributes=3;
+					};
 				};
 			};
 			class Attributes
 			{
 			};
 			id=2405;
+			atlOffset=-4.529953e-006;
 		};
 	};
 	class Connections
