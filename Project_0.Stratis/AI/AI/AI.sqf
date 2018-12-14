@@ -25,7 +25,7 @@ CLASS("AI", "MessageReceiverEx")
 	VARIABLE("currentAction"); // The current action
 	VARIABLE("currentGoal"); // The current goal
 	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
-	VARIABLE("currentGoalParameter"); // The parameter of the current goal
+	VARIABLE("currentGoalParameters"); // The parameter of the current goal
 	VARIABLE("goalsExternal"); // Goal suggested to this Agent by another agent
 	VARIABLE("worldState"); // The world state relative to this Agent
 	VARIABLE("worldFacts"); // Array with world facts
@@ -49,7 +49,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "currentAction", "");
 		SETV(_thisObject, "currentGoal", "");
 		SETV(_thisObject, "currentGoalSource", "");
-		SETV(_thisObject, "currentGoalParameter", 0);
+		SETV(_thisObject, "currentGoalParameters", 0);
 		SETV(_thisObject, "goalsExternal", []);
 		pr _ws = [1] call ws_new; // todo WorldState size must depend on the agent
 		SETV(_thisObject, "worldState", _ws);
@@ -133,25 +133,26 @@ CLASS("AI", "MessageReceiverEx")
 		
 		// If we have chosen some goal
 		if (count _goalNewArray != 0) then {
-			_goalNewArray params ["_goalClassName", "_goalParameter", "_goalBias", "_goalSource"]; // Goal class name, bias, parameter, source
+			_goalNewArray params ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource"]; // Goal class name, bias, parameter, source
 			//diag_log format ["  most relevant goal: %1", _goalClassName];
 			
 			// Check if the new goal is the same as the current goal
 			pr _currentGoal = GETV(_thisObject, "currentGoal");
 			pr _currentGoalSource = GETV(_thisObject, "currentGoalSource");
-			pr _currentGoalParameter = GETV(_thisObject, "currentGoalParameter");
-			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameter isEqualTo _goalParameter) then {
+			pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
+			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameters isEqualTo _goalParameters) then {
 				// We have the same goal. Do nothing.
 			} else {
 				// We have a new goal! Time to replan.
 				SETV(_thisObject, "currentGoal", _goalClassName);
 				SETV(_thisObject, "currentGoalSource", _goalSource);
-				SETV(_thisObject,"currentGoalParameter", _goalParameter);
+				SETV(_thisObject,"currentGoalParameters", _goalParameters);
 				diag_log format ["[AI:Process] AI: %1, new goal: %2", _thisObject, _goalClassName];
 				
 				// Make a new Action Plan
 				// First check if the goal assumes a predefined plan
-				pr _newAction = CALL_STATIC_METHOD(_goalClassName, "createPredefinedAction", [_thisObject]);
+				private _args = [_thisObject, _goalParameters];
+				pr _newAction = CALL_STATIC_METHOD(_goalClassName, "createPredefinedAction", _args);
 				if (_newAction != "") then {
 				} else {
 					// todo run planner
@@ -331,7 +332,7 @@ CLASS("AI", "MessageReceiverEx")
 		pr _possibleGoals = CALLM(_agent, "getPossibleGoals", []);
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
-		_possibleGoals = _possibleGoals apply {[_x, 0, nil, _thisObject]}; // Goal class name, bias, parameter, source
+		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject]}; // Goal class name, bias, parameter, source
 		{
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
@@ -359,14 +360,14 @@ CLASS("AI", "MessageReceiverEx")
 	// | Adds a goal to the list of external goals of this agent
 	// | Parameters: _goalClassName, _bias, _parameters
 	// | _bias - a number to be added to the relevance of the goal once it is calculated
-	// | _parameters - the parameters to be passed to the goal if it's activated, can be anything goal-specific
+	// | _parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
 	// ----------------------------------------------------------------------
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameter", nil], ["_source", "ERROR_NO_SOURCE", [""]] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBack [_goalClassName, _parameter, _bias, _source];
+		_goalsExternal pushBack [_goalClassName, _parameters, _bias, _source];
 		
 	} ENDMETHOD;
 	
@@ -423,11 +424,12 @@ CLASS("AI", "MessageReceiverEx")
 	// | Plans a way towards specified goal, returns a single action, which can be serial action or an atomic action
 	// | Return value: [action, planIsValid]
 	// ----------------------------------------------------------------------
-	
+	/*
 	METHOD("planActions") {
 		params [["_thisObject", "", [""]]];
 		// Put your A* implementation here
 	} ENDMETHOD;
+	*/
 	
 	
 	
@@ -579,8 +581,8 @@ CLASS("AI", "MessageReceiverEx")
 	
 	#define ASTAR_DEBUG
 	
-	STATIC_METHOD("AStar") {
-		params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"] ];
+	STATIC_METHOD("planActions") {
+		params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"] ];
 		
 		// Copy the array of possible actions becasue we are going to modify it
 		pr _availableActions = +_possibleActions;
@@ -588,7 +590,7 @@ CLASS("AI", "MessageReceiverEx")
 		#ifdef ASTAR_DEBUG
 		diag_log "";
 		diag_log "[AI:AStar] Info: ---------- Starting A* ----------";
-		diag_log format ["[AI:AStar] Info: currentWS: %1,  goalWS: %2,  possibleActions: %3", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _possibleActions];
+		diag_log format ["[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions];
 		#endif
 		
 		// Set of nodes already evaluated
@@ -597,15 +599,17 @@ CLASS("AI", "MessageReceiverEx")
 		// Set of discovered nodes to evaluate
 		pr _goalNode = ASTAR_NODE_NEW(_goalWS);
 		_goalNode set [ASTAR_NODE_ID_F, [_goalWS, _currentWS] call ws_getNumUnsatisfiedProps]; // Calculate heuristic for the goal node
-		//ade_dumpCallstack;
 		pr _openSet = [_goalNode];
 		
 		// Main loop of the algorithm
 		pr _path = []; // Return value of the algorithm
 		pr _count = 0; // A safety counter, in case it freezes.
-		while {count _openSet > 0 && _count < 60} do {
+		while {count _openSet > 0 && _count < 50} do {
 			
+			// ----------------------------------------------------------------------------
 			// Set current node to the node in open set with lowest f value
+			// ----------------------------------------------------------------------------
+			
 			pr _node = _openSet select 0;
 			pr _lowestF = _openSet select 0 select ASTAR_NODE_ID_F;
 			{
@@ -640,7 +644,10 @@ CLASS("AI", "MessageReceiverEx")
 			pr _nodeWS = _node select ASTAR_NODE_ID_WS;
 			pr _nodeAction = _node select ASTAR_NODE_ID_ACTION;
 			
+			// ----------------------------------------------------------------------------
 			// Terminate if we have reached the current world state
+			// ----------------------------------------------------------------------------
+			
 			if (([_nodeWS, _currentWS] call ws_getNumUnsatisfiedProps) == 0) exitWith {
 				#ifdef ASTAR_DEBUG
 					diag_log "[AI:AStar] Info: Reached current state!";
@@ -649,14 +656,17 @@ CLASS("AI", "MessageReceiverEx")
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
-					_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETER];
-					if ((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) exitWith{};
+					_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+					if (((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) ||
+							((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo ASTAR_NODE_DOES_NOT_EXIST)) exitWith{};
 					_n = _n select ASTAR_NODE_ID_NEXT_NODE;
 				};
 			};
 			
+			// ----------------------------------------------------------------------------
 			// Discover neighbour nodes of this node
 			// We can reach neighbour nodes only through available actions
+			// ----------------------------------------------------------------------------
 			
 			// Debug text
 			#ifdef ASTAR_DEBUG
@@ -664,103 +674,162 @@ CLASS("AI", "MessageReceiverEx")
 			#endif
 			
 			{ // forEach _availableActions;
+				pr _action = _x;
 				pr _effects = GET_STATIC_VAR(_x, "effects");
-				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
-				pr _connParams = [_preconditions, _effects, _nodeWS] call ws_isActionSuitable;
-				_connParams params ["_connected", "_parameterID", "_parameterValue"];
+				pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
+				pr _connected = [_preconditions, _effects, _nodeWS] call ws_isActionSuitable;
 				
 				// If there is connection, create a new node
 				if (_connected) then {
-					#ifdef ASTAR_DEBUG
-					//	diag_log format ["[AI:AStar] Info: Connected world states: action: %1,  effects: %2,  WS:  %3", _x, [_effects] call ws_toString, [_nodeWS] call ws_toString];
-					#endif
+				
+					// Array with parameters for this action we are currently considering
+					pr _parameters = GET_STATIC_VAR(_x, "parameters");
+					if (isNil "_parameters") then {_parameters = [];} else {
+						_parameters = +_parameters; // Make a deep copy
+					};
 					
+					// ----------------------------------------------------------------------------
+					// Try to resolve action parameters
+					// ----------------------------------------------------------------------------
 					
-					// Find which node this action came from
-					// Calculate world state before executing this action
-					// It depends on action effects, preconditions and world state of current node
-					pr _preconditions = (GET_STATIC_VAR(_x, "preconditions"));
-					pr _effects = GET_STATIC_VAR(_x, "effects");
-					pr _WSBeforeAction = +_nodeWS;
-					[_WSBeforeAction, _effects] call ws_substract;
-					[_WSBeforeAction, _preconditions] call ws_add;					
-					
-					// Check if this world state is in close set already
-					pr _possibleAction = _x;
-					if ( (_closeSet findIf { /* ((_x select ASTAR_NODE_ID_ACTION) isEqualTo _possibleAction) && */ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction) }) != -1) then {
-						// Print debug text
-						#ifdef ASTAR_DEBUG
-							diag_log format ["  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x];
-						#endif
-					} else {
-						pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
-						_n set [ASTAR_NODE_ID_ACTION, _x];
-						_n set [ASTAR_NODE_ID_ACTION_PARAMETER, _parameterValue];
-						_n set [ASTAR_NODE_ID_NEXT_NODE, _node];
+					pr _parametersResolved = true;
+					// Resolve parameters which are derived from goal
+					{ // foreach parameters of this action
+						pr _tag = _x select 0;
+						pr _value = _x select 1;
 						
+						// If the value has not been resolved yet
+						if (isNil "_value") then {
 						
-						
-						// Calculate H, G and F values of the new node
-						
-						// Calculate G value
-						// G = G(_node) + cost of this action
-						pr _args = [_AI, _preconditions, _nodeWS];
-						pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
-						pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
-						_n set [ASTAR_NODE_ID_G, _g];
-						
-						// Calculate F and H values
-						// F = G + Heuristic
-						// We need to store H only for debug
-						pr _h = [_WSBeforeAction, _currentWS] call ws_getNumUnsatisfiedProps;
-						pr _f = _g + _h;
-						_n set [ASTAR_NODE_ID_H, _h];
-						_n set [ASTAR_NODE_ID_F, _f];
-						
-						// If node is not in open set
-						pr _foundID = _openSet findIf { /* ( (_x select ASTAR_NODE_ID_ACTION) == _possibleAction) &&*/ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction)};
-						if (_foundID == -1) then {
-							
-							// New node is not in open set
-							// Add the new node to the open set
-							_openSet pushBack _n;
-							
-							// Print debug text: neighbour node
-							#ifdef ASTAR_DEBUG
-								pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_n]);
-								diag_log ("  New node:            " + _nodeString);
-							#endif
-						} else {
-						
-							// New discovered node is in open set already
-							pr _nodeOpen = _openSet select _foundID;
-							
-							// Check if the new node has lower score than existing node
-							if (_g < (_nodeOpen select ASTAR_NODE_ID_G)) then {
-								// If we can come to neighbour node faster through current node, than through another node, update this data
-								_nodeOpen set [ASTAR_NODE_ID_ACTION, _x];
-								_nodeOpen set [ASTAR_NODE_ID_ACTION_PARAMETER, _parameterValue];
-								_nodeOpen set [ASTAR_NODE_ID_G, _g];
-								_nodeOpen set [ASTAR_NODE_ID_F, _f];
-								_nodeOpen set [ASTAR_NODE_ID_H, _h];
-								_nodeOpen set [ASTAR_NODE_ID_NEXT_NODE, _node];
-								
-								// Print debug text
-								#ifdef ASTAR_DEBUG
-									pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
-									//        "  Found in close set:  "
-									diag_log format ["  Updated in open set: %1", _nodeString];
-								#endif
+							// Find a parameter with the same tag in goal parameters
+							pr _idSameTag = _goalParameters findIf {(_x select 0) == _tag};
+							//ade_dumpCallstack;
+							if (_idSameTag != -1) then {
+								// Copy the value from goal parameter to the action parameter
+								_x set [1, (_goalParameters select _idSameTag) select 1];
 							} else {
-								
-								// Print debug text
-								#ifdef ASTAR_DEBUG
-									pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
-									diag_log format ["  Found in open set:   %1", _nodeString];
-								#endif
+								// This parameter is required by action to be retrieved from a goal parameter
+								// But it wasn't found in the goal parameter array
+								// Print an error
+								diag_log format ["[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",
+									_action, _tag, [_goalWS] call ws_toString, _goalParameters];
+								_parametersResolved = false;
 							};
 						};
+					} forEach _parameters;
+					
+					// Have parameters from the goal been resolved so far, if they existed?
+					if (_parametersResolved) then {
+						// Resolve parameters which are passed from effects
+						if (!([_effects, _parameters, _nodeWS] call ws_applyEffectsToParameters)) then {
+							_parametersResolved = false;
+						};
 					};
+					
+					if (!_parametersResolved) then {
+						diag_log format ["[AI:AStar] Warning: can't resolve all parameters for action: %1", _action];
+					} else {
+						#ifdef ASTAR_DEBUG
+						//	diag_log format ["[AI:AStar] Info: Connected world states: action: %1,  effects: %2,  WS:  %3", _x, [_effects] call ws_toString, [_nodeWS] call ws_toString];
+						#endif
+						
+						// ----------------------------------------------------------------------------
+						// Find which node this action came from
+						// ----------------------------------------------------------------------------
+						
+						// Calculate world state before executing this action
+						// It depends on action effects, preconditions and world state of current node
+						pr _WSBeforeAction = +_nodeWS;
+						[_WSBeforeAction, _effects] call ws_substract;
+						[_WSBeforeAction, _preconditions] call ws_add;
+						
+						// Check if this world state is in close set already
+						pr _possibleAction = _x;
+						if ( (_closeSet findIf { /* ((_x select ASTAR_NODE_ID_ACTION) isEqualTo _possibleAction) && */ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction) }) != -1) then {
+							// Print debug text
+							#ifdef ASTAR_DEBUG
+								diag_log format ["  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x];
+							#endif
+						} else {
+							pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
+							_n set [ASTAR_NODE_ID_ACTION, _x];
+							_n set [ASTAR_NODE_ID_ACTION_PARAMETERS, _parameters];
+							_n set [ASTAR_NODE_ID_NEXT_NODE, _node];
+							
+							
+							// ----------------------------------------------------------------------------
+							// Calculate H, G and F values of the new node
+							// ----------------------------------------------------------------------------
+							
+							// Calculate G value
+							// G = G(_node) + cost of this action
+							pr _args = [_AI, _preconditions, _nodeWS];
+							pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
+							pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
+							_n set [ASTAR_NODE_ID_G, _g];
+							
+							// Calculate F and H values
+							// F = G + Heuristic
+							// We need to store H only for debug
+							pr _h = [_WSBeforeAction, _currentWS] call ws_getNumUnsatisfiedProps;
+							pr _f = _g + _h;
+							_n set [ASTAR_NODE_ID_H, _h];
+							_n set [ASTAR_NODE_ID_F, _f];
+							
+							// ----------------------------------------------------------------------------
+							// If node is not in open set
+							// ----------------------------------------------------------------------------
+							
+							pr _foundID = _openSet findIf { /* ( (_x select ASTAR_NODE_ID_ACTION) == _possibleAction) &&*/ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction)};
+							if (_foundID == -1) then {
+								
+								// ----------------------------------------------------------------------------
+								// New node is not in open set
+								// Add the new node to the open set
+								// ----------------------------------------------------------------------------
+								
+								_openSet pushBack _n;
+								
+								// Print debug text: neighbour node
+								#ifdef ASTAR_DEBUG
+									pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_n]);
+									diag_log ("  New node:            " + _nodeString);
+								#endif
+							} else {
+							
+								// New discovered node is in open set already
+								pr _nodeOpen = _openSet select _foundID;
+								
+								// ----------------------------------------------------------------------------
+								// Check if the new node has lower score than existing node
+								// ----------------------------------------------------------------------------
+								
+								if (_g < (_nodeOpen select ASTAR_NODE_ID_G)) then {
+									// If we can come to neighbour node faster through current node, than through another node, update this data
+									_nodeOpen set [ASTAR_NODE_ID_ACTION, _x];
+									_nodeOpen set [ASTAR_NODE_ID_ACTION_PARAMETERS, _parameters];
+									_nodeOpen set [ASTAR_NODE_ID_G, _g];
+									_nodeOpen set [ASTAR_NODE_ID_F, _f];
+									_nodeOpen set [ASTAR_NODE_ID_H, _h];
+									_nodeOpen set [ASTAR_NODE_ID_NEXT_NODE, _node];
+									
+									// Print debug text
+									#ifdef ASTAR_DEBUG
+										pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
+										//        "  Found in close set:  "
+										diag_log format ["  Updated in open set: %1", _nodeString];
+									#endif
+								} else {
+									
+									// Print debug text
+									#ifdef ASTAR_DEBUG
+										pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
+										diag_log format ["  Found in open set:   %1", _nodeString];
+									#endif
+								};
+							}; // in open set?
+						}; // in close set?
+					}; // paramters resolved?
 				};
 			} forEach _availableActions;
 			
@@ -796,7 +865,7 @@ CLASS("AI", "MessageReceiverEx")
 		pr _str = format ["[ WS: %1  Action: %2(%3)  H: %4  G: %5  F: %6  Next: %7 ]",
 			[_node select ASTAR_NODE_ID_WS] call ws_toString,
 			_node select ASTAR_NODE_ID_ACTION,
-			_node select ASTAR_NODE_ID_ACTION_PARAMETER,
+			_node select ASTAR_NODE_ID_ACTION_PARAMETERS,
 			_node select ASTAR_NODE_ID_H,
 			_node select ASTAR_NODE_ID_G,
 			_node select ASTAR_NODE_ID_F,

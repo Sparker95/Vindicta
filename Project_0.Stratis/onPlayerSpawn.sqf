@@ -86,3 +86,10 @@ while {true}do{
 	
 	sleep INTERVAL;
 };
+
+
+// Create a suspiciousness monitor for player
+NEW("suspiciousnessMonitor", [player]);
+// Create a group monitor for east side
+NEW("groupMonitor", [EAST]);
+

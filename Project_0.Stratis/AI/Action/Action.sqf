@@ -20,9 +20,24 @@ CLASS("Action", "MessageReceiver")
 	VARIABLE("timer"); // The timer which will be sending messages to this goal so that it calls its process method
 	STATIC_VARIABLE("cost"); // Cost of this action, if getCost returns a static number
 	
-	// Inherited actions should implement if planner is supposed to be used for them:
-	STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
-	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
+	
+	
+	// ---- Inherited actions should have these set if planner is supposed to be used for them: ---
+	
+	// World state which must be satisfied for this action to start
+	STATIC_VARIABLE("preconditions");
+	
+	// World state after the action ahs been executed
+	STATIC_VARIABLE("effects");
+	
+	// STATIC_VARIABLE("numParameters"); // Amount of parameters this action requires // Maybe implement it later, not very important
+	
+	// Array with parameters which must be derived from goal parameters
+	STATIC_VARIABLE("parameters");
+	
+	// ----------------------------------------------------------------------------------------------
+	
+		
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -36,7 +51,7 @@ CLASS("Action", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", []]];
 	
 		SET_VAR(_thisObject, "AI", _AI);
 		SET_VAR(_thisObject, "state", ACTION_STATE_INACTIVE); // Default state
@@ -236,6 +251,19 @@ CLASS("Action", "MessageReceiver")
 		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
 		// Return static cost
 		_cost
+	} ENDMETHOD;
+	
+	
+	// Returns preconditions of this action depending on parameters
+	// By default it tries to apply parameters to preconditions, if preconditions reference any parameters
+	// !!! If an action must provide preconditions which can't be copied from goal parameters, it must re-implement this method
+	STATIC_METHOD("getPreconditions") {
+		params [ ["_thisClass", "", [""]], ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
+		
+		pr _wsPre = GET_STATIC_VAR(_thisClass, "preconditions");
+		//[_wsPre, _goalParameters, _actionParameters] call ws_applyParametersToPreconditions;
+		
+		_wsPre		
 	} ENDMETHOD;
 	
 ENDCLASS;

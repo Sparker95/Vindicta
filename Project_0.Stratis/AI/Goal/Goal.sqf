@@ -51,16 +51,16 @@ CLASS("Goal", "")
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
 	// ----------------------------------------------------------------------
 	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
-	// This method must be redefined for goals that have predefined actions with extra parameters 
+	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
 	
 	/* virtual */ STATIC_METHOD("createPredefinedAction") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameter", 0]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
 		// Return predefined action from the database
 		pr _actionClass = GET_STATIC_VAR(_thisClass, "predefinedAction");
 		if (!(isNil "_actionClass")) then {
 			if (!(_actionClass == "")) then {
 				// Also pass the parameter from the goal to the action
-				pr _args = [_AI, _parameter];
+				pr _args = [_AI, _parameters];
 				pr _action = NEW(_actionClass, _args);
 				_action
 			} else {
@@ -84,23 +84,33 @@ CLASS("Goal", "")
 	// "GoToNearestCover" can't derive its effect from parameter and is not static, but is supplied by internal logic, therefore this goal must implement this method
 	
 	/* virtual */ STATIC_METHOD("getEffects") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], "_parameter"];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
 		
 		// Return effects from the database
 		pr _effects = GET_STATIC_VAR(_thisClass, "effects");
-		
-		// If the parameter was specified, try to apply it to the effects
-		if (!(isNil "_parameter")) then {
-			pr _parameterApplied = [_effects, _parameter] call ws_applyParameters;
+		_effects = +_effects;
+
+		// If the parameters were specified, try to apply them to the effects
+		if ((count _parameters) > 0) then {
+			pr _success = [_effects, _parameters] call ws_applyParametersToGoalEffects;
 			
 			// If parameter could not be matched to a world state property, print an error
-			if (!_parameterApplied) then {
-				diag_log format ["[%1::getEffects] Error: Parameter was supplied but could not be applied to goal effect! WS: %1,  parameter: %2",
-					_thisClass, [_effects] call ws_toString, _parameter];
+			if (!_success) then {
+				diag_log format ["[%1::getEffects] Error: Parameter was supplied but could not be applied to goal effect! WS: %2,  parameters: %3",
+					_thisClass, [_effects] call ws_toString, _parameters];
+				
+				// Clear all properties
+				pr _size = [_effects] call ws_getSize;
+				for "_i" from 0 to (_size - 1) do {
+					[_effects, _i] call ws_clearProperty;
+				};
+				_effects
+			} else {
+				_effects;
 			}
+		} else {
+			_effects
 		};
-		
-		_effects
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -38,6 +38,11 @@ ws_new = {
 	[_array_WSP, _array_propTypes]
 };
 
+ws_getSize = {
+	params [["_WS", [], [[]]]];
+	count (_WS select 0)
+};
+
 ws_getPropertyValue = {
 	params [["_WS", [], [[]]], ["_key", 0, [0]]];
 	_WS select WS_ID_WSP select _key
@@ -73,19 +78,31 @@ ws_setPropertyValue = {
 	_propTypes set [_key, _type];
 };
 
-// Must be used for goals or actions to specify that the property of world state depends on input parameter with _id
-ws_setPropertyParameterID = {
-	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_id", 0, [0]]];
+// Must be used for actions to specify that the property of world state depends on input parameter with _id
+ws_setPropertyActionParameterTag = {
+	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_tag", "ERROR_NO_TAG"]];
 	pr _properties = _WS select WS_ID_WSP;
-	_properties set [_key, _id];
+	_properties set [_key, _tag];
 	
 	pr _propTypes = _WS select WS_ID_WSPT;
-	_propTypes set [_key, WSP_TYPE_PARAMETER];
+	_propTypes set [_key, WSP_TYPE_ACTION_PARAMETER];
+};
+
+// Must be used for goals to specify that the property of world state depends on input parameter with _id
+ws_setPropertyGoalParameterTag = {
+	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_tag", "ERROR_NO_TAG"]];
+	pr _properties = _WS select WS_ID_WSP;
+	_properties set [_key, _tag];
+	
+	pr _propTypes = _WS select WS_ID_WSPT;
+	_propTypes set [_key, WSP_TYPE_GOAL_PARAMETER];
 };
 
 ws_clearProperty = {
 	params [["_WS", [], [[]]], ["_key", 0, [0]]];
 	pr _propTypes = _WS select WS_ID_WSPT;
+	pr _props = _WS select WS_ID_WSP;
+	_props set [_key, 0];
 	_propTypes set [_key, WSP_TYPE_DOES_NOT_EXIST]; // Property doesn't exist any more
 };
 
@@ -97,10 +114,14 @@ ws_toString = {
 	pr _strOut = "[";
 	for "_i" from 0 to (count _properties) do {
 		if ((_propTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then { // If this property exists, add it to the string array
-			if ((_propTypes select _i) == WSP_TYPE_PARAMETER)  then { // If it's a parameter
-				_strOut = _strOut + format ["%1:<p%2>  ", _i, _properties select _i]; // Key, Value
+			if ((_propTypes select _i) == WSP_TYPE_ACTION_PARAMETER)  then { // If it's a parameter
+				_strOut = _strOut + format ["%1:<AP %2>  ", _i, _properties select _i]; // Key, tag
 			} else {
-				_strOut = _strOut + format ["%1:%2  ", _i, _properties select _i]; // Key, Value
+				if ((_propTypes select _i) == WSP_TYPE_GOAL_PARAMETER)  then {
+					_strOut = _strOut + format ["%1:<GP %2>  ", _i, _properties select _i]; // Key, tag
+				} else {
+					_strOut = _strOut + format ["%1:%2  ", _i, _properties select _i]; // Key, Value
+				};
 			};
 		};
 	};
@@ -120,8 +141,6 @@ BUT preconditions of an action must not be in conflict with the goal.
 
 Return value: [_connected, _parameterID, _parameterValue]
 _connected - bool
-_parameterID - parameter ID that must be specific for goal/action, or -1 if nothing has to be specified
-_parameterValue - value that must be specified, or 0
 */
 ws_isActionSuitable = {
 	params [["_preconditions", [], [[]]], ["_effects", [], [[]]], ["_wsGoal", [], [[]]] ];
@@ -135,8 +154,6 @@ ws_isActionSuitable = {
 	pr _len = count _effectsProps;
 	
 	pr _connected = false;
-	pr _parameterID = -1;
-	pr _parameterValue = 0;
 	
 	// Check all properties
 	for "_i" from 0 to (_len-1) do {
@@ -145,10 +162,8 @@ ws_isActionSuitable = {
 			if ((_effectsPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST) then {		// If property exists in A
 			
 				// If property in A is a parameter which can affect a property in B
-				if ((_effectsPropTypes select _i) == WSP_TYPE_PARAMETER) then {
+				if ((_effectsPropTypes select _i) == WSP_TYPE_ACTION_PARAMETER) then {
 					_connected = true;
-					_parameterID = _effectsProps select _i;
-					_parameterValue = _goalProps select _i;
 					breakOut "s";
 				};
 				
@@ -180,8 +195,6 @@ ws_isActionSuitable = {
 					if ((_effectsPropTypes select _i) == WSP_TYPE_DOES_NOT_EXIST) then {
 						
 						_connected = false;
-						_parameterID = -1;
-						_parameterValue = 0;
 						breakOut "s";
 					};
 				};
@@ -191,7 +204,7 @@ ws_isActionSuitable = {
 	
 	
 	// Return
-	[_connected, _parameterID, _parameterValue]
+	_connected
 };
 
 /*
@@ -273,31 +286,81 @@ ws_add = {
 	};
 };
 
-// Applies parameters to the world state
-// Warning: currently supports only one parameter
-// Returns true if supplied parameter was applied
-ws_applyParameter = {
-	params [["_wsA", [], [[]]], "_parameter" ];
+// Applies goal parameters to the world state
+ws_applyParametersToGoalEffects = {
+	params [["_effects", [], [[]]], ["_parameters", [], [[]]] ];
 	
-	if (isNil "_parameter") exitWith { false };
+	if ((count _parameters) == 0) exitWith { false };
 	
-	pr _AProps = _wsA select WS_ID_WSP;
-	pr _APropTypes = _wsA select WS_ID_WSPT;
+	pr _effectsProps = _effects select WS_ID_WSP;
+	pr _effectsPropTypes = _effects select WS_ID_WSPT;
 	
-	pr _len = count _AProps;
-	pr _parameterApplied = false;
+	pr _len = count _effectsProps;
+	pr _parameterApplied = true;
 	
 	for "_i" from 0 to (_len - 1) do {
-		if ((_BPropTypes select _i) == WSP_TYPE_PARAMETER) then { // If it's a parameter
-			pr _parameterID = _AProps select _i;
-			if (_parameterID > 0) then {
-				diag_log format ["[WorldState::applyParameter] Error: More than one parameter is not supported. World State: %1", [_wsA] call ws_toString];
+		if ((_effectsPropTypes select _i) == WSP_TYPE_GOAL_PARAMETER) then { // If this world state must be retrieved from a goal parameter
+			pr _tag = _effectsProps select _i;
+			
+			// Search for a parameter with given tag
+			pr _pid = _parameters findif {(_x select 0) == _tag};
+			if (_pid == -1) then {
+				diag_log format ["[WS:applyParametersToGoalEffects] Error: could not find tag %1 in parameters %2 for goal effects %3",
+					_tag, _parameters, [_effects] call ws_toString];
+				_parameterApplied = false;
 			} else {
-				[_wsA, _i, _parameter] call ws_setPropertyValue;
-				_parameterApplied = true;
+				// Copy value from parameter to world state
+				pr _value = (_parameters select _pid) select 1;
+				[_effects, _i, _value] call ws_setPropertyValue;
 			};
 		};
 	};
 	
 	_parameterApplied
+};
+
+// Effects of actions can depend on parameters
+// This function fills parameters of action from effects
+// Returns true if parameters were successfully applied
+ws_applyEffectsToParameters = {
+	params [["_effects", [], [[]]], ["_actionParameters", [], [[]]], ["_desiredWS", [], [[]]]];
+	
+	// Unpack the arrays
+	pr _effectsProps = _effects select WS_ID_WSP;
+	pr _effectsPropTypes = _effects select WS_ID_WSPT;
+	pr _dwsProps = _desiredWS select WS_ID_WSP;
+	pr _dwsPropTypes = _desiredWS select WS_ID_WSPT;
+	
+	pr _len = count _effectsProps;
+	pr _success = true;
+	
+	for "_i" from 0 to (_len - 1) do {
+	
+		// If it's a parameter and it affects something which exists in desired world state
+		if ( ((_effectsPropTypes select _i) == WSP_TYPE_ACTION_PARAMETER) &&
+			((_dwsPropTypes select _i) != WSP_TYPE_DOES_NOT_EXIST)) then {
+			
+			// Find parameters with given tag
+			pr _parameterTag = _effectsProps select _i;
+			pr _paramsWithTag = _actionParameters select {(_x select 0) == _parameterTag};
+			
+			// If no parameters with this tag have been found, add it
+			if ((count _paramsWithTag) == 0) then {
+				_actionParameters pushBack [_parameterTag, _dwsProps select _i];
+			/*
+			// This is actually not an error because some actions can propagate a parameter from multiple effect properties to a single parameter
+			} else {
+				// A value must be passed from an effect to an action parameter
+				// But the action already has this value from the goal parameters
+				// So what the fuck is going on here???
+				
+				diag_log format ["[WS:applyParametersToPreconditions] Error: parameter already exists. Effects: %1,  actionParameters: %2",
+					_effects, _actionParameters];
+				_success = false;
+			*/
+			};
+		};
+	};
+	
+	_success
 };

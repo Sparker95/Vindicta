@@ -114,11 +114,13 @@ CLASS("ActionUnitSalute", "Action")
 		
 		diag_log "Terminating salute!";
 		
+		
+		pr _oh = GETV(_thisObject, "objectHandle");
+		_oh enableAI "MOVE";
+		
 		// Stop the animations if the action is active
 		pr _state = GETV(_thisObject, "state");
 		if (_state == ACTION_STATE_ACTIVE) then {
-			pr _oh = GETV(_thisObject, "objectHandle");
-			_oh enableAI "MOVE";
 			_oh switchmove "AmovPercMstpSlowWrflDnon_SaluteOut";
 			//_oh action ["salute", _oh];
 			_oh lookAt objNull; // Stop looking at your target
