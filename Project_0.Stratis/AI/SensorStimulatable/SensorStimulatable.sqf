@@ -43,7 +43,7 @@ CLASS("SensorStimulatable", "Sensor")
 		if (! (CALLM(_thisObject, "doComplexCheck", [_stimulus]))) exitWith {};
 		
 		// Create world fact
-		CALLM(_thisObject, "createWorldFact", []);
+		CALLM(_thisObject, "createWorldFact", [_stimulus]);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

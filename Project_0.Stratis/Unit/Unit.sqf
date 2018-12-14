@@ -357,11 +357,11 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	METHOD("getPossibleGoals") {
-		["GoalUnitSalute"]
+		["GoalUnitSalute","GoalUnitScareAway"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {
-		["ActionUnitSalute"]
+		["ActionUnitSalute","ActionUnitScareAway"]
 	} ENDMETHOD;
 	
 	

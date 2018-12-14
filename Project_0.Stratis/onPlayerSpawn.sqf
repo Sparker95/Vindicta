@@ -2,6 +2,7 @@
 //it just waits until the map display is available meaning that we can manipulate the map display now
 
 #include "UI\UICommanderIDC.hpp"
+#define pr private
 
 (finddisplay 12) ctrlCreate ["group_data_group_0", IDC_GROUP_DATA_GROUP_DATA_GROUP_0];
 //(finddisplay 12) ctrlCreate ["group_data_group_1", IDC_GROUP_DATA_GROUP_DATA_GROUP_0];
@@ -53,3 +54,35 @@ player addEventHandler ["AnimChanged", {
 		CALLM(gStimulusManager, "postMethodAsync", _args);
 	};
 }];
+
+//player setUnitTrait ["audibleCoef",0,true];
+//player setUnitTrait ["camouflageCoef",0,true];
+Civilian setFriend [West , 0];
+
+#define TRIGGER_DISTANCE 10
+#define INTERVAL 0.5
+
+while {true}do{
+	//civilians are enemy with opfor but opfor is not enemies with civilian
+	pr _nearestEnemy = player findNearestEnemy player;
+	if(!isNull _nearestEnemy)then{
+		pr _dis = _nearestEnemy distance player;
+		if(_dis < TRIGGER_DISTANCE)then{
+		
+			// Create a salute stimulus
+			pr _stim = STIMULUS_NEW();
+			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_CIV_NEAR);
+			STIMULUS_SET_SOURCE(_stim, player);
+			STIMULUS_SET_VALUE(_stim, 1-(_dis/TRIGGER_DISTANCE));
+
+			diag_log "NearEnemy trigger";
+			
+			// Send the stimulus to unit directly TODO maybe send it to group
+			pr _oh = CALLSM("unit","getUnitFromObjectHandle",[_nearestEnemy]);
+			pr _ai = CALLM(_oh,"getAI",[]);
+			CALLM(_ai,"handleStimulus",[_stim]);
+		};
+	};
+	
+	sleep INTERVAL;
+};

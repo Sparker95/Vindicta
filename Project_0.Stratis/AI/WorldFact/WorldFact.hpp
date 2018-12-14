@@ -9,7 +9,7 @@
 #define WF_ID_LIFETIME				6
 
 #define WF_TYPE_DEFAULT				-1
-#define WF_VALUE_DEFAULT			666.666
+#define WF_VALUE_DEFAULT			0
 #define WF_RELEVANCE_DEFAULT		0
 #define WF_SOURCE_DEFAULT			objNull
 #define WF_POS_DEFAULT				0

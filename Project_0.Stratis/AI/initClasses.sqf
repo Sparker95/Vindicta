@@ -51,3 +51,6 @@ call compile preprocessFileLineNumbers "AI\Unit\AIUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\SensorUnitSalute.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\SensorUnitCivNear.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitScareAway.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitScareAway.sqf";
