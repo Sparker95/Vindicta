@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project name="Jeroen's Arsenal">
+	<Package name="Arsenal">
+		<Container name="Actions">
+			<Key ID="STR_JNA_ACT_OPEN">
+				<Original>Arsenal</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
+				<Original>Arsenal for objects</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECT">
+				<Original>Select</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
+				<Original>Not looking at object</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
+				<Original>Object to far away</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
+				<Original>Object doesnt have inventory</Original>
+			</Key>
+		</Container>
+	</Package>
+	<Package name="Garage">
+		<Container name="Actions">
+			<Key ID="STR_JNG_ACT_OPEN">
+				<Original>Garage</Original>Original>
+			</Key>
+		</Container>
+	</Package>
+</Project>
+
