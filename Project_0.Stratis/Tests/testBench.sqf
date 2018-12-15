@@ -20,7 +20,7 @@ private _unit_1 = NEW("Unit", _args);
 // Spawn the new units
 private _args = [ /*(getPos player)*/ [2414.09,1147.49, 0] vectorAdd [2, 2, 0], random 360];
 CALLM(_unit_0, "spawn", _args);
-//CALLM(_unit_1, "spawn", _args);
+CALLM(_unit_1, "spawn", _args);
 //CALLM(_unit_2, "spawn", _args);
 
 // Initialize the bench object
@@ -37,19 +37,19 @@ CALLM(_unit_1, "doSitOnBench", _args);
 
 // Add the goals to the units to sit on the bench
 
-private _args = [_unit_0, _bench, 3];
+private _args = [_unit_0, _bench, 10];
 private _goal_0 = NEW("GoalUnitInteractAnimObject", _args);
 CALLM(_unit_0, "setGoal", [_goal_0]);
 CALLM(_goal_0, "setAutonomous", [1]);
 
-/*
+
 sleep 4;
 
 private _args = [_unit_1, _bench, 40];
 private _goal_1 = NEW("GoalUnitInteractAnimObject", _args);
 CALLM(_unit_1, "setGoal", [_goal_1]);
 CALLM(_goal_1, "setAutonomous", [1]);
-*/
+
 
 //sleep 2;
 /*

@@ -13,7 +13,7 @@
 #define UNIT_DATA_ID_VEHICLE_CREW	9
 // Vehicle assigned to this unit
 #define UNIT_DATA_ID_VEHICLE		10
-#define UNIT_DATA_ID_GOAL			11
+#define UNIT_DATA_ID_AI				11
 
 #define UNIT_DATA_SIZE				12
 

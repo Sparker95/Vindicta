@@ -20,7 +20,7 @@ switch (_msgType) do {
 		private _dst = _units apply {_x distance _locPos};
 		private _speedMax = 200;
 		private _dstMin = if (count _dst > 0) then {selectMin _dst;} else {_speedMax*10};
-		private _dstSpawn = 1000; // Temporary, spawn distance
+		private _dstSpawn = 300; // Temporary, spawn distance
 		private _spawnState = GET_VAR(_thisObject, "spawnState");
 		private _timer = GET_VAR(_thisObject, "timer");
 		switch (_spawnState) do {
@@ -41,6 +41,7 @@ switch (_msgType) do {
 					// Set timer interval
 					private _dstToThreshold = _dstMin - _dstSpawn;
 					private _interval = (_dstToThreshold / _speedMax) max 1;
+					private _interval = 2; // todo override this
 					//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "debugName"), _dstMin];
 					CALL_METHOD(_timer, "setInterval", [_interval]);
 				};

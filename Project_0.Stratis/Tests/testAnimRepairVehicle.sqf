@@ -22,7 +22,7 @@ private _unit_5 = NEW("Unit", _args);
 //private _unit_2 = NEW("Unit", _args);
 
 // Spawn the new units
-private _args = [ (getPos player) /*[2414.09,1147.49, 0]*/ vectorAdd [2, 2, 0], random 360];
+private _args = [ [2414.09,1147.49, 0] /*(getPos player)*/ /*[2414.09,1147.49, 0]*/ vectorAdd [2, 2, 0], random 360];
 CALLM(_unit_0, "spawn", _args);
 CALLM(_unit_1, "spawn", _args);
 CALLM(_unit_2, "spawn", _args);

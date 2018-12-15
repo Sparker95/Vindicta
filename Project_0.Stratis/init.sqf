@@ -56,11 +56,22 @@ diag_log "Init.sqf: Creating global objects...";
 
 // Init global objects
 // Main timer service
-gTimerServiceMain = NEW("TimerService", [0.5]); // timer resolution
+gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 
 // Main message loop for garrisons
 gMessageLoopMain = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
+
+// Message loop for group AI
+gMessageLoopGroupAI = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopGroupAI, "setDebugName", ["Group AI thread"]);
+
+// Message loop for Stimulus Manager
+gMessageLoopStimulusManager = NEW("MessageLoop", []);
+CALL_METHOD(gMessageLoopStimulusManager, "setDebugName", ["Stimulus Manager thread"]);
+
+// Global Stimulus Manager
+gStimulusManager = NEW("StimulusManager", []);
 
 // Message loop for locations
 gMessageLoopLocation = NEW("MessageLoop", []);
@@ -78,11 +89,11 @@ private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interv
 private _LUAPTimer = NEW("Timer", _args);
 
 // Message loop for garrison goals
-gMessageLoopGoal = NEW("MessageLoop", []);
+//gMessageLoopGoal = NEW("MessageLoop", []);
 
 
 diag_log "Init.sqf: Calling initWorld...";
 
-//call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+call compile preprocessFileLineNumbers "Init\initWorld.sqf";
 
 diag_log "Init.sqf: Init done!";

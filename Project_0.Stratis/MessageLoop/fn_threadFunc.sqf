@@ -28,6 +28,8 @@ while {true} do {
 		//Get destination object
 		private _dest = _msg select MESSAGE_ID_DESTINATION;
 		//Call handleMessage
+		//if (!isNil )
+		// todo make sure we call a method on an existing object
 		CALL_METHOD(_dest, "handleMessage", [_msg]);
 		//Delete the message
 		_msgQueue deleteAt 0;

@@ -123,6 +123,17 @@
 #define GETV(a, b) GET_VAR(a, b)
 #define GETSV(a, b) GET_STATIC_V(a, b)
 
+// todo add macros to check object validity
+/*
+#define IS_VALID(objNameStr)
+private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	//Check if it's an object
+	if(isNil "_classNameStr") exitWith {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		false;
+	};
+*/
+
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
 // -----------------------------------------------------
@@ -131,12 +142,14 @@
 //#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
 #define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
 #define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
-#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (extraParams) call GET_METHOD(classNameStr, methodNameStr)
+#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) ([classNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
 
 // Shortened variants of macros
 #define CALLM(a, b, c) CALL_METHOD(a, b, c)
 #define CALLCM(a, b, c) CALL_CLASS_METHOD(a, b, c)
 #define CALLSM(a, b, c) CALL_STATIC_METHOD(a, b, c)
+
+#define GETM(objNameStr, methodNameStr) GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
 
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
@@ -234,6 +247,7 @@ VARIABLE(OOP_PARENT_STR);
 #define NEW(classNameStr, extraParams) [] call { \
 CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
 private _oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
+if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0);	_oop_nextID = 0;}; \
 SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
 private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
 FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \

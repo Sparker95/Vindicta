@@ -9,6 +9,10 @@ Author: Sparker
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
+
+#define pr private
 
 Unit_fnc_EH_killed = compile preprocessFileLineNumbers "Unit\EH_killed.sqf";
 
@@ -78,11 +82,8 @@ CLASS(UNIT_CLASS_NAME, "")
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		MUTEX_LOCK(_mutex);
 		
-		//Delete this unit from the physical world
-		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-		if (!(isNull _objectHandle)) then {
-			deleteVehicle _objectHandle;
-		};
+		//Despawn this unit if it was spawned
+		CALLM(_thisObject, "despawn", []);
 		
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
@@ -154,6 +155,12 @@ CLASS(UNIT_CLASS_NAME, "")
 					
 					//_objectHandle disableAI "PATH";
 					//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
+					
+					// Create an AI object of the unit
+					pr _AI = NEW("AIUnit", [_thisObject]);
+					_data set [UNIT_DATA_ID_AI, _AI];
+					// Don't start the brain, because its process method will be called by
+					// its group's AI brain
 				};
 				case T_VEH: {
 					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
@@ -168,7 +175,7 @@ CLASS(UNIT_CLASS_NAME, "")
 			// Set event handlers of the object
 			_objectHandle addEventHandler ["Killed", Unit_fnc_EH_killed];
 			
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
+			//if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
@@ -193,14 +200,22 @@ CLASS(UNIT_CLASS_NAME, "")
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
+			// Stop AI, sensors, etc
+			pr _AI = _data select UNIT_DATA_ID_AI;
+			// Some units are breainless. Check if the unit had a brain.
+			if (_AI != "") then {
+				pr _msg = MESSAGE_NEW();
+				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
+				pr _msgID = CALLM(_AI, "postMessage", [_msg]);
+				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+				_data set [UNIT_DATA_ID_AI, ""];
+			};
+			
+			// Delete the vehicle
 			deleteVehicle _objectHandle;
 			private _group = _data select UNIT_DATA_ID_GROUP;
-			if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
+			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
-			
-			// Make sure we terminate the bench script
-			private _hScriptBench = _objectHandle getVariable ["unit_hScriptBench", scriptNull];
-			if (!isNull _hScriptBench) then {terminate _hScriptBench;};
 		};		
 		//Unlock the mutex
 		MUTEX_UNLOCK(_mutex);
@@ -254,22 +269,6 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                   S E T / G E T   G O A L
-	// | Sets the goal value of this unit. It doesn't mean that the unit will pursue this goal.
-	// ----------------------------------------------------------------------
-	METHOD("setGoal") {
-		params [["_thisObject", "", [""]], ["_goal", "", [""]] ];
-		private _data = GET_VAR(_thisObject, "data");
-		_data set [UNIT_DATA_ID_GOAL, _goal];
-	} ENDMETHOD;
-	
-	METHOD("getGoal") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
-		_data select UNIT_DATA_ID_GOAL
-	} ENDMETHOD;
-	
-	// ----------------------------------------------------------------------
 	// |                   G E T   M A I N   D A T A                        |
 	// ----------------------------------------------------------------------
 	// Returns [_catID, _subcatID, _className] of this unit
@@ -315,11 +314,74 @@ CLASS(UNIT_CLASS_NAME, "")
 	// | If this object is not associated with a unit, returns ""
 	// ----------------------------------------------------------------------
 	STATIC_METHOD("getUnitFromObjectHandle") {
-		params [ ["_objectHandle", objNull, [objNull]] ];
+		params [ ["_thisClass", "", [""]], ["_objectHandle", objNull, [objNull]] ];
 		_objectHandle getVariable ["unit", ""]
 	} ENDMETHOD;
 	
-	// File based methods
+	// ----------------------------------------------------------------------
+	// | I S   I N F A N T R Y   /   V E H I C L E   /   D R O N E
+	// | Returns true if the unit is of specified type
+	// ----------------------------------------------------------------------
+	
+	METHOD("isInfantry") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_INF
+	} ENDMETHOD;
+
+	METHOD("isVehicle") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_VEH
+	} ENDMETHOD;
+	
+	METHOD("isDrone") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_DRONE
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                            G O A P                             
+	// ----------------------------------------------------------------------	
+	
+	METHOD("getSubagents") {
+		[] // A single unit has no subagents
+	} ENDMETHOD;
+	
+	// Returns the AI object of this unit
+	METHOD("getAI") {
+		params [["_thisObject", "", [""]]];
+		pr _data = GET_MEM(_thisObject, "data");
+		_data select UNIT_DATA_ID_AI
+	} ENDMETHOD;
+	
+	METHOD("getPossibleGoals") {
+		["GoalUnitSalute","GoalUnitScareAway"]
+	} ENDMETHOD;
+	
+	METHOD("getPossibleActions") {
+		["ActionUnitSalute","ActionUnitScareAway"]
+	} ENDMETHOD;
+	
+	
+	
+	
+	
+	// --------------------- Generic functions -----------------
+	METHOD("getPos") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		getPos _oh
+	} ENDMETHOD;
+	
+	
+	
+	
+	
+	
+	// ================= File based methods ======================
 	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
 	METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
 	METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
@@ -329,6 +391,8 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD_FILE("doInteractAnimObject", "Unit\doInteractAnimObject.sqf");
 	METHOD_FILE("doStopInteractAnimObject", "Unit\doStopInteractAnimObject.sqf");
 	METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
+	METHOD_FILE("getBehaviour", "Unit\getBehaviour.sqf");
+	METHOD_FILE("isAlive", "Unit\isAlive.sqf");
 	
 ENDCLASS;
 

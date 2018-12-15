@@ -4,6 +4,8 @@ Spawns the whole garrison
 
 #include "..\OOP_Light\OOP_Light.h"
 
+#define pr private
+
 params [["_thisObject", "", [""]]];
 
 private _spawned = GET_VAR(_thisObject, "spawned");
@@ -22,15 +24,7 @@ private _loc = GET_VAR(_thisObject, "location");
 // Spawn groups
 {
 	private _group = _x;
-	private _groupType = CALL_METHOD(_group, "getType", []);
-	private _groupUnits = CALL_METHOD(_group, "getUnits", []);
-	{
-		private _unit = _x;
-		private _unitData = CALL_METHOD(_unit, "getMainData", []);
-		private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-		private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-		CALL_METHOD(_unit, "spawn", _posAndDir);
-	} forEach _groupUnits;
+	CALLM(_group, "spawn", [_loc]);
 } forEach _groups;
 
 // Spawn single units
@@ -44,8 +38,15 @@ private _loc = GET_VAR(_thisObject, "location");
 	};
 } forEach _units;
 
+// Create an AI brain of this garrison and start it
+pr _AI = NEW("AIGarrison", [_thisObject]);
+SETV(_thisObject, "AI", _AI);
+CALLM(_AI, "start", []); // Let's start the party! \o/
+
 // Create a goal object for this garrison
+/*
 private _args = [_thisObject]; // entity
 private _newGoal = NEW("GoalComposite", _args);
 CALLM(_newGoal, "setAutonomous", [3]); // timer interval
 SETV(_thisObject, "goal", _newGoal);
+*/

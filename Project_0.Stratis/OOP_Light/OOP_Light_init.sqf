@@ -36,8 +36,14 @@ OOP_error_notObject = {
 //Print error when specified class is not a class
 OOP_error_notClass = {
 	params ["_file", "_line", "_classNameStr"];
-	private _errorText = format ["class '%1' is not defined", _classNameStr];
-	[_file, _line, _errorText] call OOP_error;
+	private _errorText = "";
+	if (isNil "_classNameStr") then {
+		private _errorText = format ["class name is nil"];
+		[_file, _line, _errorText] call OOP_error;
+	} else {
+		private _errorText = format ["class '%1' is not defined", _classNameStr];
+		[_file, _line, _errorText] call OOP_error;
+	};
 };
 
 //Check class and print error if it's not found
@@ -108,7 +114,14 @@ OOP_assert_member = {
 
 //Check method and print error if it's not found
 OOP_assert_method = {
-	params["_classNameStr", "_methodNameStr", "_file", "_line"];	
+	params["_classNameStr", "_methodNameStr", "_file", "_line"];
+	
+	if (isNil "_classNameStr") exitWith {
+		private _errorText = format ["class name is nil"];
+		[_file, _line, _errorText] call OOP_error;
+		false;
+	};
+	
 	//Get static member list of this class 
 	private _methodList = GET_SPECIAL_MEM(_classNameStr, METHOD_LIST_STR);
 	//Check if it's a class

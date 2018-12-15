@@ -11,6 +11,10 @@
 	+msgID = postMessage() // Posts message into the message queue, returns message id.
 	+messageProcessed(reqID) // Returns true if a posted message has been processed
     ------------------------------
+	
+
+	
+	
     [MessageReceiver] // Object with message handling capabilities
     +handled=handleMessage() // Does processing of message by this object
     -getMessageLoop() // Returns the MessageLoop object which does message processing
@@ -87,3 +91,93 @@
         ------------------------------
         [EventDispatcher]
         ------------------------------
+		
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	// = = = = = = = = =   A I   C L A S S E S   = = = = = = = = =
+	// = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+	
+	class AI : MessageReceiver
+	+process() // Called every update interval
+	{
+		updateSensors();
+		goalNew = calculateMostRelevantGoal();
+		if (goalNew != currentGoal)
+			[action, planIsValid] = planActions(goalNew);
+			if (planIsValid) {
+				setCurrentAction(action);
+				currentGoal = goalNew;
+			} else
+				setCurrentAction("");
+		}
+		if(currentAction != "") // If the current action exists
+			currentAction.process();
+		if (count agent.getSubagents > 0)
+			{ _x.AI.process(); } forEach subagents;
+	}
+	-agent // Pointer to the unit which holds this AI object
+	-sensorsChanged = updateSensors() // Update values of all sensors, according to their settings, returns true if any of them have changed
+	-goal = getMostRelevantGoal() // Calculates relevance of all goals(internal and external) and chooses the most relevant
+	-currentGoal // The current goal
+	-currentAction // The current action
+	-goalExtHigh // Goal suggested to this Agent by a high level AI
+	-goalExtMedium // Goal suggested to this Agent by a medium level AI
+	-goalExtLow // Goal suggested to this Agent by a low level AI
+	-static goalsInternal[] // Array with names of all goals the AI Agent can choose from 
+	-static availableActions[] // Array with names of all actions available to this AI Agent
+	-[action, planIsValid] = planActions(goal) // Plans a way towards specified goal, returns a single action, which can be serial action or an atomic action
+	-worldState // The world state relative to this Agent
+	-setCurrentAction(action) // Sets the current action executed by the AI Agent, first terminates its current action then replaces it with a new one
+	// A group has its units as subagents, and calling group's process() should call the process() of its units.
+	// This is done because in ARMA a soldier shares most information with its group, so it is logical to process soldiers and the group synchronously.
+	{
+		delete(currentAction);
+		currentAction = action;
+	}
+	
+	class Action : MessageReceiver
+	+- Just everything that I copied from the book
+	
+	class Goal
+	+static getGoalWorldState
+	+virtual static getPlan(agent)
+	{
+		// Typically we just call the planner here
+		// However some goals are so simple so we can just return a pre-made plan here, for instance for goals of soldiers
+	}
+	
+	class Agent // It can be a Unit or a Group or a Garrison
+	+static getPossibleGoals() // Returns a list of goals this Agent can choose from
+	+static getPossibleActions() // Returns a list of actions this Agent can use
+	+subagents = getSubagents() // Returns an array of subagents of this agent
+	-AI // An object of AI class, which is only created when the Agent gets spawned
+	
+	class Sensor
+	-agent // The agent that owns this sensor
+	+update() // Updates the sensor
+	{
+		//Can either set values of WorldState
+		//Or do something else
+	}
+	
+	class WorldStateProperty
+	-key // An integer having any positive value starting from 0
+	-value
+	-type(optional) // Don't really need type because every variable in SQF has a type already
+	
+	class WorldState
+	+WorldState(nProperties) // Must specify the amount of properties when you create it
+	-properties[] // Array with WorldStateProperties
+	-propertyExists[] // Array with 0 and 1, representing if this property exists in the world state
+	+value = getWSProperty(key)
+	+setWSProperty(key, value)
+	{
+		propertyExists[key] = 1;
+		properties[key].setValue(value);
+	}
+	+clearWSProperty(key) {propertyExists[key] = 0;}
+	+getWSPropertyExists(key) // Returns true or false depending if this property exists
+	
+	class WorldStateGarrison : WorldState
+	class WorldStateGroup : WorldState
+	
+	

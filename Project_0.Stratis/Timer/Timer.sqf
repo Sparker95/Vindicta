@@ -2,6 +2,18 @@
 Timer is an object which posts a message into another object with specified time interval.
 
 Author: Sparker 31.07.2018
+
+Usage template:
+
+private _msg = MESSAGE_NEW();
+_msg set [MESSAGE_ID_DESTINATION, ***];
+_msg set [MESSAGE_ID_SOURCE, ""];
+_msg set [MESSAGE_ID_DATA, ***];
+_msg set [MESSAGE_ID_TYPE, ***];
+private _args = [__destination__, __interval__, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+private _timer = NEW("Timer", _args);
+
+
 */
 
 #include "..\OOP_Light\OOP_Light.h"
@@ -29,7 +41,7 @@ CLASS("Timer", "")
 		private _data = TIMER_DATA_DEFAULT;
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
 		_data set [TIMER_DATA_ID_TIME_NEXT, time+_interval];
-		_data set [TIMER_DATA_ID_MESSAGE, _message];
+		_data set [TIMER_DATA_ID_MESSAGE, +_message];
 		_data set [TIMER_DATA_ID_MESSAGE_RECEIVER, _messageReceiver];
 		_data set [TIMER_DATA_ID_TIMER_SERVICE, _timerService];
 		private _msgLoop = CALL_METHOD(_messageReceiver, "getMessageLoop", []);
@@ -56,7 +68,7 @@ CLASS("Timer", "")
 	// ----------------------------------------------------------------------
 	
 	METHOD("setInterval") {
-		params [["_thisObject", "", [""]], ["_interval", 0, [0]]];
+		params [["_thisObject", "", [""]], ["_interval", 1, [0]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [TIMER_DATA_ID_INTERVAL, _interval];
 		_data set [TIMER_DATA_ID_TIME_NEXT, time+_interval];
