@@ -9,10 +9,14 @@ It is a mission for ARMA III. The goal of this project is to make a guerrilla wa
 * Implement high level AI easier to control by player and more responsive to actions of enemy side.
 
 ## Current state of development
-Currently rewriting all the code with OOP-Light (https://github.com/Sparker95/OOP-Light) in the development-OOP branch.
-OOP should help produce manageable code and help implement complex event-driven systems needed for functioning of key components of the scenario.
+Currently the following components are fully or partially implemented:
+* Main system components
+* Enhanced logistics framework by Jeroen Not (enhanced arsenal, enhanced garage, enhanced repairing, rearming, refueling, etc.)
+* HC management
+* Garrison caching of locations
+* GOAP AI framework
 
-Mainly done in the old (non-OOP) code:
-* Basic generation of some types of locations (bases, outposts, etc.)
-* Garrison caching
-* Structure of AI command and some basic functions. AI controlled bases can respond to threats and provide help to other bases.
+## Technical implementation
+* Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
+OOP paradigm should help produce manageable code and help implement complex systems.
+* AI is being handled by a custom GOAP (Goal-Oriented Action Planning) AI framework. GOAP is a technology which was first used in fameous F.E.A.R. first person shooter. GOAP should help manage the complexity of creation of complex AI behaviours that involve replannable chains of actions. More on GOAP here: http://aigamedev.com/open/article/fear-sdk/ http://alumni.media.mit.edu/~jorkin/
