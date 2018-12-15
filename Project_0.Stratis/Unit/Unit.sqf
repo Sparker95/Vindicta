@@ -126,6 +126,21 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                           C R E A T E   A I
+	// ----------------------------------------------------------------------
+	
+	METHOD("createAI") {
+		params [["_thisObject", "", [""]]];
+		
+		// Create an AI object of the unit
+		// Don't start the brain, because its process method will be called by
+		// its group's AI brain
+		pr _data = GETV(_thisObject, "data");
+		pr _AI = NEW("AIUnit", [_thisObject]);
+		_data set [UNIT_DATA_ID_AI, _AI];
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                             S P A W N                              |
 	// ----------------------------------------------------------------------
 	
@@ -156,11 +171,7 @@ CLASS(UNIT_CLASS_NAME, "")
 					//_objectHandle disableAI "PATH";
 					//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 					
-					// Create an AI object of the unit
-					pr _AI = NEW("AIUnit", [_thisObject]);
-					_data set [UNIT_DATA_ID_AI, _AI];
-					// Don't start the brain, because its process method will be called by
-					// its group's AI brain
+					CALLM0(_thisObject, "createAI");					
 				};
 				case T_VEH: {
 					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
@@ -206,8 +217,8 @@ CLASS(UNIT_CLASS_NAME, "")
 			if (_AI != "") then {
 				pr _msg = MESSAGE_NEW();
 				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
-				pr _msgID = CALLM(_AI, "postMessage", [_msg]);
-				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 				_data set [UNIT_DATA_ID_AI, ""];
 			};
 			

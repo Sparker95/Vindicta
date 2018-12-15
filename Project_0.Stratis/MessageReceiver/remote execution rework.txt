@@ -1,0 +1,102 @@
+// Outline of rework needed to make MessageReceiver also work across network
+
+MessageReceiver new variables:
+	owner - number - owner of this object
+
+MessageReceiver new methods:
+
+	getOwner - must return owner of this MessageReceiver
+
+	// This machine is no longer owner of this
+	setOwner(ownerID) - must be called on the owner machine to change ownership of this MessageReceiver
+	{
+		if (clientOwner != this.owner) {
+			// Return error because setOwner must be called on the machine that owns this
+			return false;
+		}
+		
+		if (ownerID does not exist) {
+			// Return error because this owner ID does not exist
+			return false;
+		}
+		
+		if (ownerID != this.owner) {
+			// This machine is no longer owner of this
+			this.owner = ownerID;
+			
+			// Transfer only variables that will be required on the other machine
+			_serData = this.serialize();
+			
+			// Ask the other machine to take ownership
+			remoteExec(ownerID, "takeOwnership", [_thisObject, _thisObject.parents, _serData]);
+			timeSent = time;
+			
+			// Wait until the other machine responds or time is out
+			waitUntil {time - timeSent > 2 or got response};
+			if (time is out) {
+				// Tell the other machine that it doesn't own the object, if it still assumes that it does for some reason
+				
+				return false
+			}
+			
+			if (!this.loseOwnership()) {
+				// Failed to change ownership of underlying objects
+				
+				// Take ownership back
+				this.owner = clientOwner;
+				
+				// As
+				
+				return false
+			} else {
+				
+				return true;
+			}
+		} else {
+			// Return error because new owner and current owner are the same
+			return false;
+		}
+	}
+	
+	// Remote executed and being run on this machine when it aquires ownership of this object
+	static receiveOwnership(fromOwnerID, objNameStr, objParents, serialData) {
+		objectFromRemote = NEW_EXISTING(objNameStr, objParents);
+		success = objectFromRemote.deserialize(serialData);
+		
+		if (success)
+			remoteExec(successfully handled it);
+		else
+			remoteExec(failed to deserialize for some reason);
+	}
+	
+	// Called when this machine no longer owns this object
+	// virtual
+	loseOwnership(newOwnerID)
+	{
+		// Change ownership of objects inside this object
+		if (!this.box.setOwner(newOWnerID)) return false;
+		if (!this.car.setOwner(newOWnerID)) return false;
+		
+		// Clear unneeded variables if they exist
+		
+	}
+	
+	// methods for serializing when changing owner
+	// virtual
+	serData = serialize() {
+		// Returns serialized data
+	}
+	
+	// Returns a new object reconstructed from serial data
+	// virtual
+	static deserialize(serData) {
+		
+	}
+	
+Problems:
+
+	Propagate only data about existance of object and about its owner to other machines that might need this data
+	
+New OOP_Light primitives:
+	NEW_EXISTING(objNameStr)
+	Creates a record about new existing object. Only sets the parents special variable to mark object's existance without setting any other fields.

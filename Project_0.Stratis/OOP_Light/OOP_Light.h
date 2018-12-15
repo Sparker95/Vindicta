@@ -54,19 +54,19 @@
 // ----------------------------------------------------------------------
 
 //Name of a specific instance of object
-#define OBJECT_NAME_STR(classNameStr, objIDInt) (OOP_PREFIX + classNameStr + OBJECT_SEPARATOR + (format ["%1", objIDInt]))
+#define OBJECT_NAME_STR(classNameStr, objIDInt) (OOP_PREFIX + (classNameStr) + OBJECT_SEPARATOR + (format ["%1", objIDInt]))
 
 //String name of a static member
-#define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + classNameStr + STATIC_SEPARATOR + memNameStr)
+#define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
 
 //String name of a method
-#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) (classNameStr + METHOD_SEPARATOR + methodNameStr)
+#define CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) ((classNameStr) + METHOD_SEPARATOR + (methodNameStr))
 
 //String name of a special member
-#define CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + classNameStr + SPECIAL_SEPARATOR + memNameStr)
+#define CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) (OOP_PREFIX + (classNameStr) + SPECIAL_SEPARATOR + (memNameStr))
 
 //String name of a non-static member
-#define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) (objNameStr + "_" + memNameStr)
+#define OBJECT_MEM_NAME_STR(objNameStr, memNameStr) ((objNameStr) + "_" + memNameStr)
 
 //Gets parent class of an object
 #define OBJECT_PARENT_CLASS_STR(objNameStr) (FORCE_GET_MEM(objNameStr, OOP_PARENT_STR))
@@ -138,9 +138,16 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 // |             M E T H O D   C A L L S               |
 // -----------------------------------------------------
 
+#define GETM(objNameStr, methodNameStr) GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+
 //Same performance for small functions
 //#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
 #define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_METHOD_0(objNameStr, methodNameStr) ([objNameStr]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_METHOD_1(objNameStr, methodNameStr, a) ([objNameStr, a]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_METHOD_2(objNameStr, methodNameStr, a, b) ([objNameStr, a, b]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_METHOD_3(objNameStr, methodNameStr, a, b, c) ([objNameStr, a, b, c]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+#define CALL_METHOD_4(objNameStr, methodNameStr, a, b, c, d) ([objNameStr, a, b, c, d]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
 #define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
 #define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) ([classNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
 
@@ -149,7 +156,16 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLCM(a, b, c) CALL_CLASS_METHOD(a, b, c)
 #define CALLSM(a, b, c) CALL_STATIC_METHOD(a, b, c)
 
-#define GETM(objNameStr, methodNameStr) GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
+// Macros for multiple variables
+#define CALLM0(a, b) CALL_METHOD_0(a, b)
+#define CALLM1(a, b, c) CALL_METHOD_1(a, b, c)
+#define CALLM2(a, b, c, d) CALL_METHOD_2(a, b, c, d)
+#define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
+#define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
+
+// Remote executions
+#define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExec("OOP_callFromRemote", targets, false)
+#define REMOTE_EXEC_CALL_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExecCall("OOP_callFromRemote", targets, false)
 
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
@@ -226,6 +242,20 @@ VARIABLE(OOP_PARENT_STR);
  */
 
 #define ENDCLASS }
+
+// ----------------------------------------------------------------------
+// |        C O N S T R U C T O R  O F   E X I S T I N G   O B J E C T  |
+// ----------------------------------------------------------------------
+
+/*
+ * Technical info:
+ * Creates an object with given name, doesn't call its constructor.
+ */
+
+#define NEW_EXISTING(classNameStr, objNameStr) [] call { \
+FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
+objNameStr \
+}
 
 // ----------------------------------------
 // |        C O N S T R U C T O R         |

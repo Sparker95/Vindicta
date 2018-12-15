@@ -1,3 +1,8 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Mutex\Mutex.hpp"
+#include "..\CriticalSection\CriticalSection.hpp"
+#include "..\Message\Message.hpp"
+
 /*
 MessageLoop class.
 MessageLoop, when created, spawns a thread which waits for messages to get into its queue. Then it routes messages to specific objects or to itself.
@@ -6,12 +11,9 @@ Author: Sparker
 15.06.2018
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Mutex\Mutex.hpp"
-#include "..\CriticalSection\CriticalSection.hpp"
-#include "..\Message\Message.hpp"
-
 //#define DEBUG
+
+#define pr private
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
@@ -47,24 +49,25 @@ CLASS("MessageLoop", "")
 		#ifdef DEBUG
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
-		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]] ];
+		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]], ["_msgID", -1, [0]] ];
 		
 		//Start critical section
 		// Nothing must interrupt the message pushing into the queue, even event handlers
-		private _ID = -1; // Because we can't return a variable from a critical section
+		//private _ID = -1; // Because we can't return a variable from a critical section
 		CRITICAL_SECTION_START
 		
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
-		_msgQueue pushBack _msg;
+		_msgQueue pushBack [_msg, _msgID];
+		
 		//Increase the posted msg ID counter
-		_ID = GET_VAR(_thisObject, "msgPostID");
-		SET_VAR(_thisObject, "msgPostID", _ID + 1);
+		//_ID = GET_VAR(_thisObject, "msgPostID");
+		//SET_VAR(_thisObject, "msgPostID", _ID + 1);
 		
 		// Stop critical section
 		CRITICAL_SECTION_END
 		
 		//Return the message ID
-		_ID
+		//_ID
 	} ENDMETHOD;
 	
 	//MessageLoop can also handle messages directed to it.
@@ -82,12 +85,16 @@ CLASS("MessageLoop", "")
 	} ENDMETHOD;
 	
 	//Returns whether the message with specified _msgID has been processed
+	/*
+	// Not needed any more after rework for remote executed messages
+	// Because now messageReceiver handles this
 	METHOD("messageDone") {
 		params [ ["_thisObject", "", [""]], ["_msgID", 0, [0]] ];
 		private _doneID = GET_VAR(_thisObject, "msgDoneID");
 		private _return = _doneID > _msgID;
 		_return
 	} ENDMETHOD;
+	*/
 	
 	// deletes messages targeted to specified MessageReceiver
 	METHOD("deleteReceiverMessages") {
@@ -99,7 +106,7 @@ CLASS("MessageLoop", "")
 		
 		private _i = 0;
 		while {  _i < (count _msgQueue)} do {
-			private _msg = _msgQueue select _i;
+			(_msgQueue select _i) params ["_msg", "_msgID"];
 			if ( (_msg select MESSAGE_ID_DESTINATION) == _msgReceiver) then { // If found a message directed to thi receiver
 				_msgQueue deleteAt _i;
 				//diag_log format ["=========== Deleted a message: %1", _msg];

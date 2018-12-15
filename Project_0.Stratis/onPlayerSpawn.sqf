@@ -50,7 +50,8 @@ player addEventHandler ["AnimChanged", {
 		//_stim set [STIMULUS_ID_EXPIRATION_TIME, 10];
 		// Send the stimulus to the stimulus manager
 		private _args = ["handleStimulus", [_stim]];
-		CALLM(gStimulusManager, "postMethodAsync", _args);
+		
+		[_args, {CALLM(gStimulusManager, "postMethodAsync", _this);}] remoteExecCall["call", 0, false];
 	};
 }];
 

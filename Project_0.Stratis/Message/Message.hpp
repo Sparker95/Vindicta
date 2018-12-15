@@ -9,13 +9,14 @@ Author: Sparker
 
 #define MESSAGE_ID_DESTINATION 0
 #define MESSAGE_ID_SOURCE 1
-#define MESSAGE_ID_TYPE 2
-#define MESSAGE_ID_DATA	3
+#define MESSAGE_ID_SOURCE_OWNER 2
+#define MESSAGE_ID_TYPE 3
+#define MESSAGE_ID_DATA	4
 
-#define MESSAGE_NEW() ["", "", "", 0]
+#define MESSAGE_NEW() ["", "", clientOwner, "", 0]
 
 // Creates a short message which only has destination and type
-#define MESSAGE_NEW_SHORT(dest, type) [dest, "", type, 0]
+#define MESSAGE_NEW_SHORT(dest, type) [dest, "", clientOwner, type, 0]
 
 // Macros to set data
 #define MESSAGE_SET_DESTINATION(msg, val) msg set [MESSAGE_ID_DESTINATION, val]

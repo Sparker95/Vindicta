@@ -78,22 +78,34 @@ gMessageLoopLocation = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
 
 // Location unit array provider
-gLUAP = NEW("LocationUnitArrayProvider", []);
-// Create a timer for gLUAP
-private _msg = MESSAGE_NEW();
-_msg set [MESSAGE_ID_DESTINATION, gLUAP];
-_msg set [MESSAGE_ID_SOURCE, ""];
-_msg set [MESSAGE_ID_DATA, 666];
-_msg set [MESSAGE_ID_TYPE, 666];
-private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
-private _LUAPTimer = NEW("Timer", _args);
+if (isServer) then {
+	gLUAP = NEW("LocationUnitArrayProvider", []);
+	// Create a timer for gLUAP
+	private _msg = MESSAGE_NEW();
+	_msg set [MESSAGE_ID_DESTINATION, gLUAP];
+	_msg set [MESSAGE_ID_SOURCE, ""];
+	_msg set [MESSAGE_ID_DATA, 666];
+	_msg set [MESSAGE_ID_TYPE, 666];
+	private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+	private _LUAPTimer = NEW("Timer", _args);
+	
+	diag_log "Init.sqf: Calling initWorld...";
 
-// Message loop for garrison goals
-//gMessageLoopGoal = NEW("MessageLoop", []);
+	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+};
 
+// Headless Clients only
+if (!hasInterface && !isDedicated) then {
+	diag_log "Mission: Headless client connected!";
+	systemChat "Mission: Headless client connected!";
+};
 
-diag_log "Init.sqf: Calling initWorld...";
-
-call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+// Only players
+if (hasInterface) then {
+	[] spawn {
+		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+		[] spawn compile preprocessfilelinenumbers "onPlayerSpawn.sqf";
+	};
+};
 
 diag_log "Init.sqf: Init done!";

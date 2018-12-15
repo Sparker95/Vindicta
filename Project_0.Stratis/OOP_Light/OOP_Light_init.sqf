@@ -117,7 +117,7 @@ OOP_assert_method = {
 	params["_classNameStr", "_methodNameStr", "_file", "_line"];
 	
 	if (isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil"];
+		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false;
 	};
@@ -136,4 +136,14 @@ OOP_assert_method = {
 	};
 	//Return value
 	_valid
+};
+
+
+// ---- Remote execution ----
+// A remote code wants to execute something on this machine
+// However remote machine doesn't have to know what class the object belongs to
+// So we must find out object's class on this machine and then run the method
+OOP_callFromRemote = {
+	params[["_object", "", [""]], ["_methodNameStr", "", [""]], ["_params", [], [[]]]];
+	CALLM(_object, _methodNameStr, _params);
 };

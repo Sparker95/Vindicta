@@ -57,7 +57,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		_msg set [MESSAGE_ID_TYPE, _methodName];
 		private _returnArray = [];
 		_msg set [MESSAGE_ID_DATA, [_returnArray, _methodParams]]; // Array to return data to, method parameters
-		private _msgID = CALL_METHOD(_thisObject, "postMessage", [_msg]);
+		private _msgID = CALLM2(_thisObject, "postMessage", _msg, true);
 		CALL_METHOD(_thisObject, "waitUntilMessageDone", [_msgID]);
 		// Did the method return anything?
 		if (count _returnArray > 0) then {
