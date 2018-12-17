@@ -28,6 +28,8 @@ MsgRcvr_fnc_setMsgDone = {
 	_rqArrayElement set [1, _result];
 };
 
+//#define DEBUG
+
 CLASS("MessageReceiver", "")
 
 	VARIABLE("owner");
@@ -73,11 +75,15 @@ CLASS("MessageReceiver", "")
 	METHOD("postMessage") {
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]], ["_returnMsgID", false] ];
 		
+		#ifdef DEBUG
+		diag_log format ["[MessageReceiver::postMessage] Info: %1", _this];
+		#endif
+		
 		// Check owner of this object
 		pr _owner = GETV(_thisObject, "owner");
 		// Is the message directed to an object on the same machine?
 		if (_owner == clientOwner) then {
-			private _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
+			pr _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
 			if (_messageLoop == "") exitWith { diag_log format ["[MessageReceiver:postMessage] Error: %1 is not assigned to a message loop", _thisObject];};
 			_msg set [MESSAGE_ID_DESTINATION, _thisObject]; //In case message sender forgot to set the destination
 			
@@ -93,27 +99,54 @@ CLASS("MessageReceiver", "")
 						g_rqArray set [_msgID, [0, 0, _thisObject]];
 					};
 				CRITICAL_SECTION_END
+				
+				// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
+				_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
+				
 				// Post the message to the thread, give it the message ID so that it marks the message as processed
-				CALLM2(_messageLoop, "postMessage", _msg, _msgID);
+				CALLM1(_messageLoop, "postMessage", _msg);
 				
 				//Return message ID value
 				_msgID
 			} else {
-				// Only post the message, _msg=-1 will indicate that setting the flag is not required after processing the message
-				CALLM2(_messageLoop, "postMessage", _msg, -1);
+				// Only post the message, messageLoop will decide if it needs to set the messageDone flag and on which machine
+				pr _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
+				CALLM1(_messageLoop, "postMessage", _msg);
 				
-				// Return -666.666 in case it gets used by waitUntilMessageDone or messageDone by mistake
+				// Return a special value in case it gets used by waitUntilMessageDone or messageDone by mistake
 				MESSAGE_ID_INVALID
 			};
 		} else {
 			// Tell the other machine to handle this message
 			diag_log "Sending msg to a remote machine";
-			pr _sourceOwner = _msg select MESSAGE_ID_SOURCE_OWNER;
-			pr _args = [_msg, _returnMsgID];
-			REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", _args);
 			if (_returnMsgID) then {
-				0
+				// Generate a new message ID
+				pr _msgID = 0;
+				CRITICAL_SECTION_START
+					_msgID = g_rqArray find 0;
+					if (_msgID == -1) then {
+						_msgID = g_rqArray pushback [0, 0, _thisObject]; // When message has been handled, the result will be stored here, 0 will be replaced with 1
+					} else {
+						g_rqArray set [_msgID, [0, 0, _thisObject]];
+					};
+				CRITICAL_SECTION_END
+				
+				// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
+				_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
+				
+				// Post the message on the remote machine
+				// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
+				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", _owner, [_msg]);
+				
+				// Return the _msgID
+				_msgID
 			} else {
+				// The receiver is on the remote machine and we don't need to return the message ID
+				// Just send the message to the remote machine and exit
+				// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
+				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", _owner, [_msg]);
+				
+				// Return a special value in case it gets used by waitUntilMessageDone or messageDone by mistake
 				MESSAGE_ID_INVALID
 			};
 		};
@@ -210,9 +243,15 @@ CLASS("MessageReceiver", "")
 		};
 		
 		// Bail if non-existant newOwner was supplied
-		if ( ((allPlayers findif {owner _x == _newOwner}) == -1) || ((_newOwner == 2) && !isMultiplayer) || (clientOwner == 0 && _newOwner == 2) ) exitWith {
-			diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: new owner is invalid.",
-				_thisObject, _owner, _newOwner, clientOwner];
+		pr _ownerNotFound = (((allPlayers + (entities "HeadlessClient_F")) findif {owner _x == _newOwner}) == -1);
+		if ( _ownerNotFound || ((_newOwner == 2) && !isMultiplayer) || (clientOwner == 0 && _newOwner == 2) || (_newOwner == 0) ) exitWith {
+			if (_ownerNotFound) then {
+				diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: new owner not found.",
+					_thisObject, _owner, _newOwner, clientOwner];
+			} else {
+				diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: new owner is invalid.",
+					_thisObject, _owner, _newOwner, clientOwner];
+			};
 				
 			// Return failure
 			false

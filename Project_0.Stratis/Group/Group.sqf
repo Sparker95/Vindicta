@@ -242,7 +242,6 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 		// We must safely delete the AI object because it might be currently used in its own thread
 		pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
 		pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-		diag_log format ["--- Got wrong msg ID %1 %2 %3", _msgID, __FILE__, __LINE__];
 		CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 		_data set [GROUP_DATA_ID_AI, ""];
 		

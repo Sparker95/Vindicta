@@ -213,12 +213,12 @@ CLASS(UNIT_CLASS_NAME, "")
 		if (!(isNull _objectHandle)) then { //If it's been spawned before
 			// Stop AI, sensors, etc
 			pr _AI = _data select UNIT_DATA_ID_AI;
-			// Some units are breainless. Check if the unit had a brain.
+			// Some units are brainless. Check if the unit had a brain.
 			if (_AI != "") then {
 				pr _msg = MESSAGE_NEW();
 				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
 				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 				_data set [UNIT_DATA_ID_AI, ""];
 			};
 			

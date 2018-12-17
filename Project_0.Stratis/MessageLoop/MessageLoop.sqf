@@ -49,7 +49,7 @@ CLASS("MessageLoop", "")
 		#ifdef DEBUG
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
-		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]], ["_msgID", -1, [0]] ];
+		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]]];
 		
 		//Start critical section
 		// Nothing must interrupt the message pushing into the queue, even event handlers
@@ -57,7 +57,7 @@ CLASS("MessageLoop", "")
 		CRITICAL_SECTION_START
 		
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
-		_msgQueue pushBack [_msg, _msgID];
+		_msgQueue pushBack _msg;
 		
 		//Increase the posted msg ID counter
 		//_ID = GET_VAR(_thisObject, "msgPostID");
@@ -106,7 +106,7 @@ CLASS("MessageLoop", "")
 		
 		private _i = 0;
 		while {  _i < (count _msgQueue)} do {
-			(_msgQueue select _i) params ["_msg", "_msgID"];
+			pr _msg = _msgQueue select _i;
 			if ( (_msg select MESSAGE_ID_DESTINATION) == _msgReceiver) then { // If found a message directed to thi receiver
 				_msgQueue deleteAt _i;
 				//diag_log format ["=========== Deleted a message: %1", _msg];

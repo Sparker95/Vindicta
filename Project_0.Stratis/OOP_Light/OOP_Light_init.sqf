@@ -145,5 +145,6 @@ OOP_assert_method = {
 // So we must find out object's class on this machine and then run the method
 OOP_callFromRemote = {
 	params[["_object", "", [""]], ["_methodNameStr", "", [""]], ["_params", [], [[]]]];
+	//diag_log format [" --- OOP_callFromRemote: %1", _this];
 	CALLM(_object, _methodNameStr, _params);
 };

@@ -77,6 +77,10 @@ gStimulusManager = NEW("StimulusManager", []);
 gMessageLoopLocation = NEW("MessageLoop", []);
 CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
 
+// Global debug printer for tests
+private _args = ["TestDebugPrinter", gMessageLoopMain];
+gDebugPrinter = NEW("DebugPrinter", _args);
+
 // Location unit array provider
 if (isServer) then {
 	gLUAP = NEW("LocationUnitArrayProvider", []);
@@ -96,8 +100,23 @@ if (isServer) then {
 
 // Headless Clients only
 if (!hasInterface && !isDedicated) then {
-	diag_log "Mission: Headless client connected!";
-	systemChat "Mission: Headless client connected!";
+	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
+	diag_log _str;
+	systemChat _str;
+	
+	// Test: ask the server to create an object and pass it to this computer
+	[clientOwner, {
+		private _remoteOwner = _this;
+		diag_log format ["---- Connected headless client with owner ID: %1. RemoteExecutedOwner: %2, isRemoteExecuted: %3", _remoteOwner, remoteExecutedOwner, isRemoteExecuted];
+		diag_log format ["all players: %1, all headless clients: %2", allPlayers, entities "HeadlessClient_F"];
+		diag_log format ["Owners of headless clients: %1", (entities "HeadlessClient_F") apply {owner _x}];
+		
+		private _args = ["Remote DebugPrinter test", gMessageLoopMain];
+		remoteDebugPrinter = NEW("DebugPrinter", _args);
+		CALLM(remoteDebugPrinter, "setOwner", [_remoteOwner]); // Transfer it to the machine that has connected
+		diag_log format ["---- Created a debug printer for the headless client: %1", remoteDebugPrinter];
+		
+	}] remoteExec ["spawn", 2, false];
 };
 
 // Only players
