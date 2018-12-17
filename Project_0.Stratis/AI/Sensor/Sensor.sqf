@@ -13,7 +13,7 @@ Author: Sparker 08.11.2018
 
 #define pr private
 
-CLASS("Sensor", "MessageReceiver")
+CLASS("Sensor", "")
 
 	VARIABLE("AI"); // Pointer to the unit which holds this AI object
 	STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by

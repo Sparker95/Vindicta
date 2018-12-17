@@ -68,8 +68,8 @@ CLASS("Garrison", "MessageReceiverEx")
 			private _msg = MESSAGE_NEW();
 			_msg set [MESSAGE_ID_DESTINATION, _action];
 			_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
-			private _msgID = CALLM(_action, "postMessage", _msg);
-			CALLM(_action, "waitUntilMessageDone", [_msgID]);
+			private _msgID = CALLM2(_action, "postMessage", _msg, true);
+			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 		};
 	} ENDMETHOD;
 	

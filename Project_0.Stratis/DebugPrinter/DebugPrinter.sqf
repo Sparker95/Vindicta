@@ -48,6 +48,34 @@ CLASS("DebugPrinter", "MessageReceiver")
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		diag_log format ["[DebugPrinter] Info: %1: %2 has received a message: type: %3, data: %4",
 			_thisObject, GET_VAR(_thisObject, "name"), _msg select MESSAGE_ID_TYPE, _msg select MESSAGE_ID_DATA];
+		// Returns the data field
+		_msg select MESSAGE_ID_DATA
+	} ENDMETHOD;
+	
+	
+	// Change ownership
+	
+	
+		// Must return a single value which can be deserialized to restore value of an object
+	/* virtual */ METHOD("serialize") {
+		params [["_thisObject", "", [""]]];
+		private _data = [GETV(_thisObject, "name"), GETV(_thisObject, "msgLoop")];
+		_data
+	} ENDMETHOD;
+	
+	// Takes the output of deserialize and restores values of an object
+	/* virtual */ METHOD("deserialize") {
+		params [["_thisObject", "", [""]], "_serialData"];
+		_serialData params ["_name", "_msgLoop"];
+		SETV(_thisObject, "name", _serialData);
+		SETV(_thisObject, "msgLoop", _msgLoop);
+	} ENDMETHOD;
+	
+	// If your class has objects that must be transfered through the same mechanism, you must handle transfer of ownership of such objects here
+	// Must return true if all objects have been successfully transfered and return false otherwise
+	// You can also clear unneeded variables of this object here
+	/* virtual */ METHOD("transferOwnership") {
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

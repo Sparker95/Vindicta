@@ -30,7 +30,7 @@ switch (_msgType) do {
 					
 					// Spawn it now
 					if (_garMilMain != "") then {
-						private _args = ["spawn", [], []];
+						private _args = ["spawn", []];
 						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
 					};
 					// Set timer interval
@@ -52,7 +52,7 @@ switch (_msgType) do {
 					
 					// Despawn it
 					if (_garMilMain != "") then {
-						private _args = ["despawn", [], []];
+						private _args = ["despawn", []];
 						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
 					
 					};

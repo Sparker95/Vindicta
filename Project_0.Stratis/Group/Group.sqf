@@ -1,4 +1,5 @@
 #include "Group.hpp"
+#include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
@@ -14,7 +15,7 @@ Author: Sparker
 
 #define pr private
 
-CLASS(GROUP_CLASS_NAME, "")
+CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	
 	//Variables
 	VARIABLE("data");
@@ -188,6 +189,22 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                           C R E A T E   A I
+	// ----------------------------------------------------------------------
+	
+	METHOD("createAI") {
+		params [["_thisObject", "", [""]]];
+		
+		// Create an AI for this group
+		pr _AI = NEW("AIGroup", [_thisObject]);
+		pr _data = GETV(_thisObject, "data");
+		_data set [GROUP_DATA_ID_AI, _AI];
+		CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
+		CALLM(_AI, "start", []); // Kick start it
+	} ENDMETHOD;
+	
+	
+	// ----------------------------------------------------------------------
 	// |         S P A W N
 	// | Spawns all units in this group at specified location
 	// ----------------------------------------------------------------------
@@ -209,10 +226,7 @@ CLASS(GROUP_CLASS_NAME, "")
 		_groupHandle setBehaviour "SAFE";
 		
 		// Create an AI for this group
-		pr _AI = NEW("AIGroup", [_thisObject]);
-		_data set [GROUP_DATA_ID_AI, _AI];
-		CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
-		CALLM(_AI, "start", []); // Kick start it
+		CALLM0(_thisObject, "createAI");
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -226,9 +240,9 @@ CLASS(GROUP_CLASS_NAME, "")
 		
 		// Switch off their brain
 		// We must safely delete the AI object because it might be currently used in its own thread
-		pr _args = [MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE)];
-		pr _msgID = CALLM(_AI, "postMessage", _args);
-		CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+		pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+		pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+		CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 		_data set [GROUP_DATA_ID_AI, ""];
 		
 		// Despawn everything
@@ -274,6 +288,118 @@ CLASS(GROUP_CLASS_NAME, "")
 	
 	METHOD("getPossibleActions") {
 		[]
+	} ENDMETHOD;
+	
+	
+	
+	// ======================== OWNERSHIP RELATED ================================
+	
+	// Must return a single value which can be deserialized to restore value of an object
+	METHOD("serialize") {
+		params [["_thisObject", "", [""]]];
+		
+		diag_log "[Group:serialize] was called!";
+		
+		pr _data = GETV(_thisObject, "data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		//pr _mutex = _data select GROUP_DATA_ID_MUTEX;
+		//MUTEX_LOCK(_mutex);
+		
+		// Store data on all units in this group
+		pr _unitsSerialized = [];
+		private _units = _data select GROUP_DATA_ID_UNITS;
+		{
+			pr _unitDataArray = GETV(_x, "data");
+			_unitsSerialized pushBack [_x, +_unitDataArray];
+		} forEach _units;
+		
+		// Store data about this group
+		// ??
+		
+		pr _return = [_unitsSerialized, _data];
+		
+		//MUTEX_UNLOCK(_mutex);
+		_return
+	} ENDMETHOD;
+	
+	// Takes the output of deserialize and restores values of an object
+	METHOD("deserialize") {
+		params [["_thisObject", "", [""]], "_serialData"];
+		
+		diag_log "[Group:deserialize] was called!";
+		
+		// Unpack the array
+		_serialData params ["_unitsSerialized", "_data"];
+		SETV(_thisObject, "data", _data);
+		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
+		
+		// Unpack all the units
+		{ // forEach _unitsSerialized
+			_x params ["_unitObjNameStr", "_unitDataArray"];
+			pr _newUnit = NEW_EXISTING("Unit", _unitObjNameStr);
+			SETV(_newUnit, "data", +_unitDataArray);
+			
+			// Create a new AI for this unit, if it existed
+			pr _unitAI = _unitDataArray select UNIT_DATA_ID_AI;
+			diag_log format [" --- Old unit AI: %1", _unitAI];
+			if (_unitAI != "") then {
+				CALLM0(_newUnit, "createAI");				
+				diag_log format [" --- Created new unit AI: %1", _unitDataArray select UNIT_DATA_ID_AI];
+			};
+		} forEach _unitsSerialized;
+		
+		// Create a new AI for this group
+		if ((_data select GROUP_DATA_ID_AI) != "") then {
+			CALLM0(_thisObject, "createAI");
+		};		
+		
+	} ENDMETHOD;
+	
+	// Must handle transfer of ownership of underlying objects
+	// Must return true if all objects have been successfully transfered and return false otherwise
+	// You can also clear unneeded variables of this object here
+	METHOD("transferOwnership") {
+		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
+		
+		diag_log "[Group:transferOwnership] was called!";
+		
+		pr _data = GETV(_thisObject, "data");
+		
+		// Delete the AI of this group
+		// todo transfer the AI instead, or just transfer the goals and most important data?
+		pr _AI = _data select GROUP_DATA_ID_AI;
+		if (_AI != "") then {
+			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+			//if (_msgID < 0) then {diag_log format ["--- Got wrong msg ID %1 %2 %3", _msgID, __FILE__, __LINE__];};
+			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+		};
+		
+		// Delete AI of all the units
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		{
+			pr _unitData = GETV(_x, "data");
+			pr _unitAI = _unitData select UNIT_DATA_ID_AI;
+			if (_unitAI != "") then {
+				pr _msg = MESSAGE_NEW_SHORT(_unitAI, AI_MESSAGE_DELETE);
+				pr _msgID = CALLM2(_unitAI, "postMessage", _msg, true);
+				//diag_log format ["--- Got msg ID %1 %2 %3 while deleting Unit's AI", _msgID, __FILE__, __LINE__];
+				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+			};
+		} forEach _units;
+		
+		// Switch group owner if the group was spawned
+		pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		if (!isNull _groupHandle) then {
+			if (clientOwner == 2) then {
+				_groupHandle setGroupOwner _newOwner;
+			} else {
+				[_groupHandle, _newOwner] remoteExecCall ["setGroupOwner", 2, false];
+			};
+		};
+
+		// We're done here
+		true
 	} ENDMETHOD;
 	
 ENDCLASS;
