@@ -1,15 +1,15 @@
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\Message\Message.hpp"
+#include "..\..\MessageTypes.hpp"
+#include "..\..\GlobalAssert.hpp"
+#include "..\stimulusTypes.hpp"
+
 /*
 Sensor class
 It abstracts the abilities of an agent to receive information from the external world
 
 Author: Sparker 08.11.2018
 */
-
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\stimulusTypes.hpp"
 
 #define pr private
 
@@ -26,7 +26,7 @@ CLASS("Sensor", "")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		SETV(_thisObject, "AI", _AI);
-		SETV(_thisObject, "timeNextUpdate", 0);
+		SETV(_thisObject, "timeNextUpdate", time); // Update this sensor ASAP
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

@@ -11,6 +11,9 @@ Garrison AI class
 
 CLASS("AIGarrison", "AI")
 
+	// Array of targets known by this garrison
+	VARIABLE("targets");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
@@ -23,6 +26,7 @@ CLASS("AIGarrison", "AI")
 		CALLM(_thisObject, "addSensor", [_sensorHealth]);
 		
 		SETV(_thisObject, "worldState", _ws);
+		SETV(_thisObject, "targets", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -32,6 +36,17 @@ CLASS("AIGarrison", "AI")
 	
 	METHOD("getMessageLoop") {
 		gMessageLoopMain
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |                    R E C E I V E   T A R G E T S
+	// | Receives targets and record them to share with other groups later
+	// ----------------------------------------------------------------------
+	
+	METHOD("recieveTargets") {
+		params [["_thisObject", "", [""]], ["_targetsArray", [], [[]]]];
+		
+				
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -123,10 +123,10 @@ CLASS("AI", "MessageReceiverEx")
 		*/
 		
 		// Update all sensors
-		CALLM(_thisObject, "updateSensors", []);
+		CALLM0(_thisObject, "updateSensors");
 		
 		// Update all world facts (delete old facts)
-		CALLM(_thisObject, "updateWorldFacts", []);
+		CALLM0(_thisObject, "updateWorldFacts");
 		
 		//Calculate most relevant goal
 		pr _goalNewArray = CALLM(_thisObject, "getMostRelevantGoal", []);

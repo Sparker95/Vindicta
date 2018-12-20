@@ -45,6 +45,9 @@ call compile preprocessFileLineNumbers "AI\Garrison\initDatabase.sqf";
 
 // Group AI classes
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
+call compile preprocessFileLineNumbers "AI\Group\SensorGroup.sqf";
+call compile preprocessFileLineNumbers "AI\Group\SensorGroupEnemy.sqf";
+
 
 // Unit AI classes
 call compile preprocessFileLineNumbers "AI\Unit\AIUnit.sqf";
