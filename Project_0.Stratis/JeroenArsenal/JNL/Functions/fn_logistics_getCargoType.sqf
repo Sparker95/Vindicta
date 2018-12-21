@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 /*
 	Author: Jeroen Notenbomer
 
@@ -15,8 +17,8 @@
 
 params ["_object"];
 
-//private _simulation =  tolower gettext (configfile >> "CfgVehicles" >> (typeOf _object) >> "simulation");
-//private _type  = if(_simulation isEqualTo "tankx")then{0}else{1};//0 = weapon, 1 = cargo
+//pr _simulation =  tolower gettext (configfile >> "CfgVehicles" >> (typeOf _object) >> "simulation");
+//pr _type  = if(_simulation isEqualTo "tankx")then{0}else{1};//0 = weapon, 1 = cargo
 _objectModel = getText(configfile >> "CfgVehicles" >> typeOf _object >> "model");
 _return = -1;
 {

@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 /*
     By: Jeroen Notenbomer
 
@@ -14,22 +16,22 @@
 
 params["_list","_add"];
 _list = +_list;
+
 if(typeName _add isEqualTo "STRING")then{_add = [_add,1];};
 if(typeName (_add select 0) isEqualTo "STRING")then{_add = [_add]};
 
 {
-    private _index = _forEachIndex;
-    private _name = _x select 0;
-    private _amount = _x select 1;
-
+    pr _index = _forEachIndex;
+    pr _name = _x select 0;
+    pr _amount = _x select 1;
 
     if!(_name isEqualTo "")then{//skip empty
 
-        private _found = false;
+        pr _found = false;
         {
-            private _index2 = _forEachIndex;
-            private _name2 = _x select 0;
-            private _amount2 = _x select 1;
+            pr _index2 = _forEachIndex;
+            pr _name2 = _x select 0;
+            pr _amount2 = _x select 1;
 
             if(_name isEqualTo _name2)exitWith{
                 _found = true;    //found it, now update amount

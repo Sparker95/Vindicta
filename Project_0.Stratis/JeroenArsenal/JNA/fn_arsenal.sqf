@@ -1,3 +1,4 @@
+#include "defineCommon.inc"
 /*
     By: Jeroen Notenbomer
 
@@ -15,20 +16,15 @@
 /*
     selecting a weapon makes selectItem fire 2x
 */
-#include "script_component.hpp"
-#include "\A3\ui_f\hpp\defineDIKCodes.inc"
-#include "\A3\Ui_f\hpp\defineResinclDesign.inc"
 
 #define FADE_DELAY  0.15
 
-#define MODLIST ["","curator","kart","heli","mark","expansion","expansionpremium"]
-
 #define GETDLC\
     {\
-        private _dlc = "";\
-        private _addons = configsourceaddonlist _this;\
+        pr _dlc = "";\
+        pr _addons = configsourceaddonlist _this;\
         if (count _addons > 0) then {\
-            private _mods = configsourcemodlist (configfile >> "CfgPatches" >> _addons select 0);\
+            pr _mods = configsourcemodlist (configfile >> "CfgPatches" >> _addons select 0);\
             if (count _mods > 0) then {\
                 _dlc = _mods select 0;\
             };\
@@ -38,7 +34,7 @@
 
 #define ADDMODICON\
     {\
-        private _dlcName = _this call GETDLC;\
+        pr _dlcName = _this call GETDLC;\
         if (_dlcName != "") then {\
             _ctrlList lbsetpictureright [_lbAdd,(mod_a [_dlcName,["logo"]]) param [0,""]];\
             _modID = _modList find _dlcName;\
@@ -124,7 +120,7 @@ _this = [_this,1,[]] call bis_fnc_param;
 
 
 if!(_mode in ["draw3D","KeyDown","ListCurSel"])then{
-    diag_log format["mode: %1 %2", _mode, _this];
+    diag_log format["JNA mode: %1 %2", _mode, _this];
 };
 
 switch _mode do {
@@ -134,7 +130,7 @@ switch _mode do {
         if( missionnamespace getVariable ["jna_firstInit",true])exitWith{};
         missionnamespace setVariable ["jna_firstInit",false];
 
-        private _data = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+        pr _data = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
         INITTYPES;
 
         _configArray = (
@@ -149,18 +145,18 @@ switch _mode do {
             _scope = if (isnumber (_class >> "scopeArsenal")) then {getnumber (_class >> "scopeArsenal")} else {getnumber (_class >> "scope")};
             _isBase = if (isarray (_x >> "muzzles")) then {(_className call bis_fnc_baseWeapon == _className)} else {true}; //-- Check if base weapon (true for all entity types)
             if (_scope == 2 && {gettext (_class >> "model") != ""} && _isBase) then {
-                private ["_weaponType","_weaponTypeCategory"];
+                pr ["_weaponType","_weaponTypeCategory"];
                 _weaponType = (_className call bis_fnc_itemType);
                 _weaponTypeCategory = _weaponType select 0;
                 if (_weaponTypeCategory != "VehicleWeapon") then {
-                    private ["_weaponTypeSpecific","_weaponTypeID"];
+                    pr ["_weaponTypeSpecific","_weaponTypeID"];
                     _weaponTypeSpecific = _weaponType select 1;
                     _weaponTypeID = -1;
                     {
                         if (_weaponTypeSpecific in _x) exitwith {_weaponTypeID = _foreachindex;};
                     } foreach _types;
                     if (_weaponTypeID >= 0) then {
-                        private _items = _data select _weaponTypeID;
+                        pr _items = _data select _weaponTypeID;
                         _items set [count _items,configname _class];
                     };
                 };
@@ -170,20 +166,20 @@ switch _mode do {
         //--- Magazines - Put and Throw
         _magazinesThrowPut = [];
         {
-            private ["_weapons","_tab","_magazines"];
+            pr ["_weapons","_tab","_magazines"];
             _weapon = _x select 0;
             _tab = _x select 1;
             _magazines = [];
             {
                 {
-                    private ["_mag"];
+                    pr ["_mag"];
                     _mag = _x;
                     if ({_x == _mag} count _magazines == 0) then {
-                        private ["_cfgMag"];
+                        pr ["_cfgMag"];
                         _magazines set [count _magazines,_mag];
                         _cfgMag = configfile >> "cfgmagazines" >> _mag;
                         if (getnumber (_cfgMag >> "scope") == 2 || getnumber (_cfgMag >> "scopeArsenal") == 2) then {
-                            private ["_items"];
+                            pr ["_items"];
                             _items = _data select _tab;
                             _items pushback configname _cfgMag;
                             _magazinesThrowPut pushback tolower _mag;
@@ -199,7 +195,7 @@ switch _mode do {
         //--- Magazines
         {
             if (getnumber (_x >> "type") > 0 && {(getnumber (_x >> "scope") == 2 || getnumber (_x >> "scopeArsenal") == 2) && {!(tolower configname _x in _magazinesThrowPut)}}) then {
-                private _items = _data select IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL;
+                pr _items = _data select IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL;
                 _items pushback configname _x;
             };
         } foreach ("isclass _x" configclasses (configfile >> "cfgmagazines"));
@@ -209,8 +205,11 @@ switch _mode do {
 
     /////////////////////////////////////////////////////////////////////////////////////////// Externaly called
     case "Open": {
+		params["_object"];
         diag_log "JNA open arsenal";
-        private _object = UINamespace getVariable "jn_object";
+		//set type and object to use later
+		UINamespace setVariable ["jn_type","arsenal"];
+		UINamespace setVariable ["jn_object",_object];
         ["Open",[nil,_object,player,false]] call bis_fnc_arsenal;
     };
 
@@ -254,7 +253,7 @@ switch _mode do {
 
         _ctrlButtonExport = _display displayctrl IDC_RSCDISPLAYARSENAL_CONTROLSBAR_BUTTONEXPORT;
         _ctrlButtonExport ctrlRemoveAllEventHandlers "buttonclick";
-        _ctrlButtonExport ctrlSetText "TODO";
+        _ctrlButtonExport ctrlSetText "";//TODO add some function maybe?
 
         _ctrlButtonImport = _display displayctrl IDC_RSCDISPLAYARSENAL_CONTROLSBAR_BUTTONIMPORT;
         _ctrlButtonImport ctrlRemoveAllEventHandlers "buttonclick";
@@ -269,7 +268,7 @@ switch _mode do {
         _ctrlButtonRandom = _display displayctrl IDC_RSCDISPLAYARSENAL_CONTROLSBAR_BUTTONRANDOM;
         _ctrlButtonRandom ctrlRemoveAllEventHandlers "buttonclick";
         _ctrlButtonRandom ctrladdeventhandler ["buttonclick",{["buttonInvToJNA",[ctrlparent (_this select 0)]] call jn_fnc_arsenal;}];
-        _ctrlButtonRandom ctrlSetText "To crate";
+        _ctrlButtonRandom ctrlSetText "Inv. to Arsenal";
         _ctrlButtonRandom ctrlSetTooltip "Move items from crate inventory to arsenal";
 
         _ctrlArrowLeft = _display displayctrl IDC_RSCDISPLAYARSENAL_ARROWLEFT;
@@ -380,7 +379,7 @@ switch _mode do {
                         if ( isClass (configFile >> "CFGweapons" >> _itemname)) then {
                             _item set [0,(_itemname call bis_fnc_baseWeapon)];
                         };
-                    }
+                    };
                 };
             }foreach _x;
         }foreach [_uniformitems,_vestitems,_backpackitems]; //loop items in backpack
@@ -409,7 +408,7 @@ switch _mode do {
     case "TabSelectLeft": {
         params["_display","_index"];
 
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
         //create list
         ["UpdateListGui",[ _display,_ctrlList,_index]] call jn_fnc_arsenal;
 
@@ -561,15 +560,15 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "TabSelectRight": {
         params["_display","_index"];
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
-        private _type = (ctrltype _ctrlList == 102);
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
+        pr _type = (ctrltype _ctrlList == 102);
 
         _ctrlList ctrlenable true;
 
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList = _object getVariable "jna_dataList";
+        pr _object = UINamespace getVariable "jn_object";
+        pr _dataList = _object getVariable "jna_dataList";
 
-        private _inventory = if(_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG)then{
+        pr _inventory = if(_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG)then{
 
             _usableMagazines = [];
             {
@@ -662,7 +661,7 @@ switch _mode do {
                         {
                             if(_x in _itemsUnique)then{
                                 ["UpdateItemAdd",[_index,_x,0]] call jn_fnc_arsenal;
-                            }
+                            };
                         } forEach (getarray (configfile >> "cfgweapons" >> _x >> "magazines"));
                     }forEach [primaryweapon player, secondaryweapon player, handgunweapon player];
                 }else{
@@ -745,7 +744,7 @@ switch _mode do {
 
                     for "_l" from 0 to ((lnbsize _ctrlList select 0) - 1) do {
                         _dataStr = _ctrlList lnbdata [_l,0];
-                        _data = call compile _dataStr;
+                        _data = parseSimpleArray _dataStr;
                         _item = _data select 0;
                         _amount = 0;
                         {
@@ -753,7 +752,7 @@ switch _mode do {
                             _amountX = if(_idc == IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC)then{1}else{_x select 1};
                             if(_itemX == _item)then{
                                 _amount = _amount + _amountX;
-                            }
+                            };
                         } forEach _items;
 
                         _ctrlList lnbsettext [[_l,2],str (_amount)];
@@ -774,12 +773,12 @@ switch _mode do {
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "CreateListAll":{
-        params["_this"];
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList = _object getVariable "jna_dataList";
+        params["_display"];
+        pr _object = UINamespace getVariable "jn_object";
+        pr _dataList = _object getVariable "jna_dataList";
         {
-            private _inventory_box = _x;
-            private _index = _foreachindex;
+            pr _inventory_box = _x;
+            pr _index = _foreachindex;
             if(_index in [IDCS_LEFT])then{
                 _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
                 lbclear _ctrlList;
@@ -853,7 +852,7 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "ListSelectCurrent":{
         params["_display","_index","_item"];
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
 
 
         if(isnil "_item")then{
@@ -861,9 +860,9 @@ switch _mode do {
         };
 
         for "_l" from 0 to (lbsize _ctrlList - 1) do {
-            private _dataStr = _ctrlList lbdata _l;
-            private _data = call compile _dataStr;
-            private _item_l = _data select 0;
+            pr _dataStr = _ctrlList lbdata _l;
+            pr _data = parseSimpleArray _dataStr;
+            pr _item_l = _data select 0;
             if (_item isEqualTo _item_l) exitwith {
                 _ctrlList lbsetcursel _l;
             };
@@ -873,8 +872,8 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "CreateList":{
         params["_display","_index","_inventory"];
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
-        private _type = (ctrltype _ctrlList == 102);
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
+        pr _type = (ctrltype _ctrlList == 102);
         if _type then{
             lnbclear _ctrlList;
         }else{
@@ -901,16 +900,16 @@ switch _mode do {
                 )then{
                     _emptyString = ("           ") + _emptyString; //little longer for bigger icons
                 };
-                private _lbAdd = _ctrlList lbadd _emptyString;
-                private _data = str ["",0,""];
+                pr _lbAdd = _ctrlList lbadd _emptyString;
+                pr _data = str ["",0,""];
                 _ctrlList lbsetdata [_lbAdd,_data];
             };
         };
 
         //fill
         {
-            private _item = _x select 0;
-            private _amount = _x select 1;
+            pr _item = _x select 0;
+            pr _amount = _x select 1;
             ["CreateItem",[_display,_ctrlList,_index,_item,_amount]] call jn_fnc_arsenal;
         } forEach _inventory;
 
@@ -921,16 +920,16 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "ListSort":{
         params["_display","_index"];
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
-        private _type = (ctrltype _ctrlList == 102);
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _index);
+        pr _type = (ctrltype _ctrlList == 102);
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "UpdateListGui":{
         params["_display","_ctrlList","_index"];
 
-        private _type = (ctrltype _ctrlList == 102);
-        private _rows = if _type then{ (lnbsize _ctrlList select 0) - 1}else{lbsize _ctrlList - 1};
+        pr _type = (ctrltype _ctrlList == 102);
+        pr _rows = if _type then{ (lnbsize _ctrlList select 0) - 1}else{lbsize _ctrlList - 1};
         for "_l" from 0 to _rows do {
             ["UpdateItemGui",[_display,_ctrlList,_index,_l]] call jn_fnc_arsenal;
         };
@@ -938,17 +937,16 @@ switch _mode do {
 
     ///////////////////////////////////////////////////////////////////////////////////////////  GLOBAL
     case "UpdateItemAdd":{
-        params ["_index","_item","_amount",["_updateDataList",false]];
-
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList =_object getVariable "jna_dataList";
-
+        params ["_index","_item","_amount",["_updateDataList",nil]];
+		
         //update datalist
-        if(_updateDataList)then{
-            _dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_arsenal_addToArray];
+        if(!isnil "_updateDataList")then{
+			pr _object = _updateDataList;
+			pr _dataList =_object getVariable "jna_dataList";
+            _dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_common_array_add];
             _object setVariable ["jna_dataList", _dataList];
         };
-        private _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
+        pr _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
         if (typeName _display == "STRING") exitWith {};
         if(str _display isEqualTo "No display")exitWith{};
 
@@ -962,18 +960,18 @@ switch _mode do {
 
 
         //container arsenal only uses 2 list which are cleared/refilled when changing tabs
-        private _indexList = _index;
-        private _jn_type = UINamespace getVariable ["jn_type","arsenal"];
+        pr _indexList = _index;
+        pr _jn_type = UINamespace getVariable ["jn_type","arsenal"];
         if (_jn_type isEqualTo "container")then{
             _indexList = [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL] select (_index in [IDCS_LEFT]);
         };
 
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _indexList);
-        private _type = (ctrltype _ctrlList == 102);
-        private _cursel = if _type then{-1}else{lbCurSel _ctrlList};
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _indexList);
+        pr _type = (ctrltype _ctrlList == 102);
+        pr _cursel = if _type then{-1}else{lbCurSel _ctrlList};
 
         //check if we want to update cargoMag instead of cargoMagAll. Index is never cargoMax value so we need to check it here
-        private _ctrlListCargoMag = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG);
+        pr _ctrlListCargoMag = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG);
         if(_indexList == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL && ctrlEnabled _ctrlListCargoMag)then{
             _ctrlList = _ctrlListCargoMag;
         };
@@ -987,7 +985,7 @@ switch _mode do {
         _rowSize = if _type then{((lnbSize _ctrlList select 0) - 1);}else{(lbsize _ctrlList - 1);};
         for "_l" from 0 to _rowSize do {
             _dataStr = if _type then{_ctrlList lnbdata [_l,0]}else{_ctrlList lbdata _l};
-            _dataCurrent = call compile _dataStr;
+            _dataCurrent = parseSimpleArray _dataStr;
             _itemCurrent = _dataCurrent select 0;
             _amountCurrent = _dataCurrent select 1;
             _displayNameCurrent = _dataCurrent select 2;
@@ -1012,18 +1010,20 @@ switch _mode do {
 
     ///////////////////////////////////////////////////////////////////////////////////////////  GLOBAL
     case "UpdateItemRemove":{
-        params ["_index","_item","_amount",["_updateDataList",false]];
+        params ["_index","_item","_amount",["_updateDataList",nil]];
 
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList =_object getVariable "jna_dataList";
+        pr _object = UINamespace getVariable "jn_object";
+        pr _dataList =_object getVariable "jna_dataList";
 
         //update datalist
-        if(_updateDataList)then{
-            _dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_arsenal_removeFromArray];
+        if(!isnil "_updateDataList")then{
+			pr _object = _updateDataList;
+			pr _dataList =_object getVariable "jna_dataList";
+            _dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_common_array_remove];
             _object setVariable ["jna_dataList", _dataList];
         };
 
-        private _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
+        pr _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
 
         if (typeName _display == "STRING") exitWith {};
         if(str _display isEqualTo "No display")exitWith{};
@@ -1041,9 +1041,9 @@ switch _mode do {
             _indexList = [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL] select (_index in [IDCS_LEFT]);
         };
 
-        private _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _indexList);
-        private _type = ctrltype _ctrlList == 102;
-        private _cursel = if _type then{-1}else{lbCurSel _ctrlList};
+        pr _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _indexList);
+        pr _type = ctrltype _ctrlList == 102;
+        pr _cursel = if _type then{-1}else{lbCurSel _ctrlList};
 
         if((_index in [IDCS_RIGHT]) && !(ctrlEnabled _ctrlList)) exitWith{};
 
@@ -1051,7 +1051,7 @@ switch _mode do {
         _rowSize = if _type then{((lnbSize _ctrlList select 0) - 1);}else{(lbsize _ctrlList - 1);};
         for "_l" from 0 to _rowSize do {
             _dataStr = if _type then{_ctrlList lnbdata [_l,0]}else{_ctrlList lbdata _l};
-            _dataCurrent = call compile _dataStr;
+            _dataCurrent = parseSimpleArray _dataStr;
             _itemCurrent = _dataCurrent select 0;
             _amountCurrent = _dataCurrent select 1;
             _displayNameCurrent = _dataCurrent select 2;
@@ -1065,7 +1065,7 @@ switch _mode do {
                     }else{
                         _amount = _amountCurrent - _amount;
                         if(_amount<0)then{_amount = 0;};
-                    }
+                    };
                 };
 
                 if(_amount <= 0 && {
@@ -1073,7 +1073,7 @@ switch _mode do {
                         (parseNumber (_ctrlList lnbText [_l,2]) == 0);
                     }else{
                         (_l != _cursel);
-                    }
+                    };
                 })then{
                     if(_type)then{_ctrlList lnbDeleteRow _l;}else{_ctrlList lbDelete _l;};
                     if(_cursel > _l)then{
@@ -1093,7 +1093,7 @@ switch _mode do {
     case "CreateItem":{
         params["_display","_ctrlList","_index","_item","_amount"];
         if(_item isEqualTo "")exitWith{};
-        private _xCfg = switch _index do {
+        pr _xCfg = switch _index do {
             case IDC_RSCDISPLAYARSENAL_TAB_BACKPACK:    {configfile >> "cfgvehicles"    >> _item};
             case IDC_RSCDISPLAYARSENAL_TAB_GOGGLES:     {configfile >> "cfgglasses"     >> _item};
             case IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG;
@@ -1103,9 +1103,9 @@ switch _mode do {
             case IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC:   {configfile >> "cfgweapons"     >> _item};
             default                                     {configfile >> "cfgweapons"     >> _item};
         };
-        private _displayName = gettext (_xCfg >> "displayName");
-        private _data = str [_item,_amount,_displayName];
-        private _lbAdd = 0;
+        pr _displayName = gettext (_xCfg >> "displayName");
+        pr _data = str [_item,_amount,_displayName];
+        pr _lbAdd = 0;
 
         if (ctrltype _ctrlList == 102) then {
             _lbAdd = _ctrlList lnbaddrow ["",_displayName,str 0];
@@ -1148,7 +1148,7 @@ switch _mode do {
                     default {""};
                 };
                 _compatibleItems = _weapon call bis_fnc_compatibleItems;
-                if not (({_x == _item} count _compatibleItems > 0) || _item isequalto "")exitwith{
+                if not (({_x == _item} count _compatibleItems > 0) || (_item isequalto ""))exitwith{
                     _ctrlList lbSetColor [_lbAdd, [1,1,1,0.25]];
                 };
             };
@@ -1165,13 +1165,13 @@ switch _mode do {
         _type = (ctrltype _ctrlList == 102);
         _cursel = lbcursel _ctrlList;
         _dataStr = if _type then{_ctrlList lnbData [_l,0]}else{_ctrlList lbdata _l};
-        _data = call compile _dataStr;
+        _data = parseSimpleArray _dataStr;
         _item = _data select 0;
         _amount = _data select 1;
         _displayName = _data select 2;
 
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList =_object getVariable "jna_dataList";
+        pr _object = UINamespace getVariable "jn_object";
+        pr _dataList =_object getVariable "jna_dataList";
 
         //skip empty
         if(_item isEqualTo "")exitWith{};
@@ -1246,18 +1246,18 @@ switch _mode do {
             ])then{
                 //check how many useable mags there are
                 _ammoTotal = 0;
-                //_compatableMagazines = server getVariable [format ["%1_mags", _item],[]];//TODO marker for changed entry
+                //_compatableMagazines = missionnamespace getVariable [format ["%1_mags", _item],[]];//TODO marker for changed entry
                 scopeName "updateWeapon";//TODO marker for changed entry
                 _compatableMagazines = (getarray (configfile >> "cfgweapons" >> _item >> "magazines"));//TODO marker for changed entry
                 {
-                    private ["_amount"];
+                    pr ["_amount"];
                     _magName = _x select 0;
                     _amount = _x select 1;
                     //if(_amount == -1)exitWith{_ammoTotal = -1};//TODO marker for changed entry
                     if (_magName in _compatableMagazines) then {
                         if (_amount == -1) then {_ammoTotal = -1; breakTo "updateWeapon"};//TODO marker for changed entry
                         _ammoTotal = _ammoTotal + _amount;
-                    }
+                    };
                 } forEach (_dataList select IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL);
 
                 //change color;
@@ -1331,7 +1331,7 @@ switch _mode do {
         _cursel = lbcursel _ctrlList;
         _type = (ctrltype _ctrlList == 102);
         _dataStr = if _type then{_ctrlList lnbData [_cursel,0]}else{_ctrlList lbdata _cursel};
-        _data = call compile _dataStr;
+        _data = parseSimpleArray _dataStr;
         _item = _data select 0;
 
 
@@ -1369,25 +1369,25 @@ switch _mode do {
     case "SelectItem": {
 
         params ["_display","_ctrlList","_index"];
-        private _cursel = lbcursel _ctrlList;
-        private _type = (ctrltype _ctrlList == 102);
-        private _dataStr = if _type then{_ctrlList lnbData [_cursel,0]}else{_ctrlList lbdata _cursel};
-        private _data = call compile _dataStr;
-        private _item = _data select 0;
-        private _amount = _data select 1;
-        private _displayName = _data select 2;
+        pr _cursel = lbcursel _ctrlList;
+        pr _type = (ctrltype _ctrlList == 102);
+        pr _dataStr = if _type then{_ctrlList lnbData [_cursel,0]}else{_ctrlList lbdata _cursel};
+        pr _data = parseSimpleArray _dataStr;
+        pr _item = _data select 0;
+        pr _amount = _data select 1;
+        pr _displayName = _data select 2;
 
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList =_object getVariable "jna_dataList";
+        pr _object = UINamespace getVariable "jn_object";
+        pr _dataList =_object getVariable "jna_dataList";
 
-        private _oldItem = "";
+        pr _oldItem = "";
 
-        private _ctrlListPrimaryWeapon = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON);
-        private _ctrlListSecondaryWeapon = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON);
-        private _ctrlListHandgun = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_HANDGUN);
+        pr _ctrlListPrimaryWeapon = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON);
+        pr _ctrlListSecondaryWeapon = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON);
+        pr _ctrlListHandgun = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_HANDGUN);
 
         //check if weapon is unlocked
-        private _min = jna_minItemMember select _index;
+        pr _min = jna_minItemMember select _index;
         if ((_amount <= _min) AND (_amount != -1) AND (_item !="") AND !([player] call isMember) AND !_type) exitWith{
             ['showMessage',[_display,"We are low on this item, only members may use it"]] call jn_fnc_arsenal;
 
@@ -1734,7 +1734,7 @@ switch _mode do {
 
                 //prevent selecting grey items, needs to be this complicated because bis_fnc_compatibleItems returns some crap resolts like optic_aco instead of Optic_Aco
                 _compatibleItems = _weapon call bis_fnc_compatibleItems;
-                if not (({_x == _item} count _compatibleItems > 0) || _item isequalto "")exitwith{
+                if not (({_x == _item} count _compatibleItems > 0) || (_item isequalto ""))exitwith{
                     ['TabSelectRight',[_display,_index]] call jn_fnc_arsenal;
                 };
 
@@ -1799,8 +1799,8 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "SelectItemRight": {
         params["_display","_ctrlList","_index"];
-        private _center = (missionnamespace getvariable ["BIS_fnc_arsenal_center",player]);
-        private _type = (ctrltype _ctrlList == 102);
+        pr _center = (missionnamespace getvariable ["BIS_fnc_arsenal_center",player]);
+        pr _type = (ctrltype _ctrlList == 102);
 
 
         //--- Get container
@@ -1838,7 +1838,7 @@ switch _mode do {
         _columns = count lnbGetColumnsPosition _ctrlList;
         for "_r" from 0 to (_rows - 1) do {
             _dataStr = _ctrlList lnbData [_r,0];
-            _data = call compile _dataStr;
+            _data = parseSimpleArray _dataStr;
             _amount = _data select 1;
             _grayout = false;
             if ((_amount <= _min) AND (_amount != -1) AND (_amount !=0) AND !([player] call isMember)) then{_grayout = true};
@@ -1860,8 +1860,8 @@ switch _mode do {
         diag_log "----------------";
         params ["_display","_add"];
 
-        private _object = UINamespace getVariable "jn_object";
-        private _dataList =_object getVariable "jna_dataList";
+        pr _object = UINamespace getVariable "jn_object";
+        pr _dataList =_object getVariable "jna_dataList";
 
         _selected = -1;
         {
@@ -1869,16 +1869,16 @@ switch _mode do {
             if (ctrlenabled _ctrlList) exitwith {_selected = _x;};
         } foreach [IDCS_LEFT];
 
-        private _ctrlList = ctrlnull;
-        private _index = -1;
-        private _lbcursel = -1;
+        pr _ctrlList = ctrlnull;
+        pr _index = -1;
+        pr _lbcursel = -1;
         {
             _ctrlList = _display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + _x);
             if (ctrlenabled _ctrlList) exitwith {_lbcursel = lbcursel _ctrlList;_index = _x};
         } foreach [IDCS_RIGHT];
 
         _dataStr = _ctrlList lnbData [_lbcursel,0];
-        _data = call compile _dataStr;
+        _data = parseSimpleArray _dataStr;
         _item = _data select 0;
         _amount = _data select 1;
 
@@ -1943,8 +1943,8 @@ switch _mode do {
                     //add back magazines exept the one that needs to be removed
                     _removed = false;
                     {
-                        private _mag = _x select 0;
-                        private _amount = _x select 1;
+                        pr _mag = _x select 0;
+                        pr _amount = _x select 1;
                         if(_mag isEqualTo _item && !_removed)then{
                             _count = _x select 1;//this mag is removed
                             _removed = true;
@@ -1998,19 +1998,8 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "buttonInvToJNA": {
         //_display = _this select 0;
-        private _object = UINamespace getVariable "jn_object";
-        private _array = _object call jn_fnc_arsenal_cargoToArray;
-
-        diag_log str ["Test: ",_array];
-
-        //clear cargo
-        clearMagazineCargoGlobal _object;
-        clearItemCargoGlobal _object;
-        clearweaponCargoGlobal _object;
-        clearbackpackCargoGlobal _object;
-
-        //update server
-        [_object,_array] remoteExec ["jn_fnc_arsenal_cargoToArsenal",2];
+        pr _object = UINamespace getVariable "jn_object";
+		[_object,_object] call jn_fnc_arsenal_cargoToArsenal;
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -2069,7 +2058,7 @@ switch _mode do {
 
         if (isclass _itemCfg) then {
             _dataStr = param [1,if (ctrltype _ctrlList == 102) then {_ctrlList lnbdata [_cursel,0]} else {_ctrlList lbdata _cursel}];
-            _data = call compile _dataStr;
+            _data = parseSimpleArray _dataStr;
             _item = _data select 0;
 
             _ctrlInfo = _display displayctrl IDC_RSCDISPLAYARSENAL_INFO_INFO;
@@ -2274,10 +2263,10 @@ switch _mode do {
     case "HighlightMissingIcons": {
         params ["_display","_index"];
 
-        private _loop = {
-            private _index = _this;
-            private _item = ["ListCurSel",[_index]] call jn_fnc_arsenal;
-            private _ctrlTab = _display displayctrl(IDC_RSCDISPLAYARSENAL_TAB + _index);
+        pr _loop = {
+            pr _index = _this;
+            pr _item = ["ListCurSel",[_index]] call jn_fnc_arsenal;
+            pr _ctrlTab = _display displayctrl(IDC_RSCDISPLAYARSENAL_TAB + _index);
 
             //check if some item was selected
             if(_item isEqualTo "")then{
@@ -2398,14 +2387,13 @@ switch _mode do {
         titleText["", "PLAIN"];
 
         _display closedisplay 2;
-        if (missionname == "Arsenal") then {endmission "end1";};
         ["#(argb,8,8,3)color(0,0,0,1)",false,nil,0,[0,0.5]] call bis_fnc_textTiles;
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "buttonDefaultGear":{
 
-        private _object = UINamespace getVariable "jn_object";
+        pr _object = UINamespace getVariable "jn_object";
 
         /////////////////////////////////////////////////////////////////////////////////
         // unifrom
@@ -2440,7 +2428,7 @@ switch _mode do {
 
         //check items that already exist
         {
-            _itemsUnifrom = [_itemsUnifrom,_x] call jn_fnc_arsenal_removeFromArray;
+            _itemsUnifrom = [_itemsUnifrom,_x] call jn_fnc_common_array_remove;
         } forEach (uniformItems player);
 
         //add non existing items to uniform
@@ -2486,7 +2474,7 @@ switch _mode do {
 
         //check items that already exist
         {
-            _itemsBackpack = [_itemsBackpack,_x] call jn_fnc_arsenal_removeFromArray;
+            _itemsBackpack = [_itemsBackpack,_x] call jn_fnc_common_array_remove;
         } forEach (backpackitems player);
 
         //add non existing items
@@ -2507,8 +2495,8 @@ switch _mode do {
         /////////////////////////////////////////////////////////////////////////////////
         //assigned items
         {
-            private _index = _x select 0;
-            private _item = _x select 1;
+            pr _index = _x select 0;
+            pr _item = _x select 1;
             _itemCurrent = ["ListCurSel",[_index]] call jn_fnc_arsenal;
 
             if(_itemCurrent isEqualTo "")then{

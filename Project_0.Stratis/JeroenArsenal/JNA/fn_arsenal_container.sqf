@@ -1,3 +1,4 @@
+#include "defineCommon.inc"
 /*
     By: Jeroen Notenbomer
 
@@ -20,10 +21,10 @@
 
 #define GETDLC\
 	{\
-		private _dlc = "";\
-		private _addons = configsourceaddonlist _this;\
+		pr _dlc = "";\
+		pr _addons = configsourceaddonlist _this;\
 		if (count _addons > 0) then {\
-			private _mods = configsourcemodlist (configfile >> "CfgPatches" >> _addons select 0);\
+			pr _mods = configsourcemodlist (configfile >> "CfgPatches" >> _addons select 0);\
 			if (count _mods > 0) then {\
 				_dlc = _mods select 0;\
 			};\
@@ -33,7 +34,7 @@
 
 #define ADDMODICON\
 	{\
-		private _dlcName = _this call GETDLC;\
+		pr _dlcName = _this call GETDLC;\
 		if (_dlcName != "") then {\
 			_ctrlList lbsetpictureright [_lbAdd,(modParams [_dlcName,["logo"]]) param [0,""]];\
 			_modID = _modList find _dlcName;\
@@ -124,7 +125,7 @@ switch _mode do {
 	///////////////////////////////////////////////////////////////////////////////////////////
 	case "CustomInit":{
 		params["_display"];
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
 
 		missionnamespace setVariable ["bis_fnc_arsenal_center",_object_selected];
 
@@ -148,7 +149,7 @@ switch _mode do {
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	case "getMass":{
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
 
 		_massTotal = 0;
 		_loadout = (_object_selected call jn_fnc_arsenal_cargoToArray);
@@ -343,9 +344,9 @@ switch _mode do {
 
 		_ctrlList = ctrlnull;
 		jnca_tab_selected = _index;
-		private _object = uiNamespace getVariable "jn_object";
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
-		private _dataList = _object getVariable "jna_dataList";
+		pr _object = uiNamespace getVariable "jn_object";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _dataList = _object getVariable "jna_dataList";
 		_isSelectedLeft = _index in [IDCS_LEFT];
 		_listSelected = [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL] select _isSelectedLeft;
 
@@ -424,7 +425,7 @@ switch _mode do {
 			{
 				_item = _x;
 				_amount = [_items, _item] call jn_fnc_arsenal_itemCount;
-				jnva_loadout set [_index,[jnva_loadout select _index,[_item,_amount]] call jn_fnc_arsenal_addToArray];
+				jnva_loadout set [_index,[jnva_loadout select _index,[_item,_amount]] call jn_fnc_common_array_add];
 			} forEach _itemsUnique2;
 
 		}else{
@@ -490,7 +491,7 @@ switch _mode do {
 				_items = jnva_loadout select _idc;
 				for "_l" from 0 to ((lnbsize _ctrlList select 0) - 1) do {
 					_dataStr = _ctrlList lnbdata [_l,0];
-					_data = call compile _dataStr;
+					_data = parseSimpleArray _dataStr;
 					_item = _data select 0;
 					_amount = 0;
 					{
@@ -541,7 +542,7 @@ switch _mode do {
 
 		_center = (missionnamespace getvariable ["BIS_fnc_arsenal_center",player]);
 		_type = (ctrltype _ctrlList == 102);
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
 
 
 		_maximumLoad = getNumber(configfile >> "CfgVehicles" >> (typeOf _object_selected) >> "maximumLoad");
@@ -559,7 +560,7 @@ switch _mode do {
 		_columns = count lnbGetColumnsPosition _ctrlList;
 		for "_r" from 0 to (_rows - 1) do {
 			_dataStr = _ctrlList lnbData [_r,0];
-			_data = call compile _dataStr;
+			_data = parseSimpleArray _dataStr;
 			_amount = _data select 1;
 			_grayout = false;
 			if ((_amount <= _min) AND (_amount != -1) AND (_amount !=0) AND !([player] call isMember)) then{_grayout = true};
@@ -606,8 +607,8 @@ switch _mode do {
 	case "buttonCargo": {
 		params["_display","_add"];
 
-		private _object = UINamespace getVariable "jn_object";
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _object = UINamespace getVariable "jn_object";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
 
 		_index = jnca_tab_selected;
 
@@ -619,7 +620,7 @@ switch _mode do {
 
 
 		_dataStr = _ctrlList lnbData [_lbcursel,0];
-		_data = call compile _dataStr;
+		_data = parseSimpleArray _dataStr;
 		_item = _data select 0;
 		_amount = _data select 1;
 
@@ -657,7 +658,7 @@ switch _mode do {
 					if(_mass <= _max)then{
 						_ctrlList lnbsettext [[_lbcursel,2],str (_amountOld + _count)];
 
-						jnva_loadout set [_index,[jnva_loadout select _index,[_item,_count]] call jn_fnc_arsenal_addToArray];
+						jnva_loadout set [_index,[jnva_loadout select _index,[_item,_count]] call jn_fnc_common_array_add];
 						jnva_loadout_mass = _mass;
 						//[_index, _item, _count] remoteExecCall ["jn_fnc_arsenal_removeItem"];
 						[_object, _index, _item, _count] call jn_fnc_arsenal_removeItem; //Sparker: why execute it on all clients?
@@ -676,7 +677,7 @@ switch _mode do {
 				if(_count > 0)then{
 					_ctrlList lnbsettext [[_lbcursel,2],str (_amountOld - _count)];
 
-					jnva_loadout set [_index,[jnva_loadout select _index,[_item,_count]] call jn_fnc_arsenal_removeFromArray];
+					jnva_loadout set [_index,[jnva_loadout select _index,[_item,_count]] call jn_fnc_common_array_remove];
 					_mass = ["getMassItem",[_item,_count,_index]] call jn_fnc_arsenal_container;
 					jnva_loadout_mass = jnva_loadout_mass - _mass;
 					//[_index, _item, _count] remoteExecCall ["jn_fnc_arsenal_addItem"];
@@ -787,10 +788,10 @@ switch _mode do {
 	case "Unload":{
 		params["_display"];
 
-		private _object = UINamespace getVariable "jn_object";
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _object = UINamespace getVariable "jn_object";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
 
-		[_object,jnva_loadout] remoteExec ["jn_fnc_arsenal_cargoToArsenal",2];
+		[_object,jnva_loadout] remoteExec ["jn_fnc_arsenal_arrayToArsenal",2];
 
 		//clean list
 		jnva_loadout_mass = 0;
@@ -798,7 +799,7 @@ switch _mode do {
 
         //set all items to 0
 		{
-			private _ctrlList = _display displayctrl(IDC_RSCDISPLAYARSENAL_LIST + _x);
+			pr _ctrlList = _display displayctrl(IDC_RSCDISPLAYARSENAL_LIST + _x);
 			if(ctrlEnabled _ctrlList)exitWith{
 
 				diag_log str ["test: ",_x,_ctrlList];
@@ -820,7 +821,7 @@ switch _mode do {
 		jnva_loadout_mass = nil;
 		jnca_tab_selected = nil;
 
-		private _object_selected = uiNamespace getVariable "jn_object_selected";
+		pr _object_selected = uiNamespace getVariable "jn_object_selected";
 
 		//weapons
 		{

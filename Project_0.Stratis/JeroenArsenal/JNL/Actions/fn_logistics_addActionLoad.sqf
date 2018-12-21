@@ -1,6 +1,8 @@
+#include "defineCommon.inc"
+
 params ["_object"];
 diag_log ["addactionload"];
-private _loadActionID = _object getVariable ["jnl_loadActionID",nil];
+pr _loadActionID = _object getVariable ["jnl_loadActionID",nil];
 
 //Check if action exists already
 if(!isnil "_loadActionID") then
@@ -14,17 +16,17 @@ if((_object call jn_fnc_logistics_getCargoType) == -1) exitWith {};
 _loadActionID = _object addAction [
 	"<img image='\A3\ui_f\data\IGUI\Cfg\Actions\arrow_up_gs.paa' />  Load Cargo in Vehicle</t>",
 	{ //Action script
-		private _cargo = _this select 0;
-		private _player = _this select 1;
+		pr _cargo = _this select 0;
+		pr _player = _this select 1;
 		//Search for vehicles able to load cargo of this type
-		private _nearestVehicle = objNull;
-		private _nearestDistance = 7;
+		pr _nearestVehicle = objNull;
+		pr _nearestDistance = 7;
 		{
 			_distance = _x distance _cargo;
 
 			if(_distance < _nearestDistance && !(_x isEqualTo _cargo) && isnull (attachedTo _x)) then
 			{
-				if(_x call jn_fnc_garage_getVehicleIndex != -1 && _x call jn_fnc_garage_getVehicleIndex != 5) then
+				if(_x call jn_fnc_common_vehicle_getVehicleType != -1 && _x call jn_fnc_common_vehicle_getVehicleType != 5) then
 				{
 					_nearestVehicle = _x;
 					_nearestDistance = _distance;
@@ -39,7 +41,7 @@ _loadActionID = _object addAction [
 		}
 		else
 		{
-			private _nodeID = [_nearestVehicle, _cargo] call jn_fnc_logistics_canLoad;
+			pr _nodeID = [_nearestVehicle, _cargo] call jn_fnc_logistics_canLoad;
 			switch (_nodeID) do {
 				case -4:
 				{

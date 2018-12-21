@@ -1,6 +1,8 @@
+#include "defineCommon.inc"
+
 params ["_object"];
 
-private _getOutEventID = _object getVariable ["jnl_getOutGunnerEventID", nil];
+pr _getOutEventID = _object getVariable ["jnl_getOutGunnerEventID", nil];
 
 //Check if action exists already
 if(!isnil "_getOutEventID") then

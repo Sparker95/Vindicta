@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 params["_object"];
 
 //add action to all clients

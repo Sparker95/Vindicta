@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 /*
 	Author: Jeroen Notenbomer
 
@@ -20,17 +22,17 @@ params[ ["_vehicle",objNull,[objNull]], ["_object",objNull,[objNull]] ];
 
 if(isNull _vehicle || isNull _object)exitWith{["Wrong input given veh:%1 ,obj:%2",_vehicle,_object] call BIS_fnc_error;};
 
-private _typeObject  = _object call jn_fnc_logistics_getCargoType; //get _object type
+pr _typeObject  = _object call jn_fnc_logistics_getCargoType; //get _object type
 
 //check current load
-private _typeLoaded = -1;
-private _nodesLoaded = 0;
+pr _typeLoaded = -1;
+pr _nodesLoaded = 0;
 {
-	private _array = _x getVariable ["jnl_cargo",nil];//returns nr of node if the object was attached by JNL
+	pr _array = _x getVariable ["jnl_cargo",nil];//returns nr of node if the object was attached by JNL
 
 	if(!isNil "_array")then{
-		private _type = _array select 0;
-		private _node = (_array select 1)+1;
+		pr _type = _array select 0;
+		pr _node = (_array select 1)+1;
 
 		_typeLoaded = _type;
 		if(_node > _nodesLoaded)then{_nodesLoaded = _node};
@@ -42,10 +44,10 @@ if(_typeLoaded != _typeObject && _typeLoaded != -1)exitWith{-1};
 
 
 //==== Get available nodes ====
-private _nodeTotal = 0;
+pr _nodeTotal = 0;
 {
-	private _type = _x select 0;
-	private _location = _x select 1;
+	pr _type = _x select 0;
+	pr _location = _x select 1;
 	if(_type == _typeObject)then{_nodeTotal = _nodeTotal + 1;};
 } forEach (_vehicle call jn_fnc_logistics_getNodes);
 
@@ -56,13 +58,13 @@ if(_nodesLoaded < _nodeTotal) then
 {
 	//==== Check if cargo space is occupied by passengers ====
 	//Get occupied cargo nodes
-	private _occupiedCargo = [];
+	pr _occupiedCargo = [];
 	{
 		//[<Object>unit,<String>role,<Number>cargoIndex,<Array>turretPath,<Boolean>personTurret]
 		_occupiedCargo pushback (_x select 2); //cargo index
 	}forEach fullCrew _vehicle;
 	//Get all seats that can be locked by cargo of this type
-	private _allCargoLockedSeats = [];
+	pr _allCargoLockedSeats = [];
 	{
 		_allCargoLockedSeats append (_x select 1);
 	} forEach ([_vehicle, _typeObject] call jn_fnc_logistics_getNodes);

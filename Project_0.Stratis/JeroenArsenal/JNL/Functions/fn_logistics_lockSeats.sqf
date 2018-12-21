@@ -1,16 +1,18 @@
+#include "defineCommon.inc"
+
 params ["_vehicle"];
 
-private _type = -1;
-private _nodesLocked = [];
+pr _type = -1;
+pr _nodesLocked = [];
 {
-	private _data = _x getVariable ["jnl_cargo",nil];
+	pr _data = _x getVariable ["jnl_cargo",nil];
 	if(!isnil "_data")then{
 		_type = _data select 0;
 		_nodesLocked pushback (_data select 1);
 	};
 } forEach attachedObjects _vehicle;
 
-private _nodes = [_vehicle,_type] call jn_fnc_logistics_getNodes;
+pr _nodes = [_vehicle,_type] call jn_fnc_logistics_getNodes;
 _vehicle lockCargo false;
 {
 	_lockSeats = _nodes select _x select 1;//get seats to lock

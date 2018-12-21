@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 _base = cursorObject;
 _basePos = getPosWorld _base;
 _array2 =[getText (configfile >> "CfgVehicles" >> typeOf _base >> "model")];

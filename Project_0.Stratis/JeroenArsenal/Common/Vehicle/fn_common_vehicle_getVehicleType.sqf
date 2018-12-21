@@ -1,38 +1,40 @@
 #include "defineCommon.inc"
 
+
+
 params["_vehicle"];
 
-private _type = typeOf _vehicle;
-private _cfg = (configfile >> "CfgVehicles" >> _type);
-private _simulation = gettext (_cfg >> "simulation");
+pr _type = typeOf _vehicle;
+pr _cfg = (configfile >> "CfgVehicles" >> _type);
+pr _simulation = gettext (_cfg >> "simulation");
 
 
-private _index = switch (tolower _simulation) do {
+pr _index = switch (tolower _simulation) do {
 	case "car";
 	case "carx": {
-		IDC_JNG_TAB_CAR;
+		TYPE_CAR;
 	};
 	case "tank";
 	case "tankx": {
 		if (getnumber (_cfg >> "maxspeed") > 0) then {
-			IDC_JNG_TAB_ARMOR;
+			TYPE_ARMOR;
 		} else {
-			IDC_JNG_TAB_STATIC;
+			TYPE_STATIC;
 		};
 	};
 	case "helicopter";
 	case "helicopterx";
 	case "helicopterrtd": {
-		IDC_JNG_TAB_HELI;
+		TYPE_HELI;
 	};
 	case "airplane";
 	case "airplanex": {
-		IDC_JNG_TAB_PLANE;
+		TYPE_PLANE;
 	};
 	case "ship";
 	case "shipx";
 	case "submarinex": {
-		IDC_JNG_TAB_NAVAL;
+		TYPE_NAVAL;
 	};
 	default {-1};
 };

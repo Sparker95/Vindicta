@@ -1,9 +1,7 @@
+#include "defineCommon.inc"
 
-#include "\A3\ui_f\hpp\defineDIKCodes.inc"
-#include "\A3\Ui_f\hpp\defineResinclDesign.inc"
-
-private _array = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
-private _object = _this select 0;
+pr _array = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+pr _object = _this select 0;
 if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_index, _item, _amount];
 	params["","_index","_item",["_amount",1]];
 	_array set [_index,[[_item,_amount]]];
@@ -12,10 +10,10 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 };
 
 {
-	private _index = _forEachIndex;
+	pr _index = _forEachIndex;
 	{
-		private _item = _x select 0;
-		private _amount = _x select 1;
+		pr _item = _x select 0;
+		pr _amount = _x select 1;
 
 
 		if!(_item isEqualTo "" || {_item isEqualTo "ACE_PreloadedMissileDummy"}) then{
@@ -24,13 +22,13 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 			if(_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG)then{_index = IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL};
 
 			//TFAR fix
-			private _radioName = getText(configfile >> "CfgWeapons" >> _item >> "tf_parent");
+			pr _radioName = getText(configfile >> "CfgWeapons" >> _item >> "tf_parent");
 			if!(_radioName isEqualTo "")then{_item = _radioName};
 
 			//update
-			private _playersInArsenal = +(_object getVariable ["jna_playersInArsenal",[]]);
+			pr _playersInArsenal = +(_object getVariable ["jna_playersInArsenal",[]]);
 			if!(0 in _playersInArsenal)then{_playersInArsenal pushBackUnique 2;};
-			["UpdateItemAdd",[_index, _item, _amount,true]] remoteExecCall ["jn_fnc_arsenal",_playersInArsenal];
+			["UpdateItemAdd",[_index, _item, _amount,_object]] remoteExecCall ["jn_fnc_arsenal",_playersInArsenal];
 
 		};
 	} forEach _x;

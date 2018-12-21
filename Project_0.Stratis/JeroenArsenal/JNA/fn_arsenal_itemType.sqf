@@ -1,3 +1,4 @@
+#include "defineCommon.inc"
 /*
     By: Jeroen Notenbomer
 
@@ -47,7 +48,7 @@
 #include "\A3\Ui_f\hpp\defineResinclDesign.inc"
 
 params ["_item"];
-private ["_types","_return","_data"];
+pr ["_types","_return","_data"];
 _return = -1;
 
 INITTYPES
@@ -60,11 +61,11 @@ INITTYPES
 
 
 if(_return == -1)then{
-	private _data = (missionnamespace getvariable "bis_fnc_arsenal_data");
+	pr _data = (missionnamespace getvariable "bis_fnc_arsenal_data");
 	if (isNil "_data") exitWith {};
 	{
-		private _index = _x;
-		private _dataSet = _data select _index;
+		pr _index = _x;
+		pr _dataSet = _data select _index;
 
 		{
 			if((tolower _item)isEqualTo (tolower _x))exitWith{_return = _index};

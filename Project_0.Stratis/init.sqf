@@ -91,6 +91,9 @@ private _LUAPTimer = NEW("Timer", _args);
 // Message loop for garrison goals
 //gMessageLoopGoal = NEW("MessageLoop", []);
 
+//init Logistics script
+call JN_fnc_logistics_init;
+
 
 diag_log "Init.sqf: Calling initWorld...";
 

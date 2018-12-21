@@ -1,3 +1,4 @@
+#include "defineCommon.inc"
 /*
 	Author: Jeroen Notenbomer
 
@@ -15,36 +16,36 @@
 #include "\A3\ui_f\hpp\defineDIKCodes.inc"
 #include "\A3\Ui_f\hpp\defineResinclDesign.inc"
 
-private _container = _this;
-private _array = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+params["_container"];
+pr _array = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
 
 
-private _addToArray = {
+pr _addToArray = {
 	params ["_array","_index","_item","_amount"];
 
 	if!(_index == -1 || _item isEqualTo ""|| _amount == 0)then{
-		_array set [_index,[_array select _index,[_item,_amount]] call jn_fnc_arsenal_addToArray];
+		_array set [_index,[_array select _index,[_item,_amount]] call jn_fnc_common_array_add];
 	};
 };
 
 //recursion function to check all sub containers
-private _unloadContainer = {
+pr _unloadContainer = {
 	_container_sub = _this;
 
 	//magazines(exl. loaded ones)
-	private _mags = magazinesAmmoCargo _container_sub;
+	pr _mags = magazinesAmmoCargo _container_sub;
 	{
-		private _item = _x select 0;
-		private _amount = _x select 1;
-		private _index = _item call jn_fnc_arsenal_itemType;
+		pr _item = _x select 0;
+		pr _amount = _x select 1;
+		pr _index = _item call jn_fnc_arsenal_itemType;
 		[_array,_index,_item,_amount]call _addToArray;
 	} forEach _mags;
 
 	//items
 	_items = itemCargo _container_sub;
 	{
-		private _item = _x;
-		private _index = _item call jn_fnc_arsenal_itemType;
+		pr _item = _x;
+		pr _index = _item call jn_fnc_arsenal_itemType;
 		[_array,_index,_item,1]call _addToArray;
 	} forEach _items;
 

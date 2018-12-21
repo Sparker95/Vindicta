@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 //Removes the action from the cargo for all clients
 
 params["_object"];

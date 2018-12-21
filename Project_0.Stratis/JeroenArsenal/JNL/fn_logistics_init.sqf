@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 //The list of hardpoints for vehicles
 /*
 the last element is the list of seats to disable for specific node

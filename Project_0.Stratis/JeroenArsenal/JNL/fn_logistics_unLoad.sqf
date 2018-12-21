@@ -1,3 +1,5 @@
+#include "defineCommon.inc"
+
 /*
 	Author: Jeroen Notenbomer
 
@@ -14,13 +16,13 @@
 params ["_vehicle"];
 
 //find last attached cargo object
-private _object = objNull;
-private _nodeLast = -1;
+pr _object = objNull;
+pr _nodeLast = -1;
 {
-	private _array = _x getVariable ["jnl_cargo",nil];//returns nr of node if the object was attached by JNL
+	pr _array = _x getVariable ["jnl_cargo",nil];//returns nr of node if the object was attached by JNL
 
 	if(!isNil "_array")then{
-		private _node = _array select 1;
+		pr _node = _array select 1;
 		if(_node > _nodeLast)then{
 			_nodeLast = _node;
 			_object = _x;
@@ -37,19 +39,19 @@ if(!isnull _object)then{
 	[_vehicle,_object] spawn {
 		params ["_vehicle","_object"];
 		_vehicle setVariable ["jnl_isUnloading",true, true];
-		private _nodeArray = _object getVariable ["jnl_cargo",[0,0]];
-		private _objectType = _nodeArray select 0;
-		private _nodeID = _nodeArray select 1;
+		pr _nodeArray = _object getVariable ["jnl_cargo",[0,0]];
+		pr _objectType = _nodeArray select 0;
+		pr _nodeID = _nodeArray select 1;
 
 		if(_objectType == 0)then{//if its a weapon
 			_object enableWeaponDisassembly true;
 		};
 
-		private _loc1 = [_vehicle, _object, _nodeID] call jn_fnc_logistics_getCargoOffsetAndDir select 0;
+		pr _loc1 = [_vehicle, _object, _nodeID] call jn_fnc_logistics_getCargoOffsetAndDir select 0;
 
-		private _bbv = (boundingBoxReal _vehicle select 0 select 1) + ((boundingCenter _vehicle) select 1);
-		private _bbo = (boundingBoxReal _object select 0 select 1) + ((boundingCenter _object) select 1);
-		private _yEnd = _bbv + _bbo - 0.1;
+		pr _bbv = (boundingBoxReal _vehicle select 0 select 1) + ((boundingCenter _vehicle) select 1);
+		pr _bbo = (boundingBoxReal _object select 0 select 1) + ((boundingCenter _object) select 1);
+		pr _yEnd = _bbv + _bbo - 0.1;
 
 		while {_loc1 select 1 > _yEnd}do{
 			sleep 0.1;
@@ -58,7 +60,7 @@ if(!isnull _object)then{
 		};
 
 		//set speed incase vehicle was moving
-		private _vel = velocity _vehicle;
+		pr _vel = velocity _vehicle;
 		detach _object;
 		_object setVelocity _vel;
 
