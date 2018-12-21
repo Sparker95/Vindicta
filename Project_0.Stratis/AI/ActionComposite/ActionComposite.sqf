@@ -38,17 +38,29 @@ CLASS("ActionComposite", "Action")
 	/*virtual*/ METHOD("processSubactions") {	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                          A D D   S U B G O A L                     |
-	// |                                                                    |
-	// | Adds a subaction to the front of the subaction array                   |
+	// |            A D D   S U B A C T I O N   T O   F R O N T 
+	// |                                                                   
+	// | Adds a subaction to the FRONT of the subaction array              
 	// ----------------------------------------------------------------------
-	METHOD("addSubaction") {
+	METHOD("addSubactionToFront") {
 		params [["_thisObject", "", [""]], ["_subaction", "", [""]] ];
 		private _subactions = GETV(_thisObject, "subactions");
 		private _newSubactions = [_subaction];
 		_newSubactions append _subactions;
 		SETV(_thisObject, "subactions", _newSubactions);
 	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |            A D D   S U B A C T I O N   T O   F R O N T 
+	// |                                                                   
+	// | Adds a subaction to the BACK of the subaction array              
+	// ----------------------------------------------------------------------
+	METHOD("addSubactionToBack") {
+		params [["_thisObject", "", [""]], ["_subaction", "", [""]] ];
+		private _subactions = GETV(_thisObject, "subactions");
+		_subactions pushBack _subaction;
+	} ENDMETHOD;
+	
 	
 	// ----------------------------------------------------------------------
 	// |                          G E T   S U B G O A L S                   |

@@ -20,10 +20,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={2418.302,110.93062,5014.8921};
-		dir[]={0.75961298,-0.155857,-0.63144195};
-		up[]={0.11985683,0.98778039,-0.099633098};
-		aside[]={-0.63925517,-1.587905e-007,-0.76901227};
+		pos[]={2989.9399,177.98994,1879.8615};
+		dir[]={-0.30454916,-0.48335746,-0.8207466};
+		up[]={-0.16815399,0.87542236,-0.45316759};
+		aside[]={-0.93754143,-4.4936314e-008,0.3478879};
 	};
 };
 binarizationWanted=0;
@@ -63,14 +63,13 @@ addons[]=
 	"A3_Soft_F_Orange_Van_02",
 	"A3_Soft_F_Beta_Truck_02",
 	"A3_Armor_F_EPB_APC_Tracked_03",
-	"A3_Characters_F_Exp",
-	"A3_Characters_F_Mark"
+	"A3_Characters_F_Exp"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=23;
+		items=22;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -225,13 +224,6 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item22
-		{
-			className="A3_Characters_F_Mark";
-			name="Arma 3 Marksmen - Characters and Clothing";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
 	};
 };
 class DynamicSimulation
@@ -302,7 +294,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=160;
+		items=159;
 		class Item0
 		{
 			dataType="Object";
@@ -3214,12 +3206,13 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2985.001,171.39893,1869.1591};
+						position[]={2985,171.39893,1869.1591};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
+						isPlayer=1;
 					};
 					id=2413;
 					type="B_soldier_AR_F";
@@ -3956,37 +3949,6 @@ class Mission
 				name="g0_1";
 			};
 			id=2470;
-		};
-		class Item159
-		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=1;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={2426.5413,107.86272,5007.4492};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
-						isPlayer=1;
-					};
-					id=2480;
-					type="B_Recon_Sharpshooter_F";
-					atlOffset=8.392334e-005;
-				};
-			};
-			class Attributes
-			{
-			};
-			id=2479;
-			atlOffset=8.392334e-005;
 		};
 	};
 	class Connections

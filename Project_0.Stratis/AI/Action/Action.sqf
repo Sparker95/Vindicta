@@ -201,7 +201,9 @@ CLASS("Action", "MessageReceiver")
 	// a Goal is atomic and cannot aggregate subgoals yet we must implement
 	// this method to provide the uniform interface required for the goal
 	// hierarchy.
-	/* virtual */ METHOD("addSubaction") { diag_log "[Goal::addSubgoal] Error: can't add a subgoal to an atomic goal!"; } ENDMETHOD;
+	/* virtual */ METHOD("addSubactionToFront") { diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!"; } ENDMETHOD;
+	
+	/* virtual */ METHOD("addSubactionToBack") { diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!"; } ENDMETHOD;
 	
 	// Returns the list of subgoals (for debug purposes)
 	/* virtual */ METHOD("getSubactions") { [] } ENDMETHOD;
