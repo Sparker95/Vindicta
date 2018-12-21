@@ -2,6 +2,7 @@
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\modCompatBools.sqf"
+#include "..\Undercover\fn_getBodyExposure.sqf"
 
 // Create player's undercover monitor
 gMsgLoopUndercover = NEW("MessageLoop", []);
@@ -138,7 +139,11 @@ CLASS("undercoverMonitor", "MessageReceiver")
 		_unit setVariable ["distance", -1];									// not nearest unit to player, but distance to unit that currently sees player. If no enemy is there, distance is -1
 		_unit setVariable ["recentHostility", 0];
 		_unit setVariable ["suspGearVeh", 0.0];							
-		_unit setVariable ["bInVeh", false];						
+		_unit setVariable ["bInVeh", false];								// true while in vehicle	
+		_unit setVariable ["bInMilVeh", false];								// true while in military vehicle	
+		_unit setVariable ["bodyExposure", 0.0];							// value for how exposed player is inside current vehicle seat
+		_unit setVariable ["eyePosOld", [0, 0, 0]];				
+		_unit setVariable ["eyePosOldVeh", [0, 0, 0]];		
 
 		// More efficient way of checking player equipment suspiciousness ("suspicion") only when loadout changes, requires CBA
 		if (activeCBA) then {
@@ -160,6 +165,14 @@ CLASS("undercoverMonitor", "MessageReceiver")
     	_unit addEventHandler ["Fired", {
 			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
 			_unit setVariable ["recentHostility", SUSP_HOSTILITY];
+		}];
+
+		_unit addEventHandler ["SeatSwitched", {
+		params ["_vehicle", "_unit1", "_unit2"];
+		pr _bodyExposure = [20, 120, 0, 360, _unit] call fnc_getVisibleSurface;
+		_unit setVariable ["bodyExposure", _bodyExposure];
+		systemChat format ["Body exposure: %1", _bodyExposure];
+		systemChat "Switched seat.";
 		}];
 
 	
@@ -227,24 +240,46 @@ CLASS("undercoverMonitor", "MessageReceiver")
 					// REAL-TIME EVALUATION OF PLAYER'S SUSPICIOUSNESS WHILE IN VEHICLE
 					if (!(isNull objectParent _unit) && !(_bWanted)) exitWith {
 
+						pr _bInMilVeh = _unit getVariable "bInMilVeh";
 						pr _bInVeh = _unit getVariable "bInVeh";
-						pr _suspicion = _unit getVariable "suspicion";
-						_unit setVariable ["suspicion", 0.0];
-						[_unit, 0.0] call fnc_setUndercover; 
- 
-						// TODO: IMPLEMENT OPEN/CLOSED SEATS IN VEHICLES
-						// TODO: MAKE OTHER PLAYERS AFFECT VEHICLE'S OVERALL SUPICIOUSNESS
 
-							// ONLY CHECK AGAINST CIV VEHICLE ONCE AFTER ENTERING VEHICLE
-							if !(_bInVeh) then { 
-								if !((typeOf (vehicle _unit)) in civVehs) exitWith { _unit setVariable ["suspicion", 1.0]; [_unit, 1.0] call fnc_setUndercover; 	
-								}; 
+							// ALWAYS FULLY SUSPICIOUS IF IN A MILITARY VEHICLE
+							if (_bInMilVeh) exitWith { _unit setVariable ["suspicion", 1.0]; [_unit, 1.0] call fnc_setUndercover; };
 
-								_unit setVariable ["bInVeh", true];
+							// MAKES SURE WE ONLY CHECK ONCE IF WE'RE IN A MILITARY VEHICLE ->
+							if !(_bInMilVeh && _bInVeh) then {
+								if !((typeOf (vehicle _unit)) in civVehs) then { 
+										_unit setVariable ["suspicion", 1.0]; 
+										[_unit, 1.0] call fnc_setUndercover; 
+										_unit setVariable ["bInVeh", true];
+										_unit setVariable ["bInMilVeh", true]; 
+										systemChat "Not in civ vic";	
+								};
 							};
 
-							// ADJUST SUSPICIOUSNESS IN VEHICLE BASED ON DISTANCE TO ENEMY WHO SEES PLAYER
-							//if (_bSeen) then { 
+							_unit setVariable ["bInVeh", true];
+
+							if !(_bInMilVeh) then {
+
+								pr _suspicion = _unit getVariable "suspicion";
+								pr _bodyExposure = _unit getVariable "bodyExposure";
+
+								// CHECK BODY EXPOSURE BY COMPARING CURRENT eyePos TO PREVIOUS INTERVAL'S eyePos
+								pr _eyePosNewVeh = _unit worldToModel (ASLTOAGL (eyepos vehicle _unit));
+								pr _eyePosOldVeh = _unit getVariable "eyePosOldVeh";
+								pr _eyePosNew = _unit worldToModel (ASLTOAGL (eyepos _unit));
+								pr _eyePosOld = _unit getVariable "eyePosOld";
+
+								if ( (_eyePosOld vectorDistance _eyePosNew) > 0.15 or (_eyePosOldVeh vectorDistance _eyePosNewVeh) > 0.15) then { 
+									_bodyExposure = [20, 120, 0, 360, _unit] call fnc_getVisibleSurface;
+									_unit setVariable ["bodyExposure", _bodyExposure]; 
+									systemChat format ["===Body exposure: %1", _bodyExposure];
+								};
+
+								_unit setVariable ["eyePosOldVeh", _eyePosNewVeh];
+								_unit setVariable ["eyePosOld", _eyePosNew];
+
+								// ADJUST SUSPICIOUSNESS IN VEHICLE BASED ON DISTANCE TO ENEMY WHO SEES PLAYER
 
 								pr _distance = _unit getVariable "distance"; // distance to nearest enemy who presently sees player
 								pr _suspGear = _unit getVariable "suspGear";
@@ -266,16 +301,14 @@ CLASS("undercoverMonitor", "MessageReceiver")
 								if ( _distance >= SUSP_VEH_DIST ) exitWith { _unit setVariable ["suspicion", 0.0]; [_unit, 0.0] call fnc_setUndercover; };
 
 								// "PLAYER'S GEAR IS SUSPICIOUS, AND PLAYER IS SO CLOSE THEY CAN SEE IT"
-								if ( _distance < 25 && _distance > -1 && _suspGear >= 1 ) exitWith { 
+								if ( _distance < 25 && _distance > -1 && _suspGear >= 1 && _bodyExposure > 0.4 ) exitWith { 
 									_unit setVariable ["suspicion", 1.0]; [_unit, 1.0] call fnc_setUndercover; 
 								};
 
-								if ( _distance >= 25 && _distance > -1 && _distance < 200 && _suspGear >= 1 ) exitWith { 
-									_suspicion = (SUSP_VEH_DIST - _distance) * 0.0055;
+								if ( _distance >= 25 && _distance > -1 && _distance < SUSP_VEH_DIST && _suspGear >= 1 ) exitWith { 
+									_suspicion = (SUSP_VEH_DIST - _distance) * ((1 / SUSP_VEH_DIST) + ((1 / SUSP_VEH_DIST) * 0.25));
 									_unit setVariable ["suspicion", _suspicion]; [_unit, _suspicion] call fnc_setUndercover; 
-							//};
-
-
+							};
 						};
 					};
 
@@ -285,7 +318,8 @@ CLASS("undercoverMonitor", "MessageReceiver")
 						pr _recentHostility = _unit getVariable "recentHostility";
 						_suspicion = 0.0;
 						_suspGear = _unit getVariable "suspGear";
-						_unit setVariable ["bInVeh", false]; 
+						_unit setVariable ["bInVeh", false];
+						_unit setVariable ["bInMilVeh", false];  
 						
 
 						if (_recentHostility > 0) then { 

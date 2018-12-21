@@ -162,10 +162,10 @@ Displays a number of variables on screen for debugging
 			_panel8 ctrlSetText _var8;
 			_panel8 ctrlCommit 0; 
 
-			private _var9 = "bInCivVeh";
+			private _var9 = _unit getVariable "bInMilVeh";
 			if (isNil "_var9") then { _var9 = "undefined"};
 			_var9 = str _var9;
-			_var9 = formatText["Civilian vehicle: %1", _var9];
+			_var9 = formatText["Mil veh: %1", _var9];
 			_var9 = str _var9;
 			_panel9 ctrlSetText _var9;
 			_panel9 ctrlCommit 0; 
