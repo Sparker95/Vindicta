@@ -98,3 +98,6 @@ call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 
 // Initialize suspiciosness monitor
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
+
+// Initialize mod compatibility booleans 
+call compile preprocessFileLineNumbers "modCompatBools.sqf";

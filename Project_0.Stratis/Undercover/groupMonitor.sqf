@@ -4,7 +4,7 @@
 
 // Supposed to check groups that see player
 
-// We create a thread for player's suspiciousness monitor here
+// We create a thread for player's undercover monitor here
 gMsgLoopGroupMonitor = NEW("MessageLoop", []);
 CALL_METHOD(gMsgLoopGroupMonitor, "setDebugName", ["Group monitor thread"]);
 
@@ -27,7 +27,7 @@ CLASS("groupMonitor", "MessageReceiver")
 		private _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GROUP_MONITOR_MESSAGE_PROCESS);
-		pr _updateInterval = 2.0; // !!! Change your timer interval here !!!
+		pr _updateInterval = 1.0; // !!! Change your timer interval here !!!
 		private _args = [_thisObject, _updateInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		SETV(_thisObject, "timer", _timer);
@@ -67,25 +67,34 @@ CLASS("groupMonitor", "MessageReceiver")
 				Run your code here...
 				*/
 				pr _side = GETV(_thisObject, "side");
-				systemChat format ["This is the group monitor of %1 side! Current time: %2", _side, time];
+				//systemChat format ["This is the group monitor of %1 side! Current time: %2", _side, time];
 				
 				// Run basic checks...
 				pr _groups = allGroups select {(side _x) == _side};
 				{ // foreach allPlayers
 					pr _playerUnit = _x;
-					pr _found = _groups findIf {(_x knowsAbout _playerUnit) > 0.5}; // Returns -1 if nothing found
-					if (_found != -1) then {
+					pr _found = _groups findIf {(_x knowsAbout _playerUnit) > 0.5};	// Returns -1 if nothing found
+					pr _foundVeh = _groups findIf {(_x knowsAbout vehicle _playerUnit) > 0.5};
+
+					if (_found != -1 or _foundVeh != -1) then {
 						// Send a message to the player
 						pr _msg = MESSAGE_NEW();
+
+						if (_foundVeh != -1) then {
+						MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_BEING_SPOTTED);
+						MESSAGE_SET_DATA(_msg, _groups select _foundVeh); // You can pass any data you like }
+						};
+						
+						if (_found != -1) then {
 						MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_BEING_SPOTTED);
 						MESSAGE_SET_DATA(_msg, _groups select _found); // You can pass any data you like
-						
-						// Get suspiciousness monitor of this unit
-						pr _sm = _playerUnit getVariable "suspiciousnessMonitor";
+						};
+						// Get undercover monitor of this unit
+						pr _sm = _playerUnit getVariable "undercoverMonitor";
 						
 						// Send the message
 						CALL_METHOD(_sm, "postMessage", [_msg]);
-					};
+					};					
 				} foreach allPlayers;
 			};
 		};

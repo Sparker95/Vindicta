@@ -56,6 +56,6 @@ player addEventHandler ["AnimChanged", {
 
 
 // Create a suspiciousness monitor for player
-NEW("suspiciousnessMonitor", [player]);
+NEW("undercoverMonitor", [player]);
 // Create a group monitor for east side
 NEW("groupMonitor", [EAST]);
