@@ -22,7 +22,10 @@ call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
 
 // Garrison AI classes
 call compile preprocessFileLineNumbers "AI\Garrison\AIGarrison.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrison.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonStimulatable.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonHealth.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonTargets.sqf";
 
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrew.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountInfantry.sqf";
@@ -40,13 +43,25 @@ call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRepairAllVehicle
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMove.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMoveCargo.sqf";
 
+
 // Create a database with costs, effects, preconditions, etc
 call compile preprocessFileLineNumbers "AI\Garrison\initDatabase.sqf";
+
+
+
 
 // Group AI classes
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\SensorGroup.sqf";
-call compile preprocessFileLineNumbers "AI\Group\SensorGroupEnemy.sqf";
+call compile preprocessFileLineNumbers "AI\Group\SensorGroupStimulatable.sqf";
+
+call compile preprocessFileLineNumbers "AI\Group\SensorGroupTargets.sqf";
+
+
+
+
+
+
 
 
 // Unit AI classes

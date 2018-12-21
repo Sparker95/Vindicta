@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2476;
+		nextID=2481;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=87;
+		nextID=88;
 	};
 	class Camera
 	{
-		pos[]={3744.7942,216.83896,4890.9785};
-		dir[]={0.38081682,-0.33902335,-0.86028194};
-		up[]={0.1372347,0.9407782,-0.31002042};
-		aside[]={-0.91443044,8.0675818e-008,-0.4047859};
+		pos[]={2418.302,110.93062,5014.8921};
+		dir[]={0.75961298,-0.155857,-0.63144195};
+		up[]={0.11985683,0.98778039,-0.099633098};
+		aside[]={-0.63925517,-1.587905e-007,-0.76901227};
 	};
 };
 binarizationWanted=0;
@@ -63,13 +63,14 @@ addons[]=
 	"A3_Soft_F_Orange_Van_02",
 	"A3_Soft_F_Beta_Truck_02",
 	"A3_Armor_F_EPB_APC_Tracked_03",
-	"A3_Characters_F_Exp"
+	"A3_Characters_F_Exp",
+	"A3_Characters_F_Mark"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=22;
+		items=23;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -221,6 +222,13 @@ class AddonsMetaData
 		{
 			className="A3_Characters_F_Exp";
 			name="Arma 3 Apex - Characters and Clothing";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item22
+		{
+			className="A3_Characters_F_Mark";
+			name="Arma 3 Marksmen - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
@@ -3961,7 +3969,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={3743.7729,212.92976,4895.7959};
+						position[]={2426.5413,107.86272,5007.4492};
 					};
 					side="West";
 					flags=7;
@@ -3969,77 +3977,16 @@ class Mission
 					{
 						isPlayer=1;
 					};
-					id=2474;
-					type="B_G_Soldier_GL_F";
-					atlOffset=-1.5258789e-005;
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="allowDamage";
-							expression="_this allowdamage _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"BOOL"
-										};
-									};
-									value=0;
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male05GRE";
-								};
-							};
-						};
-						class Attribute2
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1;
-								};
-							};
-						};
-						nAttributes=3;
-					};
+					id=2480;
+					type="B_Recon_Sharpshooter_F";
+					atlOffset=8.392334e-005;
 				};
 			};
 			class Attributes
 			{
 			};
-			id=2473;
-			atlOffset=-1.5258789e-005;
+			id=2479;
+			atlOffset=8.392334e-005;
 		};
 	};
 	class Connections

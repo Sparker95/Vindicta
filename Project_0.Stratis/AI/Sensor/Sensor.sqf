@@ -16,7 +16,7 @@ Author: Sparker 08.11.2018
 CLASS("Sensor", "")
 
 	VARIABLE("AI"); // Pointer to the unit which holds this AI object
-	STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by
+	//STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by
 	VARIABLE("timeNextUpdate");
 	
 	// ----------------------------------------------------------------------
@@ -66,21 +66,5 @@ CLASS("Sensor", "")
 	/* virtual */ METHOD("getStimulusTypes") {
 		[]
 	} ENDMETHOD;	
-	
-	
-	// ----------------------------------------------------------------------
-	// |                    H A N D L E   M E S S A G E
-	// | 
-	// ----------------------------------------------------------------------
-	
-	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
-		pr _msgType = _msg select MESSAGE_ID_TYPE;
-		switch (_msgType) do {	
-			default {false}; // Message not handled
-		};
-	} ENDMETHOD;
-	
-	
 	
 ENDCLASS;

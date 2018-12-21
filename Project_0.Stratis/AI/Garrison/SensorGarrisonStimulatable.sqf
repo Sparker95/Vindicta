@@ -1,16 +1,15 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 
 /*
-Group sensor base class.
+Garrison stimulatable sensor base class.
 Saves some common variables at construction.
 */
 
 #define pr private
 
-CLASS("SensorGroup", "Sensor")
+CLASS("SensorGarrisonStimulatable", "SensorStimulatable")
 
-	VARIABLE("hG"); // Group handle
-	VARIABLE("group"); // Group
+	VARIABLE("gar"); // Group handle
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -19,9 +18,7 @@ CLASS("SensorGroup", "Sensor")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		pr _g = GETV(_AI, "agent");
-		SETV(_thisObject, "group", _g);
-		pr _gh = CALLM0(_g, "getGroupHandle");
-		SETV(_thisObject, "hG", _gh);
+		SETV(_thisObject, "gar", _g);
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -92,6 +92,12 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
+	// get groups
+	METHOD("getGroups") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "groups")
+	} ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                            G O A P                             
 	// ----------------------------------------------------------------------

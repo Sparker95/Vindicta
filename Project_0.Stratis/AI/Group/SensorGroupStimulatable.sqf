@@ -1,13 +1,13 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 
 /*
-Group sensor base class.
+Group stimulatable sensor base class.
 Saves some common variables at construction.
 */
 
 #define pr private
 
-CLASS("SensorGroup", "Sensor")
+CLASS("SensorGroupStimulatable", "SensorStimulatable")
 
 	VARIABLE("hG"); // Group handle
 	VARIABLE("group"); // Group

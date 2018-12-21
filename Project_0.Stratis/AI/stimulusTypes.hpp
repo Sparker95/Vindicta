@@ -7,3 +7,6 @@
 // Someone has saluted to the unit
 #define STIMULUS_TYPE_UNIT_SALUTE			100
 #define STIMULUS_TYPE_UNIT_CIV_NEAR		101
+
+// Information about targets
+#define STIMULUS_TYPE_TARGETS			200

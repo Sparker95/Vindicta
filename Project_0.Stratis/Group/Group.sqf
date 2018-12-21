@@ -209,6 +209,16 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |                           G E T   A I
+	// ----------------------------------------------------------------------
+	
+	METHOD("getAI") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _data = GETV(_thisObject, "data");
+		_data select GROUP_DATA_ID_AI
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |         S P A W N

@@ -41,22 +41,22 @@ CLASS("SensorUnitCivNear", "SensorStimulatable")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                           C R E A T E   W O R L D   F A C T
+	// |                           H A N D L E   S T I M U L U S
 	// | Creates a world fact specific to this sensor
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("createWorldFact") {
+	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]],["_stimulus",[],[[]] ] ];
 		pr _AI = GETV(_thisObject, "AI");
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
-		diag_log "createWorldFact";
+		diag_log "handleStimulus";
 		// Don't create a new fact if there is one already
 		pr _wf = WF_NEW();
 		[_wf, WF_TYPE_UNIT_ANNOYED_BY] call wf_fnc_setType;
 		
 		pr _wfFound = CALLM(_AI, "findWorldFact", [_wf]);
 		if (isNil "_wfFound") then {
-			diag_log format ["[SensorUnitCivNear:createWorldFact] Sensor: %1, created world fact", _thisObject];
+			diag_log format ["[SensorUnitCivNear:handleStimulus] Sensor: %1, created world fact", _thisObject];
 			
 			SETV(_thisObject,"timeAnnoyed",0); //reset timer
 			
