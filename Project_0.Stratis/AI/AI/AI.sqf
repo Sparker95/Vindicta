@@ -747,7 +747,11 @@ CLASS("AI", "MessageReceiverEx")
 			{ // forEach _availableActions;
 				pr _action = _x;
 				pr _effects = GET_STATIC_VAR(_x, "effects");
-				pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
+				pr _args = [[], []]; //
+				
+				// At this point we get static preconditions because action parameters are unknown
+				// Properties that will be overwritten by getPreconditions must be set to some values to resolve conflicts!
+				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
 				pr _connected = [_preconditions, _effects, _nodeWS] call ws_isActionSuitable;
 				
 				// If there is connection, create a new node
@@ -812,6 +816,9 @@ CLASS("AI", "MessageReceiverEx")
 						// It depends on action effects, preconditions and world state of current node
 						pr _WSBeforeAction = +_nodeWS;
 						[_WSBeforeAction, _effects] call ws_substract;
+						// Fully resolve preconditions since we now know all the parameters of this action
+						pr _args = [_goalParameters, _parameters]; //
+						pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
 						[_WSBeforeAction, _preconditions] call ws_add;
 						
 						// Check if this world state is in close set already
