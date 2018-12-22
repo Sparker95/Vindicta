@@ -273,7 +273,14 @@ civItems = [
 civWeapons = [
     "ACE_FakePrimaryWeapon",
     "Rifle_Base_F",
-    "Binocular"
+    "CarHorn",
+    "TruckHorn"
+];
+
+
+civBinoculars = [
+    "Binocular",
+    "Rangefinder"
 ];
 
 

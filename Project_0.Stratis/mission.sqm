@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=114;
+		nextID=118;
 	};
 	class Camera
 	{
-		pos[]={2793.0942,5.7097168,5905.3691};
-		dir[]={0.31075418,-0.564219,-0.76507992};
-		up[]={0.21234898,0.82550454,-0.52280551};
-		aside[]={-0.92655373,6.4179767e-007,-0.37634245};
+		pos[]={2796.8611,13.542284,5908.812};
+		dir[]={-0.68380624,-0.36881059,-0.62979716};
+		up[]={-0.27137426,0.92938644,-0.24994151};
+		aside[]={-0.67750943,1.2822566e-006,0.73560762};
 	};
 };
 binarizationWanted=0;
@@ -70,14 +70,13 @@ addons[]=
 	"A3_Soft_F_Kart_Kart_01",
 	"A3_Soft_F_Quadbike_01",
 	"A3_Soft_F_EPC_Truck_03",
-	"A3_Structures_F_Heli_VR_Helpers",
 	"A3_Soft_F_Offroad_01"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=31;
+		items=30;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -288,13 +287,6 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item30
-		{
-			className="A3_Structures_F_Heli";
-			name="Arma 3 Helicopters - Buildings and Structures";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
 	};
 };
 class DynamicSimulation
@@ -365,7 +357,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=169;
+		items=168;
 		class Item0
 		{
 			dataType="Object";
@@ -4681,23 +4673,6 @@ class Mission
 			atlOffset=-3.6239624e-005;
 		};
 		class Item167
-		{
-			dataType="Object";
-			class PositionInfo
-			{
-				position[]={2794.9861,1.9685328,5899.4131};
-				angles[]={6.2806892,0,0};
-			};
-			side="Empty";
-			flags=4;
-			class Attributes
-			{
-				name="testSphere";
-			};
-			id=2615;
-			type="Sign_Sphere25cm_F";
-		};
-		class Item168
 		{
 			dataType="Object";
 			class PositionInfo

@@ -1,7 +1,7 @@
 #define pr private
 #define MATH_PI 3.14159265359
 
-#define DEBUG_LINES
+//#define DEBUG_LINES
 
 params ["_thetaStart", "_thetaEnd", "_alphaStart", "_alphaEnd", "_unit"];
 
