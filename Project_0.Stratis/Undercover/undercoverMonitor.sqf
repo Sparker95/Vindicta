@@ -152,9 +152,10 @@ CLASS("undercoverMonitor", "MessageReceiver")
     	[_unit] spawn fn_UndercoverDebugUI;
 
     	// Make player overt for SUSP_HOSTILITY x Interval, after hostile action
-    	_unit addEventHandler ["Fired", {
+    	_unit addEventHandler ["FiredMan", {
 			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
 			_unit setVariable ["recentHostility", SUSP_HOSTILITY];
+			systemChat "fired";
 		}];
 
 	} ENDMETHOD;
@@ -210,7 +211,8 @@ CLASS("undercoverMonitor", "MessageReceiver")
 							pr _timeUnseen = _unit getVariable "timeUnseen";
 
 							if (_timeUnseen > 30 ) then {
-								_unit setVariable ["bWanted", false]; _unit setVariable ["bSuspicious", true]; 
+								_unit setVariable ["bWanted", false]; 
+								_unit setVariable ["bSuspicious", true]; 
 								_unit setVariable ["suspicion", SUSPICIOUS]; 
 							};
 						};
@@ -224,7 +226,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 						_unit setVariable ["bInVeh", false];
 						_unit setVariable ["bInMilVeh", false];  
 						
-						if (_recentHostility > 0) then { _recentHostility = _recentHostility - 1; _unit setVariable ["recentHostility", _recentHostility]; };
+						if (_recentHostility > 0 && !(_recentHostility <= 0)) then { _recentHostility = _recentHostility - 1; _unit setVariable ["recentHostility", _recentHostility]; };
 
 						if !(activeCBA) then { _suspGear = [_unit] call fnc_suspGear; } else { _suspGear = _unit getVariable "suspGear"; };
 
@@ -264,8 +266,21 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 							if !(_bInMilVeh) then {
 
-								pr _suspicion = _unit getVariable "suspicion";
 								pr _suspGear = _unit getVariable "suspGear";
+								pr _recentHostility = _unit getVariable "recentHostility";
+
+								if (_recentHostility > 0 && !(_recentHostility <= 0) ) exitWith { 
+									_recentHostility = _recentHostility - 1; 
+									_unit setVariable ["recentHostility", _recentHostility];
+									_suspicion = _suspicion + _recentHostility; 
+									[_unit, _suspicion] call fnc_setUndercover;
+									systemchat "decreasing hostility";
+								};
+
+								if ( (vehicle _unit nearRoads 50) isEqualTo [] ) exitWith { 
+									_suspicion = _suspicion + SUSPICIOUS;
+									[_unit, _suspicion] call fnc_setUndercover;
+								};
 
 								// EVALUATE GEAR VISIBLE IN SOMETHING LIKE THE HATCHBACK'S DRIVER' SEAT
 								if !(activeCBA) then {
@@ -304,7 +319,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 								// CHECK IF PLAYER IS SUSPICIOUS BASED ON DISTANCE TO NEAREST ENEMY WHO PRESENTLY SEES PLAYER
 								pr _distance = _unit getVariable "distance"; 
-								if !(currentWeapon _unit in civWeapons or currentWeapon _unit == "") then { _suspGear = _suspGear + SUSP_VEH_WEAP; systemChat "Weapon"; };
+								if !(currentWeapon _unit in civWeapons or currentWeapon _unit == "") then { _suspGear = _suspGear + SUSP_VEH_WEAP; };
 
 
 								// IF IN CIVILIAN VEHICLE, AND MORE THAN SUSP_VEH_DIST AWAY FROM ENEMY SPOTTING PLAYER, PLAYER REMAINS UNDERCOVER

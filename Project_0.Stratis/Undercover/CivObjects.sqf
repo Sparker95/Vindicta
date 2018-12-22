@@ -290,6 +290,8 @@ civBinoculars = [
 ----------------------------------------------------------------------------------------------
 */
 
+// no longer used array of civilian vehicles 
+/*
 civVehs = [
     "C_Hatchback_01_sport_F",
     "C_Hatchback_01_F",
@@ -329,4 +331,6 @@ civVehs = [
     "I_C_Van_02_transport_F",
     "I_C_Van_02_vehicle_F"
 ];
+
+*/
 
