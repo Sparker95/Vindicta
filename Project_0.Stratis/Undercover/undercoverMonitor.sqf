@@ -2,7 +2,6 @@
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\Undercover\fn_getBodyExposure.sqf"
 
 // Create player's undercover monitor
 gMsgLoopUndercover = NEW("MessageLoop", []);
@@ -265,19 +264,20 @@ CLASS("undercoverMonitor", "MessageReceiver")
 								pr _bodyExposure = _unit getVariable "bodyExposure";
 
 								// CHECK BODY EXPOSURE BY COMPARING CURRENT eyePos TO PREVIOUS INTERVAL'S eyePos
-								pr _eyePosNewVeh = _unit worldToModel (ASLTOAGL (eyepos vehicle _unit));
+								pr _eyePosNewVeh = (vehicle _unit) worldToModelVisual (_unit modelToWorldVisual (_unit selectionPosition "head"));
 								pr _eyePosOldVeh = _unit getVariable "eyePosOldVeh";
-								pr _eyePosNew = _unit worldToModel (ASLTOAGL (eyepos _unit));
+								//pr _eyePosNew = _unit worldToModel (ASLTOAGL (eyepos _unit));
 								pr _eyePosOld = _unit getVariable "eyePosOld";
 
-								if ( (_eyePosOld vectorDistance _eyePosNew) > 0.15 or (_eyePosOldVeh vectorDistance _eyePosNewVeh) > 0.15) then { 
+								if ( /*(_eyePosOld vectorDistance _eyePosNew) > 0.15 or*/ (_eyePosOldVeh vectorDistance _eyePosNewVeh) > 0.15) then { 
 									_bodyExposure = [20, 120, 0, 360, _unit] call fnc_getVisibleSurface;
 									_unit setVariable ["bodyExposure", _bodyExposure]; 
-									systemChat format ["===Body exposure: %1", _bodyExposure];
+									systemChat format ["Body exposure: %1", _bodyExposure];
+									//systemChat format ["Body position has changed: %1", time];
 								};
 
 								_unit setVariable ["eyePosOldVeh", _eyePosNewVeh];
-								_unit setVariable ["eyePosOld", _eyePosNew];
+								//_unit setVariable ["eyePosOld", _eyePosNew];
 
 								// ADJUST SUSPICIOUSNESS IN VEHICLE BASED ON DISTANCE TO ENEMY WHO SEES PLAYER
 
