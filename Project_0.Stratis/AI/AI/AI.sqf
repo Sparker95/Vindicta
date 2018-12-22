@@ -841,7 +841,7 @@ CLASS("AI", "MessageReceiverEx")
 							
 							// Calculate G value
 							// G = G(_node) + cost of this action
-							pr _args = [_AI, _preconditions, _nodeWS];
+							pr _args = [_AI, _parameters];
 							pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
 							pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
 							_n set [ASTAR_NODE_ID_G, _g];

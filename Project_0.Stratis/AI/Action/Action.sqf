@@ -248,7 +248,8 @@ CLASS("Action", "MessageReceiver")
 	// Returns cost of this action
 	// Takes the AI object as parameter, start and end world state
 	STATIC_METHOD("getCost") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		//params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
 		// Return static cost
