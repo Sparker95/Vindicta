@@ -159,19 +159,19 @@ CLASS("AI", "MessageReceiverEx")
 					
 					// Get desired world state
 					pr _args = [/* AI */ _thisObject, _currentGoalParameters];
-					pr _wsGoal = CALL_STATIC_METHOD(_currentGoal, "getEffects", _args);
+					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
 					
 					// Get actions this agent can do
 					pr _possActions = CALLM0(_agent, "getPossibleActions");
 					
 					// Run the A* planner to generate a plan
-					pr _args = [GETV(_thisObject, worldState), _wsGoal, _possActions, _currentGoalParameters];
+					pr _args = [GETV(_thisObject, "worldState"), _wsGoal, _possActions, _currentGoalParameters];
 					pr _actionPlan = CALL_STATIC_METHOD("AI", "planActions", _args);
 					
 					// Did the planner return anything?
 					if (count _actionPlan > 0) then {
 						// Unpack the plan
-						_newAction = CALLM(_thisObject, "createActionsFromPlan", [_plan]);
+						_newAction = CALLM(_thisObject, "createActionsFromPlan", [_actionPlan]);
 						// Set a new action from the plan
 						CALLM1(_thisObject, "setCurrentAction", _newAction);
 					} else {
@@ -727,7 +727,11 @@ CLASS("AI", "MessageReceiverEx")
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
-					_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+					
+					if (! ((_n select ASTAR_NODE_ID_ACTION) isEqualTo ASTAR_ACTION_DOES_NOT_EXIST)) then {
+						_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+					};
+					
 					if (((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) ||
 							((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo ASTAR_NODE_DOES_NOT_EXIST)) exitWith{};
 					_n = _n select ASTAR_NODE_ID_NEXT_NODE;
@@ -752,7 +756,10 @@ CLASS("AI", "MessageReceiverEx")
 				// At this point we get static preconditions because action parameters are unknown
 				// Properties that will be overwritten by getPreconditions must be set to some values to resolve conflicts!
 				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
-				pr _connected = [_preconditions, _effects, _nodeWS] call ws_isActionSuitable;
+				// Safety check
+				pr _connected = if (!isNil "_preconditions") then { [_preconditions, _effects, _nodeWS] call ws_isActionSuitable; } else {
+					false;
+				};
 				
 				// If there is connection, create a new node
 				if (_connected) then {

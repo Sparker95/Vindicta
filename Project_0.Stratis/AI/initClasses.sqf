@@ -34,6 +34,8 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMountedCar
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveDismounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRepairAllVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRelax.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonDefendPassive.sqf";
+
 // Cargo operations
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonLoadCargo.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonUnloadCurrentCargo.sqf";
@@ -42,6 +44,7 @@ call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRepairAllVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMove.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMoveCargo.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonDefendPassive.sqf";
 
 
 // Create a database with costs, effects, preconditions, etc

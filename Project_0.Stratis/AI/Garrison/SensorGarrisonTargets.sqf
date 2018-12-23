@@ -5,6 +5,7 @@
 #include "..\stimulusTypes.hpp"
 #include "..\commonStructs.hpp"
 #include "..\Stimulus\Stimulus.hpp"
+#include "garrisonWorldStateProperties.hpp"
 
 
 /*
@@ -16,6 +17,9 @@ Author: Sparker 21.12.2018
 
 // Update interval of this sensor
 #define UPDATE_INTERVAL 5
+
+// Maximum age of target before it is deleted
+#define TARGET_MAX_AGE 15
 
 // ---- Debugging defines ----
 
@@ -37,6 +41,38 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
+		// Loop throgh known targets and remove those who are older than some threshold
+		pr _AI = GETV(_thisObject, "AI");
+		pr _knownTargets = GETV(_AI, "targets");
+		if (count _knownTargets > 0) then {
+			pr _i = 0;
+			pr _t = time;
+			pr _targetsBeyondAge = _knownTargets select {(_t - (_x select TARGET_ID_TIME)) > TARGET_MAX_AGE};
+			_knownTargets = _knownTargets - _targetsBeyondAge;
+			SETV(_AI, "targets", _knownTargets);
+		};
+		
+		// Set the world state property
+		// Are we aware of any targets?
+		pr _ws = GETV(_AI, "worldState");
+		if (count _knownTargets > 0) then {
+		
+			diag_log "Garrison is in combat now!";
+		
+			// Set property value
+			[_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_setPropertyValue;
+			
+			// Play the alarm sound
+			pr _gar = GETV(_AI, "agent");
+			pr _loc = CALLM0(_gar, "getLocation");
+			pr _pos = CALLM0(_loc, "getPos");
+			playSound3D ["A3\Sounds_F\sfx\alarm.wss", objNull, false, (AGLTOASL _pos) vectorAdd [0, 0, 5], 20, 1, 1000];
+			
+			
+		} else {
+			[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
+		};
+
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -113,6 +149,11 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 				CALLM2(_groupAI, "postMethodAsync", "handleStimulus", [_stimulus]);
 			}
 		} forEach (_groups - [_groupSource]);
+		
+		// Set the world state property
+		// This garrison is now aware of enemies
+		pr _ws = GETV(_AI, "worldState");
+		[_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_setPropertyValue;
 	} ENDMETHOD;
 	
 ENDCLASS;

@@ -92,6 +92,11 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
+	METHOD("getLocation") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "location");
+	} ENDMETHOD;
+	
 	// get groups
 	METHOD("getGroups") {
 		params [["_thisObject", "", [""]]];
@@ -104,11 +109,22 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	// It should return the goals this garrison might be willing to achieve
 	METHOD("getPossibleGoals") {
-		["goalGarrisonRelax", "goalGarrisonRepairAllVehicles"]
+		["GoalGarrisonRelax",
+		"GoalGarrisonRepairAllVehicles",
+		"GoalGarrisonDefendPassive"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {
-		["actionGarrisonRelax", "actionGarrisonRepairAllVehicles"]
+		["ActionGarrisonDefendPassive",
+		"ActionGarrisonLoadCargo",
+		"ActionGarrisonMountCrew",
+		"ActionGarrisonMountInfantry",
+		"ActionGarrisonMoveDismounted",
+		"ActionGarrisonMoveMounted",
+		"ActionGarrisonMoveMountedCargo",
+		"ActionGarrisonRelax",
+		"ActionGarrisonRepairAllVehicles",
+		"ActionGarrisonUnloadCurrentCargo"]
 	} ENDMETHOD;
 	
 	METHOD("getSubagents") {
