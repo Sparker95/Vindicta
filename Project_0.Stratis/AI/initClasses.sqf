@@ -20,7 +20,15 @@ call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 
 call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
 
+
+
+
+
+
+
 // Garrison AI classes
+call compile preprocessFileLineNumbers "AI\Garrison\initClasses.sqf";
+/*
 call compile preprocessFileLineNumbers "AI\Garrison\AIGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonStimulatable.sqf";
@@ -49,21 +57,19 @@ call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonDefendPassive.sq
 
 // Create a database with costs, effects, preconditions, etc
 call compile preprocessFileLineNumbers "AI\Garrison\initDatabase.sqf";
-
+*/
 
 
 
 // Group AI classes
+call compile preprocessFileLineNumbers "AI\Group\initClasses.sqf";
+/*
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\SensorGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\SensorGroupStimulatable.sqf";
 
 call compile preprocessFileLineNumbers "AI\Group\SensorGroupTargets.sqf";
-
-
-
-
-
+*/
 
 
 
