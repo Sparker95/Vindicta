@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2415;
+		nextID=2417;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=83;
+		nextID=86;
 	};
 	class Camera
 	{
-		pos[]={2987.9771,172.84526,1870.7062};
-		dir[]={-0.92309868,0.1109717,-0.36850131};
-		up[]={0.10281169,0.99386275,0.041043468};
-		aside[]={-0.3707929,5.8929436e-007,0.92882961};
+		pos[]={2982.4666,173.73196,1873.5616};
+		dir[]={-0.95105129,-0.10284466,-0.29185298};
+		up[]={-0.098571084,0.99468309,-0.030248003};
+		aside[]={-0.29341352,5.0390372e-007,0.95610166};
 	};
 };
 binarizationWanted=0;
@@ -263,7 +263,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=144;
+		items=145;
 		class Item0
 		{
 			dataType="Object";
@@ -3330,7 +3330,7 @@ class Mission
 			flags=4;
 			class Attributes
 			{
-				init="call{this call JN_fnc_arsenal_init;" \n "this call JN_fnc_logistics_addAction;}";
+				init="call{this call JN_fnc_arsenal_init;" \n "this call JN_fnc_logistics_addAction;" \n "this call JN_fnc_garage_init;}";
 			};
 			id=2414;
 			type="B_supplyCrate_F";
@@ -3357,6 +3357,96 @@ class Mission
 				};
 				nAttributes=1;
 			};
+		};
+		class Item144
+		{
+			dataType="Group";
+			side="West";
+			class Entities
+			{
+				items=1;
+				class Item0
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={2983.2461,171.40143,1868.4761};
+					};
+					side="West";
+					flags=7;
+					class Attributes
+					{
+						isPlayable=1;
+					};
+					id=2416;
+					type="B_officer_F";
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="allowDamage";
+							expression="_this allowdamage _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"BOOL"
+										};
+									};
+									value=0;
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male11ENG";
+								};
+							};
+						};
+						class Attribute2
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=0.94999999;
+								};
+							};
+						};
+						nAttributes=3;
+					};
+				};
+			};
+			class Attributes
+			{
+			};
+			id=2415;
 		};
 	};
 	class Connections

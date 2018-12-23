@@ -16,10 +16,13 @@
 if(!isServer)exitWith{};
 params ["_clientOwner","_object"];
 
- pr _temp = _object getVariable ["jna_playersInArsenal",[]];
+pr _temp = _object getVariable ["jna_inUseBy",[]];
 _temp pushBackUnique _clientOwner;
-_object setVariable ["jna_playersInArsenal",_temp,true];
+_object setVariable ["jna_inUseBy",_temp,true];
 
-diag_log ["open arsenal for: clientOwner ",_clientOwner];
-["Open",_object] remoteExecCall ["jn_fnc_arsenal", _clientOwner];
+
+pr _jna_dataList = _object getVariable "jna_dataList";
+
+diag_log ["open arsenal for: clientOwner ",_clientOwner,_object];
+["Open",[_jna_dataList]] remoteExecCall ["jn_fnc_arsenal", _clientOwner];
 

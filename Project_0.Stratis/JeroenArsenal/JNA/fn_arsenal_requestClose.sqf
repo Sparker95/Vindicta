@@ -17,6 +17,6 @@
 if(!isServer)exitWith{};
 params ["_clientOwner","_object"];
 
-_temp = _object getVariable ["jna_playersInArsenal",[]];
+_temp = _object getVariable ["jna_inUseBy",[]];
 _temp = _temp - [_clientOwner];
-_object setVariable ["jna_playersInArsenal",_temp,true];
+_object setVariable ["jna_inUseBy",_temp,true];
