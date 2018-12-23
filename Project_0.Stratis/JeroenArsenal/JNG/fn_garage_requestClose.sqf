@@ -13,8 +13,8 @@
 */
 
 if(!isServer)exitWith{};
-params ["_clientOwner"];
+params ["_clientOwner","_object"];
 
-_temp = missionnamespace getVariable ["jng_playersInArsenal",[]];
+_temp = _object getVariable ["jng_inUseBy",[]];
 _temp= _temp - [_clientOwner];
-missionnamespace setVariable ["jng_playersInArsenal",_temp];
+_object setVariable ["jng_inUseBy",_temp];

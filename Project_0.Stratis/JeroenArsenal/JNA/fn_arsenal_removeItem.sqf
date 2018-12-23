@@ -1,9 +1,12 @@
 #include "defineCommon.inc"
 
-pr _array = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
-pr _object = _this select 0;
+params ["_object"];
+
+pr "_array";
+
 if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_index, _item, _amount];
 	params["","_index","_item",["_amount",1]];
+	_array = EMPTY_ARRAY;
 	_array set [_index,[[_item,_amount]]];
 }else{
 	_array = _this select 1;
@@ -21,7 +24,7 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 			if(_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG)then{_index = IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL};
 
 			//update
-			pr _playersInArsenal = +(_object getVariable ["jna_playersInArsenal",[]]);
+			pr _playersInArsenal = +(_object getVariable ["jna_inUseBy",[]]);
 			if!(0 in _playersInArsenal)then{_playersInArsenal pushBackUnique 2;};
 			["UpdateItemRemove",[_index, _item, _amount,_object]] remoteExecCall ["jn_fnc_arsenal",_playersInArsenal];
 		};

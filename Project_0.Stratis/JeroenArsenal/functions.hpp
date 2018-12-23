@@ -5,8 +5,8 @@ class JN {
 		class test_init {preinit = 1;};
 		class test_recompile {};
 		class test_configViewer {};
+		class test_debugv2 {preinit = 1;};
 	};
-	
 	class Common {
 		file = "JeroenArsenal\Common";
 		class common_addActionSelect {};
@@ -61,7 +61,7 @@ class JN {
 	class Fuel {
 		file = "JeroenArsenal\Fuel";
 		class fuel_init {preinit = 1;};
-		class fuel_consumption_init {};
+		class fuel_consumption_init {postInit = 1;};
 		class fuel_consumption_start {};
 		class fuel_consumption_stop {};
 		class fuel_refuel {};

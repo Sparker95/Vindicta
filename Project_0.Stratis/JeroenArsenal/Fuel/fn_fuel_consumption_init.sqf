@@ -18,6 +18,10 @@
 
 params["_unit"];
 
+if((_this select 0) isEqualTo "postInit")then {_unit = player};
+
+if(isnil "_unit")ExitWith{diag_log "jn_fnc_fuel_consumption_init error 1"};
+
 diag_log ("JNG_FUEL start for player:" + name _unit);
 
 _unit addEventHandler ["GetInMan", {

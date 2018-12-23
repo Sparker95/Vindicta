@@ -39,7 +39,7 @@ if(isServer)then{
     //load default if it was not loaded from savegame
     pr _datalist = _object getVariable "jna_dataList";
     if(isnil "_datalist")then{
-        _object setVariable ["jna_dataList" ,[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]];
+        _object setVariable ["jna_dataList" ,EMPTY_ARRAY];
     };
 };
 
@@ -98,8 +98,10 @@ if(hasInterface)then{
                     _attachmentsContainers set [_foreachindex,_attachments];
                 };
             } forEach [uniformContainer player,vestContainer player,backpackContainer player];
-            missionNamespace setVariable ["jna_containerCargo_init", _attachmentsContainers];
-
+            
+			UINamespace setVariable ["jna_containerCargo_init", _attachmentsContainers];
+			UINamespace setVariable ["jn_type","arsenal"];
+			UINamespace setVariable ["jn_object",_object];
 
 
             //request server to open arsenal
@@ -154,6 +156,15 @@ if(hasInterface)then{
 						_display closedisplay 2;
 						["jn_fnc_arsenal"] call BIS_fnc_endLoadingScreen;
 					};
+					
+					//TODO this is a temp fix for rhs because it freezes the loading screen if no primaryWeapon was equiped. This will be fix in rhs 0.4.9
+					if("bis_fnc_arsenal" in _ids)then{
+						pr _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
+						diag_log "JNA: Non Fatal Error, RHS?";
+						titleText["Non Fatal Error, RHS?", "PLAIN"];
+						["bis_fnc_arsenal"] call BIS_fnc_endLoadingScreen;
+					};
+
 				};
 
 				//request server to open arsenal

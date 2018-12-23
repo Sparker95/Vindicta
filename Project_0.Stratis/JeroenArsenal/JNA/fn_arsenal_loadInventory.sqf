@@ -2,8 +2,8 @@
 
 
 //items that need to be removed from arsenal
-pr _arrayPlaced = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
-pr _arrayTaken = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+pr _arrayPlaced = EMPTY_ARRAY;
+pr _arrayTaken = EMPTY_ARRAY;
 pr _arrayMissing = [];
 pr _arrayReplaced = [];
 

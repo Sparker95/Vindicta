@@ -130,7 +130,7 @@ switch _mode do {
         if( missionnamespace getVariable ["jna_firstInit",true])exitWith{};
         missionnamespace setVariable ["jna_firstInit",false];
 
-        pr _data = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+        pr _data = EMPTY_ARRAY;
         INITTYPES;
 
         _configArray = (
@@ -205,24 +205,25 @@ switch _mode do {
 
     /////////////////////////////////////////////////////////////////////////////////////////// Externaly called
     case "Open": {
-		params["_object"];
+		params["_jna_dataList"];
         diag_log "JNA open arsenal";
-		//set type and object to use later
-		UINamespace setVariable ["jn_type","arsenal"];
-		UINamespace setVariable ["jn_object",_object];
+		
+		pr _object = UINamespace getVariable "jn_object";
+		_object setVariable ["jna_dataList",_jna_dataList];
+		
         ["Open",[nil,_object,player,false]] call bis_fnc_arsenal;
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "CustomInit":{
-
+		diag_log ["CustomInit22",UINamespace getVariable "jn_object"];
         _display = _this select 0;
         ["ReplaceBaseItems",[_display]] call jn_fnc_arsenal;
         ["customEvents",[_display]] call jn_fnc_arsenal;
         ["CreateListAll", [_display]] call jn_fnc_arsenal;
         ['showMessage',[_display,"Jeroen (Not) Limited Arsenal"]] call jn_fnc_arsenal;
         ["HighlightMissingIcons",[_display]] call jn_fnc_arsenal;
-
+		
         ["jn_fnc_arsenal"] call BIS_fnc_endLoadingScreen;
     };
 
@@ -564,8 +565,7 @@ switch _mode do {
         pr _type = (ctrltype _ctrlList == 102);
 
         _ctrlList ctrlenable true;
-
-        pr _object = UINamespace getVariable "jn_object";
+		pr _object = uiNamespace getVariable "jn_object";
         pr _dataList = _object getVariable "jna_dataList";
 
         pr _inventory = if(_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG)then{
@@ -774,7 +774,8 @@ switch _mode do {
     ///////////////////////////////////////////////////////////////////////////////////////////
     case "CreateListAll":{
         params["_display"];
-        pr _object = UINamespace getVariable "jn_object";
+		
+		pr _object = uiNamespace getVariable "jn_object";
         pr _dataList = _object getVariable "jna_dataList";
         {
             pr _inventory_box = _x;
@@ -937,15 +938,14 @@ switch _mode do {
 
     ///////////////////////////////////////////////////////////////////////////////////////////  GLOBAL
     case "UpdateItemAdd":{
-        params ["_index","_item","_amount",["_updateDataList",nil]];
+        params ["_index","_item","_amount",["_object",nil]];
 		
         //update datalist
-        if(!isnil "_updateDataList")then{
-			pr _object = _updateDataList;
-			pr _dataList =_object getVariable "jna_dataList";
+        if(!isnil "_object")then{
+			pr _dataList = _object getVariable "jna_dataList";
             _dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_common_array_add];
-            _object setVariable ["jna_dataList", _dataList];
         };
+		
         pr _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
         if (typeName _display == "STRING") exitWith {};
         if(str _display isEqualTo "No display")exitWith{};
@@ -1010,17 +1010,12 @@ switch _mode do {
 
     ///////////////////////////////////////////////////////////////////////////////////////////  GLOBAL
     case "UpdateItemRemove":{
-        params ["_index","_item","_amount",["_updateDataList",nil]];
-
-        pr _object = UINamespace getVariable "jn_object";
-        pr _dataList =_object getVariable "jna_dataList";
+        params ["_index","_item","_amount",["_object",nil]];
 
         //update datalist
-        if(!isnil "_updateDataList")then{
-			pr _object = _updateDataList;
-			pr _dataList =_object getVariable "jna_dataList";
+        if(!isnil "_object")then{
+			pr _dataList = _object getVariable "jna_dataList";
             _dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_common_array_remove];
-            _object setVariable ["jna_dataList", _dataList];
         };
 
         pr _display =  uiNamespace getVariable ["arsanalDisplay","No display"];
@@ -1162,31 +1157,27 @@ switch _mode do {
     case "UpdateItemGui":{
         params["_display","_ctrlList","_index","_l"];
 
-        _type = (ctrltype _ctrlList == 102);
-        _cursel = lbcursel _ctrlList;
-        _dataStr = if _type then{_ctrlList lnbData [_l,0]}else{_ctrlList lbdata _l};
-        _data = parseSimpleArray _dataStr;
-        _item = _data select 0;
-        _amount = _data select 1;
-        _displayName = _data select 2;
-
-        pr _object = UINamespace getVariable "jn_object";
+        pr _type = (ctrltype _ctrlList == 102);
+        pr _cursel = lbcursel _ctrlList;
+        pr _dataStr = if _type then{_ctrlList lnbData [_l,0]}else{_ctrlList lbdata _l};
+        pr _data = parseSimpleArray _dataStr;
+        pr _item = _data select 0;
+        pr _amount = _data select 1;
+        pr _displayName = _data select 2;
+		pr _object = uiNamespace getVariable "jn_object";
         pr _dataList =_object getVariable "jna_dataList";
 
         //skip empty
         if(_item isEqualTo "")exitWith{};
 
         //update name with counters and ammocounters (need to be done after sorting)
-        //TODO change to define
-        _checkAmount = {
-            private["_amount","_suffix","_prefix","_amountString"];
-            _amount = _this;
-
-
+        //TODO change to define?
+        pr _checkAmount = {
+            pr _amount = _this;
             if(_amount == -1)exitWith{"[   ∞  ]  ";};
 
-            _suffix = "";
-            _prefix = "";
+            pr _suffix = "";
+            pr _prefix = "";
             if(_amount > 999)then{
                 _amount = round(_amount/1000);_suffix="k";
                 _prefix = switch true do{
@@ -1205,11 +1196,11 @@ switch _mode do {
         };
 
         //grayout items for non members, right items are done in selectRight
-        _min = jna_minItemMember select _index;
-        _grayout = false;
+        pr _min = jna_minItemMember select _index;
+        pr _grayout = false;
         if ((_amount <= _min) AND (_amount != -1) AND !([player] call isMember)) then{_grayout = true};
 
-        _color = [1,1,1,1];
+        pr _color = [1,1,1,1];
         if(_grayout)then{
             _color = [1,1,0,0.60];
             if _type then{
@@ -1222,7 +1213,7 @@ switch _mode do {
 
 
         //ammmo icon for weapons
-        _ammo_logo = getText(configfile >> "RscDisplayArsenal" >> "Controls" >> "TabCargoMag" >> "text");
+        pr _ammo_logo = getText(configfile >> "RscDisplayArsenal" >> "Controls" >> "TabCargoMag" >> "text");
         if _type then{
             _text = ((_amount call _checkAmount) + _displayName);
             if(_index in [
@@ -1329,6 +1320,7 @@ switch _mode do {
         params["_display","_ctrlList","_index"];
 
         _cursel = lbcursel _ctrlList;
+		if(_cursel == -1)exitWith{};
         _type = (ctrltype _ctrlList == 102);
         _dataStr = if _type then{_ctrlList lnbData [_cursel,0]}else{_ctrlList lbdata _cursel};
         _data = parseSimpleArray _dataStr;
@@ -1861,7 +1853,7 @@ switch _mode do {
         params ["_display","_add"];
 
         pr _object = UINamespace getVariable "jn_object";
-        pr _dataList =_object getVariable "jna_dataList";
+        pr _dataList = _object getVariable "jna_dataList";
 
         _selected = -1;
         {

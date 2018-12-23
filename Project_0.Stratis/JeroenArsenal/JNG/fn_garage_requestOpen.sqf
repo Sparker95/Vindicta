@@ -16,11 +16,11 @@
 if(!isServer)exitWith{};
 params ["_clientOwner","_object"];
 
- pr _temp = _object getVariable ["jng_playersInGarage",[]];
+ pr _temp = _object getVariable ["jng_inUseBy",[]];
 _temp pushBackUnique _clientOwner;
 _object setVariable ["jng_playersInGarage",_temp,true];
 
 diag_log ["open Garage for: clientOwner ",_clientOwner];
 
 //call compile preProcessFileLineNumbers "JeroenArsenal\JNG\recompile.sqf";
-["Open"] remoteExecCall ["jn_fnc_garage", _clientOwner];
+["Open",[_object]] remoteExecCall ["jn_fnc_garage", _clientOwner];

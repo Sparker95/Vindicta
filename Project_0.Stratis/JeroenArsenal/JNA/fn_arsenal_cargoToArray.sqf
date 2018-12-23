@@ -17,7 +17,7 @@
 #include "\A3\Ui_f\hpp\defineResinclDesign.inc"
 
 params["_container"];
-pr _array = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+pr _array = EMPTY_ARRAY;
 
 
 pr _addToArray = {

@@ -795,7 +795,7 @@ switch _mode do {
 
 		//clean list
 		jnva_loadout_mass = 0;
-        jnva_loadout = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+        jnva_loadout = EMPTY_ARRAY;
 
         //set all items to 0
 		{
