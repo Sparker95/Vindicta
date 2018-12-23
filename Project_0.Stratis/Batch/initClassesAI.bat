@@ -13,9 +13,10 @@ del "initClasses.sqf"
 
 REM loop through all .sqf files and add them to initClasses.sqf
 @echo // Auto generated file>> initClasses.sqf
-for %%f in (*AI*.sqf) do call :printLine %%f
-for %%f in (*Action*.sqf) do call :printLine %%f
-for %%f in (*Goal*.sqf) do call :printLine %%f
+for %%f in (AI*.sqf) do call :printLine %%f
+for %%f in (_Action*.sqf) do call :printLine %%f
+for %%f in (Action*.sqf) do call :printLine %%f
+for %%f in (Goal*.sqf) do call :printLine %%f
 for %%f in (_Sensor*.sqf) do call :printLine %%f
 for %%f in (Sensor*.sqf) do call :printLine %%f
 for %%f in (initDatabase.sqf) do call :printLine %%f

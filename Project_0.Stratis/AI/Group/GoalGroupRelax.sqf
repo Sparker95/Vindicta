@@ -13,9 +13,8 @@
 Goal for a group to perform patrol.
 */
 
-
 #define pr private
 
-CLASS("GoalGroupPatrol", "Goal")
+CLASS("GoalGroupRelax", "Goal")
 
 ENDCLASS;

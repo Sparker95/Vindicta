@@ -299,7 +299,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	} ENDMETHOD;
 	
 	METHOD("getPossibleGoals") {
-		[]
+		["GoalGroupRelax"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {

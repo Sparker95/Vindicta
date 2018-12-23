@@ -122,7 +122,14 @@ CLASS("Location", "MessageReceiver")
 		GETV(_thisObject, "pos")
 	} ENDMETHOD;
 	
+	// ----------------------------------------------------------------------
+	// |               G E T   P A T R O L   W A Y P O I N T S 
+	// ----------------------------------------------------------------------
 	
+	METHOD("getPatrolWaypoints") {
+		params [ ["_thisObject", "", [""]] ];
+		GETV(_thisObject, "borderPatrolWaypoints")
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                  G E T   M E S S A G E   L O O P                   |

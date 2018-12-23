@@ -13,22 +13,15 @@
 Template of a goal class
 */
 
-//Include some forld state properties
-#include "garrisonWorldStateProperties.hpp"
-
-
 #define pr private
 
 CLASS("MyGoal", "Goal")
 
-	STATIC_VARIABLE("effects"); // Array of world properties
-	
 	// ----------------------------------------------------------------------
 	// |            C A L C U L A T E   R E L E V A N C E
 	// ----------------------------------------------------------------------
 	// Calculates desireability to choose this goal for a given _AI
-	// Inherited classes must implement this
-	
+	// If this method is not overwritten, it will return a static relevance
 	STATIC_METHOD("calculateRelevance") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
 		
