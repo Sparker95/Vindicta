@@ -123,10 +123,10 @@ CLASS("AI", "MessageReceiverEx")
 		*/
 		
 		// Update all sensors
-		CALLM(_thisObject, "updateSensors", []);
+		CALLM0(_thisObject, "updateSensors");
 		
 		// Update all world facts (delete old facts)
-		CALLM(_thisObject, "updateWorldFacts", []);
+		CALLM0(_thisObject, "updateWorldFacts");
 		
 		//Calculate most relevant goal
 		pr _goalNewArray = CALLM(_thisObject, "getMostRelevantGoal", []);
@@ -153,13 +153,37 @@ CLASS("AI", "MessageReceiverEx")
 				// First check if the goal assumes a predefined plan
 				private _args = [_thisObject, _goalParameters];
 				pr _newAction = CALL_STATIC_METHOD(_goalClassName, "createPredefinedAction", _args);
-				if (_newAction != "") then {
+				
+				if (_newAction == "") then {
+					// Predefined action was not supplied, so we must run the planner
+					
+					// Get desired world state
+					pr _args = [/* AI */ _thisObject, _currentGoalParameters];
+					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
+					
+					// Get actions this agent can do
+					pr _possActions = CALLM0(_agent, "getPossibleActions");
+					
+					// Run the A* planner to generate a plan
+					pr _args = [GETV(_thisObject, "worldState"), _wsGoal, _possActions, _currentGoalParameters];
+					pr _actionPlan = CALL_STATIC_METHOD("AI", "planActions", _args);
+					
+					// Did the planner return anything?
+					if (count _actionPlan > 0) then {
+						// Unpack the plan
+						_newAction = CALLM(_thisObject, "createActionsFromPlan", [_actionPlan]);
+						// Set a new action from the plan
+						CALLM1(_thisObject, "setCurrentAction", _newAction);
+					} else {
+						// Terminate the current action (if it exists)
+						CALLM0(_thisObject, "deleteCurrentAction");
+						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, worldState), _wsGoal];
+					};
 				} else {
-					// todo run planner
+					// Set a new action from the predefined action
+					CALLM1(_thisObject, "setCurrentAction", _newAction);
 				};
 				
-				// Set a new action
-				SETV(_thisObject, "currentAction", _newAction);
 			};
 		} else {
 			// We don't pursue a goal any more
@@ -169,15 +193,10 @@ CLASS("AI", "MessageReceiverEx")
 			if (_currentGoal != "") then {
 				diag_log format ["[AI:Process] AI: %1 ending the current goal: %2", _thisObject, _currentGoal];
 				SETV(_thisObject, "currentGoal", "");
-				
-				// Terminate the current action
-				pr _currentAction = GETV(_thisObject, "currentAction");
-				if (_currentAction != "") then {
-					CALLM(_currentAction, "terminate", []);
-					DELETE(_currentAction);
-					SETV(_thisObject, "currentAction", "");
-				};
 			};
+			
+			// Delete the current action if we had it
+			CALLM0(_thisObject, "deleteCurrentAction");
 			
 			//diag_log format ["  most relevant goal: %1", _goalClassName];
 		};
@@ -188,12 +207,19 @@ CLASS("AI", "MessageReceiverEx")
 			pr _actionState = CALLM(_currentAction, "process", []);
 			switch (_actionState) do {
 				case ACTION_STATE_COMPLETED : {
-					// Mark the current goal as completed?
+					// Mark the current goal as completed
+					pr _currentGoal = GETV(_thisObject, "currentGoal");
+					pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
+					CALLM2(_thisObject, "deleteExternalGoal", _currentGoal, _currentGoalParameters); 
+					
+					// Delete the current action
+					CALLM0(_thisObject, "deleteCurrentAction");
 				};
 				
 				case ACTION_STATE_FAILED : {
 					// Probably we should replan our goal at the next iteration
 					SETV(_thisObject, "currentGoal", "");
+					CALLM0(_thisObject, "deleteCurrentAction");
 				};
 			};
 		};
@@ -378,13 +404,13 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	
 	METHOD("deleteExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], "_parameter"];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_parameters", [], [[]]]];
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		pr _i = 0;
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
-			if ((_cg select 0 == _goalClassName) && (_cg select 1 isEqualTo _parameter)) then {
+			if ((_cg select 0 == _goalClassName) && (_cg select 1 isEqualTo _parameters)) then {
 				_goalsExternal deleteAt _i;
 			} else {
 				_i = _i + 1;
@@ -402,34 +428,78 @@ CLASS("AI", "MessageReceiverEx")
 	// -------------------------------------------- A C T I O N S -------------------------------------------
 	// ------------------------------------------------------------------------------------------------------
 	
-	
-	
-	
 	// ----------------------------------------------------------------------
 	// |                S E T   C U R R E N T   A C T I O N
 	// |
 	// ----------------------------------------------------------------------
 	
 	METHOD("setCurrentAction") {
+		params [["_thisObject", "", [""]], ["_newAction", "", [""]]];
+		
+		// Make sure previous action is deleted
+		pr _currentAction = GETV(_thisObject, "currentAction");
+		
+		// Do we currently already have an action?
+		if (_currentAction != "") then {
+			CALLM(_currentAction, "terminate", []);
+			DELETE(_currentAction);
+		};
+		
+		SETV(_thisObject, "currentAction", _newAction);
+	} ENDMETHOD;
+	
+
+	// ----------------------------------------------------------------------
+	// |            D E L E T E   C U R R E N T   A C T I O N
+	// |
+	// ----------------------------------------------------------------------
+	
+	METHOD("deleteCurrentAction") {
 		params [["_thisObject", "", [""]]];
-		/*
-		delete(currentAction);
-		currentAction = action;
-		*/
+		pr _currentAction = GETV(_thisObject, "currentAction");
+		if (_currentAction != "") then {
+			CALLM(_currentAction, "terminate", []);
+			DELETE(_currentAction);
+			SETV(_thisObject, "currentAction", "");
+		};
 	} ENDMETHOD;
 	
 	
 	// ----------------------------------------------------------------------
-	// |                P L A N   A C T I O N S
-	// | Plans a way towards specified goal, returns a single action, which can be serial action or an atomic action
-	// | Return value: [action, planIsValid]
+	// |            C R E A T E   A C T I O N S   F R O M   P L A N
+	// |
 	// ----------------------------------------------------------------------
-	/*
-	METHOD("planActions") {
-		params [["_thisObject", "", [""]]];
-		// Put your A* implementation here
+	// Creates actions from plan generated by the planActions method	
+	METHOD("createActionsFromPlan") {
+		params [["_thisObject", "", [""]], ["_plan", [], [[]]]];
+		if (count _plan == 1) then {
+		
+			// If there is only one action in the plan, just create this action
+			(_plan select 0) params ["_actionClassName", "_actionParameters"];
+			pr _args = [_thisObject, _actionParameters];
+			pr _action = NEW(_actionClassName, _args);
+			
+			// Return the action
+			_action
+		} else {
+		
+			// If there are multiple actions in the plan, create an ActionCompositeSerial and add subactions to it 
+			pr _actionSerial = NEW("ActionCompositeSerial", [_thisObject]);
+			{ // foreach _plan
+				_x params ["_actionClassName", "_actionParameters"];
+				
+				// Create an action
+				pr _args = [_thisObject, _actionParameters];
+				pr _action = NEW(_actionClassName, _args);
+				
+				// Add it to the subactions list
+				CALLM1(_actionSerial, "addSubactionToBack", _action);
+				
+				// Return the serial action
+				_actionSerial
+			} forEach _plan;
+		};
 	} ENDMETHOD;
-	*/
 	
 	
 	
@@ -579,6 +649,7 @@ CLASS("AI", "MessageReceiverEx")
 	Performs backwards search of actions to connect current world state and goal world state, starting search from goal world state.
 	*/
 	
+	// Will print useful data about generated plan and how it was achieved
 	#define ASTAR_DEBUG
 	
 	STATIC_METHOD("planActions") {
@@ -656,7 +727,11 @@ CLASS("AI", "MessageReceiverEx")
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
-					_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+					
+					if (! ((_n select ASTAR_NODE_ID_ACTION) isEqualTo ASTAR_ACTION_DOES_NOT_EXIST)) then {
+						_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+					};
+					
 					if (((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) ||
 							((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo ASTAR_NODE_DOES_NOT_EXIST)) exitWith{};
 					_n = _n select ASTAR_NODE_ID_NEXT_NODE;
@@ -676,8 +751,15 @@ CLASS("AI", "MessageReceiverEx")
 			{ // forEach _availableActions;
 				pr _action = _x;
 				pr _effects = GET_STATIC_VAR(_x, "effects");
-				pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
-				pr _connected = [_preconditions, _effects, _nodeWS] call ws_isActionSuitable;
+				pr _args = [[], []]; //
+				
+				// At this point we get static preconditions because action parameters are unknown
+				// Properties that will be overwritten by getPreconditions must be set to some values to resolve conflicts!
+				pr _preconditions = GET_STATIC_VAR(_x, "preconditions");
+				// Safety check
+				pr _connected = if (!isNil "_preconditions") then { [_preconditions, _effects, _nodeWS] call ws_isActionSuitable; } else {
+					false;
+				};
 				
 				// If there is connection, create a new node
 				if (_connected) then {
@@ -741,6 +823,9 @@ CLASS("AI", "MessageReceiverEx")
 						// It depends on action effects, preconditions and world state of current node
 						pr _WSBeforeAction = +_nodeWS;
 						[_WSBeforeAction, _effects] call ws_substract;
+						// Fully resolve preconditions since we now know all the parameters of this action
+						pr _args = [_goalParameters, _parameters]; //
+						pr _preconditions = CALL_STATIC_METHOD(_x, "getPreconditions", _args);
 						[_WSBeforeAction, _preconditions] call ws_add;
 						
 						// Check if this world state is in close set already
@@ -763,7 +848,7 @@ CLASS("AI", "MessageReceiverEx")
 							
 							// Calculate G value
 							// G = G(_node) + cost of this action
-							pr _args = [_AI, _preconditions, _nodeWS];
+							pr _args = [_AI, _parameters];
 							pr _cost = CALL_STATIC_METHOD(_x, "getCost", _args);
 							pr _g = (_node select ASTAR_NODE_ID_G) + _cost;
 							_n set [ASTAR_NODE_ID_G, _g];

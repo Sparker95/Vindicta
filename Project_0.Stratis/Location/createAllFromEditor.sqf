@@ -123,16 +123,17 @@ private _loc = objNull;
 		};
 		
 		// Add building sentries
-		
-		private _args = [_side, GROUP_TYPE_BUILDING_SENTRY];
-		private _sentryGroup = NEW("Group", _args);
-		while {_cBuildingSentry > 0} do {
-			private _variants = [T_INF_marksman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_LMG];
-			private _args = [_template, 0, selectrandom _variants, -1, _sentryGroup];
-			private _newUnit = NEW("Unit", _args);
-			_cBuildingSentry = _cBuildingSentry - 1;
+		if (_cBuildingSentry > 0) then {
+			private _args = [_side, GROUP_TYPE_BUILDING_SENTRY];
+			private _sentryGroup = NEW("Group", _args);
+			while {_cBuildingSentry > 0} do {
+				private _variants = [T_INF_marksman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_LMG];
+				private _args = [_template, 0, selectrandom _variants, -1, _sentryGroup];
+				private _newUnit = NEW("Unit", _args);
+				_cBuildingSentry = _cBuildingSentry - 1;
+			};
+			CALL_METHOD(_garMilMain, "addGroup", [_sentryGroup]);
 		};
-		CALL_METHOD(_garMilMain, "addGroup", [_sentryGroup]);
 		
 		
 		// Add default vehicles
@@ -177,15 +178,17 @@ private _loc = objNull;
 		};
 		
 		// Static weapons
-		private _args = [_side, GROUP_TYPE_VEH_STATIC];
-		private _staticGroup = NEW("Group", _args);
-		while {_cHMGGMG > 0} do {
-			private _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high];
-			private _args = [_template, T_VEH, selectrandom _variants, -1, _staticGroup];
-			private _newUnit = NEW("Unit", _args);
-			CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
-			_cHMGGMG = _cHMGGMG - 1;
-		};
-		CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);		
+		if (_cHMGGMG > 0) then {
+			private _args = [_side, GROUP_TYPE_VEH_STATIC];
+			private _staticGroup = NEW("Group", _args);
+			while {_cHMGGMG > 0} do {
+				private _variants = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high];
+				private _args = [_template, T_VEH, selectrandom _variants, -1, _staticGroup];
+				private _newUnit = NEW("Unit", _args);
+				CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
+				_cHMGGMG = _cHMGGMG - 1;
+			};
+			CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);
+		};		
 	};
 } forEach allMapMarkers;

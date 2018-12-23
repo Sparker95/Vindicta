@@ -68,8 +68,8 @@ CLASS("Garrison", "MessageReceiverEx")
 			private _msg = MESSAGE_NEW();
 			_msg set [MESSAGE_ID_DESTINATION, _action];
 			_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
-			private _msgID = CALLM(_action, "postMessage", _msg);
-			CALLM(_action, "waitUntilMessageDone", [_msgID]);
+			private _msgID = CALLM2(_action, "postMessage", _msg, true);
+			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 		};
 	} ENDMETHOD;
 	
@@ -92,17 +92,39 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
+	METHOD("getLocation") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "location");
+	} ENDMETHOD;
+	
+	// get groups
+	METHOD("getGroups") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "groups")
+	} ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                            G O A P                             
 	// ----------------------------------------------------------------------
 	
 	// It should return the goals this garrison might be willing to achieve
 	METHOD("getPossibleGoals") {
-		["goalGarrisonRelax", "goalGarrisonRepairAllVehicles"]
+		["GoalGarrisonRelax",
+		"GoalGarrisonRepairAllVehicles",
+		"GoalGarrisonDefendPassive"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {
-		["actionGarrisonRelax", "actionGarrisonRepairAllVehicles"]
+		["ActionGarrisonDefendPassive",
+		"ActionGarrisonLoadCargo",
+		"ActionGarrisonMountCrew",
+		"ActionGarrisonMountInfantry",
+		"ActionGarrisonMoveDismounted",
+		"ActionGarrisonMoveMounted",
+		"ActionGarrisonMoveMountedCargo",
+		"ActionGarrisonRelax",
+		"ActionGarrisonRepairAllVehicles",
+		"ActionGarrisonUnloadCurrentCargo"]
 	} ENDMETHOD;
 	
 	METHOD("getSubagents") {

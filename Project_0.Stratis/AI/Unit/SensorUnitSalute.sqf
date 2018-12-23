@@ -41,7 +41,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 	// | Creates a world fact specific to this sensor
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("createWorldFact") {
+	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]]];
 		pr _AI = GETV(_thisObject, "AI");
 		
@@ -50,7 +50,7 @@ CLASS("SensorUnitSalute", "SensorStimulatable")
 		[_wf, WF_TYPE_UNIT_SALUTED_BY] call wf_fnc_setType;
 		pr _wfFound = CALLM(_AI, "findWorldFact", [_wf]);
 		if (isNil "_wfFound") then {
-			diag_log format ["[SensorUnitSalute:createWorldFact] Sensor: %1, created world fact", _thisObject];
+			diag_log format ["[SensorUnitSalute:handleStimulus] Sensor: %1, created world fact", _thisObject];
 			
 			// Create a world fact
 			[_wf, STIMULUS_GET_SOURCE(_stimulus)] call wf_fnc_setSource;

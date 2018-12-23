@@ -1,4 +1,5 @@
 #include "garrisonWorldStateProperties.hpp"
+#include "..\goalRelevance.hpp"
 
 private _s = WSP_GAR_COUNT;
 
@@ -9,11 +10,13 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // ---- Goal relevance values and effects ----
 // The actual relevance returned by goal can be different from the one which is set below
 
-["GoalGarrisonRelax",				123] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRelax",				1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonMove",				123] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonMove",				20] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonRepairAllVehicles",	123] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRepairAllVehicles",	10] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
+["GoalGarrisonDefendPassive",		30] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 
 // ---- Goal effects ----
@@ -28,6 +31,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 										
 ["GoalGarrisonMoveCargo", _s,			[[WSP_GAR_CARGO_POSITION, "g_cargoPos", true],
 										[WSP_GAR_HAS_CARGO, false]]] call AI_misc_fnc_setGoalEffects;
+										
+["GoalGarrisonDefendPassive", _s,		[[WSP_GAR_AWARE_OF_ENEMY, false]]] call AI_misc_fnc_setGoalEffects;
 
 
 // ---- Predefined actions of goals ----
@@ -80,6 +85,10 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonUnloadCurrentCargo", _s,	[	[WSP_GAR_HAS_CARGO,	true]]]		call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonUnloadCurrentCargo", _s,	[	[WSP_GAR_HAS_CARGO,	false]]]	call AI_misc_fnc_setActionEffects;
 
+// Defend passive
+["ActionGarrisonDefendPassive", _s,	[	]]		call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonDefendPassive", _s,	[	[WSP_GAR_AWARE_OF_ENEMY,	false]]]	call AI_misc_fnc_setActionEffects;
+
 
 // ---- Action costs ----
 ["ActionGarrisonMountCrew",				0.4]	call AI_misc_fnc_setActionCost;
@@ -89,3 +98,4 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonMoveDismounted",		3]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonLoadCargo",				2] 	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonUnloadCurrentCargo", 	0.3]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonDefendPassive", 		1.0]	call AI_misc_fnc_setActionCost;

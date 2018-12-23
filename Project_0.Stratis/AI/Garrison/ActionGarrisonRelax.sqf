@@ -21,9 +21,6 @@ CLASS(THIS_ACTION_NAME, "Action")
 
 	VARIABLE("AI");
 	
-	STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
-	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
-	
 	// ------------ N E W ------------
 	/*
 	METHOD("new") {

@@ -11,18 +11,24 @@ Garrison AI class
 
 CLASS("AIGarrison", "AI")
 
+	// Array of targets known by this garrison
+	VARIABLE("targets");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
-		
-		// Initialize the world state
-		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
-		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
 		
 		// Initialize sensors
 		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		
+		// Initialize the world state
+		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
+		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;		
 		
 		SETV(_thisObject, "worldState", _ws);
+		SETV(_thisObject, "targets", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
