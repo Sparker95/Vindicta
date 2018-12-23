@@ -28,7 +28,7 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 #define SUSP_VEH_DIST 75				// distance in vehicle, after which suspicious gear starts "fading" in - the closer the more overt player is
 #define SUSP_VEH_WEAP 0.3				// additional suspicion gained for having an exposed weapon on a vehicle
 #define SUSP_VEH_DIST_OVERT 10			// distance in vehicle, closer than this = instantly overt if in military vehicle or wearing suspicious gear
-#define SUSP_VEH_DIST_MULT ( (1 / SUSP_VEH_DIST) + (1 / SUSP_VEH_DIST) * 0.12 );
+#define SUSP_VEH_DIST_MULT 1.12/SUSP_VEH_DIST;
 #define DATE_TIME ((dateToNumber date))
 
 	// ----------------------------------------------------------------------
@@ -148,8 +148,6 @@ CLASS("undercoverMonitor", "MessageReceiver")
 				_unit setVariable ["suspGear", _suspGearTemp];
     		}] call CBA_fnc_addPlayerEventHandler;
     	};
-
-    	[_unit] spawn fn_UndercoverDebugUI;
 
     	// Make player overt for SUSP_HOSTILITY x Interval, after hostile action
     	_unit addEventHandler ["FiredMan", {
@@ -329,11 +327,10 @@ CLASS("undercoverMonitor", "MessageReceiver")
 								if ( _distance < 25 && _distance > -1 && _suspGear >= 1 && _bodyExposure > 0.4 ) exitWith { [_unit, 1.0] call fnc_setUndercover; };
 
 								// SCALE IN SUSPICIOUSNESS AS WE GET CLOSER TO ENEMY, IF EQUIPMENT IS SUSPICIOUS
-								if ( _distance >= 25 && _distance > -1 && _distance < SUSP_VEH_DIST && _suspGear >= 1 ) exitWith {
+								if ( _distance >= 25 && _distance < SUSP_VEH_DIST && _suspGear >= 1 ) exitWith {
 
 									_suspicion = ( (SUSP_VEH_DIST - _distance) * (1 + _bodyExposure) ) * SUSP_VEH_DIST_MULT; 
 									[_unit, _suspicion] call fnc_setUndercover; 
-
 								};
 						};
 					};
