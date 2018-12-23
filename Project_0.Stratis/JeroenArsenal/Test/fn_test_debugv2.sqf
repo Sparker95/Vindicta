@@ -84,49 +84,14 @@ while {true}do{
 	_color= getarray(configfile >> "RscDisplayDebugPublic" >> "Controls" >> "DebugConsole" >> "controls" >> "ButtonExecuteLocal" >> "colorBackground");
 	
 	_button_length = 0.06;
-	_button_lengthLoad = _xSpaceButtons - (3*_button_length) - (3*_spacingY);
+	_button_lengthRun = _xSpaceButtons - (3*_button_length) - (3*_spacingY);
 	
 	
 	private _array = [
 			[
-				"Load",
+				"...",
 				_spacingY,
-				_button_lengthLoad,
-				{
-					params ["_index"];
-					_text = profilenamespace getVariable [format["jn_debugConsole_%1",_index],""];
-					(UiNameSpace getVariable "jn_debugConsole_expression") ctrlsettext _text;
-				}
-			],[
-				"Save",
-				_spacingY,
-				_button_length,
-				{
-					params ["_index"];
-					
-					_text = ctrltext (UiNameSpace getVariable "jn_debugConsole_expression");
-					_name = "no name";
-					if(_text find "//" == 0)then{
-						_enter = _text find (toString [10]);
-						if(_enter >0)then{
-							_name = _text select [2, _enter-2];
-						};
-					};
-					diag_log ["Save",_text];
-					
-					uiNameSpace setVariable ["jn_debugConsole_index_saved",_index];
-					uiNameSpace setVariable [format ["jn_debugConsole_%1",_index],profilenamespace getVariable (format ["jn_debugConsole_%1",_index])];
-					uiNameSpace setVariable [format ["jn_debugConsole_%1_name",_index],profilenamespace getVariable (format ["jn_debugConsole_%1_name",_index])];
-					
-					profilenamespace setVariable [format ["jn_debugConsole_%1",_index],_text];
-					profilenamespace setVariable [format ["jn_debugConsole_%1_name",_index],_name];
-					
-					((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText _name;
-				}
-			],[
-				"Run",
-				_spacingY,
-				_button_length,
+				_button_lengthRun,
 				{
 					params ["_index"];
 					_input = profilenamespace getVariable [format["jn_debugConsole_%1",_index],""];
@@ -198,6 +163,41 @@ while {true}do{
 					call compile _input;
 				}
 			],[
+				"Load",
+				_spacingY,
+				_button_length,
+				{
+					params ["_index"];
+					_text = profilenamespace getVariable [format["jn_debugConsole_%1",_index],""];
+					(UiNameSpace getVariable "jn_debugConsole_expression") ctrlsettext _text;
+				}
+			],[
+				"Save",
+				_spacingY,
+				_button_length,
+				{
+					params ["_index"];
+					
+					_text = ctrltext (UiNameSpace getVariable "jn_debugConsole_expression");
+					_name = "no name";
+					if(_text find "//" == 0)then{
+						_enter = _text find (toString [10]);
+						if(_enter >0)then{
+							_name = _text select [2, _enter-2];
+						};
+					};
+					diag_log ["Save",_text];
+					
+					uiNameSpace setVariable ["jn_debugConsole_index_saved",_index];
+					uiNameSpace setVariable [format ["jn_debugConsole_%1",_index],profilenamespace getVariable (format ["jn_debugConsole_%1",_index])];
+					uiNameSpace setVariable [format ["jn_debugConsole_%1_name",_index],profilenamespace getVariable (format ["jn_debugConsole_%1_name",_index])];
+					
+					profilenamespace setVariable [format ["jn_debugConsole_%1",_index],_text];
+					profilenamespace setVariable [format ["jn_debugConsole_%1_name",_index],_name];
+					
+					((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText _name;
+				}
+			],[
 				"Del",
 				_spacingY*10,
 				_button_length,
@@ -211,7 +211,7 @@ while {true}do{
 					
 					profilenamespace setVariable [format ["jn_debugConsole_%1",_index],nil];
 					profilenamespace setVariable [format ["jn_debugConsole_%1_name",_index],nil];
-					((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText "Load";
+					((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText "...";
 				}
 			]
 	];
