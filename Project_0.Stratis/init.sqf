@@ -98,6 +98,7 @@ if (isServer) then {
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
 };
 
+
 // Headless Clients only
 if (!hasInterface && !isDedicated) then {
 	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
