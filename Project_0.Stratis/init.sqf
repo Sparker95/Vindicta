@@ -96,6 +96,9 @@ if (isServer) then {
 	diag_log "Init.sqf: Calling initWorld...";
 
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+	
+	// Create a group monitor for east side
+	NEW("groupMonitor", [EAST]);
 };
 
 
@@ -122,8 +125,10 @@ if (!hasInterface && !isDedicated) then {
 
 // Only players
 if (hasInterface) then {
+	diag_log "----- Player detected!";
 	[] spawn {
 		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+		systemChat "Player detected!";
 		[] spawn compile preprocessfilelinenumbers "onPlayerSpawn.sqf";
 	};
 };

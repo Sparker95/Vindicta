@@ -89,11 +89,14 @@ CLASS("groupMonitor", "MessageReceiver")
 						MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_BEING_SPOTTED);
 						MESSAGE_SET_DATA(_msg, _groups select _found); // You can pass any data you like
 						};
-						// Get undercover monitor of this unit
-						pr _sm = _playerUnit getVariable "undercoverMonitor";
 						
-						// Send the message
-						CALL_METHOD(_sm, "postMessage", [_msg]);
+						// Sens message to the player's undercover monitor
+						[_msg, {
+							pr _um = player getVariable "undercoverMonitor"; // Get undercover monitor of this unit
+							if (!isNil "_um") then {
+								CALLM1(_um, "postMessage", _this);
+							}
+						}] remoteExecCall ["call", owner _playerUnit, false]; // Resolve the undercover monitor object on the remote machine
 					};					
 				} foreach allPlayers;
 			};
