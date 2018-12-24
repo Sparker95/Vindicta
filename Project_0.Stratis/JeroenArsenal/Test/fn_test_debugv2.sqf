@@ -60,6 +60,10 @@ while {true}do{
 	_ctrl_links ctrlSetPosition _pos_links;
 	_ctrl_links ctrlCommit 0;
 	
+	//update text because we have change the size and it doesnt update automaticly
+	_ctrl_expression ctrlsettext ctrltext _ctrl_expression;
+	
+	
 	
 	_ctrl_watchBackground = _display displayCtrl 11886;
 	_pos_watchBackground = ctrlposition _ctrl_watchBackground;
