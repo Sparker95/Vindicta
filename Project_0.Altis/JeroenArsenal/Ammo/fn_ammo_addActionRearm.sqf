@@ -23,7 +23,7 @@ params["_vehicleFrom","_rearmCargoCapacity",["_rearmCargo",0]];
 if !isnil(_vehicleFrom getVariable "rearmAction_id")exitWith{diag_log ("JN_ammo already init for object: "+str _vehicleFrom)};
 
 pr _id = _vehicleFrom addaction [
-	STR_ACTION_REARM(_rearmCargo,_rearmCargoCapacity),
+	"",
 	{
 		pr _vehicleFrom = _this select 0;
 
@@ -58,6 +58,9 @@ pr _id = _vehicleFrom addaction [
 	"alive _target && {_target distance _this < 5} && {player == vehicle player}"
 		
 ];
+ACTION_SET_ICON_AND_TEXT(_vehicleFrom, _id, STR_ACTION_TEXT_REARM(_rearmCargo,_rearmCargoCapacity), STR_ACTION_ICON_REARM);
+	
+
 _vehicleFrom setVariable ["rearmAction_id",_id];
 
 _vehicleFrom setAmmoCargo 0; //disable Armas shit because its broken

@@ -48,8 +48,8 @@ if(hasInterface)then{
     diag_log ("Init JNA: player "+ str _object);
 
     //add arsenal button
-    _object addaction [
-        format ["<img size='1.75' image='\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\spaceArsenal_ca.paa' />%1",localize "STR_JNA_ACT_OPEN"],
+    _id = _object addaction [
+        "",
         {
             pr _object = _this select 0;
 
@@ -112,12 +112,13 @@ if(hasInterface)then{
         true,
         false,
         "",
-        "alive _target && {_target distance _this < 5}"
+        "alive _target && {_target distance _this < 5} && {vehicle player == player}"
     ];
+	ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL, STR_ACTION_ICON_ARSENAL);
 
     //add vehicle/box filling button
-    _object addaction [
-		format ["<img size='1.75' image='\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\spaceArsenal_ca.paa' />%1",localize "STR_JNA_ACT_CONTAINER_OPEN"],
+    _id = _object addaction [
+		"",
         {
 			pr _object = _this select 0;
 			
@@ -198,13 +199,14 @@ if(hasInterface)then{
         true,
         false,
         "",
-        "alive _target && {_target distance _this < 5}"
+        "alive _target && {_target distance _this < 5} && {vehicle player == player}"
 			
     ];
+	ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_CONTAINER, STR_ACTION_ICON_ARSENAL_CONTAINER);
 	
 	//add Action to unload object
-    _object addaction [
-		format ["<img size='1.75' image='\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\spaceArsenal_ca.paa' />%1",localize "STR_JNA_ACT_UNLOAD"],
+    _id = _object addaction [
+		"",
         {
 			pr _object = _this select 0;
 			
@@ -257,9 +259,10 @@ if(hasInterface)then{
         true,
         false,
         "",
-        "alive _target && {_target distance _this < 5}"
+        "alive _target && {_target distance _this < 5} && {vehicle player == player}"
 			
     ];
+	ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_UNLOAD, STR_ACTION_ICON_ARSENAL_UNLOAD);
 		
 
     if(missionNamespace getVariable ["jna_first_init",true])then{

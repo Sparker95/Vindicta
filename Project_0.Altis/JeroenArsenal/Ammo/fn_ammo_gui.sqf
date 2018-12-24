@@ -420,21 +420,23 @@ switch _mode do {
 			(_data select 1) params["_turretMagazine","_turretMagazineDisplayName","_turretMagazineSize","_turretMagazineSizeMax","_turretMagazineCfgSize","_isPylon","_turretPath"];
 			
 			if(_turretMagazineSize != _turretMagazineSizeMax)then{
-				pr _cargo = _objectFrom call jn_fnc_ammo_getCargo;
-				pr _cost = _turretMagazine call JN_fnc_ammo_getCost;
-				
+				pr _cargo = _objectFrom call jn_fnc_ammo_getCargo;	
 				pr _amount = _turretMagazineCfgSize;
-				pr _fullRearm = true;
 				if(_amount + _turretMagazineSize>_turretMagazineSizeMax)then{_amount = _turretMagazineSizeMax-_turretMagazineSize};
-				if(_amount * _cost > _cargo)then{_amount = floor(_cargo / _cost); _fullRearm = false;};
+				
+				pr _cost = _turretMagazine call JN_fnc_ammo_getCost;
+				pr _fullRearm = true;
+				if(_cost * _amount > _cargo)then{_amount = floor(_cargo / _cost); _fullRearm = false;};
 				
 				if(_amount == 0)exitWith{};
+				pr _costTotal = ROUND_TO(_cost * _amount,1);
+				pr _amountLeft = ROUND_TO(_cargo - _costTotal,1);
 			
 				pr _status = [format[
 					"%1 rearm magazine<br />Cost:%2 points<br />Points left after rearm:%3",
 					["partly","full"]select _fullRearm,
-					_cost*_amount,
-					(_cargo - (_amount * _cost))
+					_costTotal,
+					_amountLeft
 				], "Selected", "rearm", "cancel",_display,true,false] call BIS_fnc_guiMessage;
 				if(!_status)exitWith{};
 			
@@ -450,7 +452,7 @@ switch _mode do {
 					_objectTo setAmmoOnPylon [_isPylon, _turretMagazineSizeNew];
 				};
 				
-				[_objectFrom, (_cargo - (_amount * _cost))] call JN_fnc_ammo_setCargo;
+				[_objectFrom, _amountLeft] call JN_fnc_ammo_setCargo;
 				
 			};
 			_ctrlListRight lbSetCurSel -1; //select non so we can select it later again
