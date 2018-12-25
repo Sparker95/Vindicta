@@ -29,6 +29,10 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
 		
+		// Set behaviour
+		pr _hG = GETV(_thisObject, "hG");
+		_hG setBehaviour "SAFE";
+		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
