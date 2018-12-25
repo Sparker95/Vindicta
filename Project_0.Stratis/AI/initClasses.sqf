@@ -20,7 +20,7 @@ call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 
 call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
 
-
+call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 
 
 
@@ -74,6 +74,8 @@ call compile preprocessFileLineNumbers "AI\Group\SensorGroupTargets.sqf";
 
 
 // Unit AI classes
+call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
+/*
 call compile preprocessFileLineNumbers "AI\Unit\AIUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSalute.sqf";
@@ -81,3 +83,4 @@ call compile preprocessFileLineNumbers "AI\Unit\SensorUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\SensorUnitCivNear.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitScareAway.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitScareAway.sqf";
+*/

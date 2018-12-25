@@ -280,6 +280,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
+	// |                        G E T   A I
+	// ----------------------------------------------------------------------
+	
+	// Returns the group of this unit
+	METHOD("getAI") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_AI
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
 	// |                   G E T   M A I N   D A T A                        |
 	// ----------------------------------------------------------------------
 	// Returns [_catID, _subcatID, _className] of this unit
