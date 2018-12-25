@@ -36,7 +36,8 @@ while {true} do {
 				private _newID = CALLM2(_msgReceiver, "postMessage", _msg, true);
 				_x set [TIMER_DATA_ID_MESSAGE_ID, _newID];
 			} else {
-				diag_log "[TimerService::threadFunc] Message not posted!";
+				private _msg = _x select TIMER_DATA_ID_MESSAGE;
+				diag_log format ["[TimerService::threadFunc] Info: Message not posted: %1", _msg];
 			};
 			
 			// Set the time when the timer will fire next time
