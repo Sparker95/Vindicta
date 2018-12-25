@@ -31,7 +31,7 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 //#define PRINT_SPOTTED_TARGETS
 
 // Prints targets received through the stimulus
-//#define PRINT_RECEIVED_TARGETS
+#define PRINT_RECEIVED_TARGETS
 
 CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 
@@ -172,7 +172,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getStimulusTypes") {
-		[STIMULUS_TYPE_TARGETS]
+		[STIMULUS_TYPE_TARGETS, STIMULUS_TYPE_FORGET_TARGETS]
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -183,21 +183,46 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
-		#ifdef PRINT_RECEIVED_TARGETS
-			diag_log format ["[SensorGroupTargets::handleStimulus] Info: %1 received targets from %2: %3",
-				GETV(_thisObject, "group"),
-				STIMULUS_GET_SOURCE(_stimulus),
-				STIMULUS_GET_VALUE(_stimulus)];
-		#endif
+		switch (STIMULUS_GET_TYPE(_stimulus)) do {
+			
+			// Receive targets from someone
+			case STIMULUS_TYPE_TARGETS: {
+				#ifdef PRINT_RECEIVED_TARGETS
+					diag_log format ["[SensorGroupTargets::handleStimulus] Info: %1 has received targets from %2: %3",
+					GETV(_thisObject, "group"),
+					STIMULUS_GET_SOURCE(_stimulus),
+					STIMULUS_GET_VALUE(_stimulus)];
+				#endif
+				
+				// Reveal targets to this group
+				// Unpack data
+				pr _data = STIMULUS_GET_VALUE(_stimulus);
+				pr _hG = GETV(_thisObject, "hG");
+				{ // foreach _data
+					// _x is a target structure
+					_hG reveal [_x select TARGET_ID_OBJECT_HANDLE, _x select TARGET_ID_KNOWS_ABOUT];
+				} forEach _data;
+			};
+			
+			// Forget about targets
+			case STIMULUS_TYPE_FORGET_TARGETS: {
+				pr _data = STIMULUS_GET_VALUE(_stimulus);
+				
+				#ifdef PRINT_RECEIVED_TARGETS
+					diag_log format ["[SensorGroupTargets::handleStimulus] Info: %1 is forgetting targets: %2",
+					GETV(_thisObject, "group"),
+					_data];
+				#endif
+				
+				pr _hG = GETV(_thisObject, "hG");
+				{ // foreach _data
+					// _x is a target structure
+					_hG forgetTarget (_x select TARGET_ID_OBJECT_HANDLE);
+				} forEach _data;
+			};
+		};
 		
-		// Reveal targets to this group
-		// Unpack data
-		pr _data = STIMULUS_GET_VALUE(_stimulus);
-		pr _hG = GETV(_thisObject, "hG");
-		{ // foreach _data
-			// _x is a target structure
-			_hG reveal [_x select TARGET_ID_OBJECT_HANDLE, _x select TARGET_ID_KNOWS_ABOUT];
-		} forEach _data;
+
 	} ENDMETHOD;
 	
 ENDCLASS;

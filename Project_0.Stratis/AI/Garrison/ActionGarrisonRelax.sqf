@@ -7,6 +7,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "..\..\Group\Group.hpp"
 #include "garrisonWorldStateProperties.hpp"
 
 /*
@@ -18,8 +19,6 @@ Relax action
 #define THIS_ACTION_NAME "ActionGarrisonRelax"
 
 CLASS(THIS_ACTION_NAME, "Action")
-
-	VARIABLE("AI");
 	
 	// ------------ N E W ------------
 	/*
@@ -31,7 +30,24 @@ CLASS(THIS_ACTION_NAME, "Action")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
+		
+		
+		// Assign patrol goal to patrol groups
+		pr _AI = GETV(_thisObject, "AI");
+		pr _gar = GETV(_AI, "agent");
+		pr _patrolGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_PATROL);
+		//ade_dumpCallstack;
+		{
+			pr _groupAI = CALLM0(_x, "getAI");
+			if (!isNil "_AI") then {
+				if (_AI != "") then {
+					// Give a patrol task to this group
+					pr _args = ["GoalGroupPatrol", 0, [], GETV(_thisObject, "AI")];
+					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+				};
+			};
+		} forEach _patrolGroups;
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -54,6 +70,22 @@ CLASS(THIS_ACTION_NAME, "Action")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete assigned patrol goals
+		pr _AI = GETV(_thisObject, "AI");
+		pr _gar = GETV(_AI, "agent");
+		pr _patrolGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_PATROL);
+		//ade_dumpCallstack;
+		{
+			pr _groupAI = CALLM0(_x, "getAI");
+			if (!isNil "_AI") then {
+				if (_AI != "") then {
+					pr _args = ["GoalGroupPatrol", ""];
+					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+				};
+			};
+		} forEach _patrolGroups;
+		
 	} ENDMETHOD;
 
 ENDCLASS;

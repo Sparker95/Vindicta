@@ -14,8 +14,6 @@ Template of an Action class
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
 CLASS("ActionGroupPatrol", "ActionGroup")
 
 	VARIABLE("AI");
@@ -29,7 +27,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [["_thisObject", "", [""]]];
 		
 		pr _hG = GETV(_thisObject, "hG");
 		
@@ -45,6 +43,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		// Assign patrol waypoints
 		pr _AI = GETV(_thisObject, "AI");
 		pr _group = GETV(_AI, "agent");
+		diag_log format ["[ActionGroupPatrol::activate] Info: Started for AI: _AI"];
 		pr _gar = CALLM0(_group, "getGarrison");
 		pr _loc = CALLM0(_gar, "getLocation");
 		pr _waypoints = CALLM0(_loc, "getPatrolWaypoints");
@@ -57,6 +56,8 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		pr _index = _indexStart;
 		pr _i = 0;
 		pr _wpIDs = []; // Array with waypoint IDs
+		private _closestWPID = 0;
+		private _minDist = 666666;
 		while {_i < _count} do {
 			pr _wp = _hG addWaypoint [_waypoints select _index, 0];
 			_wp setWaypointType "MOVE";
@@ -65,6 +66,13 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			_wp setWaypointSpeed "LIMITED"; //"FULL"; //"LIMITED";
 			_wp setWaypointFormation "WEDGE";
 			_wpIDs pushback (_wp select 1);
+			
+			// Also find the closest waypoint
+			private _dist = (leader _hG) distance (_waypoints select _index);
+			if(_dist < _minDist) then {
+				_closestWPID = (_wp select 1);
+				_minDist = _dist;
+			};
 			
 			if(_direction) then	{ // Clockwise
 				_index = _index + 1;
@@ -75,6 +83,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 			};
 			_i = _i + 1;
 		};
+		
 		// Add cycle waypoint
 		pr _wp = _hG addWaypoint [_waypoints select _indexStart, 0]; //Cycle the waypoints
 		_wp setWaypointType "CYCLE";
@@ -82,16 +91,6 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		_wp setWaypointSpeed "LIMITED";
 		_wp setWaypointFormation "WEDGE";
 		
-		// Set the closest waypoint as active
-		private _closestWPID = 0;
-		private _minDist = 666666;
-		{
-			private _dist = (leader _hG) distance (waypointPosition [_hG, _x]);
-			if(_dist < _minDist) then {
-				_closestWPID = _x;
-				_minDist = _dist;
-			};
-		}forEach _wpIDs;
 		//Set the closest WP as current
 		_hG setCurrentWaypoint [_hG, _closestWPID];
 		

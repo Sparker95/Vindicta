@@ -21,8 +21,9 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		private _msgType = _msg select MESSAGE_ID_TYPE; // Message type is the function name
 		if (_msgType isEqualType "") then {
-			_methodParams = _msg select MESSAGE_ID_DATA;
-			private _return = CALL_METHOD(_thisObject, _msgType, _methodParams);
+			_methodParams = (_msg select MESSAGE_ID_DATA);
+			diag_log format ["----- postMethodAsync: methodParams is array: %1", _methodParams isEqualType []];
+			private _return = (CALL_METHOD(_thisObject, _msgType, _methodParams));
 			// Did the method return anything?
 			if (isNil "_return") then {	_return = 0; };
 			_return

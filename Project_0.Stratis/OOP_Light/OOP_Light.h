@@ -27,7 +27,7 @@
 // ----------------------------------------------------------------------
 
 //Enables checks for member accesses at runtime
-#define OOP_ASSERT
+//#define OOP_ASSERT
 
 /*
 #ifdef OOP_ASSERT

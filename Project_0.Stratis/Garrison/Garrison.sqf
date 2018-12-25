@@ -1,3 +1,8 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
+#include "..\GlobalAssert.hpp"
+
 /*
 Author: Sparker 12.07.2018
 
@@ -5,10 +10,7 @@ Garrison is an object which holds units and groups and handles their lifecycle (
 Garrison typically is located in one area and is performing one task.
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
-#include "..\GlobalAssert.hpp"
+#define pr private
 
 CLASS("Garrison", "MessageReceiverEx")
 
@@ -132,6 +134,21 @@ CLASS("Garrison", "MessageReceiverEx")
 		// In case we decide to process groups in the same thread as garrison, we can return the groups here
 	} ENDMETHOD;
 	
+	
+	// - - - - - - - Functions for finding - - - - - - - -
+	
+	// Returns groups that have the same type as _type
+	METHOD("findGroupsByType") {
+		params [["_thisObject", "", [""]], ["_type", 0, [0]]];
+		pr _groups = GETV(_thisObject, "groups");
+		pr _return = [];
+		{
+			if (CALLM0(_x, "getType") == _type) then {
+				_return pushBack _x;
+			};
+		} forEach _groups;
+		_return
+	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
 	

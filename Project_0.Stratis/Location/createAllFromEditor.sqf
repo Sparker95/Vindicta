@@ -1,11 +1,12 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Group\Group.hpp"
+
+
 /*
 Checks the game world for predefined game objects and markers and creates locations from them.
 
 Author: Sparker 28.07.2018
 */
-
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Group\Group.hpp"
 
 
 params [ ["_thisClass", "", [""]] ];
@@ -85,12 +86,19 @@ private _loc = objNull;
 		
 		// ==== Add infantry ====
 		private _addInfGroup = {
-			params ["_template", "_gar", "_subcatID", "_capacity"];
-			private _args = [_template, _subcatID];
+			params ["_template", "_gar", "_subcatID", "_capacity", ["_type", GROUP_TYPE_IDLE]];
+			
+			// Create an empty group
 			private _side = CALL_METHOD(_gar, "getSide", []);
-			private _newGroup = NEW("Group", [_side]);
+			_args = [_side, _type];
+			private _newGroup = NEW("Group", _args);
+			
+			// Create units from template
+			private _args = [_template, _subcatID];
 			private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", _args);
 			CALL_METHOD(_gar, "addGroup", [_newGroup]);
+			
+			// Return remaining capacity
 			_capacity = _capacity - _nAdded;
 			_capacity
 		};
@@ -99,6 +107,7 @@ private _loc = objNull;
 		private _addVehGroup = {
 			params ["_template", "_gar", "_catID", "_subcatID", "_classID"];
 			private _side = CALL_METHOD(_gar, "getSide", []);
+			private _args = [_side, GROUP_TYPE_VEH_NON_STATIC];
 			private _newGroup = NEW("Group", [_side]);
 			private _args = [_template, _catID, _subcatID, -1, _newGroup]; // ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
 			private _newUnit = NEW("Unit", _args);
@@ -108,17 +117,17 @@ private _loc = objNull;
 			CALL_METHOD(_gar, "addGroup", [_newGroup]);			
 		};
 		
-		// Add sentry infantry groups
+		// Add patrol groups
 		private _i = 0;
 		while {_cInf > 0 && _i < 3} do {
-			_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf] call _addInfGroup;			
+			_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf, GROUP_TYPE_PATROL] call _addInfGroup;			
 			_i = _i + 1;
 		};
 		
 		// Add default infantry groups
 		private _i = 0;
 		while {_cInf > 0 && _i < 1} do {
-			_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf] call _addInfGroup;			
+			_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;			
 			_i = _i + 1;
 		};
 		

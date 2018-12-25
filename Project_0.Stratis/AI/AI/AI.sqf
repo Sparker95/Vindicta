@@ -1,5 +1,6 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
+#include "..\..\CriticalSection\CriticalSection.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\Action\Action.hpp"
 #include "..\..\GlobalAssert.hpp"
@@ -15,6 +16,9 @@ Author: Sparker 07.11.2018
 */
 
 #define pr private
+
+// Will output to .rpt which goals each AI is choosing from
+//#define DEBUG_POSSIBLE_GOALS
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -49,7 +53,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "currentAction", "");
 		SETV(_thisObject, "currentGoal", "");
 		SETV(_thisObject, "currentGoalSource", "");
-		SETV(_thisObject, "currentGoalParameters", 0);
+		SETV(_thisObject, "currentGoalParameters", []);
 		SETV(_thisObject, "goalsExternal", []);
 		pr _ws = [1] call ws_new; // todo WorldState size must depend on the agent
 		SETV(_thisObject, "worldState", _ws);
@@ -158,14 +162,14 @@ CLASS("AI", "MessageReceiverEx")
 					// Predefined action was not supplied, so we must run the planner
 					
 					// Get desired world state
-					pr _args = [/* AI */ _thisObject, _currentGoalParameters];
+					pr _args = [/* AI */ _thisObject, _goalParameters];
 					pr _wsGoal = CALL_STATIC_METHOD(_goalClassName, "getEffects", _args);
 					
 					// Get actions this agent can do
 					pr _possActions = CALLM0(_agent, "getPossibleActions");
 					
 					// Run the A* planner to generate a plan
-					pr _args = [GETV(_thisObject, "worldState"), _wsGoal, _possActions, _currentGoalParameters];
+					pr _args = [GETV(_thisObject, "worldState"), _wsGoal, _possActions, _goalParameters, _thisObject];
 					pr _actionPlan = CALL_STATIC_METHOD("AI", "planActions", _args);
 					
 					// Did the planner return anything?
@@ -359,6 +363,11 @@ CLASS("AI", "MessageReceiverEx")
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
 		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject]}; // Goal class name, bias, parameter, source
+		pr _extGoals = GETV(_thisObject, "goalsExternal");
+		#ifdef DEBUG_POSSIBLE_GOALS
+			diag_log format ["[AI::getMostRelevantGoals] Info: AI: %1,  possible goals: %2", _thisObject, _possibleGoals];
+		#endif
+		_possibleGoals append _extGoals;
 		{
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
@@ -393,30 +402,33 @@ CLASS("AI", "MessageReceiverEx")
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBack [_goalClassName, _parameters, _bias, _source];
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source];
 		
+		nil
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                D E L E T E   E X T E R N A L   G O A L
-	// | Deletes an external goal having the same goalClassName and parameter
+	// | Deletes an external goal having the same goalClassName and goalSource
 	// |
 	// ----------------------------------------------------------------------
 	
 	METHOD("deleteExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_parameters", [], [[]]]];
-		
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		pr _i = 0;
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
-			if ((_cg select 0 == _goalClassName) && (_cg select 1 isEqualTo _parameters)) then {
+			if (	((_cg select 0 == _goalClassName) || (_goalClassName == "")) &&
+					( ((_cg select 3) == _goalSource) || (_goalSource == ""))) then {
 				_goalsExternal deleteAt _i;
 			} else {
 				_i = _i + 1;
 			};
 		};
 		
+		nil
 	} ENDMETHOD;
 	
 	
@@ -653,7 +665,11 @@ CLASS("AI", "MessageReceiverEx")
 	#define ASTAR_DEBUG
 	
 	STATIC_METHOD("planActions") {
-		params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"] ];
+		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
+		
+		if (!_paramsGood) then {
+			ade_dumpCallstack;
+		};
 		
 		// Copy the array of possible actions becasue we are going to modify it
 		pr _availableActions = +_possibleActions;

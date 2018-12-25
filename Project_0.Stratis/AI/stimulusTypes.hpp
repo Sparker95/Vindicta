@@ -10,3 +10,4 @@
 
 // Information about targets
 #define STIMULUS_TYPE_TARGETS			200
+#define STIMULUS_TYPE_FORGET_TARGETS	201

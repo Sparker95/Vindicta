@@ -44,12 +44,34 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		// Loop throgh known targets and remove those who are older than some threshold
 		pr _AI = GETV(_thisObject, "AI");
 		pr _knownTargets = GETV(_AI, "targets");
+		pr _targetsToForget = [];
 		if (count _knownTargets > 0) then {
 			pr _i = 0;
 			pr _t = time;
-			pr _targetsBeyondAge = _knownTargets select {(_t - (_x select TARGET_ID_TIME)) > TARGET_MAX_AGE};
-			_knownTargets = _knownTargets - _targetsBeyondAge;
+			_targetsToForget = _knownTargets select {(_t - (_x select TARGET_ID_TIME)) > TARGET_MAX_AGE};
+			_knownTargets = _knownTargets - _targetsToForget;
 			SETV(_AI, "targets", _knownTargets);
+		};
+		
+		diag_log format ["[SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
+		// Force groups to forget about old targets
+		if (count _targetsToForget > 0) then {
+			diag_log format ["--- --- [SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
+			// Create a new stimulus record
+			pr _stim = STIMULUS_NEW();
+			STIMULUS_SET_SOURCE(_stim, GETV(_thisObject, "gar"));
+			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_FORGET_TARGETS);
+			STIMULUS_SET_VALUE(_stim, _targetsToForget);
+			
+			// Broadcast this stimulus to all groups in this garrison
+			pr _gar = GETV(_thisObject, "gar");
+			pr _groups = CALLM0(_gar, "getGroups");
+			{
+				pr _groupAI = CALLM0(_x, "getAI");
+				if (_groupAI != "") then {
+					CALLM2(_groupAI, "postMethodAsync", "handleStimulus", [_stim]);
+				}
+			} forEach _groups;
 		};
 		
 		// Set the world state property
