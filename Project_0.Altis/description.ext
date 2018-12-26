@@ -54,6 +54,7 @@ class Params {
 };
 
 class CfgFunctions {
+	#include "Dialogue\functions.hpp"
 	#include "JeroenArsenal\functions.hpp"
 
 	class missionTag
