@@ -4,9 +4,11 @@ REM Change current folder
 set CDPrev=%CD%
 cd ..\
 cd %1
+cd %2
 
 REM cache some parameters
-set funcPath=%1
+set missionFolder=%1
+set funcPath=%2
 
 REM delete the old initClasses.sqf
 del "initClasses.sqf"
@@ -28,6 +30,6 @@ cd "%CDPrev%"
 goto:eof
 
 :printLine
-set totalPath="%funcPath%%1"
-@echo call compile preprocessFileLineNumbers %totalPath%;>> initClasses.sqf
+set filePathRelMission="%funcPath%%1"
+@echo call compile preprocessFileLineNumbers %filePathRelMission%;>> initClasses.sqf
 goto:eof
