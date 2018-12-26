@@ -1,0 +1,1 @@
+("VoiceArmaDll" callExtension "@START" );

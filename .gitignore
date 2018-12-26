@@ -1,11 +1,8 @@
-~Project_0.Stratis
 ~Project_0.Altis
 *.tproj
 .project
 *.sqdev
 .settings
-Project_0.Stratis/_temp
-Project_0.Stratis/temp.sqf
 temp.sqf
 Project_0.Altis/mission.sqm
 .vscode
