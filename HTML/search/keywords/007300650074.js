@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("set",["Function"],[["setGarrison",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.setGarrison","SQFClass:Unit:setGarrison"]]]]);

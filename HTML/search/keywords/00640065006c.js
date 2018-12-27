@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("del",["Function"],[["delete",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.delete","SQFClass:Unit:delete"]]]]);

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("tex",["Information"],[["text",,[[,"text colors and background highlight",,,0,"File:UI/defineCommonColors.hpp:text_colors_and_background_highlight"]]]]);

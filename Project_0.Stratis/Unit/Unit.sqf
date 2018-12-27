@@ -1,16 +1,16 @@
-/*
-Unit class.
-A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.
-
-Author: Sparker
-10.06.2018
-*/
-
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
+
+/*
+Class: Unit
+A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.
+
+Author: Sparker
+10.06.2018
+*/
 
 #define pr private
 
@@ -23,7 +23,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                             N E W                                  |
 	// ----------------------------------------------------------------------
-					
+	
+	/*
+	Method: _new
+	
+	Parameters: _template, _catID, _subcatID, _group
+	
+	_template - the template array
+	_catID, _subcatID - category and subcategory of the unit
+	_group - the group object the unit will be added to. Vehicles can be added without a group.
+	*/
+	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]];
 
@@ -76,6 +86,11 @@ CLASS(UNIT_CLASS_NAME, "")
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
 	
+	/*
+	Method: delete
+	Deletes this object, despawns the physical unit if neccessary.
+	*/
+	
 	METHOD("delete") {
 		params[["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
@@ -101,8 +116,15 @@ CLASS(UNIT_CLASS_NAME, "")
 	// |                             I S   V A L I D                        |
 	// ----------------------------------------------------------------------
 	
-	//Checks if the created unit is valid(check the constructor code)
-	//After creating a new unit, make sure it's valid before adding it to other objects
+	/*
+	Method: isValid
+	Checks if the created unit is valid(check the constructor code)
+	After creating a new unit, make sure it's valid before adding it to other objects.
+	
+	Returns: bool
+	*/
+	
+
 	METHOD("isValid") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
@@ -114,8 +136,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                         I S   S P A W N E D                        |
 	// ----------------------------------------------------------------------
+	/*
+	Method: isSpawned
+	Checks if given unit is currently spawned or not
 	
-	//Returns true if the unit is spawned
+	Returns: bool, true if the unit is spawned
+	*/
 	METHOD("isSpawned") {
 		params [["_thisObject", "", [""]]];
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
@@ -128,7 +154,14 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                           C R E A T E   A I
 	// ----------------------------------------------------------------------
+	/*
+	Method: createAI
+	Creates an AI object for this unit after it has been spawned or changed owner.
 	
+	Access: meant for internal use!
+	
+	Returns: nil
+	*/
 	METHOD("createAI") {
 		params [["_thisObject", "", [""]]];
 		
@@ -143,7 +176,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                             S P A W N                              |
 	// ----------------------------------------------------------------------
+	/*
+	Method: spawn
+	Spawns given unit at specified coordinates. Will take care if the unit has already been spawned. Creates an AI object attached to this unit.
 	
+	Parameters: _pos, _dir
+	
+	_pos - position
+	_dir - direction
+	
+	Returns: nil
+	*/
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 		//Unpack data
@@ -198,7 +241,17 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                           D E S P A W N                            |
 	// ----------------------------------------------------------------------
+	/*
+	Method: despawn
+	Despawns given unit. Deletes the AI object attached to this unit.
 	
+	Parameters: _pos, _dir
+	
+	_pos - position
+	_dir - direction
+	
+	Returns: nil
+	*/
 	METHOD("despawn") {
 		params [["_thisObject", "", [""]]];
 		//Unpack data
@@ -235,7 +288,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                    S E T   V E H I C L E   R O L E                 |
 	// ----------------------------------------------------------------------
-	// Assigns the unit to a vehicle with specified vehicle role
+	/*
+	Method: assignVehicleRole
+	NYI
+	
+	Assigns the unit to a vehicle with specified vehicle role
+	*/
 	METHOD("setVehicleRole") {
 		params [["_thisObject", "", [""]], "_vehicle", "_vehicleRole"];
 	} ENDMETHOD;
@@ -243,14 +301,30 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                   S E T / G E T   G A R R I S O N                  |
 	// ----------------------------------------------------------------------
-	// Sets the garrison of this unit (use Garrison::addUnit to add a unit to a garrison)
+	/*
+	Method: setGarrison
+	Sets the garrison this unit is attached to.
+	
+	Access: internal use! You must use Garrison::addUnit to add a unit to a garrison
+	
+	Parameters: _garrison
+	
+	_garrison - the garrison object
+	
+	Returns: nil
+	*/
 	METHOD("setGarrison") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
 	} ENDMETHOD;
 	
-	// Returns the garrison of this unit
+	/*
+	Method: getGarrison
+	Returns the garrison this unit is attached to
+	
+	Returns: <Garrison>
+	*/
 	METHOD("getGarrison") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -261,7 +335,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// |                        G E T   O B J E C T   H A N D L E           |
 	// ----------------------------------------------------------------------
 	
-	// Returns the group of this unit
+	/*
+	Method: getObjectHandle
+	Returns the object handle of this unit if it's spawned, objNull otherwise.
+	
+	Returns: object handle of this unit, or objNull if it's not spawned
+	*/
 	METHOD("getObjectHandle") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -271,7 +350,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                        G E T   G R O U P                           |
 	// ----------------------------------------------------------------------
+	/*
+	Method: getGroup
+	Returns the <Group> this unit is attached to.
 	
+	Returns: <Group>
+	*/
 	// Returns the group of this unit
 	METHOD("getGroup") {
 		params [["_thisObject", "", [""]]];
@@ -282,8 +366,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                        G E T   A I
 	// ----------------------------------------------------------------------
+	/*
+	Method: getAI
+	Returns the <AIUnit> object of this unit, or "" if it's not spawned
 	
-	// Returns the group of this unit
+	Returns: <AIUnit>
+	*/
 	METHOD("getAI") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -293,7 +381,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                   G E T   M A I N   D A T A                        |
 	// ----------------------------------------------------------------------
-	// Returns [_catID, _subcatID, _className] of this unit
+	/*
+	Method: getMainData
+	Returns category ID, subcategory ID and class name of this unit
+	
+	Returns: [_catID, _subcatID, _className]
+	*/
 	METHOD("getMainData") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -303,7 +396,11 @@ CLASS(UNIT_CLASS_NAME, "")
 	// ----------------------------------------------------------------------
 	// |                    G E T   V E H I C L E   C R E W                 |
 	// ----------------------------------------------------------------------
-	// Returns the units assigned to this vehicle
+	/*
+	Method: getVehicleCrew
+	NYI
+	Returns the units assigned to this vehicle
+	*/
 	METHOD("getVehicleCrew") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");

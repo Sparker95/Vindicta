@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/defineCommonColors.hpp","defineCommonColors.hpp");NDSummary.OnSummaryLoaded("File:UI/defineCommonColors.hpp",[["C/C++","C"]],[["Groups","Group"],["Information","Information"]],[[1,0,0,"Information","Information"],[2,0,1,"text colors and background highlight","text_colors_and_background_highlight"]]);
