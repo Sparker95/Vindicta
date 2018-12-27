@@ -1,11 +1,19 @@
 #include "defineCommon.inc"
 
 /*
-	by: Jeroen Notenbomer
-	
-	_unit: who is talking
-	_sentence: what is he talking about
-	_target: to whome he is talking
+    By: Jeroen Notenbomer
+
+    Create simple dialog for nearby and spoken to playable units.
+
+	Input:
+		_unit: unit who is talking
+		_sentence: what is he talking about
+		_target(optional): To whome is he talking, by default talking to nearby units
+		
+		_relayed(INTERNAL USE DONT USE): If this was a message from it self, to prefent endless loop
+		
+	Output:
+		nil
 */
 
 

@@ -1,5 +1,16 @@
 #include "defineCommon.inc"
 
+/*
+    By: Jeroen Notenbomer
+
+    Create HUD for sentences to be displayed on.
+	Is called by preinit=1, but can be called to again to update functions incase of debugging
+
+	Input:
+		
+	Output:
+		nil
+*/
 
 //FRAME-----------------------------------------------------------------------------
 private _display = findDisplay 46;
