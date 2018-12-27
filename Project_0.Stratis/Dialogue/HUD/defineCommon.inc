@@ -6,3 +6,4 @@
 #define FLOAT_DISPLAYTIME  7
 #define FLOAT_FADE_OUT  1
 #define FLOAT_ICON_WITDH  0.2
+#define INT_SENTENCE_LIMIT 6
