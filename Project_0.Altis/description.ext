@@ -34,11 +34,6 @@ maxplayers=50;
 };
 */
 
-class CfgSounds
-{
-
-};
-
 class CfgIdentities
 {
 
@@ -49,6 +44,11 @@ class CfgDebriefing
 
 };
 
+class CfgSounds {
+	sounds[] = {};
+	#include "CfgSounds.hpp"
+
+};
 class Params {
     //#include "aceSettings.hpp"
 };

@@ -75,7 +75,7 @@ private _structuredSentence = if(_unit isequalto player)then{
 	_icon = _display ctrlCreate ["rscstructuredtext", -1,_frame];
 	//_icon ctrlsetBackgroundColor [.5,.5,.5,.5];
 	//_icon ctrlSetTextColor _color;
-	_icon ctrlSetPosition [0,0,FLOAT_ICON_WITDH,0.2];
+	_icon ctrlSetPosition [666,0,FLOAT_ICON_WITDH,0.2];//spawn it out of site 
 	_icon ctrlCommit 0;
 	_icon ctrlSetStructuredText parseText format ["<t align = 'center' shadow = '2' size = '1'><t color = '#FFFFFF'><img image='%2'/><t color = '%1'><br/>%3:</t>",_colorHTML,STRING_ICON_UP_ARROW,_name];
 	
@@ -86,7 +86,7 @@ private _structuredSentence = if(_unit isequalto player)then{
 private _text = _display ctrlCreate ["rscstructuredtext", -1];
 _text ctrlsetBackgroundColor [.5,.5,.5,.5];
 //_text ctrlSetTextColor _color;
-_text ctrlSetPosition [0,0,1,0.05];
+_text ctrlSetPosition [666,0,1,0.05];//spawn it out of site 
 _text ctrlCommit 0;
 _text ctrlSetStructuredText _structuredSentence;
 

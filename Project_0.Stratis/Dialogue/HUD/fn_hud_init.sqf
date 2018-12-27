@@ -25,8 +25,17 @@ _frame ctrlSetPosition [0,FLOAT_POS_Y,1,0.1];
 _frame ctrlSetFade 1;
 _frame ctrlCommit 0;
 
+//clean old list incase you loaded a mission
+private _ctrl_sets = (_display getvariable ["Dialog_text_ctrlSet" ,[]]);
+{
+	_x params ["_icon","_text"];
+	ctrlDelete _icon;
+	ctrlDelete _text;
+}forEach _ctrl_sets;
+_display setvariable ["Dialog_text_ctrlSet" ,[]];
 
 
+//call BIS_fnc_addStackedEventHandler
 ["dialog_HUD", "onEachFrame", {
 	private _display = findDisplay 46;
 

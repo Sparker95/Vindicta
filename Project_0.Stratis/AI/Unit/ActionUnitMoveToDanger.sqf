@@ -22,6 +22,7 @@ CLASS("ActionUnitMoveToDanger", "Action")
 	VARIABLE("stateMachine");
 	VARIABLE("stateChanged");
 	VARIABLE("spawnHandle");
+	VARIABLE("screamTime");
 	// ------------ N E W ------------
 	
 	METHOD("new") {
@@ -37,6 +38,7 @@ CLASS("ActionUnitMoveToDanger", "Action")
 		SETV(_thisObject, "stateMachine", 0);
 		
 		SETV(_thisObject,"spawnHandle",scriptNull);
+		SETV(_thisObject,"screamTime",0);
 
 	} ENDMETHOD;
 	
@@ -44,12 +46,14 @@ CLASS("ActionUnitMoveToDanger", "Action")
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
 		
+		pr _oh = GETV(_thisObject, "objectHandle");		
+		_oh lockWP false;
+		_oh setSpeedMode "NORMAL";
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-		
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-		
 	} ENDMETHOD;
 	
 	// logic to run each update-step
@@ -84,23 +88,37 @@ CLASS("ActionUnitMoveToDanger", "Action")
 							_oh doWatch _target;
 							_pos_disarm = getpos _target;
 							sleep 0.5;
+							_isMoving = !(_pos_disarm distance getpos _target <0.1);
+							_target setVariable ["isMoving", _isMoving];
 							
-							
-							
-							(_pos_disarm distance (getpos _target))<0.1 && {_pos distance getpos _oh < 1.5};
+							_return = !_isMoving && {_pos distance getpos _oh < 1.5};
+							_return
 						};
 					};
 					SETV(_thisObject, "spawnHandle", _handle);
 				}else{
-					if (time - GETV(_thisObject,"stateTimer") > 10)then{//been following for 10 secs
+					if (time - GETV(_thisObject,"stateTimer") > 15)then{//been following for 10 secs
 						_state = ACTION_STATE_FAILED;
 					
 						CALLM(_thisObject, "terminate", []);
 						diag_log "ACTION_STATE_FAILED";
-						Hint "Im tired";
+						[_oh,"Yes keep running!",_target] call Dialog_fnc_hud_createSentence;
 						breakTo "switch";
 					}else{
-						hint "STOP RUNNING";
+	
+						if(time > GETV(_thisObject,"screamTime") && (_target getVariable ["isMoving", false]))then{
+							
+							SETV(_thisObject,"screamTime",time +2);
+							if(selectRandom [true,false])then{
+								[_oh,"Stop!",_target] call Dialog_fnc_hud_createSentence;
+								_oh say "stop";
+							}else{
+								[_oh,"Halt!",_target] call Dialog_fnc_hud_createSentence;
+								_oh say "halt";
+							};
+							
+							_oh setSpeedMode "FULL";
+						};
 					};
 				};
 				
@@ -139,6 +157,8 @@ CLASS("ActionUnitMoveToDanger", "Action")
 							"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
 						};
 						
+						[_oh,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+						
 						_oh playMove _animation;
 						waitUntil {animationState _oh == _animation};
 						waitUntil {animationState _oh != _animation};
@@ -147,7 +167,7 @@ CLASS("ActionUnitMoveToDanger", "Action")
 						
 						//sleep 1;
 						
-						hint "Hello i'm here";
+						
 					};		
 					
 					SETV(_thisObject, "spawnHandle", _handle);
@@ -187,7 +207,8 @@ CLASS("ActionUnitMoveToDanger", "Action")
 		pr _oh = GETV(_thisObject, "objectHandle");
 		_oh doWatch objNull;
 		_oh lookAt objNull;
-		
+		_oh lockWP false;
+		_oh setSpeedMode "LIMITED";
 		hint "";
 		
 	} ENDMETHOD;
