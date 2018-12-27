@@ -33,6 +33,28 @@ if(!_relayed)exitWith{
 	}forEach (allPlayers - entities "HeadlessClient_F");
 };
 
+
+//lip sycn
+private _lipTimer = _unit getvariable ["setrandomlip_timer",0];
+private _lipTimer_new = (count _sentence / 12) + time;
+if(_lipTimer_new >_lipTimer)then{
+	_unit setvariable ["setrandomlip_timer",_lipTimer_new];
+	private _lipScript = _unit getvariable ["setrandomlip_script",scriptnull];
+	terminate _lipScript;
+	_lipScript = [_unit,_target] spawn {
+		params["_unit","_target"];
+		_unit setRandomLip true;
+		waitUntil{
+			_unit lookAt _target;
+			sleep 0.1;
+			( time > _unit getvariable ["setrandomlip_timer",0])
+		};
+		_unit setRandomLip false;
+		_unit doWatch objnull;
+	};
+	_unit getvariable ["setrandomlip_script",_lipScript];
+};
+
 if(!hasinterface)exitWith{};
 
 private _display = findDisplay 46;
