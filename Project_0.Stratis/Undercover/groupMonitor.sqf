@@ -71,8 +71,10 @@ CLASS("groupMonitor", "MessageReceiver")
 				
 				// Run basic checks...
 				pr _groups = allGroups select {(side _x) == _side};
+				
 				{ // foreach allPlayers
 					pr _playerUnit = _x;
+					_groups = _groups select {((leader _x) distance _playerUnit) < 1200};
 					pr _found = _groups findIf {(_x knowsAbout _playerUnit) > 0.5};	// Returns -1 if nothing found
 					pr _foundVeh = _groups findIf {(_x knowsAbout vehicle _playerUnit) > 0.5};
 

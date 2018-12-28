@@ -126,7 +126,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 		// PLAYER VARIABLES
 		_unit setVariable ["suspGear", 0.0];								// suspiciousness of the unit's gear 
 		_unit setVariable ["suspicion", 0.0];								// overall suspicion
-		_unit setVariable ["_lastSpottedTimes", [1, 2, 3, 4, 5, 6]]; 		// recorded times since the player was last seen by an enemy. If each index is equal to every other index, player is presumed unseen
+		_unit setVariable ["lastSpottedTimes", [1, 2, 3, 4, 5, 6]]; 		// recorded times since the player was last seen by an enemy. If each index is equal to every other index, player is presumed unseen
 		_unit setVariable ["timeUnseen", 0];								// sum amount of time unit has not been seen by an enemy
 		_unit setVariable ["bWanted", false];								// true if unit is "wanted" (overt)				
 		_unit setVariable ["bSuspicious", false];							// true if unit is currently suspicious
@@ -155,6 +155,10 @@ CLASS("undercoverMonitor", "MessageReceiver")
 			_unit setVariable ["recentHostility", SUSP_HOSTILITY];
 			systemChat "fired";
 		}];
+
+		call compile preprocessFileLineNumbers "UI_OOP\UIUndercoverDebug_Update.sqf";
+
+
 
 	} ENDMETHOD;
 	
@@ -345,7 +349,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 				// PLAYER VARIABLES
 				pr _bSeen = _unit getVariable "bSeen";
 				pr _bWanted = _unit getVariable "bWanted";
-				pr _lastSpottedTimes = _unit getVariable "_lastSpottedTimes";
+				pr _lastSpottedTimes = _unit getVariable "lastSpottedTimes";
 				pr _suspicion = _unit getVariable "suspicion";
 
 				pr _knownTime = 0.0;
@@ -366,16 +370,13 @@ CLASS("undercoverMonitor", "MessageReceiver")
 							if (_tempArr isEqualTo _lastSpottedTimes) then { 
 
 								_unit setVariable ["bSeen", false]; 
-								//_msgData forgetTarget _unit;
-								//_msgData forgetTarget vehicle _unit;
-								_unit setVariable ["distance", 0];
+								_unit setVariable ["distance", -1];
 
 				 			} else { _unit setVariable ["bSeen", true]; _unit setVariable ["timeUnseen", 0]; };
 
 				 			_lastSpottedTimes pushBack _knownTime;
 							_lastSpottedTimes deleteAt 0;
-							_unit setVariable ["_lastSpottedTimes", _lastSpottedTimes];
-							 
+							_unit setVariable ["lastSpottedTimes", _lastSpottedTimes];
 						};
 					};
 
@@ -394,8 +395,6 @@ CLASS("undercoverMonitor", "MessageReceiver")
 							if (_tempArr isEqualTo _lastSpottedTimes) then {
 
 								_unit setVariable ["bSeen", false]; 
-								//_msgData forgetTarget vehicle _unit;
-								//_msgData forgetTarget _unit;
 								_unit setVariable ["distance", -1];
 
 				 			} else { 
@@ -405,7 +404,8 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 				 			_lastSpottedTimes pushBack _knownTime;
 							_lastSpottedTimes deleteAt 0;
-							_unit setVariable ["_lastSpottedTimes", _lastSpottedTimes];
+							_unit setVariable ["lastSpottedTimes", _lastSpottedTimes];
+							systemChat format ["LST_V: %1", _lastSpottedTimes];
 							 
 						};
 					};
