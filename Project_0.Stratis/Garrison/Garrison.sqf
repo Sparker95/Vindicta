@@ -1,3 +1,8 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
+#include "..\GlobalAssert.hpp"
+
 /*
 Author: Sparker 12.07.2018
 
@@ -5,10 +10,7 @@ Garrison is an object which holds units and groups and handles their lifecycle (
 Garrison typically is located in one area and is performing one task.
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
-#include "..\GlobalAssert.hpp"
+#define pr private
 
 CLASS("Garrison", "MessageReceiverEx")
 
@@ -68,8 +70,8 @@ CLASS("Garrison", "MessageReceiverEx")
 			private _msg = MESSAGE_NEW();
 			_msg set [MESSAGE_ID_DESTINATION, _action];
 			_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
-			private _msgID = CALLM(_action, "postMessage", _msg);
-			CALLM(_action, "waitUntilMessageDone", [_msgID]);
+			private _msgID = CALLM2(_action, "postMessage", _msg, true);
+			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 		};
 	} ENDMETHOD;
 	
@@ -92,17 +94,39 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
+	METHOD("getLocation") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "location");
+	} ENDMETHOD;
+	
+	// get groups
+	METHOD("getGroups") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "groups")
+	} ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                            G O A P                             
 	// ----------------------------------------------------------------------
 	
 	// It should return the goals this garrison might be willing to achieve
 	METHOD("getPossibleGoals") {
-		["goalGarrisonRelax", "goalGarrisonRepairAllVehicles"]
+		["GoalGarrisonRelax",
+		"GoalGarrisonRepairAllVehicles",
+		"GoalGarrisonDefendPassive"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {
-		["actionGarrisonRelax", "actionGarrisonRepairAllVehicles"]
+		["ActionGarrisonDefendPassive",
+		"ActionGarrisonLoadCargo",
+		"ActionGarrisonMountCrew",
+		"ActionGarrisonMountInfantry",
+		"ActionGarrisonMoveDismounted",
+		"ActionGarrisonMoveMounted",
+		"ActionGarrisonMoveMountedCargo",
+		"ActionGarrisonRelax",
+		"ActionGarrisonRepairAllVehicles",
+		"ActionGarrisonUnloadCurrentCargo"]
 	} ENDMETHOD;
 	
 	METHOD("getSubagents") {
@@ -110,6 +134,21 @@ CLASS("Garrison", "MessageReceiverEx")
 		// In case we decide to process groups in the same thread as garrison, we can return the groups here
 	} ENDMETHOD;
 	
+	
+	// - - - - - - - Functions for finding - - - - - - - -
+	
+	// Returns groups that have the same type as _type
+	METHOD("findGroupsByType") {
+		params [["_thisObject", "", [""]], ["_type", 0, [0]]];
+		pr _groups = GETV(_thisObject, "groups");
+		pr _return = [];
+		{
+			if (CALLM0(_x, "getType") == _type) then {
+				_return pushBack _x;
+			};
+		} forEach _groups;
+		_return
+	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
 	

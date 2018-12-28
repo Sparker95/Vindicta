@@ -28,6 +28,9 @@ CLASS("AIUnit", "AI")
 		pr _sensorSalute = NEW("SensorUnitSalute", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorSalute]);
 		
+		pr _sensorCivNear = NEW("SensorUnitCivNear", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorCivNear]);
+		
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	

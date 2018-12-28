@@ -15,9 +15,6 @@ The goal of saluting to someone
 Author: Sparker 24.11.2018
 */
 
-//Include some forld state properties
-//#include "garrisonWorldStateProperties.hpp"
-
 
 #define pr private
 

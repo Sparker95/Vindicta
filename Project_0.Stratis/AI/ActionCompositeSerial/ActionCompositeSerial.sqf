@@ -23,6 +23,9 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 			_state = CALLM(_thisObject, "processSubactions", []);
 		};
 		SETV(_thisObject, "state", _state);
+		
+		// Return state
+		_state
 	} ENDMETHOD;
 	
 	

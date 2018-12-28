@@ -201,7 +201,9 @@ CLASS("Action", "MessageReceiver")
 	// a Goal is atomic and cannot aggregate subgoals yet we must implement
 	// this method to provide the uniform interface required for the goal
 	// hierarchy.
-	/* virtual */ METHOD("addSubaction") { diag_log "[Goal::addSubgoal] Error: can't add a subgoal to an atomic goal!"; } ENDMETHOD;
+	/* virtual */ METHOD("addSubactionToFront") { diag_log "[Goal::addSubactionToFront] Error: can't add a subgoal to an atomic action!"; } ENDMETHOD;
+	
+	/* virtual */ METHOD("addSubactionToBack") { diag_log "[Goal::addSubactionToBack] Error: can't add a subgoal to an atomic action!"; } ENDMETHOD;
 	
 	// Returns the list of subgoals (for debug purposes)
 	/* virtual */ METHOD("getSubactions") { [] } ENDMETHOD;
@@ -246,7 +248,8 @@ CLASS("Action", "MessageReceiver")
 	// Returns cost of this action
 	// Takes the AI object as parameter, start and end world state
 	STATIC_METHOD("getCost") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		//params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
 		// Return static cost
