@@ -1,18 +1,17 @@
 /*
+	Function: misc_fnc_getTurrets
+
 	Author:
 		Karel Moricky, optimised by Killzone_Kid
+		Modified by Sparker to return different turret types like copilot turret or passenger turrets.
 
 	Description:
 		Return vehicle turrets
 
-	Parameter(s):
-		0: OBJECT or STRING (classname)
-		1: CONFIG or ARRAY - output type (array of config paths or IDs)
+	Parameter(s): _veh, _isCopilot, _dontCreateAI
 
 	Returns:
 		ARRAY of CONFIGs or ARRAYs
-
-	Modified by Sparker to return different turret types like copilot turret or passenger turrets.
 */
 
 params ["_veh", "_isCopilot", "_dontCreateAI"];

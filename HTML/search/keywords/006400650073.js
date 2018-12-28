@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("des",["Function"],[["despawn",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.despawn","SQFClass:Unit:despawn"]]]]);
+NDSearch.OnPrefixDataLoaded("des",["Function","Variable"],[["deserialize",,[["MessageReceiver",,,,0,"File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.deserialize","SQFClass:MessageReceiver:deserialize"]]],["despawn",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.despawn","SQFClass:Unit:despawn"]]],["DESTINATION",,[["Message",,,,1,"File:Message/Message.hpp:Message.DESTINATION","SQFClass:Message:DESTINATION"]]]]);

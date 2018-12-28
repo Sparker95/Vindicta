@@ -2,7 +2,9 @@
 #include "..\Group\Group.hpp"
 
 
+// Class: Location
 /*
+Method: (static)createAllFromEditor
 Checks the game world for predefined game objects and markers and creates locations from them.
 
 Author: Sparker 28.07.2018

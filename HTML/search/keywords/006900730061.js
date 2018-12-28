@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("isa",["Function"],[["isAlive",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.isAlive","SQFClass:Unit:isAlive"]]]]);

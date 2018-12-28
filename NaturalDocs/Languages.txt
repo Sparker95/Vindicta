@@ -20,7 +20,7 @@
 
 Language: SQF
 
-   Extensions: sqf SQF
+   Extensions: sqf SQF h hpp
 
    Simple Identifier: SQF
 

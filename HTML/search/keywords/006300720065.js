@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("cre",["Function"],[["createAI",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.createAI","SQFClass:Unit:createAI"]]]]);
+NDSearch.OnPrefixDataLoaded("cre",["Function"],[["createAI",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.createAI","SQFClass:Unit:createAI"]]],["createDefaultCrew",,[["Unit",,,,0,"File:Unit/createDefaultCrew.sqf:Unit.createDefaultCrew","SQFClass:Unit:createDefaultCrew"]]]]);

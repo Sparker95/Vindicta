@@ -12,14 +12,14 @@ params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
 if(_unitGarrison != "") exitWith {
 	diag_log format ["[Garrison::addUnit] Error: can't add a unit which is already in a garrison, garrison: %1, unit: %2: %3",
-		GET_VAR(_thisObject, "debugName"), _unit, CALL_METHOD(_unit, "getDebugData", [])];
+		GET_VAR(_thisObject, "debugName"), _unit, CALL_METHOD(_unit, "getData", [])];
 };
 
 // Check if the unit is in a group
 private _unitGroup = CALL_METHOD(_unit, "getGroup", []);
 if (_unitGroup != "") exitWith {
 	diag_log format ["[Garrison::addUnit] Error: can't add a unit assigned to a group, garrison : %1, unit: %2: %3",
-		GET_VAR(_thisObject, "debugName"), _unit, CALL_METHOD(_unit, "getDebugData", [])];
+		GET_VAR(_thisObject, "debugName"), _unit, CALL_METHOD(_unit, "getData", [])];
 };
 
 private _units = GET_VAR(_thisObject, "units");

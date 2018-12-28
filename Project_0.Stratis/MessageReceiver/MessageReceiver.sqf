@@ -4,9 +4,9 @@
 #include "MessageReceiver.hpp"
 
 /*
-MessageReceiver class.
-This class has capability to handle incoming messages.
-Inherited classes must implement a getMessageLoop method which must return the MessageLoop object to which a message can be sent.
+Class: MessageReceiver
+This class has capability to handle incoming messages. It also has ability to change its ownership in MP.
+Inherited classes must implement a getMessageLoop method which must return the <MessageLoop> object to which a message can be sent.
 
 Author: Sparker
 15.06.2018
@@ -34,33 +34,58 @@ CLASS("MessageReceiver", "")
 
 	VARIABLE("owner");
 
-	// Derived classes must implement this method if they need to receive messages
-	METHOD("getMessageLoop") {
-		""
-	} ENDMETHOD;
-	
-	// Sets initial ownership of the object
+	/*
+	Method: new
+	Sets initial ownership of the object
+	*/	
 	METHOD("new") {
 		params [ ["_thisObject", "", [""]] ];
 		SETV(_thisObject, "owner", clientOwner);
 	} ENDMETHOD;
 	
-	// Delete method should be called by the thread(message loop) which owns this object
+	/*
+	Method: delete
+	Deletes this MessageReceiver and deletes messages directed to it from its <MessageLoop>
+	
+	Warning: should be called by the thread(<MessageLoop>) which owns this object
+	*/
 	METHOD("delete") {
 		params [ ["_thisObject", "", [""]] ];
-		private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
-		diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
-		// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
-		CALLM(_msgLoop, "deleteReceiverMessages", [_thisObject]);
+		CRITICAL_SECTION_START
+			private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
+			diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
+			// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
+			CALLM(_msgLoop, "deleteReceiverMessages", [_thisObject]);
+		CRITICAL_SECTION_END
+	} ENDMETHOD;
+
+	/*
+	Method: getMessageLoop
+	Derived classes must implement this method if they need to receive messages.
+	
+	Returns: <MessageLoop> object
+	*/
+	METHOD("getMessageLoop") {
+		""
 	} ENDMETHOD;
 	
 	/*
+	Method: handleMessage
+	Handles messages sent to this MessageReceiver. Called by <MessageLoop> inside its thread.
+	
+	Access: called by framework. But you can call it manually if you are sure that there will be no race conditions.
+	
 	Derived classes can implement this method like this:
+	
+	Returns: you can return whatever you need from here to later retrieve it by waitUntilMessageDone.
+	
+	--- Code
 	switch(_msgType) do {
-		case "DO_STUFF": {...}
-		case "DO_OTHER_STUFF" : {...}
+		case "DO_STUFF": {...};
+		case "DO_OTHER_STUFF" : {...};
 		default: {return baseClass::handleMessage(msg);}
 	}
+	---
 	*/
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
@@ -69,9 +94,22 @@ CLASS("MessageReceiver", "")
 		false // message not handled
 	} ENDMETHOD;
 	
-	// Posts a message into the MessageLoop of this object
-	// The object can exist on this machine or on another machine
-	// If it exists on another machine, it still must be represented on this machine, at least it must have the "owner" variable set properly
+	/*
+	Method: postMessage
+	Posts a message into the MessageLoop of this object
+	The object can exist on this machine or on another machine
+	If it exists on another machine, it still must be represented on this machine, at least it must have the "owner" variable set properly.
+	
+	Parameters: _msg, _returnMsgID
+	
+	_msg - the <Message> to send to this object.
+	_returnMsgID - Optional, Bool, default is false. If true, the framework generates a valid message ID which can be passed to waitUntilMessageDone or messageDone functions.
+	
+	Warning: _returnMsgID=true allocates resources that are deallocated by waitUntilMessageDone or messageDone.
+	If you don't need to wait for the message processing completion, set _returnMsgID to false.
+	
+	Returns: Number, message ID if _returnMsgID is true, MESSAGE_ID_INVALID otherwise.
+	*/
 	METHOD("postMessage") {
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]], ["_returnMsgID", false] ];
 		
@@ -152,10 +190,17 @@ CLASS("MessageReceiver", "")
 		};
 	} ENDMETHOD;
 	
-	// Returns true if the message with given msgID was done
-	// A proper msgID must be provided
-	// !!! Returns proper result only once for given msgID
-	// Always returns true for negative msgID
+	/*
+	Method: messageDone
+	Returns true if the message with given msgID was done
+	A proper msgID must be provided. Always returns true for negative msgID.
+	Warning: Returns proper result only once for given msgID
+	
+	Parameters: _msgID
+	_msgID - the message ID returned by postMessage.
+	
+	Returns: Bool
+	*/	
 	STATIC_METHOD("messageDone") {
 		params ["_thisClass", "_msgID"];
 		
@@ -182,8 +227,14 @@ CLASS("MessageReceiver", "")
 		}
 	} ENDMETHOD;
 	
-	// Suspends until the message has been processed
-	// Returns whatever was returned by the messageReceiver that was processing the message
+	/*
+	Method: waitUntilMessageDone
+	
+	Parameters: _msgID
+	_msgID - the message ID returned by postMessage.
+	
+	Returns: whatever was returned by handleMessage of the messageReceiver that was processing the message
+	*/
 	METHOD("waitUntilMessageDone") {
 		params [ ["_thisObject", "", [""]], ["_msgID", 0, [0]] ];
 		
@@ -220,11 +271,24 @@ CLASS("MessageReceiver", "")
 	//
 	// ----------------------------------------------------------------------------------------------------
 	
+	// Group: ownership transfer
+	
 	// ------------------------------------------------------------------------------------------------------
 	// D O N ' T   O V E R R I D E   T H E S E   M E T H O D S   I N   I N H E R I T E D   C L A S S E S
 	// ------------------------------------------------------------------------------------------------------
 	
+	/*
+	Method: setOwner
+	Changes owner of a MessageReceiver.
 	
+	Parameters: _newOwner
+	
+	_newOwner - owner ID of the machine that will receive ownership
+	
+	Warning: must be called in scheduled environment as it waits until the other machine accepts ownership.
+	
+	Returns: Bool, true if ownership was changed successfully, false otherwise.
+	*/
 	// Must be called on the machine that owns this object to change ownership
 	// For safety this should be called in the thread that owns the object
 	// Don't override this in inherited classes!
@@ -314,8 +378,16 @@ CLASS("MessageReceiver", "")
 		
 	} ENDMETHOD;
 	
-	// Must be remotely executed on this machine by the owner of an object
-	// Don't override this!
+	/*
+	Method: receiveOwnership
+	Called on remote machine when an ownership change is in the process.
+	
+	Access: Internal use only! Don't override!
+	
+	Parameters: _objParent, _uniqueID, _serialData
+	
+	Returns: nil
+	*/
 	/* private */ STATIC_METHOD("receiveOwnership") {
 		params [ ["_objNameStr", "", [""]], ["_objParent", "", [""]], ["_uniqueID", 0, [0]], ["_serialData", 0]];
 		
@@ -340,8 +412,14 @@ CLASS("MessageReceiver", "")
 	// --------------------------------------------------------------------------------------------
 	// YOU MUST OVERRIDE THESE METHODS IF YOU NEED TO CHANGE OWNERSHIP OF OBJECTS OF YOUR INHERITED CLASS
 	// --------------------------------------------------------------------------------------------
+	/*
+	Method: serialize
+	Must return a single value which can be deserialized by deserialize method to restore value of an object.
 	
-	// Must return a single value which can be deserialized to restore value of an object
+	Override if you need to transfer ownership of objects of your inherited class.
+	
+	Returns: anything you need which can be sent over network.
+	*/
 	/* virtual */ METHOD("serialize") {
 		params [["_thisObject", "", [""]]];
 		diag_log format ["[MessageReceiver:serialize] Error: method serialize is not implemented for %1!", _thisObject];
@@ -350,15 +428,33 @@ CLASS("MessageReceiver", "")
 		0
 	} ENDMETHOD;
 	
-	// Takes the output of deserialize and restores values of an object
+	/*
+	Method: deserialize
+	Takes the output of serialize and restores values of an object
+	
+	Override if you need to transfer ownership of objects of your inherited class.
+	
+	Returns: nil
+	*/
 	/* virtual */ METHOD("deserialize") {
 		params [["_thisObject", "", [""]], "_serialData"];
 		diag_log format ["[MessageReceiver:serialize] Error: method deserialize is not implemented for %1!", _thisObject];
 	} ENDMETHOD;
 	
-	// If your class has objects that must be transfered through the same mechanism, you must handle transfer of ownership of such objects here
-	// Must return true if all objects have been successfully transfered and return false otherwise
-	// You can also clear unneeded variables of this object here
+	/*
+	Method: transferOwnership
+	Called on local machine when an ownership transfer is in the progress.
+	If your class has objects that must be transfered through the same mechanism, you must handle transfer of ownership of such objects here.
+	If transfer of all objects has happened properly, must return true.
+	
+	You can also clear unneeded variables of this object here.
+	
+	Parameters: _newOwner
+	
+	_newOwner - owner ID of the machine that will receive ownership
+	
+	Returns: Bool
+	*/
 	/* virtual */ METHOD("transferOwnership") {
 		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
 		diag_log format ["[MessageReceiver:transferOwnership] Error: method transferOwnership is not implemented for %1!", _thisObject];

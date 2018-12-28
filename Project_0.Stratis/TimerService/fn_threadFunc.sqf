@@ -2,8 +2,14 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Timer\Timer.hpp"
 
+// Class: TimerService
 /*
+Function: threadFunc
 Thread function for a TimerService.
+
+Parameters: _timerService
+
+Access: Internal use.
 */
 
 params [["_thisObject", "", [""]]];

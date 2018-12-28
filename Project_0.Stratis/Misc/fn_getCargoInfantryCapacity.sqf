@@ -1,19 +1,13 @@
-/**
- * Project_0 - fn_cargoInfantryCapacity
- * 
- * Author: Sparker
- * 
- * Description:
- * Returns how many units can be loaded by all the vehicles from _vehArray
- * 
- * Parameter(s):
- * _vehArray - a single vehicle/vehicle classname OR an array of vehicles or vehicle classnames
- 
- * 
- * Return Value:
- * Number - 
- * 
- */
+/*
+Function: misc_fnc_getCargoInfantryCapacity
+Returns how many units can be loaded as cargo by all the vehicles from _veh
+
+Parameters: _veh
+
+_vehArray - a single vehicle/vehicle classname OR an array of vehicles or vehicle classnames
+
+Returns: Number
+*/
 
 private _vehArray = _this;
 
@@ -21,8 +15,6 @@ if(!(_vehArray isEqualType [])) then
 {
 	_vehArray = [_vehArray];
 };
-
-//diag_log format ["===== vehArray: %1", _vehArray];
 
 //Now we consider only loading of infantry
 private _nCargoSeats = 0;

@@ -1,11 +1,14 @@
 /*
+Function: misc_fnc_currentWeaponSilenced
 Checks if given unit is currently using a silenced weapon.
 
-parameters:
-_unit - object
+Parameters: _unit
 
-output:
-silenced - [true/false] - is the current weapon of the unit silenced?
+_unit - objectHandle of the unit
+
+Returns:
+
+silenced - Bool [true/false] - is the current weapon of the unit silenced?
 */
 
 params ["_unit"];
@@ -23,7 +26,7 @@ if(_s != "") exitWith
 };
 
 //If there is no silencer, check weapon's ammo audibleFire coefficient
-_mag = currentMagazine (vehicle player);
+_mag = currentMagazine (vehicle _unit);
 _ammo = getText (configFile >> "cfgMagazines" >> _mag >> "ammo");
 _ammoAudible = getNumber (configFile >> "cfgAmmo" >> _ammo >> "audibleFire");
 //Compare with threshold value

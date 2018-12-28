@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("wai",["Function"],[["waitUntilMessageDone",,[["MessageReceiver",,,,0,"File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.waitUntilMessageDone","SQFClass:MessageReceiver:waitUntilMessageDone"]]]]);

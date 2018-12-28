@@ -5,9 +5,11 @@
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 
+// Class: Group
 /*
-Group class.
-Group class is a set of Units. A group can have men, vehicles and drones.
+Virtualized Group has <Unit> objects inside it.
+
+Unlike standard ARMA group, it can have men, vehicles and drones inside it.
 
 Author: Sparker
 11.06.2018

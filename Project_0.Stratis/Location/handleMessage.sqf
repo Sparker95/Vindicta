@@ -3,6 +3,12 @@
 #include "location.hpp"
 #include "..\MessageTypes.hpp"
 
+// Class: Location
+/*
+Method: handleMessage
+Checks spawn conditions of this location. Spawns garrisons if needed.
+*/
+
 params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 
 private _msgType = _msg select MESSAGE_ID_TYPE;
@@ -59,7 +65,7 @@ switch (_msgType) do {
 					
 					SET_VAR(_thisObject, "spawnState", 0);
 				};
-			};
-		};
-	};
-};
+			}; // case 1
+		}; // switch spawn state
+	}; // case LOCATION_MESSAGE_PROCESS
+}; // switch msg type

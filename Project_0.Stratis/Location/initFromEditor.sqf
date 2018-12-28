@@ -1,11 +1,19 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Group\Group.hpp"
+
+// Class: Location
 /*
+Method: initFromEditor
 Initializes the location parameters from editor-plased objects.
+
+Parameters: _marker
+
+_marker - the marker to initialize from
+
+Returns: nil
 
 Author: Sparker 28.07.2018
 */
-
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Group\Group.hpp"
 
 params [ ["_thisObject", "", [""]], ["_marker", "", [""]] ];
 

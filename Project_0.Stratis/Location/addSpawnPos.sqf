@@ -1,16 +1,18 @@
-/*
-Adds a spawn position to to the spawn types array.
-
-parameters:
-_typesArray - array with 
-_groupTypes - array with group types
-_pos
-_dir
-_building - the building this pos. is attached to or objNull if it's not dependant on any building
-*/
-
 #include "Location.hpp"
 #include "..\OOP_Light\OOP_Light.h"
+
+// Class: Location
+/*
+Method: addSpawnPos
+Adds a spawn position to to the spawn types array.
+
+Parameters: _typesArray, _groupTypes, _pos, _dir, _building
+_typesArray - array with 
+_groupTypes - array with group types
+_pos - position
+_dir - direction
+_building - the building this pos. is attached to or objNull if it's not dependant on any building
+*/
 
 params [["_thisObject", "", [""]], ["_unitTypes", [], [[]]], ["_groupTypes", [], [[]]], ["_pos", [], [[]]], ["_dir", 0, [0]], ["_building", objNull, [objNull]] ];
 

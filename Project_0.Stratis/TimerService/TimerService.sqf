@@ -1,11 +1,12 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Mutex\Mutex.hpp"
+
 /*
-TimerService is a container for Timer objects. it checks Timer objects supplied to it with some time interval(resolution) and dispatches a message if the time for this timer has expired.
+Class: TimerService
+TimerService is a container for Timer objects. It checks Timer objects supplied to it with some time interval(resolution) and dispatches a message if the time for this timer has expired.
 
 Author: Sparker 31.07.2018
 */
-
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Mutex\Mutex.hpp"
 
 TimerService_fnc_threadFunc = compile preprocessFileLineNumbers "TimerService\fn_threadFunc.sqf";
 
@@ -16,10 +17,15 @@ CLASS("TimerService", "")
 	VARIABLE("scriptHandle");
 	VARIABLE("mutex");
 	
-	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
-	// ----------------------------------------------------------------------
+	/*
+	Method: new
 	
+	Parameters: _resolution
+	
+	_resolution - the time interval at which this timer service will check its timers and dispatch messages.
+	It defines the maximum frequency at which your timer can run.
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_resolution", 0, [0]]];
 		SET_VAR(_thisObject, "timers", []);
@@ -32,10 +38,13 @@ CLASS("TimerService", "")
 		SET_VAR(_thisObject, "scriptHandle", _hThread);
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
+
 	// |                            D E L E T E                             |
-	// ----------------------------------------------------------------------
+	/*
+	Method: delete
 	
+	Warning: must be called in scheduled environment!
+	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		// Wait until we lock the mutex. We don't want to stop the thread while it's doing something.
@@ -52,11 +61,19 @@ CLASS("TimerService", "")
 		} forEach (GET_VAR(_thisObject, "timers"));
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
 	// |                         A D D   T I M E R                          |
-	// ----------------------------------------------------------------------
-	// Adds a timer to this timerService
-	// You don't need to call this since a timer is added to TimerService on Timer creation automatically
+	/*
+	Method: addTimer
+	Adds a timer to this timerService.
+	
+	Access: Internal use. You don't need to call this since a timer is added to TimerService on Timer creation automatically.
+	
+	Parameters: _timer
+	
+	_timer - the <Timer> object to add to this TimerService.
+	
+	Returns: nil
+	*/
 	METHOD("addTimer") {
 		params [["_thisObject", "", [""]], ["_timer", "", [""]]];
 		private _timers = GET_VAR(_thisObject, "timers");
@@ -64,10 +81,19 @@ CLASS("TimerService", "")
 		_timers pushBackUnique _timerDereferenced;
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
 	// |                      R E M O V E   T I M E R                       |
-	// ----------------------------------------------------------------------
-	// Removes timer from the timer array of this timer service
+	/*
+	Method: removeTimer
+	Remove a timer from this TimerService.
+	
+	Warning: must be called in scheduled environment!
+	
+	Parameters: _timer
+	
+	_timer - the <Timer> object to remove from this TimerService.
+	
+	Returns: nil
+	*/
 	METHOD("removeTimer") {
 		params [["_thisObject", "", [""]], ["_timer", "", [""]]];
 		private _timers = GET_VAR(_thisObject, "timers");

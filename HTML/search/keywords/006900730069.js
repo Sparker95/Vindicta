@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("isi",["Function"],[["isInfantry",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.isInfantry","SQFClass:Unit:isInfantry"]]]]);

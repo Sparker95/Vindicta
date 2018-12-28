@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sou",["Variable"],[["SOURCE",,[["Message",,,,0,"File:Message/Message.hpp:Message.SOURCE","SQFClass:Message:SOURCE"]]],["SOURCE_ID",,[["Message",,,,0,"File:Message/Message.hpp:Message.SOURCE_ID","SQFClass:Message:SOURCE_ID"]]],["SOURCE_OWNER",,[["Message",,,,0,"File:Message/Message.hpp:Message.SOURCE_OWNER","SQFClass:Message:SOURCE_OWNER"]]]]);

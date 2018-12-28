@@ -1,5 +1,6 @@
 /*
-Location class
+Class: Location
+Location has garrisons at a static place and spawns units.
 
 Author: Sparker 28.07.2018
 */
@@ -25,19 +26,31 @@ CLASS("Location", "MessageReceiver")
 	VARIABLE("capacityInf"); // Infantry capacity
 	STATIC_VARIABLE("all");
 	
-	// ----------------------------------------------------------------------
-	// |                 S E T   D E B U G   N A M E                        |
-	// ----------------------------------------------------------------------
+
+	// |                 S E T   D E B U G   N A M E
+	/*
+	Method: setDebugName
+	Sets debug name of this MessageLoop.
 	
+	Parameters: _debugName
+	
+	_debugName - String
+	
+	Returns: nil
+	*/
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
 		SET_VAR(_thisObject, "debugName", _debugName);
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                              N E W                                 |
-	// ----------------------------------------------------------------------
+	// |                              N E W
+	/*
+	Method: new
 	
+	Parameters: _pos
+	
+	_pos - position of this location
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]] ];
 		
@@ -73,10 +86,11 @@ CLASS("Location", "MessageReceiver")
 		_allArray pushBack _thisObject;
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
+
 	// |                            D E L E T E                             |
-	// ----------------------------------------------------------------------
-	
+	/*
+	Method: delete
+	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		
@@ -103,48 +117,78 @@ CLASS("Location", "MessageReceiver")
 		SET_STATIC_VAR("Location", "all", _allArray);
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                            G E T   A L L                           |
-	// ----------------------------------------------------------------------
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               G E T T I N G   M E M B E R   V A L U E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+	// |                            G E T   A L L
+	/*
+	Method: (static)getAll
+	Returns an array of all locations.
 	
+	Returns: Array of location objects
+	*/
 	STATIC_METHOD("getAll") {
 		private _all = GET_STATIC_VAR("Location", "all");
 		private _return = +_all;
 		_return
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                            G E T   P O S                           |
-	// ----------------------------------------------------------------------
 	
+	// |                            G E T   P O S                           |
+	/*
+	Method: getPos
+	Returns position of this location
+	
+	Returns: Array, position
+	*/
 	METHOD("getPos") {
 		params [ ["_thisObject", "", [""]] ];
 		GETV(_thisObject, "pos")
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
 	// |               G E T   P A T R O L   W A Y P O I N T S 
-	// ----------------------------------------------------------------------
+	/*
+	Method: getPatrolWaypoints
+	Returns array with positions for patrol waypoints.
 	
+	Returns: Array of positions
+	*/
 	METHOD("getPatrolWaypoints") {
 		params [ ["_thisObject", "", [""]] ];
 		GETV(_thisObject, "borderPatrolWaypoints")
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                  G E T   M E S S A G E   L O O P                   |
-	// ----------------------------------------------------------------------
-	
+	// |                  G E T   M E S S A G E   L O O P
 	METHOD("getMessageLoop") { //Derived classes must implement this method
 		gMessageLoopLocation
 	} ENDMETHOD;
 	
-	// Adding garrisons
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               S E T T I N G   M E M B E R   V A L U E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	/*
+	Method: setGarrisonMilitaryMain
+	Sets the main military garrison located at this location
+	
+	Parameters: _garrison
+	
+	_garrison - <Garrison> object
+	
+	Returns: nil
+	*/
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
 		CALL_METHOD(_garrison, "setLocation", [_thisObject]);
 	} ENDMETHOD;
+	
+	
+	
 	
 	// File-based methods
 	
