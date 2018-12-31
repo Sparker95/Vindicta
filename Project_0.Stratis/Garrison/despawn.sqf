@@ -25,6 +25,7 @@ if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't des
 SET_VAR(_thisObject, "spawned", false);
 
 // Delete the AI object
+// We delete it instantly because Garrison AI is in the same thread
 pr _AI = GETV(_thisObject, "AI");
 DELETE(_AI);
 SETV(_thisObject, "AI", "");

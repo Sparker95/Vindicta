@@ -22,10 +22,16 @@ g_rqArray = [0];
 // A small function to mark the message with given ID as processed
 // Parameters: [msgID, result]
 MsgRcvr_fnc_setMsgDone = {
-	params ["_msgID", ["_result", 0]];
+	params ["_msgID", ["_result", 0], "_dest"];
 	pr _rqArrayElement = g_rqArray select _msgID; // g_rqArray was defined in messageReceiver.sqf
-	_rqArrayElement set [0, 1]; // Set the flag that the message has been processed
-	_rqArrayElement set [1, _result];
+	// Make sure the proper receiver marks this message
+	if ((_rqArrayElement select 2) == _dest) then {
+		_rqArrayElement set [0, 1]; // Set the flag that the message has been processed
+		_rqArrayElement set [1, _result];
+		//diag_log format [" --- Message receiver has acknowledged message: %1,  msgID: %2", _dest, _msgID];
+	} else {
+		diag_log format ["[MessageReceiver] Error: message was acknowledged by wrong receiver. %1 was acknowledged by %2", _rqArrayElement, _dest];
+	};
 };
 
 //#define DEBUG
@@ -136,13 +142,12 @@ CLASS("MessageReceiver", "")
 					} else {
 						g_rqArray set [_msgID, [0, 0, _thisObject]];
 					};
+					// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
+					_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
+					
+					// Post the message to the thread, give it the message ID so that it marks the message as processed
+					CALLM1(_messageLoop, "postMessage", _msg);
 				CRITICAL_SECTION_END
-				
-				// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
-				_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
-				
-				// Post the message to the thread, give it the message ID so that it marks the message as processed
-				CALLM1(_messageLoop, "postMessage", _msg);
 				
 				//Return message ID value
 				_msgID

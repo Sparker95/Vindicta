@@ -4,6 +4,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
+#include "..\GlobalAssert.hpp"
 
 // Class: Group
 /*
@@ -17,7 +18,7 @@ Author: Sparker
 
 #define pr private
 
-CLASS(GROUP_CLASS_NAME, "MessageReceiver")
+CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	
 	//Variables
 	VARIABLE("data");
@@ -35,6 +36,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
+		
+		// Check existance of neccessary global objects
+		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
+		
 		private _data = GROUP_DATA_DEFAULT;
 		_data set [GROUP_DATA_ID_SIDE, _side];
 		_data set [GROUP_DATA_ID_TYPE, _groupType];
@@ -53,19 +58,28 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 		// todo
 	} ENDMETHOD;
 	
+	/*
+	Method: getMessageLoop
+	See <MessageReceiver.getMessageLoop>
+	
+	Returns: <MessageLoop>
+	*/
+	// Returns the message loop this object is attached to
+	METHOD("getMessageLoop") {
+		gMessageLoopMain
+	} ENDMETHOD;
+	
 	
 	// |                           A D D   U N I T
 	/*
 	Method: addUnit
 	Adds an existing <Unit> to this group. You don't need to call it manually.
 	
-	Warning: must be called in scheduled environment! Probably needs a fix :/
-	
 	Access: internal use!
 	
 	Parameters: _unit
 	
-	_unit to add
+	_unit - <Unit> to add
 	
 	Returns: nil
 	*/
@@ -73,10 +87,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList pushBackUnique _unit;
-		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 	
@@ -182,7 +194,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 		
 		// Set the garrison of all units in this group
 		private _units = _data select GROUP_DATA_ID_UNITS;
-		{ CALL_METHOD(_x, "setGarrison", [_thisObject]); } forEach _units;
+		{ CALL_METHOD(_x, "setGarrison", [_garrison]); } forEach _units;
 	} ENDMETHOD;
 	
 	
@@ -236,12 +248,25 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	// |                 H A N D L E   U N I T   K I L L E D                |
 	/*
 	Method: handleUnitKilled
-	NYI
+	Called when the unit has been killed.
+	
+	Must be called inside the group's thread, not inside event handler.
 	
 	Returns: nil
 	*/
 	METHOD("handleUnitKilled") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		diag_log format ["[Group::handleUnitKilled] Info: %1", _unit];
+		
+		pr _data = GETV(_thisObject, "data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		
+		// Remove the unit from this group
+		_units deleteAt (_units find _unit);
+		
+		// Set group of this unit
+		CALLM1(_unit, "setGroup", "");	
 	} ENDMETHOD;
 	
 	
@@ -371,12 +396,14 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 		pr _data = GETV(_thisObject, "data");
 		if ((_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
-			// Switch off their brain
-			// We must safely delete the AI object because it might be currently used in its own thread
-			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
-			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
-			_data set [GROUP_DATA_ID_AI, ""];
+			if (_AI != "") then {
+				// Switch off their brain
+				// We must safely delete the AI object because it might be currently used in its own thread
+				pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+				_data set [GROUP_DATA_ID_AI, ""];
+				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+			};
 			
 			// Despawn everything
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
@@ -387,7 +414,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 			// Delete the group handle
 			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
 			if (count units _groupHandle > 0) then {
-				diag_log format ["[Group] Error: group is not empty at despawning: %1. Units remaining: %2", _data, units _groupHandle];
+				diag_log format ["[Group] Warning: group is not empty at despawning: %1. Units remaining:", _data];
+				{
+					diag_log format ["  %1,  alive: %2", _x, alive _x];
+				} forEach (units _groupHandle);
+				_groupHandle deleteGroupWhenEmpty true;
 			} else {			
 				deleteGroup _groupHandle;
 			};

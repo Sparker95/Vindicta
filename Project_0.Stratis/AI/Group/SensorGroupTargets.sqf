@@ -31,7 +31,7 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 //#define PRINT_SPOTTED_TARGETS
 
 // Prints targets received through the stimulus
-#define PRINT_RECEIVED_TARGETS
+//#define PRINT_RECEIVED_TARGETS
 
 CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 

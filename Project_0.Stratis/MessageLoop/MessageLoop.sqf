@@ -24,12 +24,6 @@ CLASS("MessageLoop", "")
 	VARIABLE("msgQueue");	
 	//Handle to the script which does message processing
 	VARIABLE("scriptHandle");	
-	//Array with objects handled by this message loop
-	VARIABLE("objects");
-	//Counter for messages posted into the queue
-	VARIABLE("msgPostID");
-	//Counter for messages processed by the function
-	VARIABLE("msgDoneID");
 	//Mutex for accessing the message queue
 	VARIABLE("mutex");
 	//Debug name to help read debug printouts
@@ -44,9 +38,6 @@ CLASS("MessageLoop", "")
 	METHOD("new") {
 		params [ ["_thisObject", "", [""]] ];		
 		SET_VAR(_thisObject, "msgQueue", []);
-		SET_VAR(_thisObject, "objects", []);
-		SET_VAR(_thisObject, "msgPostID", 0);
-		SET_VAR(_thisObject, "msgDoneID", 0);
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;		
 		SET_VAR(_thisObject, "scriptHandle", _scriptHandle);	
 		SET_VAR(_thisObject, "mutex", MUTEX_NEW());
@@ -68,9 +59,6 @@ CLASS("MessageLoop", "")
 		private _scriptHandle = GET_VAR(_thisObject, "scriptHandle");
 		terminate _scriptHandle;
 		SET_VAR(_thisObject, "msgQueue", nil);
-		SET_VAR(_thisObject, "objects", nil);
-		SET_VAR(_thisObject, "msgPostID", nil);
-		SET_VAR(_thisObject, "msgDoneID", nil);	
 		SET_VAR(_thisObject, "scriptHandle", nil);		
 		MUTEX_UNLOCK(_mutex);
 		SET_VAR(_thisObject, "mutex", nil);
@@ -109,24 +97,8 @@ CLASS("MessageLoop", "")
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
 		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]]];
-		
-		//Start critical section
-		// Nothing must interrupt the message pushing into the queue, even event handlers
-		//private _ID = -1; // Because we can't return a variable from a critical section
-		CRITICAL_SECTION_START
-		
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
-		
-		//Increase the posted msg ID counter
-		//_ID = GET_VAR(_thisObject, "msgPostID");
-		//SET_VAR(_thisObject, "msgPostID", _ID + 1);
-		
-		// Stop critical section
-		CRITICAL_SECTION_END
-		
-		//Return the message ID
-		//_ID
 	} ENDMETHOD;
 	
 	//MessageLoop can also handle messages directed to it.

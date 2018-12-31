@@ -53,10 +53,9 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			SETV(_AI, "targets", _knownTargets);
 		};
 		
-		diag_log format ["[SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
 		// Force groups to forget about old targets
 		if (count _targetsToForget > 0) then {
-			diag_log format ["--- --- [SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
+			//diag_log format ["--- --- [SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
 			// Create a new stimulus record
 			pr _stim = STIMULUS_NEW();
 			STIMULUS_SET_SOURCE(_stim, GETV(_thisObject, "gar"));

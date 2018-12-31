@@ -40,10 +40,10 @@ CLASS(THIS_ACTION_NAME, "Action")
 		//ade_dumpCallstack;
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
-			if (!isNil "_AI") then {
-				if (_AI != "") then {
+			if (!isNil "_groupAI") then {
+				if (_groupAI != "") then {
 					// Give a patrol task to this group
-					pr _args = ["GoalGroupPatrol", 0, [], GETV(_thisObject, "AI")];
+					pr _args = ["GoalGroupPatrol", 0, [], _AI];
 					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 				};
 			};

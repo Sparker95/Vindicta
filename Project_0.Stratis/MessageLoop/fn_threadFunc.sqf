@@ -23,7 +23,13 @@ while {true} do {
 	waitUntil {	(count _msgQueue) > 0 };
 	while {(count _msgQueue) > 0} do {
 		//Get a message from the front of the queue
-		pr _msg = _msgQueue select 0;
+		pr _msg = 0;
+		CRITICAL_SECTION_START
+			// Take the message from the front of the queue
+			_msg = _msgQueue select 0;
+			// Delete the message
+			_msgQueue deleteAt 0;
+		CRITICAL_SECTION_END
 		pr _msgID = _msg select MESSAGE_ID_SOURCE_ID;
 		#ifdef DEBUG
 		diag_log format ["[MessageLoop] Info: message in queue: %1", _msg];
@@ -40,20 +46,11 @@ while {true} do {
 			pr _msgSourceOwner = _msg select MESSAGE_ID_SOURCE_OWNER;
 			if (_msgSourceOwner == clientOwner) then {
 				// Mark this message processed on this machine
-				[_msgID, _result] call MsgRcvr_fnc_setMsgDone;
+				[_msgID, _result, _dest] call MsgRcvr_fnc_setMsgDone;
 			} else {
 				// Mark this message processed on the remote machine
-				[_msgID, _result] remoteExecCall ["MsgRcvr_fnc_setMsgDone", _msgSourceOwner, false];
+				[_msgID, _result, _dest] remoteExecCall ["MsgRcvr_fnc_setMsgDone", _msgSourceOwner, false];
 			};
 		};
-		//Delete the message
-		_msgQueue deleteAt 0;
 	};
-	
-	//By now the queue must be empty.
-	//Make msgDoneID equal to msgPostID in case something went wrong.
-	CRITICAL_SECTION_START
-	private _msgPostID = GET_VAR(_thisObject, "msgPostID");
-	SET_VAR(_thisObject, "msgDoneID", _msgPostID);
-	CRITICAL_SECTION_END
 };

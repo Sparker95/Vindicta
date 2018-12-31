@@ -35,9 +35,9 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]];
 
-		//Check argument validity
+		// Check argument validity
 		private _valid = false;
-		//Check template
+		// Check template
 		if(_classID == -1) then	{
 			if(([_template, _catID, _subcatID, 0] call t_fnc_isValid)) then	{
 				_valid = true;
@@ -49,10 +49,10 @@ CLASS(UNIT_CLASS_NAME, "")
 			};
 		};
 		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);  diag_log format ["[Unit::new] Error: created invalid unit: %1", _this] };
-		//Check group
+		// Check group
 		if(_group == "" && _catID == T_INF) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 		
-		//If a random class was requested to be added
+		// If a random class was requested to be added
 		private _class = "";
 		if(_classID == -1) then {
 			private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
@@ -61,7 +61,7 @@ CLASS(UNIT_CLASS_NAME, "")
 			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
 		};
 		
-		//Create the data array
+		// Create the data array
 		private _data = UNIT_DATA_DEFAULT;
 		_data set [UNIT_DATA_ID_CAT, _catID];
 		_data set [UNIT_DATA_ID_SUBCAT, _subcatID];
@@ -70,11 +70,11 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data set [UNIT_DATA_ID_GROUP, _group];
 		SET_MEM(_thisObject, "data", _data);
 		
-		//Push the new object into the array with all units
+		// Push the new object into the array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
 		_allArray pushBack _thisObject;
 		
-		//Add this unit to a group
+		// Add this unit to a group
 		if(_group != "") then {
 			CALL_METHOD(_group, "addUnit", [_thisObject]);
 		};
@@ -267,8 +267,8 @@ CLASS(UNIT_CLASS_NAME, "")
 				pr _msg = MESSAGE_NEW();
 				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
 				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 				_data set [UNIT_DATA_ID_AI, ""];
+				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 			};
 			
 			// Delete the vehicle
@@ -314,7 +314,24 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
 	} ENDMETHOD;
 	
+	//                         S E T   G R O U P
+	/*
+	Method: setGroup
+	Sets the group this unit is attached to.
 	
+	Access: internal use!
+	
+	Parameters: _garrison
+	
+	_garrison - the garrison object
+	
+	Returns: nil
+	*/
+	METHOD("setGroup") {
+		params [["_thisObject", "", [""]], ["_group", "", [""]] ];
+		private _data = GET_VAR(_thisObject, "data");
+		_data set [UNIT_DATA_ID_GROUP, _group];
+	} ENDMETHOD;
 	
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -435,12 +452,12 @@ CLASS(UNIT_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	
-	//                     H A N D L E   D E S T R O Y E D
+	//                     H A N D L E   K I L L E D
 	/*
-	Method: handleDestroyed
+	Method: handleKilled
 	NYI
 	*/	
-	METHOD("handleDestroyed") {
+	METHOD("handleKilled") {
 		params [["_thisObject", "", [""]]];
 		//Oh no, Johny is down! What should we do?
 	} ENDMETHOD;

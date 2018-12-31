@@ -44,6 +44,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	_side - side of this garrison
 	*/
+	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		
@@ -180,6 +181,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	} ENDMETHOD;
 	
 	
+	
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -223,6 +226,36 @@ CLASS("Garrison", "MessageReceiverEx")
 		// In case we decide to process groups in the same thread as garrison, we can return the groups here
 	} ENDMETHOD;
 	
+	
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                E V E N T   H A N D L E R S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
+	
+	// |                 H A N D L E   U N I T   K I L L E D                |
+	/*
+	Method: handleUnitKilled
+	Called when the unit has been killed.
+	
+	Must be called inside the garrison thread through postMethodAsync, not inside event handler.
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitKilled") {
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		diag_log format ["[Garrison::handleUnitKilled] Info: %1", _unit];
+		
+		pr _units = GETV(_thisObject, "units");
+		
+		// Remove the unit from this garrison
+		_units deleteAt (_units find _unit);
+		
+		// Set Garrison of this Unit
+		CALLM1(_unit, "setGarrison", "");
+	} ENDMETHOD;	
 	
 	
 	
