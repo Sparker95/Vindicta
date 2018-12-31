@@ -3,6 +3,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
+#include "..\CriticalSection\CriticalSection.hpp"
 
 /*
 Class: Unit
@@ -183,10 +184,12 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
-		private _mutex = _data select UNIT_DATA_ID_MUTEX;
+		
+		//private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		
 		//Lock the mutex
-		MUTEX_LOCK(_mutex);
+		//MUTEX_LOCK(_mutex);
+		CRITICAL_SECTION_START
 		
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -226,8 +229,10 @@ CLASS(UNIT_CLASS_NAME, "")
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		};		
+		
+		CRITICAL_SECTION_END
 		//Unlock the mutex
-		MUTEX_UNLOCK(_mutex);
+		//MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 	

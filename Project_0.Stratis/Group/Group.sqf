@@ -149,24 +149,14 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	// |                  G E T   G R O U P   H A N D L E
 	/*
 	Method: getGroupHandle
-	Returns a valid group handle of this group. Creates a group with createGroup if it wasn't created yet.
+	Returns the group handle of this group.
 	
 	Returns: group handle.
 	*/
 	METHOD("getGroupHandle") {
 		params [["_thisObject", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
-		private _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-		if (isNull _groupHandle) then { //Check if the group has been spawned
-			private _side = _data select GROUP_DATA_ID_SIDE;
-			// Spawn the group
-			_groupHandle = createGroup [_side, true]; //side, delete when empty
-			_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
-		};
-		MUTEX_UNLOCK(_mutex);
-		_groupHandle
+		private _data = GET_VAR(_thisObject, "data");		
+		_data select GROUP_DATA_ID_GROUP_HANDLE
 	} ENDMETHOD;
 	
 	
@@ -221,6 +211,20 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 		
 		pr _data = GETV(_thisObject, "data");
 		_data select GROUP_DATA_ID_AI
+	} ENDMETHOD;
+	
+	// |                           I S   S P A W N E D
+	/*
+	Method: isSpawned
+	Returns the spawned state of this group
+	
+	Returns: Bool
+	*/
+	METHOD("isSpawned") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _data = GETV(_thisObject, "data");
+		_data select GROUP_DATA_ID_SPAWNED
 	} ENDMETHOD;
 	
 	
@@ -319,22 +323,38 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
 		pr _data = GETV(_thisObject, "data");
-		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
-		pr _groupType = _data select GROUP_DATA_ID_TYPE;
-		{
-			private _unit = _x;
-			private _unitData = CALL_METHOD(_unit, "getMainData", []);
-			private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-			private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-			CALL_METHOD(_unit, "spawn", _posAndDir);
-		} forEach _groupUnits;
-		
-		// Set group default behaviour
-		pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-		_groupHandle setBehaviour "SAFE";
-		
-		// Create an AI for this group
-		CALLM0(_thisObject, "createAI");
+		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			{
+				private _unit = _x;
+				private _unitData = CALL_METHOD(_unit, "getMainData", []);
+				
+				// Create a group handle if we have any infantry and the group handle doesn't exist yet
+				private _catID = _unitData select 0;
+				if (_catID == T_INF) then {
+					pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+					if (isNull _groupHandle) then {
+						private _side = _data select GROUP_DATA_ID_SIDE;
+						_groupHandle = createGroup [_side, false]; //side, delete when empty
+						_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+					};
+				};			
+				private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
+				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
+				CALL_METHOD(_unit, "spawn", _posAndDir);
+			} forEach _groupUnits;
+			
+			// Set group default behaviour
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			_groupHandle setBehaviour "SAFE";
+			
+			// Create an AI for this group
+			CALLM0(_thisObject, "createAI");
+			
+			// Set the spawned flag to true
+			_data set [GROUP_DATA_ID_SPAWNED, true];
+		};
 	} ENDMETHOD;
 	
 	
@@ -349,29 +369,33 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	METHOD("despawn") {
 		params [["_thisObject", "", [""]]];
 		pr _data = GETV(_thisObject, "data");
-		pr _AI = _data select GROUP_DATA_ID_AI;
-		
-		// Switch off their brain
-		// We must safely delete the AI object because it might be currently used in its own thread
-		pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
-		pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-		CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
-		_data set [GROUP_DATA_ID_AI, ""];
-		
-		// Despawn everything
-		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
-		{
-			CALL_METHOD(_x, "despawn", []);
-		} forEach _groupUnits;
-		
-		// Delete the group handle
-		pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-		if (count units _groupHandle > 0) then {
-			diag_log format ["[Group] Error: group is not empty at despawning: %1. Units remaining: %2", _data, units _groupHandle];
-		} else {			
-			deleteGroup _groupHandle;
+		if ((_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _AI = _data select GROUP_DATA_ID_AI;
+			// Switch off their brain
+			// We must safely delete the AI object because it might be currently used in its own thread
+			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+			_data set [GROUP_DATA_ID_AI, ""];
+			
+			// Despawn everything
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			{
+				CALL_METHOD(_x, "despawn", []);
+			} forEach _groupUnits;
+			
+			// Delete the group handle
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			if (count units _groupHandle > 0) then {
+				diag_log format ["[Group] Error: group is not empty at despawning: %1. Units remaining: %2", _data, units _groupHandle];
+			} else {			
+				deleteGroup _groupHandle;
+			};
+			_data set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
+			
+			// Set the spawned flag to false
+			_data set [GROUP_DATA_ID_SPAWNED, false];
 		};
-		_data set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
 	} ENDMETHOD;
 	
 	

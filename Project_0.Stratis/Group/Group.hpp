@@ -9,9 +9,10 @@
 #define GROUP_DATA_ID_TYPE			4
 #define GROUP_DATA_ID_GARRISON		5
 #define GROUP_DATA_ID_AI			6
+#define GROUP_DATA_ID_SPAWNED		7
 
-//				     		  0,        1,       2,  3, 4,  5,  6
-#define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0, "", ""]
+//				     		  0,        1,       2,  3, 4,  5,  6,     7
+#define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0, "", "", false]
 
 /*
 Enum: GROUP_TYPE
