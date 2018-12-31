@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("tra",["Function"],[["transferOwnership",,[["MessageReceiver",,,,0,"File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.transferOwnership","SQFClass:MessageReceiver:transferOwnership"]]]]);
+NDSearch.OnPrefixDataLoaded("tra",["Function"],[["transferOwnership",,[["Group",,,,0,"File:Group/Group.sqf:Group.transferOwnership","SQFClass:Group:transferOwnership"],["MessageReceiver",,,,0,"File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.transferOwnership","SQFClass:MessageReceiver:transferOwnership"]]]]);

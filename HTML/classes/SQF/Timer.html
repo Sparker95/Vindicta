@@ -8,31 +8,31 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic10"></a><div class="CTopic TClass LSQF first">
+<a name="Topic113"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">Timer</div>
  <div class="CBody"><p>Timer is an object which posts a message into a message receiver with specified time interval.</p><p>Usage example:</p><p>private _msg = MESSAGE_NEW(); _msg set [MESSAGE_ID_DESTINATION, ***]; _msg set [MESSAGE_ID_SOURCE, &quot;&quot;]; _msg set [MESSAGE_ID_DATA, ***]; _msg set [MESSAGE_ID_TYPE, ***]; private _args = [__destination__, __interval__, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service private _timer = NEW(&quot;Timer&quot;, _args);</p><p>Author: Sparker 31.07.2018</p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic11"></a><div class="CTopic TGroup LSQF">
+<a name="Functions"></a><a name="Topic114"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="new"></a><a name="Topic12"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic115"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
  <div class="CBody"><p>Parameters: _messageReceiver, _interval, _message, _timerService</p><table class="CDefinitionList"><tr><td class="CDLEntry">_messageReceiver</td><td class="CDLDefinition"><p>the object of MessageReceiver class (or inherited) which will be receiving the messages</p></td></tr><tr><td class="CDLEntry">_interval</td><td class="CDLDefinition"><p>interval between sending messages in seconds</p></td></tr><tr><td class="CDLEntry">_message</td><td class="CDLDefinition"><p>a Message which will be posted to the _messageReceiver</p></td></tr><tr><td class="CDLEntry">_timerService</td><td class="CDLDefinition"><p>the TimerService object this timer will be attached to</p></td></tr></table></div>
 </div>
 
-<a name="delete"></a><a name="Topic13"></a><div class="CTopic TFunction LSQF">
+<a name="delete"></a><a name="Topic116"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
- <div class="CBody"><p>Deletes this timer and removes it from corresponding <a href="../../index.html#SQFClass:TimerService" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,4);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >TimerService</a>.</p><p>Warning: must be called in scheduled environment, since it called TimerService.removeTimer.</p></div>
+ <div class="CBody"><p>Deletes this timer and removes it from corresponding <a href="../../index.html#SQFClass:TimerService" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,122);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >TimerService</a>.</p><p>Warning: must be called in scheduled environment, since it called TimerService.removeTimer.</p></div>
 </div>
 
-<a name="setInterval"></a><a name="Topic14"></a><div class="CTopic TFunction LSQF">
+<a name="setInterval"></a><a name="Topic117"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setInterval</div>
  <div class="CBody"><p>Sets the interval of this timer.</p><p>Parameters: _interval</p><table class="CDefinitionList"><tr><td class="CDLEntry">_interval</td><td class="CDLDefinition"><p>interval in seconds</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="getDataArray"></a><a name="Topic15"></a><div class="CTopic TFunction LSQF last">
+<a name="getDataArray"></a><a name="Topic118"></a><div class="CTopic TFunction LSQF last">
  <div class="CTitle">getDataArray</div>
  <div class="CBody"><p>Returns an internal data array of this Timer.</p><p>Access: Internal use.</p><p>Returns: Array, see Timer.hpp</p></div>
 </div>

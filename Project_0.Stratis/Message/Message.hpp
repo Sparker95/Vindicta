@@ -1,5 +1,6 @@
 /*
 Struct: Message
+File: Message\Message.hpp
 Message is a structure that can be sent to <MessageReceiver> objects.
 Internally message is an array with several elements.
 

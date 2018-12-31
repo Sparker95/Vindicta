@@ -10,7 +10,12 @@
 #include "AI.hpp"
 
 /*
-AI base class.
+Class: AI
+This is the central class of AI framework.
+It handles arbitration of goals, receives data from sensors,
+stores world facts, runs an A* action planner.
+
+Lots of the code and architecture is rerived from F.E.A.R. AI made by Jeff Orkin.
 
 Author: Sparker 07.11.2018
 */

@@ -5,7 +5,7 @@
 #include "..\stimulusTypes.hpp"
 
 /*
-Sensor class
+Class: Sensor
 It abstracts the abilities of an agent to receive information from the external world
 
 Author: Sparker 08.11.2018

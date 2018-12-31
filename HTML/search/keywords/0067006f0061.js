@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("goa",["Class"],[["Goal",,[[,,,,0,"File:AI/Goal/Goal.sqf:Goal","SQFClass:Goal"]]]]);

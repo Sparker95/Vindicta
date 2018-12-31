@@ -5,16 +5,26 @@
 #define WS_ID_WSPT	1
 
 /*
-WorldState class
+Class: WorldState
 WorldState is an array with WorldStateProperties
 World State is a representation of the world relative to the agent
 
 Author: Sparker 07.11.2018
 */
 
-// Returns a new WorldState object (kind of)
-// Argument: [_count] - amount of entries
 
+/*
+Method: ws_new
+Returns a new WorldState object
+
+Parameters: _size
+
+_size - amount of world state properties
+_b - 
+_c -
+
+Returns: new WorldState object
+*/
 ws_new = {
 	params [["_size", 0, [0]]];
 	pr _array_WSP = [];
@@ -38,17 +48,50 @@ ws_new = {
 	[_array_WSP, _array_propTypes]
 };
 
+
+/*
+Method: ws_getSize
+Returns size of this world state
+
+Parameters: _ws
+
+_ws - world state
+
+Returns: Number
+*/
 ws_getSize = {
 	params [["_WS", [], [[]]]];
 	count (_WS select 0)
 };
 
+/*
+Method: ws_getPropertyValue
+Returns size of this world state
+
+Parameters: _ws, _key
+
+_ws - world state
+_key - Number, ID of world state property
+
+Returns: Number
+*/
 ws_getPropertyValue = {
 	params [["_WS", [], [[]]], ["_key", 0, [0]]];
 	_WS select WS_ID_WSP select _key
 };
 
-// Returns true if the property exists and is equal to supplied value
+/*
+Method: ws_propertyExistsAndEquals
+Returns true if the property exists and is equal to supplied value
+
+Parameters: _ws, _key, _value
+
+_ws - world state
+_key - Number, ID of world state property
+_value - value
+
+Returns: Bool
+*/
 ws_propertyExistsAndEquals = {
 	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_value", 0, WSP_TYPES]];
 	pr _prop = _WS select WS_ID_WSP select _key;
@@ -61,6 +104,19 @@ ws_propertyExistsAndEquals = {
 	};
 };
 
+
+/*
+Method: ws_setPropertyValue
+Sets value of property with given key
+
+Parameters: _ws, _key, _value
+
+_ws - world state
+_key - Number, ID of world state property
+_value - value
+
+Returns: nil
+*/
 ws_setPropertyValue = {
 	params [["_WS", [], [[]]], ["_key", 0, [0]], ["_value", 0, WSP_TYPES]];
 	pr _properties = _WS select WS_ID_WSP;
@@ -98,6 +154,17 @@ ws_setPropertyGoalParameterTag = {
 	_propTypes set [_key, WSP_TYPE_GOAL_PARAMETER];
 };
 
+/*
+Method: ws_clearProperty
+Clears property with given key
+
+Parameters: _ws, _key
+
+_ws - world state
+_key - Number, ID of world state property
+
+Returns: nil
+*/
 ws_clearProperty = {
 	params [["_WS", [], [[]]], ["_key", 0, [0]]];
 	pr _propTypes = _WS select WS_ID_WSPT;
@@ -106,6 +173,16 @@ ws_clearProperty = {
 	_propTypes set [_key, WSP_TYPE_DOES_NOT_EXIST]; // Property doesn't exist any more
 };
 
+/*
+Method: ws_toString
+Converts world state to a string, which can be useful for debug purposes
+
+Parameters: _ws
+
+_ws - world state
+
+Returns: String
+*/
 // Returns a string in human readable form for debug purposes
 ws_toString = {
 	params [["_WS", [], [[]]]];
@@ -132,7 +209,9 @@ ws_toString = {
 	//str _WS
 };
 
-/* Checks if an action with given effects and preconditions can be used to satisfy some goal.
+/*
+Method: ws_isActionSuitable
+Checks if an action with given effects and preconditions can be used to satisfy some goal.
 
 An action can be applied if any properties in effects are equal to properties in goal,
 or if a property in effects is a parameter which affects an existing property in goal.
@@ -208,6 +287,7 @@ ws_isActionSuitable = {
 };
 
 /*
+Method: ws_getNumUnsatisfiedProps
 Returns number of unsatisfied properties between world state A and B
 */
 
@@ -243,8 +323,11 @@ ws_getNumUnsatisfiedProps = {
 	_num
 };
 
-// Erases properties in _wsA which are affected by properties in _wsB world state
-// Modifies the original _wsA array, returns nothing
+/*
+Method: ws_substract
+ Erases properties in _wsA which are affected by properties in _wsB world state
+Modifies the original _wsA array, returns nothing
+*/
 ws_substract = {
 	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
 	
@@ -264,8 +347,12 @@ ws_substract = {
 	};
 };
 
-// Adds _wsB to _wsA, modifying _wsA
-// By adding B to A, we override properties in A which exist in B by values from B
+
+/*
+Method: ws_add
+Adds _wsB to _wsA, modifying _wsA
+By adding B to A, we override properties in A which exist in B by values from B.
+*/
 ws_add = {
 	params [["_wsA", [], [[]]], ["_wsB", [], [[]]] ];
 	
@@ -286,7 +373,10 @@ ws_add = {
 	};
 };
 
-// Applies goal parameters to the world state
+/*
+Method: ws_applyParametersToGoalEffects
+Applies goal parameters to the world state
+*/
 ws_applyParametersToGoalEffects = {
 	params [["_effects", [], [[]]], ["_parameters", [], [[]]] ];
 	
@@ -319,9 +409,13 @@ ws_applyParametersToGoalEffects = {
 	_parameterApplied
 };
 
-// Effects of actions can depend on parameters
-// This function fills parameters of action from effects
-// Returns true if parameters were successfully applied
+/*
+Method:
+ws_applyEffectsToParameters
+Effects of actions can depend on parameters
+This function fills parameters of action from effects
+Returns true if parameters were successfully applied
+*/
 ws_applyEffectsToParameters = {
 	params [["_effects", [], [[]]], ["_actionParameters", [], [[]]], ["_desiredWS", [], [[]]]];
 	

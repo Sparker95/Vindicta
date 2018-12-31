@@ -1,14 +1,14 @@
-/*
-AI class for the group
-
-Author: Sparker 12.11.2018
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "unitWorldStateProperties.hpp"
 #include "..\..\GlobalAssert.hpp"
+
+/*
+Class: AI.AIUnit
+
+Author: Sparker 12.11.2018
+*/
 
 #define pr private
 

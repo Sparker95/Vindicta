@@ -1,10 +1,20 @@
-/*
-Adds an existing unit to this garrison
-*/
-
-//#include "..\Garrison\Garrison.hpp"
 #include "..\Message\Message.hpp"
 #include "..\OOP_Light\OOP_Light.h"
+//#include "..\Garrison\Garrison.hpp"
+
+// Class: Garrison
+/*
+Method: addUnit
+Adds an existing unit to this garrison. Unit can only be added while not in a group. So, only vehicles can be added this way.
+
+Threading: should be called through postMethod (see <MessageReceiverEx>)
+
+Parameters: _unit
+
+_unit - <Unit> object
+
+Returns: nil
+*/
 
 params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 

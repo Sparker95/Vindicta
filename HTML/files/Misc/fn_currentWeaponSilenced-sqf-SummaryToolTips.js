@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Misc/fn_currentWeaponSilenced.sqf",{81:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Checks if given unit is currently using a silenced weapon.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Misc/fn_currentWeaponSilenced.sqf",{99:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Checks if given unit is currently using a silenced weapon.</div></div>"});

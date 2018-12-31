@@ -8,151 +8,151 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Unit"></a><a name="Topic21"></a><div class="CTopic TClass LSQF first">
+<a name="Unit"></a><a name="Topic133"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">Unit</div>
  <div class="CBody"><p>A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.</p><p>Author: Sparker 10.06.2018</p></div>
 </div>
 
-<a name="Unit.Functions"></a><a name="Topic106"></a><div class="CTopic TGroup LSQF">
+<a name="Unit.Functions"></a><a name="Topic134"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="Unit.new"></a><a name="Topic23"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.new"></a><a name="Topic135"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
  <div class="CBody"><p>Parameters: _template, _catID, _subcatID, _group</p><table class="CDefinitionList"><tr><td class="CDLEntry">_template</td><td class="CDLDefinition"><p>the template array</p></td></tr><tr><td class="CDLEntry">_catID, _subcatID</td><td class="CDLDefinition"><p>category and subcategory of the unit</p></td></tr><tr><td class="CDLEntry">_group</td><td class="CDLDefinition"><p>the group object the unit will be added to. Vehicles can be added without a group.</p></td></tr></table></div>
 </div>
 
-<a name="Unit.delete"></a><a name="Topic24"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.delete"></a><a name="Topic136"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
  <div class="CBody"><p>Deletes this object, despawns the physical unit if neccessary.</p></div>
 </div>
 
-<a name="Unit.isValid"></a><a name="Topic25"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.isValid"></a><a name="Topic137"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isValid</div>
  <div class="CBody"><p>Checks if the created unit is valid(check the constructor code) After creating a new unit, make sure it's valid before adding it to other objects.</p><p>Returns: bool</p></div>
 </div>
 
-<a name="Unit.isSpawned"></a><a name="Topic26"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.isSpawned"></a><a name="Topic138"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isSpawned</div>
  <div class="CBody"><p>Checks if given unit is currently spawned or not</p><p>Returns: bool, true if the unit is spawned</p></div>
 </div>
 
-<a name="Unit.createAI"></a><a name="Topic27"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.createAI"></a><a name="Topic139"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">createAI</div>
  <div class="CBody"><p>Creates an AI object for this unit after it has been spawned or changed owner.</p><p>Access: meant for internal use!</p><p>Returns: nil</p></div>
 </div>
 
-<a name="Unit.spawn"></a><a name="Topic28"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.spawn"></a><a name="Topic140"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">spawn</div>
  <div class="CBody"><p>Spawns given unit at specified coordinates. Will take care if the unit has already been spawned. Creates an AI object attached to this unit.</p><p>Parameters: _pos, _dir</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr><tr><td class="CDLEntry">_dir</td><td class="CDLDefinition"><p>direction</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="Unit.despawn"></a><a name="Topic29"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.despawn"></a><a name="Topic141"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">despawn</div>
  <div class="CBody"><p>Despawns given unit. Deletes the AI object attached to this unit.</p><p>Parameters: _pos, _dir</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr><tr><td class="CDLEntry">_dir</td><td class="CDLDefinition"><p>direction</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="Unit.assignVehicleRole"></a><a name="Topic30"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.assignVehicleRole"></a><a name="Topic142"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">assignVehicleRole</div>
  <div class="CBody"><p>NYI</p><p>Assigns the unit to a vehicle with specified vehicle role</p></div>
 </div>
 
-<a name="Unit.setGarrison"></a><a name="Topic31"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.setGarrison"></a><a name="Topic143"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setGarrison</div>
  <div class="CBody"><p>Sets the garrison this unit is attached to.</p><p>Access: internal use! You must use Garrison::addUnit to add a unit to a garrison properly.</p><p>Parameters: _garrison</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p>the garrison object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="Unit.getGarrison"></a><a name="Topic32"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getGarrison"></a><a name="Topic144"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getGarrison</div>
- <div class="CBody"><p>Returns the garrison this unit is attached to</p><p>Returns: &lt;Garrison&gt;</p></div>
+ <div class="CBody"><p>Returns the garrison this unit is attached to</p><p>Returns: <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,194);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a></p></div>
 </div>
 
-<a name="Unit.getObjectHandle"></a><a name="Topic33"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getObjectHandle"></a><a name="Topic145"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getObjectHandle</div>
  <div class="CBody"><p>Returns the object handle of this unit if it's spawned, objNull otherwise.</p><p>Returns: object handle of this unit, or objNull if it's not spawned</p></div>
 </div>
 
-<a name="Unit.getGroup"></a><a name="Topic34"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getGroup"></a><a name="Topic146"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getGroup</div>
- <div class="CBody"><p>Returns the &lt;Group&gt; this unit is attached to.</p><p>Returns: &lt;Group&gt;</p></div>
+ <div class="CBody"><p>Returns the <a href="../../index.html#File:Group/Group.sqf:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,1);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> this unit is attached to.</p><p>Returns: <a href="../../index.html#File:Group/Group.sqf:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,1);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a></p></div>
 </div>
 
-<a name="Unit.getAI"></a><a name="Topic35"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getAI"></a><a name="Topic147"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getAI</div>
  <div class="CBody"><p>Returns the &lt;AIUnit&gt; object of this unit, or &quot;&quot; if it's not spawned</p><p>Returns: &lt;AIUnit&gt;</p></div>
 </div>
 
-<a name="Unit.getMainData"></a><a name="Topic36"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getMainData"></a><a name="Topic148"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getMainData</div>
  <div class="CBody"><p>Returns category ID, subcategory ID and class name of this unit</p><p>Returns: array: [_catID, _subcatID, _className]</p></div>
 </div>
 
-<a name="Unit.getVehicleCrew"></a><a name="Topic37"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getVehicleCrew"></a><a name="Topic149"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getVehicleCrew</div>
  <div class="CBody"><p>NYI Returns the units assigned to this vehicle</p></div>
 </div>
 
-<a name="Unit.getData"></a><a name="Topic38"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getData"></a><a name="Topic150"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getData</div>
- <div class="CBody"><p>Access: Meant for internal use since you can break the <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object this way.</p><p>Returns: the internal data array of this unit.</p></div>
+ <div class="CBody"><p>Access: Meant for internal use since you can break the <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object this way.</p><p>Returns: the internal data array of this unit.</p></div>
 </div>
 
-<a name="Unit.getPos"></a><a name="Topic39"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getPos"></a><a name="Topic151"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getPos</div>
  <div class="CBody"><p>Returns position of this unit or [] if the unit is not spawned</p><p>Returns: [x, y, z]</p></div>
 </div>
 
-<a name="Unit.handleDestroyed"></a><a name="Topic40"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.handleDestroyed"></a><a name="Topic152"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleDestroyed</div>
  <div class="CBody"><p>NYI</p></div>
 </div>
 
-<a name="Unit.(static)getUnitFromObjectHandle"></a><a name="Topic41"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.(static)getUnitFromObjectHandle"></a><a name="Topic153"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)getUnitFromObjectHandle</div>
- <div class="CBody"><p>Returns the <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object the given object handle is associated with, or &quot;&quot; if this objectHandle is not associated with <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a></p><p>Parameters: _objectHandle</p><table class="CDefinitionList"><tr><td class="CDLEntry">_objectHandle</td><td class="CDLDefinition"><p>the object handle of a unit.</p></td></tr></table><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> or &quot;&quot;</p></div>
+ <div class="CBody"><p>Returns the <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object the given object handle is associated with, or &quot;&quot; if this objectHandle is not associated with <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a></p><p>Parameters: _objectHandle</p><table class="CDefinitionList"><tr><td class="CDLEntry">_objectHandle</td><td class="CDLDefinition"><p>the object handle of a unit.</p></td></tr></table><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> or &quot;&quot;</p></div>
 </div>
 
-<a name="Unit.(static)createUnitFromObjectHandle"></a><a name="Topic42"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.(static)createUnitFromObjectHandle"></a><a name="Topic154"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)createUnitFromObjectHandle</div>
- <div class="CBody"><p>NYI Creates a unit and instantly attaches it to provided object handle.</p><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a></p></div>
+ <div class="CBody"><p>NYI Creates a unit and instantly attaches it to provided object handle.</p><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a></p></div>
 </div>
 
-<a name="Unit.getVehaviour"></a><a name="Topic43"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getVehaviour"></a><a name="Topic155"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getVehaviour</div>
  <div class="CBody"><p>Runs 'behaviour' command on the object handle of this unit. See <a href="https://community.bistudio.com/wiki/behaviour" target="_top">https://&#8203;community&#8203;.bistudio&#8203;.com&#8203;/wiki&#8203;/behaviour</a></p><table class="CDefinitionList"><tr><td class="CDLEntry">Returns: String</td><td class="CDLDefinition"><p>One of &quot;CARELESS&quot;, &quot;SAFE&quot;, &quot;AWARE&quot;, &quot;COMBAT&quot; and &quot;STEALTH&quot;</p></td></tr></table></div>
 </div>
 
-<a name="Unit.isAlive"></a><a name="Topic44"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.isAlive"></a><a name="Topic156"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isAlive</div>
  <div class="CBody"><p>Returns true if this unit is alive, false otherwise.&nbsp; Despawned unit is always considered alive.</p><p>Returns: Bool</p></div>
 </div>
 
-<a name="Unit.isInfantry"></a><a name="Topic45"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.isInfantry"></a><a name="Topic157"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isInfantry</div>
- <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is infantry</p><p>Returns: Bool</p></div>
+ <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is infantry</p><p>Returns: Bool</p></div>
 </div>
 
-<a name="Unit.isVehicle"></a><a name="Topic46"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.isVehicle"></a><a name="Topic158"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isVehicle</div>
- <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is vehicle</p><p>Returns: Bool</p></div>
+ <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is vehicle</p><p>Returns: Bool</p></div>
 </div>
 
-<a name="Unit.isDrone"></a><a name="Topic47"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.isDrone"></a><a name="Topic159"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isDrone</div>
- <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is drone</p><p>Returns: Bool</p></div>
+ <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is drone</p><p>Returns: Bool</p></div>
 </div>
 
-<a name="Unit.getSubagents"></a><a name="Topic48"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getSubagents"></a><a name="Topic160"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getSubagents</div>
  <div class="CBody"><p>Returns subagents of this agent. For Unit it's an empty array since units have no subagents.</p><p>Access: Used by AI class</p><p>Returns: []</p></div>
 </div>
 
-<a name="Unit.getPossibleGoals"></a><a name="Topic49"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.getPossibleGoals"></a><a name="Topic161"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getPossibleGoals</div>
  <div class="CBody"><p>Returns the list of goals this agent evaluates on its own.</p><p>Access: Used by AI class</p><p>Returns: Array with goal class names</p></div>
 </div>
 
-<a name="Unit.getPossibleActions"></a><a name="Topic50"></a><div class="CTopic TFunction LSQF last">
+<a name="Unit.getPossibleActions"></a><a name="Topic162"></a><div class="CTopic TFunction LSQF last">
  <div class="CTitle">getPossibleActions</div>
  <div class="CBody"><p>Returns the list of actions this agent can use for planning.</p><p>Access: Used by AI class</p><p>Returns: Array with action class names</p></div>
 </div>

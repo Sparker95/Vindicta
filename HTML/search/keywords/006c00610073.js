@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("las",["Variable"],[["LAST_UPDATE_TIME",,[["WorldFact",,,,0,"File:AI/WorldFact/WorldFact.hpp:WorldFact.LAST_UPDATE_TIME","SQFClass:WorldFact:LAST_UPDATE_TIME"]]]]);

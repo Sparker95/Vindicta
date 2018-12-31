@@ -5,6 +5,7 @@
 #include "..\..\GlobalAssert.hpp"
 
 /*
+Class: AI.AIGroup
 AI class for the group
 
 Author: Sparker 12.11.2018

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("clu",["Class"],[["Cluster",,[[,,,,0,"File:Cluster/common.sqf:Cluster","SQFClass:Cluster"]]]]);

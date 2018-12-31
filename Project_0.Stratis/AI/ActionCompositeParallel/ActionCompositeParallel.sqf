@@ -1,4 +1,12 @@
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\Action\Action.hpp"
+
 /*
+Class: Action.ActionCompositeParallel
+NYI
+
+Not really sure if it's needed.
+
 Parallel action evaluates all subactions at once.
 
 It returns:
@@ -9,9 +17,6 @@ ACTIVE otherwise
 
 Author: Sparker 05.08.2018
 */
-
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\Action\Action.hpp"
 
 CLASS("ActionCompositeParallel", "ActionComposite")
 	

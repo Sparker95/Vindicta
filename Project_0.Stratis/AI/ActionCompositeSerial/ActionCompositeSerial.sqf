@@ -1,21 +1,28 @@
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\Action\Action.hpp"
+
 /*
-The composite action class.
+Class: Action.ActionCompositeSerial
+A composite action, which executed its subactions in serial way, starting from FRONT of the action queue.
+
 Based on source from "Programming Game AI by Example" by Mat Buckland: http://www.ai-junkie.com/books/toc_pgaibe.html
 
 Author: Sparker 05.08.2018
 */
 
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\Action\Action.hpp"
-
 CLASS("ActionCompositeSerial", "ActionComposite")
 
 	// ----------------------------------------------------------------------
 	// |                            P R O C E S S                           |
-	// |                                                                    |
-	// | By default we just process all subactions                            |
 	// ----------------------------------------------------------------------
+	/*
+	Method: process
+	If this composite action is not in failed state, it processes the front
+	action which is not completed byt calling processSubaction method.
+	You can override it to achieve custom behaviour.
 	
+	Returns: Number, current state, one of <ACTION_STATE>
+	*/
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		private _state = GETV(_thisObject, "state");
@@ -32,7 +39,13 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	// ----------------------------------------------------------------------
 	// |                    P R O C E S S   S U B G O A L S                 |
 	// ----------------------------------------------------------------------
+	/*
+	Method: processSubactions
+	Removes completed subactions from FRONT of the queue, then calls
+	process on non-completed actions.
 	
+	Returns: Number, current state of the front most action, one of <ACTION_STATE>
+	*/
 	METHOD("processSubactions") {
 		params [["_thisObject", "", [""]]];
 		private _subactions = GETV(_thisObject, "subactions");
@@ -71,10 +84,17 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	
 	// ----------------------------------------------------------------------
 	// |                      H A N D L E   M E S S A G E                   |
-	// |                                                                    |
-	// | Forwards the message to frontmost subaction
 	// ----------------------------------------------------------------------
+	/*
+	Method: handleMessage
+	Forwards the message to frontmost subaction
 	
+	Parameters: _msg
+	
+	_msg - <Message>
+	
+	Returns: Bool, true if message was handled
+	*/
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		// Forward the message to base class Action message handler
@@ -92,15 +112,23 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	
 	// -----------------------------------------------------------------------------------------------
 	//                F O R W A R D   M E S S A G E   T O   F R O N T   S U B G O A L
-	//
-	// passes the message to the action at the front of the queue
 	// -----------------------------------------------------------------------------------------------
+	/*
+	Method: forwardMessageToFrontSubaction
+	passes the message to the action at the front of the queue
 	
+	Parameters: _msg
+	
+	_msg - <Message>
+		
+	Returns: Bool, true if message was handled
+	*/
 	METHOD("forwardMessageToFrontSubaction") {
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		private _subactions = GETV(_thisObject, "subactions");
 		private _subactionFront = _subactions select 0;
-		CALLM(_subactionFront, "handleMessage", [_msg]);
+		private _msgHandled = CALLM(_subactionFront, "handleMessage", [_msg]);
+		_msgHandled
 	} ENDMETHOD;
 
 ENDCLASS;

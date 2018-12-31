@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sen",["Class"],[["Sensor",,[[,,,,0,"File:AI/Sensor/Sensor.sqf:Sensor","SQFClass:Sensor"]]],["SensorStimulatable",,[["Sensor",,,,0,"File:AI/SensorStimulatable/SensorStimulatable.sqf:Sensor.SensorStimulatable","SQFClass:Sensor.SensorStimulatable"]]]]);
