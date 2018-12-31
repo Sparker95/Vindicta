@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("rel",["Variable"],[["RELEVANCE",,[["WorldFact",,,,0,"File:AI/WorldFact/WorldFact.hpp:WorldFact.RELEVANCE","SQFClass:WorldFact:RELEVANCE"]]]]);

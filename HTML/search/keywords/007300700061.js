@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("spa",["Function"],[["spawn",,[["Garrison",,,,0,"File:Garrison/despawn.sqf:Garrison.spawn","SQFClass:Garrison:spawn"],["Group",,,,0,"File:Group/Group.sqf:Group.spawn","SQFClass:Group:spawn"],["Unit",,,,0,"File:Unit/Unit.sqf:Unit.spawn","SQFClass:Unit:spawn"]]]]);

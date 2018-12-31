@@ -2,6 +2,8 @@
 #include "..\WorldState\WorldState.hpp"
 
 /*
+Class: Goal
+Every goal is static, that is, not instantiated.
 */
 
 #define pr private
@@ -84,7 +86,11 @@ CLASS("Goal", "")
 	// "GoToNearestCover" can't derive its effect from parameter and is not static, but is supplied by internal logic, therefore this goal must implement this method
 	
 	/* virtual */ STATIC_METHOD("getEffects") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		
+		if (!_paramsGood) then {
+			ade_dumpCallstack;
+		};
 		
 		// Return effects from the database
 		pr _effects = GET_STATIC_VAR(_thisClass, "effects");

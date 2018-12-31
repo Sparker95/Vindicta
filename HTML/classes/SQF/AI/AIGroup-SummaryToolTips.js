@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:AI.AIGroup",{302:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">AI class for the group</div></div>"});

@@ -1,12 +1,15 @@
 #include "Group.hpp"
+#include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 
+// Class: Group
 /*
-Group class.
-Group class is a set of Units. A group can have men, vehicles and drones.
+Virtualized Group has <Unit> objects inside it.
+
+Unlike standard ARMA group, it can have men, vehicles and drones inside it.
 
 Author: Sparker
 11.06.2018
@@ -14,15 +17,22 @@ Author: Sparker
 
 #define pr private
 
-CLASS(GROUP_CLASS_NAME, "")
+CLASS(GROUP_CLASS_NAME, "MessageReceiver")
 	
 	//Variables
 	VARIABLE("data");
 	
-	// ----------------------------------------------------------------------
 	// |                             N E W                                  |
-	// ----------------------------------------------------------------------
+	/*
+	Method: new
 	
+	Parameters: _side, _groupType, 
+	
+	_side - Side (west, east, etc) of this group
+	_groupType - Number, group type, see <GROUP_TYPE>
+	
+	Returns: nil
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
 		private _data = GROUP_DATA_DEFAULT;
@@ -32,19 +42,33 @@ CLASS(GROUP_CLASS_NAME, "")
 		SET_VAR(_thisObject, "data", _data);
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                            D E L E T E                             |
-	// ----------------------------------------------------------------------
-	
+
+	// |                            D E L E T E
+	/*
+	Method: delete
+	NYI
+	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		// todo
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                           A D D   U N I T                          |
-	// ----------------------------------------------------------------------
 	
+	// |                           A D D   U N I T
+	/*
+	Method: addUnit
+	Adds an existing <Unit> to this group. You don't need to call it manually.
+	
+	Warning: must be called in scheduled environment! Probably needs a fix :/
+	
+	Access: internal use!
+	
+	Parameters: _unit
+	
+	_unit to add
+	
+	Returns: nil
+	*/
 	METHOD("addUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -55,10 +79,22 @@ CLASS(GROUP_CLASS_NAME, "")
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
+	
 	// ----------------------------------------------------------------------
 	// |                        R E M O V E   U N I T                       |
 	// ----------------------------------------------------------------------
+	/*
+	Method: removeUnit
+	Removes a unit from this group.
 	
+	Access: internal use
+	
+	Parameters: _unit
+	
+	_unit - <Unit> that will be removed from this group.
+
+	Returns: nil
+	*/
 	METHOD("removeUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -69,10 +105,22 @@ CLASS(GROUP_CLASS_NAME, "")
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                         G E T   U N I T S                          |
-	// ----------------------------------------------------------------------
+
+
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                          G E T T I N G   M E M B E R   V A L U E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
+
+
+	// |                         G E T   U N I T S
+	/*
+	Method: getUnits
+	Returns an array with units in this group.
+	
+	Returns: Array of units.
+	*/
 	METHOD("getUnits") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -84,24 +132,27 @@ CLASS(GROUP_CLASS_NAME, "")
 		_return
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
 	// |                         G E T   T Y P E                            |
-	// ----------------------------------------------------------------------
+	/*
+	Method: getType
+	Description
 	
+	Returns: Number, grup type. See <GROUP_TYPE>,
+	*/
 	METHOD("getType") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data select GROUP_DATA_ID_TYPE
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                  G E T   G R O U P   H A N D L E                   |
-	// ----------------------------------------------------------------------
 	
+	// |                  G E T   G R O U P   H A N D L E
 	/*
+	Method: getGroupHandle
 	Returns a valid group handle of this group. Creates a group with createGroup if it wasn't created yet.
-	*/
 	
+	Returns: group handle.
+	*/
 	METHOD("getGroupHandle") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -118,10 +169,22 @@ CLASS(GROUP_CLASS_NAME, "")
 		_groupHandle
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
+	
 	// |                     S E T / G E T   G A R R I S O N                |
-	// ----------------------------------------------------------------------
-	// Sets the garrison of this garrison (use Garrison::addGroup to add a group to a garrison)
+	// 
+	/*
+	Method: setGarrison
+	Sets the <Garrison> of this garrison.
+	Use <Garrison.addGroup> to add a group to a garrison.
+	
+	Access: internal use.
+	
+	Parameters: _garrison
+	
+	_garrison - <Garrison>
+	
+	Returns: nil
+	*/
 	METHOD("setGarrison") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		private _data = GET_VAR(_thisObject, "data");
@@ -132,7 +195,13 @@ CLASS(GROUP_CLASS_NAME, "")
 		{ CALL_METHOD(_x, "setGarrison", [_thisObject]); } forEach _units;
 	} ENDMETHOD;
 	
-	// Returns the garrison of this group
+	
+	/*
+	Method: getGarrison
+	Returns the <Garrison> this Group is attached to.
+	
+	Returns: String, <Garrison>
+	*/
 	METHOD("getGarrison") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
@@ -140,57 +209,113 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	
-	// ----------------------------------------------------------------------
+	// |                           G E T   A I
+	/*
+	Method: getAI
+	Returns the <AI> of this group, if it's spawned, or "" otherwise.
+	
+	Returns: String, <AIGroup>
+	*/
+	METHOD("getAI") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _data = GETV(_thisObject, "data");
+		_data select GROUP_DATA_ID_AI
+	} ENDMETHOD;
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                E V E N T   H A N D L E R S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
+	
 	// |                 H A N D L E   U N I T   K I L L E D                |
-	// ----------------------------------------------------------------------
-
+	/*
+	Method: handleUnitKilled
+	NYI
+	
+	Returns: nil
+	*/
 	METHOD("handleUnitKilled") {
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
 	
 	
-	// ----------------------------------------------------------------------
 	// |              H A N D L E   U N I T   D E S P A W N E D             |
-	// ----------------------------------------------------------------------
-
+	/*
+	Method: handleUnitDespawned
+	NYI
+	
+	Returns: nil
+	*/
 	METHOD("handleUnitDespawned") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]] ];
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
+	
+	
 	// |                 H A N D L E   U N I T   S P A W N E D              |
-	// ----------------------------------------------------------------------
-
+	/*
+	Method: handleUnitSpawned
+	NYI
+	
+	Returns: nil
+	*/
 	METHOD("handleUnitSpawned") {
 		params [["_thisObject", "", [""]], "_unit"];
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |         C R E A T E   U N I T S   F R O M   T E M P L A T E        |
-	// ----------------------------------------------------------------------
+
+
+
 	
-	// Creates units from template and adds them to this given group
-	// Returns amount of units added
-	METHOD("createUnitsFromTemplate") {
-		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_subcatID", 0, [0]]];
-		private _groupData = [_template, _subcatID, -1] call t_fnc_selectGroup;
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                          S P A W N I N G   A N D   D E S P A W N I N G
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		
-		// Create every unit and add it to this group
-		{
-			private _catID = _x select 0;
-			private _subcatID = _x select 1;
-			private _classID = _x select 2;
-			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
-			NEW("Unit", _args);
-		} forEach _groupData;
+	
+	
+	// |                           C R E A T E   A I
+	/*
+	Method: createAI
+	Creates an <AIGroup> for this group.
+	
+	Access: internal.
+	
+	Returns: nil
+	*/
+	METHOD("createAI") {
+		params [["_thisObject", "", [""]]];
 		
-		(count _groupData)
+		pr _data = GETV(_thisObject, "data");
+		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+		
+		// Create an AI for this group if it has any units
+		if (count _groupUnits > 0) then {
+			pr _AI = NEW("AIGroup", [_thisObject]);
+			pr _data = GETV(_thisObject, "data");
+			_data set [GROUP_DATA_ID_AI, _AI];
+			CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
+			CALLM(_AI, "start", []); // Kick start it
+		};
+
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
+	
+	
+	
 	// |         S P A W N
-	// | Spawns all units in this group at specified location
-	// ----------------------------------------------------------------------
+	/*
+	Method: spawn
+	Spawns all the units in this group.
+	
+	Parameters: _loc
+	
+	_loc - <Location> where the group will spawn.
+	
+	Returns: nil
+	*/
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
 		pr _data = GETV(_thisObject, "data");
@@ -209,26 +334,28 @@ CLASS(GROUP_CLASS_NAME, "")
 		_groupHandle setBehaviour "SAFE";
 		
 		// Create an AI for this group
-		pr _AI = NEW("AIGroup", [_thisObject]);
-		_data set [GROUP_DATA_ID_AI, _AI];
-		CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
-		CALLM(_AI, "start", []); // Kick start it
+		CALLM0(_thisObject, "createAI");
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
+	
+	
 	// |         D E S P A W N
-	// | Despawns all units in this group
-	// ----------------------------------------------------------------------
+	/*
+	Method: despawn
+	Despawns all units in this group. Also deletes the group handle.
+	
+	Returns: nil
+	*/
 	METHOD("despawn") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
+		params [["_thisObject", "", [""]]];
 		pr _data = GETV(_thisObject, "data");
 		pr _AI = _data select GROUP_DATA_ID_AI;
 		
 		// Switch off their brain
 		// We must safely delete the AI object because it might be currently used in its own thread
-		pr _args = [MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE)];
-		pr _msgID = CALLM(_AI, "postMessage", _args);
-		CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+		pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+		pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+		CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
 		_data set [GROUP_DATA_ID_AI, ""];
 		
 		// Despawn everything
@@ -248,12 +375,27 @@ CLASS(GROUP_CLASS_NAME, "")
 	} ENDMETHOD;
 	
 	
-	// ========================= AI-related =====================================
 	
-	// ----------------------------------------------------------------------
-	// |         G E T   S U B A G E N T S
-	// | Returns the list of agents which have an AI object which must be processed through its process method
-	// ----------------------------------------------------------------------
+	
+	
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                         G O A P 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+	//                          G E T   S U B A G E N T S
+	/*
+	Method: getSubagents
+	Returns subagents of this agent.
+	For group subagents are its units, since their <AIUnit> is processed synchronosuly with <AIGroup> by default.
+	
+	Access: Used by AI class
+	
+	Returns: array of units.
+	*/
 	METHOD("getSubagents") {
 		params [["_thisObject", "", [""]]];
 		
@@ -268,12 +410,191 @@ CLASS(GROUP_CLASS_NAME, "")
 		_return
 	} ENDMETHOD;
 	
+	
+	//                        G E T   P O S S I B L E   G O A L S
+	/*
+	Method: getPossibleGoals
+	Returns the list of goals this agent evaluates on its own.
+	
+	Access: Used by AI class
+	
+	Returns: Array with goal class names
+	*/
 	METHOD("getPossibleGoals") {
+		["GoalGroupRelax"]
+	} ENDMETHOD;
+	
+	
+	//                      G E T   P O S S I B L E   A C T I O N S
+	/*
+	Method: getPossibleActions
+	Returns the list of actions this agent can use for planning.
+	
+	Access: Used by AI class
+	
+	Returns: Array with action class names
+	*/
+	METHOD("getPossibleActions") {
 		[]
 	} ENDMETHOD;
 	
-	METHOD("getPossibleActions") {
-		[]
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                O W N E R S H I P   T R A N S F E R
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	/*
+	Method: serialize
+	See <MessageReceiver.serialize>
+	*/
+	// Must return a single value which can be deserialized to restore value of an object
+	METHOD("serialize") {
+		params [["_thisObject", "", [""]]];
+		
+		diag_log "[Group:serialize] was called!";
+		
+		pr _data = GETV(_thisObject, "data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		//pr _mutex = _data select GROUP_DATA_ID_MUTEX;
+		//MUTEX_LOCK(_mutex);
+		
+		// Store data on all units in this group
+		pr _unitsSerialized = [];
+		private _units = _data select GROUP_DATA_ID_UNITS;
+		{
+			pr _unitDataArray = GETV(_x, "data");
+			_unitsSerialized pushBack [_x, +_unitDataArray];
+		} forEach _units;
+		
+		// Store data about this group
+		// ??
+		
+		pr _return = [_unitsSerialized, _data];
+		
+		//MUTEX_UNLOCK(_mutex);
+		_return
+	} ENDMETHOD;
+	
+	/*
+	Method: deserialize
+	See <MessageReceiver.deserialize>
+	*/
+	// Takes the output of deserialize and restores values of an object
+	METHOD("deserialize") {
+		params [["_thisObject", "", [""]], "_serialData"];
+		
+		diag_log "[Group:deserialize] was called!";
+		
+		// Unpack the array
+		_serialData params ["_unitsSerialized", "_data"];
+		SETV(_thisObject, "data", _data);
+		_data set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
+		
+		// Unpack all the units
+		{ // forEach _unitsSerialized
+			_x params ["_unitObjNameStr", "_unitDataArray"];
+			pr _newUnit = NEW_EXISTING("Unit", _unitObjNameStr);
+			SETV(_newUnit, "data", +_unitDataArray);
+			
+			// Create a new AI for this unit, if it existed
+			pr _unitAI = _unitDataArray select UNIT_DATA_ID_AI;
+			diag_log format [" --- Old unit AI: %1", _unitAI];
+			if (_unitAI != "") then {
+				CALLM0(_newUnit, "createAI");				
+				diag_log format [" --- Created new unit AI: %1", _unitDataArray select UNIT_DATA_ID_AI];
+			};
+		} forEach _unitsSerialized;
+		
+		// Create a new AI for this group
+		if ((_data select GROUP_DATA_ID_AI) != "") then {
+			CALLM0(_thisObject, "createAI");
+		};		
+		
+	} ENDMETHOD;
+	
+	/*
+	Method: transferOwnership
+	See <MessageReceiver.transferOwnership>
+	*/
+	METHOD("transferOwnership") {
+		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
+		
+		diag_log "[Group:transferOwnership] was called!";
+		
+		pr _data = GETV(_thisObject, "data");
+		
+		// Delete the AI of this group
+		// todo transfer the AI instead, or just transfer the goals and most important data?
+		pr _AI = _data select GROUP_DATA_ID_AI;
+		if (_AI != "") then {
+			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+			//if (_msgID < 0) then {diag_log format ["--- Got wrong msg ID %1 %2 %3", _msgID, __FILE__, __LINE__];};
+			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+		};
+		
+		// Delete AI of all the units
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		{
+			pr _unitData = GETV(_x, "data");
+			pr _unitAI = _unitData select UNIT_DATA_ID_AI;
+			if (_unitAI != "") then {
+				pr _msg = MESSAGE_NEW_SHORT(_unitAI, AI_MESSAGE_DELETE);
+				pr _msgID = CALLM2(_unitAI, "postMessage", _msg, true);
+				//diag_log format ["--- Got msg ID %1 %2 %3 while deleting Unit's AI", _msgID, __FILE__, __LINE__];
+				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+			};
+		} forEach _units;
+		
+		// Switch group owner if the group was spawned
+		pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		if (!isNull _groupHandle) then {
+			if (clientOwner == 2) then {
+				_groupHandle setGroupOwner _newOwner;
+			} else {
+				[_groupHandle, _newOwner] remoteExecCall ["setGroupOwner", 2, false];
+			};
+		};
+
+		// We're done here
+		true
+	} ENDMETHOD;
+	
+	
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               O T H E R   M E T H O D S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
+	
+	// |         C R E A T E   U N I T S   F R O M   T E M P L A T E
+	/*
+	Method: createUnitsFromTemplate
+	Creates units from template and adds them to this group.
+	
+	Parameters: _template, _subcatID
+	
+	_template - <Template>
+	_subcatID - subcategory of this group template
+	
+	Returns: Number, amount of created units.
+	*/
+	METHOD("createUnitsFromTemplate") {
+		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_subcatID", 0, [0]]];
+		private _groupData = [_template, _subcatID, -1] call t_fnc_selectGroup;
+		
+		// Create every unit and add it to this group
+		{
+			private _catID = _x select 0;
+			private _subcatID = _x select 1;
+			private _classID = _x select 2;
+			private _args = [_template, _catID, _subcatID, _classID, _thisObject]; //["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
+			NEW("Unit", _args);
+		} forEach _groupData;
+		
+		(count _groupData)
 	} ENDMETHOD;
 	
 ENDCLASS;

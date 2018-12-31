@@ -1,10 +1,16 @@
-/*
-Despawns the whole garrison
-*/
-
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
+
+// Class: Garrison
+/*
+Method: spawn
+Despawns all groups and units in this garrison.
+
+Threading: should be called through postMethod (see <MessageReceiverEx>)
+
+Returns: nil
+*/
 
 #define pr private
 

@@ -28,7 +28,7 @@ CLASS("ActionUnitSalute", "Action")
 
 	VARIABLE("target");
 	VARIABLE("activationTime");
-	VARIABLE("objectHandle");
+	VARIABLE("objectHandle");	
 	
 	// ------------ N E W ------------
 	// _target - whom to salute to

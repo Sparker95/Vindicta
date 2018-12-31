@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ser",["Function"],[["serialize",,[["Group",,,,0,"File:Group/Group.sqf:Group.serialize","SQFClass:Group:serialize"],["MessageReceiver",,,,0,"File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.serialize","SQFClass:MessageReceiver:serialize"]]]]);

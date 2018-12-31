@@ -1,14 +1,15 @@
-/*
-AI class for the group
-
-Author: Sparker 12.11.2018
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "groupWorldStateProperties.hpp"
 #include "..\..\GlobalAssert.hpp"
+
+/*
+Class: AI.AIGroup
+AI class for the group
+
+Author: Sparker 12.11.2018
+*/
 
 #define pr private
 
@@ -25,13 +26,8 @@ CLASS("AIGroup", "AI")
 		//[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
 		
 		// Initialize sensors
-		/*
-		pr _sensors = [];
-		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
-		_sensors pushBack _sensorHealth;
-		
-		SETV(_thisObject, "sensors", _sensors);
-		*/
+		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorTargets]);
 		
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
@@ -44,5 +40,5 @@ CLASS("AIGroup", "AI")
 	METHOD("getMessageLoop") {
 		gMessageLoopGroupAI
 	} ENDMETHOD;
-
+	
 ENDCLASS;

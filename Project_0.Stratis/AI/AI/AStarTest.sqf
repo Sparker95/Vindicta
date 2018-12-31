@@ -25,43 +25,26 @@ pr _actions = ["ActionGarrisonMountCrew",
 						"ActionGarrisonLoadCargo",
 						"ActionGarrisonUnloadCurrentCargo"];
 
-/*
 
-// Goal: move somewhere
-
-// Fill world states						
-pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
-[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_POSITION, getPos player] call ws_setPropertyValue;
-
-pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
-[_wsGoal, WSP_GAR_POSITION, [6, 6, 6]] call ws_setPropertyValue;
-
-// Run A*
-pr _args = [_wsCurrent, _wsGoal, _actions];
-CALL_STATIC_METHOD("AI", "AStar", _args);
-
-*/
 
 // Goal: transport cargo
 // Fill world states
 pr _wsCurrent = [WSP_GAR_COUNT] call ws_new;
-[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, true] call ws_setPropertyValue;
-[_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+[_wsCurrent, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
 [_wsCurrent, WSP_GAR_POSITION, getPos player] call ws_setPropertyValue;
 
-/*
+
 pr _wsGoal = [WSP_GAR_COUNT] call ws_new;
 [_wsGoal, WSP_GAR_CARGO_POSITION, [6, 6, 6]] call ws_setPropertyValue;
 [_wsGoal, WSP_GAR_HAS_CARGO, false] call ws_setPropertyValue;
-*/
 
-pr _args = ["", [ ["g_pos", [6, 6, 6]] ]];
-pr _wsGoal = CALLSM("GoalGarrisonMove", "getEffects", _args);
+
+//pr _args = ["", [ ["g_pos", [6, 6, 6]] ]];
+//pr _wsGoal = CALLSM("GoalGarrisonMove", "getEffects", _args);
 
 // Run A*
 //["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI"]
-pr _args = [_wsCurrent, _wsGoal, _actions, [["cargo", "thisBox"]]];
+pr _args = [_wsCurrent, _wsGoal, _actions, [["g_cargo", "thisBox"]]];
 CALL_STATIC_METHOD("AI", "planActions", _args);

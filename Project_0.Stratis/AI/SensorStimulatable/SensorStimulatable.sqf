@@ -1,14 +1,15 @@
-/*
-A stimulatable sensor class.
-
-Author: Sparker 23.11.2018
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\stimulusTypes.hpp"
+
+/*
+Class: Sensor.SensorStimulatable
+A stimulatable sensor class.
+
+Author: Sparker 23.11.2018
+*/
 
 CLASS("SensorStimulatable", "Sensor")
 	
@@ -34,16 +35,14 @@ CLASS("SensorStimulatable", "Sensor")
 	// |                            S T I M U L A T E
 	// ----------------------------------------------------------------------
 	
-	METHOD("stimulate") {
+	/* private */ METHOD("stimulate") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
-		
-		// Check distance
 		
 		// Do sensor-specific complex check
 		if (! (CALLM(_thisObject, "doComplexCheck", [_stimulus]))) exitWith {};
 		
 		// Create world fact
-		CALLM(_thisObject, "createWorldFact", [_stimulus]);
+		CALLM(_thisObject, "handleStimulus", [_stimulus]);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -56,11 +55,11 @@ CLASS("SensorStimulatable", "Sensor")
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
-	// |                           C R E A T E   W O R L D   F A C T
-	// | Creates a world fact specific to this sensor
+	// |                           H A N D L E   S T I M U L U S
+	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("createWorldFact") {
+	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 	} ENDMETHOD;
 	
@@ -70,7 +69,7 @@ CLASS("SensorStimulatable", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/*virtual*/ METHOD("doComplexCheck") {
-		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
+		//params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		// Return true by default
 		true				
 	} ENDMETHOD;

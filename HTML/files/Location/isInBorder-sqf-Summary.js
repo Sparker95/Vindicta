@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Location/isInBorder.sqf","isInBorder.sqf");NDSummary.OnSummaryLoaded("File:Location/isInBorder.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[8,0,0,"Location","Location"],[9,0,2,"Functions","Location.Functions"],[10,0,1,"isInBorder","Location.isInBorder"]]);

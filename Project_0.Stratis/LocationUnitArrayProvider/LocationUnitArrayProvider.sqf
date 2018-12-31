@@ -1,9 +1,10 @@
+#include "..\OOP_Light\OOP_Light.h"
+
 /*
+Class: LocationUnitArrayProvider
 This object calculates arrays with units which can spawn locations of different sides.
 Calculating these arrays is a resource-consuming and it must not be performed very often, that's why we need a separate object for this.
 */
-
-#include "..\OOP_Light\OOP_Light.h"
 
 CLASS("LocationUnitArrayProvider", "MessageReceiver")
 
@@ -11,10 +12,10 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver")
 	VARIABLE("spawnEast"); // These units can spawn East locations
 	VARIABLE("spawnInd"); // These units can spawn Independant locations
 	
-	// ----------------------------------------------------------------------
-	// |                              N E W                                 |
-	// ----------------------------------------------------------------------
-	
+	// |                              N E W
+	/*
+	Method: New
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
@@ -25,26 +26,24 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver")
 		SET_VAR(_thisObject, "spawnInd", []);		
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                            D E L E T E                             |
-	// ----------------------------------------------------------------------
 	
+	// |                            D E L E T E
+	/*
+	Method: Delete
+	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                  G E T   M E S S A G E   L O O P                   |
-	// ----------------------------------------------------------------------
 	
+	// |                  G E T   M E S S A G E   L O O P
 	METHOD("getMessageLoop") { //Derived classes must implement this method
 		gMessageLoopLocation
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                     H A N D L E   M E S S A G E                    |
-	// ----------------------------------------------------------------------
+	
+	// |                     H A N D L E   M E S S A G E
 	
 	METHOD("handleMessage") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
@@ -63,10 +62,18 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver")
 		SET_VAR(_thisObject, "spawnInd", _spawnInd);
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                    G E T   U N I T   A R R A Y                     |
-	// ----------------------------------------------------------------------
-	// Returns array of units that can spawn locations of given _side
+	
+	// |                    G E T   U N I T   A R R A Y
+	/*
+	Method: getUnitArray
+	Returns array of units that can spawn locations of given _side
+	
+	Parameters: _side
+	
+	_side - side
+	
+	Returns: Array with object handles of objects that can spawn locations of given side
+	*/
 	METHOD("getUnitArray") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]] ];
 		switch (_side) do {

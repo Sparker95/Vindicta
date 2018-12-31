@@ -5,6 +5,7 @@ OnLoadMission = "Project_0";
 //overviewText = "Be the Resistance Leader. Fight against a superior enemy in technology, number, assets and vehicles. Use guerrilla tactics in a totally dynamic world, with around 18 sidemissions, everywhere, anytime, anything.";
 //overviewPicture = "pic.paa";
 
+allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
 enableDebugConsole = 2;
 
@@ -66,7 +67,7 @@ class Params {
 
 class CfgFunctions {
 	//#include "Functions\functionList.hpp"
-	//#include "JeroenArsenal\functions.hpp"
+	#include "JeroenArsenal\functions.hpp"
 };
 
 //==== Dialogs and UIs ====

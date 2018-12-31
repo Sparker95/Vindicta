@@ -7,6 +7,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "garrisonWorldStateProperties.hpp"
 
 /*
 Template of an Action class
@@ -50,6 +51,18 @@ CLASS("ActionGarrisonLoadCargo", "Action")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+	} ENDMETHOD;
+	
+	// Returns preconditions of this action depending on parameters
+	// By default it tries to apply parameters to preconditions, if preconditions reference any parameters
+	// !!! If an action must provide preconditions which can't be copied from goal parameters, it must re-implement this method
+	STATIC_METHOD("getPreconditions") {
+		params [ ["_thisClass", "", [""]], ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
+		
+		pr _wsPre = +(GET_STATIC_VAR(_thisClass, "preconditions"));
+		[_wsPre, WSP_GAR_VEHICLES_POSITION, getPos player] call ws_setPropertyValue;
+		
+		_wsPre		
 	} ENDMETHOD;
 	
 ENDCLASS;

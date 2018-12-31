@@ -3,6 +3,12 @@
 #include "location.hpp"
 #include "..\MessageTypes.hpp"
 
+// Class: Location
+/*
+Method: handleMessage
+Checks spawn conditions of this location. Spawns garrisons if needed.
+*/
+
 params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 
 private _msgType = _msg select MESSAGE_ID_TYPE;
@@ -30,7 +36,7 @@ switch (_msgType) do {
 					
 					// Spawn it now
 					if (_garMilMain != "") then {
-						private _args = ["spawn", [], []];
+						private _args = ["spawn", []];
 						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
 					};
 					// Set timer interval
@@ -52,14 +58,14 @@ switch (_msgType) do {
 					
 					// Despawn it
 					if (_garMilMain != "") then {
-						private _args = ["despawn", [], []];
+						private _args = ["despawn", []];
 						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
 					
 					};
 					
 					SET_VAR(_thisObject, "spawnState", 0);
 				};
-			};
-		};
-	};
-};
+			}; // case 1
+		}; // switch spawn state
+	}; // case LOCATION_MESSAGE_PROCESS
+}; // switch msg type

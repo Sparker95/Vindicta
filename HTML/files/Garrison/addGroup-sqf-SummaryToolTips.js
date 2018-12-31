@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Garrison/addGroup.sqf",{207:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Adds an existing group to this garrison.</div></div>"});

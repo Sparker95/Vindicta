@@ -1,18 +1,22 @@
-/*
-Returns how many units of this type and group type the location can hold.
-
-Parameters:
-	_unitTypes - Number or Array
-		- Number - catID
-		- Array - array with [catID, subcatID] of the units
-	_groupTypes - Array with group types
-
-Author: Sparker 29.07.2018
-*/
-
 #include "Location.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
+
+// Class: Location
+/*
+Method: getUnitCapacity
+Returns how many units of this type and group type the location can hold.
+
+Parameters: _unitTypes, _groupTypes
+_unitTypes - Number or Array
+	- Number - catID
+	- Array - array with [catID, subcatID] of the units
+_groupTypes - Array with group types
+
+Returns: Number
+
+Author: Sparker 29.07.2018
+*/
 
 params [ ["_thisObject", "", [""]], ["_unitTypes", 0, [[], 0]], ["_groupTypes", [], [[]]] ];
 

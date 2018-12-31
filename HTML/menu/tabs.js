@@ -1,0 +1,1 @@
+NDMenu.OnTabsLoaded([["File","Files","File:","files.js"],["Class","Classes","SQFClass:","classes.js"]]);

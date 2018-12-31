@@ -1,22 +1,22 @@
-/*
-Sensor class
-It abstracts the abilities of an agent to receive information from the external world
-
-Author: Sparker 08.11.2018
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\stimulusTypes.hpp"
 
+/*
+Class: Sensor
+It abstracts the abilities of an agent to receive information from the external world
+
+Author: Sparker 08.11.2018
+*/
+
 #define pr private
 
-CLASS("Sensor", "MessageReceiver")
+CLASS("Sensor", "")
 
 	VARIABLE("AI"); // Pointer to the unit which holds this AI object
-	STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by
+	//STATIC_VARIABLE("stimulusType"); // Holds the type of the stimulus this sensor can be stimulated by
 	VARIABLE("timeNextUpdate");
 	
 	// ----------------------------------------------------------------------
@@ -26,7 +26,7 @@ CLASS("Sensor", "MessageReceiver")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		SETV(_thisObject, "AI", _AI);
-		SETV(_thisObject, "timeNextUpdate", 0);
+		SETV(_thisObject, "timeNextUpdate", time); // Update this sensor ASAP
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -66,21 +66,5 @@ CLASS("Sensor", "MessageReceiver")
 	/* virtual */ METHOD("getStimulusTypes") {
 		[]
 	} ENDMETHOD;	
-	
-	
-	// ----------------------------------------------------------------------
-	// |                    H A N D L E   M E S S A G E
-	// | 
-	// ----------------------------------------------------------------------
-	
-	METHOD("handleMessage") { //Derived classes must implement this method
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
-		pr _msgType = _msg select MESSAGE_ID_TYPE;
-		switch (_msgType) do {	
-			default {false}; // Message not handled
-		};
-	} ENDMETHOD;
-	
-	
 	
 ENDCLASS;

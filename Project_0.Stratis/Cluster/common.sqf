@@ -1,7 +1,11 @@
 /*
+Class: Cluster
+Cluster is a set of objects which are 'close' to each other.
+
 A cluster array structure is:
 [x1, y1, x2, y2, objectIDs]
 
+--- Code
 x1, y1, x2, y2 - edge coordinates:
 x2 > x1
 y2 > y1
@@ -9,6 +13,7 @@ y2 > y1
 	|		  |	
 	|		  |
 (x1, y1)------*
+---
 
 objectIDs - array with IDs of objects (integers)
 */

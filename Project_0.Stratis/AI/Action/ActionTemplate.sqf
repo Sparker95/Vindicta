@@ -17,14 +17,12 @@ Template of an Action class
 #define THIS_ACTION_NAME "MyAction"
 
 CLASS("MyAction", "Action")
-
-	VARIABLE("AI");
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _AI);
+
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated

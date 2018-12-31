@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sta",["Variable"],[["state",,[["Action",,,,0,"File:AI/Action/Action.sqf:Action.state","SQFClass:Action:state"]]]]);

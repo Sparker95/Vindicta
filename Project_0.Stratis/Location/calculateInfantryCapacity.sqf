@@ -1,5 +1,9 @@
+// Class: Location
 /*
+Method: calculateInfantryCapacity
 Calculates infantry capacity based on buildings in this location.
+
+Returns: Number - amount of infantry soldeirs that can stay here
 
 Author: Sparker 03.08.2018
 */
