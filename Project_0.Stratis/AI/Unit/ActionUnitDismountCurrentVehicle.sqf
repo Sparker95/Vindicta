@@ -14,17 +14,12 @@ Author: Sparker 26.11.2018
 
 #define pr private
 
-CLASS("ActionUnitDismountCurrentVehicle", "Action")
-
-	VARIABLE("objectHandle");
+CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		pr _a = GETV(_AI, "agent"); // cache the object handle
-		pr _oh = CALLM(_a, "getObjectHandle", []);
-		SETV(_thisObject, "objectHandle", _oh);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -48,9 +43,9 @@ CLASS("ActionUnitDismountCurrentVehicle", "Action")
 		pr _return = GETV(_thisObject, "state");
 		switch(GETV(_thisObject, "state")) do {
 			case ACTION_STATE_ACTIVE : {
-				pr _oh = GETV(_thisObject, "objectHandle");
+				pr _oh = GETV(_thisObject, "hO");
 				// Did we dismount already?
-				if (!(vehicle _oh isEqualTo _oh)) then {
+				if (!((vehicle _oh) isEqualTo _oh)) then {
 					// If yes, the action is complete
 					SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 					_return = ACTION_STATE_COMPLETED;
