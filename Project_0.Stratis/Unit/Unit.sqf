@@ -151,18 +151,22 @@ CLASS(UNIT_CLASS_NAME, "")
 	Method: createAI
 	Creates an AI object for this unit after it has been spawned or changed owner.
 	
+	Parameters: _AIClassName
+
+	_AIClassName - class name of <AI> object to create
+	
 	Access: meant for internal use!
 	
 	Returns: nil
 	*/
 	METHOD("createAI") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_AIClassName", "", [""]]];
 		
 		// Create an AI object of the unit
 		// Don't start the brain, because its process method will be called by
 		// its group's AI brain
 		pr _data = GETV(_thisObject, "data");
-		pr _AI = NEW("AIUnit", [_thisObject]);
+		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
 	} ENDMETHOD;
 	
@@ -206,13 +210,19 @@ CLASS(UNIT_CLASS_NAME, "")
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 					
+					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
+					
 					//_objectHandle disableAI "PATH";
 					//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 					
-					CALLM0(_thisObject, "createAI");					
+					CALLM1(_thisObject, "createAI", "AIUnitInfantry");
 				};
 				case T_VEH: {
 					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
+					
+					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
+					
+					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
 				};
 				case T_DRONE: {
 				};
@@ -225,7 +235,7 @@ CLASS(UNIT_CLASS_NAME, "")
 			_objectHandle addEventHandler ["Killed", Unit_fnc_EH_killed];
 			
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
-			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
+			
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		};		
@@ -411,17 +421,6 @@ CLASS(UNIT_CLASS_NAME, "")
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
 	} ENDMETHOD;
 	
-	//                     G E T   V E H I C L E   C R E W
-	/*
-	Method: getVehicleCrew
-	NYI
-	Returns the units assigned to this vehicle
-	*/
-	METHOD("getVehicleCrew") {
-		params [["_thisObject", "", [""]]];
-		private _data = GET_MEM(_thisObject, "data");
-		_data select UNIT_DATA_ID_VEHICLE_CREW
-	} ENDMETHOD;
 	
 	//                        G E T   D A T A
 	/*

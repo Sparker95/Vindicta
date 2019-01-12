@@ -54,6 +54,7 @@ OOP_assert_class = {
 	//Check if it's a class
 	if(isNil "_memList") then {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
+		ade_dumpCallstack;
 		false;
 	} else {true};
 };
@@ -66,6 +67,7 @@ OOP_assert_object = {
 	//Check if it's an object
 	if(isNil "_classNameStr") then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
+		ade_dumpCallstack;
 		false;
 	} else {
 		true;
@@ -80,12 +82,14 @@ OOP_assert_staticMember = {
 	//Check if it's a class
 	if(isNil "_memList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
+		ade_dumpCallstack;
 		false;
 	};
 	//Check static member
 	private _valid = _memNameStr in _memList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
+		ade_dumpCallstack;
 	};
 	//Return value
 	_valid
@@ -98,7 +102,9 @@ OOP_assert_member = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
-		[_file, _line, _objNameStr] call OOP_error_notObject;
+		private _errorText = format ["class name is nil. Attempt to access member: %1", _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		ade_dumpCallstack;
 		false;
 	};
 	//Get member list of this class 
@@ -107,6 +113,7 @@ OOP_assert_member = {
 	private _valid = _memNameStr in _memList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
+		ade_dumpCallstack;
 	};
 	//Return value
 	_valid
@@ -119,6 +126,7 @@ OOP_assert_method = {
 	if (isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
 		[_file, _line, _errorText] call OOP_error;
+		ade_dumpCallstack;
 		false;
 	};
 	
@@ -127,15 +135,31 @@ OOP_assert_method = {
 	//Check if it's a class
 	if(isNil "_methodList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
+		ade_dumpCallstack;
 		false;
 	};
 	//Check method
 	private _valid = _methodNameStr in _methodList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
+		ade_dumpCallstack;
 	};
 	//Return value
 	_valid
+};
+
+// Dumps all variables of an object
+OOP_dumpAllVariables = {
+	params [["_thisObject", "", [""]]];
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	diag_log format ["Dumping all variables of %1: %2", _thisObject, _memList];
+	{
+		private _varValue = GETV(_thisObject, _x);
+		diag_log format ["%1.%2: %3", _thisObject, _x, _varValue];
+	} forEach _memList;
 };
 
 
