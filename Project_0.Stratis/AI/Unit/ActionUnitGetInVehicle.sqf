@@ -211,7 +211,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			};
 			case "TURRET" : {
 				pr _turretPath = GETV(_thisObject, "turretPath");
-				pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x select 3 isEqualTo _turretPath};
+				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x select 3 isEqualTo _turretPath};
 				pr _turretOperator = _turretSeat select 0 select 0;
 				if (!(isNull _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
 					// Return
@@ -292,7 +292,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			};
 			case "TURRET" : {
 				pr _turretPath = GETV(_thisObject, "turretPath");
-				pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x select 3 isEqualTo _turretPath};
+				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x select 3 isEqualTo _turretPath};
 				pr _turretOperator = _turretSeat select 0 select 0;
 				
 				pr _return = _turretOperator isEqualTo _hO;
