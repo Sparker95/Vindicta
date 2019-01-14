@@ -123,6 +123,10 @@
 #define GETV(a, b) GET_VAR(a, b)
 #define GETSV(a, b) GET_STATIC_V(a, b)
 
+// Getting/setting variables of _thisObject
+#define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
+#define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
+
 // todo add macros to check object validity
 /*
 #define IS_VALID(objNameStr)

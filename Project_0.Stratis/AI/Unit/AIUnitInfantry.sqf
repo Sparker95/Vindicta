@@ -48,6 +48,26 @@ CLASS("AIUnitInfantry", "AI")
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	
+	/*
+	Method: unassignVehicle
+	Unassigns unit from the vehicle it was assigned to
+	
+	Returns: nil
+	*/
+	METHOD("unassignVehicle") {
+		params [ ["_thisObject", "", [""]]];
+
+		// Unassign this inf unit from its current vehicle
+		pr _assignedVehicle = T_GETV("assignedVehicle");
+		if (!isNil "_assignedVehicle") then {
+			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
+			CALLM0(_assignedVehAI, "unassignUnit", _thisObject);
+			T_SETV("assignedVehicle", nil);
+			T_SETV("assignedVehicleRole", VEHICLE_ROLE_NONE);
+			pr _hO = GETV(_thisObject, "hO");
+			unassignVehicle _hO;
+		};
+	} ENDMETHOD;
 	
 	/*
 	Method: assignAsDriver
@@ -56,28 +76,33 @@ CLASS("AIUnitInfantry", "AI")
 	
 	_veh - string, vehicle <Unit>
 	
-	Returns: nil
+	Returns: true if assignment was successful, false otherwise
 	*/
 	METHOD("assignAsDriver") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]] ];
 
 		// Unassign this inf unit from its current vehicle
-		pr _assignedVehicle = GETV(_thisObject, "assignedVehicle");
-		if (!isNil "_assignedVehicle") then {
-			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
-			CALLM0(_assignedVehAI, "unassignUnit", _thisObject); 
-		};
+		CALLM0(_thisObject, "unassignVehicle");
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
-		SETV(_vehAI, "assignedDriver", _thisObject);
-		SETV(_thisObject, "assignedVehicle", _veh);
-		SETV(_thisObject, "assignedVehicleRole", VEHICLE_ROLE_DRIVER);
-		SETV(_thisObject, "assignedCargoIndex", nil);
-		SETV(_thisObject, "assignedTurretPath", nil);
+		// Check if someone else is assigned already
+		pr _driver = CALLM0(_vehAI, "getAssignedDriver");
+		pr _unit = T_GETV("agent");
+		if (_driver != "" && _driver != _unit) then {
+			false
+		} else {
+			SETV(_vehAI, "assignedDriver", _unit);
+			SETV(_thisObject, "assignedVehicle", _veh);
+			SETV(_thisObject, "assignedVehicleRole", VEHICLE_ROLE_DRIVER);
+			SETV(_thisObject, "assignedCargoIndex", nil);
+			SETV(_thisObject, "assignedTurretPath", nil);
+			true
+		};
 	} ENDMETHOD;
 	
 	/*
 	Method: assignAsGunner
+	Disabled for now! Use assignAsTurret instead.
 	
 	Parameters: _veh
 	
@@ -85,15 +110,12 @@ CLASS("AIUnitInfantry", "AI")
 	
 	Returns: nil
 	*/
+	/*
 	METHOD("assignAsGunner") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]] ];
 		
 		// Unassign this inf unit from its current vehicle
-		pr _assignedVehicle = GETV(_thisObject, "assignedVehicle");
-		if (!isNil "_assignedVehicle") then {
-			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
-			CALLM0(_assignedVehAI, "unassignUnit", _thisObject); 
-		};
+		CALLM0(_thisObject, "unassignVehicle");
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
 		SETV(_vehAI, "assignedGunner", _thisObject);
@@ -102,6 +124,7 @@ CLASS("AIUnitInfantry", "AI")
 		SETV(_thisObject, "assignedCargoIndex", nil);
 		SETV(_thisObject, "assignedTurretPath", nil);
 	} ENDMETHOD;
+	*/
 	
 	/*
 	Method: assignAsTurret
@@ -111,26 +134,30 @@ CLASS("AIUnitInfantry", "AI")
 	_veh - string, vehicle <Unit>
 	_turretPath - array, turret path
 	
-	Returns: nil
+	Returns: true if assignment was successful, false otherwise
 	*/
 	METHOD("assignAsTurret") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]], ["_turretPath", [], [[]]] ];
 		
 		// Unassign this inf unit from its current vehicle
-		pr _assignedVehicle = GETV(_thisObject, "assignedVehicle");
-		if (!isNil "_assignedVehicle") then {
-			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
-			CALLM0(_assignedVehAI, "unassignUnit", _thisObject); 
-		};
+		CALLM0(_thisObject, "unassignVehicle");
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
-		pr _vehTurrets = GETV(_vehAI, "assignedTurrets");
-		if (isNil "_vehTurrets") then {_vehTurrets = []; SETV(_vehAI, "assignedTurrets", _vehTurrets); };
-		_vehTurrets pushBack [GETV(_thisObject, "agent"), _turretPath];
-		SETV(_thisObject, "assignedVehicle", _veh);
-		SETV(_thisObject, "assignedVehicleRole", VEHICLE_ROLE_TURRET);
-		SETV(_thisObject, "assignedCargoIndex", nil);
-		SETV(_thisObject, "assignedTurretPath", _turretPath);
+		pr _unit = T_GETV("agent");
+		// Check if someone else is already assigned
+		pr _turretOperator = CALLM1(_vehAI, "getAssignedTurret", _turretPath);
+		if (_turretOperator != "" && _turretOperator != _unit) then {
+			false
+		} else {
+			pr _vehTurrets = GETV(_vehAI, "assignedTurrets");
+			if (isNil "_vehTurrets") then {_vehTurrets = []; SETV(_vehAI, "assignedTurrets", _vehTurrets); };
+			_vehTurrets pushBack [_unit, _turretPath];
+			T_SETV("assignedVehicle", _veh);
+			T_SETV("assignedVehicleRole", VEHICLE_ROLE_TURRET);
+			T_SETV("assignedCargoIndex", nil);
+			T_SETV("assignedTurretPath", _turretPath);
+			true
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -140,26 +167,30 @@ CLASS("AIUnitInfantry", "AI")
 	
 	_veh - string, vehicle <Unit>
 	
-	Returns: nil
+	Returns: true if assignment was successful, false otherwise
 	*/
 	METHOD("assignAsCargoIndex") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]], ["_cargoIndex", 0, [0]] ];
 		
 		// Unassign this inf unit from its current vehicle
-		pr _assignedVehicle = GETV(_thisObject, "assignedVehicle");
-		if (!isNil "_assignedVehicle") then {
-			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
-			CALLM0(_assignedVehAI, "unassignUnit", _thisObject); 
-		};
+		CALLM0(_thisObject, "unassignVehicle");
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
-		pr _vehCargo = GETV(_vehAI, "assignedCargo");
-		if (isNil "_vehCargo") then {_vehCargo = []; SETV(_vehAI, "assignedCargo", _vehCargo); };
-		_vehCargo pushBack [GETV(_thisObject, "agent"), _cargoIndex];
-		SETV(_thisObject, "assignedVehicle", _veh);
-		SETV(_thisObject, "assignedVehicleRole", VEHICLE_ROLE_CARGO);
-		SETV(_thisObject, "assignedCargoIndex", _cargoIndex);
-		SETV(_thisObject, "assignedTurretPath", nil);
+		pr _unit = T_GETV("agent");
+		// Check if someone else is already assigned
+		pr _cargoPassenger = CALLM1(_vehAI, "getAssignedCargo", _cargoIndex);
+		if (_cargoPassenger != "" && _cargoPassenger != _unit) then {
+			false
+		} else {
+			pr _vehCargo = GETV(_vehAI, "assignedCargo");
+			if (isNil "_vehCargo") then {_vehCargo = []; SETV(_vehAI, "assignedCargo", _vehCargo); };
+			_vehCargo pushBack [GETV(_thisObject, "agent"), _cargoIndex];
+			SETV(_thisObject, "assignedVehicle", _veh);
+			SETV(_thisObject, "assignedVehicleRole", VEHICLE_ROLE_CARGO);
+			SETV(_thisObject, "assignedCargoIndex", _cargoIndex);
+			SETV(_thisObject, "assignedTurretPath", nil);
+			true
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -181,9 +212,11 @@ CLASS("AIUnitInfantry", "AI")
 					_hO assignAsDriver _hVeh;
 				};
 				
+				/*
 				case VEHICLE_ROLE_GUNNER: {
 					_hO assignAsGunner _hVeh;
 				};
+				*/
 				
 				case VEHICLE_ROLE_TURRET: {
 					pr _turretPath = GETV(_thisObject, "assignedTurretPath");
@@ -193,7 +226,6 @@ CLASS("AIUnitInfantry", "AI")
 				case VEHICLE_ROLE_CARGO: {
 					pr _cargoIndex = GETV(_thisObject, "assignedCargoIndex");
 					_hO assignAsCargoIndex [_hVeh, _cargoIndex];
-					ade_dumpCallstack;
 				};
 			};
 		};
@@ -219,20 +251,22 @@ CLASS("AIUnitInfantry", "AI")
 					true
 				};
 				
+				/*
 				case VEHICLE_ROLE_GUNNER: {
 					_hO moveInGunner _hVeh;
 					true
 				};
+				*/
 				
 				case VEHICLE_ROLE_TURRET: {
 					pr _turretPath = GETV(_thisObject, "assignedTurretPath");
-					_hO moveInTurret [_hO, _turretPath];
+					_hO moveInTurret [_hVeh, _turretPath];
 					true
 				};
 				
 				case VEHICLE_ROLE_CARGO: {
 					pr _cargoIndex = GETV(_thisObject, "assignedCargoIndex");
-					_hO moveInCargo [_hO, _cargoIndex];
+					_hO moveInCargo [_hVeh, _cargoIndex];
 					true
 				};
 			};

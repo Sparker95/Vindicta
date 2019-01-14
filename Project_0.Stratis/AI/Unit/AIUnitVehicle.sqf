@@ -16,7 +16,6 @@ CLASS("AIUnitVehicle", "AI")
 
 	// Assigned crew variables
 	VARIABLE("assignedDriver");
-	VARIABLE("assignedGunner");
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
@@ -51,15 +50,17 @@ CLASS("AIUnitVehicle", "AI")
 		};
 		
 		// Unassign gunner
+		/*
 		pr _gunner = GETV(_thisObject, "assignedGunner");
 		if (!isNil "_gunner") then {
 			if (_gunner == _unit) then { SETV(_thisObject, "assignedDriver", nil);};
 		};
+		*/
 		
 		// Unassign cargo
 		pr _cargo = GETV(_thisObject, "assignedCargo");
 		if (!isNil "_cargo") then {
-			pr _cargoThisUnit = _cargo select {_x select 0 == _unit};
+			pr _cargoThisUnit = _cargo select {_x select 1 == _unit};
 			{
 				_cargo deleteAt (_cargo find _x);
 			} forEach _cargoThisUnit;
@@ -68,12 +69,80 @@ CLASS("AIUnitVehicle", "AI")
 		// Unassign turrets
 		pr _turrets = GETV(_thisObject, "assignedTurrets");
 		if (!isNil "_turrets") then {
-			pr _turretsThisUnit = _turrets select {_x select 0 == _unit};
+			pr _turretsThisUnit = _turrets select {_x select 1 == _unit};
 			{
 				_turrets deleteAt (_turrets find _x);
 			} forEach _turretsThisUnit;
 		};
 		
+	} ENDMETHOD;
+	
+	/*
+	Method: getAssignedDriver
+	Returns the <Unit> assigned as driver or "" if noone is assigned.
+	
+	Returns: <Unit> or ""
+	*/
+	METHOD("getAssignedDriver") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _driver = T_GETV("assignedDriver");
+		
+		if (isNil "_driver") then {
+			""
+		} else {
+			_driver
+		};		
+	} ENDMETHOD;
+	
+	/*
+	Method: getAssignedTurret
+	Returns <Unit> assigned to specified turret path or "" if noone is assigned.
+	
+	Parameters: _turretPath
+	
+	_turretPath - array, turret path
+	
+	Returns: <Unit> or ""
+	*/
+	METHOD("getAssignedTurret") {
+		params [["_thisObject", "", [""]], ["_turretPath", [], [[]]] ];
+		pr _assignedTurrets = T_GETV("assignedTurrets");
+		
+		// Turret array is not initialized, therefore no turrets were assigned
+		if (isNil "_assignedTurrets") exitWith {""};
+		
+		pr _index = _assignedTurrets findIf {(_x select 1) isEqualTo _turretPath};
+		if (_index == -1) then {
+			""
+		} else {
+			_assignedTurrets select _index select 0
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: getAssignedCargo
+	Returns <Unit> assigned to specified cargo index or "" if noone is assigned.
+	
+	Parameters: _cargoIndex
+	
+	_cargoIndex - number
+	
+	Returns: <Unit> or ""
+	*/	
+	METHOD("getAssignedCargo") {
+		params [["_thisObject", "", [""]], ["_cargoIndex", 0, [0]] ];
+		pr _assignedCargo = T_GETV("assignedCargo");
+		
+		// Cargo array is not initialized, therefore no turrets were assigned
+		if (isNil "_assignedCargo") exitWith {""};
+		
+		pr _index = _assignedCargo findIf {(_x select 1) == _cargoIndex};
+		if (_index == -1) then {
+			""
+		} else {
+			_assignedCargo select _index select 0
+		};
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

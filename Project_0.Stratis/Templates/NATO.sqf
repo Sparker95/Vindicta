@@ -41,8 +41,8 @@ _veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_default, ["B_MRAP_01_F"]];
 _veh set [T_VEH_MRAP_unarmed, ["B_MRAP_01_F"]];
-_veh set [T_VEH_MRAP_HMG, ["B_MRAP_01_hmg_F"]];
-_veh set [T_VEH_MRAP_GMG, ["B_MRAP_01_gmg_F"]];
+_veh set [T_VEH_MRAP_HMG, ["B_G_Offroad_01_F"]];//"B_MRAP_01_hmg_F"]];
+_veh set [T_VEH_MRAP_GMG, ["B_G_Offroad_01_F"]]; //"B_MRAP_01_gmg_F"]];
 _veh set [T_VEH_IFV, ["B_APC_Wheeled_01_cannon_F"]]; //Marshal IFV
 _veh set [T_VEH_APC, ["B_APC_Tracked_01_rcws_F"]]; //Panther
 _veh set [T_VEH_truck_inf, ["B_Truck_01_transport_F", "B_Truck_01_covered_F"]];

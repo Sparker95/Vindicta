@@ -622,6 +622,7 @@ CLASS("AI", "MessageReceiverEx")
 		params [["_thisObject", "", [""]]];
 		pr _timer = GETV(_thisObject, "timer");
 		if (_timer != "") then {
+			SETV(_thisObject, "timer", "");
 			DELETE(_timer);
 		};
 	} ENDMETHOD;

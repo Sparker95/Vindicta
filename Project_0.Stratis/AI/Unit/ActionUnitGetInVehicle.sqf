@@ -48,17 +48,21 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	// Cargo index or turret path array
 	VARIABLE("chosenCargoSeat");
 	
+	// Time when unit is expected to get into vehicle
+	VARIABLE("ETA");
+	
 	// ------------ N E W ------------
 	/*
 	Method: new
 	Description
 	
-	Parameters: _AI, _veh, _vehRole, _turretPath
+	Parameters: _AI, _parameters
 	
 	_AI - <AI>
-	_veh - <Unit> or object handle which has a <Unit> attached to it.
-	_vehRole - one of "DRIVER", "GUNNER", "TURRET", "CARGO". Cargo will also mean FFV cargo seats.
-	_turretPath - Array, turret path is _vehRole is "TURRET"
+	_parameters - array with parameters: "vehicle", "vehicleRole", "turretPath"
+	"vehicle" - <Unit> or object handle which has a <Unit> attached to it.
+	"vehicleRole" - one of "DRIVER", "TURRET", "CARGO". Cargo will also mean FFV cargo seats.
+	"turretPath" - Array, turret path is _vehRole is "TURRET"
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
@@ -109,23 +113,25 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		[[B Alpha 1-1:5,"cargo",0,[],false],[B Alpha 1-1:4,"cargo",1,[],false],[B Alpha 1-1:6,"cargo",2,[],false],[<NULL-object>,"cargo",3,[],false],[<NULL-object>,"cargo",4,[],false],[<NULL-object>,"cargo",5,[],false],[<NULL-object>,"cargo",6,[],false],[<NULL-object>,"cargo",8,[],false],[<NULL-object>,"cargo",9,[],false],[<NULL-object>,"cargo",10,[],false],[<NULL-object>,"cargo",11,[],false],[<NULL-object>,"cargo",12,[],false],[<NULL-object>,"cargo",13,[],false],[<NULL-object>,"cargo",14,[],false],[<NULL-object>,"cargo",16,[],false]]
 		*/
 			case "DRIVER": {
-				CALLM1(_AI, "assignAsDriver", _unitVeh);
+				pr _success = CALLM1(_AI, "assignAsDriver", _unitVeh);
 				
 				// Return
-				true
+				_success
 			};
+			/*
 			case "GUNNER" : {
 				CALLM1(_AI, "assignAsGunner", _unitVeh);
 				
 				// Return
 				true
 			};
+			*/
 			case "TURRET" : {
 				pr _turretPath = GETV(_thisObject, "turretPath");
-				CALLM2(_AI, "assignAsTurret", _unitVeh, _turretPath);
+				pr _success = CALLM2(_AI, "assignAsTurret", _unitVeh, _turretPath);
 				
 				// Return
-				true
+				_success
 			};
 			case "CARGO" : {
 				/* FulLCrew output: Array - format:
@@ -136,9 +142,22 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				4: <Boolean>personTurret */
 				
 				pr _hVeh = GETV(_thisObject, "hVeh");
+				pr _hO = GETV(_thisObject, "hO");
+				pr _vehAI = CALLM0(_unitVeh, "getAI");
+				pr _unit = GETV(T_GETV("AI"), "agent");
 				
-				pr _freeCargoSeats = (fullCrew [_hVeh, "cargo", true]) select {isNull (_x select 0)};
-				pr _freeFFVSeats = (fullCrew [_hVeh, "Turret", true]) select {(isNull {_x select 0}) && (_x select 4)}; // empty and person turret
+				pr _freeCargoSeats = (fullCrew [_hVeh, "cargo", true]) select {
+					pr _assignedPassenger = CALLM1(_vehAI, "getAssignedCargo", _x select 2);
+					( (isNull (_x select 0)) ||
+					  ((_x select 0) isEqualTo _hO) ) &&
+					  ( _assignedPassenger == "" || _assignedPassenger == _unit)
+				};
+				
+				pr _freeFFVSeats = (fullCrew [_hVeh, "Turret", true]) select {
+					pr _assignedTurret = CALLM1(_vehAI, "getAssignedTurret", _x select 3);
+					( (isNull (_x select 0)) || ((_x select 0) isEqualTo _hO)) && (_x select 4) && (_assignedTurret == "" || _assignedTurret == _unit)
+				}; // empty and person turret
+				
 				pr _freeSeats = _freeCargoSeats + _freeFFVSeats;
 				pr _chosenCargoSeat = GETV(_thisObject, "chosenCargoSeat");
 				
@@ -155,14 +174,17 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					_chosenSeat params ["_seatUnit", "_seatRole", "_seatCargoIndex", "_seatTurretPath"]; //, "_seatPersonTurret"];
 					if (_seatRole == "cargo") then {
 						SETV(_thisObject, "chosenCargoSeat", _seatCargoIndex);
-						CALLM2(_AI, "assignAsCargoIndex", _unitVeh, _seatCargoIndex);
+						pr _success = CALLM2(_AI, "assignAsCargoIndex", _unitVeh, _seatCargoIndex);
+						
+						// Return
+						_success
 					} else {
 						SETV(_thisObject, "chosenCargoSeat", _seatTurretPath);
-						CALLM2(_AI, "assignAsTurret", _unitVeh, _seatTurretPath);
+						pr _success = CALLM2(_AI, "assignAsTurret", _unitVeh, _seatTurretPath);
+						
+						// Return
+						_success
 					};
-					
-					// Return
-					true
 				}; // else
 			}; // case
 			
@@ -199,6 +221,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					false
 				};
 			};
+			/*
 			case "GUNNER" : {
 				pr _gunner = gunner _hVeh;
 				if (!(isNull _gunner) && !(_gunner isEqualTo _hO)) then {
@@ -209,6 +232,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					false
 				};
 			};
+			*/
 			case "TURRET" : {
 				pr _turretPath = GETV(_thisObject, "turretPath");
 				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x select 3 isEqualTo _turretPath};
@@ -285,11 +309,13 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				pr _return = _driver isEqualTo _hO;
 				_return
 			};
+			/*
 			case "GUNNER" : {
 				pr _gunner = gunner _hVeh;
 				pr _return = _gunner isEqualTo _ho;
 				_return
 			};
+			*/
 			case "TURRET" : {
 				pr _turretPath = GETV(_thisObject, "turretPath");
 				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x select 3 isEqualTo _turretPath};
@@ -339,23 +365,36 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _hO = GETV(_thisObject, "hO");
 		pr _hVeh = GETV(_thisObject, "hVeh");
 		
-		if (vehicle _hO isEqualTo _hVeh) then {
+		/*
+		if ((vehicle _hO isEqualTo _hVeh) && (CALLM0(_thisObject, "isAtAssignedSeat"))) then {
 			// We are done here
 			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 			ACTION_STATE_COMPLETED
 		} else {
+		*/
 			// Assign vehicle
 			pr _success = CALLM0(_thisObject, "assignVehicle");
 			if (_success) then {
+				INFO_0("ACTIVATEd successfully");
+				
+				// Calculate ETA
+				pr _hO = T_GETV("hO");
+				pr _hVeh = T_GETV("hVeh");
+				pr _ETA = time + ((_hO distance _hVeh)/1.4 + 40);
+				INFO_1("Set ETA: %1", _ETA);
+				T_SETV("ETA", _ETA);
+				
 				SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 				// Return ACTIVE state
 				ACTION_STATE_ACTIVE
 			} else {
+				INFO_0("Failed to ACTIVATE");
+				
 				// Failed to assign vehicle
 				SETV(_thisObject, "state", ACTION_STATE_FAILED);
 				ACTION_STATE_FAILED
 			};
-		};
+		//};
 	} ENDMETHOD;
 	
 	// logic to run each update-step
@@ -400,7 +439,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						ACTION_STATE_FAILED
 					};
 				} else {
-					// Can't chose another driver or turret or gunner seat
+					// Can't choose another driver or turret or gunner seat
 					// Action is failed
 					INFO_0("Failed to assign a new seat");
 					SETV(_thisObject, "state", ACTION_STATE_FAILED);
@@ -439,6 +478,19 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					CALLM0(_AI, "executeVehicleAssignment");
 					// Order get in
 					[_hO] orderGetIn true;
+					
+					// Check ETA
+					pr _ETA = T_GETV("ETA");
+					INFO_2("Time: %1, ETA: %2", time, _ETA);
+					if(time > _ETA) then {
+						// FFS why did you get stuck again??
+						// When are BIS going to repair their fucking AIs stucking in the middle of fucking nowhere?
+						// Let's just teleport you, buddy :/
+						INFO_0("Exceeded ETA. Teleporting unit.");
+						CALLM0(_AI, "moveInAssignedVehicle");
+					};
+					
+					ACTION_STATE_ACTIVE
 				};
 			}; // else
 		} else { // state == active
@@ -452,3 +504,17 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	} ENDMETHOD; 
 
 ENDCLASS;
+
+/*
+Code to test it quickly:
+
+// setVeh
+veh = cursorObject getVariable "unit";
+
+
+// GetIn
+_unit = cursorObject;
+_parameters = [["vehicle", veh], ["vehicleRole", "CARGO"], ["turretPath", 0]];
+
+newAction = [_unit, "ActionUnitGetInVehicle", _parameters, 1] call AI_misc_fnc_forceUnitAction;
+*/
