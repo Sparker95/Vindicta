@@ -1,1 +1,1 @@
-NDContentPage.OnToolTipsLoaded({});
+NDContentPage.OnToolTipsLoaded({5:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Action represents something which an agent can do over some period of time.&nbsp; Action can be in many states, see ACTION_STATE.</div></div>",42:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Deletes an external goal having the same goalClassName and goalSource</div></div>",44:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Every goal is static, that is, not instantiated.</div></div>"});

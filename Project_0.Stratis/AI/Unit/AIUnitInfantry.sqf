@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -48,6 +51,15 @@ CLASS("AIUnitInfantry", "AI")
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	
+	METHOD("delete") {
+		params [["_thisObject", "", [""]]];
+		
+		OOP_INFO_1("DELETE %1", _thisObject);
+		
+		// Unassign this unit from its assigned vehicle
+		CALLM0(_thisObject, "unassignVehicle");
+	} ENDMETHOD;
+	
 	/*
 	Method: unassignVehicle
 	Unassigns unit from the vehicle it was assigned to
@@ -57,16 +69,21 @@ CLASS("AIUnitInfantry", "AI")
 	METHOD("unassignVehicle") {
 		params [ ["_thisObject", "", [""]]];
 
+		OOP_INFO_1("unassigning vehicle of %1", _thisObject);
+
 		// Unassign this inf unit from its current vehicle
 		pr _assignedVehicle = T_GETV("assignedVehicle");
 		if (!isNil "_assignedVehicle") then {
+			OOP_INFO_1("assigned vehicle: %1", _assignedVehicle);
+			
 			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
-			CALLM0(_assignedVehAI, "unassignUnit", _thisObject);
+			pr _unit = T_GETV("agent");
+			CALLM1(_assignedVehAI, "unassignUnit", _unit);
 			T_SETV("assignedVehicle", nil);
 			T_SETV("assignedVehicleRole", VEHICLE_ROLE_NONE);
-			pr _hO = GETV(_thisObject, "hO");
-			unassignVehicle _hO;
 		};
+		pr _hO = GETV(_thisObject, "hO");
+		unassignVehicle _hO;
 	} ENDMETHOD;
 	
 	/*

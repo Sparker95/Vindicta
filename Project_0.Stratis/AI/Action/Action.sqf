@@ -231,17 +231,17 @@ CLASS("Action", "MessageReceiver")
 	
 	/*
 	Method: activate
-	logic to run when the goal is activated
+	Logic to run when the goal is activated. You should set the action state inside.
 	
-	Returns: the new <ACTION_STATE>
+	Returns: the current <ACTION_STATE>
 	*/
 	/* virtual */ METHOD("activate") {} ENDMETHOD;
 	
 	/*
 	Method: process
-	logic to run each update-step
+	Logic to run each update-step. Remember to set the state variable of the action here as well!
 	
-	Returns: the new <ACTION_STATE>
+	Returns: the current <ACTION_STATE>
 	*/
 	/* virtual */ METHOD("process") {} ENDMETHOD;
 	

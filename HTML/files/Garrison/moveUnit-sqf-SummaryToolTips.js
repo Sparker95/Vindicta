@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Garrison/moveUnit.sqf",{184:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">NYI. Moves unit between garrisons.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Garrison/moveUnit.sqf",{124:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">NYI. Moves unit between garrisons.</div></div>"});

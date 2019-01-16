@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("mov",["Function"],[["moveUnit",,[[,,,,0,"File:Garrison/moveUnit.sqf:moveUnit"]]]]);
+NDSearch.OnPrefixDataLoaded("mov",["Function"],[["moveInAssignedVehicle",,[["AI.AIUnitInfantry",,,,0,"File:AI/Unit/AIUnitInfantry.sqf:AI.AIUnitInfantry.moveInAssignedVehicle","SQFClass:AI.AIUnitInfantry:moveInAssignedVehicle"]]],["moveUnit",,[[,,,,0,"File:Garrison/moveUnit.sqf:moveUnit"]]]]);

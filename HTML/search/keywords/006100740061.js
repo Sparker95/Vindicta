@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ata",["Function"],[["atAssignedSeat",,[["ActionUnit.ActionUnitGetInVehicle",,,,0,"File:AI/Unit/ActionUnitGetInVehicle.sqf:ActionUnit.ActionUnitGetInVehicle.atAssignedSeat","SQFClass:ActionUnit.ActionUnitGetInVehicle:atAssignedSeat"]]]]);

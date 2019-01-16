@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:AI/SensorStimulatable/SensorStimulatable.sqf",{272:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">A stimulatable sensor class.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:AI/SensorStimulatable/SensorStimulatable.sqf",{47:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">A stimulatable sensor class.</div></div>"});

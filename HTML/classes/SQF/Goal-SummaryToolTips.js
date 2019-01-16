@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Goal",{271:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Every goal is static, that is, not instantiated.</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:Goal",{44:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Every goal is static, that is, not instantiated.</div></div>"});

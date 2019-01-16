@@ -9,21 +9,12 @@
 #include "..\worldFactTypes.hpp"
 
 /*
-Template of an Action class
+Class: ActionGroup.ActionGroupPatrol
 */
 
 #define pr private
 
 CLASS("ActionGroupPatrol", "ActionGroup")
-
-	VARIABLE("AI");
-	
-	// ------------ N E W ------------
-	
-	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _AI);
-	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {

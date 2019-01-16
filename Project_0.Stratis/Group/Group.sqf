@@ -261,12 +261,16 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		
 		pr _data = GETV(_thisObject, "data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
+		pr _AI = _data select GROUP_DATA_ID_AI;
+		
+		// Post a message to the group AI
+		CALLM2(_AI, "postMethodAsync", "handleUnitRemoved", [_unit]);
 		
 		// Remove the unit from this group
 		_units deleteAt (_units find _unit);
 		
 		// Set group of this unit
-		CALLM1(_unit, "setGroup", "");	
+		CALLM1(_unit, "setGroup", "");
 	} ENDMETHOD;
 	
 	

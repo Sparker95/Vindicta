@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -39,6 +42,33 @@ CLASS("AIGroup", "AI")
 	
 	METHOD("getMessageLoop") {
 		gMessageLoopGroupAI
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitRemoved
+	Handles what happens when a unit gets removed from its group, for instance when it gets killed.
+	Currently it called handleUnitRemoved of the current action.
+	
+	Access: internal
+	
+	How to call: through postMethodAsync
+	
+	Parameters: _unit
+	
+	_unit - <Unit>
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitRemoved") {
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		OOP_INFO_1("handleUnitRemoved: %1", _unit);
+		
+		// Call handleUnitRemoved of the current action, if it exists
+		pr _currentAction = T_GETV("currentAction");
+		if (_currentAction != "") then {
+			CALLM1(_currentAction, "handleUnitRemoved", _unit);
+		};
 	} ENDMETHOD;
 	
 ENDCLASS;

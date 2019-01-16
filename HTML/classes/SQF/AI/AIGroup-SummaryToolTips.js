@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:AI.AIGroup",{302:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">AI class for the group</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:AI.AIGroup",{45:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">AI class for the group</div></div>",278:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Handles what happens when a unit gets removed from its group, for instance when it gets killed.&nbsp; Currently it called handleUnitRemoved of the current action.</div></div>"});

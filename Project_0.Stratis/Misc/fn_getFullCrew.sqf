@@ -6,12 +6,14 @@ Parameters: _vehicle
 
 _vehicle - object handle of class name
 
-Returns: [_pilot, _copilot, _stdTurrets, _psgTurrets, _nCargo]
+Returns: [_n_driver, _copilotTurrets, _stdTurrets, _psgTurrets, _nCargo]
 _n_driver - Number, 0 or 1, if there's a driver(pilot) or not
 _copilotTurrets - copilot's turret path
 _stdTurrets - standard(with AI inside by default) turret paths excluding the copilot turret.
 _psgTurrets - passenger turrets (FFVs).
 _n_cargo - Number, number or passenger seats in cargo (non-FFV).
+
+Params: ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"]
 */
 
 params ["_vehicleName"];

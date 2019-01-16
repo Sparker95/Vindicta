@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\CriticalSection\CriticalSection.hpp"
@@ -15,7 +18,7 @@ This is the central class of AI framework.
 It handles arbitration of goals, receives data from sensors,
 stores world facts, runs an A* action planner.
 
-Lots of the code and architecture is rerived from F.E.A.R. AI made by Jeff Orkin.
+Lots of the code and architecture is derived from F.E.A.R. AI made by Jeff Orkin.
 
 Author: Sparker 07.11.2018
 */
@@ -30,8 +33,12 @@ Author: Sparker 07.11.2018
 
 CLASS("AI", "MessageReceiverEx")
 
+	/* Variable: agent
+	Holds a reference to the unit/group/whatever that owns this AI object*/
 	VARIABLE("agent"); // Pointer to the unit which holds this AI object
+	/* Variable: currentAction */
 	VARIABLE("currentAction"); // The current action
+	/* Variable: currentGoal*/
 	VARIABLE("currentGoal"); // The current goal
 	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
 	VARIABLE("currentGoalParameters"); // The parameter of the current goal
@@ -214,12 +221,27 @@ CLASS("AI", "MessageReceiverEx")
 		pr _currentAction = GETV(_thisObject, "currentAction");
 		if (_currentAction != "") then {
 			pr _actionState = CALLM(_currentAction, "process", []);
+			
+			// If it's an external goal, set its action state in the external goal array
+			pr _goalSource = T_GETV("currentGoalSource");
+			if (_goalSource != _thisObject) then {
+				pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+				pr _goalClassName = T_GETV("currentGoal");
+				pr _index = _goalsExternal findIf {(_goalClassName == (_x select 0)) && (_goalSource == (_x select 3))};
+				if (_index != -1) then {
+					pr _arrayElement = _goalsExternal select _index;
+					_arrayElement set [4, _actionState];
+				} else {
+					diag_log format ["[AI::process] Error: can't set external goal action state: %1, %2", _thisObject, _goalClassName];
+				};
+			};
+			
 			switch (_actionState) do {
 				case ACTION_STATE_COMPLETED : {
 					// Mark the current goal as completed
-					pr _currentGoal = GETV(_thisObject, "currentGoal");
-					pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
-					CALLM2(_thisObject, "deleteExternalGoal", _currentGoal, _currentGoalParameters); 
+					//pr _currentGoal = GETV(_thisObject, "currentGoal");
+					//pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
+					//CALLM2(_thisObject, "deleteExternalGoal", _currentGoal, _currentGoalParameters); 
 					
 					// Delete the current action
 					CALLM0(_thisObject, "deleteCurrentAction");
@@ -354,7 +376,7 @@ CLASS("AI", "MessageReceiverEx")
 	
 	// ----------------------------------------------------------------------
 	// |                G E T   M O S T   R E L E V A N T   G O A L
-	// | Return value: [goal, parameter]
+	// | Return value: ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource"]
 	// | 
 	// ----------------------------------------------------------------------
 	
@@ -397,30 +419,52 @@ CLASS("AI", "MessageReceiverEx")
 	
 	// ----------------------------------------------------------------------
 	// |                A D D   E X T E R N A L   G O A L
-	// | Adds a goal to the list of external goals of this agent
-	// | Parameters: _goalClassName, _bias, _parameters
-	// | _bias - a number to be added to the relevance of the goal once it is calculated
-	// | _parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
+	// | 
 	// ----------------------------------------------------------------------
+	
+	/*
+	Method: addExternalGoal
+	Adds a goal to the list of external goals of this agent
+	
+	Parameters: _goalClassName, _bias, _parameters
+	
+	_goalClassName - <Goal> class name
+	_bias - a number to be added to the relevance of the goal once it is calculated
+	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
+	_source - string, optional, can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	
+	Returns: nil
+	*/
 	
 	METHOD("addExternalGoal") {
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
 		
+		OOP_INFO_2("Added external goal: %1, %2", _goalClassName, _parameters);
+		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source];
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE];
 		
 		nil
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                D E L E T E   E X T E R N A L   G O A L
-	// | Deletes an external goal having the same goalClassName and goalSource
-	// |
 	// ----------------------------------------------------------------------
+	/*
+	Method: deleteExternalGoal
+	Deletes an external goal having the same goalClassName and goalSource
 	
+	Parameters: _goalClassName, _goalSource
+	
+	_goalClassName - <Goal> class name
+	_goalSource - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: nil
+	*/
 	METHOD("deleteExternalGoal") {
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
 
+		CRITICAL_SECTION_START
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		pr _i = 0;
 		while {_i < count _goalsExternal} do {
@@ -432,13 +476,48 @@ CLASS("AI", "MessageReceiverEx")
 				_i = _i + 1;
 			};
 		};
+		CRITICAL_SECTION_END
 		
 		nil
 	} ENDMETHOD;
 	
 	
 	
+	// --------------------------------------------------------------------------------
+	// |                G E T   E X T E R N A L   G O A L   A C T I O N   S T A T E
+	// --------------------------------------------------------------------------------
+	/*
+	Method: getExternalGoalActionState
+	Returns the state of <Action> which is executed in response to specified external <Goal>, or -1 if specified goal was not found.
 	
+	Parameters: _goalClassName, _source
+	
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Number, one of <ACTION_STATE>
+	*/
+	METHOD("getExternalGoalActionState") {
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+
+		pr _return = -1;
+		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, action state];
+		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+		pr _index = if (_goalSource == "") then {
+			_goalsExternal findIf {(_x select 0) == _goalClassName}
+		} else {
+			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		};
+		if (_index != -1) then {
+			_return = _goalsExternal select _index select 4;
+		} else {
+			OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+		};
+		CRITICAL_SECTION_END
+		
+		_return
+	} ENDMETHOD;
 	
 	
 	// ------------------------------------------------------------------------------------------------------

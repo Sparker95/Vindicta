@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("aiu",["Class"],[["AIUnit",,[["AI",,,,0,"File:AI/Unit/AIUnit.sqf:AI.AIUnit","SQFClass:AI.AIUnit"]]]]);
+NDSearch.OnPrefixDataLoaded("aiu",["Class"],[["AIUnitInfantry",,[["AI",,,,0,"File:AI/Unit/AIUnitInfantry.sqf:AI.AIUnitInfantry","SQFClass:AI.AIUnitInfantry"]]],["AIUnitVehicle",,[["AI",,,,0,"File:AI/Unit/AIUnitVehicle.sqf:AI.AIUnitVehicle","SQFClass:AI.AIUnitVehicle"]]]]);

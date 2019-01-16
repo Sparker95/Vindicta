@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Group/_ActionGroup.sqf","_ActionGroup.sqf");NDSummary.OnSummaryLoaded("File:AI/Group/_ActionGroup.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[352,0,0,"ActionGroup","ActionGroup"],[363,0,2,"Functions","ActionGroup.Functions"],[364,0,1,"handleUnitRemoved","ActionGroup.handleUnitRemoved"]]);

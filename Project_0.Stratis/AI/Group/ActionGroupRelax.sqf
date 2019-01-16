@@ -9,7 +9,7 @@
 #include "..\worldFactTypes.hpp"
 
 /*
-Template of an Action class
+Class: ActionGroup.ActionGroupRelax
 */
 
 #define pr private

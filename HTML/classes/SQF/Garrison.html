@@ -8,80 +8,85 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic194"></a><div class="CTopic TClass LSQF first">
+<a name="Topic142"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">Garrison</div>
  <div class="CBody"><p>Garrison is an object which holds units and groups and handles their lifecycle (spawning, despawning, destruction).&nbsp; Garrison is much like a group, it has an &lt;AIGarrison&gt;. But it can have multiple groups of different types.</p><p>Author: Sparker 12.07.2018</p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic195"></a><div class="CTopic TGroup LSQF">
+<a name="Functions"></a><a name="Topic143"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="new"></a><a name="Topic196"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic144"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
  <div class="CBody"><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>side of this garrison</p></td></tr></table></div>
 </div>
 
-<a name="delete"></a><a name="Topic197"></a><div class="CTopic TFunction LSQF">
+<a name="delete"></a><a name="Topic145"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
 </div>
 
-<a name="getMessageLoop"></a><a name="Topic198"></a><div class="CTopic TFunction LSQF">
+<a name="getMessageLoop"></a><a name="Topic146"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getMessageLoop</div>
- <div class="CBody"><p>See <a href="../../index.html#SQFClass:MessageReceiver:getMessageLoop" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,81);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MessageReceiver.getMessageLoop</a></p><p>Returns: <a href="../../index.html#SQFClass:MessageLoop" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,61);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MessageLoop</a></p></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQFClass:MessageReceiver:getMessageLoop" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,262);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MessageReceiver.getMessageLoop</a></p><p>Returns: <a href="../../index.html#SQFClass:MessageLoop" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,248);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MessageLoop</a></p></div>
 </div>
 
-<a name="setLocation"></a><a name="Topic199"></a><div class="CTopic TFunction LSQF">
+<a name="setLocation"></a><a name="Topic147"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setLocation</div>
- <div class="CBody"><p>Sets the location of this garrison</p><p>Parameters: _location</p><table class="CDefinitionList"><tr><td class="CDLEntry">_location</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,11);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a></p></td></tr></table></div>
+ <div class="CBody"><p>Sets the location of this garrison</p><p>Parameters: _location</p><table class="CDefinitionList"><tr><td class="CDLEntry">_location</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,189);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a></p></td></tr></table></div>
 </div>
 
-<a name="getSide"></a><a name="Topic200"></a><div class="CTopic TFunction LSQF">
+<a name="getSide"></a><a name="Topic148"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getSide</div>
  <div class="CBody"><p>Returns side of this garrison.</p><p>Returns: Side</p></div>
 </div>
 
-<a name="getLocation"></a><a name="Topic201"></a><div class="CTopic TFunction LSQF">
+<a name="getLocation"></a><a name="Topic149"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getLocation</div>
- <div class="CBody"><p>Returns location this garrison is attached to.</p><p>Returns: <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,11);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a></p></div>
+ <div class="CBody"><p>Returns location this garrison is attached to.</p><p>Returns: <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,189);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a></p></div>
 </div>
 
-<a name="getGroups"></a><a name="Topic202"></a><div class="CTopic TFunction LSQF">
+<a name="getGroups"></a><a name="Topic150"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getGroups</div>
- <div class="CBody"><p>Returns groups of this garrison.</p><p>Returns: Array of <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,1);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> objects.</p></div>
+ <div class="CBody"><p>Returns groups of this garrison.</p><p>Returns: Array of <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,154);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> objects.</p></div>
 </div>
 
-<a name="findGroupByType"></a><a name="Topic203"></a><div class="CTopic TFunction LSQF">
+<a name="findGroupByType"></a><a name="Topic151"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">findGroupByType</div>
- <div class="CBody"><p>Finds groups in this garrison that have the same type as _type</p><p>Parameters: _type</p><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>Number, one of &lt;GROUP_TYPE&gt;</p></td></tr></table><p>Returns: Array with <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,1);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> objects.</p></div>
+ <div class="CBody"><p>Finds groups in this garrison that have the same type as _type</p><p>Parameters: _type</p><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>Number, one of &lt;GROUP_TYPE&gt;</p></td></tr></table><p>Returns: Array with <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,154);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> objects.</p></div>
 </div>
 
-<a name="getSubagents"></a><a name="Topic204"></a><div class="CTopic TFunction LSQF">
+<a name="getSubagents"></a><a name="Topic152"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getSubagents</div>
  <div class="CBody"><p>Returns subagents of this agent.&nbsp; For garrison it returns an empty array, because the subagents of garrison (groups) are processed in a separate thread.</p><p>Access: Used by AI class</p><p>Returns: [].</p></div>
 </div>
 
-<a name="addGroup"></a><a name="Topic207"></a><div class="CTopic TFunction LSQF">
+<a name="handleUnitKilled"></a><a name="Topic153"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">handleUnitKilled</div>
+ <div class="CBody"><p>Called when the unit has been killed.</p><p>Must be called inside the garrison thread through postMethodAsync, not inside event handler.</p><p>Returns: nil</p></div>
+</div>
+
+<a name="addGroup"></a><a name="Topic141"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addGroup</div>
- <div class="CBody"><p>Adds an existing group to this garrison.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Parameters: _group</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,1);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> object</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Adds an existing group to this garrison.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Parameters: _group</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,154);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="addUnit"></a><a name="Topic210"></a><div class="CTopic TFunction LSQF">
+<a name="addUnit"></a><a name="Topic135"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addUnit</div>
- <div class="CBody"><p>Adds an existing unit to this garrison. Unit can only be added while not in a group. So, only vehicles can be added this way.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Parameters: _unit</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Adds an existing unit to this garrison. Unit can only be added while not in a group. So, only vehicles can be added this way.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Parameters: _unit</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,320);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="spawn"></a><a name="Topic190"></a><div class="CTopic TFunction LSQF">
+<a name="spawn"></a><a name="Topic138"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">spawn</div>
  <div class="CBody"><p>Despawns all groups and units in this garrison.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Returns: nil</p></div>
 </div>
 
-<a name="findUnits"></a><a name="Topic193"></a><div class="CTopic TFunction LSQF">
+<a name="findUnits"></a><a name="Topic131"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">findUnits</div>
- <div class="CBody"><p>Returns an array of units with specified category and subcategory</p><p>Parameters: _query</p><table class="CDefinitionList"><tr><td class="CDLEntry">_query</td><td class="CDLDefinition"><p>array of [_catID, _subcatID].&nbsp; _subcatID can be -1 if you don't care about a subcategory match.</p></td></tr></table><p>Returns: Array of units <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,133);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> class</p></div>
+ <div class="CBody"><p>Returns an array of units with specified category and subcategory</p><p>Parameters: _query</p><table class="CDefinitionList"><tr><td class="CDLEntry">_query</td><td class="CDLDefinition"><p>array of [_catID, _subcatID].&nbsp; _subcatID can be -1 if you don't care about a subcategory match.</p></td></tr></table><p>Returns: Array of units <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,320);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> class</p></div>
 </div>
 
-<a name="spawn"></a><a name="Topic187"></a><div class="CTopic TFunction LSQF last">
+<a name="spawn"></a><a name="Topic120"></a><div class="CTopic TFunction LSQF last">
  <div class="CTitle">spawn</div>
  <div class="CBody"><p>Spawns all groups and units in this garrison, if it's not currently spawned.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Returns: nil</p></div>
 </div>

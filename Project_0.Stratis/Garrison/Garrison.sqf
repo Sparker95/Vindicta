@@ -255,6 +255,16 @@ CLASS("Garrison", "MessageReceiverEx")
 		
 		// Set Garrison of this Unit
 		CALLM1(_unit, "setGarrison", "");
+		
+		// Call handleUnitKilled of the group of this unit
+		pr _group = CALLM0(_unit, "getGroup");
+		if (_group != "") then {
+			CALLM1(_group, "handleUnitKilled", _unit);
+		};
+		
+		// Call handleKilled of the unit
+		CALLM0(_unit, "handleKilled");
+		
 	} ENDMETHOD;	
 	
 	

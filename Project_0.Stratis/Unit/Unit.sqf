@@ -376,6 +376,18 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data select UNIT_DATA_ID_OBJECT_HANDLE
 	} ENDMETHOD;
 	
+	/*
+	Method: getClassName
+	Returns class name of this unit
+	
+	Returns: String
+	*/
+	METHOD("getClassName") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CLASS_NAME
+	} ENDMETHOD;
+	
 
 	//                        G E T   G R O U P
 	/*
@@ -419,8 +431,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
-	} ENDMETHOD;
-	
+	} ENDMETHOD;	
 	
 	//                        G E T   D A T A
 	/*
@@ -454,10 +465,21 @@ CLASS(UNIT_CLASS_NAME, "")
 	//                     H A N D L E   K I L L E D
 	/*
 	Method: handleKilled
-	NYI
+	Gets called when a unit is killed.
 	*/	
 	METHOD("handleKilled") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete the brain of this unit, if it exists
+		pr _data = T_GETV("data");
+		pr _AI = _data select UNIT_DATA_ID_AI;
+		if (_AI != "") then {
+			pr _msg = MESSAGE_NEW();
+			MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
+			pr _msgID = CALLM1(_AI, "postMessage", _msg);
+			
+			_data set [UNIT_DATA_ID_AI, ""];
+		};
 		//Oh no, Johny is down! What should we do?
 	} ENDMETHOD;
 	

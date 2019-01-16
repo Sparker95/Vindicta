@@ -1,3 +1,7 @@
+
+
+
+
 // Macros for manipulating A* nodes
 
 #define ASTAR_NODE_ID_WS				0

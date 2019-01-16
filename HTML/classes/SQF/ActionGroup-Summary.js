@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:ActionGroup","ActionGroup");NDSummary.OnSummaryLoaded("SQFClass:ActionGroup",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[352,0,0,"ActionGroup"],[363,0,2,"Functions","Functions"],[364,0,1,"handleUnitRemoved","handleUnitRemoved"]]);

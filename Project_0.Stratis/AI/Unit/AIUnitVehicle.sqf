@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -43,10 +46,15 @@ CLASS("AIUnitVehicle", "AI")
 	METHOD("unassignUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		
+		OOP_INFO_1("Unassigning unit: %1", _unit);
+		
 		// Unassign driver
 		pr _driver = GETV(_thisObject, "assignedDriver");
 		if (!isNil "_driver") then {
-			if (_driver == _unit) then { SETV(_thisObject, "assignedDriver", nil);};
+			if (_driver == _unit) then {
+				OOP_INFO_0("unassigned driver");
+				SETV(_thisObject, "assignedDriver", nil);
+			};
 		};
 		
 		// Unassign gunner
@@ -60,18 +68,20 @@ CLASS("AIUnitVehicle", "AI")
 		// Unassign cargo
 		pr _cargo = GETV(_thisObject, "assignedCargo");
 		if (!isNil "_cargo") then {
-			pr _cargoThisUnit = _cargo select {_x select 1 == _unit};
+			pr _cargoThisUnit = _cargo select {_x select 0 == _unit};
 			{
 				_cargo deleteAt (_cargo find _x);
+				OOP_INFO_0("unassigned cargo");
 			} forEach _cargoThisUnit;
 		};
 		
 		// Unassign turrets
 		pr _turrets = GETV(_thisObject, "assignedTurrets");
 		if (!isNil "_turrets") then {
-			pr _turretsThisUnit = _turrets select {_x select 1 == _unit};
+			pr _turretsThisUnit = _turrets select {_x select 0 == _unit};
 			{
 				_turrets deleteAt (_turrets find _x);
+				OOP_INFO_0("unassigned turret");
 			} forEach _turretsThisUnit;
 		};
 		

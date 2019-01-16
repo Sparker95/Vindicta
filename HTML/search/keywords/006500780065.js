@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("exe",["Function"],[["executeVehicleAssignment",,[["AI.AIUnitInfantry",,,,0,"File:AI/Unit/AIUnitInfantry.sqf:AI.AIUnitInfantry.executeVehicleAssignment","SQFClass:AI.AIUnitInfantry:executeVehicleAssignment"]]]]);

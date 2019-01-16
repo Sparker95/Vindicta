@@ -110,7 +110,7 @@ private _loc = objNull;
 			params ["_template", "_gar", "_catID", "_subcatID", "_classID"];
 			private _side = CALL_METHOD(_gar, "getSide", []);
 			private _args = [_side, GROUP_TYPE_VEH_NON_STATIC];
-			private _newGroup = NEW("Group", [_side]);
+			private _newGroup = NEW("Group", _args);
 			private _args = [_template, _catID, _subcatID, -1, _newGroup]; // ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
 			private _newUnit = NEW("Unit", _args);
 			// Create crew for the vehicle

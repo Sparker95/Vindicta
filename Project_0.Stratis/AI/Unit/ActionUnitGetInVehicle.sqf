@@ -103,6 +103,8 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _AI = GETV(_thisObject, "AI");
 		pr _unitVeh = GETV(_thisObject, "unitVeh");
 		
+		OOP_INFO_2("Asigning vehicle: %1, role: %2", _unitVeh, _vehRole);
+		
 		switch (_vehRole) do {	
 		/*
 		[[hemttD,"driver",-1,[],false],
@@ -148,14 +150,14 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				
 				pr _freeCargoSeats = (fullCrew [_hVeh, "cargo", true]) select {
 					pr _assignedPassenger = CALLM1(_vehAI, "getAssignedCargo", _x select 2);
-					( (isNull (_x select 0)) ||
+					( (!alive (_x select 0)) ||
 					  ((_x select 0) isEqualTo _hO) ) &&
 					  ( _assignedPassenger == "" || _assignedPassenger == _unit)
 				};
 				
 				pr _freeFFVSeats = (fullCrew [_hVeh, "Turret", true]) select {
 					pr _assignedTurret = CALLM1(_vehAI, "getAssignedTurret", _x select 3);
-					( (isNull (_x select 0)) || ((_x select 0) isEqualTo _hO)) && (_x select 4) && (_assignedTurret == "" || _assignedTurret == _unit)
+					( (!alive (_x select 0)) || ((_x select 0) isEqualTo _hO)) && (_x select 4) && (_assignedTurret == "" || _assignedTurret == _unit)
 				}; // empty and person turret
 				
 				pr _freeSeats = _freeCargoSeats + _freeFFVSeats;
@@ -237,7 +239,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				pr _turretPath = GETV(_thisObject, "turretPath");
 				pr _turretSeat = (fullCrew [_hVeh, "", true]) select {_x select 3 isEqualTo _turretPath};
 				pr _turretOperator = _turretSeat select 0 select 0;
-				if (!(isNull _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
+				if ((alive _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
 					// Return
 					true
 				} else {
@@ -258,7 +260,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					pr _cargoIndex = _chosenCargoSeat;
 					pr _cargoSeat = (fullCrew [_hVeh, "cargo", true]) select {_x select 2 isEqualTo _cargoIndex};
 					pr _cargoOperator = _cargoSeat select 0 select 0;
-					if (!(isNull _cargoOperator) && !(_cargoOperator isEqualTo _hO)) then {
+					if ((alive _cargoOperator) && !(_cargoOperator isEqualTo _hO)) then {
 						// Return
 						true
 					} else {
@@ -269,7 +271,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					pr _turretPath = _chosenCargoSeat;
 					pr _turretSeat = (fullCrew [_hVeh, "Turret", true]) select {_x select 3 isEqualTo _turretPath};
 					pr _turretOperator = _turretSeat select 0 select 0;
-					if (!(isNull _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
+					if ((alive _turretOperator) && !(_turretOperator isEqualTo _hO)) then {
 						// Return
 						true
 					} else {
@@ -405,13 +407,13 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _state = CALLM(_thisObject, "activateIfInactive", []);
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
-			INFO_0("State is ACTIVE");
 			
 			pr _hVeh = GETV(_thisObject, "hVeh");
 			pr _hO = GETV(_thisObject, "hO");
 			pr _vehRole = GETV(_thisObject, "vehRole");
+			pr _unitVeh = T_GETV("unitVeh");
 			
-			
+			INFO_2("PROCESS: State is ACTIVE. Assigned vehicle: %1, role: %2", _unitVeh, _vehRole);
 			// Check if the seat is occupied by someone else
 			if (CALLM0(_thisObject, "seatIsOccupied")) then {
 				INFO_0("Seat is occupied");
@@ -472,22 +474,28 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						ACTION_STATE_ACTIVE
 					};
 				} else {
-					INFO_0("Not in vehicle yet. Going on ...");
-				
-					// Execute vehicle assignment
-					CALLM0(_AI, "executeVehicleAssignment");
-					// Order get in
-					[_hO] orderGetIn true;
+					// If the unit is on foot now
+					if (vehicle _hO isEqualTo _hO) then {						
+						INFO_0("Not in vehicle yet. Going on ...");
 					
-					// Check ETA
-					pr _ETA = T_GETV("ETA");
-					INFO_2("Time: %1, ETA: %2", time, _ETA);
-					if(time > _ETA) then {
-						// FFS why did you get stuck again??
-						// When are BIS going to repair their fucking AIs stucking in the middle of fucking nowhere?
-						// Let's just teleport you, buddy :/
-						INFO_0("Exceeded ETA. Teleporting unit.");
-						CALLM0(_AI, "moveInAssignedVehicle");
+						// Execute vehicle assignment
+						CALLM0(_AI, "executeVehicleAssignment");
+						// Order get in
+						[_hO] orderGetIn true;
+						
+						// Check ETA
+						pr _ETA = T_GETV("ETA");
+						INFO_2("Time: %1, ETA: %2", time, _ETA);
+						if(time > _ETA) then {
+							// FFS why did you get stuck again??
+							// When are BIS going to repair their fucking AIs stucking in the middle of fucking nowhere?
+							// Let's just teleport you, buddy :/
+							INFO_0("Exceeded ETA. Teleporting unit.");
+							CALLM0(_AI, "moveInAssignedVehicle");
+						};
+					} else {
+						INFO_0("In WRONG vehicle. Getting out.");
+						doGetOut _hO;
 					};
 					
 					ACTION_STATE_ACTIVE

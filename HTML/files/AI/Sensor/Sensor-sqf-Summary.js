@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("File:AI/Sensor/Sensor.sqf","Sensor.sqf");NDSummary.OnSummaryLoaded("File:AI/Sensor/Sensor.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[246,0,0,"Sensor","Sensor"]]);
+NDFramePage.OnPageTitleLoaded("File:AI/Sensor/Sensor.sqf","Sensor.sqf");NDSummary.OnSummaryLoaded("File:AI/Sensor/Sensor.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[46,0,0,"Sensor","Sensor"]]);
