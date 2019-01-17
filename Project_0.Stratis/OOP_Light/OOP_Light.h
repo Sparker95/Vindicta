@@ -332,6 +332,7 @@ private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 // ----------------------------------------------------------------------
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
+
 #ifdef OOP_INFO
 #define OOP_INFO_0(str) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
 #define OOP_INFO_1(str, a) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
@@ -378,4 +379,15 @@ private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 #define OOP_ERROR_3(str, a, b, c)
 #define OOP_ERROR_4(str, a, b, c, d)
 #define OOP_ERROR_5(str, a, b, c, d, e)
+#endif
+
+// ----------------------------------------------------------------------
+// |                   A S S E R T I O N   M A C R O S                  |
+// ----------------------------------------------------------------------
+// ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+// Exits current scope if provided object's class doesn't match specified class
+#ifdef OOP_ASSERT
+#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
+#else
+#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
 #endif

@@ -19,7 +19,9 @@ Author: Sparker 12.11.2018
 CLASS("AIGroup", "AI")
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+		
+		ASSERT_OBJECT_CLASS(_agent, "Group");
 		
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);

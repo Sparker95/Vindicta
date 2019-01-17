@@ -22,6 +22,7 @@ CLASS("ActionUnit", "Action")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		
 		pr _a = GETV(_AI, "agent"); // cache the object handle
 		pr _oh = CALLM(_a, "getObjectHandle", []);
 		SETV(_thisObject, "hO", _oh);

@@ -23,7 +23,9 @@ CLASS("AIUnitVehicle", "AI")
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
+		
+		ASSERT_OBJECT_CLASS(_agent, "Unit");
 		
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
@@ -45,6 +47,8 @@ CLASS("AIUnitVehicle", "AI")
 	*/
 	METHOD("unassignUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		ASSERT_OBJECT_CLASS(_unit, "Unit");
 		
 		OOP_INFO_1("Unassigning unit: %1", _unit);
 		

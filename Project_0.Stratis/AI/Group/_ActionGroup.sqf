@@ -24,6 +24,9 @@ CLASS("ActionGroup", "Action")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		
+		ASSERT_OBJECT_CLASS(_AI, "AIGroup");
+		
 		pr _agent = GETV(_AI, "agent");
 		pr _hG = CALLM0(_agent, "getGroupHandle"); // Group handle
 		SETV(_thisObject, "hG", _hG);

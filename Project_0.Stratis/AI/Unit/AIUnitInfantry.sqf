@@ -30,6 +30,9 @@ CLASS("AIUnitInfantry", "AI")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
+		// Make sure arguments are of proper classes
+		ASSERT_OBJECT_CLASS(_agent, "Unit");
+		
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
 		
@@ -98,6 +101,8 @@ CLASS("AIUnitInfantry", "AI")
 	METHOD("assignAsDriver") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]] ];
 
+		ASSERT_OBJECT_CLASS(_veh, "Unit");
+
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");
 		
@@ -156,6 +161,8 @@ CLASS("AIUnitInfantry", "AI")
 	METHOD("assignAsTurret") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]], ["_turretPath", [], [[]]] ];
 		
+		ASSERT_OBJECT_CLASS(_veh, "Unit");
+		
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");
 		
@@ -188,6 +195,8 @@ CLASS("AIUnitInfantry", "AI")
 	*/
 	METHOD("assignAsCargoIndex") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]], ["_cargoIndex", 0, [0]] ];
+		
+		ASSERT_OBJECT_CLASS(_veh, "Unit");
 		
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");

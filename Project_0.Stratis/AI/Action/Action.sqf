@@ -71,7 +71,9 @@ CLASS("Action", "MessageReceiver")
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", []]];
-	
+
+		ASSERT_OBJECT_CLASS(_AI, "AI");
+
 		SET_VAR(_thisObject, "AI", _AI);
 		SET_VAR(_thisObject, "state", ACTION_STATE_INACTIVE); // Default state
 		//pr _msgLoop = CALLM("AI", "getMessageLoop");
