@@ -44,7 +44,7 @@ location_bp_sentry =
 [
 	[ //The giant military tower
 		["Land_Cargo_Tower_V1_F", "Land_Cargo_Tower_V2_F", "Land_Cargo_Tower_V3_F"],
-		[[10, 180], [12, 0], [15, 270], [2, 0], [4, 180], [7, 90], [8, 270]]
+		[[0, 0], [1, 0], [10, 180], [12, 0], [15, 270], [2, 0], [4, 180], [7, 90], [8, 270]]
 	],
 	[ //The small military watchtower
 		["Land_Cargo_Patrol_V1_F", "Land_Cargo_Patrol_V2_F", "Land_Cargo_Patrol_V3_F"],

@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
@@ -32,22 +35,44 @@ CLASS(THIS_ACTION_NAME, "Action")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];		
 		
+		OOP_INFO_0("ACTIVATE");
 		
-		// Assign patrol goal to patrol groups
-		pr _AI = GETV(_thisObject, "AI");
-		pr _gar = GETV(_AI, "agent");
-		pr _patrolGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_PATROL);
-		//ade_dumpCallstack;
-		{
+		// Give goals to groups
+		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _groups = CALLM0(_gar, "getGroups");
+		{ // foreach _groups
+			pr _type = CALLM0(_x, "getType");
 			pr _groupAI = CALLM0(_x, "getAI");
-			if (!isNil "_groupAI") then {
-				if (_groupAI != "") then {
-					// Give a patrol task to this group
-					pr _args = ["GoalGroupPatrol", 0, [], _AI];
+			
+			if (_groupAI != "") then {
+				pr _args = [];
+				switch (_type) do {
+					case GROUP_TYPE_IDLE: {
+						_args = ["GoalGroupRelax", 0, [], _thisObject];
+					};
+					
+					case GROUP_TYPE_VEH_STATIC: {
+						_args = ["GoalGroupRelax", 0, [], _thisObject];
+					};
+					
+					case GROUP_TYPE_VEH_NON_STATIC: {
+						_args = ["GoalGroupRelax", 0, [], _thisObject];
+					};
+					
+					case GROUP_TYPE_BUILDING_SENTRY: {
+						_args = ["GoalGroupRelax", 0, [], _thisObject];
+					};
+					
+					case GROUP_TYPE_PATROL: {
+						_args = ["GoalGroupPatrol", 0, [], _thisObject];
+					};
+				};
+				
+				if (count _args > 0) then {
 					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 				};
 			};
-		} forEach _patrolGroups;
+		} forEach _groups;
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -85,6 +110,44 @@ CLASS(THIS_ACTION_NAME, "Action")
 				};
 			};
 		} forEach _patrolGroups;
+		
+		
+		// Remove assigned goals
+		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _groups = CALLM0(_gar, "getGroups");
+		{ // foreach _groups
+			pr _type = CALLM0(_x, "getType");
+			pr _groupAI = CALLM0(_x, "getAI");
+			
+			if (_groupAI != "") then {
+				pr _args = [];
+				switch (_type) do {
+					case GROUP_TYPE_IDLE: {
+						_args = ["GoalGroupRelax", ""];
+					};
+					
+					case GROUP_TYPE_VEH_STATIC: {
+						_args = ["GoalGroupRelax", ""];
+					};
+					
+					case GROUP_TYPE_VEH_NON_STATIC: {
+						_args = ["GoalGroupRelax", ""];
+					};
+					
+					case GROUP_TYPE_BUILDING_SENTRY: {
+						_args = ["GoalGroupRelax", ""];
+					};
+					
+					case GROUP_TYPE_PATROL: {
+						_args = ["GoalGroupPatrol", ""];						
+					};
+				};
+				
+				if (count _args > 0) then {
+					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+				};
+			};
+		} forEach _groups;
 		
 	} ENDMETHOD;
 

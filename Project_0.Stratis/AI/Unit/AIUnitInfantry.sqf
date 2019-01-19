@@ -26,6 +26,9 @@ CLASS("AIUnitInfantry", "AI")
 	VARIABLE("assignedVehicleRole");
 	VARIABLE("assignedCargoIndex");
 	VARIABLE("assignedTurretPath");
+	
+	// Sentry position
+	VARIABLE("sentryPos");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -80,8 +83,11 @@ CLASS("AIUnitInfantry", "AI")
 			OOP_INFO_1("assigned vehicle: %1", _assignedVehicle);
 			
 			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
-			pr _unit = T_GETV("agent");
-			CALLM1(_assignedVehAI, "unassignUnit", _unit);
+			if (_assignedVehAI != "") then { // sanity checks
+				pr _unit = T_GETV("agent");
+				CALLM1(_assignedVehAI, "unassignUnit", _unit);
+			};
+			
 			T_SETV("assignedVehicle", nil);
 			T_SETV("assignedVehicleRole", VEHICLE_ROLE_NONE);
 		};
@@ -298,6 +304,39 @@ CLASS("AIUnitInfantry", "AI")
 			};
 		} else {
 			false
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: setSentryPos
+	Sets the sentry position, which may be later retrieved by actions.
+	
+	Parameters: _pos
+	
+	_pos - position
+	
+	Returns: nil
+	*/
+	
+	METHOD("setSentryPos") {
+		params [ ["_thisObject", "", [""]], ["_pos", [], [[]]] ];
+		T_SETV("sentryPos", _pos);
+	} ENDMETHOD;
+	
+	/*
+	Method: getSentryPos
+	Getter for setSentryPos
+	
+	Returns: position or [] if no position was assigned
+	*/
+	
+	METHOD("getSentryPos") {
+		params [ ["_thisObject", "", [""]]];
+		pr _pos = T_GETV("sentryPos");
+		if (isNil "_pos") then {
+			[]
+		} else {
+			_pos
 		};
 	} ENDMETHOD;
 	

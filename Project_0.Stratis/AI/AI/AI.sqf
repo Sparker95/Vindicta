@@ -18,6 +18,8 @@ This is the central class of AI framework.
 It handles arbitration of goals, receives data from sensors,
 stores world facts, runs an A* action planner.
 
+It is also often used to store general data which is only needed for spawned units.
+
 Lots of the code and architecture is derived from F.E.A.R. AI made by Jeff Orkin.
 
 Author: Sparker 07.11.2018
@@ -158,12 +160,13 @@ CLASS("AI", "MessageReceiverEx")
 			pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
 			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameters isEqualTo _goalParameters) then {
 				// We have the same goal. Do nothing.
+				//OOP_INFO_0("PROCESS: Goal is the same...");
 			} else {
 				// We have a new goal! Time to replan.
 				SETV(_thisObject, "currentGoal", _goalClassName);
 				SETV(_thisObject, "currentGoalSource", _goalSource);
 				SETV(_thisObject,"currentGoalParameters", _goalParameters);
-				diag_log format ["[AI:Process] AI: %1, new goal: %2", _thisObject, _goalClassName];
+				diag_log format ["[AI:Process] AI: %1, NEW GOAL: %2", _thisObject, _goalClassName];
 				
 				// Make a new Action Plan
 				// First check if the goal assumes a predefined plan
@@ -465,16 +468,23 @@ CLASS("AI", "MessageReceiverEx")
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
 
 		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE]
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		pr _i = 0;
+		pr _goalDeleted = false;
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
-			if (	((_cg select 0 == _goalClassName) || (_goalClassName == "")) &&
+			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
 					( ((_cg select 3) == _goalSource) || (_goalSource == ""))) then {
-				_goalsExternal deleteAt _i;
+				pr _deletedGoal = _goalsExternal deleteAt _i;
+				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
 			} else {
 				_i = _i + 1;
 			};
+		};
+		
+		if (!_goalDeleted) then {
+			OOP_WARNING_2("couldn't delete external goal: %1, %2", _goalClassName, _goalSource);
 		};
 		CRITICAL_SECTION_END
 		

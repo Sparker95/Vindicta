@@ -4,6 +4,7 @@
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
+#include "..\Group\Group.hpp"
 
 /*
 Class: Unit
@@ -157,7 +158,7 @@ CLASS(UNIT_CLASS_NAME, "")
 	
 	Access: meant for internal use!
 	
-	Returns: nil
+	Returns: Created <AI> object
 	*/
 	METHOD("createAI") {
 		params [["_thisObject", "", [""]], ["_AIClassName", "", [""]]];
@@ -168,6 +169,9 @@ CLASS(UNIT_CLASS_NAME, "")
 		pr _data = GETV(_thisObject, "data");
 		pr _AI = NEW(_AIClassName, [_thisObject]);
 		_data set [UNIT_DATA_ID_AI, _AI];
+		
+		// Return
+		_AI
 	} ENDMETHOD;
 	
 	
@@ -215,7 +219,12 @@ CLASS(UNIT_CLASS_NAME, "")
 					//_objectHandle disableAI "PATH";
 					//_objectHandle setUnitPos "UP"; //Force him to not sit or lay down
 					
-					CALLM1(_thisObject, "createAI", "AIUnitInfantry");
+					pr _AI = CALLM1(_thisObject, "createAI", "AIUnitInfantry");
+					
+					pr _groupType = CALLM0(_group, "getType");
+					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {	
+						CALLM1(_AI, "setSentryPos", _pos);
+					};
 				};
 				case T_VEH: {
 					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];

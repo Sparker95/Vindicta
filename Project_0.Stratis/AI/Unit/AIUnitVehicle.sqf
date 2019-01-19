@@ -35,6 +35,36 @@ CLASS("AIUnitVehicle", "AI")
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	
+	METHOD("delete") {
+		params [["_thisObject", "", [""]]];
+		
+		
+		// Unassign all units assigned to this vehicle
+		pr _units = [];
+		pr _driver = GETV(_thisObject, "assignedDriver");
+		if (!isNil "_driver") then {
+			pr _AI = CALLM0(_driver, "getAI");
+			CALLM0(_AI, "unassignVehicle");
+		};
+		
+		pr _cargo = GETV(_thisObject, "assignedCargo");
+		if (!isNil "_cargo") then {
+			{
+				pr _AI = CALLM0(_x select 0, "getAI");
+				CALLM0(_AI, "unassignVehicle");
+			} forEach _cargo;
+		};
+		
+		pr _turrets = GETV(_thisObject, "assignedTurrets");
+		if (!isNil "_turrets") then {
+			{
+				pr _AI = CALLM0(_x select 0, "getAI");
+				CALLM0(_AI, "unassignVehicle");
+			} forEach _turrets;
+		};
+		
+	} ENDMETHOD;
+	
 	/*
 	Method: unassignUnit
 	Unassigns unit from this vehicle, if it was assigned. Only changes variables in this AI object.

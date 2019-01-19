@@ -162,3 +162,12 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+
+/*
+_unit = cursorObject; 
+_goalClassName = "GoalGroupGetInVehiclesAsCrew"; 
+_parameters = []; 
+call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf"; 
+[_unit, _goalClassName, _parameters] call AI_misc_fnc_addGroupGoal;
+*/

@@ -480,7 +480,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	Returns: Array with goal class names
 	*/
 	METHOD("getPossibleGoals") {
-		["GoalGroupRelax"]
+		//["GoalGroupRelax"]
+		[]
 	} ENDMETHOD;
 	
 	

@@ -215,6 +215,9 @@ CLASS("Location", "MessageReceiver")
 	
 	// Gets a spawn position to spawn some unit
 	METHOD_FILE("getSpawnPos", "Location\getSpawnPos.sqf");
+		
+	// Returns a random position within border
+	METHOD_FILE("getRandomPos", "Location\getRandomPos.sqf");
 	
 	// Returns how many units of this type and group type this location can hold
 	METHOD_FILE("getUnitCapacity", "Location\getUnitCapacity.sqf");
