@@ -78,6 +78,7 @@ CLASS("groupMonitor", "MessageReceiver")
 					pr _found = _groups findIf {(_x knowsAbout _playerUnit) > 0.5};	// Returns -1 if nothing found
 					pr _foundVeh = _groups findIf {(_x knowsAbout vehicle _playerUnit) > 0.5};
 
+
 					if (_found != -1 or _foundVeh != -1) then {
 						// Send a message to the player
 						pr _msg = MESSAGE_NEW();
