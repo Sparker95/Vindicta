@@ -44,14 +44,22 @@ CLASS("AIUnitVehicle", "AI")
 		pr _driver = GETV(_thisObject, "assignedDriver");
 		if (!isNil "_driver") then {
 			pr _AI = CALLM0(_driver, "getAI");
-			CALLM0(_AI, "unassignVehicle");
+			if (! isNil "_AI") then { // Sanity checks
+				if (_AI != "") then {
+					CALLM0(_AI, "unassignVehicle");
+				};
+			};			
 		};
 		
 		pr _cargo = GETV(_thisObject, "assignedCargo");
 		if (!isNil "_cargo") then {
 			{
 				pr _AI = CALLM0(_x select 0, "getAI");
-				CALLM0(_AI, "unassignVehicle");
+				if (! isNil "_AI") then { // Sanity checks
+					if (_AI != "") then {
+						CALLM0(_AI, "unassignVehicle");
+					};
+				};
 			} forEach _cargo;
 		};
 		
@@ -59,7 +67,11 @@ CLASS("AIUnitVehicle", "AI")
 		if (!isNil "_turrets") then {
 			{
 				pr _AI = CALLM0(_x select 0, "getAI");
-				CALLM0(_AI, "unassignVehicle");
+				if (! isNil "_AI") then { // Sanity checks
+					if (_AI != "") then {
+						CALLM0(_AI, "unassignVehicle");
+					};
+				};
 			} forEach _turrets;
 		};
 		

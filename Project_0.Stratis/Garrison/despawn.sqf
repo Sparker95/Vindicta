@@ -31,13 +31,21 @@ DELETE(_AI);
 SETV(_thisObject, "AI", "");
 
 private _units = GET_VAR(_thisObject, "units");
-private _groups = GET_VAR(_thisObject, "groups");
+private _groups = (GET_VAR(_thisObject, "groups"));
+private _groupsCopy = +_groups;
 
-// Despawn groups
+// Despawn groups, delete empty groups
 {
 	private _group = _x;
 	CALLM(_group, "despawn", []);
+	
+	pr _units = CALLM0(_x, "getUnits");
+	if (count _units == 0) then {
+		_groups deleteAt (_groups find _x);
+		DELETE(_group);
+	};
 } forEach _groups;
+
 
 // Despawn single units
 {

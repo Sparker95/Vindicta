@@ -111,10 +111,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
+		//MUTEX_LOCK(_mutex);
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList = _unitList - [_unit];
-		MUTEX_UNLOCK(_mutex);
+		//MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 
@@ -264,13 +264,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		pr _AI = _data select GROUP_DATA_ID_AI;
 		
 		// Post a message to the group AI
-		CALLM2(_AI, "postMethodAsync", "handleUnitRemoved", [_unit]);
+		pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitRemoved", [_unit], true);
+		CALLM1(_AI, "waitUntilMessageDone", _msgID);
 		
 		// Remove the unit from this group
 		_units deleteAt (_units find _unit);
-		
-		// Set group of this unit
-		CALLM1(_unit, "setGroup", "");
 	} ENDMETHOD;
 	
 	

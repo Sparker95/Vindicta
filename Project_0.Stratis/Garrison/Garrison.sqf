@@ -253,9 +253,6 @@ CLASS("Garrison", "MessageReceiverEx")
 		// Remove the unit from this garrison
 		_units deleteAt (_units find _unit);
 		
-		// Set Garrison of this Unit
-		CALLM1(_unit, "setGarrison", "");
-		
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
 		if (_group != "") then {
@@ -265,6 +262,8 @@ CLASS("Garrison", "MessageReceiverEx")
 		// Call handleKilled of the unit
 		CALLM0(_unit, "handleKilled");
 		
+		// Set Garrison of this Unit
+		CALLM1(_unit, "setGarrison", "");		
 	} ENDMETHOD;	
 	
 	

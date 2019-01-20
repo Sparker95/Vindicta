@@ -274,7 +274,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
 		
 		//Lock the mutex
-		MUTEX_LOCK(_mutex);
+		//MUTEX_LOCK(_mutex);
 		
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -286,8 +286,8 @@ CLASS(UNIT_CLASS_NAME, "")
 				pr _msg = MESSAGE_NEW();
 				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
 				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-				_data set [UNIT_DATA_ID_AI, ""];
 				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+				_data set [UNIT_DATA_ID_AI, ""];
 			};
 			
 			// Delete the vehicle
@@ -297,7 +297,7 @@ CLASS(UNIT_CLASS_NAME, "")
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		};
 		//Unlock the mutex
-		MUTEX_UNLOCK(_mutex);
+		//MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 	
 
@@ -489,7 +489,9 @@ CLASS(UNIT_CLASS_NAME, "")
 			
 			_data set [UNIT_DATA_ID_AI, ""];
 		};
-		//Oh no, Johny is down! What should we do?
+		
+		// Ungroup this unit
+		_data set [UNIT_DATA_ID_GROUP, ""];
 	} ENDMETHOD;
 	
 

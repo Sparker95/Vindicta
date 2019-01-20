@@ -103,8 +103,8 @@ CLASS(THIS_ACTION_NAME, "Action")
 		//ade_dumpCallstack;
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
-			if (!isNil "_AI") then {
-				if (_AI != "") then {
+			if (!isNil "_groupAI") then {
+				if (_groupAI != "") then {
 					pr _args = ["GoalGroupPatrol", ""];
 					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
 				};

@@ -54,6 +54,13 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		_wp setWaypointBehaviour "SAFE";
 		_hG setCurrentWaypoint _wp;
 		
+		// Give a goal to units
+		pr _units = CALLM0(_group, "getUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _thisObject);
+		} forEach _units;
+		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
@@ -75,6 +82,14 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete the goal to dismount vehicles
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _units = CALLM0(_group, "getUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitDismountCurrentVehicle", "");
+		} forEach _units;
 	} ENDMETHOD;
 
 ENDCLASS;
