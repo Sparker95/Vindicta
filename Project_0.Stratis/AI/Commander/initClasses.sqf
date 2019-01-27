@@ -1,0 +1,1 @@
+call compile preprocessFileLineNumbers "AI\Commander\AICommander.sqf";
