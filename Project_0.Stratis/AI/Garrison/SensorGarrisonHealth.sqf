@@ -1,15 +1,18 @@
-/*
-This sensor checks the health state of units: does infantry need to be healed, do vehicles need to be repaired
-
-Author: Sparker 08.11.2018
-*/
-
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "garrisonWorldStateProperties.hpp"
 #include "..\stimulusTypes.hpp"
+
+/*
+This sensor checks the health state of units: does infantry need to be healed, do vehicles need to be repaired
+
+Author: Sparker 08.11.2018
+*/
 
 #define pr private
 

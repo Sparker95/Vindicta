@@ -7,7 +7,7 @@ Saves some common variables at construction.
 
 #define pr private
 
-CLASS("SensorGroup", "Sensor")
+CLASS("SensorGarrison", "Sensor")
 
 	VARIABLE("gar"); // Group handle
 	

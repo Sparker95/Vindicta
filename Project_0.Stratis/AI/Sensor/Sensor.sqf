@@ -54,7 +54,7 @@ CLASS("Sensor", "")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		params [ ["_thisObject", "", [""]]];
+		//params [ ["_thisObject", "", [""]]];
 		0
 	} ENDMETHOD;
 	

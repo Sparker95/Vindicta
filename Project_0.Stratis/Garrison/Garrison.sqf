@@ -141,7 +141,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	*/
 	METHOD("getLocation") {
 		params [["_thisObject", "", [""]]];
-		GET_VAR(_thisObject, "location");
+		GET_VAR(_thisObject, "location")
 	} ENDMETHOD;
 	
 	
@@ -155,6 +155,18 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("getGroups") {
 		params [["_thisObject", "", [""]]];
 		GET_VAR(_thisObject, "groups")
+	} ENDMETHOD;
+	
+	// 						G E T   U N I T S
+	/*
+	Method: getUnits
+	Returns all units of this garrison.
+	
+	Returns: Array of <Unit> objects.
+	*/
+	METHOD("getUnits") {
+		params [["_thisObject", "", [""]]];
+		T_GETV("units")
 	} ENDMETHOD;
 	
 	//             F I N D   G R O U P S   B Y   T Y P E

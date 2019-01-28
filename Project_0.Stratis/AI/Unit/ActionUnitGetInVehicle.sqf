@@ -367,6 +367,13 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _hO = GETV(_thisObject, "hO");
 		pr _hVeh = GETV(_thisObject, "hVeh");
 		
+		// Insta-fail if vehicle is destroyed
+		if (!alive _hVeh) exitWith {
+			INFO_0("Failed to ACTIVATE: vehicle is destroyed");
+			SETV(_thisObject, "state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+		
 		/*
 		if ((vehicle _hO isEqualTo _hVeh) && (CALLM0(_thisObject, "isAtAssignedSeat"))) then {
 			// We are done here
@@ -414,6 +421,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			pr _unitVeh = T_GETV("unitVeh");
 			
 			INFO_2("PROCESS: State is ACTIVE. Assigned vehicle: %1, role: %2", _unitVeh, _vehRole);
+			
 			// Check if the seat is occupied by someone else
 			if (CALLM0(_thisObject, "seatIsOccupied")) then {
 				INFO_0("Seat is occupied");

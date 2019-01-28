@@ -485,7 +485,8 @@ CLASS(UNIT_CLASS_NAME, "")
 		if (_AI != "") then {
 			pr _msg = MESSAGE_NEW();
 			MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);			
-			pr _msgID = CALLM1(_AI, "postMessage", _msg);
+			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+			CALLM1(_AI, "waitUntilMessageDone", _msgID);
 			
 			_data set [UNIT_DATA_ID_AI, ""];
 		};

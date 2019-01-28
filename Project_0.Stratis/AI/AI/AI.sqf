@@ -312,6 +312,9 @@ CLASS("AI", "MessageReceiverEx")
 	
 	METHOD("addSensor") {
 		params [["_thisObject", "", [""]], ["_sensor", "ERROR_NO_SENSOR", [""]]];
+		
+		ASSERT_OBJECT_CLASS(_sensor, "Sensor");
+		
 		// Add the sensor to the sensor list
 		pr _sensors = GETV(_thisObject, "sensors");
 		_sensors pushBackUnique _sensor;

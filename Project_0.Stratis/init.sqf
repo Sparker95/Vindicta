@@ -21,15 +21,15 @@ diag_log "Init.sqf: Creating global objects...";
 gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 
 
-// Global debug printer for tests
-private _args = ["TestDebugPrinter", gMessageLoopMain];
-gDebugPrinter = NEW("DebugPrinter", _args);
-
 // Headless clients and server only
 if (isServer || (!hasInterface && !isDedicated)) then {
 	// Main message loop for garrisons
 	gMessageLoopMain = NEW("MessageLoop", []);
 	CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
+	
+	// Global debug printer for tests
+	private _args = ["TestDebugPrinter", gMessageLoopMain];
+	gDebugPrinter = NEW("DebugPrinter", _args);
 	
 	// Message loop for group AI
 	gMessageLoopGroupAI = NEW("MessageLoop", []);
@@ -41,19 +41,30 @@ if (isServer || (!hasInterface && !isDedicated)) then {
 	
 	// Global Stimulus Manager
 	gStimulusManager = NEW("StimulusManager", []);
+	
+	// Message loop for locations
+	gMessageLoopLocation = NEW("MessageLoop", []);
+	CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
+	
+	// Location unit array provider
+	gLUAP = NEW("LocationUnitArrayProvider", []);
+	// Create a timer for gLUAP
+	private _msg = MESSAGE_NEW();
+	_msg set [MESSAGE_ID_DESTINATION, gLUAP];
+	_msg set [MESSAGE_ID_SOURCE, ""];
+	_msg set [MESSAGE_ID_DATA, 666];
+	_msg set [MESSAGE_ID_TYPE, 666];
+	private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+	private _LUAPTimer = NEW("Timer", _args);
 };
 
 // Server only
 if (isServer) then {
 
-	// Message loop for locations
-	gMessageLoopLocation = NEW("MessageLoop", []);
-	CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
-
 	// Message loops for commander AI
 	gMessageLoopCommanderWest = NEW("MessageLoop", []);
 	gMessageLoopCommanderInd = NEW("MessageLoop", []);
-	//gMessageLoopCommanderEast = NEW("MessageLoop", []);
+	gMessageLoopCommanderEast = NEW("MessageLoop", []);
 	
 	// Commander AIs
 	// West
@@ -65,17 +76,6 @@ if (isServer) then {
 	// East
 	private _args = ["", EAST, gMessageLoopCommanderEast];
 	gAICommanderEast = NEW("AICommander", _args);
-
-	// Location unit array provider
-	gLUAP = NEW("LocationUnitArrayProvider", []);
-	// Create a timer for gLUAP
-	private _msg = MESSAGE_NEW();
-	_msg set [MESSAGE_ID_DESTINATION, gLUAP];
-	_msg set [MESSAGE_ID_SOURCE, ""];
-	_msg set [MESSAGE_ID_DATA, 666];
-	_msg set [MESSAGE_ID_TYPE, 666];
-	private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
-	private _LUAPTimer = NEW("Timer", _args);
 	
 	// Create locations and other things
 	diag_log "Init.sqf: Calling initWorld...";

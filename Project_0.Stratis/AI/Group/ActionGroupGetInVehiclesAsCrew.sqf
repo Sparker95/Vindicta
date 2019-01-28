@@ -150,8 +150,8 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		
 		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE || _state == ACTION_STATE_COMPLETED) then {
-			// Activate once again to assign the units
-			CALLM0(_thisObject, "activate");
+			// At next process call activate once again to assign the units
+			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
 	} ENDMETHOD;
 	

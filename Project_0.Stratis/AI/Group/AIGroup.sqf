@@ -49,11 +49,9 @@ CLASS("AIGroup", "AI")
 	/*
 	Method: handleUnitRemoved
 	Handles what happens when a unit gets removed from its group, for instance when it gets killed.
-	Currently it called handleUnitRemoved of the current action.
+	Currently it calles handleUnitRemoved of the current action.
 	
 	Access: internal
-	
-	How to call: through postMethodAsync
 	
 	Parameters: _unit
 	
