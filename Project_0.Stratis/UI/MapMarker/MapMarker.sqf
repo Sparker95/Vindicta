@@ -10,7 +10,9 @@ It's much like a local map marker, but allows to attach events to them like you 
 
 #define pr private
 
-CLASS("MapMarker", "")
+#define CLASS_NAME "MapMarker"
+
+CLASS(CLASS_NAME, "")
 
 	// All map marker objects
 	STATIC_VARIABLE("all");
@@ -23,6 +25,11 @@ CLASS("MapMarker", "")
 	VARIABLE("eWidthUI");
 	VARIABLE("eHeightUI");
 	
+	/*
+	Method: new
+	Creates a new MapMarker
+	*/
+	
 	METHOD("new") {
 		params ["_thisObject"];
 		
@@ -31,7 +38,7 @@ CLASS("MapMarker", "")
 		T_SETV("eHeightUI", 10);
 		
 		// Add to the array
-		pr _all = GET_STATIC_VAR("MapMarker", "all");
+		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 		_all pushBack _thisObject;
 	} ENDMETHOD;
 	
@@ -39,9 +46,20 @@ CLASS("MapMarker", "")
 		params ["_thisObject"];
 		
 		// Remove from the all array
-		pr _all = GET_STATIC_VAR("MapMarker", "all");
+		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 		_all deleteAt (_all find _thisObject);
 	} ENDMETHOD;
+	
+	/*
+	Method: onDraw
+	Overwrite to perform drawing of your marker. You should use commands like drawIcon.
+	
+	Parameters: _control
+	
+	_control - the map control where you must draw
+	
+	Returns: nil
+	*/
 	
 	METHOD("onDraw") {
 		params ["_thisObject", "_control"];
@@ -61,37 +79,107 @@ CLASS("MapMarker", "")
 		
 	} ENDMETHOD;
 	
+	
+	/*
+	Method: onMouseEnter
+	Gets called when the mouse pointer enters the marker area.
+	
+	Returns: nil
+	*/
 	METHOD("onMouseEnter") {
 		params ["_thisObject"];
-		OOP_INFO_3("ENTER");
+		OOP_INFO_0("ENTER");
 	} ENDMETHOD;
 	
+	/*
+	Method: onMouseLeave
+	Gets called when the mouse pointer leaves the marker area.
+	
+	Returns: nil
+	*/
 	METHOD("onMouseLeave") {
 		params ["_thisObject"];
 		OOP_INFO_0("LEAVE");
 	} ENDMETHOD;
 	
+	/*
+	Method: onMouseButtonDown
+	Gets called when user pushes mouse button while over the marker
+	
+	Parameters: _button, _shift, _ctrl, _alt
+	
+	_button - 0 for LMB, 1 for RMB
+	_shift, _ctrl, _alt -  BOOL
+	
+	Returns: nil
+	*/
 	METHOD("onMouseButtonDown") {
-		params ["_thisObject", "_shift", "_ctrl", "_alt"];
-		OOP_INFO_3("DOWN Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
+		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		OOP_INFO_4("DOWN Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 	
+	/*
+	Method: onMouseButtonUp
+	Gets called when user releases mouse button while over the marker
+	
+	Parameters: _button, _shift, _ctrl, _alt
+	
+	_button - 0 for LMB, 1 for RMB
+	_shift, _ctrl, _alt -  BOOL
+	
+	Returns: nil
+	*/
 	METHOD("onMouseButtonUp") {
-		params ["_thisObject", "_shift", "_ctrl", "_alt"];
-		OOP_INFO_3("UP Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
+		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
+		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 	
+	/*
+	Method: onMouseButtonClick
+	Gets called when user clicks left mouse button at the marker
+	
+	Parameters: _shift, _ctrl, _alt
+	
+	_shift, _ctrl, _alt -  BOOL
+	
+	Returns: nil
+	*/
 	METHOD("onMouseButtonClick") {
 		params ["_thisObject", "_shift", "_ctrl", "_alt"];
 		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 	} ENDMETHOD;
 	
-	// Setting properties
+	
+	// ==== Setting properties ====
+	/*
+	Method: setPos
+	Sets position of the marker in world coordinates
+	
+	Parameters: _pos
+	
+	_pos - Array, [x, y]
+	
+	Returns: nil
+	*/
 	METHOD("setPos") {
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
 		
 		T_SETV("pos", _pos);
 	} ENDMETHOD;
+	
+	/*
+	Method: setEventSize
+	Mouse events are activated based on 'event size'.
+	This is done so that we can detach drawing from event detection.
+	Event size units are compatible with drawIcon width and height units.
+	
+	Parameters: _width, _height
+	
+	_width - Number
+	_height - Number
+	
+	Returns: nil
+	*/
 	
 	METHOD("setEventSize") {
 		params [["_thisObject", "", [""]], ["_width", 0, [0]], ["_height", 0, [0]] ];
@@ -100,10 +188,22 @@ CLASS("MapMarker", "")
 		T_SETV("eHeightUI", _height);
 	} ENDMETHOD;
 
-	// Static methods
+	// === Static methods ====
+	/*
+	Method: (static)getMarkerUnderCursor
+	Returns MapMarker object which is currently under the cursor, or "" if there is none.
+	
+	Parameters: _mapControl, _xCursorPosUI, _yCursorPosUI
+	
+	_mapControl - the map control
+	_xCursorPosUI - X position of the cursor in global UI coordinates (compatible with Ctrl event handler coordinates) 
+	_yCursorPosUI - Y position of the cursor in global UI coordinates (compatible with Ctrl event handler coordinates) 
+	
+	Returns: <MapMarker> or ""
+	*/
 	STATIC_METHOD("getMarkerUnderCursor") {
 		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
-			pr _all = GET_STATIC_VAR("MapMarker", "all");
+			pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 			
 			// Loop through all markers and find if the cursor is hovering over any of them
 			pr _index = _all findIf {
@@ -137,36 +237,36 @@ CLASS("MapMarker", "")
 
 ENDCLASS;
 
-SET_STATIC_VAR("MapMarker", "all", []);
-SET_STATIC_VAR("MapMarker", "markerUnderCursor", "");
+SET_STATIC_VAR(CLASS_NAME, "all", []);
+SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
 
 0 spawn {
 	waitUntil {! isNull (findDisplay 12)};
 	
-	// Add a Draw event handler
+	// Add a Draw event handler to draw markers
 	// It will call onDraw of every MapMarker object
 	((findDisplay 12) displayCtrl 51) ctrlAddEventHandler ["Draw", {
 		//OOP_INFO_0("Map OnDraw");
 		params ["_control"];
 		
-		pr _all = GET_STATIC_VAR("MapMarker", "all");
+		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 		{
 			CALLM1(_x, "onDraw", _control);
 		} forEach _all;
 	}];
 	
-	// ==== Add events ====
+	// ==== Add event handlers ====
 	
 	// Mouse button down
 	((findDisplay 12) displayCtrl 51) ctrlAddEventHandler ["MouseButtonDown", {
 		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 		 
 		 pr _args = [_displayorcontrol, _xPos, _yPos];
-		 pr _marker = CALL_STATIC_METHOD("MapMarker", "getMarkerUnderCursor", _args);
+		 pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
 
 		 // Call event handler
 		 if (_marker != "") then {
-		 	CALLM3(_marker, "onMouseButtonDown", _shift, _ctrl, _alt);
+		 	CALLM4(_marker, "onMouseButtonDown", _button, _shift, _ctrl, _alt);
 		 };
 	}];
 	
@@ -176,12 +276,12 @@ SET_STATIC_VAR("MapMarker", "markerUnderCursor", "");
 		 diag_log format ["Map MouseButtonDown: %1 %2", [_xPos, _yPos], _displayorcontrol ctrlMapScreenToWorld [_xPos, _yPos]];
 		 
 		 pr _args = [_displayorcontrol, _xPos, _yPos];
-		 pr _marker = CALL_STATIC_METHOD("MapMarker", "getMarkerUnderCursor", _args);
+		 pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
 		 diag_log format ["Marker under cursor: %1", _marker];
 		 
 		 // Call event handler
 		 if (_marker != "") then {
-		 	CALLM3(_marker, "onMouseButtonUp", _shift, _ctrl, _alt);
+		 	CALLM4(_marker, "onMouseButtonUp", _button, _shift, _ctrl, _alt);
 		 };
 	}];
 	
@@ -190,7 +290,7 @@ SET_STATIC_VAR("MapMarker", "markerUnderCursor", "");
 		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 		 pr _args = [_displayorcontrol, _xPos, _yPos];
-		 pr _marker = CALL_STATIC_METHOD("MapMarker", "getMarkerUnderCursor", _args);
+		 pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
 
 		 // Call event handler
 		 if (_marker != "") then {
@@ -203,8 +303,8 @@ SET_STATIC_VAR("MapMarker", "markerUnderCursor", "");
 		params ["_control", "_xPos", "_yPos", "_mouseOver"];
 
 		pr _args = [_control, _xPos, _yPos];
-		pr _markerCurrent = CALL_STATIC_METHOD("MapMarker", "getMarkerUnderCursor", _args);
-		pr _markerPrev = GET_STATIC_VAR("MapMarker", "markerUnderCursor");
+		pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+		pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
 		
 		// Did something change?
 		if (_markerPrev != _markerCurrent) then {
@@ -219,7 +319,7 @@ SET_STATIC_VAR("MapMarker", "markerUnderCursor", "");
 			};
 			
 			// Update the variable
-			SET_STATIC_VAR("MapMarker", "markerUnderCursor", _markerCurrent)
+			SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
 		};
 		
 		// Call event handler
@@ -229,7 +329,7 @@ SET_STATIC_VAR("MapMarker", "markerUnderCursor", "");
 	}];
 	
 	
-	// Make some test textures
+	// Make some test markers
 	pr _testMarker = NEW("MapMarker", []);
 	pr _pos = [4000, 5000];
 	CALLM1(_testMarker, "setPos", _pos);

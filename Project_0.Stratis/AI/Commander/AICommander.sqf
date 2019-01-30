@@ -7,7 +7,7 @@
 #include "..\..\GlobalAssert.hpp"
 
 /*
-Class: AI.AIGroup
+Class: AI.AICommander
 AI class for the commander.
 
 Author: Sparker 12.11.2018

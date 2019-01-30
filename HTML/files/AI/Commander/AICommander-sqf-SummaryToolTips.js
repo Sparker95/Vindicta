@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Commander/AICommander.sqf",{398:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">AI class for the commander.</div></div>"});

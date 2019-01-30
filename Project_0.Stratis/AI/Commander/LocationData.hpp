@@ -1,5 +1,7 @@
+// Class: AICommander
+
 /*
-Struct: CLD
+Enum: CLD
 Stands for Commander Location Data
 Data about spotted locations is stored in Commander AI world facts in this way.
 */
@@ -11,8 +13,6 @@ Type of this location*/
 /*Field: CLD_ID_SIDE
 Side that controls this location*/
 #define CLD_ID_SIDE 1
-
-/*Field: CLD_ID_*/
 
 /*Field: CLD_ID_UNITS
 Array with subarrays which hold how many units of specific types/subtypes are there

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ond",["Function"],[["onDraw",,[["MapMarker",,,,0,"File:UI/MapMarker/MapMarker.sqf:MapMarker.onDraw","SQFClass:MapMarker:onDraw"]]]]);
