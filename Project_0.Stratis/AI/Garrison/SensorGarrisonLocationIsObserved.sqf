@@ -44,7 +44,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
-		diag_log "UPDATE";
+		//diag_log "UPDATE";
 		
 		pr _gar = T_GETV("gar");
 		pr _side = CALLM0(_gar, "getSide");

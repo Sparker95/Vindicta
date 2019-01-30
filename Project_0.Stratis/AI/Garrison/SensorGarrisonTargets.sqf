@@ -19,7 +19,7 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 5
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 15
+#define TARGET_MAX_AGE 30
 
 // ---- Debugging defines ----
 
@@ -78,7 +78,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		pr _ws = GETV(_AI, "worldState");
 		if (count _knownTargets > 0) then {
 		
-			diag_log "Garrison is in combat now!";
+			//diag_log "Garrison is in combat now!";
 		
 			// Set property value
 			[_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_setPropertyValue;
