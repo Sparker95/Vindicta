@@ -17,6 +17,7 @@ CLASS(CLASS_NAME, "")
 	// All map marker objects
 	STATIC_VARIABLE("all");
 	STATIC_VARIABLE("markerUnderCursor");
+	STATIC_VARIABLE("timePrevButtonDown");
 	
 	// 2D position
 	VARIABLE("pos");
@@ -34,8 +35,8 @@ CLASS(CLASS_NAME, "")
 		params ["_thisObject"];
 		
 		T_SETV("pos", [0, 0]);
-		T_SETV("eWidthUI", 10);
-		T_SETV("eHeightUI", 10);
+		T_SETV("eWidthUI", 20);
+		T_SETV("eHeightUI", 20);
 		
 		// Add to the array
 		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
@@ -49,6 +50,12 @@ CLASS(CLASS_NAME, "")
 		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 		_all deleteAt (_all find _thisObject);
 	} ENDMETHOD;
+	
+	
+	
+	
+	
+	// = = = = = = = O V E R R I D A B L E   E V E N T   H A N D L E R S = = = = = = = =
 	
 	/*
 	Method: onDraw
@@ -188,6 +195,16 @@ CLASS(CLASS_NAME, "")
 		T_SETV("eHeightUI", _height);
 	} ENDMETHOD;
 
+
+
+
+
+
+
+
+
+
+
 	// === Static methods ====
 	/*
 	Method: (static)getMarkerUnderCursor
@@ -239,6 +256,7 @@ ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "all", []);
 SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
+SET_STATIC_VAR(CLASS_NAME, "timePrevButtonDown", 0);
 
 0 spawn {
 	waitUntil {! isNull (findDisplay 12)};
@@ -267,6 +285,8 @@ SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
 		 // Call event handler
 		 if (_marker != "") then {
 		 	CALLM4(_marker, "onMouseButtonDown", _button, _shift, _ctrl, _alt);
+		 } else {
+		 	[missionNamespace, "MapMarker_MouseButtonDown_none", [_button, _shift, _ctrl, _alt]] call BIS_fnc_callScriptedEventHandler;
 		 };
 	}];
 	
@@ -295,6 +315,8 @@ SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
 		 // Call event handler
 		 if (_marker != "") then {
 		 	CALLM3(_marker, "onMouseButtonClick", _shift, _ctrl, _alt);
+		 } else {
+		 	[missionNamespace, "MapMarker_MouseButtonClick_none", [_button, _shift, _ctrl, _alt]] call BIS_fnc_callScriptedEventHandler;
 		 };
 	}];
 	
@@ -321,24 +343,5 @@ SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
 			// Update the variable
 			SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
 		};
-		
-		// Call event handler
-		if (_marker != "") then {
-			CALLM0(_marker, "onMouseButtonClick");
-		};
-	}];
-	
-	
-	// Make some test markers
-	pr _testMarker = NEW("MapMarker", []);
-	pr _pos = [4000, 5000];
-	CALLM1(_testMarker, "setPos", _pos);
-	CALLM2(_testMarker, "setEventSize", 100, 50);
-	
-	pr _testMarker = NEW("MapMarker", []);
-	pr _pos = [5000, 5000];
-	CALLM1(_testMarker, "setPos", _pos);
-	CALLM2(_testMarker, "setEventSize", 40, 100);
-	
-	
+	}];	
 };
