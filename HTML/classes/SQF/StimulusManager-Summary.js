@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:StimulusManager","StimulusManager");NDSummary.OnSummaryLoaded("SQFClass:StimulusManager",[["SQF","SQF"]],[["Classes","Class"]],[[48,0,0,"StimulusManager"]]);
+NDFramePage.OnPageTitleLoaded("SQFClass:StimulusManager","StimulusManager");NDSummary.OnSummaryLoaded("SQFClass:StimulusManager",[["SQF","SQF"]],[["Classes","Class"]],[[97,0,0,"StimulusManager"]]);

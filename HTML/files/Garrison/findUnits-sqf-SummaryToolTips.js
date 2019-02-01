@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Garrison/findUnits.sqf",{131:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns an array of units with specified category and subcategory</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Garrison/findUnits.sqf",{167:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns an array of units with specified category and subcategory</div></div>"});

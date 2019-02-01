@@ -1,1 +1,1 @@
-NDContentPage.OnToolTipsLoaded({});
+NDContentPage.OnToolTipsLoaded({61:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">AI class for the commander.</div></div>"});

@@ -64,6 +64,9 @@ call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf"
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
 // Initialize Unit class
+call compile preprocessFileLineNumbers "Commander\Commander.sqf";
+
+// Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 
 // Initialize Group class

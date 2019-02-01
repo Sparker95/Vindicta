@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Garrison/countUnits.sqf",{413:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Counts amount of units with specified category and subcategory</div></div>"});

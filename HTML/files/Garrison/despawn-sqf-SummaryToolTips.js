@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Garrison/despawn.sqf",{138:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Despawns all groups and units in this garrison.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Garrison/despawn.sqf",{183:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Despawns all groups and units in this garrison.</div></div>"});

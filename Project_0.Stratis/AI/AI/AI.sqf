@@ -309,7 +309,16 @@ CLASS("AI", "MessageReceiverEx")
 	// |                A D D   S E N S O R
 	// | Adds a given sensor to the AI object
 	// ----------------------------------------------------------------------
+	/*
+	Method: addSensor
+	Adds a sensor to this AI object.
 	
+	Parameters: _sensor
+	
+	_sensor - <Sensor> or <SensorStimulatable>
+	
+	Returns: nil
+	*/
 	METHOD("addSensor") {
 		params [["_thisObject", "", [""]], ["_sensor", "ERROR_NO_SENSOR", [""]]];
 		
@@ -688,7 +697,10 @@ CLASS("AI", "MessageReceiverEx")
 	// |                S T A R T
 	// | Starts the AI brain
 	// ----------------------------------------------------------------------
-	
+	/*
+	Method: start
+	Starts the AI brain. From now process method will be called periodically.
+	*/
 	METHOD("start") {
 		params [["_thisObject", "", [""]]];
 		if (GETV(_thisObject, "timer") == "") then {
@@ -709,7 +721,10 @@ CLASS("AI", "MessageReceiverEx")
 	// |                S T O P
 	// | Stops the AI brain
 	// ----------------------------------------------------------------------
-	
+	/*
+	Method: stop
+	Stops the periodic call of process function.
+	*/
 	METHOD("stop") {
 		params [["_thisObject", "", [""]]];
 		pr _timer = GETV(_thisObject, "timer");
@@ -725,7 +740,16 @@ CLASS("AI", "MessageReceiverEx")
 	// |               S E T   P R O C E S S   I N T E R V A L
 	// | Sets the process interval of this AI object
 	// ----------------------------------------------------------------------
+	/*
+	Method: setProcessInterval
+	Sets the process interval of this AI object.
 	
+	Parameters: _interval
+	
+	_interval - Number, interval in seconds.
+	
+	Returns: nil
+	*/
 	METHOD("setProcessInterval") {
 		params [["_thisObject", "", [""]], ["_interval", 5, [5]]];
 		SETV(_thisObject, "processInterval", _interval);

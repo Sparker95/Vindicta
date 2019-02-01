@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("com",["Class"],[["Commander",,[[,,,,0,"File:Commander/Commander.sqf:Commander","SQFClass:Commander"]]]]);

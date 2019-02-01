@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Cluster",{132:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Cluster is a set of objects which are \'close\' to each other.</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:Cluster",{164:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Cluster is a set of objects which are \'close\' to each other.</div></div>"});

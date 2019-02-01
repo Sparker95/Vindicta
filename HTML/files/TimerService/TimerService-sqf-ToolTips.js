@@ -1,1 +1,1 @@
-NDContentPage.OnToolTipsLoaded({300:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Timer is an object which posts a message into a message receiver with specified time interval.</div></div>"});
+NDContentPage.OnToolTipsLoaded({348:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Timer is an object which posts a message into a message receiver with specified time interval.</div></div>"});

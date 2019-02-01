@@ -306,5 +306,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	// Find units with specific type
 	METHOD_FILE("findUnits", "Garrison\findUnits.sqf");
+	
+	// Counts amount of units with specific type
+	METHOD_FILE("countUnits", "Garrison\countUnits.sqf");
 
 ENDCLASS;

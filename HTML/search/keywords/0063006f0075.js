@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cou",["Function"],[["countUnits",,[["Garrison",,,,0,"File:Garrison/countUnits.sqf:Garrison.countUnits","SQFClass:Garrison:countUnits"]]]]);

@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Goal","Goal");NDSummary.OnSummaryLoaded("SQFClass:Goal",[["SQF","SQF"]],[["Classes","Class"]],[[44,0,0,"Goal"]]);
+NDFramePage.OnPageTitleLoaded("SQFClass:Goal","Goal");NDSummary.OnSummaryLoaded("SQFClass:Goal",[["SQF","SQF"]],[["Classes","Class"]],[[63,0,0,"Goal"]]);

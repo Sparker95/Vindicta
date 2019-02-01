@@ -68,14 +68,25 @@ if (isServer) then {
 	
 	// Commander AIs
 	// West
-	private _args = ["", WEST, gMessageLoopCommanderWest];
+	gCommanderWest = NEW("Commander", []);
+	private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
 	gAICommanderWest = NEW_PUBLIC("AICommander", _args);
+	publicVariable "gAICommanderWest";
 	// Independent
-	private _args = ["", INDEPENDENT, gMessageLoopCommanderInd];
+	gCommanderInd = NEW("Commander", []);
+	private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
 	gAICommanderInd = NEW_PUBLIC("AICommander", _args);
+	publicVariable "gAICommanderInd";
 	// East
-	private _args = ["", EAST, gMessageLoopCommanderEast];
+	gCommanderEast = NEW("Commander", []);
+	private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
 	gAICommanderEast = NEW_PUBLIC("AICommander", _args);
+	publicVariable "gAICommanderEast";
+	// Start them up
+	{
+		CALLM1(_x, "setProcessInterval", 10);
+		CALLM0(_x, "start");
+	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
 	
 	// Create locations and other things
 	diag_log "Init.sqf: Calling initWorld...";

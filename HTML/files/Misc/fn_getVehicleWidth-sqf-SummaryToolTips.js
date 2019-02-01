@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Misc/fn_getVehicleWidth.sqf",{258:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns the vehicle width derived from its model.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Misc/fn_getVehicleWidth.sqf",{297:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns the vehicle width derived from its model.</div></div>"});

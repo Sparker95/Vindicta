@@ -22,7 +22,13 @@ CLASS("Sensor", "")
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
+	/*
+	Method: new
 	
+	Parameters: _AI
+	
+	_AI - <AI> - derived object this sensor is attached to
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		SETV(_thisObject, "AI", _AI);

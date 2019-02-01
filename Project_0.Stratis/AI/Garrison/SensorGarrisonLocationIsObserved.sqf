@@ -9,6 +9,7 @@
 #include "..\commonStructs.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "garrisonWorldStateProperties.hpp"
+#include "..\Commander\LocationData.hpp"
 
 
 /*
@@ -81,6 +82,43 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 				
 				// Report to chat for now
 				systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, time];
+				
+				// Report to the AICommander of the side that observes this location
+				private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_s]);
+				if (_AICommander != "") then {
+				
+					//OOP_INFO_1("Reporting to AICommander: %1", _AICommander);
+				
+					pr _stim = STIMULUS_NEW();
+					STIMULUS_SET_SOURCE(_stim, _loc);
+					pr _locPos = +(CALLM0(_loc, "getPos"));
+					_locPos resize 2;
+					STIMULUS_SET_POS(_stim, _locPos);
+					STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_LOCATION);
+					
+					// Fill data (see AI\Commander\LocationData.hpp)
+					pr _value = CLD_NEW();
+					_value set [CLD_ID_TYPE, 1]; // todo add types for locations at some point?
+					_value set [CLD_ID_SIDE, CALLM0(_gar, "getSide")];
+					_value set [CLD_ID_POS, _locPos];
+					// Now count all the units
+					{
+						_x params ["_catID", "_catSize"];
+						pr _query = [[_catID, 0]];
+						for "_subcatID" from 0 to (_catSize - 1) do {
+							(_query select 0) set [1, _subcatID];
+							pr _amount = CALLM1(_gar, "countUnits", _query);
+							(_value select CLD_ID_UNIT_AMOUNT select _catID) set [_subcatID, _amount];
+						};
+						
+					} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
+					STIMULUS_SET_VALUE(_stim, _value);
+					
+					//OOP_INFO_1("Sending stimulus: %1", _stim);
+					
+					// Send the stimulus
+					CALLM2(_AICommander, "postMethodAsync", "handleStimulus", [_stim]);
+				};
 			};
 		} forEach _enemySides;
 		
