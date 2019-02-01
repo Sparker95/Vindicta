@@ -47,6 +47,9 @@ CLASS("MessageReceiver", "")
 	METHOD("new") {
 		params [ ["_thisObject", "", [""]] ];
 		SETV(_thisObject, "owner", clientOwner);
+		if (IS_PUBLIC(_thisObject)) then {
+			PUBLIC_VAR(_thisObject, "owner");
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -62,6 +65,11 @@ CLASS("MessageReceiver", "")
 			diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
 			// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
 			CALLM(_msgLoop, "deleteReceiverMessages", [_thisObject]);
+			
+			if (IS_PUBLIC(_thisObject)) then {
+				T_SETV("owner", nil);
+				PUBLIC_VAR(_thisObject, "owner");
+			};
 		CRITICAL_SECTION_END
 	} ENDMETHOD;
 

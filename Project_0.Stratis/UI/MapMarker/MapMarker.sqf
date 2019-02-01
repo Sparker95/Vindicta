@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+//#define NAMESPACE uiNamespace
 #include "..\..\OOP_Light\OOP_Light.h"
 
 /*
@@ -34,7 +35,8 @@ CLASS(CLASS_NAME, "")
 	METHOD("new") {
 		params ["_thisObject"];
 		
-		T_SETV("pos", [0, 0]);
+		pr _args = [0, 0];
+		T_SETV("pos", _args);
 		T_SETV("eWidthUI", 20);
 		T_SETV("eHeightUI", 20);
 		

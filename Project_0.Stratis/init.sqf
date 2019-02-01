@@ -69,13 +69,13 @@ if (isServer) then {
 	// Commander AIs
 	// West
 	private _args = ["", WEST, gMessageLoopCommanderWest];
-	gAICommanderWest = NEW("AICommander", _args);
+	gAICommanderWest = NEW_PUBLIC("AICommander", _args);
 	// Independent
 	private _args = ["", INDEPENDENT, gMessageLoopCommanderInd];
-	gAICommanderInd = NEW("AICommander", _args);
+	gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 	// East
 	private _args = ["", EAST, gMessageLoopCommanderEast];
-	gAICommanderEast = NEW("AICommander", _args);
+	gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 	
 	// Create locations and other things
 	diag_log "Init.sqf: Calling initWorld...";

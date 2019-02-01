@@ -49,7 +49,7 @@ private _loc = objNull;
 		
 		// Create a new location
 		private _args = [_mrkPos];
-		private _loc = NEW("Location", _args);
+		private _loc = NEW_PUBLIC("Location", _args);
 		
 		
 		// Initialize the new location

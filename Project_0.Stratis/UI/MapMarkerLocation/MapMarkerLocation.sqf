@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+//#define NAMESPACE uiNamespace
 #include "..\..\OOP_Light\OOP_Light.h"
 
 /*
