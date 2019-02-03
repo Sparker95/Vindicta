@@ -81,6 +81,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						private _o = _x select 1;
 						private _s = side _o;
 						private _age = _x select 5; //Target age is the time that has passed since the last time the group has actually seen the enemy unit. Values lower than 0 mean that they see the enemy right now
+
 						//diag_log format ["Age of target %1: %2", _x select 1, _age];
 						if(_s != _side) then { //If target's side is enemy
 							if ((_s in [EAST, WEST, INDEPENDENT, sideUnknown]) && (_age <= TARGET_AGE_TO_REVEAL)) then {

@@ -25,7 +25,7 @@
 #define AI_MESSAGE_PROCESS 500
 #define AI_MESSAGE_DELETE 501
 
-// Suspiciousness monitor
+// Undercover monitor
 #define SMON_MESSAGE_PROCESS		600
 #define SMON_MESSAGE_BEING_SPOTTED	601
 
