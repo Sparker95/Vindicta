@@ -46,6 +46,13 @@ OOP_error_notClass = {
 	};
 };
 
+//Print error when object's class is different from supplied class
+OOP_error_wrongClass = {
+	params ["_file", "_line", "_objNameStr", "_classNameStr", "_expectedClassNameStr"];
+	private _errorText = format ["class of object %1 is %2, expected: %3", _objNameStr, _classNameStr, _expectedClassNameStr];
+	[_file, _line, _errorText] call OOP_error;
+};
+
 //Check class and print error if it's not found
 OOP_assert_class = {
 	params["_classNameStr", "_file", "_line"];
@@ -54,8 +61,32 @@ OOP_assert_class = {
 	//Check if it's a class
 	if(isNil "_memList") then {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
+		ade_dumpCallstack;
 		false;
 	} else {true};
+};
+
+//Check object class and print error if it differs from supplied
+OOP_assert_objectClass = {
+	params["_objNameStr", "_expectedClassNameStr", "_file", "_line"];
+	
+	//Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	//Check if it's an object
+	if(isNil "_classNameStr") then {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		ade_dumpCallstack;
+		false;
+	} else {
+		private _parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
+		if (_expectedClassNameStr in _parents || _classNameStr == _expectedClassNameStr) then {
+			true // all's fine
+		} else {
+			[_file, _line, _objNameStr, _classNameStr, _expectedClassNameStr] call OOP_error_wrongClass;
+			ade_dumpCallstack;
+			false
+		};
+	};
 };
 
 //Check object and print error if it's not an OOP object
@@ -66,6 +97,7 @@ OOP_assert_object = {
 	//Check if it's an object
 	if(isNil "_classNameStr") then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
+		ade_dumpCallstack;
 		false;
 	} else {
 		true;
@@ -80,12 +112,14 @@ OOP_assert_staticMember = {
 	//Check if it's a class
 	if(isNil "_memList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
+		ade_dumpCallstack;
 		false;
 	};
 	//Check static member
 	private _valid = _memNameStr in _memList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
+		ade_dumpCallstack;
 	};
 	//Return value
 	_valid
@@ -98,7 +132,9 @@ OOP_assert_member = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
-		[_file, _line, _objNameStr] call OOP_error_notObject;
+		private _errorText = format ["class name is nil. Attempt to access member: %1", _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		ade_dumpCallstack;
 		false;
 	};
 	//Get member list of this class 
@@ -107,6 +143,7 @@ OOP_assert_member = {
 	private _valid = _memNameStr in _memList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
+		ade_dumpCallstack;
 	};
 	//Return value
 	_valid
@@ -119,6 +156,7 @@ OOP_assert_method = {
 	if (isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
 		[_file, _line, _errorText] call OOP_error;
+		ade_dumpCallstack;
 		false;
 	};
 	
@@ -127,15 +165,31 @@ OOP_assert_method = {
 	//Check if it's a class
 	if(isNil "_methodList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
+		ade_dumpCallstack;
 		false;
 	};
 	//Check method
 	private _valid = _methodNameStr in _methodList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
+		ade_dumpCallstack;
 	};
 	//Return value
 	_valid
+};
+
+// Dumps all variables of an object
+OOP_dumpAllVariables = {
+	params [["_thisObject", "", [""]]];
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	diag_log format ["Dumping all variables of %1: %2", _thisObject, _memList];
+	{
+		private _varValue = GETV(_thisObject, _x);
+		diag_log format ["%1.%2: %3", _thisObject, _x, _varValue];
+	} forEach _memList;
 };
 
 
@@ -147,4 +201,11 @@ OOP_callFromRemote = {
 	params[["_object", "", [""]], ["_methodNameStr", "", [""]], ["_params", [], [[]]]];
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
 	CALLM(_object, _methodNameStr, _params);
+};
+
+// If assertion is enabled, this gets called on remote machine when we call a static method on it
+// So it will run the standard assertions before calling static method
+OOP_callStaticMethodFromRemote = {
+	params [["_classNameStr", "", [""]], ["_methodNameStr", "", [""]], ["_args", [], [[]]]];
+	CALL_STATIC_METHOD(_classNameStr, _methodNameStr, _args);
 };

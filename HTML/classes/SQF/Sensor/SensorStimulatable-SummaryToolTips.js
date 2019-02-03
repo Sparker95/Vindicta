@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Sensor.SensorStimulatable",{75:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">A stimulatable sensor class.</div></div>"});

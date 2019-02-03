@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("iss",["Function"],[["isSpawned",,[["Group",,,,0,"File:Group/Group.sqf:Group.isSpawned","SQFClass:Group:isSpawned"],["Unit",,,,0,"File:Unit/Unit.sqf:Unit.isSpawned","SQFClass:Unit:isSpawned"]]]]);

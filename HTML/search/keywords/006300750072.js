@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cur",["Variable"],[["currentAction",,[["AI",,,,0,"File:AI/AI/AI.sqf:AI.currentAction","SQFClass:AI:currentAction"]]],["currentGoal",,[["AI",,,,0,"File:AI/AI/AI.sqf:AI.currentGoal","SQFClass:AI:currentGoal"]]]]);

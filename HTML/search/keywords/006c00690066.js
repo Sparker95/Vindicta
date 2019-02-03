@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("lif",["Variable"],[["LIFETIME",,[["WorldFact",,,,0,"File:AI/WorldFact/WorldFact.hpp:WorldFact.LIFETIME","SQFClass:WorldFact:LIFETIME"]]]]);

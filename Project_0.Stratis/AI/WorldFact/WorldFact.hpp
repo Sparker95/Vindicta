@@ -1,11 +1,23 @@
-// World Fact is a record about the world by some AI agent
+/*
+Struct: WorldFact
+File: AI\WorldFact\WorldFact.hpp
+World Fact is a record about the world by some AI agent.
+Used inside <AI> class.
+*/
 
+// Field: TYPE
 #define WF_ID_TYPE					0
+// Field: VALUE
 #define WF_ID_VALUE					1
+// Field: RELEVANCE
 #define WF_ID_RELEVANCE				2
+// Field: SOURCE
 #define WF_ID_SOURCE				3
+// Field: POS
 #define WF_ID_POS					4
+// Field: LAST_UPDATE_TIME
 #define WF_ID_LAST_UPDATE_TIME		5
+// Field: LIFETIME
 #define WF_ID_LIFETIME				6
 
 #define WF_TYPE_DEFAULT				-1

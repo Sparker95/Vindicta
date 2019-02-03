@@ -1,15 +1,22 @@
-/*
-Gets a spawn position for a unit of specified category and subcategory.
-
-Return value:
-[[x, y, z], direction]
-
-Author: Sparker 29.07.2018
-*/
-
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
 #include "Location.hpp"
+
+// Class: Location
+/*
+Method: getSpawnPos
+Gets a spawn position for a unit of specified category and subcategory.
+
+Parameters: _catID, _subcatID, _className, _groupType
+_catID - 
+_subcatID - 
+_className - 
+_groupType - 
+
+Return value: Array in format [[x, y, z], direction]
+
+Author: Sparker 29.07.2018
+*/
 
 params [["_thisObject", "", [""]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]] ];
 

@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:AI.AICommander","AICommander");NDSummary.OnSummaryLoaded("SQFClass:AI.AICommander",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[61,0,0,"<span class=\"Qualifier\">AI.</span>&#8203;AICommander"],[409,0,2,"Functions","Functions"],[410,0,1,"(static)getCommanderAIOfSide","(static)getCommanderAIOfSide"]]);

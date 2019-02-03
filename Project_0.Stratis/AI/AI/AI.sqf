@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\CriticalSection\CriticalSection.hpp"
@@ -10,7 +13,14 @@
 #include "AI.hpp"
 
 /*
-AI base class.
+Class: AI
+This is the central class of AI framework.
+It handles arbitration of goals, receives data from sensors,
+stores world facts, runs an A* action planner.
+
+It is also often used to store general data which is only needed for spawned units.
+
+Lots of the code and architecture is derived from F.E.A.R. AI made by Jeff Orkin.
 
 Author: Sparker 07.11.2018
 */
@@ -25,8 +35,12 @@ Author: Sparker 07.11.2018
 
 CLASS("AI", "MessageReceiverEx")
 
+	/* Variable: agent
+	Holds a reference to the unit/group/whatever that owns this AI object*/
 	VARIABLE("agent"); // Pointer to the unit which holds this AI object
+	/* Variable: currentAction */
 	VARIABLE("currentAction"); // The current action
+	/* Variable: currentGoal*/
 	VARIABLE("currentGoal"); // The current goal
 	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
 	VARIABLE("currentGoalParameters"); // The parameter of the current goal
@@ -146,12 +160,13 @@ CLASS("AI", "MessageReceiverEx")
 			pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
 			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameters isEqualTo _goalParameters) then {
 				// We have the same goal. Do nothing.
+				//OOP_INFO_0("PROCESS: Goal is the same...");
 			} else {
 				// We have a new goal! Time to replan.
 				SETV(_thisObject, "currentGoal", _goalClassName);
 				SETV(_thisObject, "currentGoalSource", _goalSource);
 				SETV(_thisObject,"currentGoalParameters", _goalParameters);
-				diag_log format ["[AI:Process] AI: %1, new goal: %2", _thisObject, _goalClassName];
+				diag_log format ["[AI:Process] AI: %1, NEW GOAL: %2", _thisObject, _goalClassName];
 				
 				// Make a new Action Plan
 				// First check if the goal assumes a predefined plan
@@ -209,12 +224,27 @@ CLASS("AI", "MessageReceiverEx")
 		pr _currentAction = GETV(_thisObject, "currentAction");
 		if (_currentAction != "") then {
 			pr _actionState = CALLM(_currentAction, "process", []);
+			
+			// If it's an external goal, set its action state in the external goal array
+			pr _goalSource = T_GETV("currentGoalSource");
+			if (_goalSource != _thisObject) then {
+				pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+				pr _goalClassName = T_GETV("currentGoal");
+				pr _index = _goalsExternal findIf {(_goalClassName == (_x select 0)) && (_goalSource == (_x select 3))};
+				if (_index != -1) then {
+					pr _arrayElement = _goalsExternal select _index;
+					_arrayElement set [4, _actionState];
+				} else {
+					diag_log format ["[AI::process] Error: can't set external goal action state: %1, %2", _thisObject, _goalClassName];
+				};
+			};
+			
 			switch (_actionState) do {
 				case ACTION_STATE_COMPLETED : {
 					// Mark the current goal as completed
-					pr _currentGoal = GETV(_thisObject, "currentGoal");
-					pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
-					CALLM2(_thisObject, "deleteExternalGoal", _currentGoal, _currentGoalParameters); 
+					//pr _currentGoal = GETV(_thisObject, "currentGoal");
+					//pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
+					//CALLM2(_thisObject, "deleteExternalGoal", _currentGoal, _currentGoalParameters); 
 					
 					// Delete the current action
 					CALLM0(_thisObject, "deleteCurrentAction");
@@ -279,9 +309,21 @@ CLASS("AI", "MessageReceiverEx")
 	// |                A D D   S E N S O R
 	// | Adds a given sensor to the AI object
 	// ----------------------------------------------------------------------
+	/*
+	Method: addSensor
+	Adds a sensor to this AI object.
 	
+	Parameters: _sensor
+	
+	_sensor - <Sensor> or <SensorStimulatable>
+	
+	Returns: nil
+	*/
 	METHOD("addSensor") {
 		params [["_thisObject", "", [""]], ["_sensor", "ERROR_NO_SENSOR", [""]]];
+		
+		ASSERT_OBJECT_CLASS(_sensor, "Sensor");
+		
 		// Add the sensor to the sensor list
 		pr _sensors = GETV(_thisObject, "sensors");
 		_sensors pushBackUnique _sensor;
@@ -349,7 +391,7 @@ CLASS("AI", "MessageReceiverEx")
 	
 	// ----------------------------------------------------------------------
 	// |                G E T   M O S T   R E L E V A N T   G O A L
-	// | Return value: [goal, parameter]
+	// | Return value: ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource"]
 	// | 
 	// ----------------------------------------------------------------------
 	
@@ -392,48 +434,112 @@ CLASS("AI", "MessageReceiverEx")
 	
 	// ----------------------------------------------------------------------
 	// |                A D D   E X T E R N A L   G O A L
-	// | Adds a goal to the list of external goals of this agent
-	// | Parameters: _goalClassName, _bias, _parameters
-	// | _bias - a number to be added to the relevance of the goal once it is calculated
-	// | _parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
+	// | 
 	// ----------------------------------------------------------------------
+	
+	/*
+	Method: addExternalGoal
+	Adds a goal to the list of external goals of this agent
+	
+	Parameters: _goalClassName, _bias, _parameters
+	
+	_goalClassName - <Goal> class name
+	_bias - a number to be added to the relevance of the goal once it is calculated
+	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
+	_source - string, optional, can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	
+	Returns: nil
+	*/
 	
 	METHOD("addExternalGoal") {
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
 		
+		OOP_INFO_2("Added external goal: %1, %2", _goalClassName, _parameters);
+		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source];
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE];
 		
 		nil
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                D E L E T E   E X T E R N A L   G O A L
-	// | Deletes an external goal having the same goalClassName and goalSource
-	// |
 	// ----------------------------------------------------------------------
+	/*
+	Method: deleteExternalGoal
+	Deletes an external goal having the same goalClassName and goalSource
 	
+	Parameters: _goalClassName, _goalSource
+	
+	_goalClassName - <Goal> class name
+	_goalSource - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: nil
+	*/
 	METHOD("deleteExternalGoal") {
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
 
+		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE]
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		pr _i = 0;
+		pr _goalDeleted = false;
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
-			if (	((_cg select 0 == _goalClassName) || (_goalClassName == "")) &&
+			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
 					( ((_cg select 3) == _goalSource) || (_goalSource == ""))) then {
-				_goalsExternal deleteAt _i;
+				pr _deletedGoal = _goalsExternal deleteAt _i;
+				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
 			} else {
 				_i = _i + 1;
 			};
 		};
+		
+		if (!_goalDeleted) then {
+			OOP_WARNING_2("couldn't delete external goal: %1, %2", _goalClassName, _goalSource);
+		};
+		CRITICAL_SECTION_END
 		
 		nil
 	} ENDMETHOD;
 	
 	
 	
+	// --------------------------------------------------------------------------------
+	// |                G E T   E X T E R N A L   G O A L   A C T I O N   S T A T E
+	// --------------------------------------------------------------------------------
+	/*
+	Method: getExternalGoalActionState
+	Returns the state of <Action> which is executed in response to specified external <Goal>, or -1 if specified goal was not found.
 	
+	Parameters: _goalClassName, _source
+	
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Number, one of <ACTION_STATE>
+	*/
+	METHOD("getExternalGoalActionState") {
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+
+		pr _return = -1;
+		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, action state];
+		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+		pr _index = if (_goalSource == "") then {
+			_goalsExternal findIf {(_x select 0) == _goalClassName}
+		} else {
+			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		};
+		if (_index != -1) then {
+			_return = _goalsExternal select _index select 4;
+		} else {
+			OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+		};
+		CRITICAL_SECTION_END
+		
+		_return
+	} ENDMETHOD;
 	
 	
 	// ------------------------------------------------------------------------------------------------------
@@ -591,7 +697,10 @@ CLASS("AI", "MessageReceiverEx")
 	// |                S T A R T
 	// | Starts the AI brain
 	// ----------------------------------------------------------------------
-	
+	/*
+	Method: start
+	Starts the AI brain. From now process method will be called periodically.
+	*/
 	METHOD("start") {
 		params [["_thisObject", "", [""]]];
 		if (GETV(_thisObject, "timer") == "") then {
@@ -612,11 +721,15 @@ CLASS("AI", "MessageReceiverEx")
 	// |                S T O P
 	// | Stops the AI brain
 	// ----------------------------------------------------------------------
-	
+	/*
+	Method: stop
+	Stops the periodic call of process function.
+	*/
 	METHOD("stop") {
 		params [["_thisObject", "", [""]]];
 		pr _timer = GETV(_thisObject, "timer");
 		if (_timer != "") then {
+			SETV(_thisObject, "timer", "");
 			DELETE(_timer);
 		};
 	} ENDMETHOD;
@@ -627,7 +740,16 @@ CLASS("AI", "MessageReceiverEx")
 	// |               S E T   P R O C E S S   I N T E R V A L
 	// | Sets the process interval of this AI object
 	// ----------------------------------------------------------------------
+	/*
+	Method: setProcessInterval
+	Sets the process interval of this AI object.
 	
+	Parameters: _interval
+	
+	_interval - Number, interval in seconds.
+	
+	Returns: nil
+	*/
 	METHOD("setProcessInterval") {
 		params [["_thisObject", "", [""]], ["_interval", 5, [5]]];
 		SETV(_thisObject, "processInterval", _interval);

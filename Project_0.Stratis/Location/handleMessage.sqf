@@ -3,6 +3,12 @@
 #include "location.hpp"
 #include "..\MessageTypes.hpp"
 
+// Class: Location
+/*
+Method: handleMessage
+Checks spawn conditions of this location. Spawns garrisons if needed.
+*/
+
 params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 
 private _msgType = _msg select MESSAGE_ID_TYPE;
@@ -20,7 +26,7 @@ switch (_msgType) do {
 		private _dst = _units apply {_x distance _locPos};
 		private _speedMax = 200;
 		private _dstMin = if (count _dst > 0) then {selectMin _dst;} else {_speedMax*10};
-		private _dstSpawn = 300; // Temporary, spawn distance
+		private _dstSpawn = 400; // Temporary, spawn distance
 		private _spawnState = GET_VAR(_thisObject, "spawnState");
 		private _timer = GET_VAR(_thisObject, "timer");
 		switch (_spawnState) do {
@@ -59,7 +65,7 @@ switch (_msgType) do {
 					
 					SET_VAR(_thisObject, "spawnState", 0);
 				};
-			};
-		};
-	};
-};
+			}; // case 1
+		}; // switch spawn state
+	}; // case LOCATION_MESSAGE_PROCESS
+}; // switch msg type

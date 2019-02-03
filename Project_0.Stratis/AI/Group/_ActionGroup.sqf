@@ -9,6 +9,7 @@
 #include "..\worldFactTypes.hpp"
 
 /*
+Class: ActionGroup
 Group action.
 */
 
@@ -18,13 +19,36 @@ Group action.
 
 CLASS("ActionGroup", "Action")
 
+	
 	VARIABLE("hG");
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		
+		ASSERT_OBJECT_CLASS(_AI, "AIGroup");
+		
 		pr _agent = GETV(_AI, "agent");
 		pr _hG = CALLM0(_agent, "getGroupHandle"); // Group handle
 		SETV(_thisObject, "hG", _hG);
 	} ENDMETHOD;
 
+	/*
+	Method: handleUnitRemoved
+	Handles what happened when a unit gets removed from its group while the group has some action operational.
+	By default it does nothing.
+	
+	How it gets called: called by <AIGroup> directly.
+	
+	Parameters: _unit
+	
+	_unit - <Unit>
+	
+	Returns: nil
+	*/
+	
+	METHOD("handleUnitRemoved") {
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+	} ENDMETHOD;
+	
 ENDCLASS;

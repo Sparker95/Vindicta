@@ -1,12 +1,18 @@
-/*
-Adds spawn positions of this building to the location.
-
-Author: Sparker 03.08.2018
-*/
-
 #include "Location.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
+
+// Class: Location
+/*
+Method: addSpawnPosFromBuilding
+Adds spawn positions of this building to the location.
+
+Parameters: _building
+
+_building - the object handle of the building
+
+Author: Sparker 03.08.2018
+*/
 
 params [["_thisObject", "", [""]], ["_building", objNull, [objNull]]];
 

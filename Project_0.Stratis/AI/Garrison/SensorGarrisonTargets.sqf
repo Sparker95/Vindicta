@@ -19,7 +19,7 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 5
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 15
+#define TARGET_MAX_AGE 30
 
 // ---- Debugging defines ----
 
@@ -53,10 +53,9 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			SETV(_AI, "targets", _knownTargets);
 		};
 		
-		diag_log format ["[SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
 		// Force groups to forget about old targets
 		if (count _targetsToForget > 0) then {
-			diag_log format ["--- --- [SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
+			//diag_log format ["--- --- [SensorGarrisonTargets::update] Info: forgetting targets: %1", _targetsToForget];
 			// Create a new stimulus record
 			pr _stim = STIMULUS_NEW();
 			STIMULUS_SET_SOURCE(_stim, GETV(_thisObject, "gar"));
@@ -79,7 +78,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		pr _ws = GETV(_AI, "worldState");
 		if (count _knownTargets > 0) then {
 		
-			diag_log "Garrison is in combat now!";
+			//diag_log "Garrison is in combat now!";
 		
 			// Set property value
 			[_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_setPropertyValue;

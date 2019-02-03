@@ -78,21 +78,23 @@
 #define METHOD_LIST_STR "methodList"
 #define PARENTS_STR "parents"
 #define OOP_PARENT_STR "oop_parent"
+#define OOP_PUBLIC_STR "oop_public"
 
 // ----------------------------------------------------------------------
 // |          I N T E R N A L   A C C E S S   M E M B E R S             |
 // ----------------------------------------------------------------------
 
 #define FORCE_SET_MEM(objNameStr, memNameStr, value) NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
-#define FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) NAMESPACE setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
-#define FORCE_SET_METHOD(classNameStr, methodNameStr, code) NAMESPACE setVariable [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), code]
+#define FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
+#define FORCE_SET_METHOD(classNameStr, methodNameStr, code) missionNamespace setVariable [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), code]
 #define FORCE_GET_MEM(objNameStr, memNameStr) ( NAMESPACE getVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr) )
 #define FORCE_GET_STATIC_MEM(classNameStr, memNameStr) ( NAMESPACE getVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) )
 #define FORCE_GET_METHOD(classNameStr, methodNameStr) ( NAMESPACE getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
+#define FORCE_PUBLIC_MEM(objNameStr, memNameStr) publicVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr)
 
 //Special members don't use run time checks
-#define SET_SPECIAL_MEM(classNameStr, memNameStr, value) NAMESPACE setVariable [CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr), value]
-#define GET_SPECIAL_MEM(classNameStr, memNameStr) ( NAMESPACE getVariable CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) )
+#define SET_SPECIAL_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr), value]
+#define GET_SPECIAL_MEM(classNameStr, memNameStr) ( missionNamespace getVariable CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr) )
 
 // -----------------------------------------------------
 // |           A C C E S S   M E M B E R S             |
@@ -104,24 +106,34 @@
 	#define GET_MEM(objNameStr, memNameStr) ( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_GET_MEM(objNameStr, memNameStr)}else{nil} )
 	#define GET_STATIC_MEM(classNameStr, memNameStr) ( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_GET_STATIC_MEM(classNameStr, memNameStr)}else{nil} )
 	#define GET_METHOD(classNameStr, methodNameStr) ( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then {FORCE_GET_METHOD(classNameStr, methodNameStr)}else{nil} )
+	#define PUBLIC_MEM(objNameStr, memNameStr) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_PUBLIC_MEM(objNameStr, memNameStr)}
 #else
 	#define SET_MEM(objNameStr, memNameStr, value) FORCE_SET_MEM(objNameStr, memNameStr, value)
 	#define SET_STATIC_MEM(classNameStr, memNameStr, value) FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)
 	#define GET_MEM(objNameStr, memNameStr) FORCE_GET_MEM(objNameStr, memNameStr)
 	#define GET_STATIC_MEM(classNameStr, memNameStr) FORCE_GET_STATIC_MEM(classNameStr, memNameStr)
 	#define GET_METHOD(classNameStr, methodNameStr) FORCE_GET_METHOD(classNameStr, methodNameStr)
+	#define PUBLIC_MEM(objNameStr, memNameStr) FORCE_PUBLIC_MEM(objNameStr, memNameStr)
 #endif
 
 #define SET_VAR(a, b, c) SET_MEM(a, b, c)
 #define SET_STATIC_VAR(a, b, c) SET_STATIC_MEM(a, b, c)
 #define GET_VAR(a, b) GET_MEM(a, b)
 #define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
+#define PUBLIC_VAR(a, b) PUBLIC_MEM(a, b)
 
 // Shortened variants of macros
 #define SETV(a, b, c) SET_VAR(a, b, c)
 #define SETSV(a, b, c) SET_STATIC_VAR(a, b, c)
 #define GETV(a, b) GET_VAR(a, b)
 #define GETSV(a, b) GET_STATIC_V(a, b)
+
+// Getting/setting variables of _thisObject
+#define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
+#define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
+
+
+
 
 // todo add macros to check object validity
 /*
@@ -166,6 +178,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 // Remote executions
 #define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]
 #define REMOTE_EXEC_CALL_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callFromRemote", targets, false]
+
+#ifdef OOP_ASSERT
+#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) [classNameStr, methodNameStr, extraParams] remoteExec ["OOP_callStaticMethodFromRemote", targets, false];
+#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) [classNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callStaticMethodFromRemote", targets, false];
+#else
+#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) (classNameStr + extraParams) remoteExec [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, false];
+#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) (classNameStr + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, false];
+#endif
 
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
@@ -230,7 +250,8 @@ SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
 METHOD("new") {} ENDMETHOD; \
 METHOD("delete") {} ENDMETHOD; \
 METHOD("copy") {} ENDMETHOD; \
-VARIABLE(OOP_PARENT_STR);
+VARIABLE(OOP_PARENT_STR); \
+VARIABLE(OOP_PUBLIC_STR);
 
 // ----------------------------------------
 // |           E N D C L A S S            |
@@ -292,6 +313,40 @@ CALL_METHOD(_objNameStr, "new", extraParams); \
 _objNameStr \
 }
 
+// -----------------------------------------------------------------------
+// |        C O N S T R U C T O R  O F  P U B L I C   O B J E C T        |
+// -----------------------------------------------------------------------
+
+/*
+ * Creates a 'public' object that will also exist across other computers in multiplayer.
+ * Same as constructor, but also marks the object as public with a OOP_PUBLIC_STR variable.
+ * It also transmits oop_parent and oop_public variables with publicVariable.
+ * It doesn't mean the object's variables will be streamed across MP network, you still need to do it yourself.
+ */
+
+#define NEW_PUBLIC(classNameStr, extraParams) [] call { \
+CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
+private _oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
+if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0); _oop_nextID = 0;}; \
+SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
+private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
+FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \
+PUBLIC_VAR(_objNameStr, OOP_PARENT_STR); \
+FORCE_SET_MEM(_objNameStr, OOP_PUBLIC_STR, 1); \
+PUBLIC_VAR(_objNameStr, OOP_PUBLIC_STR); \
+private _oop_parents = GET_SPECIAL_MEM(classNameStr, PARENTS_STR); \
+private _oop_i = 0; \
+private _oop_parentCount = count _oop_parents; \
+while {_oop_i < _oop_parentCount} do { \
+	([_objNameStr] + extraParams) call GET_METHOD((_oop_parents select _oop_i), "new"); \
+	_oop_i = _oop_i + 1; \
+}; \
+CALL_METHOD(_objNameStr, "new", extraParams); \
+_objNameStr \
+}
+
+
+
 // ----------------------------------------
 // |         D E S T R U C T O R          |
 // ----------------------------------------
@@ -301,6 +356,7 @@ _objNameStr \
  * Check object validity if needed.
  * Call all destructors of the base classes from derived classes to base classes.
  * Clean (set to nil) all members of this object.
+ * If the object was global, also broadcast this.
  */
 
 #ifdef OOP_ASSERT
@@ -320,6 +376,78 @@ while {_oop_i > -1} do { \
 [objNameStr] call GET_METHOD((_oop_parents select _oop_i), "delete"); \
 _oop_i = _oop_i - 1; \
 }; \
+private _isPublic = IS_PUBLIC(objNameStr); \
 private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 {FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
+if (_isPublic) then { \
+PUBLIC_VAR(OOP_PARENT_STR); \
+PUBLIC_VAR(OOP_PUBLIC_STR); \
+}; \
 }
+
+
+// ----------------------------------------------------------------------
+// |                   L O G G I N G   M A C R O S                      |
+// ----------------------------------------------------------------------
+
+#ifdef OOP_INFO
+#define OOP_INFO_0(str) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
+#define OOP_INFO_1(str, a) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
+#define OOP_INFO_2(str, a, b) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b]]
+#define OOP_INFO_3(str, a, b, c) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c]]
+#define OOP_INFO_4(str, a, b, c, d) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d]]
+#define OOP_INFO_5(str, a, b, c, d, e) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d, e]]
+#else
+#define OOP_INFO_0(str)
+#define OOP_INFO_1(str, a)
+#define OOP_INFO_2(str, a, b)
+#define OOP_INFO_3(str, a, b, c)
+#define OOP_INFO_4(str, a, b, c, d)
+#define OOP_INFO_5(str, a, b, c, d, e)
+#endif
+
+#ifdef OOP_WARNING
+#define OOP_WARNING_0(str) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
+#define OOP_WARNING_1(str, a) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
+#define OOP_WARNING_2(str, a, b) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b]]
+#define OOP_WARNING_3(str, a, b, c) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c]]
+#define OOP_WARNING_4(str, a, b, c, d) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d]]
+#define OOP_WARNING_5(str, a, b, c, d, e) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d, e]]
+#else
+#define OOP_WARNING_0(str)
+#define OOP_WARNING_1(str, a)
+#define OOP_WARNING_2(str, a, b)
+#define OOP_WARNING_3(str, a, b, c)
+#define OOP_WARNING_4(str, a, b, c, d)
+#define OOP_WARNING_5(str, a, b, c, d, e)
+#endif
+
+#ifdef OOP_ERROR
+#define OOP_ERROR_0(str) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
+#define OOP_ERROR_1(str, a) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
+#define OOP_ERROR_2(str, a, b) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b]]
+#define OOP_ERROR_3(str, a, b, c) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c]]
+#define OOP_ERROR_4(str, a, b, c, d) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d]]
+#define OOP_ERROR_5(str, a, b, c, d, e) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d, e]]
+#else
+#define OOP_ERROR_0(str)
+#define OOP_ERROR_1(str, a)
+#define OOP_ERROR_2(str, a, b)
+#define OOP_ERROR_3(str, a, b, c)
+#define OOP_ERROR_4(str, a, b, c, d)
+#define OOP_ERROR_5(str, a, b, c, d, e)
+#endif
+
+// ----------------------------------------------------------------------
+// |                A S S E R T I O N S  A N D   C H E C K S            |
+// ----------------------------------------------------------------------
+// ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+// Exits current scope if provided object's class doesn't match specified class
+#ifdef OOP_ASSERT
+#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
+#else
+#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+#endif
+
+// Returns true if given object is public (was created with NEW_PUBLIC)
+#define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )

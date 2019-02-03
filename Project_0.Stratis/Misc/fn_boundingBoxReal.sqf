@@ -1,5 +1,10 @@
 /*
-Gets bounding box of vehicle bases on its type.
+Function: misc_fnc_boundingBoxReal
+Gets bounding box of vehicle bases on its type, unlike boundingBoxReal arma command which works with a created vehicle.
+
+Parameters: _vehType
+
+_vehType - String, class name of the vehicle
 
 Author: Sparker 29.07.2018
 */

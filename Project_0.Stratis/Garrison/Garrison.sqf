@@ -4,10 +4,13 @@
 #include "..\GlobalAssert.hpp"
 
 /*
+Class: Garrison
+Garrison is an object which holds units and groups and handles their lifecycle (spawning, despawning, destruction).
+Garrison is much like a group, it has an <AIGarrison>. But it can have multiple groups of different types.
+
 Author: Sparker 12.07.2018
 
-Garrison is an object which holds units and groups and handles their lifecycle (spawning, despawning, destruction).
-Garrison typically is located in one area and is performing one task.
+
 */
 
 #define pr private
@@ -20,7 +23,6 @@ CLASS("Garrison", "MessageReceiverEx")
 	VARIABLE("side");
 	VARIABLE("debugName");
 	VARIABLE("location");
-	//VARIABLE("action"); // Top level action of this garrison
 	VARIABLE("AI"); // The AI brain of this garrison
 	
 	// ----------------------------------------------------------------------
@@ -35,6 +37,13 @@ CLASS("Garrison", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
+	/*
+	Method: new
+	
+	Parameters: _side
+	
+	_side - side of this garrison
+	*/
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
@@ -54,7 +63,10 @@ CLASS("Garrison", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
+	/*
+	Method: delete
 	
+	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		SET_VAR(_thisObject, "units", nil);
@@ -63,51 +75,132 @@ CLASS("Garrison", "MessageReceiverEx")
 		SET_VAR(_thisObject, "side", nil);
 		SET_VAR(_thisObject, "debugName", nil);
 		
-		// Delete the action object of this garrison
-		private _action = GET_VAR(_thisObject, "action");
-		if (_action != "") then {
-			// Since garrison's actions are processed in another thread, we must wait until the thread properly terminates this action.
-			private _msg = MESSAGE_NEW();
-			_msg set [MESSAGE_ID_DESTINATION, _action];
-			_msg set [MESSAGE_ID_TYPE, ACTION_MESSAGE_DELETE];
-			private _msgID = CALLM2(_action, "postMessage", _msg, true);
-			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
-		};
+		
 	} ENDMETHOD;
 	
+	/*
+	Method: getMessageLoop
+	See <MessageReceiver.getMessageLoop>
+	
+	Returns: <MessageLoop>
+	*/
 	// Returns the message loop this object is attached to
 	METHOD("getMessageLoop") {
 		gMessageLoopMain
 	} ENDMETHOD;
 	
-	// Getting values
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                           S E T T I N G   M E M B E R   V A L U E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	
-	// getSide
-	METHOD("getSide") {
-		params [["_thisObject", "", [""]]];
-		GET_VAR(_thisObject, "side")
-	} ENDMETHOD;
+	//                       S E T   L O C A T I O N
+	/*
+	Method: setLocation
+	Sets the location of this garrison
 	
-	// Sets the location of this garrison
+	Parameters: _location
+	
+	_location - <Location>
+	*/
 	METHOD("setLocation") {
 		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
 		SET_VAR(_thisObject, "location", _location);
 	} ENDMETHOD;
 	
-	METHOD("getLocation") {
+	
+	
+	
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                           G E T T I N G   M E M B E R   V A L U E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
+	
+	// Getting values
+	
+	//                         G E T   S I D E
+	/*
+	Method: getSide
+	Returns side of this garrison.
+	
+	Returns: Side
+	*/
+	METHOD("getSide") {
 		params [["_thisObject", "", [""]]];
-		GET_VAR(_thisObject, "location");
+		GET_VAR(_thisObject, "side")
 	} ENDMETHOD;
 	
-	// get groups
+	
+	//                     G E T   L O C A T I O N
+	/*
+	Method: getLocation
+	Returns location this garrison is attached to.
+	
+	Returns: <Location>
+	*/
+	METHOD("getLocation") {
+		params [["_thisObject", "", [""]]];
+		GET_VAR(_thisObject, "location")
+	} ENDMETHOD;
+	
+	
+	//                      G E T   G R O U P S
+	/*
+	Method: getGroups
+	Returns groups of this garrison.
+	
+	Returns: Array of <Group> objects.
+	*/
 	METHOD("getGroups") {
 		params [["_thisObject", "", [""]]];
 		GET_VAR(_thisObject, "groups")
 	} ENDMETHOD;
 	
-	// ----------------------------------------------------------------------
-	// |                            G O A P                             
-	// ----------------------------------------------------------------------
+	// 						G E T   U N I T S
+	/*
+	Method: getUnits
+	Returns all units of this garrison.
+	
+	Returns: Array of <Unit> objects.
+	*/
+	METHOD("getUnits") {
+		params [["_thisObject", "", [""]]];
+		T_GETV("units")
+	} ENDMETHOD;
+	
+	//             F I N D   G R O U P S   B Y   T Y P E
+	/*
+	Method: findGroupByType
+	Finds groups in this garrison that have the same type as _type
+	
+	Parameters: _type
+	
+	_type - Number, one of <GROUP_TYPE>
+	
+	Returns: Array with <Group> objects.
+	*/
+	METHOD("findGroupsByType") {
+		params [["_thisObject", "", [""]], ["_type", 0, [0]]];
+		pr _groups = GETV(_thisObject, "groups");
+		pr _return = [];
+		{
+			if (CALLM0(_x, "getType") == _type) then {
+				_return pushBack _x;
+			};
+		} forEach _groups;
+		_return
+	} ENDMETHOD;
+	
+	
+	
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                G O A P 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
+		
+		
 	
 	// It should return the goals this garrison might be willing to achieve
 	METHOD("getPossibleGoals") {
@@ -129,26 +222,64 @@ CLASS("Garrison", "MessageReceiverEx")
 		"ActionGarrisonUnloadCurrentCargo"]
 	} ENDMETHOD;
 	
+	
+	//            G E T   S U B A G E N T S
+	/*
+	Method: getSubagents
+	Returns subagents of this agent.
+	For garrison it returns an empty array, because the subagents of garrison (groups) are processed in a separate thread.
+
+	Access: Used by AI class
+	
+	Returns: [].
+	*/
 	METHOD("getSubagents") {
-		[] // Empty array, because the subagents of garrison (groups) are processed in a separate thread
+		[] 
 		// In case we decide to process groups in the same thread as garrison, we can return the groups here
 	} ENDMETHOD;
 	
 	
-	// - - - - - - - Functions for finding - - - - - - - -
 	
-	// Returns groups that have the same type as _type
-	METHOD("findGroupsByType") {
-		params [["_thisObject", "", [""]], ["_type", 0, [0]]];
-		pr _groups = GETV(_thisObject, "groups");
-		pr _return = [];
-		{
-			if (CALLM0(_x, "getType") == _type) then {
-				_return pushBack _x;
-			};
-		} forEach _groups;
-		_return
-	} ENDMETHOD;
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                                E V E N T   H A N D L E R S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		
+	
+	// |                 H A N D L E   U N I T   K I L L E D                |
+	/*
+	Method: handleUnitKilled
+	Called when the unit has been killed.
+	
+	Must be called inside the garrison thread through postMethodAsync, not inside event handler.
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitKilled") {
+		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		diag_log format ["[Garrison::handleUnitKilled] Info: %1", _unit];
+		
+		pr _units = GETV(_thisObject, "units");
+		
+		// Remove the unit from this garrison
+		_units deleteAt (_units find _unit);
+		
+		// Call handleUnitKilled of the group of this unit
+		pr _group = CALLM0(_unit, "getGroup");
+		if (_group != "") then {
+			CALLM1(_group, "handleUnitKilled", _unit);
+		};
+		
+		// Call handleKilled of the unit
+		CALLM0(_unit, "handleKilled");
+		
+		// Set Garrison of this Unit
+		CALLM1(_unit, "setGarrison", "");		
+	} ENDMETHOD;	
+	
+	
+	
 	
 	// ======================================= FILES ==============================================
 	
@@ -175,5 +306,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	// Find units with specific type
 	METHOD_FILE("findUnits", "Garrison\findUnits.sqf");
+	
+	// Counts amount of units with specific type
+	METHOD_FILE("countUnits", "Garrison\countUnits.sqf");
 
 ENDCLASS;

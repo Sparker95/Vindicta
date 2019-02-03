@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Location/getRandomPos.sqf","getRandomPos.sqf");NDSummary.OnSummaryLoaded("File:Location/getRandomPos.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[249,0,0,"Location","Location"],[250,0,2,"Functions","Location.Functions"],[251,0,1,"getRandomPos","Location.getRandomPos"]]);

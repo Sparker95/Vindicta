@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:Action.ActionCompositeParallel","ActionCompositeParallel");NDSummary.OnSummaryLoaded("SQFClass:Action.ActionCompositeParallel",[["SQF","SQF"]],[["Classes","Class"]],[[1,0,0,"<span class=\"Qualifier\">Action.</span>&#8203;ActionCompositeParallel"]]);

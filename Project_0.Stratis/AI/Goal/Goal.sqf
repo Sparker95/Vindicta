@@ -2,6 +2,8 @@
 #include "..\WorldState\WorldState.hpp"
 
 /*
+Class: Goal
+Every goal is static, that is, not instantiated.
 */
 
 #define pr private

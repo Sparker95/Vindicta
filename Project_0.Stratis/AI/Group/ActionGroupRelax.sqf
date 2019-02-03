@@ -9,7 +9,7 @@
 #include "..\worldFactTypes.hpp"
 
 /*
-Template of an Action class
+Class: ActionGroup.ActionGroupRelax
 */
 
 #define pr private
@@ -32,6 +32,34 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		// Set behaviour
 		pr _hG = GETV(_thisObject, "hG");
 		_hG setBehaviour "SAFE";
+		{_x doFollow (leader _hG)} forEach (units _hG);
+		_hG setFormation "DIAMOND";
+		
+		// Find some random position at the location and go there
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _gar = CALLM0(_group, "getGarrison");
+		pr _loc = CALLM0(_gar, "getLocation");
+		pr _pos = CALLM0(_loc, "getRandomPos");
+		
+		// Delete all waypoints
+		while {(count (waypoints _hG)) > 0} do
+		{
+			deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
+		};
+		
+		// Add a move waypoint
+		pr _wp = _hG addWaypoint [_pos, 20, 0];
+		_wp setWaypointType "MOVE";
+		_wp setWaypointFormation "DIAMOND";
+		_wp setWaypointBehaviour "SAFE";
+		_hG setCurrentWaypoint _wp;
+		
+		// Give a goal to units
+		pr _units = CALLM0(_group, "getUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _thisObject);
+		} forEach _units;
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -54,6 +82,14 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete the goal to dismount vehicles
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _units = CALLM0(_group, "getUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitDismountCurrentVehicle", "");
+		} forEach _units;
 	} ENDMETHOD;
 
 ENDCLASS;

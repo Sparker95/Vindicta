@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("ran",["Variable"],[["RANGE",,[["Stimulus",,,,0,"File:AI/Stimulus/Stimulus.hpp:Stimulus.RANGE","SQFClass:Stimulus:RANGE"]]]]);

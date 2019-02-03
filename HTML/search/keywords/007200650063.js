@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("rec",["Function"],[["receiveOwnership",,[["MessageReceiver",,,,0,"File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.receiveOwnership","SQFClass:MessageReceiver:receiveOwnership"]]]]);

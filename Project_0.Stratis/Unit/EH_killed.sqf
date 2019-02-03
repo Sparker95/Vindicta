@@ -1,18 +1,32 @@
+#define OOP_ERROR
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+#include "..\MessageTypes.hpp"
+#include "Unit.hpp"
+
 /*
 Killed EH for units. Its main job is to send messages to objects. 
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
+#define pr private
 
 params ["_objectHandle", "_killer", "_instigator", "_useEffects"];
 
 // Is this object an instance of Unit class?
 private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
-//diag_log format ["[Unit] Info: Event handler: unit was destroyed: %1", _unit];
+diag_log format ["[Unit::EH_killed] Info: %1 %2", _unit, GETV(_unit, "data")];
 
 if (_unit != "") then {
-
+	// Since this code is run in event handler context, we can't delete the unit from the group and garrison directly.
+	
+	// Post a message to the garrison of the unit
+	pr _data = GETV(_unit, "data");
+	pr _garrison = _data select UNIT_DATA_ID_GARRISON;
+	if (_garrison != "") then {	// Sanity check	
+		CALLM2(_garrison, "postMethodAsync", "handleUnitKilled", [_unit]);
+	} else {
+		pr _thisObject = _unit;
+		OOP_ERROR_2("Unit is not attached to a garrison: %1, %2", _unit, _data);
+	};
 };

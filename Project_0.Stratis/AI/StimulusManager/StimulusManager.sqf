@@ -1,14 +1,14 @@
-/*
-Stimulus Manager class.
-
-Stimulus manager is a common object which gathers stimulus from one source and distributes it to multiple sensing AI objects
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\Stimulus\Stimulus.hpp"
+
+/*
+Class: StimulusManager
+
+Stimulus manager is a common object which gathers stimulus from one source and distributes it to multiple sensing AI objects
+*/
 
 #define pr private
 

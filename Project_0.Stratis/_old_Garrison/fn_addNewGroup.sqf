@@ -190,10 +190,12 @@ private _typesWithCrew = [];
 			};
 			if(_subcatID in T_VEH_static) exitWith //Static vehicles will have riflemen assigned
 			{
-				_crewClass = [_template, T_INF, T_INF_pilot, 0] call t_fnc_select; //todo replace pilots with riflemen
+				//_crewClass = [_template, T_INF, T_INF_pilot, 0] call t_fnc_select; //todo replace pilots with riflemen
+				_crewClass = [_template, T_INF, T_INF_rifleman, 0] call t_fnc_select; //todo replace pilots with riflemen
 				for "_j" from 0 to (_np + _ncp + _nt - 1) do
 				{
-					_typesWithCrew pushBack [T_INF, T_INF_pilot, _crewClass]; //T_INF_rifleman, 0];
+					//_typesWithCrew pushBack [T_INF, T_INF_pilot, _crewClass]; //T_INF_rifleman, 0];
+					_typesWithCrew pushBack [T_INF, T_INF_rifleman, _crewClass];
 				};
 			};
 			if(_subcatID in T_VEH_need_basic_crew) exitWith //MRAPs and gunboats will have riflemen as drivers and gunners

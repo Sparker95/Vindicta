@@ -1,8 +1,16 @@
+// Class: Location
 /*
+Method: (static)isPosSafte
 Returns true if the place is good for spawning specific vehicle.
 The main method of this function - checking vehicles inside the bounding box.
 Houses and buildings are ignored.
-_posAndDir - [_x, _y, _z, _dir], in format positionATL
+
+Parameters: _pos, _dir, _className
+_pos - position
+_dir - direction
+_className - vehicle class name
+
+Returns: Bool
 
 Author: Sparker 29.07.2018
 */

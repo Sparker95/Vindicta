@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:CriticalSection","CriticalSection");NDSummary.OnSummaryLoaded("SQFClass:CriticalSection",[["SQF","SQF"]],[["Classes","Class"],["Groups","Group"],["Macros","Macro"]],[[160,0,0,"CriticalSection"],[161,0,1,"Macros","Macros"],[162,0,2,"CRITICAL_SECTION_START","CRITICAL_SECTION_START"],[163,0,2,"CRITICAL_SECTION_END","CRITICAL_SECTION_END"]]);

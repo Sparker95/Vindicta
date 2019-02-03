@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:AI.AIGarrison","AIGarrison");NDSummary.OnSummaryLoaded("SQFClass:AI.AIGarrison",[["SQF","SQF"]],[["Classes","Class"]],[[62,0,0,"<span class=\"Qualifier\">AI.</span>&#8203;AIGarrison"]]);

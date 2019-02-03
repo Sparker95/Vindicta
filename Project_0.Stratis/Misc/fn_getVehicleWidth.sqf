@@ -1,5 +1,10 @@
 /*
+Function: misc_fnc_getVehicleWidth
 Returns the vehicle width derived from its model.
+
+Parameters: _vehicle
+
+_vehicle - objectHandle of the vehicle
 */
 
 params ["_vehicle"];

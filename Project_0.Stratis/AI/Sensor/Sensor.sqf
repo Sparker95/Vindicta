@@ -5,7 +5,7 @@
 #include "..\stimulusTypes.hpp"
 
 /*
-Sensor class
+Class: Sensor
 It abstracts the abilities of an agent to receive information from the external world
 
 Author: Sparker 08.11.2018
@@ -22,7 +22,13 @@ CLASS("Sensor", "")
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
+	/*
+	Method: new
 	
+	Parameters: _AI
+	
+	_AI - <AI> - derived object this sensor is attached to
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
 		SETV(_thisObject, "AI", _AI);
@@ -54,7 +60,7 @@ CLASS("Sensor", "")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		params [ ["_thisObject", "", [""]]];
+		//params [ ["_thisObject", "", [""]]];
 		0
 	} ENDMETHOD;
 	

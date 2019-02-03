@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("una",["Function"],[["unassignUnit",,[["AI.AIUnitVehicle",,,,0,"File:AI/Unit/AIUnitVehicle.sqf:AI.AIUnitVehicle.unassignUnit","SQFClass:AI.AIUnitVehicle:unassignUnit"]]],["unassignVehicle",,[["AI.AIUnitInfantry",,,,0,"File:AI/Unit/AIUnitInfantry.sqf:AI.AIUnitInfantry.unassignVehicle","SQFClass:AI.AIUnitInfantry:unassignVehicle"]]]]);

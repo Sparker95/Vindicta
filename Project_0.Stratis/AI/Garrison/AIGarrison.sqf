@@ -1,11 +1,14 @@
-/*
-Garrison AI class
-*/
-
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "garrisonWorldStateProperties.hpp"
+
+/*
+Class: AI.AIGarrison
+*/
 
 #define pr private
 
@@ -15,13 +18,19 @@ CLASS("AIGarrison", "AI")
 	VARIABLE("targets");
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
 		// Initialize sensors
 		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorHealth]);
 		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		
+		pr _loc = CALLM0(_agent, "getLocation");
+		if (_loc != "") then {
+			pr _sensorObserved = NEW("SensorGarrisonLocationIsObserved", [_thisObject]);
+			CALLM1(_thisObject, "addSensor", _sensorObserved);
+		};
 		
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent

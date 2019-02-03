@@ -18,6 +18,9 @@ CLASS("SensorGroup", "Sensor")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		
+		ASSERT_OBJECT_CLASS(_AI, "AIGroup");
+		
 		pr _g = GETV(_AI, "agent");
 		SETV(_thisObject, "group", _g);
 		pr _gh = CALLM0(_g, "getGroupHandle");

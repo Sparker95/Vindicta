@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("exp",["Variable"],[["EXPIRATION_TIME",,[["Stimulus",,,,0,"File:AI/Stimulus/Stimulus.hpp:Stimulus.EXPIRATION_TIME","SQFClass:Stimulus:EXPIRATION_TIME"]]]]);

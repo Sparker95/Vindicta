@@ -1,10 +1,20 @@
-/*
-Adds an existing group to this garrison
-*/
-
-//#include "..\Garrison\Garrison.hpp"
 #include "..\Message\Message.hpp"
 #include "..\OOP_Light\OOP_Light.h"
+//#include "..\Garrison\Garrison.hpp"
+
+// Class: Garrison
+/*
+Method: addGroup
+Adds an existing group to this garrison.
+
+Threading: should be called through postMethod (see <MessageReceiverEx>)
+
+Parameters: _group
+
+_unit - <Group> object
+
+Returns: nil
+*/
 
 params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 

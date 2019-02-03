@@ -5,45 +5,6 @@ add inits here until it's so fucked up, then redo it all over again
 
 //==== Locations initialization
 //player allowDamage false;
-/*
-
-// Old init code
-call compile preprocessFileLineNumbers "initModules.sqf";
-if(isServer) then
-{
-	allLocations = call compile preprocessFileLineNumbers "Init\createAllLocations.sqf";
-	[allLocations] call compile preprocessFileLineNumbers "Init\initAllGarrisons.sqf";
-	
-	//Init some HQ modules
-	call (compile (preprocessFileLineNumbers "Init\initHQ.sqf"));
-
-	HCGarrisonWEST = [] call gar_fnc_createGarrison;
-	[HCGarrisonWEST, "HC WEST"] call gar_fnc_setName;
-	[HCGarrisonWEST, WEST] call gar_fnc_setSide;
-	//[HCGarrisonWEST, G_AS_none] call gar_fnc_setAlertState;
-	[HCGarrisonWEST] call gar_fnc_spawnGarrison;
-
-	HCGarrisonEAST = [] call gar_fnc_createGarrison;
-	[HCGarrisonEAST, "HC EAST"] call gar_fnc_setName;
-	[HCGarrisonEAST, EAST] call gar_fnc_setSide;
-	//[HCGarrisonEAST, G_AS_none] call gar_fnc_setAlertState;
-	[HCGarrisonEAST] call gar_fnc_spawnGarrison;
-
-	//Global garrison for garbage collection
-	gGarbageGarrison = [] call gar_fnc_createGarrison;
-	[gGarbageGarrison, "Garbage"] call gar_fnc_setName;
-	[gGarbageGarrison, WEST] call gar_fnc_setSide;
-	[gGarbageGarrison] call gar_fnc_spawnGarrison;
-
-	publicVariable "allLocations";
-};
-
-
-//Commander's map
-UI_fnc_onMapSingleClick =
-compile preprocessfilelinenumbers "UI\onMapSingleClick.sqf";
-onMapSingleClick {call UI_fnc_onMapSingleClick;};
-*/
 
 #include "OOP_Light\OOP_Light.h"
 #include "Message\Message.hpp"
@@ -55,34 +16,37 @@ call compile preprocessFileLineNumbers "initModules.sqf";
 diag_log "Init.sqf: Creating global objects...";
 
 // Init global objects
+
 // Main timer service
 gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 
-// Main message loop for garrisons
-gMessageLoopMain = NEW("MessageLoop", []);
-CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
 
-// Message loop for group AI
-gMessageLoopGroupAI = NEW("MessageLoop", []);
-CALL_METHOD(gMessageLoopGroupAI, "setDebugName", ["Group AI thread"]);
-
-// Message loop for Stimulus Manager
-gMessageLoopStimulusManager = NEW("MessageLoop", []);
-CALL_METHOD(gMessageLoopStimulusManager, "setDebugName", ["Stimulus Manager thread"]);
-
-// Global Stimulus Manager
-gStimulusManager = NEW("StimulusManager", []);
-
-// Message loop for locations
-gMessageLoopLocation = NEW("MessageLoop", []);
-CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
-
-// Global debug printer for tests
-private _args = ["TestDebugPrinter", gMessageLoopMain];
-gDebugPrinter = NEW("DebugPrinter", _args);
-
-// Location unit array provider
-if (isServer) then {
+// Headless clients and server only
+if (isServer || (!hasInterface && !isDedicated)) then {
+	// Main message loop for garrisons
+	gMessageLoopMain = NEW("MessageLoop", []);
+	CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
+	
+	// Global debug printer for tests
+	private _args = ["TestDebugPrinter", gMessageLoopMain];
+	gDebugPrinter = NEW("DebugPrinter", _args);
+	
+	// Message loop for group AI
+	gMessageLoopGroupAI = NEW("MessageLoop", []);
+	CALL_METHOD(gMessageLoopGroupAI, "setDebugName", ["Group AI thread"]);
+	
+	// Message loop for Stimulus Manager
+	gMessageLoopStimulusManager = NEW("MessageLoop", []);
+	CALL_METHOD(gMessageLoopStimulusManager, "setDebugName", ["Stimulus Manager thread"]);
+	
+	// Global Stimulus Manager
+	gStimulusManager = NEW("StimulusManager", []);
+	
+	// Message loop for locations
+	gMessageLoopLocation = NEW("MessageLoop", []);
+	CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
+	
+	// Location unit array provider
 	gLUAP = NEW("LocationUnitArrayProvider", []);
 	// Create a timer for gLUAP
 	private _msg = MESSAGE_NEW();
@@ -92,13 +56,41 @@ if (isServer) then {
 	_msg set [MESSAGE_ID_TYPE, 666];
 	private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 	private _LUAPTimer = NEW("Timer", _args);
-	
-	diag_log "Init.sqf: Calling initWorld...";
+};
 
-	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+// Server only
+if (isServer) then {
+
+	// Message loops for commander AI
+	gMessageLoopCommanderWest = NEW("MessageLoop", []);
+	gMessageLoopCommanderInd = NEW("MessageLoop", []);
+	gMessageLoopCommanderEast = NEW("MessageLoop", []);
 	
-	// Create a group monitor for east side
-	NEW("groupMonitor", [EAST]);
+	// Commander AIs
+	// West
+	gCommanderWest = NEW("Commander", []);
+	private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+	gAICommanderWest = NEW_PUBLIC("AICommander", _args);
+	publicVariable "gAICommanderWest";
+	// Independent
+	gCommanderInd = NEW("Commander", []);
+	private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
+	gAICommanderInd = NEW_PUBLIC("AICommander", _args);
+	publicVariable "gAICommanderInd";
+	// East
+	gCommanderEast = NEW("Commander", []);
+	private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
+	gAICommanderEast = NEW_PUBLIC("AICommander", _args);
+	publicVariable "gAICommanderEast";
+	// Start them up
+	{
+		CALLM1(_x, "setProcessInterval", 10);
+		CALLM0(_x, "start");
+	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
+	
+	// Create locations and other things
+	diag_log "Init.sqf: Calling initWorld...";
+	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
 };
 
 

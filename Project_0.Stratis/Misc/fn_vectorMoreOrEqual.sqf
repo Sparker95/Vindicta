@@ -1,8 +1,18 @@
 /*
+Function: misc_fnc_vectorMoreOrEqual
+
 Checks if all elements in _v0 are >= than corresponding elements in _v1.
 
-Examples:	[[0, 1, 2], [0, 1, 1]] call misc_fnc_vectorMoreOrEqual; return: true
-			[[0, 1, 0], [0, 1, 1]] call misc_fnc_vectorMoreOrEqual; return: false
+Parameters: _v0, _v1
+
+_v0 - first vector
+_v1 - second vector
+
+Examples:
+--- Code
+[[0, 1, 2], [0, 1, 1]] call misc_fnc_vectorMoreOrEqual; return: true
+[[0, 1, 0], [0, 1, 1]] call misc_fnc_vectorMoreOrEqual; return: false
+---
  */
 
 params ["_v0", "_v1"];

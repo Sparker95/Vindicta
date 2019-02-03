@@ -2,8 +2,14 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Timer\Timer.hpp"
 
+// Class: TimerService
 /*
+Function: threadFunc
 Thread function for a TimerService.
+
+Parameters: _timerService
+
+Access: Internal use.
 */
 
 params [["_thisObject", "", [""]]];
@@ -35,9 +41,10 @@ while {true} do {
 				private _msg = _x select TIMER_DATA_ID_MESSAGE;
 				private _newID = CALLM2(_msgReceiver, "postMessage", _msg, true);
 				_x set [TIMER_DATA_ID_MESSAGE_ID, _newID];
+				//diag_log format [" --- Timer posted message to: %1,  msgID: %2", _msgReceiver, _newID];
 			} else {
 				private _msg = _x select TIMER_DATA_ID_MESSAGE;
-				diag_log format ["[TimerService::threadFunc] Info: Message not posted: %1", _msg];
+				diag_log format ["[TimerService::threadFunc] Info: Message not posted: %1,  msgID: %2", _msg, _msgID];
 			};
 			
 			// Set the time when the timer will fire next time

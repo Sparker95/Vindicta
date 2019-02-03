@@ -1,12 +1,22 @@
 # Project_0.Stratis
 
-**What is it?**
-It is a mission for ARMA III. The goal of this project is to make a guerrilla warfare simulator for ARMA III, hugely influenced by a similar mission by Barbolani: Antistasi (http://www.a3antistasi.com/).
+## What is it?
+It is a mission for ARMA III. The goal of this project is to make a guerrilla warfare simulator for ARMA III, hugely influenced by a similar mission by Barbolani: Antistasi (http://www.a3antistasi.enjin.com/).
 
-**Goals of this project**
+## Goals of this project
 * Most of the features of the original Antistasi.
-* Proper operation of logistics of the enemy and friendly factions.
-* Enemy high command more responsive to player's actions.
+* Proper operation of logistics of the enemy and friendly factions, including handling of all units, i.e. no areas generating infinite amounts of enemies.
+* Implement high level AI easier to control by player and more responsive to actions of enemy side.
 
-**Current state of development**
-Some mainly structural things are implemented, like garrison caching, location spawning/despawning and some scripts for AI. Other than that, there's not much to look at here.
+## Current state of development
+Currently the following components are fully or partially implemented:
+* Main system components
+* Enhanced logistics framework by Jeroen Not (enhanced arsenal, enhanced garage, enhanced repairing, rearming, refueling, etc.)
+* HC management
+* Garrison caching of locations
+* GOAP AI framework
+
+## Technical implementation
+* Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
+OOP paradigm should help produce manageable code and help implement complex systems.
+* AI is being handled by a custom GOAP (Goal-Oriented Action Planning) AI framework. GOAP is a technology which was first used in fameous F.E.A.R. first person shooter. GOAP should help manage the complexity of creation of complex AI behaviours that involve replannable chains of actions. More on GOAP here: http://aigamedev.com/open/article/fear-sdk/ http://alumni.media.mit.edu/~jorkin/

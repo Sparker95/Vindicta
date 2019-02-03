@@ -1,16 +1,17 @@
+#include "..\OOP_Light\OOP_Light.h"
+
+//Class: Garrison
 /*
+Method: findUnits
 Returns an array of units with specified category and subcategory
 
-Parameters:
-[_thisObject, _query]
-_query - array of [_catID, _subcatID]
-_subcatID can be -1 if you don't care about a subcategory match
+Parameters: _query
 
-Returns:
-Array of units of Unit class
+_query - array of [_catID, _subcatID].
+_subcatID can be -1 if you don't care about a subcategory match.
+
+Returns: Array of units <Unit> class
 */
-
-#include "..\OOP_Light\OOP_Light.h"
 
 #define pr private
 

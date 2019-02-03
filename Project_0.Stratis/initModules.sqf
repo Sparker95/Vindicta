@@ -64,6 +64,9 @@ call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf"
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
 // Initialize Unit class
+call compile preprocessFileLineNumbers "Commander\Commander.sqf";
+
+// Initialize Unit class
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 
 // Initialize Group class
@@ -99,5 +102,11 @@ call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 // Initialize suspiciosness monitor
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
+// UI classes
+call compile preprocessFileLineNumbers "UI\MapMarker\MapMarker.sqf";
+call compile preprocessFileLineNumbers "UI\MapMarkerLocation\MapMarkerLocation.sqf";
+
 // Initialize mod compatibility booleans 
-call compile preprocessFileLineNumbers "modCompatBools.sqf";
+// No need to compile it actually
+//call compile preprocessFileLineNumbers "modCompatBools.sqf";
+

@@ -1,8 +1,15 @@
+#include "..\OOP_Light\OOP_Light.h"
+
+// Class: Garrison
 /*
-Spawns the whole garrison
+Method: spawn
+Spawns all groups and units in this garrison, if it's not currently spawned.
+
+Threading: should be called through postMethod (see <MessageReceiverEx>)
+
+Returns: nil
 */
 
-#include "..\OOP_Light\OOP_Light.h"
 
 #define pr private
 

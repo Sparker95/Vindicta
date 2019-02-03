@@ -1,11 +1,13 @@
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+
 /*
+Class: MessageReceiver.DebugPrinter
 DebugPrinter class is just a MessageReceiver for testing purposes. It simply prints out every received message.
+It can also be passed to another machine through <MessageReceiver.setOwner> method.
 
 Author: Sparker 31.07.2018
 */
-
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
 
 CLASS("DebugPrinter", "MessageReceiver")
 
@@ -15,7 +17,15 @@ CLASS("DebugPrinter", "MessageReceiver")
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
+	/*
+	Method: new
 	
+	Parameters: _msgLoop
+	
+	_msgLoop - <MessageLoop> this object will be attached to.
+	
+	Returns: nil
+	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_name", "", [""]], ["_msgLoop", "", [""] ] ];
 		SET_VAR(_thisObject, "name", _name);

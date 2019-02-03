@@ -1,14 +1,15 @@
-/*
-A stimulatable sensor class.
-
-Author: Sparker 23.11.2018
-*/
-
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\stimulusTypes.hpp"
+
+/*
+Class: Sensor.SensorStimulatable
+A stimulatable sensor class.
+
+Author: Sparker 23.11.2018
+*/
 
 CLASS("SensorStimulatable", "Sensor")
 	
