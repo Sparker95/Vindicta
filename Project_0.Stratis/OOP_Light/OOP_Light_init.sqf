@@ -202,3 +202,10 @@ OOP_callFromRemote = {
 	//diag_log format [" --- OOP_callFromRemote: %1", _this];
 	CALLM(_object, _methodNameStr, _params);
 };
+
+// If assertion is enabled, this gets called on remote machine when we call a static method on it
+// So it will run the standard assertions before calling static method
+OOP_callStaticMethodFromRemote = {
+	params [["_classNameStr", "", [""]], ["_methodNameStr", "", [""]], ["_args", [], [[]]]];
+	CALL_STATIC_METHOD(_classNameStr, _methodNameStr, _args);
+};

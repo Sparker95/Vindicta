@@ -107,5 +107,6 @@ call compile preprocessFileLineNumbers "UI\MapMarker\MapMarker.sqf";
 call compile preprocessFileLineNumbers "UI\MapMarkerLocation\MapMarkerLocation.sqf";
 
 // Initialize mod compatibility booleans 
-call compile preprocessFileLineNumbers "modCompatBools.sqf";
+// No need to compile it actually
+//call compile preprocessFileLineNumbers "modCompatBools.sqf";
 

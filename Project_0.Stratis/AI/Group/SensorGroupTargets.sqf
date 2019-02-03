@@ -5,6 +5,7 @@
 #include "..\stimulusTypes.hpp"
 #include "..\commonStructs.hpp"
 #include "..\Stimulus\Stimulus.hpp"
+#include "..\..\Undercover\UndercoverMonitor.hpp"
 
 
 /*
@@ -61,7 +62,49 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		#endif
 		
 		pr _side = side _hG;
+		pr _otherSides = [WEST, EAST, INDEPENDENT] - [_side];
+		pr _allPlayers = allPlayers;
+		
 		if (({alive _x} count (units _hG)) > 0) then {
+		
+			// Check spotted targets
+			pr _nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/];
+			// Filter objects that are of different side and are currently being seen
+			pr _currentlyObservedObjects = _nt select {
+				//private _o = _x select 1;
+				//private _s = side _o;
+				//Target age is the time that has passed since the last time the group has actually seen the enemy unit.
+				// Values lower than 0 mean that they see the enemy right now
+				//private _age = _x select 5;
+				((side (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
+			};
+			
+			// Loop through potential targets and find players(also in vehicles) to send data to their UndercoverMonitor
+			{
+				pr _o = _x select 1;
+				
+				if (_o in _allPlayers) then {
+					// It's a Man and a player
+					pr _args = [_o, _hG];
+					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _o, _args);
+				} else {
+					// It's not a player
+					// But might be a man or a vehicle
+					if (!(_o isKindOf "Man")) then {
+						// It's a vehicle \o/ ! Let's check it's crew if there are players hiding >)
+						{
+							if (_x in _allPlayers) then {
+								if (UNDERCOVER_IS_UNIT_EXPOSED(_x)) then {
+									// I can see you!
+									pr _args = [_x, _hG];
+									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _x, _args);
+								};
+							};
+						} forEach (crew _o);					
+					};
+				};				
+			} forEach _currentlyObservedObjects;		
+		
 			if ((behaviour (leader _hG)) isEqualTo "COMBAT") then {
 				// Find new enemies
 				/*
@@ -72,27 +115,17 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				4 targetPosition: Array - [x,y] of the target
 				5 targetAge: Number - the actual target age in seconds (can be negative)
 				*/
-				pr _observedTargets = [];
 				pr _comTime = GETV(_thisObject, "comTime");
 				if (_comTime > TARGET_TIME_RELAY) then {
-					_nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/];
-					{ //forEach _nt
-						//private _s = _x select 2; //Perceived Side of the target						
-						private _o = _x select 1;
-						private _s = side _o;
-						private _age = _x select 5; //Target age is the time that has passed since the last time the group has actually seen the enemy unit. Values lower than 0 mean that they see the enemy right now
 
-						//diag_log format ["Age of target %1: %2", _x select 1, _age];
-						if(_s != _side) then { //If target's side is enemy
-							if ((_s in [EAST, WEST, INDEPENDENT, sideUnknown]) && (_age <= TARGET_AGE_TO_REVEAL)) then {
-								// object handle, knows about, position, age
-								_observedTargets pushBack TARGET_NEW(_o, _hG knowsAbout (_x select 1),  _x select 4, time-(_x select 5)+1); // Add 1 to age since its lowest value is -1
-							};
-						};
-					} forEach _nt;
-					
+					pr _observedTargets = _currentlyObservedObjects select {
+						( (side (_x select 1)) in _otherSides)
+					};
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {
+						// Add 1 to age since its lowest value is -1};
+						_observedTargets = _observedTargets apply {TARGET_NEW(_x select 1, _hG knowsAbout (_x select 1),  _x select 4, time-(_x select 5)+1)};
+					
 						#ifdef PRINT_SPOTTED_TARGETS
 							diag_log format ["[SensorGroupTargets::Update] Info: GroupHandle: %1, targets: %2", _hg, _observedTargets];
 						#endif

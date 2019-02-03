@@ -91,9 +91,6 @@ if (isServer) then {
 	// Create locations and other things
 	diag_log "Init.sqf: Calling initWorld...";
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
-	
-	// Create a group monitor for east side
-	NEW("groupMonitor", [EAST]);
 };
 
 

@@ -179,6 +179,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]
 #define REMOTE_EXEC_CALL_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callFromRemote", targets, false]
 
+#ifdef OOP_ASSERT
+#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) [classNameStr, methodNameStr, extraParams] remoteExec ["OOP_callStaticMethodFromRemote", targets, false];
+#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) [classNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callStaticMethodFromRemote", targets, false];
+#else
+#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) (classNameStr + extraParams) remoteExec [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, false];
+#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) (classNameStr + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, false];
+#endif
+
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
 // -----------------------------------------------------

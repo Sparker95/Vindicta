@@ -141,7 +141,7 @@ CLASS("AICommander", "AI")
 		
 		OOP_INFO_1("show notification called!!11");
 		
-		ade_dumpCallstack;
+		//ade_dumpCallstack;
 		
 		pr _id = T_GETV("notificationID");
 		pr _nots = T_GETV("notifications");

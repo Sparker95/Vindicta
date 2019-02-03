@@ -2,6 +2,8 @@
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 
+// Marked for removal because now this functionality has moved to AI\Group\SensorGroupTargets
+
 // Supposed to check groups that see player
 
 // We create a thread for player's undercover monitor here
@@ -93,7 +95,7 @@ CLASS("groupMonitor", "MessageReceiver")
 						MESSAGE_SET_DATA(_msg, _groups select _found); // You can pass any data you like
 						};
 						
-						// Sens message to the player's undercover monitor
+						// Send message to the player's undercover monitor
 						[_msg, {
 							pr _um = player getVariable "undercoverMonitor"; // Get undercover monitor of this unit
 							if (!isNil "_um") then {
