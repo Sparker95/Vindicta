@@ -8,7 +8,7 @@ class EditorData
 	toggles=609;
 	class ItemIDProvider
 	{
-		nextID=2629;
+		nextID=2634;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=154;
+		nextID=162;
 	};
 	class Camera
 	{
-		pos[]={2570.209,95.688782,5516.6362};
-		dir[]={0.43262985,-0.51518649,-0.74003965};
-		up[]={0.2600762,0.85682487,-0.4448736};
-		aside[]={-0.86330044,-1.2411037e-006,-0.50468409};
+		pos[]={2558.6279,108.51233,5528.4736};
+		dir[]={0.073902503,-0.410786,-0.90886861};
+		up[]={0.033308446,0.91148549,-0.40961397};
+		aside[]={-0.99670714,-1.5263468e-006,-0.081043258};
 	};
 };
 binarizationWanted=0;
@@ -70,13 +70,14 @@ addons[]=
 	"A3_Soft_F_Quadbike_01",
 	"A3_Soft_F_EPC_Truck_03",
 	"A3_Soft_F_Offroad_01",
-	"A3_Soft_F_Exp_Offroad_01"
+	"A3_Soft_F_Exp_Offroad_01",
+	"A3_Structures_F_Exp_Military_Pillboxes"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=29;
+		items=30;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -280,6 +281,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item29
+		{
+			className="A3_Structures_F_Exp";
+			name="Arma 3 Apex - Buildings and Structures";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 class DynamicSimulation
@@ -350,7 +358,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=170;
+		items=173;
 		class Item0
 		{
 			dataType="Object";
@@ -3327,8 +3335,8 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2576.1531,82.100784,5507.7236};
-						angles[]={0,2.6179938,0};
+						position[]={2561.3848,82.126297,5490.7412};
+						angles[]={0,1.9198622,0};
 					};
 					side="West";
 					flags=7;
@@ -3340,7 +3348,6 @@ class Mission
 					};
 					id=2415;
 					type="B_soldier_exp_F";
-					atlOffset=-7.6293945e-006;
 					class CustomAttributes
 					{
 						class Attribute0
@@ -3427,7 +3434,6 @@ class Mission
 			{
 			};
 			id=2414;
-			atlOffset=-7.6293945e-006;
 		};
 		class Item143
 		{
@@ -4260,7 +4266,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={2766.2939,98.184921,5402.8647};
+						position[]={2577.772,82.331284,5498.8237};
 						angles[]={0,4.7996559,0};
 					};
 					side="East";
@@ -4268,10 +4274,53 @@ class Mission
 					class Attributes
 					{
 						skill=0.40000001;
+						init="call{doStop this;}";
 					};
 					id=2624;
 					type="O_Soldier_LAT_F";
-					atlOffset=-7.6293945e-006;
+					atlOffset=7.6293945e-006;
+					class CustomAttributes
+					{
+						class Attribute0
+						{
+							property="speaker";
+							expression="_this setspeaker _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"STRING"
+										};
+									};
+									value="Male03PER";
+								};
+							};
+						};
+						class Attribute1
+						{
+							property="pitch";
+							expression="_this setpitch _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"SCALAR"
+										};
+									};
+									value=1.03;
+								};
+							};
+						};
+						nAttributes=2;
+					};
 				};
 			};
 			class Attributes
@@ -4294,6 +4343,55 @@ class Mission
 			};
 			id=2628;
 			type="C_Hatchback_01_sport_F";
+		};
+		class Item170
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2724.7388,94.320862,5393.7871};
+				angles[]={0,4.7996559,0};
+			};
+			side="Empty";
+			flags=5;
+			class Attributes
+			{
+			};
+			id=2629;
+			type="Land_PillboxWall_01_3m_F";
+		};
+		class Item171
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2724.9216,94.202896,5395.5928};
+				angles[]={0,4.7996559,0};
+			};
+			side="Empty";
+			flags=5;
+			class Attributes
+			{
+			};
+			id=2630;
+			type="Land_PillboxWall_01_3m_F";
+		};
+		class Item172
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={2557.1641,83.67218,5492.4365};
+				angles[]={0.032487731,0,0.079830162};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=2633;
+			type="B_Truck_01_mover_F";
+			atlOffset=-0.0085830688;
 		};
 	};
 	class Connections
