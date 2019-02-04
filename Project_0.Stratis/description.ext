@@ -82,8 +82,18 @@ class Params {
 };
 
 class CfgFunctions {
-	//#include "Functions\functionList.hpp"
 	#include "JeroenArsenal\functions.hpp"
+	
+	class missionTag
+	{
+		class randomThings
+		{
+			class initModules {
+				preInit = 1;
+				file = "initModules.sqf";
+			};
+		};
+	};
 };
 
 //==== Dialogs and UIs ====

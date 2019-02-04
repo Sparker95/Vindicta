@@ -35,6 +35,9 @@ private _loc = objNull;
 		private _side = WEST;
 		private _template = tNATO;
 		
+		// Hide this marker a bit
+		_x setMarkerAlpha 0.4;
+		
 		// Check marker side in its name
 		if(_x find "_ind" > 0) then	{
 			_side = INDEPENDENT;
@@ -202,4 +205,6 @@ private _loc = objNull;
 			CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);
 		};		
 	};
+	
+	
 } forEach allMapMarkers;

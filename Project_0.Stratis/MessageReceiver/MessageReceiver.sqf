@@ -187,7 +187,7 @@ CLASS("MessageReceiver", "")
 				
 				// Post the message on the remote machine
 				// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
-				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", _owner, [_msg]);
+				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", [_msg], _owner);
 				
 				// Return the _msgID
 				_msgID
@@ -195,7 +195,7 @@ CLASS("MessageReceiver", "")
 				// The receiver is on the remote machine and we don't need to return the message ID
 				// Just send the message to the remote machine and exit
 				// Set the _returnMsgID so that it doesn't generate a new message ID on the remote machine and overrides it in the message
-				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", _owner, [_msg]);
+				REMOTE_EXEC_CALL_METHOD(_thisObject, "postMessage", [_msg], _owner);
 				
 				// Return a special value in case it gets used by waitUntilMessageDone or messageDone by mistake
 				MESSAGE_ID_INVALID

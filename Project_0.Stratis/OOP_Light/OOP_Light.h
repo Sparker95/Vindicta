@@ -27,7 +27,7 @@
 // ----------------------------------------------------------------------
 
 //Enables checks for member accesses at runtime
-#define OOP_ASSERT
+//#define OOP_ASSERT
 
 /*
 #ifdef OOP_ASSERT
@@ -176,15 +176,15 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
 
 // Remote executions
-#define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]
-#define REMOTE_EXEC_CALL_METHOD(objNameStr, methodNameStr, targets, extraParams) [objNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callFromRemote", targets, false]
+#define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, extraParams, targets) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]
+#define REMOTE_EXEC_CALL_METHOD(objNameStr, methodNameStr, extraParams, targets) [objNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callFromRemote", targets, false]
 
 #ifdef OOP_ASSERT
-#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) [classNameStr, methodNameStr, extraParams] remoteExec ["OOP_callStaticMethodFromRemote", targets, false];
-#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) [classNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callStaticMethodFromRemote", targets, false];
+#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) [classNameStr, methodNameStr, extraParams] remoteExec ["OOP_callStaticMethodFromRemote", targets, JIP];
+#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) [classNameStr, methodNameStr, extraParams] remoteExecCall ["OOP_callStaticMethodFromRemote", targets, JIP];
 #else
-#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) (classNameStr + extraParams) remoteExec [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, false];
-#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, targets, extraParams) (classNameStr + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, false];
+#define REMOTE_EXEC_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExec [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
+#define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #endif
 
 // -----------------------------------------------------

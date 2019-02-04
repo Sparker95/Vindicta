@@ -50,7 +50,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	METHOD("getStimulusTypes") {
 		[STIMULUS_TYPE_LOCATION]
 	} ENDMETHOD;
 	
@@ -64,7 +64,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 		
 		OOP_INFO_1("Received location data: %1", _stimulus);
 		pr _AI = T_GETV("AI");
-		CALLM1(_AI, "updateLocationData", _stimulus select STIMULUS_ID_VALUE);
+		CALLM1(_AI, "updateLocationData", _stimulus select STIMULUS_ID_VALUE); // stimulus value is location
 	} ENDMETHOD;
 	
 ENDCLASS;

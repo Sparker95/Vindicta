@@ -21,7 +21,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	
 	METHOD("new") {
 		params ["_thisObject"];
-		CALLM2(_thisObject, "setEventSize", 20);
+		CALLM2(_thisObject, "setEventSize", 20, 20);
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
 	} ENDMETHOD;
@@ -43,12 +43,12 @@ CLASS(CLASS_NAME, "MapMarker")
 		[
 			"\A3\ui_f\data\map\markers\military\circle_CA.paa",
 			//"\A3\ui_f\data\map\mapcontrol\Bunker_CA.paa", // Texture   icon = "";
-			[0.8,0,0,1], //Color
+			T_GETV("color"), //Color
 			_pos, // Pos
 			20, // Width
 			20, // Height
 			0, // Angle
-			"   " + "Enemy base" // Text
+			"   " + T_GETV("text") // Text
 		];
 		
 		if (T_GETV("selected")) then {
@@ -71,7 +71,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			_control drawIcon 
 			[
 				"\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa",
-				[1,0,0,1], //Color
+				T_GETV("color"), //Color
 				_pos, // Pos
 				29, // Width
 				29, // Height
@@ -210,11 +210,17 @@ SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
 pr _testMarker = NEW("MapMarkerLocation", []);
 pr _pos = [333, 333];
 CALLM1(_testMarker, "setPos", _pos);
+pr _color = [0, 0, 0.8, 1];
+CALLM1(_testMarker, "setColor", _color);
 
 pr _testMarker = NEW("MapMarkerLocation", []);
 pr _pos = [666, 333];
 CALLM1(_testMarker, "setPos", _pos);
+pr _color = [0.8, 0, 0.8, 1];
+CALLM1(_testMarker, "setColor", _color);
 
 pr _testMarker = NEW("MapMarkerLocation", []);
 pr _pos = [666, 666];
 CALLM1(_testMarker, "setPos", _pos);
+pr _color = [0, 0.8, 0.8, 1];
+CALLM1(_testMarker, "setColor", _color);

@@ -19,7 +19,7 @@ Author: Sparker
 
 #define pr private
 
-#define DEBUG
+//#define DEBUG
 #define CLASS_NAME "ActionUnitGetInVehicle"
 
 #ifdef DEBUG

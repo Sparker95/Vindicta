@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("cli",["Class"],[["ClientMapUI",,[[,,,,0,"File:UI/ClientMapUI/ClientMapUI.sqf:ClientMapUI","SQFClass:ClientMapUI"]]]]);

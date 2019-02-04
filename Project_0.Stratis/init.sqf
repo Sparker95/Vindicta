@@ -3,15 +3,31 @@ Dirty init.sqf
 add inits here until it's so fucked up, then redo it all over again
 */
 
+
+
 //==== Locations initialization
 //player allowDamage false;
 
 #include "OOP_Light\OOP_Light.h"
 #include "Message\Message.hpp"
+#include "CriticalSection\CriticalSection.hpp"
 
-diag_log "Init.sqf: Calling initModules...";
+// Initialize OOP classes and other things
+//call compile preprocessFileLineNumbers "initModules.sqf";
 
-call compile preprocessFileLineNumbers "initModules.sqf";
+// If a client, wait for the server to finish its initialization
+if(! isServer) then {
+	diag_log "Waiting for server init...";
+	systemChat "Waiting for server initialization...";
+	
+	waitUntil {! isNil "serverInitDone"};
+	
+	systemChat "Server initialization completed!";
+	diag_log "Server initialization completed!";
+};
+
+// Initialize global objects in unscheduled
+CRITICAL_SECTION_START
 
 diag_log "Init.sqf: Creating global objects...";
 
@@ -82,15 +98,19 @@ if (isServer) then {
 	private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
 	gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 	publicVariable "gAICommanderEast";
-	// Start them up
-	{
-		CALLM1(_x, "setProcessInterval", 10);
-		CALLM0(_x, "start");
-	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
-	
+
+
 	// Create locations and other things
 	diag_log "Init.sqf: Calling initWorld...";
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+	
+	// Add friendly locations to commanders
+	// And start them
+	{
+		CALLM0(_x, "updateFriendlyLocationsData");
+		CALLM1(_x, "setProcessInterval", 10);
+		CALLM0(_x, "start");
+	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
 };
 
 
@@ -128,6 +148,8 @@ if (hasInterface) then {
 diag_log "Init.sqf: Init done!";
 
 
+
+/*
 [] spawn {
 
 while {true}do{
@@ -283,3 +305,9 @@ while {true}do{
 }
 
 };
+*/
+
+serverInitDone = 1;
+publicVariable "serverInitDone";
+
+CRITICAL_SECTION_END

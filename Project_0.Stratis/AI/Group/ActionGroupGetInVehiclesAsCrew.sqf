@@ -1,4 +1,4 @@
-#define OOP_INFO
+//#define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"

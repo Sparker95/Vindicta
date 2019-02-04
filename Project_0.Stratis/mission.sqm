@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=96;
+		nextID=99;
 	};
 	class Camera
 	{
-		pos[]={3751.147,225.84451,4887.6714};
-		dir[]={-0.21312909,-0.67040265,0.71074784};
-		up[]={-0.19256318,0.7419861,0.64216483};
-		aside[]={0.95787269,-3.996247e-007,0.28723419};
+		pos[]={3733.0757,226.24771,4930.5781};
+		dir[]={0.15592876,-0.50513512,-0.84888458};
+		up[]={0.09127786,0.86297762,-0.4969227};
+		aside[]={-0.98357898,7.4614945e-008,-0.18067351};
 	};
 };
 binarizationWanted=0;
@@ -2615,7 +2615,7 @@ class Mission
 		class Item123
 		{
 			dataType="Marker";
-			position[]={3795.0754,6.3448029,4697.978};
+			position[]={3795.075,6.3449998,4697.978};
 			name="outpost_east_3";
 			markerType="ELLIPSE";
 			type="ellipse";
@@ -2623,7 +2623,7 @@ class Mission
 			a=50;
 			b=50;
 			id=2169;
-			atlOffset=-183.67444;
+			atlOffset=-183.67424;
 		};
 		class Item124
 		{
@@ -3966,6 +3966,7 @@ class Mission
 					flags=7;
 					class Attributes
 					{
+						isPlayable=1;
 					};
 					id=2493;
 					type="B_ghillie_sard_F";
@@ -4074,6 +4075,7 @@ class Mission
 					flags=7;
 					class Attributes
 					{
+						isPlayer=1;
 						isPlayable=1;
 					};
 					id=2495;
@@ -4081,6 +4083,25 @@ class Mission
 					class CustomAttributes
 					{
 						class Attribute0
+						{
+							property="allowDamage";
+							expression="_this allowdamage _value;";
+							class Value
+							{
+								class data
+								{
+									class type
+									{
+										type[]=
+										{
+											"BOOL"
+										};
+									};
+									value=0;
+								};
+							};
+						};
+						class Attribute1
 						{
 							property="speaker";
 							expression="_this setspeaker _value;";
@@ -4099,7 +4120,7 @@ class Mission
 								};
 							};
 						};
-						class Attribute1
+						class Attribute2
 						{
 							property="pitch";
 							expression="_this setpitch _value;";
@@ -4118,7 +4139,7 @@ class Mission
 								};
 							};
 						};
-						nAttributes=2;
+						nAttributes=3;
 					};
 				};
 			};
@@ -4145,7 +4166,6 @@ class Mission
 					flags=7;
 					class Attributes
 					{
-						isPlayer=1;
 						isPlayable=1;
 					};
 					id=2497;
