@@ -1,20 +1,4 @@
-#include "UI_OOP\dialog\define.hpp"
-#include "UI_OOP\styles\style.hpp"
-#include "UI_OOP\styles\customStyle.hpp"
-#include "UI_OOP\dialog\empty.hpp"
-#include "UI_OOP\dialog\FakeDialog.hpp"
-#include "UI_OOP\dialog\ctrlCreateDialog.hpp"
-#include "UI_OOP\dialog\ctrlModifyDialog.hpp"
-#include "UI_OOP\dialog\DisplayConfig.hpp"
-#include "UI_OOP\dialog\helpDialog.hpp"
-
-#include "UI\defineCommonGrids.hpp"
-#include "UI\defineCommonColors.hpp"
-
-#include "UI\UIBase.hpp"
-#include "UI\UICommander.hpp"
-
-author="Sparker and Jeroen";
+author="Sparker, Jeroen, Marvis";
 OnLoadName = "Project_0";
 OnLoadMission = "Project_0";
 
@@ -88,6 +72,7 @@ class CfgFunctions {
 	{
 		class randomThings
 		{
+			// Call initModules.sqf in preinit because we need to compile functions/classes before JIP functions are called
 			class initModules {
 				preInit = 1;
 				file = "initModules.sqf";
@@ -97,6 +82,8 @@ class CfgFunctions {
 };
 
 //==== Dialogs and UIs ====
+#include "UI\Resources\UIBase.hpp"
+#include "UI\Resources\MapUI\MapUI.h"
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
 //#include "\A3\ui_f\hpp\defineCommonColors.inc"
 
@@ -124,6 +111,16 @@ class CfgRemoteExec
 };
 
 // OOP GUI
+
+#include "UI_OOP\dialog\define.hpp"
+#include "UI_OOP\styles\style.hpp"
+#include "UI_OOP\styles\customStyle.hpp"
+#include "UI_OOP\dialog\empty.hpp"
+#include "UI_OOP\dialog\FakeDialog.hpp"
+#include "UI_OOP\dialog\ctrlCreateDialog.hpp"
+#include "UI_OOP\dialog\ctrlModifyDialog.hpp"
+#include "UI_OOP\dialog\DisplayConfig.hpp"
+#include "UI_OOP\dialog\helpDialog.hpp"
 
 // UIUndercoverDebug
 class RscTitles {

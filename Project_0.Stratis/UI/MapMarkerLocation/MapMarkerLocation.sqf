@@ -4,6 +4,8 @@
 //#define NAMESPACE uiNamespace
 #include "..\..\OOP_Light\OOP_Light.h"
 
+#include "..\Resources\MapUI\MapUI_Macros.h"
+
 /*
 Class: MapMarkerLocation
 That's how we draw locations
@@ -135,7 +137,17 @@ CLASS(CLASS_NAME, "MapMarker")
 			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers");
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
-		};		
+			
+			
+			// If only this marker is selected now
+			if (count _selectedMarkers == 1) then {
+				pr _pos = T_GETV("pos");
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_pos]);
+			} else {
+				// Deselect everything
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+			};
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -187,6 +199,9 @@ CLASS(CLASS_NAME, "MapMarker")
 		diag_log "Clicked elsewhere!";
 		if (_button == 0) then {
 			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
+			
+			// Update location data panel
+			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
 		};
 	} ENDMETHOD;
 

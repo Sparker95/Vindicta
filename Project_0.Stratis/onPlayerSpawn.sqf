@@ -1,9 +1,10 @@
 //todo redo this crap
 //it just waits until the map display is available meaning that we can manipulate the map display now
 
-#include "UI\UICommanderIDC.hpp"
+//#include "UI\UICommanderIDC.hpp"
 #define pr private
 
+/*
 (finddisplay 12) ctrlCreate ["group_data_group_0", IDC_GROUP_DATA_GROUP_DATA_GROUP_0];
 //(finddisplay 12) ctrlCreate ["group_data_group_1", IDC_GROUP_DATA_GROUP_DATA_GROUP_0];
 (findDisplay 12) displayAddEventHandler["KeyDown",
@@ -16,8 +17,28 @@
 	false}
 ];
 [] spawn compile preprocessfilelinenumbers "UI\commanderUIUpdate.sqf";
+*/
 
+// Add controls to the map
+#include "UI\Resources\MapUI\MapUI_Macros.h";
+_cfg = missionConfigFile >> "MapUI";
+_idd = 12;
+[_cfg, _idd] call ui_fnc_createControlsFromConfig;
+// Disable totally static controls
+{
+	((finddisplay 12) displayCtrl _x) ctrlEnable false;
+} forEach [IDD_LD_PANEL, IDC_LD_TYPE, IDC_LD_TIME, IDC_LD_COMPOSITION, IDC_LD_SIDE];
 
+//(findDisplay 12) ctrlCreate ["MapUIFinal", IDD_MAP_UI];
+/*
+[] spawn {
+
+sleep 15;
+
+createDialog "MapUI";
+
+};
+*/
 
 // Trigger some code when player salutes
 /*
