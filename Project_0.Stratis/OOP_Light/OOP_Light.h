@@ -154,14 +154,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 //Same performance for small functions
 //#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call (call compile (CLASS_STATIC_MEM_NAME_STR(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)))
-#define CALL_METHOD(objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-#define CALL_METHOD_0(objNameStr, methodNameStr) ([objNameStr]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-#define CALL_METHOD_1(objNameStr, methodNameStr, a) ([objNameStr, a]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-#define CALL_METHOD_2(objNameStr, methodNameStr, a, b) ([objNameStr, a, b]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-#define CALL_METHOD_3(objNameStr, methodNameStr, a, b, c) ([objNameStr, a, b, c]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-#define CALL_METHOD_4(objNameStr, methodNameStr, a, b, c, d) ([objNameStr, a, b, c, d]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr)
-#define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) ([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
-#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) ([classNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr)
+#define CALL_METHOD(objNameStr, methodNameStr, extraParams) (([objNameStr] + extraParams) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+#define CALL_METHOD_0(objNameStr, methodNameStr) (([objNameStr]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+#define CALL_METHOD_1(objNameStr, methodNameStr, a) (([objNameStr, a]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+#define CALL_METHOD_2(objNameStr, methodNameStr, a, b) (([objNameStr, a, b]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+#define CALL_METHOD_3(objNameStr, methodNameStr, a, b, c) (([objNameStr, a, b, c]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+#define CALL_METHOD_4(objNameStr, methodNameStr, a, b, c, d) (([objNameStr, a, b, c, d]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+#define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) (([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr))
+#define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (([classNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr))
 
 // Shortened variants of macros
 #define CALLM(a, b, c) CALL_METHOD(a, b, c)
