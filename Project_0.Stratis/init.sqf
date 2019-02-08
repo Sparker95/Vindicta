@@ -105,7 +105,7 @@ if (isServer) then {
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
 	
 	// Add friendly locations to commanders
-	// And start them
+	// And start them 
 	{
 		CALLM0(_x, "updateFriendlyLocationsData");
 		CALLM1(_x, "setProcessInterval", 10);
