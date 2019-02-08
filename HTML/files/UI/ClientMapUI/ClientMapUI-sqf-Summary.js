@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:UI/ClientMapUI/ClientMapUI.sqf","ClientMapUI.sqf");NDSummary.OnSummaryLoaded("File:UI/ClientMapUI/ClientMapUI.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[417,0,0,"ClientMapUI","ClientMapUI"]]);

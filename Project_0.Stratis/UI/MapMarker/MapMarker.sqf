@@ -23,6 +23,12 @@ CLASS(CLASS_NAME, "")
 	// 2D position
 	VARIABLE("pos");
 	
+	// Text
+	VARIABLE("text");
+	
+	// Color
+	VARIABLE("color");
+	
 	// Width and height in UI units used for mouse events
 	VARIABLE("eWidthUI");
 	VARIABLE("eHeightUI");
@@ -39,6 +45,9 @@ CLASS(CLASS_NAME, "")
 		T_SETV("pos", _args);
 		T_SETV("eWidthUI", 20);
 		T_SETV("eHeightUI", 20);
+		
+		// T_SETV("text", "");
+		// T_SETV("color", )
 		
 		// Add to the array
 		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
@@ -174,6 +183,29 @@ CLASS(CLASS_NAME, "")
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
 		
 		T_SETV("pos", _pos);
+	} ENDMETHOD;
+	
+	/*
+	Method: setText
+	Sets "text" variable of this marker object.
+	You can use the text variable however you like.
+	However you are free not to use the text variable in your inherited classes.
+	
+	Parameters: _text
+	
+	_text - String
+	
+	Returns: nil
+	*/
+	METHOD("setText") {
+		params [["_thisObject", "", [""]], ["_string", "", [""]]];
+		
+		T_SETV("text", _text);
+	} ENDMETHOD;
+	
+	METHOD("setColor") {
+		params [["_thisObject", "", [""]], "_color"];
+		T_SETV("color", _color);
 	} ENDMETHOD;
 	
 	/*

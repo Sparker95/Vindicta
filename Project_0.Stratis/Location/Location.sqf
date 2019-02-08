@@ -187,7 +187,16 @@ CLASS("Location", "MessageReceiver")
 		CALL_METHOD(_garrison, "setLocation", [_thisObject]);
 	} ENDMETHOD;
 	
+	/*
+	Method: getGarrisonMilitaryMain
+	Gets the main military garrison located at this location
 	
+	Returns: <Garrison> or "" if there is no garrison there
+	*/
+	METHOD("getGarrisonMilitaryMain") {
+		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		GET_VAR(_thisObject, "garrisonMilMain")
+	} ENDMETHOD;
 	
 	
 	// File-based methods

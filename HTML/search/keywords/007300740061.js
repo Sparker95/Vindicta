@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("sta",["Function","Variable"],[["start",,[["AI",,,,0,"File:AI/AI/AI.sqf:AI.start","SQFClass:AI:start"]]],["state",,[["Action",,,,1,"File:AI/Action/Action.sqf:Action.state","SQFClass:Action:state"]]]]);
+NDSearch.OnPrefixDataLoaded("sta",["Function","Variable","Macro"],[["start",,[["AI",,,,0,"File:AI/AI/AI.sqf:AI.start","SQFClass:AI:start"]]],["state",,[["Action",,,,1,"File:AI/Action/Action.sqf:Action.state","SQFClass:Action:state"]]],["STATIC_FUNCTION",,[[,,,,2,"File:UI_OOP/oop.h:STATIC_FUNCTION"]]]]);

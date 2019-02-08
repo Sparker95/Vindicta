@@ -35,6 +35,9 @@ private _loc = objNull;
 		private _side = WEST;
 		private _template = tNATO;
 		
+		// Hide this marker a bit
+		_x setMarkerAlpha 0.4;
+		
 		// Check marker side in its name
 		if(_x find "_ind" > 0) then	{
 			_side = INDEPENDENT;
@@ -120,20 +123,25 @@ private _loc = objNull;
 		};
 		
 		// Add patrol groups
+		/*
 		private _i = 0;
 		while {_cInf > 0 && _i < 3} do {
 			_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf, GROUP_TYPE_PATROL] call _addInfGroup;			
 			_i = _i + 1;
 		};
+		*/
 		
 		// Add default infantry groups
+		/*
 		private _i = 0;
 		while {_cInf > 0 && _i < 1} do {
 			_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;			
 			_i = _i + 1;
 		};
+		*/
 		
 		// Add building sentries
+		/*
 		if (_cBuildingSentry > 0) then {
 			private _args = [_side, GROUP_TYPE_BUILDING_SENTRY];
 			private _sentryGroup = NEW("Group", _args);
@@ -145,6 +153,7 @@ private _loc = objNull;
 			};
 			CALL_METHOD(_garMilMain, "addGroup", [_sentryGroup]);
 		};
+		*/
 		
 		
 		// Add default vehicles
@@ -202,4 +211,6 @@ private _loc = objNull;
 			CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);
 		};		
 	};
+	
+	
 } forEach allMapMarkers;

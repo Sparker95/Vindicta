@@ -2,6 +2,8 @@
 
 #include "OOP_Light\OOP_Light.h"
 
+diag_log "initModules was called!";
+
 //Initialize the group for logic objects
 if(isNil "groupLogic") then
 {
@@ -103,8 +105,7 @@ call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // UI classes
-call compile preprocessFileLineNumbers "UI\MapMarker\MapMarker.sqf";
-call compile preprocessFileLineNumbers "UI\MapMarkerLocation\MapMarkerLocation.sqf";
+call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 
 // Initialize mod compatibility booleans 
 // No need to compile it actually

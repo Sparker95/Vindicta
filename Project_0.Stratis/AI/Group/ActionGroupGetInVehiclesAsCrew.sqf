@@ -1,4 +1,4 @@
-#define OOP_INFO
+//#define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -30,16 +30,17 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
+	// _unitsIgnore - units to ignore in assignment. For instance if this unit was destroyed.
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_unitsIgnore", []]];
 		
-		OOP_INFO_0("Activate");
+		OOP_INFO_0("ACTIVATE");
 		
 		pr _group = GETV(T_GETV("AI"), "agent");
 		
 		// Assign units to vehicles
-		pr _units = CALLM0(_group, "getUnits");
-		pr _vehicles = _units select {CALLM0(_x, "isVehicle")};
+		pr _units = CALLM0(_group, "getUnits") - _unitsIgnore;
+		pr _vehicles = (_units select {CALLM0(_x, "isVehicle")}) - _unitsIgnore; // _unitsIgnore can also contain vehicles
 		// Array with standard crew for each vehicle
 		pr _vehiclesStdCrew = _vehicles apply {
 			[CALLM0(_x, "getClassName")] call misc_fnc_getFullCrew;
@@ -148,11 +149,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		OOP_INFO_1("Unit removed: %1", _unit);
 		
+		// Call activate method, pass the unit that was removed
+		CALLM1(_thisObject, "activate", [_unit]);
+		
+		/*
 		pr _state = T_GETV("state");
 		if (_state == ACTION_STATE_ACTIVE || _state == ACTION_STATE_COMPLETED) then {
 			// At next process call activate once again to assign the units
 			T_SETV("state", ACTION_STATE_INACTIVE);
 		};
+		*/
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
