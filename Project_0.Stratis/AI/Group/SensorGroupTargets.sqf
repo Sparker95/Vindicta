@@ -86,7 +86,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				if (_o in _allPlayers) then {
 					// It's a Man and a player
 					pr _args = [_o, _hG];
-					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _o, _args);
+					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _o, false); //classNameStr, methodNameStr, extraParams, targets, JIP
 				} else {
 					// It's not a player
 					// But might be a man or a vehicle
@@ -97,7 +97,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 								if (UNDERCOVER_IS_UNIT_EXPOSED(_x)) then {
 									// I can see you!
 									pr _args = [_x, _hG];
-									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _x, _args);
+									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _x, false);
 								};
 							};
 						} forEach (crew _o);					
