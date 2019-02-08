@@ -534,7 +534,7 @@ CLASS("AI", "MessageReceiverEx")
 		if (_index != -1) then {
 			_return = _goalsExternal select _index select 4;
 		} else {
-			OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
 		};
 		CRITICAL_SECTION_END
 		

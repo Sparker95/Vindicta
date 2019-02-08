@@ -247,17 +247,17 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	
 	// |                 H A N D L E   U N I T   K I L L E D                |
 	/*
-	Method: handleUnitKilled
-	Called when the unit has been killed.
+	Method: handleUnitRemoved
+	Called when the unit has been removed (killed or moved to a different place).
 	
 	Must be called inside the group's thread, not inside event handler.
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitKilled") {
+	METHOD("handleUnitRemoved") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		
-		diag_log format ["[Group::handleUnitKilled] Info: %1", _unit];
+		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
 		
 		pr _data = GETV(_thisObject, "data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;

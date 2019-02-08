@@ -29,10 +29,13 @@ drones - [amount of subcategory 0, 1, 2, ...]
 // Last time it was updated
 #define CLD_ID_TIME 4
 
+// Extra data
+// Marker, makes sense only for clients
+#define CLD_ID_MARKER 5
+
 #define CLD_NEW() call { \
-private _return = [0, CIVILIAN, [[], [], []], [0, 0], 0]; \
+private _return = [0, CIVILIAN, [[], [], []], [0, 0], 0, ""]; \
 (_return select CLD_ID_UNIT_AMOUNT select T_INF) resize T_INF_SIZE; \
 (_return select CLD_ID_UNIT_AMOUNT select T_VEH) resize T_VEH_SIZE; \
 (_return select CLD_ID_UNIT_AMOUNT select T_DRONE) resize T_DRONE_SIZE; \
 _return};
-

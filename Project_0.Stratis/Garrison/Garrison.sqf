@@ -259,23 +259,22 @@ CLASS("Garrison", "MessageReceiverEx")
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		
 		diag_log format ["[Garrison::handleUnitKilled] Info: %1", _unit];
-		
-		pr _units = GETV(_thisObject, "units");
-		
-		// Remove the unit from this garrison
-		_units deleteAt (_units find _unit);
-		
+	
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
 		if (_group != "") then {
-			CALLM1(_group, "handleUnitKilled", _unit);
+			CALLM1(_group, "handleUnitRemoved", _unit);
 		};
 		
 		// Call handleKilled of the unit
 		CALLM0(_unit, "handleKilled");
 		
 		// Set Garrison of this Unit
-		CALLM1(_unit, "setGarrison", "");		
+		CALLM1(_unit, "setGarrison", "");
+		
+		// Remove the unit from this garrison
+		pr _units = GETV(_thisObject, "units");
+		_units deleteAt (_units find _unit);	
 	} ENDMETHOD;	
 	
 	
