@@ -1,0 +1,2 @@
+// Do a call stack dump through Dedmen's addon
+ade_dumpCallstack

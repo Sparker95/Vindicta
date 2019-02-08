@@ -154,7 +154,7 @@ Displays a number of variables on screen for debugging
 			_panel6 ctrlSetText _var6;
 			_panel6 ctrlCommit 0; 
 
-			private _var8 = _unit getVariable "distance";
+			private _var8 = _unit getVariable "nearestEnemyDist";
 			if (isNil "_var8") then { _var8 = "undefined"};
 			_var8 = str _var8;
 			_var8 = formatText["Distance nearest unit: %1", _var8];
