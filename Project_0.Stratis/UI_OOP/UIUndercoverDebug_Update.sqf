@@ -27,7 +27,7 @@ params["_unit"];
 		_ctrl = "getOOP_Text_101_LastSpottedTimes" call UIUndercoverDebug;
 		_ctrl ctrlSetText format ["LastSpottedTimes: %1", _lastSpottedTimes];
 
-		pr _distance = player getVariable "distance";
+		pr _distance = player getVariable "nearestEnemyDist";
 		if (isNil "_distance") then { _distance = "UNDEF"};
 		_ctrl = "getOOP_Text_101_Distance" call UIUndercoverDebug;
 		_ctrl ctrlSetText format ["Distance Nearest Enemy: %1", _distance];

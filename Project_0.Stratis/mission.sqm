@@ -8,7 +8,7 @@ class EditorData
 	toggles=577;
 	class ItemIDProvider
 	{
-		nextID=2507;
+		nextID=2520;
 	};
 	class MarkerIDProvider
 	{
@@ -16,20 +16,22 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=96;
+		nextID=102;
 	};
 	class Camera
 	{
-		pos[]={3751.147,225.84451,4887.6714};
-		dir[]={-0.21312909,-0.67040265,0.71074784};
-		up[]={-0.19256318,0.7419861,0.64216483};
-		aside[]={0.95787269,-3.996247e-007,0.28723419};
+		pos[]={3745.0784,221.99539,4892.9766};
+		dir[]={0.027197389,-0.76807004,0.6399169};
+		up[]={0.032612395,0.64035147,0.76737368};
+		aside[]={0.99917626,-3.5388293e-006,-0.042459637};
 	};
 };
 binarizationWanted=0;
 addons[]=
 {
 	"A3_Soft_F_Beta_Truck_01",
+	"ace_realisticnames",
+	"ace_cargo",
 	"A3_Structures_F_Mil_Cargo",
 	"A3_Misc_F_Helpers",
 	"A3_Ui_F",
@@ -44,9 +46,12 @@ addons[]=
 	"A3_Modules_F",
 	"A3_Armor_F_Gamma_MBT_01",
 	"A3_Armor_F_EPC_MBT_01",
+	"ace_cookoff",
 	"A3_Armor_F_Beta_APC_Wheeled_01",
 	"A3_Soft_F_MRAP_01",
 	"A3_Weapons_F_Ammoboxes",
+	"ace_rearm",
+	"ace_dragging",
 	"A3_Armor_F_Gamma_APC_Wheeled_03",
 	"A3_Soft_F_Beta_MRAP_03",
 	"A3_Modules_F_Curator_Curator",
@@ -71,7 +76,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=24;
+		items=28;
 		class Item0
 		{
 			className="A3_Soft_F_Beta";
@@ -81,159 +86,187 @@ class AddonsMetaData
 		};
 		class Item1
 		{
+			className="A3_Characters_F";
+			name="Arma 3 Alpha - Characters and Clothing";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item2
+		{
+			className="ace_cargo";
+			name="ACE3 - Cargo";
+			author="ACE-Team";
+			url="http://ace3mod.com/";
+		};
+		class Item3
+		{
 			className="A3_Structures_F_Mil";
 			name="Arma 3 - Military Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item2
+		class Item4
 		{
 			className="A3_Misc_F";
 			name="Arma 3 - 3D Aids and Helpers";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item3
+		class Item5
 		{
 			className="A3_Ui_F";
 			name="Arma 3 - User Interface";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item4
+		class Item6
 		{
 			className="A3_Structures_F_Bootcamp";
 			name="Arma 3 Bootcamp Update - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item5
+		class Item7
 		{
 			className="A3_Static_F";
 			name="Arma 3 Alpha - Turrets";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item6
+		class Item8
 		{
 			className="A3_Structures_F";
 			name="Arma 3 - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item7
-		{
-			className="A3_Characters_F";
-			name="Arma 3 Alpha - Characters and Clothing";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
-		class Item8
+		class Item9
 		{
 			className="A3_Modules_F";
 			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item9
+		class Item10
 		{
 			className="A3_Boat_F";
 			name="Arma 3 Alpha - Boats and Submersibles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item10
+		class Item11
 		{
 			className="A3_Armor_F_Gamma";
 			name="Arma 3 - Armored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item11
+		class Item12
 		{
 			className="A3_Armor_F_EPC";
 			name="Arma 3 Win Episode - Armored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item12
+		class Item13
+		{
+			className="ace_cookoff";
+			name="ACE3 - Cook off";
+			author="ACE-Team";
+			url="http://ace3mod.com/";
+		};
+		class Item14
 		{
 			className="A3_Armor_F_Beta";
 			name="Arma 3 Beta - Armored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item13
+		class Item15
 		{
 			className="A3_Soft_F";
 			name="Arma 3 Alpha - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item14
+		class Item16
 		{
 			className="A3_Weapons_F";
 			name="Arma 3 Alpha - Weapons and Accessories";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item15
+		class Item17
+		{
+			className="ace_rearm";
+			name="ACE3 - Rearm";
+			author="ACE-Team";
+			url="http://ace3mod.com/";
+		};
+		class Item18
+		{
+			className="ace_dragging";
+			name="ACE3 - Dragging";
+			author="ACE-Team";
+			url="http://ace3mod.com/";
+		};
+		class Item19
 		{
 			className="A3_Modules_F_Curator";
 			name="Arma 3 Zeus Update - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item16
+		class Item20
 		{
 			className="A3_Structures_F_EPC";
 			name="Arma 3 Win Episode - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item17
+		class Item21
 		{
 			className="A3_Soft_F_Gamma";
 			name="Arma 3 - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item18
+		class Item22
 		{
 			className="A3_Soft_F_Exp";
 			name="Arma 3 Apex - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item19
+		class Item23
 		{
 			className="A3_Soft_F_Orange";
 			name="Arma 3 Orange - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item20
+		class Item24
 		{
 			className="A3_Armor_F_EPB";
 			name="Arma 3 Adapt Episode - Armored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item21
+		class Item25
 		{
 			className="A3_Characters_F_Exp";
 			name="Arma 3 Apex - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item22
+		class Item26
 		{
 			className="A3_Characters_F_Mark";
 			name="Arma 3 Marksmen - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item23
+		class Item27
 		{
 			className="A3_Soft_F_Kart";
 			name="Arma 3 Karts - Unarmored Land Vehicles";
@@ -310,7 +343,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=169;
+		items=170;
 		class Item0
 		{
 			dataType="Object";
@@ -4068,83 +4101,14 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={3743.3401,209.74117,4904.231};
+						position[]={3745.864,211.28441,4901.0688};
+						angles[]={0,0.14681709,0};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
-						isPlayable=1;
-					};
-					id=2495;
-					type="B_soldier_AR_F";
-					class CustomAttributes
-					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male10ENG";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=0.97000003;
-								};
-							};
-						};
-						nAttributes=2;
-					};
-				};
-			};
-			class Attributes
-			{
-			};
-			id=2494;
-		};
-		class Item160
-		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=1;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={3746.2729,209.84514,4904.0928};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
+						init="call{removeAllWeapons this; " \n "removeAllItems this; " \n "removeAllAssignedItems this; " \n "removeUniform this; " \n "removeVest this; " \n "removeBackpack this; " \n "removeHeadgear this; " \n "removeGoggles this;" \n "this addaction [""Open Arsenal"", { [""Open"",true] call BIS_fnc_arsenal;}];}";
 						isPlayer=1;
 						isPlayable=1;
 					};
@@ -4218,7 +4182,7 @@ class Mission
 			};
 			id=2496;
 		};
-		class Item161
+		class Item160
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4235,7 +4199,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0013885498;
 		};
-		class Item162
+		class Item161
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4252,7 +4216,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0028533936;
 		};
-		class Item163
+		class Item162
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4268,7 +4232,7 @@ class Mission
 			id=2500;
 			type="B_Truck_01_transport_F";
 		};
-		class Item164
+		class Item163
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4284,7 +4248,7 @@ class Mission
 			id=2501;
 			type="Land_Cargo_Patrol_V2_F";
 		};
-		class Item165
+		class Item164
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4300,7 +4264,7 @@ class Mission
 			id=2502;
 			type="Land_Cargo_Patrol_V2_F";
 		};
-		class Item166
+		class Item165
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4317,62 +4281,73 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00057983398;
 		};
-		class Item167
+		class Item166
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={3750.9333,210.4395,4908.3374};
-				angles[]={0.495134,0,0.087279201};
+				position[]={3743.3525,209.94571,4907.6519};
+				angles[]={0.52183491,0,0.0050033992};
 			};
 			side="Empty";
 			flags=4;
 			class Attributes
 			{
 			};
-			id=2505;
-			type="C_Truck_02_covered_F";
-			atlOffset=0.00088500977;
+			id=2515;
+			type="B_Truck_01_mover_F";
+			atlOffset=-1.5258789e-005;
+		};
+		class Item167
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={3748.0193,208.83287,4908.8638};
+				angles[]={0.51995212,0,0.087279201};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=2517;
+			type="C_Hatchback_01_F";
+			atlOffset=-3.0517578e-005;
 		};
 		class Item168
 		{
 			dataType="Object";
 			class PositionInfo
 			{
-				position[]={3755.5813,211.45905,4904.5991};
-				angles[]={0.49513245,0,0.11943288};
+				position[]={3751.4968,207.22333,4911.4941};
+				angles[]={0.50476193,0,0.10708727};
 			};
 			side="Empty";
 			flags=4;
 			class Attributes
 			{
 			};
-			id=2506;
+			id=2518;
 			type="C_Kart_01_F";
-			atlOffset=-0.0085601807;
-			class CustomAttributes
+			atlOffset=-6.1035156e-005;
+		};
+		class Item169
+		{
+			dataType="Object";
+			class PositionInfo
 			{
-				class Attribute0
-				{
-					property="allowDamage";
-					expression="_this allowdamage _value;";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"BOOL"
-								};
-							};
-							value=0;
-						};
-					};
-				};
-				nAttributes=1;
+				position[]={3754.6819,209.53902,4909.9116};
+				angles[]={0.48735774,0,0.18293318};
 			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=2519;
+			type="C_Van_01_transport_F";
+			atlOffset=-0.0002746582;
 		};
 	};
 	class Connections
