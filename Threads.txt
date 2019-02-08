@@ -1,0 +1,5 @@
+How to divide code into threads:
+1 thread: locations, garrisons and other important non-blocking things.
+1 thread per each faction's active AI commander: evaluate all its senses. Plan missions, evaluate goals, create new missions, etc.
+1 thread per each faction's reactive AI commander: evaluate all senses and react to them.
+1 thread: AI garrison/group/unit goals and senses.
