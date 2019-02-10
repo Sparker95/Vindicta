@@ -214,16 +214,6 @@ CLASS("undercoverMonitor", "MessageReceiver")
 							"mrkLastHostility" setMarkerShape "ELLIPSE";
 						#endif
 
-
-						if (_bInVeh && (count (crew (vehicle _unit)) > 1)) then {
-
-							{
-								if (isPlayer _x && alive _x) then {
-										if (UNDERCOVER_IS_UNIT_EXPOSED(_x)) then { _x setVariable [UNDERCOVER_WANTED, true, true]; };
-								};
-							} forEach crew vehicle _unit;W
-
-						}; // compromise all other exposed player units in vehicle
 					}; // only update marker if unit is seen, otherwise no escape possible
 
 					if ( ((position _unit) distance2D (getMarkerPos "mrkLastHostility")) < WANTED_CIRCLE_RADIUS) then {
