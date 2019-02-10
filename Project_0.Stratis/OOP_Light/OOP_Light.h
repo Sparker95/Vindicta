@@ -27,7 +27,7 @@
 // ----------------------------------------------------------------------
 
 //Enables checks for member accesses at runtime
-//#define OOP_ASSERT
+#define OOP_ASSERT
 
 /*
 #ifdef OOP_ASSERT
@@ -297,9 +297,12 @@ objNameStr \
 
 #define NEW(classNameStr, extraParams) [] call { \
 CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
-private _oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
+private _oop_nextID = -1; \
+_oop_nul = isNil { \
+_oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
 if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0);	_oop_nextID = 0;}; \
 SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
+}; \
 private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
 FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \
 private _oop_parents = GET_SPECIAL_MEM(classNameStr, PARENTS_STR); \
@@ -326,9 +329,12 @@ _objNameStr \
 
 #define NEW_PUBLIC(classNameStr, extraParams) [] call { \
 CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
-private _oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
+private _oop_nextID = -1; \
+_oop_nul = isNil { \
+_oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
 if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0); _oop_nextID = 0;}; \
 SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
+}; \
 private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
 FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \
 PUBLIC_VAR(_objNameStr, OOP_PARENT_STR); \

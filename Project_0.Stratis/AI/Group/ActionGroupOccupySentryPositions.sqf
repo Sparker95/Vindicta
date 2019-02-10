@@ -27,6 +27,7 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 		OOP_INFO_0("ACTIVATE");
 		
 		// Add goals to all units
+		pr _AI = T_GETV("AI");
 		pr _group = GETV(T_GETV("AI"), "agent");
 		pr _units = CALLM0(_group, "getUnits");
 		{ // foreach units
@@ -35,11 +36,11 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 			pr _sentryPos = CALLM0(_unitAI, "getSentryPos");
 			
 			// Remove similar external goals from this AI
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMove", _thisObject);
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMove", _AI);
 			
 			if (count _sentryPos > 0) then {
 				pr _parameters = [["position", _sentryPos]];
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _thisObject);
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
 			} else {
 				pr _unitData = CALLM0(_unit, "getData");
 				OOP_WARNING_2("SENTRY position not assigned for unit: %1, %2", _unit, _unitData);
@@ -74,8 +75,8 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 		_state
 	} ENDMETHOD;
 	
-	METHOD("handleUnitRemoved") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		//OOP_INFO_1("Unit removed: %1", _unit);
 	} ENDMETHOD;
 	

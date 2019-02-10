@@ -21,7 +21,7 @@ Relax action
 
 #define THIS_ACTION_NAME "ActionGarrisonRelax"
 
-CLASS(THIS_ACTION_NAME, "Action")
+CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// ------------ N E W ------------
 	/*
@@ -39,6 +39,7 @@ CLASS(THIS_ACTION_NAME, "Action")
 		
 		// Give goals to groups
 		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _AI = T_GETV("AI");
 		pr _groups = CALLM0(_gar, "getGroups");
 		{ // foreach _groups
 			pr _type = CALLM0(_x, "getType");
@@ -48,23 +49,23 @@ CLASS(THIS_ACTION_NAME, "Action")
 				pr _args = [];
 				switch (_type) do {
 					case GROUP_TYPE_IDLE: {
-						_args = ["GoalGroupRelax", 0, [], _thisObject];
+						_args = ["GoalGroupRelax", 0, [], _AI];
 					};
 					
 					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupRelax", 0, [], _thisObject];
+						_args = ["GoalGroupRelax", 0, [], _AI];
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupRelax", 0, [], _thisObject];
+						_args = ["GoalGroupRelax", 0, [], _AI];
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupRelax", 0, [], _thisObject];
+						_args = ["GoalGroupRelax", 0, [], _AI];
 					};
 					
 					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupPatrol", 0, [], _thisObject];
+						_args = ["GoalGroupPatrol", 0, [], _AI];
 					};
 				};
 				

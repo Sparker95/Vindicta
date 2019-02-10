@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("gar",["Class"],[["Garrison",,[[,,,,0,"File:Garrison/addGroup.sqf:Garrison","SQFClass:Garrison"]]]]);
+NDSearch.OnPrefixDataLoaded("gar",["Class"],[["Garrison",,[[,,,,0,"File:Garrison/countUnits.sqf:Garrison","SQFClass:Garrison"]]]]);

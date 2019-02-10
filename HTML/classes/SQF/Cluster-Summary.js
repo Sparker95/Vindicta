@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Cluster","Cluster");NDSummary.OnSummaryLoaded("SQFClass:Cluster",[["SQF","SQF"]],[["Classes","Class"]],[[164,0,0,"Cluster"]]);
+NDFramePage.OnPageTitleLoaded("SQFClass:Cluster","Cluster");NDSummary.OnSummaryLoaded("SQFClass:Cluster",[["SQF","SQF"]],[["Classes","Class"]],[[170,0,0,"Cluster"]]);

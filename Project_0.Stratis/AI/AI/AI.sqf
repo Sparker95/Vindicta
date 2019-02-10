@@ -446,18 +446,22 @@ CLASS("AI", "MessageReceiverEx")
 	_goalClassName - <Goal> class name
 	_bias - a number to be added to the relevance of the goal once it is calculated
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
-	_source - string, optional, can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
 	
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]] ];
 		
 		OOP_INFO_2("Added external goal: %1, %2", _goalClassName, _parameters);
 		
+		if (_sourceAI != "") then {
+			ASSERT_OBJECT_CLASS(_sourceAI, "AI");
+		};
+		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE];
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
 		nil
 	} ENDMETHOD;
@@ -472,12 +476,16 @@ CLASS("AI", "MessageReceiverEx")
 	Parameters: _goalClassName, _goalSource
 	
 	_goalClassName - <Goal> class name
-	_goalSource - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	_goalSourceAI - <AI> object that gave this goal or "" to ignore this field. If "" is provided, source field will be ignored.
 	
 	Returns: nil
 	*/
 	METHOD("deleteExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSourceAI", ""]];
+
+		if (_goalSourceAI != "") then {
+			ASSERT_OBJECT_CLASS(_goalSourceAI, "AI");
+		};
 
 		CRITICAL_SECTION_START
 		// [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE]
@@ -487,7 +495,7 @@ CLASS("AI", "MessageReceiverEx")
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
 			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
-					( ((_cg select 3) == _goalSource) || (_goalSource == ""))) then {
+					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
 				pr _deletedGoal = _goalsExternal deleteAt _i;
 				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
 			} else {

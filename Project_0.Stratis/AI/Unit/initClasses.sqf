@@ -1,4 +1,5 @@
 // Auto generated file
+call compile preprocessFileLineNumbers "AI\Unit\AIUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitInfantry.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\AIUnitVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_ActionUnit.sqf";

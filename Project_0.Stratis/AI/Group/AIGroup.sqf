@@ -47,27 +47,62 @@ CLASS("AIGroup", "AI")
 	} ENDMETHOD;
 	
 	/*
-	Method: handleUnitRemoved
-	Handles what happens when a unit gets removed from its group, for instance when it gets killed.
-	Currently it calles handleUnitRemoved of the current action.
+	Method: handleUnitsRemoved
+	Handles what happens when units get removed from their group, for instance when they gets destroyed.
+	Currently it deletes goals from units that have been given by this AI object and calls handleUnitsRemoved of the current action.
+	
+	Access: internal
+	
+	Parameters: _units
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		OOP_INFO_1("handleUnitsRemoved: %1", _units);
+		
+		// Delete goals that have been given by this object
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (!isNil "_unitAI") then {
+				if (_unitAI != "") then {
+					CALLM2(_unitAI, "deleteExternalGoal", "", _thisObject);
+				};
+			};
+		} forEach _units;
+		
+		// Call handleUnitsRemoved of the current action, if it exists
+		pr _currentAction = T_GETV("currentAction");
+		if (_currentAction != "") then {
+			CALLM1(_currentAction, "handleUnitsRemoved", _units);
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happens when units get added to a group.
+	Currently it calles handleUnitAdded of the current action.
 	
 	Access: internal
 	
 	Parameters: _unit
 	
-	_unit - <Unit>
+	_units - Array of <Unit> objects
 	
 	Returns: nil
 	*/
-	METHOD("handleUnitRemoved") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		
-		OOP_INFO_1("handleUnitRemoved: %1", _unit);
+		OOP_INFO_1("handleUnitsAdded: %1", _units);
 		
-		// Call handleUnitRemoved of the current action, if it exists
+		// Call handleUnitAdded of the current action, if it exists
 		pr _currentAction = T_GETV("currentAction");
 		if (_currentAction != "") then {
-			CALLM1(_currentAction, "handleUnitRemoved", _unit);
+			CALLM1(_currentAction, "handleUnitsAdded", _units);
 		};
 	} ENDMETHOD;
 	

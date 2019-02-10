@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Garrison/removeUnit.sqf",{157:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">NYI. Removes unit from this garrison.</div></div>"});

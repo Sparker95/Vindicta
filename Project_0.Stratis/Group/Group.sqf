@@ -73,11 +73,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	// |                           A D D   U N I T
 	/*
 	Method: addUnit
-	Adds an existing <Unit> to this group. You don't need to call it manually.
+	Adds existing <Unit> to this group. Also use it when you want to move unit between groups.
 	
-	Access: internal use!
-	
-	Parameters: _unit
+	Parameters: _units
 	
 	_unit - <Unit> to add
 	
@@ -86,9 +84,49 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	METHOD("addUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
+		
+		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
+		pr _groupIsSpawned = CALLM0(_group, "isSpawned");
+		
+		if (_unitIsSpawned && !_groupIsSpawned || !_unitIsSpawned && _groupIsSpawned) exitWith {
+			OOP_ERROR_4("Group %1 is spawned: %2, unit %3 is spawned: %3", _thisObject, _groupIsSpawned, _unit, _unitIsSpawned);
+		};
+		
+		// Get unit's group
+		pr _unitGroup = CALLM0(_unit, "getGroup");
+		
+		// Remove the unit from its previous group
+		if (_unitGroup != "") then {
+			//if (CALLM0(_unitGroup, "getOwner") == clientOwner) then {
+				CALLM1(_unitGroup, "removeUnit", _unit);
+			//} else {
+			//	CALLM3(_unitGroup, "postMethodAsync", "removeUnit", [_unit], false);
+				//CALLM1(_unitGroup, "waitUntilMessageDone", _msgID);
+			//};			
+		};
+		
+		// Add unit to the new group
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList pushBackUnique _unit;
+		CALLM1(_unit, "setGroup", _thisObject);
+		
+		// Associate the unit with the garrison of this group
+		
+		
+		if (CALLM0(_thisObject,"isSpawned")) then {
+		
+			// Make the unit join the actual group
+			pr _newGroupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			pr _unitObjectHandle = CALLM0(_unit, "getObjectHandle");
+			[_unitObjectHandle] join _newGroupHandle;
+			
+			// If the target group is spawned, notify its AI object
+			pr _AI = _data select GROUP_DATA_ID_AI;
+			if (_AI != "") then {
+				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsAdded", [[_unit]], true);
+				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+			};
+		};
 	} ENDMETHOD;
 	
 	
@@ -101,7 +139,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	
 	Access: internal use
 	
-	Parameters: _unit
+	Parameters: _unit, _newGroup
 	
 	_unit - <Unit> that will be removed from this group.
 
@@ -109,12 +147,22 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("removeUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		//MUTEX_LOCK(_mutex);
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList = _unitList - [_unit];
-		//MUTEX_UNLOCK(_mutex);
+		
+		pr _data = GETV(_thisObject, "data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		
+		// Notify group AI of this unit
+		if (CALLM0(_thisObject, "isSpawned")) then {
+			pr _AI = _data select GROUP_DATA_ID_AI;
+			if (_AI != "") then {
+				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsRemoved", [[_unit]], true);
+				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+			};
+		};
+		
+		// Remove the unit from this group
+		_units deleteAt (_units find _unit);
+		CALLM1(_unit, "setGroup", "");
 	} ENDMETHOD;
 	
 
@@ -259,16 +307,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		
 		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
 		
-		pr _data = GETV(_thisObject, "data");
-		pr _units = _data select GROUP_DATA_ID_UNITS;
-		pr _AI = _data select GROUP_DATA_ID_AI;
-		
-		// Post a message to the group AI
-		pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitRemoved", [_unit], true);
-		CALLM1(_AI, "waitUntilMessageDone", _msgID);
-		
-		// Remove the unit from this group
-		_units deleteAt (_units find _unit);
+		CALLM1(_thisObject, "removeUnit", _unit);
 	} ENDMETHOD;
 	
 	

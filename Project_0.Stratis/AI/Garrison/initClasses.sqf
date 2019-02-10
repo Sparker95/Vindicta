@@ -1,5 +1,6 @@
 // Auto generated file
 call compile preprocessFileLineNumbers "AI\Garrison\AIGarrison.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\_ActionGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonDefendPassive.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonLoadCargo.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrew.sqf";

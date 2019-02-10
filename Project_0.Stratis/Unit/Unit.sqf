@@ -16,7 +16,9 @@ Author: Sparker
 
 #define pr private
 
-Unit_fnc_EH_killed = compile preprocessFileLineNumbers "Unit\EH_killed.sqf";
+Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
+Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
+
 
 CLASS(UNIT_CLASS_NAME, "")
 	VARIABLE("data");
@@ -26,40 +28,51 @@ CLASS(UNIT_CLASS_NAME, "")
 	/*
 	Method: new
 	
-	Parameters: _template, _catID, _subcatID, _group
+	Parameters: _template, _catID, _subcatID, _classID, _group, _hO
 	
-	_template - the template array
+	_template - the template array. Ignored if _hO is not null.
 	_catID, _subcatID - category and subcategory of the unit
+	_classID - ID of the class in the template array, or -1 to pick a random class name. Ignored if _hO is not null.
 	_group - the group object the unit will be added to. Vehicles can be added without a group.
+	_hO - object handle. If null, new unit wwill be created in despawned state. Otherwise new <Unit> object will be attached to this object handle.
 	*/
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]];
+		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
 
 		// Check argument validity
 		private _valid = false;
-		// Check template
-		if(_classID == -1) then	{
-			if(([_template, _catID, _subcatID, 0] call t_fnc_isValid)) then	{
-				_valid = true;
+		if (isNull _ho) then {
+			// Check template
+			if(_classID == -1) then	{
+				if(([_template, _catID, _subcatID, 0] call t_fnc_isValid)) then	{
+					_valid = true;
+				};
+			}
+			else {
+				if(([_template, _catID, _subcatID, _classID] call t_fnc_isValid)) then {
+					_valid = true;
+				};
 			};
-		}
-		else {
-			if(([_template, _catID, _subcatID, _classID] call t_fnc_isValid)) then {
-				_valid = true;
-			};
+		} else {
+			_valid = true;
 		};
+		
 		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);  diag_log format ["[Unit::new] Error: created invalid unit: %1", _this] };
 		// Check group
-		if(_group == "" && _catID == T_INF) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
+		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 		
 		// If a random class was requested to be added
 		private _class = "";
-		if(_classID == -1) then {
-			private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
-			_class = _classData select 0;
+		if (isNull _hO) then {
+			if(_classID == -1) then {
+				private _classData = [_template, _catID, _subcatID] call t_fnc_selectRandom;
+				_class = _classData select 0;
+			} else {
+				_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
+			};
 		} else {
-			_class = [_template, _catID, _subcatID, _classID] call t_fnc_select;
+			_class = typeOf _hO;
 		};
 		
 		// Create the data array
@@ -69,6 +82,9 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data set [UNIT_DATA_ID_CLASS_NAME, _class];
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_data set [UNIT_DATA_ID_GROUP, _group];
+		if (!isNull _hO) then {
+			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
+		};
 		SET_MEM(_thisObject, "data", _data);
 		
 		// Push the new object into the array with all units
@@ -78,6 +94,12 @@ CLASS(UNIT_CLASS_NAME, "")
 		// Add this unit to a group
 		if(_group != "") then {
 			CALL_METHOD(_group, "addUnit", [_thisObject]);
+		};
+		
+		// Initialize variables and event handlers
+		if (!isNull _hO) then {
+			CALLM0(_thisObject, "initObjectVariables");
+			CALLM0(_thisObject, "initObjectEventHandlers");
 		};
 	} ENDMETHOD;
 	
@@ -125,24 +147,6 @@ CLASS(UNIT_CLASS_NAME, "")
 		if (isNil "_data") exitWith {false};
 		//Return true if the data array is of the correct size
 		( (count _data) == UNIT_DATA_SIZE)
-	} ENDMETHOD;
-	
-	
-	
-	//                          I S   S P A W N E D
-	/*
-	Method: isSpawned
-	Checks if given unit is currently spawned or not
-	
-	Returns: bool, true if the unit is spawned
-	*/
-	METHOD("isSpawned") {
-		params [["_thisObject", "", [""]]];
-		private _mutex = _data select UNIT_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
-		private _return = !( isNull (_data select UNIT_DATA_ID_OBJECT_HANDLE));
-		MUTEX_UNLOCK(_mutex);
-		_return
 	} ENDMETHOD;
 	
 	
@@ -237,14 +241,13 @@ CLASS(UNIT_CLASS_NAME, "")
 				};
 			};
 			
-			// Set variable of the object
-			_objectHandle setVariable ["unit", _thisObject];
 			
-			// Set event handlers of the object
-			_objectHandle addEventHandler ["Killed", Unit_fnc_EH_killed];
+			// Initialize variables
+			CALLM0(_thisObject, "initObjectVariables");
 			
-			//if (_group != "") then { CALL_METHOD(_group, "handleUnitSpawned", []) };
-			
+			// Initialize event handlers
+			CALLM0(_thisObject, "initObjectEventHandlers");
+
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		};		
@@ -252,6 +255,47 @@ CLASS(UNIT_CLASS_NAME, "")
 		CRITICAL_SECTION_END
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
+	
+	/*
+	Method: initObjectVariables
+	Sets variables of unit's object handle.
+	
+	Returns: nil
+	*/
+	METHOD("initObjectVariables") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		
+		// Set variables of the object
+		if (!isNull _hO) then {
+			_hO setVariable ["unit", _thisObject];
+			// That's all really
+		};
+		
+	} ENDMETHOD;
+	
+	
+	/*
+	Method: initObjectEventHandlers
+	Adds event handlers to unit.
+	
+	Returns: nil
+	*/
+	METHOD("initObjectEventHandlers") {
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		pr _catID = _data select UNIT_DATA_ID_CAT;
+		
+		// Killed
+		_hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+		
+		// GetIn, if it's a vehicle
+		if (_catID == T_VEH) then {
+			_hO addEventHandler ["GetIn", Unit_fnc_EH_GetIn];
+		};
 	} ENDMETHOD;
 	
 	
@@ -368,7 +412,15 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD("getGarrison") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		_data select UNIT_DATA_ID_GARRISON
+		
+		// If unit is in a group, get the garrison of its group
+		pr _group = _data select UNIT_DATA_ID_GROUP;
+		if (_group != "") then {
+			CALLM0(_group, "getGarrison")
+		} else {
+			// For ungrouped units, return the garrison of the unit
+			_data select UNIT_DATA_ID_GARRISON
+		};
 	} ENDMETHOD;
 	
 	
@@ -563,6 +615,20 @@ CLASS(UNIT_CLASS_NAME, "")
 		} else {	
 			alive _object
 		};
+	} ENDMETHOD;
+	
+	//                          I S   S P A W N E D
+	/*
+	Method: isSpawned
+	Checks if given unit is currently spawned or not
+	
+	Returns: bool, true if the unit is spawned
+	*/
+	METHOD("isSpawned") {
+		params [["_thisObject", "", [""]]];
+		pr _data = T_GETV("data");
+		private _return = !( isNull (_data select UNIT_DATA_ID_OBJECT_HANDLE));
+		_return
 	} ENDMETHOD;
 	
 	

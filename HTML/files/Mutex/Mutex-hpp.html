@@ -8,31 +8,31 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Mutex"></a><a name="Topic333"></a><div class="CTopic TStruct LSQF first">
+<a name="Mutex"></a><a name="Topic341"></a><div class="CTopic TStruct LSQF first">
  <div class="CTitle">Mutex</div>
  <div class="CBody"><p>Mutex lets multiple threads (scheduled scripts) share the same resource so that only one of the threads can access it.</p><p>Usage: Create a Mutex known to both threads. Lock it before doing read-modify-write operations on the common resource. Unlock it.</p><p>Warning: this Mutex is NON-RECURSIVE! The thread will DEADLOCK if attempted to lock a mutex more than once.</p><p>thx to Freghar from BIS forum for the implementation: <a href="https://forums.bohemia.net/forums/topic/183993-scripting-introduction-for-new-scripters/?tab=comments#comment-3016726" target="_top">https://&#8203;forums&#8203;.bohemia&#8203;.net&#8203;/forums&#8203;/topic&#8203;/183993-scripting-introduction-for-n&#8203;ew-scripters&#8203;/&#8203;?tab=comments&#8203;#comment-3016726</a></p></div>
 </div>
 
-<a name="Mutex.Macros"></a><a name="Topic334"></a><div class="CTopic TGroup LSQF">
+<a name="Mutex.Macros"></a><a name="Topic342"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Macros</div>
 </div>
 
-<a name="Mutex.MUTEX_NEW"></a><a name="Topic335"></a><div class="CTopic TMacro LSQF">
+<a name="Mutex.MUTEX_NEW"></a><a name="Topic343"></a><div class="CTopic TMacro LSQF">
  <div class="CTitle">MUTEX_NEW()</div>
  <div class="CBody"><p>Returns a new Mutex</p></div>
 </div>
 
-<a name="Mutex.MUTEX_LOCK"></a><a name="Topic336"></a><div class="CTopic TMacro LSQF">
+<a name="Mutex.MUTEX_LOCK"></a><a name="Topic344"></a><div class="CTopic TMacro LSQF">
  <div class="CTitle">MUTEX_LOCK(mutex)</div>
  <div class="CBody"><p>Locks the mutex</p></div>
 </div>
 
-<a name="Mutex.MUTEX_UNLOCK"></a><a name="Topic337"></a><div class="CTopic TMacro LSQF">
+<a name="Mutex.MUTEX_UNLOCK"></a><a name="Topic345"></a><div class="CTopic TMacro LSQF">
  <div class="CTitle">MUTEX_UNLOCK(mutex)</div>
  <div class="CBody"><p>Unlocks the mutex</p></div>
 </div>
 
-<a name="Mutex.MUTEX_TRY_LOCK"></a><a name="Topic338"></a><div class="CTopic TMacro LSQF last">
+<a name="Mutex.MUTEX_TRY_LOCK"></a><a name="Topic346"></a><div class="CTopic TMacro LSQF last">
  <div class="CTitle">MUTEX_TRY_LOCK(mutex)</div>
  <div class="CBody"><p>Tries to lock the mutex without blocking. Returns immediately if the mutex is already locked.</p><p>Returns: true if successful, false if the mutex has already been locked</p></div>
 </div>

@@ -1,44 +1,36 @@
-//todo redo this crap
-//it just waits until the map display is available meaning that we can manipulate the map display now
+#include "OOP_Light\OOP_Light.h"
+#include "AI\Stimulus\Stimulus.hpp"
+#include "AI\stimulusTypes.hpp"
+#include "OOP_Light\OOP_Light.h"
 
-//#include "UI\UICommanderIDC.hpp"
+/*
+This is an event script.
+https://community.bistudio.com/wiki/Event_Scripts
+
+Executed locally when player respawns in a multiplayer mission.
+This event script will also fire at the beginning of a mission if respawnOnStart is 0 or 1,
+oldUnit will be objNull in this instance.
+This script will not fire at mission start if respawnOnStart equals -1.
+*/
+
 #define pr private
 
-/*
-(finddisplay 12) ctrlCreate ["group_data_group_0", IDC_GROUP_DATA_GROUP_DATA_GROUP_0];
-//(finddisplay 12) ctrlCreate ["group_data_group_1", IDC_GROUP_DATA_GROUP_DATA_GROUP_0];
-(findDisplay 12) displayAddEventHandler["KeyDown",
-{
-	diag_log format ["KeyDown: %1", _this];
-	if(_this select 1 == 21) then
-	{
-		call compile preprocessfilelinenumbers "UI\showGroupControl.sqf";
-	};
-	false}
-];
-[] spawn compile preprocessfilelinenumbers "UI\commanderUIUpdate.sqf";
-*/
+params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
 
-// Add controls to the map
-#include "UI\Resources\MapUI\MapUI_Macros.h";
-_cfg = missionConfigFile >> "MapUI";
-_idd = 12;
-[_cfg, _idd] call ui_fnc_createControlsFromConfig;
-// Disable totally static controls
-{
-	((finddisplay 12) displayCtrl _x) ctrlEnable false;
-} forEach [IDD_LD_PANEL, IDC_LD_TYPE, IDC_LD_TIME, IDC_LD_COMPOSITION, IDC_LD_SIDE];
-
-//(findDisplay 12) ctrlCreate ["MapUIFinal", IDD_MAP_UI];
-/*
-[] spawn {
-
-sleep 15;
-
-createDialog "MapUI";
-
+// Make sure server initialization is done
+waitUntil {
+	diag_log format ["---- onPlayerRespawn: waiting server init, time: %1", diag_tickTime];
+	! isNil "serverInitDone"
 };
-*/
+diag_log format ["---- onPlayerRespawn: server init done, time: %1", diag_tickTime];
+
+diag_log format ["------- onPlayerRespawn %1", _this];
+
+// Execute script on the server
+_this remoteExec ["fnc_onPlayerRespawnServer", 2, false];
+
+//waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+
 
 // Trigger some code when player salutes
 /*
@@ -48,10 +40,6 @@ saluteKeys = actionKeys "Salute";
 		systemChat "Hello, soldier!";
 	};
 }];*/
-
-#include "AI\Stimulus\Stimulus.hpp"
-#include "AI\stimulusTypes.hpp"
-#include "OOP_Light\OOP_Light.h"
 
 player addEventHandler ["AnimChanged", {
 	params ["_unit", "_anim"];
@@ -79,11 +67,12 @@ player addEventHandler ["AnimChanged", {
 
 //player setUnitTrait ["audibleCoef",0,true];
 //player setUnitTrait ["camouflageCoef",0,true];
-Civilian setFriend [West , 0];
+//Civilian setFriend [West , 0];
 
 #define TRIGGER_DISTANCE 10
 #define INTERVAL 0.5
 
+/*
 [] spawn {
 	while {true}do{
 		//civilians are enemy with opfor but opfor is not enemies with civilian
@@ -110,7 +99,7 @@ Civilian setFriend [West , 0];
 		sleep INTERVAL;
 	};
 };
-
+*/
 
 // Create a suspiciousness monitor for player
 NEW("undercoverMonitor", [player]);

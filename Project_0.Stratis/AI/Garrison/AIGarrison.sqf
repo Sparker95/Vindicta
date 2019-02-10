@@ -49,4 +49,60 @@ CLASS("AIGarrison", "AI")
 		gMessageLoopMain
 	} ENDMETHOD;
 
+	/*
+	Method: handleGroupsAdded
+	Handles what happens when groups get added while there is an active action.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			// Call it directly since it is in the same thread
+			CALLM1(_action, "handleGroupsAdded", [_groups]);
+		};
+		
+		nil
+	} ENDMETHOD;
+
+
+	/*
+	Method: handleGroupsRemoved
+	Handles a group being removed from its garrison while the AI object is still operational.
+	Currently it deletes goals from groups that have been assigned by this AI object and calls handleGroupsRemoved of current action of this AI object, if it exists.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		// Delete goals that have been given by this object
+		{
+			pr _groupAI = CALLM0(_x, "getAI");
+			if (!isNil "_groupAI") then {
+				if (_groupAI != "") then {
+					CALLM2(_groupAI, "deleteExternalGoal", "", _thisObject);
+				};
+			};
+		} forEach _groups;
+		
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			// Call it directly since it is in the same thread
+			CALLM1(_action, "handleGroupsRemoved", [_groups]);
+		};
+		
+		nil
+	} ENDMETHOD;
+
 ENDCLASS;

@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Location/getUnitCapacity.sqf",{248:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns how many units of this type and group type the location can hold.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Location/getUnitCapacity.sqf",{258:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns how many units of this type and group type the location can hold.</div></div>"});
