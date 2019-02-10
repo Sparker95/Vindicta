@@ -517,6 +517,15 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// If the action is active, unassign the unit from the vehicle
+		pr _state = T_GETV("state");
+		if (_state == ACTION_STATE_ACTIVE) then {
+			pr _AI = GETV(_thisObject, "AI");
+			CALLM0(_AI, "unassignVehicle");
+		};
+		
+		
 	} ENDMETHOD; 
 
 ENDCLASS;
