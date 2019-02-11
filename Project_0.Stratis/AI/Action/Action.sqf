@@ -402,4 +402,27 @@ CLASS("Action", "MessageReceiver")
 		_wsPre		
 	} ENDMETHOD;
 	
+	/*
+	Method: (static)getParameterValue
+	Takes an array with parameters and returns value of parameter with given tag, or nil if such a parameter was not found.
+	If the parameter is not found, it will diag_log an error message.
+	
+	Parameters: _parameters, _tag
+	
+	_parameters - array with parameters
+	_tag - Number or String, parameter tag
+	
+	Returns: anything
+	*/
+	STATIC_METHOD("getParameterValue") {
+		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]]];
+		pr _index = _parameters findif {_x select 0 == _tag};
+		if (_index == -1) then {
+			diag_log format ["[%1::] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters];
+			nil
+		} else {
+			(_parameters select _index) select 1
+		};
+	} ENDMETHOD;
+	
 ENDCLASS;

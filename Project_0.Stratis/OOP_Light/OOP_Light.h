@@ -160,8 +160,16 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALL_METHOD_2(objNameStr, methodNameStr, a, b) (([objNameStr, a, b]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
 #define CALL_METHOD_3(objNameStr, methodNameStr, a, b, c) (([objNameStr, a, b, c]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
 #define CALL_METHOD_4(objNameStr, methodNameStr, a, b, c, d) (([objNameStr, a, b, c, d]) call GET_METHOD(OBJECT_PARENT_CLASS_STR(objNameStr), methodNameStr))
+
 #define CALL_CLASS_METHOD(classNameStr, objNameStr, methodNameStr, extraParams) (([objNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr))
+
 #define CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams) (([classNameStr] + extraParams) call GET_METHOD(classNameStr, methodNameStr))
+#define CALL_STATIC_METHOD_0(classNameStr, methodNameStr) ([classNameStr] call GET_METHOD(classNameStr, methodNameStr))
+#define CALL_STATIC_METHOD_1(classNameStr, methodNameStr, a) (([classNameStr, a]) call GET_METHOD(classNameStr, methodNameStr))
+#define CALL_STATIC_METHOD_2(classNameStr, methodNameStr, a, b) (([classNameStr, a, b]) call GET_METHOD(classNameStr, methodNameStr))
+#define CALL_STATIC_METHOD_3(classNameStr, methodNameStr, a, b, c) (([classNameStr, a, b, c]) call GET_METHOD(classNameStr, methodNameStr))
+#define CALL_STATIC_METHOD_4(classNameStr, methodNameStr, a, b, c, d) (([classNameStr, a, b, c, d]) call GET_METHOD(classNameStr, methodNameStr))
+
 
 // Shortened variants of macros
 #define CALLM(a, b, c) CALL_METHOD(a, b, c)
@@ -174,6 +182,12 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM2(a, b, c, d) CALL_METHOD_2(a, b, c, d)
 #define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
+
+#define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b);
+#define CALLSM1(a, b, c) CALL_STATIC_METHOD_0(a, b, c);
+#define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_0(a, b, c, d);
+#define CALLSM3(a, b, c, d, e) CALL_STATIC_METHOD_0(a, b, c, d, e);
+#define CALLSM4(a, b, c, d, e, f) CALL_STATIC_METHOD_0(a, b, c, d, e, f);
 
 // Remote executions
 #define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, extraParams, targets) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]

@@ -10,25 +10,40 @@
 #include "..\parameterTags.hpp"
 
 /*
-Template of an Action class
+Merges or splits vehicle group(s)
+We need to merge vehicle groups into one group for convoy.
+
+Parameters:
+_merge - true to merge, false to split
 */
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
+#define THIS_ACTION_NAME "ActionGarrisonMergeVehicleGroups"
 
-CLASS("MyAction", "Action")
+CLASS("MyAction", "ActionGarrison")
+	
+	VARIABLE("merge");
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-
+		
+		pr _merge = CALLSM2("Action", "getParameterValue", TAG_A_MERGE);
+		T_SETV("merge", _merge);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
+		
+		pr _merge = T_GETV("merge");
+		if (_merge) then {
+		
+		} else {
+		
+		};
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -42,26 +57,15 @@ CLASS("MyAction", "Action")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM(_thisObject, "activateIfInactive", []);
 		
 		// Return the current state
-		ACTION_STATE_ACTIVE
+		_state
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
-	
-	
-	// Calculates cost of this action
-	/*
-	STATIC_METHOD( ["_thisClass", "", [""]], "getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		
-		// Return cost
-		0
-	} ENDMETHOD;
-	*/
 
 ENDCLASS;

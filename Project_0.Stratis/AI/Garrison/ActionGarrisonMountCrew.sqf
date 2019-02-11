@@ -8,6 +8,7 @@
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
 #include "garrisonWorldStateProperties.hpp"
+#include "..\parameterTags.hpp"
 
 /*
 All crew of vehicles mounts assigned vehicles.
@@ -17,18 +18,17 @@ All crew of vehicles mounts assigned vehicles.
 
 #define THIS_ACTION_NAME "ActionGarrisonMountCrew"
 
-CLASS(THIS_ACTION_NAME, "Action")
-
-	VARIABLE("AI");
+CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
-	STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
-	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
+	VARIABLE("mount"); // Bool, true for mounting, false for dismounting
 	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _AI);
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		
+		pr _mount = CALLSM2("Action", "getParameterValue", _parameters, TAG_A_MOUNT);
+		T_SETV("mount", _mount);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated

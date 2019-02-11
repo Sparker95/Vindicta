@@ -111,8 +111,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		CALLM1(_unit, "setGroup", _thisObject);
 		
 		// Associate the unit with the garrison of this group
+		// todo
 		
-		
+		// Handle spawn states
 		if (CALLM0(_thisObject,"isSpawned")) then {
 		
 			// Make the unit join the actual group
@@ -129,6 +130,34 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		};
 	} ENDMETHOD;
 	
+	/*
+	Method: addGroup
+	Moves all units from second group into this group.
+	
+	Parameters: _group
+	
+	_group - the group to move into this group
+	_delete - Boolean, true - deletes the abandoned group. Default: false.
+	
+	Returns: nil
+	*/
+	
+	METHOD("addGroup") {
+		params [["_thisObject", "", [""]], ["_group", "", [""]], ["_delete", false]];
+		
+		// Get units of the other group
+		pr _units = CALLM0(_group, "getUnits");
+		
+		// Add all units to this group
+		{
+			CALLM1(_thisObject, "addUnit", _x);
+		} forEach _units;
+		
+		// Delete the other group if needed
+		if (_delete) then {
+			DELETE(_group);
+		};
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                        R E M O V E   U N I T                       |
