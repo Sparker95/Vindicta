@@ -10,8 +10,10 @@ Arguments are the same as in onPlayerRespawn.sqf.
 
 diag_log format ["------- onPlayerRespawnServer %1", _this];
 
+params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
+
 // Create a new Unit and attach it to player
-pr _args = [[], T_INF, T_INF_rifleman, -1, "", player];
+pr _args = [[], T_INF, T_INF_rifleman, -1, "", _newUnit];
 pr _unit = NEW("Unit", _args);
 
 // Add player's unit to the global garrison

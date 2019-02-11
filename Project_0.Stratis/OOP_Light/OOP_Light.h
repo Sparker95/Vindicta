@@ -91,6 +91,7 @@
 #define FORCE_GET_STATIC_MEM(classNameStr, memNameStr) ( NAMESPACE getVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) )
 #define FORCE_GET_METHOD(classNameStr, methodNameStr) ( NAMESPACE getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
 #define FORCE_PUBLIC_MEM(objNameStr, memNameStr) publicVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr)
+#define FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr) publicVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr)
 
 //Special members don't use run time checks
 #define SET_SPECIAL_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr), value]
@@ -107,6 +108,7 @@
 	#define GET_STATIC_MEM(classNameStr, memNameStr) ( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_GET_STATIC_MEM(classNameStr, memNameStr)}else{nil} )
 	#define GET_METHOD(classNameStr, methodNameStr) ( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then {FORCE_GET_METHOD(classNameStr, methodNameStr)}else{nil} )
 	#define PUBLIC_MEM(objNameStr, memNameStr) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_PUBLIC_MEM(objNameStr, memNameStr)}
+	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)}
 #else
 	#define SET_MEM(objNameStr, memNameStr, value) FORCE_SET_MEM(objNameStr, memNameStr, value)
 	#define SET_STATIC_MEM(classNameStr, memNameStr, value) FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)
@@ -114,6 +116,7 @@
 	#define GET_STATIC_MEM(classNameStr, memNameStr) FORCE_GET_STATIC_MEM(classNameStr, memNameStr)
 	#define GET_METHOD(classNameStr, methodNameStr) FORCE_GET_METHOD(classNameStr, methodNameStr)
 	#define PUBLIC_MEM(objNameStr, memNameStr) FORCE_PUBLIC_MEM(objNameStr, memNameStr)
+	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)
 #endif
 
 #define SET_VAR(a, b, c) SET_MEM(a, b, c)
@@ -121,12 +124,15 @@
 #define GET_VAR(a, b) GET_MEM(a, b)
 #define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
 #define PUBLIC_VAR(a, b) PUBLIC_MEM(a, b)
+#define PUBLIC_STATIC_VAR(a, b) PUBLIC_STATIC_MEM(a, b)
+#define SET_VAR_PUBLIC(a, b, c) SET_VAR(a, b, c); PUBLIC_VAR(a, b);
 
 // Shortened variants of macros
 #define SETV(a, b, c) SET_VAR(a, b, c)
 #define SETSV(a, b, c) SET_STATIC_VAR(a, b, c)
 #define GETV(a, b) GET_VAR(a, b)
-#define GETSV(a, b) GET_STATIC_V(a, b)
+#define GETSV(a, b) GET_STATIC_VAR(a, b)
+#define PVAR(a, b) PUBLIC_VAR(a, b)
 
 // Getting/setting variables of _thisObject
 #define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
@@ -184,10 +190,10 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
 
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b);
-#define CALLSM1(a, b, c) CALL_STATIC_METHOD_0(a, b, c);
-#define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_0(a, b, c, d);
-#define CALLSM3(a, b, c, d, e) CALL_STATIC_METHOD_0(a, b, c, d, e);
-#define CALLSM4(a, b, c, d, e, f) CALL_STATIC_METHOD_0(a, b, c, d, e, f);
+#define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c);
+#define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d);
+#define CALLSM3(a, b, c, d, e) CALL_STATIC_METHOD_3(a, b, c, d, e);
+#define CALLSM4(a, b, c, d, e, f) CALL_STATIC_METHOD_4(a, b, c, d, e, f);
 
 // Remote executions
 #define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, extraParams, targets) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]
