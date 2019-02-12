@@ -19,16 +19,10 @@ All infantry mounts vehicles as passengers
 
 CLASS(THIS_ACTION_NAME, "Action")
 
-	VARIABLE("AI");
-	
-	STATIC_VARIABLE("preconditions"); // World state which must be satisfied for this action to start
-	STATIC_VARIABLE("effects"); // World state after the action ahs been executed
-	
 	// ------------ N E W ------------
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _a);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -36,10 +30,10 @@ CLASS(THIS_ACTION_NAME, "Action")
 		params [["_to", "", [""]]];		
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 		
 		// Return ACTIVE state
-		ACTION_STATE_ACTIVE
+		ACTION_STATE_COMPLETED
 		
 	} ENDMETHOD;
 	
@@ -50,7 +44,7 @@ CLASS(THIS_ACTION_NAME, "Action")
 		CALLM(_thisObject, "activateIfInactive", []);
 		
 		// Return the current state
-		ACTION_STATE_ACTIVE
+		ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied

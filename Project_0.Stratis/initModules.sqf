@@ -1,6 +1,7 @@
 //Just a quick file to initialize the modules already made in needed order
 
 #include "OOP_Light\OOP_Light.h"
+#define COMPILEFUNC(path) compile preprocessFileLineNumbers path
 
 diag_log "initModules was called!";
 
@@ -22,6 +23,7 @@ tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
+fnc_onPlayerRespawnServer = COMPILEFUNC("fn_onPlayerRespawnServer.sqf");
 
 /*
 //Initialize garrison

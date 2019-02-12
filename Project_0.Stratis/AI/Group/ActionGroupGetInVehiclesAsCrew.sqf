@@ -36,6 +36,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		
 		OOP_INFO_0("ACTIVATE");
 		
+		pr _AI = T_GETV("AI");
 		pr _group = GETV(T_GETV("AI"), "agent");
 		
 		// Assign units to vehicles
@@ -64,7 +65,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 				pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "DRIVER"], ["turretPath", 0]];
 				
 				// Add goal to this driver
-				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _group);
+				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
 				
 				// Add the AI of this driver to the array
 				_driversAI pushBack _driverAI;
@@ -86,7 +87,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 					pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "TURRET"], ["turretPath", _turretPath]];
 					
 					// Add goal to this turret
-					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _group);		
+					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);		
 					
 					_turretsAI pushback _turretAI;
 					
@@ -145,12 +146,12 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		};
 	} ENDMETHOD;
 	
-	METHOD("handleUnitRemoved") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
-		OOP_INFO_1("Unit removed: %1", _unit);
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]] ];
+		OOP_INFO_1("Units removed: %1", _units);
 		
 		// Call activate method, pass the unit that was removed
-		CALLM1(_thisObject, "activate", [_unit]);
+		CALLM1(_thisObject, "activate", _units);
 		
 		/*
 		pr _state = T_GETV("state");

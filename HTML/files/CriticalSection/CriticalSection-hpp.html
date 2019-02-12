@@ -8,20 +8,20 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="CriticalSection"></a><a name="Topic160"></a><div class="CTopic TClass LSQF first">
+<a name="CriticalSection"></a><a name="Topic171"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">CriticalSection</div>
  <div class="CBody"><p>Critical section is a piece of code which must be executed uninterrupted.&nbsp; In SQF scheduled scripts can potentially be interrupted at any point by another scheduled script or by an event handler, thus we must prevent it.</p><p>It is just a wrapper for isNil {};</p><div class="CHeading">Example</div><pre>CRITICAL_SECTION_START<br />_a = b;<br />_a = _a + <span class="SHNumber">1</span>;<br />b = _a;<br />CRITICAL_SECTION_END</pre><p>Author: Sparker</p><p>Thx Dedmen for this idea!</p></div>
 </div>
 
-<a name="CriticalSection.Macros"></a><a name="Topic161"></a><div class="CTopic TGroup LSQF">
+<a name="CriticalSection.Macros"></a><a name="Topic172"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Macros</div>
 </div>
 
-<a name="CriticalSection.CRITICAL_SECTION_START"></a><a name="Topic162"></a><div class="CTopic TMacro LSQF">
+<a name="CriticalSection.CRITICAL_SECTION_START"></a><a name="Topic173"></a><div class="CTopic TMacro LSQF">
  <div class="CTitle">CRITICAL_SECTION_START</div>
 </div>
 
-<a name="CriticalSection.CRITICAL_SECTION_END"></a><a name="Topic163"></a><div class="CTopic TMacro LSQF last">
+<a name="CriticalSection.CRITICAL_SECTION_END"></a><a name="Topic174"></a><div class="CTopic TMacro LSQF last">
  <div class="CTitle">CRITICAL_SECTION_END</div>
 </div>
 

@@ -56,7 +56,10 @@
 #define WSP_GAR_CARGO									18
 #define WSP_GAR_HAS_CARGO								19
 
+// Vehicle groups are merged
+#define WSP_GAR_VEHICLE_GROUPS_MERGED					20
+
 // Side
 
 // Total amount of properties
-#define WSP_GAR_COUNT									20
+#define WSP_GAR_COUNT									21

@@ -130,5 +130,52 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		private _msgHandled = CALLM(_subactionFront, "handleMessage", [_msg]);
 		_msgHandled
 	} ENDMETHOD;
+	
+	
+	
+	/*
+	Method: handleGroupsAdded
+	Calls the same method of the front most action.
+	*/
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");
+		CALLM1(_subactions select 0, "handleGroupsAdded", _groups);
+	} ENDMETHOD;
+
+
+	/*
+	Method: handleGroupsRemoved
+	Calls the same method of the front most action.
+	*/
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");		
+		CALLM1(_subactions select 0, "handleGroupsRemoved", _groups);
+	} ENDMETHOD;
+	
+	
+	/*
+	Method: handleUnitsRemoved
+	Calls the same method of the front most action.
+	*/
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");		
+		CALLM1(_subactions select 0, "handleUnitsRemoved", _groups);
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Calls the same method of the front most action.
+	*/
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");		
+		CALLM1(_subactions select 0, "handleUnitsAdded", _groups);
+	} ENDMETHOD;
+	
 
 ENDCLASS;

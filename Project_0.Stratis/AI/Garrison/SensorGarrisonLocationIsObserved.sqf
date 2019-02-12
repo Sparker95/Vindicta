@@ -66,7 +66,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 		// Check if other sides can see any unit of this garrison
 		{
 			pr _s = _x;
-			pr _enemyObjectsSide = _enemyObjects select {side _x == _s};
+			pr _enemyObjectsSide = _enemyObjects select {side group _x == _s};
 			pr _observedBySide = _enemyObjectsSide findIf {
 				pr _enemyObject = _x;
 				pr _enemyObservesThisUnit =  _thisObjects findIf {

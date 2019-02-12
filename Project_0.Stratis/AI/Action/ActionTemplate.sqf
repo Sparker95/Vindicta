@@ -7,6 +7,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "..\parameterTags.hpp"
 
 /*
 Template of an Action class
@@ -21,7 +22,7 @@ CLASS("MyAction", "Action")
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 
 	} ENDMETHOD;
 	

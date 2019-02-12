@@ -17,13 +17,15 @@ add inits here until it's so fucked up, then redo it all over again
 
 // If a client, wait for the server to finish its initialization
 if(! isServer) then {
-	diag_log "Waiting for server init...";
-	systemChat "Waiting for server initialization...";
+	private _str = format ["Waiting for server init, time: %1", diag_tickTime];
+	diag_log _str;
+	systemChat _str;
 	
 	waitUntil {! isNil "serverInitDone"};
 	
-	systemChat "Server initialization completed!";
-	diag_log "Server initialization completed!";
+	_str = format ["Server initialization completed at time: %1", diag_tickTime];
+	systemChat _str;
+	diag_log _str;;
 };
 
 // Initialize global objects in unscheduled
@@ -76,6 +78,13 @@ if (isServer || (!hasInterface && !isDedicated)) then {
 
 // Server only
 if (isServer) then {
+
+	// Garrison objects to track players and player owned vehicles
+	gGarrisonPlayersWest = NEW("Garrison", [WEST]);
+	gGarrisonPlayersEast = NEW("Garrison", [EAST]);
+	gGarrisonPlayersInd = NEW("Garrison", [INDEPENDENT]);
+	gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
+	gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
 
 	// Message loops for commander AI
 	gMessageLoopCommanderWest = NEW("MessageLoop", []);
@@ -138,10 +147,10 @@ if (!hasInterface && !isDedicated) then {
 // Only players
 if (hasInterface) then {
 	diag_log "----- Player detected!";
-	[] spawn {
+	
+	0 spawn {
 		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
-		systemChat "Player detected!";
-		[] spawn compile preprocessfilelinenumbers "onPlayerSpawn.sqf";
+		call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 	};
 };
 

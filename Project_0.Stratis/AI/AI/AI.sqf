@@ -75,7 +75,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "sensors", []);
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
-		SETV(_thisObject, "processInterval", 10);
+		SETV(_thisObject, "processInterval", 1);
 		
 		// Add this AI to the stimulus manager
 		pr _args = ["addSensingAI", [_thisObject]];
@@ -196,7 +196,7 @@ CLASS("AI", "MessageReceiverEx")
 					} else {
 						// Terminate the current action (if it exists)
 						CALLM0(_thisObject, "deleteCurrentAction");
-						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, worldState), _wsGoal];
+						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, "worldState"), _wsGoal];
 					};
 				} else {
 					// Set a new action from the predefined action
@@ -446,18 +446,22 @@ CLASS("AI", "MessageReceiverEx")
 	_goalClassName - <Goal> class name
 	_bias - a number to be added to the relevance of the goal once it is calculated
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
-	_source - string, optional, can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
 	
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]] ];
 		
 		OOP_INFO_2("Added external goal: %1, %2", _goalClassName, _parameters);
 		
+		if (_sourceAI != "") then {
+			ASSERT_OBJECT_CLASS(_sourceAI, "AI");
+		};
+		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE];
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
 		nil
 	} ENDMETHOD;
@@ -472,12 +476,16 @@ CLASS("AI", "MessageReceiverEx")
 	Parameters: _goalClassName, _goalSource
 	
 	_goalClassName - <Goal> class name
-	_goalSource - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	_goalSourceAI - <AI> object that gave this goal or "" to ignore this field. If "" is provided, source field will be ignored.
 	
 	Returns: nil
 	*/
 	METHOD("deleteExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSourceAI", ""]];
+
+		if (_goalSourceAI != "") then {
+			ASSERT_OBJECT_CLASS(_goalSourceAI, "AI");
+		};
 
 		CRITICAL_SECTION_START
 		// [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE]
@@ -487,7 +495,7 @@ CLASS("AI", "MessageReceiverEx")
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
 			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
-					( ((_cg select 3) == _goalSource) || (_goalSource == ""))) then {
+					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
 				pr _deletedGoal = _goalsExternal deleteAt _i;
 				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
 			} else {
@@ -541,6 +549,47 @@ CLASS("AI", "MessageReceiverEx")
 		_return
 	} ENDMETHOD;
 	
+	/*
+	Method: (static)allAgentsCompletedExternalGoal
+	Returns true if all provided AI objects have completed an external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/
+	STATIC_METHOD("allAgentsCompletedExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		{
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			(_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1)
+		} count _agents == (count _agents)
+	} ENDMETHOD;
+
+	/*
+	Method: (static)anyAgentFailedExternalGoal
+	Returns true if any agent has failed the external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/	
+	STATIC_METHOD("anyAgentFailedExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		(_agents findIf {
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			(_actionState == ACTION_STATE_FAILED)
+		}) != -1
+	} ENDMETHOD;
 	
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- A C T I O N S -------------------------------------------
@@ -715,6 +764,7 @@ CLASS("AI", "MessageReceiverEx")
 			private _timer = NEW("Timer", _args);
 			SETV(_thisObject, "timer", _timer);
 		};
+		nil
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -732,6 +782,7 @@ CLASS("AI", "MessageReceiverEx")
 			SETV(_thisObject, "timer", "");
 			DELETE(_timer);
 		};
+		nil
 	} ENDMETHOD;
 	
 	

@@ -33,8 +33,8 @@ CLASS("ActionGroup", "Action")
 	} ENDMETHOD;
 
 	/*
-	Method: handleUnitRemoved
-	Handles what happened when a unit gets removed from its group while the group has some action operational.
+	Method: handleUnitsRemoved
+	Handles what happened when units get removed from its group while the group has some action operational.
 	By default it does nothing.
 	
 	How it gets called: called by <AIGroup> directly.
@@ -46,8 +46,27 @@ CLASS("ActionGroup", "Action")
 	Returns: nil
 	*/
 	
-	METHOD("handleUnitRemoved") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happened when units get added to its group while the group has some action operational.
+	By default it does nothing.
+	
+	How it gets called: called by <AIGroup> directly.
+	
+	Parameters: _unit
+	
+	_unit - <Unit>
+	
+	Returns: nil
+	*/
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		
 	} ENDMETHOD;
 	

@@ -1,3 +1,6 @@
+//#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
@@ -34,7 +37,7 @@ MsgRcvr_fnc_setMsgDone = {
 	};
 };
 
-//#define DEBUG
+#define DEBUG
 
 CLASS("MessageReceiver", "")
 
@@ -127,9 +130,7 @@ CLASS("MessageReceiver", "")
 	METHOD("postMessage") {
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]], ["_returnMsgID", false] ];
 		
-		#ifdef DEBUG
-		diag_log format ["[MessageReceiver::postMessage] Info: %1", _this];
-		#endif
+		OOP_INFO_1("postMessage: %1", _msg);
 		
 		// Check owner of this object
 		pr _owner = GETV(_thisObject, "owner");
@@ -153,6 +154,8 @@ CLASS("MessageReceiver", "")
 					// Set the message id in the message structure, so that messageLoop understands if it needs to set a flag when the message is done
 					_msg set [MESSAGE_ID_SOURCE_ID, _msgID];
 					
+					OOP_INFO_1("postMessage: generated msgID: %1", _msgID);
+					
 					// Post the message to the thread, give it the message ID so that it marks the message as processed
 					CALLM1(_messageLoop, "postMessage", _msg);
 				CRITICAL_SECTION_END
@@ -169,7 +172,7 @@ CLASS("MessageReceiver", "")
 			};
 		} else {
 			// Tell the other machine to handle this message
-			diag_log "Sending msg to a remote machine";
+			OOP_INFO_0("Sending msg to a remote machine");
 			if (_returnMsgID) then {
 				// Generate a new message ID
 				pr _msgID = 0;
@@ -268,6 +271,7 @@ CLASS("MessageReceiver", "")
 		pr _return = 0;
 		waitUntil {
 			//diag_log "Waiting...";
+			OOP_INFO_1("waiting for msgID to be done: %1", _msgID);
 			(g_rqArray select _msgID select 0) == 1
 		};
 		_return = g_rqArray select _msgID select 1;
