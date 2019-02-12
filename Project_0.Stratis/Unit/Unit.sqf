@@ -113,8 +113,6 @@ CLASS(UNIT_CLASS_NAME, "")
 	METHOD("delete") {
 		params[["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
-		private _mutex = _data select UNIT_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
 		
 		//Despawn this unit if it was spawned
 		CALLM(_thisObject, "despawn", []);
@@ -125,9 +123,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
-		_allArray = _allArray - [_thisObject];
-		SET_STATIC_MEM(UNIT_CLASS_NAME, "all", _allArray);
-		MUTEX_UNLOCK(_mutex);
+		_allArray deleteAt (_allArray find _thisObject);
 		SET_MEM(_thisObject, "data", nil);
 	} ENDMETHOD;
 	

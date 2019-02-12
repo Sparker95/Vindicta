@@ -75,7 +75,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "sensors", []);
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
-		SETV(_thisObject, "processInterval", 10);
+		SETV(_thisObject, "processInterval", 1);
 		
 		// Add this AI to the stimulus manager
 		pr _args = ["addSensingAI", [_thisObject]];
@@ -196,7 +196,7 @@ CLASS("AI", "MessageReceiverEx")
 					} else {
 						// Terminate the current action (if it exists)
 						CALLM0(_thisObject, "deleteCurrentAction");
-						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, worldState), _wsGoal];
+						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, "worldState"), _wsGoal];
 					};
 				} else {
 					// Set a new action from the predefined action
@@ -549,6 +549,47 @@ CLASS("AI", "MessageReceiverEx")
 		_return
 	} ENDMETHOD;
 	
+	/*
+	Method: (static)allAgentsCompletedExternalGoal
+	Returns true if all provided AI objects have completed an external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/
+	STATIC_METHOD("allAgentsCompletedExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		{
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			(_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1)
+		} count _agents == (count _agents)
+	} ENDMETHOD;
+
+	/*
+	Method: (static)anyAgentFailedExternalGoal
+	Returns true if any agent has failed the external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/	
+	STATIC_METHOD("anyAgentFailedExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		(_agents findIf {
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			(_actionState == ACTION_STATE_FAILED)
+		}) != -1
+	} ENDMETHOD;
 	
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- A C T I O N S -------------------------------------------
@@ -723,6 +764,7 @@ CLASS("AI", "MessageReceiverEx")
 			private _timer = NEW("Timer", _args);
 			SETV(_thisObject, "timer", _timer);
 		};
+		nil
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -740,6 +782,7 @@ CLASS("AI", "MessageReceiverEx")
 			SETV(_thisObject, "timer", "");
 			DELETE(_timer);
 		};
+		nil
 	} ENDMETHOD;
 	
 	

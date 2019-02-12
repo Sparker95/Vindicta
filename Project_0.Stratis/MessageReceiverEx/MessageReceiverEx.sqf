@@ -110,8 +110,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 		params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]] ];
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_TYPE, _methodName];
-		private _returnArray = [];
-		_msg set [MESSAGE_ID_DATA, _methodParams]; // Array to return data to, method parameters
+		_msg set [MESSAGE_ID_DATA, _methodParams];
 		private _msgID = CALLM2(_thisObject, "postMessage", _msg, true);
 		pr _return = CALLM1(_thisObject, "waitUntilMessageDone", _msgID);
 		

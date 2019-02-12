@@ -171,9 +171,21 @@ CLASS("Garrison", "MessageReceiverEx")
 		T_GETV("units")
 	} ENDMETHOD;
 	
+	// 						G E T   A I
+	/*
+	Method: getAI
+	Returns the AI object of this garrison.
+	
+	Returns: Array of <Unit> objects.
+	*/
+	METHOD("getAI") {
+		params [["_thisObject", "", [""]]];
+		T_GETV("AI")
+	} ENDMETHOD;
+	
 	//             F I N D   G R O U P S   B Y   T Y P E
 	/*
-	Method: findGroupByType
+	Method: findGroupsByType
 	Finds groups in this garrison that have the same type as _type
 	
 	Parameters: _type
@@ -311,10 +323,10 @@ CLASS("Garrison", "MessageReceiverEx")
 			_groupIsSpawned = CALLM0(_group, "isSpawned");
 			if (_groupIsSpawned) then { // If the group is finally spawned
 				// Notify the AI of the garrison about it
+				// Call the handleGroupsAdded directly since it's in the same thread
 				pr _AI = T_GETV("AI");
 				if (_AI != "") then {
-					pr _msgID = CALLM3(_AI, "postMethodAsync", "handleGroupsAdded", [[_group]], true);
-					CALLM1(_AI, "waitUntilMessageDone", _msgID);
+					CALLM1(_AI, "handleGroupsAdded", [[_group]]);
 				};
 			};
 		} else {
@@ -329,7 +341,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	} ENDMETHOD;
 	
 	/*
-	Method: addGroup
+	Method: removeGroup
 	Removes an existing group from this garrison.
 	You don't need to call this. Use addGroup when you need to move groups between garrisons.
 	
@@ -389,7 +401,8 @@ CLASS("Garrison", "MessageReceiverEx")
 		"ActionGarrisonMoveMountedCargo",
 		"ActionGarrisonRelax",
 		"ActionGarrisonRepairAllVehicles",
-		"ActionGarrisonUnloadCurrentCargo"]
+		"ActionGarrisonUnloadCurrentCargo",
+		"ActionGarrisonMergeVehicleGroups"]
 	} ENDMETHOD;
 	
 	

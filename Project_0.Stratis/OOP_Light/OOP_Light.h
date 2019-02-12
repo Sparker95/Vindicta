@@ -125,7 +125,7 @@
 #define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
 #define PUBLIC_VAR(a, b) PUBLIC_MEM(a, b)
 #define PUBLIC_STATIC_VAR(a, b) PUBLIC_STATIC_MEM(a, b)
-#define SET_VAR_PUBLIC(a, b, c) SET_VAR(a, b, c); PUBLIC_VAR(a, b);
+#define SET_VAR_PUBLIC(a, b, c) SET_VAR(a, b, c); PUBLIC_VAR(a, b)
 
 // Shortened variants of macros
 #define SETV(a, b, c) SET_VAR(a, b, c)
@@ -189,11 +189,11 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
 
-#define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b);
-#define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c);
-#define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d);
-#define CALLSM3(a, b, c, d, e) CALL_STATIC_METHOD_3(a, b, c, d, e);
-#define CALLSM4(a, b, c, d, e, f) CALL_STATIC_METHOD_4(a, b, c, d, e, f);
+#define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
+#define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
+#define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d)
+#define CALLSM3(a, b, c, d, e) CALL_STATIC_METHOD_3(a, b, c, d, e)
+#define CALLSM4(a, b, c, d, e, f) CALL_STATIC_METHOD_4(a, b, c, d, e, f)
 
 // Remote executions
 #define REMOTE_EXEC_METHOD(objNameStr, methodNameStr, extraParams, targets) [objNameStr, methodNameStr, extraParams] remoteExec ["OOP_callFromRemote", targets, false]

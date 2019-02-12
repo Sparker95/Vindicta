@@ -98,7 +98,7 @@ _action
 
 
 
-// Makes a group which has a unit with objectHandle stop its AI brain and switch to specified action immediately
+// Adds a goal to the group of the unit with given object handle
 AI_misc_fnc_addGroupGoal = {
 	params [ ["_objectHandle", objNull, [objNull]], ["_goalClassName", "", [""]], ["_parameters", []]];
 	
@@ -121,4 +121,30 @@ _goalClassName = "GoalGroupGetInVehiclesAsCrew";
 _parameters = [];
 call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 [_unit, _goalClassName, _parameters] call AI_misc_fnc_addGroupGoal;
+*/
+
+
+AI_misc_fnc_addGarrisonGoal = {
+	params [ ["_objectHandle", objNull, [objNull]], ["_goalClassName", "", [""]], ["_parameters", []]];
+	
+	pr _unit = _objectHandle getVariable "unit";
+	if (isNil "_unit") exitWith { diag_log "Error: object handle is not a unit!"; };
+	
+	// Get the unit's garrison
+	pr _gar = CALLM0(_unit, "getGarrison");
+	pr _garAI = CALLM0(_gar, "getAI");
+	if (isNil "_garAI") exitWith {diag_log "Error: garrison AI is not found!";};
+	
+	// Delete previously given external goals
+	CALLM2(_garAI, "deleteExternalGoal", "", _garAI);
+	
+	CALLM4(_garAI, "addExternalGoal", _goalClassName, 0, _parameters, _garAI);
+};
+
+/*
+_unit = cursorObject;
+_goalClassName = "GoalGarrisonMove";
+_parameters = [];
+call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
+[_unit, _goalClassName, _parameters] call AI_misc_fnc_addGarrisonGoal;
 */

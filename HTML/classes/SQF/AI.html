@@ -54,6 +54,16 @@
  <div class="CBody"><p>Returns the state of <a href="../../index.html#SQFClass:Action" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,2);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Action</a> which is executed in response to specified external <a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,73);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a>, or -1 if specified goal was not found.</p><p>Parameters: _goalClassName, _source</p><table class="CDefinitionList"><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,73);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Number, one of &lt;ACTION_STATE&gt;</p></div>
 </div>
 
+<a name="(static)allAgentsCompletedExternalGoal"></a><a name="Topic218"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)allAgentsCompletedExternalGoal</div>
+ <div class="CBody"><p>Returns true if all provided AI objects have completed an external goal.</p><p>Parameters: _agents, _goalClassName, _goalSource</p><table class="CDefinitionList"><tr><td class="CDLEntry">_agents</td><td class="CDLDefinition"><p>array of agent objects (Unit, Garrison, Group - must support getAI method)</p></td></tr><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,73);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Bool</p></div>
+</div>
+
+<a name="(static)anyAgentFailedExternalGoal"></a><a name="Topic455"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)anyAgentFailedExternalGoal</div>
+ <div class="CBody"><p>Returns true if any agent has failed the external goal.</p><p>Parameters: _agents, _goalClassName, _goalSource</p><table class="CDefinitionList"><tr><td class="CDLEntry">_agents</td><td class="CDLDefinition"><p>array of agent objects (Unit, Garrison, Group - must support getAI method)</p></td></tr><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,73);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Bool</p></div>
+</div>
+
 <a name="start"></a><a name="Topic59"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">start</div>
  <div class="CBody"><p>Starts the AI brain. From now process method will be called periodically.</p></div>

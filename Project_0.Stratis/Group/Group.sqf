@@ -1,3 +1,5 @@
+#define OOP_ERROR
+#define OOP_WARNING
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
@@ -55,7 +57,23 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-		// todo
+		
+		pr _data = T_GETV("data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		
+		// Report an error if we are deleting a group with units in it
+		if(count _units > 0) then {
+			OOP_ERROR_2("Deleting a group that has units in it: %1, %2", _thisObject, _data);
+			{
+				DELETE(_x);
+			} forEach _units;
+		};
+		
+		// Delete the group from its garrison
+		pr _gar = _data select GROUP_DATA_ID_GARRISON;
+		if (_gar != "") then {
+			CALLM1(_gar, "removeGroup", _thisObject);
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -118,7 +136,15 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		
 			// Make the unit join the actual group
 			pr _newGroupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			// Create group handle if it doesn't exist yet
+			if (isNull _newGroupHandle) then {
+				_newGroupHandle = createGroup [_data select GROUP_DATA_ID_SIDE, false]; //side, delete when empty
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _newGroupHandle];
+			};
+			
 			pr _unitObjectHandle = CALLM0(_unit, "getObjectHandle");
+			
 			[_unitObjectHandle] join _newGroupHandle;
 			
 			// If the target group is spawned, notify its AI object
@@ -224,14 +250,27 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	// |                         G E T   T Y P E                            |
 	/*
 	Method: getType
-	Description
+	Returns <GROUP_TYPE>
 	
-	Returns: Number, grup type. See <GROUP_TYPE>,
+	Returns: Number, group type. See <GROUP_TYPE>,
 	*/
 	METHOD("getType") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data select GROUP_DATA_ID_TYPE
+	} ENDMETHOD;
+	
+	// |                         G E T   S I D E                            |
+	/*
+	Method: getSide
+	Returns side of this group
+	
+	Returns: Side
+	*/
+	METHOD("getSide") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select GROUP_DATA_ID_SIDE
 	} ENDMETHOD;
 	
 	

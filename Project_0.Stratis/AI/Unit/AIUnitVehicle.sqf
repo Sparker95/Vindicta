@@ -201,6 +201,40 @@ CLASS("AIUnitVehicle", "AI")
 		};
 	} ENDMETHOD;
 	
+	/*
+	Method: getAssignedUnits
+	Returns all units assigned to this vehicle
+	
+	Parameters: _returnDriver, _returnTurrets, _returnCargo
+
+	_returnDriver - Bool, optional, default: true
+	_returnTurrets - Bool, optional, default: true
+	_returnCargo - Bool, optional, default: true
+	
+	Returns: Array of <Unit>s
+	*/
+	METHOD("getAssignedUnits") {
+		params [["_thisObject", "", [""]], ["_returnDriver", true], ["_returnTurrets", true], ["_returnCargo", true] ];
+		
+		pr _ret = [];
+		if (_returnDriver) then {
+			pr _driver = T_GETV("assignedDriver");
+			if (!isNil "_driver") then { _ret pushBack _driver};
+		};
+		
+		if (_returnTurrets) then {
+			pr _turrets = T_GETV("assignedTurrets");
+			if (!isNil "_turrets") then { _ret append (_turrets apply {_x select 0}) };
+		};
+		
+		if (_returnCargo) then {
+			pr _cargo = T_GETV("assignedCargo");
+			if (!isNil "_cargo") then { _ret append (_cargo apply {_x select 0}) };
+		};
+		
+		_ret
+	} ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The group AI resides in its own thread

@@ -418,7 +418,7 @@ CLASS("Action", "MessageReceiver")
 		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]]];
 		pr _index = _parameters findif {_x select 0 == _tag};
 		if (_index == -1) then {
-			diag_log format ["[%1::] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters];
+			diag_log format ["[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters];
 			nil
 		} else {
 			(_parameters select _index) select 1
