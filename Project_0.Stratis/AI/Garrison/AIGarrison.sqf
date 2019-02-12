@@ -38,6 +38,9 @@ CLASS("AIGarrison", "AI")
 		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);
+		
+		// Set process interval
+		CALLM1(_thisObject, "setProcessInterval", 1); //6);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

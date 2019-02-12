@@ -19,15 +19,23 @@ Handles moving of a group with multiple or single ground vehicles.
 
 #define pr private
 
+// Needed vehicle separation in meters
+#define SEPARATION 18
+#define SPEED_MAX 60
+#define SPEED_MIN 8
+
 CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	VARIABLE("pos");
+	VARIABLE("speedLimit");
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
+		
+		T_SETV("speedLimit", 20);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -65,7 +73,73 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _state = CALLM(_thisObject, "activateIfInactive", []);
 		
+		pr _hG = T_GETV("hG"); // Group handle
+		
+		
+		//Check the separation of the convoy
+		private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
+		#ifdef DEBUG_FORMATION
+		diag_log format [">>> Current separation: %1", _sCur];
+		#endif
+		if(_sCur > 1.9*SEPARATION) then
+		{
+			//We are driving too fast!
+			pr _speedLimit = T_GETV("speedLimit");
+			if(_speedLimit > SPEED_MIN) then
+			{
+				T_SETV("speedLimit", _speedLimit - 3);
+				(vehicle (leader _hG)) limitSpeed _speedLimit;
+				#ifdef DEBUG_FORMATION
+				diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
+				#endif
+			};
+		}
+		else
+		{
+			//We are driving too slow!
+			pr _speedLimit = T_GETV("speedLimit");
+			if(_speedLimit < SPEED_MAX) then
+			{
+				T_SETV("speedLimit", _speedLimit + 3.5);
+				(vehicle (leader _hG)) limitSpeed _speedLimit;
+				#ifdef DEBUG_FORMATION
+				diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
+				#endif
+			};
+		};
+		
+		
+		
+		
 		_state
+	} ENDMETHOD;
+	
+	//Gets the maximum separation between vehicles in convoy
+	METHOD("getMaxSeparation") {
+		params [["_thisObject", "", [""]]];
+
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
+		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
+		
+		//diag_log format ["All vehicles: %1", _allVehicles];
+		//diag_log format ["Lead vehicle: %1", _vehLead];
+		private _vehArraySort = _allVehicles apply {[_x distance _vehLead, _x]};
+
+
+		//diag_log format ["Unsorted array: %1", _vehArraySort];
+		_vehArraySort sort true; //Ascending
+		//diag_log format ["Sorted array: %1", _vehArraySort];
+		//Get the max separation
+		private _dMax = 0;
+		private _c = count _allVehicles;
+		for "_i" from 0 to (_c - 2) do
+		{
+			_d = (_vehArraySort select _i select 1) distance (_vehArraySort select (_i + 1) select 1);
+			if (_d > _dMax) then {_dMax = _d;};
+		};
+		_dMax
+		
 	} ENDMETHOD;
 	
 	METHOD("handleUnitsRemoved") {

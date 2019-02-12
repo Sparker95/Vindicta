@@ -358,7 +358,7 @@ CLASS("Garrison", "MessageReceiverEx")
 		if (T_GETV("spawned")) then {
 			pr _AI = T_GETV("AI");
 			if (_AI != "") then {
-				CALLM1(_AI, "handleGroupsRemoved", [[_group]]); // We call it synchronously because Garrison AI is in the same thread.
+				CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
 			};
 		};
 		

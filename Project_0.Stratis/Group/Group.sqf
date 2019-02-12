@@ -53,13 +53,21 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	// |                            D E L E T E
 	/*
 	Method: delete
-	NYI
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		
 		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
+		
+		// Delete the group from its garrison
+		pr _gar = _data select GROUP_DATA_ID_GARRISON;
+		if (_gar != "") then {
+			CALLM1(_gar, "removeGroup", _thisObject);
+		};
+		
+		// Despawn if spawned
+		CALLM0(_thisObject, "despawn");
 		
 		// Report an error if we are deleting a group with units in it
 		if(count _units > 0) then {
@@ -69,11 +77,6 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 			} forEach _units;
 		};
 		
-		// Delete the group from its garrison
-		pr _gar = _data select GROUP_DATA_ID_GARRISON;
-		if (_gar != "") then {
-			CALLM1(_gar, "removeGroup", _thisObject);
-		};
 	} ENDMETHOD;
 	
 	/*
@@ -434,7 +437,6 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 			pr _AI = NEW("AIGroup", [_thisObject]);
 			pr _data = GETV(_thisObject, "data");
 			_data set [GROUP_DATA_ID_AI, _AI];
-			CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
 			CALLM(_AI, "start", []); // Kick start it
 		};
 

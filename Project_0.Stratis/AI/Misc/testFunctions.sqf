@@ -139,6 +139,8 @@ AI_misc_fnc_addGarrisonGoal = {
 	CALLM2(_garAI, "deleteExternalGoal", "", _garAI);
 	
 	CALLM4(_garAI, "addExternalGoal", _goalClassName, 0, _parameters, _garAI);
+	
+	_gar
 };
 
 /*

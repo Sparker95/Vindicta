@@ -34,7 +34,8 @@ CLASS("AIGroup", "AI")
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorTargets]);
 		
-		//SETV(_thisObject, "worldState", _ws);
+		// Set process interval
+		CALLM1(_thisObject, "setProcessInterval", 3);		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

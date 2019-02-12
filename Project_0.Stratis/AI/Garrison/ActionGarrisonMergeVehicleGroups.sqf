@@ -51,6 +51,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				for "_i" from 1 to (count _vehGroups - 1) do {
 					pr _group = _vehGroups select _i;
 					CALLM1(_destGroup, "addGroup", _group);
+					DELETE(_group);
 				};
 			};
 		} else {
