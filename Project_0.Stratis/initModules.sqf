@@ -67,6 +67,9 @@ call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf"
 // Initialize MessageLoop class
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
+// Mod compatibility global variables
+call compile preprocessFileLineNumbers "modCompatBools.sqf";
+
 // Initialize Unit class
 call compile preprocessFileLineNumbers "Commander\Commander.sqf";
 
@@ -108,8 +111,3 @@ call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // UI classes
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
-
-// Initialize mod compatibility booleans 
-// No need to compile it actually
-//call compile preprocessFileLineNumbers "modCompatBools.sqf";
-

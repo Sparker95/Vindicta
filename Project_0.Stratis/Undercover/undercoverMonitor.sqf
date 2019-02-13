@@ -1,8 +1,8 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
-#include "..\modCompatBools.hpp"
 #include "UndercoverMonitor.hpp"
+#include "..\modCompatBools.sqf"
 
 /*
 Undercover Monitor: Determines if the enemy should identify a player as 
@@ -73,7 +73,7 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 		if !((headgear _unit in civHeadgear) or (headgear _unit == "")) then { _suspGear = _suspGear + SUSP_HEADGEAR; _suspGearVeh = _suspGearVeh + SUSP_HEADGEAR; }; 
 		if !((goggles _unit in civFacewear) or (goggles _unit == "")) then { _suspGear = _suspGear + SUSP_FACEWEAR; _suspGearVeh = _suspGearVeh + SUSP_FACEWEAR; };
 		if !((vest _unit in civVests) or (vest _unit == "")) then { _suspGear = _suspGear + SUSP_VEST; _suspGearVeh = _suspGearVeh + SUSP_VEST; };
-		if (hmd player != "") then { _suspGear = _suspGear + SUSP_NVGS; _suspGearVeh = _suspGearVeh + SUSP_NVGS; };
+		if (hmd _unit != "") then { _suspGear = _suspGear + SUSP_NVGS; _suspGearVeh = _suspGearVeh + SUSP_NVGS; };
 		if !((backpack _unit in civBackpacks) or (backpack _unit == "")) then { _suspGear = _suspGear + SUSP_BACKPACK; };
 
 		if !( primaryWeapon _unit in civWeapons) then { _suspGear = 1; };
@@ -212,6 +212,10 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 				0 call { // start exitWith scope
 
+					if (animationState _unit == "ace_amovpercmstpssurwnondnon") exitWith { _suspicion = 0; }; // Hotfix for ACE surrendering
+
+					if ( _unit getVariable ["ACE_isUnconscious", false] ) exitWith { _suspicion = 0; }; 
+
 					/* 
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					|	W A N T E D   S T A T E 																											   |
@@ -295,7 +299,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 						case true: { 
 
 							_suspicion = 0;
-							if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle player) >> "faction") == "CIV_F") exitWith {
+							if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle _unit) >> "faction") == "CIV_F") exitWith {
 								_suspicion = 1;
 							}; // if in military vehicle
 
