@@ -148,6 +148,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 			_unit setVariable ["bInVeh", false];					// true while player unit is in vehicle
 			_unit setVariable ["bInMarker", false];					// true while player unit is in wanted marker
 			call compile preprocessFileLineNumbers "UI_OOP\UIUndercoverDebug_Update.sqf";
+
 		#endif	
 
 	} ENDMETHOD;
@@ -213,7 +214,6 @@ CLASS("undercoverMonitor", "MessageReceiver")
 				0 call { // start exitWith scope
 
 					if (animationState _unit == "ace_amovpercmstpssurwnondnon") exitWith { _suspicion = 0; }; // Hotfix for ACE surrendering
-
 					if ( _unit getVariable ["ACE_isUnconscious", false] ) exitWith { _suspicion = 0; }; 
 
 					/* 
@@ -226,16 +226,15 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 						// create marker, kind of like GTA's red circle you have to escape to lose the police
 						if (_bSeen) then {
-							pr _mrkLastHost = createMarker ["mrkLastHostility", position _unit];
-							"mrkLastHostility" setMarkerPos position _unit;
-							"mrkLastHostility" setMarkerAlpha 0.0;
+							pr _mrkLastHost = createMarkerLocal ["mrkLastHostility", position _unit];
+							"mrkLastHostility" setMarkerAlphaLocal 0.0;
 
 							#ifdef DEBUG
-								"mrkLastHostility" setMarkerBrush "SOLID";
-								"mrkLastHostility" setMarkerAlpha 0.5;
-								"mrkLastHostility" setMarkerColor "ColorBlue";
-								"mrkLastHostility" setMarkerSize [WANTED_CIRCLE_RADIUS/2, WANTED_CIRCLE_RADIUS/2];
-								"mrkLastHostility" setMarkerShape "ELLIPSE";
+								"mrkLastHostility" setMarkerBrushLocal "SOLID";
+								"mrkLastHostility" setMarkerAlphaLocal 0.5;
+								"mrkLastHostility" setMarkerColorLocal "ColorBlue";
+								"mrkLastHostility" setMarkerSizeLocal [WANTED_CIRCLE_RADIUS/2, WANTED_CIRCLE_RADIUS/2];
+								"mrkLastHostility" setMarkerShapeLocal "ELLIPSE";
 							#endif
 
 						}; // only update marker if unit is seen, otherwise no escape possible
@@ -265,10 +264,10 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 				 	if (time < _timeHostility) exitWith { _suspicion = 1; };
 
-				 	//if (CALL_STATIC_METHOD("Location", "getLocationAtPos", _unit) != "") exitWith { _suspicion = 1; };
+				 	if (CALL_STATIC_METHOD("Location", "getLocationAtPos", [_unit]) != "") exitWith { _suspicion = 1; };
 
 					if ( (vehicle _unit nearRoads SUSP_NOROADS) isEqualTo [] ) then { 
-						_unit setVariable [UNDERCOVER_SUSPICIOUS, true, true];	
+						_suspicion = _suspicion + SUSPICIOUS;	
 					}; // suspiciousness penalty for being too far from roads
 
 					/*
@@ -373,8 +372,8 @@ CLASS("undercoverMonitor", "MessageReceiver")
 					#endif
 				};
 
-				if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_unit)) then { _suspicion = _suspicion + SUSPICIOUS; };
-				if ( _suspicion >= 1) then { _unit setCaptive false; } else { _unit setCaptive true; };
+				if ( _suspicion >= SUSPICIOUS && _suspicion < 1 ) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; };
+				if ( _suspicion >= 1 ) then { _unit setCaptive false; } else { _unit setCaptive true; };
 
 				#ifdef DEBUG // set variables for debug GUI
 					_unit setVariable ["bInVeh", _bInVeh];
