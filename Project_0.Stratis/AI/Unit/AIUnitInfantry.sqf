@@ -308,6 +308,38 @@ CLASS("AIUnitInfantry", "AI")
 	} ENDMETHOD;
 	
 	/*
+	Method: getAssignedVehicleRole
+	Returns assigned vehicle role of the unit
+	
+	Returns: "DRIVER", "TURRET", "CARGO" or "" if the unit is not assigned anywhere
+	*/
+	
+	METHOD("getAssignedVehicleRole") {
+		params [ ["_thisObject", "", [""]] ];
+		
+		pr _vehRole = GETV(_thisObject, "assignedVehicleRole");
+		
+		// If nothing is assigned
+		if (isNil "_vehRole") exitWith {""};
+		
+		switch (_vehRole) do {
+			case VEHICLE_ROLE_DRIVER: {
+				"DRIVER"
+			};
+			
+			case VEHICLE_ROLE_TURRET: {
+				"TURRET"
+			};
+			
+			case VEHICLE_ROLE_CARGO: {
+				"CARGO"
+			};
+			
+			default {""};
+		};
+	} ENDMETHOD;
+	
+	/*
 	Method: setSentryPos
 	Sets the sentry position, which may be later retrieved by actions.
 	

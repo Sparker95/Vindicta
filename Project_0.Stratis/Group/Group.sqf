@@ -290,6 +290,22 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		_data select GROUP_DATA_ID_GROUP_HANDLE
 	} ENDMETHOD;
 	
+	// |                  G E T   L E A D E R
+	/*
+	Method: getLeader
+	Returns the leader of the group.
+	
+	Returns: <Unit> object
+	*/
+	METHOD("getLeader") {
+		params ["_thisObject"];
+		pr _data = GET_VAR(_thisObject, "data");
+		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		
+		pr _hLeader = leader _hG;
+		CALLSM1("Unit", "getUnitFromObjectHandle", _hLeader)
+	} ENDMETHOD;
+	
 	
 	// |                     S E T / G E T   G A R R I S O N                |
 	// 

@@ -134,7 +134,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						pr _AI = GETV(_thisObject, "AI");
 						pr _group = GETV(_AI, "agent");
 						pr _gar = CALLM0(_group, "getGarrison");
-						_AI = GETV(_gar, "AI");
+						_garAI = GETV(_gar, "AI");
 						
 						// Create a STIMULUS record
 						pr _stim = STIMULUS_NEW();
@@ -161,8 +161,8 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						
 						// Only send new data to the garrison if previous data has been processed
 						pr _prevMsgID = GETV(_thisObject, "prevMsgID");
-						if (CALLM1(_AI, "messageDone", _prevMsgID)) then {
-							pr _msgID = CALLM3(_AI, "postMethodAsync", "handleStimulus", [_stim], true);
+						if (CALLM1(_garAI, "messageDone", _prevMsgID)) then {
+							pr _msgID = CALLM3(_garAI, "postMethodAsync", "handleStimulus", [_stim], true);
 							SETV(_thisObject, "prevMsgID", _msgID);
 						//} else {
 						//	diag_log format [" ---- Previous stimulus has not been processed! MsgID: %1", _msgID];

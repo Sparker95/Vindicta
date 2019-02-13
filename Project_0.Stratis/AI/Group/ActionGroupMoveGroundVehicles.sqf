@@ -24,10 +24,13 @@ Handles moving of a group with multiple or single ground vehicles.
 #define SPEED_MAX 60
 #define SPEED_MIN 8
 
+#define DEBUG_FORMATION
+
 CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	VARIABLE("pos");
 	VARIABLE("speedLimit");
+	VARIABLE("time");
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
@@ -35,7 +38,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 		
-		T_SETV("speedLimit", 20);
+		T_SETV("speedLimit", SPEED_MIN);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -43,7 +46,11 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		params [["_thisObject", "", [""]]];
 		
 		pr _hG = T_GETV("hG");
+		pr _AI = T_GETV("AI");
 		pr _pos = T_GETV("pos");
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
+		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
 		
 		// Delete all previous waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
@@ -59,7 +66,31 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		_wp setWaypointFormation "COLUMN";
 		_wp setWaypointBehaviour "SAFE";
 		_wp setWaypointCombatMode "GREEN";
-		_hG setCurrentWaypoint _wp; 
+		_hG setCurrentWaypoint _wp;
+		
+		{
+			private _vehHandle = _x;
+			_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
+			_vehHandle setConvoySeparation SEPARATION;
+			//_vehHandle forceFollowRoad true;
+		} forEach _allVehicles;
+		(vehicle (leader _hG)) limitSpeed T_GETV("speedLimit");
+		
+		// Give goals to all drivers except the lead driver
+		pr _leader = CALLM0(_group, "getLeader");
+		pr _groupUnits = CALLM0(_group, "getUnits");
+		{
+			if (CALLM0(_x, "isInfantry") && (_x != _leader)) then {
+				pr _unitAI = CALLM0(_x, "getAI");
+				if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
+					// Add goal
+					CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
+				};
+			};
+		} forEach _groupUnits;
+		
+		// Set time last called
+		T_SETV("time", time);
 		
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -75,19 +106,22 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _hG = T_GETV("hG"); // Group handle
 		
+		pr _dt = time - T_GETV("time");
+		T_SETV("time", time);
 		
 		//Check the separation of the convoy
 		private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
 		#ifdef DEBUG_FORMATION
 		diag_log format [">>> Current separation: %1", _sCur];
 		#endif
-		if(_sCur > 1.9*SEPARATION) then
+		if(_sCur > 3*SEPARATION) then
 		{
 			//We are driving too fast!
 			pr _speedLimit = T_GETV("speedLimit");
 			if(_speedLimit > SPEED_MIN) then
 			{
-				T_SETV("speedLimit", _speedLimit - 3);
+				_speedLimit = (_speedLimit - _dt*2) max SPEED_MIN;
+				T_SETV("speedLimit", _speedLimit);
 				(vehicle (leader _hG)) limitSpeed _speedLimit;
 				#ifdef DEBUG_FORMATION
 				diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
@@ -100,7 +134,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			pr _speedLimit = T_GETV("speedLimit");
 			if(_speedLimit < SPEED_MAX) then
 			{
-				T_SETV("speedLimit", _speedLimit + 3.5);
+				_speedLimit = (_speedLimit + _dt*4) min SPEED_MAX;
+				T_SETV("speedLimit", _speedLimit);
 				(vehicle (leader _hG)) limitSpeed _speedLimit;
 				#ifdef DEBUG_FORMATION
 				diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
@@ -151,14 +186,25 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
-		// Stop the group
+		// Delete given goals
 		pr _hG = T_GETV("hG");
+		pr _AI = T_GETV("AI");
+		pr _pos = T_GETV("pos");
+		pr _group = GETV(T_GETV("AI"), "agent");
+		
+		// Stop the group
 		// Delete waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		// Add a move waypoint at the current position of the leader
 		pr _wp = _hG addWaypoint [getPos leader _hG, 0];
 		_wp setWaypointType "MOVE";
 		_hG setCurrentWaypoint _wp;
+		
+		// Delete given goals
+		pr _groupUnits = CALLM0(_group, "getUnits");
+		{
+			CALLM4(_unitAI, "deleteExternalGoal", "GoalUnitFollowLeaderVehicle", _AI);
+		} forEach _groupUnits;
 		
 	} ENDMETHOD;
 
