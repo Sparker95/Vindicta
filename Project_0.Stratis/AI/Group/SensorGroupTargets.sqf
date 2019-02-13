@@ -76,7 +76,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				//Target age is the time that has passed since the last time the group has actually seen the enemy unit.
 				// Values lower than 0 mean that they see the enemy right now
 				//private _age = _x select 5;
-				((side (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
+				((side group (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
 			};
 			
 			// Loop through potential targets and find players(also in vehicles) to send data to their UndercoverMonitor
@@ -119,7 +119,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				if (_comTime > TARGET_TIME_RELAY) then {
 
 					pr _observedTargets = _currentlyObservedObjects select {
-						( (side (_x select 1)) in _otherSides)
+						( (side group (_x select 1)) in _otherSides)
 					};
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {
