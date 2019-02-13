@@ -261,6 +261,8 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 				 	if (time < _timeHostility) exitWith { _suspicion = 1; };
 
+				 	//if (CALL_STATIC_METHOD("Location", "getLocationAtPos", _unit) != "") exitWith { _suspicion = 1; };
+
 					if ( (vehicle _unit nearRoads SUSP_NOROADS) isEqualTo [] ) then { 
 						_unit setVariable [UNDERCOVER_SUSPICIOUS, true, true];	
 					}; // suspiciousness penalty for being too far from roads
