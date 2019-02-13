@@ -38,7 +38,7 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 #define SUSP_CROUCH 0.1								// suspiciousness gained crouching
 #define SUSP_PRONE 0.2								// suspiciousness gained prone
 #define SUSP_SPEEDMAX 0.35							// suspiciousness gained for movement speed
-#define SUSP_NOROADS 50								// distance that is too far from road to not be suspicious
+#define SUSP_NOROADS 80								// distance that is too far from road to not be suspicious
 
 // suspicion values for each equipment type
 #define SUSP_UNIFORM 0.7							// suspiciousness gained for mil uniform
@@ -53,11 +53,11 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 #define SUSP_VEH_DIST_MIN 15						// distance at which player is too close to be undercover with suspicious gear in a vehicle
 #define SUSP_VEH_DIST_MULT 1.12/SUSP_VEH_DIST;		// multiplier for distance-based fade-in of suspiciousness variable
 
-#define TIME_SEEN 4									// time it takes, in seconds, for player unit to go from "seen" to "unseen"
+#define TIME_SEEN 5									// time it takes, in seconds, for player unit to go from "seen" to "unseen"
 #define TIME_HOSTILITY 10							// time in seconds player unit is overt after a hostile action
-#define TIME_UNSEEN_WANTED_EXIT -900				// time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
+#define TIME_UNSEEN_WANTED_EXIT -240				// time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
 
-#define WANTED_CIRCLE_RADIUS 40
+#define WANTED_CIRCLE_RADIUS 500
 
 	// ----------------------------------------------------------------------
 	// |                       S Q F  F U N C T I O N S 					|
@@ -73,7 +73,7 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 		if !((headgear _unit in civHeadgear) or (headgear _unit == "")) then { _suspGear = _suspGear + SUSP_HEADGEAR; _suspGearVeh = _suspGearVeh + SUSP_HEADGEAR; }; 
 		if !((goggles _unit in civFacewear) or (goggles _unit == "")) then { _suspGear = _suspGear + SUSP_FACEWEAR; _suspGearVeh = _suspGearVeh + SUSP_FACEWEAR; };
 		if !((vest _unit in civVests) or (vest _unit == "")) then { _suspGear = _suspGear + SUSP_VEST; _suspGearVeh = _suspGearVeh + SUSP_VEST; };
-		if (hmd _unit != "") then { _suspGear = _suspGear + SUSP_NVGS; _suspGearVeh = _suspGearVeh + SUSP_NVGS; };
+		if (hmd _unit != "") then { _suspGear = _suspGear + SUSP_NVGS; };
 		if !((backpack _unit in civBackpacks) or (backpack _unit == "")) then { _suspGear = _suspGear + SUSP_BACKPACK; };
 
 		if !( primaryWeapon _unit in civWeapons) then { _suspGear = 1; };
@@ -237,6 +237,14 @@ CLASS("undercoverMonitor", "MessageReceiver")
 								"mrkLastHostility" setMarkerShapeLocal "ELLIPSE";
 							#endif
 
+							if (_bInVeh && count crew vehicle _unit > 1) then {
+
+								{
+									if (isPlayer _x && alive _x) then { _x setVariable [UNDERCOVER_WANTED, true, true]; };
+								} forEach crew vehicle _unit;
+
+							}; // sets other units in vehicle wanted
+
 						}; // only update marker if unit is seen, otherwise no escape possible
 
 						_suspicion = 1;
@@ -298,8 +306,8 @@ CLASS("undercoverMonitor", "MessageReceiver")
 						case true: { 
 
 							_suspicion = 0;
-							if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle _unit) >> "faction") == "CIV_F") exitWith {
-								_suspicion = 1;
+							if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle _unit) >> "faction") == "CIV_F") then {
+								_suspicion = SUSPICIOUS;
 							}; // if in military vehicle
 
 							// Always re-evaluate body exposure while in a vehicle
@@ -327,32 +335,19 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 							}; _unit setVariable ["eyePosOldVeh", _eyePosNewVeh]; // bodyExposure and eyePos
 
-							pr _compromisedCrew = false;
-							if (count crew vehicle _unit > 1 && _bodyExposure == 0) then {
-
-								{
-									if (!(captive _x) && isPlayer _x && alive _x) then { _compromisedCrew = true; };
-								} forEach crew vehicle _unit;
-
-							}; // check if any unit in vehicle is compromised, if so suspicion = 1. Fix for AI not shooting at vehicles with captives.
-
-							if (_compromisedCrew) exitWith { _suspicion = 1; };
-
 							/* 
 								Suspiciousness in a civilian vehicle, based on distance to the nearest enemy who sees player unit
 							*/
 
 							// make sure there is an actual enemy and a distance
 							if (_distance != -1 && _suspGearVeh >= SUSPICIOUS) then { 
-								// player unit is too far away for anybody to notice equipment, so player unit is undercover
-								if ( _distance >= SUSP_VEH_DIST or _distance == -1 ) exitWith { _suspicion = 0; };
 		
 								// player unit's gear is suspicious, and player is so close they can see it
 								if ( _distance < SUSP_VEH_DIST_MIN && _distance > -1 && _bodyExposure > 0.4 ) exitWith { _suspicion = 1; };
 		
 								// scale in suspiciousness as player unit gets closer to nearest enemy
 								if ( _distance >= SUSP_VEH_DIST_MIN && _distance < SUSP_VEH_DIST && _suspGearVeh >= SUSPICIOUS ) exitWith {
-									_suspicion = ( (SUSP_VEH_DIST - _distance) * (1 + _bodyExposure) ) * SUSP_VEH_DIST_MULT; 
+									_suspicion = _suspicion + ( (SUSP_VEH_DIST - _distance) * (1 + _bodyExposure) ) * SUSP_VEH_DIST_MULT; 
 								};
 							};
 						}; // end case: player unit IS in vehicle
