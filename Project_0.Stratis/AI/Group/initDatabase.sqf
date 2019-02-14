@@ -17,6 +17,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupGetInVehiclesAsCrew", 40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupOccupySentryPositions", 50] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupMoveGroundVehicles", 60] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupUnflipVehicles", 70] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
 
 
 // ---- Goal effects ----
@@ -34,6 +36,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupGetInVehiclesAsCrew", "ActionGroupGetInVehiclesAsCrew"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupOccupySentryPositions", "ActionGroupOccupySentryPositions"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupMoveGroundVehicles", "ActionGroupMoveGroundVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupUnflipVehicles", "ActionGroupUnflipVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
 
 
 

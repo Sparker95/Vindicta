@@ -43,7 +43,7 @@ CLASS("Goal", "")
 	// By default returns instrinsic goal relevance
 	
 	/* virtual */ STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_thisObject", "", [""]], ["_AI", "", [""]]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
 		pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
 		 // Return relevance
 		_intrinsicRelevance

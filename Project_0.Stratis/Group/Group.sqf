@@ -586,10 +586,15 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		
 		// Return only units which actually have an AI object (soldiers and drones)
+		/*
 		pr _return = _unitList select {
 			CALLM(_x, "isInfantry", [])
 		};
-		_return
+		*/
+		//_return
+		
+		// Return all units since vehicles have an AI object too :p
+		_unitList
 	} ENDMETHOD;
 	
 	
@@ -604,7 +609,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("getPossibleGoals") {
 		//["GoalGroupRelax"]
-		[]
+		["GoalGroupUnflipVehicles"]
 	} ENDMETHOD;
 	
 	

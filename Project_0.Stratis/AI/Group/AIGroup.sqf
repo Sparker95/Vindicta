@@ -34,6 +34,15 @@ CLASS("AIGroup", "AI")
 		pr _sensorTargets = NEW("SensorGroupTargets", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorTargets]);
 		
+		pr _sensorHealth = NEW("SensorGroupHealth", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		
+		// Initialize the world state
+		pr _ws = [WSP_GROUP_COUNT] call ws_new; // todo WorldState size must depend on the agent
+		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
+		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, true] call ws_setPropertyValue;
+		SETV(_thisObject, "worldState", _ws);
+		
 		// Set process interval
 		CALLM1(_thisObject, "setProcessInterval", 3);		
 	} ENDMETHOD;
