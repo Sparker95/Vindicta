@@ -16,6 +16,8 @@ CLASS("AIGarrison", "AI")
 
 	// Array of targets known by this garrison
 	VARIABLE("targets");
+	
+	VARIABLE("sensorHealth");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -23,6 +25,8 @@ CLASS("AIGarrison", "AI")
 		// Initialize sensors
 		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		T_SETV("sensorHealth", _sensorHealth); // Keep reference to this sensor in case we want to update it
+		
 		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorTargets]);
 		
@@ -106,6 +110,46 @@ CLASS("AIGarrison", "AI")
 		};
 		
 		nil
+	} ENDMETHOD;
+	
+	
+	
+	/*
+	Method: handleUnitsRemoved
+	Handles what happens when units get removed from their group, for instance when they gets destroyed.
+	
+	Access: internal
+	
+	Parameters: _units
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		// Update health sensor
+		CALLM0(T_GETV("sensorHealth"), "update");
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happens when units get added to a group.
+	
+	Access: internal
+	
+	Parameters: _unit
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		// Update health sensor
+		CALLM0(T_GETV("sensorHealth"), "update");
 	} ENDMETHOD;
 
 ENDCLASS;

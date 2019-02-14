@@ -11,13 +11,15 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // ---- Goal relevance values and effects ----
 // The actual relevance returned by goal can be different from the one which is set below
 
-["GoalGarrisonRelax",				1] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRelax",					1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonMove",				20] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRepairAllVehicles",		10] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonRepairAllVehicles",	10] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonMove",					20] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonDefendPassive",		30] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRebalanceVehicleGroups",	25] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
+["GoalGarrisonDefendPassive",			30] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 
 // ---- Goal effects ----
@@ -40,6 +42,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // ---- Predefined actions of goals ----
 
 ["GoalGarrisonRelax", "ActionGarrisonRelax"] call AI_misc_fnc_setGoalPredefinedAction;
+
+["GoalGarrisonRebalanceVehicleGroups", "ActionGarrisonRebalanceVehicleGroups"] call AI_misc_fnc_setGoalPredefinedAction;
 
 
 // ---- Action preconditions and effects ----

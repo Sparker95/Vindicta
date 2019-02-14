@@ -7,6 +7,7 @@
 #include "..\..\GlobalAssert.hpp"
 #include "garrisonWorldStateProperties.hpp"
 #include "..\stimulusTypes.hpp"
+#include "..\..\Group\Group.hpp"
 
 /*
 This sensor checks the health state of units: does infantry need to be healed, do vehicles need to be repaired
@@ -53,6 +54,7 @@ CLASS("SensorGarrisonHealth", "Sensor")
 		[_worldState, WSP_GAR_ALL_HUMANS_HEALED, _allSoldiersHealed] call ws_setPropertyValue;
 		
 		// Find vehicles and check if they all are OK
+		// todo query the group sensor instead
 		pr _vehicles = [_gar, [[T_VEH, -1], [T_DRONE, -1]]] call GETM(_gar, "findUnits");
 		//diag_log format ["Found vehicles: %1", _vehicles];
 		pr _allVehRepaired = true;
@@ -66,7 +68,46 @@ CLASS("SensorGarrisonHealth", "Sensor")
 		[_worldState, WSP_GAR_ALL_VEHICLES_REPAIRED, _allVehRepaired] call ws_setPropertyValue;
 		[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, _allVehCanMove] call ws_setPropertyValue;
 		
-		diag_log format ["SensorGarrisonHealth: medics:%1 engineer:%2 allHealed:%3 allVehRepaired:%4 allVehCanMove:%5", _medicAvailable, _engineerAvailable, _allSoldiersHealed, _allVehRepaired, _allVehCanMove];
+		// Check if all vehicles have enough crew
+		pr _nDriversAll = 0; // Amount of all drivers required for this garrison
+		pr _vehGroupsStatic = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+		pr _vehGroupsNonStatic = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
+		
+		// Find static vehicle groups that don't have enough infantry to operate all guns
+		pr _haveTurretsStatic = true;
+		
+		{
+			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
+			_nDriversAll = _nDriversAll + _nDrivers; // All 
+			pr _nInf = count CALLM0(_x, "getInfantryUnits");
+			if (_nTurrets > _nInf) then { _haveTurretsStatic = false; };
+		} forEach _vehGroupsStatic;
+		
+		// Find non static vehicle groups that don't have enough drivers or turret operators
+		pr _haveTurretsNonStatic = true;
+		pr _haveDriversNonStatic = true;
+		{
+			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
+			pr _nInf = count CALLM0(_x, "getInfantryUnits");
+			_nDriversAll = _nDriversAll + _nDrivers; // All 
+			if (_nDrivers > _nInf) then {_haveDriversNonStatic = false;};
+			if (_nTurrets > (_nInf-_nDrivers)) then {_haveTurretsNonStatic = false;};
+			if (! _haveTurretsNonStatic && ! _haveDriversNonStatic) exitWith{}; // Terminate the loop if we already know that this group is unbalanced
+		} forEach _vehGroupsNonStatic;
+		
+		[_worldState, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, _haveDriversNonStatic] call ws_setPropertyValue;
+		[_worldState, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, _haveTurretsStatic && _haveTurretsNonStatic] call ws_setPropertyValue;
+		
+		// Check if there are enough humans to operate all the vehicles
+		pr _query = [[T_INF, -1]];
+		pr _nInfGarrison = CALLM1(_gar, "countUnits", _query);
+		pr _enoughHumansForAllVehicles = true;
+		if (_nInfGarrison < _nDriversAll) then { _enoughHumansForAllVehicles = false; };
+		
+		[_worldState, WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES, _enoughHumansForAllVehicles] call ws_setPropertyValue;
+		
+		diag_log format ["SensorGarrisonHealth: medics:%1 engineer:%2 allHealed:%3 allVehRepaired:%4 allVehCanMove:%5 vehsHaveDrivers: %6, vehsHaveTurrets: %7",
+		_medicAvailable, _engineerAvailable, _allSoldiersHealed, _allVehRepaired, _allVehCanMove, _haveDriversNonStatic, _haveTurretsStatic && _haveTurretsNonStatic];
 		
 	} ENDMETHOD;
 	
@@ -76,7 +117,7 @@ CLASS("SensorGarrisonHealth", "Sensor")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		5
+		10
 	} ENDMETHOD;	
 	
 ENDCLASS;

@@ -190,16 +190,19 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	Parameters: _type
 	
-	_type - Number, one of <GROUP_TYPE>
+	_type - Number, one of <GROUP_TYPE>, or Array with such numbers
 	
 	Returns: Array with <Group> objects.
 	*/
 	METHOD("findGroupsByType") {
-		params [["_thisObject", "", [""]], ["_type", 0, [0]]];
+		params [["_thisObject", "", [""]], ["_types", 0, [0, []]]];
+		
+		if (_types isEqualType 0) then {_types = [_types]};
+		
 		pr _groups = GETV(_thisObject, "groups");
 		pr _return = [];
 		{
-			if (CALLM0(_x, "getType") == _type) then {
+			if (CALLM0(_x, "getType") in _types) then {
 				_return pushBack _x;
 			};
 		} forEach _groups;
@@ -377,6 +380,33 @@ CLASS("Garrison", "MessageReceiverEx")
 	} ENDMETHOD;
 	
 	
+	/*
+	Method: getRequiredCrew
+	Returns amount of needed drivers and turret operators for all vehicles in this garrison.
+	
+	Returns: [_nDrivers, _nTurrets]
+	*/
+	
+	METHOD("getRequiredCrew") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _units = T_GETV("units");
+		
+		pr _nDrivers = 0;
+		pr _nTurrets = 0;
+		
+		{
+			if (CALLM0(_x, "isVehicle")) then {
+				pr _className = CALLM0(_x, "getClassName");
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				_nDrivers = _nDrivers + _n_driver;
+				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+			};
+		} forEach _units;
+		
+		[_nDrivers, _nTurrets]
+	} ENDMETHOD;
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -388,7 +418,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("getPossibleGoals") {
 		["GoalGarrisonRelax",
 		"GoalGarrisonRepairAllVehicles",
-		"GoalGarrisonDefendPassive"]
+		"GoalGarrisonDefendPassive",
+		"GoalGarrisonRebalanceVehicleGroups"]
 	} ENDMETHOD;
 	
 	METHOD("getPossibleActions") {

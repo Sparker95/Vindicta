@@ -9,12 +9,14 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountInfantry.
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveDismounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMountedCargo.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRebalanceVehicleGroups.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonRepairAllVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonUnloadCurrentCargo.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonDefendPassive.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMove.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonMoveCargo.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRebalanceVehicleGroups.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRepairAllVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\_SensorGarrison.sqf";

@@ -86,6 +86,11 @@
  <div class="CBody"><p>Removes an existing group from this garrison.&nbsp; You don't need to call this. Use addGroup when you need to move groups between garrisons.</p><p>Parameters: _group</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,202);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
+<a name="getRequiredCrew"></a><a name="Topic469"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getRequiredCrew</div>
+ <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this garrison.</p><p>Returns: [_nDrivers, _nTurrets]</p></div>
+</div>
+
 <a name="getSubagents"></a><a name="Topic199"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getSubagents</div>
  <div class="CBody"><p>Returns subagents of this agent.&nbsp; For garrison it returns an empty array, because the subagents of garrison (groups) are processed in a separate thread.</p><p>Access: Used by AI class</p><p>Returns: [].</p></div>

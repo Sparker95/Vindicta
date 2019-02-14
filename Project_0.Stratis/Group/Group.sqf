@@ -242,13 +242,53 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	METHOD("getUnits") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		private _return = +_unitList;
-		MUTEX_UNLOCK(_mutex);
 		_return
 	} ENDMETHOD;
+	
+	// |                         G E T  I N F A N T R Y  U N I T S
+	/*
+	Method: getInfantryUnits
+	Returns all infantry units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getInfantryUnits") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		_unitList select {CALLM0(_x, "isInfantry")}
+	} ENDMETHOD;
+	
+	// |                         G E T   V E H I C L E   U N I T S
+	/*
+	Method: getVehiucleUnits
+	Returns all vehicle units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getVehicleUnits") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		_unitList select {CALLM0(_x, "isVehicle")}
+	} ENDMETHOD;
+	
+	// |                         G E T   D R O N E   U N I T S
+	/*
+	Method: getVehicleUnits
+	Returns all drone units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getDroneUnits") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		_unitList select {CALLM0(_x, "isDrone")}
+	} ENDMETHOD;
+	
 	
 	// |                         G E T   T Y P E                            |
 	/*
@@ -783,6 +823,33 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		} forEach _groupData;
 		
 		(count _groupData)
+	} ENDMETHOD;
+	
+	/*
+	Method: getRequiredCrew
+	Returns amount of needed drivers and turret operators for all vehicles in this group.
+	
+	Returns: [_nDrivers, _nTurrets]
+	*/
+	
+	METHOD("getRequiredCrew") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _units = T_GETV("data") select GROUP_DATA_ID_UNITS;
+		
+		pr _nDrivers = 0;
+		pr _nTurrets = 0;
+		
+		{
+			if (CALLM0(_x, "isVehicle")) then {
+				pr _className = CALLM0(_x, "getClassName");
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				_nDrivers = _nDrivers + _n_driver;
+				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+			};
+		} forEach _units;
+		
+		[_nDrivers, _nTurrets]
 	} ENDMETHOD;
 	
 ENDCLASS;
