@@ -17,6 +17,7 @@ Author: Sparker
 #define pr private
 
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
+Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 
 
@@ -287,6 +288,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		
 		// Killed
 		_hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+		_hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
 		
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
