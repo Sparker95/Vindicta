@@ -439,7 +439,7 @@ CLASS("AI", "MessageReceiverEx")
 	
 	/*
 	Method: addExternalGoal
-	Adds a goal to the list of external goals of this agent
+	Adds a goal to the list of external goals of this agent. By default it also deletes goals with same _goalClassName irrelevant of its source!
 	
 	Parameters: _goalClassName, _bias, _parameters
 	
@@ -447,20 +447,36 @@ CLASS("AI", "MessageReceiverEx")
 	_bias - a number to be added to the relevance of the goal once it is calculated
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
 	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	_deleteSimilarGoals - Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.
 	
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true] ];
 		
-		OOP_INFO_2("Added external goal: %1, %2", _goalClassName, _parameters);
+		OOP_INFO_2("Added external goal: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
 		if (_sourceAI != "") then {
 			ASSERT_OBJECT_CLASS(_sourceAI, "AI");
 		};
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+		
+		if (_deleteSimilarGoals) then {
+			pr _i = 0;
+			pr _goalDeleted = false;
+			while {_i < count _goalsExternal} do {
+				pr _cg = _goalsExternal select _i;
+				if (	(((_cg select 0) == _goalClassName)) ) then {
+					pr _deletedGoal = _goalsExternal deleteAt _i;
+					OOP_INFO_1("AUTOMATICALLY DELETED EXTERNAL GOAL: %1", _deletedGoal);
+				} else {
+					_i = _i + 1;
+				};
+			};
+		};
+		
 		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
 		nil
@@ -504,7 +520,7 @@ CLASS("AI", "MessageReceiverEx")
 		};
 		
 		if (!_goalDeleted) then {
-			OOP_WARNING_2("couldn't delete external goal: %1, %2", _goalClassName, _goalSource);
+			OOP_WARNING_2("couldn't delete external goal: %1, %2", _goalClassName, _goalSourceAI);
 		};
 		CRITICAL_SECTION_END
 		
@@ -542,6 +558,42 @@ CLASS("AI", "MessageReceiverEx")
 		if (_index != -1) then {
 			_return = _goalsExternal select _index select 4;
 		} else {
+			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+		};
+		CRITICAL_SECTION_END
+		
+		_return
+	} ENDMETHOD;
+	
+	// --------------------------------------------------------------------------------
+	// |                G E T   E X T E R N A L   G O A L   P A R A M E T E R S
+	// --------------------------------------------------------------------------------
+	/*
+	Method: getExternalGoalParameters
+	Returns the parameters array of the external goal.
+	
+	Parameters: _goalClassName, _source
+	
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Array with goal parameters passed to it, or [] if this goal was not found.
+	*/
+	METHOD("getExternalGoalParameters") {
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+
+		pr _return = [];
+		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, action state];
+		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+		pr _index = if (_goalSource == "") then {
+			_goalsExternal findIf {(_x select 0) == _goalClassName}
+		} else {
+			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		};
+		if (_index != -1) then {
+			_return = _goalsExternal select _index select 2;
+		//} else {
 			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
 		};
 		CRITICAL_SECTION_END

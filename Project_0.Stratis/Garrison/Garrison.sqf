@@ -171,6 +171,45 @@ CLASS("Garrison", "MessageReceiverEx")
 		T_GETV("units")
 	} ENDMETHOD;
 	
+	// |                         G E T  I N F A N T R Y  U N I T S
+	/*
+	Method: getInfantryUnits
+	Returns all infantry units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getInfantryUnits") {
+		params [["_thisObject", "", [""]]];
+		private _unitList = T_GETV("units");
+		_unitList select {CALLM0(_x, "isInfantry")}
+	} ENDMETHOD;
+	
+	// |                         G E T   V E H I C L E   U N I T S
+	/*
+	Method: getVehiucleUnits
+	Returns all vehicle units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getVehicleUnits") {
+		params [["_thisObject", "", [""]]];
+		private _unitList = T_GETV("units");
+		_unitList select {CALLM0(_x, "isVehicle")}
+	} ENDMETHOD;
+	
+	// |                         G E T   D R O N E   U N I T S
+	/*
+	Method: getVehicleUnits
+	Returns all drone units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getDroneUnits") {
+		params [["_thisObject", "", [""]]];
+		private _unitList = T_GETV("units");
+		_unitList select {CALLM0(_x, "isDrone")}
+	} ENDMETHOD;
+	
 	// 						G E T   A I
 	/*
 	Method: getAI

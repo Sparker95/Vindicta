@@ -21,9 +21,16 @@ private _nCargoSeats = 0;
 for "_i" from 0 to ((count _vehArray) - 1) do
 {
 	private _veh = _vehArray select _i;
-	private _fullCrew = _veh call misc_fnc_getFullCrew;
-	private _nCargo = (count (_fullCrew select 3)) + (_fullCrew select 4); //FFV turrets + cargo seats
-	_nCargoSeats = _nCargoSeats + _nCargo;
+	
+	if (_veh isEqualType objNull) then {_veh = typeOf _vehicleName};
+	
+	private _vehCfg = configFIle >> "CfgVehicles" >> _veh;
+
+	private _psgTurrets = [_veh, 0, 1] call misc_fnc_getTurrets;
+	
+	private _n_cargo = getNumber (_vehCfg >> "transportSoldier");
+	
+	_nCargoSeats = (count _psgTurrets) + _n_cargo;
 };
 
 _nCargoSeats

@@ -88,7 +88,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		CALLM(_thisObject, "activateIfInactive", []);
 		
-		diag_log "---- Garrison defend passive action!";
+		//diag_log "---- Garrison defend passive action!";
+		
+		
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
