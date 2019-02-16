@@ -66,7 +66,11 @@
 // Vehicle groups are merged
 #define WSP_GAR_VEHICLE_GROUPS_MERGED					21
 
+// Vehicle groups rebalanced
+// It's rather a fake one because it's always false for the sake of adding an action to the action list all the time
+#define WSP_GAR_VEHICLE_GROUPS_BALANCED					22
+
 // Side
 
 // Total amount of properties
-#define WSP_GAR_COUNT									22
+#define WSP_GAR_COUNT									23

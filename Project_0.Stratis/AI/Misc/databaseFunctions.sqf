@@ -85,9 +85,22 @@ AI_misc_fnc_setActionParametersFromGoal = {
 	SET_STATIC_VAR(_actionClass, "parameters", _parameters);
 };
 
+AI_misc_fnc_setActionPrecedence = {
+	params [["_actionClass", "", [""]], ["_precedence", 0, [0]] ];
+	SET_STATIC_VAR(_actionClass, "precedence", _precedence);
+};
+
 AI_misc_fnc_setActionCost = {
 	params [["_actionClass", "", [""]], ["_cost", 0, [0]]];
 	
 	// Set the static variable
 	SET_STATIC_VAR(_actionClass, "cost", _cost);
+};
+
+AI_misc_fnc_setActionCostAndPrecedence = {
+	params [["_actionClass", "", [""]], ["_cost", 0, [0]], ["_precedence", 0, [0]]];
+	
+	// Set the static variable
+	SET_STATIC_VAR(_actionClass, "cost", _cost);
+	SET_STATIC_VAR(_actionClass, "precedence", _precedence);
 };

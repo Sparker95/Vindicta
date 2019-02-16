@@ -48,6 +48,9 @@ CLASS("Action", "MessageReceiver")
 	// World state after the action ahs been executed
 	STATIC_VARIABLE("effects");
 	
+	// Actions that are used by planner will be sorted by their precedence
+	STATIC_VARIABLE("precedence");
+	
 	// STATIC_VARIABLE("numParameters"); // Amount of parameters this action requires // Maybe implement it later, not very important
 	
 	// Array with parameters which must be derived from goal parameters
@@ -370,8 +373,11 @@ CLASS("Action", "MessageReceiver")
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _cost = GET_STATIC_VAR(_thisClass, "cost");
-		// Return static cost
-		_cost
+		//if (isNil "_cost") then {
+		//	0
+		//} else {
+			_cost	
+		//};
 	} ENDMETHOD;
 	
 	
@@ -401,6 +407,33 @@ CLASS("Action", "MessageReceiver")
 		
 		_wsPre		
 	} ENDMETHOD;
+	
+	
+	// ----------------------------------------------------------------------
+	// |                         G E T   P R E C E D E N C E                |
+	// |                                                                    |
+	// ----------------------------------------------------------------------
+	
+	/*
+	Method: getPrecedence
+	Returns the precedence of this action.
+	Actions executed first should have lower precedence.
+	Precedence is only needed for actions that are used by planner.
+	
+	Returns: Number
+	*/
+	STATIC_METHOD("getPrecedence") {
+		params [ ["_thisClass", "", [""]] ];
+		
+		pr _precedence = GET_STATIC_VAR(_thisClass, "precedence");
+		
+		//if (isNil "_precedence") then {
+		//	0
+		//} else {
+			_precedence
+		//};
+	} ENDMETHOD;
+	
 	
 	/*
 	Method: (static)getParameterValue

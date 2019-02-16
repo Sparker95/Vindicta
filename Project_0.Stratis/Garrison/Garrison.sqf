@@ -472,7 +472,8 @@ CLASS("Garrison", "MessageReceiverEx")
 		"ActionGarrisonRelax",
 		"ActionGarrisonRepairAllVehicles",
 		"ActionGarrisonUnloadCurrentCargo",
-		"ActionGarrisonMergeVehicleGroups"]
+		"ActionGarrisonMergeVehicleGroups",
+		"ActionGarrisonRebalanceVehicleGroups"]
 	} ENDMETHOD;
 	
 	

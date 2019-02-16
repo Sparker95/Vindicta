@@ -1,4 +1,4 @@
-//#define OOP_INFO
+#define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -117,19 +117,9 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		if (_state == ACTION_STATE_ACTIVE) then {
 			
 			// Wait until all given goals are completed
-			pr _groupUnits = CALLM0(GETV(T_GETV("AI"), "agent"), "getUnits");
-			pr _allAI = T_GETV("driversAI") + T_GETV("turretsAI");
-			OOP_INFO_1("All AI: %1", _allAI);
-			{
-				pr _unitAI = CALLM0(_x, "getAI");
-				pr _infActionState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitGetInVehicle", "");
-				OOP_INFO_2("Infantry AI: %1, state: %2", _x, _infActionState);
-			} forEach _groupUnits;
-			if (({
-					pr _unitAI = CALLM0(_x, "getAI");
-					pr _infState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitGetInVehicle", "");
-					(_infState == ACTION_STATE_COMPLETED) || (_infState == -1)
-				} count _groupUnits) == (count _groupUnits)) then {
+			pr _group = GETV(T_GETV("AI"), "agent");
+			pr _groupUnits = CALLM0(_group, "getInfantryUnits");
+			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
 				OOP_INFO_0("Action COMPLETED");
 				
 				// We are done here

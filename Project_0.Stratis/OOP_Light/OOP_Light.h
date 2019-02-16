@@ -416,13 +416,16 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
 
+#define LOG_0 if(isNil "_thisClass") then {OBJECT_PARENT_CLASS_STR(_thisObject)} else {_thisClass}
+#define LOG_1 if(isNil "_thisClass") then {_thisObject} else {"static"}
+
 #ifdef OOP_INFO
-#define OOP_INFO_0(str) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
-#define OOP_INFO_1(str, a) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
-#define OOP_INFO_2(str, a, b) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b]]
-#define OOP_INFO_3(str, a, b, c) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c]]
-#define OOP_INFO_4(str, a, b, c, d) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d]]
-#define OOP_INFO_5(str, a, b, c, d, e) diag_log format ["[%1.%2] INFO: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d, e]]
+#define OOP_INFO_0(str) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, str]
+#define OOP_INFO_1(str, a) diag_log format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format [str, a]]
+#define OOP_INFO_2(str, a, b) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b]]
+#define OOP_INFO_3(str, a, b, c) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]
+#define OOP_INFO_4(str, a, b, c, d) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
+#define OOP_INFO_5(str, a, b, c, d, e) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
 #else
 #define OOP_INFO_0(str)
 #define OOP_INFO_1(str, a)
@@ -433,12 +436,12 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 #endif
 
 #ifdef OOP_WARNING
-#define OOP_WARNING_0(str) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
-#define OOP_WARNING_1(str, a) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
-#define OOP_WARNING_2(str, a, b) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b]]
-#define OOP_WARNING_3(str, a, b, c) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c]]
-#define OOP_WARNING_4(str, a, b, c, d) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d]]
-#define OOP_WARNING_5(str, a, b, c, d, e) diag_log format ["[%1.%2] WARNING: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d, e]]
+#define OOP_WARNING_0(str) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, str]
+#define OOP_WARNING_1(str, a) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a]]
+#define OOP_WARNING_2(str, a, b) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b]]
+#define OOP_WARNING_3(str, a, b, c) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c]]
+#define OOP_WARNING_4(str, a, b, c, d) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
+#define OOP_WARNING_5(str, a, b, c, d, e) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
 #else
 #define OOP_WARNING_0(str)
 #define OOP_WARNING_1(str, a)
@@ -449,12 +452,12 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 #endif
 
 #ifdef OOP_ERROR
-#define OOP_ERROR_0(str) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, str]
-#define OOP_ERROR_1(str, a) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a]]
-#define OOP_ERROR_2(str, a, b) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b]]
-#define OOP_ERROR_3(str, a, b, c) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c]]
-#define OOP_ERROR_4(str, a, b, c, d) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d]]
-#define OOP_ERROR_5(str, a, b, c, d, e) diag_log format ["[%1.%2] ERROR: %3", OBJECT_PARENT_CLASS_STR(_thisObject), _thisObject, format [str, a, b, c, d, e]]
+#define OOP_ERROR_0(str) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]
+#define OOP_ERROR_1(str, a) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]
+#define OOP_ERROR_2(str, a, b) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]
+#define OOP_ERROR_3(str, a, b, c) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]
+#define OOP_ERROR_4(str, a, b, c, d) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
+#define OOP_ERROR_5(str, a, b, c, d, e) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
 #else
 #define OOP_ERROR_0(str)
 #define OOP_ERROR_1(str, a)

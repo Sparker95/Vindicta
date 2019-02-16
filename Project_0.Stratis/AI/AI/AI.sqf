@@ -514,6 +514,7 @@ CLASS("AI", "MessageReceiverEx")
 					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
 				pr _deletedGoal = _goalsExternal deleteAt _i;
 				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
+				_goalDeleted = true;
 			} else {
 				_i = _i + 1;
 			};
@@ -615,9 +616,11 @@ CLASS("AI", "MessageReceiverEx")
 	*/
 	STATIC_METHOD("allAgentsCompletedExternalGoal") {
 		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		OOP_INFO_2("allAgentsCompletedExternalGoal: %1, Source: %2", _goalClassName, _goalSource);
 		{
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1));
 			(_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1)
 		} count _agents == (count _agents)
 	} ENDMETHOD;
@@ -694,7 +697,7 @@ CLASS("AI", "MessageReceiverEx")
 		if (count _plan == 1) then {
 		
 			// If there is only one action in the plan, just create this action
-			(_plan select 0) params ["_actionClassName", "_actionParameters"];
+			(_plan select 0) params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
 			pr _args = [_thisObject, _actionParameters];
 			pr _action = NEW(_actionClassName, _args);
 			
@@ -705,7 +708,7 @@ CLASS("AI", "MessageReceiverEx")
 			// If there are multiple actions in the plan, create an ActionCompositeSerial and add subactions to it 
 			pr _actionSerial = NEW("ActionCompositeSerial", [_thisObject]);
 			{ // foreach _plan
-				_x params ["_actionClassName", "_actionParameters"];
+				_x params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
 				
 				// Create an action
 				pr _args = [_thisObject, _actionParameters];
@@ -968,13 +971,15 @@ CLASS("AI", "MessageReceiverEx")
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
-					
 					if (! ((_n select ASTAR_NODE_ID_ACTION) isEqualTo ASTAR_ACTION_DOES_NOT_EXIST)) then {
-						_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+						pr _actionClassName = _n select ASTAR_NODE_ID_ACTION;
+						pr _precedence = CALLSM0(_actionClassName, "getPrecedence");
+						_path pushBack [_precedence, _actionClassName, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
 					};
 					
 					if (((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) ||
 							((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo ASTAR_NODE_DOES_NOT_EXIST)) exitWith{};
+
 					_n = _n select ASTAR_NODE_ID_NEXT_NODE;
 				};
 			};
@@ -1166,11 +1171,14 @@ CLASS("AI", "MessageReceiverEx")
 			_count = _count + 1;
 		};
 		
+		// Sort the plan by precedence
+		_path sort true; // Ascending
+		
 		#ifdef ASTAR_DEBUG
 			diag_log format ["[AI:AStar] Info: Generated plan: %1", _path];
 		#endif
 		
-		// Return the reconstructed path
+		// Return the reconstructed sorted path 
 		_path
 	} ENDMETHOD;
 	

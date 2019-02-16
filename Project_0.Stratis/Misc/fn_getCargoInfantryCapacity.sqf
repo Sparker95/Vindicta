@@ -16,21 +16,24 @@ if(!(_vehArray isEqualType [])) then
 	_vehArray = [_vehArray];
 };
 
+
 //Now we consider only loading of infantry
 private _nCargoSeats = 0;
 for "_i" from 0 to ((count _vehArray) - 1) do
 {
 	private _veh = _vehArray select _i;
 	
-	if (_veh isEqualType objNull) then {_veh = typeOf _vehicleName};
+	diag_log format ["%1", _veh];
 	
-	private _vehCfg = configFIle >> "CfgVehicles" >> _veh;
-
+	if (_veh isEqualType objNull) then {_veh = typeOf _veh};
+	
+	private _vehCfg = configFile >> "CfgVehicles" >> _veh;
+	
 	private _psgTurrets = [_veh, 0, 1] call misc_fnc_getTurrets;
 	
 	private _n_cargo = getNumber (_vehCfg >> "transportSoldier");
 	
-	_nCargoSeats = (count _psgTurrets) + _n_cargo;
+	_nCargoSeats = _nCargoSeats + (count _psgTurrets) + _n_cargo;
 };
 
 _nCargoSeats

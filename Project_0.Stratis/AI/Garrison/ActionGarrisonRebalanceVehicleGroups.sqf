@@ -53,6 +53,34 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
 			
+			pr _nMoreUnitsRequired = _nDrivers + _nTurrets - _nInf;
+			if (_nMoreUnitsRequired > 0) then {
+				while {_nMoreUnitsRequired > 0 && (count _freeUnits > 0)} do {
+					CALLM1(_group, "addUnit", _freeUnits deleteAt 0);
+					_nMoreUnitsRequired = _nMoreUnitsRequired - 1;
+				};
+			} else {
+				// If there are more units than we need in this group
+				if (_nMoreUnitsRequired < 0) then {
+					// Move the not needed units into any of the other groups
+					pr _receivingGroup = _freeGroups select 0;
+					if (isNil "_receivingGroup") then {
+						pr _args = [CALLM0(_group, "getSide"), GROUP_TYPE_IDLE];
+						_receivingGroup = NEW("Group", _args);
+						CALLM0(_receivingGroup, "spawn");
+						_freeGroups pushBack _receivingGroup;
+					};
+					
+					// Move the units
+					pr _groupUnits = CALLM0(_group, "getUnits");
+					while {_nMoreUnitsRequired < 0} do {
+						CALLM1(_receivingGroup, "addUnit", _groupUnits select ((count _groupUnits) - 1));
+						_nMoreUnitsRequired = _nMoreUnitsRequired + 1;
+					};
+				};
+			};
+			
+			/*
 			pr _nMoreDriversRequired = _nDrivers - _nInf;
 			if (_nMoreDriversRequired > 0) then {
 				while {_nMoreDriversRequired > 0 && (count _freeUnits > 0)} do {
@@ -60,13 +88,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					_nMoreDriversRequired = _nMoreDriversRequired - 1;
 				};
 			};
+			*/
 		} forEach _vehGroups;
 		
 		// Try to add turret operators to all groups
+		/*
 		{ // foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
-			pr _nInf = count CALLM0(_x, "getInfantryUnits");
+			pr _nInf = count CALLM0(_group, "getInfantryUnits");
 			
 			pr _nTurretOperatorsRequired = _nTurrets - _nInf - _nDrivers;
 			
@@ -77,6 +107,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				};
 			};
 		} forEach _vehGroups;
+		*/
 		
 		// Call the health sensor again so that it can update the world state properties
 		CALLM0(GETV(_AI, "sensorHealth"), "update");

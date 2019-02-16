@@ -39,7 +39,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Give goals to these groups
 		{
-			pr _groupAI = CALLM0(_x, "getGroup");
+			pr _groupAI = CALLM0(_x, "getAI");
 			CALLM4(_groupAI, "addExternalGoal", "GoalGroupGetInGarrisonVehiclesAsCargo", 0, [], _AI);
 		} forEach _infGroups;
 		
@@ -83,7 +83,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		
 		{
-			pr _groupAI = CALLM0(_x, "getGroup");
+			pr _groupAI = CALLM0(_x, "getAI");
 			CALLM2(_groupAI, "deleteExternalGoal", "GoalGroupGetInGarrisonVehiclesAsCargo", "");
 		} forEach _infGroups;
 	} ENDMETHOD;

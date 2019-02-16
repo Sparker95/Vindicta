@@ -1,3 +1,4 @@
+#define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
 #include "Group.hpp"
@@ -107,7 +108,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		private _data = GET_VAR(_thisObject, "data");
 		
 		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
-		pr _groupIsSpawned = CALLM0(_group, "isSpawned");
+		pr _groupIsSpawned = CALLM0(_thisObject, "isSpawned");
 		
 		if (_unitIsSpawned && !_groupIsSpawned || !_unitIsSpawned && _groupIsSpawned) exitWith {
 			OOP_ERROR_4("Group %1 is spawned: %2, unit %3 is spawned: %3", _thisObject, _groupIsSpawned, _unit, _unitIsSpawned);
@@ -848,6 +849,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
 			};
 		} forEach _units;
+		
+		OOP_INFO_2("getRequiredCrew: drivers: %1, turrets: %2", _nDrivers, _nTurrets);
 		
 		[_nDrivers, _nTurrets]
 	} ENDMETHOD;

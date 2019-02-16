@@ -13,6 +13,7 @@
 /*
 Merges or splits vehicle group(s)
 We need to merge vehicle groups into one group for convoy.
+This action also moves ungrouped vehicles into the common vehicle group.
 
 Parameters:
 _merge - true to merge, false to split
@@ -44,16 +45,25 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		if (_merge) then {
 			// Find all vehicle groups
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
-			
+			pr _destGroup = _vehGroups select 0;
+						
 			// If there are more than one vehicle groups, merge them into the first group
 			if (count _vehGroups > 1) then {
-				pr _destGroup = _vehGroups select 0;
 				for "_i" from 1 to (count _vehGroups - 1) do {
 					pr _group = _vehGroups select _i;
 					CALLM1(_destGroup, "addGroup", _group);
 					DELETE(_group);
 				};
 			};
+			
+			// Also move ungrouped vehicles
+			pr _vehicleUnits = CALLM0(_gar, "getVehicleUnits");
+			{
+				pr _vehGroup = CALLM0(_x, "getGroup");
+				if (_vehGroup == "") then {
+					CALLM1(_destGroup, "addUnit", _x);
+				};
+			} forEach _vehicleUnits;
 		} else {
 			// Find all vehicle groups
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);

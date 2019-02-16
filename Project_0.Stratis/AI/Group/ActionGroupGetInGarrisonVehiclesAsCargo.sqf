@@ -1,4 +1,4 @@
-//#define OOP_INFO
+#define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -40,9 +40,19 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		
 		// Get array of all vehicles in the garrison that can carry cargo troops
 		pr _unitsVeh = CALLM0(_gar, "getVehicleUnits") select {
-			pr _className = CALLM0(_x, "getClassName");
-			([_x] call misc_fnc_getCargoInfantryCapacity) > 0 // If it can carry any troops as cargo
+			pr _className = CALLM0(_x, "getClassName");\
+			pr _cap = [_className] call misc_fnc_getCargoInfantryCapacity;
+			OOP_INFO_2("   Vehicle: %1, cargo infantry capacity: %2", _className, _cap);
+			_cap > 0 // If it can carry any troops as cargo
 		};
+		OOP_INFO_1("Vehicles with cargo infantry capacity: %1", _unitsVeh);
+		
+		// Fail if there are no vehicles with cargo infantry capacity
+		if (count _unitsVeh == 0) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+		
 		T_SETV("freeVehicles", _unitsVeh);
 				
 		// Get all infantry
@@ -50,7 +60,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", ""); // Delete any other goals like this first
-			pr _args = [_unitsVeh select 0, "CARGO"];
+			
+			pr _args = [["vehicle", _unitsVeh select 0], ["vehicleRole", "CARGO"], ["turretPath", []]];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);
 		} forEach _unitsInf;		
 		
@@ -70,7 +81,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 			pr _group = GETV(T_GETV("AI"), "agent");
 			pr _unitsInf = CALLM0(_group, "getInfantryUnits");
 			pr _nGoalsCompleted = 0;
-			pr _freeVehicles = T_GETV("greeVehicles");
+			pr _AI = T_GETV("AI");
+			pr _freeVehicles = T_GETV("freeVehicles");
 			{
 				pr _unitAI = CALLM0(_x, "getAI");
 				pr _goalState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitGetInVehicle", _AI);
@@ -87,8 +99,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 					case ACTION_STATE_FAILED: {
 						// Get parameters passed to this goal
 						pr _parameters = CALLM2(_unitAI, "getExternalGoalParameters", "GoalUnitGetInVehicle", _AI);
-						if (count _parameters > 0) then { // Just for safety
-							pr _assignedVehicle = _parameters select 0;
+						pr _assignedVehicle = CALLSM2("Action", "getParameterValue", _parameters, "vehicle");
+						if (_assignedVehicle != "") then { // Just for safety
 							
 							// Delete this goal from the soldier
 							CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", "");
@@ -98,8 +110,9 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 							pr _vehToGetIn = _freeVehicles select 0;
 							
 							// Add a new goal to this unit
-							pr _args = [_vehToGetIn, "CARGO"];
+							pr _args = [["vehicle", _vehToGetIn], ["vehicleRole", "CARGO"], ["turretPath", []]];
 							CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);
+							ade_dumpCallstack;
 						};
 					};
 				};
@@ -131,7 +144,6 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		pr _unitsInf = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			pr _args = [_unitsVeh select 0, "CARGO"];
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", "");
 		} forEach _unitsInf;
 		
