@@ -38,7 +38,9 @@ CLASS("AIGarrison", "AI")
 		
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
-		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;		
+		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);

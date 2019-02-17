@@ -279,6 +279,7 @@ CLASS("AIUnitInfantry", "AI")
 			pr _hO = GETV(_thisObject, "hO"); // Object handle of this unit
 			switch (_vehRole) do {
 				case VEHICLE_ROLE_DRIVER: {
+					_hO setPosWorld (getPosWorld _hO);
 					_hO moveInDriver _hVeh;
 					true
 				};
@@ -292,12 +293,14 @@ CLASS("AIUnitInfantry", "AI")
 				
 				case VEHICLE_ROLE_TURRET: {
 					pr _turretPath = GETV(_thisObject, "assignedTurretPath");
+					_hO setPosWorld (getPosWorld _hO);
 					_hO moveInTurret [_hVeh, _turretPath];
 					true
 				};
 				
 				case VEHICLE_ROLE_CARGO: {
 					pr _cargoIndex = GETV(_thisObject, "assignedCargoIndex");
+					_hO setPosWorld (getPosWorld _hO);
 					_hO moveInCargo [_hVeh, _cargoIndex];
 					true
 				};

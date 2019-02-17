@@ -18,6 +18,8 @@ Author: Sparker 12.11.2018
 
 CLASS("AIGroup", "AI")
 
+	VARIABLE("sensorHealth");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -36,15 +38,17 @@ CLASS("AIGroup", "AI")
 		
 		pr _sensorHealth = NEW("SensorGroupHealth", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		T_SETV("sensorHealth", _sensorHealth);
 		
 		// Initialize the world state
 		pr _ws = [WSP_GROUP_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, true] call ws_setPropertyValue;
 		[_ws, WSP_GROUP_ALL_VEHICLES_TOUCHING_GROUND, true] call ws_setPropertyValue;
+		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		SETV(_thisObject, "worldState", _ws);
 		
 		// Set process interval
-		CALLM1(_thisObject, "setProcessInterval", 3);		
+		CALLM1(_thisObject, "setProcessInterval", 3);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

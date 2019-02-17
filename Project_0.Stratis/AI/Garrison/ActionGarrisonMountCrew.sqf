@@ -47,7 +47,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			{
 				// Give goal to mount vehicles
 				pr _groupAI = CALLM0(_x, "getAI");
-				CALLM4(_groupAI, "addExternalGoal", "GoalGroupGetInVehiclesAsCrew", 0, [], _AI);
+				pr _args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 			} forEach _vehGroups;
 		} else {
 			// NYI
@@ -85,6 +86,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				
 				// Complete the action when all vehicle groups have mounted
 				if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
+				//pr _ws = GETV(T_GETV("AI"), "worldState");
+				//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
+					// Update sensors affected by this action
+					CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
+					
 					_state = ACTION_STATE_COMPLETED;
 					breakTo "s0";
 				};

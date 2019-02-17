@@ -40,7 +40,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Give goals to these groups
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
-			CALLM4(_groupAI, "addExternalGoal", "GoalGroupGetInGarrisonVehiclesAsCargo", 0, [], _AI);
+			pr _args = ["GoalGroupGetInGarrisonVehiclesAsCargo", 0, [], _AI];
+			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _infGroups;
 		
 		// Set state
@@ -63,7 +64,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 			
 			// This action is completed when all infantry groups have mounted
+			
 			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
+				 //Update sensors affected by this action
+				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
+				
+			//pr _ws = GETV(T_GETV("AI"), "worldState");
+			//if ([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
 				_state = ACTION_STATE_COMPLETED		
 			};
 		};
@@ -84,7 +91,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
-			CALLM2(_groupAI, "deleteExternalGoal", "GoalGroupGetInGarrisonVehiclesAsCargo", "");
+			pr _args = ["GoalGroupGetInGarrisonVehiclesAsCargo", ""];
+			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
 		} forEach _infGroups;
 	} ENDMETHOD;
 

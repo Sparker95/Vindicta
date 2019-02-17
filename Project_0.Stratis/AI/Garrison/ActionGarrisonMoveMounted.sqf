@@ -1,3 +1,5 @@
+#define OOP_INFO
+#define OON_WARNING
 #define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
@@ -53,11 +55,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _groupAI = CALLM0(_x, "getAI");
 			
 			// Delete other goals like this first
-			CALLM2(_groupAI, "deleteExternalGoal", "GoalGroupMoveGroundVehicles", "");
+			pr _args = ["GoalGroupMoveGroundVehicles", ""];
+			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
 			
 			// Add new goal to move
-			pr _parameters = [[TAG_POS, _pos]];
-			CALLM4(_groupAI, "addExternalGoal", "GoalGroupMoveGroundVehicles", 0, _parameters, _AI);			
+			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos]], _AI];
+			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
 			
 		} forEach _vehGroups;
 		
@@ -72,6 +75,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
+		
+		// Fail if not everyone is in vehicles
+		pr _everyoneIsMounted = CALLM0(_thisObject, "isEveryoneInVehicle");
+		OOP_INFO_1("Everyone is in vehicles: %1", _everyoneIsMounted);
+		if (! _everyoneIsMounted) exitWith {
+			OOP_INFO_0("ACTION FAILED because not everyone is in vehicles");
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
 		
 		pr _state = CALLM(_thisObject, "activateIfInactive", []);
 		
@@ -104,6 +116,18 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		_state
 	} ENDMETHOD;
 	
+	// Returns true if everyone is in vehicles
+	METHOD("isEveryoneInVehicle") {
+		params ["_thisObject"];
+		pr _AI = T_GETV("AI");
+		pr _ws = GETV(_AI, "worldState");
+		
+		pr _return = 	([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) &&
+						([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue);
+		
+		_return
+	} ENDMETHOD;
+	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
@@ -115,7 +139,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _group = _x;
 			pr _groupAI = CALLM0(_x, "getAI");
 			// Delete other goals like this first
-			CALLM2(_groupAI, "deleteExternalGoal", "GoalGroupMoveGroundVehicles", "");			
+			pr _args = ["GoalGroupMoveGroundVehicles", ""];
+			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);			
 		} forEach _vehGroups;
 		
 	} ENDMETHOD;

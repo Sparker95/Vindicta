@@ -10,6 +10,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "groupWorldStateProperties.hpp"
 
 /*
 Class: ActionGroupGetInGarrisonVehiclesAsCargo
@@ -102,6 +103,8 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 						pr _assignedVehicle = CALLSM2("Action", "getParameterValue", _parameters, "vehicle");
 						if (_assignedVehicle != "") then { // Just for safety
 							
+							OOP_INFO_3("Unit failed to get into vehicle: %1, unit's AI: %2, parameters: %3", _x, _unitAI, _parameters);
+							
 							// Delete this goal from the soldier
 							CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", "");
 						
@@ -109,16 +112,25 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 							_freeVehicles pushBack (_freeVehicles deleteAt (_freeVehicles find _assignedVehicle));
 							pr _vehToGetIn = _freeVehicles select 0;
 							
+							OOP_INFO_1("Added goal to get into another vehicle: %1", _vehToGetIn);
+							
 							// Add a new goal to this unit
 							pr _args = [["vehicle", _vehToGetIn], ["vehicleRole", "CARGO"], ["turretPath", []]];
 							CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);
-							ade_dumpCallstack;
+							//ade_dumpCallstack;
 						};
 					};
 				};
 			} forEach _unitsInf;
 			
-			if (_nGoalsCompleted == count _unitsInf) then {
+			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _unitsInf, "GoalUnitGetInVehicle", "")) then {
+			//if (_nGoalsCompleted == count _unitsInf) then {
+			//pr _ws = GETV(_AI, "worldState");
+			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
+			
+				// Update sensors
+				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
+				
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};

@@ -158,7 +158,11 @@ CLASS("AI", "MessageReceiverEx")
 			pr _currentGoal = GETV(_thisObject, "currentGoal");
 			pr _currentGoalSource = GETV(_thisObject, "currentGoalSource");
 			pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
-			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameters isEqualTo _goalParameters) then {
+			pr _currentAction = T_GETV("currentAction");
+			if (	_currentGoal == _goalClassName &&
+					_currentGoalSource == _goalSource &&
+					_currentGoalParameters isEqualTo _goalParameters// &&
+					/*_currentAction != ""*/) then {
 				// We have the same goal. Do nothing.
 				//OOP_INFO_0("PROCESS: Goal is the same...");
 			} else {
@@ -212,6 +216,8 @@ CLASS("AI", "MessageReceiverEx")
 			if (_currentGoal != "") then {
 				diag_log format ["[AI:Process] AI: %1 ending the current goal: %2", _thisObject, _currentGoal];
 				SETV(_thisObject, "currentGoal", "");
+				T_SETV("currentGoalSource", "");
+				T_SETV("currentGoalParameters", []);
 			};
 			
 			// Delete the current action if we had it
@@ -455,7 +461,7 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("addExternalGoal") {
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true] ];
 		
-		OOP_INFO_2("Added external goal: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
+		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
 		if (_sourceAI != "") then {
 			ASSERT_OBJECT_CLASS(_sourceAI, "AI");
@@ -620,8 +626,8 @@ CLASS("AI", "MessageReceiverEx")
 		{
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
-			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1));
-			(_actionState == ACTION_STATE_COMPLETED) || (_actionState == -1)
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) ); // || (_actionState == -1));
+			(_actionState == ACTION_STATE_COMPLETED)  // || (_actionState == -1)
 		} count _agents == (count _agents)
 	} ENDMETHOD;
 
@@ -680,6 +686,9 @@ CLASS("AI", "MessageReceiverEx")
 		params [["_thisObject", "", [""]]];
 		pr _currentAction = GETV(_thisObject, "currentAction");
 		if (_currentAction != "") then {
+			pr _state = GETV(_currentAction, "state");
+			OOP_INFO_2("DELETING CURRENT ACTION: %1, state: %2", _currentAction, _state);
+		
 			CALLM(_currentAction, "terminate", []);
 			DELETE(_currentAction);
 			SETV(_thisObject, "currentAction", "");

@@ -19,7 +19,7 @@ Author: Sparker
 
 #define pr private
 
-//#define DEBUG
+#define DEBUG
 #define CLASS_NAME "ActionUnitGetInVehicle"
 
 #ifdef DEBUG
@@ -456,6 +456,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					ACTION_STATE_FAILED
 				};
 			} else { // if seat is occupied
+			
 				// Assigned seat is not occupied
 				
 				INFO_0("Assigned seat is FREE");
@@ -479,7 +480,12 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						// We're in the right vehicle but at the wrong seat
 						// Just swap seats instantly
 						CALLM0(_AI, "moveInAssignedVehicle");
+						
+						// Wait until we are at proper place anyway
 						ACTION_STATE_ACTIVE
+						
+						// Fuck this shit, sometimes you can't move unit from one seat to another
+						//ACTION_STATE_COMPLETED
 					};
 				} else {
 					// If the unit is on foot now
@@ -520,7 +526,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		
 		// If the action is active, unassign the unit from the vehicle
 		pr _state = T_GETV("state");
-		if (_state == ACTION_STATE_ACTIVE) then {
+		if (_state == ACTION_STATE_ACTIVE || _state == ACTION_STATE_FAILED) then {
 			pr _AI = GETV(_thisObject, "AI");
 			CALLM0(_AI, "unassignVehicle");
 		};

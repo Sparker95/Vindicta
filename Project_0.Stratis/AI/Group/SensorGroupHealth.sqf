@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -46,6 +49,26 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		// Check if vehicles need repairs
 		pr _allRepaired = (_vehicles findIf {! (canMove _x)}) == -1;
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
+		
+		// Check if all infantry units are in vehicles
+		pr _infantryUnits = CALLM0(_group, "getInfantryUnits");
+		pr _infantry = _infantryUnits apply {CALLM0(_x, "getObjectHandle")};
+		pr _allInfMounted = (_infantry findIf {(vehicle _x) == _x}) == -1;
+		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
+		
+		// Check if all infantry units are in proper group
+		// Sometimes units get ungrouped when entering vehicles >_< WTF
+		pr _hG = CALLM0(_group, "getGroupHandle");
+		{
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			pr _infGroup = group _hO;
+			if (! (_infGroup isEqualTo _hG)) then {
+				OOP_ERROR_3("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3", _x, _infGroup, _hG);
+				
+				// Force the unit to join the proper group
+				[_hO] joinSilent _infGroup;
+			};
+		} forEach _infantryUnits;
 		
 	} ENDMETHOD;
 	

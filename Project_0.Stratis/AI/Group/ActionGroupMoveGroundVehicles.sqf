@@ -203,7 +203,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		// Delete given goals
 		pr _groupUnits = CALLM0(_group, "getUnits");
 		{
-			CALLM4(_unitAI, "deleteExternalGoal", "GoalUnitFollowLeaderVehicle", _AI);
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitFollowLeaderVehicle", _AI);
 		} forEach _groupUnits;
 		
 	} ENDMETHOD;

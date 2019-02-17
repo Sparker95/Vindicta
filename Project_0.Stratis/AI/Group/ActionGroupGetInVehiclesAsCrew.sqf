@@ -10,6 +10,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "groupWorldStateProperties.hpp"
 
 /*
 Class: ActionGroup.ActionGroupGetInVehiclesAsCrew
@@ -117,10 +118,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		if (_state == ACTION_STATE_ACTIVE) then {
 			
 			// Wait until all given goals are completed
-			pr _group = GETV(T_GETV("AI"), "agent");
+			pr _AI = T_GETV("AI");
+			pr _group = GETV(_AI, "agent");
 			pr _groupUnits = CALLM0(_group, "getInfantryUnits");
 			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
+			//pr _ws = GETV(_AI, "worldState");
+			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
 				OOP_INFO_0("Action COMPLETED");
+				
+				// Update sensors
+				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
 				
 				// We are done here
 				T_SETV("state", ACTION_STATE_COMPLETED);
