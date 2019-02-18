@@ -13,11 +13,8 @@ Damage EH for units. Its main job is to send messages to objects.
 
 params ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitIndex", "_instigator", "_hitPoint"];
 
-	pr _instigator = _this select 3;
-	pr _damagedUnit = _this select 0;
-
 	//systemchat format ["%1 damaged %2", name _instigator, name _damagedUnit];
 
-	if (side _damagedUnit != side _instigator && isPlayer _instigator && alive _instigator) then { 
-		_instigator setVariable [UNDERCOVER_WANTED, true, true];
+	if (side _unit != side _source && isPlayer _source && alive _source) then { 
+		_source setVariable [UNDERCOVER_WANTED, true, true];
 	};
