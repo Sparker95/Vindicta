@@ -63,7 +63,7 @@ CLASS("SensorGarrisonHealth", "Sensor")
 		{ // for each vehicles
 			pr _oh = CALLM(_x, "getObjectHandle", []);
 			//diag_log format ["Vehicle: %1, can move: %2", _oh, canMove _oh];
-			if (getDammage _oh > 0.2) then {_allVehRepaired = false;};
+			if (getDammage _oh > 0.6) then {_allVehRepaired = false;};
 			if (!canMove _oh) then {_allVehCanMove = false;};
 		} forEach _vehicles;
 		[_worldState, WSP_GAR_ALL_VEHICLES_REPAIRED, _allVehRepaired] call ws_setPropertyValue;
@@ -116,12 +116,16 @@ CLASS("SensorGarrisonHealth", "Sensor")
 		
 		// Query world states of vehicle groups and AND all their values
 		pr _allCrewMounted = true;
-		{
-			pr _groupAI = CALLM0(_x, "getAI");
-			pr _groupWS = GETV(_groupAI, "worldState");
-			pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
-			_allCrewMounted = _allCrewMounted && _val;
-		} forEach _vehGroups;
+		if (count _vehGroups == 0) then { // If there are no vehicle groups, set property to false
+			_allCrewMounted = false;
+		} else {
+			{
+				pr _groupAI = CALLM0(_x, "getAI");
+				pr _groupWS = GETV(_groupAI, "worldState");
+				pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
+				_allCrewMounted = _allCrewMounted && _val;
+			} forEach _vehGroups;
+		};
 		[_worldState, WSP_GAR_ALL_CREW_MOUNTED, _allCrewMounted] call ws_setPropertyValue;
 		
 		// Query world state of infantry groups

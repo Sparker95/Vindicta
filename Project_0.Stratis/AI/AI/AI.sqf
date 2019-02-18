@@ -28,7 +28,7 @@ Author: Sparker 07.11.2018
 #define pr private
 
 // Will output to .rpt which goals each AI is choosing from
-//#define DEBUG_POSSIBLE_GOALS
+#define DEBUG_POSSIBLE_GOALS
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -44,6 +44,7 @@ CLASS("AI", "MessageReceiverEx")
 	VARIABLE("currentGoal"); // The current goal
 	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
 	VARIABLE("currentGoalParameters"); // The parameter of the current goal
+	//VARIABLE("currentGoalState"); // State of the action
 	VARIABLE("goalsExternal"); // Goal suggested to this Agent by another agent
 	VARIABLE("worldState"); // The world state relative to this Agent
 	VARIABLE("worldFacts"); // Array with world facts
@@ -68,6 +69,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "currentGoal", "");
 		SETV(_thisObject, "currentGoalSource", "");
 		SETV(_thisObject, "currentGoalParameters", []);
+		//SETV(_thisObject, "currentGoalState", ACTION_STATE_INACTIVE);
 		SETV(_thisObject, "goalsExternal", []);
 		pr _ws = [1] call ws_new; // todo WorldState size must depend on the agent
 		SETV(_thisObject, "worldState", _ws);
@@ -127,6 +129,8 @@ CLASS("AI", "MessageReceiverEx")
 		updateSensors();
 		goalNew = calculateMostRelevantGoal();
 		if (goalNew != currentGoal)
+			if(currentAction != "")
+				setCurrentAction("");
 			[action, planIsValid] = planActions(goalNew);
 			if (planIsValid) {
 				setCurrentAction(action);
@@ -151,26 +155,35 @@ CLASS("AI", "MessageReceiverEx")
 		
 		// If we have chosen some goal
 		if (count _goalNewArray != 0) then {
-			_goalNewArray params ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource"]; // Goal class name, bias, parameter, source
+			_goalNewArray params ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource", "_goalActionState"]; // Goal class name, bias, parameter, source
 			//diag_log format ["  most relevant goal: %1", _goalClassName];
 			
 			// Check if the new goal is the same as the current goal
-			pr _currentGoal = GETV(_thisObject, "currentGoal");
-			pr _currentGoalSource = GETV(_thisObject, "currentGoalSource");
-			pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
+			pr _currentGoal = T_GETV("currentGoal");
+			//pr _currentGoalSource = T_GETV("currentGoalSource");
+			pr _currentGoalParameters = T_GETV( "currentGoalParameters");
+			//pr _currentGoalActionState = T_GETV("currentGoalState");
 			pr _currentAction = T_GETV("currentAction");
 			if (	_currentGoal == _goalClassName &&
-					_currentGoalSource == _goalSource &&
-					_currentGoalParameters isEqualTo _goalParameters// &&
-					/*_currentAction != ""*/) then {
+					//_currentGoalSource == _goalSource &&
+					_currentGoalParameters isEqualTo _goalParameters
+					//_currentGoalActionState == ACTION_STATE_ACTIVE
+					|| _goalActionState == ACTION_STATE_COMPLETED // If we have already completed it, no need to do it again
+					) then {
 				// We have the same goal. Do nothing.
-				//OOP_INFO_0("PROCESS: Goal is the same...");
+				OOP_INFO_2("PROCESS: SAME GOAL: %1, %2", _currentGoal, _currentGoalParameters);
 			} else {
 				// We have a new goal! Time to replan.
-				SETV(_thisObject, "currentGoal", _goalClassName);
-				SETV(_thisObject, "currentGoalSource", _goalSource);
-				SETV(_thisObject,"currentGoalParameters", _goalParameters);
-				diag_log format ["[AI:Process] AI: %1, NEW GOAL: %2", _thisObject, _goalClassName];
+				
+				// Delete the current action if we had it
+				CALLM0(_thisObject, "deleteCurrentAction");
+				
+				T_SETV("currentGoal", _goalClassName);
+				T_SETV("currentGoalSource", _goalSource);
+				T_SETV("currentGoalParameters", _goalParameters);
+				//T_SETV("currentGoalState", _goalActionState);
+				OOP_INFO_4("PROCESS: NEW GOAL: %1, parameters: %2, source: %3, state: %4",
+					_goalClassName, _goalParameters, _goalSource, _goalActionState);
 				
 				// Make a new Action Plan
 				// First check if the goal assumes a predefined plan
@@ -200,7 +213,7 @@ CLASS("AI", "MessageReceiverEx")
 					} else {
 						// Terminate the current action (if it exists)
 						CALLM0(_thisObject, "deleteCurrentAction");
-						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, "worldState"), _wsGoal];
+						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", GETV(_thisObject, "worldState"), _wsGoal);
 					};
 				} else {
 					// Set a new action from the predefined action
@@ -210,14 +223,16 @@ CLASS("AI", "MessageReceiverEx")
 			};
 		} else {
 			// We don't pursue a goal any more
+			OOP_INFO_0("PROCESS: NO GOAL");
 			
 			// End the previous goal if we had it
 			pr _currentGoal = GETV(_thisObject, "currentGoal");
 			if (_currentGoal != "") then {
-				diag_log format ["[AI:Process] AI: %1 ending the current goal: %2", _thisObject, _currentGoal];
-				SETV(_thisObject, "currentGoal", "");
+				OOP_INFO_1("PROCESS: ENDING CURRENT GOAL: %1", _currentGoal);
+				T_SETV("currentGoal", "");
 				T_SETV("currentGoalSource", "");
 				T_SETV("currentGoalParameters", []);
+				//T_SETV("currentGoalState", -1); // -1 means there is no goal
 			};
 			
 			// Delete the current action if we had it
@@ -231,6 +246,11 @@ CLASS("AI", "MessageReceiverEx")
 		if (_currentAction != "") then {
 			pr _actionState = CALLM(_currentAction, "process", []);
 			
+			OOP_INFO_2("CURRENT ACTION: %1, state: %2", _currentAction, _actionState);
+			
+			// Set goal state			
+			//T_SETV("currentGoalState", _actionState);
+			
 			// If it's an external goal, set its action state in the external goal array
 			pr _goalSource = T_GETV("currentGoalSource");
 			if (_goalSource != _thisObject) then {
@@ -241,7 +261,7 @@ CLASS("AI", "MessageReceiverEx")
 					pr _arrayElement = _goalsExternal select _index;
 					_arrayElement set [4, _actionState];
 				} else {
-					diag_log format ["[AI::process] Error: can't set external goal action state: %1, %2", _thisObject, _goalClassName];
+					OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
 				};
 			};
 			
@@ -254,12 +274,17 @@ CLASS("AI", "MessageReceiverEx")
 					
 					// Delete the current action
 					CALLM0(_thisObject, "deleteCurrentAction");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
 				};
 				
 				case ACTION_STATE_FAILED : {
 					// Probably we should replan our goal at the next iteration
 					SETV(_thisObject, "currentGoal", "");
-					CALLM0(_thisObject, "deleteCurrentAction");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
 				};
 			};
 		};
@@ -410,18 +435,22 @@ CLASS("AI", "MessageReceiverEx")
 		pr _possibleGoals = CALLM(_agent, "getPossibleGoals", []);
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
-		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject]}; // Goal class name, bias, parameter, source
+		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject, ACTION_STATE_INACTIVE]}; // Goal class name, bias, parameter, source, state
 		pr _extGoals = GETV(_thisObject, "goalsExternal");
-		#ifdef DEBUG_POSSIBLE_GOALS
-			diag_log format ["[AI::getMostRelevantGoals] Info: AI: %1,  possible goals: %2", _thisObject, _possibleGoals];
-		#endif
 		_possibleGoals append _extGoals;
+		#ifdef DEBUG_POSSIBLE_GOALS
+			OOP_INFO_1("getMostRelevantGoals possible goals: %1", _possibleGoals);
+		#endif
 		{
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
 			pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
 			//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
 			_relevance = _relevance + _bias;
+			
+			#ifdef DEBUG_POSSIBLE_GOALS
+				OOP_INFO_2("getMostRelevantGoals goal: %1, relevance: %2", _goalClassName, _relevance);
+			#endif
 			
 			if (_relevance > _relevanceMax) then {
 				_relevanceMax = _relevance;

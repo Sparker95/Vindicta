@@ -132,13 +132,14 @@ AI_misc_fnc_addGarrisonGoal = {
 	
 	// Get the unit's garrison
 	pr _gar = CALLM0(_unit, "getGarrison");
+	pr _goalSource = gAICommanderWest;
 	pr _garAI = CALLM0(_gar, "getAI");
 	if (isNil "_garAI") exitWith {diag_log "Error: garrison AI is not found!";};
 	
 	// Delete previously given external goals
-	CALLM2(_garAI, "deleteExternalGoal", "", _garAI);
+	CALLM2(_garAI, "deleteExternalGoal", "", _goalSource);
 	
-	CALLM4(_garAI, "addExternalGoal", _goalClassName, 0, _parameters, _garAI);
+	CALLM4(_garAI, "addExternalGoal", _goalClassName, 0, _parameters, _goalSource);
 	
 	_gar
 };

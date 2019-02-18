@@ -490,12 +490,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 		
 		// Create an AI for this group if it has any units
-		if (count _groupUnits > 0) then {
+		//if (count _groupUnits > 0) then {
 			pr _AI = NEW("AIGroup", [_thisObject]);
 			pr _data = GETV(_thisObject, "data");
 			_data set [GROUP_DATA_ID_AI, _AI];
 			CALLM(_AI, "start", []); // Kick start it
-		};
+		//};
 
 	} ENDMETHOD;
 	

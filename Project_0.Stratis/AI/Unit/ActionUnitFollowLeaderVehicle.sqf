@@ -19,7 +19,7 @@ Author: Sparker 13.02.2019
 #define pr private
 
 // How much time it's allowed to stand at one place without being considered 'stuck'
-#define TIMER_STUCK_TRESHOLD 50
+#define TIMER_STUCK_THRESHOLD 50
 
 CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	
@@ -27,6 +27,7 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	VARIABLE("stuckTimer");
 	VARIABLE("time");
 	VARIABLE("triedRoads"); // Array with road pieces unit tried to achieve when it got stuck
+	VARIABLE("stuckCounter"); // How many times this has been stuck
 	
 	// ------------ N E W ------------
 	
@@ -40,12 +41,16 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 		
 		pr _hO = GETV(_thisObject, "hO");
 		
+		// Order to follow leader
+		_hO doFollow (leader group _hO);
+		
 		// Get distance between the vehicle of this unit and the lead vehicle
 		pr _dist = (vehicle _hO) distance (vehicle leader group _hO);
 		T_SETV("dist", _dist);
 		T_SETV("stuckTimer", 0);
 		T_SETV("time", time);
 		T_SETV("triedRoads", []);
+		T_SETV("stuckCounter", 0);
 		
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
@@ -70,23 +75,45 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 			
 			OOP_INFO_1("Probably stuck: %1", _timer);
 			
-			if (_timer > TIMER_STUCK_TRESHOLD) then {
+			if (_timer > TIMER_STUCK_THRESHOLD) then {
 				OOP_INFO_0("Is totally stuck now!");
 				
-				// Try to doMove to some of the nearest roads
-				pr _triedRoads = T_GETV("triedRoads");
-				pr _nr = (_ho nearRoads 200) select {! (_x in _triedRoads)};
-				if (count _nr > 0) then {
-					// Sort roads by distance
-					_nr = (_nr apply {[_x, _x distance2D _hO]});
-					_nr sort true; // Ascending
+				pr _stuckCounter = T_GETV("stuckCounter");
+				
+				if (_stuckCounter < 3) then {
+					// Try to doMove to some of the nearest roads
+					pr _triedRoads = T_GETV("triedRoads");
+					pr _nr = (_ho nearRoads 200) select {! (_x in _triedRoads)};
+					if (count _nr > 0) then {
+						// Sort roads by distance
+						_nr = (_nr apply {[_x, _x distance2D _hO]});
+						_nr sort true; // Ascending
+						
+						// do move to the nearest road piece we didn't visit yet
+						pr _road = (_nr select 0) select 0;
+						_hO doMove (getpos _road);
+						_triedRoads pushBack _road;
+						T_SETV("stuckTimer", 0);
+					};
+				} else {
+					// Allright this shit is serious
+					// We need serious measures now :/
+					if (_stuckCounter < 4) then {
+						// Let's just try to rotate you?
+						pr _hVeh = vehicle _hO;
+						_hVeh setDir ((getDir _hVeh) + 180);
+						_hVeh setPosWorld ((getPosWorld _hVeh) vectorAdd [0, 0, 1]);
+					} else {
+						// Let's try to teleport you somewhere >_<
+						pr _defaultPos = getPos _hVeh;
+						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
+						_hVeh setPos _newPos;
+					};
+
 					
-					// do move to the nearest road piece we didn't visit yet
-					pr _road = (_nr select 0) select 0;
-					_hO doMove (getpos _road);
-					_triedRoads pushBack _road;
-					T_SETV("stuckTimer", 0);
-				};
+				};				
+				
+				T_SETV("stuckCounter", _stuckCounter + 1);
 			};
 		} else {
 			// Reset the timer

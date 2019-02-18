@@ -163,6 +163,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Delete given goals
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _crew = CALLM0(_group, "getInfantryUnits");
+		
+		// Delete previous goals of units to get into vehicles
+		{
+			pr _crewAI = CALLM0(_x, "getAI");
+			CALLM2(_crewAI, "deleteExternalGoal", "GoalUnitGetInVehicle", "");
+		} forEach _crew;
+		
 	} ENDMETHOD;
 
 ENDCLASS;

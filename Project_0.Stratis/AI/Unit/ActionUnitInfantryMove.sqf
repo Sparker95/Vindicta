@@ -10,7 +10,7 @@
 
 /*
 Class: ActionUnit.ActionUnitInfantryMove
-Makes a single unit move to a specified position.
+Makes a single unit move to a specified static position.
 
 Parameters:
 "position" - position AGL

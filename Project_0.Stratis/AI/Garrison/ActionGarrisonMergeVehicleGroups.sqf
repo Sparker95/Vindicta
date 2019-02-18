@@ -46,6 +46,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			// Find all vehicle groups
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
 			pr _destGroup = _vehGroups select 0;
+			
+			// If there are no vehicle groups, create one right now
+			if (isNil "_destGroup") then {
+				pr _args = [CALLM0(_gar, "getSide"), GROUP_TYPE_VEH_NON_STATIC];
+				_destGroup = NEW("Group", _args);
+				CALLM0(_destGroup, "spawn");
+				CALLM1(_gar, "addGroup", _destGroup);
+				_vehGroups pushBack _destGroup;
+			};
 						
 			// If there are more than one vehicle groups, merge them into the first group
 			if (count _vehGroups > 1) then {
@@ -90,6 +99,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						
 						// Create a group, add it to the garrison
 						pr _newGroup = NEW("Group", [_side]);
+						CALLM0(_newGroup, "spawn");
 						CALLM1(_gar, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle

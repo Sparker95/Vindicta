@@ -472,6 +472,11 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					if (CALLM0(_thisObject, "isAtAssignedSeat")) then {
 						INFO_0("Arrived at assigned seat");
 						
+						// Tell the driver to stop or he'll start driving around like an insane
+						if (_vehRole == "DRIVER") then {
+							dostop _hO;
+						};
+						
 						// We're done here
 						SETV(_thisobject, "state", ACTION_STATE_COMPLETED);
 						ACTION_STATE_COMPLETED

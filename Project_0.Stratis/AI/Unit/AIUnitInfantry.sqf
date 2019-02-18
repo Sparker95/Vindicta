@@ -342,6 +342,24 @@ CLASS("AIUnitInfantry", "AI")
 		};
 	} ENDMETHOD;
 	
+		/*
+	Method: getAssignedVehicle
+	Returns assigned vehicle or "" if the unit is not assigned to a vehicle
+	
+	Returns: vehicle's <Unit> object or "" if the unit is not assigned anywhere
+	*/
+	
+	METHOD("getAssignedVehicle") {
+		params [ ["_thisObject", "", [""]] ];
+		
+		pr _veh = GETV(_thisObject, "assignedVehicle");
+		
+		// If nothing is assigned
+		if (isNil "_veh") exitWith {""};
+		
+		_veh
+	} ENDMETHOD;
+	
 	/*
 	Method: setSentryPos
 	Sets the sentry position, which may be later retrieved by actions.

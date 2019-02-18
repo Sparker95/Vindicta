@@ -33,6 +33,8 @@ CLASS("ActionUnitInfantryMoveBuilding", "ActionUnitInfantryMoveBase")
 		pr _pos = _building buildingPos _posID;
 		T_SETV("pos", _pos);
 		
+		T_SETV("tolerance", 1.0);
+		
 	} ENDMETHOD;
 
 ENDCLASS;

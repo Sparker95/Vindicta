@@ -13,9 +13,9 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonRelax",					1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonRepairAllVehicles",		10] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonMove",					10] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
-["GoalGarrisonMove",					20] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGarrisonRepairAllVehicles",		20] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 ["GoalGarrisonRebalanceVehicleGroups",	25] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
@@ -45,13 +45,15 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonRelax", "ActionGarrisonRelax"] call AI_misc_fnc_setGoalPredefinedAction;
 
+["GoalGarrisonRepairAllVehicles", "ActionGarrisonRepairAllVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
+
 ["GoalGarrisonRebalanceVehicleGroups", "ActionGarrisonRebalanceVehicleGroups"] call AI_misc_fnc_setGoalPredefinedAction;
 
 
 // ---- Action preconditions and effects ----
 
 // Repair all vehicles
-["ActionGarrisonRepairAllVehicles",	_s, [	[WSP_GAR_ENGINEER_AVAILABLE,	true]]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonRepairAllVehicles",	_s, [	]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonRepairAllVehicles",	_s,	[	[WSP_GAR_ALL_VEHICLES_REPAIRED,	true],
 											[WSP_GAR_ALL_VEHICLES_CAN_MOVE,	true]]] call AI_misc_fnc_setActionEffects;
 										
@@ -117,6 +119,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonDefendPassive", 			1.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMergeVehicleGroups", 		0.1]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonRebalanceVehicleGroups", 	0.1]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonRepairAllVehicles", 		0.1]	call AI_misc_fnc_setActionCost;
 
 // ---- Action precedence ----
 ["ActionGarrisonMountCrew",					5]	call AI_misc_fnc_setActionPrecedence;
@@ -129,3 +132,4 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonDefendPassive", 			20]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMergeVehicleGroups", 		1]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonRebalanceVehicleGroups", 	2]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonRepairAllVehicles", 		1]	call AI_misc_fnc_setActionPrecedence;

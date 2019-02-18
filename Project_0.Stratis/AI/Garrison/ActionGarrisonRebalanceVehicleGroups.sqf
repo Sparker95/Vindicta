@@ -1,3 +1,5 @@
+#define OOP_INFO
+#define OOP_WARNING
 #define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
@@ -33,6 +35,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
 		
+		OOP_INFO_0("ACTIVATE");
+		
 		// Give waypoint to the vehicle group
 		pr _gar = T_GETV("gar");
 		pr _AI = T_GETV("AI");
@@ -47,11 +51,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 		
+		OOP_INFO_2("Vehicle groups: %1, free units: %2", _vehGroups, _freeUnits);
+		
 		// Try to add drivers to all groups
 		{ // foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
+			
+			OOP_INFO_2("Analyzing vehicle group: %1, required drivers: %2, required turret operators: %3", _group, _nDrivers, _nTurrets);
 			
 			pr _nMoreUnitsRequired = _nDrivers + _nTurrets - _nInf;
 			if (_nMoreUnitsRequired > 0) then {
@@ -68,6 +76,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						pr _args = [CALLM0(_group, "getSide"), GROUP_TYPE_IDLE];
 						_receivingGroup = NEW("Group", _args);
 						CALLM0(_receivingGroup, "spawn");
+						CALLM1(_gar, "addGroup", _receivingGroup);
 						_freeGroups pushBack _receivingGroup;
 					};
 					
