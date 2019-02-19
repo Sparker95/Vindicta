@@ -36,19 +36,18 @@ _inf set [T_INF_survivor, ["O_Survivor_F"]];
 _inf set [T_INF_unarmed, ["O_Soldier_unarmed_F"]];
 
 //Recon
-_inf set [T_INF_recon_TL, ["O_V_Soldier_TL_hex_F"]];
-_inf set [T_INF_recon_rifleman, ["O_V_Soldier_hex_F"]];
-_inf set [T_INF_recon_medic, ["O_V_Soldier_Medic_hex_F"]];
-_inf set [T_INF_recon_exp, ["O_V_Soldier_Exp_hex_F"]];
-_inf set [T_INF_recon_LAT, ["O_V_Soldier_LAT_hex_F"]];
-_inf set [T_INF_recon_marksman, ["O_V_Soldier_M_hex_F"]];
-_inf set [T_INF_recon_JTAC, ["O_V_Soldier_JTAC_hex_F"]];
+_inf set [T_INF_recon_TL, ["O_recon_TL_F"]];
+_inf set [T_INF_recon_rifleman, ["O_recon_F"]];
+_inf set [T_INF_recon_medic, ["O_recon_medic_F"]];
+_inf set [T_INF_recon_exp, ["O_recon_exp_F"]];
+_inf set [T_INF_recon_LAT, ["O_recon_LAT_F"]];
+_inf set [T_INF_recon_marksman, ["O_recon_M_F"]];
+_inf set [T_INF_recon_JTAC, ["O_recon_JTAC_F"]];
 
 //Divers
 _inf set [T_INF_diver_TL, ["O_diver_TL_F"]];
 _inf set [T_INF_diver_rifleman, ["O_diver_F"]];
 _inf set [T_INF_diver_exp, ["O_diver_exp_F"]];
-
 
 
 //==== Vehicles ====
@@ -123,7 +122,7 @@ _group set [T_GROUP_inf_AT_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F"
 _group set [T_GROUP_inf_rifle_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSquad"]];
 _group set [T_GROUP_inf_assault_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfAssault"]];
 _group set [T_GROUP_inf_weapons_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSquad_Weapons"]];
-_group set [T_GROUP_inf_fire_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSquad"]];
+_group set [T_GROUP_inf_fire_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfTeam"]];
 _group set [T_GROUP_inf_recon_patrol, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OI_reconPatrol"]];
 _group set [T_GROUP_inf_recon_sentry, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OI_reconSentry"]];
 _group set [T_GROUP_inf_recon_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_ReconSquad"]];
