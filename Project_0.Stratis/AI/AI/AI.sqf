@@ -442,19 +442,24 @@ CLASS("AI", "MessageReceiverEx")
 			OOP_INFO_1("getMostRelevantGoals possible goals: %1", _possibleGoals);
 		#endif
 		{
-			pr _goalClassName = _x select 0;
-			pr _bias = _x select 1;
-			pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
-			//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
-			_relevance = _relevance + _bias;
+			pr _goalState = _x select 4;
 			
-			#ifdef DEBUG_POSSIBLE_GOALS
-				OOP_INFO_2("getMostRelevantGoals goal: %1, relevance: %2", _goalClassName, _relevance);
-			#endif
-			
-			if (_relevance > _relevanceMax) then {
-				_relevanceMax = _relevance;
-				_mostRelevantGoal = _x;
+			// Don't return completed goals
+			if (_goalState != ACTION_STATE_COMPLETED) then {
+				pr _goalClassName = _x select 0;
+				pr _bias = _x select 1;
+				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
+				//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
+				_relevance = _relevance + _bias;
+				
+				#ifdef DEBUG_POSSIBLE_GOALS
+					OOP_INFO_2("getMostRelevantGoals goal: %1, relevance: %2", _goalClassName, _relevance);
+				#endif
+				
+				if (_relevance > _relevanceMax) then {
+					_relevanceMax = _relevance;
+					_mostRelevantGoal = _x;
+				};
 			};
 		} forEach _possibleGoals;
 		

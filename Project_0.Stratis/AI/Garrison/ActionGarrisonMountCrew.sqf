@@ -106,6 +106,24 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		pr _gar = T_GETV("gar");
+		pr _mount = T_GETV("mount");
+		pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
+		pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
+
+		// Did we need to mount or dismount?
+		if (_mount) then {
+			{
+				// Delete goal to mount vehicles
+				pr _groupAI = CALLM0(_x, "getAI");
+				pr _args = ["GoalGroupGetInVehiclesAsCrew", ""];
+				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+			} forEach _vehGroups;
+		} else {
+			// NYI
+		};
+		
 	} ENDMETHOD; 
 
 ENDCLASS;

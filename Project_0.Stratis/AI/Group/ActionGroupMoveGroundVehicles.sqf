@@ -199,6 +199,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _wp = _hG addWaypoint [getPos leader _hG, 0];
 		_wp setWaypointType "MOVE";
 		_hG setCurrentWaypoint _wp;
+		doStop (leader _hG);
 		
 		// Delete given goals
 		pr _groupUnits = CALLM0(_group, "getUnits");

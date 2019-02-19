@@ -14,12 +14,24 @@ Fires on the owner of the unit.
 
 params ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitIndex", "_instigator", "_hitPoint"];
 
-// Disable damage for driving over friendlies
-if ((side _source == side _unit) && /*(_projectile == "") &&*/ (isNull _instigator)) then
+/*
+// Code to dump values passed to the event handler
+_array = ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitIndex", "_instigator", "_hitPoint"]; 
+_str = "";
 {
-	0
-};
+_str = _str + format ["%1: %2, ", _x, _this select _foreachindex];
+} forEach _array;
+diag_log _str;
+*/
 
 if (side _unit != side _source && isPlayer _source && alive _source) then { 
 	_source setVariable [UNDERCOVER_WANTED, true, true];
+};
+
+// Disable damage for driving over friendlies
+pr _sideUnit = side group _unit;
+pr _sideSource = side group _source;
+if ((_sideUnit == _sideSource || isNull _source) && /*(_projectile == "") &&*/ (isNull _instigator)) then
+{
+	0
 };

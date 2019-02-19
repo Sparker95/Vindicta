@@ -129,6 +129,10 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	// logic to run when the goal is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// Stop the car from driving around
+		pr _hO = GETV(_thisObject, "hO");
+		doStop _hO;
 	} ENDMETHOD; 
 
 ENDCLASS;

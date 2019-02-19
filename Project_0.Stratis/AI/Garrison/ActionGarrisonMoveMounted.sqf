@@ -54,10 +54,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _group = _x;
 			pr _groupAI = CALLM0(_x, "getAI");
 			
-			// Delete other goals like this first
-			pr _args = ["GoalGroupMoveGroundVehicles", ""];
-			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-			
 			// Add new goal to move
 			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
