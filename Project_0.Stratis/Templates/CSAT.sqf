@@ -22,7 +22,7 @@ _inf set [T_INF_spotter, ["O_spotter_F"]];
 _inf set [T_INF_exp, ["O_soldier_exp_F"]];
 _inf set [T_INF_ammo, ["O_Soldier_A_F"]];
 _inf set [T_INF_LAT, ["O_Soldier_LAT_F"]];
-_inf set [T_INF_AT, ["O_Soldier_AT_F"]];
+_inf set [T_INF_AT, ["O_Soldier_HAT_F"]];
 _inf set [T_INF_AA, ["O_Soldier_AA_F"]];
 _inf set [T_INF_LMG, ["O_Soldier_AR_F"]];
 _inf set [T_INF_HMG, ["O_HeavyGunner_F"]];
