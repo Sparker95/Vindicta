@@ -1,4 +1,6 @@
+// Class: Location
 /*
+Method: setBorder
 Sets border parameters for this location
 
 Arguments:
