@@ -36,12 +36,12 @@ private _loc = objNull;
 		private _template = tNATO;
 		
 		// Hide this marker a bit
-		_x setMarkerAlpha 0.4;
+		_x setMarkerAlpha 0.3;
 		
 		// Check marker side in its name
 		if(_x find "_ind" > 0) then	{
 			_side = INDEPENDENT;
-			_template = tIND;
+			_template = tAAF;
 		} else	{
 			if(_x find "_east" > 0) then {
 				_side = EAST;

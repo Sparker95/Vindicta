@@ -18,6 +18,7 @@ call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
 //Initialize the NATO template
 tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
 tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
+tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
 //a = [classesNATO, T_VEH, T_VEH_default] call t_fnc_select;
 //[classesNATO] call t_fnc_checkNil;
 

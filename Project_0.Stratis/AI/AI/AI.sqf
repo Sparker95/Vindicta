@@ -492,9 +492,11 @@ CLASS("AI", "MessageReceiverEx")
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
+		/*
 		if (_sourceAI != "") then {
 			ASSERT_OBJECT_CLASS(_sourceAI, "AI");
 		};
+		*/
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
 		
@@ -534,9 +536,11 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("deleteExternalGoal") {
 		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSourceAI", ""]];
 
+		/*
 		if (_goalSourceAI != "") then {
 			ASSERT_OBJECT_CLASS(_goalSourceAI, "AI");
 		};
+		*/
 
 		CRITICAL_SECTION_START
 		// [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE]

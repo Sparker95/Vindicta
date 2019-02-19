@@ -20,7 +20,7 @@ Parameters: "vehicle" - <Unit> object
 CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	VARIABLE("veh");
-	//VARIABLE("timeActivated");
+	VARIABLE("timeActivated");
 	
 	// ------------ N E W ------------
 	
@@ -42,18 +42,13 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		
 		_hO action ["repairVehicle", _hVeh];
 		
-		//T_SETV("timeActivated", time);
-		
-		// Check if the unit is not an actual engineer
-		if (!(_hO getUnitTrait "engineer")) then {
-			[CALLM0(_veh, "getObjectHandle")] call AI_misc_fnc_repairWithoutEngineer; // Will do partial repairs of vehicle
-		};	
+		T_SETV("timeActivated", time);
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
+		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
-		ACTION_STATE_COMPLETED
+		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	// logic to run each update-step
@@ -62,8 +57,18 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
-		//if (_state == ACTION_STATE_ACTIVE) then {
-		//};
+		if (_state == ACTION_STATE_ACTIVE) then {
+			// Makethe actual repair affects lag behind the animation
+			if (time - T_GETV("timeActivated") > 5) then {
+				pr _hO = T_GETV("hO");
+				pr _veh = T_GETV("veh");
+				// Check if the unit is not an actual engineer
+				if (!(_hO getUnitTrait "engineer")) then {
+					[CALLM0(_veh, "getObjectHandle")] call AI_misc_fnc_repairWithoutEngineer; // Will do partial repairs of vehicle
+				};	
+				_state = ACTION_STATE_COMPLETED;
+			};
+		};
 		
 		T_SETV("state", _state);
 		_state
