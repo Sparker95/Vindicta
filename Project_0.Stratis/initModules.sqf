@@ -112,3 +112,5 @@ call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // UI classes
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
+
+fn_spawnUnit = compile preprocessFileLineNumbers "Tests\fn_spawnUnit.sqf";
