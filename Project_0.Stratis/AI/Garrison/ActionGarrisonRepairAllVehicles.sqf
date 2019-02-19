@@ -24,9 +24,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	VARIABLE("repairUnit"); // The unit that will perform repairs on vehicles
 
+	METHOD("new") {
+		params [["_thisObject", "", [""]]];
+		T_SETV("repairUnit", "");
+	} ENDMETHOD;
+
+
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];
+		params [["_thisObject", "", [""]]];
 		
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
@@ -34,8 +40,14 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Find all broken vehicles
 		pr _vehicles = [_gar, [[T_VEH, -1], [T_DRONE, -1]]] call GETM(_gar, "findUnits");
 		pr _brokenVehicles = _vehicles select {
-			pr _hO = CALLM(_x, "getObjectHandle", []);
-			(getDammage _hO > 0.61) || (!canMove _hO)
+		
+			pr _oh = CALLM(_x, "getObjectHandle", []);
+			//diag_log format ["Vehicle: %1, can move: %2", _oh, canMove _oh];
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"]; //, "_className"];
+			pr _isStatic = [_catID, _subcatID] in T_static;
+			pr _anyWheelDamaged = if (!_isStatic) then {[_oh] call AI_misc_fnc_isAnyWheelDamaged} else {false};
+			pr _canNotMove = (((!canMove _oh) || _anyWheelDamaged) && !_isStatic);
+			(getDammage _oh > 0.61) || _canNotMove
 		};
 		
 		OOP_INFO_1("Broken vehicles: %1", _brokenVehicles);
@@ -115,9 +127,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Delete assigned goal
 		pr _repairUnit = T_GETV("repairUnit");
-		pr _repairUnitAI = CALLM0(_repairUnit, "getAI");
-		pr _args = ["GoalUnitRepairVehicle", _AI];
-		CALLM2(_repairUnitAI, "postMethodAsync", "deleteExternalGoal", _args);
+		if (_repairUnit != "") then {
+			pr _repairUnitAI = CALLM0(_repairUnit, "getAI");
+			pr _args = ["GoalUnitRepairVehicle", _AI];
+			CALLM2(_repairUnitAI, "postMethodAsync", "deleteExternalGoal", _args);
+		};
 		
 	} ENDMETHOD;
 
