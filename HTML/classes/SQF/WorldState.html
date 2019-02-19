@@ -8,71 +8,71 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic135"></a><div class="CTopic TClass LSQF first">
+<a name="Topic149"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">WorldState</div>
  <div class="CBody"><p>WorldState is an array with WorldStateProperties World State is a representation of the world relative to the agent</p><p>Author: Sparker 07.11.2018</p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic136"></a><div class="CTopic TGroup LSQF">
+<a name="Functions"></a><a name="Topic150"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="ws_new"></a><a name="Topic137"></a><div class="CTopic TFunction LSQF">
+<a name="ws_new"></a><a name="Topic151"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_new</div>
  <div class="CBody"><p>Returns a new WorldState object</p><p>Parameters: _size</p><table class="CDefinitionList"><tr><td class="CDLEntry">_size</td><td class="CDLDefinition"><p>amount of world state properties _b - _c -</p></td></tr></table><p>Returns: new WorldState object</p></div>
 </div>
 
-<a name="ws_getSize"></a><a name="Topic138"></a><div class="CTopic TFunction LSQF">
+<a name="ws_getSize"></a><a name="Topic152"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_getSize</div>
  <div class="CBody"><p>Returns size of this world state</p><p>Parameters: _ws</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ws</td><td class="CDLDefinition"><p>world state</p></td></tr></table><p>Returns: Number</p></div>
 </div>
 
-<a name="ws_getPropertyValue"></a><a name="Topic139"></a><div class="CTopic TFunction LSQF">
+<a name="ws_getPropertyValue"></a><a name="Topic153"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_getPropertyValue</div>
  <div class="CBody"><p>Returns size of this world state</p><p>Parameters: _ws, _key</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ws</td><td class="CDLDefinition"><p>world state</p></td></tr><tr><td class="CDLEntry">_key</td><td class="CDLDefinition"><p>Number, ID of world state property</p></td></tr></table><p>Returns: Number</p></div>
 </div>
 
-<a name="ws_propertyExistsAndEquals"></a><a name="Topic140"></a><div class="CTopic TFunction LSQF">
+<a name="ws_propertyExistsAndEquals"></a><a name="Topic154"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_propertyExistsAndEquals</div>
  <div class="CBody"><p>Returns true if the property exists and is equal to supplied value</p><p>Parameters: _ws, _key, _value</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ws</td><td class="CDLDefinition"><p>world state</p></td></tr><tr><td class="CDLEntry">_key</td><td class="CDLDefinition"><p>Number, ID of world state property</p></td></tr><tr><td class="CDLEntry">_value</td><td class="CDLDefinition"><p>value</p></td></tr></table><p>Returns: Bool</p></div>
 </div>
 
-<a name="ws_setPropertyValue"></a><a name="Topic141"></a><div class="CTopic TFunction LSQF">
+<a name="ws_setPropertyValue"></a><a name="Topic155"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_setPropertyValue</div>
  <div class="CBody"><p>Sets value of property with given key</p><p>Parameters: _ws, _key, _value</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ws</td><td class="CDLDefinition"><p>world state</p></td></tr><tr><td class="CDLEntry">_key</td><td class="CDLDefinition"><p>Number, ID of world state property</p></td></tr><tr><td class="CDLEntry">_value</td><td class="CDLDefinition"><p>value</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="ws_clearProperty"></a><a name="Topic142"></a><div class="CTopic TFunction LSQF">
+<a name="ws_clearProperty"></a><a name="Topic156"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_clearProperty</div>
  <div class="CBody"><p>Clears property with given key</p><p>Parameters: _ws, _key</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ws</td><td class="CDLDefinition"><p>world state</p></td></tr><tr><td class="CDLEntry">_key</td><td class="CDLDefinition"><p>Number, ID of world state property</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="ws_toString"></a><a name="Topic143"></a><div class="CTopic TFunction LSQF">
+<a name="ws_toString"></a><a name="Topic157"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_toString</div>
  <div class="CBody"><p>Converts world state to a string, which can be useful for debug purposes</p><p>Parameters: _ws</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ws</td><td class="CDLDefinition"><p>world state</p></td></tr></table><p>Returns: String</p></div>
 </div>
 
-<a name="ws_isActionSuitable"></a><a name="Topic144"></a><div class="CTopic TFunction LSQF">
+<a name="ws_isActionSuitable"></a><a name="Topic158"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_isActionSuitable</div>
  <div class="CBody"><p>Checks if an action with given effects and preconditions can be used to satisfy some goal.</p><p>An action can be applied if any properties in effects are equal to properties in goal, or if a property in effects is a parameter which affects an existing property in goal.</p><p>BUT preconditions of an action must not be in conflict with the goal.</p><p>Return value: [_connected, _parameterID, _parameterValue] _connected - bool</p></div>
 </div>
 
-<a name="ws_getNumUnsatisfiedProps"></a><a name="Topic145"></a><div class="CTopic TFunction LSQF">
+<a name="ws_getNumUnsatisfiedProps"></a><a name="Topic159"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_getNumUnsatisfiedProps</div>
  <div class="CBody"><p>Returns number of unsatisfied properties between world state A and B</p></div>
 </div>
 
-<a name="ws_substract"></a><a name="Topic146"></a><div class="CTopic TFunction LSQF">
+<a name="ws_substract"></a><a name="Topic160"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_substract</div>
  <div class="CBody"><p>Erases properties in _wsA which are affected by properties in _wsB world state Modifies the original _wsA array, returns nothing</p></div>
 </div>
 
-<a name="ws_add"></a><a name="Topic147"></a><div class="CTopic TFunction LSQF">
+<a name="ws_add"></a><a name="Topic161"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">ws_add</div>
  <div class="CBody"><p>Adds _wsB to _wsA, modifying _wsA By adding B to A, we override properties in A which exist in B by values from B.</p></div>
 </div>
 
-<a name="ws_applyParametersToGoalEffects"></a><a name="Topic148"></a><div class="CTopic TFunction LSQF last">
+<a name="ws_applyParametersToGoalEffects"></a><a name="Topic162"></a><div class="CTopic TFunction LSQF last">
  <div class="CTitle">ws_applyParametersToGoalEffects</div>
  <div class="CBody"><p>Applies goal parameters to the world state</p></div>
 </div>

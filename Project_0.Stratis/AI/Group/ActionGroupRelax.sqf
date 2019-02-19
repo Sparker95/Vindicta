@@ -30,6 +30,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		params [["_to", "", [""]]];		
 		
 		// Set behaviour
+		pr _AI = T_GETV("AI");
 		pr _hG = GETV(_thisObject, "hG");
 		_hG setBehaviour "SAFE";
 		{_x doFollow (leader _hG)} forEach (units _hG);
@@ -58,7 +59,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _thisObject);
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _AI);
 		} forEach _units;
 		
 		// Set state

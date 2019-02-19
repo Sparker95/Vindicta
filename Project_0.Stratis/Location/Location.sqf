@@ -63,10 +63,10 @@ CLASS("Location", "MessageReceiver")
 		SET_VAR(_thisObject, "garrisonCiv", "");
 		SET_VAR(_thisObject, "garrisonMilAA", "");
 		SET_VAR(_thisObject, "garrisonMilMain", "");
-		SET_VAR(_thisObject, "boundingRadius", 50);
-		SET_VAR(_thisObject, "border", 50);
+		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
+		SET_VAR_PUBLIC(_thisObject, "border", 50);
 		SET_VAR(_thisObject, "borderPatrolWaypoints", []);
-		SET_VAR(_thisObject, "pos", _pos);
+		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
 		SET_VAR(_thisObject, "spawnPosTypes", []);
 		SET_VAR(_thisObject, "spawnState", 0);
 		SET_VAR(_thisObject, "capacityInf", 0);
@@ -84,6 +84,7 @@ CLASS("Location", "MessageReceiver")
 		//Push the new object into the array with all units
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray pushBack _thisObject;
+		PUBLIC_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 	
 
@@ -113,8 +114,8 @@ CLASS("Location", "MessageReceiver")
 		
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_VAR("Location", "all");
-		_allArray = _allArray - [_thisObject];
-		SET_STATIC_VAR("Location", "all", _allArray);
+		_allArray deleteAt (_allArray find _thisObject);
+		PUBLIC_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 	
 
@@ -233,6 +234,12 @@ CLASS("Location", "MessageReceiver")
 	
 	// Checks if given position is safe to spawn a vehicle here
 	STATIC_METHOD_FILE("isPosSafe", "Location\isPosSafe.sqf");
+	
+	// Returns the nearest location to given position and distance to it
+	STATIC_METHOD_FILE("getNearestLocation", "Location\getNearestLocation.sqf");
+	
+	// Returns location that has its border overlapping given position
+	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
 	
 	
 	

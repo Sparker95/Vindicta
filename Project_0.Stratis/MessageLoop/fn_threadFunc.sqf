@@ -18,6 +18,8 @@ private _mutex = GET_VAR(_thisObject, "mutex");
 
 //#define DEBUG
 
+scriptName _thisObject;
+
 while {true} do {
 	//Do we have anything in the queue?
 	waitUntil {	(count _msgQueue) > 0 };

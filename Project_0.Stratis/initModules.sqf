@@ -1,6 +1,7 @@
 //Just a quick file to initialize the modules already made in needed order
 
 #include "OOP_Light\OOP_Light.h"
+#define COMPILEFUNC(path) compile preprocessFileLineNumbers path
 
 diag_log "initModules was called!";
 
@@ -17,11 +18,13 @@ call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
 //Initialize the NATO template
 tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
 tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
+tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
 //a = [classesNATO, T_VEH, T_VEH_default] call t_fnc_select;
 //[classesNATO] call t_fnc_checkNil;
 
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
+fnc_onPlayerRespawnServer = COMPILEFUNC("fn_onPlayerRespawnServer.sqf");
 
 /*
 //Initialize garrison
@@ -65,6 +68,9 @@ call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf"
 // Initialize MessageLoop class
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
+// Mod compatibility global variables
+call compile preprocessFileLineNumbers "modCompatBools.sqf";
+
 // Initialize Unit class
 call compile preprocessFileLineNumbers "Commander\Commander.sqf";
 
@@ -106,8 +112,3 @@ call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // UI classes
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
-
-// Initialize mod compatibility booleans 
-// No need to compile it actually
-//call compile preprocessFileLineNumbers "modCompatBools.sqf";
-

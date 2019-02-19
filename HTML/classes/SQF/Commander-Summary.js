@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Commander","Commander");NDSummary.OnSummaryLoaded("SQFClass:Commander",[["SQF","SQF"]],[["Classes","Class"]],[[149,0,0,"Commander"]]);
+NDFramePage.OnPageTitleLoaded("SQFClass:Commander","Commander");NDSummary.OnSummaryLoaded("SQFClass:Commander",[["SQF","SQF"]],[["Classes","Class"]],[[163,0,0,"Commander"]]);

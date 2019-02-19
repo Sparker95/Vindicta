@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
@@ -51,11 +54,30 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	// |                            D E L E T E
 	/*
 	Method: delete
-	NYI
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-		// todo
+		
+		pr _data = T_GETV("data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		
+		// Delete the group from its garrison
+		pr _gar = _data select GROUP_DATA_ID_GARRISON;
+		if (_gar != "") then {
+			CALLM1(_gar, "removeGroup", _thisObject);
+		};
+		
+		// Despawn if spawned
+		CALLM0(_thisObject, "despawn");
+		
+		// Report an error if we are deleting a group with units in it
+		if(count _units > 0) then {
+			OOP_ERROR_2("Deleting a group that has units in it: %1, %2", _thisObject, _data);
+			{
+				DELETE(_x);
+			} forEach _units;
+		};
+		
 	} ENDMETHOD;
 	
 	/*
@@ -73,11 +95,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	// |                           A D D   U N I T
 	/*
 	Method: addUnit
-	Adds an existing <Unit> to this group. You don't need to call it manually.
+	Adds existing <Unit> to this group. Also use it when you want to move unit between groups.
 	
-	Access: internal use!
-	
-	Parameters: _unit
+	Parameters: _units
 	
 	_unit - <Unit> to add
 	
@@ -86,11 +106,88 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	METHOD("addUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
+		
+		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
+		pr _groupIsSpawned = CALLM0(_thisObject, "isSpawned");
+		
+		if (_unitIsSpawned && !_groupIsSpawned || !_unitIsSpawned && _groupIsSpawned) exitWith {
+			OOP_ERROR_4("Group %1 is spawned: %2, unit %3 is spawned: %3", _thisObject, _groupIsSpawned, _unit, _unitIsSpawned);
+		};
+		
+		// Get unit's group
+		pr _unitGroup = CALLM0(_unit, "getGroup");
+		
+		// Remove the unit from its previous group
+		if (_unitGroup != "") then {
+			//if (CALLM0(_unitGroup, "getOwner") == clientOwner) then {
+				CALLM1(_unitGroup, "removeUnit", _unit);
+			//} else {
+			//	CALLM3(_unitGroup, "postMethodAsync", "removeUnit", [_unit], false);
+				//CALLM1(_unitGroup, "waitUntilMessageDone", _msgID);
+			//};			
+		};
+		
+		// Add unit to the new group
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		_unitList pushBackUnique _unit;
+		CALLM1(_unit, "setGroup", _thisObject);
+		
+		// Associate the unit with the garrison of this group
+		// todo
+		
+		// Handle spawn states
+		if (CALLM0(_thisObject,"isSpawned")) then {
+		
+			// Make the unit join the actual group
+			pr _newGroupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			// Create group handle if it doesn't exist yet
+			if (isNull _newGroupHandle) then {
+				_newGroupHandle = createGroup [_data select GROUP_DATA_ID_SIDE, false]; //side, delete when empty
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _newGroupHandle];
+			};
+			
+			pr _unitObjectHandle = CALLM0(_unit, "getObjectHandle");
+			
+			[_unitObjectHandle] join _newGroupHandle;
+			
+			// If the target group is spawned, notify its AI object
+			pr _AI = _data select GROUP_DATA_ID_AI;
+			if (_AI != "") then {
+				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsAdded", [[_unit]], true);
+				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+			};
+		};
 	} ENDMETHOD;
 	
+	/*
+	Method: addGroup
+	Moves all units from second group into this group.
+	
+	Parameters: _group
+	
+	_group - the group to move into this group
+	_delete - Boolean, true - deletes the abandoned group. Default: false.
+	
+	Returns: nil
+	*/
+	
+	METHOD("addGroup") {
+		params [["_thisObject", "", [""]], ["_group", "", [""]], ["_delete", false]];
+		
+		// Get units of the other group
+		pr _units = CALLM0(_group, "getUnits");
+		
+		// Add all units to this group
+		{
+			CALLM1(_thisObject, "addUnit", _x);
+		} forEach _units;
+		
+		// Delete the other group if needed
+		if (_delete) then {
+			DELETE(_group);
+		};
+	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
 	// |                        R E M O V E   U N I T                       |
@@ -101,7 +198,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	
 	Access: internal use
 	
-	Parameters: _unit
+	Parameters: _unit, _newGroup
 	
 	_unit - <Unit> that will be removed from this group.
 
@@ -109,12 +206,22 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("removeUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
-		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		//MUTEX_LOCK(_mutex);
-		private _unitList = _data select GROUP_DATA_ID_UNITS;
-		_unitList = _unitList - [_unit];
-		//MUTEX_UNLOCK(_mutex);
+		
+		pr _data = GETV(_thisObject, "data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		
+		// Notify group AI of this unit
+		if (CALLM0(_thisObject, "isSpawned")) then {
+			pr _AI = _data select GROUP_DATA_ID_AI;
+			if (_AI != "") then {
+				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsRemoved", [[_unit]], true);
+				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+			};
+		};
+		
+		// Remove the unit from this group
+		_units deleteAt (_units find _unit);
+		CALLM1(_unit, "setGroup", "");
 	} ENDMETHOD;
 	
 
@@ -136,25 +243,78 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	METHOD("getUnits") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
-		private _mutex = _data select GROUP_DATA_ID_MUTEX;
-		MUTEX_LOCK(_mutex);
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		private _return = +_unitList;
-		MUTEX_UNLOCK(_mutex);
 		_return
 	} ENDMETHOD;
+	
+	// |                         G E T  I N F A N T R Y  U N I T S
+	/*
+	Method: getInfantryUnits
+	Returns all infantry units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getInfantryUnits") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		_unitList select {CALLM0(_x, "isInfantry")}
+	} ENDMETHOD;
+	
+	// |                         G E T   V E H I C L E   U N I T S
+	/*
+	Method: getVehiucleUnits
+	Returns all vehicle units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getVehicleUnits") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		_unitList select {CALLM0(_x, "isVehicle")}
+	} ENDMETHOD;
+	
+	// |                         G E T   D R O N E   U N I T S
+	/*
+	Method: getVehicleUnits
+	Returns all drone units.
+	
+	Returns: Array of units.
+	*/
+	METHOD("getDroneUnits") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _unitList = _data select GROUP_DATA_ID_UNITS;
+		_unitList select {CALLM0(_x, "isDrone")}
+	} ENDMETHOD;
+	
 	
 	// |                         G E T   T Y P E                            |
 	/*
 	Method: getType
-	Description
+	Returns <GROUP_TYPE>
 	
-	Returns: Number, grup type. See <GROUP_TYPE>,
+	Returns: Number, group type. See <GROUP_TYPE>,
 	*/
 	METHOD("getType") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data select GROUP_DATA_ID_TYPE
+	} ENDMETHOD;
+	
+	// |                         G E T   S I D E                            |
+	/*
+	Method: getSide
+	Returns side of this group
+	
+	Returns: Side
+	*/
+	METHOD("getSide") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select GROUP_DATA_ID_SIDE
 	} ENDMETHOD;
 	
 	
@@ -169,6 +329,22 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");		
 		_data select GROUP_DATA_ID_GROUP_HANDLE
+	} ENDMETHOD;
+	
+	// |                  G E T   L E A D E R
+	/*
+	Method: getLeader
+	Returns the leader of the group.
+	
+	Returns: <Unit> object
+	*/
+	METHOD("getLeader") {
+		params ["_thisObject"];
+		pr _data = GET_VAR(_thisObject, "data");
+		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		
+		pr _hLeader = leader _hG;
+		CALLSM1("Unit", "getUnitFromObjectHandle", _hLeader)
 	} ENDMETHOD;
 	
 	
@@ -259,16 +435,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		
 		diag_log format ["[Group::handleUnitRemoved] Info: %1", _unit];
 		
-		pr _data = GETV(_thisObject, "data");
-		pr _units = _data select GROUP_DATA_ID_UNITS;
-		pr _AI = _data select GROUP_DATA_ID_AI;
-		
-		// Post a message to the group AI
-		pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitRemoved", [_unit], true);
-		CALLM1(_AI, "waitUntilMessageDone", _msgID);
-		
-		// Remove the unit from this group
-		_units deleteAt (_units find _unit);
+		CALLM1(_thisObject, "removeUnit", _unit);
 	} ENDMETHOD;
 	
 	
@@ -323,13 +490,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 		
 		// Create an AI for this group if it has any units
-		if (count _groupUnits > 0) then {
+		//if (count _groupUnits > 0) then {
 			pr _AI = NEW("AIGroup", [_thisObject]);
 			pr _data = GETV(_thisObject, "data");
 			_data set [GROUP_DATA_ID_AI, _AI];
-			CALLM(_AI, "setProcessInterval", [3]); // How often its process method will be called
 			CALLM(_AI, "start", []); // Kick start it
-		};
+		//};
 
 	} ENDMETHOD;
 	
@@ -461,10 +627,15 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		private _unitList = _data select GROUP_DATA_ID_UNITS;
 		
 		// Return only units which actually have an AI object (soldiers and drones)
+		/*
 		pr _return = _unitList select {
 			CALLM(_x, "isInfantry", [])
 		};
-		_return
+		*/
+		//_return
+		
+		// Return all units since vehicles have an AI object too :p
+		_unitList
 	} ENDMETHOD;
 	
 	
@@ -479,7 +650,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("getPossibleGoals") {
 		//["GoalGroupRelax"]
-		[]
+		["GoalGroupUnflipVehicles"]
 	} ENDMETHOD;
 	
 	
@@ -653,6 +824,35 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 		} forEach _groupData;
 		
 		(count _groupData)
+	} ENDMETHOD;
+	
+	/*
+	Method: getRequiredCrew
+	Returns amount of needed drivers and turret operators for all vehicles in this group.
+	
+	Returns: [_nDrivers, _nTurrets]
+	*/
+	
+	METHOD("getRequiredCrew") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _units = T_GETV("data") select GROUP_DATA_ID_UNITS;
+		
+		pr _nDrivers = 0;
+		pr _nTurrets = 0;
+		
+		{
+			if (CALLM0(_x, "isVehicle")) then {
+				pr _className = CALLM0(_x, "getClassName");
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				_nDrivers = _nDrivers + _n_driver;
+				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+			};
+		} forEach _units;
+		
+		OOP_INFO_2("getRequiredCrew: drivers: %1, turrets: %2", _nDrivers, _nTurrets);
+		
+		[_nDrivers, _nTurrets]
 	} ENDMETHOD;
 	
 ENDCLASS;

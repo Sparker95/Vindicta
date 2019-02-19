@@ -18,20 +18,21 @@ Base action for movement. Has only activate, terminate, process implemented.
 
 #define pr private
 
-#define TOLERANCE 1.0
+//#define TOLERANCE 1.0
 
 CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	VARIABLE("pos");
-	VARIABLE("ETA");
+	VARIABLE("ETA");	
+	VARIABLE("tolerance"); // completion radius
 	
 	// ------------ N E W ------------
-	/*
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
+		T_SETV("tolerance", 1.0); // Default tolerance value
+		
 	} ENDMETHOD;
-	*/
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
@@ -68,7 +69,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			pr _hO = T_GETV("hO");
 			pr _pos = T_GETV("pos");
 			
-			if ((_hO distance _pos) < TOLERANCE) then {
+			if ((_hO distance _pos) < T_GETV("tolerance")) then {
 				OOP_INFO_1("MOVE COMPLETED for infantry: %1", _thisObject);
 			
 				doStop _hO;

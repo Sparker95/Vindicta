@@ -279,6 +279,7 @@ CLASS("AIUnitInfantry", "AI")
 			pr _hO = GETV(_thisObject, "hO"); // Object handle of this unit
 			switch (_vehRole) do {
 				case VEHICLE_ROLE_DRIVER: {
+					_hO setPosWorld (getPosWorld _hO);
 					_hO moveInDriver _hVeh;
 					true
 				};
@@ -292,12 +293,14 @@ CLASS("AIUnitInfantry", "AI")
 				
 				case VEHICLE_ROLE_TURRET: {
 					pr _turretPath = GETV(_thisObject, "assignedTurretPath");
+					_hO setPosWorld (getPosWorld _hO);
 					_hO moveInTurret [_hVeh, _turretPath];
 					true
 				};
 				
 				case VEHICLE_ROLE_CARGO: {
 					pr _cargoIndex = GETV(_thisObject, "assignedCargoIndex");
+					_hO setPosWorld (getPosWorld _hO);
 					_hO moveInCargo [_hVeh, _cargoIndex];
 					true
 				};
@@ -305,6 +308,56 @@ CLASS("AIUnitInfantry", "AI")
 		} else {
 			false
 		};
+	} ENDMETHOD;
+	
+	/*
+	Method: getAssignedVehicleRole
+	Returns assigned vehicle role of the unit
+	
+	Returns: "DRIVER", "TURRET", "CARGO" or "" if the unit is not assigned anywhere
+	*/
+	
+	METHOD("getAssignedVehicleRole") {
+		params [ ["_thisObject", "", [""]] ];
+		
+		pr _vehRole = GETV(_thisObject, "assignedVehicleRole");
+		
+		// If nothing is assigned
+		if (isNil "_vehRole") exitWith {""};
+		
+		switch (_vehRole) do {
+			case VEHICLE_ROLE_DRIVER: {
+				"DRIVER"
+			};
+			
+			case VEHICLE_ROLE_TURRET: {
+				"TURRET"
+			};
+			
+			case VEHICLE_ROLE_CARGO: {
+				"CARGO"
+			};
+			
+			default {""};
+		};
+	} ENDMETHOD;
+	
+		/*
+	Method: getAssignedVehicle
+	Returns assigned vehicle or "" if the unit is not assigned to a vehicle
+	
+	Returns: vehicle's <Unit> object or "" if the unit is not assigned anywhere
+	*/
+	
+	METHOD("getAssignedVehicle") {
+		params [ ["_thisObject", "", [""]] ];
+		
+		pr _veh = GETV(_thisObject, "assignedVehicle");
+		
+		// If nothing is assigned
+		if (isNil "_veh") exitWith {""};
+		
+		_veh
 	} ENDMETHOD;
 	
 	/*

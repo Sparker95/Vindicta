@@ -49,7 +49,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 		
 		pr _gar = T_GETV("gar");
 		pr _side = CALLM0(_gar, "getSide");
-		pr _enemySides = [WEST, EAST, INDEPENDENT]; // - [_side];
+		pr _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		
 		// Bail if this garrison has no location
 		pr _loc = CALLM0(_gar, "getLocation");
@@ -57,7 +57,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 		pr _locPos = CALLM0(_loc, "getPos");
 		
 		// Get units that can spawn this location that are also within spawn range
-		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _locPos) < 2000) && (alive _x) && ((side _x) != _side)}; // todo retrieve the proper spawn distance
+		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _locPos) < 2000) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
 		
 		// Get units of this garrison
 		pr _thisUnits = CALLM0(_gar, "getUnits");
@@ -66,7 +66,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 		// Check if other sides can see any unit of this garrison
 		{
 			pr _s = _x;
-			pr _enemyObjectsSide = _enemyObjects select {side _x == _s};
+			pr _enemyObjectsSide = _enemyObjects select {side group _x == _s};
 			pr _observedBySide = _enemyObjectsSide findIf {
 				pr _enemyObject = _x;
 				pr _enemyObservesThisUnit =  _thisObjects findIf {

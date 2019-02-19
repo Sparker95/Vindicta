@@ -17,8 +17,8 @@ params [["_thisObject", "", [""]], ["_type", "", [""]], ["_data", 50, [0, []]] ]
 switch (_type) do {
 	case "circle" : {
 		_data params [ ["_radius", 0, [0] ] ];
-		SET_VAR(_thisObject, "boundingRadius", _radius);
-		SET_VAR(_thisObject, "border", _radius);
+		SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
+		SET_VAR_PUBLIC(_thisObject, "border", _radius);
 		
 		// Update the patrol waypoints
 		private _wp = [];
@@ -49,8 +49,8 @@ switch (_type) do {
 	case "rectangle" : {
 		_data params ["_a", "_b", "_dir"];
 		private _radius = sqrt(_a*_a + _b*_b);
-		SET_VAR(_thisObject, "border", _data);
-		SET_VAR(_thisObject, "boundingRadius", _radius);
+		SET_VAR_PUBLIC(_thisObject, "border", _data);
+		SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
 		
 		// Add patrol waypoints
 		/*

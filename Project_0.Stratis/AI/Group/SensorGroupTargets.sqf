@@ -76,7 +76,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				//Target age is the time that has passed since the last time the group has actually seen the enemy unit.
 				// Values lower than 0 mean that they see the enemy right now
 				//private _age = _x select 5;
-				((side (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
+				((side group (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
 			};
 			
 			// Loop through potential targets and find players(also in vehicles) to send data to their UndercoverMonitor
@@ -86,7 +86,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				if (_o in _allPlayers) then {
 					// It's a Man and a player
 					pr _args = [_o, _hG];
-					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _o, _args);
+					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _o, false); //classNameStr, methodNameStr, extraParams, targets, JIP
 				} else {
 					// It's not a player
 					// But might be a man or a vehicle
@@ -97,7 +97,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 								if (UNDERCOVER_IS_UNIT_EXPOSED(_x)) then {
 									// I can see you!
 									pr _args = [_x, _hG];
-									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _x, _args);
+									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _x, false);
 								};
 							};
 						} forEach (crew _o);					
@@ -119,7 +119,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				if (_comTime > TARGET_TIME_RELAY) then {
 
 					pr _observedTargets = _currentlyObservedObjects select {
-						( (side (_x select 1)) in _otherSides)
+						( (side group (_x select 1)) in _otherSides)
 					};
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {
@@ -134,7 +134,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						pr _AI = GETV(_thisObject, "AI");
 						pr _group = GETV(_AI, "agent");
 						pr _gar = CALLM0(_group, "getGarrison");
-						_AI = GETV(_gar, "AI");
+						_garAI = GETV(_gar, "AI");
 						
 						// Create a STIMULUS record
 						pr _stim = STIMULUS_NEW();
@@ -161,8 +161,8 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						
 						// Only send new data to the garrison if previous data has been processed
 						pr _prevMsgID = GETV(_thisObject, "prevMsgID");
-						if (CALLM1(_AI, "messageDone", _prevMsgID)) then {
-							pr _msgID = CALLM3(_AI, "postMethodAsync", "handleStimulus", [_stim], true);
+						if (CALLM1(_garAI, "messageDone", _prevMsgID)) then {
+							pr _msgID = CALLM3(_garAI, "postMethodAsync", "handleStimulus", [_stim], true);
 							SETV(_thisObject, "prevMsgID", _msgID);
 						//} else {
 						//	diag_log format [" ---- Previous stimulus has not been processed! MsgID: %1", _msgID];

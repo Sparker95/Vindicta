@@ -17,6 +17,7 @@ CLASS("GoalGarrisonMove", "Goal")
 	// Calculates desireability to choose this goal for a given _AI
 	// Inherited classes must implement this
 	
+	/*
 	STATIC_METHOD("calculateRelevance") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
 		
@@ -24,5 +25,6 @@ CLASS("GoalGarrisonMove", "Goal")
 		GOAL_RELEVANCE_GARRISON_MOVE
 
 	} ENDMETHOD;
+	*/
 
 ENDCLASS;

@@ -1,4 +1,4 @@
-//#define OOP_INFO
+#define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -10,6 +10,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
+#include "groupWorldStateProperties.hpp"
 
 /*
 Class: ActionGroup.ActionGroupGetInVehiclesAsCrew
@@ -36,6 +37,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		
 		OOP_INFO_0("ACTIVATE");
 		
+		pr _AI = T_GETV("AI");
 		pr _group = GETV(T_GETV("AI"), "agent");
 		
 		// Assign units to vehicles
@@ -64,7 +66,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 				pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "DRIVER"], ["turretPath", 0]];
 				
 				// Add goal to this driver
-				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _group);
+				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
 				
 				// Add the AI of this driver to the array
 				_driversAI pushBack _driverAI;
@@ -86,7 +88,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 					pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "TURRET"], ["turretPath", _turretPath]];
 					
 					// Add goal to this turret
-					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _group);		
+					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);		
 					
 					_turretsAI pushback _turretAI;
 					
@@ -116,20 +118,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		if (_state == ACTION_STATE_ACTIVE) then {
 			
 			// Wait until all given goals are completed
-			pr _groupUnits = CALLM0(GETV(T_GETV("AI"), "agent"), "getUnits");
-			pr _allAI = T_GETV("driversAI") + T_GETV("turretsAI");
-			OOP_INFO_1("All AI: %1", _allAI);
-			{
-				pr _unitAI = CALLM0(_x, "getAI");
-				pr _infActionState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitGetInVehicle", "");
-				OOP_INFO_2("Infantry AI: %1, state: %2", _x, _infActionState);
-			} forEach _groupUnits;
-			if (({
-					pr _unitAI = CALLM0(_x, "getAI");
-					pr _infState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitGetInVehicle", "");
-					(_infState == ACTION_STATE_COMPLETED) || (_infState == -1)
-				} count _groupUnits) == (count _groupUnits)) then {
+			pr _AI = T_GETV("AI");
+			pr _group = GETV(_AI, "agent");
+			pr _groupUnits = CALLM0(_group, "getInfantryUnits");
+			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
+			//pr _ws = GETV(_AI, "worldState");
+			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
 				OOP_INFO_0("Action COMPLETED");
+				
+				// Update sensors
+				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
 				
 				// We are done here
 				T_SETV("state", ACTION_STATE_COMPLETED);
@@ -145,12 +143,12 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		};
 	} ENDMETHOD;
 	
-	METHOD("handleUnitRemoved") {
-		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
-		OOP_INFO_1("Unit removed: %1", _unit);
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]] ];
+		OOP_INFO_1("Units removed: %1", _units);
 		
 		// Call activate method, pass the unit that was removed
-		CALLM1(_thisObject, "activate", [_unit]);
+		CALLM1(_thisObject, "activate", _units);
 		
 		/*
 		pr _state = T_GETV("state");
@@ -164,6 +162,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete given goals
+		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _crew = CALLM0(_group, "getInfantryUnits");
+		
+		// Delete previous goals of units to get into vehicles
+		{
+			pr _crewAI = CALLM0(_x, "getAI");
+			CALLM2(_crewAI, "deleteExternalGoal", "GoalUnitGetInVehicle", "");
+		} forEach _crew;
 		
 	} ENDMETHOD;
 

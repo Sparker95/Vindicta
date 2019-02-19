@@ -8,95 +8,105 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic225"></a><div class="CTopic TClass LSQF first">
+<a name="Topic240"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">Location</div>
  <div class="CBody"><p>Location has garrisons at a static place and spawns units.</p><p>Author: Sparker 28.07.2018</p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic226"></a><div class="CTopic TGroup LSQF">
+<a name="Functions"></a><a name="Topic241"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="setDebugName"></a><a name="Topic227"></a><div class="CTopic TFunction LSQF">
+<a name="setDebugName"></a><a name="Topic242"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setDebugName</div>
  <div class="CBody"><p>Sets debug name of this MessageLoop.</p><p>Parameters: _debugName</p><table class="CDefinitionList"><tr><td class="CDLEntry">_debugName</td><td class="CDLDefinition"><p>String</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="new"></a><a name="Topic228"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic243"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
  <div class="CBody"><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position of this location</p></td></tr></table></div>
 </div>
 
-<a name="delete"></a><a name="Topic229"></a><div class="CTopic TFunction LSQF">
+<a name="delete"></a><a name="Topic244"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
 </div>
 
-<a name="(static)getAll"></a><a name="Topic230"></a><div class="CTopic TFunction LSQF">
+<a name="(static)getAll"></a><a name="Topic245"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)getAll</div>
  <div class="CBody"><p>Returns an array of all locations.</p><p>Returns: Array of location objects</p></div>
 </div>
 
-<a name="getPos"></a><a name="Topic231"></a><div class="CTopic TFunction LSQF">
+<a name="getPos"></a><a name="Topic246"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getPos</div>
  <div class="CBody"><p>Returns position of this location</p><p>Returns: Array, position</p></div>
 </div>
 
-<a name="getPatrolWaypoints"></a><a name="Topic232"></a><div class="CTopic TFunction LSQF">
+<a name="getPatrolWaypoints"></a><a name="Topic247"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getPatrolWaypoints</div>
  <div class="CBody"><p>Returns array with positions for patrol waypoints.</p><p>Returns: Array of positions</p></div>
 </div>
 
-<a name="setGarrisonMilitaryMain"></a><a name="Topic233"></a><div class="CTopic TFunction LSQF">
+<a name="setGarrisonMilitaryMain"></a><a name="Topic248"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setGarrisonMilitaryMain</div>
- <div class="CBody"><p>Sets the main military garrison located at this location</p><p>Parameters: _garrison</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,168);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Sets the main military garrison located at this location</p><p>Parameters: _garrison</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,184);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="getGarrisonMilitaryMain"></a><a name="Topic433"></a><div class="CTopic TFunction LSQF">
+<a name="getGarrisonMilitaryMain"></a><a name="Topic249"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getGarrisonMilitaryMain</div>
- <div class="CBody"><p>Gets the main military garrison located at this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,168);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no garrison there</p></div>
+ <div class="CBody"><p>Gets the main military garrison located at this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,184);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no garrison there</p></div>
 </div>
 
-<a name="addSpawnPos"></a><a name="Topic263"></a><div class="CTopic TFunction LSQF">
+<a name="addSpawnPos"></a><a name="Topic273"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addSpawnPos</div>
  <div class="CBody"><p>Adds a spawn position to to the spawn types array.</p><p>Parameters: _typesArray, _groupTypes, _pos, _dir, _building _unitTypes - array with _groupTypes - array with group types _pos - position _dir - direction _building - the building this pos. is attached to or objNull if it's not dependant on any building</p></div>
 </div>
 
-<a name="addSpawnPosFromBuilding"></a><a name="Topic266"></a><div class="CTopic TFunction LSQF">
+<a name="addSpawnPosFromBuilding"></a><a name="Topic284"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addSpawnPosFromBuilding</div>
  <div class="CBody"><p>Adds spawn positions of this building to the location.</p><p>Parameters: _building</p><table class="CDefinitionList"><tr><td class="CDLEntry">_building</td><td class="CDLDefinition"><p>the object handle of the building</p></td></tr></table><p>Author: Sparker 03.08.2018</p></div>
 </div>
 
-<a name="calculateInfantryCapacity"></a><a name="Topic257"></a><div class="CTopic TFunction LSQF">
+<a name="calculateInfantryCapacity"></a><a name="Topic270"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">calculateInfantryCapacity</div>
  <div class="CBody"><p>Calculates infantry capacity based on buildings in this location.</p><table class="CDefinitionList"><tr><td class="CDLEntry">Returns: Number</td><td class="CDLDefinition"><p>amount of infantry soldeirs that can stay here</p></td></tr></table><p>Author: Sparker 03.08.2018</p></div>
 </div>
 
-<a name="(static)createAllFromEditor"></a><a name="Topic254"></a><div class="CTopic TFunction LSQF">
+<a name="(static)createAllFromEditor"></a><a name="Topic267"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)createAllFromEditor</div>
  <div class="CBody"><p>Checks the game world for predefined game objects and markers and creates locations from them.</p><p>Author: Sparker 28.07.2018</p></div>
 </div>
 
-<a name="getRandomPos"></a><a name="Topic251"></a><div class="CTopic TFunction LSQF">
+<a name="(static)getLocationAtPos"></a><a name="Topic453"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getLocationAtPos</div>
+ <div class="CBody"><p>Returns location that has the provided position/object within its border.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position or object</p></td></tr></table><p>Returns: <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,240);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> or &quot;&quot; if there is no such location</p><p>Author: Sparker 2.11.2019</p></div>
+</div>
+
+<a name="(static)getNearestLocation"></a><a name="Topic450"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getNearestLocation</div>
+ <div class="CBody"><p>Returns the nearest location to given position(or object) and 2D distance to it</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position or object</p></td></tr></table><p>Returns: [Location, distance]</p><p>Author: Sparker 2.11.2019</p></div>
+</div>
+
+<a name="getRandomPos"></a><a name="Topic261"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getRandomPos</div>
  <div class="CBody"><p>Returns a random position within the border of the location.&nbsp; Distribution is uniform</p><p>Returns: Array, position</p></div>
 </div>
 
-<a name="getSpawnPos"></a><a name="Topic260"></a><div class="CTopic TFunction LSQF">
+<a name="getSpawnPos"></a><a name="Topic276"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getSpawnPos</div>
  <div class="CBody"><p>Gets a spawn position for a unit of specified category and subcategory.</p><p>Parameters: _catID, _subcatID, _className, _groupType _catID - _subcatID - _className - _groupType -</p><p>Return value: Array in format [[x, y, z], direction]</p><p>Author: Sparker 29.07.2018</p></div>
 </div>
 
-<a name="getUnitCapacity"></a><a name="Topic248"></a><div class="CTopic TFunction LSQF">
+<a name="getUnitCapacity"></a><a name="Topic258"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getUnitCapacity</div>
  <div class="CBody"><p>Returns how many units of this type and group type the location can hold.</p><p>Parameters: _unitTypes, _groupTypes _unitTypes - Number or Array - Number - catID - Array - array with [catID, subcatID] of the units _groupTypes - Array with group types</p><p>Returns: Number</p><p>Author: Sparker 29.07.2018</p></div>
 </div>
 
-<a name="handleMessage"></a><a name="Topic245"></a><div class="CTopic TFunction LSQF">
+<a name="handleMessage"></a><a name="Topic255"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleMessage</div>
  <div class="CBody"><p>Checks spawn conditions of this location. Spawns garrisons if needed.</p></div>
 </div>
 
-<a name="initFromEditor"></a><a name="Topic242"></a><div class="CTopic TFunction LSQF">
+<a name="initFromEditor"></a><a name="Topic264"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">initFromEditor</div>
  <div class="CBody"><p>Initializes the location parameters from editor-plased objects.</p><p>Parameters: _marker</p><table class="CDefinitionList"><tr><td class="CDLEntry">_marker</td><td class="CDLDefinition"><p>the marker to initialize from</p></td></tr></table><p>Returns: nil</p><p>Author: Sparker 28.07.2018</p></div>
 </div>
@@ -106,8 +116,8 @@
  <div class="CBody"><p>Checks if given position is in area of given location.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="(static)isPosSafte"></a><a name="Topic236"></a><div class="CTopic TFunction LSQF last">
- <div class="CTitle">(static)isPosSafte</div>
+<a name="(static)isPosSafe"></a><a name="Topic447"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">(static)isPosSafe</div>
  <div class="CBody"><p>Returns true if the place is good for spawning specific vehicle.&nbsp; The main method of this function - checking vehicles inside the bounding box.&nbsp; Houses and buildings are ignored.</p><p>Parameters: _pos, _dir, _className _pos - position _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
 </div>
 

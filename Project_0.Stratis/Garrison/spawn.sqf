@@ -49,11 +49,3 @@ private _loc = GET_VAR(_thisObject, "location");
 pr _AI = NEW("AIGarrison", [_thisObject]);
 SETV(_thisObject, "AI", _AI);
 CALLM(_AI, "start", []); // Let's start the party! \o/
-
-// Create a goal object for this garrison
-/*
-private _args = [_thisObject]; // entity
-private _newGoal = NEW("GoalComposite", _args);
-CALLM(_newGoal, "setAutonomous", [3]); // timer interval
-SETV(_thisObject, "goal", _newGoal);
-*/

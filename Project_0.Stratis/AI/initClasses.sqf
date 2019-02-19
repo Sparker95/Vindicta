@@ -20,6 +20,8 @@ call compile preprocessFileLineNumbers "AI\StimulusManager\StimulusManager.sqf";
 
 call compile preprocessFileLineNumbers "AI\Misc\databaseFunctions.sqf";
 
+call compile preprocessFileLineNumbers "AI\Misc\repairFunctions.sqf";
+
 call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 
 

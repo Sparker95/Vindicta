@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:AI/Unit/ActionUnitInfantryMove.sqf",{100:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a single unit move to a specified position.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:AI/Unit/ActionUnitInfantryMove.sqf",{131:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a single unit move to a specified position.</div></div>"});

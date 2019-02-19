@@ -28,7 +28,7 @@ Author: Sparker 07.11.2018
 #define pr private
 
 // Will output to .rpt which goals each AI is choosing from
-//#define DEBUG_POSSIBLE_GOALS
+#define DEBUG_POSSIBLE_GOALS
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -44,6 +44,7 @@ CLASS("AI", "MessageReceiverEx")
 	VARIABLE("currentGoal"); // The current goal
 	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
 	VARIABLE("currentGoalParameters"); // The parameter of the current goal
+	//VARIABLE("currentGoalState"); // State of the action
 	VARIABLE("goalsExternal"); // Goal suggested to this Agent by another agent
 	VARIABLE("worldState"); // The world state relative to this Agent
 	VARIABLE("worldFacts"); // Array with world facts
@@ -68,6 +69,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "currentGoal", "");
 		SETV(_thisObject, "currentGoalSource", "");
 		SETV(_thisObject, "currentGoalParameters", []);
+		//SETV(_thisObject, "currentGoalState", ACTION_STATE_INACTIVE);
 		SETV(_thisObject, "goalsExternal", []);
 		pr _ws = [1] call ws_new; // todo WorldState size must depend on the agent
 		SETV(_thisObject, "worldState", _ws);
@@ -75,7 +77,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "sensors", []);
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
-		SETV(_thisObject, "processInterval", 10);
+		SETV(_thisObject, "processInterval", 1);
 		
 		// Add this AI to the stimulus manager
 		pr _args = ["addSensingAI", [_thisObject]];
@@ -127,6 +129,8 @@ CLASS("AI", "MessageReceiverEx")
 		updateSensors();
 		goalNew = calculateMostRelevantGoal();
 		if (goalNew != currentGoal)
+			if(currentAction != "")
+				setCurrentAction("");
 			[action, planIsValid] = planActions(goalNew);
 			if (planIsValid) {
 				setCurrentAction(action);
@@ -151,22 +155,35 @@ CLASS("AI", "MessageReceiverEx")
 		
 		// If we have chosen some goal
 		if (count _goalNewArray != 0) then {
-			_goalNewArray params ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource"]; // Goal class name, bias, parameter, source
+			_goalNewArray params ["_goalClassName", "_goalBias", "_goalParameters", "_goalSource", "_goalActionState"]; // Goal class name, bias, parameter, source
 			//diag_log format ["  most relevant goal: %1", _goalClassName];
 			
 			// Check if the new goal is the same as the current goal
-			pr _currentGoal = GETV(_thisObject, "currentGoal");
-			pr _currentGoalSource = GETV(_thisObject, "currentGoalSource");
-			pr _currentGoalParameters = GETV(_thisObject, "currentGoalParameters");
-			if (_currentGoal == _goalClassName && _currentGoalSource == _goalSource && _currentGoalParameters isEqualTo _goalParameters) then {
+			pr _currentGoal = T_GETV("currentGoal");
+			//pr _currentGoalSource = T_GETV("currentGoalSource");
+			pr _currentGoalParameters = T_GETV( "currentGoalParameters");
+			//pr _currentGoalActionState = T_GETV("currentGoalState");
+			pr _currentAction = T_GETV("currentAction");
+			if (	_currentGoal == _goalClassName &&
+					//_currentGoalSource == _goalSource &&
+					_currentGoalParameters isEqualTo _goalParameters
+					//_currentGoalActionState == ACTION_STATE_ACTIVE
+					|| _goalActionState == ACTION_STATE_COMPLETED // If we have already completed it, no need to do it again
+					) then {
 				// We have the same goal. Do nothing.
-				//OOP_INFO_0("PROCESS: Goal is the same...");
+				OOP_INFO_2("PROCESS: SAME GOAL: %1, %2", _currentGoal, _currentGoalParameters);
 			} else {
 				// We have a new goal! Time to replan.
-				SETV(_thisObject, "currentGoal", _goalClassName);
-				SETV(_thisObject, "currentGoalSource", _goalSource);
-				SETV(_thisObject,"currentGoalParameters", _goalParameters);
-				diag_log format ["[AI:Process] AI: %1, NEW GOAL: %2", _thisObject, _goalClassName];
+				
+				// Delete the current action if we had it
+				CALLM0(_thisObject, "deleteCurrentAction");
+				
+				T_SETV("currentGoal", _goalClassName);
+				T_SETV("currentGoalSource", _goalSource);
+				T_SETV("currentGoalParameters", _goalParameters);
+				//T_SETV("currentGoalState", _goalActionState);
+				OOP_INFO_4("PROCESS: NEW GOAL: %1, parameters: %2, source: %3, state: %4",
+					_goalClassName, _goalParameters, _goalSource, _goalActionState);
 				
 				// Make a new Action Plan
 				// First check if the goal assumes a predefined plan
@@ -196,7 +213,7 @@ CLASS("AI", "MessageReceiverEx")
 					} else {
 						// Terminate the current action (if it exists)
 						CALLM0(_thisObject, "deleteCurrentAction");
-						diag_log format ["[AI::Process] Error: Failed to generate an action plan. AI: %1,  Current WS: %1,  Goal WS: %3", _thisObject, GETV(_thisObject, worldState), _wsGoal];
+						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", GETV(_thisObject, "worldState"), _wsGoal);
 					};
 				} else {
 					// Set a new action from the predefined action
@@ -206,12 +223,16 @@ CLASS("AI", "MessageReceiverEx")
 			};
 		} else {
 			// We don't pursue a goal any more
+			OOP_INFO_0("PROCESS: NO GOAL");
 			
 			// End the previous goal if we had it
 			pr _currentGoal = GETV(_thisObject, "currentGoal");
 			if (_currentGoal != "") then {
-				diag_log format ["[AI:Process] AI: %1 ending the current goal: %2", _thisObject, _currentGoal];
-				SETV(_thisObject, "currentGoal", "");
+				OOP_INFO_1("PROCESS: ENDING CURRENT GOAL: %1", _currentGoal);
+				T_SETV("currentGoal", "");
+				T_SETV("currentGoalSource", "");
+				T_SETV("currentGoalParameters", []);
+				//T_SETV("currentGoalState", -1); // -1 means there is no goal
 			};
 			
 			// Delete the current action if we had it
@@ -225,6 +246,11 @@ CLASS("AI", "MessageReceiverEx")
 		if (_currentAction != "") then {
 			pr _actionState = CALLM(_currentAction, "process", []);
 			
+			OOP_INFO_2("CURRENT ACTION: %1, state: %2", _currentAction, _actionState);
+			
+			// Set goal state			
+			//T_SETV("currentGoalState", _actionState);
+			
 			// If it's an external goal, set its action state in the external goal array
 			pr _goalSource = T_GETV("currentGoalSource");
 			if (_goalSource != _thisObject) then {
@@ -235,7 +261,7 @@ CLASS("AI", "MessageReceiverEx")
 					pr _arrayElement = _goalsExternal select _index;
 					_arrayElement set [4, _actionState];
 				} else {
-					diag_log format ["[AI::process] Error: can't set external goal action state: %1, %2", _thisObject, _goalClassName];
+					OOP_ERROR_1("PROCESS: can't set external goal action state: %1", _goalClassName);
 				};
 			};
 			
@@ -248,12 +274,17 @@ CLASS("AI", "MessageReceiverEx")
 					
 					// Delete the current action
 					CALLM0(_thisObject, "deleteCurrentAction");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
 				};
 				
 				case ACTION_STATE_FAILED : {
 					// Probably we should replan our goal at the next iteration
 					SETV(_thisObject, "currentGoal", "");
-					CALLM0(_thisObject, "deleteCurrentAction");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
 				};
 			};
 		};
@@ -404,18 +435,22 @@ CLASS("AI", "MessageReceiverEx")
 		pr _possibleGoals = CALLM(_agent, "getPossibleGoals", []);
 		pr _relevanceMax = -1000;
 		pr _mostRelevantGoal = [];
-		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject]}; // Goal class name, bias, parameter, source
+		_possibleGoals = _possibleGoals apply {[_x, 0, [], _thisObject, ACTION_STATE_INACTIVE]}; // Goal class name, bias, parameter, source, state
 		pr _extGoals = GETV(_thisObject, "goalsExternal");
-		#ifdef DEBUG_POSSIBLE_GOALS
-			diag_log format ["[AI::getMostRelevantGoals] Info: AI: %1,  possible goals: %2", _thisObject, _possibleGoals];
-		#endif
 		_possibleGoals append _extGoals;
+		#ifdef DEBUG_POSSIBLE_GOALS
+			OOP_INFO_1("getMostRelevantGoals possible goals: %1", _possibleGoals);
+		#endif
 		{
 			pr _goalClassName = _x select 0;
 			pr _bias = _x select 1;
 			pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
 			//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
 			_relevance = _relevance + _bias;
+			
+			#ifdef DEBUG_POSSIBLE_GOALS
+				OOP_INFO_2("getMostRelevantGoals goal: %1, relevance: %2", _goalClassName, _relevance);
+			#endif
 			
 			if (_relevance > _relevanceMax) then {
 				_relevanceMax = _relevance;
@@ -439,25 +474,47 @@ CLASS("AI", "MessageReceiverEx")
 	
 	/*
 	Method: addExternalGoal
-	Adds a goal to the list of external goals of this agent
+	Adds a goal to the list of external goals of this agent. By default it also deletes goals with same _goalClassName irrelevant of its source!
 	
 	Parameters: _goalClassName, _bias, _parameters
 	
 	_goalClassName - <Goal> class name
 	_bias - a number to be added to the relevance of the goal once it is calculated
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
-	_source - string, optional, can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
+	_deleteSimilarGoals - Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.
 	
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_source", "ERROR_NO_SOURCE", [""]] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true] ];
 		
-		OOP_INFO_2("Added external goal: %1, %2", _goalClassName, _parameters);
+		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
+		
+		/*
+		if (_sourceAI != "") then {
+			ASSERT_OBJECT_CLASS(_sourceAI, "AI");
+		};
+		*/
 		
 		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
-		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE];
+		
+		if (_deleteSimilarGoals) then {
+			pr _i = 0;
+			pr _goalDeleted = false;
+			while {_i < count _goalsExternal} do {
+				pr _cg = _goalsExternal select _i;
+				if (	(((_cg select 0) == _goalClassName)) ) then {
+					pr _deletedGoal = _goalsExternal deleteAt _i;
+					OOP_INFO_1("AUTOMATICALLY DELETED EXTERNAL GOAL: %1", _deletedGoal);
+				} else {
+					_i = _i + 1;
+				};
+			};
+		};
+		
+		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
 		nil
 	} ENDMETHOD;
@@ -472,12 +529,18 @@ CLASS("AI", "MessageReceiverEx")
 	Parameters: _goalClassName, _goalSource
 	
 	_goalClassName - <Goal> class name
-	_goalSource - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	_goalSourceAI - <AI> object that gave this goal or "" to ignore this field. If "" is provided, source field will be ignored.
 	
 	Returns: nil
 	*/
 	METHOD("deleteExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSourceAI", ""]];
+
+		/*
+		if (_goalSourceAI != "") then {
+			ASSERT_OBJECT_CLASS(_goalSourceAI, "AI");
+		};
+		*/
 
 		CRITICAL_SECTION_START
 		// [_goalClassName, _bias, _parameters, _source, ACTION_STATE_INACTIVE]
@@ -487,16 +550,17 @@ CLASS("AI", "MessageReceiverEx")
 		while {_i < count _goalsExternal} do {
 			pr _cg = _goalsExternal select _i;
 			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
-					( ((_cg select 3) == _goalSource) || (_goalSource == ""))) then {
+					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
 				pr _deletedGoal = _goalsExternal deleteAt _i;
 				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
+				_goalDeleted = true;
 			} else {
 				_i = _i + 1;
 			};
 		};
 		
 		if (!_goalDeleted) then {
-			OOP_WARNING_2("couldn't delete external goal: %1, %2", _goalClassName, _goalSource);
+			OOP_WARNING_2("couldn't delete external goal: %1, %2", _goalClassName, _goalSourceAI);
 		};
 		CRITICAL_SECTION_END
 		
@@ -541,6 +605,85 @@ CLASS("AI", "MessageReceiverEx")
 		_return
 	} ENDMETHOD;
 	
+	// --------------------------------------------------------------------------------
+	// |                G E T   E X T E R N A L   G O A L   P A R A M E T E R S
+	// --------------------------------------------------------------------------------
+	/*
+	Method: getExternalGoalParameters
+	Returns the parameters array of the external goal.
+	
+	Parameters: _goalClassName, _source
+	
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Array with goal parameters passed to it, or [] if this goal was not found.
+	*/
+	METHOD("getExternalGoalParameters") {
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+
+		pr _return = [];
+		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, action state];
+		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+		pr _index = if (_goalSource == "") then {
+			_goalsExternal findIf {(_x select 0) == _goalClassName}
+		} else {
+			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		};
+		if (_index != -1) then {
+			_return = _goalsExternal select _index select 2;
+		//} else {
+			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+		};
+		CRITICAL_SECTION_END
+		
+		_return
+	} ENDMETHOD;
+	
+	/*
+	Method: (static)allAgentsCompletedExternalGoal
+	Returns true if all provided AI objects have completed an external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/
+	STATIC_METHOD("allAgentsCompletedExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		OOP_INFO_2("allAgentsCompletedExternalGoal: %1, Source: %2", _goalClassName, _goalSource);
+		{
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) ); // || (_actionState == -1));
+			(_actionState == ACTION_STATE_COMPLETED)  // || (_actionState == -1)
+		} count _agents == (count _agents)
+	} ENDMETHOD;
+
+	/*
+	Method: (static)anyAgentFailedExternalGoal
+	Returns true if any agent has failed the external goal.
+	
+	Parameters: _agents, _goalClassName, _goalSource
+	
+	_agents - array of agent objects (Unit, Garrison, Group - must support getAI method)
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/	
+	STATIC_METHOD("anyAgentFailedExternalGoal") {
+		params ["_thisClass", ["_agents", [], [[]]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+		(_agents findIf {
+			pr _AI = CALLM0(_x, "getAI");
+			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
+			(_actionState == ACTION_STATE_FAILED)
+		}) != -1
+	} ENDMETHOD;
 	
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- A C T I O N S -------------------------------------------
@@ -576,6 +719,9 @@ CLASS("AI", "MessageReceiverEx")
 		params [["_thisObject", "", [""]]];
 		pr _currentAction = GETV(_thisObject, "currentAction");
 		if (_currentAction != "") then {
+			pr _state = GETV(_currentAction, "state");
+			OOP_INFO_2("DELETING CURRENT ACTION: %1, state: %2", _currentAction, _state);
+		
 			CALLM(_currentAction, "terminate", []);
 			DELETE(_currentAction);
 			SETV(_thisObject, "currentAction", "");
@@ -593,7 +739,7 @@ CLASS("AI", "MessageReceiverEx")
 		if (count _plan == 1) then {
 		
 			// If there is only one action in the plan, just create this action
-			(_plan select 0) params ["_actionClassName", "_actionParameters"];
+			(_plan select 0) params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
 			pr _args = [_thisObject, _actionParameters];
 			pr _action = NEW(_actionClassName, _args);
 			
@@ -604,7 +750,7 @@ CLASS("AI", "MessageReceiverEx")
 			// If there are multiple actions in the plan, create an ActionCompositeSerial and add subactions to it 
 			pr _actionSerial = NEW("ActionCompositeSerial", [_thisObject]);
 			{ // foreach _plan
-				_x params ["_actionClassName", "_actionParameters"];
+				_x params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
 				
 				// Create an action
 				pr _args = [_thisObject, _actionParameters];
@@ -715,6 +861,7 @@ CLASS("AI", "MessageReceiverEx")
 			private _timer = NEW("Timer", _args);
 			SETV(_thisObject, "timer", _timer);
 		};
+		nil
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -732,6 +879,7 @@ CLASS("AI", "MessageReceiverEx")
 			SETV(_thisObject, "timer", "");
 			DELETE(_timer);
 		};
+		nil
 	} ENDMETHOD;
 	
 	
@@ -865,13 +1013,15 @@ CLASS("AI", "MessageReceiverEx")
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
-					
 					if (! ((_n select ASTAR_NODE_ID_ACTION) isEqualTo ASTAR_ACTION_DOES_NOT_EXIST)) then {
-						_path pushBack [_n select ASTAR_NODE_ID_ACTION, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
+						pr _actionClassName = _n select ASTAR_NODE_ID_ACTION;
+						pr _precedence = CALLSM0(_actionClassName, "getPrecedence");
+						_path pushBack [_precedence, _actionClassName, _n select ASTAR_NODE_ID_ACTION_PARAMETERS];
 					};
 					
 					if (((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo _goalNode) ||
 							((_n select ASTAR_NODE_ID_NEXT_NODE) isEqualTo ASTAR_NODE_DOES_NOT_EXIST)) exitWith{};
+
 					_n = _n select ASTAR_NODE_ID_NEXT_NODE;
 				};
 			};
@@ -1063,11 +1213,14 @@ CLASS("AI", "MessageReceiverEx")
 			_count = _count + 1;
 		};
 		
+		// Sort the plan by precedence
+		_path sort true; // Ascending
+		
 		#ifdef ASTAR_DEBUG
 			diag_log format ["[AI:AStar] Info: Generated plan: %1", _path];
 		#endif
 		
-		// Return the reconstructed path
+		// Return the reconstructed sorted path 
 		_path
 	} ENDMETHOD;
 	

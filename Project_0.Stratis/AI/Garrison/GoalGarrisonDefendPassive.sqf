@@ -24,7 +24,7 @@ CLASS("GoalGarrisonDefendPassive", "Goal")
 		if ([_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_propertyExistsAndEquals) then {
 			GET_STATIC_VAR(_thisClass, "relevance")
 			} else {
-			GOAL_RELEVANCE_BIAS_LOWER
+			0
 		};
 	} ENDMETHOD;
 

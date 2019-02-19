@@ -274,15 +274,11 @@ civWeapons = [
     "ACE_FakePrimaryWeapon",
     "Rifle_Base_F",
     "CarHorn",
-    "TruckHorn"
-];
-
-
-civBinoculars = [
+    "TruckHorn",
     "Binocular",
-    "Rangefinder"
+    "Rangefinder",
+    ""
 ];
-
 
 /* 
 ----------------------------------------------------------------------------------------------

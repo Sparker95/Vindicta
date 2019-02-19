@@ -40,6 +40,15 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
+		// Add goals to units
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
+		pr _inf = CALLM0(_group, "getInfantryUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+		} forEach _inf;
+		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		
@@ -51,6 +60,8 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 		
 		CALLM(_thisObject, "activateIfInactive", []);
 		
+		// This action is terminal because it's never over right now
+		
 		// Return the current state
 		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
@@ -58,6 +69,16 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete given goals
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
+		pr _inf = CALLM0(_group, "getInfantryUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
+		} forEach _inf;
+		
 	} ENDMETHOD;
 
 ENDCLASS;
