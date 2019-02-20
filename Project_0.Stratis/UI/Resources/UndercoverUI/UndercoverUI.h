@@ -2,10 +2,10 @@
 
 class UndercoverUI
 {
-	idd = 46;
+	idd = 9222;
 	name = "UndercoverUI";
-	onLoad = "with uiNamespace do { undercoverUI_display = _this select 0; };";
-	//onUnload = "with uiNamespace do{ };";
+	onLoad = "uiNamespace setVariable ['undercoverUI_display', _this select 0]";
+	onUnload = "uiNamespace setVariable ['undercoverUI_display', displayNull]";
 	movingEnable = false;
 	enableSimulation = true;
 	duration = 1000;
@@ -25,13 +25,11 @@ class UndercoverUI
 			w = safeZoneW * 0.0625;
 			h = safeZoneH * 0.01296297;
 			style = 2;
-			text = "SUSPICIOUS";
+			text = "";
 			colorBackground[] = {0.3569,0.8941,0.1216,0};
 			colorText[] = {1,1,1,1};
 			font = "PuristaBold";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.7);
-			access = 0;
-			moving = false;
 			shadow = 1;
 			
 		};
@@ -44,7 +42,7 @@ class UndercoverUI
 			w = safeZoneW * 0.1625;
 			h = safeZoneH * 0.01851852;
 			style = 2;
-			text = "Your behavior may attract attention";
+			text = "";
 			colorBackground[] = {0,0,0,0.5};
 			colorText[] = {1,1,1,1};
 			font = "PuristaMedium";

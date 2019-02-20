@@ -12,7 +12,6 @@ _idd = 12;
 	((finddisplay 12) displayCtrl _x) ctrlEnable false;
 } forEach [IDD_LD_PANEL, IDC_LD_TYPE, IDC_LD_TIME, IDC_LD_COMPOSITION, IDC_LD_SIDE];
 
-rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;
+rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register Undercover UI layer
+uiNamespace setVariable ["undercoverUI_display", displayNull];		// set Undercover UI idd
 rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];
-
-

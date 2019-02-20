@@ -3,6 +3,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
+#include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
 /*
 Undercover Monitor: Determines if the enemy should identify a player as 
@@ -83,6 +84,26 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 		_unit setVariable ["suspGearVeh", _suspGearVeh];
 	};
 
+	fnc_drawUI = {
+		params ["_suspicion"];
+
+			pr _textUI = "";
+
+			if (_suspicion >= SUSPICIOUS && _suspicion < 1) then { _textUI = "SUSPICIOUS"}; 
+			if (_suspicion < SUSPICIOUS) then { _textUI = "UNDERCOVER"};
+			if (_suspicion >= 1) then { _textUI = "HOSTILE"};			
+				
+			if (_suspicion > 1) then { _suspicion = 1; };
+			if (_suspicion < 0) then { _suspicion = 0; }; 
+
+			if ( displayNull != (uinamespace getVariable "undercoverUI_display") ) then {
+				((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlSetText format ["%1", _textUI];
+	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) progressSetPosition _suspicion;
+	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlCommit 0;
+	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 0;
+	  		};
+	};
+
 	// ----------------------------------------------------------------------
 	// |                       M A I N  C L A S S                           |
 	// ----------------------------------------------------------------------
@@ -130,7 +151,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 		_unit setVariable ["bodyExposure", 1.0];							// value for how exposed player is inside current vehicle seat
 		_unit setVariable ["eyePosOld", [0, 0, 0]];				
-		_unit setVariable ["eyePosOldVeh", [0, 0, 0]];		
+		_unit setVariable ["eyePosOldVeh", [0, 0, 0]];	
 
 		// more efficient way of checking player equipment suspiciousness only when loadout changes, this is a CBA event handler
 		["loadout", { 
@@ -188,14 +209,14 @@ CLASS("undercoverMonitor", "MessageReceiver")
 				pr _unit = GETV(_thisObject, "unit");
 				pr _bSeen = _unit getVariable "bSeen";
 				pr _bInVeh = false;
-				pr _removeWanted = false; // if true, WANTED state is removed in current interval
+				pr _removeWanted = false; 															// if true, WANTED state is removed in current interval
 				pr _suspicion = 0;
 				pr _timeHostility = _unit getVariable "timeHostility";
 				pr _timeSeen = _unit getVariable "timeSeen";
-				pr _suspGear = _unit getVariable "suspGear"; // equipment suspiciousness as determined by CBA "loadout" event handler
-				pr _suspGearVeh = _unit getVariable "suspGearVeh"; // (in vehicle) equipment suspiciousness as determined by CBA "loadout" event handler
-				pr _nearestEnemy = _unit getVariable "nearestEnemy"; // enemy closest to player, from group sent to SMON_MESSAGE_BEING_SPOTTED
-				if (!(isNull objectParent _unit)) then { _bInVeh = true; }; // player unit is in vehicle
+				pr _suspGear = _unit getVariable "suspGear"; 										// equipment suspiciousness as determined by CBA "loadout" event handler
+				pr _suspGearVeh = _unit getVariable "suspGearVeh"; 									// (in vehicle) equipment suspiciousness as determined by CBA "loadout" event handler
+				pr _nearestEnemy = _unit getVariable "nearestEnemy"; 								// enemy closest to player, from group sent to SMON_MESSAGE_BEING_SPOTTED
+				if (!(isNull objectParent _unit)) then { _bInVeh = true; }; 						// is player unit in vehicle?
 				if !(currentWeapon _unit in civWeapons) then { _suspicion = 1; };
 				_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];
 
@@ -366,6 +387,9 @@ CLASS("undercoverMonitor", "MessageReceiver")
 						_unit setVariable ["bInMarker", false]; // debug UI variable
 					#endif
 				};
+
+				
+				[_suspicion] call fnc_drawUI; 
 
 				if ( _suspicion >= SUSPICIOUS && _suspicion < 1 ) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; };
 				if ( _suspicion >= 1 ) then { _unit setCaptive false; } else { _unit setCaptive true; };
