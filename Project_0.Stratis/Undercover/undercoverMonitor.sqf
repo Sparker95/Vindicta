@@ -386,7 +386,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 					systemChat format ["Units alive in group: %1", _unitsGrpAlive];
 					*/
 				#endif 
-			};
+			}; // end SMON_MESSAGE_PROCESS
 			
 			// called when player unit is being spotted by an enemy group
 			case SMON_MESSAGE_BEING_SPOTTED: {
@@ -413,8 +413,15 @@ CLASS("undercoverMonitor", "MessageReceiver")
 
 				if (_suspicion >= 1) then { 
 					 _unit setVariable [UNDERCOVER_WANTED, true, true];
-				};
+				}; // end SMON_MESSAGE_BEING_SPOTTED
 			};
+
+			case SMON_MESSAGE_COMPROMISED: {
+			
+				pr _unit = GETV(_thisObject, "unit");
+				_unit setVariable [UNDERCOVER_WANTED, true, true];	
+
+			}; // end SMON_MESSAGE_COMPROMISED
 		};
 		
 		false
