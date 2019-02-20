@@ -28,7 +28,7 @@ gMsgLoopUndercover = NEW("MessageLoop", []);
 CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 
 #define pr private
-#define DEBUG
+//#define DEBUG
 
 	// ----------------------------------------------------------------------
 	// |                U N D E R C O V E R  D E F I N E S                  |
@@ -417,7 +417,7 @@ CLASS("undercoverMonitor", "MessageReceiver")
 			};
 
 			case SMON_MESSAGE_COMPROMISED: {
-			
+
 				pr _unit = GETV(_thisObject, "unit");
 				_unit setVariable [UNDERCOVER_WANTED, true, true];	
 
