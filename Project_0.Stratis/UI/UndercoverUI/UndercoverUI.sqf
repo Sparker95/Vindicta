@@ -1,14 +1,13 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
-//#define NAMESPACE uiNamespace
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Undercover\undercoverMonitor.hpp"
 #include "..\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
 /*
 Class: UndercoverUI
-Handles the Undercover UI 
+Passes values from undercoverMonitor to display them on the Undercover UI
 */
 
 #define CLASS_NAME "UndercoverUI"

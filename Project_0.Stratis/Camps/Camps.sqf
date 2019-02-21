@@ -11,6 +11,8 @@ Author: Sparker 28.07.2018
 
 #define pr private
 
+//add arsenal to box: [_object] call JN_fnc_arsenal_init; 
+
 CLASS("Camps", "")
 
 	// |                               N E W                             	|
@@ -21,6 +23,11 @@ CLASS("Camps", "")
 		// create a new location for our camp
 		pr _location = NEW("Location", [getPos player]);
 		CALLM2(_location, "setBorder", "circle", CAMP_SIZE);
+		pr _locationPos = CALLM0(_location, "getPos");
+
+		// create Jeroen arsenal box
+		pr _arsenalBox = "Box_FIA_Support_F" createVehicle _locationPos;
+		[_arsenalBox] call JN_fnc_arsenal_init;
 
 		systemChat "Creating camp";
 	} ENDMETHOD;
@@ -33,4 +40,6 @@ CLASS("Camps", "")
 		
 	} ENDMETHOD;
 
-ENDCLASS;
+	// |                            			                            |
+
+ENDCLASS;Box_FIA_Support_F
