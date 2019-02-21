@@ -113,5 +113,5 @@ call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 // Initialize suspiciosness monitor
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
-// Initialize Camps class
-call compile preprocessFileLineNumbers "Camps\Camps.sqf";
+// Initialize Camp class
+call compile preprocessFileLineNumbers "Camp\Camp.sqf";
