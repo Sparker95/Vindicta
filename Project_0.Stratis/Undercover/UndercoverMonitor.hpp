@@ -19,12 +19,13 @@
 #define SUSP_PRONE 0.2								// suspiciousness gained prone
 #define SUSP_SPEEDMAX 0.35							// suspiciousness gained for movement speed
 #define SUSP_NOROADS 80								// distance that is too far from road to not be suspicious
+#define SUSP_OFFROAD 0.3							// suspiciousness gained for being too far from roads
 
 // suspicion values for each equipment type
-#define SUSP_UNIFORM 0.7							// suspiciousness gained for mil uniform
-#define SUSP_VEST 0.5								// suspiciousness gained for mil vest
-#define SUSP_NVGS 0.7								// suspiciousness gained for NVGs
-#define SUSP_HEADGEAR 0.7							// suspiciousness gained for mil headgear
+#define SUSP_UNIFORM 0.6							// suspiciousness gained for mil uniform
+#define SUSP_VEST 0.6								// suspiciousness gained for mil vest
+#define SUSP_NVGS 0.6								// suspiciousness gained for NVGs
+#define SUSP_HEADGEAR 0.5							// suspiciousness gained for mil headgear
 #define SUSP_FACEWEAR 0.1							// suspiciousness gained for mil facewear
 #define SUSP_BACKPACK 0.3							// suspiciousness gained for mil backpack
 
