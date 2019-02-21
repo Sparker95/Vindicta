@@ -1,0 +1,1 @@
+#define CAMP_SIZE 40
