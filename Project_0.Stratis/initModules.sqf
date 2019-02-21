@@ -107,10 +107,10 @@ call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
 // Initialize AI classes
 call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 
-// Initialize suspiciosness monitor
-call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
-
 // UI classes
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
+
+// Initialize suspiciosness monitor
+call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 fn_spawnUnit = compile preprocessFileLineNumbers "Tests\fn_spawnUnit.sqf";
