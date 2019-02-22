@@ -104,12 +104,9 @@ player addEventHandler ["AnimChanged", {
 NEW("undercoverMonitor", [player]);
 
 // Create camp scroll menu
-// use remoteExec to send this on server
-// fnc_CreateCamp = compileFinal preprocessFileLineNumbers "Camp\CreateCamp.sqf";
-// player addAction ["Create Camp", call "Camp\CreateCamp.sqf"; ];
+// TODO : make it MP (use remoteExec to send creation on server)
 
 player addAction ["Create Camp", {
-
 	private _allLocations = GETSV("Location", "all");
 	private _isPosAllowed = true;
 	private _pos = getPos player;
@@ -119,7 +116,7 @@ player addAction ["Create Camp", {
 		pr _type = GETV(_x, "type");
 		private _dist = _pos distance _locPos;
 		if (_dist < 500) exitWith {_isPosAllowed = false};
-		if (_dist < 3000 && _type = "camp") exitWith {_isPosAllowed = false};
+		if (_dist < 3000 && _type == "camp") exitWith {_isPosAllowed = false};
 	} forEach _allLocations;
 
 	if (_isPosAllowed) then {

@@ -31,6 +31,14 @@ CLASS("Camp", "Location")
 		[_arsenalBox] call JN_fnc_arsenal_init;
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 
+		// Create Marker
+		private _markerName = createMarker ["CustomCamp", _pos];
+		_markerName setMarkerShape "RECTANGLE";
+		_markerName setMarkerSize [100, 100];		
+		
+		{
+			diag_log format ["marker: %1", _x];
+		} forEach allMapMarkers;
 
 		OOP_DEBUG_0("---- end Creating camp");
 	} ENDMETHOD;
