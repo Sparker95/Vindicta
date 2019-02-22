@@ -12,6 +12,7 @@ enableDebugConsole = 2;
 respawn = 3;
 respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
 respawnDelay = 5; // Default: ?
+RespawnDialog = 1;
 respawnTemplates[] = {"MenuPosition"};
 
 /*
@@ -55,7 +56,7 @@ class Params {
 
 class CfgFunctions {
 	#include "JeroenArsenal\functions.hpp"
-	
+
 	class missionTag
 	{
 		class randomThings
