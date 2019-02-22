@@ -32,10 +32,12 @@ CLASS("Camp", "Location")
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 
 		// Create Marker
-		private _markerName = createMarker ["CustomCamp", _pos];
-		_markerName setMarkerShape "RECTANGLE";
-		_markerName setMarkerSize [100, 100];		
-		
+		private _markerName = createMarker ["respawn_west_" + _thisObject, _pos]; // magic
+		_markerName setMarkerShape "ICON"; //"RECTANGLE";
+		//_markerName setMarkerSize [100, 100];		
+		_markerName setMarkerType "mil_start";
+		_markerName setMarkerColor "ColorWEST";
+		_markerName setMarkerText ("Camp " + _thisObject);
 		{
 			diag_log format ["marker: %1", _x];
 		} forEach allMapMarkers;
