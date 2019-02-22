@@ -40,6 +40,13 @@ CLASS("Camps", "")
 		
 	} ENDMETHOD;
 
-	// |                            			                            |
+	// |                        S P A W N  Z E U S                       	|
+
+	/*
+	METHOD("spawnZeus") {
+		params [["_thisObject", "", [""]]];
+		
+	} ENDMETHOD; 
+	*/
 
 ENDCLASS;Box_FIA_Support_F

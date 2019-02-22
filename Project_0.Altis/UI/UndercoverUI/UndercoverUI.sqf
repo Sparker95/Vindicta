@@ -8,6 +8,8 @@
 /*
 Class: UndercoverUI
 Passes values from undercoverMonitor to display them on the Undercover UI
+
+Author: Marvis
 */
 
 #define CLASS_NAME "UndercoverUI"

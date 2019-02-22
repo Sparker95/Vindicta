@@ -1,5 +1,11 @@
 #include "UndercoverUI_Macros.h"
 
+/*
+UndercoverUI
+Author: Marvis 19.02.2019
+
+*/
+
 class UndercoverUI
 {
 	idd = 9222;
@@ -8,7 +14,7 @@ class UndercoverUI
 	onUnload = "uiNamespace setVariable ['undercoverUI_display', displayNull]";
 	movingEnable = false;
 	enableSimulation = true;
-	duration = 1000;
+	duration = 10000000;
 	
 	class ControlsBackground
 	{
