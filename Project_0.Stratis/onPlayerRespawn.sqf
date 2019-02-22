@@ -1,7 +1,6 @@
 #include "OOP_Light\OOP_Light.h"
 #include "AI\Stimulus\Stimulus.hpp"
 #include "AI\stimulusTypes.hpp"
-#include "OOP_Light\OOP_Light.h"
 
 /*
 This is an event script.
@@ -106,6 +105,8 @@ NEW("undercoverMonitor", [player]);
 
 // Create camp scroll menu
 // use remoteExec to send this on server
+// fnc_CreateCamp = compileFinal preprocessFileLineNumbers "Camp\CreateCamp.sqf";
+// player addAction ["Create Camp", call "Camp\CreateCamp.sqf"; ];
 
 player addAction ["Create Camp", {
 
@@ -115,9 +116,10 @@ player addAction ["Create Camp", {
 
 	{
 		pr _locPos = GETV(_x, "pos");
+		pr _type = GETV(_x, "type");
 		private _dist = _pos distance _locPos;
-		if (_dist < 1000) exitWith {_isPosAllowed = false};
-		// TODO if (_dist < 3000 && location == Camp) exitWith {_isPosAllowed = false};
+		if (_dist < 500) exitWith {_isPosAllowed = false};
+		if (_dist < 3000 && _type = "camp") exitWith {_isPosAllowed = false};
 	} forEach _allLocations;
 
 	if (_isPosAllowed) then {

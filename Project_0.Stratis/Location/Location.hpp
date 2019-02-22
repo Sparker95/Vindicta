@@ -20,3 +20,7 @@
 #define LOCATION_SPT_ID_COUNTER		3
 
 #define LOCATION_SPT_DEFAULT [[], [], [], 0]
+
+#define LOCATION_TYPE_CAMP "camp"
+#define LOCATION_TYPE_BASE "base"
+#define LOCATION_TYPE_OUTPOST "outpost"

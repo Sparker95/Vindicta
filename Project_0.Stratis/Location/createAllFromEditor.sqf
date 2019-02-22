@@ -42,7 +42,7 @@ private _loc = objNull;
 		if(_x find "_ind" > 0) then	{
 			_side = INDEPENDENT;
 			_template = tAAF;
-		} else	{
+		} else {
 			if(_x find "_east" > 0) then {
 				_side = EAST;
 				_template = tCSAT;
@@ -53,16 +53,17 @@ private _loc = objNull;
 		// Create a new location
 		private _args = [_mrkPos];
 		private _loc = NEW_PUBLIC("Location", _args);
-		
-		
+	
 		// Initialize the new location
 		CALL_METHOD(_loc, "initFromEditor", [_mrk]);
 		
 		// Set debug name
 		private _debugName = format ["fromMarker_%1", _mrk];
 		CALL_METHOD(_loc, "setDebugName", [_debugName]);
-		
-		
+
+		// Set type
+		CALL_METHOD(_loc, "setType", [_type]);
+
 		// Output the capacity of this garrison
 		// Infantry capacity
 		private _args = [T_INF, [GROUP_TYPE_IDLE]];

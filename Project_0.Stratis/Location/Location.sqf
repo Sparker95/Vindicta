@@ -12,6 +12,7 @@ Author: Sparker 28.07.2018
 
 CLASS("Location", "MessageReceiverEx")
 
+	VARIABLE("type");
 	VARIABLE("debugName");
 	VARIABLE("garrisonCiv");
 	VARIABLE("garrisonMilAA");
@@ -41,6 +42,21 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
 		SET_VAR(_thisObject, "debugName", _debugName);
+	} ENDMETHOD;
+
+	/*
+	Method: setType
+	Set the Type.
+	
+	Parameters: _type
+	
+	_type - String
+	
+	Returns: nil
+	*/
+	METHOD("setType") {
+		params [["_thisObject", "", [""]], ["_type", "", [""]]];
+		SET_VAR(_thisObject, "type", _type);
 	} ENDMETHOD;
 	
 	// |                              N E W
@@ -148,6 +164,17 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getPos") {
 		params [ ["_thisObject", "", [""]] ];
 		GETV(_thisObject, "pos")
+	} ENDMETHOD;
+
+	/*
+	Method: getType
+	Returns type of this location
+	
+	Returns: int
+	*/
+	METHOD("getType") {
+		params [ ["_thisObject", "", [""]] ];
+		GETV(_thisObject, "type")
 	} ENDMETHOD;
 	
 	// |               G E T   P A T R O L   W A Y P O I N T S 

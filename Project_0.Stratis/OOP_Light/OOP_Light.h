@@ -524,12 +524,12 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 #endif
 
 #ifdef OOP_DEBUG
-#define OOP_DEBUG_0(str) diag_log format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, str]
-#define OOP_DEBUG_1(str, a) diag_log format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a]]
-#define OOP_DEBUG_2(str, a, b) diag_log format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b]]
-#define OOP_DEBUG_3(str, a, b, c) diag_log format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c]]
-#define OOP_DEBUG_4(str, a, b, c, d) diag_log format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
-#define OOP_DEBUG_5(str, a, b, c, d, e) diag_log format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
+#define OOP_DEBUG_0(str) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_1(str, a) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_2(str, a, b) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_3(str, a, b, c) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_4(str, a, b, c, d) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
 #define OOP_DEBUG_0(str)
 #define OOP_DEBUG_1(str, a)
