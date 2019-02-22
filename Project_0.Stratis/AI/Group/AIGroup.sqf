@@ -1,11 +1,4 @@
-#define OOP_INFO
-#define OOP_ERROR
-#define OOP_WARNING
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "groupWorldStateProperties.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.AIGroup

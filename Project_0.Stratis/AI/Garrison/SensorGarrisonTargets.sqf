@@ -1,12 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\commonStructs.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "garrisonWorldStateProperties.hpp"
-
+#include "common.hpp"
 
 /*
 Sensor for a garrison to receive spotted enemies from its groups and relay them to other groups garrison.

@@ -1,11 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
+#include "common.hpp"
 
 /*
 This sensor gets stimulated when someone salutes to this unit

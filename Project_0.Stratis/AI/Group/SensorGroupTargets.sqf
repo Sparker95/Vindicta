@@ -1,12 +1,5 @@
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\commonStructs.hpp"
-#include "..\Stimulus\Stimulus.hpp"
+#include "common.hpp"
 #include "..\..\Undercover\UndercoverMonitor.hpp"
-
 
 /*
 Sensor for a group to gather spotted enemies and relay them to the garrison.

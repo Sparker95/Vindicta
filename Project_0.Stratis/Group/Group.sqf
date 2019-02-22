@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
+#define OFSTREAM_FILE "Main.rpt"
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
@@ -40,6 +41,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
 		
+		OOP_INFO_2("side: %1, group type: %2", _side, _groupType);
+		
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 		
@@ -57,6 +60,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+		
+		OOP_INFO_0("");
 		
 		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
@@ -105,6 +110,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("addUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		OOP_INFO_1("%1", _unit);
+		
 		private _data = GET_VAR(_thisObject, "data");
 		
 		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
@@ -175,6 +183,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	METHOD("addGroup") {
 		params [["_thisObject", "", [""]], ["_group", "", [""]], ["_delete", false]];
 		
+		OOP_INFO_1("%1", _group);
+		
 		// Get units of the other group
 		pr _units = CALLM0(_group, "getUnits");
 		
@@ -206,6 +216,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("removeUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
+		
+		OOP_INFO_1("%1", _unit);
 		
 		pr _data = GETV(_thisObject, "data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
@@ -515,6 +527,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
+		
+		OOP_INFO_0("SPAWN");
+		
 		pr _data = GETV(_thisObject, "data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
@@ -547,6 +562,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 			
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
+		} else {
+			OOP_WARNING_0("Already spawned");
 		};
 	} ENDMETHOD;
 	
@@ -561,6 +578,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 	*/
 	METHOD("despawn") {
 		params [["_thisObject", "", [""]]];
+		
+		OOP_INFO_0("DESPAWN");
+		
 		pr _data = GETV(_thisObject, "data");
 		if ((_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
@@ -594,6 +614,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 			
 			// Set the spawned flag to false
 			_data set [GROUP_DATA_ID_SPAWNED, false];
+		} else {
+			OOP_WARNING_0("Already despawned");
 		};
 	} ENDMETHOD;
 	

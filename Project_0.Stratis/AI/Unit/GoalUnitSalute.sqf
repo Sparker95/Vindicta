@@ -1,13 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
-#include "..\goalRelevance.hpp"
+#include "common.hpp"
 
 /*
 The goal of saluting to someone
@@ -33,15 +24,15 @@ CLASS("GoalUnitSalute", "Goal")
 		pr _query = WF_NEW();
 		[_query, WF_TYPE_UNIT_SALUTED_BY] call wf_fnc_setType;
 		pr _wf = CALLM(_AI, "findWorldFact", [_query]);
-		if (isNil "_wf") exitWith {GOAL_RELEVANCE_BIAS_LOWER};
+		if (isNil "_wf") exitWith {0};
 		
 		// We have found the world fact
 		// Now check if it is relevant
 		// After responding to this world fact, the action will mark the world fact as irrelevant
-		if ((WF_GET_RELEVANCE(_wf)) == 0) exitWith {GOAL_RELEVANCE_BIAS_LOWER};
+		if ((WF_GET_RELEVANCE(_wf)) == 0) exitWith {0};
 		
 		diag_log format ["[GoalUnitSalute] high relevance for AI: %1", _AI];
-		GOAL_RELEVANCE_UNIT_SALUTE
+		GET_STATIC_VAR("GoalUnitSalute", "relevance")
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

@@ -1,11 +1,7 @@
+#include "common.hpp"
 /*
 Goal for a garrison to relax
 */
-
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\WorldState\WorldState.hpp"
-#include "garrisonWorldStateProperties.hpp"
-#include "..\goalRelevance.hpp"
 
 #define pr private
 

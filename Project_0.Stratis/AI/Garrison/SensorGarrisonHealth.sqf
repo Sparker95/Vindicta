@@ -1,14 +1,4 @@
-#define OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "garrisonWorldStateProperties.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\..\Group\Group.hpp"
-#include "..\Group\groupWorldStateProperties.hpp"
+#include "common.hpp"
 
 /*
 This sensor checks the health state of units: does infantry need to be healed, do vehicles need to be repaired
@@ -141,9 +131,10 @@ CLASS("SensorGarrisonHealth", "Sensor")
 		} forEach _infGroups;
 		[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 		
-		diag_log format ["SensorGarrisonHealth: medics:%1 engineer:%2 allHealed:%3 allVehRepaired:%4 allVehCanMove:%5 vehsHaveDrivers: %6, vehsHaveTurrets: %7, crew mounted: %8, inf mounted: %9",
+		pr _str = format ["medics:%1 engineer:%2 allHealed:%3 allVehRepaired:%4 allVehCanMove:%5 vehsHaveDrivers: %6, vehsHaveTurrets: %7, crew mounted: %8, inf mounted: %9",
 			_medicAvailable, _engineerAvailable, _allSoldiersHealed, _allVehRepaired, _allVehCanMove, _haveDriversNonStatic,
 			_haveTurretsStatic && _haveTurretsNonStatic, _allCrewMounted, _allInfMounted];
+		OOP_INFO_0(_str);
 		
 	} ENDMETHOD;
 	

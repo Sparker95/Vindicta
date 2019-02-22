@@ -26,6 +26,6 @@ if (_unit != "") then {
 	if (_garrison != "") then {	// Sanity check	
 		CALLM2(_garrison, "postMethodAsync", "handleUnitKilled", [_unit]);
 	} else {
-		OOP_ERROR_2("Unit is not attached to a garrison: %1, %2", _unit, _data);
+		diag_log format ["[Unit::EH_killes.sqf] Error: Unit is not attached to a garrison: %1, %2", _unit, _data];
 	};
 };

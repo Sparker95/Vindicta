@@ -1,19 +1,4 @@
-#define OOP_INFO
-#define OON_WARNING
-#define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\Action\Action.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
-#include "garrisonWorldStateProperties.hpp"
-#include "..\parameterTags.hpp"
-#include "..\..\Group\Group.hpp"
-
+#include "common.hpp"
 /*
 Garrison moves on available vehicles
 */

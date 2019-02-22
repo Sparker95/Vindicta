@@ -22,12 +22,35 @@
  *
  */
 
-// ----------------------------------------------------------------------
-// |            E X T E R N A L   F L A G S / D E F I N E S             |
-// ----------------------------------------------------------------------
+// ----------------------------------------------------
+// |          C O N T R O L  F L A G S                |
+// ----------------------------------------------------
+
+// Defines the ofstream file name for OOP_INFO_, OOP_ERROR_, OOP_WARNING_ macros
+// Must be defined before including OOP_Light.h into your class definition .sqf file
+//#define OFSTREAM_FILE "OOP.rpt"
+
+// Enables output to external file with ofstream in all OOP classes
+// It's a global flag, must be defined here
+#define OFSTREAM_ENABLE
 
 //Enables checks for member accesses at runtime
+// It's a global flag, must be defined here
 #define OOP_ASSERT
+
+// Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
+// You can either define it here or usage of OOP_INFO_, ..., macros will cause its automatic definition
+// OOP SCRIPTNAME
+#define OOP_SCRIPTNAME
+#ifdef OOP_INFO
+#define OOP_SCRIPTNAME
+#endif
+#ifdef OOP_WARNING
+#define OOP_SCRIPTNAME
+#endif
+#ifdef OOP_ERROR
+#define OOP_SCRIPTNAME
+#endif
 
 /*
 #ifdef OOP_ASSERT
@@ -35,6 +58,7 @@
 #endif
 */
 
+// Namespaces are NYI :/
 #ifndef NAMESPACE
 	#define NAMESPACE missionNameSpace
 #endif
@@ -219,18 +243,18 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 #define STATIC_MEMBER(memNameStr) STATIC_VARIABLE(memNameStr)
 
-#define METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr; \
+#define METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr;  _oop_newMethodList pushBackUnique methodNameStr; \
 NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
 #define ENDMETHOD ]
 
-#define METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; \
+#define METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
 NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
-#define STATIC_METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr; \
+#define STATIC_METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
 NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
-#define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; \
+#define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
 NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
 // ----------------------------------------
@@ -244,7 +268,7 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), 
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#define CLASS(classNameStr, baseClassNameStr)	[] call { \
+#define CLASS(classNameStr, baseClassNameStr)	 \
 scopeName "scopeClass"; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
@@ -252,6 +276,7 @@ private _oop_memList = []; \
 private _oop_staticMemList = []; \
 private _oop_parents = []; \
 private _oop_methodList = []; \
+private _oop_newMethodList = []; \
 if (baseClassNameStr != "") then { \
 	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {breakOut "scopeClass";}; \
 	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
@@ -280,9 +305,21 @@ VARIABLE(OOP_PUBLIC_STR);
 /*
  * Technical info:
  * It just terminates the call block of the CLASS
+ * No it doesn't do anything any more
  */
 
-#define ENDCLASS }
+#ifdef OOP_SCRIPTNAME
+#define ENDCLASS { \
+private _fnc = missionNamespace getVariable CLASS_METHOD_NAME_STR(_oop_classNameStr, _x); \
+private _fnc_array = toArray str _fnc; \
+_fnc_array deleteAt 0; \
+_fnc_array deleteAt ((count _fnc_array) - 1); \
+private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + (toString _fnc_array); \
+missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
+} forEach _oop_newMethodList;
+#else
+#define ENDCLASS
+#endif
 
 // ----------------------------------------------------------------------
 // |        C O N S T R U C T O R  O F   E X I S T I N G   O B J E C T  |
@@ -416,16 +453,31 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
 
-#define LOG_0 if(isNil "_thisClass") then {OBJECT_PARENT_CLASS_STR(_thisObject)} else {_thisClass}
-#define LOG_1 if(isNil "_thisClass") then {_thisObject} else {"static"}
+#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else {_thisClass}
+#define LOG_1 _fnc_scriptName
+
+// If ofstream addon is globally enabled
+#ifdef OFSTREAM_ENABLE
+#define __OFSTREAM_OUT(fileName, text) ((ofstream_new fileName) ofstream_write(text))
+#else
+#define __OFSTREAM_OUT(fileName, text) diag_log text
+#endif
+
+#define _OFSTREAM_FILE OFSTREAM_FILE
+
+#ifdef OFSTREAM_FILE
+#define WRITE_LOG(text) __OFSTREAM_OUT(OFSTREAM_FILE, text)
+#else
+#define WRITE_LOG(text) diag_log text
+#endif
 
 #ifdef OOP_INFO
-#define OOP_INFO_0(str) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, str]
-#define OOP_INFO_1(str, a) diag_log format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format [str, a]]
-#define OOP_INFO_2(str, a, b) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b]]
-#define OOP_INFO_3(str, a, b, c) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]
-#define OOP_INFO_4(str, a, b, c, d) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
-#define OOP_INFO_5(str, a, b, c, d, e) diag_log format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
+#define OOP_INFO_0(str) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
+#define OOP_INFO_1(str, a) private _o_str = format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
+#define OOP_INFO_2(str, a, b) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
+#define OOP_INFO_3(str, a, b, c) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
+#define OOP_INFO_4(str, a, b, c, d) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
+#define OOP_INFO_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
 #define OOP_INFO_0(str)
 #define OOP_INFO_1(str, a)
@@ -436,12 +488,12 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 #endif
 
 #ifdef OOP_WARNING
-#define OOP_WARNING_0(str) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, str]
-#define OOP_WARNING_1(str, a) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a]]
-#define OOP_WARNING_2(str, a, b) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b]]
-#define OOP_WARNING_3(str, a, b, c) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c]]
-#define OOP_WARNING_4(str, a, b, c, d) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
-#define OOP_WARNING_5(str, a, b, c, d, e) diag_log format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
+#define OOP_WARNING_0(str) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
+#define OOP_WARNING_1(str, a) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
+#define OOP_WARNING_2(str, a, b) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
+#define OOP_WARNING_3(str, a, b, c) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
+#define OOP_WARNING_4(str, a, b, c, d) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
+#define OOP_WARNING_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
 #define OOP_WARNING_0(str)
 #define OOP_WARNING_1(str, a)
@@ -452,12 +504,12 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 #endif
 
 #ifdef OOP_ERROR
-#define OOP_ERROR_0(str) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]
-#define OOP_ERROR_1(str, a) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]
-#define OOP_ERROR_2(str, a, b) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]
-#define OOP_ERROR_3(str, a, b, c) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]
-#define OOP_ERROR_4(str, a, b, c, d) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]
-#define OOP_ERROR_5(str, a, b, c, d, e) diag_log format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]
+#define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
+#define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
+#define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
+#define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
+#define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
+#define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
 #define OOP_ERROR_0(str)
 #define OOP_ERROR_1(str, a)

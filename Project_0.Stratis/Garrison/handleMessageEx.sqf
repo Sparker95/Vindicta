@@ -1,3 +1,4 @@
+#include "common.hpp"
 /*
 Handle message incoming into a garrison object.
 */

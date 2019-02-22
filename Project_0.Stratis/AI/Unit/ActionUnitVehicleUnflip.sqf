@@ -1,16 +1,4 @@
-#define OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\Action\Action.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
-
+#include "common.hpp"
 /*
 The vehicle will unflip itself
 Author: Sparker 14.02.2019

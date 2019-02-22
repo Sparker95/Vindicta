@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 
 //Class: Garrison

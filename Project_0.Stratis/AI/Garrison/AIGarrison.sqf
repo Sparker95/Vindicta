@@ -1,10 +1,4 @@
-#define OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "garrisonWorldStateProperties.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.AIGarrison

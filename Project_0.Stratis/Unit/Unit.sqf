@@ -1,3 +1,7 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
+#define OFSTREAM_FILE "Main.rpt"
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
@@ -191,6 +195,10 @@ CLASS(UNIT_CLASS_NAME, "")
 	*/
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
+		
+		OOP_INFO_0("SPAWN");
+		diag_log format ["function name is: %1", _fnc_scriptName];
+		
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
 		
@@ -247,7 +255,9 @@ CLASS(UNIT_CLASS_NAME, "")
 
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
-		};		
+		} else {
+			OOP_WARNING_0("Already spawned");
+		};
 		
 		CRITICAL_SECTION_END
 		//Unlock the mutex
@@ -311,6 +321,9 @@ CLASS(UNIT_CLASS_NAME, "")
 	*/
 	METHOD("despawn") {
 		params [["_thisObject", "", [""]]];
+		
+		OOP_INFO_0("DESPAWN");
+		
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
 		private _mutex = _data select UNIT_DATA_ID_MUTEX;
@@ -337,6 +350,8 @@ CLASS(UNIT_CLASS_NAME, "")
 			private _group = _data select UNIT_DATA_ID_GROUP;
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
+		} else {
+			OOP_WARNING_0("Already despawned");
 		};
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);

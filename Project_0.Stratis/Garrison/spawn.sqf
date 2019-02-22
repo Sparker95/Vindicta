@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 
 // Class: Garrison
@@ -15,10 +16,12 @@ Returns: nil
 
 params [["_thisObject", "", [""]]];
 
+OOP_INFO_0("SPAWN");
+
 private _spawned = GET_VAR(_thisObject, "spawned");
 
 if (_spawned) exitWith {
-	diag_log format ["[Garrison::spawn] Error: Can't spawn a garrison which is already spawned: %1", GET_VAR(_thisObject, "debugName")];
+	OOP_ERROR_0("Can't spawn a garrison which is already spawned");
 };
 
 // Set spawned flag

@@ -1,3 +1,4 @@
+#include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
@@ -18,8 +19,11 @@ params [["_thisObject", "", [""]]];
 
 private _spawned = GET_VAR(_thisObject, "spawned");
 
-if (!_spawned) exitWith { diag_log format ["[Garrison::despawn] Error: Can't despawn a garrison which is not spawned: %1",
-	GET_VAR(_thisObject, "debugName")]; };
+OOP_INFO_0("DESPAWN");
+
+if (!_spawned) exitWith {
+	OOP_ERROR_0("Already despawned");
+};
 
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);

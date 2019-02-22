@@ -1,5 +1,4 @@
-#define OOP_WARNING
-#define OOP_ERROR
+#include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
@@ -50,6 +49,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		
+		OOP_INFO_1("%1", _side);
+		
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 		
@@ -71,6 +72,9 @@ CLASS("Garrison", "MessageReceiverEx")
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+		
+		OOP_INFO_0("");
+		
 		SET_VAR(_thisObject, "units", nil);
 		SET_VAR(_thisObject, "groups", nil);	
 		SET_VAR(_thisObject, "spawned", nil);
@@ -268,6 +272,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("addUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 
+		OOP_INFO_1("%1", _unit);
+
 		// Check if the unit is already in a garrison
 		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
 		if(_unitGarrison != "") then {
@@ -309,6 +315,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("removeUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 		
+		OOP_INFO_1("%1", _unit);
+		
 		private _units = GET_VAR(_thisObject, "units");
 		_units deleteAt (_units find _unit);
 		
@@ -332,6 +340,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	*/
 	METHOD("addGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
+		
+		OOP_INFO_1("%1", _group);
 		
 		// Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
@@ -395,6 +405,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	*/
 	METHOD("removeGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
+		
+		OOP_INFO_1("%1", _group);
 		
 		// Notify AI object if the garrison is spawned
 		if (T_GETV("spawned")) then {
@@ -516,6 +528,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("handleUnitKilled") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 		
+		OOP_INFO_0("");
+		
 		diag_log format ["[Garrison::handleUnitKilled] Info: %1", _unit];
 	
 		// Call handleUnitKilled of the group of this unit
@@ -550,6 +564,8 @@ CLASS("Garrison", "MessageReceiverEx")
 	
 	METHOD("handleGetInVehicle") {
 		params [["_thisObject", "", [""]], ["_unitVeh", "", [""]], ["_unitInf", "", [""]]];
+		
+		OOP_INFO_0("");
 		
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");
