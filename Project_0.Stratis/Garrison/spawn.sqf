@@ -32,6 +32,7 @@ private _groups = GET_VAR(_thisObject, "groups");
 private _loc = GET_VAR(_thisObject, "location");
 
 // Spawn groups
+OOP_INFO_1("Spawning groups: %1", _groups);
 {
 	private _group = _x;
 	CALLM(_group, "spawn", [_loc]);

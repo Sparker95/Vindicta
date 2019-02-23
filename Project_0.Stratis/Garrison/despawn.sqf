@@ -39,16 +39,21 @@ private _groups = (GET_VAR(_thisObject, "groups"));
 private _groupsCopy = +_groups;
 
 // Despawn groups, delete empty groups
+OOP_INFO_1("Despawning groups: %1", _groups);
+private _i = 0;
+while {_i < count _groups} do
 {
-	private _group = _x;
+	private _group = _groups select _i;
 	CALLM(_group, "despawn", []);
 	
-	pr _units = CALLM0(_x, "getUnits");
+	pr _units = CALLM0(_group, "getUnits");
 	if (count _units == 0) then {
-		_groups deleteAt (_groups find _x);
+		_groups deleteAt _i;
 		DELETE(_group);
+	} else {
+		_i = _i + 1;
 	};
-} forEach _groups;
+};
 
 
 // Despawn single units

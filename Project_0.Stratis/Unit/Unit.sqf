@@ -86,7 +86,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data set [UNIT_DATA_ID_SUBCAT, _subcatID];
 		_data set [UNIT_DATA_ID_CLASS_NAME, _class];
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
-		_data set [UNIT_DATA_ID_GROUP, _group];
+		_data set [UNIT_DATA_ID_GROUP, ""];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
 		};
