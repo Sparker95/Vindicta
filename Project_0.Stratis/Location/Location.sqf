@@ -218,7 +218,7 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("setType") {
 		params [["_thisObject", "", [""]], ["_type", "", [""]]];
-		SET_VAR(_thisObject, "type", _type);
+		SET_VAR_PUBLIC(_thisObject, "type", _type);
 	} ENDMETHOD;
 
 	/*
@@ -229,7 +229,7 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("getType") {
 		params [ ["_thisObject", "", [""]] ];
-		GETV(_thisObject, "type")
+		GET_VAR(_thisObject, "type")
 	} ENDMETHOD;
 
 

@@ -61,7 +61,7 @@ private _loc = objNull;
 		CALL_METHOD(_loc, "setDebugName", [_debugName]);
 
 		// Set type
-		CALL_METHOD(_loc, "setType", [_type]);
+		SET_VAR_PUBLIC(_loc, "type", [_type]);
 
 		// Output the capacity of this garrison
 		// Infantry capacity

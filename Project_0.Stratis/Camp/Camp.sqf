@@ -13,12 +13,18 @@ CLASS("Camp", "Location")
 	VARIABLE("arsenalBox"); // arsenalBox of this Camp
 	VARIABLE("camoNet"); // camoNet of this Camp
 
+	// used for remoteExec
+	STATIC_METHOD("newStatic") {
+		params ["_thisClass", "_pos"];
+		NEW_PUBLIC("Camp", [_pos]);
+	} ENDMETHOD;
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]] ];
 
-		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
-		SET_VAR(_thisObject, "type", LOCATION_TYPE_CAMP);
 		SET_VAR(_thisObject, "capacityInf", 2);
+		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
+		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_CAMP);
 
 		// Create camp vehicles
 		private _camoNet = "CamoNet_ghex_F" createVehicle  _pos;
@@ -34,6 +40,7 @@ CLASS("Camp", "Location")
 		_marker setMarkerType "mil_start";
 		_marker setMarkerColor "ColorWEST";
 		_marker setMarkerText ("WEST Camp " + _thisObject);
+		_marker setMarkerAlpha 0.3;
 
 		// Setup location's border from marker properties
 		private _mrkSize = getMarkerSize _marker;
@@ -93,6 +100,7 @@ CLASS("Camp", "Location")
 		};
 
 		CALLM1(gAICommanderWest, "updateLocationData", [_thisObject]);
+		OOP_INFO_1("new camp created: %1", _thisObject);
 	} ENDMETHOD;
 
 	METHOD("delete") {
