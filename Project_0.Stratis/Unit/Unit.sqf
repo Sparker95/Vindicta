@@ -197,8 +197,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 		
 		OOP_INFO_0("SPAWN");
-		diag_log format ["function name is: %1", _fnc_scriptName];
-		
+
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
 		

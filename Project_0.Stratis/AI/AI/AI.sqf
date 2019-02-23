@@ -951,9 +951,9 @@ CLASS("AI", "MessageReceiverEx")
 		pr _availableActions = +_possibleActions;
 		
 		#ifdef ASTAR_DEBUG
-		diag_log "";
-		diag_log "[AI:AStar] Info: ---------- Starting A* ----------";
-		diag_log format ["[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions];
+		OOP_INFO_0("");
+		OOP_INFO_0("[AI:AStar] Info: ---------- Starting A* ----------");
+		OOP_INFO_4("[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions);
 		#endif
 		
 		// Set of nodes already evaluated
@@ -986,17 +986,17 @@ CLASS("AI", "MessageReceiverEx")
 			// Debug output
 			// Print the node we currently analyze
 			#ifdef ASTAR_DEBUG
-				diag_log "";
-				diag_log format ["[AI:AStar] Info: Step: %1,  Open set:", _count];
+				OOP_INFO_0("");
+				OOP_INFO_1("[AI:AStar] Info: Step: %1,  Open set:", _count);
 				// Print the open and closed set
 				{
 					pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_x]);
-					diag_log ("  " + _nodeString);
+					OOP_INFO_0("  " + _nodeString);
 				} forEach _openSet;
 				
 				// Print the selected node
 				pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_node]);
-				diag_log format ["[AI:AStar] Info: Analyzing node: %1", _nodeString];
+				OOP_INFO_1("[AI:AStar] Info: Analyzing node: %1", _nodeString);
 			#endif
 			
 			// Remove the current node from the open set, add it to the close set
@@ -1013,7 +1013,7 @@ CLASS("AI", "MessageReceiverEx")
 			
 			if (([_nodeWS, _currentWS] call ws_getNumUnsatisfiedProps) == 0) exitWith {
 				#ifdef ASTAR_DEBUG
-					diag_log "[AI:AStar] Info: Reached current state!";
+					OOP_INFO_0("[AI:AStar] Info: Reached current state!");
 				#endif
 				
 				// Recunstruct path
@@ -1039,7 +1039,7 @@ CLASS("AI", "MessageReceiverEx")
 			
 			// Debug text
 			#ifdef ASTAR_DEBUG
-				diag_log format ["[AI:AStar] Info: Discovering neighbours:", _nodeString];
+				OOP_INFO_1("[AI:AStar] Info: Discovering neighbours:", _nodeString);
 			#endif
 			
 			{ // forEach _availableActions;
@@ -1071,8 +1071,7 @@ CLASS("AI", "MessageReceiverEx")
 					pr _parametersResolved = true;
 					// Resolve parameters which are derived from goal
 					{ // foreach parameters of this action
-						pr _tag = _x select 0;
-						pr _value = _x select 1;
+						_x params ["_tag", "_value"];
 						
 						// If the value has not been resolved yet
 						if (isNil "_value") then {
@@ -1087,8 +1086,7 @@ CLASS("AI", "MessageReceiverEx")
 								// This parameter is required by action to be retrieved from a goal parameter
 								// But it wasn't found in the goal parameter array
 								// Print an error
-								diag_log format ["[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",
-									_action, _tag, [_goalWS] call ws_toString, _goalParameters];
+								OOP_WARNING_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
 								_parametersResolved = false;
 							};
 						};
@@ -1103,7 +1101,7 @@ CLASS("AI", "MessageReceiverEx")
 					};
 					
 					if (!_parametersResolved) then {
-						diag_log format ["[AI:AStar] Warning: can't resolve all parameters for action: %1", _action];
+						OOP_WARNING_1("[AI:AStar] Warning: can't resolve all parameters for action: %1", _action);
 					} else {
 						#ifdef ASTAR_DEBUG
 						//	diag_log format ["[AI:AStar] Info: Connected world states: action: %1,  effects: %2,  WS:  %3", _x, [_effects] call ws_toString, [_nodeWS] call ws_toString];
@@ -1127,7 +1125,7 @@ CLASS("AI", "MessageReceiverEx")
 						if ( (_closeSet findIf { /* ((_x select ASTAR_NODE_ID_ACTION) isEqualTo _possibleAction) && */ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction) }) != -1) then {
 							// Print debug text
 							#ifdef ASTAR_DEBUG
-								diag_log format ["  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x];
+								OOP_INFO_2("  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x);
 							#endif
 						} else {
 							pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
@@ -1172,7 +1170,7 @@ CLASS("AI", "MessageReceiverEx")
 								// Print debug text: neighbour node
 								#ifdef ASTAR_DEBUG
 									pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_n]);
-									diag_log ("  New node:            " + _nodeString);
+									OOP_INFO_0("  New node:            " + _nodeString);
 								#endif
 							} else {
 							
@@ -1196,14 +1194,14 @@ CLASS("AI", "MessageReceiverEx")
 									#ifdef ASTAR_DEBUG
 										pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
 										//        "  Found in close set:  "
-										diag_log format ["  Updated in open set: %1", _nodeString];
+										OOP_INFO_1("  Updated in open set: %1", _nodeString);
 									#endif
 								} else {
 									
 									// Print debug text
 									#ifdef ASTAR_DEBUG
 										pr _nodeString = CALL_STATIC_METHOD("AI", "AStarNodeToString", [_nodeOpen]);
-										diag_log format ["  Found in open set:   %1", _nodeString];
+										OOP_INFO_1("  Found in open set:   %1", _nodeString);
 									#endif
 								};
 							}; // in open set?
@@ -1223,7 +1221,7 @@ CLASS("AI", "MessageReceiverEx")
 		_path sort true; // Ascending
 		
 		#ifdef ASTAR_DEBUG
-			diag_log format ["[AI:AStar] Info: Generated plan: %1", _path];
+			OOP_INFO_1("[AI:AStar] Info: Generated plan: %1", _path);
 		#endif
 		
 		// Return the reconstructed sorted path 

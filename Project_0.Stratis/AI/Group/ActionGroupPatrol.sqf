@@ -29,7 +29,22 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		diag_log format ["[ActionGroupPatrol::activate] Info: Started for AI: _AI"];
 		pr _gar = CALLM0(_group, "getGarrison");
 		pr _loc = CALLM0(_gar, "getLocation");
-		pr _waypoints = CALLM0(_loc, "getPatrolWaypoints");
+		
+		// Check if there is a location
+		pr _waypoints = if (_loc != "") then {
+			CALLM0(_loc, "getPatrolWaypoints");
+		} else {
+			// Generate some random patrol waypoints
+			pr _angle = 0;
+			pr _wp = [];
+			while {_angle < 360} do {
+				pr _newPos = (leader _hG) getPos [100 + random 40, _angle];
+				_wp pushBack _newPos;
+				_angle = _angle + 30;
+			};
+			_wp
+		};
+		
 		// Remove assigned waypoints first
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		// Give waipoints to the group
