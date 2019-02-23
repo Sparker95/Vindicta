@@ -24,7 +24,7 @@ CLASS("Camp", "Location")
 
 		SET_VAR(_thisObject, "capacityInf", 2);
 		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
-		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_CAMP);
+		CALL_METHOD(_thisObject, "setType", [LOCATION_TYPE_CAMP]);
 
 		// Create camp vehicles
 		private _camoNet = "CamoNet_ghex_F" createVehicle  _pos;
@@ -58,7 +58,7 @@ CLASS("Camp", "Location")
 		// https://github.com/Sparker95/Project_0.Stratis/blob/f7c1abd03b5f404d93e5b561b93bdc74f6268dd6/Project_0.Stratis/Location/createAllFromEditor.sqf#L86-L88
 		// Infantry capacity
 		private _side = WEST;
-		private _template = tNATO;
+		private _template = tGUERILLA;
 		private _args = [T_INF, [GROUP_TYPE_IDLE]];
 		private _cInf = CALL_METHOD(_thisObject, "getUnitCapacity", _args);
 

@@ -33,7 +33,7 @@ private _loc = objNull;
 	// Did we find a location marker?
 	if(!(_type isEqualTo "")) then {
 		private _side = WEST;
-		private _template = tNATO;
+		private _template = tGUERILLA;
 
 		// Hide this marker a bit
 		_x setMarkerAlpha 0.3;
@@ -61,7 +61,7 @@ private _loc = objNull;
 		CALL_METHOD(_loc, "setDebugName", [_debugName]);
 
 		// Set type
-		SET_VAR_PUBLIC(_loc, "type", [_type]);
+		CALL_METHOD(_loc, "setType", [_type]);
 
 		// Output the capacity of this garrison
 		// Infantry capacity
