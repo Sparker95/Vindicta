@@ -40,10 +40,9 @@ switch (_type) do {
 				_wp pushback _pos;
 			};
 			_i = _i + 1;
-		
+
 			//Test
-			"Sign_Arrow_Large_Pink_F" createVehicle (_pos);
-			//
+			createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];
 		};
 		SET_VAR(_thisObject, "borderPatrolWaypoints", _wp);
 	};
@@ -120,8 +119,8 @@ switch (_type) do {
 			_i = _i + 1;
 		
 			//Test
-			"Sign_Arrow_Large_Pink_F" createVehicle (_pos);
-			//
+			createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];
+
 		};
 		SET_VAR(_thisObject, "borderPatrolWaypoints", _wp);
 	};

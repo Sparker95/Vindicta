@@ -9,7 +9,7 @@
 
 // Spawn Position Types:
 // [_unitTypes, _groupTypes, _positions, _counter]
- 
+
 // Array with unit types [_catid, subcatid]
 #define LOCATION_SPT_ID_UNIT_TYPES 	0
 // Array with group types

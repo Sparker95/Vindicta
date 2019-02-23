@@ -104,8 +104,8 @@ player addEventHandler ["AnimChanged", {
 NEW("undercoverMonitor", [player]);
 
 // Create camp scroll menu
-// TODO : make it MP (use remoteExec to send creation on server)
-
+// TODO: make it MP (use remoteExec to send creation on server)
+// TODO: moove this in a proper UI and fn
 player addAction ["Create Camp", {
 	private _allLocations = GETSV("Location", "all");
 	private _isPosAllowed = true;
