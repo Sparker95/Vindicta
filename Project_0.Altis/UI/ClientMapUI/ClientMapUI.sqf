@@ -82,6 +82,7 @@ CLASS(CLASS_NAME, "")
 		pr _type = _cld select CLD_ID_TYPE;
 		pr _pos = _cld select CLD_ID_POS;
 		pr _side = _CLD select CLD_ID_SIDE;
+		pr _text = "";
 		
 		pr _color = switch(_side) do {
 			case WEST: {CMUI_ColorWEST};
@@ -89,9 +90,18 @@ CLASS(CLASS_NAME, "")
 			case INDEPENDENT: {CMUI_ColorInd};
 		};
 
+		pr _nameTown = ""; 
+		_nameTown = CALL_STATIC_METHOD("ClientMapUI", "getNamePrefix", [_pos]);
+		pr _nameLocMrkTxt = "";
+		_nameLocMrkTxt = CALL_STATIC_METHOD("ClientMapUI", "getNearestMarkerText", [_pos]);
+
+		if (_nameLocMrkTxt != "") then { 
+			_text = format ["%1", _nameLocMrkTxt]; 
+		} else {
+			_text = format ["%1 Outpost", _nameTown];
+		}; // prioritize custom location name over generated one
+
 		CALLM1(_mapMarker, "setPos", _pos);
-		pr _prefixName = CALL_STATIC_METHOD("ClientMapUI", "getNamePrefix", [_pos]);
-		pr _text = format ["%1 Outpost", _prefixName];
 		CALLM1(_mapMarker, "setText", _text);
 		CALLM1(_mapMarker, "setColor", _color);
 	} ENDMETHOD;
@@ -191,7 +201,7 @@ CLASS(CLASS_NAME, "")
 		pr _idcs = [];
 	} ENDMETHOD;
 
-	// Searches for near landmarks or towns to return a name prefix for outpost markers
+	// Returns nearest town's or city's name as String for use as outpost name
 	STATIC_METHOD("getNamePrefix") {
 		params ["_thisClass", "_pos"];
 		pr _locations = nearestLocations [_pos, ["NameCity", "NameCityCapital", "NameVillage"], 4000];
@@ -199,6 +209,20 @@ CLASS(CLASS_NAME, "")
 		pr _return = "Unknown";
 
 		if (_nearestLocName != "") then { _return = _nearestLocName; };
+
+		_return
+	} ENDMETHOD;
+
+	// Returns marker text of closest marker
+	STATIC_METHOD("getNearestMarkerText") {
+		params ["_thisClass", "_pos"];
+		pr _return = "";
+
+		{
+     		if(((getMarkerPos _x) distance _pos) < 100) exitWith {
+          		_return = markerText _x;
+     		};
+		} forEach allMapMarkers;
 
 		_return
 	} ENDMETHOD;
