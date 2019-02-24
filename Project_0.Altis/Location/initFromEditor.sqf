@@ -1,3 +1,4 @@
+#define OOP_INFO
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
 
@@ -15,6 +16,8 @@ Returns: nil
 Author: Sparker 28.07.2018
 */
 
+#define pr private
+
 params [ ["_thisObject", "", [""]], ["_marker", "", [""]] ];
 
 // Setup location's border from marker properties
@@ -28,6 +31,19 @@ if(_mrkSize select 0 == _mrkSize select 1) then { // if width==height, make it a
 	private _args = ["rectangle", [_mrkSize select 0, _mrkSize select 1, _dir] ];
 	CALL_METHOD(_thisObject, "setBorder", _args);
 };
+
+// Setup marker allowed areas
+pr _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
+	CALLM1(_thisObject, "isInBorder", markerPos _x)
+};
+OOP_INFO_1("Allowed areas inside this location: %1", _allowedAreas);
+{
+	pr _pos = markerPos _x;
+	(markerSize _x) params ["_a", "_b"];
+	pr _dir = markerDir _x;
+	OOP_INFO_1("Adding allowed area: %1", _x);
+	CALLM4(_thisObject, "addAllowedArea", _pos, _a, _b, _dir);
+} forEach _allowedAreas;
 
 // Setup location's spawn positions
 private _radius = GET_VAR(_thisObject, "boundingRadius");

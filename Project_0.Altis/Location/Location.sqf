@@ -20,6 +20,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
 	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
+	VARIABLE("allowedAreas"); // Array with allowed areas
 	VARIABLE("pos"); // Position of this location
 	VARIABLE("spawnPosTypes"); // Array with spawn positions types
 	VARIABLE("spawnState"); // Is this location spawned or not
@@ -62,17 +63,21 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gMessageLoopLocation") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
-		SET_VAR(_thisObject, "debugName", "noname");
-		SET_VAR(_thisObject, "garrisonCiv", "");
-		SET_VAR(_thisObject, "garrisonMilAA", "");
-		SET_VAR(_thisObject, "garrisonMilMain", "");
+		T_SETV("debugName", "noname");
+		T_SETV("garrisonCiv", "");
+		T_SETV("garrisonMilAA", "");
+		T_SETV("garrisonMilMain", "");
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
-		SET_VAR(_thisObject, "borderPatrolWaypoints", []);
+		T_SETV("borderPatrolWaypoints", []);
 		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
-		SET_VAR(_thisObject, "spawnPosTypes", []);
-		SET_VAR(_thisObject, "spawnState", 0);
-		SET_VAR(_thisObject, "capacityInf", 0);
+		T_SETV("spawnPosTypes", []);
+		T_SETV("spawnState", 0);
+		T_SETV("capacityInf", 0);
+		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
+
+		// Setup basic border
+		CALLM2(_thisObject, "setBorder", "circle", 20);
 
 		// Create timer object
 		private _msg = MESSAGE_NEW();
@@ -84,7 +89,7 @@ CLASS("Location", "MessageReceiverEx")
 		private _timer = NEW("Timer", _args);
 		SET_VAR(_thisObject, "timer", _timer);
 
-		//Push the new object into the array with all units
+		//Push the new object into the array with all locations
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray pushBack _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
@@ -275,7 +280,12 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Returns location that has its border overlapping given position
 	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
+	
+	// Adds an allowed area
+	METHOD_FILE("addAllowedArea", "Location\addAllowedArea.sqf");
 
+	// Checks if player is in any of the allowed areas
+	METHOD_FILE("isInAllowedArea", "Location\isInAllowedArea.sqf");
 
 
 	//
