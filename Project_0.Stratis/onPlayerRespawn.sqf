@@ -1,7 +1,6 @@
 #include "OOP_Light\OOP_Light.h"
 #include "AI\Stimulus\Stimulus.hpp"
 #include "AI\stimulusTypes.hpp"
-#include "OOP_Light\OOP_Light.h"
 
 /*
 This is an event script.
@@ -43,14 +42,14 @@ saluteKeys = actionKeys "Salute";
 
 player addEventHandler ["AnimChanged", {
 	params ["_unit", "_anim"];
-	
+
 	//systemChat format ["AnimChanged to : %1", _anim];
 	//diag_log format ["AnimChanged to : %1", _anim];
-	
+
 	if (_anim == "amovpercmstpslowwrfldnon_salute" || _anim == "amovpercmstpsraswrfldnon_salute" ||
-		_anim == "amovpercmstpsraswpstdnon_salute") then {                                           
+		_anim == "amovpercmstpsraswpstdnon_salute") then {
 		systemChat "You salute to everyone!";
-		
+
 		// Create a salute stimulus
 		private _stim = STIMULUS_NEW();
 		STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_SALUTE);
@@ -60,7 +59,7 @@ player addEventHandler ["AnimChanged", {
 		//_stim set [STIMULUS_ID_EXPIRATION_TIME, 10];
 		// Send the stimulus to the stimulus manager
 		private _args = ["handleStimulus", [_stim]];
-		
+
 		[_args, {CALLM(gStimulusManager, "postMethodAsync", _this);}] remoteExecCall["call", 0, false];
 	};
 }];
@@ -80,22 +79,22 @@ player addEventHandler ["AnimChanged", {
 		if(!isNull _nearestEnemy)then{
 			pr _dis = _nearestEnemy distance player;
 			if(_dis < TRIGGER_DISTANCE)then{
-			
+
 				// Create a salute stimulus
 				pr _stim = STIMULUS_NEW();
 				STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_CIV_NEAR);
 				STIMULUS_SET_SOURCE(_stim, player);
 				STIMULUS_SET_VALUE(_stim, 1-(_dis/TRIGGER_DISTANCE));
-	
+
 				diag_log "NearEnemy trigger";
-				
+
 				// Send the stimulus to unit directly TODO maybe send it to group
 				pr _oh = CALLSM("unit","getUnitFromObjectHandle",[_nearestEnemy]);
 				pr _ai = CALLM(_oh,"getAI",[]);
 				CALLM(_ai,"handleStimulus",[_stim]);
 			};
 		};
-		
+
 		sleep INTERVAL;
 	};
 };
@@ -103,4 +102,6 @@ player addEventHandler ["AnimChanged", {
 
 // Create a suspiciousness monitor for player
 NEW("undercoverMonitor", [player]);
-player addAction ["Create Camp", { NEW("Camps", [getPos player]); }];
+
+// Create camp scroll menu
+player addAction ["Create Camp", "Camp\createCamp.sqf"];

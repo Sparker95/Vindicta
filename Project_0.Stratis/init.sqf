@@ -38,7 +38,6 @@ diag_log "Init.sqf: Creating global objects...";
 // Main timer service
 gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 
-
 // Headless clients and server only
 if (isServer || (!hasInterface && !isDedicated)) then {
 	// Main message loop for garrisons

@@ -9,7 +9,7 @@
 
 // Spawn Position Types:
 // [_unitTypes, _groupTypes, _positions, _counter]
- 
+
 // Array with unit types [_catid, subcatid]
 #define LOCATION_SPT_ID_UNIT_TYPES 	0
 // Array with group types
@@ -20,3 +20,7 @@
 #define LOCATION_SPT_ID_COUNTER		3
 
 #define LOCATION_SPT_DEFAULT [[], [], [], 0]
+
+#define LOCATION_TYPE_CAMP "camp"
+#define LOCATION_TYPE_BASE "base"
+#define LOCATION_TYPE_OUTPOST "outpost"

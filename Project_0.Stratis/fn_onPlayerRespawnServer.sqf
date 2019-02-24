@@ -1,7 +1,6 @@
 #include "OOP_Light\OOP_Light.h"
 #include "AI\Stimulus\Stimulus.hpp"
 #include "AI\stimulusTypes.hpp"
-#include "OOP_Light\OOP_Light.h"
 #define pr private
 /*
 onPlayerRespawn.sqf calls this when player respawns

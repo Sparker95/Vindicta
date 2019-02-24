@@ -523,6 +523,22 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 #define OOP_ERROR_5(str, a, b, c, d, e)
 #endif
 
+#ifdef OOP_DEBUG
+#define OOP_DEBUG_0(str) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_1(str, a) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_2(str, a, b) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_3(str, a, b, c) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_4(str, a, b, c, d) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
+#else
+#define OOP_DEBUG_0(str)
+#define OOP_DEBUG_1(str, a)
+#define OOP_DEBUG_2(str, a, b)
+#define OOP_DEBUG_3(str, a, b, c)
+#define OOP_DEBUG_4(str, a, b, c, d)
+#define OOP_DEBUG_5(str, a, b, c, d, e)
+#endif
+
 // ----------------------------------------------------------------------
 // |                A S S E R T I O N S  A N D   C H E C K S            |
 // ----------------------------------------------------------------------

@@ -28,7 +28,7 @@ private _capacity = 0;
 // Is _unitTypes a number or an array?
 if (_unitTypes isEqualType 0) then {
 	private _catID = _unitTypes;
-	
+
 	// Basic infantry capacity is not based on spawn positions but rather on buildings added to this location
 	if (_catID == T_INF && (GROUP_TYPE_IDLE in _groupTypes) || (GROUP_TYPE_PATROL in _groupTypes)) then {
 		_capacity = GET_VAR(_thisObject, "capacityInf");

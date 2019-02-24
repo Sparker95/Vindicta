@@ -19,6 +19,7 @@ call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
 tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
 tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
+tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 //a = [classesNATO, T_VEH, T_VEH_default] call t_fnc_select;
 //[classesNATO] call t_fnc_checkNil;
 
@@ -113,5 +114,5 @@ call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 // Initialize suspiciosness monitor
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
-// Initialize Camps class
-call compile preprocessFileLineNumbers "Camps\Camps.sqf";
+// Initialize Camp class
+call compile preprocessFileLineNumbers "Camp\Camp.sqf";
