@@ -1,3 +1,6 @@
+#include "camp.hpp"
+#include "..\Group\Group.hpp"
+
 /*
 Class: Camp
 Camp has garrisons at a static place and spawns units handle by location variable.
@@ -5,10 +8,7 @@ Camp has an arsenal and maybe events and other features ?
 
 Author: Sparker 28.07.2018
 */
-#include "camp.hpp"
-#include "..\Group\Group.hpp"
-
-CLASS("Camp", "Location")
+CLASS("Camp", "Location");
 
 	VARIABLE("arsenalBox"); // arsenalBox of this Camp
 	VARIABLE("camoNet"); // camoNet of this Camp

@@ -1,16 +1,9 @@
-/*
-Class: Location
-Location has garrisons at a static place and spawns units.
-
-Author: Sparker 28.07.2018
-*/
-
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "Location.hpp"
 #include "..\MessageTypes.hpp"
 
-CLASS("Location", "MessageReceiverEx")
+CLASS("Location", "MessageReceiverEx");
 
 	VARIABLE("type");
 	VARIABLE("debugName");
@@ -280,7 +273,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Returns location that has its border overlapping given position
 	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
-	
+
 	// Adds an allowed area
 	METHOD_FILE("addAllowedArea", "Location\addAllowedArea.sqf");
 
