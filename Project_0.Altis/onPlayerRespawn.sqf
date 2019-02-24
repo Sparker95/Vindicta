@@ -105,3 +105,5 @@ NEW("undercoverMonitor", [player]);
 
 // Create camp scroll menu
 player addAction ["Create Camp", "Camp\createCamp.sqf"];
+
+player addAction ["Send Help", "Location\sendHelpToPos.sqf"];

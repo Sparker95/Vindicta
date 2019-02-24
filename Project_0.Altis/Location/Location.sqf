@@ -216,6 +216,17 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	/*
+	Method: getGarrisonMilAA
+	Gets the main military garrison located at this location
+
+	Returns: <Garrison> or "" if there is no garrison there
+	*/
+	METHOD("getGarrisonMilAA") {
+		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		GET_VAR(_thisObject, "garrisonMilAA")
+	} ENDMETHOD;
+
+	/*
 	Method: setType
 	Set the Type.
 
@@ -239,6 +250,17 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getType") {
 		params [ ["_thisObject", "", [""]] ];
 		GET_VAR(_thisObject, "type")
+	} ENDMETHOD;
+
+	/*
+	Method: getCapacityInf
+	Returns type of this location
+
+	Returns: Integer
+	*/
+	METHOD("getCapacityInf") {
+		params [ ["_thisObject", "", [""]] ];
+		GET_VAR(_thisObject, "capacityInf")
 	} ENDMETHOD;
 
 

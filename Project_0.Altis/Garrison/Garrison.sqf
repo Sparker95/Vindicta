@@ -273,6 +273,20 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+<<<<<<< HEAD
+=======
+	/*
+	Method: countAllUnits
+	Returns all units of this garrison.
+
+	Returns: Array of <Unit> objects.
+	*/
+	METHOD("countAllUnits") {
+		params [["_thisObject", "", [""]]];
+		count T_GETV("units")
+	} ENDMETHOD;
+
+>>>>>>> start some logic
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                A D D I N G / R E M O V I N G   U N I T S   A N D   G R O U P S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
