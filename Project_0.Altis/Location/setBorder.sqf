@@ -1,3 +1,5 @@
+#include "..\OOP_Light\OOP_Light.h"
+
 // Class: Location
 /*
 Method: setBorder
@@ -11,8 +13,6 @@ _data	- for "circle":
 	[_a, _b, _dir] - rectangle dimensions and direction
 
 */
-
-#include "..\OOP_Light\OOP_Light.h"
 
 params [["_thisObject", "", [""]], ["_type", "", [""]], ["_data", 50, [0, []]] ];
 
