@@ -8,12 +8,15 @@
 			</Key>
 			<Key ID="STR_JNC_ACT_CANCEL">
 				<Original>Cancel</Original>
+				<German>Abbrechen</German>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_HINT">
-				<Original>Select a object</Original>
+				<Original>Select an object</Original>
+				<German>Objekt auswählen</German>
 			</Key>
 			<Key ID="STR_JNC_ACT_SELECT_NO_OBJECT">
-				<Original>Not looking at something</Original>
+				<Original>Not looking at anything</Original>
+				<German>Nichts ausgewählt</German>
 			</Key>
 		</Container>
 	</Package>
@@ -21,21 +24,26 @@
 		<Container name="Actions">
 			<Key ID="STR_JNA_ACT_OPEN">
 				<Original>Arsenal</Original>
+				<German>Arsenal</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
-				<Original>Load to vehicle</Original>
+				<Original>Load into vehicle</Original>
+				<German>In Fahrzeug laden</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
 				<Original>Unload from vehicle</Original>
+				<German>Fahrzeug entladen</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
-				<Original>Not looking at object</Original>
+				<Original>Not looking at an object</Original>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR2">
-				<Original>Object to far away</Original>
+				<Original>Object too far away</Original>
+				<German>Objekt zu weit entfernt</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
-				<Original>Object doesnt have inventory</Original>
+				<Original>Object does not have any inventory</Original>
+				<German>Objekt hat kein Inventar</German>
 			</Key>
 		</Container>
 	</Package>
@@ -43,15 +51,19 @@
 		<Container name="Actions">
 			<Key ID="STR_JNG_ACT_OPEN">
 				<Original>Open garage</Original>
+				<German>Garage öffnen</German>
 			</Key>
 			<Key ID="STR_JNG_ACT_STOREVEHICLE">
 				<Original>Garage Vehicle</Original>
+				<German>Fahrzeug verstauen</German>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR1">
-				<Original>Vehicle to far away</Original>
+				<Original>Vehicle too far away</Original>
+				<German>Fahrzeug zu weit entfernt</German>
 			</Key>
 			<Key ID="STR_JNG_ACT_CONTAINER_SELECTERROR2">
 				<Original>Not looking at a vehicle</Original>
+				<German>Kein Fahrzeug ausgewählt</German>
 			</Key>
 		</Container>
 	</Package>
@@ -59,15 +71,19 @@
 		<Container name="Actions">
 			<Key ID="STR_JN_FUEL_ACT_REFUEL">
 				<Original>Refuel</Original>
+				<German>Betanken</German>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_REFUELOPTION">
 				<Original>Refuel cargo or tank</Original>
+				<German>Tank oder Ladung betanken</German>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELTANK">
 				<Original>Tank</Original>
+				<German>Tank</German>
 			</Key>
 			<Key ID="STR_JN_FUEL_ACT_FUELCARGO">
 				<Original>Cargo</Original>
+				<German>Ladung</German>
 			</Key>
 		</Container>
 	</Package>
@@ -75,6 +91,7 @@
 		<Container name="Actions">
 			<Key ID="STR_JN_AMMO_ACT_REARM">
 				<Original>Rearm</Original>
+				<German>Neubewaffnen</German>
 			</Key>
 		</Container>
 	</Package>
@@ -82,6 +99,7 @@
 		<Container name="Actions">
 			<Key ID="STR_JN_REPAIR_ACT_REPAIR">
 				<Original>Repair</Original>
+				<German>Reparieren</German>
 			</Key>
 		</Container>
 	</Package>
