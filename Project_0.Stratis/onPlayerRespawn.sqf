@@ -103,4 +103,4 @@ player addEventHandler ["AnimChanged", {
 
 // Create a suspiciousness monitor for player
 NEW("undercoverMonitor", [player]);
-systemChat "onPlayerSpawn!";
+player addAction ["Create Camp", { NEW("Camps", [getPos player]); }];

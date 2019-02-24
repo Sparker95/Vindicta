@@ -25,7 +25,10 @@ diag_log _str;
 */
 
 if (side _unit != side _source && isPlayer _source && alive _source) then { 
-	_source setVariable [UNDERCOVER_WANTED, true, true];
+	pr _um = player getVariable "undercoverMonitor";
+	pr _msg = MESSAGE_NEW();
+	MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
+	CALLM1(_um, "postMessage", _msg); // handle message in undercoverMonitor
 };
 
 // Disable damage for driving over friendlies
