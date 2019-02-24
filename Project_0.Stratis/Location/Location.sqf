@@ -10,7 +10,7 @@ Author: Sparker 28.07.2018
 #include "Location.hpp"
 #include "..\MessageTypes.hpp"
 
-CLASS("Location", "MessageReceiver")
+CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("debugName");
 	VARIABLE("garrisonCiv");
@@ -185,7 +185,9 @@ CLASS("Location", "MessageReceiver")
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
-		CALL_METHOD(_garrison, "setLocation", [_thisObject]);
+		if (_garrison != "") then {
+			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -203,7 +205,7 @@ CLASS("Location", "MessageReceiver")
 	// File-based methods
 	
 	// Handles messages
-	METHOD_FILE("handleMessage", "Location\handleMessage.sqf");
+	METHOD_FILE("handleMessageEx", "Location\handleMessageEx.sqf");
 	
 	// Sets border parameters
 	METHOD_FILE("setBorder", "Location\setBorder.sqf");

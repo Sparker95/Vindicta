@@ -18,12 +18,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		OOP_INFO_0("ACTIVATE");
 		
 		// Give goals to groups
 		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _loc = CALLM0(_gar, "getLocation");
 		pr _AI = T_GETV("AI");
 		pr _groups = CALLM0(_gar, "getGroups");
 		{ // foreach _groups
@@ -46,7 +47,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupOccupySentryPositions", 0, [], _AI];
+						_args = if (_loc != "") then {
+							["GoalGroupOccupySentryPositions", 0, [], _AI];
+						} else {
+							["GoalGroupRegroup", 0, [], _AI];
+						};
 					};
 					
 					case GROUP_TYPE_PATROL: {
@@ -89,6 +94,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Remove assigned goals
 		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _loc = CALLM0(_gar, "getLocation");
 		pr _groups = CALLM0(_gar, "getGroups");
 		{ // foreach _groups
 			pr _type = CALLM0(_x, "getType");
@@ -109,7 +115,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupOccupySentryPositions", ""];
+						_args = if (_loc != "") then {
+							["GoalGroupOccupySentryPositions", 0, [], _AI];
+						} else {
+							["GoalGroupRegroup", 0, [], _AI];
+						};
 					};
 					
 					case GROUP_TYPE_PATROL: {

@@ -32,7 +32,12 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		pr _group = GETV(T_GETV("AI"), "agent");
 		pr _gar = CALLM0(_group, "getGarrison");
 		pr _loc = CALLM0(_gar, "getLocation");
-		pr _pos = CALLM0(_loc, "getRandomPos");
+		pr _pos = if (_loc != "") then {
+			CALLM0(_loc, "getRandomPos");
+		} else {
+			pr _lp = getPos leader _hG;
+			[(_lp select 0) - 30 + random 60, (_lp select 1) - 30 + random 60, 0];
+		};
 		
 		// Delete all waypoints
 		while {(count (waypoints _hG)) > 0} do

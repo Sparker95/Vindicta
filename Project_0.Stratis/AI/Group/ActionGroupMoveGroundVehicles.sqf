@@ -17,6 +17,7 @@ Handles moving of a group with multiple or single ground vehicles.
 CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	VARIABLE("pos");
+	VARIABLE("radius"); // Completion radius
 	VARIABLE("speedLimit");
 	VARIABLE("time");
 	
@@ -25,6 +26,9 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
+		
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		T_SETV("radius", _radius);
 		
 		T_SETV("speedLimit", SPEED_MIN);
 	} ENDMETHOD;
@@ -93,6 +97,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _state = CALLM(_thisObject, "activateIfInactive", []);
 		
 		pr _hG = T_GETV("hG"); // Group handle
+		pr _pos = T_GETV("pos");
+		pr _radius = T_GETV("radius");
 		
 		pr _dt = time - T_GETV("time");
 		T_SETV("time", time);
@@ -129,6 +135,15 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
 				#endif
 			};
+		};
+		
+		
+		// Check if enough vehicles have arrived
+		// For now just check if leader is there
+		pr _radius = T_GETV("radius");
+		if (( (vehicle leader _hG) distance _pos ) < _radius) then {
+			OOP_INFO_0("Arrived at destionation");
+			_state = ACTION_STATE_COMPLETED
 		};
 		
 		

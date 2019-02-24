@@ -162,8 +162,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx")
 			// If the target group is spawned, notify its AI object
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != "") then {
-				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsAdded", [[_unit]], true);
-				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+				CALLM2(_AI, "postMethodSync", "handleUnitsAdded", [[_unit]]);
 			};
 		};
 	} ENDMETHOD;

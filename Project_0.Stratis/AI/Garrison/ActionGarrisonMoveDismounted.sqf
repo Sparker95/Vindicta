@@ -19,7 +19,7 @@ CLASS(THIS_ACTION_NAME, "Action")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-		SETV(_thisObject, "AI", _a);
+		SETV(_thisObject, "AI", _AI);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated

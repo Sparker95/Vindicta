@@ -159,7 +159,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 					// No room for this soldier in the vehicle
 					// Mission failed
 					// We are dooomed!
-					
+					// https://www.youtube.com/watch?v=WD73a1trdJ0
 					// Return
 					false
 				} else { // if count free seats == 0

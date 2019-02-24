@@ -29,7 +29,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 		
 		// Get array of all vehicles in the garrison that can carry cargo troops
 		pr _unitsVeh = CALLM0(_gar, "getVehicleUnits") select {
-			pr _className = CALLM0(_x, "getClassName");\
+			pr _className = CALLM0(_x, "getClassName");
 			pr _cap = [_className] call misc_fnc_getCargoInfantryCapacity;
 			OOP_INFO_2("   Vehicle: %1, cargo infantry capacity: %2", _className, _cap);
 			_cap > 0 // If it can carry any troops as cargo
@@ -50,7 +50,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitGetInVehicle", ""); // Delete any other goals like this first
 			
-			pr _args = [["vehicle", _unitsVeh select 0], ["vehicleRole", "CARGO"], ["turretPath", []]];
+			pr _args = [["vehicle", selectRandom _unitsVeh /*_unitsVeh select 0*/], ["vehicleRole", "CARGO"], ["turretPath", []]];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _args, _AI);
 		} forEach _unitsInf;		
 		

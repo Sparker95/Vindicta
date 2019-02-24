@@ -11,6 +11,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 
 	VARIABLE("pos"); // The destination position
+	VARIABLE("radius"); // Completion radius
 
 	// ------------ N E W ------------
 	
@@ -19,16 +20,23 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
+		
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		T_SETV("radius", _radius);
+		
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
 		
+		OOP_INFO_0("ACTIVATE");
+		
 		// Give waypoint to the vehicle group
 		pr _gar = T_GETV("gar");
 		pr _AI = T_GETV("AI");
 		pr _pos = T_GETV("pos");
+		pr _radius = T_GETV("radius");
 		
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 		if (count _vehGroups > 1) then {
@@ -40,10 +48,22 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _groupAI = CALLM0(_x, "getAI");
 			
 			// Add new goal to move
-			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos]], _AI];
+			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_RADIUS, _radius]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
 			
 		} forEach _vehGroups;
+		
+		// Reset current location of this garrison
+		// todo redo this crap, it will fail with headless clients
+		pr _loc = CALLM0(_gar, "getLocation");
+		OOP_INFO_1("Garrison's location: %1", _loc);
+		if (_loc != "") then {
+			if (CALLM0(_loc, "getGarrisonMilitaryMain") == _gar) then { // If this garrison is the main garrison of its location
+				OOP_INFO_0("Posting method");
+				CALLM2(_loc, "postMethodAsync", "setGarrisonMilitaryMain", [""]); // This location will no longer control spawning of this garrison
+			};
+			CALLM1(_gar, "setLocation", ""); // This garrison is no longer attached to its location
+		};
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -76,8 +96,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _AI = T_GETV("AI");
 			pr _pos = T_GETV("pos");
 		
-			// Complete if all groups' actions are completed
-			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+			pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
+			pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
 			
 			// Fail if any group has failed
 			if (CALLSM3("AI", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
@@ -87,6 +107,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			// Succede if all groups have completed the goal
 			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+				OOP_INFO_0("All groups have arrived");
 				_state = ACTION_STATE_COMPLETED;
 				breakTo "s0";
 			};

@@ -41,7 +41,9 @@
 // Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
 // You can either define it here or usage of OOP_INFO_, ..., macros will cause its automatic definition
 // OOP SCRIPTNAME
-#define OOP_SCRIPTNAME
+
+//#define OOP_SCRIPTNAME
+/*
 #ifdef OOP_INFO
 #define OOP_SCRIPTNAME
 #endif
@@ -51,6 +53,7 @@
 #ifdef OOP_ERROR
 #define OOP_SCRIPTNAME
 #endif
+*/
 
 /*
 #ifdef OOP_ASSERT
@@ -314,7 +317,7 @@ private _fnc = missionNamespace getVariable CLASS_METHOD_NAME_STR(_oop_className
 private _fnc_array = toArray str _fnc; \
 _fnc_array deleteAt 0; \
 _fnc_array deleteAt ((count _fnc_array) - 1); \
-private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + (toString _fnc_array); \
+private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + toString [10] + format ["#line 1 '%1'", CLASS_METHOD_NAME_STR(_oop_classNameStr, _x)] + toString [10] + (toString _fnc_array); \
 missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
 } forEach _oop_newMethodList;
 #else
@@ -454,7 +457,8 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // ----------------------------------------------------------------------
 
 #define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else {_thisClass}
-#define LOG_1 _fnc_scriptName
+//#define LOG_1 _fnc_scriptName
+#define LOG_1 "fnc"
 
 // If ofstream addon is globally enabled
 #ifdef OFSTREAM_ENABLE

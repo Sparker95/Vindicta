@@ -86,7 +86,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		_data set [UNIT_DATA_ID_SUBCAT, _subcatID];
 		_data set [UNIT_DATA_ID_CLASS_NAME, _class];
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
-		_data set [UNIT_DATA_ID_GROUP, _group];
+		_data set [UNIT_DATA_ID_GROUP, ""];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
 		};
@@ -197,8 +197,7 @@ CLASS(UNIT_CLASS_NAME, "")
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 		
 		OOP_INFO_0("SPAWN");
-		diag_log format ["function name is: %1", _fnc_scriptName];
-		
+
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
 		
