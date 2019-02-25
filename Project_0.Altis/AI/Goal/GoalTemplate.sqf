@@ -1,14 +1,4 @@
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-#include "..\WorldFact\WorldFact.hpp"
-
-#include "..\stimulusTypes.hpp"
-#include "..\worldFactTypes.hpp"
-#include "..\goalRelevance.hpp"
-
+#include "common.hpp"
 /*
 Template of a goal class
 */
@@ -24,6 +14,18 @@ CLASS("MyGoal", "Goal")
 	// If this method is not overwritten, it will return a static relevance
 	STATIC_METHOD("calculateRelevance") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		
+	} ENDMETHOD;
+	
+	// ----------------------------------------------------------------------
+	// |            C R E A T E   P R E D E F I N E D   A C T I O N
+	// ----------------------------------------------------------------------
+	// By default it gets predefined action from database if it is defined and creates it, passing a goal parameter to action parameter, if it exists
+	// This method must be redefined for goals that have predefined actions that require parameters not from goal parameters
+	
+	/* virtual */ STATIC_METHOD("createPredefinedAction") {
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
+		
 		
 	} ENDMETHOD;
 

@@ -17,3 +17,5 @@ TAG_... - parameters passed to actions
 #define TAG_CARGO_POS "g_cargoPos"
 
 #define TAG_MERGE "a_merge"
+
+#define TAG_DURATION "g_duration"

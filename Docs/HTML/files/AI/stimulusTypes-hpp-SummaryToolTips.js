@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:AI/stimulusTypes.hpp",{148:"<div class=\"NDToolTip TEnumeration LSQF\"><div class=\"TTSummary\">File: AI\\stimulusTypes.hpp</div></div>"});
+NDSummary.OnToolTipsLoaded("File:AI/stimulusTypes.hpp",{184:"<div class=\"NDToolTip TEnumeration LSQF\"><div class=\"TTSummary\">File: AI\\stimulusTypes.hpp</div></div>"});

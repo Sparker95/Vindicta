@@ -1044,6 +1044,7 @@ CLASS("AI", "MessageReceiverEx")
 			
 			{ // forEach _availableActions;
 				pr _action = _x;
+				OOP_INFO_1("Analyzing action: %1", _action);
 				pr _effects = GET_STATIC_VAR(_x, "effects");
 				pr _args = [[], []]; //
 				

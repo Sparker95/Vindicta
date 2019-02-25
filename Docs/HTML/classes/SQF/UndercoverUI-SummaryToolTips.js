@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:UndercoverUI",{447:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Passes values from undercoverMonitor to display them on the Undercover UI</div></div>"});

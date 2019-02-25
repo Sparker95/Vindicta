@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("mer",["Function"],[["mergeVehicleGroups",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.mergeVehicleGroups","SQFClass:Garrison:mergeVehicleGroups"]]]]);

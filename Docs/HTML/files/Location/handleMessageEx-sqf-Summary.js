@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Location/handleMessageEx.sqf","handleMessageEx.sqf");NDSummary.OnSummaryLoaded("File:Location/handleMessageEx.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[298,0,0,"Location","Location"],[299,0,2,"Functions","Location.Functions"],[300,0,1,"handleMessage","Location.handleMessage"]]);
