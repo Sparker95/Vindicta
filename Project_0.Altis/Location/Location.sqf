@@ -1,4 +1,5 @@
 #define OOP_INFO
+#define OOP_WARNING
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "Location.hpp"
@@ -195,9 +196,9 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
-		
+
 		OOP_INFO_1("setGarrisonMilitaryMain: %1", _garrison);
-		
+
 		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
 		if (_garrison != "") then {
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
@@ -263,6 +264,40 @@ CLASS("Location", "MessageReceiverEx")
 		GET_VAR(_thisObject, "capacityInf")
 	} ENDMETHOD;
 
+	/*
+	Method: getCurrentGarrison
+	Returns the current garrison attached to this location
+
+	Returns: <Garrison> or "" if there is no current garrison
+	*/
+	METHOD("getCurrentGarrison") {
+		params [ ["_thisObject", "", [""]] ];
+
+		private _garrison = GETV(_thisObject, "garrisonMilAA");
+		if (_garrison == "") then { _garrison = GETV(_thisObject, "garrisonMilMain"); };
+		if (_garrison == "") then { OOP_WARNING_1("No garrison found for location %1", _thisObject); };
+		_garrison
+	} ENDMETHOD;
+
+	/*
+	Method: countAvailableUnits
+	Returns an number of current units of this location
+
+	Returns: Integer
+	*/
+	METHOD("countAvailableUnits") {
+		params [ ["_thisObject", "", [""]] ];
+
+		private _garrison = CALLM0(_thisObject, "getCurrentGarrison");
+		if (_garrison == "") exitWith { 0 };
+
+		private _countAllUnits = CALLM0(_garrison, "countAllUnits");
+		private _getRequiredUnits = CALLM0(_garrison, "getRequiredCrew");
+		private _minimumUnits = 0;
+		{ _minimumUnits = _minimumUnits + _x; } forEach _getRequiredUnits;
+
+		_countAllUnits - _minimumUnits
+	} ENDMETHOD;
 
 	// File-based methods
 
@@ -311,8 +346,6 @@ CLASS("Location", "MessageReceiverEx")
 	// Checks if player is in any of the allowed areas
 	METHOD_FILE("isInAllowedArea", "Location\isInAllowedArea.sqf");
 
-
-	//
 	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
 ENDCLASS;
 
