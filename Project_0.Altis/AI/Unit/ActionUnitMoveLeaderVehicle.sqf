@@ -1,18 +1,19 @@
 #include "common.hpp"
 
 /*
-Should be used for a vehicle driver that must follow the lead vehicle in a convoy.
+Should be used for a vehicle driver that drives the lead vehicle of a convoy.
+Parameters: TAG_POS - position where to move to
 Author: Sparker 13.02.2019
 */
 
 #define pr private
 
 // How much time it's allowed to stand at one place without being considered 'stuck'
-#define TIMER_STUCK_THRESHOLD 50
+#define TIMER_STUCK_THRESHOLD 30
 
-CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
+CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	
-	VARIABLE("dist"); // Distance to leader's vehicle
+	VARIABLE("pos");
 	VARIABLE("stuckTimer");
 	VARIABLE("time");
 	VARIABLE("triedRoads"); // Array with road pieces unit tried to achieve when it got stuck
@@ -21,7 +22,16 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], []] ];
+		
+		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
+		T_SETV("pos", _pos);
+		
+		T_SETV("stuckTimer", 0);
+		T_SETV("time", time);
+		T_SETV("triedRoads", []);
+		T_SETV("stuckCounter", 0);
+		
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -29,17 +39,20 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 		params [["_thisObject", "", [""]]];
 		
 		pr _hO = GETV(_thisObject, "hO");
+		pr _hG = group _hO;
+		pr _pos = T_GETV("pos");
 		
-		// Order to follow leader
-		_hO doFollow (leader group _hO);
+		// Order to move
+		// Delete all previous waypoints
+		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
-		// Get distance between the vehicle of this unit and the lead vehicle
-		pr _dist = (vehicle _hO) distance (vehicle leader group _hO);
-		T_SETV("dist", _dist);
-		T_SETV("stuckTimer", 0);
-		T_SETV("time", time);
-		T_SETV("triedRoads", []);
-		T_SETV("stuckCounter", 0);
+		// Give a waypoint to move
+		pr _wp = _hG addWaypoint [_pos, 0];
+		_wp setWaypointType "MOVE";
+		_wp setWaypointFormation "COLUMN";
+		_wp setWaypointBehaviour "SAFE";
+		_wp setWaypointCombatMode "GREEN";
+		_hG setCurrentWaypoint _wp;
 		
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
@@ -52,17 +65,15 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 		pr _state = CALLM(_thisObject, "activateIfInactive", []);
 		
 		pr _hO = GETV(_thisObject, "hO");
-		pr _dist = (vehicle _hO) distance (vehicle leader group _hO);
-		pr _distPrev = T_GETV("dist");
 		pr _dt = time - T_GETV("time"); // Time that has passed since previous call
 		
-		// Distance is increasing and my speed is small AF
-		if ((_dist >= _distPrev) && (speed _hO < 4)) then {
+		// My speed is small AF
+		if (speed _hO < 4) then {
 			pr _timer = T_GETV("stuckTimer");
 			_timer = _timer + _dt;
 			T_SETV("stuckTimer", _timer);
 			
-			OOP_WARNING_1("Probably stuck: %1", _timer);
+			OOP_WARNING_1("Leader vehicle is probably stuck: %1", _timer);
 			
 			if (_timer > TIMER_STUCK_THRESHOLD) then {
 				OOP_WARNING_0("Is totally stuck now!");
@@ -74,7 +85,8 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 					pr _triedRoads = T_GETV("triedRoads");
 					pr _nr = (_ho nearRoads 200) select {! (_x in _triedRoads)};
 					if (count _nr > 0) then {
-						OOP_WARNING_0("Moving to nearest road...");
+						OOP_WARNING_0("Moving the leader vehicle to the nearest road...");
+					
 						// Sort roads by distance
 						_nr = (_nr apply {[_x, _x distance2D _hO]});
 						_nr sort true; // Ascending
@@ -86,17 +98,18 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 						T_SETV("stuckTimer", 0);
 					};
 				} else {
+					OOP_WARNING_0("Tried to move to nearest road too many times!");
 					// Allright this shit is serious
 					// We need serious measures now :/
 					if (_stuckCounter < 4) then {
-						OOP_WARNING_0("Rotating the vehicle!");
+						OOP_WARNING_0("Rotating the leader vehicle!");
 						// Let's just try to rotate you?
 						pr _hVeh = vehicle _hO;
 						_hVeh setDir ((getDir _hVeh) + 180);
 						_hVeh setPosWorld ((getPosWorld _hVeh) vectorAdd [0, 0, 1]);
 					} else {
 						// Let's try to teleport you somewhere >_<
-						OOP_WARNING_0("Teleporting the vehicle!");
+						OOP_WARNING_0("Teleporting the leader vehicle!");
 						pr _hVeh = vehicle _hO;
 						pr _defaultPos = getPos _hVeh;
 						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
@@ -104,7 +117,10 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 					};
 
 					
-				};				
+				};
+				
+				// Set state to inactive so that the action gets reactivated
+				_state = ACTION_STATE_INACTIVE;
 				
 				T_SETV("stuckCounter", _stuckCounter + 1);
 			};

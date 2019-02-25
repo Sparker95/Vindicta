@@ -81,6 +81,11 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			};
 		} forEach _groupUnits;
 		
+		// Lead vehicle gets a special goal
+		pr _leaderAI = CALLM0(_leader, "getAI");
+		pr _parameters = [[TAG_POS, _pos]];
+		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
+		
 		// Set time last called
 		T_SETV("time", time);
 		
@@ -209,6 +214,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitFollowLeaderVehicle", _AI);
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitMoveLeaderVehicle", _AI);
 		} forEach _groupUnits;
 		
 	} ENDMETHOD;

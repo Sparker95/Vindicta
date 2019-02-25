@@ -5,7 +5,7 @@ Goal for a group to clear a certain area.
 
 #define pr private
 
-CLASS("MyGoal", "Goal")
+CLASS("GoalGroupClearArea", "Goal")
 	
 	// ----------------------------------------------------------------------
 	// |            C R E A T E   P R E D E F I N E D   A C T I O N
@@ -27,7 +27,7 @@ CLASS("MyGoal", "Goal")
 		
 		// Now it's one of the vehicle groups
 		pr _args = [_AI, _parameters];
-		pr _action = NEW("ActionGroupVehicleClearArea", _args);
+		pr _action = NEW("ActionGroupGetInVehiclesAsCrew", _args);
 		_action
 	} ENDMETHOD;
 

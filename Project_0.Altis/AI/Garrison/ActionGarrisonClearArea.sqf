@@ -38,7 +38,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		OOP_INFO_0("ACTIVATE");
 		
 		pr _gar = GETV(T_GETV("AI"), "agent");
-		pr _AI = T_GETV("AI");
+		//pr _AI = T_GETV("AI");
+		//pr _pos = T_GETV("pos");
+		T_PRVAR(AI);
+		T_PRVAR(pos);
+		T_PRVAR(radius);
 		
 		// Split vehicle groups
 		CALLM1(_gar, "mergeVehicleGroups", false);

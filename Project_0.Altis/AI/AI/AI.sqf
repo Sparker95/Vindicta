@@ -940,6 +940,12 @@ CLASS("AI", "MessageReceiverEx")
 	// Will print useful data about generated plan and how it was achieved
 	#define ASTAR_DEBUG
 	
+	#ifdef OFSTREAM_ENABLE
+	#define ASTAR_LOG(text) (ofstream_new "A-star.rpt") ofstream_write text
+	#else
+	#define ASTAR_LOG(text)
+	#endif
+	
 	STATIC_METHOD("planActions") {
 		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
 		
@@ -1044,7 +1050,7 @@ CLASS("AI", "MessageReceiverEx")
 			
 			{ // forEach _availableActions;
 				pr _action = _x;
-				OOP_INFO_1("Analyzing action: %1", _action);
+				//OOP_INFO_1("Analyzing action: %1", _action);
 				pr _effects = GET_STATIC_VAR(_x, "effects");
 				pr _args = [[], []]; //
 				

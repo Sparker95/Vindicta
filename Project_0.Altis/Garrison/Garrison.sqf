@@ -528,19 +528,25 @@ CLASS("Garrison", "MessageReceiverEx")
 						pr _vehAI = CALLM0(_vehicle, "getAI");
 						
 						// Create a group, add it to the garrison
-						pr _newGroup = NEW("Group", [_side]);
+						pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC];
+						pr _newGroup = NEW("Group", _args);
 						CALLM0(_newGroup, "spawn");
-						CALLM1(_gar, "addGroup", _newGroup);
+						CALLM1(_thisObject, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle
-						pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
-							// We only need units in this vehicle that are also in this group
-							CALLM0(_x, "getGroup") == _group
+						if (_vehAI != "") then {
+							pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
+								// We only need units in this vehicle that are also in this group
+								CALLM0(_x, "getGroup") == _group
+							};
+							//OOP_INFO_1("Vehicle crew: %1", _vehCrew);
+							
+							// Move units to the new group
+							{ CALLM1(_newGroup, "addUnit", _x); } forEach _vehCrew;
 						};
-						//OOP_INFO_1("Vehicle crew: %1", _vehCrew);
 						
-						// Move units to the new group
-						{ CALLM1(_newGroup, "addUnit", _x); } forEach _vehCrew;
+						// Move the vehicle to its new group
+						CALLM1(_newGroup, "addUnit", _vehicle);
 					};
 					
 					// Start up the AI object again

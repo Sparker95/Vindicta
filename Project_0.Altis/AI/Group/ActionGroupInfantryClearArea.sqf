@@ -10,6 +10,10 @@ The whole group regroups and gets some waypoints to clear the area
 
 CLASS("ActionGroupInfantryClearArea", "ActionGroup")
 	
+	VARIABLE("pos");
+	VARIABLE("radius");
+	VARIABLE("inCombat");
+	
 	// ------------ N E W ------------
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
@@ -18,6 +22,7 @@ CLASS("ActionGroupInfantryClearArea", "ActionGroup")
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
 		T_SETV("pos", _pos);
 		T_SETV("radius", _radius);
+		T_SETV("inCombat", false);
 
 	} ENDMETHOD;
 
@@ -62,6 +67,10 @@ CLASS("ActionGroupInfantryClearArea", "ActionGroup")
 		};
 		_hG setCurrentWaypoint _wp0;
 		
+		// Create a cycle waypoint
+		pr _wpCycle = _hG addWaypoint [waypointPosition _wp0, 0];
+		_wpCycle setWaypointType "CYCLE";
+		
 		
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -76,6 +85,17 @@ CLASS("ActionGroupInfantryClearArea", "ActionGroup")
 		CALLM(_thisObject, "activateIfInactive", []);
 		
 		// This action is terminal because it's never over right now
+		
+		// Delete all waypoints when we know about some enemies
+		T_PRVAR(hG);
+		if ((behaviour (leader _hG)) == "COMBAT") then {
+			if (!T_GETV("inCombat")) then {
+				// Delete waypoints once, let them chose what to do on their own
+				while {(count (waypoints _hG)) > 0} do { deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];	};
+				OOP_INFO_0("Deleted waypoints");
+				T_SETV("inCombat", true);
+			};
+		};
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE

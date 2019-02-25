@@ -108,6 +108,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			// Succede if all groups have completed the goal
 			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 				OOP_INFO_0("All groups have arrived");
+				
+				// Set pos world state property
+				pr _ws = GETV(_AI, "worldState");
+				[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+				
 				_state = ACTION_STATE_COMPLETED;
 				breakTo "s0";
 			};

@@ -10,6 +10,9 @@ Class: ActionGroup.ActionGroupVehicleClearArea
 
 CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 	
+	VARIABLE("pos");
+	VARIABLE("radius");
+	
 	// ------------ N E W ------------
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];

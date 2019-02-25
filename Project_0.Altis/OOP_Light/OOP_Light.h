@@ -165,8 +165,10 @@
 #define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
 #define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
 
-
-
+// Unpacking a _thisObject variable into a private _variable
+// So if we have private _var = GET_VAR(_thisObject, "var"), this macros can help
+#define __STRINGIFY(s) #s
+#define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, __STRINGIFY(varName))
 
 // todo add macros to check object validity
 /*
@@ -463,7 +465,7 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // If ofstream addon is globally enabled
 #ifdef OFSTREAM_ENABLE
 #define __OFSTREAM_OUT(fileName, text) ((ofstream_new fileName) ofstream_write(text))
-#define WRITE_CRITICAL(text) ((ofstream_new "critical.rpt") ofstream_write(text))
+#define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
 #else
 #define __OFSTREAM_OUT(fileName, text) diag_log text
 #define WRITE_CRITICAL(text)

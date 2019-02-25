@@ -36,6 +36,9 @@ CLASS("AIGarrison", "AI")
 		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_VEHICLE_GROUPS_BALANCED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
+		
 		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);
