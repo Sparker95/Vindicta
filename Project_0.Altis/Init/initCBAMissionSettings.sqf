@@ -1,7 +1,9 @@
+// done with Extended_PreInit_EventHandlers in description.ext
 #include "..\modCompatBools.sqf"
 
 // CHECKBOX --- extra argument: default value
 ["Test_Setting_1", "CHECKBOX", ["-test checkbox-", "-tooltip-"], "My Category", true] call cba_settings_fnc_init;
+// diag_log format["DEBUG: Test_Setting_1: %1", Test_Setting_1];
 
 // LIST --- extra arguments: [_values, _valueTitles, _defaultIndex]
 ["Test_Setting_2", "LIST",     ["-test list-",     "-tooltip-"], "My Category", [[1,0], ["enabled","disabled"], 1]] call cba_settings_fnc_init;
