@@ -1,0 +1,286 @@
+author="Sparker, Jeroen, Marvis";
+OnLoadName = "Project_0";
+OnLoadMission = "Project_0";
+
+allowFunctionsRecompile = 1;
+allowFunctionsLog = 1;
+enableDebugConsole = 2;
+
+
+
+// ---- Respawn ----
+respawn = 3;
+respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
+respawnDelay = 5; // Default: ?
+respawnTemplates[] = {"MenuPosition"};
+
+/*
+class CfgTaskEnhancements
+    {
+    enable       = 1;            //0: disable new task features (default), 1: enable new task features & add new task markers and task widgets into the map
+    3d           = 1;            //0: do not use new 3D markers (default), 1: replace task waypoints with new 3D markers
+    3dDrawDist   = 3500;        //3d marker draw distance (default: 2000)
+    share        = 1;            //0: do not count assigned players (default), 1: count how many players have the task assigned
+    propagate    = 1;            //0: do not propagate (default), 1: propagate shared tasks to subordinates
+    };
+*/
+
+/*
+class Header
+{
+gameType = COOP;
+minplayers=1;
+maxplayers=50;
+};
+*/
+
+class CfgIdentities
+{
+
+};
+
+class CfgDebriefing
+{
+
+};
+
+class CfgSounds {
+	sounds[] = {};
+	#include "CfgSounds.hpp"
+
+};
+class Params {
+    //#include "aceSettings.hpp"
+};
+
+class CfgFunctions {
+
+	#include "Dialogue\functions.hpp"
+	#include "JeroenArsenal\functions.hpp"
+	
+	class missionTag
+	{
+		class randomThings
+		{
+			// Call initModules.sqf in preinit because we need to compile functions/classes before JIP functions are called
+			class initModules {
+				preInit = 1;
+				file = "initModules.sqf";
+			};
+		};
+	};
+};
+
+//==== Dialogs and UIs ====
+#include "UI\Resources\UIBase.hpp"
+#include "UI\Resources\MapUI\MapUI.h"
+//#include "\A3\ui_f\hpp\defineCommonGrids.inc"
+//#include "\A3\ui_f\hpp\defineCommonColors.inc"
+
+
+
+
+
+//==== Remote execution ====
+class CfgRemoteExec
+{
+    // List of script functions allowed to be sent from client via remoteExec
+    class Functions
+    {
+        // State of remoteExec: 0-turned off, 1-turned on, taking whitelist into account, 2-turned on, however, ignoring whitelists (default because of backward compatibility)
+        mode = 2;
+        // Ability to send jip messages: 0-disabled, 1-enabled (default)
+        jip = 1;
+    };
+
+    // List of script commands allowed to be sent from client via remoteExec
+    class Commands
+    {
+        mode = 2;
+    };
+};
+
+
+// OOP GUI
+#include "UI_OOP\dialog\define.hpp"
+#include "UI_OOP\styles\style.hpp"
+#include "UI_OOP\styles\customStyle.hpp"
+#include "UI_OOP\dialog\empty.hpp"
+#include "UI_OOP\dialog\FakeDialog.hpp"
+#include "UI_OOP\dialog\ctrlCreateDialog.hpp"
+#include "UI_OOP\dialog\ctrlModifyDialog.hpp"
+#include "UI_OOP\dialog\DisplayConfig.hpp"
+#include "UI_OOP\dialog\helpDialog.hpp"
+
+// UIUndercoverDebug
+class RscTitles {
+    class UIUndercoverDebug {
+        idd = 1000;
+        duration = 100000000;
+        name= "UIUndercoverDebug";
+        movingEnable = false;
+        enableSimulation = true;
+        onLoad = "with missionNamespace do{UIUndercoverDebug = ['new', _this select 0] call oo_UIUndercoverDebug;};";
+        onUnload = "with missionNamespace do{['delete',UIUndercoverDebug] call oo_UIUndercoverDebug;};";
+        class controlsBackground {
+            class OOP_MainLayer_100_100 : OOP_MainLayer {
+                idc = 100;
+                x = -62.6667 * pixelGrid * pixelW;
+                y = -27 * pixelGrid * pixelH;
+                w = 213.333 * pixelGrid * pixelW;
+                h = 120 * pixelGrid * pixelH;
+                class controls{
+                    class OOP_Text_101_Susp_101: OOP_Text {
+                        idc = 101;
+                        x = 0.264 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Susp: 0.2346386";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_SuspGear_102: OOP_Text {
+                        idc = 102;
+                        x = 21.3333 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Gear Susp: 0.236275";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_Wanted_103: OOP_Text {
+                        idc = 103;
+                        x = 133.333 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 13.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Wanted: false";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_Suspicious_104: OOP_Text {
+                        idc = 104;
+                        x = 146.667 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 16 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Suspicious: false";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_Seen_105: OOP_Text {
+                        idc = 105;
+                        x = 162.667 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 13.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Seen: false";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_Distance_106: OOP_Text {
+                        idc = 106;
+                        x = 162.667 * pixelGrid * pixelW;
+                        y = 2.4 * pixelGrid * pixelH;
+                        w = 32 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Distance Nearest Enemy: 135.826478";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_TimeUnseen_107: OOP_Text {
+                        idc = 107;
+                        x = 176 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 18.6667 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Time Unseen: 120";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_Captive_108: OOP_Text {
+                        idc = 108;
+                        x = 194.667 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 18.6667 * pixelGrid * pixelW;
+                        h = 4.8 * pixelGrid * pixelH;
+                        text = "Not captive";
+                        colorText[] = {0.61, 0.81, 1, 1};
+                        colorBackground[] = {0.8, 0.04, 0.14, 1};
+                        tooltipColorText[] = {0.61, 0.81, 1, 1};
+                    };
+                    class OOP_Text_101_InVeh_110: OOP_Text {
+                        idc = 110;
+                        x = 0.264 * pixelGrid * pixelW;
+                        y = 2.4 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "In vehicle: false";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_InVehMil_111: OOP_Text {
+                        idc = 111;
+                        x = 21.3333 * pixelGrid * pixelW;
+                        y = 2.4 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "In military vehicle: false";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_SuspVeh_112: OOP_Text {
+                        idc = 112;
+                        x = 42.6667 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Vehicle Susp: 0.236275";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_SuspGear_0_0_113: OOP_Text {
+                        idc = 113;
+                        x = 64 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Vehicle Susp: 0.236275";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_InVehCiv_114: OOP_Text {
+                        idc = 114;
+                        x = 42.6667 * pixelGrid * pixelW;
+                        y = 2.4 * pixelGrid * pixelH;
+                        w = 21.3333 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "In civilian vehicle: false";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_BodyExp_115: OOP_Text {
+                        idc = 115;
+                        x = 85.3333 * pixelGrid * pixelW;
+                        y = 0.198 * pixelGrid * pixelH;
+                        w = 24 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Body Exposure: 0.23627579";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_LastSpottedTimes_116: OOP_Text {
+                        idc = 116;
+                        x = 64 * pixelGrid * pixelW;
+                        y = 2.4 * pixelGrid * pixelH;
+                        w = 98.6667 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Last Spotted Times: [137.83, 136.99, 132.91, 139.54, 142.41, 132.90]";
+                        colorBackground[] = {0, 0, 0, 1};
+                    };
+                    class OOP_Text_101_Blank_117: OOP_Text {
+                        idc = 117;
+                        x = 0.264 * pixelGrid * pixelW;
+                        y = 4.8 * pixelGrid * pixelH;
+                        w = 213.069 * pixelGrid * pixelW;
+                        h = 2.4 * pixelGrid * pixelH;
+                        text = "Add more text here...";
+                        colorText[] = {0, 0, 0, 1};
+                        colorBackground[] = {1, 1, 1, 1};
+                        tooltipColorText[] = {0, 0, 0, 1};
+                    };
+                };
+            };
+        };
+        class controls {};
+    };
+};

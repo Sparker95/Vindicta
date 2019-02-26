@@ -19,58 +19,47 @@
 // Need vehicles to reach destination
 #define WSP_GAR_NEED_VEHICLES_TO_REACH_DESTINATION		6
 
-// Handling of vehicles and crew
+// Enough vehicles for all humans
+#define WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS			7
 
 // All vehicles have crew assigned
-#define WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS			7
-
-#define WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS 8
-
-#define WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED			9
-
-// Enough vehicles for all humans
-#define WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS			10
-
+#define WSP_GAR_ALL_VEHICLES_HAVE_CREW_ASSIGNED			8
 
 // Engineer available
-#define WSP_GAR_ENGINEER_AVAILABLE						11
+#define WSP_GAR_ENGINEER_AVAILABLE						9
 
 // Medic available
-#define WSP_GAR_MEDIC_AVAILABLE							12
+#define WSP_GAR_MEDIC_AVAILABLE							10
 
 // Garrison moving
-#define WSP_GAR_MOVING									13
+#define WSP_GAR_MOVING									11
 
 // Enough humans to operate vehicles
-#define WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES			14
+#define WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES			12
 
 // Empty vehicles around are available
-#define WSP_GAR_EMPTY_VEHICLES_AVAILABLE				15
+#define WSP_GAR_EMPTY_VEHICLES_AVAILABLE				13
 
 // Arrived at destination
 //#define WSP_GAR_ARRIVED_AT_DESTINATION					14
 
 // Position
-#define WSP_GAR_POSITION								16
+#define WSP_GAR_POSITION								15
 
 // Cargo position
-#define WSP_GAR_CARGO_POSITION							17
+#define WSP_GAR_CARGO_POSITION							16
 
 // Vehicles position
-#define WSP_GAR_VEHICLES_POSITION						18
+#define WSP_GAR_VEHICLES_POSITION						17
 
 // Cargo
-#define WSP_GAR_CARGO									19
-#define WSP_GAR_HAS_CARGO								20
+#define WSP_GAR_CARGO									18
+#define WSP_GAR_HAS_CARGO								19
 
 // Vehicle groups are merged
-#define WSP_GAR_VEHICLE_GROUPS_MERGED					21
-
-// Vehicle groups rebalanced
-// It's rather a fake one because it's always false for the sake of adding an action to the action list all the time
-#define WSP_GAR_VEHICLE_GROUPS_BALANCED					22
+#define WSP_GAR_VEHICLE_GROUPS_MERGED					20
 
 // Side
 
 // Total amount of properties
-#define WSP_GAR_COUNT									23
+#define WSP_GAR_COUNT									21

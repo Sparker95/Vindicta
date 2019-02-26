@@ -1,0 +1,30 @@
+Functions to implement:
+functions to reorganize groups:
+
+gar_fnc_assignAsDriver
+gar_fnc_assignVehicleRole ??
+
+Main procedures:
+
+1. Transport vehicle and its troops:
+Find vehicle
+Find driver
+Find troops
+Create new groups g0
+Move vehicle to g0
+Move driver to g0
+Assign driver unit as driver
+Create new group g1
+Move troops to g1
+Assign troops as cargo to the transport veh. of g0
+Move!
+When arrive, order g1 to dismount, order g0 to go home or stay here or join the other group or whatever
+
+2. Attack vehicle
+Just move the whole group around!
+
+3. Convoys
+Organize groups (like in 1. and 2.)
+Store compositions of groups
+Merge the groups into one group for convoy
+When convoy arrives, split the groups again.

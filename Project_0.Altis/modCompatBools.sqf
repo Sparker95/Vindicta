@@ -1,16 +1,15 @@
 /* 
-	
-	Global variables for checking if certain mods are loaded
+	INCLUDE THIS FILE WITH: #include "..\modCompatBools.sqf"
+
+	EXAMPLES:
+
+	if (activeACE) then {
+		// ACE active
+	} else {
+		// ACE not active
+	};
 
 */
 
-#define activeACE bActiveACE
-#define activeCBA bActiveCBA
-
-activeACE = false;
-activeCBA = false;
-
-// check if mod is active and set variable
-if (isClass (configFile >> "CfgPatches" >> "ace_main")) then { activeACE = true; };
-if (isClass (configfile >> "CfgVehicles" >> "CBA_main_require")) then { activeCBA = true; };
-
+#define activeCBA (isClass (configfile >> "CfgVehicles" >> "CBA_main_require"))
+#define activeACE (isClass (configFile >> "CfgPatches" >> "ace_main"))
