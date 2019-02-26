@@ -11,7 +11,7 @@ enableDebugConsole = 2;
 // ---- Respawn ----
 respawn = 3;
 respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
-respawnDelay = 5; // Default: ?
+respawnDelay = 2; // Default: ?
 respawnTemplates[] = {"MenuPosition"};
 
 /*
@@ -113,10 +113,8 @@ class CfgRemoteExec
 
 // HUD UIs
 class RscTitles {
-
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUI_Debug\UIUndercoverDebug.h"
-
 };
 
 class Extended_PreInit_EventHandlers {
