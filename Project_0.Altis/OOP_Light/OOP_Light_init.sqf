@@ -1,10 +1,10 @@
+#include "OOP_Light.h"
+
 /*
  * This file contains some functions for OOP_Light, mainly for asserting classess, objects and members.
  * Author: Sparker
  * 02.06.2018
 */
-
-#include "OOP_Light.h"
 
 // Prints an error message with supplied text, file and line number
 OOP_error = {
@@ -69,7 +69,7 @@ OOP_assert_class = {
 //Check object class and print error if it differs from supplied
 OOP_assert_objectClass = {
 	params["_objNameStr", "_expectedClassNameStr", "_file", "_line"];
-	
+
 	//Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
@@ -105,9 +105,9 @@ OOP_assert_object = {
 };
 
 //Check static member and print error if it's not found
-OOP_assert_staticMember = {	
-	params["_classNameStr", "_memNameStr", "_file", "_line"];	
-	//Get static member list of this class 
+OOP_assert_staticMember = {
+	params["_classNameStr", "_memNameStr", "_file", "_line"];
+	//Get static member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
 	//Check if it's a class
 	if(isNil "_memList") exitWith {
@@ -137,7 +137,7 @@ OOP_assert_member = {
 		ade_dumpCallstack;
 		false;
 	};
-	//Get member list of this class 
+	//Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	//Check member
 	private _valid = _memNameStr in _memList;
@@ -152,15 +152,15 @@ OOP_assert_member = {
 //Check method and print error if it's not found
 OOP_assert_method = {
 	params["_classNameStr", "_methodNameStr", "_file", "_line"];
-	
+
 	if (isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		ade_dumpCallstack;
 		false;
 	};
-	
-	//Get static member list of this class 
+
+	//Get static member list of this class
 	private _methodList = GET_SPECIAL_MEM(_classNameStr, METHOD_LIST_STR);
 	//Check if it's a class
 	if(isNil "_methodList") exitWith {

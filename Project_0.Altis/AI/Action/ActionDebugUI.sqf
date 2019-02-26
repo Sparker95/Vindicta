@@ -1,10 +1,8 @@
+#include "..\..\OOP_Light\OOP_Light.h"
+#include "..\Action\Action.hpp"
 /*
 This script will be displaying the actions of unit you are looking at.
 */
-
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\Action\Action.hpp"
-
 [] spawn {
 
 #define ACTION_DEBUG_NEXT_CTRL_ID_START 6666
@@ -17,11 +15,11 @@ actionDebugs = [];
 addMissionEventHandler ["EachFrame", {
 	{
 		private _ctrlID = _x select 1;
-		private _objectHandle = _x select 2;		
+		private _objectHandle = _x select 2;
 		private _posScreen = worldToScreen (getPos _objectHandle);
 		private _ctrl = (findDisplay 46) displayCtrl _ctrlID;
 		_posScreen set [0, (_posScreen select 0) - 0.15];
-		_ctrl ctrlSetPosition _posScreen;		
+		_ctrl ctrlSetPosition _posScreen;
 		_ctrl ctrlCommit 0;
 	} forEach actionDebugs;
 }];
@@ -42,7 +40,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 			if (_key == 20) then { // T button
 				if (!_ctrl) then { // T without Ctrl
 					//diag_log "Pressed T key!!";
-					private _ctrlID = cursorObject getVariable ["actionDebugCtrlID", -1];				
+					private _ctrlID = cursorObject getVariable ["actionDebugCtrlID", -1];
 					// Do we already have a control for this unit?
 					if (_ctrlID == -1) then {
 						// No we don't have a control for this unit
@@ -61,12 +59,12 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 								_ctrl ctrlSetScale 0.7;
 								_ctrl ctrlSetText "Text goes here...";
 								_ctrl ctrlCommit 0;
-							
+
 								actionDebugs pushBack [_unit, actionDebugNextCtrlID, cursorObject];
-								
+
 								// Set variable
 								cursorObject setVariable ["actionDebugCtrlID", actionDebugNextCtrlID];
-								actionDebugNextCtrlID = actionDebugNextCtrlID + 1;							
+								actionDebugNextCtrlID = actionDebugNextCtrlID + 1;
 							};
 						};
 					} else {
@@ -104,14 +102,14 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 		{
 			_text = [_x, _text, _level] call _appendSubactionTree;
 		} forEach _subactions;
-		
+
 		_text
 	};
 
 
 	while {true} do {
 		sleep 0.1;
-		
+
 		{
 			private _unit = _x select 0;
 			private _ctrlID = _x select 1;
@@ -121,7 +119,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 				// Make a string with the whole action tree
 				_text = [_action, _text, 0] call _appendSubactionTree;
 			};
-			private _ctrl = (findDisplay 46) displayCtrl _ctrlID;			
+			private _ctrl = (findDisplay 46) displayCtrl _ctrlID;
 			_ctrl ctrlSetText _text;
 			_ctrl ctrlCommit 0;
 		} forEach actionDebugs;
@@ -133,7 +131,7 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 	private _unit = "";
 	while {true} do {
 		sleep 0.1;
-		
+
 		private _unitNew = [cursorObject] call unit_fnc_getUnitFromObjectHandle;
 		if (_unitNew != "") then {
 			// Get unit's action

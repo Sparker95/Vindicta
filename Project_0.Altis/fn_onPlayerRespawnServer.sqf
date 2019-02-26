@@ -24,3 +24,10 @@ pr _gar = switch (side group player) do {
 };
 
 CALLM2(_gar, "postMethodAsync", "addUnit", [_unit]);
+
+while {!(_exitPos isEqualTo [0, 0, 0])} do
+{
+_exitArray pushBack _exitPos;
+_i = _i + 1;
+_exitPos = _o buildingExit _i;
+}

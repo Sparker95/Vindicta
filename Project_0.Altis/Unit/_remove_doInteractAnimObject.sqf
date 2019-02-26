@@ -1,7 +1,3 @@
-/*
-Makes this unit play an animation with an animObject
-*/
-
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Unit\Unit.hpp"
 #include "..\Message\Message.hpp"
@@ -15,5 +11,5 @@ _objectHandle switchMove _animation;
 _objectHandle disableAI "MOVE";
 _objectHandle disableAI "ANIM";
 _objectHandle setPos _pos;
-_objectHandle setDir _dir; 
+_objectHandle setDir _dir;
 true // Animation successfull

@@ -18,12 +18,12 @@ Author: Sparker
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
-CLASS("MessageLoop", "")
+CLASS("MessageLoop", "");
 
 	//Array with messages
-	VARIABLE("msgQueue");	
+	VARIABLE("msgQueue");
 	//Handle to the script which does message processing
-	VARIABLE("scriptHandle");	
+	VARIABLE("scriptHandle");
 	//Mutex for accessing the message queue
 	VARIABLE("mutex");
 	//Debug name to help read debug printouts
@@ -36,19 +36,19 @@ CLASS("MessageLoop", "")
 	Constructor
 	*/
 	METHOD("new") {
-		params [ ["_thisObject", "", [""]] ];		
+		params [ ["_thisObject", "", [""]] ];
 		SET_VAR(_thisObject, "msgQueue", []);
-		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;		
-		SET_VAR(_thisObject, "scriptHandle", _scriptHandle);	
+		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+		SET_VAR(_thisObject, "scriptHandle", _scriptHandle);
 		SET_VAR(_thisObject, "mutex", MUTEX_NEW());
 	} ENDMETHOD;
-	
+
 	/*
 	Method: delete
 	Deletes this thread.
-	
+
 	After the thread is deleted, objects can no longer process messages through it.
-	
+
 	Warning: must be called in scheduled environment!
 	*/
 	METHOD("delete") {
@@ -59,37 +59,37 @@ CLASS("MessageLoop", "")
 		private _scriptHandle = GET_VAR(_thisObject, "scriptHandle");
 		terminate _scriptHandle;
 		SET_VAR(_thisObject, "msgQueue", nil);
-		SET_VAR(_thisObject, "scriptHandle", nil);		
+		SET_VAR(_thisObject, "scriptHandle", nil);
 		MUTEX_UNLOCK(_mutex);
 		SET_VAR(_thisObject, "mutex", nil);
 	} ENDMETHOD;
-	
-	
+
+
 	/*
 	Method: setDebugName
 	Sets debug name of this MessageLoop.
-	
+
 	Parameters: _debugName
-	
+
 	_debugName - String
-	
+
 	Returns: nil
 	*/
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
 		SET_VAR(_thisObject, "debugName", _debugName);
-	} ENDMETHOD;	
-	
+	} ENDMETHOD;
+
 	/*
 	Method: postMessage
 	Adds a message into the message queue
-	
+
 	Access: internal use!
-	
+
 	Parameters: _msg
-	
+
 	_msg - <Message>
-	
+
 	Returns: nil
 	*/
 	METHOD("postMessage") {
@@ -100,7 +100,7 @@ CLASS("MessageLoop", "")
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
 	} ENDMETHOD;
-	
+
 	//MessageLoop can also handle messages directed to it.
 	/*
 	Derived classes can implement this method like this:
@@ -116,28 +116,28 @@ CLASS("MessageLoop", "")
 		false
 	} ENDMETHOD;
 	*/
-	
-	
+
+
 	/*
 	Method: deleteReceiverMessages
 	Description
 	Deletes messages targeted to specified <MessageReceiver>.
-	
+
 	Access: internal use!
-	
+
 	Parameters: _msgReceiver
-	
+
 	_msgReceiver - <String>, <MessageReceiver>
-	
+
 	Returns: nil
 	*/
 	METHOD("deleteReceiverMessages") {
 		params [ ["_thisObject", "", [""]], ["_msgReceiver", "", [""]] ];
 		private _msgQueue = GETV(_thisObject, "msgQueue");
-		
+
 		//diag_log format ["Deleting message receiver: %1", _msgReceiver];
 		//diag_log format ["Message queue: %1", _msgQueue];
-		
+
 		private _i = 0;
 		while {  _i < (count _msgQueue)} do {
 			pr _msg = _msgQueue select _i;
@@ -149,5 +149,5 @@ CLASS("MessageLoop", "")
 			};
 		};
 	} ENDMETHOD;
-	
+
 ENDCLASS;
