@@ -119,3 +119,6 @@ class RscTitles {
 
 };
 
+class Extended_PreInit_EventHandlers {
+    missionSettings = call compile preprocessFileLineNumbers "Init\initCBAMissionSettings.sqf";
+};
