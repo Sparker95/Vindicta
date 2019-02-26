@@ -12,8 +12,6 @@ add inits here until it's so fucked up, then redo it all over again
 #include "Message\Message.hpp"
 #include "CriticalSection\CriticalSection.hpp"
 
-#define do_stupid_crap(a) asd adsasdasd sdasd a
-do_stupid_shit(5);
 
 // Initialize OOP classes and other things
 //call compile preprocessFileLineNumbers "initModules.sqf";
