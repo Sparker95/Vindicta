@@ -11,7 +11,7 @@ enableDebugConsole = 2;
 // ---- Respawn ----
 respawn = 3;
 respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
-respawnDelay = 5; // Default: ?
+respawnDelay = 2; // Default: ?
 respawnTemplates[] = {"MenuPosition"};
 
 /*
@@ -101,22 +101,19 @@ class CfgRemoteExec
 
 
 // OOP GUI
-#include "UI_OOP\dialog\define.hpp"
-#include "UI_OOP\styles\style.hpp"
-#include "UI_OOP\styles\customStyle.hpp"
-#include "UI_OOP\dialog\empty.hpp"
-#include "UI_OOP\dialog\FakeDialog.hpp"
-#include "UI_OOP\dialog\ctrlCreateDialog.hpp"
-#include "UI_OOP\dialog\ctrlModifyDialog.hpp"
-#include "UI_OOP\dialog\DisplayConfig.hpp"
-#include "UI_OOP\dialog\helpDialog.hpp"
+#include "UI\UI_OOP\dialog\define.hpp"
+#include "UI\UI_OOP\styles\style.hpp"
+#include "UI\UI_OOP\dialog\empty.hpp"
+#include "UI\UI_OOP\dialog\FakeDialog.hpp"
+#include "UI\UI_OOP\dialog\ctrlCreateDialog.hpp"
+#include "UI\UI_OOP\dialog\ctrlModifyDialog.hpp"
+#include "UI\UI_OOP\dialog\DisplayConfig.hpp"
+#include "UI\UI_OOP\dialog\helpDialog.hpp"
 
 // HUD UIs
 class RscTitles {
-
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUI_Debug\UIUndercoverDebug.h"
-
 };
 
 class Extended_PreInit_EventHandlers {
