@@ -1,38 +1,38 @@
+#define OOP_INFO
+#define OOP_DEBUG
+#include "OOP_Light\OOP_Light.h"
+#include "Message\Message.hpp"
+#include "CriticalSection\CriticalSection.hpp"
+
 /*
 Dirty init.sqf
 add inits here until it's so fucked up, then redo it all over again
 */
 
-
-
 //==== Locations initialization
-//player allowDamage false;
-
-#include "OOP_Light\OOP_Light.h"
-#include "Message\Message.hpp"
-#include "CriticalSection\CriticalSection.hpp"
+// player allowDamage false;
 
 
 // Initialize OOP classes and other things
 //call compile preprocessFileLineNumbers "initModules.sqf";
 
 // If a client, wait for the server to finish its initialization
-if(! isServer) then {
+if (!isServer) then {
 	private _str = format ["Waiting for server init, time: %1", diag_tickTime];
-	diag_log _str;
 	systemChat _str;
+	OOP_INFO_0(_str);
 
 	waitUntil {! isNil "serverInitDone"};
 
 	_str = format ["Server initialization completed at time: %1", diag_tickTime];
 	systemChat _str;
-	diag_log _str;;
+	OOP_INFO_0(_str);
 };
 
 // Initialize global objects in unscheduled
 CRITICAL_SECTION_START
 
-diag_log "Init.sqf: Creating global objects...";
+OOP_INFO_0("Init.sqf: Creating global objects...");
 
 // Init global objects
 
@@ -110,8 +110,22 @@ if (isServer) then {
 
 
 	// Create locations and other things
-	diag_log "Init.sqf: Calling initWorld...";
+	OOP_INFO_0("Init.sqf: Calling initWorld...");
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+
+	// addMissionEventHandlers
+	private _onPlayerConnectedMissionEH = {
+		params ["_id", "_uid", "_name", "_jip", "_owner"];
+
+		OOP_DEBUG_1("player connected str this: %1", str _this);
+		OOP_DEBUG_1("player connected this: %1", _this);
+		OOP_DEBUG_1("player connected _id: %1", _id);
+		OOP_DEBUG_1("player connected _uid: %1", _uid);
+		OOP_DEBUG_1("player connected _name: %1", _name);
+		OOP_DEBUG_1("player connected _jip: %1", _jip);
+		OOP_DEBUG_1("player connected _owner: %1", _owner);
+	};
+	handlercon = addMissionEventHandler ["PlayerConnected", _onPlayerConnectedMissionEH];
 
 	// Add friendly locations to commanders
 	// And start them
@@ -126,7 +140,7 @@ if (isServer) then {
 // Headless Clients only
 if (!hasInterface && !isDedicated) then {
 	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
-	diag_log _str;
+	OOP_INFO_0(_str);
 	systemChat _str;
 
 	// Test: ask the server to create an object and pass it to this computer
@@ -154,7 +168,7 @@ if (hasInterface) then {
 	};
 };
 
-diag_log "Init.sqf: Init done!";
+OOP_INFO_0("Init.sqf: Init done!");
 
 
 

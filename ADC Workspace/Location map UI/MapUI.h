@@ -10,6 +10,7 @@
 #define IDC_PL_BUTTON_ADD_MEMBER 8002
 #define IDD_LD_PANEL 7006
 #define IDC_PL_HEADER_LISTPLAYERS 8003
+#define IDC_PL_BUTTON_SHOW_PLAYERLIST 8004
 
 #include "CustomControlClasses.h"
 class MapUI
@@ -147,7 +148,6 @@ class MapUI
 			text = "test";
 			colorBackground[] = {0.302,0.302,0.302,1};
 			sizeEx = safeZoneH*0.030;
-			access = 0;
 			
 		};
 		class PlayerList_button_add_member : Map_UI_button 
@@ -159,6 +159,21 @@ class MapUI
 			w = safeZoneW * 0.09570313;
 			h = safeZoneH * 0.03993056;
 			text = "Add member";
+			font = "PuristaLight";
+			onButtonClick = "diag_log 'buttonClick'";
+			onMouseEnter = "diag_log 'Mouse enter!'";
+			onMouseExit = "diag_log 'Mouse exit!'";
+			
+		};
+		class PlayerList_button_show_players : Map_UI_button 
+		{
+			type = 1;
+			idc = IDC_PL_BUTTON_SHOW_PLAYERLIST;
+			x = safeZoneX + safeZoneW * 0.88476563;
+			y = safeZoneY + safeZoneH * 0.56944445;
+			w = safeZoneW * 0.09570313;
+			h = safeZoneH * 0.03993056;
+			text = "PlayerList";
 			font = "PuristaLight";
 			onButtonClick = "diag_log 'buttonClick'";
 			onMouseEnter = "diag_log 'Mouse enter!'";

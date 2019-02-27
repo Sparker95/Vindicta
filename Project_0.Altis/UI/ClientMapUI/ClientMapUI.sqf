@@ -189,39 +189,7 @@ CLASS(CLASS_NAME, "")
 			diag_log format ["Location data was NOT found in the database"];
 		};
 
-		// playerlist ui sqf arma
-		_allHCs = entities "HeadlessClient_F";
-		_allHPs = allPlayers - _allHCs;
-		private _ctrlList = (finddisplay 12) displayCtrl IDC_PL_LISTPLAYERS;
-		// lbClear _ctrlList;
-
-		{
-			private _name =  _x;
-			private _index =  _ctrlList lbAdd _name;
-
-			_ctrlList lbSetData [_index, _name];
-			_ctrlList lbSetText [_index, _name];
-
-			private _text =  _ctrlList lbText _index;
-		} forEach [
-			"Item 0", "Item 1", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2"
-			,"Item 0", "Item 1", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2"
-			,"Item 0", "Item 1", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2"
-			,"Item 0", "Item 1", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2"
-			,"Item 0", "Item 1", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2", "Item 2"
-			];
-		// replace above with allPlayers
-
-		// {
-		// 	OOP_DEBUG_1("_control: %1", _x);
-		// } forEach allControls (finddisplay 12);
-
-		_ctrlList ctrlCommit 0;
-		_ctrlList ctrlShow true;
-
-
 		// Apply new text for GUI elements
-		// ((finddisplay 12) displayCtrl IDC_PL_LISTPLAYERS) ctrlSetText (_listNamePlayersText + "- DummyPlayer\n");
 		((finddisplay 12) displayCtrl IDC_LD_TYPE) ctrlSetText ("Type: " + _typeText);
 		((finddisplay 12) displayCtrl IDC_LD_SIDE) ctrlSetText ("Side: " + _sideText);
 		((finddisplay 12) displayCtrl IDC_LD_TIME) ctrlSetText ("Time: " + _timeText);
