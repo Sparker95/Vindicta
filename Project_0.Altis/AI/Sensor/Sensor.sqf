@@ -1,3 +1,4 @@
+#define PROFILER_COUNTERS_ENABLE
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -31,6 +32,9 @@ CLASS("Sensor", "")
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]]];
+		
+		PROFILER_COUNTER_INC("Sensor");
+		
 		SETV(_thisObject, "AI", _AI);
 		SETV(_thisObject, "timeNextUpdate", time); // Update this sensor ASAP
 	} ENDMETHOD;
@@ -41,6 +45,8 @@ CLASS("Sensor", "")
 	
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+		
+		PROFILER_COUNTER_DEC("Sensor");
 		
 	} ENDMETHOD;
 

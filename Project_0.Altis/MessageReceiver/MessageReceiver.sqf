@@ -49,6 +49,9 @@ CLASS("MessageReceiver", "")
 	*/	
 	METHOD("new") {
 		params [ ["_thisObject", "", [""]] ];
+		
+		PROFILER_COUNTER_INC("MessageReceiver");
+		
 		SETV(_thisObject, "owner", clientOwner);
 		if (IS_PUBLIC(_thisObject)) then {
 			PUBLIC_VAR(_thisObject, "owner");
@@ -63,6 +66,9 @@ CLASS("MessageReceiver", "")
 	*/
 	METHOD("delete") {
 		params [ ["_thisObject", "", [""]] ];
+		
+		PROFILER_COUNTER_DEC("MessageReceiver");
+		
 		CRITICAL_SECTION_START
 			private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
 			diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];

@@ -1,3 +1,4 @@
+#define PROFILER_COUNTERS_ENABLE
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "Action.hpp"
 #include "..\..\Message\Message.hpp"
@@ -74,6 +75,8 @@ CLASS("Action", "MessageReceiver")
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", []]];
+		
+		PROFILER_COUNTER_INC("Action");
 
 		ASSERT_OBJECT_CLASS(_AI, "AI");
 
@@ -93,6 +96,8 @@ CLASS("Action", "MessageReceiver")
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+		
+		PROFILER_COUNTER_DEC("Action");
 		
 		// Delete the timer of this goal if it exists
 		private _timer = GETV(_thisObject, "timer");

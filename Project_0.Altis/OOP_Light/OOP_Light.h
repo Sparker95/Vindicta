@@ -40,6 +40,7 @@
 
 // Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
 // You can either define it here or usage of OOP_INFO_, ..., macros will cause its automatic definition
+// ! ! ! It's currently totally disabled because recompiling breaks file names in callstacks ! ! !
 // OOP SCRIPTNAME
 
 //#define OOP_SCRIPTNAME
@@ -54,6 +55,36 @@
 #define OOP_SCRIPTNAME
 #endif
 */
+
+// Enables macros for Arma Script Profiler counters, enables global counter variables per every class
+// Define it at the top of the file per every class where you need to count objects
+//#define PROFILER_COUNTERS_ENABLE
+
+// ----------------------------------------------------------------------
+// |                P R O F I L E R   C O U N T E R S                   |
+// ----------------------------------------------------------------------
+
+#define COUNTER_NAME_STR(nameStr) ("g_profCnt_" + nameStr)
+
+#ifdef PROFILER_COUNTERS_ENABLE
+
+#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0]; nameStr profilerSetCounter 0;
+
+#define PROFILER_COUNTER_INC(nameStr) isNil { \
+private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
+nameStr profilerSetCounter _oop_cnt; };
+
+#define PROFILER_COUNTER_DEC(nameStr) isNil { \
+private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
+nameStr profilerSetCounter _oop_cnt; };
+
+#else
+#define PROFILER_COUNTER_INIT(nameStr)
+#define PROFILER_COUNTER_INC(nameStr)
+#define PROFILER_COUNTER_DEC(nameStr)
+#endif
 
 /*
 #ifdef OOP_ASSERT
@@ -297,6 +328,7 @@ SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
 SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
 SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList); \
 SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
+PROFILER_COUNTER_INIT(_oop_classNameStr); \
 METHOD("new") {} ENDMETHOD; \
 METHOD("delete") {} ENDMETHOD; \
 METHOD("copy") {} ENDMETHOD; \

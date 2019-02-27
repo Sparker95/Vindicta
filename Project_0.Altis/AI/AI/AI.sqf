@@ -2,6 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
+#define PROFILER_COUNTERS_ENABLE
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\CriticalSection\CriticalSection.hpp"
@@ -61,6 +62,8 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
+		PROFILER_COUNTER_INC("AI");
+		
 		// Make sure the required global objects exist
 		ASSERT_GLOBAL_OBJECT(AI_TIMER_SERVICE);
 		ASSERT_GLOBAL_OBJECT(STIMULUS_MANAGER);
@@ -92,6 +95,9 @@ CLASS("AI", "MessageReceiverEx")
 	
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+		
+		PROFILER_COUNTER_DEC("AI");
+		
 		// Stop the AI if it is currently running
 		CALLM(_thisObject, "stop", []);
 		
