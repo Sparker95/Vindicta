@@ -56,6 +56,10 @@
 #endif
 */
 
+// Enables support for Arma Script Profiler globally
+// Set it in this file
+//#define ASP_ENABLE
+
 // Enables macros for Arma Script Profiler counters, enables global counter variables per every class
 // Define it at the top of the file per every class where you need to count objects
 //#define PROFILER_COUNTERS_ENABLE
@@ -63,6 +67,10 @@
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
 // ----------------------------------------------------------------------
+
+#ifndef ASP_ENABLE
+#undef PROFILER_COUNTERS_ENABLE
+#endif
 
 #define COUNTER_NAME_STR(nameStr) ("g_profCnt_" + nameStr)
 
