@@ -38,7 +38,7 @@
 #define WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES			11
 
 
-// Position
+// Position or the current location this garrison is attached to
 #define WSP_GAR_POSITION								12
 
 // Cargo position
@@ -62,8 +62,14 @@
 #define WSP_GAR_CARGO									18
 #define WSP_GAR_HAS_CARGO								19
 
+// Location the garrison is attached to
+#define WSP_GAR_LOCATION								20
+
+
+
+
 // Total amount of properties
-#define WSP_GAR_COUNT									20
+#define WSP_GAR_COUNT									21
 
 
 

@@ -73,14 +73,35 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 		
-		OOP_INFO_0("");
+		OOP_INFO_0("DELETE GARRISON");
 		
-		SET_VAR(_thisObject, "units", nil);
-		SET_VAR(_thisObject, "groups", nil);	
-		SET_VAR(_thisObject, "spawned", nil);
-		SET_VAR(_thisObject, "side", nil);
-		SET_VAR(_thisObject, "debugName", nil);
+		// Detach from location if was attached to it
+		pr _loc = T_GETV("location");
+		if (_loc != "") then {
+			CALLM2(_loc, "postMethodSync", "setGarrisonMilitaryMain", "");
+		};
 		
+		// Despawn if spawned
+		CALLM0(_thisObject, "despawn");
+		
+		pr _units = T_GETV("units");
+		pr _groups = T_GETV("groups");
+		
+		if (count _units != 0) then {
+			OOP_ERROR_1("Deleting garrison which has units: %1", _units);
+		};
+		
+		if (count _groups != 0) then {
+			OOP_ERROR_1("Deleting garrison which has groups: %1", _groups);
+		};
+		
+		{
+			DELETE(_x);
+		} forEach _units;
+		
+		{
+			DELETE(_x);
+		} forEach _groups;
 		
 	} ENDMETHOD;
 	
@@ -272,7 +293,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("addUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("ADD UNIT: %1", _unit);
 
 		// Check if the unit is already in a garrison
 		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
@@ -315,7 +336,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("removeUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 		
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 		
 		private _units = GET_VAR(_thisObject, "units");
 		_units deleteAt (_units find _unit);
@@ -341,7 +362,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("addGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 		
-		OOP_INFO_1("%1", _group);
+		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
 		// Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
@@ -406,7 +427,7 @@ CLASS("Garrison", "MessageReceiverEx")
 	METHOD("removeGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 		
-		OOP_INFO_1("%1", _group);
+		OOP_INFO_2("REMOVE GROUP: %1, group units: %1", _group, CALLM0(_group, "getUnits"));
 		
 		// Notify AI object if the garrison is spawned
 		if (T_GETV("spawned")) then {
@@ -426,6 +447,44 @@ CLASS("Garrison", "MessageReceiverEx")
 		_groups deleteAt (_groups find _group);
 		
 		CALLM1(_group, "setGarrison", "");
+		
+		nil
+	} ENDMETHOD;
+	
+	
+	/*
+	Method: addGarrison
+	Moves all units and groups from another garrison to this one.
+	
+	Parameters: _garrison, _delete
+	
+	_garrison - <Garrison> object
+	_delete - Bool, optional, deletes the _garrison, default: false
+	
+	Returns: nil
+	*/
+	
+	METHOD("addGarrison") {
+		params[["_thisObject", "", [""]], ["_garrison", "", [""]], ["_delete", false] ];
+		
+		OOP_INFO_3("ADD GARRISON: %1, garrison groups: %2, garrison units: %3", _garrison, CALLM0(_garrison, "getGroups"), CALLM0(_garrison, "getUnits"));
+		
+		// Move all groups
+		pr _groups = +CALLM0(_garrison, "getGroups");
+		{
+			CALLM1(_thisObject, "addGroup", _x);
+		} forEach _groups;
+		
+		// Move remaining units
+		pr _units = +CALLM0(_garrison, "getUnits");
+		{
+			CALLM1(_thisObject, "addUnit", _x);
+		} forEach _units;
+		
+		// Delete the other garrison if needed
+		if (_delete) then {
+			DELETE(_garrison);
+		};
 		
 		nil
 	} ENDMETHOD;
@@ -582,6 +641,8 @@ CLASS("Garrison", "MessageReceiverEx")
 		"ActionGarrisonMountCrew",
 		"ActionGarrisonMountInfantry",
 		"ActionGarrisonMoveDismounted",
+		//"ActionGarrisonMoveMountedToPosition",
+		//"ActionGarrisonMoveMountedToLocation",
 		"ActionGarrisonMoveMounted",
 		"ActionGarrisonMoveMountedCargo",
 		"ActionGarrisonRelax",
@@ -589,7 +650,8 @@ CLASS("Garrison", "MessageReceiverEx")
 		"ActionGarrisonUnloadCurrentCargo",
 		"ActionGarrisonMergeVehicleGroups",
 		"ActionGarrisonRebalanceVehicleGroups",
-		"ActionGarrisonClearArea"]
+		"ActionGarrisonClearArea",
+		"ActionGarrisonJoinLocation"]
 	} ENDMETHOD;
 	
 	

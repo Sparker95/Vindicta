@@ -1094,7 +1094,7 @@ CLASS("AI", "MessageReceiverEx")
 								// But it wasn't found in the goal parameter array
 								// Print an error
 								OOP_WARNING_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
-								_parametersResolved = false;
+								//_parametersResolved = false;
 							};
 						};
 					} forEach _parameters;

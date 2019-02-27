@@ -10,6 +10,8 @@ TAG_... - parameters passed to actions
 #define TAG_G_POS "g_pos"
 #define TAG_POS "a_pos"
 
+#define TAG_LOCATION "g_location"
+
 #define TAG_RADIUS "g_radius"
 
 #define TAG_CARGO "g_cargo"
