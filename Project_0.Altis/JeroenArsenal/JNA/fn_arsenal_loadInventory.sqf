@@ -89,7 +89,7 @@ pr _inventory = [];
 		pr _amount = _x select 1;
 		pr _index = _item call jn_fnc_arsenal_itemType;
 		//no need to remove because uniform, vest and backpack get replaced.
-		[_arrayPlaced,_index,_item,_amount]call _addToArray;
+		[_arrayPlaced,_index,_item,_amount] call _addToArray;
 	};
 } foreach magazinesAmmoFull player;
 
@@ -187,14 +187,14 @@ pr _assignedItems = ((_inventory select 9) + [_inventory select 3] + [_inventory
 			if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
 				if(_item isEqualTo (_inventory select 5) )then{
 					player addweapon _item;
-				else{
+				}else{
 					player linkItem _item;
 				};
 			};
 			if ([_availableItems select _index, _item] call jn_fnc_arsenal_itemCount > 0) then {
 				if(_item isEqualTo (_inventory select 5) )then{
 					player addweapon _item;
-				else{
+				}else{
 					player linkItem _item;
 				};
 				[_arrayTaken,_index,_item,_amount]call _addToArray;
@@ -203,7 +203,6 @@ pr _assignedItems = ((_inventory select 9) + [_inventory select 3] + [_inventory
 				_arrayMissing = [_arrayMissing,[_item,_amount]] call jn_fnc_common_array_add;
 			};
 		};
-
 	};
 } forEach _assignedItems - [""];
 
