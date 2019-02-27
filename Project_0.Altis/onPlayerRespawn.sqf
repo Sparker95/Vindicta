@@ -19,7 +19,7 @@ This script will not fire at mission start if respawnOnStart equals -1.
 // Make sure server initialization is done
 waitUntil {
     diag_log format ["---- onPlayerRespawn: waiting server init, time: %1", diag_tickTime];
-    // ! isNil "serverInitDone"
+    ! isNil "serverInitDone"
 };
 diag_log format ["---- onPlayerRespawn: server init done, time: %1", diag_tickTime];
 
