@@ -7,9 +7,7 @@ class LocationData_Panel : Map_UI_panel
     h = safeZoneH * 0.53993056;
     style = 0;
     text = "";
-    onMouseEnter = "diag_log 'on mouse enter!'";
-    onMouseExit = "diag_log 'on mouse exit!'";
-
+    enable = 0;
 };
 class LocationData_type : Map_UI_text_base
 {
@@ -19,7 +17,7 @@ class LocationData_type : Map_UI_text_base
     w = safeZoneW * 0.2296875;
     h = safeZoneH * 0.04027778;
     text = "Type: ...";
-
+    enable = 0;
 };
 class LocationData_time : Map_UI_text_base
 {
@@ -29,7 +27,7 @@ class LocationData_time : Map_UI_text_base
     w = safeZoneW * 0.23;
     h = safeZoneH * 0.04;
     text = "Last updated: ...";
-
+    enable = 0;
 };
 class LocationData_composition : Map_UI_text_base
 {
@@ -39,7 +37,7 @@ class LocationData_composition : Map_UI_text_base
     w = safeZoneW * 0.24;
     h = safeZoneH * 0.36;
     text = "Composition: ...";
-
+    enable = 0;
 };
 class LocationData_side : Map_UI_text_base
 {
@@ -49,7 +47,7 @@ class LocationData_side : Map_UI_text_base
     w = safeZoneW * 0.23;
     h = safeZoneH * 0.04;
     text = "Side: ...";
-
+    enable = 0;
 };
 class LocationData_header : Map_UI_text_base
 {
@@ -60,7 +58,7 @@ class LocationData_header : Map_UI_text_base
     h = safeZoneH * 0.03;
     style = 2;
     text = "Location data";
-
+    enable = 0;
 };
 class LocationData_button : Map_UI_button
 {
@@ -70,8 +68,4 @@ class LocationData_button : Map_UI_button
     w = safeZoneW * 0.12011719;
     h = safeZoneH * 0.03993056;
     text = "Push me";
-    onButtonClick = "diag_log 'buttonClick'";
-    onMouseEnter = "diag_log 'Mouse enter!'";
-    onMouseExit = "diag_log 'Mouse exit!'";
-
 };

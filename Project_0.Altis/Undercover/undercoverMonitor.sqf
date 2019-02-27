@@ -105,7 +105,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		#ifdef DEBUG
 			_unit setVariable ["bInVeh", false];					// true while player unit is in vehicle
 			_unit setVariable ["bInMarker", false];					// true while player unit is in wanted marker
-			call compile preprocessFileLineNumbers "UI_OOP\UIUndercoverDebug_Update.sqf";
+			call compile preprocessFileLineNumbers "UI\UI_OOP\UIUndercoverDebug_Update.sqf";
 		#endif
 
 	} ENDMETHOD;

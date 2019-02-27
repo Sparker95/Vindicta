@@ -17,7 +17,6 @@ class Map_UI_text_base
 	text = "1";
 	font = "PuristaMedium";
 	lineSpacing = 1;
-
 };
 class Map_UI_panel : Map_UI_text_base
 {
@@ -26,7 +25,6 @@ class Map_UI_panel : Map_UI_text_base
 	colorBackground[] = {0,0,0,0.5};
 	colorText[] = {1,1,1,1};
 	font = "PuristaMedium";
-
 };
 class Map_UI_button : Map_UI_text_base
 {
@@ -49,9 +47,7 @@ class Map_UI_button : Map_UI_text_base
 	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.1,1.0};
 	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.1,1.0};
 	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.1,1.0};
-
 };
-
 class Map_UI_text_scroll : RscControlsGroup
 {
 	type = 15;
@@ -67,11 +63,14 @@ class Map_UI_text_scroll : RscControlsGroup
 	font = "PuristaMedium";
 	lineSpacing = 1;
 };
-
 class Map_UI_text_centered : Map_UI_text_base
 {
-	// why the fuck do i loose my events with this :O
 	style = 2;
-	// type = 1;
+};
+class Map_UI_custom_button : Map_UI_text_centered
+{
+    sizeEx = safeZoneH * 0.025;
+    text = "CustomButton";
+    colorBackground[] = {0.1,0.1,0.1,0.5};
 };
 #endif

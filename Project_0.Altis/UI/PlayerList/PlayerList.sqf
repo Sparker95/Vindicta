@@ -19,22 +19,18 @@ CLASS(CLASS_NAME, "")
 		params [["_thisObject", "", [""]]];
 		private _mapDisplay = findDisplay 12;
 
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseButtonDown", { CALLSM0(CLASS_NAME, "TogglePlayerListUI") }];
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "MouseExitPlayerListUI", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "MouseEnterPlayerListUI", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseExit", { CALLSM1(CLASS_NAME, "MouseExitPlayerListUI", _this) }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseButtonDown", { CALLSM0(CLASS_NAME, "PlayerListMouseButtonDown") }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "PlayerListMouseExit", _this) }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "PlayerListMouseEnter", _this) }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseExit", { CALLSM1(CLASS_NAME, "PlayerListMouseExit", _this) }];
 
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseEnter", { CALLSM0(CLASS_NAME, "onMouseEnter") }];
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseExit", { CALLSM1(CLASS_NAME, "onMouseExit", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseButtonDown", { CALLSM1(CLASS_NAME, "onMouseButtonDown", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "onMouseButtonUp", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_PANEL) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "IDC_PL_PANELMouseButtonUp", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_PANEL) ctrlAddEventHandler ["MouseButtonDown", { CALLSM1(CLASS_NAME, "IDC_PL_PANELMouseButtonUp", _this) }];
-		(_mapDisplay displayCtrl IDC_PL_PANEL) ctrlAddEventHandler ["MouseButtonClick", { CALLSM1(CLASS_NAME, "IDC_PL_PANELMouseButtonUp", _this) }];
-
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseButtonDown", { CALLSM1(CLASS_NAME, "AddMemberMouseButtonDown", _this) }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "AddMemberMouseExit", _this) }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseExit", { CALLSM1(CLASS_NAME, "AddMemberMouseExit", _this) }];
+		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "AddMemberMouseEnter", _this) }];
 	} ENDMETHOD;
 
-	// refresh playerlist ui
+	// Start PlayerList EH
 	// TODO: use eventHandler onConnect to populate a allPlayers array and send it to clients
 	STATIC_METHOD("updatePlayers") {
 		_allHCs = entities "HeadlessClient_F";
@@ -53,11 +49,12 @@ CLASS(CLASS_NAME, "")
 		} forEach allPlayers;
 	} ENDMETHOD;
 
-	STATIC_METHOD("TogglePlayerListUI") {
+	STATIC_METHOD("PlayerListMouseButtonDown") {
 		private _mapDisplay = findDisplay 12;
-		private _ctrl = _mapDisplay displayCtrl IDC_PL_LISTPLAYERS;
-		private _ctrl = (findDisplay 12) displayCtrl IDC_PL_LISTPLAYERS;
+		private _ctrl = _mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST;
 		_ctrl ctrlSetBackgroundColor [0.1,0.3,0.1,0.7];
+
+		_ctrl = _mapDisplay displayCtrl IDC_PL_LISTPLAYERS;
 		_bool = ctrlShown _ctrl;
 		if (_bool) then {
 			(_mapDisplay displayCtrl IDC_PL_PANEL) ctrlShow false;
@@ -71,70 +68,49 @@ CLASS(CLASS_NAME, "")
 			(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlShow true;
 			(_mapDisplay displayCtrl IDC_PL_LISTPLAYERS) ctrlShow true;
 		};
-
-		OOP_DEBUG_1("isShown %1", _bool);
 	} ENDMETHOD;
 
-	STATIC_METHOD("MouseEnterPlayerListUI") {
+	STATIC_METHOD("PlayerListMouseEnter") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control"];
 		// get current and adapt ?
 		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.7];
 	} ENDMETHOD;
 
-	STATIC_METHOD("MouseExitPlayerListUI") {
+	STATIC_METHOD("PlayerListMouseExit") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control"];
 		// get current and adapt ?
 		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.5];
 	} ENDMETHOD;
+	// End PlayerList Eh
 
-	STATIC_METHOD("MouseButtonDownPlayerListPanelUI") {
-		params ["_thisClass", "_paramsEH"];
-		_paramsEH params ["_control"];
-		// get current and adapt ?
-		_control ctrlSetBackgroundColor [0.1,0.3,0.1,0.7];
-	} ENDMETHOD;
-
-	STATIC_METHOD("MouseButtonUp") {
-		params ["_thisClass", "_paramsEH"];
-		_paramsEH params ["_control"];
-		// get current and adapt ?
-		_control ctrlSetBackgroundColor [0.1,0.3,0.1,0.7];
-	} ENDMETHOD;
-
-	// TODO : Define something so it does not get 'focus' and hide 'child layers'
-	STATIC_METHOD("IDC_PL_PANELMouseButtonUp") {} ENDMETHOD;
-
-	STATIC_METHOD("onMouseEnter") {
-		params ["_thisClass", "_paramsEH"];
-		_paramsEH params ["_control"];
-		_control ctrlSetBackgroundColor [0, 0, 0, 0.7];
-	} ENDMETHOD;
-
-	STATIC_METHOD("onMouseExit") {
-		params ["_thisClass", "_paramsEH"];
-		_paramsEH params ["_control"];
-		_control ctrlSetBackgroundColor [0, 0, 0, 0.5];
-	} ENDMETHOD;
-
-	STATIC_METHOD("onMouseButtonDown") {
+	// Start AddMember button EH
+	STATIC_METHOD("AddMemberMouseEnter") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-		_control ctrlSetBackgroundColor [0, 0, 0, 0.6];
-		OOP_DEBUG_1("MouseButtonDown _control %1", _control);
+		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.7];
 	} ENDMETHOD;
 
-	STATIC_METHOD("onMouseButtonUp") {
+	STATIC_METHOD("AddMemberMouseExit") {
+		params ["_thisClass", "_paramsEH"];
+		_paramsEH params ["_control", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.5];
+	} ENDMETHOD;
+
+	STATIC_METHOD("AddMemberMouseButtonDown") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 		private _mapDisplay = findDisplay 12;
+
+		_control ctrlSetBackgroundColor [0.1,0.3,0.1,0.7];
 
 		private _ctrlPL = _mapDisplay displayCtrl IDC_PL_LISTPLAYERS;
 		private _selectedPlayer = lbCurSel _ctrlPL;
 		OOP_DEBUG_1("MouseButtonUp _selectedPlayer lbValue %1", _ctrlPL lbValue _selectedPlayer);
 		OOP_DEBUG_1("MouseButtonUp _selectedPlayer lbData %1", _ctrlPL lbData _selectedPlayer);
 	} ENDMETHOD;
+	// End AddMember button EH
 
 ENDCLASS;

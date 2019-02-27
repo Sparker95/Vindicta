@@ -1,8 +1,6 @@
-//Exported via Arma Dialog Creator (https://github.com/kayler-renslow/arma-dialog-creator)
-
 #include "MapUI_Macros.h"
-
 #include "CustomControlClasses.h"
+
 class MapUI
 {
 	idd = IDD_MAP_UI;
@@ -16,5 +14,4 @@ class MapUI
 		#include "Controls\LocationData.h"
 		#include "Controls\PlayerList.h"
 	};
-
 };

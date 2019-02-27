@@ -49,17 +49,13 @@ _createControlFromConfig = {
 	// Apply properties
 
 	// Report unsupported properties
-	pr _supportedProps = ["idc", "x", "y", "w", "h", "text", "enableSimulation", "sizeEx", "show", "colorBackground"];
+	pr _supportedProps = ["idc", "x", "y", "w", "h", "text", "enableSimulation", "sizeEx", "show", "colorBackground", "enable"];
 	pr _props = (configProperties [_cfg, "true", false]) apply {configName _x};
 	{
 		if (! (_x in _supportedProps)) then {
 			diag_log format ["[ui_fnc_createControlsFromConfig] Error: property %1 is not supported in %2", _x, _cfg];
 		} else {
 			switch (_x) do {
-				case "show" : {
-					_val = getNumber (_cfg >> _x);
-					if (_val == 0) then { _ctrl ctrlShow false; } else { _ctrl ctrlShow true; }
-				};
 				case "text" : {
 					_val = getText (_cfg >> _x);
 					_ctrl ctrlSetText _val;
@@ -76,9 +72,17 @@ _createControlFromConfig = {
 				};
 				case "colorBackground" : {
 					_val = getArray (_cfg >> _x);
-					diag_log format["val %1", _val];
 					_ctrl ctrlSetBackgroundColor _val;
 				};
+				case "enable" : {
+					_val = getNumber (_cfg >> _x);
+					if (_val == 0) then { _ctrl ctrlEnable false; } else { _ctrl ctrlEnable true; }
+				};
+				case "show" : {
+					_val = getNumber (_cfg >> _x);
+					if (_val == 0) then { _ctrl ctrlShow false; } else { _ctrl ctrlShow true; }
+				};
+
 			};
 		};
 	} forEach _props;

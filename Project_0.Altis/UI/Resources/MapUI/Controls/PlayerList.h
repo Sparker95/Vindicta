@@ -14,6 +14,7 @@ class PlayerList_Panel : Map_UI_panel
     onMouseEnter = "";
     onMouseExit = "";
     show = 0;
+    enable = 0;
 };
 class PlayerList_header_list_players : Map_UI_text_base
 {
@@ -34,26 +35,24 @@ class PlayerList_list_name_players : RscListBox
     h = safeZoneH * 0.42534723;
     show = 0;
 };
-class PlayerList_button_add_member : Map_UI_text_base
+class PlayerList_button_add_member : Map_UI_custom_button
 {
     idc = IDC_PL_BUTTON_ADD_MEMBER;
     x = safeZoneX + safeZoneW * 0.17675782;
     y = safeZoneY + safeZoneH * 0.52083334;
     w = safeZoneW * 0.09570313;
     h = safeZoneH * 0.03590056;
-    text = "Add member";
-    sizeEx = safeZoneH * 0.02;
+    text = "Add as member";
     show = 0;
+    enable = 1;
 };
-class PlayerList_button_show_players : Map_UI_button
+class PlayerList_button_show_players : Map_UI_custom_button
 {
     idc = IDC_PL_BUTTON_SHOW_PLAYERLIST;
     x = safeZoneX + safeZoneW * 0.88476563;
     y = safeZoneY + safeZoneH * 0.56944445;
     w = safeZoneW * 0.09570313;
     h = safeZoneH * 0.03993056;
-    sizeEx = safeZoneH * 0.02;
-    text = "PlayerList";
-    colorBackground[] = {0.1,0.1,0.1,0.5};
-
+    text = "Players List";
+    enable = 1;
 };
