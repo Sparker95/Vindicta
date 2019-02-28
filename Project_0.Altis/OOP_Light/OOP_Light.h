@@ -499,11 +499,6 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // ----------------------------------------------------------------------
 
 #define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else {"NoClass"}}
-<<<<<<< HEAD
-=======
-// #define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else {_thisClass}
->>>>>>> add OOP_ logging macros support for no class
-//#define LOG_1 _fnc_scriptName
 #define LOG_1 "fnc"
 
 // If ofstream addon is globally enabled

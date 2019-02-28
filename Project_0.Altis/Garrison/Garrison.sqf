@@ -273,8 +273,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-<<<<<<< HEAD
-=======
 	/*
 	Method: countAllUnits
 	Returns all units of this garrison.
@@ -286,7 +284,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		count T_GETV("units")
 	} ENDMETHOD;
 
->>>>>>> start some logic
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                A D D I N G / R E M O V I N G   U N I T S   A N D   G R O U P S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

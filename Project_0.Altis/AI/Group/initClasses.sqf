@@ -1,6 +1,7 @@
 // Auto generated file
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_ActionGroup.sqf";
+call compile preprocessFileLineNumbers "AI\Group\ActionGroupMoveToPos.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupGetInGarrisonVehiclesAsCargo.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupGetInVehiclesAsCrew.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupInfantryClearArea.sqf";

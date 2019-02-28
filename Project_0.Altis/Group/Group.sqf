@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
+#define OOP_DEBUG
 #define OFSTREAM_FILE "Main.rpt"
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
