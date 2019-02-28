@@ -8,51 +8,51 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic30"></a><div class="CTopic TClass LSQF first">
+<a name="Topic38"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle"><span class="Qualifier">Action.</span>&#8203;ActionCompositeSerial</div>
  <div class="CBody"><p>A composite action, which executed its subactions in serial way, starting from FRONT of the action queue.</p><p>Based on source from &quot;Programming Game AI by Example&quot; by Mat Buckland: <a href="http://www.ai-junkie.com/books/toc_pgaibe.html" target="_top">http://&#8203;www&#8203;.ai-junkie&#8203;.com&#8203;/books&#8203;/toc_pgaibe&#8203;.html</a></p><p>Author: Sparker 05.08.2018</p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic31"></a><div class="CTopic TGroup LSQF">
+<a name="Functions"></a><a name="Topic39"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="process"></a><a name="Topic32"></a><div class="CTopic TFunction LSQF">
+<a name="process"></a><a name="Topic40"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">process</div>
- <div class="CBody"><p>If this composite action is not in failed state, it processes the front action which is not completed byt calling processSubaction method.&nbsp; You can override it to achieve custom behaviour.</p><p>Returns: Number, current state, one of <a href="../../../index.html#SQFClass:Action:ACTION_STATE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,29);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ACTION_STATE</a></p></div>
+ <div class="CBody"><p>If this composite action is not in failed state, it processes the front action which is not completed byt calling processSubaction method.&nbsp; You can override it to achieve custom behaviour.</p><p>Returns: Number, current state, one of <a href="../../../index.html#SQFClass:Action:ACTION_STATE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,4);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ACTION_STATE</a></p></div>
 </div>
 
-<a name="processSubactions"></a><a name="Topic33"></a><div class="CTopic TFunction LSQF">
+<a name="processSubactions"></a><a name="Topic41"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">processSubactions</div>
- <div class="CBody"><p>Removes completed subactions from FRONT of the queue, then calls process on non-completed actions.</p><p>Returns: Number, current state of the front most action, one of <a href="../../../index.html#SQFClass:Action:ACTION_STATE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,29);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ACTION_STATE</a></p></div>
+ <div class="CBody"><p>Removes completed subactions from FRONT of the queue, then calls process on non-completed actions.</p><p>Returns: Number, current state of the front most action, one of <a href="../../../index.html#SQFClass:Action:ACTION_STATE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,4);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ACTION_STATE</a></p></div>
 </div>
 
-<a name="handleMessage"></a><a name="Topic34"></a><div class="CTopic TFunction LSQF">
+<a name="handleMessage"></a><a name="Topic42"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleMessage</div>
- <div class="CBody"><p>Forwards the message to frontmost subaction</p><p>Parameters: _msg</p><table class="CDefinitionList"><tr><td class="CDLEntry">_msg</td><td class="CDLDefinition"><p><a href="../../../index.html#SQFClass:Message" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,285);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Message</a></p></td></tr></table><p>Returns: Bool, true if message was handled</p></div>
+ <div class="CBody"><p>Forwards the message to frontmost subaction</p><p>Parameters: _msg</p><table class="CDefinitionList"><tr><td class="CDLEntry">_msg</td><td class="CDLDefinition"><p><a href="../../../index.html#SQFClass:Message" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,349);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Message</a></p></td></tr></table><p>Returns: Bool, true if message was handled</p></div>
 </div>
 
-<a name="forwardMessageToFrontSubaction"></a><a name="Topic35"></a><div class="CTopic TFunction LSQF">
+<a name="forwardMessageToFrontSubaction"></a><a name="Topic43"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">forwardMessageToFrontSubaction</div>
- <div class="CBody"><p>passes the message to the action at the front of the queue</p><p>Parameters: _msg</p><table class="CDefinitionList"><tr><td class="CDLEntry">_msg</td><td class="CDLDefinition"><p><a href="../../../index.html#SQFClass:Message" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,285);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Message</a></p></td></tr></table><p>Returns: Bool, true if message was handled</p></div>
+ <div class="CBody"><p>passes the message to the action at the front of the queue</p><p>Parameters: _msg</p><table class="CDefinitionList"><tr><td class="CDLEntry">_msg</td><td class="CDLDefinition"><p><a href="../../../index.html#SQFClass:Message" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,349);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Message</a></p></td></tr></table><p>Returns: Bool, true if message was handled</p></div>
 </div>
 
-<a name="handleGroupsAdded"></a><a name="Topic462"></a><div class="CTopic TFunction LSQF">
+<a name="handleGroupsAdded"></a><a name="Topic44"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleGroupsAdded</div>
  <div class="CBody"><p>Calls the same method of the front most action.</p></div>
 </div>
 
-<a name="handleGroupsRemoved"></a><a name="Topic463"></a><div class="CTopic TFunction LSQF">
+<a name="handleGroupsRemoved"></a><a name="Topic45"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleGroupsRemoved</div>
  <div class="CBody"><p>Calls the same method of the front most action.</p></div>
 </div>
 
-<a name="handleUnitsRemoved"></a><a name="Topic464"></a><div class="CTopic TFunction LSQF">
+<a name="handleUnitsRemoved"></a><a name="Topic46"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleUnitsRemoved</div>
  <div class="CBody"><p>Calls the same method of the front most action.</p></div>
 </div>
 
-<a name="handleUnitsAdded"></a><a name="Topic465"></a><div class="CTopic TFunction LSQF last">
+<a name="handleUnitsAdded"></a><a name="Topic47"></a><div class="CTopic TFunction LSQF last">
  <div class="CTitle">handleUnitsAdded</div>
  <div class="CBody"><p>Calls the same method of the front most action.</p></div>
 </div>

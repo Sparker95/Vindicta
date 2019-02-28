@@ -1,9 +1,17 @@
+#define OOP_INFO
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "Location.hpp"
 #include "..\MessageTypes.hpp"
 
-CLASS("Location", "MessageReceiverEx");
+/*
+Class: Location
+Location has garrisons at a static place and spawns units.
+
+Author: Sparker 28.07.2018
+*/
+
+CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("type");
 	VARIABLE("debugName");
@@ -187,6 +195,9 @@ CLASS("Location", "MessageReceiverEx");
 	*/
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		
+		OOP_INFO_1("setGarrisonMilitaryMain: %1", _garrison);
+		
 		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
 		if (_garrison != "") then {
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
@@ -235,8 +246,6 @@ CLASS("Location", "MessageReceiverEx");
 
 	// Handles messages
 	METHOD_FILE("handleMessageEx", "Location\handleMessageEx.sqf");
-
-	METHOD_FILE("handleMessage", "Location\handleMessage.sqf");
 
 	// Sets border parameters
 	METHOD_FILE("setBorder", "Location\setBorder.sqf");

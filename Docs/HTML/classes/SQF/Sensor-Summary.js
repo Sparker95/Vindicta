@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:Sensor","Sensor");NDSummary.OnSummaryLoaded("SQFClass:Sensor",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[87,0,0,"Sensor"],[88,0,2,"Functions","Functions"],[89,0,1,"new","new"]]);
+NDFramePage.OnPageTitleLoaded("SQFClass:Sensor","Sensor");NDSummary.OnSummaryLoaded("SQFClass:Sensor",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[102,0,0,"Sensor"],[103,0,2,"Functions","Functions"],[104,0,1,"new","new"]]);

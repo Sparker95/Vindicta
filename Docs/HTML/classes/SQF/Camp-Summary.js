@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:Camp","Camp");NDSummary.OnSummaryLoaded("SQFClass:Camp",[["SQF","SQF"]],[["Classes","Class"]],[[185,0,0,"Camp"]]);

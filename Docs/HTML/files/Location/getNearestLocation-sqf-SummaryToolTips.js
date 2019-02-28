@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Location/getNearestLocation.sqf",{450:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns the nearest location to given position(or object) and 2D distance to it</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Location/getNearestLocation.sqf",{321:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns the nearest location to given position(or object) and 2D distance to it</div></div>"});

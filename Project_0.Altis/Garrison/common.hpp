@@ -4,3 +4,5 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OFSTREAM_FILE "Main.rpt"
+
+#include "..\Group\Group.hpp"

@@ -40,7 +40,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_groupType", GROUP_TYPE_IDLE, [GROUP_TYPE_IDLE]]];
-
+		
+		PROFILER_COUNTER_INC(GROUP_CLASS_NAME);
+		
 		OOP_INFO_2("side: %1, group type: %2", _side, _groupType);
 
 		// Check existance of neccessary global objects
@@ -60,7 +62,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-
+		
+		PROFILER_COUNTER_DEC(GROUP_CLASS_NAME);
+		
 		OOP_INFO_0("");
 
 		pr _data = T_GETV("data");

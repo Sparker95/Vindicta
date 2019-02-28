@@ -73,15 +73,36 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 
-		OOP_INFO_0("");
-
-		SET_VAR(_thisObject, "units", nil);
-		SET_VAR(_thisObject, "groups", nil);
-		SET_VAR(_thisObject, "spawned", nil);
-		SET_VAR(_thisObject, "side", nil);
-		SET_VAR(_thisObject, "debugName", nil);
-
-
+		OOP_INFO_0("DELETE GARRISON");
+		
+		// Detach from location if was attached to it
+		pr _loc = T_GETV("location");
+		if (_loc != "") then {
+			CALLM2(_loc, "postMethodSync", "setGarrisonMilitaryMain", "");
+		};
+		
+		// Despawn if spawned
+		CALLM0(_thisObject, "despawn");
+		
+		pr _units = T_GETV("units");
+		pr _groups = T_GETV("groups");
+		
+		if (count _units != 0) then {
+			OOP_ERROR_1("Deleting garrison which has units: %1", _units);
+		};
+		
+		if (count _groups != 0) then {
+			OOP_ERROR_1("Deleting garrison which has groups: %1", _groups);
+		};
+		
+		{
+			DELETE(_x);
+		} forEach _units;
+		
+		{
+			DELETE(_x);
+		} forEach _groups;
+    
 	} ENDMETHOD;
 
 	/*
@@ -272,7 +293,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("ADD UNIT: %1", _unit);
 
 		// Check if the unit is already in a garrison
 		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
@@ -314,9 +335,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("removeUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
-
-		OOP_INFO_1("%1", _unit);
-
+		
+		OOP_INFO_1("REMOVE UNIT: %1", _unit);
+		
 		private _units = GET_VAR(_thisObject, "units");
 		_units deleteAt (_units find _unit);
 
@@ -341,9 +362,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 
-		OOP_INFO_1("%1", _group);
-
-		// Check if the group is already in another garrison
+		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
+		
+    // Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
 		if (_groupGarrison != "") then {
 			// Remove the group from its previous garrison
@@ -405,9 +426,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("removeGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
-
-		OOP_INFO_1("%1", _group);
-
+		
+		OOP_INFO_2("REMOVE GROUP: %1, group units: %1", _group, CALLM0(_group, "getUnits"));
+		
 		// Notify AI object if the garrison is spawned
 		if (T_GETV("spawned")) then {
 			pr _AI = T_GETV("AI");
@@ -431,6 +452,44 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 
+	/*
+	Method: addGarrison
+	Moves all units and groups from another garrison to this one.
+	
+	Parameters: _garrison, _delete
+	
+	_garrison - <Garrison> object
+	_delete - Bool, optional, deletes the _garrison, default: false
+	
+	Returns: nil
+	*/
+	
+	METHOD("addGarrison") {
+		params[["_thisObject", "", [""]], ["_garrison", "", [""]], ["_delete", false] ];
+		
+		OOP_INFO_3("ADD GARRISON: %1, garrison groups: %2, garrison units: %3", _garrison, CALLM0(_garrison, "getGroups"), CALLM0(_garrison, "getUnits"));
+		
+		// Move all groups
+		pr _groups = +CALLM0(_garrison, "getGroups");
+		{
+			CALLM1(_thisObject, "addGroup", _x);
+		} forEach _groups;
+		
+		// Move remaining units
+		pr _units = +CALLM0(_garrison, "getUnits");
+		{
+			CALLM1(_thisObject, "addUnit", _x);
+		} forEach _units;
+		
+		// Delete the other garrison if needed
+		if (_delete) then {
+			DELETE(_garrison);
+		};
+		
+		nil
+	} ENDMETHOD;
+	
+	
 	/*
 	Method: getRequiredCrew
 	Returns amount of needed drivers and turret operators for all vehicles in this garrison.
@@ -457,6 +516,109 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		[_nDrivers, _nTurrets]
 	} ENDMETHOD;
+	
+	/*
+	Method: mergeVehicleGroups
+	Merges or splits vehicle group(s)
+	
+	Parameters: _merge
+	
+	_merge - Bool, true to merge, false to split
+	
+	Returns: nil
+	*/
+	
+	METHOD("mergeVehicleGroups") {
+		params [["_thisObject", "", [""]], ["_merge", false, [false]]];
+		
+		if (_merge) then {
+			// Find all vehicle groups
+			pr _vehGroups = CALLM1(_thisObject, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
+			pr _destGroup = _vehGroups select 0;
+			
+			// If there are no vehicle groups, create one right now
+			if (isNil "_destGroup") then {
+				pr _args = [CALLM0(_thisObject, "getSide"), GROUP_TYPE_VEH_NON_STATIC];
+				_destGroup = NEW("Group", _args);
+				CALLM0(_destGroup, "spawn");
+				CALLM1(_thisObject, "addGroup", _destGroup);
+				_vehGroups pushBack _destGroup;
+			};
+						
+			// If there are more than one vehicle groups, merge them into the first group
+			if (count _vehGroups > 1) then {
+				for "_i" from 1 to (count _vehGroups - 1) do {
+					pr _group = _vehGroups select _i;
+					CALLM1(_destGroup, "addGroup", _group);
+					DELETE(_group);
+				};
+			};
+			
+			// Also move ungrouped vehicles
+			pr _vehicleUnits = CALLM0(_thisObject, "getVehicleUnits");
+			{
+				pr _vehGroup = CALLM0(_x, "getGroup");
+				if (_vehGroup == "") then {
+					CALLM1(_destGroup, "addUnit", _x);
+				};
+			} forEach _vehicleUnits;
+		} else {
+			// Find all vehicle groups
+			pr _vehGroups = CALLM1(_thisObject, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
+			
+			// Split every vehicle group
+			{
+				pr _group = _x;
+				pr _groupVehicles = CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")};
+				
+				// If there are more than one vehicle
+				if (count _groupVehicles > 1) then {
+					// Temporarily stop the AI object of the group because it can perform vehicle assignments in the other thread
+					// Event handlers when units are destroyed are disposed from this thread anyway
+					pr _groupAI = CALLM0(_group, "getAI");
+					if (_groupAI != "") then {
+						CALLM2(_groupAI, "postMethodSync", "stop",  []);
+					};
+					
+					// Create a new group per every vehicle (except for the first one)
+					pr _side = CALLM0(_group, "getSide");
+					for "_i" from 1 to ((count _groupVehicles) - 1) do {
+						pr _vehicle = _groupVehicles select _i;
+						pr _vehAI = CALLM0(_vehicle, "getAI");
+						
+						// Create a group, add it to the garrison
+						pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC];
+						pr _newGroup = NEW("Group", _args);
+						CALLM0(_newGroup, "spawn");
+						CALLM1(_thisObject, "addGroup", _newGroup);
+						
+						// Get crew of this vehicle
+						if (_vehAI != "") then {
+							pr _vehCrew = CALLM3(_vehAI, "getAssignedUnits", true, true, false) select {
+								// We only need units in this vehicle that are also in this group
+								CALLM0(_x, "getGroup") == _group
+							};
+							//OOP_INFO_1("Vehicle crew: %1", _vehCrew);
+							
+							// Move units to the new group
+							{ CALLM1(_newGroup, "addUnit", _x); } forEach _vehCrew;
+						};
+						
+						// Move the vehicle to its new group
+						CALLM1(_newGroup, "addUnit", _vehicle);
+					};
+					
+					// Start up the AI object again
+					if (_groupAI != "") then {
+						CALLM2(_groupAI, "postMethodSync", "start",  []);
+					};
+				};
+			} forEach _vehGroups;
+		};
+		
+		nil
+	} ENDMETHOD;	
+	
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P
@@ -479,13 +641,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		"ActionGarrisonMountCrew",
 		"ActionGarrisonMountInfantry",
 		"ActionGarrisonMoveDismounted",
+		//"ActionGarrisonMoveMountedToPosition",
+		//"ActionGarrisonMoveMountedToLocation",
 		"ActionGarrisonMoveMounted",
 		"ActionGarrisonMoveMountedCargo",
 		"ActionGarrisonRelax",
 		"ActionGarrisonRepairAllVehicles",
 		"ActionGarrisonUnloadCurrentCargo",
 		"ActionGarrisonMergeVehicleGroups",
-		"ActionGarrisonRebalanceVehicleGroups"]
+		"ActionGarrisonRebalanceVehicleGroups",
+		"ActionGarrisonClearArea",
+		"ActionGarrisonJoinLocation"]
 	} ENDMETHOD;
 
 

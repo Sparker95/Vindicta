@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:ActionGroup.ActionGroupRegroup",{85:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">The whole group regroups around squad leader</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:ActionGroup.ActionGroupRegroup",{95:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">The whole group regroups around squad leader</div></div>"});

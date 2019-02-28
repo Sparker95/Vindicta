@@ -62,10 +62,10 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 			_timer = _timer + _dt;
 			T_SETV("stuckTimer", _timer);
 			
-			OOP_INFO_1("Probably stuck: %1", _timer);
+			OOP_WARNING_1("Probably stuck: %1", _timer);
 			
 			if (_timer > TIMER_STUCK_THRESHOLD) then {
-				OOP_INFO_0("Is totally stuck now!");
+				OOP_WARNING_0("Is totally stuck now!");
 				
 				pr _stuckCounter = T_GETV("stuckCounter");
 				
@@ -74,6 +74,7 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 					pr _triedRoads = T_GETV("triedRoads");
 					pr _nr = (_ho nearRoads 200) select {! (_x in _triedRoads)};
 					if (count _nr > 0) then {
+						OOP_WARNING_0("Moving to nearest road...");
 						// Sort roads by distance
 						_nr = (_nr apply {[_x, _x distance2D _hO]});
 						_nr sort true; // Ascending
@@ -88,12 +89,15 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 					// Allright this shit is serious
 					// We need serious measures now :/
 					if (_stuckCounter < 4) then {
+						OOP_WARNING_0("Rotating the vehicle!");
 						// Let's just try to rotate you?
 						pr _hVeh = vehicle _hO;
 						_hVeh setDir ((getDir _hVeh) + 180);
 						_hVeh setPosWorld ((getPosWorld _hVeh) vectorAdd [0, 0, 1]);
 					} else {
 						// Let's try to teleport you somewhere >_<
+						OOP_WARNING_0("Teleporting the vehicle!");
+						pr _hVeh = vehicle _hO;
 						pr _defaultPos = getPos _hVeh;
 						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
 						_hVeh setPos _newPos;

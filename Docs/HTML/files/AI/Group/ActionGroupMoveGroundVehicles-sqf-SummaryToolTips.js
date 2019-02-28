@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupMoveGroundVehicles.sqf",{252:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Handles moving of a group with multiple or single ground vehicles.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupMoveGroundVehicles.sqf",{99:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Handles moving of a group with multiple or single ground vehicles.</div></div>"});

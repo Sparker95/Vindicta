@@ -2,6 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
+#define PROFILER_COUNTERS_ENABLE
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\CriticalSection\CriticalSection.hpp"
@@ -61,6 +62,8 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
+		PROFILER_COUNTER_INC("AI");
+		
 		// Make sure the required global objects exist
 		ASSERT_GLOBAL_OBJECT(AI_TIMER_SERVICE);
 		ASSERT_GLOBAL_OBJECT(STIMULUS_MANAGER);
@@ -92,6 +95,9 @@ CLASS("AI", "MessageReceiverEx")
 	
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+		
+		PROFILER_COUNTER_DEC("AI");
+		
 		// Stop the AI if it is currently running
 		CALLM(_thisObject, "stop", []);
 		
@@ -940,6 +946,12 @@ CLASS("AI", "MessageReceiverEx")
 	// Will print useful data about generated plan and how it was achieved
 	#define ASTAR_DEBUG
 	
+	#ifdef OFSTREAM_ENABLE
+	#define ASTAR_LOG(text) (ofstream_new "A-star.rpt") ofstream_write text
+	#else
+	#define ASTAR_LOG(text)
+	#endif
+	
 	STATIC_METHOD("planActions") {
 		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
 		
@@ -1044,6 +1056,7 @@ CLASS("AI", "MessageReceiverEx")
 			
 			{ // forEach _availableActions;
 				pr _action = _x;
+				//OOP_INFO_1("Analyzing action: %1", _action);
 				pr _effects = GET_STATIC_VAR(_x, "effects");
 				pr _args = [[], []]; //
 				
@@ -1087,7 +1100,7 @@ CLASS("AI", "MessageReceiverEx")
 								// But it wasn't found in the goal parameter array
 								// Print an error
 								OOP_WARNING_4("[AI:AStar] Warning: can't find a parameter for action: %1,  tag:  %2,  goal: %3,  goal parameters: %4",	_action, _tag, [_goalWS] call ws_toString, _goalParameters);
-								_parametersResolved = false;
+								//_parametersResolved = false;
 							};
 						};
 					} forEach _parameters;

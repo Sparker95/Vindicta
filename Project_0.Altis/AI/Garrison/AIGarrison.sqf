@@ -36,6 +36,15 @@ CLASS("AIGarrison", "AI")
 		[_ws, WSP_GAR_ALL_CREW_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_VEHICLE_GROUPS_BALANCED, false] call ws_setPropertyValue;
+		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
+		pr _loc = CALLM0(_agent, "getLocation");
+		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
+		if (_loc != "") then {
+			pr _pos = CALLM0(_loc, "getPos");
+			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+		};
+		
 		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);
