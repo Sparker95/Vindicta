@@ -1,7 +1,3 @@
-/*
-This is meant for stopping an AnimObject animation. It also lets a unit walk away from its current position.
-*/
-
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Unit\Unit.hpp"
 #include "..\Message\Message.hpp"

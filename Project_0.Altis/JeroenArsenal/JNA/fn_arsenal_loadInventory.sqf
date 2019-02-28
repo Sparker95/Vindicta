@@ -8,7 +8,7 @@ pr _arrayMissing = [];
 pr _arrayReplaced = [];
 
 pr  _addToArray = {
-	pr ["_array","_index","_item","_amount"];
+	params ["_array","_index","_item","_amount"];
 	_array = _this select 0;
 	_index = _this select 1;
 	_item = _this select 2;
@@ -21,7 +21,7 @@ pr  _addToArray = {
 
 
 pr _removeFromArray = {
-	pr ["_array","_index","_item","_amount"];
+	params ["_array","_index","_item","_amount"];
 	_array = _this select 0;
 	_index = _this select 1;
 	_item = _this select 2;
@@ -69,7 +69,7 @@ pr _dataList = _object getVariable "jna_dataList";
 pr _saveData = profilenamespace getvariable ["bis_fnc_saveInventory_data",[]];
 pr _inventory = [];
 {
-	if(typename _x  == "STRING" && {_x == _saveName})exitWith{
+	if (typename _x  == "STRING" && {_x == _saveName}) exitWith {
 		_inventory = _saveData select (_foreachindex + 1);
 	};
 } forEach _saveData;
@@ -81,19 +81,17 @@ pr _inventory = [];
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// magazines (loaded)
-{
-
 	//["30Rnd_65x39_caseless_green",30,false,-1,"Uniform"]
-
+{
 	pr _loaded = _x select 2;
-	if(_loaded)then{
+	if(_loaded) then {
 		pr _item = _x select 0;
 		pr _amount = _x select 1;
 		pr _index = _item call jn_fnc_arsenal_itemType;
 		//no need to remove because uniform, vest and backpack get replaced.
-		[_arrayPlaced,_index,_item,_amount]call _addToArray;
+		[_arrayPlaced,_index,_item,_amount] call _addToArray;
 	};
-}foreach magazinesAmmoFull player;
+} foreach magazinesAmmoFull player;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// assinged items
 pr _assignedItems_old = assignedItems player - [binocular player] + [headgear player] + [goggles player]; //we ignore binocular here, because its a weapon
@@ -189,14 +187,14 @@ pr _assignedItems = ((_inventory select 9) + [_inventory select 3] + [_inventory
 			if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
 				if(_item isEqualTo (_inventory select 5) )then{
 					player addweapon _item;
-				else{
+				}else{
 					player linkItem _item;
 				};
 			};
 			if ([_availableItems select _index, _item] call jn_fnc_arsenal_itemCount > 0) then {
 				if(_item isEqualTo (_inventory select 5) )then{
 					player addweapon _item;
-				else{
+				}else{
 					player linkItem _item;
 				};
 				[_arrayTaken,_index,_item,_amount]call _addToArray;
@@ -205,7 +203,6 @@ pr _assignedItems = ((_inventory select 9) + [_inventory select 3] + [_inventory
 				_arrayMissing = [_arrayMissing,[_item,_amount]] call jn_fnc_common_array_add;
 			};
 		};
-
 	};
 } forEach _assignedItems - [""];
 
@@ -305,10 +302,12 @@ pr _backpackItems = _inventory select 2 select 1;
 
 //add containers
 pr _containers = [_uniform,_vest,_backpack];
-pr _invCallArray = [{removeUniform player;player forceAddUniform _this;},//todo remove function because its done already before
-                      {removeVest player;player addVest _this;},
-                      {removeBackpackGlobal player;player addBackpack _this;}];
-					  
+pr _invCallArray = [
+	{removeUniform player;player forceAddUniform _this;},//todo remove function because its done already before
+    {removeVest player;player addVest _this;},
+    {removeBackpackGlobal player;player addBackpack _this;}
+];
+
 {
 	pr _item = _x;
 	if!(_item isEqualTo "")then{
@@ -318,7 +317,7 @@ pr _invCallArray = [{removeUniform player;player forceAddUniform _this;},//todo 
 			IDC_RSCDISPLAYARSENAL_TAB_VEST,
 			IDC_RSCDISPLAYARSENAL_TAB_BACKPACK
 		] select _foreachindex;
-		
+
 		call {
 			if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
 				  _item call (_invCallArray select _foreachindex);
@@ -360,7 +359,7 @@ pr _invCallArray = [{removeUniform player;player forceAddUniform _this;},//todo 
 				pr _amount = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
 				call {
 					if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
-						_container addMagazineAmmoCargo  [_item,1, _amount];
+						_container addMagazineAmmoCargo [_item,1, _amount];
 					};
 
 					if(_amountAvailable < _amount) then {

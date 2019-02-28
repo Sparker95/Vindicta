@@ -282,7 +282,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Returns location that has its border overlapping given position
 	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
-	
+
 	// Adds an allowed area
 	METHOD_FILE("addAllowedArea", "Location\addAllowedArea.sqf");
 

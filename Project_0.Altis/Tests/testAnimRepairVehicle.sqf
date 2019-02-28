@@ -1,8 +1,8 @@
+
+#include "..\OOP_Light\OOP_Light.h"
 /*
 TEst the goal for AI to play repair vehicle animation
 */
-
-#include "..\OOP_Light\OOP_Light.h"
 
 // _benchObject - editor-placed bench object
 params ["_vehicleObject"];

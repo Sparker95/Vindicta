@@ -1,23 +1,23 @@
-_o = cursorObject;
-_posArray = _o buildingPos -1;
-{
-_no = "Sign_Arrow_Large_Blue_F" createVehicle _x;
-_no setPosATL _x;
-_no setVariable ["buildingPosID", _forEachIndex];
-} forEach _posArray;
-_exitArray = [];
-_i = 0;
-_exitPos = _o buildingExit _i;
-while {!(_exitPos isEqualTo [0, 0, 0])} do
-{
-_exitArray pushBack _exitPos;
-_i = _i + 1;
-_exitPos = _o buildingExit _i;
-};
-{
-_no = "Sign_Arrow_Large_F" createVehicle _x;
-_no setPosATL _x;
-} forEach _exitArray;
+// _o = cursorObject;
+// _posArray = _o buildingPos -1;
+// {
+// _no = "Sign_Arrow_Large_Blue_F" createVehicle _x;
+// _no setPosATL _x;
+// _no setVariable ["buildingPosID", _forEachIndex];
+// } forEach _posArray;
+// _exitArray = [];
+// _i = 0;
+// _exitPos = _o buildingExit _i;
+// while {!(_exitPos isEqualTo [0, 0, 0])} do
+// {
+// _exitArray pushBack _exitPos;
+// _i = _i + 1;
+// _exitPos = _o buildingExit _i;
+// };
+// {
+// _no = "Sign_Arrow_Large_F" createVehicle _x;
+// _no setPosATL _x;
+// } forEach _exitArray;
 
 //Good positions on different buildings:
 /*

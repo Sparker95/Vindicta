@@ -33,21 +33,21 @@ _getNumber = {
 // Creates a single control from config
 _createControlFromConfig = {
 	params [["_cfg", configNull, [configNull]], ["_idd", 0, [0]]];
-	
+
 	// Get parent class
 	_cfgParent = inheritsFrom (_cfg);
 	if (isNull _cfgParent) exitWith {
 		diag_log format ["[ui_fnc_createControlsFromConfig] Error: %1 has no parent class", _cfg];
 	};
-	
+
 	// Create new control
 	pr _parentName = configName _cfgParent;
 	pr _idc = getNumber (_cfg >> "idc");
 	pr _ctrl = (findDisplay _idd) ctrlCreate [_parentName, _idc];
 	diag_log format ["[ui_fnc_createControlsFromConfig] Created control: %1", _ctrl];
-	
+
 	// Apply properties
-	
+
 	// Report unsupported properties
 	pr _supportedProps = ["idc", "x", "y", "w", "h", "text"];
 	pr _props = (configProperties [_cfg, "true", false]) apply {configName _x};
@@ -63,16 +63,15 @@ _createControlFromConfig = {
 			};
 		};
 	} forEach _props;
-	
+
 	// x, y, w, h
 	pr _xywh = ["x", "y", "w", "h"] apply {[_cfg >> _x] call _getNumber};
 	if (({isNil "_x"} count _xywh) > 0) then {
 		diag_log format ["[ui_fnc_createControlsFromConfig] Error: x,y,w,h is not defined for %1. Value: %2", _cfg, _xywh];
 	} else {
-		diag_log format ["[ui_fnc_createControlsFromConfig] Setting control position: %1", _xywh];
 		_ctrl ctrlSetPosition _xywh;
 	};
-	
+
 	// Commit control
 	_ctrl ctrlCommit 0;
 };
@@ -82,11 +81,11 @@ if (! isClass (_cfg >> "Controls")) then {
 	[_cfg, _idd] call _createControlFromConfig;
 } else {
 	// It might be a group box which must be created as well
-	if (isNumber (_cfg >> "type")) then {	
+	if (isNumber (_cfg >> "type")) then {
 		diag_log format ["Creating control that has subcontrols %1", _cfg];
 		[_cfg, _idd] call _createControlFromConfig;
 	};
-	
+
 	// Call this function for all subcontrols
 	// Todo actually group subcontrols must be created sifferently
 	// Just do it later, we don't use group boxes now anyway :p

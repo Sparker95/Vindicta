@@ -19,16 +19,16 @@ private _timer = NEW("Timer", _args);
 Author: Sparker 31.07.2018
 */
 
-CLASS("Timer", "")
+CLASS("Timer", "");
 
 	VARIABLE("data");
-	
+
 	// |                              N E W                                 |
 	/*
 	Method: new
-	
+
 	Parameters: _messageReceiver, _interval, _message, _timerService
-	
+
 	_messageReceiver - the object of MessageReceiver class (or inherited) which will be receiving the messages
 	_interval - interval between sending messages in seconds
 	_message - a Message which will be posted to the _messageReceiver
@@ -52,13 +52,13 @@ CLASS("Timer", "")
 		// Add this timer to the timer service
 		CALL_METHOD(_timerService, "addTimer", [_thisObject]);
 	} ENDMETHOD;
-	
-	
+
+
 	// |                            D E L E T E                             |
 	/*
 	Method: delete
 	Deletes this timer and removes it from corresponding <TimerService>.
-	
+
 	Warning: must be called in scheduled environment, since it called TimerService.removeTimer.
 	*/
 	METHOD("delete") {
@@ -67,17 +67,17 @@ CLASS("Timer", "")
 		private _timerService = _data select TIMER_DATA_ID_TIMER_SERVICE;
 		CALL_METHOD(_timerService, "removeTimer", [_thisObject]);
 	} ENDMETHOD;
-	
-	
+
+
 	// |                       S E T   I N T E R V A L                      |
 	/*
 	Method: setInterval
 	Sets the interval of this timer.
-	
+
 	Parameters: _interval
-	
+
 	_interval - interval in seconds
-	
+
 	Returns: nil
 	*/
 	METHOD("setInterval") {
@@ -94,9 +94,9 @@ CLASS("Timer", "")
 	/*
 	Method: getDataArray
 	Returns an internal data array of this Timer.
-	
+
 	Access: Internal use.
-	
+
 	Returns: Array, see Timer.hpp
 	*/
 	METHOD("getDataArray") {

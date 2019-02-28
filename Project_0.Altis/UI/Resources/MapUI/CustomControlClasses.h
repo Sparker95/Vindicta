@@ -17,18 +17,16 @@ class Map_UI_text_base
 	text = "1";
 	font = "PuristaMedium";
 	lineSpacing = 1;
-	
 };
-class Map_UI_panel : Map_UI_text_base 
+class Map_UI_panel : Map_UI_text_base
 {
 	type = 0;
 	style = 0+16+512;
 	colorBackground[] = {0,0,0,0.5};
 	colorText[] = {1,1,1,1};
 	font = "PuristaMedium";
-	
 };
-class Map_UI_button : Map_UI_text_base 
+class Map_UI_button : Map_UI_text_base
 {
 	type = 1;
 	style = 2;
@@ -49,9 +47,7 @@ class Map_UI_button : Map_UI_text_base
 	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.1,1.0};
 	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.1,1.0};
 	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.1,1.0};
-	
 };
-
 class Map_UI_text_scroll : RscControlsGroup
 {
 	type = 15;
@@ -66,5 +62,15 @@ class Map_UI_text_scroll : RscControlsGroup
 	text = "1";
 	font = "PuristaMedium";
 	lineSpacing = 1;
+};
+class Map_UI_text_centered : Map_UI_text_base
+{
+	style = 2;
+};
+class Map_UI_custom_button : Map_UI_text_centered
+{
+    sizeEx = safeZoneH * 0.025;
+    text = "CustomButton";
+    colorBackground[] = {0.1,0.1,0.1,0.5};
 };
 #endif
