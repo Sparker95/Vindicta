@@ -115,4 +115,5 @@ call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // Initialize Camp class
-call compile preprocessFileLineNumbers "Camp\Camp.sqf";
+call compile preprocessFileLineNumbers "Camp\initClasses.sqf";
+
