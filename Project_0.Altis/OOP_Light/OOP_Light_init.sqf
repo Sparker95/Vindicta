@@ -185,10 +185,14 @@ OOP_dumpAllVariables = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	diag_log format ["Dumping all variables of %1: %2", _thisObject, _memList];
+	diag_log format ["DEBUG: Dumping all variables of %1: %2", _thisObject, _memList];
 	{
 		private _varValue = GETV(_thisObject, _x);
-		diag_log format ["%1.%2: %3", _thisObject, _x, _varValue];
+		if (isNil "_varValue") then {
+			diag_log format ["DEBUG: %1.%2: %3", _thisObject, _x, "<null>"];
+		} else {
+			diag_log format ["DEBUG: %1.%2: %3", _thisObject, _x, _varValue];
+		}
 	} forEach _memList;
 };
 

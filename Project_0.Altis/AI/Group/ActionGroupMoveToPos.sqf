@@ -1,13 +1,12 @@
 #include "common.hpp"
-#define OFSTREAM_FILE "Help.rpt"
 
 CLASS("ActionGroupMoveToPos", "ActionGroup")
 
 	VARIABLE("pos");
 
 	METHOD("new") {
-		params [ ["_thisObject", "", [""]] , ["_AI", "", [""]] , ["_pos", [], []] ];
-		T_SETV("pos", _pos);
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		T_SETV("pos", _parameters select 1);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -22,8 +21,7 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 		_hG setFormation "DIAMOND";
 
 		// Delete all waypoints
-		while {(count (waypoints _hG)) > 0} do
-		{
+		while {(count (waypoints _hG)) > 0} do {
 			deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
 		};
 
@@ -34,16 +32,8 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 		_wp setWaypointBehaviour "SAFE";
 		_hG setCurrentWaypoint _wp;
 
-		// TODO Give a goal to units
-		// private _group = GETV(T_GETV("AI"), "agent");
-		// private _units = CALLM0(_group, "getUnits");
-		// {
-		// 	private _unitAI = CALLM0(_x, "getAI");
-		// 	CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _AI);
-		// } forEach _units;
-
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -64,7 +54,7 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 			{
 				private _unitPos = getPos _x;
 				private _distance = _destination distance _unitPos;
-				if (_distance < 30) exitWith { _isGroupNearPos = true; };
+				if (_distance < 20) exitWith { _isGroupNearPos = true; };
 			} forEach (units _hG);
 
 			// Return the current state
@@ -78,15 +68,10 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
-		OOP_INFO_1("terminated: _thisObject: %1", _thisObject);
 
-		// Delete the goal to dismount vehicles
-		// pr _group = GETV(T_GETV("AI"), "agent");
-		// pr _units = CALLM0(_group, "getUnits");
-		// {
-		// 	pr _unitAI = CALLM0(_x, "getAI");
-		// 	CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitDismountCurrentVehicle", "");
-		// } forEach _units;
+		// Delete the goal
+		private _AI = T_GETV("AI") ;
+		CALLM2(_AI, "deleteExternalGoal", "GoalGroupMoveToPos", "");
 	} ENDMETHOD;
 
 ENDCLASS;
