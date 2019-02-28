@@ -1,3 +1,5 @@
+#include "camp.hpp"
+#include "..\Group\Group.hpp"
 /*
 Class: Camp
 Camp has garrisons at a static place and spawns units handle by location variable.
@@ -5,13 +7,15 @@ Camp has an arsenal and maybe events and other features ?
 
 Author: Sparker 28.07.2018
 */
-#include "camp.hpp"
-#include "..\Group\Group.hpp"
+
+//cursorobject addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayEGSpectator\Fps.paa' />  %1", "Open Build Menu"], {  }];
+
+#define pr private
 
 CLASS("Camp", "Location")
 
-	VARIABLE("arsenalBox"); // arsenalBox of this Camp
-	VARIABLE("camoNet"); // camoNet of this Camp
+	VARIABLE("arsenalBox"); // arsenal box object of this Camp
+	VARIABLE("campFire"); // camp fire object of this Camp
 
 	// used for remoteExec
 	STATIC_METHOD("newStatic") {
@@ -26,13 +30,14 @@ CLASS("Camp", "Location")
 		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
 		CALL_METHOD(_thisObject, "setType", [LOCATION_TYPE_CAMP]);
 
-		// Create camp vehicles
-		private _camoNet = "CamoNet_ghex_F" createVehicle  _pos;
-		SET_VAR(_thisObject, "camoNet", _camoNet);
-		private _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
-		[_arsenalBox] call JN_fnc_arsenal_init;
+		// Create box with Jeroen's arsenal box
+		pr _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
+		_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
-		private _firePlace = "FirePlace_burning_F" createVehicle _pos;
+
+		pr _campFire = "Land_Campfire_F" createVehicle _pos;
+		_campFire remoteExec ["fnc_addActionCampZeus", 0, _campFire];
+		SET_VAR(_thisObject, "campFire", _campFire);
 
 		// Create Marker
 		private _marker = createMarker ["respawn_west_" + _thisObject, _pos]; // magic
@@ -103,10 +108,36 @@ CLASS("Camp", "Location")
 		OOP_INFO_1("new camp created: %1", _thisObject);
 	} ENDMETHOD;
 
+
+	// |                            D E L E T E                             |
+
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
 
 		SET_VAR(_thisObject, "arsenalBox", nil);
+		SET_VAR(_thisObject, "campFire", nil);
+	} ENDMETHOD;
+
+	// |                   		 C R E A T E  Z E U S                   	 |
+
+	STATIC_METHOD("createZeus") {
+		params ["_thisClass"];
+
+		pr _groupCurator = createGroup WEST;
+		pr _campCurator = _groupCurator createunit ["ModuleCurator_F", [0, 90, 90], [], 0.5, "NONE"];
+
+		// set editing area
+		_campCurator addCuratorEditingArea [89, position player, 40];
+		_campCurator setCuratorEditingAreaType true; // disallow placing outside of area
+
+		// camera movement restrictions
+		_campCurator addCuratorCameraArea [90, position player, 40];
+		_campCurator setCuratorCameraAreaCeiling 50;
+		_campCurator allowCuratorLogicIgnoreAreas false; // may have to enable to allow commanding units
+
+		removeAllCuratorAddons _campCurator; // remove *all* objects from Zeus menu
+		unassignCurator _campCurator;
+
 	} ENDMETHOD;
 
 ENDCLASS;
