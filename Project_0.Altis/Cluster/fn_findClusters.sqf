@@ -1,5 +1,3 @@
-#define OOP_DEBUG
-#include "..\OOP_Light\OOP_Light.h"
 /*
 This function groups provided clusters into bigger clusters according to provided maximum distance.
 
@@ -54,7 +52,9 @@ for "_i" from 0 to _c-1 do
 			{count _ci > 0} &&
 			{count _cj > 0}) then
 		{
-			OOP_DEBUG_2("Checking clusters: %1 %2", _i, _j);
+			#ifdef DEBUG
+			diag_log format ["Checking clusters: %1 %2", _i, _j];
+			#endif
 			_d = [_ci, _cj] call cluster_fnc_distance;
 			//If the clusters are close, merge them
 			if (_d < _md) then

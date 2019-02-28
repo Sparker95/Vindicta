@@ -85,7 +85,7 @@ private _loc = objNull;
 			_debugName, _cInf, _cVehGround, _cHMGGMG, _cBuildingSentry];
 
 		// Add the main garrison to this location
-		_garMilMain = NEW("Garrison", [_side]);
+		private _garMilMain = NEW("Garrison", [_side]);
 		CALL_METHOD(_loc, "setGarrisonMilitaryMain", [_garMilMain]);
 
 		// Add default units to the garrison
