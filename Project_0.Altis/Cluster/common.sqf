@@ -15,7 +15,7 @@ y2 > y1
 (x1, y1)------*
 ---
 
-objectIDs - array with IDs of objects (integers)
+objectIDs - array with IDs of objects (integers, objects, arrays, anything)
 */
 
 cluster_fnc_newCluster =
@@ -51,14 +51,21 @@ cluster_fnc_distance =
 	*/
 	params ["_c1", "_c2"];
 	
+	/*
 	_c1x1 = _c1 select 0;
     _c1y1 = _c1 select 1;
     _c1x2 = _c1 select 2;
     _c1y2 = _c1 select 3;
+    */
+    _c1 params ["_c1x1", "_c1y1", "_c1x2", "_c1y2"];
+    
+    /*
     _c2x1 = _c2 select 0;
     _c2y1 = _c2 select 1;
     _c2x2 = _c2 select 2;
     _c2y2 = _c2 select 3;
+    */
+    _c2 params ["_c2x1", "_c2y1", "_c2x2", "_c2y2"];
     
     _dx = 0;
     if( ! (	_c2x1 < _c1x2 && _c2x1 > _c1x1 ||
@@ -97,14 +104,21 @@ cluster_fnc_merge =
 	*/
 	params ["_c1", "_c2"];
 	
+	/*
 	_c1x1 = _c1 select 0;
     _c1y1 = _c1 select 1;
     _c1x2 = _c1 select 2;
     _c1y2 = _c1 select 3;
+    */
+    _c1 params ["_c1x1", "_c1y1", "_c1x2", "_c1y2"];
+    
+    /*
     _c2x1 = _c2 select 0;
     _c2y1 = _c2 select 1;
     _c2x2 = _c2 select 2;
     _c2y2 = _c2 select 3;
+    */
+    _c2 params ["_c2x1", "_c2y1", "_c2x2", "_c2y2"];
     
     _allx = [_c1x1, _c1x2, _c2x1, _c2x2];
     _ally = [_c1y1, _c1y2, _c2y1, _c2y2];

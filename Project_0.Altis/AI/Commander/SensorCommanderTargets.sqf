@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 /*
-Sensor for a garrison to receive spotted enemies from its groups and relay them to other groups of this garrison.
+Sensor for a commander to receive spotted enemies from its garrisons and relay them to other garrisons.
 Author: Sparker 21.12.2018
 */
 

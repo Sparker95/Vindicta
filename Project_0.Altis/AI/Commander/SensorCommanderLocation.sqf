@@ -1,12 +1,4 @@
-#define OOP_INFO
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\commonStructs.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-
+#include "common.hpp"
 
 /*
 Sensor for commander that receives data about composition of a location.

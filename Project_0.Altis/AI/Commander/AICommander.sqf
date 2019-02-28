@@ -1,10 +1,4 @@
-#define OOP_INFO
-#define OOP_ERROR
-#define OOP_WARNING
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "common.hpp"
 #include "LocationData.hpp"
 
 /*
@@ -26,6 +20,8 @@ CLASS("AICommander", "AI")
 	VARIABLE("locationDataThis"); // Points to one of the above arrays depending on its side
 	VARIABLE("notificationID");
 	VARIABLE("notifications"); // Array with [task name, task creation time]
+
+	VARIABLE("targets"); // Array of targets known by this Commander
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
