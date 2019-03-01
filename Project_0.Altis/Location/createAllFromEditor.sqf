@@ -213,5 +213,4 @@ private _loc = objNull;
 		};
 	};
 
-
 } forEach allMapMarkers;

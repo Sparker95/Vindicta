@@ -30,7 +30,7 @@ CLASS("Camp", "Location");
 		private _camoNet = "CamoNet_ghex_F" createVehicle  _pos;
 		SET_VAR(_thisObject, "camoNet", _camoNet);
 		private _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
-		[_arsenalBox] call JN_fnc_arsenal_init;
+   		_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 		private _firePlace = "FirePlace_burning_F" createVehicle _pos;
 
