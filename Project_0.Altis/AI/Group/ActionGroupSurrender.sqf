@@ -12,20 +12,9 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 
 		private _hG = GETV(_thisObject, "hG");
 
-		// Set behaviour
 		_hG setBehaviour "CARELESS";
-
-		// Set combat mode
 		_hG setCombatMode "BLUE"; // Never fire, engage at will
-
-		// Surrender (leave weapon and animation surrender)
-		{
-			OOP_DEBUG_1("_unit: %1", _x);
-			[_x] call misc_fnc_actionDropAllWeapons;
-			sleep 1;
-			_x action ["Surrender", _x];
-		} forEach (units _hG);
-
+		{ [_x] spawn misc_fnc_actionDropAllWeaponsAndSurrender; } forEach (units _hG);
 
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);

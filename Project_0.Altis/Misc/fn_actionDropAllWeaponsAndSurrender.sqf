@@ -32,6 +32,8 @@ if (!(isNil "_handgunWeapon")) then {
 	_weaponHolder setVelocity [(sin (_dir) * _speed)+_biasX, (cos (_dir) * _speed)+_biasY, 4];
 };
 
+sleep .1;
+
 if (!(isNil "_currentWeapon")) then {
 	private _speed = 1.5;
 	_unit removeWeapon (currentWeapon _unit);
@@ -45,3 +47,5 @@ if (!(isNil "_currentWeapon")) then {
 	private _biasY = random [-1.5, 0, 1.5];
 	_weaponHolder setVelocity [(sin (_dir) * _speed)+_biasX, (cos (_dir) * _speed)+_biasY, 4];
 };
+
+_unit action ["Surrender", _unit];
