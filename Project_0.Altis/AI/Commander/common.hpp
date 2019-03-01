@@ -1,7 +1,7 @@
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
-#define OFSTREAM_FILE "AI.rpt"
+#define OFSTREAM_FILE "Commander.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
@@ -17,3 +17,5 @@
 #include "..\Garrison\garrisonWorldStateProperties.hpp"
 #include "..\Group\groupWorldStateProperties.hpp"
 #include "LocationData.hpp"
+#include "..\..\Cluster\Cluster.hpp"
+#include "AICommander.hpp"

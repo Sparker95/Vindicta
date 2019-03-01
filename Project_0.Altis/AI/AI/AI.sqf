@@ -128,7 +128,7 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		//diag_log format ["AI:Process is called for AI: %1", _thisObject];
+		OOP_INFO_0("PROCESS");
 		
 		pr _agent = GETV(_thisObject, "agent");
 		
@@ -383,12 +383,16 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("updateSensors") {
 		params [["_thisObject", "", [""]]];
 		pr _sensors = GETV(_thisObject, "sensors");
+		OOP_INFO_1("Updating sensors: %1", _sensors);
 		{
 			pr _sensor = _x;
+			
 			// Update the sensor if it's time to update it
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
+			OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
 			// If timeNextUpdate is 0, we never update this sensor
 			if (_timeNextUpdate != 0 && time > _timeNextUpdate) then {
+				OOP_INFO_0("  Calling UPDATE!");
 				CALLM(_sensor, "update", []);
 				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
 				SETV(_sensor, "timeNextUpdate", time + _interval);

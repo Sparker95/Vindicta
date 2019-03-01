@@ -86,7 +86,20 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		} else {
 			[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
 		};
-
+		
+		// Send targets to commander
+		if (count _knownTargets > 0) then {
+			pr _gar = T_GETV("gar");
+			pr _side = CALLM0(_gar, "getSide");		
+			pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+			// Create stimulus
+			pr _stim = STIMULUS_NEW();
+			STIMULUS_SET_SOURCE(_stim, _gar);
+			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_TARGETS);
+			STIMULUS_SET_VALUE(_stim, +_knownTargets);
+			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
+		};
+		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

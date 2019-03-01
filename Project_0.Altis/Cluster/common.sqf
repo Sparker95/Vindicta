@@ -135,6 +135,13 @@ cluster_fnc_merge =
 	_array append (_c2 select 4);
 };
 
+// Checks if point with given coordinates is inside border or lies right on it
+cluster_fnc_isInBorder = {
+	params ["_c", "_x", "_y"];
+	_c params ["_x1", "_y1", "_x2", "_y2"];
+	(_x >= _x1) && (_x <= _x2) && (_y >= _y1) && (_y <= _y2)
+};
+
 cluster_fnc_getCenter =
 {
 	/*

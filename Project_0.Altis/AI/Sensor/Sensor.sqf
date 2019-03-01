@@ -36,7 +36,7 @@ CLASS("Sensor", "")
 		PROFILER_COUNTER_INC("Sensor");
 		
 		SETV(_thisObject, "AI", _AI);
-		SETV(_thisObject, "timeNextUpdate", time); // Update this sensor ASAP
+		SETV(_thisObject, "timeNextUpdate", time+0.01); // Update this sensor ASAP, fir for sensors created at time start
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
