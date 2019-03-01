@@ -4,6 +4,10 @@ private _currentWeapon = currentWeapon _unit;
 private _secondWeapon = secondaryWeapon _unit;
 private _handgunWeapon = handgunWeapon _unit;
 
+private _rand = ceil(random 6);
+diag_log format["sleep %1", _rand];
+sleep _rand;
+
 if (!(isNil "_secondWeapon")) then {
 	private _speed = 1.4;
 	_unit removeWeapon (secondaryWeapon _unit);

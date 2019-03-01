@@ -12,9 +12,9 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 
 		private _hG = GETV(_thisObject, "hG");
 
-		_hG setBehaviour "CARELESS";
 		_hG setCombatMode "BLUE"; // Never fire, engage at will
 		{ [_x] spawn misc_fnc_actionDropAllWeaponsAndSurrender; } forEach (units _hG);
+		_hG setBehaviour "CARELESS";
 
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
