@@ -16,7 +16,7 @@ CLASS("ActionGarrisonSurrender", "ActionGarrison")
 		private _groups = CALLM0(_gar, "getGroups");
 		{
 			private _groupAI = CALLM0(_x, "getAI");
-			CALLM4(_groupAI, "addExternalGoal", "GoalGroupSurrend", 0, [], gAICommanderEast);
+			CALLM4(_groupAI, "addExternalGoal", "GoalGroupSurrender", 0, [], gAICommanderEast);
 		} forEach _groups;
 
 		// Set state
