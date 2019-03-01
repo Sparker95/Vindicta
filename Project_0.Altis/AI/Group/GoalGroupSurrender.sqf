@@ -4,9 +4,6 @@
 Class: Goal.GoalGroupSurrender
 */
 
-
-#define pr private
-
 CLASS("GoalGroupSurrender", "Goal")
 
 ENDCLASS;

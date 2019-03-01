@@ -11,7 +11,6 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 		params [["_thisObject", "", [""]]];
 
 		private _hG = GETV(_thisObject, "hG");
-		OOP_DEBUG_1("activate _thisObject: %1", _thisObject);
 
 		// Set behaviour
 		_hG setBehaviour "CARELESS";
@@ -22,7 +21,7 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 		// Surrender (leave weapon and animation surrender)
 		{
 			OOP_DEBUG_1("_unit: %1", _x);
-			[_x] call misc_fnc_actionDropWeapon;
+			[_x] call misc_fnc_actionDropAllWeapons;
 			sleep 1;
 			_x action ["Surrender", _x];
 		} forEach (units _hG);
@@ -33,7 +32,6 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
-
 	} ENDMETHOD;
 
 	// Logic to run each update-step
