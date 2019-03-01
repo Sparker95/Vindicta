@@ -1,3 +1,14 @@
+/*
+Function: misc_fnc_actionDropAllWeaponsAndSurrender
+Throw all weapons of a unit in randomly in front of him with some animation and then launch surrender action
+Added a random small sleep in case it is applied on a large it will appear more not natural.
+
+Parameters: _unit
+
+_unit - Unit Infantry
+
+Author: Sen 01.03.2019
+*/
 params ["_unit"];
 
 private _currentWeapon = currentWeapon _unit;
