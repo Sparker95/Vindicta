@@ -26,6 +26,7 @@ call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\GoalGarrisonRepairAllVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\_SensorGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\_SensorGarrisonStimulatable.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonCasualties.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonHealth.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonLocationIsObserved.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonTargets.sqf";

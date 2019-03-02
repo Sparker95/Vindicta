@@ -277,7 +277,13 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Set variables of the object
 		if (!isNull _hO) then {
-			_hO setVariable ["unit", _thisObject];
+			// Variable with a reference to Unit object
+			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject];
+			pr _cat = _data select UNIT_DATA_ID_CAT;
+			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
+			
+			// Variable with the efficiency vector of this unit
+			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, (T_efficiency select _cat select _subcat)];
 			// That's all really
 		};
 
@@ -577,7 +583,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	*/
 	STATIC_METHOD("getUnitFromObjectHandle") {
 		params [ ["_thisClass", "", [""]], ["_objectHandle", objNull, [objNull]] ];
-		_objectHandle getVariable ["unit", ""]
+		_objectHandle getVariable [UNIT_VAR_NAME_STR, ""]
 	} ENDMETHOD;
 
 	/*

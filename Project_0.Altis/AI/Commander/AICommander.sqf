@@ -10,8 +10,6 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-#define DEBUG_CLUSTERS
-
 CLASS("AICommander", "AI")
 
 	VARIABLE("side");
@@ -64,6 +62,8 @@ CLASS("AICommander", "AI")
 		CALLM1(_thisObject, "addSensor", _sensorLocation);
 		pr _sensorTargets = NEW("SensorCommanderTargets", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorTargets);
+		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
 		
 	} ENDMETHOD;
@@ -277,13 +277,22 @@ CLASS("AICommander", "AI")
 		_value
 	} ENDMETHOD;
 	
+	// Generates a new target cluster ID
+	METHOD("getNewTargetClusterID") {
+		params ["_thisObject"];
+		pr _nextID = T_GETV("nextClusterID");
+		T_SETV("nextClusterID", _nextID + 1);
+		_nextID
+	} ENDMETHOD;
+	
 	// Generates a new unique cluster ID
+	/*
 	METHOD("createNewTargetCluster") {
-		params ["_thisObject", "_cluster"];
+		params ["_thisObject", "_cluster", "_efficiency"];
 		pr _targetClusters = T_GETV("targetClusters");
 		pr _nextID = T_GETV("nextClusterID");
 		T_SETV("nextClusterID", _nextID + 1);
-		_targetClusters pushBack TARGET_CLUSTER_NEW(_nextID, _cluster);
+		_targetClusters pushBack TARGET_CLUSTER_NEW(_nextID, _cluster, _efficiency);
 		
 		// Create debug markers
 		#ifdef DEBUG_CLUSTERS
@@ -327,11 +336,21 @@ CLASS("AICommander", "AI")
 			
 		} forEach (_cluster select CLUSTER_ID_OBJECTS);
 		
+		// Add marker with efficiency text
+		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
+		pr _mrk = createmarker [_name, _cCenter];
+		_mrk setMarkerType "mil_dot";
+		_mrk setMarkerColor "ColorPink";
+		_mrk setMarkerAlpha 1.0;
+		_mrk setMarkerText (str _efficiency);
+		_clusterMarkers pushBack _mrk;
+		
 		T_SETV("nextMarkerID", _nextMarkerID);
 		
 		
 		#endif
 	} ENDMETHOD;
+	*/
 	
 	// Deletes all target clusters
 	METHOD("deleteAllTargetClusters") {

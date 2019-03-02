@@ -2,6 +2,8 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
+#include "..\AI\Stimulus\Stimulus.hpp"
+#include "..\AI\StimulusTypes.hpp"
 #include "Unit.hpp"
 
 /*
@@ -25,6 +27,18 @@ if (_unit != "") then {
 	pr _garrison = _data select UNIT_DATA_ID_GARRISON;
 	if (_garrison != "") then {	// Sanity check	
 		CALLM2(_garrison, "postMethodAsync", "handleUnitKilled", [_unit]);
+		
+		// Send stimulus to garrison's casualties sensor
+		pr _garAI = CALLM0(_garrison, "getAI");
+		if (_garAI != "") then {
+			if (!isNull _killer) then { // If there is an existing killer
+				pr _stim = STIMULUS_NEW();
+				STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
+				pr _value = [_unit, _killer];
+				STIMULUS_SET_VALUE(_stim, _value);
+				CALLM2(_garAI, "postMethodAsync", "handleStimulus", [_stim]);
+			};
+		};
 	} else {
 		diag_log format ["[Unit::EH_killes.sqf] Error: Unit is not attached to a garrison: %1, %2", _unit, _data];
 	};
