@@ -5,7 +5,7 @@ call compile preprocessFileLineNumbers "AI\ActionCompositeParallel\ActionComposi
 call compile preprocessFileLineNumbers "AI\ActionCompositeSerial\ActionCompositeSerial.sqf";
 
 call compile preprocessFileLineNumbers "AI\AI\AI.sqf";
-
+call compile preprocessFileLineNumbers "AI\AI\AI_GOAP.sqf";
 
 call compile preprocessFileLineNumbers "AI\Goal\Goal.sqf";
 

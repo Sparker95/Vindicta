@@ -6,7 +6,7 @@ Class: AI.AIGarrison
 
 #define pr private
 
-CLASS("AIGarrison", "AI")
+CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison
 	VARIABLE("targets");

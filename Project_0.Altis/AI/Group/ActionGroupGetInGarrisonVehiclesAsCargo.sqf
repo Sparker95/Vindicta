@@ -111,7 +111,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 				};
 			} forEach _unitsInf;
 			
-			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _unitsInf, "GoalUnitGetInVehicle", "")) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _unitsInf, "GoalUnitGetInVehicle", "")) then {
 			//if (_nGoalsCompleted == count _unitsInf) then {
 			//pr _ws = GETV(_AI, "worldState");
 			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
