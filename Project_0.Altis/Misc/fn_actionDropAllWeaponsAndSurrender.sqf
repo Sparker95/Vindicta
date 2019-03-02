@@ -16,10 +16,9 @@ private _secondWeapon = secondaryWeapon _unit;
 private _handgunWeapon = handgunWeapon _unit;
 
 private _rand = ceil(random 6);
-diag_log format["sleep %1", _rand];
 sleep _rand;
 
-if (!(isNil "_secondWeapon")) then {
+if !(_secondWeapon == "") then {
 	private _speed = 1.4;
 	_unit removeWeapon (secondaryWeapon _unit);
 	sleep .1;
@@ -33,7 +32,7 @@ if (!(isNil "_secondWeapon")) then {
 	_weaponHolder setVelocity [(sin (_dir) * _speed)+_biasX, (cos (_dir) * _speed)+_biasY, 4];
 };
 
-if (!(isNil "_handgunWeapon")) then {
+if !(_handgunWeapon == "") then {
 	private _speed = 1.6;
 	_unit removeWeapon (handgunWeapon _unit);
 	sleep .1;
@@ -49,7 +48,7 @@ if (!(isNil "_handgunWeapon")) then {
 
 sleep .1;
 
-if (!(isNil "_currentWeapon")) then {
+if !(_currentWeapon == "") then {
 	private _speed = 1.5;
 	_unit removeWeapon (currentWeapon _unit);
 	sleep .1;
