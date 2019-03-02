@@ -11,7 +11,9 @@ Author: Sen 01.03.2019
 */
 params ["_unit"];
 
-private _currentWeapon = currentWeapon _unit;
+_unit setCombatMode "BLUE";
+
+private _primaryWeapon = primaryWeapon _unit;
 private _secondWeapon = secondaryWeapon _unit;
 private _handgunWeapon = handgunWeapon _unit;
 
@@ -46,15 +48,13 @@ if !(_handgunWeapon == "") then {
 	_weaponHolder setVelocity [(sin (_dir) * _speed)+_biasX, (cos (_dir) * _speed)+_biasY, 4];
 };
 
-sleep .1;
-
-if !(_currentWeapon == "") then {
+if !(_primaryWeapon == "") then {
 	private _speed = 1.5;
 	_unit removeWeapon (currentWeapon _unit);
 	sleep .1;
 	_weaponHolder = "WeaponHolderSimulated" createVehicle [0,0,0];
 	_weaponHolder disableCollisionWith _unit;
-	_weaponHolder addWeaponCargoGlobal [_currentWeapon, 1];
+	_weaponHolder addWeaponCargoGlobal [_primaryWeapon, 1];
 	_weaponHolder setPos (_unit modelToWorld [0,0.2,1.2]);
 	private _dir = direction _unit;
 	private _biasX = random [-1.5, 0, 1.5];
@@ -63,3 +63,4 @@ if !(_currentWeapon == "") then {
 };
 
 _unit action ["Surrender", _unit];
+_unit setBehaviour "CARELESS";
