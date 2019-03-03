@@ -1,0 +1,6 @@
+#define IDC_TEXTC 3202
+#define IDC_TEXTL1 3201
+#define IDC_TEXTL2 3200
+#define IDC_TEXTR1 3203
+#define IDC_TEXTR2 3204
+
