@@ -116,6 +116,6 @@ class RscTitles {
 
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUI_Debug\UIUndercoverDebug.h"
-
+#include "UI\Resources\BuildUI\BuildUI.h"
 };
 
