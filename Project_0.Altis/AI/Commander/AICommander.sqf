@@ -71,6 +71,9 @@ CLASS("AICommander", "AI")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		// Update sensors
+		CALLM0(_thisObject, "updateSensors");
+		
 		// Delete old notifications
 		pr _nots = T_GETV("notifications");
 		pr _i = 0;
@@ -85,9 +88,6 @@ CLASS("AICommander", "AI")
 				_i = _i + 1;
 			};
 		};
-		
-		// Call base class method
-		CALL_CLASS_METHOD("AI", _thisObject, "process", []);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -352,6 +352,7 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	*/
 	
+	/*
 	// Deletes all target clusters
 	METHOD("deleteAllTargetClusters") {
 		params ["_thisObject"];
@@ -370,5 +371,90 @@ CLASS("AICommander", "AI")
 		
 		#endif
 	} ENDMETHOD;
+	*/
+	
+	/*
+	Method: allocateUnits
+	Tries to find a location to send units from
+	
+	Parameters: _a, _b, _c
+	
+	_a - 
+	_b - 
+	_c -
+	
+	Returns: nil
+	*/
+	METHOD("allocateUnits") {
+		params ["_thisObject", ["_pos", [], [[]]], ["_requiredEff", [], [[]]]];
+		
+		pr _side = T_GETV("side");
+		private _allLocations = CALLSM1("Location", "getAll");
+		
+		// Find locations controled by this side
+		private _friendlyLocations = _allLocations select {
+			pr _gar = CALLM0(_x, "getGarrisonMilitaryMain");
+			pr _garSide = CALLM0(_gar, "getSide");
+			_garSide == _side
+		};
+		
+		// Sort friendly locations by distance
+		_friendlyDistLoc = _friendlyLocations apply {
+			pr _locPos = CALLM0(_x, "getPos");
+			[_locPos distance2D _pos, _x]
+		};
+		_friendlyDistLoc sort true; // Ascending
+		
+		// Find location that can deal with the threat
+		scopeName "s0";
+		{
+			_x params ["_dist", "_loc"];
+			pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
+			pr _garEff = CALLM0(_gar, "getEfficiencyMobile");
+			// If units at this garrison can destroy the threat
+			if ([_garEff, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
+				scopeName "s1";
+				
+				pr _units = CALLM0(_gar, "getUnits") select {! CALLM0(_x, "isStatic")};
+				_units apply {pr _eff = CALLM0(_x, "getEfficiency"); [0, _eff, _x]};
+				pr _allocatedUnits = []; // Array with units we have allocated
+				pr _effAllocated = +T_EFF_null; // Efficiency of units allocated so far
+				
+				// Allocate units per each efficiency category
+				pr _j = 0;
+				for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
+					// Exit now if we have allocated enough units to deal with the threat
+					if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
+						breakTo "s1";
+					};
+					
+					// For every unit, set element 0 to efficiency value with index _i
+					{_x set [0, _x select 1 select _i];} forEach _units;
+					// Sort units in this efficiency category
+					_units sort false; // Descending
+					
+					// Add units until there are enough of them
+					pr _requiredEffCat = _requiredEff select _j; // Required efficiency in this category
+					pr _pickUnitID = 0;
+					while {(_effAllocated select _j < _requiredEffCat) && (_pickUnitID < count _units)} do {
+						_allocatedUnits pushBack (_units select _pickUnitID select 2);
+						pr _unitEff = _units select _pickUnitID select 1;
+						// Add to the allocated efficiency vector
+						_effAllocated = VECTOR_ADD_9(_effAllocated, _unitEff);
+						_pickUnitID = _pickUnitID + 1;
+					};
+					
+					_j = _j + 1;
+				};
+				
+				// Check if we have allocated enough units
+				if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
+					// Success!
+				};
+			};
+		} forEach _friendlyDistLoc;
+		
+	} ENDMETHOD;
+	
 	
 ENDCLASS;

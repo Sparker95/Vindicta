@@ -25,6 +25,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE("debugName");
 	VARIABLE("location");
 	VARIABLE("AI"); // The AI brain of this garrison
+	VARIABLE("effTotal"); // Efficiency vector of all units
+	VARIABLE("effMobile"); // Efficiency vector of all units that can move
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -61,6 +63,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		SET_VAR(_thisObject, "debugName", "");
 		//SET_VAR(_thisObject, "action", "");
 		SETV(_thisObject, "AI", "");
+		SETV(_thisObject, "effTotal", +T_EFF_null);
+		SETV(_thisObject, "effMobile", +T_EFF_null);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -317,6 +321,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _units = GET_VAR(_thisObject, "units");
 		_units pushBackUnique _unit;
 		CALL_METHOD(_unit, "setGarrison", [_thisObject]);
+		
+		// Add to the efficiency vector
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
+		CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
 
 		nil
 	} ENDMETHOD;
@@ -343,6 +351,10 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Set the garrison of this unit
 		CALLM1(_unit, "setGarrison", "");
+
+		// Substract from the efficiency vector
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
+		CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
 
 		nil
 	} ENDMETHOD;
@@ -376,6 +388,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _units = GET_VAR(_thisObject, "units");
 		{
 			_units pushBackUnique _x;
+			
+			// Add to the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+			CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
 		} forEach _groupUnits;
 		private _groups = GET_VAR(_thisObject, "groups");
 		_groups pushBackUnique _group;
@@ -442,6 +458,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _units = GET_VAR(_thisObject, "units");
 		{
 			_units deleteAt (_units find _x);
+			
+			// Substract from the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+			CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
+				
 		} forEach _groupUnits;
 		pr _groups = GET_VAR(_thisObject, "groups");
 		_groups deleteAt (_groups find _group);
@@ -617,7 +638,82 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		
 		nil
+	} ENDMETHOD;
+	
+	/*
+	Method: addEfficiency
+	Adds values to efficiency vector
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("addEfficiency") {
+		params ["_thisObject", "_catID", "_subCatID"];
+		
+		pr _effAdd = T_efficiency select _catID select _subcatID;
+		
+		pr _effTotal = T_GETV("effTotal");
+		_effTotal = VECTOR_ADD_9(_effTotal, _effAdd);
+		T_SETV("effTotal", _effTotal);
+		 
+		// If the added unit is not static
+		if (! ([_catID, _subcatID] in T_static)) then {
+			pr _effMobile = T_GETV("effMobile");
+			_effMobile = VECTOR_ADD_9(_effMobile, _effAdd);
+			T_SETV("effMobile", _effMobile);
+		};
 	} ENDMETHOD;	
+	
+	/*
+	Method: subEfficiency
+	Substracts values to efficiency vector
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("substractEfficiency") {
+		params ["_thisObject", "_catID", "_subCatID"];
+		
+		pr _effSub = T_efficiency select _catID select _subcatID;
+		
+		pr _effTotal = T_GETV("effTotal"); 
+		_effTotal = VECTOR_SUB_9(_effTotal, _effSub);
+		T_SETV("effTotal", _effTotal);
+		
+		// If the removed unit is not static
+		if (! ([_catID, _subcatID] in T_static)) then {
+			pr _effMobile = T_GETV("effMobile");
+			_effMobile = VECTOR_SUB_9(_effMobile, _effSub);
+			T_SETV("effMobile", _effMobile);
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: getEfficiencyMobile
+	Returns efficiency of all mobile units
+	
+	Returns: Efficiency vector
+	*/
+	
+	METHOD("getEfficiencyMobile") {
+		params ["_thisObject"];
+		T_GETV("effMobile")
+	} ENDMETHOD;
+	
+	/*
+	Method: getEfficiencyTotal
+	Returns efficiency of all mobile units
+	
+	Returns: Efficiency vector
+	*/
+	
+	METHOD("getEfficiencyTotal") {
+		params ["_thisObject"];
+		T_GETV("effTotal")
+	} ENDMETHOD;
+	
 	
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

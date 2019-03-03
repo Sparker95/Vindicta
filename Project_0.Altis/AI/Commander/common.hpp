@@ -18,4 +18,5 @@
 #include "..\Group\groupWorldStateProperties.hpp"
 #include "LocationData.hpp"
 #include "..\..\Cluster\Cluster.hpp"
+#include "..\..\Templates\Templates.hpp"
 #include "AICommander.hpp"

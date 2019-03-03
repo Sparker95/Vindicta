@@ -1,3 +1,4 @@
+#include "Templates.hpp"
 /*
 These arrays represent the efficiency  of all units in the templates.
 

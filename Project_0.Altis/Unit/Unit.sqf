@@ -511,6 +511,19 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
 	} ENDMETHOD;
+	
+	//                    G E T   E F F I C I E N C Y
+	/*
+	Method: getEfficiency
+	Returns efficiency vector of this unit
+
+	Returns: Efficiency vector
+	*/
+	METHOD("getEfficiency") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		T_efficiency select (_data select UNIT_DATA_ID_CAT) select (_data select UNIT_DATA_ID_SUBCAT)
+	} ENDMETHOD;
 
 	//                        G E T   D A T A
 	/*
@@ -691,6 +704,19 @@ CLASS(UNIT_CLASS_NAME, "");
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data select UNIT_DATA_ID_CAT == T_DRONE
+	} ENDMETHOD;
+	
+	//                         I S   S T A T I C
+	/*
+	Method: isStatic
+	Returns true if given <Unit> is one of static vehicles defined in Templates
+
+	Returns: Bool
+	*/
+	METHOD("isStatic") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
 	} ENDMETHOD;
 
 

@@ -27,6 +27,3 @@
 #define TARGET_COMMANDER_ID_TIME			3
 #define TARGET_COMMANDER_ID_OBSERVED_BY		4
 #define TARGET_COMMANDER_NEW(hO, knows, pos, time, observedBy) [hO, knows, pos, time, observedBy]
-
-// Adds two vectors of length 9
-#define VECTOR_ADD_9(a, b) ((a select [0, 3]) vectorAdd (b select [0, 3])) + ((a select [3, 3]) vectorAdd (b select [3, 3])) + ((a select [6, 3]) vectorAdd (b select [6, 3]))

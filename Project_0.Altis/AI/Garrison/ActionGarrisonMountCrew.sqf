@@ -67,13 +67,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			// Do we need to mount or dismount?
 			if (_mount) then {
 				// Fail this action if any group has failed
-				if (CALLSM3("AI", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
+				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
 					_state = ACTION_STATE_FAILED;
 					breakTo "s0";
 				};
 				
 				// Complete the action when all vehicle groups have mounted
-				if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
 				//pr _ws = GETV(T_GETV("AI"), "worldState");
 				//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
 					// Update sensors affected by this action
