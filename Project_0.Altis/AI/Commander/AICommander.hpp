@@ -18,6 +18,9 @@
 // Minimum distance for enemy clusters before they are merged into one cluster
 #define TARGETS_CLUSTER_DISTANCE_MIN	500
 
+// Maximum distance for QRF that doesn't need vehicles to transport troops
+#define QRF_NO_TRANSPORT_DISTANCE_MAX	800
+
 
 // Structure of a target record for commander
 // It's the same as targets structure but has an array with garrisons that are observing this target

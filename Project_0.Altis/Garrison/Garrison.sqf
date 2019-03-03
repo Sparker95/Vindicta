@@ -523,19 +523,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		pr _units = T_GETV("units");
 
-		pr _nDrivers = 0;
-		pr _nTurrets = 0;
-
-		{
-			if (CALLM0(_x, "isVehicle")) then {
-				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
-				_nDrivers = _nDrivers + _n_driver;
-				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
-			};
-		} forEach _units;
-
-		[_nDrivers, _nTurrets]
+		CALLSM1("Unit", "getRequiredCrew", _units)
 	} ENDMETHOD;
 	
 	/*

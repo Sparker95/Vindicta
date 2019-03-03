@@ -609,6 +609,50 @@ CLASS(UNIT_CLASS_NAME, "");
 	STATIC_METHOD("createUnitFromObjectHandle") {
 	} ENDMETHOD;
 
+
+	/*
+	Method: (static)getRequiredCrew
+	Returns amount of needed drivers and turret operators for all vehicles in this garrison.
+
+	Parameters: _units
+
+	_units - array of <Unit> objects
+
+	Returns: [_nDrivers, _nTurrets]
+	*/
+	
+	STATIC_METHOD("getRequiredCrew") {
+		params ["_thisClass", ["_units", [], [[]]]];
+		
+		pr _nDrivers = 0;
+		pr _nTurrets = 0;
+		{
+			if (CALLM0(_x, "isVehicle")) then {
+				pr _className = CALLM0(_x, "getClassName");
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				_nDrivers = _nDrivers + _n_driver;
+				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+			};
+		} forEach _units;
+	} ENDMETHOD;
+	
+	/*
+	Function: (static)getCargoInfantryCapacity
+	Returns how many units can be loaded as cargo by all the vehicles from _units
+	
+	Parameters: _units
+	
+	_units - array of <Unit> objects
+	
+	Returns: Number
+	*/
+	STATIC_METHOD("getCargoInfantryCapacity") {
+		params ["_thisClass", ["_units", [], [[]]]];
+		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
+		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
+	} ENDMETHOD;
+
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
