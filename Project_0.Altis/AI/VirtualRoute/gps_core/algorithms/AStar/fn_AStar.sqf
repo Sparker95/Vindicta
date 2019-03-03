@@ -26,7 +26,8 @@ params [
 	["_distanceFunction", { 
 		params ["_current", "_next", "_startRoute", "_goalRoute"];
 		_goalRoute distance _next
-	}]
+	}],
+	["_debugDraw", false]
 ];
 
 private _frontier = [];
@@ -59,7 +60,7 @@ for "_i" from 0 to 1 step 0 do {
 			_priority = _new_cost + ([_current, _next, _startRoute, _goalRoute] call _distanceFunction);
 			[_frontier,_priority,_counter,_next] call misc_fnc_PQ_insert;
 			
-			if(!(isNil "gps_test_fnc_mapDrawLine")) then {
+			if(_debugDraw and !(isNil "gps_test_fnc_mapDrawLine")) then {
 				[
 					["start", getPos _current],
 					["end", getPos _next],
@@ -77,7 +78,7 @@ for "_i" from 0 to 1 step 0 do {
 				_priority = _new_cost + ([_current, _next, _startRoute, _goalRoute] call _distanceFunction);
 				[_frontier,_priority,_counter,_next] call misc_fnc_PQ_insert;
 
-				if(!(isNil "gps_test_fnc_mapDrawLine")) then {
+				if(_debugDraw and !(isNil "gps_test_fnc_mapDrawLine")) then {
 					[
 						["start", getPos _current],
 						["end", getPos _next],
@@ -93,7 +94,7 @@ for "_i" from 0 to 1 step 0 do {
 	} foreach ([_namespace,RID(_current)] call misc_fnc_hashTable_find);
 };
 
-if(!(isNil "gps_test_fnc_mapDrawLine")) then {
+if(_debugDraw and !(isNil "gps_test_fnc_mapDrawLine")) then {
 	_allMarkers = allMapMarkers;
 	{
 		if (toLower _x find "astar_" >= 0) then

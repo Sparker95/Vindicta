@@ -112,39 +112,43 @@ CLASS("VirtualRoute", "")
 			[_startRoute] call gps_core_fnc_insertFakeNode;
 			[_endRoute] call gps_core_fnc_insertFakeNode;
 
-			// This gets the node to node path.
-			private _path = [_startRoute,_endRoute,_costFn] call gps_core_fnc_generateNodePath;
-			// This fills in all the actual roads between the nodes.
-			private _fullPath = [_path] call gps_core_fnc_generatePathHelpers;
+			try {
+				// This gets the node to node path.
+				private _path = [_startRoute,_endRoute,_costFn] call gps_core_fnc_generateNodePath;
+				// This fills in all the actual roads between the nodes.
+				private _fullPath = [_path] call gps_core_fnc_generatePathHelpers;
 
-			T_SETV("route", _fullPath);
+				T_SETV("route", _fullPath);
 
-			// Generating waypoints for AI navigation
-			private _waypoints = [getPos (_fullPath select 0)];
-			private _last_junction = 0;
-			for "_i" from 0 to count _fullPath - 1 do {
-				private _current = _fullPath select _i;
-				if(count ([gps_allCrossRoadsWithWeight, str _current] call misc_fnc_hashTable_find) > 1) then
-				{
-					_waypoints pushBack (getPos (_fullPath select floor((_i + _last_junction)/2)));
-					_last_junction = _i;
+				// Generating waypoints for AI navigation
+				private _waypoints = [getPos (_fullPath select 0)];
+				private _last_junction = 0;
+				for "_i" from 0 to count _fullPath - 1 do {
+					private _current = _fullPath select _i;
+					if(count ([gps_allCrossRoadsWithWeight, str _current] call misc_fnc_hashTable_find) > 1) then
+					{
+						_waypoints pushBack (getPos (_fullPath select floor((_i + _last_junction)/2)));
+						_last_junction = _i;
+					};
 				};
+				_waypoints pushBack getPos (_fullPath select (count _fullPath - 1));
+				
+				T_SETV("waypoints", _waypoints);
+
+				T_SETV("nextIdx", 1);
+				T_SETV("pos", getPos (_fullPath select 0));
+
+				T_PRVAR(speedFn);
+
+				// Speed for first section
+				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1] call _speedFn;
+				T_SETV("currSpeed_ms", _currSpeed_ms);
+
+				// Set it last
+				T_SETV("calculated", true);
+			} catch {
+				T_SETV("failed", true);
 			};
-			_waypoints pushBack getPos (_fullPath select (count _fullPath - 1));
-			
-			T_SETV("waypoints", _waypoints);
-
-			T_SETV("nextIdx", 1);
-			T_SETV("pos", getPos (_fullPath select 0));
-
-			T_PRVAR(speedFn);
-
-			// Speed for first section
-			pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1] call _speedFn;
-			T_SETV("currSpeed_ms", _currSpeed_ms);
-
-			// Set it last
-			T_SETV("calculated", true);
 		};
 	} ENDMETHOD;
 
@@ -185,58 +189,118 @@ CLASS("VirtualRoute", "")
 		pr _dt = time - _last_t;
 		T_SETV("last_t", time);
 
-		// TODO: 
-		// To make this work for large dt (> a few seconds) we should make it a loop:
-		// while speed*dt > next_dist {
-		// 	dt_to_next = next_dist / speed (check this is the correct math)
-		//	dt = dt - dt_to_next
-		//  nextIdx = nextIdx + 1 etc. (same as below, just move to the next section)
-		// }
-		// pos = pos + dist blah bah.
-
-		// How far will should we travel?
-		T_PRVAR(currSpeed_ms);
-		pr _dist = _currSpeed_ms * _dt;
-
 		// How far to the next node?
 		T_PRVAR(pos);
 		T_PRVAR(nextIdx);
 		T_PRVAR(route);
-		pr _next_pos = getPos (_route select _nextIdx);
-		pr _next_dist = _pos distance _next_pos;
+		pr _nextPos = getPos (_route select _nextIdx);
+		pr _nextDist = _pos distance _nextPos;
+
+		// How far will should we travel?
+		T_PRVAR(currSpeed_ms);
+		//pr _dist = _currSpeed_ms * _dt;
 
 		// If we will reach the next node then...
-		if(_dist >= _next_dist) then {
+		while { _currSpeed_ms * _dt >= _nextDist and _nextIdx < count _route } do {
 
-			// Just set our position to the next node itself. We lose a bit of accuracy here but it 
-			// should be trivial.
-			T_SETV("pos", _next_pos);
-
-			// _pos = _next_pos;
-			//T_PRVAR(nextIdx);
-
+			// Set our position to the next node.
+			_pos = _nextPos;
 			_nextIdx = _nextIdx + 1;
+			T_SETV("nextIdx", _nextIdx);
 
 			// If we didn't reach the end yet
 			if(_nextIdx < count _route) then {
-				T_PRVAR(speedFn);
+				// Reduce dt by the time it took to reach the next node
+				_dt = _dt - _nextDist / _currSpeed_ms;
 
 				// Update speed for the next section
+				T_PRVAR(speedFn);
 				_currSpeed_ms = [_route select _nextIdx - 1, _route select _nextIdx] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
 
-				//_next_pos = getPos (_route select _nextIdx);
-				//T_SETV("_nextIdx", _nextIdx);
+				_nextPos = getPos (_route select _nextIdx);
+				_nextDist = _pos distance _nextPos;
 			} else {
-
+				T_SETV("complete", true);
 			};
-
-			T_SETV("nextIdx", _nextIdx);
-		} else {
-			// Update position
-			_pos = _pos vectorAdd (vectorNormalized (_next_pos vectorDiff _pos) vectorMultiply _dist);
-			T_SETV("pos", _pos);
 		};
+
+		pr _dist = _currSpeed_ms * _dt;
+
+		// Update position
+		_pos = _pos vectorAdd (vectorNormalized (_nextPos vectorDiff _pos) vectorMultiply _dist);
+		T_SETV("pos", _pos);
+
+	} ENDMETHOD;
+
+
+	/*
+	Method: getConvoyPositions
+	Return a set of positions and directions for convoy vehicles
+
+	Parameters: _number, _spacing
+
+	_number - Number of positions to return.
+	_spacing - Optional, default 20, Spacing between positions.
+
+	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...]
+	*/
+	METHOD("getConvoyPositions") {
+		params [
+			"_thisObject",
+			"_number",
+			["_spacing", 20]
+		];
+		
+		// How far to the next node?
+		T_PRVAR(pos);
+		T_PRVAR(nextIdx);
+		T_PRVAR(route);
+		
+		pr _startPos = getPos (_route select 0);
+
+		private _convoyPositions = [];
+
+		// If we didn't move enough for the convoy to fit going back from current position
+		// we will go forward from start.
+		if(_pos distance _startPos < _spacing * _number) then {
+			pr _currPos = _startPos;
+			pr _index = 0;
+			pr _nextPos = getPos (_route select (_index + 1));
+			for "_i" from 0 to _number do {
+				_convoyPositions pushBack [_currPos, _currPos getDir _nextPos];
+				pr _distNext = _currPos distance _nextPos;
+				pr _distRemaining = _spacing;
+				while {_distRemaining >= _distNext} do {
+					_distRemaining = _distRemaining - _distNext;
+					_index = _index + 1;
+					_currPos = _nextPos;
+					_nextPos = getPos (_route select (_index + 1));
+					_distNext = _currPos distance _nextPos;
+				};
+				_currPos = _currPos vectorAdd (vectorNormalized (_nextPos vectorDiff _currPos) vectorMultiply _distRemaining);
+			};
+		} else {
+			pr _currPos = _pos;
+			pr _index = _nextIdx - 1;
+			pr _prevPos = getPos (_route select _index);
+			for "_i" from 0 to _number do {
+				_convoyPositions pushBack [_currPos, _prevPos getDir _currPos];
+				pr _distPrev = _currPos distance _prevPos;
+				pr _distRemaining = _spacing;
+				while {_distRemaining >= _distPrev} do {
+					_distRemaining = _distRemaining - _distPrev;
+					_index = _index - 1;
+					_currPos = _prevPos;
+					_prevPos = getPos (_route select _index);
+					_distPrev = _currPos distance _prevPos;
+				};
+				_currPos = _currPos vectorAdd (vectorNormalized (_prevPos vectorDiff _currPos) vectorMultiply _distRemaining);
+			};
+			reverse _convoyPositions;
+		};
+
+		_convoyPositions
 	} ENDMETHOD;
 
 	/*
