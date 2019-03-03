@@ -5,6 +5,9 @@ class BuildUI
 {
 	idd = 3981;
 	enableSimulation = true;
+	name = "BuildUI";
+	onLoad = "uiNamespace setVariable ['buildUI_display', _this select 0]";
+	onUnload = "uiNamespace setVariable ['buildUI_display', displayNull]";
 	
 	class ControlsBackground
 	{
