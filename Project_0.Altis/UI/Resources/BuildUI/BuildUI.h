@@ -1,6 +1,5 @@
 #include "BuildUI_Macros.h"
 
-#include "CustomControlClasses.h"
 class BuildUI
 {
 	idd = 3981;
@@ -44,10 +43,9 @@ class BuildUI
 			colorBackground[] = {0.2,0.2,0.2,0.6};
 			colorText[] = {0.702,0.102,0.102,1};
 			font = "PuristaMedium";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);	
 		};
-		class Category Text_Center : CategoryTextControl 
+		class CategoryText_Center
 		{
 			type = 0;
 			idc = IDC_TEXTC;
@@ -63,7 +61,7 @@ class BuildUI
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class CategoryText_L2 : CategoryTextControl 
+		class CategoryText_L2
 		{
 			type = 0;
 			idc = IDC_TEXTL2;
@@ -79,7 +77,7 @@ class BuildUI
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class CategoryText_L1 : CategoryTextControl 
+		class CategoryText_L1
 		{
 			type = 0;
 			idc = IDC_TEXTL1;
@@ -95,7 +93,7 @@ class BuildUI
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class CategoryText_R1 : CategoryTextControl 
+		class CategoryText_R1
 		{
 			type = 0;
 			idc = IDC_TEXTR1;
@@ -111,7 +109,7 @@ class BuildUI
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class CategoryText_R2 : CategoryTextControl 
+		class CategoryText_R2
 		{
 			type = 0;
 			idc = IDC_TEXTR2;
