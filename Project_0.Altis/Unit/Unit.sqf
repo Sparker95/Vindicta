@@ -634,6 +634,7 @@ CLASS(UNIT_CLASS_NAME, "");
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
 			};
 		} forEach _units;
+		[_nDrivers, _nTurrets]
 	} ENDMETHOD;
 	
 	/*

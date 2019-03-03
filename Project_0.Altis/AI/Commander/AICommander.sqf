@@ -421,12 +421,13 @@ CLASS("AICommander", "AI")
 			scopeName "scopeLocLoop";
 			_x params ["_dist", "_loc"];
 			
-			OOP_INFO_3("Analyzing location: %1, pos: %2, distance: %2", _loc, CALLM0(_loc, "getPos"), _dist);
+			OOP_INFO_3("Analyzing location: %1, pos: %2, distance: %3", _loc, CALLM0(_loc, "getPos"), _dist);
 			
 			pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
 			pr _garEff = CALLM0(_gar, "getEfficiencyMobile");
 			// If units at this garrison can destroy the threat
 			if (([_garEff, _requiredEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) then {
+				OOP_INFO_0("  This location can destroy the threat");
 				scopeName "s1";
 				
 				pr _units = CALLM0(_gar, "getUnits") select {! CALLM0(_x, "isStatic")};
@@ -453,10 +454,10 @@ CLASS("AICommander", "AI")
 					// Add units until there are enough of them
 					pr _requiredEffCat = _requiredEff select _j; // Required efficiency in this category
 					pr _pickUnitID = 0;
-					while {(_effAllocated select _j < _requiredEffCat) && (_pickUnitID < count _units)} do {
+					while {(_effAllocated select _i < _requiredEffCat) && (_pickUnitID < count _units)} do {
 						pr _unit = _units select _pickUnitID select 2;
 						pr _group = CALLM0(_unit, "getGroup");
-						pr _groupType = if (_group != "") then {CALLM0(_group, "getType") else {GROUP_TYPE_IDLE};
+						pr _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
 						// Try not to take troops from vehicle groups
 						pr _ignore = (CALLM0(_unit, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC]);
 						
@@ -477,12 +478,15 @@ CLASS("AICommander", "AI")
 									_allocatedUnits pushBackUnique _unit;
 								};
 								_allocatedVehicles pushBack _unit;
+								OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
 							} else {
+								OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
 								_allocatedUnits pushBack _unit;
 							};
 							pr _unitEff = _units select _pickUnitID select 1;
 							// Add to the allocated efficiency vector
 							_effAllocated = VECTOR_ADD_9(_effAllocated, _unitEff);
+							//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
 						};
 						_pickUnitID = _pickUnitID + 1;
 					};
@@ -490,8 +494,13 @@ CLASS("AICommander", "AI")
 					_j = _j + 1;
 				};
 				
+				OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroups, _effAllocated);
+				
 				// Check if we have allocated enough units
 				if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
+				
+					OOP_INFO_0("   Allocated units can destroy the threat");
+					
 					pr _nCrewRequired = CALLSM1("Unit", "getRequiredCrew", _allocatedVehicles);
 					_nCrewRequired params ["_nDrivers", "_nTurrets"];
 					pr _nInfAllocated = {CALLM0(_x, "isInfantry")} count _allocatedUnits;
@@ -515,23 +524,32 @@ CLASS("AICommander", "AI")
 						if (_freeInfUnits < _nMoreCrewRequired) then {
 							// Not enough infantry here to equip all the vehicles we have allocated
 							// Go check other locations
+							OOP_INFO_0("   Failed to allocate additional crew");
 							breakTo "scopeLocLoop";
 						} else {
+							pr _crewToAdd = _freeInfUnits select [0, _nMoreCrewRequired];
+							
+							OOP_INFO_1("   Successfully allocated additional crew: %1", _crewToAdd);
 							// Add the allocated units to the array
-							_allocatedUnits append (_freeInfUnits select [0, _nMoreCrewRequired]);
+							_allocatedUnits append _crewToAdd;
 						};
 					};
 					
 					// Do we need to find transport vehicles?
 					if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
-						pr _nCargoSeatsRequired = _nInfAllocated - _nDrivers - _nTurrets;
+						pr _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
 						pr _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
+						//ade_dumpcallstack;
+						OOP_INFO_2("   Finding additional transport vehicles for %1 troops. Currently available cargo seats: %2", _nCargoSeatsRequired, _nCargoSeatsAvailable);
 						
 						// If we need more vehicles for transport
 						if (_nCargoSeatsAvailable < _nCargoSeatsRequired) then {
+						
+							OOP_INFO_0("   Currently NOT enough cargo seats");
+							
 							pr _nMoreCargoSeatsRequired = _nCargoSeatsRequired - _nCargoSeatsAvailable;
 							// Get all remaining vehicles in this garrison, sort them by their cargo infantry capacity
-							pr _availableVehicles = CALLM1(_gar, "getUnits") select {
+							pr _availableVehicles = CALLM0(_gar, "getUnits") select {
 								CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
 								if (_x in _allocatedVehicles || _catID != T_VEH) then { // Don't consider vehicles we have already taken and non-vehicles
 									false
@@ -546,9 +564,12 @@ CLASS("AICommander", "AI")
 							pr _availableVehiclesCapacity = _availableVehicles apply {[CALLSM1("Unit", "getCargoInfantryCapacity", [_x]), _x]};
 							_availableVehiclesCapacity sort false; // Descending
 							
+							OOP_INFO_1("   Available additional vehicles with cargo capacity: %1", _availableVehiclesCapacity);
+							
 							// Add more vehicles while we can
 							pr _i = 0;
 							while {(_nMoreCargoSeatsRequired > 0) && (_i < count _availableVehiclesCapacity)} do {
+								OOP_INFO_2("   Added vehicle: %1, with cargo capacity: %2", _availableVehiclesCapacity select _i select 1, _availableVehiclesCapacity select _i select 0);
 								_allocatedUnits pushBack (_availableVehiclesCapacity select _i select 1);
 								_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - (_availableVehiclesCapacity select _i select 0);
 								_i = _i + 1;
@@ -556,16 +577,21 @@ CLASS("AICommander", "AI")
 							
 							// IF we have finally found enough vehicles
 							if (_nMoreCargoSeatsRequired <= 0) then {
+								
+								OOP_INFO_0("   Successfully allocated additional vehicles!");
+								
 								// Success
 								_allocated = true;					
 								breakTo "s0";
 							} else {
 								// Not enough vehicles for everyone!
 								// Check other locations then
+								OOP_INFO_0("   Failed to allocate additional vehicles!");
 								breakTo "scopeLocLoop";
 							}; // if (_nMoreCargoSeatsRequired <= 0)
 						} else { // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
 							// We don't need more vehicles, it's fine
+							OOP_INFO_0("   Currently enough cargo seats");
 							_allocated = true;					
 							breakTo "s0";			
 						}; // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
@@ -573,14 +599,18 @@ CLASS("AICommander", "AI")
 					} else {
 						// No need to find transport vehicles
 						// We are done here!
+						OOP_INFO_0("   No need to find more transport vehicles");
 						_allocated = true;					
 						breakTo "s0";					
 					}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 
 				} else { // if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
 					// Not enough units to deal with the threat
+					OOP_INFO_0("   Allocated units can NOT destroy the threat");
 					breakTo "scopeLocLoop";
 				};
+			} else {
+				OOP_INFO_0("  This location can NOT destroy the threat");
 			};
 		} forEach _friendlyDistLoc;
 		
