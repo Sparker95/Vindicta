@@ -7,6 +7,7 @@ class BuildUI
 	name = "BuildUI";
 	onLoad = "uiNamespace setVariable ['buildUI_display', _this select 0]";
 	onUnload = "uiNamespace setVariable ['buildUI_display', displayNull]";
+	duration = 10000000;
 	
 	class ControlsBackground
 	{
