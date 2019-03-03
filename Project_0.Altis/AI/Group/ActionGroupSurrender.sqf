@@ -10,11 +10,16 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 
-		private _hG = GETV(_thisObject, "hG");
+		private _AI = T_GETV("AI");
+		private _group = GETV(_AI, "agent");
+		private _groupUnits = CALLM0(_group, "getUnits");
 
-		_hG setCombatMode "BLUE"; // Never fire, engage at will
-		{ [_x] spawn misc_fnc_actionDropAllWeaponsAndSurrender; } forEach (units _hG);
-		_hG setBehaviour "CARELESS";
+		{
+			if (CALLM0(_x, "isInfantry")) then {
+				private _unitAI = CALLM0(_x, "getAI");
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitSurrender", 0, [], _AI);
+			};
+		} forEach _groupUnits;
 
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -27,10 +32,6 @@ CLASS("ActionGroupSurrender", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		CALLM(_thisObject, "activateIfInactive", []);
-
-		// Make sure they have no weapon and surrender animation
-		private _state = T_GETV("state");
-		_state;
 
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;

@@ -15,6 +15,7 @@ call compile preprocessFileLineNumbers "AI\Unit\ActionUnitMoveLeaderVehicle.sqf"
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitRepairVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitScareAway.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\ActionUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\ActionUnitVehicleUnflip.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitDismountCurrentVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitFollowLeaderVehicle.sqf";
@@ -25,6 +26,7 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitMoveLeaderVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitRepairVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitScareAway.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitVehicleUnflip.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnit.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnitStimulatable.sqf";

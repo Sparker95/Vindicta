@@ -11,17 +11,17 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // ---- Goal relevance values and effects ----
 // The actual relevance returned by goal can be different from the one which is set below
 
-["GoalGroupRelax",				1] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupPatrol",				30] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupRegroup",				35] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupGetInVehiclesAsCrew", 40] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupGetInGarrisonVehiclesAsCargo", 40] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupOccupySentryPositions", 50] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupMoveGroundVehicles", 60] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupUnflipVehicles", 70] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupClearArea", 80] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupMoveToPos", 100] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupSurrender", 150] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupRelax",								1] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupPatrol",								30] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupRegroup",							35] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupGetInVehiclesAsCrew",				40] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupGetInGarrisonVehiclesAsCargo",		40] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupOccupySentryPositions",				50] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupMoveGroundVehicles",					60] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupUnflipVehicles",						70] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupClearArea",							80] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupMoveToPos",							100] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupSurrender",							150] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 // ---- Goal effects ----
 // The actual effects returned by goal can depend on context and differ from those set below
