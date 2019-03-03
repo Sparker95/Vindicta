@@ -1,0 +1,31 @@
+/*%FSM<COMPILE "D:\Steam Games\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, call.fsm">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"_",0,250,-39.366180,-160.211273,50.633820,-110.211273,0.000000,""};
+globals[] = {0.000000,0,0,0,0,640,480,1,2,6316128,1,-300.000000,300.000000,300.000000,-300.000000,1164,704,1};
+window[] = {2,-1,-1,-1,-1,650,26,1226,26,3,1182};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "call.fsm";
+        class States
+        {
+                /*%FSM<STATE "_">*/
+                class _
+                {
+                        name = "_";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"(_this select 0) call (_this select 1);"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="_";
+        finalStates[] =
+        {
+        };
+};
+/*%FSM</COMPILE>*/
