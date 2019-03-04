@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+#define OFSTREAM_FILE "buildUI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\BuildUI\BuildUI_Macros.h"
 
@@ -11,50 +12,47 @@ Initializes the build menu UI, handles opening and closing, and handles the buil
 Author: Marvis
 */
 
-#define CLASS_NAME "BuildUI"
 #define pr private
 
-g_buildUIRpt = ofstream_new "buildUI.rpt"; 
-g_buildUIRpt << ".RPT VARIABLE: g_buildUIRpt";
+build_ui_activeBuildMenus = [];
+build_ui_unit = objNull; // player
+build_ui_EHKeyDown = objNull;
+build_ui_EHKeyUp = objNull;
 
-VARIABLE("unit"); // player
-VARIABLE("EHKeyDown");
-VARIABLE("EHKeyUp");
+build_ui_addOpenBuildMenuAction = {
+	params ["_object"];
+	OOP_INFO_1("[BuildUI] Adding Open Build Menu action to %1.", _object);
 
-CLASS(CLASS_NAME, "")
-	
-	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_unit", objNull, [objNull]]];
+	pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayEGSpectator\Fps.paa' />  %1", "Open Build Menu"], {  
+		params ["_target", "_caller", "_actionId", "_arguments"];
+		[] call build_ui_init;
+	}];
 
-		SETV(_thisObject, "unit", _unit);
-		_unit setVariable ["BuildUI", _thisObject];
-		g_buildUIRpt << format ["Class BuildUI: Player %1, build UI object created.", name _unit];
-		
-	} ENDMETHOD;
+	build_ui_activeBuildMenus pushBack [_object, _id];
+};
 
-	METHOD("openUI") {
-		params [["_thisObject", "", [""]]];
+build_ui_removeAllActions = {
+	{
+		_x params ["_object", "_id"];
+		_object removeAction _id;
+	} forEach build_ui_activeBuildMenus;
+};
 
-		pr _unit = GETV(_thisObject, "unit");
+build_ui_init = {
+	OOP_INFO_1("[BuildUI] Player %1, build UI initialized.", name player);
 
-		g_buildUIRpt << "Class BuildUI: 'openUI' method called.";
+	// Maybe extra variable isn't even needed, can it be other than the player?!
+	build_ui_unit = player;
+};
 
-		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
+build_ui_openUI = {
+	OOP_INFO_0("[BuildUI] 'build_ui_openUI' method called.");
 
+	build_ui_EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
 		systemChat format ["%1", _EHKeyDown];
+	}];
+};
 
-		}];
-
-		//SET_VAR(_thisObject, "EHKeyDown", _EHKeyDown);
-		//SET_VAR(_thisObject, "EHKeyUp", _EHKeyUp);
-		
-	} ENDMETHOD;
-
-	METHOD("closeUI") {
-		params [["_thisObject", "", [""]]];
-
-			
-		
-	} ENDMETHOD;
-
-ENDCLASS;
+build_ui_closeUI = {
+	OOP_INFO_0("[BuildUI] 'build_ui_closeUI' method called.");
+};

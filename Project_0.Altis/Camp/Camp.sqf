@@ -36,7 +36,7 @@ CLASS("Camp", "Location")
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 
 		pr _campFire = "Land_Campfire_F" createVehicle _pos;
-		_campFire remoteExec ["fnc_openBuildUI", 0, _campFire];
+		_campFire remoteExec ["build_ui_addOpenBuildMenuAction", 0, _campFire];
 		SET_VAR(_thisObject, "campFire", _campFire);
 
 		// Create Respawn Marker

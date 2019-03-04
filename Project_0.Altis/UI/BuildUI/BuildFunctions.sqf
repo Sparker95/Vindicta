@@ -50,14 +50,13 @@ ui_fnc_moveObject = {
 	true
 };
 
-
 ui_fnc_enterBuildMode = {
-	cutRsc ["buildUI", "PLAIN", 2];
+	// cutRsc ["buildUI", "PLAIN", 2];
 	
-	// FOR DEBUGGING:
-	{
-		_x setVariable ["P0_allowMove", true];
-	} forEach (player nearObjects 50);
+	// // FOR DEBUGGING:
+	// {
+	// 	_x setVariable ["P0_allowMove", true];
+	// } forEach (player nearObjects 50);
 
 	player addAction ["Grab Object", {
 		params ["_object"];
@@ -94,3 +93,6 @@ ui_fnc_enterBuildMode = {
 	}, []] call BIS_fnc_addStackedEventHandler;
 };
 
+ui_fnc_enterBuildMode = {
+
+};
