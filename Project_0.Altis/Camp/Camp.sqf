@@ -31,21 +31,17 @@ CLASS("Camp", "Location")
 		CALL_METHOD(_thisObject, "setType", [LOCATION_TYPE_CAMP]);
 
 		// Create box with Jeroen's arsenal box
-		pr _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
+		pr _arsenalBox = "Box_FIA_Support_F" createVehicle _pos;
 		_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 
 		pr _campFire = "Land_Campfire_F" createVehicle _pos;
-		_campFire remoteExec ["fnc_addActionCampZeus", 0, _campFire];
+		_campFire remoteExec ["fnc_openBuildUI", 0, _campFire];
 		SET_VAR(_thisObject, "campFire", _campFire);
 
-		// Create Marker
+		// Create Respawn Marker
 		private _marker = createMarker ["respawn_west_" + _thisObject, _pos]; // magic
-		_marker setMarkerShape "ICON"; //"RECTANGLE";
-		_marker setMarkerType "mil_start";
-		_marker setMarkerColor "ColorWEST";
-		_marker setMarkerText ("WEST Camp " + _thisObject);
-		_marker setMarkerAlpha 0.3;
+		_marker setMarkerAlpha 0.0;
 
 		// Setup location's border from marker properties
 		private _mrkSize = getMarkerSize _marker;
@@ -96,7 +92,6 @@ CLASS("Camp", "Location")
 			_i = _i + 1;
 		};
 
-
 		// Add default infantry groups
 		private _i = 0;
 		while {_cInf > 0 && _i < 666} do {
@@ -116,28 +111,6 @@ CLASS("Camp", "Location")
 
 		SET_VAR(_thisObject, "arsenalBox", nil);
 		SET_VAR(_thisObject, "campFire", nil);
-	} ENDMETHOD;
-
-	// |                   		 C R E A T E  Z E U S                   	 |
-
-	STATIC_METHOD("createZeus") {
-		params ["_thisClass"];
-
-		pr _groupCurator = createGroup WEST;
-		pr _campCurator = _groupCurator createunit ["ModuleCurator_F", [0, 90, 90], [], 0.5, "NONE"];
-
-		// set editing area
-		_campCurator addCuratorEditingArea [89, position player, 40];
-		_campCurator setCuratorEditingAreaType true; // disallow placing outside of area
-
-		// camera movement restrictions
-		_campCurator addCuratorCameraArea [90, position player, 40];
-		_campCurator setCuratorCameraAreaCeiling 50;
-		_campCurator allowCuratorLogicIgnoreAreas false; // may have to enable to allow commanding units
-
-		removeAllCuratorAddons _campCurator; // remove *all* objects from Zeus menu
-		unassignCurator _campCurator;
-
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -6,3 +6,4 @@ call compile preprocessFileLineNumbers "UI\MapMarker\MapMarker.sqf";
 call compile preprocessFileLineNumbers "UI\MapMarkerLocation\MapMarkerLocation.sqf";
 
 call compile preprocessFileLineNumbers "UI\BuildUI\BuildFunctions.sqf";
+call compile preprocessFileLineNumbers "UI\BuildUI\BuildUI.sqf";
