@@ -264,12 +264,18 @@ fnc_debugv2_overwrite = {
 	
 };
 
+
+
 [] spawn {
-	waitUntil {!isNull findDisplay 49}; 
+
+	waitUntil {!isNull findDisplay 46}; 
+
 	(findDisplay 46) displayAddEventHandler ["KeyDown", {
 		params ["_display", "_key", "_shift", "_ctrl", "_alt"];
-		diag_log "test2";
-		if(_key == 1)then{[] spawn fnc_debugv2_overwrite;};
+		
+		if(_key == 1)then{
+			[] spawn fnc_debugv2_overwrite;
+		};
 	}];
 
 };
