@@ -74,8 +74,8 @@ CLASS("BuildUI", "")
 
 		// ? cutRsc ["buildUI", "PLAIN", 2];
 
-		build_ui_EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
-			systemChat format ["%1", build_ui_EHKeyDown];
+		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
+			systemChat format ["%1", str _this];
 			
 			switch (_keyText) do {
 				default { false; }; 
@@ -85,6 +85,8 @@ CLASS("BuildUI", "")
 			};
 		}];
 
+		T_SETV("EHKeyDown", _EHKeyDown);
+
 		// TODO: Add player on death event to hide UI and drop held items etc.
 		// Also for when they leave camp area.
 	} ENDMETHOD;
@@ -92,7 +94,7 @@ CLASS("BuildUI", "")
 	METHOD("closeUI") {
 		OOP_INFO_0("method called");
 
-		(findDisplay 46) displayRemoveEventHandler ["KeyDown", build_ui_EHKeyDown];
+		(findDisplay 46) displayRemoveEventHandler ["KeyDown", T_GETV("EHKeyDown")];
 		T_SETV("EHKeyDown", nil);
 
 		OOP_INFO_0("Removed display event handler!");
