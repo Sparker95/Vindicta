@@ -5,7 +5,7 @@ class JN {
 		class test_init {preinit = 1;};
 		class test_recompile {};
 		class test_configViewer {};
-		class test_debugv2 {preinit = 1;};
+		class test_debugv2 {postinit = 1;};
 	};
 	class Common {
 		file = "JeroenArsenal\Common";
