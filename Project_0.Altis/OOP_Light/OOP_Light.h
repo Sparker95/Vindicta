@@ -456,7 +456,8 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
 
-#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else {_thisClass}
+#define LOG_SCOPE(scopeName) private _oop_logScope = scopeName
+#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }}}
 //#define LOG_1 _fnc_scriptName
 #define LOG_1 "fnc"
 

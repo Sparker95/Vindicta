@@ -102,7 +102,8 @@ player addEventHandler ["AnimChanged", {
 
 // Create a suspiciousness monitor for player
 NEW("undercoverMonitor", [player]);
-NEW("BuildUI", [player]);
 
 // Create camp scroll menu
 player addAction ["Create Camp", "Camp\createCamp.sqf"];
+
+call build_ui_init;
