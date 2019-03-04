@@ -216,6 +216,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
 
+// Macros for calls to this
+#define T_CALLM(a, b) CALL_METHOD(_thisObject, a, b)
+#define T_CALLM0(a) CALL_METHOD_0(_thisObject, a)
+#define T_CALLM1(a, b) CALL_METHOD_1(_thisObject, a, b)
+#define T_CALLM2(a, b, c) CALL_METHOD_2(_thisObject, a, b, c)
+#define T_CALLM3(a, b, c, d) CALL_METHOD_3(_thisObject, a, b, c, d)
+#define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
+
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
 #define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d)

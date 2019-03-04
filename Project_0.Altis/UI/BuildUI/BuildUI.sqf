@@ -4,6 +4,7 @@
 #define OFSTREAM_FILE "buildUI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\BuildUI\BuildUI_Macros.h"
+#include "..\..\GlobalAssert.hpp"
 
 /*
 Class: BuildUI
@@ -14,75 +15,102 @@ Author: Marvis
 
 #define pr private
 
-build_ui_activeBuildMenus = [];
-build_ui_unit = objNull; // player
-build_ui_EHKeyDown = objNull;
-build_ui_EHKeyUp = objNull;
+g_BuildUI = nil;
 
-LOG_SCOPE("BuildUI");
+CLASS("BuildUI", "")
+
+	VARIABLE("activeBuildMenus");
+	VARIABLE("EHKeyDown");
+	VARIABLE("EHKeyUp") ;
+
+	METHOD("new") {
+		params [["_thisObject", "", [""]]];
+
+		if(!(isNil("g_BuildUI"))) exitWith {
+			OOP_ERROR_0("BuildUI already initialized! Make sure to delete it before trying to initialize it again!");
+		};
+
+		g_BuildUI = _thisObject;
+
+		OOP_INFO_1("Player %1 build UI initialized.", name player);
+
+		T_SETV("activeBuildMenus", []);
+		T_SETV("EHKeyDown", nil);
+		T_SETV("EHKeyUp", nil);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_1("Player %1 build UI destroyed.", name player);
+
+		g_BuildUI = nil;
+	} ENDMETHOD;
+
+	METHOD("addOpenBuildMenuAction") {
+		params [["_thisObject", "", [""]], "_object"];
+		OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
+
+		pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayEGSpectator\Fps.paa' />  %1", "Open Build Menu"], {  
+			params ["_target", "_caller", "_actionId", "_arguments"];
+			_arguments params ["_thisObject"];
+			T_CALLM0("openUI");
+		}, [_thisObject]];
+
+		T_GETV("activeBuildMenus") pushBack [_object, _id];
+	} ENDMETHOD;
+
+	METHOD("removeAllActions") {
+		OOP_INFO_0("Removing all active Open Build Menu actions.");
+
+		{
+			_x params ["_object", "_id"];
+			_object removeAction _id;
+		} forEach T_GETV("activeBuildMenus");
+	} ENDMETHOD;
+
+	METHOD("openUI") {
+		OOP_INFO_0("method called");
+
+		// ? cutRsc ["buildUI", "PLAIN", 2];
+
+		build_ui_EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
+			systemChat format ["%1", build_ui_EHKeyDown];
+			
+			switch (_keyText) do {
+				default { false; }; 
+				case """UP""": { CALLM0(g_BuildUI, "navUp"); true; };
+				case """DOWN""": { CALLM0(g_BuildUI, "navDown"); true; };
+				case """Escape""": { CALLM0(g_BuildUI, "closeUI"); true; };
+			};
+		}];
+
+		// TODO: Add player on death event to hide UI and drop held items etc.
+		// Also for when they leave camp area.
+	} ENDMETHOD;
+
+	METHOD("closeUI") {
+		OOP_INFO_0("method called");
+
+		(findDisplay 46) displayRemoveEventHandler ["KeyDown", build_ui_EHKeyDown];
+		T_SETV("EHKeyDown", nil);
+
+		OOP_INFO_0("Removed display event handler!");
+	} ENDMETHOD;
+
+	// navigate up item list
+	METHOD("navUp") {
+		OOP_INFO_0("method called");
+	} ENDMETHOD;
+
+	METHOD("navDown") {
+		OOP_INFO_0("method called");
+	} ENDMETHOD;
+
+ENDCLASS;
 
 build_ui_addOpenBuildMenuAction = {
-	params ["_object"];
-	OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
+	ASSERT_GLOBAL_OBJECT(g_BuildUI);
 
-	pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayEGSpectator\Fps.paa' />  %1", "Open Build Menu"], {  
-		params ["_target", "_caller", "_actionId", "_arguments"];
-		call build_ui_openUI;
-	}];
-
-	build_ui_activeBuildMenus pushBack [_object, _id];
-};
-
-build_ui_removeAllActions = {
-	OOP_INFO_0("Removing all active Open Build Menu actions.");
-
-	{
-		_x params ["_object", "_id"];
-		_object removeAction _id;
-	} forEach build_ui_activeBuildMenus;
-};
-
-build_ui_init = {
-	OOP_INFO_1("Player %1, build UI initialized.", name player);
-
-	// Maybe extra variable isn't even needed, can it be other than the player?!
-	build_ui_unit = player;
-};
-
-build_ui_openUI = {
-	OOP_INFO_0("'build_ui_openUI' method called.");
-
-	// ? cutRsc ["buildUI", "PLAIN", 2];
-
-	build_ui_EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
-		systemChat format ["%1", build_ui_EHKeyDown];
-		
-		switch (_keyText) do {
-			default { false; }; 
-			case """UP""": { call build_ui_navUp; true; };
-			case """DOWN""": { call build_ui_navDown; true; };
-			case """Escape""": { call build_ui_navDown; true; };
-		};
-	}];
-
-	// TODO: Add player on death event to hide UI and drop held items etc.
-	// Also for when they leave camp area.
-};
-
-build_ui_closeUI = {
-	OOP_INFO_0("'build_ui_closeUI' method called.");
-
-	(findDisplay 46) displayRemoveEventHandler ["KeyDown", build_ui_EHKeyDown];
-	build_ui_EHKeyDown = nil;
-
-	OOP_INFO_0("'build_ui_closeUI' method: Removed display event handler!");
-};
-
-// navigate up item list
-build_ui_navUp = {
-	OOP_INFO_0("'navUp' method called.");
-};
-
-build_ui_navDown = {
-	OOP_INFO_0("'navDown' method called.");
+	CALLM1(g_BuildUI, "addOpenBuildMenuAction", _this);
 };
