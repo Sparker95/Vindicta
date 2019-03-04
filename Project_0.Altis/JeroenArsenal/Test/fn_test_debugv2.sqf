@@ -1,16 +1,8 @@
 #include "defineCommon.inc"
 
-[] spawn {
-
-while {true}do{
-
-	waituntil {isnull (findDisplay 316000) && {isnull findDisplay 49}};
-	waituntil {!isnull (findDisplay 316000) || {!isnull findDisplay 49}};
-
-	_display = findDisplay 316000;
-			if(isnull _display)then{_display = findDisplay 49};//ingame
-			if(isnull _display)exitWith{};
-		
+fnc_debugv2_overwrite = {
+	waitUntil {!isNull findDisplay 49}; 
+	_display = findDisplay 49;
 	
 	_ctrl_debug = _display displayCtrl 13184; 
 	_pos_debug = ctrlposition _ctrl_debug;// [x, y, w, h] 
@@ -270,10 +262,15 @@ while {true}do{
 		((UiNameSpace getVariable "jn_debugConsole_buttons") # _index) ctrlSetText _name;
 	}];
 	
-	
-	
-	
-}
+};
+
+[] spawn {
+	waitUntil {!isNull findDisplay 49}; 
+	(findDisplay 46) displayAddEventHandler ["KeyDown", {
+		params ["_display", "_key", "_shift", "_ctrl", "_alt"];
+		diag_log "test2";
+		if(_key == 1)then{[] spawn fnc_debugv2_overwrite;};
+	}];
 
 };
 
