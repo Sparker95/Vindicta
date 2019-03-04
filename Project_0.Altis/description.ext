@@ -115,7 +115,6 @@ class CfgRemoteExec
 // HUD UIs
 class RscTitles {
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
-#include "UI\Resources\UndercoverUI_Debug\UIUndercoverDebug.h"
 };
 
 class Extended_PreInit_EventHandlers {

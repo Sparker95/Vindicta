@@ -102,12 +102,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		pr _timer = NEW("Timer", _args);
 		SETV(_thisObject, "timer", _timer);
 
-		#ifdef DEBUG
-			_unit setVariable ["bInVeh", false];					// true while player unit is in vehicle
-			_unit setVariable ["bInMarker", false];					// true while player unit is in wanted marker
-			call compile preprocessFileLineNumbers "UI\UI_OOP\UIUndercoverDebug_Update.sqf";
-		#endif
-
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -159,9 +153,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				if !(isNull _nearestEnemy) then {
 					_distance = (position _nearestEnemy) distance (position _unit);
 
-					#ifdef DEBUG
-					_unit setVariable ["nearestEnemyDist", _distance];
-					#endif
 				}; // get distance to nearestEnemy
 
 
@@ -202,10 +193,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 						}; // only update marker if unit is seen, otherwise no escape possible
 
 						_suspicion = 1;
-
-					 	#ifdef DEBUG
-						_unit setVariable ["bInMarker", true]; // debug UI variable
-						#endif
 
 						// conditions for going back to UNDERCOVER state
 						if ( ((position _unit) distance2D (getMarkerPos "mrkLastHostility")) > WANTED_CIRCLE_RADIUS) exitWith { _removeWanted = true; };
@@ -308,10 +295,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 					deleteMarkerLocal "mrkLastHostility";
 					_unit setVariable [UNDERCOVER_WANTED, false, true];
 					_unit setVariable ["removeWanted", false];
-
-					#ifdef DEBUG
-						_unit setVariable ["bInMarker", false]; // debug UI variable
-					#endif
 				};
 
 				if ( _suspicion >= SUSPICIOUS && _suspicion < 1 ) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; };
@@ -321,12 +304,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				_unit setVariable [UNDERCOVER_SUSPICION, _suspicion, true];
 				CALL_STATIC_METHOD("UndercoverUI", "drawUI", [_unit]); // draw UI
 
-				#ifdef DEBUG // set variables for debug GUI
-					_unit setVariable ["bInVeh", _bInVeh];
-					_unit setVariable ["suspicion", _suspicion];
-					_unit setVariable ["timeSeenDebug", (_timeSeen - time)];
-					_unit setVariable ["timeHostilityDebug", (_timeHostility - time)];
-				#endif
 			}; // end SMON_MESSAGE_PROCESS
 
 			// Finds enemy unit closest to player unit and store it in variable for SMON_MESSAGE_PROCESS
