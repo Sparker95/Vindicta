@@ -14,7 +14,7 @@ _vehicle setMass (_mass * (1+((FLOAT_MASSMULTIPLIER-1)*_amount/_cap)));
 
 pr _id = _vehicle getVariable "rearmAction_id";
 if(!isNil "_id")then{
-	_vehicle setUserActionText [_id, STR_ACTION_REARM(_amount,_cap)];
+	ACTION_SET_ICON_AND_TEXT(_vehicle, _id, STR_ACTION_TEXT_REARM(_amount,_cap), STR_ACTION_ICON_REARM);
 };
 
 true;
