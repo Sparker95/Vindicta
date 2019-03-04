@@ -20,7 +20,7 @@ gMsgLoopUndercover = NEW("MessageLoop", []);
 CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 
 #define pr private
-//#define DEBUG
+#define DEBUG
 
 	// ----------------------------------------------------------------------
 	// |                       S Q F  F U N C T I O N S 					|
@@ -329,7 +329,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				#endif
 			}; // end SMON_MESSAGE_PROCESS
 
-			// messaged by onUnitSpotted static method when unit is being spotted by enemy side
 			// Finds enemy unit closest to player unit and store it in variable for SMON_MESSAGE_PROCESS
 			case SMON_MESSAGE_BEING_SPOTTED: {
 
