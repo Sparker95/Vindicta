@@ -13,7 +13,8 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 		private _hO = T_GETV("hO");
 		_hO spawn{
 			sleep random 6;
-			_this call misc_fnc_actionDropAllWeaponsAndSurrender
+			_this call misc_fnc_actionDropAllWeapons;
+			_this action ["Surrender", _this];
 		};
 
 		// Set state

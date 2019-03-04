@@ -1,5 +1,5 @@
 /*
-Function: misc_fnc_actionDropAllWeaponsAndSurrender
+Function: misc_fnc_actionDropAllWeapons
 Throw all weapons of a unit in randomly in front of him with some animation and then launch surrender action
 Added a random small sleep in case it is applied on a large it will appear more not natural.
 
@@ -8,13 +8,10 @@ Parameters: _unit
 _unit - Unit Infantry
 
 Author: Sen 01.03.2019
-	Updated: Jeroen 03.03.2019 merging into single weaponholder
+Updated: Jeroen 03.03.2019 merging into single weaponholder
 */
 
 params ["_unit"];
-
-//private _rand = ceil(random 6);
-//sleep _rand;
 
 private _weaponHolders = [];
 private _weapons = [];
@@ -40,7 +37,7 @@ private _currentWeapon = currentWeapon _unit; //we need to store it because when
 		_weaponHolder setVelocity [(sin (_dir) * _speed)+_biasX, (cos (_dir) * _speed)+_biasY, 1];
 		sleep 0.5;//dorp weapon one by one
 	};
-}forEach [[primaryWeapon _unit,170,1.5], [secondaryWeapon _unit,190,1.4],[handgunWeapon _unit,90,1.6]]; 
+}forEach [[secondaryWeapon _unit,190,1.4], [handgunWeapon _unit,90,1.6], [primaryWeapon _unit,170,1.5]]; 
 
 
 // we place items together in a non simulated weapon holder.
@@ -58,6 +55,4 @@ if(count _weapons > 0)then{
 		_weaponHolder addWeaponCargoGlobal [_x,1];
 	}forEach _weapons;
 };
-
-_unit action ["Surrender", _unit];
 
