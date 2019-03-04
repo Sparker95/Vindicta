@@ -32,15 +32,15 @@ CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 		pr _suspGear = 0;
 		pr _suspGearVeh = 0;
 
-		if !((uniform _unit in civUniforms) or (uniform _unit == "")) then { _suspGear = _suspGear + SUSP_UNIFORM; _suspGearVeh = _suspGearVeh + SUSP_UNIFORM; };
-		if !((headgear _unit in civHeadgear) or (headgear _unit == "")) then { _suspGear = _suspGear + SUSP_HEADGEAR; _suspGearVeh = _suspGearVeh + SUSP_HEADGEAR; };
-		if !((goggles _unit in civFacewear) or (goggles _unit == "")) then { _suspGear = _suspGear + SUSP_FACEWEAR; _suspGearVeh = _suspGearVeh + SUSP_FACEWEAR; };
-		if !((vest _unit in civVests) or (vest _unit == "")) then { _suspGear = _suspGear + SUSP_VEST; _suspGearVeh = _suspGearVeh + SUSP_VEST; };
+		if !((uniform _unit in g_civUniforms) or (uniform _unit == "")) then { _suspGear = _suspGear + SUSP_UNIFORM; _suspGearVeh = _suspGearVeh + SUSP_UNIFORM; };
+		if !((headgear _unit in g_civHeadgear) or (headgear _unit == "")) then { _suspGear = _suspGear + SUSP_HEADGEAR; _suspGearVeh = _suspGearVeh + SUSP_HEADGEAR; };
+		if !((goggles _unit in g_civFacewear) or (goggles _unit == "")) then { _suspGear = _suspGear + SUSP_FACEWEAR; _suspGearVeh = _suspGearVeh + SUSP_FACEWEAR; };
+		if !((vest _unit in g_civVests) or (vest _unit == "")) then { _suspGear = _suspGear + SUSP_VEST; _suspGearVeh = _suspGearVeh + SUSP_VEST; };
 		if (hmd _unit != "") then { _suspGear = _suspGear + SUSP_NVGS; };
-		if !((backpack _unit in civBackpacks) or (backpack _unit == "")) then { _suspGear = _suspGear + SUSP_BACKPACK; };
+		if !((backpack _unit in g_civBackpacks) or (backpack _unit == "")) then { _suspGear = _suspGear + SUSP_BACKPACK; };
 
-		if !( primaryWeapon _unit in civWeapons) then { _suspGear = 1; };
-		if !( secondaryWeapon _unit in civWeapons) then { _suspGear = 1; };
+		if !( primaryWeapon _unit in g_civWeapons) then { _suspGear = 1; };
+		if !( secondaryWeapon _unit in g_civWeapons) then { _suspGear = 1; };
 
 		_unit setVariable ["suspGear", _suspGear];
 		_unit setVariable ["suspGearVeh", _suspGearVeh]; // equipment we think is visible in a car (e.g. no backpack visible)
@@ -216,7 +216,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 
 					/*
 					--------------------------------------------------------------------------------------------------------------------------------------------
-					|	 U N D E R C O V E R  C H E C K 																									   |
+					|	 N O N - W A N T E D  S T A T E 																									   |
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					*/
 
@@ -234,7 +234,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 						case false: {
 
 							_unit setVariable [UNDERCOVER_EXPOSED, true, true];
-							if !(currentWeapon _unit in civWeapons) then { _suspicion = 1; };
+							if !(currentWeapon _unit in g_civWeapons) then { _suspicion = 1; };
 							pr _suspGear = _unit getVariable "suspGear"; // full equipment suspiciousness as determined by CBA "loadout" event handler
 
 							pr _suspStance = 0;
@@ -279,7 +279,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 									if (_bodyExposure > 0.85) then {
 										_bodyExposure = 1;
 										_unit setVariable [UNDERCOVER_EXPOSED, true, true];
-										if !(currentWeapon _unit in civWeapons) then { _suspicion = 1; };
+										if !(currentWeapon _unit in g_civWeapons) then { _suspicion = 1; };
 									};
 								};
 
