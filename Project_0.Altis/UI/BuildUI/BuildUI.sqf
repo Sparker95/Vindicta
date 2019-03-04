@@ -49,10 +49,30 @@ build_ui_openUI = {
 	OOP_INFO_0("[BuildUI] 'build_ui_openUI' method called.");
 
 	build_ui_EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
-		systemChat format ["%1", _EHKeyDown];
+		systemChat format ["%1", build_ui_EHKeyDown];
+		
+		switch (_keyText) do {
+			default { false; }; 
+			case """UP""": { call build_ui_navUp; true; };
+			case """DOWN""": { call build_ui_navDown; true; };
+			case """Escape""": { call build_ui_navDown; true; };
+		};
 	}];
 };
 
 build_ui_closeUI = {
 	OOP_INFO_0("[BuildUI] 'build_ui_closeUI' method called.");
+	(findDisplay 46) displayRemoveEventHandler ["KeyDown", build_ui_EHKeyDown];
+	build_ui_EHKeyDown = nil;
+
+	OOP_INFO_0("[BuildUI] 'closeUI' method: Removed display event handler!");
+};
+
+// navigate up item list
+build_ui_navUp = {
+	OOP_INFO_0("[BuildUI] 'navUp' method called.");
+};
+
+build_ui_navDown = {
+	OOP_INFO_0("[BuildUI] 'navDown' method called.");
 };
