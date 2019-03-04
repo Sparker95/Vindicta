@@ -1,0 +1,7 @@
+
+#define COLOR_ORANGE 		[1,0.64,0,1]
+#define COLOR_ORANGE_HTML 	"#FFA300"
+#define COLOR_WHITE 		[1,1,1,1]
+#define COLOR_WHITE_HTML	"#FFFFFF"
+
+
