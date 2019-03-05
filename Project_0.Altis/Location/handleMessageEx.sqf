@@ -29,15 +29,22 @@ switch (_msgType) do {
 		private _dstSpawn = 400; // Temporary, spawn distance
 		private _spawnState = GET_VAR(_thisObject, "spawnState");
 		private _timer = GET_VAR(_thisObject, "timer");
+		private _cpModule = GET_VAR(_thisObject, "cpModule");
+
 		switch (_spawnState) do {
+
 			case 0: { // Location is currently not spawned
+
 				if (_dstMin < _dstSpawn) then {
+
 					diag_log format ["[Location] Info: spawning %1", GET_VAR(_thisObject, "debugName")];
+					
+					[_cpModule] call CivPresence_fnc_spawn; 
 					
 					// Spawn it now
 					if (_garMilMain != "") then {
 						private _args = ["spawn", []];
-						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
+						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]]; 						
 					};
 					// Set timer interval
 					CALL_METHOD(_timer, "setInterval", [5]);
@@ -55,12 +62,11 @@ switch (_msgType) do {
 			case 1: { // Location is currently spawned
 				if (_dstMin > _dstSpawn) then {
 					diag_log format ["[Location] Info: despawning %1", GET_VAR(_thisObject, "debugName")];
-					
+					[_cpModule] call CivPresence_fnc_despawn;  
 					// Despawn it
 					if (_garMilMain != "") then {
 						private _args = ["despawn", []];
 						CALL_METHOD(_garMilMain, "postMethodAsync", _args); //params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnArray", []]];
-					
 					};
 					
 					SET_VAR(_thisObject, "spawnState", 0);

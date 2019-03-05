@@ -55,8 +55,10 @@ class Params {
 };
 
 class CfgFunctions {
+	#include "CivilianPresence\functions.hpp"
 	#include "Dialogue\functions.hpp"
 	#include "JeroenArsenal\functions.hpp"
+
 
 	class missionTag
 	{

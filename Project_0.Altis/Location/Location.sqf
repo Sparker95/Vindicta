@@ -28,6 +28,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("spawnState"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
 	VARIABLE("capacityInf"); // Infantry capacity
+	VARIABLE("cpModule"); //civilian module
 	STATIC_VARIABLE("all");
 
 
@@ -76,6 +77,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("spawnPosTypes", []);
 		T_SETV("spawnState", 0);
 		T_SETV("capacityInf", 0);
+		T_SETV("cpModule",objnull);
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 
 		// Setup basic border
