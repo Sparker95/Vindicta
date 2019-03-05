@@ -1,10 +1,17 @@
+//Gets called at mission start
+//initilises every thing to emulate the bis_civilianPresence modules
+
+//Created by: Jeroen Notenbomer
+
 //#define DEBUG
-#define INT_RESOLUTION 50
+
+#define INT_RESOLUTION 50	//in meters, average distance between spawn/way points
 
 params ["_pos","_size","_rotation"];
 _pos set [2,0];
 private _unitTypes = missionNameSpace getVariable "CivPresence_unitTypes";
 
+//we only need to do this ones
 if(isnil "_unitTypes")then{
 	//register module specific functions
 	[
@@ -35,9 +42,21 @@ _module setVariable ["#usePanicMode",true];
 _module setVariable ["#unitCount",20];
 _module setVariable ["#useAgents",true];
 
-private _waypoints = [];
-private _spawnPoints = [];
 
+private _waypoints = [];//road segments and spawnpoints
+private _spawnPoints = [];//locations in buildings
+
+
+//create a structior as follows:
+//	0	X	0	X	0	
+//	X	0	X	0	X
+//	0	X	0	X	0	
+//	X	0	X	0	X
+//	0	X	0	X	0	
+//	X	0	X	0	X
+
+//if 0 search for nearby road segments
+//if X search for nearby buildings
 
 private _useBuilding = true;
 for "_x" from (_pos#0-(_size#0)) to (_pos#0+(_size#0)) step INT_RESOLUTION do{

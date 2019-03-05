@@ -1,3 +1,4 @@
+//Slowly starts to spawn in civilians in the area
 
 params [["_module",objnull,[objnull]]];
 
@@ -12,7 +13,6 @@ _module setVariable ["#running",true];
 
 _spawnPoints = _module getVariable ["#modulesUnit",[]];
 
-
 _module spawn{
 	private _module = _this;
 
@@ -20,17 +20,20 @@ _module spawn{
 	private _maxUnits = _module getVariable ["#unitCount",0];
 	private _active = false;
 
+	
 	while{
 		_active = _module getVariable ["#active",false];
 		_units = _units select {!isNull _x && {alive _x}};
 		(_active && _maxUnits > 0) || (!_active && count _units > 0)
 	}do{
 		if (_active) then{
+			//spawn in units when module is active and total number is not reached.
 			if (count _units < _maxUnits) then{
 				private _unit = ["createUnit",[_module]] call bis_fnc_moduleCivilianPresence;
 				if (!isNull _unit) then {_units pushBack _unit};
 			};
 		}else{
+			//slowly removes units that are not in view of players
 			private _unit = selectRandom _units;
 			private _deleted = ["deleteUnit",[_module,_unit]] call bis_fnc_moduleCivilianPresence;
 
