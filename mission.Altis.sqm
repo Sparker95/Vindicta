@@ -8,7 +8,7 @@ class EditorData
 	toggles=1;
 	class ItemIDProvider
 	{
-		nextID=552;
+		nextID=572;
 	};
 	class MarkerIDProvider
 	{
@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={22737.727,115.02053,16085.343};
-		dir[]={-0.041283514,-0.47795489,0.8774606};
-		up[]={-0.022461919,0.87837225,0.47744802};
-		aside[]={0.99893516,6.894843e-007,0.046996988};
+		pos[]={9711.2305,97.421822,22369.252};
+		dir[]={-0.23776563,-0.78821075,-0.56765765};
+		up[]={-0.30451441,0.61540002,-0.72701621};
+		aside[]={-0.92237371,-1.8172432e-007,0.38633919};
 	};
 };
 binarizationWanted=0;
@@ -232,7 +232,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=223;
+		items=242;
 		class Item0
 		{
 			dataType="Object";
@@ -3766,7 +3766,7 @@ class Mission
 			fillName="SolidBorder";
 			a=741.02155;
 			b=366.11765;
-			angle=314.09396;
+			angle=314.09393;
 			drawBorder=1;
 			id=459;
 		};
@@ -4556,7 +4556,7 @@ class Mission
 		class Item202
 		{
 			dataType="Marker";
-			position[]={23233.078,-8,18657.395};
+			position[]={23279.324,3.1900001,18544.355};
 			name="base_east_2";
 			text="Almyra Airfield";
 			markerType="RECTANGLE";
@@ -4564,12 +4564,11 @@ class Mission
 			colorName="ColorRed";
 			alpha=0.5;
 			fillName="SolidBorder";
-			a=192.55099;
-			b=440.48999;
+			a=252.49435;
+			b=555.35553;
 			angle=359.99194;
 			drawBorder=1;
 			id=519;
-			atlOffset=-11.190001;
 		};
 		class Item203
 		{
@@ -4584,7 +4583,7 @@ class Mission
 			fillName="SolidBorder";
 			a=233.638;
 			b=373.96201;
-			angle=45.156998;
+			angle=45.156994;
 			drawBorder=1;
 			id=520;
 			atlOffset=-0.00025367737;
@@ -4651,20 +4650,20 @@ class Mission
 		class Item208
 		{
 			dataType="Marker";
-			position[]={16075.92,11.143188,16976.992};
+			position[]={16075.92,11.143,16976.992};
 			name="base_east_4";
-			text="Almyra Airfield";
+			text="Telos Base";
 			markerType="RECTANGLE";
 			type="ellipse";
 			colorName="ColorRed";
 			alpha=0.5;
 			fillName="SolidBorder";
 			a=192.55099;
-			b=179.82697;
-			angle=13.035092;
+			b=179.827;
+			angle=13.034999;
 			drawBorder=1;
 			id=526;
-			atlOffset=-2.762002;
+			atlOffset=-2.7621908;
 		};
 		class Item209
 		{
@@ -4677,7 +4676,7 @@ class Mission
 			colorName="ColorCIV";
 			a=143.30174;
 			b=72.724991;
-			angle=249.60446;
+			angle=249.60445;
 			id=527;
 		};
 		class Item210
@@ -4693,7 +4692,7 @@ class Mission
 			fillName="SolidBorder";
 			a=464.24026;
 			b=365.23975;
-			angle=314.09393;
+			angle=314.0939;
 			drawBorder=1;
 			id=528;
 		};
@@ -4710,7 +4709,7 @@ class Mission
 			fillName="SolidBorder";
 			a=169.90199;
 			b=213.92799;
-			angle=25.280998;
+			angle=25.280996;
 			drawBorder=1;
 			id=529;
 			atlOffset=-6.2836304;
@@ -4776,7 +4775,7 @@ class Mission
 			colorName="ColorCIV";
 			a=79.324509;
 			b=11.188336;
-			angle=182.27171;
+			angle=182.2717;
 			id=533;
 		};
 		class Item216
@@ -4814,20 +4813,20 @@ class Mission
 		class Item218
 		{
 			dataType="Marker";
-			position[]={16582.328,50.719196,19005.746};
-			name="base_east_10";
-			text="Almyra Airfield";
+			position[]={16582.328,50.719002,19005.746};
+			name="outpost_east_15";
+			text="Zelora Outpost";
 			markerType="RECTANGLE";
 			type="ellipse";
 			colorName="ColorRed";
 			alpha=0.5;
 			fillName="SolidBorder";
-			a=49.925274;
-			b=61.520004;
-			angle=52.494598;
+			a=49.924999;
+			b=61.52;
+			angle=52.494999;
 			drawBorder=1;
 			id=546;
-			atlOffset=15.457024;
+			atlOffset=15.456829;
 		};
 		class Item219
 		{
@@ -4870,7 +4869,7 @@ class Mission
 			colorName="ColorCIV";
 			a=38.822784;
 			b=5.037437;
-			angle=142.08119;
+			angle=142.08118;
 			id=549;
 			atlOffset=-3.8459511;
 		};
@@ -4891,6 +4890,390 @@ class Mission
 			drawBorder=1;
 			id=551;
 			atlOffset=0.00037288666;
+		};
+		class Item223
+		{
+			dataType="Marker";
+			position[]={14193.193,89.287964,21233.32};
+			name="outpost_east_16";
+			text="Frini Outpost";
+			markerType="ELLIPSE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=104.15279;
+			b=81.598915;
+			angle=11.161983;
+			drawBorder=1;
+			id=552;
+			atlOffset=12.758392;
+		};
+		class Item224
+		{
+			dataType="Marker";
+			position[]={3902.2429,65.304001,12283.139};
+			name="outpost_east_17";
+			text="Kavala Outpost";
+			markerType="RECTANGLE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=56.645;
+			b=44.402;
+			angle=100.56999;
+			drawBorder=1;
+			id=553;
+			atlOffset=14.962803;
+		};
+		class Item225
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={13812.623,64.23584,6394.999};
+			};
+			areaSize[]={13.367923,0,9.156539};
+			flags=1;
+			id=555;
+			type="ModuleHideTerrainObjects_F";
+			atlOffset=3.9858055;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="#filter";
+					expression="_this setVariable [""#filter"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=15;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="#hideLocally";
+					expression="_this setVariable [""#hideLocally"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"BOOL"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				nAttributes=2;
+			};
+		};
+		class Item226
+		{
+			dataType="Marker";
+			position[]={13810.362,59.189941,6391.6206};
+			name="outpost_east_4";
+			markerType="ELLIPSE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=54.416298;
+			b=40.173218;
+			angle=356.0444;
+			drawBorder=1;
+			id=556;
+			atlOffset=-1.1889;
+		};
+		class Item227
+		{
+			dataType="Marker";
+			position[]={8299.7051,75.683594,10078.685};
+			name="outpost_east_18";
+			markerType="ELLIPSE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=142.37851;
+			b=99.459023;
+			angle=327.02954;
+			drawBorder=1;
+			id=557;
+			atlOffset=-0.65850067;
+		};
+		class Item228
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={8287.6846,75.908829,10101.252};
+				angles[]={0.018519115,5.4378304,0.053020213};
+			};
+			areaSize[]={28.190544,0,23.704874};
+			flags=1;
+			id=558;
+			type="ModuleHideTerrainObjects_F";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="#filter";
+					expression="_this setVariable [""#filter"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=15;
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="#hideLocally";
+					expression="_this setVariable [""#hideLocally"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"BOOL"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				nAttributes=2;
+			};
+		};
+		class Item229
+		{
+			dataType="Marker";
+			position[]={12294.143,122.42468,8884.0576};
+			name="outpost_east_19";
+			markerType="ELLIPSE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=100;
+			b=100;
+			drawBorder=1;
+			id=559;
+			atlOffset=-1.5329895;
+		};
+		class Item230
+		{
+			dataType="Marker";
+			position[]={3186.573,11.44,12902.781};
+			name="outpost_east_20";
+			text="Kavala Seaport";
+			markerType="RECTANGLE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=58.242001;
+			b=81.438004;
+			angle=183.121;
+			drawBorder=1;
+			id=560;
+			atlOffset=9.4399996;
+		};
+		class Item231
+		{
+			dataType="Marker";
+			position[]={11525.316,23.077,11640.812};
+			name="base_east_7";
+			text="Therisa Airfield";
+			markerType="RECTANGLE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=348.54401;
+			b=454.009;
+			angle=38.743996;
+			drawBorder=1;
+			id=561;
+			atlOffset=0.00043487549;
+		};
+		class Item232
+		{
+			dataType="Marker";
+			position[]={4356.3662,293.90302,20661.037};
+			name="outpost_east_21";
+			text="Oreokastro Outpost";
+			markerType="ELLIPSE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=67.766998;
+			b=142.51401;
+			angle=104.09499;
+			drawBorder=1;
+			id=562;
+			atlOffset=-2.5959778;
+		};
+		class Item233
+		{
+			dataType="Marker";
+			position[]={5867.4004,217.72264,20191.242};
+			name="base_east_8";
+			text="Dump Base";
+			markerType="ELLIPSE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=202.72551;
+			b=166.10939;
+			angle=314.09396;
+			drawBorder=1;
+			id=563;
+		};
+		class Item234
+		{
+			dataType="Marker";
+			position[]={5907.2754,230.15608,20053.709};
+			name="allowedarea_12";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=43.571793;
+			b=5.0588818;
+			angle=39.892174;
+			id=564;
+		};
+		class Item235
+		{
+			dataType="Marker";
+			position[]={5832.9668,224.97722,20090.486};
+			name="allowedarea_13";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=43.571793;
+			b=5.7457213;
+			angle=10.35861;
+			id=565;
+		};
+		class Item236
+		{
+			dataType="Marker";
+			position[]={5762.1406,221.47144,20098.945};
+			name="allowedarea_14";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=30.828016;
+			b=6.0439515;
+			angle=357.65723;
+			id=566;
+			atlOffset=-0.1526947;
+		};
+		class Item237
+		{
+			dataType="Marker";
+			position[]={5709.4888,219.91156,20081.395};
+			name="allowedarea_15";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=30.828016;
+			b=6.0439515;
+			angle=324.92215;
+			id=567;
+		};
+		class Item238
+		{
+			dataType="Marker";
+			position[]={9653.3145,3.5450487,22265.934};
+			name="allowedarea_16";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=30.828016;
+			b=6.0439515;
+			angle=357.6572;
+			id=568;
+		};
+		class Item239
+		{
+			dataType="Marker";
+			position[]={9706.1465,1.2069092,22313.334};
+			name="outpost_east_22";
+			text="Pyrgos FOB";
+			markerType="RECTANGLE";
+			type="ellipse";
+			colorName="ColorRed";
+			alpha=0.5;
+			fillName="SolidBorder";
+			a=80;
+			b=54.851479;
+			angle=3.4855175;
+			drawBorder=1;
+			id=569;
+			atlOffset=-1.3979599;
+		};
+		class Item240
+		{
+			dataType="Marker";
+			position[]={9728.2256,5.3942494,22259.973};
+			name="allowedarea_17";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=30.828016;
+			b=6.0439515;
+			angle=19.45351;
+			id=570;
+		};
+		class Item241
+		{
+			dataType="Marker";
+			position[]={9692.0049,3.4663036,22267.549};
+			name="allowedarea_18";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=10.202437;
+			b=6.0439515;
+			angle=357.74957;
+			id=571;
 		};
 	};
 };
