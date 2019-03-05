@@ -1,5 +1,5 @@
 // An array with unique identifiers (numbers))
-#define TARGET_CLUSTER_ID_IDS			0
+#define TARGET_CLUSTER_ID_ID			0
 
 // The cluster
 #define TARGET_CLUSTER_ID_CLUSTER		1
@@ -16,7 +16,7 @@
 #define TARGET_CLUSTER_NEW() [nil, nil, nil, nil, nil]
 
 // Minimum distance for enemy clusters before they are merged into one cluster
-#define TARGETS_CLUSTER_DISTANCE_MIN	500
+#define TARGETS_CLUSTER_DISTANCE_MIN	100
 
 // Maximum distance for QRF that doesn't need vehicles to transport troops
 #define QRF_NO_TRANSPORT_DISTANCE_MAX	800

@@ -59,6 +59,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		pr _newTargets = T_GETV("newTargets");
 		pr _knownTargets = GETV(_AI, "targets");
 		
+		// Exit if there are no known targets
 		if (count _knownTargets == 0) exitWith {};
 		
 		OOP_INFO_0("UPDATE");
@@ -136,7 +137,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		
 		// Create new target clusters
 		pr _newTargetClusters = [];
-		{
+		{ // foreach newClusters
+			pr _newTargetClusterIndex = _forEachIndex;
+			
 			// Calculate the efficiency vector of each cluster
 			// Check who targets in this cluster are observed by
 			pr _eff = +T_EFF_null; // Empty efficiency vector
@@ -151,91 +154,150 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			} forEach _clusterTargets;
 			
 			pr _newTC = TARGET_CLUSTER_NEW();
-			pr _IDs = []; // Array with unique IDs for this cluster
-			_newTC set [TARGET_CLUSTER_ID_IDS, _IDs];
+			_newTC set [TARGET_CLUSTER_ID_ID, -1]; // Set invalid ID first
 			_newTC set [TARGET_CLUSTER_ID_CLUSTER, _x];
 			_newTC set [TARGET_CLUSTER_ID_EFFICIENCY, _eff];
 			_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, +T_EFF_null];
 			_newTC set [TARGET_CLUSTER_ID_OBSERVED_BY, _observedBy];
 			
-			// Check affinity of this new cluster
-			{
+			// Check affinity of this new cluster, propagate damage from old clusters to new clusters
+			pr _affinityRow = _affinity select _newTargetClusterIndex; // This row in affinity matrix shows affinity of this new target cluster with every old target cluster
+			pr _sumAffinityRow = 0; { _sumAffinityRow = _sumAffinityRow + _x; } forEach _affinityRow;
+			pr _nAffAboveZero = 0; // Amount of elements above zero			
+			{ // forEach _affinityRow
+				pr _affinityNewOld = _x;
+				
 				// If this new cluster has some units which were in the old cluster
-				if (_x > 0) then {
+				if (_affinityNewOld > 0) then {
 					// Add IDs from old cluster to the new one
 					pr _oldClusterIndex = _forEachIndex;
 					pr _oldTargetCluster = _targetClusters select _oldClusterIndex;
-					pr _oldClusterIDs = _oldTargetCluster select TARGET_CLUSTER_ID_IDS;
-					{ _IDs pushBackUnique _x } forEach _oldClusterIDs;
 					
-					// Copy caused damage to this cluster from the old one
-					_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, _oldTargetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE];
+					// Add caused damage to this cluster from the old one, proportional to the affinity
+					pr _c = _affinityNewOld / _sumAffinityRow;
+					pr _damageToAdd = (_oldTargetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE) apply {_c * _x};
+					pr _newTCDamage = _newTC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;
+					_newTCDamage = VECTOR_ADD_9(_newTCDamage, _damageToAdd);
+					_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, _newTCDamage];
+					
+					// Increase counter of affinity above zero
+					_nAffAboveZero = _nAffAboveZero + 1;
 				};
-			} forEach (_affinity select _forEachIndex);
+			} forEach _affinityRow;
 			
-			// If this target cluster is totally new, generate a new ID
-			if (count _IDs == 0) then {
-				// Generate a new ID for it
-				pr _ID = CALLM0(_AI, "getNewTargetClusterID");
-				_IDs set [0, _ID];
+			// If this cluster inherits from >1 clusters, it needs a new unique ID
+			if (_nAffAboveZero > 1) then {
+				_newTC set [TARGET_CLUSTER_ID_ID, -2]; // Needs a new ID
+				OOP_INFO_1("New target cluster inherits from multiple target clusters");
 			};
-			
-			// Update map markers
-			#ifdef DEBUG_CLUSTERS
-				
-				// Get color for markers
-				pr _side = GETV(_AI, "side");
-				pr _colorEnemy = switch (_side) do {
-					case WEST: {"ColorWEST"};
-					case EAST: {"ColorEAST"};
-					case INDEPENDENT: {"ColorGUER"};
-					default {"ColorCIV"};
-				};
-			
-				pr _clusterMarkers = T_GETV("debug_clusterMarkers");		
-				// Create marker for the cluster
-				pr _c = _x;
-				pr _nextMarkerID = T_GETV("debug_nextMarkerID");
-				pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-				pr _cCenter = _c call cluster_fnc_getCenter;
-				pr _mrk = createMarker [_name, _cCenter];
-				pr _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
-				pr _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
-				_mrk setMarkerShape "RECTANGLE";
-				_mrk setMarkerBrush "SolidFull";
-				_mrk setMarkerSize [_width, _height];
-				_mrk setMarkerColor _colorEnemy;
-				_mrk setMarkerAlpha 0.3;
-				_clusterMarkers pushBack _mrk;
-				
-				// Add markers for spotted units
-				{
-					pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-					pr _mrk = createmarker [_name, _x select TARGET_ID_POS];
-					_mrk setMarkerType "mil_box";
-					_mrk setMarkerColor _colorEnemy;
-					_mrk setMarkerAlpha 0.5;
-					_mrk setMarkerText "";
-					_clusterMarkers pushBack _mrk;
-					//_mrk setMarkerText (format ["%1", round ((_e select 2) select _i)]); //Enemy age
-					
-				} forEach (_c select CLUSTER_ID_OBJECTS);
-				
-				// Add marker with some text
-				pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-				pr _mrk = createmarker [_name, _cCenter];
-				_mrk setMarkerType "mil_dot";
-				_mrk setMarkerColor "ColorPink";
-				_mrk setMarkerAlpha 1.0;
-				_mrk setMarkerText format ["ids: %1, e: %2, dmg: %3, obsrv: %4", _IDs, _eff, _newTC select TARGET_CLUSTER_ID_CAUSED_DAMAGE, _newTC select TARGET_CLUSTER_ID_OBSERVED_BY];
-				_clusterMarkers pushBack _mrk;
-				
-				T_SETV("debug_nextMarkerID", _nextMarkerID);
-			#endif
 			
 			// Add new target cluster to the array of target clusters			
 			_newTargetClusters pushBack _newTC;
 		} forEach _newClusters;
+		
+		
+		// Check which old clusters generate multiple new clusters so that we generate new IDs for them
+		{ // forEach _targetClusters;
+			pr _oldTargetCluster = _x;
+			pr _oldTargetClusterIndex = _forEachIndex;
+			pr _nRowAboveZero = 0; // Sum all values in the column
+			{ if ((_x select _oldTargetClusterIndex) > 0) then {_nRowAboveZero = _nRowAboveZero + 1;}; } forEach _affinity;
+			
+			OOP_INFO_2("Analyzing old cluster. _nRowAboveZero: %1, ID: %2", _nRowAboveZero, _oldTargetCluster select TARGET_CLUSTER_ID_ID);
+			
+			if (_nRowAboveZero > 1) then { // If this old cluster got separated into multiple new clusters or just into one
+				pr _newSplitTCs = []; // Array with new split target clusters and their affinity: [_affinity, _targetCluster]
+				{ // The new clusters branched from it need new ID
+					pr _newTC = _newTargetClusters select _forEachIndex;
+					pr _existingID = _newTC select TARGET_CLUSTER_ID_ID;
+					pr _a = _x select _oldTargetClusterIndex;
+					// Now existing new target cluster ID is -1 or -2
+					// -2 - needs new ID because it was inherited from multiple clusters
+					// -1 - either was connected with one or with zero old clusters
+					if (_a > 0) then {
+						if (_existingID == -1 || _existingID == -2) then { // Make a new ID if it wasn't made yet
+							pr _newID = CALLM0(_AI, "getNewTargetClusterID");
+							_newTC set [TARGET_CLUSTER_ID_ID, _newID]; // Needs a new ID
+							OOP_INFO_1("Assigned new ID to new target cluster: %1", _newID);
+						};
+						_newSplitTCs pushBack [_a, _newTC];
+					};
+				} forEach _affinity;
+				
+				// Notify AICommander that the target cluster got splitted
+				CALLM2(_AI, "onTargetClusterSplitted", _oldTargetCluster, _newSplitTCs);
+			} else {
+				if (_nRowAboveZero == 1) then { // This old target cluster is connected with one new cluster
+					
+				} else { // This old target cluster is not connected with a new one so it will be deleted
+					CALLM1(_AI, "onTargetClusterDeleted", _oldTargetCluster select TARGET_CLUSTER_ID_ID);
+				};
+			};
+		} forEach _targetClusters;
+		
+		
+		{ // forEach _newTargetClusters;
+			pr _newTC = _x;
+			pr _newTargetClusterIndex = _forEachIndex;
+			pr _affinityRow = _affinity select _newTargetClusterIndex; // This row in affinity matrix shows affinity of this new target cluster with every old target cluster
+			pr _nAffAboveZero = {_x > 0} count _affinityRow; // Amount of elements above zero
+			
+			pr _ID = _x select TARGET_CLUSTER_ID_ID;
+			
+			OOP_INFO_2("Analyzing new cluster. _nAffAboveZero: %1, ID: %2", _nAffAboveZero, _ID);
+			
+			// By now ID is -1, -2 or already assigned
+			// If it's -2 then there was some merging/splitting and it needs a new ID
+			// If it's -1 then it's either a totally new cluster or it inherits from some old cluster without any merging
+			
+			if (_ID == -1) then {
+				if (_nAffAboveZero == 0) then {
+					// The new cluster is totally unrelated with any old cluster, so it's a new one
+					// Generate a new ID for it
+					pr _ID = CALLM0(_AI, "getNewTargetClusterID");
+					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
+					ade_dumpcallstack;
+					CALLM1(_AI, "onTargetClusterCreated", _newTC);
+				} else {
+					// It inherits from one old cluster, need to find what it inherits from
+					pr _i = 0;
+					while {_i < (count _affinityRow)} do {
+						if (_affinityRow select _i > 0) exitWith { // Found the old cluster this cluster is connected with
+							pr _ID = _targetClusters select _i select TARGET_CLUSTER_ID_ID; // Copy the ID fron old one to the new cluster
+							_newTC set [TARGET_CLUSTER_ID_ID, _ID];
+							
+							OOP_INFO_1("New target cluster inherits from old cluster with ID: %1", _ID);
+						};
+						_i = _i + 1;
+					};
+				};
+			} else {
+				if (_ID == -2) then {
+					// This new cluster is a merge of multiple old clusters
+					// Generate a new ID for it
+					pr _ID = CALLM0(_AI, "getNewTargetClusterID");
+					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
+					
+					OOP_INFO_1("Generated a new ID for new target cluster: %1", _ID);
+					
+					// Find clusters that got merged into this one
+					pr _oldTCs = [];
+					{
+						if (_x > 0) then { _oldTCs pushBack (_targetClusters select _forEachIndex); };
+					} forEach _affinityRow;
+					// Notify AICommander
+					CALLM2(_AI, "onTargetClustersMerged", _oldTCs, _newTC);
+				};
+			};
+			
+			// Update map markers
+			#ifdef DEBUG_CLUSTERS
+				CALLM1(_thisObject, "drawCluster", _newTC);				
+			#endif
+		} forEach _newTargetClusters;
+		
+		
+		
 		
 		// Overwrite the old cluster array
 		SETV(_AI, "targetClusters", _newTargetClusters);
@@ -252,6 +314,62 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		T_SETV("newTargets", []);
 		T_SETV("deletedTargets", []);
 		
+	} ENDMETHOD;
+	
+	METHOD("drawCluster") {
+		params ["_thisObject", "_tc"];
+		
+		pr _AI = T_GETV("AI");
+		pr _c = _tc select TARGET_CLUSTER_ID_CLUSTER;
+		pr _eff = _tc select TARGET_CLUSTER_ID_EFFICIENCY;
+		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
+		// Get color for markers
+		pr _side = GETV(_AI, "side");
+		pr _colorEnemy = switch (_side) do {
+			case WEST: {"ColorWEST"};
+			case EAST: {"ColorEAST"};
+			case INDEPENDENT: {"ColorGUER"};
+			default {"ColorCIV"};
+		};
+	
+		pr _clusterMarkers = T_GETV("debug_clusterMarkers");		
+		// Create marker for the cluster
+		pr _nextMarkerID = T_GETV("debug_nextMarkerID");
+		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
+		pr _cCenter = _c call cluster_fnc_getCenter;
+		pr _mrk = createMarker [_name, _cCenter];
+		pr _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
+		pr _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [_width, _height];
+		_mrk setMarkerColor _colorEnemy;
+		_mrk setMarkerAlpha 0.3;
+		_clusterMarkers pushBack _mrk;
+		
+		// Add markers for spotted units
+		{
+			pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
+			pr _mrk = createmarker [_name, _x select TARGET_ID_POS];
+			_mrk setMarkerType "mil_box";
+			_mrk setMarkerColor _colorEnemy;
+			_mrk setMarkerAlpha 0.5;
+			_mrk setMarkerText "";
+			_clusterMarkers pushBack _mrk;
+			//_mrk setMarkerText (format ["%1", round ((_e select 2) select _i)]); //Enemy age
+			
+		} forEach (_c select CLUSTER_ID_OBJECTS);
+		
+		// Add marker with some text
+		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
+		pr _mrk = createmarker [_name, _cCenter];
+		_mrk setMarkerType "mil_dot";
+		_mrk setMarkerColor "ColorPink";
+		_mrk setMarkerAlpha 1.0;
+		_mrk setMarkerText format ["id: %1, e: %2, dmg: %3, obsrv: %4", _ID, _tc select TARGET_CLUSTER_ID_EFFICIENCY, _tc select TARGET_CLUSTER_ID_CAUSED_DAMAGE, _tc select TARGET_CLUSTER_ID_OBSERVED_BY];
+		_clusterMarkers pushBack _mrk;
+		
+		T_SETV("debug_nextMarkerID", _nextMarkerID);
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

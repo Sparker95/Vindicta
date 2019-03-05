@@ -25,6 +25,8 @@ CLASS("AICommander", "AI")
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 	
+	VARIABLE("targetClusterActions"); // Array with ActionCommanderRespondToTargetCluster
+	
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
@@ -57,6 +59,9 @@ CLASS("AICommander", "AI")
 		T_SETV("clusterMarkers", []);
 		#endif
 		
+		// Array with ActionCommanderRespondToTargetCluster
+		T_SETV("targetClusterActions", []);
+		
 		// Create sensors
 		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorLocation);
@@ -73,6 +78,11 @@ CLASS("AICommander", "AI")
 		
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
+		
+		// Process cluster actions
+		{
+			CALLM0(_x, "process");
+		} forEach T_GETV("targetClusterActions");
 		
 		// Delete old notifications
 		pr _nots = T_GETV("notifications");
@@ -374,16 +384,97 @@ CLASS("AICommander", "AI")
 	*/
 	
 	/*
-	Method: allocateUnits
-	Tries to find a location to send units from
+	Method: onTargetClusterCreated
+	Gets called on creation of a totally new target cluster
 	
-	Parameters: _a, _b, _c
+	Parameters: _tc
 	
-	_a - 
-	_b - 
-	_c -
+	_tc - the new target cluster
 	
 	Returns: nil
+	*/
+	METHOD("onTargetClusterCreated") {
+		params ["_thisObject", "_tc"];
+		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
+		
+		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
+		
+		/*
+		// Create a new action to respond to this target cluster
+		pr _args = [_thisObject, _ID];
+		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
+		T_GETV("targetClusterActions") pushBack _newAction;
+		*/
+		
+		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
+	} ENDMETHOD;
+	
+	/*
+	Method: onTargetClusterSplitted
+	Gets called when an already known cluster gets splitted into multiple new clusters.
+	
+	Parameters: _tc
+	
+	_tc - the new target cluster
+	
+	Returns: nil
+	*/
+	METHOD("onTargetClusterSplitted") {
+		params ["_thisObject", "_tcOld", "_tcsNew"];
+		
+		pr _ID = _tcOld select TARGET_CLUSTER_ID_ID;
+		pr _IDsNew = []; { _IDsNew pushBack (_x select 1 select TARGET_CLUSTER_ID_ID)} forEach _tcsNew;
+		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new IDs: %2", _ID, _IDsNew);
+		
+	} ENDMETHOD;
+	
+	/*
+	Method: onTargetClusterMerged
+	Gets called when old clusters get merged into a new one
+	
+	Parameters: _tc
+	
+	_tc - the new target cluster
+	
+	Returns: nil
+	*/
+	METHOD("onTargetClustersMerged") {
+		params ["_thisObject", "_tcsOld", "_tcNew"];
+		
+		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
+		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
+		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _ID);
+		
+	} ENDMETHOD;
+	
+	/*
+	Method: onTargetClusterDeleted
+	Gets called on deletion of a cluster because these enemies are not spotted any more
+	
+	Parameters: _tc
+	
+	_tc - the new target cluster
+	
+	Returns: nil
+	*/
+	METHOD("onTargetClusterDeleted") {
+		params ["_thisObject", "_tc"];
+		
+		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
+		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
+		
+	} ENDMETHOD;
+	
+	/*
+	Method: allocateUnitsGroundQRF
+	Tries to find a location to send units from
+	
+	Parameters: _pos, _requiredEff
+	
+	_pos - position where to send QRF to
+	_requiredEff - efficiency vector
+	
+	Returns: ???
 	*/
 	METHOD("allocateUnitsGroundQRF") {
 		params ["_thisObject", ["_pos", [], [[]]], ["_requiredEff", [], [[]]]];

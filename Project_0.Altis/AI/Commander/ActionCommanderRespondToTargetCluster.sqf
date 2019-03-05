@@ -42,4 +42,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		params [["_thisObject", "", [""]]];
 	} ENDMETHOD;
 
+	METHOD("getClusterID") {
+		params ["_thisObject"];
+		T_GETV("clusterID")
+	} ENDMETHOD;
+
 ENDCLASS;
