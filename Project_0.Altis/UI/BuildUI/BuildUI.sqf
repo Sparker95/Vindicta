@@ -14,6 +14,7 @@ Author: Marvis
 */
 
 #define pr private
+#define UI_DISPLAY (uinamespace getVariable "buildUI_display")
 
 g_BuildUI = nil;
 
@@ -21,30 +22,31 @@ CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
 	VARIABLE("EHKeyDown");
-	VARIABLE("EHKeyUp") ;
+	VARIABLE("EHKeyUp");
 
-	// Object currently highlighted
-	VARIABLE("activeObject");
-	// With an object selection we can do silly things like move a bunch at the same time, copy and paste etc.
-	// Just implement Add To Selection and Remove From Selection
+	VARIABLE("currentCat");				// currently selected item category
+
+	// object variables
+	VARIABLE("activeObject");			// Object currently highlighted
 	VARIABLE("selectedObjects");
 	VARIABLE("moveActionId");
 
+
 	METHOD("new") {
 		params ["_thisObject"];
+		OOP_INFO_1("'new' method called. ====================================");
 
 		if(!(isNil("g_BuildUI"))) exitWith {
 			OOP_ERROR_0("BuildUI already initialized! Make sure to delete it before trying to initialize it again!");
 		};
 
+		g_rscLayerBuildUI = ["rscLayerBuildUI"] call BIS_fnc_rscLayer;	// register build UI layer
+
 		g_BuildUI = _thisObject;
-
-		OOP_INFO_1("Player %1 build UI initialized.", name player);
-
+		SET_VAR_PUBLIC(_thisObject, "currentCat", 0);  // index in g_buildUIObjects array of objects
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
 		T_SETV("EHKeyUp", nil);
-
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
 		T_SETV("moveActionId", -1);
@@ -85,29 +87,36 @@ CLASS("BuildUI", "")
 
 	METHOD("openUI") {
 		params ["_thisObject"];
+		OOP_INFO_0("'openUI' method called.");
 
-		OOP_INFO_0("method called");
+		// update UI text and categories
+		["BuildUIUpdate", "onEachFrame", {
+
+			pr _IDCs = [IDC_TEXTC, IDC_TEXTL1, IDC_TEXTL2, IDC_TEXTR1, IDC_TEXTR2];
+			pr _currentCat = T_GETV("currentCat");
+
+			if (displayNull != UI_DISPLAY) then {
+			  	{
+			  		(UI_DISPLAY displayCtrl _x) ctrlSetText "####";
+			  		(UI_DISPLAY displayCtrl _x) ctrlCommit 0;
+			  	} forEach _IDCs;
+
+
+		  	};
+		}] call BIS_fnc_addStackedEventHandler;
 
 		T_CALLM0("enterMoveMode");
-
-		// TEST CODE >>>
-		player addAction ["Create Test Object", {
-			params ["_target", "_caller", "_actionId", "_arguments"];
-			_arguments params ["_thisObject"];
-			pr _type = selectRandom ["Land_BagFence_Long_F", "Land_BagFence_Round_F", "Land_PortableLight_double_F", "Land_TentA_F"];
-			T_CALLM1("createNewObject", _type);
-		}, [_thisObject]];
-		cutRsc ["buildUI", "PLAIN", 2];
-		// <<< TEST CODE
+		g_rscLayerBuildUI cutRsc ["BuildUI", "PLAIN", -1, false]; // blend in UI
 
 		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
-			systemChat format ["%1", str _this];
 			
-			switch (_keyText) do {
+			switch ((keyName (_this select 1))) do {
 				default { false; }; 
 				case """UP""": { CALLM0(g_BuildUI, "navUp"); true; };
 				case """DOWN""": { CALLM0(g_BuildUI, "navDown"); true; };
 				case """Escape""": { CALLM0(g_BuildUI, "closeUI"); true; };
+				case """E""": { systemChat "Q"; true; };
+				case """Q""": { systemChat "E"; true; };
 			};
 		}];
 
@@ -120,10 +129,14 @@ CLASS("BuildUI", "")
 	METHOD("closeUI") {
 		params ["_thisObject"];
 
-		OOP_INFO_0("method called");
+		OOP_INFO_0("'closeUI' method called. ====================================");
+
+		T_CALLM0("exitMoveMode");
+		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
 		(findDisplay 46) displayRemoveEventHandler ["KeyDown", T_GETV("EHKeyDown")];
 		T_SETV("EHKeyDown", nil);
+		["BuildUIUpdate", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 
 		OOP_INFO_0("Removed display event handler!");
 	} ENDMETHOD;
@@ -131,18 +144,34 @@ CLASS("BuildUI", "")
 	// navigate up item list
 	METHOD("navUp") {
 		params ["_thisObject"];
+		OOP_INFO_0("'navUp' method called");
 
-		OOP_INFO_0("method called");
 	} ENDMETHOD;
 
+	// navigate down item list
 	METHOD("navDown") {
 		params ["_thisObject"];
+		OOP_INFO_0("'navDown' method called");
 
-		OOP_INFO_0("method called");
+	} ENDMETHOD;
+
+	// navigate right through categories
+	METHOD("navRight") {
+		params [["_thisObject", "", [""]]];
+		OOP_INFO_0("'navRight' method called");
+
+	} ENDMETHOD;
+
+	// navigate left through categories
+	METHOD("navLeft") {
+		params [["_thisObject", "", [""]]];
+		OOP_INFO_0("'navLeft' method called");
+
 	} ENDMETHOD;
 
 	METHOD("createNewObject") {
 		params ["_thisObject", "_type", ["_offs", [0, 4, 0]]];
+		OOP_INFO_0("'createNewObject' method called");
 		
 		T_CALLM0("exitMoveMode");
 		pr _newObj = createVehicle [_type, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
@@ -152,6 +181,7 @@ CLASS("BuildUI", "")
 
 	METHOD("enterMoveMode") {
 		params ["_thisObject"];
+		OOP_INFO_0("'enterMoveMode' method called");
 
 		if(T_GETV("moveActionId") != -1) exitWith {
 			OOP_ERROR_0("enterMoveMode called while already in move mode! Must call exitMoveMode before entering it again!");
@@ -201,6 +231,7 @@ CLASS("BuildUI", "")
 
 	METHOD("exitMoveMode") {
 		params ["_thisObject"];
+		OOP_INFO_0("'exitMoveMode' method called");
 
 		pr _activeObject = T_GETV("activeObject");
 		if(count _activeObject > 0) then {
@@ -218,6 +249,7 @@ CLASS("BuildUI", "")
 
 	METHOD("addToSelection") {
 		params ["_thisObject"];
+		OOP_INFO_0("'addToSelection' method called");
 
 		pr _activeObject = T_GETV("activeObject");
 		if(count _activeObject == 0) exitWith {
@@ -231,6 +263,7 @@ CLASS("BuildUI", "")
 
 	METHOD("removeFromSelection") {
 		params ["_thisObject"];
+		OOP_INFO_0("'removeFromSelection' method called");
 
 		pr _activeObject = T_GETV("activeObject");
 		pr _selectedObjects = T_GETV("selectedObjects");		
@@ -247,6 +280,7 @@ CLASS("BuildUI", "")
 
 	METHOD("moveSelectedObjects") {
 		params ["_thisObject"];
+		OOP_INFO_0("'moveSelectedObjects' method called");
 		
 		// Add currently active object if it isn't already selected
 		T_CALLM0("addToSelection");
@@ -314,7 +348,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 ENDCLASS;
 
-build_ui_addOpenBuildMenuAction = {
+build_UI_addOpenBuildMenuAction = {
 	ASSERT_GLOBAL_OBJECT(g_BuildUI);
 
 	CALLM1(g_BuildUI, "addOpenBuildMenuAction", _this);
