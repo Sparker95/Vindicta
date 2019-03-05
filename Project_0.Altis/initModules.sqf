@@ -1,5 +1,5 @@
 //Just a quick file to initialize the modules already made in needed order
-
+#define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
 #define COMPILEFUNC(path) compile preprocessFileLineNumbers path
 
@@ -116,3 +116,13 @@ call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // Initialize Camp class
 call compile preprocessFileLineNumbers "Camp\Camp.sqf";
+
+// Initialize Grid class
+call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
+
+// Initialize Grid Statistics
+call compile preprocessFileLineNumbers "GridStats\initFunctions.sqf";
+call compile preprocessFileLineNumbers "GridStats\initVariables.sqf";
+call compile preprocessFileLineNumbers "GridStats\initVariablesServer.sqf";
+
+
