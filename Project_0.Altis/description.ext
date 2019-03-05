@@ -114,6 +114,14 @@ class CfgRemoteExec
 // HUD UIs
 class RscTitles {
 
+    class Default 
+    {
+        idd = -1;
+        fadein = 0;
+        fadeout = 0;
+        duration = 2;
+    };
+
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUI_Debug\UIUndercoverDebug.h"
 #include "UI\Resources\BuildUI\BuildUI.h"
