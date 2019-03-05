@@ -1,31 +1,57 @@
 #include "common.hpp"
 
 /*
-Class: Cell
-One grid of 
+Class: Grid
+Properties:
+	startX: float
+	startY: float
+	sizeX: float
+	sizeY: float
+	gridArray: Array
 */
 
 CLASS("Grid", "");
-	VARIABLE("topLeft");
-	VARIABLE("topRight");
-	VARIABLE("bottomRight");
-	VARIABLE("bottomLeft");
+	VARIABLE("startX");
+	VARIABLE("startY");
+	VARIABLE("sizeX");
+	VARIABLE("sizeY");
+	VARIABLE("gridSizeX");
+	VARIABLE("gridSizeY");
+	VARIABLE("squareSize");
 
-	VARIABLE("cells");
+	VARIABLE("gridArray");
 
 	METHOD("new") {
-		params ["_thisObject", "_topLeft", "_topRight", "_bottomRight", "_bottomLeft"];
-		OOP_DEBUG_1("_thisObject %1", _thisObject);
-		T_SETV("topLeft", _topLeft);
-		T_SETV("_topRight", _topRight);
-		T_SETV("_bottomRight", _bottomRight);
-		T_SETV("_bottomLeft", _bottomLeft);
+		params ["_thisObject", "_startX", "_startY", "_sizeX", "_sizeY", "_squareSize"];
+
+		private _gridSizeX = floor(_sizeX / ws_squareSize); //Size of the grid measured in squares
+		private _gridSizeY = floor(_sizeY / ws_squareSize);
+		
+		T_SETV("startX", _startX);
+		T_SETV("startY", _startY);
+		T_SETV("sizeX", _sizeX);
+		T_SETV("sizeY", _sizeY);
+		T_SETV("squareSize", squareSize);
+		T_SETV("gridSizeX", _sizeY);
+		T_SETV("gridSizeY", _sizeY);
+
+		private _gridArray = [];
+		for [{private _i = 0}, {_i < _startX}, {_i = _i + 1}] do //_i is x-pos
+		{
+			_column = [];
+			for [{private _j = 0}, {_j < _startY}, {_j = _j + 1}] do //_j is y-pos
+			{
+				_column pushBack 0;
+			};
+			_gridArray pushback _column;
+		};
+
+		T_SETV("gridArray", _gridArray);
 	} ENDMETHOD;
 
-	METHOD("addCell") {
-		params ["_thisObject", "_cell"];
-		private _cells = T_GETV("cells");
-		_cells pushBack _cell;
+	METHOD("getGridArray") {
+		private _gridArray = T_GETV("gridArray");
+		_gridArray
 	} ENDMETHOD;
 
 ENDCLASS;

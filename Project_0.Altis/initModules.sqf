@@ -123,6 +123,3 @@ call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
 // Initialize Grid Statistics
 call compile preprocessFileLineNumbers "GridStats\initFunctions.sqf";
 call compile preprocessFileLineNumbers "GridStats\initVariables.sqf";
-call compile preprocessFileLineNumbers "GridStats\initVariablesServer.sqf";
-
-
