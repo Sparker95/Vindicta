@@ -22,17 +22,43 @@ pr _catLights = [
 	["Land_Camping_Light_F", "Camping Light"]
 ];
 
+pr _catDeco = [
+	// format: Classname, Display name string
+	["Land_CampingChair_V2_F", "Camping Chair"],
+	["Land_CampingTable_F", "Camping Table"],
+	["Land_WoodenTable_large_F", "Wooden Table"],
+	["Land_WoodPile_large_F", "Woodpile Cover"],
+	["Land_WoodenCrate_01_F", "Wooden Crate"],
+	["Land_WoodenCrate_01_stack_x5_F", "Wooden Crates"]
+];
+
 pr _catCamo = [
 	// format: Classname, Display name string
 	["CamoNet_BLUFOR_open_F", "Camonet Open"],
 	["CamoNet_BLUFOR_big_F", "Camonet"]
 ];
 
+pr _catCover = [
+	// format: Classname, Display name string
+	["Land_Rampart_F", "Rampart"],
+	["Land_SlumWall_01_s_2m_F", "Slumwall"],
+	["Land_SlumWall_01_s_4m_F", "Slumwall"],
+	["Land_Mound01_8m_F", "Stone Wall"],
+	["Land_TinWall_01_m_4m_v2_F", "Tin Wall"],
+	["Land_TinWall_01_m_4m_v1_F", "Tin Wall"]
+];
+
+
 // array of categories and category names
 g_BuildUIObjects = [
 
-[_catLights, "Lights"], 			// first cat, center on the UI
+[_catLights, "Lights"], 			
 [_catDefense, "Fortification"],
-[_catCamo, "Camouflage"]
+[_catCamo, "Camouflage"],
+[_catDeco, "Decoration"],
+[_catCover, "Cover"]
 
 ];
+
+
+

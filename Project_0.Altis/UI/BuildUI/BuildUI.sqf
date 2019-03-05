@@ -24,7 +24,9 @@ CLASS("BuildUI", "")
 	VARIABLE("EHKeyDown");
 	VARIABLE("EHKeyUp");
 
-	VARIABLE("currentCat");				// currently selected item category
+	VARIABLE("currentCatID");				// currently selected item category
+	VARIABLE("UICatTexts");
+	VARIABLE("UI_IDCArray");
 
 	// object variables
 	VARIABLE("activeObject");			// Object currently highlighted
@@ -40,16 +42,22 @@ CLASS("BuildUI", "")
 			OOP_ERROR_0("BuildUI already initialized! Make sure to delete it before trying to initialize it again!");
 		};
 
+		pr _IDCs = [IDC_TEXTC, IDC_TEXTL1, IDC_TEXTL2, IDC_TEXTR1, IDC_TEXTR2];
 		g_rscLayerBuildUI = ["rscLayerBuildUI"] call BIS_fnc_rscLayer;	// register build UI layer
 
 		g_BuildUI = _thisObject;
-		SET_VAR_PUBLIC(_thisObject, "currentCat", 0);  // index in g_buildUIObjects array of objects
+		T_SETV("currentCatID", 0);  // index in g_buildUIObjects array of objects
+		T_SETV("UICatTexts", []);
+		T_SETV("UI_IDCArray", _IDCs);
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
 		T_SETV("EHKeyUp", nil);
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
 		T_SETV("moveActionId", -1);
+
+		T_CALLM("makeUIArray", [0]); // initialize UI category strings
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -92,16 +100,21 @@ CLASS("BuildUI", "")
 		// update UI text and categories
 		["BuildUIUpdate", "onEachFrame", {
 
-			pr _IDCs = [IDC_TEXTC, IDC_TEXTL1, IDC_TEXTL2, IDC_TEXTR1, IDC_TEXTR2];
-			pr _currentCat = T_GETV("currentCat");
+			pr _IDCs = GETV(g_BuildUI, "UI_IDCArray");
+			pr _UICatTexts = GETV(g_BuildUI, "UICatTexts");
 
 			if (displayNull != UI_DISPLAY) then {
-			  	{
-			  		(UI_DISPLAY displayCtrl _x) ctrlSetText "####";
-			  		(UI_DISPLAY displayCtrl _x) ctrlCommit 0;
-			  	} forEach _IDCs;
 
+				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
+				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
+				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
+				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTR1) ctrlSetText format ["%1", (_UICatTexts select 3)];
+				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTR2) ctrlSetText format ["%1", (_UICatTexts select 4)];
 
+				{
+					(UI_Display displayCtrl _x) ctrlCommit 0;
+				} forEach IDCs;
+	
 		  	};
 		}] call BIS_fnc_addStackedEventHandler;
 
@@ -114,9 +127,22 @@ CLASS("BuildUI", "")
 				default { false; }; 
 				case """UP""": { CALLM0(g_BuildUI, "navUp"); true; };
 				case """DOWN""": { CALLM0(g_BuildUI, "navDown"); true; };
-				case """Escape""": { CALLM0(g_BuildUI, "closeUI"); true; };
-				case """E""": { systemChat "Q"; true; };
-				case """Q""": { systemChat "E"; true; };
+
+				case """LEFT""": { 
+					pr _currentCatID = GETV(g_BuildUI, "currentCatID");
+					pr _newCatID = _currentCatID-1;
+					CALLM(g_BuildUI, "navLeft", [_newCatID]); 
+					true; 
+				};
+
+				case """RIGHT""": { 
+					pr _currentCatID = GETV(g_BuildUI, "currentCatID");
+					pr _newCatID = _currentCatID+1;
+					CALLM(g_BuildUI, "navLeft", [_newCatID]); 
+					true; 
+				};
+
+				case """Backspace""": { CALLM0(g_BuildUI, "closeUI"); true; };
 			};
 		}];
 
@@ -157,15 +183,48 @@ CLASS("BuildUI", "")
 
 	// navigate right through categories
 	METHOD("navRight") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], "_newCatID"];
 		OOP_INFO_0("'navRight' method called");
+
+		if ((_newCatID < 0) OR _newCatID > ((count g_buildUIObjects) - 1)) exitWith { OOP_INFO_1("Invalid newCatID: %1", _newCatID); };
+
+		T_SETV("currentCatID", _newCatID); 
+		T_CALLM("makeUIArray", [_newCatID]);
 
 	} ENDMETHOD;
 
 	// navigate left through categories
 	METHOD("navLeft") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], "_newCatID"];
 		OOP_INFO_0("'navLeft' method called");
+
+		if ((_newCatID < 0) OR _newCatID > ((count g_buildUIObjects) - 1)) exitWith { OOP_INFO_1("Invalid newCatID: %1", _newCatID); };
+		
+		T_SETV("currentCatID", _newCatID);
+		T_CALLM("makeUIArray", [_newCatID]);
+
+	} ENDMETHOD;
+
+	// generates an array of display strings for each UI text
+	// format: [L2, L1, C, R1, R2]
+	STATIC_METHOD("makeUIArray") {
+		params [["_thisObject", "", [""]], "_currentCatID"];
+		OOP_INFO_0("'makeUIArray' method called");
+
+		pr _UIarray = [_currentCatID-2, _currentCatID-1, _currentCatID, _currentCatID+1, _currentCatID+2]; 
+		pr _return = [];
+
+		{ 
+			if ((_x < 0) OR (_x > ((count g_buildUIObjects) - 1))) then { 
+				_return pushBack ""; 
+			} else {
+				_return pushBack ((g_buildUIObjects select _x) select 1);
+				OOP_INFO_1("Current _return array: %1",_return);
+			};
+		} forEach _UIarray; 
+
+		SETV(_thisObject, "UICatTexts", _return);
+		systemChat format ["%1", _return];
 
 	} ENDMETHOD;
 
