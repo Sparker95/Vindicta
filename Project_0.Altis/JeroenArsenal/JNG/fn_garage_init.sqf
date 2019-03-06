@@ -105,7 +105,7 @@ if(hasInterface)then{
 				params ["_object"];
 				alive player;
 			};
-			pr _conditions = {
+			pr _conditionColor = {
 				params ["_object"];
 				!isnull cursorObject && {!(_object isEqualTo cursorObject)}&&{_object distance cursorObject < MAX_DISTANCE_TO_STORE}
 			};
