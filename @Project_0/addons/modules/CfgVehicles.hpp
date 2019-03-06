@@ -1,14 +1,17 @@
 class CfgVehicles {
 	class Logic;
 	class Module_F: Logic{};
-	class ModuleSector_F: Module_F{};
+	class ModuleCivilianPresence_F: Module_F{};
 
-	class Project_0_LocationSector: ModuleSector_F
+	class Project_0_LocationSector: Module_F
 	{
 		scope = 2; 
         vehicleClass = "Modules";
 		displayName = "Location Sector";
 		category = "Project_0";
+		canSetArea = 1;
+		canSetAreaHeight = 0;
+		canSetAreaShape = 1;
 
 		// Example for futur modules ?
 		// function = "Project_0_fnc_createLocation";
@@ -69,9 +72,9 @@ class CfgVehicles {
 				displayName = "Capacity Infantry";
 				tooltip = "Capacity Infantry of the location";
 				property = "Project_0_LocationSector_CapacityInfantry";
-				control = "Slider";
-				value = 20;
-				defaultValue = 20;
+				control = "CivilianPresence_UnitCount";
+				value = 5;
+				defaultValue = 5;
 			};
 			class CivilianPresence_UnitCount
 			{
@@ -94,21 +97,12 @@ class CfgVehicles {
 		category = "Project_0";
 
 		class Units;
-		class Edit;
 		class AttributesBase;
 		class Attributes: AttributesBase
 		{
 			class Units: Units
 			{
 				property = "Project_0_LocationWaypoint";
-			};
-			class isWaypoint: Edit
-			{
-				displayName = "isWaypoint";
-				value = "true";
-				defaultVvalue = "true";
-				tooltip = "Name of the waypoint location";
-				property = "Project_0_LocationWaypoint_name";
 			};
 		};
 	};

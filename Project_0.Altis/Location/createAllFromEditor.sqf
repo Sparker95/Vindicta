@@ -25,6 +25,8 @@ private _locations = entities "Project_0_LocationSector";
 	private _locCivPresUnitCount = _locSector getVariable ["CivilianPresence_UnitCount", ""];
 	private _template = "";
 	private _side = "";
+
+	if (_locType == "city") exitWith{};
 	
 	// TODO: use synced waypoints to help AIs
 	// _waypoints = synchronizedObjects _locationSector;
@@ -57,7 +59,6 @@ private _locations = entities "Project_0_LocationSector";
 	// Infantry capacity
 	private _args = [T_INF, [GROUP_TYPE_IDLE]];
 	private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
-	OOP_DEBUG_1("_cInf %1", _cInf);
 	if (_cInf < 5) then {_cInf = 5};
 
 	// // Wheeled and tracked vehicle capacity

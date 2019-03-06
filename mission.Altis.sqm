@@ -5,21 +5,21 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=1;
+	toggles=5;
 	class ItemIDProvider
 	{
-		nextID=572;
+		nextID=642;
 	};
 	class MarkerIDProvider
 	{
-		nextID=3;
+		nextID=5;
 	};
 	class Camera
 	{
-		pos[]={9711.2305,97.421822,22369.252};
-		dir[]={-0.23776563,-0.78821075,-0.56765765};
-		up[]={-0.30451441,0.61540002,-0.72701621};
-		aside[]={-0.92237371,-1.8172432e-007,0.38633919};
+		pos[]={13038.482,25.094639,9647.6055};
+		dir[]={0,-0.70710683,0.70710683};
+		up[]={0,0.70710677,0.70710677};
+		aside[]={0.99999994,0,-0};
 	};
 };
 binarizationWanted=0;
@@ -47,20 +47,21 @@ addons[]=
 	"A3_Structures_F_Walls",
 	"A3_Structures_F_Exp_Military_Camonets",
 	"A3_Structures_F_Exp_Infrastructure_Airports",
-	"A3_Ui_F",
 	"A3_Characters_F",
 	"A3_Soft_F_Beta_Truck_01",
 	"A3_Soft_F_Exp_Truck_01",
 	"ace_realisticnames",
 	"ace_cargo",
 	"A3_Static_F",
-	"A3_Modules_F_ObjectModifiers"
+	"A3_Modules_F_ObjectModifiers",
+	"A3_Ui_F",
+	"cba_modules"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=20;
+		items=21;
 		class Item0
 		{
 			className="A3_Structures_F_Households";
@@ -161,45 +162,52 @@ class AddonsMetaData
 		};
 		class Item14
 		{
-			className="A3_Ui_F";
-			name="Arma 3 - User Interface";
-			author="Bohemia Interactive";
-			url="https://www.arma3.com";
-		};
-		class Item15
-		{
 			className="A3_Characters_F";
 			name="Arma 3 Alpha - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item16
+		class Item15
 		{
 			className="A3_Soft_F_Beta";
 			name="Arma 3 Beta - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item17
+		class Item16
 		{
 			className="A3_Soft_F_Exp";
 			name="Arma 3 Apex - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item18
+		class Item17
 		{
 			className="ace_cargo";
 			name="ACE3 - Cargo";
 			author="ACE-Team";
 			url="http://ace3mod.com/";
 		};
-		class Item19
+		class Item18
 		{
 			className="A3_Static_F";
 			name="Arma 3 Alpha - Turrets";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
+		};
+		class Item19
+		{
+			className="A3_Ui_F";
+			name="Arma 3 - User Interface";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
+		class Item20
+		{
+			className="cba_modules";
+			name="Community Base Addons - Modules";
+			author="CBA Team";
+			url="https://www.github.com/CBATeam/CBA_A3";
 		};
 	};
 };
@@ -232,7 +240,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=242;
+		items=264;
 		class Item0
 		{
 			dataType="Object";
@@ -3404,23 +3412,6 @@ class Mission
 		};
 		class Item145
 		{
-			dataType="Marker";
-			position[]={9929.4854,242.478,19385.953};
-			name="outpost_east_0";
-			text="Galati Overwatch";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=150;
-			b=150;
-			drawBorder=1;
-			id=405;
-			atlOffset=0.00015258789;
-		};
-		class Item146
-		{
 			dataType="Group";
 			side="East";
 			class Entities
@@ -3490,23 +3481,7 @@ class Mission
 			};
 			id=406;
 		};
-		class Item147
-		{
-			dataType="Marker";
-			position[]={6835.5112,66.376999,16099.953};
-			name="outpost_east_2";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=100;
-			b=100;
-			drawBorder=1;
-			id=409;
-			atlOffset=-0.00032043457;
-		};
-		class Item148
+		class Item146
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3523,7 +3498,7 @@ class Mission
 			type="Land_HBarrier_Big_F";
 			atlOffset=1.6751099;
 		};
-		class Item149
+		class Item147
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3540,7 +3515,7 @@ class Mission
 			id=424;
 			type="Land_HBarrier_Big_F";
 		};
-		class Item150
+		class Item148
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3556,7 +3531,7 @@ class Mission
 			id=438;
 			type="B_Truck_01_transport_F";
 		};
-		class Item151
+		class Item149
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3573,7 +3548,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0093994141;
 		};
-		class Item152
+		class Item150
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3589,7 +3564,7 @@ class Mission
 			id=440;
 			type="B_Truck_01_transport_F";
 		};
-		class Item153
+		class Item151
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3605,7 +3580,7 @@ class Mission
 			id=441;
 			type="B_HMG_01_high_F";
 		};
-		class Item154
+		class Item152
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3622,22 +3597,7 @@ class Mission
 			type="B_HMG_01_high_F";
 			atlOffset=-0.022598267;
 		};
-		class Item155
-		{
-			dataType="Marker";
-			position[]={8408.46,180.694,18232.811};
-			name="outpost_east_1";
-			text="Syrta Checkpoint";
-			markerType="RECTANGLE";
-			type="rectangle";
-			colorName="ColorRed";
-			a=55;
-			b=35;
-			angle=223.74881;
-			id=443;
-			atlOffset=-0.00025939941;
-		};
-		class Item156
+		class Item153
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3654,7 +3614,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0040283203;
 		};
-		class Item157
+		class Item154
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3670,7 +3630,7 @@ class Mission
 			id=445;
 			type="B_Truck_01_transport_F";
 		};
-		class Item158
+		class Item155
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3687,23 +3647,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0012664795;
 		};
-		class Item159
-		{
-			dataType="Marker";
-			position[]={12457.463,71.59668,15191.983};
-			name="outpost_east_3";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=100;
-			b=100;
-			drawBorder=1;
-			id=452;
-			atlOffset=-2.668808;
-		};
-		class Item160
+		class Item156
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3719,7 +3663,7 @@ class Mission
 			id=456;
 			type="B_Truck_01_transport_F";
 		};
-		class Item161
+		class Item157
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3736,7 +3680,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0073547363;
 		};
-		class Item162
+		class Item158
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3753,42 +3697,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.018325806;
 		};
-		class Item163
-		{
-			dataType="Marker";
-			position[]={14383.351,19.002199,16192.894};
-			name="base_east_5";
-			text="Altis Airbase";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=741.02155;
-			b=366.11765;
-			angle=314.09393;
-			drawBorder=1;
-			id=459;
-		};
-		class Item164
-		{
-			dataType="Marker";
-			position[]={4552.7412,260.14401,15422.236};
-			name="outpost_east_5";
-			text="Negades Comms Station";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=200;
-			b=200;
-			angle=314.09384;
-			drawBorder=1;
-			id=460;
-			atlOffset=-2.4787598;
-		};
-		class Item165
+		class Item159
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3805,7 +3714,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=0.010192871;
 		};
-		class Item166
+		class Item160
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3822,7 +3731,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.011932373;
 		};
-		class Item167
+		class Item161
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3840,7 +3749,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00088500977;
 		};
-		class Item168
+		class Item162
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3857,7 +3766,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.002746582;
 		};
-		class Item169
+		class Item163
 		{
 			dataType="Logic";
 			class PositionInfo
@@ -3912,24 +3821,7 @@ class Mission
 				nAttributes=2;
 			};
 		};
-		class Item170
-		{
-			dataType="Marker";
-			position[]={10006.564,13.831543,11225.406};
-			name="outpost_east_6";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=55;
-			b=55;
-			angle=314.09384;
-			drawBorder=1;
-			id=466;
-			atlOffset=-2.4502792;
-		};
-		class Item171
+		class Item164
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3946,7 +3838,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00086212158;
 		};
-		class Item172
+		class Item165
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3963,7 +3855,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.003288269;
 		};
-		class Item173
+		class Item166
 		{
 			dataType="Object";
 			class PositionInfo
@@ -3979,25 +3871,7 @@ class Mission
 			id=469;
 			type="B_Truck_01_transport_F";
 		};
-		class Item174
-		{
-			dataType="Marker";
-			position[]={25233.24,84.834,21824.443};
-			name="outpost_east_7";
-			text="Sofia Listening Station";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=170;
-			b=100;
-			angle=2.0179999;
-			drawBorder=1;
-			id=470;
-			atlOffset=-2.555809;
-		};
-		class Item175
+		class Item167
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4014,7 +3888,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00032424927;
 		};
-		class Item176
+		class Item168
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4030,7 +3904,7 @@ class Mission
 			id=472;
 			type="B_Truck_01_transport_F";
 		};
-		class Item177
+		class Item169
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4047,7 +3921,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0059394836;
 		};
-		class Item178
+		class Item170
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4063,7 +3937,7 @@ class Mission
 			id=474;
 			type="Land_HBarrier_5_F";
 		};
-		class Item179
+		class Item171
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4079,7 +3953,7 @@ class Mission
 			id=475;
 			type="Land_HBarrier_5_F";
 		};
-		class Item180
+		class Item172
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4095,7 +3969,7 @@ class Mission
 			id=476;
 			type="Land_HBarrier_5_F";
 		};
-		class Item181
+		class Item173
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4111,7 +3985,7 @@ class Mission
 			id=477;
 			type="Land_HBarrier_Big_F";
 		};
-		class Item182
+		class Item174
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4127,7 +4001,7 @@ class Mission
 			id=478;
 			type="Land_HBarrier_Big_F";
 		};
-		class Item183
+		class Item175
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4144,7 +4018,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00015163422;
 		};
-		class Item184
+		class Item176
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4160,7 +4034,7 @@ class Mission
 			id=480;
 			type="B_Truck_01_transport_F";
 		};
-		class Item185
+		class Item177
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4177,7 +4051,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00013923645;
 		};
-		class Item186
+		class Item178
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4194,25 +4068,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00015354156;
 		};
-		class Item187
-		{
-			dataType="Marker";
-			position[]={17429.359,11.536,13159.277};
-			name="outpost_east_8";
-			text="Pyrgos FOB";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=80;
-			b=108;
-			angle=317.05399;
-			drawBorder=1;
-			id=483;
-			atlOffset=-2.9610233;
-		};
-		class Item188
+		class Item179
 		{
 			dataType="Logic";
 			class PositionInfo
@@ -4267,7 +4123,7 @@ class Mission
 				nAttributes=2;
 			};
 		};
-		class Item189
+		class Item180
 		{
 			dataType="Logic";
 			class PositionInfo
@@ -4321,25 +4177,7 @@ class Mission
 				nAttributes=2;
 			};
 		};
-		class Item190
-		{
-			dataType="Marker";
-			position[]={26874.24,50.979,24804.375};
-			name="base_east_1";
-			text="Molos Airfield";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=398.42999;
-			b=197.547;
-			angle=310.39001;
-			drawBorder=1;
-			id=502;
-			atlOffset=31.089302;
-		};
-		class Item191
+		class Item181
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4356,7 +4194,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0010929108;
 		};
-		class Item192
+		class Item182
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4396,7 +4234,7 @@ class Mission
 				nAttributes=1;
 			};
 		};
-		class Item193
+		class Item183
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4413,7 +4251,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.0013580322;
 		};
-		class Item194
+		class Item184
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4430,25 +4268,7 @@ class Mission
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00023651123;
 		};
-		class Item195
-		{
-			dataType="Marker";
-			position[]={23621.42,89.032997,21102.9};
-			name="outpost_east_9";
-			text="Delfinaki Listening Station";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=192.55099;
-			b=165.38499;
-			angle=2.0179999;
-			drawBorder=1;
-			id=509;
-			atlOffset=-11.189354;
-		};
-		class Item196
+		class Item185
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4466,7 +4286,7 @@ class Mission
 			type="B_HMG_01_high_F";
 			atlOffset=1.095993;
 		};
-		class Item197
+		class Item186
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4484,7 +4304,7 @@ class Mission
 			type="B_HMG_01_high_F";
 			atlOffset=1.1660004;
 		};
-		class Item198
+		class Item187
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4500,7 +4320,7 @@ class Mission
 			id=513;
 			type="Land_HBarrierTower_F";
 		};
-		class Item199
+		class Item188
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4518,7 +4338,7 @@ class Mission
 			type="Land_Razorwire_F";
 			atlOffset=0.0042724609;
 		};
-		class Item200
+		class Item189
 		{
 			dataType="Object";
 			class PositionInfo
@@ -4535,60 +4355,7 @@ class Mission
 			id=516;
 			type="Land_Razorwire_F";
 		};
-		class Item201
-		{
-			dataType="Marker";
-			position[]={20943.068,3.9579999,19258.238};
-			name="outpost_east_10";
-			text="Paros Listening Station";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=144.41901;
-			b=136.869;
-			angle=2.0179999;
-			drawBorder=1;
-			id=518;
-			atlOffset=-9.9416723;
-		};
-		class Item202
-		{
-			dataType="Marker";
-			position[]={23279.324,3.1900001,18544.355};
-			name="base_east_2";
-			text="Almyra Airfield";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=252.49435;
-			b=555.35553;
-			angle=359.99194;
-			drawBorder=1;
-			id=519;
-		};
-		class Item203
-		{
-			dataType="Marker";
-			position[]={21080.533,20.792,7322.3511};
-			name="base_east_3";
-			text="Mazi Airfield";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=233.638;
-			b=373.96201;
-			angle=45.156994;
-			drawBorder=1;
-			id=520;
-			atlOffset=-0.00025367737;
-		};
-		class Item204
+		class Item190
 		{
 			dataType="Marker";
 			position[]={21231.141,22.297333,7133.5127};
@@ -4602,7 +4369,7 @@ class Mission
 			angle=309.64853;
 			id=521;
 		};
-		class Item205
+		class Item191
 		{
 			dataType="Marker";
 			position[]={21408.287,16.069336,7330.5903};
@@ -4617,7 +4384,7 @@ class Mission
 			id=523;
 			atlOffset=-0.64612389;
 		};
-		class Item206
+		class Item192
 		{
 			dataType="Marker";
 			position[]={21050.695,25.529663,6964.3428};
@@ -4632,7 +4399,7 @@ class Mission
 			id=524;
 			atlOffset=-1.3247585;
 		};
-		class Item207
+		class Item193
 		{
 			dataType="Marker";
 			position[]={20673.984,32.111816,7180.2246};
@@ -4647,25 +4414,7 @@ class Mission
 			id=525;
 			atlOffset=-0.90431595;
 		};
-		class Item208
-		{
-			dataType="Marker";
-			position[]={16075.92,11.143,16976.992};
-			name="base_east_4";
-			text="Telos Base";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=192.55099;
-			b=179.827;
-			angle=13.034999;
-			drawBorder=1;
-			id=526;
-			atlOffset=-2.7621908;
-		};
-		class Item209
+		class Item194
 		{
 			dataType="Marker";
 			position[]={15888.387,14.282901,16913.813};
@@ -4679,92 +4428,21 @@ class Mission
 			angle=249.60445;
 			id=527;
 		};
-		class Item210
+		class Item195
 		{
 			dataType="Marker";
-			position[]={15226.529,17.187288,17062.203};
-			name="base_east_6";
-			text="Altis Airbase";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=464.24026;
-			b=365.23975;
-			angle=314.0939;
-			drawBorder=1;
-			id=528;
-		};
-		class Item211
-		{
-			dataType="Marker";
-			position[]={20082.992,85.970001,6778.8828};
-			name="outpost_east_13";
-			text="Selekano Outpost Airfield";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=169.90199;
-			b=213.92799;
-			angle=25.280996;
-			drawBorder=1;
-			id=529;
-			atlOffset=-6.2836304;
-		};
-		class Item212
-		{
-			dataType="Marker";
-			position[]={23064.914,47.417,7278.7832};
-			name="outpost_east_14";
-			text="Feres Outpost";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=131.36301;
-			b=152.039;
-			angle=48.642998;
-			drawBorder=1;
-			id=530;
-			atlOffset=-1.4228935;
-		};
-		class Item213
-		{
-			dataType="Marker";
-			position[]={19037.939,91.994003,9912.2227};
-			name="base_east_9";
-			text="Telecom Base";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=316.01501;
-			b=568.59802;
-			angle=129.189;
-			drawBorder=1;
-			id=531;
-			atlOffset=-88.772842;
-		};
-		class Item214
-		{
-			dataType="Marker";
-			position[]={15259.016,17.563053,17616.229};
+			position[]={15260,16.397387,17591};
 			name="allowedarea_6";
 			text="Syrta Checkpoint";
 			markerType="RECTANGLE";
 			type="rectangle";
 			colorName="ColorCIV";
 			a=143.30174;
-			b=72.724991;
+			b=47.996006;
 			angle=179.1357;
 			id=532;
 		};
-		class Item215
+		class Item196
 		{
 			dataType="Marker";
 			position[]={15301.656,16.478048,17550.918};
@@ -4775,10 +4453,10 @@ class Mission
 			colorName="ColorCIV";
 			a=79.324509;
 			b=11.188336;
-			angle=182.2717;
+			angle=182.27167;
 			id=533;
 		};
-		class Item216
+		class Item197
 		{
 			dataType="Marker";
 			position[]={15380.08,15.524326,17542.938};
@@ -4792,43 +4470,7 @@ class Mission
 			angle=197.16028;
 			id=534;
 		};
-		class Item217
-		{
-			dataType="Marker";
-			position[]={18319.678,49.130001,15581.377};
-			name="outpost_east_12";
-			text="Maybe a storage outpost ?";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=192.55099;
-			b=124.593;
-			angle=4.6900001;
-			drawBorder=1;
-			id=535;
-			atlOffset=0.00036239624;
-		};
-		class Item218
-		{
-			dataType="Marker";
-			position[]={16582.328,50.719002,19005.746};
-			name="outpost_east_15";
-			text="Zelora Outpost";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=49.924999;
-			b=61.52;
-			angle=52.494999;
-			drawBorder=1;
-			id=546;
-			atlOffset=15.456829;
-		};
-		class Item219
+		class Item198
 		{
 			dataType="Marker";
 			position[]={16551.865,30.148315,18980.02};
@@ -4843,7 +4485,7 @@ class Mission
 			id=547;
 			atlOffset=-4.5693016;
 		};
-		class Item220
+		class Item199
 		{
 			dataType="Marker";
 			position[]={16575.689,31.312622,18963.275};
@@ -4858,7 +4500,7 @@ class Mission
 			id=548;
 			atlOffset=-4.4625282;
 		};
-		class Item221
+		class Item200
 		{
 			dataType="Marker";
 			position[]={16606.703,30.735229,19019.863};
@@ -4869,65 +4511,11 @@ class Mission
 			colorName="ColorCIV";
 			a=38.822784;
 			b=5.037437;
-			angle=142.08118;
+			angle=142.08112;
 			id=549;
 			atlOffset=-3.8459511;
 		};
-		class Item222
-		{
-			dataType="Marker";
-			position[]={22469.322,13.948,16263.688};
-			name="outpost_east_11";
-			text="Kalochori Listening Station";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=59.155998;
-			b=79.208;
-			angle=2.0179999;
-			drawBorder=1;
-			id=551;
-			atlOffset=0.00037288666;
-		};
-		class Item223
-		{
-			dataType="Marker";
-			position[]={14193.193,89.287964,21233.32};
-			name="outpost_east_16";
-			text="Frini Outpost";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=104.15279;
-			b=81.598915;
-			angle=11.161983;
-			drawBorder=1;
-			id=552;
-			atlOffset=12.758392;
-		};
-		class Item224
-		{
-			dataType="Marker";
-			position[]={3902.2429,65.304001,12283.139};
-			name="outpost_east_17";
-			text="Kavala Outpost";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=56.645;
-			b=44.402;
-			angle=100.56999;
-			drawBorder=1;
-			id=553;
-			atlOffset=14.962803;
-		};
-		class Item225
+		class Item201
 		{
 			dataType="Logic";
 			class PositionInfo
@@ -4982,41 +4570,7 @@ class Mission
 				nAttributes=2;
 			};
 		};
-		class Item226
-		{
-			dataType="Marker";
-			position[]={13810.362,59.189941,6391.6206};
-			name="outpost_east_4";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=54.416298;
-			b=40.173218;
-			angle=356.0444;
-			drawBorder=1;
-			id=556;
-			atlOffset=-1.1889;
-		};
-		class Item227
-		{
-			dataType="Marker";
-			position[]={8299.7051,75.683594,10078.685};
-			name="outpost_east_18";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=142.37851;
-			b=99.459023;
-			angle=327.02954;
-			drawBorder=1;
-			id=557;
-			atlOffset=-0.65850067;
-		};
-		class Item228
+		class Item202
 		{
 			dataType="Logic";
 			class PositionInfo
@@ -5071,94 +4625,7 @@ class Mission
 				nAttributes=2;
 			};
 		};
-		class Item229
-		{
-			dataType="Marker";
-			position[]={12294.143,122.42468,8884.0576};
-			name="outpost_east_19";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=100;
-			b=100;
-			drawBorder=1;
-			id=559;
-			atlOffset=-1.5329895;
-		};
-		class Item230
-		{
-			dataType="Marker";
-			position[]={3186.573,11.44,12902.781};
-			name="outpost_east_20";
-			text="Kavala Seaport";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=58.242001;
-			b=81.438004;
-			angle=183.121;
-			drawBorder=1;
-			id=560;
-			atlOffset=9.4399996;
-		};
-		class Item231
-		{
-			dataType="Marker";
-			position[]={11525.316,23.077,11640.812};
-			name="base_east_7";
-			text="Therisa Airfield";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=348.54401;
-			b=454.009;
-			angle=38.743996;
-			drawBorder=1;
-			id=561;
-			atlOffset=0.00043487549;
-		};
-		class Item232
-		{
-			dataType="Marker";
-			position[]={4356.3662,293.90302,20661.037};
-			name="outpost_east_21";
-			text="Oreokastro Outpost";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=67.766998;
-			b=142.51401;
-			angle=104.09499;
-			drawBorder=1;
-			id=562;
-			atlOffset=-2.5959778;
-		};
-		class Item233
-		{
-			dataType="Marker";
-			position[]={5867.4004,217.72264,20191.242};
-			name="base_east_8";
-			text="Dump Base";
-			markerType="ELLIPSE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=202.72551;
-			b=166.10939;
-			angle=314.09396;
-			drawBorder=1;
-			id=563;
-		};
-		class Item234
+		class Item203
 		{
 			dataType="Marker";
 			position[]={5907.2754,230.15608,20053.709};
@@ -5172,7 +4639,7 @@ class Mission
 			angle=39.892174;
 			id=564;
 		};
-		class Item235
+		class Item204
 		{
 			dataType="Marker";
 			position[]={5832.9668,224.97722,20090.486};
@@ -5186,7 +4653,7 @@ class Mission
 			angle=10.35861;
 			id=565;
 		};
-		class Item236
+		class Item205
 		{
 			dataType="Marker";
 			position[]={5762.1406,221.47144,20098.945};
@@ -5197,11 +4664,11 @@ class Mission
 			colorName="ColorCIV";
 			a=30.828016;
 			b=6.0439515;
-			angle=357.65723;
+			angle=357.6572;
 			id=566;
 			atlOffset=-0.1526947;
 		};
-		class Item237
+		class Item206
 		{
 			dataType="Marker";
 			position[]={5709.4888,219.91156,20081.395};
@@ -5215,7 +4682,7 @@ class Mission
 			angle=324.92215;
 			id=567;
 		};
-		class Item238
+		class Item207
 		{
 			dataType="Marker";
 			position[]={9653.3145,3.5450487,22265.934};
@@ -5229,25 +4696,7 @@ class Mission
 			angle=357.6572;
 			id=568;
 		};
-		class Item239
-		{
-			dataType="Marker";
-			position[]={9706.1465,1.2069092,22313.334};
-			name="outpost_east_22";
-			text="Pyrgos FOB";
-			markerType="RECTANGLE";
-			type="ellipse";
-			colorName="ColorRed";
-			alpha=0.5;
-			fillName="SolidBorder";
-			a=80;
-			b=54.851479;
-			angle=3.4855175;
-			drawBorder=1;
-			id=569;
-			atlOffset=-1.3979599;
-		};
-		class Item240
+		class Item208
 		{
 			dataType="Marker";
 			position[]={9728.2256,5.3942494,22259.973};
@@ -5261,19 +4710,4782 @@ class Mission
 			angle=19.45351;
 			id=570;
 		};
-		class Item241
+		class Item209
 		{
 			dataType="Marker";
-			position[]={9692.0049,3.4663036,22267.549};
+			position[]={9694,3.7079296,22263};
 			name="allowedarea_18";
 			text="Syrta Checkpoint";
 			markerType="RECTANGLE";
 			type="rectangle";
 			colorName="ColorCIV";
-			a=10.202437;
-			b=6.0439515;
-			angle=357.74957;
+			a=20.122646;
+			b=10.367704;
+			angle=358.78256;
 			id=571;
+		};
+		class Item210
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={12300.505,123.98564,8889.0781};
+			};
+			areaSize[]={68.161003,0,82.803001};
+			flags=1;
+			id=576;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="South Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item211
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={12274.738,123.38063,8917.707};
+			};
+			id=577;
+			type="Project_0_LocationWaypoint";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationWaypoint";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item212
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={12220,111.63609,8891};
+				angles[]={0.0039967569,0,0.27300945};
+			};
+			id=581;
+			type="Project_0_LocationWaypoint";
+			atlOffset=7.6293945e-006;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationWaypoint";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item213
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={12246,110.08827,8742};
+				angles[]={5.8889623,0,6.1993828};
+			};
+			id=582;
+			type="Project_0_LocationWaypoint";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationWaypoint";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				nAttributes=1;
+			};
+		};
+		class Item214
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={12280.849,125.67699,8931.0059};
+				angles[]={0.034652505,3.1572936,0.018663859};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=583;
+			type="B_Truck_01_transport_F";
+			atlOffset=-0.0038223267;
+		};
+		class Item215
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={12275.813,125.43897,8931.0117};
+				angles[]={0.0053377044,3.1572936,0.083802827};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=585;
+			type="B_Truck_01_transport_F";
+		};
+		class Item216
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={13810,60.39798,6393};
+				angles[]={0.0039968039,0,6.2152915};
+			};
+			areaSize[]={26.289,0,26.42};
+			areaIsRectangle=1;
+			flags=1;
+			id=588;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Southest Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item217
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={8301,76.069969,10063};
+				angles[]={0,0,6.1967392};
+			};
+			areaSize[]={52.203999,0,44.858002};
+			flags=1;
+			id=589;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Edessa Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item218
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={11591,21.340668,11656};
+				angles[]={0.033318337,0.61044639,0.023998277};
+			};
+			areaSize[]={304.216,0,412.75299};
+			areaIsRectangle=1;
+			flags=1;
+			id=590;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="base";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=30;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="AAC Airfield";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item219
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={11763.057,25.086039,11897.988};
+				angles[]={6.2698536,5.453074,6.2338929};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=591;
+			type="B_Truck_01_transport_F";
+			atlOffset=-0.00066566467;
+		};
+		class Item220
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={11757.115,25.235762,11890.991};
+				angles[]={6.2791886,5.4525514,6.2631893};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=592;
+			type="B_Truck_01_transport_F";
+			atlOffset=-0.0011463165;
+		};
+		class Item221
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={11754.023,25.391235,11905.979};
+				angles[]={6.2738566,5.453074,6.272521};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=593;
+			type="B_Truck_01_transport_F";
+		};
+		class Item222
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={11748.006,25.37277,11898.991};
+				angles[]={6.2791886,5.453074,6.2805333};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=594;
+			type="B_Truck_01_transport_F";
+		};
+		class Item223
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={11739,25.406786,11906.994};
+				angles[]={6.2805333,5.453074,0};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=595;
+			type="B_Truck_01_transport_F";
+		};
+		class Item224
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={11744.997,25.429455,11914.003};
+				angles[]={0.0013372133,5.453074,0.0013372133};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=596;
+			type="B_Truck_01_transport_F";
+			atlOffset=9.5367432e-006;
+		};
+		class Item225
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={10005,16.338018,11229};
+				angles[]={6.2578607,5.330637,0.0053407075};
+			};
+			areaSize[]={52.203999,0,44.858002};
+			flags=1;
+			id=597;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Zaros Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item226
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3902,50.336674,12283};
+				angles[]={0.0093375118,0.18240437,0.023998277};
+			};
+			areaSize[]={44.192001,0,55.880001};
+			areaIsRectangle=1;
+			flags=1;
+			id=601;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Kavala Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item227
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3173,2,12895};
+			};
+			areaSize[]={68.161003,0,82.803001};
+			areaIsRectangle=1;
+			flags=1;
+			id=602;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Kavala Seaport Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item228
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14379,19.01,16211};
+				angles[]={0,0.77574646,0};
+			};
+			areaSize[]={361.28299,0,728.45099};
+			areaIsRectangle=1;
+			flags=1;
+			id=603;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="base";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=30;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Altis Airfield";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item229
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={15209,17.697266,17057};
+				angles[]={0.038641591,0.77574646,6.2685246};
+			};
+			areaSize[]={361.28299,0,456.68301};
+			areaIsRectangle=1;
+			flags=1;
+			id=604;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="base";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=30;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Altis Airport Baracks";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item230
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={16077,13.838808,16976};
+				angles[]={6.1703334,0.21856451,0.042641956};
+			};
+			areaSize[]={199.18829,0,179.38399};
+			areaIsRectangle=1;
+			flags=1;
+			id=605;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Kavala Seaport Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item231
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={9706,2.6153381,22316};
+				angles[]={6.2791882,1.6208348,0.0013439035};
+			};
+			areaSize[]={56.792999,0,80.181};
+			areaIsRectangle=1;
+			flags=1;
+			id=606;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Krya Nera Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item232
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={18311,48.944717,15579};
+				angles[]={6.2658539,0.022514746,0.025324726};
+			};
+			areaSize[]={170.405,0,122.26};
+			areaIsRectangle=1;
+			flags=1;
+			id=608;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Charkia Storage Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item233
+		{
+			dataType="Marker";
+			position[]={18411,47.451538,15477};
+			name="allowedarea_19";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=31.950027;
+			b=5.0588818;
+			angle=96.6698;
+			id=609;
+			atlOffset=-0.77252197;
+		};
+		class Item234
+		{
+			dataType="Marker";
+			position[]={18420,49.420029,15510};
+			name="allowedarea_20";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=12.392559;
+			b=5.0588818;
+			angle=117.59128;
+			id=610;
+		};
+		class Item235
+		{
+			dataType="Marker";
+			position[]={18453,50.677422,15542};
+			name="allowedarea_21";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=40.215912;
+			b=7.4543862;
+			angle=139.61703;
+			id=611;
+		};
+		class Item236
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={20944,13.983416,19254};
+				angles[]={6.2791739,0.022519479,0.089096971};
+			};
+			areaSize[]={143.60553,0,131.99434};
+			areaIsRectangle=1;
+			flags=1;
+			id=612;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Kavala Seaport Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item237
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={22438,14.176656,16292};
+				angles[]={0.0079936078,0.022514746,6.2818413};
+			};
+			areaSize[]={93.026001,0,93.691002};
+			areaIsRectangle=1;
+			flags=1;
+			id=613;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Kalochori Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item238
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={17430,14.421988,13161};
+				angles[]={0.034644786,0.82182324,6.2805324};
+			};
+			areaSize[]={109.171,0,79.847};
+			areaIsRectangle=1;
+			flags=1;
+			id=614;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="base";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=15;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Pyrgos Base";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item239
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={21082,20.762611,7324};
+				angles[]={6.2738566,5.5036526,6.2525291};
+			};
+			areaSize[]={372.44699,0,231.88213};
+			areaIsRectangle=1;
+			flags=1;
+			id=615;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Charkia Storage Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item240
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={23612,98.464867,21104};
+				angles[]={0.3372674,0.022514746,0.20889845};
+			};
+			areaSize[]={212.89999,0,134.01601};
+			areaIsRectangle=1;
+			flags=1;
+			id=616;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Delfinaki Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item241
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={25233,87.18,21822};
+				angles[]={6.19276,0.022514746,6.2338972};
+			};
+			areaSize[]={171.729,0,98.735001};
+			areaIsRectangle=1;
+			flags=1;
+			id=617;
+			type="Project_0_LocationSector";
+			atlOffset=-7.6293945e-006;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Sofia Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item242
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={26872,19.84671,24803};
+				angles[]={6.2538638,5.4163327,6.2791882};
+			};
+			areaSize[]={397.04099,0,198.474};
+			areaIsRectangle=1;
+			flags=1;
+			id=618;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="base";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Molos Airfield";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item243
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={23282,3.1900001,18548};
+				angles[]={0,6.2822256,0};
+			};
+			areaSize[]={254.071,0,543.76099};
+			areaIsRectangle=1;
+			flags=1;
+			id=619;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="base";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=30;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Almyra Airfield";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item244
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={4553,262.76001,15420};
+				angles[]={0.061261058,0,0};
+			};
+			areaSize[]={199.853,0,201.58099};
+			flags=1;
+			id=620;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Negades Comms Station";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item245
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={6835.4858,66.639587,16100.658};
+				angles[]={0.061261058,0,0};
+			};
+			areaSize[]={100.00211,0,101.64458};
+			flags=1;
+			id=621;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Negades Comms Station";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item246
+		{
+			dataType="Marker";
+			position[]={6778,66.053589,16152};
+			name="allowedarea_22";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=34.681976;
+			b=7.9887705;
+			angle=62.075039;
+			id=622;
+			atlOffset=-4.3011398;
+		};
+		class Item247
+		{
+			dataType="Marker";
+			position[]={6813,60.116699,16099};
+			name="allowedarea_23";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=34.681976;
+			b=7.9887705;
+			angle=51.091408;
+			id=623;
+			atlOffset=-4.0953827;
+		};
+		class Item248
+		{
+			dataType="Marker";
+			position[]={6861,57,16037};
+			name="allowedarea_24";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=45.792671;
+			b=6.6710224;
+			angle=51.091404;
+			id=624;
+			atlOffset=-3.299366;
+		};
+		class Item249
+		{
+			dataType="Marker";
+			position[]={6788,54.122437,16051};
+			name="allowedarea_25";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=45.792671;
+			b=4.366169;
+			angle=146.92319;
+			id=625;
+			atlOffset=-3.4004326;
+		};
+		class Item250
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={4356.0562,296.53873,20661.236};
+				angles[]={0.059602994,0.23251276,6.2690482};
+			};
+			areaSize[]={142.071,0,67.305};
+			flags=1;
+			id=626;
+			type="Project_0_LocationSector";
+			atlOffset=-3.0517578e-005;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Oreokastro Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item251
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={5862,216.72522,20194};
+				angles[]={0.16125098,0.63627726,0.061261058};
+			};
+			areaSize[]={169.565,0,200.739};
+			flags=1;
+			id=627;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Dump Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item252
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={9925.1357,240.46754,19389.002};
+			};
+			areaSize[]={141.16306,0,147.19627};
+			flags=1;
+			id=628;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Galati Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item253
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={12829,86.988617,16701};
+				angles[]={0.16514865,0,0.0146689};
+			};
+			areaSize[]={214.98997,0,216.8938};
+			flags=1;
+			id=629;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Negades Comms Station";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item254
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={12456.817,74.365128,15191.832};
+				angles[]={0.061261058,0,0};
+			};
+			areaSize[]={100.00211,0,101.64458};
+			flags=1;
+			id=630;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Negades Comms Station";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item255
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14194,76.283928,21233};
+				angles[]={6.1914506,0.17509142,6.0213337};
+			};
+			areaSize[]={104.908,0,82.950996};
+			flags=1;
+			id=631;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Frini outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item256
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={19036,180.87053,9918};
+				angles[]={6.256237,0.62405992,6.1977339};
+			};
+			areaSize[]={572.685,0,313.396};
+			flags=1;
+			id=632;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=20;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Big Comms Station";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item257
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={8408,180.7,18233};
+				angles[]={0.014259339,5.4767032,6.2769194};
+			};
+			areaSize[]={34.839001,0,54.624001};
+			areaIsRectangle=1;
+			flags=1;
+			id=633;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Syrta Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item258
+		{
+			dataType="Marker";
+			position[]={8380,175.51416,18218};
+			name="allowedarea_26";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=9.1187925;
+			b=5.037437;
+			angle=146.92911;
+			id=634;
+			atlOffset=-4.8818359;
+		};
+		class Item259
+		{
+			dataType="Marker";
+			position[]={8460,179.11063,18233};
+			name="allowedarea_27";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=21.356142;
+			b=5.8822365;
+			angle=204.91154;
+			id=635;
+		};
+		class Item260
+		{
+			dataType="Marker";
+			position[]={8415,176,18232};
+			name="allowedarea_28";
+			text="Syrta Checkpoint";
+			markerType="RECTANGLE";
+			type="rectangle";
+			colorName="ColorCIV";
+			a=33.855145;
+			b=5.5380263;
+			angle=161.17828;
+			id=636;
+			atlOffset=-4.6013336;
+		};
+		class Item261
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={20084,91.770409,6780};
+				angles[]={0.48267081,0.62405992,6.19276};
+			};
+			areaSize[]={172.222,0,222.26199};
+			flags=1;
+			id=639;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Selakano Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item262
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={23065.93,48.549061,7283.1758};
+				angles[]={0.4628264,0.7774744,6.1147785};
+			};
+			areaSize[]={128.534,0,157.351};
+			flags=1;
+			id=640;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Feres Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item263
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={16581.885,35.25169,19006.867};
+				angles[]={0.0083077671,4.0541382,0.013177236};
+			};
+			areaSize[]={48.817001,0,61.259998};
+			areaIsRectangle=1;
+			flags=1;
+			id=641;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="outpost";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="false";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivUnitCount";
+					expression="_this setVariable [""#unitCount"",_value]";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Zeloran Outpost";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+	};
+	class Connections
+	{
+		class LinkIDProvider
+		{
+			nextID=3;
+		};
+		class Links
+		{
+			items=3;
+			class Item0
+			{
+				linkID=0;
+				item0=577;
+				item1=576;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item1
+			{
+				linkID=1;
+				item0=581;
+				item1=577;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
+			class Item2
+			{
+				linkID=2;
+				item0=582;
+				item1=581;
+				class CustomData
+				{
+					type="Sync";
+				};
+			};
 		};
 	};
 };
