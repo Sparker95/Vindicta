@@ -339,22 +339,27 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	/* 
-		Takes an itemID and returns the associated classname.
+		Returns the classname of the currently selected menu item, if the menu is open.
+		Returns "" if the menu is closed.
 
 		Example:
-		pr _itemID = T_GETV("currentItemID");
-		T_CALLM("itemIDtoClassname", [_itemID]);
+		private classname = T_CALLM0("currentClassname");
 
 	*/
-	METHOD("itemIDtoClassname") {
-		params [["_thisObject", "", [""]], "_ItemID"];
+	METHOD("currentClassname") {
+		params [["_thisObject", "", [""]]];
 
+		pr _ItemCatOpen = T_GETV("ItemCatOpen");
+		pr _return = "";
+
+		if (_itemCatOpen) then { 
 		pr _currentCatID = T_GETV("currentCatID");
+		pr _currentItemID = T_GETV("currentItemID");
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		pr _return = (_itemCat select _itemID) select 0;
-
-		systemChat format ["%1", _return];
-		_return;
+		_return = (_itemCat select _currentItemID) select 0;
+		};
+		
+		_return
 	} ENDMETHOD;
 
 	METHOD("createNewObject") {
