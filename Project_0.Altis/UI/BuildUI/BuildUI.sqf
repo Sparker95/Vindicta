@@ -10,11 +10,13 @@
 Class: BuildUI
 Initializes the build menu UI, handles opening and closing, and handles the building itself
 
+sound place: 
+playSound ["3DEN_notificationDefault", false];
+
 Author: Marvis
 */
 
 #define pr private
-#define UI_DISPLAY (uinamespace getVariable "buildUI_display")
 
 g_BuildUI = nil;
 
@@ -22,14 +24,16 @@ CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
 	VARIABLE("EHKeyDown");
-	VARIABLE("EHKeyUp");
 
-	VARIABLE("currentCatID");				// currently selected item category
-	VARIABLE("UICatTexts");
-	VARIABLE("UI_IDCArray");
+	VARIABLE("currentCatID");				// currently selected category index
+	VARIABLE("currentItemID");				// currently selected item index
+	VARIABLE("UICatTexts");					// array of strings for category names
+	VARIABLE("UIItemTexts");				// array of strings for item names in current category
+	VARIABLE("TimeFadeIn");					// fade in time for category change UI effect
+	VARIABLE("ItemCatOpen");				// true if item list should be shown
 
 	// object variables
-	VARIABLE("activeObject");			// Object currently highlighted
+	VARIABLE("activeObject");				// Object currently highlighted
 	VARIABLE("selectedObjects");
 	VARIABLE("moveActionId");
 
@@ -42,21 +46,24 @@ CLASS("BuildUI", "")
 			OOP_ERROR_0("BuildUI already initialized! Make sure to delete it before trying to initialize it again!");
 		};
 
-		pr _IDCs = [IDC_TEXTC, IDC_TEXTL1, IDC_TEXTL2, IDC_TEXTR1, IDC_TEXTR2];
 		g_rscLayerBuildUI = ["rscLayerBuildUI"] call BIS_fnc_rscLayer;	// register build UI layer
 
 		g_BuildUI = _thisObject;
-		T_SETV("currentCatID", 0);  // index in g_buildUIObjects array of objects
+		T_SETV("currentCatID", 0);  			// index in g_buildUIObjects array of objects
+		T_SETV("currentItemID", 0);  			// index in g_buildUIObjects category subarray of objects
+		T_SETV("TimeFadeIn", 0);
 		T_SETV("UICatTexts", []);
-		T_SETV("UI_IDCArray", _IDCs);
+
+		pr _args = ["", "", "", "", ""];
+		T_SETV("UIItemTexts", _args);
+
+		T_SETV("ItemCatOpen", false);			// true if item list submenu is open
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
-		T_SETV("EHKeyUp", nil);
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
 		T_SETV("moveActionId", -1);
-
-		T_CALLM("makeUIArray", [0]); // initialize UI category strings
+		T_CALLM("makeCatTexts", [0]); 			// initialize UI category strings
 
 	} ENDMETHOD;
 
@@ -100,20 +107,52 @@ CLASS("BuildUI", "")
 		// update UI text and categories
 		["BuildUIUpdate", "onEachFrame", {
 
-			pr _IDCs = GETV(g_BuildUI, "UI_IDCArray");
 			pr _UICatTexts = GETV(g_BuildUI, "UICatTexts");
+			pr _UIItemTexts = GETV(g_BuildUI, "UIItemTexts");
+			pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
+			pr _ItemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
 
-			if (displayNull != UI_DISPLAY) then {
+			if (displayNull != (uinamespace getVariable "buildUI_display")) then {
+
+				if (_ItemCatOpen) then { 
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
+					{
+						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
+						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
+						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTC) ctrlSetText format ["%1", (_UIItemTexts select 2)];
+						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR1) ctrlSetText format ["%1", (_UIItemTexts select 3)];
+						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR2) ctrlSetText format ["%1", (_UIItemTexts select 4)];
+
+						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlShow true;
+
+						{
+						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+						} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+
+					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+				} else { 
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
+					{
+						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlShow false;
+						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+				};
 
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
+				
+				// button highlight effect
+				if (_TimeFadeIn > time) then { 
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, (_TimeFadeIn - time)];
+				} else { ((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, 0]; };
+
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTR1) ctrlSetText format ["%1", (_UICatTexts select 3)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTR2) ctrlSetText format ["%1", (_UICatTexts select 4)];
 
 				{
-					(UI_Display displayCtrl _x) ctrlCommit 0;
-				} forEach IDCs;
+					((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+				} forEach [IDC_TEXTL2, IDC_TEXTL1, IDC_TEXTC, IDC_TEXTR1, IDC_TEXTR2];
 	
 		  	};
 		}] call BIS_fnc_addStackedEventHandler;
@@ -122,23 +161,30 @@ CLASS("BuildUI", "")
 		g_rscLayerBuildUI cutRsc ["BuildUI", "PLAIN", -1, false]; // blend in UI
 
 		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
-			
+
 			switch ((keyName (_this select 1))) do {
 				default { false; }; 
-				case """UP""": { CALLM0(g_BuildUI, "navUp"); true; };
-				case """DOWN""": { CALLM0(g_BuildUI, "navDown"); true; };
+				case """UP""": { 
+					playSound ["clicksoft", false];
+					CALLM0(g_BuildUI, "openItems"); true; 
+				};
+
+				case """DOWN""": { 
+					playSound ["clicksoft", false];
+					CALLM0(g_BuildUI, "closeItems"); true; 
+				};
 
 				case """LEFT""": { 
-					pr _currentCatID = GETV(g_BuildUI, "currentCatID");
-					pr _newCatID = _currentCatID-1;
-					CALLM(g_BuildUI, "navLeft", [_newCatID]); 
+					playSound ["clicksoft", false];
+					SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
+					CALLM(g_BuildUI, "navLR", [-1]); 
 					true; 
 				};
 
 				case """RIGHT""": { 
-					pr _currentCatID = GETV(g_BuildUI, "currentCatID");
-					pr _newCatID = _currentCatID+1;
-					CALLM(g_BuildUI, "navLeft", [_newCatID]); 
+					playSound ["clicksoft", false];
+					SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
+					CALLM(g_BuildUI, "navLR", [1]); 
 					true; 
 				};
 
@@ -160,56 +206,78 @@ CLASS("BuildUI", "")
 		T_CALLM0("exitMoveMode");
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
-		(findDisplay 46) displayRemoveEventHandler ["KeyDown", T_GETV("EHKeyDown")];
+		(findDisplay 46) displayRemoveAllEventHandlers "keydown";
 		T_SETV("EHKeyDown", nil);
+
+		// close item category and reset selected item ID to avoid problems
+		T_SETV("currentItemID", 0);
+		T_SETV("ItemCatOpen", false);
+
 		["BuildUIUpdate", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 
 		OOP_INFO_0("Removed display event handler!");
 	} ENDMETHOD;
 
-	// navigate up item list
-	METHOD("navUp") {
+	// opens item list UI element
+	METHOD("openItems") {
 		params ["_thisObject"];
-		OOP_INFO_0("'navUp' method called");
+		OOP_INFO_0("'openItems' method called");
+		T_SETV("ItemCatOpen", true);
+		T_SETV("currentItemID", 0);
 
+		T_CALLM("makeItemTexts", [0]); // create item list display texts
 	} ENDMETHOD;
 
-	// navigate down item list
-	METHOD("navDown") {
+	// closes item list UI element
+	METHOD("closeItems") {
 		params ["_thisObject"];
-		OOP_INFO_0("'navDown' method called");
-
+		OOP_INFO_0("'closeItems' method called");
+		T_SETV("ItemCatOpen", false);
+		T_SETV("currentItemID", 0);
 	} ENDMETHOD;
 
-	// navigate right through categories
-	METHOD("navRight") {
-		params [["_thisObject", "", [""]], "_newCatID"];
-		OOP_INFO_0("'navRight' method called");
+	/* Description: Navigate left or right in either category or item list on the UI
 
+		Parameter: Number
+		(+)1: array index plus 1 (right)
+		-1: array index minus 1 (left)
+
+		current category index + _num = new index
+	*/
+	METHOD("navLR") {
+		params [["_thisObject", "", [""]], "_num"];
+		OOP_INFO_1("'navLR' method called: %1", _num);
+		pr _itemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
+		pr _currentCatID = T_GETV("currentCatID"); // currently selected category
+
+		if (_itemCatOpen) then { 
+		pr _currentItemID = T_GETV("currentItemID");
+		pr _newItemID = _currentItemID + (_num);
+
+		// make sure item ID is index of item subarray of g_buildUIObjects template array
+		if (_newItemID < 0) exitWith { OOP_INFO_1("Invalid itemID: %1", _newItemID); };
+		pr _itemCatIndexSize = (count (g_buildUIObjects select _currentCatID select 0)) - 1;
+		if (_newItemID > _itemCatIndexSize) exitWith { OOP_INFO_1("Invalid itemID: %1", _newItemID); };
+
+		T_SETV("currentItemID", _newItemID); 
+		T_CALLM("makeItemTexts", [_newItemID]);
+		} else {
+		pr _newCatID = _currentCatID + (_num);
+
+		// make sure category ID is index of g_buildUIObjects template array
 		if ((_newCatID < 0) OR _newCatID > ((count g_buildUIObjects) - 1)) exitWith { OOP_INFO_1("Invalid newCatID: %1", _newCatID); };
 
 		T_SETV("currentCatID", _newCatID); 
-		T_CALLM("makeUIArray", [_newCatID]);
+		T_CALLM("makeCatTexts", [_newCatID]);
+		};
 
 	} ENDMETHOD;
 
-	// navigate left through categories
-	METHOD("navLeft") {
-		params [["_thisObject", "", [""]], "_newCatID"];
-		OOP_INFO_0("'navLeft' method called");
-
-		if ((_newCatID < 0) OR _newCatID > ((count g_buildUIObjects) - 1)) exitWith { OOP_INFO_1("Invalid newCatID: %1", _newCatID); };
-		
-		T_SETV("currentCatID", _newCatID);
-		T_CALLM("makeUIArray", [_newCatID]);
-
-	} ENDMETHOD;
-
-	// generates an array of display strings for each UI text
-	// format: [L2, L1, C, R1, R2]
-	STATIC_METHOD("makeUIArray") {
+	// generates an array of display strings for each category on the UI
+	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
+	STATIC_METHOD("makeCatTexts") {
 		params [["_thisObject", "", [""]], "_currentCatID"];
-		OOP_INFO_0("'makeUIArray' method called");
+		OOP_INFO_0("'makeCatTexts' method called");
 
 		pr _UIarray = [_currentCatID-2, _currentCatID-1, _currentCatID, _currentCatID+1, _currentCatID+2]; 
 		pr _return = [];
@@ -218,13 +286,39 @@ CLASS("BuildUI", "")
 			if ((_x < 0) OR (_x > ((count g_buildUIObjects) - 1))) then { 
 				_return pushBack ""; 
 			} else {
-				_return pushBack ((g_buildUIObjects select _x) select 1);
-				OOP_INFO_1("Current _return array: %1",_return);
+				_return pushBack (toUpper ((g_buildUIObjects select _x) select 1));
+				OOP_INFO_1("Current CATEGORY text array: %1",_return);
 			};
 		} forEach _UIarray; 
 
 		SETV(_thisObject, "UICatTexts", _return);
-		systemChat format ["%1", _return];
+		systemChat format ["Current CATEGORY name: %1", ((g_buildUIObjects select _currentCatID) select 1)];
+
+	} ENDMETHOD;
+
+	// generates an array of display strings for the item list on the UI
+	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
+	STATIC_METHOD("makeItemTexts") {
+		params [["_thisObject", "", [""]], "_ItemID"];
+		OOP_INFO_0("'makeItemTexts' method called");
+
+		pr _currentCatID = T_GETV("currentCatID");
+		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+		pr _itemCatIndexSize = (count _itemCat) -1;
+		pr _UIarray = [_ItemID-2, _ItemID-1, _ItemID, _ItemID+1, _ItemID+2]; 
+		pr _return = [];
+
+		{ 
+			if ((_x < 0) OR (_x > _itemCatIndexSize)) then { 
+				_return pushBack ""; 
+			} else {
+				_return pushBack (toUpper ((_itemCat select _x) select 1));
+				OOP_INFO_1("Current ITEM array: %1", _return);
+			};
+		} forEach _UIarray; 
+
+		T_SETV("UIItemTexts", _return);
+		systemChat format ["Current ITEM name: %1", ((_itemCat select _ItemID) select 1)];
 
 	} ENDMETHOD;
 

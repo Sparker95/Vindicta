@@ -48,6 +48,14 @@ pr _catCover = [
 	["Land_TinWall_01_m_4m_v1_F", "Tin Wall"]
 ];
 
+pr _catRange = [
+	// format: Classname, Display name string
+	["Land_Target_Dueling_01_F", "Dueling Target"],
+	["Zombie_PopUp_Moving_90deg_F", "Target Zombie 1"],
+	["Zombie_PopUp_Moving_F", "Target Zombie 2"],
+	["TargetP_Zom_F", "Target Zombie 3"]
+];
+
 
 // array of categories and category names
 g_BuildUIObjects = [
@@ -56,7 +64,8 @@ g_BuildUIObjects = [
 [_catDefense, "Fortification"],
 [_catCamo, "Camouflage"],
 [_catDeco, "Decoration"],
-[_catCover, "Cover"]
+[_catCover, "Cover"],
+[_catRange, "Training"]
 
 ];
 
