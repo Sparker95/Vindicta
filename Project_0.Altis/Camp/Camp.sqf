@@ -16,6 +16,7 @@ CLASS("Camp", "Location")
 
 	VARIABLE("arsenalBox"); // arsenal box object of this Camp
 	VARIABLE("campFire"); // camp fire object of this Camp
+	VARIABLE("garageBox"); // box object with garage attached to it
 
 	// used for remoteExec
 	STATIC_METHOD("newStatic") {
@@ -38,6 +39,10 @@ CLASS("Camp", "Location")
 		pr _campFire = "Land_Campfire_F" createVehicle _pos;
 		_campFire remoteExec ["build_ui_addOpenBuildMenuAction", 0, _campFire];
 		SET_VAR(_thisObject, "campFire", _campFire);
+
+		pr _garageBox = "Land_CargoBox_V1_F" createVehicle _pos;
+		_garageBox remoteExec ["JN_fnc_garage_init", 0, _garageBox];
+		SET_VAR(_thisObject, "garageBox", _garageBox);
 
 		// Create Respawn Marker
 		private _marker = createMarker ["respawn_west_" + _thisObject, _pos]; // magic
