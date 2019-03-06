@@ -112,6 +112,9 @@ CLASS("BuildUI", "")
 			pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
 			pr _ItemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
 
+			// Why not use a macro for these long-ass texts?
+			// Arma doesn't want that.
+
 			if (displayNull != (uinamespace getVariable "buildUI_display")) then {
 
 				if (_ItemCatOpen) then { 
@@ -163,7 +166,23 @@ CLASS("BuildUI", "")
 		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
 
 			switch ((keyName (_this select 1))) do {
-				default { false; }; 
+				default { false; };
+
+				case """Tab""": { 
+					// TODO: add pick up/drop current object
+					true; // disables default control 
+				};
+
+				case """Q""": { 
+					// TODO: rotate object counter-clockwise
+					true; // disables default control 
+				};
+
+				case """E""": { 
+					// TODO: rotate object clockwise
+					true; // disables default control 
+				};
+
 				case """UP""": { 
 					playSound ["clicksoft", false];
 					CALLM0(g_BuildUI, "openItems"); true; 
@@ -188,6 +207,7 @@ CLASS("BuildUI", "")
 					true; 
 				};
 
+				// close build menu
 				case """Backspace""": { CALLM0(g_BuildUI, "closeUI"); true; };
 			};
 		}];
@@ -275,7 +295,7 @@ CLASS("BuildUI", "")
 
 	// generates an array of display strings for each category on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
-	STATIC_METHOD("makeCatTexts") {
+	METHOD("makeCatTexts") {
 		params [["_thisObject", "", [""]], "_currentCatID"];
 		OOP_INFO_0("'makeCatTexts' method called");
 
@@ -287,18 +307,16 @@ CLASS("BuildUI", "")
 				_return pushBack ""; 
 			} else {
 				_return pushBack (toUpper ((g_buildUIObjects select _x) select 1));
-				OOP_INFO_1("Current CATEGORY text array: %1",_return);
 			};
 		} forEach _UIarray; 
 
 		SETV(_thisObject, "UICatTexts", _return);
-		systemChat format ["Current CATEGORY name: %1", ((g_buildUIObjects select _currentCatID) select 1)];
 
 	} ENDMETHOD;
 
 	// generates an array of display strings for the item list on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
-	STATIC_METHOD("makeItemTexts") {
+	METHOD("makeItemTexts") {
 		params [["_thisObject", "", [""]], "_ItemID"];
 		OOP_INFO_0("'makeItemTexts' method called");
 
@@ -313,13 +331,30 @@ CLASS("BuildUI", "")
 				_return pushBack ""; 
 			} else {
 				_return pushBack (toUpper ((_itemCat select _x) select 1));
-				OOP_INFO_1("Current ITEM array: %1", _return);
 			};
 		} forEach _UIarray; 
 
 		T_SETV("UIItemTexts", _return);
-		systemChat format ["Current ITEM name: %1", ((_itemCat select _ItemID) select 1)];
 
+	} ENDMETHOD;
+
+	/* 
+		Takes an itemID and returns the associated classname.
+
+		Example:
+		pr _itemID = T_GETV("currentItemID");
+		T_CALLM("itemIDtoClassname", [_itemID]);
+
+	*/
+	METHOD("itemIDtoClassname") {
+		params [["_thisObject", "", [""]], "_ItemID"];
+
+		pr _currentCatID = T_GETV("currentCatID");
+		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+		pr _return = (_itemCat select _itemID) select 0;
+
+		systemChat format ["%1", _return];
+		_return;
 	} ENDMETHOD;
 
 	METHOD("createNewObject") {

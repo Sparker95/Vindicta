@@ -42,10 +42,10 @@ pr _catCover = [
 	// format: Classname, Display name string
 	["Land_Rampart_F", "Rampart"],
 	["Land_SlumWall_01_s_2m_F", "Slumwall"],
-	["Land_SlumWall_01_s_4m_F", "Slumwall"],
+	["Land_SlumWall_01_s_4m_F", "Slumwall 2"],
 	["Land_Mound01_8m_F", "Stone Wall"],
 	["Land_TinWall_01_m_4m_v2_F", "Tin Wall"],
-	["Land_TinWall_01_m_4m_v1_F", "Tin Wall"]
+	["Land_TinWall_01_m_4m_v1_F", "Tin Wall 2"]
 ];
 
 pr _catRange = [
