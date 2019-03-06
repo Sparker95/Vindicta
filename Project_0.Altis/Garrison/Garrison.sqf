@@ -49,8 +49,6 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 
-		OOP_INFO_1("%1", _side);
-
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
