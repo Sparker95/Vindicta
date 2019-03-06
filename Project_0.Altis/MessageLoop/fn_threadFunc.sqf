@@ -1,12 +1,11 @@
-/*
-The thread function of the MessageLoop.
-It checks for messages in the loop and calls handleMessages of objects.
-*/
-
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
+/*
+The thread function of the MessageLoop.
+It checks for messages in the loop and calls handleMessages of objects.
+*/
 
 #define pr private
 

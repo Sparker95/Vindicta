@@ -31,8 +31,10 @@ CLASS("Camp", "Location")
 		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
 		CALL_METHOD(_thisObject, "setType", [LOCATION_TYPE_CAMP]);
 
-		// Create box with Jeroen's arsenal box
-		pr _arsenalBox = "Box_FIA_Support_F" createVehicle _pos;
+		// Create camp vehicles
+		private _camoNet = "CamoNet_ghex_F" createVehicle  _pos;
+		SET_VAR(_thisObject, "camoNet", _camoNet);
+		private _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
 		_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 

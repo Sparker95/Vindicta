@@ -1,14 +1,16 @@
+#define OOP_INFO
+#define OOP_WARNING
+#include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
+#include "Location.hpp"
+#include "..\MessageTypes.hpp"
+
 /*
 Class: Location
 Location has garrisons at a static place and spawns units.
 
 Author: Sparker 28.07.2018
 */
-
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
-#include "Location.hpp"
-#include "..\MessageTypes.hpp"
 
 CLASS("Location", "MessageReceiverEx")
 
@@ -194,6 +196,9 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+
+		OOP_INFO_1("setGarrisonMilitaryMain: %1", _garrison);
+
 		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
 		if (_garrison != "") then {
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
@@ -209,6 +214,17 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilMain")
+	} ENDMETHOD;
+
+	/*
+	Method: getGarrisonMilAA
+	Gets the main military garrison located at this location
+
+	Returns: <Garrison> or "" if there is no garrison there
+	*/
+	METHOD("getGarrisonMilAA") {
+		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		GET_VAR(_thisObject, "garrisonMilAA")
 	} ENDMETHOD;
 
 	/*
@@ -237,13 +253,56 @@ CLASS("Location", "MessageReceiverEx")
 		GET_VAR(_thisObject, "type")
 	} ENDMETHOD;
 
+	/*
+	Method: getCapacityInf
+	Returns type of this location
+
+	Returns: Integer
+	*/
+	METHOD("getCapacityInf") {
+		params [ ["_thisObject", "", [""]] ];
+		GET_VAR(_thisObject, "capacityInf")
+	} ENDMETHOD;
+
+	/*
+	Method: getCurrentGarrison
+	Returns the current garrison attached to this location
+
+	Returns: <Garrison> or "" if there is no current garrison
+	*/
+	METHOD("getCurrentGarrison") {
+		params [ ["_thisObject", "", [""]] ];
+
+		private _garrison = GETV(_thisObject, "garrisonMilAA");
+		if (_garrison == "") then { _garrison = GETV(_thisObject, "garrisonMilMain"); };
+		if (_garrison == "") then { OOP_WARNING_1("No garrison found for location %1", _thisObject); };
+		_garrison
+	} ENDMETHOD;
+
+	/*
+	Method: countAvailableUnits
+	Returns an number of current units of this location
+
+	Returns: Integer
+	*/
+	METHOD("countAvailableUnits") {
+		params [ ["_thisObject", "", [""]] ];
+
+		private _garrison = CALLM0(_thisObject, "getCurrentGarrison");
+		if (_garrison == "") exitWith { 0 };
+
+		private _countAllUnits = CALLM0(_garrison, "countAllUnits");
+		private _getRequiredUnits = CALLM0(_garrison, "getRequiredCrew");
+		private _minimumUnits = 0;
+		{ _minimumUnits = _minimumUnits + _x; } forEach _getRequiredUnits;
+
+		_countAllUnits - _minimumUnits
+	} ENDMETHOD;
 
 	// File-based methods
 
 	// Handles messages
 	METHOD_FILE("handleMessageEx", "Location\handleMessageEx.sqf");
-
-	METHOD_FILE("handleMessage", "Location\handleMessage.sqf");
 
 	// Sets border parameters
 	METHOD_FILE("setBorder", "Location\setBorder.sqf");
@@ -280,15 +339,13 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Returns location that has its border overlapping given position
 	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
-	
+
 	// Adds an allowed area
 	METHOD_FILE("addAllowedArea", "Location\addAllowedArea.sqf");
 
 	// Checks if player is in any of the allowed areas
 	METHOD_FILE("isInAllowedArea", "Location\isInAllowedArea.sqf");
 
-
-	//
 	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
 ENDCLASS;
 

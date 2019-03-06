@@ -47,7 +47,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		[_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 		
 		// Check if all infantry units are in proper group
-		// Sometimes units get ungrouped when entering vehicles >_< WTF
+		// Sometimes units get ungrouped when entering vehicles >_< WTF this shit is so annoying, BIS why do you make broken things everywhere
 		pr _hG = CALLM0(_group, "getGroupHandle");
 		{
 			pr _hO = CALLM0(_x, "getObjectHandle");
@@ -56,7 +56,8 @@ CLASS("SensorGroupHealth", "SensorGroup")
 				OOP_ERROR_3("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3", _x, _infGroup, _hG);
 				
 				// Force the unit to join the proper group
-				[_hO] joinSilent _infGroup;
+				[_hO] joinSilent _hO;
+				[_hO] joinSilent _hO;
 			};
 		} forEach _infantryUnits;
 		

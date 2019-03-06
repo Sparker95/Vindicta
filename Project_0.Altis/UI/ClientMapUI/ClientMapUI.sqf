@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+#define OOP_DEBUG
 //#define NAMESPACE uiNamespace
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\AI\Commander\LocationData.hpp"
@@ -26,15 +27,15 @@ CLASS(CLASS_NAME, "")
 	STATIC_VARIABLE("locationDataWest"); // What client's side knows about West knowledge about locations
 	STATIC_VARIABLE("locationDataEast");
 	STATIC_VARIABLE("locationDataInd");
-	
+
 	STATIC_METHOD("updateLocationData") {
 		params [["_thisObject", "", [""]], ["_locationData", [], [[]]], ["_side", CIVILIAN]];
-		
+
 		OOP_INFO_0("UPDATE LOCATION DATA");
 		OOP_INFO_1("location data: %1", _locationData);
 		OOP_INFO_2("side: %1   didJip: %2", _side, didJIP);
-		
-		
+
+
 		pr _varName = switch (_side) do {
 			case WEST: {"locationDataWest"};
 			case EAST: {"locationDataEast"};
@@ -42,7 +43,7 @@ CLASS(CLASS_NAME, "")
 			default {"ERROR_UNKNOWN_SIDE"};
 		};
 		pr _ldOld = GET_STATIC_VAR(CLASS_NAME, _varName);
-		
+
 		//Move references for MapMarkers from old location data to new location data
 		{ // foreach _ldOld
 			pr _oldPos = _x select CLD_ID_POS;
@@ -59,23 +60,23 @@ CLASS(CLASS_NAME, "")
 				DELETE(_mrk);
 			};
 		} forEach _ldOld;
-		
+
 		// Now create new markers for locations that are added right now
 		{
 			pr _mrk = _x select CLD_ID_MARKER;
 			if (_mrk == "") then {
-				_mrk = NEW("MapMarkerLocation", []);						
+				_mrk = NEW("MapMarkerLocation", []);
 				_x set [CLD_ID_MARKER, _mrk];
 			};
-			
+
 			// Set/update marker properties
 			pr _args = [_mrk, _x];
 			CALL_STATIC_METHOD(CLASS_NAME, "setLocationMarkerProperties", _args);
 		} forEach _locationData;
-		
+
 		SET_STATIC_VAR(CLASS_NAME, _varName, _locationData);
 	} ENDMETHOD;
-	
+
 	// Sets text, color, position, and other properties of a marker attached to certain location
 	STATIC_METHOD("setLocationMarkerProperties") {
 		params ["_thisClass", ["_mapMarker", "", [""]], ["_cld", [], [[]]]];
@@ -83,20 +84,20 @@ CLASS(CLASS_NAME, "")
 		pr _pos = _cld select CLD_ID_POS;
 		pr _side = _CLD select CLD_ID_SIDE;
 		pr _text = "";
-		
+
 		pr _color = switch(_side) do {
 			case WEST: {CMUI_ColorWEST};
 			case EAST: {CMUI_ColorEAST};
 			case INDEPENDENT: {CMUI_ColorInd};
 		};
 
-		pr _nameTown = ""; 
+		pr _nameTown = "";
 		_nameTown = CALL_STATIC_METHOD("ClientMapUI", "getNamePrefix", [_pos]);
 		pr _nameLocMrkTxt = "";
 		_nameLocMrkTxt = CALL_STATIC_METHOD("ClientMapUI", "getNearestMarkerText", [_pos]);
 
-		if (_nameLocMrkTxt != "") then { 
-			_text = format ["%1", _nameLocMrkTxt]; 
+		if (_nameLocMrkTxt != "") then {
+			_text = format ["%1", _nameLocMrkTxt];
 		} else {
 			_text = format ["%1 Outpost", _nameTown];
 		}; // prioritize custom location name over generated one
@@ -105,12 +106,12 @@ CLASS(CLASS_NAME, "")
 		CALLM1(_mapMarker, "setText", _text);
 		CALLM1(_mapMarker, "setColor", _color);
 	} ENDMETHOD;
-	
+
 	STATIC_METHOD("getLocationData") {
 		params ["_thisClass", ["_pos", [], [[]]], ["_side", CIVILIAN]];
-		
+
 		_pos resize 2;
-		
+
 		if (_side == CIVILIAN) then {
 			_side = side group player;
 		};
@@ -121,14 +122,14 @@ CLASS(CLASS_NAME, "")
 			case INDEPENDENT: {"locationDataInd"};
 		};
 		pr _ld = GET_STATIC_VAR(CLASS_NAME, _varName);
-		
+
 		// Find this location in client's database
 		pr _index = _ld findif {
 			pr _locPos = _x select CLD_ID_POS;
-			
+
 			_pos isEqualTo _locPos;
 		};
-		
+
 		if (_index == -1) then {
 			diag_log format ["Location data was not found!"];
 			[]
@@ -136,15 +137,15 @@ CLASS(CLASS_NAME, "")
 			diag_log format ["Location data was found: %1", _ld select _index];
 			_ld select _index
 		};
-		
+
 	} ENDMETHOD;
-	
+
 	// Formats location data and shows it on the location data panel
 	STATIC_METHOD("updateLocationDataPanel") {
 		params ["_thisClass", ["_pos", [], [[]]]];
-		
+
 		diag_log format ["Updating location data panel: %1", _pos];
-		
+
 		// Was a proper position provided or should we show nothing?
 		pr _ld = if (count _pos != 0) then {
 			CALL_STATIC_METHOD(CLASS_NAME, "getLocationData", [_pos]);
@@ -155,17 +156,18 @@ CLASS(CLASS_NAME, "")
 		pr _timeText = "unknown";
 		pr _compositionText = "unknown";
 		pr _sideText = "unknown";
-		
+		private _listNamePlayersText = "";
+
 		// Did we find a location in the database?
 		if ((count _ld) != 0) then {
-			
+
 			diag_log format ["Location data was found in the database"];
-			
+
 			_typeText = "outpost";
 			_timeText = "666 seconds ago";
 			_sideText = str (_ld select CLD_ID_SIDE);
 			_compositionText = "";
-			
+
 			pr _ua = _ld select CLD_ID_UNIT_AMOUNT;
 			// Amount of infrantry
 			pr _ninf = 0;
@@ -186,20 +188,21 @@ CLASS(CLASS_NAME, "")
 		} else {
 			diag_log format ["Location data was NOT found in the database"];
 		};
-		
+
 		// Apply new text for GUI elements
 		((finddisplay 12) displayCtrl IDC_LD_TYPE) ctrlSetText ("Type: " + _typeText);
 		((finddisplay 12) displayCtrl IDC_LD_SIDE) ctrlSetText ("Side: " + _sideText);
 		((finddisplay 12) displayCtrl IDC_LD_TIME) ctrlSetText ("Time: " + _timeText);
 		((finddisplay 12) displayCtrl IDC_LD_COMPOSITION) ctrlSetText ("Composition:\n" + _compositionText);
-		{((finddisplay 12) displayCtrl _x) ctrlCommit 0;} forEach [IDC_LD_TYPE, IDC_LD_SIDE, IDC_LD_TIME, IDC_LD_COMPOSITION];
+		{((finddisplay 12) displayCtrl _x) ctrlCommit 0;} forEach [IDC_LD_TYPE, IDC_LD_SIDE, IDC_LD_TIME, IDC_LD_COMPOSITION, IDC_PL_LISTPLAYERS];
 	} ENDMETHOD;
-	
+
 	STATIC_METHOD("showLocationDataPanel") {
 		params ["_thisClass", ["_show", true]];
-		
+
 		pr _idcs = [];
 	} ENDMETHOD;
+
 
 	// Returns nearest town's or city's name as String for use as outpost name
 	STATIC_METHOD("getNamePrefix") {

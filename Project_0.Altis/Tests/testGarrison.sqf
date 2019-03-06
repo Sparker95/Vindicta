@@ -14,19 +14,19 @@
 			diag_log format ["Created an invalid unit!"];
 		};
 	};
-	
+
 	// Add the group to the garrison
 	private _args = ["addGroup", [_group]];
 	CALL_METHOD(_garrison, "postMethodSync", _args);
-	
+
 	// Spawn the garrison
 	_args = ["spawn", []];
 	CALL_METHOD(_garrison, "postMethodSync", _args);
 	CALL_METHOD(_garrison, "postMethodSync", _args);
 	CALL_METHOD(_garrison, "postMethodSync", _args);
-	
+
 	sleep 2;
-	
+
 	// Despawn the garrison
 	_args = ["despawn", []];
 	CALL_METHOD(_garrison, "postMethodSync", _args);

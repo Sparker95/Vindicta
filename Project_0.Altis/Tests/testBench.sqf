@@ -1,6 +1,4 @@
-/*
-TEst the goal for AI to sit on a bench
-*/
+
 
 #include "..\OOP_Light\OOP_Light.h"
 

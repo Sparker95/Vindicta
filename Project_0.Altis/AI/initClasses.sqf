@@ -38,3 +38,6 @@ call compile preprocessFileLineNumbers "AI\Group\initClasses.sqf";
 
 // Unit AI classes
 call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
+
+// Virtual Route
+call compile preprocessFileLineNumbers "AI\VirtualRoute\init.sqf";

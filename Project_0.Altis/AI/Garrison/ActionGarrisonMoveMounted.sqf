@@ -14,15 +14,33 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	VARIABLE("radius"); // Completion radius
 
 	// ------------ N E W ------------
-	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
+		// Unpack position
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		T_SETV("pos", _pos);
+		pr _loc = "";
+		if (_pos isEqualType []) then {
+			T_SETV("pos", _pos); // Set value if array if passed
+			pr _locAndDist = CALLSM1("Location", "getNearestLocation", _pos);
+			_loc = _locAndDist select 0;
+		} else {
+			// Otherwise the location object was passed probably, get pos from location object
+			_loc = _pos;
+			pr _locPos = CALLM0(_loc, "getPos");
+			T_SETV("pos", _locPos);
+		};
 		
+		// Unpack radius
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
-		T_SETV("radius", _radius);
+		if (isNil "_radius") then {
+			// Try to figure out completion radius from location
+			//pr _radius = CALLM0(_loc, "getBoundingRadius"); // there is no such function
+			// Just use 100 meters for now
+			T_SETV("radius", 100);
+		} else {
+			T_SETV("radius", _radius);
+		};
 		
 	} ENDMETHOD;
 	
@@ -108,6 +126,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			// Succede if all groups have completed the goal
 			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 				OOP_INFO_0("All groups have arrived");
+				
+				// Set pos world state property
+				pr _ws = GETV(_AI, "worldState");
+				[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+				[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+				
 				_state = ACTION_STATE_COMPLETED;
 				breakTo "s0";
 			};

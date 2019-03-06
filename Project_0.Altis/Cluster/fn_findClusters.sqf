@@ -31,8 +31,6 @@ data size - exec. time
 200 - 250 ms
 */
 
-//#define DEBUG
-
 params ["_clusters", "_md"];
 
 private _c = count _clusters;

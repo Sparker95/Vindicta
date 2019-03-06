@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Misc/fn_isVehicleFlipped.sqf",{460:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns true if the vehicle is flipped</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Misc/fn_isVehicleFlipped.sqf",{367:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns true if the vehicle is flipped</div></div>"});

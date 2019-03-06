@@ -1,6 +1,3 @@
-/*
-*/
-
 #include "UICommanderIDC.hpp"
 #include "defineCommonGrids.hpp"
 

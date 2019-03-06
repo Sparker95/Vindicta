@@ -67,6 +67,7 @@ private _loc = objNull;
 		// Infantry capacity
 		private _args = [T_INF, [GROUP_TYPE_IDLE]];
 		private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
+		if (_cInf < 5) then {_cInf = 5};
 
 		// Wheeled and tracked vehicle capacity
 		_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
@@ -211,6 +212,5 @@ private _loc = objNull;
 			CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);
 		};
 	};
-
 
 } forEach allMapMarkers;
