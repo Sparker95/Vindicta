@@ -195,14 +195,12 @@ CLASS("BuildUI", "")
 
 				case """LEFT""": { 
 					playSound ["clicksoft", false];
-					SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
 					CALLM(g_BuildUI, "navLR", [-1]); 
 					true; 
 				};
 
 				case """RIGHT""": { 
 					playSound ["clicksoft", false];
-					SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
 					CALLM(g_BuildUI, "navLR", [1]); 
 					true; 
 				};
@@ -282,6 +280,7 @@ CLASS("BuildUI", "")
 		T_SETV("currentItemID", _newItemID); 
 		T_CALLM("makeItemTexts", [_newItemID]);
 		} else {
+		SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
 		pr _newCatID = _currentCatID + (_num);
 
 		// make sure category ID is index of g_buildUIObjects template array
