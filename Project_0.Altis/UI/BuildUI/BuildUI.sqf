@@ -129,7 +129,7 @@ CLASS("BuildUI", "")
 						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlShow true;
 
 						{
-						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+							((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
 						} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
 
 					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
@@ -269,25 +269,25 @@ CLASS("BuildUI", "")
 		pr _currentCatID = T_GETV("currentCatID"); // currently selected category
 
 		if (_itemCatOpen) then { 
-		pr _currentItemID = T_GETV("currentItemID");
-		pr _newItemID = _currentItemID + (_num);
+			pr _currentItemID = T_GETV("currentItemID");
+			// How many items in the currently selected category
+			pr _itemIndexSize = count (g_buildUIObjects select _currentCatID select 0);
 
-		// make sure item ID is index of item subarray of g_buildUIObjects template array
-		if (_newItemID < 0) exitWith { OOP_INFO_1("Invalid itemID: %1", _newItemID); };
-		pr _itemCatIndexSize = (count (g_buildUIObjects select _currentCatID select 0)) - 1;
-		if (_newItemID > _itemCatIndexSize) exitWith { OOP_INFO_1("Invalid itemID: %1", _newItemID); };
+			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
+			pr _newItemID = (_currentItemID + _num + _itemIndexSize) mod _itemIndexSize;
 
-		T_SETV("currentItemID", _newItemID); 
-		T_CALLM("makeItemTexts", [_newItemID]);
+			T_SETV("currentItemID", _newItemID); 
+			T_CALLM("makeItemTexts", [_newItemID]);
 		} else {
-		SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
-		pr _newCatID = _currentCatID + (_num);
+			SETV(g_BuildUI, "TimeFadeIn", (time+(0.4)));
+			pr _newCatID = _currentCatID + (_num);
+			// How many categories
+			pr _categoryIndexSize = count g_buildUIObjects;
+			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
+			pr _newCatID = (_currentCatID + _num + _categoryIndexSize) mod _categoryIndexSize;
 
-		// make sure category ID is index of g_buildUIObjects template array
-		if ((_newCatID < 0) OR _newCatID > ((count g_buildUIObjects) - 1)) exitWith { OOP_INFO_1("Invalid newCatID: %1", _newCatID); };
-
-		T_SETV("currentCatID", _newCatID); 
-		T_CALLM("makeCatTexts", [_newCatID]);
+			T_SETV("currentCatID", _newCatID); 
+			T_CALLM("makeCatTexts", [_newCatID]);
 		};
 
 	} ENDMETHOD;
@@ -312,6 +312,13 @@ CLASS("BuildUI", "")
 		SETV(_thisObject, "UICatTexts", _return);
 
 	} ENDMETHOD;
+
+	// METHOD("getCarouselItems") {
+	// 	params [["_thisObject", "", [""]], "_extent"];
+
+
+	// 	for "_id" from 
+	// } ENDMETHOD;
 
 	// generates an array of display strings for the item list on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
@@ -352,10 +359,10 @@ CLASS("BuildUI", "")
 		pr _return = "";
 
 		if (_itemCatOpen) then { 
-		pr _currentCatID = T_GETV("currentCatID");
-		pr _currentItemID = T_GETV("currentItemID");
-		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		_return = (_itemCat select _currentItemID) select 0;
+			pr _currentCatID = T_GETV("currentCatID");
+			pr _currentItemID = T_GETV("currentItemID");
+			pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+			_return = (_itemCat select _currentItemID) select 0;
 		};
 		
 		_return
