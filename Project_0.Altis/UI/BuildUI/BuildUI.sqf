@@ -127,25 +127,24 @@ CLASS("BuildUI", "")
 			// Arma doesn't want that.
 			// You could still use some private variables though? 
 			// pr _display = uinamespace getVariable "buildUI_display";
+			// "dOeS nOt SuPpOrT sErIaLiZaTiOn"
 
 			if (displayNull != (uinamespace getVariable "buildUI_display")) then {
 
+				// item menu
 				if (_ItemCatOpen) then { 
 					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTC) ctrlSetText format ["%1", (_UIItemTexts select 2)];
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR1) ctrlSetText format ["%1", (_UIItemTexts select 3)];
+					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR2) ctrlSetText format ["%1", (_UIItemTexts select 4)];
+
 					{
-						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
-						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
-						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTC) ctrlSetText format ["%1", (_UIItemTexts select 2)];
-						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR1) ctrlSetText format ["%1", (_UIItemTexts select 3)];
-						((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR2) ctrlSetText format ["%1", (_UIItemTexts select 4)];
-
 						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlShow true;
-
-						{
-							((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
-						} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
-
+						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
 					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+
 				} else { 
 					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
 					{
@@ -154,6 +153,7 @@ CLASS("BuildUI", "")
 					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
 				};
 
+				// cat menu
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
@@ -183,16 +183,19 @@ CLASS("BuildUI", "")
 				default { false; };
 
 				case """Tab""": { 
-					// TODO: add pick up/drop current object
+					playSound ["clicksoft", false];
+
 					true; // disables default control 
 				};
 
 				case """Q""": { 
+					playSound ["clicksoft", false];
 					// TODO: rotate object counter-clockwise
 					true; // disables default control 
 				};
 
 				case """E""": { 
+					playSound ["clicksoft", false];
 					// TODO: rotate object clockwise
 					true; // disables default control 
 				};
@@ -235,6 +238,7 @@ CLASS("BuildUI", "")
 
 		OOP_INFO_0("'closeUI' method called. ====================================");
 
+		T_CALLM0("clearCarousel");
 		T_CALLM0("exitMoveMode");
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 

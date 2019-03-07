@@ -15,53 +15,40 @@ class BuildUI
 	};
 	class Controls
 	{
-		class TooltipBG
+		class TooltipBG : RscPicture
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_TTEXTBG;
 			x = safeZoneX + safeZoneW * 0.29375;
 			y = safeZoneY + safeZoneH * 0.78148149;
 			w = safeZoneW * 0.4125;
 			h = safeZoneH * 0.05277778;
-			style = 0;
-			text = "";
-			colorBackground[] = {0.702,0.102,0.102,1};
-			colorText[] = {0.702,0.102,0.102,1};
-			font = "RobotoCondensedBold";
+			text = "UI\Images\gradient_2way.paa";
+			colorText[] = {0.82, 0.561, 0.129, 1.0};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
 		};
-		class CategoryBG
+		class CategoryBG : RscPicture
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_CTEXTBG;
 			x = safeZoneX + safeZoneW * 0.29375;
 			y = safeZoneY + safeZoneH * 0.74537038;
 			w = safeZoneW * 0.4125;
 			h = safeZoneH * 0.03055556;
-			style = 0;
-			text = "";
+			text = "UI\Images\gradient_2way.paa";
 			colorBackground[] = {0.2,0.2,0.2,0.6};
-			colorText[] = {0.702,0.102,0.102,1};
-			font = "RobotoCondensedBold";
+			colorText[] = {0.1, 0.1, 0.1, 1};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
 		};
-		class ItemCatBG
+		class ItemCatBG : RscPicture
 		{
-			type = 0;
 			idc = IDC_ITEXTBG;
 			x = safeZoneX + safeZoneW * 0.29375;
 			y = safeZoneY + safeZoneH * 0.7212963;
 			w = safeZoneW * 0.4125;
 			h = safeZoneH * 0.01851852;
-			style = 2;
-			text = "";
+			text = "UI\Images\gradient_2way.paa";
 			colorBackground[] = {0,0,0,0.6};
-			colorText[] = {0.702,0.102,0.102,1};
-			font = "RobotoCondensedBold";
+			colorText[] = {0.1, 0.1, 0.1, 1};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
 		};
 		class CategoryText_Center
 		{

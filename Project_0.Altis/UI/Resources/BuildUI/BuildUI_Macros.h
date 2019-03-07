@@ -9,4 +9,6 @@
 #define IDC_ITEXTR1 8584
 #define IDC_ITEXTR2 8585
 #define IDC_ITEXTBG 8586
+#define IDC_CTEXTBG 8901
+#define IDC_TTEXTBG 8902
 
