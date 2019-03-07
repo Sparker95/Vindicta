@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={13038.482,25.094639,9647.6055};
-		dir[]={0,-0.70710683,0.70710683};
-		up[]={0,0.70710677,0.70710677};
-		aside[]={0.99999994,0,-0};
+		pos[]={8411,204,18121};
+		dir[]={-1.2858001e-005,-0.70710683,0.70710683};
+		up[]={-1.2858001e-005,0.70710677,0.70710677};
+		aside[]={0.99999994,0,1.8183933e-005};
 	};
 };
 binarizationWanted=0;
@@ -38,8 +38,6 @@ addons[]=
 	"A3_Structures_F_Civ_Garbage",
 	"A3_Rocks_F",
 	"A3_Structures_F_Mil_Fortification",
-	"ace_logistics_wirecutter",
-	"ace_concertina_wire",
 	"A3_Structures_F_Heli_Items_Airport",
 	"A3_Structures_F_Mil_Cargo",
 	"A3_Modules_F",
@@ -50,8 +48,6 @@ addons[]=
 	"A3_Characters_F",
 	"A3_Soft_F_Beta_Truck_01",
 	"A3_Soft_F_Exp_Truck_01",
-	"ace_realisticnames",
-	"ace_cargo",
 	"A3_Static_F",
 	"A3_Modules_F_ObjectModifiers",
 	"A3_Ui_F",
@@ -61,7 +57,7 @@ class AddonsMetaData
 {
 	class List
 	{
-		items=21;
+		items=18;
 		class Item0
 		{
 			className="A3_Structures_F_Households";
@@ -120,89 +116,68 @@ class AddonsMetaData
 		};
 		class Item8
 		{
-			className="ace_logistics_wirecutter";
-			name="ACE3 - Logistics Wire Cutter";
-			author="ACE-Team";
-			url="http://ace3mod.com/";
-		};
-		class Item9
-		{
-			className="ace_concertina_wire";
-			name="ACE3 - Concertina Wire";
-			author="ACE-Team";
-			url="http://ace3mod.com/";
-		};
-		class Item10
-		{
 			className="A3_Structures_F_Heli";
 			name="Arma 3 Helicopters - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item11
+		class Item9
 		{
 			className="A3_Modules_F";
 			name="Arma 3 Alpha - Scripted Modules";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item12
+		class Item10
 		{
 			className="A3_Structures_F_Exp";
 			name="Arma 3 Apex - Buildings and Structures";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item13
+		class Item11
 		{
 			className="A3_Structures_F_Exp_Infrastructure";
 			name="Arma 3 Apex - Infrastructure Objects";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item14
+		class Item12
 		{
 			className="A3_Characters_F";
 			name="Arma 3 Alpha - Characters and Clothing";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item15
+		class Item13
 		{
 			className="A3_Soft_F_Beta";
 			name="Arma 3 Beta - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item16
+		class Item14
 		{
 			className="A3_Soft_F_Exp";
 			name="Arma 3 Apex - Unarmored Land Vehicles";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item17
-		{
-			className="ace_cargo";
-			name="ACE3 - Cargo";
-			author="ACE-Team";
-			url="http://ace3mod.com/";
-		};
-		class Item18
+		class Item15
 		{
 			className="A3_Static_F";
 			name="Arma 3 Alpha - Turrets";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item19
+		class Item16
 		{
 			className="A3_Ui_F";
 			name="Arma 3 - User Interface";
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
-		class Item20
+		class Item17
 		{
 			className="cba_modules";
 			name="Community Base Addons - Modules";
@@ -3422,7 +3397,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={8410.002,183.99475,18142.533};
+						position[]={8370,180.06544,18201.051};
 					};
 					side="East";
 					flags=7;
@@ -5433,6 +5408,7 @@ class Mission
 			};
 			id=593;
 			type="B_Truck_01_transport_F";
+			atlOffset=7.6293945e-006;
 		};
 		class Item222
 		{
@@ -6548,7 +6524,7 @@ class Mission
 			colorName="ColorCIV";
 			a=31.950027;
 			b=5.0588818;
-			angle=96.6698;
+			angle=96.669785;
 			id=609;
 			atlOffset=-0.77252197;
 		};
@@ -6577,7 +6553,7 @@ class Mission
 			colorName="ColorCIV";
 			a=40.215912;
 			b=7.4543862;
-			angle=139.61703;
+			angle=139.617;
 			id=611;
 		};
 		class Item236
@@ -7925,7 +7901,7 @@ class Mission
 			colorName="ColorCIV";
 			a=34.681976;
 			b=7.9887705;
-			angle=51.091408;
+			angle=51.0914;
 			id=623;
 			atlOffset=-4.0953827;
 		};
@@ -7940,7 +7916,7 @@ class Mission
 			colorName="ColorCIV";
 			a=45.792671;
 			b=6.6710224;
-			angle=51.091404;
+			angle=51.091396;
 			id=624;
 			atlOffset=-3.299366;
 		};
@@ -9019,7 +8995,7 @@ class Mission
 			colorName="ColorCIV";
 			a=9.1187925;
 			b=5.037437;
-			angle=146.92911;
+			angle=146.92908;
 			id=634;
 			atlOffset=-4.8818359;
 		};
