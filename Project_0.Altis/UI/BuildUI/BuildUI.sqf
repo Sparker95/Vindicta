@@ -37,6 +37,12 @@ CLASS("BuildUI", "")
 	VARIABLE("selectedObjects");
 	VARIABLE("moveActionId");
 
+	// carousel
+	VARIABLE("previousItemID");
+	VARIABLE("animStartTime");
+	VARIABLE("animCompleteTime");
+	VARIABLE("carouselObjects");
+
 
 	METHOD("new") {
 		params ["_thisObject"];
@@ -64,6 +70,11 @@ CLASS("BuildUI", "")
 		T_SETV("selectedObjects", []);
 		T_SETV("moveActionId", -1);
 		T_CALLM("makeCatTexts", [0]); 			// initialize UI category strings
+
+		T_SETV("previousItemID", 0);
+		T_SETV("animStartTime", 0);
+		T_SETV("animCompleteTime", 0);
+		T_SETV("carouselObjects", []);
 
 	} ENDMETHOD;
 
@@ -114,6 +125,8 @@ CLASS("BuildUI", "")
 
 			// Why not use a macro for these long-ass texts?
 			// Arma doesn't want that.
+			// You could still use some private variables though? 
+			// pr _display = uinamespace getVariable "buildUI_display";
 
 			if (displayNull != (uinamespace getVariable "buildUI_display")) then {
 
@@ -144,7 +157,7 @@ CLASS("BuildUI", "")
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
 				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
-				
+
 				// button highlight effect
 				if (_TimeFadeIn > time) then { 
 					((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, (_TimeFadeIn - time)];
@@ -157,6 +170,7 @@ CLASS("BuildUI", "")
 					((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
 				} forEach [IDC_TEXTL2, IDC_TEXTL1, IDC_TEXTC, IDC_TEXTR1, IDC_TEXTR2];
 	
+				CALLM0(g_BuildUI, "updateCarouselOffsets");
 		  	};
 		}] call BIS_fnc_addStackedEventHandler;
 
@@ -244,6 +258,8 @@ CLASS("BuildUI", "")
 		T_SETV("currentItemID", 0);
 
 		T_CALLM("makeItemTexts", [0]); // create item list display texts
+
+		T_CALLM0("createCarousel");
 	} ENDMETHOD;
 
 	// closes item list UI element
@@ -252,6 +268,7 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
 		T_SETV("currentItemID", 0);
+		T_CALLM0("clearCarousel");
 	} ENDMETHOD;
 
 	/* Description: Navigate left or right in either category or item list on the UI
@@ -270,6 +287,9 @@ CLASS("BuildUI", "")
 
 		if (_itemCatOpen) then { 
 			pr _currentItemID = T_GETV("currentItemID");
+			T_SETV("previousItemID", _currentItemID); 
+			T_SETV("animStartTime", time); 
+			T_SETV("animCompleteTime", time + 0.2); 
 			// How many items in the currently selected category
 			pr _itemIndexSize = count (g_buildUIObjects select _currentCatID select 0);
 
@@ -312,13 +332,6 @@ CLASS("BuildUI", "")
 		SETV(_thisObject, "UICatTexts", _return);
 
 	} ENDMETHOD;
-
-	// METHOD("getCarouselItems") {
-	// 	params [["_thisObject", "", [""]], "_extent"];
-
-
-	// 	for "_id" from 
-	// } ENDMETHOD;
 
 	// generates an array of display strings for the item list on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
@@ -366,6 +379,155 @@ CLASS("BuildUI", "")
 		};
 		
 		_return
+	} ENDMETHOD;
+
+	// METHOD("getItemClasses") {
+	// 	params ["_thisObject"];
+
+	// 	T_PRVAR(currentCatID);
+	// 	T_PRVAR(currentItemID);
+	// 	T_PRVAR(ItemCatOpen);
+	// 	if !(_ItemCatOpen) exitWith { [] };
+
+	// 	// How many items in the currently selected category
+	// 	pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+	// 	_return = (_itemCat select _currentItemID) select 0;
+	// 	pr _itemIndexSize = count _itemCat;
+	// 	pr _items = [];
+	// 	for "_i" from _currentItemID to (_currentItemID + _itemIndexSize) do {
+	// 		pr _idx = _i mod _itemIndexSize;
+	// 		_items pushBack ((_itemCat select _idx) select 0);
+	// 	};
+	// 	return _items;
+	// } ENDMETHOD;
+
+	METHOD("clearCarousel") {
+		params ["_thisObject"];
+		OOP_INFO_0("'clearCarousel' method called");
+
+		T_PRVAR(carouselObjects);
+		{
+			detach _x;
+			deleteVehicle _x;
+		} forEach _carouselObjects;
+
+		T_SETV("carouselObjects", []);
+	} ENDMETHOD;
+
+	METHOD("getCarouselOffsets") {
+		params ["_thisObject"];
+		OOP_INFO_0("'getCarouselOffsets' method called");
+
+		T_PRVAR(currentCatID);
+		T_PRVAR(currentItemID);
+		
+		// How many items in the currently selected category
+		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+		// _return = (_itemCat select _currentItemID) select 0;
+		pr _itemIndexSize = count _itemCat - 1;
+		
+		pr _offsets = [];
+
+		T_PRVAR(animStartTime);
+		T_PRVAR(animCompleteTime);
+		T_PRVAR(previousItemID);
+		
+		pr _xtotal = 0;
+		pr _prevx = 0;
+		pr _currx = 0;
+
+		for "_i" from 0 to _itemIndexSize do {
+			pr _item = (_itemCat select _i) select 0;
+			pr _size = sizeOf _item;
+			_xtotal = _xtotal + _size + 1;
+			pr _xpos = _xtotal - (_size + 1) * 0.5;
+			if (_i == _previousItemID) then { _prevx = _xpos; };
+			if (_i == _currentItemID) then { _currx = _xpos; };
+
+			pr _offsIdx = _i - _currentItemID;
+			pr _offs = [_xpos, 5 + _size * 0.5, 2];
+			_offsets pushBack _offs;
+		};
+		
+		//pr _t = 1 - (0 max (_animCompleteTime - time) / (animCompleteTime - animStartTime));
+
+		// pr _actualXOffs = if ((_previousItemID != _currentItemID) and (_animStartTime != _animCompleteTime) and (_currx != _prevx)) then { 
+		// 	linearConversion [_animStartTime, _animCompleteTime, time, _prevx, _currx, true] 
+		// } else { 
+		// 	_currx
+		// };
+
+		pr _actualXOffs = linearConversion [_animStartTime, _animCompleteTime, time, _prevx, _currx, true];
+
+		//_prevx + (_currx - _prevx) * _t;
+		for "_i" from 0 to _itemIndexSize do {
+			pr _offs = (_offsets select _i) vectorAdd [-_actualXOffs, 0, 0];
+			pr _h = 1 - (1 min (0.5 * abs (_offs select 0)));
+			_offs = _offs vectorAdd [0, -_h*2, -_h];
+			_offsets set [_i, _offs];
+		};
+
+		_offsets
+	} ENDMETHOD;
+
+	METHOD("createCarousel") {
+		params ["_thisObject"];
+		OOP_INFO_0("'createCarousel' method called");
+
+		T_CALLM0("clearCarousel");
+
+		T_PRVAR(carouselObjects);
+		T_PRVAR(currentCatID);
+		// T_PRVAR(currentItemID);
+		T_PRVAR(ItemCatOpen);
+
+		if (!_ItemCatOpen) exitWith { [] };
+
+		// How many items in the currently selected category
+		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+		// _return = (_itemCat select _currentItemID) select 0;
+		pr _itemIndexSize = count _itemCat - 1;
+		pr _offsets = T_CALLM0("getCarouselOffsets");
+		for "_i" from 0 to _itemIndexSize do {
+			pr _item = (_itemCat select _i) select 0;
+			OOP_INFO_1("Creating carousel item %1", _item);
+			pr _offs = _offsets select _i;
+			pr _veh = createVehicle [_item, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
+			_veh attachTo [player, _offs]; 
+			_carouselObjects pushBack _veh;
+		};
+	} ENDMETHOD;
+
+	METHOD("updateCarouselOffsets") {
+		params ["_thisObject"];
+		OOP_INFO_0("'updateCarouselOffsets' method called");
+
+		T_PRVAR(carouselObjects);
+		T_PRVAR(currentCatID);
+		T_PRVAR(ItemCatOpen);
+
+		if (!_ItemCatOpen) exitWith { [] };
+
+		//T_PRVAR(currentItemID);
+		
+		// How many items in the currently selected category
+		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
+		pr _itemIndexSize = count _itemCat - 1;
+		pr _offsets = T_CALLM0("getCarouselOffsets");
+		for "_i" from 0 to _itemIndexSize do {
+			pr _offs = _offsets select _i;
+			pr _veh = _carouselObjects select _i;
+			OOP_INFO_3("%1/%2/%3", _i, _itemIndexSize, _offs);
+			_veh attachTo [player, _offs];
+			// pr _item = (_itemCat select _i) select 0;
+			// OOP_INFO_1("Creating carousel item %1", _item);
+			// pr _offs = [(_i - _itemIndexSize / 2) * 3, 10, 2];
+			// pr _veh = createVehicle [_item, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
+			// _veh attachTo [player]; 
+			// _carouselObjects pushBack _veh;
+		};
+
+		_offsets
 	} ENDMETHOD;
 
 	METHOD("createNewObject") {
