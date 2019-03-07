@@ -15,6 +15,7 @@ Author: Sparker 28.07.2018
 CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("type");
+	VARIABLE("side");
 	VARIABLE("debugName");
 	VARIABLE("garrisonCiv");
 	VARIABLE("garrisonMilAA");
@@ -44,7 +45,17 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+		T_SETV("debugName", _debugName);
+	} ENDMETHOD;
+
+	METHOD("setCapacityInf") {
+		params [["_thisObject", "", [""]], ["_capacityInf", "", [""]]];
+		T_SETV("capacityInf", parseNumber _capacityInf);
+	} ENDMETHOD;
+
+	METHOD("setSide") {
+		params [["_thisObject", "", [""]], ["_side", EAST, [EAST]]];
+		T_SETV("side", _side);
 	} ENDMETHOD;
 
 
