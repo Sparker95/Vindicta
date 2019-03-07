@@ -10,7 +10,7 @@ x1, y1, x2, y2 - edge coordinates:
 x2 > x1
 y2 > y1
 	*------(x2, y2)
-	|		  |	
+	|		  |
 	|		  |
 (x1, y1)------*
 ---
@@ -22,10 +22,27 @@ cluster_fnc_newCluster =
 {
 	/*
 	Creates a new cluster array.
-	
+
 	Returns: a new cluster array.
 	*/
 	params ["_x1", "_y1", "_x2", "_y2", "_objectID"];
+	_array = [_x1, _y1, _x2, _y2, [_objectID]];
+	_array
+};
+
+cluster_fnc_newSquareClusterFromPos =
+{
+	/*
+	Creates a new cluster array.
+
+	Returns: a new cluster array.
+	*/
+	params ["_locPos", "_radius", "_objectID"];
+	private _x1 = [(_locPos select 0) - _radius, (_locPos select 1) - _radius];
+	private _y1 = [(_locPos select 0) - _radius, (_locPos select 1) + _radius];
+	private _x2 = [(_locPos select 0) + _radius, (_locPos select 1) + _radius];
+	private _y2 = [(_locPos select 0) + _radius, (_locPos select 1) - _radius];
+
 	_array = [_x1, _y1, _x2, _y2, [_objectID]];
 	_array
 };
@@ -34,7 +51,7 @@ cluster_fnc_addObjectID =
 {
 	/*
 	Adds a new object ID to the cluster.
-	
+
 	Returns: nothing.
 	*/
 	params ["_c", "_newID"];
@@ -46,11 +63,11 @@ cluster_fnc_distance =
 {
 	/*
 	Measures distance between two clusters.
-	
+
 	Returns: distance(number)
 	*/
 	params ["_c1", "_c2"];
-	
+
 	/*
 	_c1x1 = _c1 select 0;
     _c1y1 = _c1 select 1;
@@ -66,7 +83,7 @@ cluster_fnc_distance =
     _c2y2 = _c2 select 3;
     */
     _c2 params ["_c2x1", "_c2y1", "_c2x2", "_c2y2"];
-    
+
     _dx = 0;
     if( ! (	_c2x1 < _c1x2 && _c2x1 > _c1x1 ||
 			_c2x2 < _c1x2 && _c2x2 > _c1x1 ||
@@ -78,7 +95,7 @@ cluster_fnc_distance =
 		else
 		{	_dx = _c1x1 - _c2x2; };
 	};
-    
+
     _dy = 0;
     if( ! (	_c2y1 < _c1y2 && _c2y1 > _c1y1 ||
 			_c2y2 < _c1y2 && _c2y2 > _c1y1 ||
@@ -90,7 +107,7 @@ cluster_fnc_distance =
 		else
 		{	_dy = _c1y1 - _c2y2; };
 	};
-    
+
     _dx max _dy
 };
 
@@ -99,11 +116,11 @@ cluster_fnc_merge =
 	/*
 	This function merges two clusters into one cluster.
 	The resulting cluster is stored in the first cluster array.
-	
+
 	Returns: nothing.
 	*/
 	params ["_c1", "_c2"];
-	
+
 	/*
 	_c1x1 = _c1 select 0;
     _c1y1 = _c1 select 1;
@@ -119,14 +136,14 @@ cluster_fnc_merge =
     _c2y2 = _c2 select 3;
     */
     _c2 params ["_c2x1", "_c2y1", "_c2x2", "_c2y2"];
-    
+
     _allx = [_c1x1, _c1x2, _c2x1, _c2x2];
     _ally = [_c1y1, _c1y2, _c2y1, _c2y2];
     _newx1 = selectMin _allx;
     _newy1 = selectMin _ally;
     _newx2 = selectMax _allx;
     _newy2 = selectMax _ally;
-    
+
     _c1 set [0, _newx1];
 	_c1 set [1, _newy1];
 	_c1 set [2, _newx2];

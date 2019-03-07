@@ -38,71 +38,69 @@ CLASS("AI", "MessageReceiverEx")
 	VARIABLE("processInterval"); // The update interval for the timer, in seconds
 	VARIABLE("sensorStimulusTypes"); // Array with stimulus types of the sensors of this AI object
 	VARIABLE("sensors"); // Array with sensors
-	
+
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
-		
+
 		PROFILER_COUNTER_INC("AI");
-		
+
 		// Make sure the required global objects exist
 		ASSERT_GLOBAL_OBJECT(AI_TIMER_SERVICE);
 		ASSERT_GLOBAL_OBJECT(STIMULUS_MANAGER);
-		
+
 		SETV(_thisObject, "agent", _agent);
 		SETV(_thisObject, "sensors", []);
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
 		SETV(_thisObject, "processInterval", 1);
-		
+
 		// Add this AI to the stimulus manager
 		pr _args = ["addSensingAI", [_thisObject]];
 		CALLM(STIMULUS_MANAGER, "postMethodAsync", _args);
-		
+
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                            D E L E T E                             |
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-		
+
 		PROFILER_COUNTER_DEC("AI");
-		
+
 		// Stop the AI if it is currently running
 		CALLM(_thisObject, "stop", []);
-		
+
 		// Remove this AI from the stimulus manager
 		pr _args = ["removeSensingAI", [_thisObject]];
 		CALLM(STIMULUS_MANAGER, "postMethodSync", _args);
-		
+
 		// Delete all sensors
 		pr _sensors = GETV(_thisObject, "sensors");
 		{
 			DELETE(_x);
 		} forEach _sensors;
-		
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                              P R O C E S S
 	// | Must be called every update interval
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-				
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   M E S S A G E
-	// | 
+	// |
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("handleMessageEx") { //Derived classes must implement this method
 		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
@@ -111,29 +109,29 @@ CLASS("AI", "MessageReceiverEx")
 				CALLM(_thisObject, "process", []);
 				true
 			};
-			
+
 			case AI_MESSAGE_DELETE: {
 				DELETE(_thisObject);
 				true
 			};
-			
+
 			default {false}; // Message not handled
 		};
 	} ENDMETHOD;
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- S E N S O R S -------------------------------------------
 	// ------------------------------------------------------------------------------------------------------
-	
-	
-	
-	
+
+
+
+
 	// ----------------------------------------------------------------------
 	// |                A D D   S E N S O R
 	// | Adds a given sensor to the AI object
@@ -141,22 +139,22 @@ CLASS("AI", "MessageReceiverEx")
 	/*
 	Method: addSensor
 	Adds a sensor to this AI object.
-	
+
 	Parameters: _sensor
-	
+
 	_sensor - <Sensor> or <SensorStimulatable>
-	
+
 	Returns: nil
 	*/
 	METHOD("addSensor") {
 		params [["_thisObject", "", [""]], ["_sensor", "ERROR_NO_SENSOR", [""]]];
-		
+
 		ASSERT_OBJECT_CLASS(_sensor, "Sensor");
-		
+
 		// Add the sensor to the sensor list
 		pr _sensors = GETV(_thisObject, "sensors");
 		_sensors pushBackUnique _sensor;
-		
+
 		// Check the stimulus types this sensor responds to
 		pr _stimTypesSensor = CALLM(_sensor, "getStimulusTypes", []);
 		pr _stimTypesThis = GETV(_thisObject, "sensorStimulusTypes");
@@ -165,12 +163,12 @@ CLASS("AI", "MessageReceiverEx")
 			_stimTypesThis pushBackUnique _x;
 		} forEach _stimTypesSensor;
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                    U P D A T E   S E N S O R S
 	// | Update values of all sensors, according to their settings
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("updateSensors") {
 		params [["_thisObject", "", [""]]];
 		pr _sensors = GETV(_thisObject, "sensors");
@@ -190,12 +188,12 @@ CLASS("AI", "MessageReceiverEx")
 			};
 		} forEach _sensors;
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                    H A N D L E   S T I M U L U S
 	// | Handles external stimulus.
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
@@ -206,19 +204,18 @@ CLASS("AI", "MessageReceiverEx")
 				CALLM(_x, "stimulate", [_stimulus]);
 			};
 		} foreach _sensors;
-	} ENDMETHOD;
-	
+	} ENDMETHOD
 	// ------------------------------------------------------------------------------------------------------
 	// -------------------------------------------- W O R L D   F A C T S -----------------------------------
 	// ------------------------------------------------------------------------------------------------------
-	
+
 	// Adds a world fact
 	METHOD("addWorldFact") {
 		params [["_thisObject", "", [""]], ["_fact", [], [[]]]];
 		pr _facts = GETV(_thisObject, "worldFacts");
 		_facts pushBack _fact;
 	} ENDMETHOD;
-	
+
 	// Finds a world fact that matches a query
 	// Returns the found world fact or nil if nothing was found
 	METHOD("findWorldFact") {
@@ -234,7 +231,7 @@ CLASS("AI", "MessageReceiverEx")
 		};
 		if (!isNil "_return") then {_return} else {nil};
 	} ENDMETHOD;
-	
+
 	// Finds all world facts that match a query
 	// Returns array with facts that satisfy criteria or []
 	METHOD("findWorldFacts") {
@@ -250,7 +247,7 @@ CLASS("AI", "MessageReceiverEx")
 		};
 		_return
 	} ENDMETHOD;
-	
+
 	// Deletes all facts that match query
 	METHOD("deleteWorldFacts") {
 		params [["_thisObject", "", [""]], ["_query", [], [[]]]];
@@ -261,7 +258,7 @@ CLASS("AI", "MessageReceiverEx")
 			if ([_fact, _query] call wf_fnc_matchesQuery) then {_facts deleteAt _i} else {_i = _i + 1;};
 		};
 	} ENDMETHOD;
-	
+
 	// Maintains the array of world facts
 	// Deletes world facts that have exceeded their lifetime
 	METHOD("updateWorldFacts") {
@@ -278,7 +275,7 @@ CLASS("AI", "MessageReceiverEx")
 			};
 		};
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                S T A R T
 	// | Starts the AI brain
@@ -303,7 +300,7 @@ CLASS("AI", "MessageReceiverEx")
 		};
 		nil
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                S T O P
 	// | Stops the AI brain
@@ -321,9 +318,9 @@ CLASS("AI", "MessageReceiverEx")
 		};
 		nil
 	} ENDMETHOD;
-	
-	
-	
+
+
+
 	// ----------------------------------------------------------------------
 	// |               S E T   P R O C E S S   I N T E R V A L
 	// | Sets the process interval of this AI object
@@ -331,17 +328,17 @@ CLASS("AI", "MessageReceiverEx")
 	/*
 	Method: setProcessInterval
 	Sets the process interval of this AI object.
-	
+
 	Parameters: _interval
-	
+
 	_interval - Number, interval in seconds.
-	
+
 	Returns: nil
 	*/
 	METHOD("setProcessInterval") {
 		params [["_thisObject", "", [""]], ["_interval", 5, [5]]];
 		SETV(_thisObject, "processInterval", _interval);
-		
+
 		// If the AI object is already running, also change the interval of the timer which is already started
 		pr _timer = GETV(_thisObject, "timer");
 		if (_timer != "") then {

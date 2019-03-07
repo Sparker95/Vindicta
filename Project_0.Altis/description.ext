@@ -36,7 +36,8 @@ maxplayers=50;
 
 class CfgSounds
 {
-
+	sounds[] = {};
+	#include "CfgSounds.hpp"
 };
 
 class CfgIdentities
@@ -54,6 +55,7 @@ class Params {
 };
 
 class CfgFunctions {
+	#include "Dialogue\functions.hpp"
 	#include "JeroenArsenal\functions.hpp"
 
 	class missionTag

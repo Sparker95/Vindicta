@@ -3,7 +3,10 @@
 #define FLOAT_MASSMULTIPLIER 1.3
 #define INT_MAX_DISTANCE_TO_REREARM 6
 
-#define STR_ACTION_REARM(AMMOCARGO,AMMOCARGOCAPACTIY) format ["<img size='1.75' image='\A3\ui_f\data\IGUI\Cfg\Actions\reammo_ca.paa' />%1 [%2/%3]",localize "STR_JN_AMMO_ACT_REARM",AMMOCARGO,AMMOCARGOCAPACTIY]
+
+//ACTION TEXT AND ICON
+#define STR_ACTION_ICON_REARM "\A3\ui_f\data\IGUI\Cfg\Actions\reammo_ca.paa" //TODO
+#define STR_ACTION_TEXT_REARM(AMOUNT,TOTAL_AMOUNT) format["%1 [%2/%3]",localize "STR_JN_AMMO_ACT_REARM",AMOUNT,TOTAL_AMOUNT]
 
 
 #define FADE_DELAY	0.15
