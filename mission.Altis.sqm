@@ -16,10 +16,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={13038.482,25.094639,9647.6055};
-		dir[]={0,-0.70710683,0.70710683};
-		up[]={0,0.70710677,0.70710677};
-		aside[]={0.99999994,0,-0};
+		pos[]={8411,204,18121};
+		dir[]={-1.2858001e-005,-0.70710683,0.70710683};
+		up[]={-1.2858001e-005,0.70710677,0.70710677};
+		aside[]={0.99999994,0,1.8183933e-005};
 	};
 };
 binarizationWanted=0;
@@ -3397,7 +3397,7 @@ class Mission
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={8410.002,183.99475,18142.533};
+						position[]={8370,180.06544,18201.051};
 					};
 					side="East";
 					flags=7;
@@ -5408,6 +5408,7 @@ class Mission
 			};
 			id=593;
 			type="B_Truck_01_transport_F";
+			atlOffset=7.6293945e-006;
 		};
 		class Item222
 		{
@@ -6523,7 +6524,7 @@ class Mission
 			colorName="ColorCIV";
 			a=31.950027;
 			b=5.0588818;
-			angle=96.6698;
+			angle=96.669785;
 			id=609;
 			atlOffset=-0.77252197;
 		};
@@ -6552,7 +6553,7 @@ class Mission
 			colorName="ColorCIV";
 			a=40.215912;
 			b=7.4543862;
-			angle=139.61703;
+			angle=139.617;
 			id=611;
 		};
 		class Item236
@@ -7900,7 +7901,7 @@ class Mission
 			colorName="ColorCIV";
 			a=34.681976;
 			b=7.9887705;
-			angle=51.091408;
+			angle=51.0914;
 			id=623;
 			atlOffset=-4.0953827;
 		};
@@ -7915,7 +7916,7 @@ class Mission
 			colorName="ColorCIV";
 			a=45.792671;
 			b=6.6710224;
-			angle=51.091404;
+			angle=51.091396;
 			id=624;
 			atlOffset=-3.299366;
 		};
@@ -8994,7 +8995,7 @@ class Mission
 			colorName="ColorCIV";
 			a=9.1187925;
 			b=5.037437;
-			angle=146.92911;
+			angle=146.92908;
 			id=634;
 			atlOffset=-4.8818359;
 		};
