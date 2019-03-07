@@ -14,7 +14,7 @@ CLASS("MyClass", "MyClassParent");
 	// ----------------------------------------------------------------------
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		P_DEFAULT_PARAMS;
 
 	} ENDMETHOD;
 
@@ -23,7 +23,7 @@ CLASS("MyClass", "MyClassParent");
 	// ----------------------------------------------------------------------
 
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		P_DEFAULT_PARAMS;
 
 	} ENDMETHOD;
 

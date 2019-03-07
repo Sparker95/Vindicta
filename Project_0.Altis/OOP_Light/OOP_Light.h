@@ -301,6 +301,19 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 #define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
 NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
+// -----------------------------------------------------
+// |       M E T H O D   P A R A M E T E R S           |
+// -----------------------------------------------------
+
+#define P_THISOBJECT ["_thisObject", "", [""]]
+#define P_DEFAULT_PARAMS params [["_thisObject", "", [""]]]
+#define P_THISCLASS ["_thisClass", "", [""]]
+#define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
+#define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
+#define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+
 // ----------------------------------------
 // |              C L A S S               |
 // ----------------------------------------
