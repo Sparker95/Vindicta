@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 /*
-Sensor for a garrison to receive spotted enemies from its groups and relay them to other groups garrison.
+Sensor for a garrison to receive spotted enemies from its groups and relay them to other groups of this garrison.
 Author: Sparker 21.12.2018
 */
 
@@ -33,16 +33,19 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
-		// Loop throgh known targets and remove those who are older than some threshold
+		// Loop throgh known targets and remove those who are older than some threshold or not alive any more
 		pr _AI = GETV(_thisObject, "AI");
 		pr _knownTargets = GETV(_AI, "targets");
 		pr _targetsToForget = [];
 		if (count _knownTargets > 0) then {
 			pr _i = 0;
 			pr _t = time;
-			_targetsToForget = _knownTargets select {(_t - (_x select TARGET_ID_TIME)) > TARGET_MAX_AGE};
-			_knownTargets = _knownTargets - _targetsToForget;
-			SETV(_AI, "targets", _knownTargets);
+			_targetsToForget = _knownTargets select {
+				((_t - (_x select TARGET_ID_TIME)) > TARGET_MAX_AGE) || false
+				//(!alive (_x select TARGET_ID_OBJECT_HANDLE))
+			};
+			//_knownTargets = _knownTargets - _targetsToForget;
+			//SETV(_AI, "targets", _knownTargets);
 		};
 		
 		// Force groups to forget about old targets
@@ -52,7 +55,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			pr _stim = STIMULUS_NEW();
 			STIMULUS_SET_SOURCE(_stim, GETV(_thisObject, "gar"));
 			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_FORGET_TARGETS);
-			STIMULUS_SET_VALUE(_stim, _targetsToForget);
+			STIMULUS_SET_VALUE(_stim, _targetsToForget apply {_x select TARGET_ID_OBJECT_HANDLE});
 			
 			// Broadcast this stimulus to all groups in this garrison
 			pr _gar = GETV(_thisObject, "gar");
@@ -86,7 +89,20 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		} else {
 			[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
 		};
-
+		
+		// Send targets to commander
+		if (count _knownTargets > 0) then {
+			pr _gar = T_GETV("gar");
+			pr _side = CALLM0(_gar, "getSide");		
+			pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+			// Create stimulus
+			pr _stim = STIMULUS_NEW();
+			STIMULUS_SET_SOURCE(_stim, _gar);
+			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_TARGETS);
+			STIMULUS_SET_VALUE(_stim, +_knownTargets);
+			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
+		};
+		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -115,6 +131,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
+		pr _type = STIMULUS_GET_TYPE(_stimulus);
+		
 		#ifdef PRINT_RECEIVED_TARGETS
 		diag_log format ["[SensorGarrisonTargets::handleStimulus] Info: %1 received targets from %2: %3",
 			GETV(_thisObject, "gar"),
@@ -128,24 +146,26 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		{ // forEach (STIMULUS_GET_VALUE(_stimulus));
 			// Check if the target is already known
 			pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
-			pr _index = _knownTargets findIf {(_x select TARGET_ID_OBJECT_HANDLE) isEqualTo _hO};
-			if (_index == -1) then {
-				// Didn't find an existing entry
-				
-				// Add it to the array
-				_knownTargets pushBack _x;
-			} else {
-				// Found an existing entry
-				pr _targetExisting = _knownTargets select _index;
-				
-				// Check time the target was previously spotted
-				pr _timeNew = _x select TARGET_ID_TIME;
-				pr _timePrev = _targetExisting select TARGET_ID_TIME;
-				// Is the new report newer than the old record?
-				if (_timeNew > _timePrev) then {
-					_targetExisting set [TARGET_ID_POS, _x select TARGET_ID_POS];
-					_targetExisting set [TARGET_ID_TIME, _timeNew];
-					_targetExisting set [TARGET_ID_KNOWS_ABOUT, TARGET_ID_KNOWS_ABOUT];
+			if (alive _hO) then {
+				pr _index = _knownTargets findIf {(_x select TARGET_ID_OBJECT_HANDLE) isEqualTo _hO};
+				if (_index == -1) then {
+					// Didn't find an existing entry
+					
+					// Add it to the array
+					_knownTargets pushBack _x;
+				} else {
+					// Found an existing entry
+					pr _targetExisting = _knownTargets select _index;
+					
+					// Check time the target was previously spotted
+					pr _timeNew = _x select TARGET_ID_TIME;
+					pr _timePrev = _targetExisting select TARGET_ID_TIME;
+					// Is the new report newer than the old record?
+					if (_timeNew > _timePrev) then {
+						_targetExisting set [TARGET_ID_POS, _x select TARGET_ID_POS];
+						_targetExisting set [TARGET_ID_TIME, _timeNew];
+						_targetExisting set [TARGET_ID_KNOWS_ABOUT, TARGET_ID_KNOWS_ABOUT];
+					};
 				};
 			};
 		} forEach (STIMULUS_GET_VALUE(_stimulus));
@@ -168,6 +188,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		// This garrison is now aware of enemies
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_setPropertyValue;
+		
 	} ENDMETHOD;
 	
 ENDCLASS;

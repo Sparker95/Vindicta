@@ -118,13 +118,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
 			
 			// Fail if any group has failed
-			if (CALLSM3("AI", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+			if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 				_state = ACTION_STATE_FAILED;
 				breakTo "s0";
 			};
 			
 			// Succede if all groups have completed the goal
-			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 				OOP_INFO_0("All groups have arrived");
 				
 				// Set pos world state property

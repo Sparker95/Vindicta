@@ -14,7 +14,7 @@ Make a copy of your initial array if you still need it after calling the functio
 
 Parameters:
 _clusters - array with clusters
-_md - Maximum Distance between clusters
+_md - Minimum Distance between clusters, if two clusters are closer than _md to each other then they will be merged
 
 Returns: array with new bigger clusters.
 

@@ -111,6 +111,22 @@ T_VEH_need_heli_crew = [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_
 T_VEH_need_plane_crew = [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo]; //Vehicles that need crew like T_INF_pilot
 T_VEH_static = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
 
+// Ground vehicles with potential infantry transport capability
+T_VEH_ground_infantry_cargo =
+[
+	T_VEH_car_unarmed,
+	T_VEH_car_armed,
+	T_VEH_MRAP_unarmed,
+	T_VEH_MRAP_HMG,
+	T_VEH_MRAP_GMG,
+	T_VEH_IFV,
+	T_VEH_APC,
+	T_VEH_MBT,
+	T_VEH_personal,
+	T_VEH_truck_inf,
+	T_VEH_truck_cargo
+];
+
 //Drones
 T_DRONE = 2;
 T_DRONE_SIZE = 11;
@@ -248,3 +264,4 @@ T_static = [
 	[T_DRONE, T_DRONE_stat_GMG_low],
 	[T_DRONE, T_DRONE_stat_AA]
 ];
+

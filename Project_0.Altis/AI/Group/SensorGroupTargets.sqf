@@ -227,7 +227,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				pr _hG = GETV(_thisObject, "hG");
 				{ // foreach _data
 					// _x is a target structure
-					_hG reveal [_x select TARGET_ID_OBJECT_HANDLE, _x select TARGET_ID_KNOWS_ABOUT];
+					pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
+					if (alive _hO) then {
+						_hG reveal [_hO, _x select TARGET_ID_KNOWS_ABOUT];
+					};
 				} forEach _data;
 			};
 			
@@ -242,9 +245,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				#endif
 				
 				pr _hG = GETV(_thisObject, "hG");
+				//pr _thisSide = side _hG;
 				{ // foreach _data
-					// _x is a target structure
-					_hG forgetTarget (_x select TARGET_ID_OBJECT_HANDLE);
+					_hG forgetTarget _x;
 				} forEach _data;
 			};
 		};

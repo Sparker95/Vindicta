@@ -6,7 +6,7 @@ Class: AI.AIGarrison
 
 #define pr private
 
-CLASS("AIGarrison", "AI")
+CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison
 	VARIABLE("targets");
@@ -23,6 +23,10 @@ CLASS("AIGarrison", "AI")
 		
 		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		
+		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		
 		
 		pr _loc = CALLM0(_agent, "getLocation");
 		if (_loc != "") then {

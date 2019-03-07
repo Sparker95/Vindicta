@@ -27,6 +27,9 @@ tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 fnc_onPlayerRespawnServer = COMPILEFUNC("fn_onPlayerRespawnServer.sqf");
 
+//Initialize cluster module
+call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
+
 /*
 //Initialize garrison
 call compile preprocessFileLineNumbers "Garrison\initFunctions.sqf";
@@ -46,9 +49,6 @@ call compile preprocessFileLineNumbers "UI\initFunctions.sqf";
 //Initialize sense module
 call compile preprocessFileLineNumbers "Sense\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Sense\initVariablesServer.sqf";
-
-//Initialize cluster module
-call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
 
 //Initialize script objects
 call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";

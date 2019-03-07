@@ -109,7 +109,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 			pr _AI = T_GETV("AI");
 			pr _group = GETV(_AI, "agent");
 			pr _groupUnits = CALLM0(_group, "getInfantryUnits");
-			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _groupUnits, "GoalUnitGetInVehicle", "")) then {
 			//pr _ws = GETV(_AI, "worldState");
 			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
 				OOP_INFO_0("Action COMPLETED");

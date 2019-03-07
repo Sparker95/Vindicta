@@ -54,7 +54,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			// This action is completed when all infantry groups have mounted
 			
-			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
 				 //Update sensors affected by this action
 				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
 				

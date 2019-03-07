@@ -1,3 +1,6 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
@@ -87,10 +90,9 @@ CLASS("StimulusManager", "MessageReceiverEx")
 			};
 			
 			if (_canSense) then {
-				diag_log format ["[StimulusManager:handleStimulus] can be sensed by AI: %1, distance: %2", _AI, _distance];
+				OOP_INFO_2("[StimulusManager:handleStimulus] can be sensed by AI: %1, distance: %2", _AI, _distance);
 				// Make the AI handle the stimulus
-				pr _args = ["handleStimulus", [+_stimulus]];
-				CALLM(_AI, "postMethodAsync", _args); // We call the method asynchronously because it is in another thread
+				CALLM2(_AI, "postMethodAsync", "handleStimulus", [_stimulus]); // We call the method asynchronously because it is in another thread
 			};
 		} forEach _AIs;
 	} ENDMETHOD;
