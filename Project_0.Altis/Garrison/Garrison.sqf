@@ -34,7 +34,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+		T_SETV("debugName", _debugName);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -56,15 +56,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
-		SET_VAR(_thisObject, "units", []);
-		SET_VAR(_thisObject, "groups", []);
-		SET_VAR(_thisObject, "spawned", false);
-		SET_VAR(_thisObject, "side", _side);
-		SET_VAR(_thisObject, "debugName", "");
-		//SET_VAR(_thisObject, "action", "");
-		SETV(_thisObject, "AI", "");
-		SETV(_thisObject, "effTotal", +T_EFF_null);
-		SETV(_thisObject, "effMobile", +T_EFF_null);
+		T_SETV("units", []);
+		T_SETV("groups", []);
+		T_SETV("spawned", false);
+		T_SETV("side", _side);
+		T_SETV("debugName", "");
+		//T_SETV("action", "");
+		T_SETV("AI", "");
+		T_SETV("effTotal", +T_EFF_null);
+		T_SETV("effMobile", +T_EFF_null);
+		T_SETV("location", "");
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -135,7 +136,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("setLocation") {
 		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
-		SET_VAR(_thisObject, "location", _location);
+		T_SETV("location", _location);
 	} ENDMETHOD;
 
 
@@ -508,6 +509,106 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		
 		nil
+	} ENDMETHOD;
+	
+	/*
+	Method: addUnitsAndGroups
+	Moves all specified units and groups from another garrison to this one.
+	Before moving, it ensures that all provided units are still in this garrison.
+	New groups for infantry units and vehicle units are created.
+	ALl provided units and groups must originate in one garrison!
+	
+	Parameters: _garrison, _units, _groups
+	
+	_garSrc - source <Garrison>
+	_units - array of <Unit> objects
+	_groupsAndUnits - array of [_group, _units]
+	
+	Returns: Bool, true if move was performed properly
+	*/
+	METHOD("addUnitsAndGroups") {
+		params ["_thisObject", ["_garSrc", "", [""]], ["_units", [], [[]]], ["_groupsAndUnits", [], [[]]]];
+		
+		// Check if all units are still in the same garrison
+		pr _index = _units findIf {CALLM0(_x, "getGarrison") != _garSrc};
+		if (_index != -1) exitWith { false };
+		
+		// Check if all groups and their units are still in the same garrison
+		pr _index = _groupsAndUnits findIf {
+			_x params ["_group", "_groupUnits"];;
+			if (CALLM0(_group, "getGarrison") != _garSrc) then {
+				true;
+			} else {
+				pr _index1 = _groupUnits findIf {CALLM0(_x, "getGarrison") != _garSrc};
+				if (_index1 != -1) then {
+					true
+				} else{
+					false
+				};
+			};
+		};
+		if (_index != -1) exitWith { false };
+		
+		// If we are here then the composition is ok
+		// Move units first
+		pr _newInfGroups = [];
+		pr _newVehGroup = "";
+		pr _isSpawned = T_GETV("spawned");
+		pr _side = T_GETV("side");
+		{
+			if (CALLM0(_x, "isInfantry")) then {
+				// Move the unit to the new group
+				// If there is no inf group yet, create one
+				// Also create a new group if the amount of troops is too big
+				pr _createNewGroup = if (count _newInfGroups == 0) then {
+					true
+				} else {
+					pr _lastGroup = _newInfGroups select (count _newInfGroups - 1);
+					if (count CALLM0(_lastGroup, "getUnits") > 6) then {
+						true	
+					} else { false };
+				};
+				// Create a new group if needed or pick an existing one
+				pr _group = if (_createNewGroup) then {
+					pr _args = [_side, GROUP_TYPE_IDLE];
+					_newGroup = NEW("Group", _args);
+					if (_isSpawned) then { // If the garrison is currently spawned, set proper state to the new group
+						CALLM0(_newGroup, "spawn");
+					};
+					CALLM1(_garSrc, "addGroup", _newGroup);
+					_newInfGroups pushBack _newGroup;
+					_newGroup
+				} else {
+					_newInfGroups select (count _newInfGroups - 1)
+				};
+				// We have a group now, move the unit here
+				CALLM1(_group, "addUnit", _x);
+			} else {
+				// All vehicle groups go into one group
+				if (_newVehGroup == "") then {
+					pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC]; // todo We assume we aren't moving static vehicles anywhere right now
+					_newVehGroup = NEW("Group", _args);
+					if (_isSpawned) then { // If the garrison is currently spawned, set proper state to the new group
+						CALLM0(_newGroup, "spawn");
+					};
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+				// Move the vehicle into the new group
+				CALLM1(_newVehGroup, "addUnit", _x);
+			};
+		} forEach _units;
+		
+		// Now move all groups into the new garrison
+		{
+			CALLM1(_thisObject, "addGroup", _x);
+		} forEach _newInfGroups;
+		{
+			pr _group = _x select 0;
+			CALLM1(_thisObject, "addGroup", _group);
+		} forEach _groupsAndUnits;
+		
+		true
+		
 	} ENDMETHOD;
 	
 	

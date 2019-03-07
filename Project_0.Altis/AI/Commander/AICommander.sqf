@@ -76,6 +76,8 @@ CLASS("AICommander", "AI")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
+		
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
 		
@@ -399,12 +401,10 @@ CLASS("AICommander", "AI")
 		
 		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
 		
-		/*
 		// Create a new action to respond to this target cluster
 		pr _args = [_thisObject, _ID];
 		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
 		T_GETV("targetClusterActions") pushBack _newAction;
-		*/
 		
 		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
 	} ENDMETHOD;
@@ -427,6 +427,31 @@ CLASS("AICommander", "AI")
 		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new IDs: %2", _ID, _IDsNew);
 		
 	} ENDMETHOD;
+	
+	/*
+	Method: getTargetCluster
+	Returns a target cluster with specified ID
+	
+	Parameters: _ID
+	
+	_ID - ID of the target cluster
+	
+	Returns: target cluster structure or [] if nothing was found
+	*/
+	METHOD("getTargetCluster") {
+		params ["_thisObject", ["_ID", 0, [0]]];
+		
+		pr _targetClusters = T_GETV("targetClusters");
+		pr _ret = [];
+		{ // foreach _targetClusters
+			if (_x select TARGET_CLUSTER_ID_ID == _ID) exitWith {
+				_ret = _x;
+			};
+		} forEach _targetClusters;
+		
+		_ret
+	} ENDMETHOD;
+	
 	
 	/*
 	Method: onTargetClusterMerged
@@ -474,7 +499,7 @@ CLASS("AICommander", "AI")
 	_pos - position where to send QRF to
 	_requiredEff - efficiency vector
 	
-	Returns: ???
+	Returns: [_location, _garrison, _units, _groupsAndGroups]
 	*/
 	METHOD("allocateUnitsGroundQRF") {
 		params ["_thisObject", ["_pos", [], [[]]], ["_requiredEff", [], [[]]]];
@@ -501,7 +526,9 @@ CLASS("AICommander", "AI")
 		
 		// Find location that can deal with the threat
 		pr _allocatedUnits = []; // Array with units we have allocated
-		pr _allocatedGroups = []; // Array with groups we have allocated
+		pr _allocatedGroupsAndUnits = []; // Array with groups we have allocated
+		pr _garrison = "";
+		pr _location = "";
 		
 		pr _allocatedVehicles = [];
 		pr _allocatedCrew = [];
@@ -516,6 +543,12 @@ CLASS("AICommander", "AI")
 			
 			pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
 			pr _garEff = CALLM0(_gar, "getEfficiencyMobile");
+			
+			// Return values
+			_garrison = _gar;
+			_location = _loc;
+			
+			
 			// If units at this garrison can destroy the threat
 			if (([_garEff, _requiredEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) then {
 				OOP_INFO_0("  This location can destroy the threat");
@@ -524,7 +557,7 @@ CLASS("AICommander", "AI")
 				pr _units = CALLM0(_gar, "getUnits") select {! CALLM0(_x, "isStatic")};
 				_units = _units apply {pr _eff = CALLM0(_x, "getEfficiency"); [0, _eff, _x]};
 				_allocatedUnits = [];
-				_allocatedGroups = [];
+				_allocatedGroupsAndUnits = [];
 				_allocatedCrew = [];
 				_allocatedVehicles = [];
 				_effAllocated = +T_EFF_null;
@@ -558,7 +591,7 @@ CLASS("AICommander", "AI")
 								pr _groupUnits = CALLM0(_group, "getUnits");
 								// If there are more than one unit in a vehicle's group, then add the whole group
 								if (count _groupUnits > 1) then {
-									_allocatedGroups pushBackUnique _group;
+									_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
 									// Add allocated crew to array
 									{
 										if (CALLM0(_x, "isInfantry")) then {
@@ -585,7 +618,7 @@ CLASS("AICommander", "AI")
 					_j = _j + 1;
 				};
 				
-				OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroups, _effAllocated);
+				OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
 				
 				// Check if we have allocated enough units
 				if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
@@ -612,7 +645,7 @@ CLASS("AICommander", "AI")
 						};
 						
 						// Are there enough units left?
-						if (_freeInfUnits < _nMoreCrewRequired) then {
+						if (count _freeInfUnits < _nMoreCrewRequired) then {
 							// Not enough infantry here to equip all the vehicles we have allocated
 							// Go check other locations
 							OOP_INFO_0("   Failed to allocate additional crew");
@@ -716,10 +749,15 @@ CLASS("AICommander", "AI")
 				OOP_INFO_1("  Group %1", _x);
 				{
 					OOP_INFO_2("     %1, %2", _x, CALLM0(_x, "getClassName"));
-				} forEach CALLM0(_x, "getUnits");
-			} forEach _allocatedGroups;
+				} forEach CALLM0(_x select 0, "getUnits");
+			} forEach _allocatedGroupsAndUnits;
+			
+			// Return
+			[_location, _garrison, _allocatedUnits, _allocatedGroupsAndUnits]
 		} else {
 			OOP_INFO_0("Couldn't allocate units!");
+			// Return
+			[]
 		};
 		
 	} ENDMETHOD;

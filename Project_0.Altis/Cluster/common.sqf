@@ -152,3 +152,12 @@ cluster_fnc_getCenter =
 	private _cy = 0.5*((_c select 1) + (_c select 3));
 	[_cx, _cy]
 };
+
+// Returns size in format [_width, _height]
+cluster_fnc_getSize = 
+{
+	private _c = _this;
+	private _w = ((_c select 2) - (_c select 0));
+	private _h = ((_c select 3) - (_c select 1));
+	[_w, _h]
+};

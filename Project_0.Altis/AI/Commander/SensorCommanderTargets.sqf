@@ -22,6 +22,8 @@ Author: Sparker 21.12.2018
 
 #define DEBUG_CLUSTERS
 
+//#define DEBUG_TARGETS
+
 CLASS("SensorCommanderTargets", "SensorStimulatable")
 
 	VARIABLE("newTargets"); // Targets which were recognized as new will be added to this array on receiving new targets stimulus
@@ -256,7 +258,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					// Generate a new ID for it
 					pr _ID = CALLM0(_AI, "getNewTargetClusterID");
 					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
-					ade_dumpcallstack;
+					//ade_dumpcallstack;
 					CALLM1(_AI, "onTargetClusterCreated", _newTC);
 				} else {
 					// It inherits from one old cluster, need to find what it inherits from
@@ -398,7 +400,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
+		#ifdef DEBUG_TARGETS
 		OOP_INFO_1("Received targets: %1", STIMULUS_GET_VALUE(_stimulus));
+		#endif
 		
 		// Filter spotted enemies
 		pr _sourceGarrison = STIMULUS_GET_SOURCE(_stimulus);
@@ -415,13 +419,17 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					// Add a new target record
 					pr _newCommanderTarget = TARGET_COMMANDER_NEW(_hO, _x select TARGET_ID_KNOWS_ABOUT, _x select TARGET_ID_POS, _x select TARGET_ID_TIME, [_sourceGarrison]);
 					
+					#ifdef DEBUG_TARGETS
 					OOP_INFO_1("Added new target: %1", _newCommanderTarget);
+					#endif
 					
 					// Add it to the array
 					_knownTargets pushBack _newCommanderTarget;
 				} else {
 				
+					#ifdef DEBUG_TARGETS
 					OOP_INFO_1("Updated existing target: %1", _x);
+					#endif
 					
 					// Found an existing entry
 					pr _targetExisting = _knownTargets select _index;
