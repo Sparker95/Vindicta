@@ -123,51 +123,47 @@ CLASS("BuildUI", "")
 			pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
 			pr _ItemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
 
-			// Why not use a macro for these long-ass texts?
-			// Arma doesn't want that.
-			// You could still use some private variables though? 
-			// pr _display = uinamespace getVariable "buildUI_display";
-			// "dOeS nOt SuPpOrT sErIaLiZaTiOn"
+			pr _display = uinamespace getVariable "buildUI_display";
 
-			if (displayNull != (uinamespace getVariable "buildUI_display")) then {
+			if (displayNull != _display) then {
 
 				// item menu
 				if (_ItemCatOpen) then { 
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTC) ctrlSetText format ["%1", (_UIItemTexts select 2)];
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR1) ctrlSetText format ["%1", (_UIItemTexts select 3)];
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTR2) ctrlSetText format ["%1", (_UIItemTexts select 4)];
+					(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
+					(_display displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
+					(_display displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
+					(_display displayCtrl IDC_ITEXTC) ctrlSetText format ["%1", (_UIItemTexts select 2)];
+					(_display displayCtrl IDC_ITEXTR1) ctrlSetText format ["%1", (_UIItemTexts select 3)];
+					(_display displayCtrl IDC_ITEXTR2) ctrlSetText format ["%1", (_UIItemTexts select 4)];
 
 					{
-						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlShow true;
-						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+						(_display displayCtrl _x) ctrlShow true;
+						(_display displayCtrl _x) ctrlCommit 0;
 					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
 
 				} else { 
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
+					(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
 					{
-						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlShow false;
-						((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+						(_display displayCtrl _x) ctrlShow false;
+						(_display displayCtrl _x) ctrlCommit 0;
 					} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
 				};
 
 				// cat menu
-				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
-				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
-				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
+				(_display displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
+				(_display displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
+				(_display displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
 
 				// button highlight effect
 				if (_TimeFadeIn > time) then { 
-					((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, (_TimeFadeIn - time)];
-				} else { ((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, 0]; };
+					(_display displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, (_TimeFadeIn - time)];
+				} else { (_display displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, 0]; };
 
-				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTR1) ctrlSetText format ["%1", (_UICatTexts select 3)];
-				((uinamespace getVariable "buildUI_display") displayCtrl IDC_TEXTR2) ctrlSetText format ["%1", (_UICatTexts select 4)];
+				(_display displayCtrl IDC_TEXTR1) ctrlSetText format ["%1", (_UICatTexts select 3)];
+				(_display displayCtrl IDC_TEXTR2) ctrlSetText format ["%1", (_UICatTexts select 4)];
 
 				{
-					((uinamespace getVariable "buildUI_display") displayCtrl _x) ctrlCommit 0;
+					(_display displayCtrl _x) ctrlCommit 0;
 				} forEach [IDC_TEXTL2, IDC_TEXTL1, IDC_TEXTC, IDC_TEXTR1, IDC_TEXTR2];
 	
 				CALLM0(g_BuildUI, "updateCarouselOffsets");
@@ -184,7 +180,7 @@ CLASS("BuildUI", "")
 
 				case """Tab""": { 
 					playSound ["clicksoft", false];
-
+					CALLM0(g_BuildUI, "handleActionKey");
 					true; // disables default control 
 				};
 
@@ -254,6 +250,10 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("Removed display event handler!");
 	} ENDMETHOD;
 
+	METHOD("handleActionKey") {
+		params ["_thisObject"];
+	} ENDMETHOD;
+
 	// opens item list UI element
 	METHOD("openItems") {
 		params ["_thisObject"];
@@ -264,6 +264,7 @@ CLASS("BuildUI", "")
 		T_CALLM("makeItemTexts", [0]); // create item list display texts
 
 		T_CALLM0("createCarousel");
+		T_CALLM0("exitMoveMode");
 	} ENDMETHOD;
 
 	// closes item list UI element
@@ -273,6 +274,7 @@ CLASS("BuildUI", "")
 		T_SETV("ItemCatOpen", false);
 		T_SETV("currentItemID", 0);
 		T_CALLM0("clearCarousel");
+		T_CALLM0("enterMoveMode");
 	} ENDMETHOD;
 
 	/* Description: Navigate left or right in either category or item list on the UI
@@ -548,18 +550,18 @@ CLASS("BuildUI", "")
 		params ["_thisObject"];
 		OOP_INFO_0("'enterMoveMode' method called");
 
-		if(T_GETV("moveActionId") != -1) exitWith {
-			OOP_ERROR_0("enterMoveMode called while already in move mode! Must call exitMoveMode before entering it again!");
-		};
+		// if(T_GETV("moveActionId") != -1) exitWith {
+		// 	OOP_ERROR_0("enterMoveMode called while already in move mode! Must call exitMoveMode before entering it again!");
+		// };
 
-		pr _moveActionId = player addAction ["Move Selected Object", {
-			params ["_target", "_caller", "_actionId", "_arguments"];
-			_arguments params ["_thisObject"];
+		// pr _moveActionId = player addAction ["Move Selected Object", {
+		// 	params ["_target", "_caller", "_actionId", "_arguments"];
+		// 	_arguments params ["_thisObject"];
 
-			T_CALLM0("moveSelectedObjects");
-		}, [_thisObject]];
+		// 	T_CALLM0("moveSelectedObjects");
+		// }, [_thisObject]];
 
-		T_SETV("moveActionId", _moveActionId);
+		//T_SETV("moveActionId", _moveActionId);
 
 		["BuildUIHighlightObject", "onEachFrame", {
 			params ["_thisObject"];
@@ -606,8 +608,8 @@ CLASS("BuildUI", "")
 			T_SETV("activeObject", []);
 		};
 
-		player removeAction T_GETV("moveActionId");
-		T_SETV("moveActionId", -1);
+		// player removeAction T_GETV("moveActionId");
+		// T_SETV("moveActionId", -1);
 
 		["BuildUIHighlightObject", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 	} ENDMETHOD;
