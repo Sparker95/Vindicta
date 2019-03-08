@@ -1,3 +1,4 @@
+#include "LocationData.hpp"
 // An array with unique identifiers (numbers))
 #define TARGET_CLUSTER_ID_ID			0
 

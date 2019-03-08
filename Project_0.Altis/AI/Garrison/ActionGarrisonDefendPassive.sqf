@@ -107,18 +107,18 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					};
 					
 					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", ""];
+						_args = ["GoalGroupGetInVehiclesAsCrew", _AI];
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", ""];
+						_args = ["GoalGroupGetInVehiclesAsCrew", _AI];
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
 						_args = if (_loc != "") then {
-							["GoalGroupOccupySentryPositions", 0, [], _AI];
+							["GoalGroupOccupySentryPositions", _AI];
 						} else {
-							["GoalGroupRegroup", 0, [], _AI];
+							["GoalGroupRegroup", _AI];
 						};
 					};
 					
