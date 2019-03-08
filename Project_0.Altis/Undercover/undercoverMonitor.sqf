@@ -94,6 +94,11 @@ CLASS("undercoverMonitor", "MessageReceiver");
 			_unit setVariable ["timeHostility", time + TIME_HOSTILITY];
 		}];
 
+		// show debug UI
+		#ifdef DEBUG
+			cutRsc ["UndercoverUIDebug", "PLAIN", -1, false];
+		#endif
+
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_PROCESS);
@@ -297,12 +302,24 @@ CLASS("undercoverMonitor", "MessageReceiver");
 					_unit setVariable ["removeWanted", false];
 				};
 
+
+
 				if ( _suspicion >= SUSPICIOUS && _suspicion < 1 ) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; };
 				if ( _suspicion >= 1 ) then { _unit setCaptive false; } else { _unit setCaptive true; };
 				_unit setVariable ["suspicion", _suspicion];
 
 				_unit setVariable [UNDERCOVER_SUSPICION, _suspicion, true];
+
+				// update debug UI
+				#ifdef DEBUG
+				[_unit] call fnc_UIUndercoverDebug;
+				g_rscLayerUndercover cutRsc ["Default", "PLAIN", -1, false];
+				#endif
+
+				// update normal UI
+				#ifndef DEBUG
 				CALL_STATIC_METHOD("UndercoverUI", "drawUI", [_unit]); // draw UI
+				#endif
 
 			}; // end SMON_MESSAGE_PROCESS
 
