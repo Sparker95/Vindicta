@@ -20,6 +20,7 @@
 #define SUSP_SPEEDMAX 0.35							// suspiciousness gained for movement speed
 #define SUSP_NOROADS 80								// distance that is too far from road to not be suspicious
 #define SUSP_OFFROAD 0.3							// suspiciousness gained for being too far from roads
+#define SUSP_INCREMENT 0.08							// value for gradual increase of suspiciousness when performing suspicous behavior while seen
 
 // suspicion values for each equipment type
 #define SUSP_UNIFORM 0.6							// suspiciousness gained for mil uniform
@@ -37,5 +38,7 @@
 #define TIME_SEEN 5									// time it takes, in seconds, for player unit to go from "seen" to "unseen"
 #define TIME_HOSTILITY 10							// time in seconds player unit is overt after a hostile action
 #define TIME_UNSEEN_WANTED_EXIT -240				// time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
+
+#define HINT_DISPTIME 8								// amount of time each hint is displayed
 
 #define WANTED_CIRCLE_RADIUS 500
