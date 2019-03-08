@@ -12,7 +12,7 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 6
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 1200
+#define TARGET_MAX_AGE 40
 
 // ---- Debugging defines ----
 
@@ -232,7 +232,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 				if (_nRowAboveZero == 1) then { // This old target cluster is connected with one new cluster
 					
 				} else { // This old target cluster is not connected with a new one so it will be deleted
-					CALLM1(_AI, "onTargetClusterDeleted", _oldTargetCluster select TARGET_CLUSTER_ID_ID);
+					CALLM1(_AI, "onTargetClusterDeleted", _oldTargetCluster);
 				};
 			};
 		} forEach _targetClusters;

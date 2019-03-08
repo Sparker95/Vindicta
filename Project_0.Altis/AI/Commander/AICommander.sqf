@@ -487,6 +487,21 @@ CLASS("AICommander", "AI")
 		
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
+		OOP_INFO_0("Stopping garrisons assigned to this target cluster");
+		pr _targetClusterActions = T_GETV("targetClusterActions");
+		pr _i = 0;
+		while { _i < (count _targetClusterActions)} do{
+			pr _action = _targetClusterActions select _i;
+			if (CALLM0(_action, "getTargetClusterID") == _ID) then {
+				// Terminate and delete the old action
+				OOP_INFO_1("Terminating and deleting action: %1", _action);
+				CALLM0(_action, "terminate");
+				DELETE(_action);
+				_targetClusterActions deleteAt _i;
+			} else {
+				_i = _i + 1;
+			};
+		};
 		
 	} ENDMETHOD;
 	

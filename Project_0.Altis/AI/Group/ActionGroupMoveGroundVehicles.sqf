@@ -53,13 +53,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		_hG setCombatMode "GREEN"; // Hold fire, defend only
 		
 		// Give a waypoint to move
+		/*
 		pr _wp = _hG addWaypoint [_pos, 0];
 		_wp setWaypointType "MOVE";
 		_wp setWaypointFormation "COLUMN";
 		_wp setWaypointBehaviour "SAFE";
 		_wp setWaypointCombatMode "GREEN";
 		_hG setCurrentWaypoint _wp;
-		
+		*/
 		{
 			private _vehHandle = _x;
 			_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
@@ -67,6 +68,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			//_vehHandle forceFollowRoad true;
 		} forEach _allVehicles;
 		(vehicle (leader _hG)) limitSpeed T_GETV("speedLimit");
+		
 		
 		// Give goals to all drivers except the lead driver
 		pr _leader = CALLM0(_group, "getLeader");
