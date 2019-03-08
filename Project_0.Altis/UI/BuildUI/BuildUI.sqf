@@ -35,7 +35,8 @@ CLASS("BuildUI", "")
 	// object variables
 	VARIABLE("activeObject");				// Object currently highlighted
 	VARIABLE("selectedObjects");
-	VARIABLE("moveActionId");
+	VARIABLE("movingObjects");
+	VARIABLE("isMoving");
 
 	// carousel
 	VARIABLE("previousItemID");
@@ -68,7 +69,8 @@ CLASS("BuildUI", "")
 		T_SETV("EHKeyDown", nil);
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
-		T_SETV("moveActionId", -1);
+		T_SETV("movingObjects", []);
+		T_SETV("isMoving", false);
 		T_CALLM("makeCatTexts", [0]); 			// initialize UI category strings
 
 		T_SETV("previousItemID", 0);
@@ -126,7 +128,6 @@ CLASS("BuildUI", "")
 			pr _display = uinamespace getVariable "buildUI_display";
 
 			if (displayNull != _display) then {
-
 				// item menu
 				if (_ItemCatOpen) then { 
 					(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
@@ -165,9 +166,9 @@ CLASS("BuildUI", "")
 				{
 					(_display displayCtrl _x) ctrlCommit 0;
 				} forEach [IDC_TEXTL2, IDC_TEXTL1, IDC_TEXTC, IDC_TEXTR1, IDC_TEXTR2];
-	
+
 				CALLM0(g_BuildUI, "updateCarouselOffsets");
-		  	};
+			};
 		}] call BIS_fnc_addStackedEventHandler;
 
 		T_CALLM0("enterMoveMode");
@@ -251,7 +252,23 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("handleActionKey") {
-		params ["_thisObject"];
+		P_DEFAULT_PARAMS;
+		OOP_INFO_0("'handleActionKey' method called");
+
+		T_PRVAR(ItemCatOpen);
+		OOP_INFO_1("'handleActionKey' %1", _ItemCatOpen);
+		if (_ItemCatOpen) then {
+			pr _currentClassName = T_CALLM0("currentClassname");
+			OOP_INFO_1("'handleActionKey' creating new %1", _currentClassName);
+			T_CALLM0("closeItems");
+			T_CALLM1("createNewObject", _currentClassName);
+		} else {
+			if (T_GETV("isMoving")) then {
+				T_CALLM0("dropHere");
+			} else {
+				T_CALLM0("moveSelectedObjects");
+			};
+		};
 	} ENDMETHOD;
 
 	// opens item list UI element
@@ -372,40 +389,21 @@ CLASS("BuildUI", "")
 
 	*/
 	METHOD("currentClassname") {
-		params [["_thisObject", "", [""]]];
+		P_DEFAULT_PARAMS;
 
-		pr _ItemCatOpen = T_GETV("ItemCatOpen");
+		T_PRVAR(ItemCatOpen);
 		pr _return = "";
-
-		if (_itemCatOpen) then { 
-			pr _currentCatID = T_GETV("currentCatID");
-			pr _currentItemID = T_GETV("currentItemID");
+		OOP_INFO_1("'currentClassname' %1", _ItemCatOpen);
+		if (_ItemCatOpen) then {
+			T_PRVAR(currentCatID);
+			T_PRVAR(currentItemID);
 			pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
 			_return = (_itemCat select _currentItemID) select 0;
+			OOP_INFO_4("'currentClassname' %1 %2 %3 %4", _currentCatID, _currentItemID, _itemCat, _return);
 		};
-		
+
 		_return
 	} ENDMETHOD;
-
-	// METHOD("getItemClasses") {
-	// 	params ["_thisObject"];
-
-	// 	T_PRVAR(currentCatID);
-	// 	T_PRVAR(currentItemID);
-	// 	T_PRVAR(ItemCatOpen);
-	// 	if !(_ItemCatOpen) exitWith { [] };
-
-	// 	// How many items in the currently selected category
-	// 	pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-	// 	_return = (_itemCat select _currentItemID) select 0;
-	// 	pr _itemIndexSize = count _itemCat;
-	// 	pr _items = [];
-	// 	for "_i" from _currentItemID to (_currentItemID + _itemIndexSize) do {
-	// 		pr _idx = _i mod _itemIndexSize;
-	// 		_items pushBack ((_itemCat select _idx) select 0);
-	// 	};
-	// 	return _items;
-	// } ENDMETHOD;
 
 	METHOD("clearCarousel") {
 		params ["_thisObject"];
@@ -422,7 +420,6 @@ CLASS("BuildUI", "")
 
 	METHOD("getCarouselOffsets") {
 		params ["_thisObject"];
-		OOP_INFO_0("'getCarouselOffsets' method called");
 
 		T_PRVAR(currentCatID);
 		T_PRVAR(currentItemID);
@@ -495,18 +492,17 @@ CLASS("BuildUI", "")
 		pr _itemIndexSize = count _itemCat - 1;
 		pr _offsets = T_CALLM0("getCarouselOffsets");
 		for "_i" from 0 to _itemIndexSize do {
-			pr _item = (_itemCat select _i) select 0;
-			OOP_INFO_1("Creating carousel item %1", _item);
+			pr _type = (_itemCat select _i) select 0;
+			OOP_INFO_1("Creating carousel item %1", _type);
 			pr _offs = _offsets select _i;
-			pr _veh = createVehicle [_item, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
-			_veh attachTo [player, _offs]; 
-			_carouselObjects pushBack _veh;
+			pr _newObj = createVehicle [_type, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
+			_newObj attachTo [player, _offs]; 
+			_carouselObjects pushBack _newObj;
 		};
 	} ENDMETHOD;
 
 	METHOD("updateCarouselOffsets") {
 		params ["_thisObject"];
-		OOP_INFO_0("'updateCarouselOffsets' method called");
 
 		T_PRVAR(carouselObjects);
 		T_PRVAR(currentCatID);
@@ -515,7 +511,7 @@ CLASS("BuildUI", "")
 		if (!_ItemCatOpen) exitWith { [] };
 
 		//T_PRVAR(currentItemID);
-		
+
 		// How many items in the currently selected category
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
 		pr _itemIndexSize = count _itemCat - 1;
@@ -523,7 +519,6 @@ CLASS("BuildUI", "")
 		for "_i" from 0 to _itemIndexSize do {
 			pr _offs = _offsets select _i;
 			pr _veh = _carouselObjects select _i;
-			OOP_INFO_3("%1/%2/%3", _i, _itemIndexSize, _offs);
 			_veh attachTo [player, _offs];
 			// pr _item = (_itemCat select _i) select 0;
 			// OOP_INFO_1("Creating carousel item %1", _item);
@@ -537,12 +532,14 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("createNewObject") {
-		params ["_thisObject", "_type", ["_offs", [0, 4, 0]]];
-		OOP_INFO_0("'createNewObject' method called");
-		
+		params [P_THISCLASS, "_type", ["_offs", [0, 4, 0]]];
+		OOP_INFO_2("'createNewObject' method called, _type = %1, _offs = %2", _type, _offs);
+
 		T_CALLM0("exitMoveMode");
-		pr _newObj = createVehicle [_type, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
-		T_SETV("selectedObjects", [[_newObj, getPos _newObj]]);
+		pr _pos = player modelToWorld _offs;
+		pr _newObj = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+		pr _selectedObjects = [[_newObj, _pos]];
+		T_SETV("selectedObjects", _selectedObjects);
 		T_CALLM0("moveSelectedObjects");
 	} ENDMETHOD;
 
@@ -566,9 +563,11 @@ CLASS("BuildUI", "")
 		["BuildUIHighlightObject", "onEachFrame", {
 			params ["_thisObject"];
 
+			if(T_GETV(isMoving)) exitWith {};
+
 			pr _activeObject = T_GETV("activeObject");
 			//pr _selectedObjects = T_GETV("selectedObjects");
-			
+
 			if(count _activeObject == 0 or {cursorObject != _activeObject select 0 }) then {
 				if(count _activeObject > 0) then {
 					_activeObject params ["_obj", "_pos"];
@@ -577,7 +576,7 @@ CLASS("BuildUI", "")
 					_activeObject = [];
 					T_SETV("activeObject", _activeObject);
 				};
-				
+
 				//if(cursorObject getVariable ["P0_allowMove", false]) then {
 				if(true) then {
 					private _pos = getPosWorld cursorObject;
@@ -614,62 +613,87 @@ CLASS("BuildUI", "")
 		["BuildUIHighlightObject", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 	} ENDMETHOD;
 
-	METHOD("addToSelection") {
-		params ["_thisObject"];
-		OOP_INFO_0("'addToSelection' method called");
-
-		pr _activeObject = T_GETV("activeObject");
-		if(count _activeObject == 0) exitWith {
-			OOP_ERROR_0("No item is active!");
-		};
-		pr _selectedObjects = T_GETV("selectedObjects");		
-		if((_activeObject select 0) in (_selectedObjects apply { _x select 0 })) exitWith {false};
-		_selectedObjects pushBack _activeObject;
+	STATIC_METHOD("addObjectUnique") {
+		params [P_THISCLASS, P_ARRAY("_arr"), P_ARRAY("_obj")];
+		if((_obj select 0) in (_arr apply { _x select 0 })) exitWith {false};
+		_arr pushBack _obj;
 		true
 	} ENDMETHOD;
 
-	METHOD("removeFromSelection") {
-		params ["_thisObject"];
-		OOP_INFO_0("'removeFromSelection' method called");
-
-		pr _activeObject = T_GETV("activeObject");
-		pr _selectedObjects = T_GETV("selectedObjects");		
-		if(count _activeObject == 0) exitWith {
-			OOP_ERROR_0("No item is active!");
-		};
-
-		if(!((_activeObject select 0) in (_selectedObjects apply { _x select 0 }))) exitWith {false};
-		_selectedObjects = _selectedObjects - [_activeObject];
-
-		T_SETV("selectedObjects", _selectedObjects);
+	STATIC_METHOD("removeObjectUnique") {
+		params [P_THISCLASS, P_ARRAY("_arr"), P_ARRAY("_obj")];
+		pr _idx = _arr findIf { (_x select 0) == (_obj select 0) };
+		if(_idx == -1) exitWith {false};
+		_arr deleteAt _idx;
 		true
 	} ENDMETHOD;
+
+	// METHOD("addToSelection") {
+	// 	params ["_thisObject"];
+	// 	OOP_INFO_0("'addToSelection' method called");
+
+	// 	pr _activeObject = T_GETV("activeObject");
+	// 	if(count _activeObject == 0) exitWith {
+	// 		// OOP_ERROR_0("No item is active!");
+	// 	};
+	// 	pr _selectedObjects = T_GETV("selectedObjects");
+
+	// 	if((_activeObject select 0) in (_selectedObjects apply { _x select 0 })) exitWith {false};
+	// 	_selectedObjects pushBack _activeObject;
+
+	// 	true
+	// } ENDMETHOD;
+
+	// METHOD("removeFromSelection") {
+	// 	params ["_thisObject"];
+	// 	OOP_INFO_0("'removeFromSelection' method called");
+
+	// 	pr _activeObject = T_GETV("activeObject");
+	// 	pr _selectedObjects = T_GETV("selectedObjects");		
+	// 	if(count _activeObject == 0) exitWith {
+	// 		OOP_ERROR_0("No item is active!");
+	// 	};
+
+	// 	if(!((_activeObject select 0) in (_selectedObjects apply { _x select 0 }))) exitWith {false};
+	// 	_selectedObjects = _selectedObjects - [_activeObject];
+
+	// 	T_SETV("selectedObjects", _selectedObjects);
+	// 	true
+	// } ENDMETHOD;
 
 	METHOD("moveSelectedObjects") {
-		params ["_thisObject"];
+		P_DEFAULT_PARAMS;
+
 		OOP_INFO_0("'moveSelectedObjects' method called");
-		
+
+		T_SETV("isMoving", true);
+
+		// Grab the selected objects
+		T_PRVAR(activeObject);
+		T_PRVAR(selectedObjects);
+
+		pr _movingObjects = +_selectedObjects;
+		CALL_STATIC_METHOD_2("BuildUI", "addObjectUnique", _movingObjects, _activeObject);
+		T_SETV("movingObjects", _movingObjects);
+
 		// Add currently active object if it isn't already selected
-		T_CALLM0("addToSelection");
+		//T_CALLM0("addToSelection");
 		// Exit move mode so it doesn't interfere
 		T_CALLM0("exitMoveMode");
-		
-		// Grab the selected objects
-		pr _selectedObjects = T_GETV("selectedObjects");
-		T_SETV("selectedObjects", []);			
+
 
 		{
 			_x params ["_object", "_pos"];
-			_object setPosWorld _pos;
-			_object enableSimulation true;
+			// _object setPosWorld _pos;
+			// _object enableSimulation true;
 
 			private _relativePos = player worldToModel (_object modelToWorld [0,0,0.1]);
 			private _starting_h = getCameraViewDirection player select 2;
-			
+
 			private _dir = getDir _object - getDir player; //vectorDir _object;
 			//private _up = vectorUp _object;
 			_object enableSimulationGlobal false;
-			
+
 			_object setVariable ["build_ui_beingMoved", true];
 			_object setVariable ["build_ui_relativePos", _relativePos];
 			_object setVariable ["build_ui_starting_h", _starting_h];
@@ -677,10 +701,10 @@ CLASS("BuildUI", "")
 			_object attachTo [player, _relativePos];
 			_object setDir _dir;
 			//_object setVectorDirAndUp [_dir, _up];
-		} forEach _selectedObjects;
-		
+		} forEach _movingObjects;
+
 		["SetHQObjectHeight", "onEachFrame", {
-			params ["_selectedObjects"];
+			params ["_movingObjects"];
 			{
 				_x params ["_object", "_pos"];
 				private _relativePos = _object getVariable "build_ui_relativePos";
@@ -691,28 +715,55 @@ CLASS("BuildUI", "")
 				// detach _object;
 				_object attachTo [player, _relativePos vectorAdd [0, 0, _relative_h * vectorMagnitude _relativePos]];
 				// _object setDir _dir;
-			} forEach _selectedObjects;
-		}, [_selectedObjects]] call BIS_fnc_addStackedEventHandler;
+			} forEach _movingObjects;
+		}, [_movingObjects]] call BIS_fnc_addStackedEventHandler;
 
-		player addAction ["Drop Here", {
-			params ["_target", "_caller", "_actionId", "_arguments"];
-			["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
-			_arguments params ["_thisObject", "_selectedObjects"];
 
-			{
-				_x params ["_object", "_oldPos"];
-				detach _object;
-				private _pos = getPos _object;
-				_object setPos [_pos select 0, _pos select 1, 0];
-				_object enableSimulationGlobal true;
-			} forEach _selectedObjects;
 
-			player removeAction (_this select 2);
+		// player addAction ["Drop Here", {
+		// 	params ["_target", "_caller", "_actionId", "_arguments"];
+		// 	["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
+		// 	_arguments params ["_thisObject", "_selectedObjects"];
+
+		// 	{
+		// 		_x params ["_object", "_oldPos"];
+		// 		detach _object;
+		// 		private _pos = getPos _object;
+		// 		_object setPos [_pos select 0, _pos select 1, 0];
+		// 		_object enableSimulationGlobal true;
+		// 	} forEach _selectedObjects;
+
+		// 	player removeAction (_this select 2);
 			
-			T_CALLM0("enterMoveMode");
-		}, [_thisObject, _selectedObjects], 0, false, true, "", ""];
+		// 	T_CALLM0("enterMoveMode");
+		// }, [_thisObject, _selectedObjects], 0, false, true, "", ""];
 
 	} ENDMETHOD;
+
+	METHOD("dropHere") {
+		P_DEFAULT_PARAMS;
+
+		T_PRVAR(movingObjects);
+		// T_SETV("selectedObjects", _movingObjects);
+
+		["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
+		//_arguments params ["_thisObject", "_selectedObjects"];
+
+		{
+			_x params ["_object", "_oldPos"];
+			detach _object;
+			private _pos = getPos _object;
+			_object setPos [_pos select 0, _pos select 1, 0];
+			_object enableSimulationGlobal true;
+		} forEach _movingObjects;
+
+		T_SETV("isMoving", false);
+
+		//player removeAction (_this select 2);		
+		T_CALLM0("enterMoveMode");
+		
+	} ENDMETHOD;
+
 ENDCLASS;
 
 build_UI_addOpenBuildMenuAction = {
