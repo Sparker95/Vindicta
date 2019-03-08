@@ -64,6 +64,7 @@ private _locations = entities "Project_0_LocationSector";
 	// // Wheeled and tracked vehicle capacity
 	_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
 	private _cVehGround = CALL_METHOD(_loc, "getUnitCapacity", _args);
+	_cVehGround = round random 10;
 
 	// Static HMG capacity
 	private _args = [T_PL_HMG_GMG_high, GROUP_TYPE_ALL];
@@ -128,7 +129,6 @@ private _locations = entities "Project_0_LocationSector";
 
 
 	// Add building sentries
-	/*
 	if (_cBuildingSentry > 0) then {
 		private _args = [_side, GROUP_TYPE_BUILDING_SENTRY];
 		private _sentryGroup = NEW("Group", _args);
@@ -140,13 +140,12 @@ private _locations = entities "Project_0_LocationSector";
 		};
 		CALL_METHOD(_garMilMain, "addGroup", [_sentryGroup]);
 	};
-	*/
 
 
 	// Add default vehicles
 	// Some trucks
 	private _i = 0;
-	while {_cVehGround > 0 && _i < 2} do {
+	while {_cVehGround > 0 && _i < 3} do {
 		private _args = [_template, T_VEH, T_VEH_truck_inf, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {

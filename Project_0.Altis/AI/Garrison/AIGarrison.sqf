@@ -161,5 +161,12 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Update health sensor
 		CALLM0(T_GETV("sensorHealth"), "update");
 	} ENDMETHOD;
+	
+	
+	METHOD("handleLocationChanged") {
+		params ["_thisObject", ["_loc", "", [""]]];
+		pr _ws = T_GETV("worldState");
+		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
+	} ENDMETHOD;
 
 ENDCLASS;

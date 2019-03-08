@@ -3,6 +3,7 @@
 #include "OOP_Light\OOP_Light.h"
 #include "Message\Message.hpp"
 #include "CriticalSection\CriticalSection.hpp"
+#include "AI\Commander\AICommander.hpp"
 
 /*
 Dirty init.sqf
@@ -129,8 +130,23 @@ if (isServer) then {
 
 	// Add friendly locations to commanders
 	// And start them
+	private _allLocs = CALLSM0("Location", "getAll");
 	{
-		CALLM0(_x, "updateFriendlyLocationsData");
+		private _AI = _x;
+		private _side = GETV(_x, "side");
+		{
+			private _loc = _x;
+			private _locSide = CALLM0(_loc, "getSide");
+			private _updateLevel = if (_locSide == _side || _locSide == CIVILIAN) then {
+				CLD_UPDATE_LEVEL_UNITS
+			} else {
+				CLD_UPDATE_LEVEL_TYPE_UNKNOWN
+			};
+			CALLM2(_AI, "updateLocationData", _loc, _updateLevel);
+		} forEach _allLocs;
+
+		//CALLM0(_x, "updateFriendlyLocationsData");
+		
 		CALLM1(_x, "setProcessInterval", 10);
 		CALLM0(_x, "start");
 	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];

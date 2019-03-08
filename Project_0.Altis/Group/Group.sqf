@@ -157,6 +157,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Create group handle if it doesn't exist yet
 			if (isNull _newGroupHandle) then {
 				_newGroupHandle = createGroup [_data select GROUP_DATA_ID_SIDE, false]; //side, delete when empty
+				_newGroupHandle allowFleeing 0; // Never flee
 				_data set [GROUP_DATA_ID_GROUP_HANDLE, _newGroupHandle];
 			};
 

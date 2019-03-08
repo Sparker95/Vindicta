@@ -135,10 +135,12 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("setLocation") {
 		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
 		T_SETV("location", _location);
+		
+		if (T_GETV("spawned")) then {
+			pr _AI = T_GETV("AI");
+			CALLM1(_AI, "handleLocationChanged", _location);
+		};
 	} ENDMETHOD;
-
-
-
 
 
 
@@ -598,9 +600,9 @@ CLASS("Garrison", "MessageReceiverEx");
 					pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC]; // todo We assume we aren't moving static vehicles anywhere right now
 					_newVehGroup = NEW("Group", _args);
 					if (_isSpawned) then { // If the garrison is currently spawned, set proper state to the new group
-						CALLM0(_newGroup, "spawn");
+						CALLM0(_newVehGroup, "spawn");
 					};
-					CALLM1(_garSrc, "addGroup", _newGroup);
+					CALLM1(_garSrc, "addGroup", _newVehGroup);
 				};
 				// Move the vehicle into the new group
 				CALLM1(_newVehGroup, "addUnit", _x);
@@ -812,7 +814,18 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("effTotal")
 	} ENDMETHOD;
 	
+	/*
+	Method: spawnAndDetach
+	Spawnes the garrison and detaches it from its current location
 	
+	Returns: nil
+	*/
+	METHOD("spawnAndDetach") {
+		params ["_thisObject"];
+		CALLM0(_thisObject, "spawn");
+		CALLM1(_thisObject, "setLocation", "");
+		nil
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P

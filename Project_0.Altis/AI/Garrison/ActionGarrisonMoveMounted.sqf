@@ -34,7 +34,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Unpack radius
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
 		if (isNil "_radius") then {
-			// Try to figure out completion radius from location
+			// todo Try to figure out completion radius from location
 			//pr _radius = CALLM0(_loc, "getBoundingRadius"); // there is no such function
 			// Just use 100 meters for now
 			T_SETV("radius", 100);
@@ -82,6 +82,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 			CALLM1(_gar, "setLocation", ""); // This garrison is no longer attached to its location
 		};
+		pr _ws = GETV(_AI, "worldState");
+		[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
+		pr _u0 = CALLM0(_gar, "getUnits") select 0; // Just some random unit
+		pr _pos = getPos CALLM0(_u0, "getObjectHandle");
+		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);

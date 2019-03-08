@@ -140,9 +140,9 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	
 	// Location data
-	// Any side except EAST, WEST, INDEPENDENT means AI object will update its own knowledge about locations
+	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_locs", "", ["", []]], ["_side", CIVILIAN]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN]];
 		
 		pr _thisSide = T_GETV("side");
 		
@@ -153,48 +153,61 @@ CLASS("AICommander", "AI")
 			default { _side = _thisSide; T_GETV("locationDataThis")};
 		};
 		
-		// It accepts array of locations or one location
-		// So convert parameter types here
-		if (_locs isEqualType "") then {_locs = [_locs]};
-		
-		{ // foreach _locs
-			pr _loc = _x;
-			
-			pr _CLD = CALL_STATIC_METHOD("AICommander", "createCLDFromLocation", [_loc]);
-		
-			if (_CLD isEqualTo []) then {
-				OOP_ERROR_1("Can't update location data: %1", _loc);
-			} else {		
-				// Check this location already exists
-				pr _locPos = _CLD select CLD_ID_POS;
-				pr _locSide = _CLD select CLD_ID_SIDE;
-				pr _entry = _ld findIf {(_x select CLD_ID_POS) isEqualTo _locPos};
-				if (_entry == -1) then {
-					// Add new entry
-					_ld pushBack _CLD;
-					
-					systemChat "Discovered new location";
-					
-					if (_side == _thisSide && _side != _locSide) then {
-						CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
-					};
-					
-				} else {
-					pr _prevUpdateTime = (_ld select _entry select CLD_ID_TIME);
-					_ld set [_entry, _CLD];
-					
-					systemChat "Location data was updated";
-					
-					// Show notification if we haven't updated this data for quite some time
-					if (_side == _thisSide && _side != _locSide) then {
-						if ((time - _prevUpdateTime) > 600) then {
-							CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
-						};
-					};
-				};			
-			};
+		pr _args = [_loc, _updateType];
+		pr _ldNew = CALL_STATIC_METHOD("AICommander", "createCLDFromLocation", _args);
+	
+		if (_ldNew isEqualTo []) then {
+			OOP_ERROR_1("Can't update location data: %1", _loc);
+		} else {
+			// Check if this location already exists
+			pr _locPos = _ldNew select CLD_ID_POS;
+			pr _locSide = _ldNew select CLD_ID_SIDE;
+			pr _entry = _ld findIf {(_x select CLD_ID_POS) isEqualTo _locPos};
+			if (_entry == -1) then {
+				// Add new entry
+				_ld pushBack _ldNew;
 				
-		} forEach _locs;
+				systemChat "Discovered new location";
+				
+				if (_side == _thisSide && _side != _locSide) then {
+					CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
+				};
+				
+			} else {
+				pr _ldPrev = _ld select _entry;
+				_ldPrev params ["_type", "_side", "_unitAmount", "_pos", "_time"];
+				_ldNew params ["_typeNew", "_sideNew", "_unitAmountNew", "_posNew", "_timeNew"];
+				
+				// Update only specific fields
+				
+				// Update type
+				if (_typeNew != LOCATION_TYPE_UNKNOWN) then {
+					_ldPrev set [CLD_ID_TYPE, _typeNew];
+				};
+				
+				// Update side
+				if (_sideNew != CLD_SIDE_UNKNOWN) then {
+					_ldPrev set [CLD_ID_SIDE, _sideNew];
+				};
+				
+				// Update units
+				if (count _unitAmountNew > 0) then {
+					_ldPrev set [CLD_ID_UNIT_AMOUNT, _unitAmountNew];
+				};
+				
+				// Update time
+				_ldPrev set [CLD_ID_TIME, time];
+				
+				systemChat "Location data was updated";
+				
+				// Show notification if we haven't updated this data for quite some time
+				if (_side == _thisSide && _side != _locSide) then {
+					if ((time - _time) > 600) then {
+						CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
+					};
+				};
+			};
+		};
 		
 		// Broadcast new data to clients, add it to JIP queue
 		pr _JIPID = (_thisObject+"_JIP_"+(str _side)); // We use this object as JIP id because it's a string :D
@@ -252,39 +265,61 @@ CLASS("AICommander", "AI")
 		OOP_INFO_1("Adding locations to database: %1", _friendlyLocs);
 		
 		// Update data on these locations
-		if (count _friendlyLocs > 0) then {
-			CALLM1(_thisObject, "updateLocationData", _friendlyLocs);
-		};
+		{
+			CALLM2(_thisObject, "updateLocationData", _x, CLD_UPDATE_LEVEL_UNITS);
+		} forEach _friendlyLocs;
 	} ENDMETHOD;
 	
 	// Creates a LocationData array from Location
 	STATIC_METHOD("createCLDFromLocation") {
-		params ["_thisClass", ["_loc", "", [""]]];
+		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 		
 		pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
 		
-		if (_gar == "") exitWith {[]};
-		
 		pr _value = CLD_NEW();
-		_value set [CLD_ID_TYPE, 1]; // todo add types for locations at some point?
-		_value set [CLD_ID_SIDE, CALLM0(_gar, "getSide")];
+		
+		// Set position
 		pr _locPos = +(CALLM0(_loc, "getPos"));
 		_locPos resize 2;
 		_value set [CLD_ID_POS, _locPos];
+		
+		// Set time
 		_value set [CLD_ID_TIME, time];
-		// Now count all the units
-		{
-			_x params ["_catID", "_catSize"];
-			pr _query = [[_catID, 0]];
-			for "_subcatID" from 0 to (_catSize - 1) do {
-				(_query select 0) set [1, _subcatID];
-				pr _amount = CALLM1(_gar, "countUnits", _query);
-				(_value select CLD_ID_UNIT_AMOUNT select _catID) set [_subcatID, _amount];
+		
+		// Set type
+		if (_updateLevel >= CLD_UPDATE_LEVEL_TYPE) then {
+			_value set [CLD_ID_TYPE, CALLM0(_loc, "getType")]; // todo add types for locations at some point?
+		} else {
+			_value set [CLD_ID_TYPE, LOCATION_TYPE_UNKNOWN]; // todo add types for locations at some point?
+		};
+		
+		// Set side
+		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
+			if (_gar != "") then {
+				_value set [CLD_ID_SIDE, CALLM0(_gar, "getSide")];
+			} else {
+				_value set [CLD_ID_SIDE, CLD_SIDE_UNKNOWN];
 			};
-			
-		} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
+		} else {
+			_value set [CLD_ID_SIDE, CLD_SIDE_UNKNOWN];
+		};
+		
+		// Set unit count
+		if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
+			pr _CLD_full = CLD_UNIT_AMOUNT_FULL;
+			{
+				_x params ["_catID", "_catSize"];
+				pr _query = [[_catID, 0]];
+				for "_subcatID" from 0 to (_catSize - 1) do {
+					(_query select 0) set [1, _subcatID];
+					pr _amount = CALLM1(_gar, "countUnits", _query);
+					(_CLD_full select _catID) set [_subcatID, _amount];
+				};
+			} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
+			_value set [CLD_ID_UNIT_AMOUNT, _CLD_full];
+		};
 		
 		_value
 	} ENDMETHOD;
@@ -487,6 +522,21 @@ CLASS("AICommander", "AI")
 		
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
+		OOP_INFO_0("Stopping garrisons assigned to this target cluster");
+		pr _targetClusterActions = T_GETV("targetClusterActions");
+		pr _i = 0;
+		while { _i < (count _targetClusterActions)} do{
+			pr _action = _targetClusterActions select _i;
+			if (CALLM0(_action, "getTargetClusterID") == _ID) then {
+				// Terminate and delete the old action
+				OOP_INFO_1("Terminating and deleting action: %1", _action);
+				CALLM0(_action, "terminate");
+				DELETE(_action);
+				_targetClusterActions deleteAt _i;
+			} else {
+				_i = _i + 1;
+			};
+		};
 		
 	} ENDMETHOD;
 	
