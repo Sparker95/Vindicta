@@ -44,8 +44,12 @@ CLASS("BuildUI", "")
 	VARIABLE("animCompleteTime");			// Time animation will complete (could be in the past, meaning the animation is complete)
 	VARIABLE("carouselObjects");			// Objects in the carousel (vehicles)
 
+	VARIABLE("rotation");					// Rotational offset in build and carousel
+	VARIABLE("targetRotation");				// Target rotational offset for smooth animation
+	VARIABLE("lastFrameTime");				// Time of last frame
+
 	METHOD("new") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_1("'new' method called. ====================================");
 
 		if(!(isNil("g_BuildUI"))) exitWith {
@@ -66,7 +70,7 @@ CLASS("BuildUI", "")
 		T_SETV("ItemCatOpen", false);			// true if item list submenu is open
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
-		
+
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
 		T_SETV("movingObjects", []);
@@ -77,11 +81,15 @@ CLASS("BuildUI", "")
 		T_SETV("animCompleteTime", 0);
 		T_SETV("carouselObjects", []);
 
+		T_SETV("rotation", 0);
+		T_SETV("targetRotation", 0);
+		T_SETV("lastFrameTime", time);
+
 		T_CALLM("makeCatTexts", [0]); 			// initialize UI category strings
 	} ENDMETHOD;
 
 	METHOD("delete") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		OOP_INFO_1("Player %1 build UI destroyed.", name player);
 
@@ -89,13 +97,13 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("addOpenBuildMenuAction") {
-		params ["_thisObject", "_object"];
+		params [P_THISOBJECT, "_object"];
 
 		OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
 
 		pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayEGSpectator\Fps.paa' />  %1", "Open Build Menu"], {  
 			params ["_target", "_caller", "_actionId", "_arguments"];
-			_arguments params ["_thisObject"];
+			_arguments params [P_THISOBJECT];
 			T_CALLM0("openUI");
 		}, [_thisObject]];
 
@@ -103,7 +111,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("removeAllActions") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("Removing all active Open Build Menu actions.");
 
@@ -113,7 +121,35 @@ CLASS("BuildUI", "")
 		} forEach T_GETV("activeBuildMenus");
 	} ENDMETHOD;
 
-	build_ui_UIUpdateOnEachFrame = {
+	METHOD("openUI") {
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("'openUI' method called.");
+
+		// update UI text and categories, this is a separate function due to https://feedback.bistudio.com/T123355
+		["BuildUIUpdate", "onEachFrame", { 
+			CALLM0(g_BuildUI, "UIFrameUpdate");
+		}] call BIS_fnc_addStackedEventHandler;
+
+		T_CALLM0("enterMoveMode");
+		g_rscLayerBuildUI cutRsc ["BuildUI", "PLAIN", -1, false]; // blend in UI
+
+		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
+			params ["_control", "_dikCode", "_shiftState", "_ctrlState", "_altState"];
+			if(isNil "g_BuildUI") exitWith {
+				(findDisplay 46) displayRemoveAllEventHandlers "KeyDown";
+			};
+			CALLM4(g_BuildUI, "onKeyHandler", _dikCode, _shiftState, _ctrlState, _altState);
+		}];
+
+		T_SETV("EHKeyDown", _EHKeyDown);
+
+		// TODO: Add player on death event to hide UI and drop held items etc.
+		// Also for when they leave camp area.
+	} ENDMETHOD;
+
+	METHOD("UIFrameUpdate") {
+		params [P_THISOBJECT];
 		pr _UICatTexts = GETV(g_BuildUI, "UICatTexts");
 		pr _UIItemTexts = GETV(g_BuildUI, "UIItemTexts");
 		pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
@@ -161,40 +197,37 @@ CLASS("BuildUI", "")
 				(_display displayCtrl _x) ctrlCommit 0;
 			} forEach [IDC_TEXTL2, IDC_TEXTL1, IDC_TEXTC, IDC_TEXTR1, IDC_TEXTR2];
 
-			CALLM0(g_BuildUI, "updateCarouselOffsets");
+			T_CALLM0("updateCarouselOffsets");
 		};
-	};
 
-	METHOD("openUI") {
-		params ["_thisObject"];
-		OOP_INFO_0("'openUI' method called.");
+		T_PRVAR(lastFrameTime);
+		T_PRVAR(rotation);
+		T_PRVAR(targetRotation);
 
-		// update UI text and categories, this is a separate function due to https://feedback.bistudio.com/T123355
-		["BuildUIUpdate", "onEachFrame", { call build_ui_UIUpdateOnEachFrame }] call BIS_fnc_addStackedEventHandler;
+		pr _rotationVec = [1, _rotation, 0] call CBA_fnc_polar2vect;
+		pr _targetRotationVec = [1, _targetRotation, 0] call CBA_fnc_polar2vect;
+		pr _rate = sqrt (_rotationVec distance _targetRotationVec) * 0.25;
+		pr _finalVec = [];
 
-		T_CALLM0("enterMoveMode");
-		g_rscLayerBuildUI cutRsc ["BuildUI", "PLAIN", -1, false]; // blend in UI
+		for "_i" from 0 to 2 do 
+		{
+			_finalVec pushBack ([_rotationVec select _i, _targetRotationVec select _i, _rate, time - _lastFrameTime] call BIS_fnc_lerp);
+		};
+		T_SETV("rotation", (_finalVec call CBA_fnc_vect2Polar) select 1);
 
-		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
-			if(isNil "g_BuildUI") exitWith {
-				(findDisplay 46) displayRemoveAllEventHandlers "KeyDown";
-			};
-			CALLM1(g_BuildUI, "onKeyHandler", _this select 1);
-		}];
-
-		T_SETV("EHKeyDown", _EHKeyDown);
-
-		// TODO: Add player on death event to hide UI and drop held items etc.
-		// Also for when they leave camp area.
+		// pr _newRotation = _rotation + _rate;
 	} ENDMETHOD;
 
 	METHOD("onKeyHandler") {
-		params [P_THISOBJECT, "_dikCode"];
+		params [P_THISOBJECT, "_dikCode", "_shiftState", "_ctrlState", "_altState"];
 
 		switch (keyName _dikCode) do {
 			default { false; };
 
 			case """Tab""": { 
+				// TODO: Currently we don't handle key up so holding down Tab will directly go from 
+				// select to place to actually dropping the object if you hold it down too long.
+				// Handle KeyUp as well to emulate KeyPress like behaviour for Tab and Backspace.
 				playSound ["clicksoft", false];
 				T_CALLM0("handleActionKey");
 				true; // disables default control 
@@ -202,12 +235,16 @@ CLASS("BuildUI", "")
 
 			case """Q""": { 
 				playSound ["clicksoft", false];
+				pr _rot = if(_shiftState) then { -90 } else { -15 };
+				T_CALLM1("rotate", _rot);
 				// TODO: rotate object counter-clockwise
 				true; // disables default control 
 			};
 
 			case """E""": { 
 				playSound ["clicksoft", false];
+				pr _rot = if(_shiftState) then { 90 } else { 15 };
+				T_CALLM1("rotate", _rot);
 				// TODO: rotate object clockwise
 				true; // disables default control 
 			};
@@ -250,7 +287,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("closeUI") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("'closeUI' method called. ====================================");
 
@@ -271,7 +308,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("handleActionKey") {
-		P_DEFAULT_PARAMS;
+		params [P_THISOBJECT];
 		OOP_INFO_0("'handleActionKey' method called");
 
 		T_PRVAR(ItemCatOpen);
@@ -285,17 +322,29 @@ CLASS("BuildUI", "")
 			if (T_GETV("isMovingObjects")) then {
 				T_CALLM0("dropHere");
 			} else {
+				T_SETV("rotation", 0);
+				T_SETV("targetRotation", 0);
 				T_CALLM0("moveSelectedObjects");
 			};
 		};
 	} ENDMETHOD;
 
+	METHOD("rotate") {
+		params [P_THISOBJECT, "_amount"];
+		OOP_INFO_1("'rotate' method called _amount = %1", _amount);
+		T_PRVAR(targetRotation);
+		T_SETV("targetRotation", _targetRotation + _amount);
+	} ENDMETHOD;
+
 	// opens item list UI element
 	METHOD("openItems") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("'openItems' method called");
 		T_SETV("ItemCatOpen", true);
 		T_SETV("currentItemID", 0);
+
+		T_SETV("rotation", 0);
+		T_SETV("targetRotation", 0);
 
 		T_CALLM("makeItemTexts", [0]); // create item list display texts
 
@@ -305,7 +354,7 @@ CLASS("BuildUI", "")
 
 	// closes item list UI element
 	METHOD("closeItems") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
 		T_SETV("currentItemID", 0);
@@ -358,7 +407,7 @@ CLASS("BuildUI", "")
 	// generates an array of display strings for each category on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
 	METHOD("makeCatTexts") {
-		params [["_thisObject", "", [""]], "_currentCatID"];
+		params [P_THISOBJECT, "_currentCatID"];
 		OOP_INFO_0("'makeCatTexts' method called");
 
 		pr _UIarray = [_currentCatID-2, _currentCatID-1, _currentCatID, _currentCatID+1, _currentCatID+2]; 
@@ -379,7 +428,7 @@ CLASS("BuildUI", "")
 	// generates an array of display strings for the item list on the UI
 	// format: [Left text 2, Left text 1, Center text, Right text 1, Right text 2]
 	METHOD("makeItemTexts") {
-		params [["_thisObject", "", [""]], "_ItemID"];
+		params [P_THISOBJECT, "_ItemID"];
 		OOP_INFO_0("'makeItemTexts' method called");
 
 		pr _currentCatID = T_GETV("currentCatID");
@@ -409,7 +458,7 @@ CLASS("BuildUI", "")
 
 	*/
 	METHOD("currentClassname") {
-		P_DEFAULT_PARAMS;
+		params [P_THISOBJECT];
 
 		T_PRVAR(ItemCatOpen);
 		pr _return = "";
@@ -426,7 +475,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("clearCarousel") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("'clearCarousel' method called");
 
 		T_PRVAR(carouselObjects);
@@ -439,7 +488,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("getCarouselOffsets") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		T_PRVAR(currentCatID);
 		T_PRVAR(currentItemID);
@@ -494,21 +543,21 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("createCarousel") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
+
 		OOP_INFO_0("'createCarousel' method called");
 
 		T_CALLM0("clearCarousel");
 
 		T_PRVAR(carouselObjects);
 		T_PRVAR(currentCatID);
-		// T_PRVAR(currentItemID);
 		T_PRVAR(ItemCatOpen);
+		T_PRVAR(rotation);
 
 		if (!_ItemCatOpen) exitWith { [] };
 
 		// How many items in the currently selected category
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		// _return = (_itemCat select _currentItemID) select 0;
 		pr _itemIndexSize = count _itemCat - 1;
 		pr _offsets = T_CALLM0("getCarouselOffsets");
 		for "_i" from 0 to _itemIndexSize do {
@@ -517,20 +566,20 @@ CLASS("BuildUI", "")
 			pr _offs = _offsets select _i;
 			pr _newObj = createVehicle [_type, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
 			_newObj attachTo [player, _offs]; 
+			_newObj setDir _rotation;
 			_carouselObjects pushBack _newObj;
 		};
 	} ENDMETHOD;
 
 	METHOD("updateCarouselOffsets") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 
 		T_PRVAR(carouselObjects);
 		T_PRVAR(currentCatID);
 		T_PRVAR(ItemCatOpen);
+		T_PRVAR(rotation);
 
 		if (!_ItemCatOpen) exitWith { [] };
-
-		// T_PRVAR(currentItemID);
 
 		// How many items in the currently selected category
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
@@ -540,12 +589,7 @@ CLASS("BuildUI", "")
 			pr _offs = _offsets select _i;
 			pr _veh = _carouselObjects select _i;
 			_veh attachTo [player, _offs];
-			// pr _item = (_itemCat select _i) select 0;
-			// OOP_INFO_1("Creating carousel item %1", _item);
-			// pr _offs = [(_i - _itemIndexSize / 2) * 3, 10, 2];
-			// pr _veh = createVehicle [_item, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
-			// _veh attachTo [player]; 
-			// _carouselObjects pushBack _veh;
+			_veh setDir _rotation;
 		};
 
 		_offsets
@@ -563,15 +607,16 @@ CLASS("BuildUI", "")
 		pr _pos = player modelToWorld _offs;
 		pr _newObj = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
-
+		// Why is this necessary? I don't know but it is!
+		_newObj setDir -90;
 		pr _activeObject = [_newObj, _pos, vectorDir _newObj, vectorUp _newObj];
 		T_SETV("activeObject", _activeObject);
 		T_CALLM0("moveSelectedObjects");
 	} ENDMETHOD;
 
-	build_ui_highlightObjectOnEachFrame = {
-		P_DEFAULT_PARAMS;
-
+	METHOD("highlightObjectOnEachFrame") {
+		params [P_THISOBJECT];
+		
 		if(T_GETV("isMovingObjects")) exitWith {};
 
 		T_PRVAR(activeObject);
@@ -599,19 +644,25 @@ CLASS("BuildUI", "")
 			};
 
 		};
-	};
+	} ENDMETHOD;
 
 	METHOD("enterMoveMode") {
-		P_DEFAULT_PARAMS;
+		params [P_THISOBJECT];
 		OOP_INFO_0("'enterMoveMode' method called");
 
+		T_SETV("rotation", 0);
+		T_SETV("targetRotation", 0);
+
 		// Updated highlighted object, this is a separate function due to https://feedback.bistudio.com/T123355
-		["BuildUIHighlightObject", "onEachFrame", { call build_ui_highlightObjectOnEachFrame }, [_thisObject]] call BIS_fnc_addStackedEventHandler;
+		["BuildUIHighlightObject", "onEachFrame", { 
+			CALLM0(g_BuildUI, "highlightObjectOnEachFrame");
+			call build_ui_highlightObjectOnEachFrame;
+		}, []] call BIS_fnc_addStackedEventHandler;
 
 	} ENDMETHOD;
 
 	METHOD("exitMoveMode") {
-		params ["_thisObject"];
+		params [P_THISOBJECT];
 		OOP_INFO_0("'exitMoveMode' method called");
 
 		T_PRVAR(activeObject);
@@ -661,10 +712,11 @@ CLASS("BuildUI", "")
 		_obj setVectorDirAndUp [_dir, _up];
 		_obj enableSimulation true;
 	} ENDMETHOD;
-
-	build_ui_MoveObjectsOnEachFrame = {
+	
+	METHOD("moveObjectsOnEachFrame") {
 		params [P_THISOBJECT];
 		T_PRVAR(movingObjects);
+		T_PRVAR(rotation);
 		{
 			_x params ["_object", "_pos", "_dir", "_up"];
 
@@ -683,23 +735,32 @@ CLASS("BuildUI", "")
 				
 				_dist = (_size max (_maxdist min (player distance _firstIns))) - _size * 0.5;
 			};
+
 			private _height = _object getVariable "build_ui_height";
+			private _relativeRot = _object getVariable "build_ui_relativeDir";
 			private _worldPos = player modelToWorld [_relativePos select 0, _dist, _relativePos select 2];
+
 			// Put on ground
 			_worldPos set [2, _height];
 			_object attachTo [player, player worldToModel _worldPos];
+			_object setDir (_relativeRot + _rotation);
 			_object setVariable ["build_ui_dist", _dist];
 		} forEach _movingObjects;
-	};
+		
+	} ENDMETHOD;
 
 	METHOD("moveSelectedObjects") {
-		P_DEFAULT_PARAMS;
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("'moveSelectedObjects' method called");
 
 		// Grab the selected objects
 		T_PRVAR(activeObject);
 		T_PRVAR(selectedObjects);
+		T_PRVAR(rotation);
+
+		// Exit move mode so it doesn't interfere (it will clear activeObject, but we already took a copy above)
+		T_CALLM0("exitMoveMode");
 
 		pr _movingObjects = +_selectedObjects;
 		if (count _activeObject > 0) then {
@@ -709,9 +770,6 @@ CLASS("BuildUI", "")
 
 		T_SETV("isMovingObjects", true);
 		T_SETV("movingObjects", _movingObjects);
-
-		// Exit move mode so it doesn't interfere
-		T_CALLM0("exitMoveMode");
 
 		{
 			_x params ["_object", "_pos", "_dir", "_up"];
@@ -728,21 +786,24 @@ CLASS("BuildUI", "")
 			_object setVariable ["build_ui_beingMoved", true];
 			_object setVariable ["build_ui_relativePos", _relativePos];
 			_object setVariable ["build_ui_starting_h", _starting_h];
+			_object setVariable ["build_ui_relativeDir", _relativeDir];
 			_object setVariable ["build_ui_height", _height];
 			_object setVariable ["build_ui_dist", _relativePos select 1];
 			_object setVariable ["build_ui_size", sizeOf (typeOf _object)];
 
 			_object attachTo [player, _relativePos];
-			_object setDir _relativeDir;
+			_object setDir (_relativeDir + _rotation);
 		} forEach _movingObjects;
 
 		// Update moving objects on each frame, this is a separate function due to https://feedback.bistudio.com/T123355
-		["BuildUIMoveObjectsOnEachFrame", "onEachFrame", { call build_ui_MoveObjectsOnEachFrame }, [_thisObject]] call BIS_fnc_addStackedEventHandler;
+		["BuildUIMoveObjectsOnEachFrame", "onEachFrame", {
+			CALLM0(g_BuildUI, "moveObjectsOnEachFrame");
+		}, []] call BIS_fnc_addStackedEventHandler;
 		true
 	} ENDMETHOD;
 
 	METHOD("dropHere") {
-		P_DEFAULT_PARAMS;
+		params [P_THISOBJECT];
 		T_PRVAR(movingObjects);
 
 		["BuildUIMoveObjectsOnEachFrame", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
@@ -764,7 +825,7 @@ CLASS("BuildUI", "")
 	} ENDMETHOD;
 
 	METHOD("cancelMovingObjects") {
-		P_DEFAULT_PARAMS;
+		params [P_THISOBJECT];
 
 		T_PRVAR(movingObjects);
 
@@ -787,10 +848,12 @@ ENDCLASS;
 
 build_UI_addOpenBuildMenuAction = {
 	ASSERT_GLOBAL_OBJECT(g_BuildUI);
-	CALLM1(g_BuildUI, "addOpenBuildMenuAction", _this);
+	params ["_obj"];
+	CALLM1(g_BuildUI, "addOpenBuildMenuAction", _obj);
 };
 
 build_UI_setObjectMovable = {
+	ASSERT_GLOBAL_OBJECT(g_BuildUI);
 	params ["_obj", "_val"];
 	OOP_INFO_2("'build_UI_setObjectMovable' method called with %1, %2", _obj, _val);
 	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);

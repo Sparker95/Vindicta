@@ -24,6 +24,24 @@ CLASS("Camp", "Location")
 		NEW_PUBLIC("Camp", [_pos]);
 	} ENDMETHOD;
 
+	STATIC_METHOD("clientInitArsenal") {
+		params [P_THISCLASS, P_OBJECT("_arsenalBox")];
+		[_arsenalBox] call jn_fnc_arsenal_init;
+		[_arsenalBox, true] call build_UI_setObjectMovable;
+	} ENDMETHOD;
+
+	STATIC_METHOD("clientInitCampFire") {
+		params [P_THISCLASS, P_OBJECT("_campFire")];
+		[_campFire] call build_UI_addOpenBuildMenuAction;
+		[_campFire, true] call build_UI_setObjectMovable;
+	} ENDMETHOD;
+
+	STATIC_METHOD("clientInitGarageBox") {
+		params [P_THISCLASS, P_OBJECT("_garageBox")];
+		[_garageBox] call JN_fnc_garage_init;
+		[_garageBox, true] call build_UI_setObjectMovable;
+	} ENDMETHOD;
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]] ];
 
@@ -33,18 +51,21 @@ CLASS("Camp", "Location")
 
 		// Create camp vehicles
 		private _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
-		_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
-		[_arsenalBox, true] remoteExec ["build_UI_setObjectMovable", 0, _arsenalBox];
+		REMOTE_EXEC_STATIC_METHOD("Camp", "clientInitArsenal", [_arsenalBox], 0, _arsenalBox);
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
+		//_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
+		//[_arsenalBox, true] remoteExec ["build_UI_setObjectMovable", 0, _arsenalBox];
 
 		pr _campFire = "Land_Campfire_F" createVehicle _pos;
-		_campFire remoteExec ["build_UI_addOpenBuildMenuAction", 0, _campFire];
-		[_campFire, true] remoteExec ["build_UI_setObjectMovable", 0, _campFire];
+		REMOTE_EXEC_STATIC_METHOD("Camp", "clientInitCampFire", [_campFire], 0, _campFire);
+		// _campFire remoteExec ["build_UI_addOpenBuildMenuAction", 0, _campFire];
+		// [_campFire, true] remoteExec ["build_UI_setObjectMovable", 0, _campFire];
 		SET_VAR(_thisObject, "campFire", _campFire);
 
 		pr _garageBox = "Land_CargoBox_V1_F" createVehicle _pos;
-		_garageBox remoteExec ["JN_fnc_garage_init", 0, _garageBox];
-		[_garageBox, true] remoteExec ["build_UI_setObjectMovable", 0, _garageBox];
+		REMOTE_EXEC_STATIC_METHOD("Camp", "clientInitGarageBox", [_garageBox], 0, _garageBox);
+		//_garageBox remoteExec ["JN_fnc_garage_init", 0, _garageBox];
+		//[_garageBox, true] remoteExec ["build_UI_setObjectMovable", 0, _garageBox];
 		SET_VAR(_thisObject, "garageBox", _garageBox);
 
 		// Create Respawn Marker
