@@ -654,16 +654,16 @@ CLASS("BuildUI", "")
 
 				// Vert positions where vert is max dot x + min dot ([1, 1, 1]-x)
 				private _verts = [
-					[0, 0, 0], // nlb
-					[1, 0, 0], // nrb
-					[1, 1, 0], // nrt
-					[0, 1, 0], // nlt
-					[0, 0, 1], // flb
-					[1, 0, 1], // frb
-					[1, 1, 1], // frt
-					[0, 1, 1]  // flt
+					[0, 0, 0], // lnb
+					[1, 0, 0], // rnb
+					[1, 0, 1], // rnt
+					[0, 0, 1], // lnt
+					[0, 1, 0], // lfb
+					[1, 1, 0], // rfb
+					[1, 1, 1], // rft
+					[0, 1, 1]  // lft
 				] apply { 
-					_obj modelToWorld (([_max, _x] call multiply_Vec) vectorAdd ([_min, [1, 1, 1] vectorDiff _x] call multiply_Vec))
+					(([_max, _x] call multiply_Vec) vectorAdd ([_min, [1, 1, 1] vectorDiff _x] call multiply_Vec))
 				};
 
 				// Pairs of verts to form edges of bounding box
@@ -681,13 +681,36 @@ CLASS("BuildUI", "")
 					[2, 6],
 					[3, 7]
 				];
+				// Pairs of verts to form edges of bounding box
+				private _baseEdges = [
+					[0, 1],
+					[4, 5],
+					[0, 4],
+					[1, 5]
+				];
 
-				private _col = [1, 0.5, 0.2, 1];
+				private _spacing = 0.05;
+				private _zhgt = (_min select 2) - (_max select 2);
+				private _num = ceil ((abs _zhgt) / _spacing);
+
+				// Rate of t set to 5 unit per second
+				private _t = 2 * time / _spacing;
+				for "_z" from 0 to _num do
 				{
-					_x params ["_v0", "_v1"];
-					drawLine3D [_verts select _v0, _verts select _v1, _col];
-				} forEach _edges;
-				//_obj setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
+					private _zoffs = [0, 0, _z * _spacing];
+
+					// Work out a rotating offset
+					private _coffs = (((_t + _z) mod _num) - (_num * 0.8)) / _num;
+
+					// Apply limit
+					_coffs = 0 max (1 min _coffs); //if (_coffs > 0.7) then { 1 } else { 0 };
+
+					private _color = [1, 0, 1, _coffs];
+					{
+						_x params ["_v0", "_v1"];
+						drawLine3D [_obj modelToWorld ((_verts select _v0) vectorAdd _zoffs), _obj modelToWorld ((_verts select _v1) vectorAdd _zoffs), _color];
+					} forEach _baseEdges;
+				}
 			};
 
 		};
