@@ -57,7 +57,7 @@ CLASS("SensorGarrisonHealth", "Sensor")
 			pr _isStatic = [_catID, _subcatID] in T_static;
 			pr _anyWheelDamaged = if (!_isStatic) then {[_oh] call AI_misc_fnc_isAnyWheelDamaged} else {false};
 			if (getDammage _oh > 0.61) then {_allVehRepaired = false;};
-			if (((!canMove _oh) || _anyWheelDamaged) && !_isStatic) then {_allVehCanMove = false;};
+			if (((!canMove _oh) || _anyWheelDamaged || (fuel _oh < 0.01)) && !_isStatic) then {_allVehCanMove = false;};
 		} forEach _vehicles;
 		[_worldState, WSP_GAR_ALL_VEHICLES_REPAIRED, _allVehRepaired] call ws_setPropertyValue;
 		[_worldState, WSP_GAR_ALL_VEHICLES_CAN_MOVE, _allVehCanMove] call ws_setPropertyValue;

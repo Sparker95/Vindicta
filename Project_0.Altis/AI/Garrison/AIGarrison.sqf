@@ -6,6 +6,11 @@ Class: AI.AIGarrison
 
 #define pr private
 
+#define DEBUG_GOAL_MARKERS
+
+#define MRK_GOAL	"_goal"
+#define MRK_ARROW	"_arrow"
+
 CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison
@@ -55,7 +60,47 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Set process interval
 		CALLM1(_thisObject, "setProcessInterval", 1); //6);
+		
+		#ifdef DEBUG_GOAL_MARKERS
+		// Main marker
+		pr _name = _thisObject + MRK_GOAL;
+		pr _mrk = createmarker [_name, CALLM0(_agent, "getPos")];
+		_mrk setMarkerType "n_unknown";
+		_mrk setMarkerColor ([CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor);
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText "new...";
+		// Arrow marker (todo)
+		#endif
+		
 	} ENDMETHOD;
+	
+	METHOD("delete") {
+		params ["_thisObject"];
+		deleteMarker (_thisObject + MRK_GOAL);
+	} ENDMETHOD;
+	
+	
+	#ifdef DEBUG_GOAL_MARKERS
+	METHOD("process") {
+		params ["_thisObject"];
+		
+		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		
+		// Update the markers
+		pr _gar = T_GETV("agent");
+		pr _mrk = _thisObject + MRK_GOAL;
+		
+		// Set text
+		pr _text = format ["%1, %2, %3, %4", _gar, T_GETV("currentGoal"), T_GETV("currentGoalParameters"), T_GETV("currentAction")];
+		_mrk setMarkerText _text;
+		
+		// Set pos
+		pr _pos = CALLM0(_gar, "getPos");
+		_mrk setMarkerPos _pos;
+		
+	} ENDMETHOD;
+	#endif
 	
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P

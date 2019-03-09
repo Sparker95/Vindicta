@@ -52,7 +52,8 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		pr _success = false;
 		while {!_success} do {
 			// Try to allocate the selected units
-			pr _eff = _tc select TARGET_CLUSTER_ID_EFFICIENCY;
+			pr _eff = +(_tc select TARGET_CLUSTER_ID_EFFICIENCY);
+			_eff set [0, 7];
 			OOP_INFO_2("RESPOND TO TARGET: Trying to allocate units, pos: %1, eff: %2", _center, _eff);
 			pr _alloc = CALLM2(_AI, "allocateUnitsGroundQRF", _center, _eff);
 			// If we have failed to allocate units, break the loop
@@ -79,7 +80,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				
 				// Give the goal to the garrison
 				pr _cSize = _cluster call cluster_fnc_getSize;
-				pr _radius = (selectMax _cSize) min 200;
+				pr _radius = (selectMax _cSize) min 400;
 				pr _parameters = [[TAG_G_POS, _center], [TAG_RADIUS, _radius], [TAG_DURATION, 60*20]]; 
 				pr _garAI = CALLM0(_newGar, "getAI");
 				pr _args = ["GoalGarrisonClearArea", 0, _parameters, _AI];

@@ -84,8 +84,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
-		pr _u0 = CALLM0(_gar, "getUnits") select 0; // Just some random unit
-		pr _pos = getPos CALLM0(_u0, "getObjectHandle");
+		pr _pos = CALLM0(_gar, "getPos");
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		
 		// Set state

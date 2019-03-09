@@ -17,10 +17,10 @@
 #define TARGET_CLUSTER_NEW() [nil, nil, nil, nil, nil]
 
 // Minimum distance for enemy clusters before they are merged into one cluster
-#define TARGETS_CLUSTER_DISTANCE_MIN	100
+#define TARGETS_CLUSTER_DISTANCE_MIN	500
 
 // Maximum distance for QRF that doesn't need vehicles to transport troops
-#define QRF_NO_TRANSPORT_DISTANCE_MAX	800
+#define QRF_NO_TRANSPORT_DISTANCE_MAX	50
 
 
 // Structure of a target record for commander

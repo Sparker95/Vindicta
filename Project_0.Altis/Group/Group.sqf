@@ -44,7 +44,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		
 		PROFILER_COUNTER_INC(GROUP_CLASS_NAME);
 		
-		OOP_INFO_2("side: %1, group type: %2", _side, _groupType);
+		OOP_INFO_2("NEW   side: %1, group type: %2", _side, _groupType);
 
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
@@ -66,7 +66,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		
 		PROFILER_COUNTER_DEC(GROUP_CLASS_NAME);
 		
-		OOP_INFO_0("");
+		OOP_INFO_0("DELETE");
 
 		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
@@ -116,7 +116,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("addUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("ADD UNIT: %1", _unit);
 
 		private _data = GET_VAR(_thisObject, "data");
 
@@ -188,7 +188,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("addGroup") {
 		params [["_thisObject", "", [""]], ["_group", "", [""]], ["_delete", false]];
 
-		OOP_INFO_1("%1", _group);
+		OOP_INFO_1("ADD GROUP: %1", _group);
 
 		// Get units of the other group
 		pr _units = CALLM0(_group, "getUnits");
@@ -222,7 +222,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("removeUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 
 		pr _data = GETV(_thisObject, "data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;

@@ -40,12 +40,16 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		if (count _knownTargets > 0) then {
 			pr _i = 0;
 			pr _t = time;
-			_targetsToForget = _knownTargets select {
-				((_t - (_x select TARGET_ID_TIME)) > TARGET_MAX_AGE) || false
-				//(!alive (_x select TARGET_ID_OBJECT_HANDLE))
+			while {_i < count _knownTargets} do {
+				pr _target = _knownTargets select _i;
+				if ( ((_t - (_target select TARGET_ID_TIME)) > TARGET_MAX_AGE) || 
+						(!alive (_target select TARGET_ID_OBJECT_HANDLE)) ) then {
+					_knownTargets deleteAt _i;
+					_targetsToForget pushBack _target;
+				} else {
+					_i = _i + 1;
+				};
 			};
-			//_knownTargets = _knownTargets - _targetsToForget;
-			//SETV(_AI, "targets", _knownTargets);
 		};
 		
 		// Force groups to forget about old targets

@@ -51,6 +51,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 
+		OOP_INFO_0("NEW GARRISON");
+
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
@@ -250,6 +252,23 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getAI") {
 		params [["_thisObject", "", [""]]];
 		T_GETV("AI")
+	} ENDMETHOD;
+	
+	// 						G E T   P O S
+	/*
+	Method: getPos
+	Returns the position of the garrison. Just picks the first unit and returns its position.
+
+	Returns: Array
+	*/
+	METHOD("getPos") {
+		params [["_thisObject", "", [""]]];
+		pr _units = T_GETV("units");
+		if (count _units > 0) then {
+			CALLM0(_units select 0, "getPos");
+		} else {
+			[0, 0, 0]
+		};
 	} ENDMETHOD;
 
 	//             F I N D   G R O U P S   B Y   T Y P E
@@ -455,7 +474,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("removeGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 		
-		OOP_INFO_2("REMOVE GROUP: %1, group units: %1", _group, CALLM0(_group, "getUnits"));
+		OOP_INFO_2("REMOVE GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
 		// Notify AI object if the garrison is spawned
 		if (T_GETV("spawned")) then {
@@ -564,7 +583,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Move units first
 		pr _newInfGroups = [];
 		pr _newVehGroup = "";
-		pr _isSpawned = T_GETV("spawned");
+		pr _srcIsSpawned = T_GETV("spawned");
 		pr _side = T_GETV("side");
 		{
 			if (CALLM0(_x, "isInfantry")) then {
@@ -583,9 +602,9 @@ CLASS("Garrison", "MessageReceiverEx");
 				pr _group = if (_createNewGroup) then {
 					pr _args = [_side, GROUP_TYPE_IDLE];
 					_newGroup = NEW("Group", _args);
-					if (_isSpawned) then { // If the garrison is currently spawned, set proper state to the new group
-						CALLM0(_newGroup, "spawn");
-					};
+					//if (_srcIsSpawned) then { // If the garrison is currently spawned, set proper state to the new group
+					//	CALLM0(_newGroup, "spawn");
+					//};
 					CALLM1(_garSrc, "addGroup", _newGroup);
 					_newInfGroups pushBack _newGroup;
 					_newGroup
@@ -599,9 +618,9 @@ CLASS("Garrison", "MessageReceiverEx");
 				if (_newVehGroup == "") then {
 					pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC]; // todo We assume we aren't moving static vehicles anywhere right now
 					_newVehGroup = NEW("Group", _args);
-					if (_isSpawned) then { // If the garrison is currently spawned, set proper state to the new group
-						CALLM0(_newVehGroup, "spawn");
-					};
+					//if (_srcIsSpawned) then { // If the garrison is currently spawned, set proper state to the new group
+					//	CALLM0(_newVehGroup, "spawn");
+					//};
 					CALLM1(_garSrc, "addGroup", _newVehGroup);
 				};
 				// Move the vehicle into the new group
@@ -613,10 +632,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			CALLM1(_thisObject, "addGroup", _x);
 		} forEach _newInfGroups;
+		
+		CALLM1(_thisObject, "addGroup", _newVehGroup);
+		/*
 		{
 			pr _group = _x select 0;
 			CALLM1(_thisObject, "addGroup", _group);
 		} forEach _groupsAndUnits;
+		*/
 		
 		true
 		
@@ -901,9 +924,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("handleUnitKilled") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 
-		OOP_INFO_0("");
-
-		diag_log format ["[Garrison::handleUnitKilled] Info: %1", _unit];
+		OOP_INFO_1("HANDLE UNIT KILLED: %1", _unit);
 
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
@@ -938,7 +959,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("handleGetInVehicle") {
 		params [["_thisObject", "", [""]], ["_unitVeh", "", [""]], ["_unitInf", "", [""]]];
 
-		OOP_INFO_0("");
+		OOP_INFO_2("HANDLE UNIT GET IN VEHICLE: %1, %2", _unitVeh, _unitInf);
 
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");

@@ -15,6 +15,12 @@ private _radius = 0;
 private _loc = objNull;
 private _locations = entities "Project_0_LocationSector";
 
+#define ADD_TRUCKS
+#define ADD_UNARMED_MRAPS
+//#define ADD_ARMED_MRAPS
+//#define ADD_TANKS
+//#define ADD_APCS_IFVS
+
 {
 	private _locSector = _x;
 	private _locSectorPos = getPos _locSector;
@@ -59,12 +65,13 @@ private _locations = entities "Project_0_LocationSector";
 	// Infantry capacity
 	private _args = [T_INF, [GROUP_TYPE_IDLE]];
 	private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
-	if (_cInf < 5) then {_cInf = 5};
+	//if (_cInf < 5) then {_cInf = 5};
+	_cInf = 5 + random 5;
 
 	// // Wheeled and tracked vehicle capacity
 	_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
 	private _cVehGround = CALL_METHOD(_loc, "getUnitCapacity", _args);
-	_cVehGround = round random 10;
+	_cVehGround = 10;
 
 	// Static HMG capacity
 	private _args = [T_PL_HMG_GMG_high, GROUP_TYPE_ALL];
@@ -121,12 +128,13 @@ private _locations = entities "Project_0_LocationSector";
 	};
 
 	// Add default infantry groups
+	/*
 	private _i = 0;
 	while {_cInf > 0 && _i < 666} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;
 		_i = _i + 1;
 	};
-
+	*/
 
 	// Add building sentries
 	if (_cBuildingSentry > 0) then {
@@ -145,6 +153,7 @@ private _locations = entities "Project_0_LocationSector";
 	// Add default vehicles
 	// Some trucks
 	private _i = 0;
+	#ifdef ADD_TRUCKS
 	while {_cVehGround > 0 && _i < 3} do {
 		private _args = [_template, T_VEH, T_VEH_truck_inf, -1, ""];
 		private _newUnit = NEW("Unit", _args);
@@ -156,7 +165,18 @@ private _locations = entities "Project_0_LocationSector";
 		};
 		_i = _i + 1;
 	};
-
+	#endif ADD_TRUCKS
+	
+	#ifdef ADD_UNARMED_MRAPS
+	_i = 0;
+	while {(_cVehGround > 0) && _i < 2} do  {
+		[_template, _garMilMain, T_VEH, T_VEH_MRAP_unarmed, -1] call _addVehGroup;
+		_cVehGround = _cVehGround - 1;
+		_i = _i + 1;
+	};
+	#endif
+	
+	#ifdef ADD_ARMED_MRAPS
 	// Some MRAPs
 	if (_cVehGround > 0) then {
 		[_template, _garMilMain, T_VEH, T_VEH_MRAP_HMG, -1] call _addVehGroup;
@@ -166,7 +186,9 @@ private _locations = entities "Project_0_LocationSector";
 		[_template, _garMilMain, T_VEH, T_VEH_MRAP_GMG, -1] call _addVehGroup;
 		_cVehGround = _cVehGround - 1;
 	};
+	#endif
 
+	#ifdef ADD_APCS_IFVS
 	// Some APCs and IFVs
 	if (_cVehGround > 0) then {
 		[_template, _garMilMain, T_VEH, T_VEH_APC, -1] call _addVehGroup;
@@ -176,15 +198,21 @@ private _locations = entities "Project_0_LocationSector";
 		[_template, _garMilMain, T_VEH, T_VEH_IFV, -1] call _addVehGroup;
 		_cVehGround = _cVehGround - 1;
 	};
+	#endif
 
+	#ifdef ADD_TANKS
 	// Some tanks
 	if (_cVehGround > 0) then {
 		[_template, _garMilMain, T_VEH, T_VEH_MBT, -1] call _addVehGroup;
 		_cVehGround = _cVehGround - 1;
 	};
+	#endif
 
 	// Static weapons
 	if (_cHMGGMG > 0) then {
+		// temp cap of amount of static guns
+		_cHMGGMG = (4 + random 5) min _cHMGGMG;
+		
 		private _args = [_side, GROUP_TYPE_VEH_STATIC];
 		private _staticGroup = NEW("Group", _args);
 		while {_cHMGGMG > 0} do {

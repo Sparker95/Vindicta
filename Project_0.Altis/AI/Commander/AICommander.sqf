@@ -572,6 +572,9 @@ CLASS("AICommander", "AI")
 		};
 		_friendlyDistLoc sort true; // Ascending
 		
+		// ignore the nearest place
+		_friendlyDistLoc deleteAt 0;
+		
 		OOP_INFO_1("Friendly locations sorted: %1", _friendlyDistLoc);
 		
 		// Find location that can deal with the threat
@@ -638,7 +641,7 @@ CLASS("AICommander", "AI")
 						if (!_ignore) then {							
 							// If it was a vehicle, and it had crew in its group, add the crew as well
 							if (CALLM0(_unit, "isVehicle")) then {
-								pr _groupUnits = CALLM0(_group, "getUnits");
+								pr _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
 								// If there are more than one unit in a vehicle's group, then add the whole group
 								if (count _groupUnits > 1) then {
 									_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
@@ -710,7 +713,7 @@ CLASS("AICommander", "AI")
 					};
 					
 					// Do we need to find transport vehicles?
-					if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
+					if (true) then { //_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 						pr _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
 						pr _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
 						//ade_dumpcallstack;
