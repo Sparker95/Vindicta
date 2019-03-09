@@ -320,6 +320,7 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), 
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
 
 // ----------------------------------------

@@ -34,14 +34,17 @@ CLASS("Camp", "Location")
 		// Create camp vehicles
 		private _arsenalBox = "Box_FIA_Support_F" createVehicle  _pos;
 		_arsenalBox remoteExec ["JN_fnc_arsenal_init", 0, _arsenalBox];
+		[_arsenalBox, true] remoteExec ["build_UI_setObjectMovable", 0, _arsenalBox];
 		SET_VAR(_thisObject, "arsenalBox", _arsenalBox);
 
 		pr _campFire = "Land_Campfire_F" createVehicle _pos;
-		_campFire remoteExec ["build_ui_addOpenBuildMenuAction", 0, _campFire];
+		_campFire remoteExec ["build_UI_addOpenBuildMenuAction", 0, _campFire];
+		[_campFire, true] remoteExec ["build_UI_setObjectMovable", 0, _campFire];
 		SET_VAR(_thisObject, "campFire", _campFire);
 
 		pr _garageBox = "Land_CargoBox_V1_F" createVehicle _pos;
 		_garageBox remoteExec ["JN_fnc_garage_init", 0, _garageBox];
+		[_garageBox, true] remoteExec ["build_UI_setObjectMovable", 0, _garageBox];
 		SET_VAR(_thisObject, "garageBox", _garageBox);
 
 		// Create Respawn Marker
