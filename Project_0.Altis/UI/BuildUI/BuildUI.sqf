@@ -35,7 +35,7 @@ CLASS("BuildUI", "")
 	// object variables
 	VARIABLE("activeObject");				// Object currently highlighted
 	VARIABLE("selectedObjects");			// Objects that will be part of move actions
-	VARIABLE("movingObjects");				// Objects currently being moved (includes selected and active when move starts)
+	VARIABLE("movingObjectGhosts");			// Objects currently being moved (includes selected and active when move starts)
 	VARIABLE("isMovingObjects");			// Are objects being moved at the moment?
 
 	// carousel
@@ -73,7 +73,7 @@ CLASS("BuildUI", "")
 
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
-		T_SETV("movingObjects", []);
+		T_SETV("movingObjectGhosts", []);
 		T_SETV("isMovingObjects", false);
 
 		T_SETV("previousItemID", 0);
@@ -235,7 +235,7 @@ CLASS("BuildUI", "")
 
 			case """Q""": { 
 				playSound ["clicksoft", false];
-				pr _rot = if(_shiftState) then { -90 } else { -15 };
+				pr _rot = if(_shiftState) then { 90 } else { 15 };
 				T_CALLM1("rotate", _rot);
 				// TODO: rotate object counter-clockwise
 				true; // disables default control 
@@ -243,7 +243,7 @@ CLASS("BuildUI", "")
 
 			case """E""": { 
 				playSound ["clicksoft", false];
-				pr _rot = if(_shiftState) then { 90 } else { 15 };
+				pr _rot = if(_shiftState) then { -90 } else { -15 };
 				T_CALLM1("rotate", _rot);
 				// TODO: rotate object clockwise
 				true; // disables default control 
@@ -495,7 +495,6 @@ CLASS("BuildUI", "")
 
 		// How many items in the currently selected category
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		// _return = (_itemCat select _currentItemID) select 0;
 		pr _itemIndexSize = count _itemCat - 1;
 
 		pr _offsets = [];
@@ -508,6 +507,7 @@ CLASS("BuildUI", "")
 		pr _prevx = 0;
 		pr _currx = 0;
 
+		// Work out carousel x offsets based on object sizes.
 		for "_i" from 0 to _itemIndexSize do {
 			pr _item = (_itemCat select _i) select 0;
 			pr _size = sizeOf _item;
@@ -521,17 +521,10 @@ CLASS("BuildUI", "")
 			_offsets pushBack _offs;
 		};
 
-		//pr _t = 1 - (0 max (_animCompleteTime - time) / (animCompleteTime - animStartTime));
-
-		// pr _actualXOffs = if ((_previousItemID != _currentItemID) and (_animStartTime != _animCompleteTime) and (_currx != _prevx)) then { 
-		// 	linearConversion [_animStartTime, _animCompleteTime, time, _prevx, _currx, true] 
-		// } else { 
-		// 	_currx
-		// };
-
+		// Animate our actual x offset over time for nice transitions.
 		pr _actualXOffs = linearConversion [_animStartTime, _animCompleteTime, time, _prevx, _currx, true];
 
-		//_prevx + (_currx - _prevx) * _t;
+		// Apply the offsets to the carousel objects.
 		for "_i" from 0 to _itemIndexSize do {
 			pr _offs = (_offsets select _i) vectorAdd [-_actualXOffs, 0, 0];
 			pr _h = 1 - (1 min (0.5 * abs (_offs select 0)));
@@ -554,17 +547,21 @@ CLASS("BuildUI", "")
 		T_PRVAR(ItemCatOpen);
 		T_PRVAR(rotation);
 
+		// If we aren't looking at items in a category then there is no carousel.
+		// TODO: maybe carousel could have the active selected item in each category.
 		if (!_ItemCatOpen) exitWith { [] };
 
-		// How many items in the currently selected category
+		// How many items in the currently selected category?
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
 		pr _itemIndexSize = count _itemCat - 1;
 		pr _offsets = T_CALLM0("getCarouselOffsets");
+
+		// Create the objects local to the player with the correct offsets.
 		for "_i" from 0 to _itemIndexSize do {
 			pr _type = (_itemCat select _i) select 0;
 			OOP_INFO_1("Creating carousel item %1", _type);
 			pr _offs = _offsets select _i;
-			pr _newObj = createVehicle [_type, player modelToWorld _offs, [], 0, "CAN_COLLIDE"];
+			pr _newObj = _type createVehicleLocal (player modelToWorld _offs);
 			_newObj attachTo [player, _offs]; 
 			_newObj setDir _rotation;
 			_carouselObjects pushBack _newObj;
@@ -602,11 +599,14 @@ CLASS("BuildUI", "")
 		if(count _offs == 0) then {
 			_offs = [0, sizeOf _type * 2, 0];
 		};
+		// Exit move mode to remove the highlight event handler etc.
 		T_CALLM0("exitMoveMode");
 
 		pr _pos = player modelToWorld _offs;
-		pr _newObj = createVehicle [_type, _pos, [], 0, "CAN_COLLIDE"];
+		pr _newObj = _type createVehicleLocal _pos; //[_type, _pos, [], 0, "CAN_COLLIDE"];
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
+		_newObj setVariable ["build_ui_newObject", true];
+
 		// Why is this necessary? I don't know but it is!
 		_newObj setDir -90;
 		pr _activeObject = [_newObj, _pos, vectorDir _newObj, vectorUp _newObj];
@@ -674,6 +674,170 @@ CLASS("BuildUI", "")
 		["BuildUIHighlightObject", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
 	} ENDMETHOD;
 
+	METHOD("moveObjectsOnEachFrame") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(movingObjectGhosts);
+		T_PRVAR(rotation);
+		{
+			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+			private _relativePos = _ghostObject getVariable "build_ui_relativePos";
+			private _dist = _ghostObject getVariable "build_ui_dist";
+			private _ins = lineIntersectsSurfaces [
+				AGLToASL positionCameraToWorld [0,0,0],
+				AGLToASL positionCameraToWorld [0,0,1000],
+				player, _ghostObject
+			];
+
+			if(count _ins != 0) then {
+				pr _firstIns = ASLToAGL ((_ins select 0) select 0);
+				private _size = _ghostObject getVariable "build_ui_size";
+				private _maxdist = 10 + _size * 0.5; // Max distance the object can be placed at
+				
+				_dist = (_size max (_maxdist min (player distance _firstIns)) - (_size * 0.5));
+			};
+
+			private _height = _ghostObject getVariable "build_ui_height";
+			private _relativeRot = _ghostObject getVariable "build_ui_relativeDir";
+			private _worldPos = player modelToWorld [_relativePos select 0, _dist, _relativePos select 2];
+
+			// Put on ground
+			_worldPos set [2, _height];
+			_ghostObject attachTo [player, player worldToModel _worldPos];
+			_ghostObject setDir (_relativeRot + _rotation);
+			_ghostObject setVariable ["build_ui_dist", _dist];
+		} forEach _movingObjectGhosts;
+		
+	} ENDMETHOD;
+
+	METHOD("moveSelectedObjects") {
+		params [P_THISOBJECT];
+
+		OOP_INFO_0("'moveSelectedObjects' method called");
+
+		// Grab the selected objects
+		T_PRVAR(activeObject);
+		T_PRVAR(selectedObjects);
+		T_PRVAR(rotation);
+
+		// Exit move mode so it doesn't interfere (it will clear activeObject, but we already took a copy above)
+		T_CALLM0("exitMoveMode");
+
+		pr _movingObjects = +_selectedObjects;
+		if (count _activeObject > 0) then {
+			CALL_STATIC_METHOD_2("BuildUI", "addSelection", _movingObjects, _activeObject);
+		};
+		if (count _movingObjects == 0) exitWith { false };
+
+		T_SETV("isMovingObjects", true);
+
+		private _movingObjectGhosts = [];
+		{
+			_x params ["_object", "_pos", "_dir", "_up"];
+
+			private _relativePos = player worldToModel (_object modelToWorld [0,0,0.1]);
+			private _starting_h = getCameraViewDirection player select 2;
+			private _bboxCenter = boundingCenter _object;
+
+			private _originHeight = (getPosATL _object) select 2;
+			private _height = (_bboxCenter select 2);
+			private _relativeDir = getDir _object - getDir player;
+
+			private _ghost = (typeOf _object) createVehicleLocal (getPos _object);
+
+			// This has local only effect
+			_object hideObject true;
+
+			_ghost enableSimulation false;
+			_ghost setVariable ["build_ui_beingMoved", true];
+			_ghost setVariable ["build_ui_relativePos", _relativePos];
+			_ghost setVariable ["build_ui_starting_h", _starting_h];
+			_ghost setVariable ["build_ui_relativeDir", _relativeDir];
+			_ghost setVariable ["build_ui_height", _height];
+			_ghost setVariable ["build_ui_dist", _relativePos select 1];
+			_ghost setVariable ["build_ui_size", sizeOf (typeOf _object)];
+
+			_ghost attachTo [player, _relativePos];
+			_ghost setDir (_relativeDir + _rotation);
+
+			_movingObjectGhosts pushBack [_ghost, _object, _pos, _dir, _up];
+		} forEach _movingObjects;
+
+		T_SETV("movingObjectGhosts", _movingObjectGhosts);
+
+		// Update moving objects on each frame, this is a separate function due to https://feedback.bistudio.com/T123355
+		["BuildUIMoveObjectsOnEachFrame", "onEachFrame", {
+			CALLM0(g_BuildUI, "moveObjectsOnEachFrame");
+		}, []] call BIS_fnc_addStackedEventHandler;
+		true
+	} ENDMETHOD;
+
+	// STATIC_METHOD("createObject") {
+	// 	params [P_THISCLASS];
+		
+	// } ENDMETHOD;
+	
+	METHOD("dropHere") {
+		params [P_THISOBJECT];
+		T_PRVAR(movingObjectGhosts);
+
+		["BuildUIMoveObjectsOnEachFrame", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
+
+		// Detach objects from player and place them
+		{
+			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+			detach _ghostObject;
+			private _currPos = getPos _ghostObject;
+
+			// If it is a new object then we must create a server version.
+			if (_object getVariable ["build_ui_newObject", false]) then {
+				_actualObject = (typeOf _object) createVehicle _currPos;
+				CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _actualObject, true);
+				deleteVehicle _object;
+				_object = _actualObject;
+			};
+			_object setDir (getDir _ghostObject);
+			_object setPos [_currPos select 0, _currPos select 1, 0];
+			// _object enableSimulationGlobal true;
+			_object hideObject false;
+
+			deleteVehicle _ghostObject;
+		} forEach _movingObjectGhosts;
+
+		T_SETV("movingObjectGhosts", []);
+		T_SETV("isMovingObjects", false);
+
+		T_CALLM0("enterMoveMode");
+	} ENDMETHOD;
+
+	METHOD("cancelMovingObjects") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(movingObjectGhosts);
+
+		["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
+
+		// Detach objects and put objects back where they started
+		{
+			_x params ["_ghostObject", "_object", "_pos", "_dir", "_up"];
+			detach _ghostObject;
+			deleteVehicle _ghostObject;
+
+			// If it is a new object then we delete it, otherwise unhide it locally
+			if(_object getVariable ["build_ui_newObject", false]) then {
+				deleteVehicle _object;
+			} else {
+				_object hideObject false;
+			};
+		} forEach _movingObjectGhosts;
+
+		T_SETV("movingObjectGhosts", []);
+		T_SETV("isMovingObjects", false);
+
+		T_CALLM0("enterMoveMode");
+
+	} ENDMETHOD;
+
 	STATIC_METHOD("setObjectMovable") {
 		params [P_THISCLASS, P_OBJECT("_obj"), P_BOOL("_set")];
 		_obj setVariable ["build_ui_allowMove", _set, true];
@@ -711,137 +875,6 @@ CLASS("BuildUI", "")
 		_obj setPosWorld _pos;
 		_obj setVectorDirAndUp [_dir, _up];
 		_obj enableSimulation true;
-	} ENDMETHOD;
-	
-	METHOD("moveObjectsOnEachFrame") {
-		params [P_THISOBJECT];
-		T_PRVAR(movingObjects);
-		T_PRVAR(rotation);
-		{
-			_x params ["_object", "_pos", "_dir", "_up"];
-
-			private _relativePos = _object getVariable "build_ui_relativePos";
-			private _dist = _object getVariable "build_ui_dist";
-			private _ins = lineIntersectsSurfaces [
-				AGLToASL positionCameraToWorld [0,0,0],
-				AGLToASL positionCameraToWorld [0,0,1000],
-				player, _object
-			];
-
-			if(count _ins != 0) then {
-				pr _firstIns = ASLToAGL ((_ins select 0) select 0);
-				private _size = _object getVariable "build_ui_size";
-				private _maxdist = _size * 5; // Max distance the object can be placed at
-				
-				_dist = (_size max (_maxdist min (player distance _firstIns))) - _size * 0.5;
-			};
-
-			private _height = _object getVariable "build_ui_height";
-			private _relativeRot = _object getVariable "build_ui_relativeDir";
-			private _worldPos = player modelToWorld [_relativePos select 0, _dist, _relativePos select 2];
-
-			// Put on ground
-			_worldPos set [2, _height];
-			_object attachTo [player, player worldToModel _worldPos];
-			_object setDir (_relativeRot + _rotation);
-			_object setVariable ["build_ui_dist", _dist];
-		} forEach _movingObjects;
-		
-	} ENDMETHOD;
-
-	METHOD("moveSelectedObjects") {
-		params [P_THISOBJECT];
-
-		OOP_INFO_0("'moveSelectedObjects' method called");
-
-		// Grab the selected objects
-		T_PRVAR(activeObject);
-		T_PRVAR(selectedObjects);
-		T_PRVAR(rotation);
-
-		// Exit move mode so it doesn't interfere (it will clear activeObject, but we already took a copy above)
-		T_CALLM0("exitMoveMode");
-
-		pr _movingObjects = +_selectedObjects;
-		if (count _activeObject > 0) then {
-			CALL_STATIC_METHOD_2("BuildUI", "addSelection", _movingObjects, _activeObject);
-		};
-		if (count _movingObjects == 0) exitWith { false };
-
-		T_SETV("isMovingObjects", true);
-		T_SETV("movingObjects", _movingObjects);
-
-		{
-			_x params ["_object", "_pos", "_dir", "_up"];
-
-			private _relativePos = player worldToModel (_object modelToWorld [0,0,0.1]);
-			private _starting_h = getCameraViewDirection player select 2;
-			private _bboxCenter = boundingCenter _object;
-
-			private _originHeight = (getPosATL _object) select 2;
-			private _height = (_bboxCenter select 2);
-			private _relativeDir = getDir _object - getDir player;
-
-			_object enableSimulation false;
-			_object setVariable ["build_ui_beingMoved", true];
-			_object setVariable ["build_ui_relativePos", _relativePos];
-			_object setVariable ["build_ui_starting_h", _starting_h];
-			_object setVariable ["build_ui_relativeDir", _relativeDir];
-			_object setVariable ["build_ui_height", _height];
-			_object setVariable ["build_ui_dist", _relativePos select 1];
-			_object setVariable ["build_ui_size", sizeOf (typeOf _object)];
-
-			_object attachTo [player, _relativePos];
-			_object setDir (_relativeDir + _rotation);
-		} forEach _movingObjects;
-
-		// Update moving objects on each frame, this is a separate function due to https://feedback.bistudio.com/T123355
-		["BuildUIMoveObjectsOnEachFrame", "onEachFrame", {
-			CALLM0(g_BuildUI, "moveObjectsOnEachFrame");
-		}, []] call BIS_fnc_addStackedEventHandler;
-		true
-	} ENDMETHOD;
-
-	METHOD("dropHere") {
-		params [P_THISOBJECT];
-		T_PRVAR(movingObjects);
-
-		["BuildUIMoveObjectsOnEachFrame", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
-
-		// Detach objects from player and place them
-		{
-			_x params ["_object", "_pos", "_dir", "_up"];
-			detach _object;
-			private _currPos = getPos _object;
-			_object setPos [_currPos select 0, _currPos select 1, 0];
-			_object enableSimulationGlobal true;
-		} forEach _movingObjects;
-
-		T_SETV("movingObjects", []);
-		T_SETV("isMovingObjects", false);
-
-		T_CALLM0("enterMoveMode");
-
-	} ENDMETHOD;
-
-	METHOD("cancelMovingObjects") {
-		params [P_THISOBJECT];
-
-		T_PRVAR(movingObjects);
-
-		["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
-
-		// Detach objects and put objects back where they started
-		{
-			_x params ["_object", "_pos", "_dir", "_up"];
-			detach _object;
-			CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _x);
-		} forEach _movingObjects;
-		T_SETV("movingObjects", []);
-		T_SETV("isMovingObjects", false);
-
-		T_CALLM0("enterMoveMode");
-
 	} ENDMETHOD;
 
 ENDCLASS;
