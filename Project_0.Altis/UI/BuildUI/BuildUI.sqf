@@ -614,6 +614,15 @@ CLASS("BuildUI", "")
 		T_CALLM0("moveSelectedObjects");
 	} ENDMETHOD;
 
+	multiply_Vec = {
+		params ["_a", "_b"];
+		private _r = [];
+		for "_i" from 0 to (count _a) - 1 do {
+			_r pushBack ((_a select _i) * (_b select _i));
+		};
+		_r
+	};
+
 	METHOD("highlightObjectOnEachFrame") {
 		params [P_THISOBJECT];
 
@@ -640,7 +649,8 @@ CLASS("BuildUI", "")
 
 			if(count _activeObject != 0) then {
 				_activeObject params ["_obj", "_pos", "_dir", "_up"];
-				private _bounds = boundingBoxReal _obj;
+				private _bb = boundingBoxReal _obj;
+				_bb params ["_min", "_max"];
 
 				// Vert positions where vert is max dot x + min dot ([1, 1, 1]-x)
 				private _verts = [
@@ -652,26 +662,30 @@ CLASS("BuildUI", "")
 					[1, 0, 1], // frb
 					[1, 1, 1], // frt
 					[0, 1, 1]  // flt
-				];
+				] apply { 
+					_obj modelToWorld (([_max, _x] call multiply_Vec) vectorAdd ([_min, [1, 1, 1] vectorDiff _x] call multiply_Vec))
+				};
 
 				// Pairs of verts to form edges of bounding box
 				private _edges = [
 					[0, 1],
 					[1, 2],
 					[2, 3],
-					[3, 4],
+					[3, 0],
+					[4, 5],
 					[5, 6],
 					[6, 7],
-					[7, 8],
-					[8, 9],
-					[0, 5],
-					[1, 6],
-					[2, 7],
-					[3, 8]
+					[7, 4],
+					[0, 4],
+					[1, 5],
+					[2, 6],
+					[3, 7]
 				];
 
+				private _col = [1, 0.5, 0.2, 1];
 				{
-					
+					_x params ["_v0", "_v1"];
+					drawLine3D [_verts select _v0, _verts select _v1, _col];
 				} forEach _edges;
 				//_obj setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
 			};
