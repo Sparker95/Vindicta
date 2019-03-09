@@ -80,7 +80,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				
 				// Give the goal to the garrison
 				pr _cSize = _cluster call cluster_fnc_getSize;
-				pr _radius = (selectMax _cSize) min 400;
+				pr _radius = ((selectMax _cSize) + 300) max 300; // 300 meters from cluster border, but not less than 300 meters
 				pr _parameters = [[TAG_G_POS, _center], [TAG_RADIUS, _radius], [TAG_DURATION, 60*20]]; 
 				pr _garAI = CALLM0(_newGar, "getAI");
 				pr _args = ["GoalGarrisonClearArea", 0, _parameters, _AI];
