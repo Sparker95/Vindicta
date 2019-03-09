@@ -69,6 +69,7 @@
 // ----------------------------------------------------------------------
 
 #ifndef ASP_ENABLE
+#define PROFILER_COUNTERS_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
 #endif
 
