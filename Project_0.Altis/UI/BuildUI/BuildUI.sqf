@@ -25,12 +25,14 @@ CLASS("BuildUI", "")
 	VARIABLE("activeBuildMenus");
 	VARIABLE("EHKeyDown");
 
+	VARIABLE("isMenuOpen");					// is the menu itself open?
 	VARIABLE("currentCatID");				// currently selected category index
 	VARIABLE("currentItemID");				// currently selected item index
 	VARIABLE("UICatTexts");					// array of strings for category names
 	VARIABLE("UIItemTexts");				// array of strings for item names in current category
 	VARIABLE("TimeFadeIn");					// fade in time for category change UI effect
 	VARIABLE("ItemCatOpen");				// true if item list should be shown
+	VARIABLE("playerEvents");				// handles to player event handlers when ui is open
 
 	// object variables
 	VARIABLE("activeObject");				// Object currently highlighted
@@ -56,8 +58,6 @@ CLASS("BuildUI", "")
 			OOP_ERROR_0("BuildUI already initialized! Make sure to delete it before trying to initialize it again!");
 		};
 
-		g_rscLayerBuildUI = ["rscLayerBuildUI"] call BIS_fnc_rscLayer;	// register build UI layer
-
 		g_BuildUI = _thisObject;
 		T_SETV("currentCatID", 0);  			// index in g_buildUIObjects array of objects
 		T_SETV("currentItemID", 0);  			// index in g_buildUIObjects category subarray of objects
@@ -68,9 +68,12 @@ CLASS("BuildUI", "")
 		T_SETV("UIItemTexts", _args);
 
 		T_SETV("ItemCatOpen", false);			// true if item list submenu is open
+		T_SETV("playerEvents", []);			// true if item list submenu is open
+
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
 
+		T_SETV("isMenuOpen", false);
 		T_SETV("activeObject", []);
 		T_SETV("selectedObjects", []);
 		T_SETV("movingObjectGhosts", []);
@@ -86,12 +89,19 @@ CLASS("BuildUI", "")
 		T_SETV("lastFrameTime", time);
 
 		T_CALLM("makeCatTexts", [0]); 			// initialize UI category strings
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
+		T_CALLM0("closeUI");
+
 		OOP_INFO_1("Player %1 build UI destroyed.", name player);
+
+		if !(isNil "g_rscLayerBuildUI") then {
+			g_rscLayerBuildUI = nil;
+		};
 
 		g_BuildUI = nil;
 	} ENDMETHOD;
@@ -126,12 +136,20 @@ CLASS("BuildUI", "")
 
 		OOP_INFO_0("'openUI' method called.");
 
+		if(T_GETV("isMenuOpen")) exitWith {};
+		T_SETV("isMenuOpen", true);
+
 		// update UI text and categories, this is a separate function due to https://feedback.bistudio.com/T123355
 		["BuildUIUpdate", "onEachFrame", { 
 			CALLM0(g_BuildUI, "UIFrameUpdate");
 		}] call BIS_fnc_addStackedEventHandler;
 
 		T_CALLM0("enterMoveMode");
+
+		if(isNil "g_rscLayerBuildUI") then {
+			g_rscLayerBuildUI = ["rscLayerBuildUI"] call BIS_fnc_rscLayer;	// register build UI layer
+		};
+
 		g_rscLayerBuildUI cutRsc ["BuildUI", "PLAIN", -1, false]; // blend in UI
 
 		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
@@ -143,6 +161,18 @@ CLASS("BuildUI", "")
 		}];
 
 		T_SETV("EHKeyDown", _EHKeyDown);
+
+		pr _playerEvents = [
+			player addEventHandler ["Dammaged", { CALLM0(g_BuildUI, "closeUI"); }],
+			player addEventHandler ["GetInMan", { CALLM0(g_BuildUI, "closeUI"); }],
+			player addEventHandler ["Killed", { CALLM0(g_BuildUI, "closeUI"); }],
+			player addEventHandler ["InventoryOpened", { CALLM0(g_BuildUI, "closeUI"); }]
+		];
+
+		T_SETV("playerEvents", _playerEvents);
+		
+		// Put away weapon
+		player action ["SWITCHWEAPON", player, player, -1];
 
 		// TODO: Add player on death event to hide UI and drop held items etc.
 		// Also for when they leave camp area.
@@ -290,9 +320,14 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT];
 
 		OOP_INFO_0("'closeUI' method called. ====================================");
+		
+		if !(T_GETV("isMenuOpen")) exitWith {};
 
+		// Reset everything that might be active
+		T_CALLM0("cancelMovingObjects");
 		T_CALLM0("clearCarousel");
 		T_CALLM0("exitMoveMode");
+
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
 		(findDisplay 46) displayRemoveAllEventHandlers "keydown";
@@ -303,8 +338,17 @@ CLASS("BuildUI", "")
 		T_SETV("ItemCatOpen", false);
 
 		["BuildUIUpdate", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
-
 		OOP_INFO_0("Removed display event handler!");
+
+		T_SETV("isMenuOpen", false);
+		T_PRVAR(playerEvents);
+
+		player removeEventHandler["Dammaged", _playerEvents select 0];
+		player removeEventHandler["GetInMan", _playerEvents select 1];
+		player removeEventHandler["Killed", _playerEvents select 2];
+		player removeEventHandler["InventoryOpened", _playerEvents select 3];
+
+		T_SETV("playerEvents", []);
 	} ENDMETHOD;
 
 	METHOD("handleActionKey") {
@@ -603,7 +647,7 @@ CLASS("BuildUI", "")
 		T_CALLM0("exitMoveMode");
 
 		pr _pos = player modelToWorld _offs;
-		pr _newObj = _type createVehicleLocal _pos; //[_type, _pos, [], 0, "CAN_COLLIDE"];
+		pr _newObj = _type createVehicleLocal _pos;
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
 		_newObj setVariable ["build_ui_newObject", true];
 
@@ -712,7 +756,6 @@ CLASS("BuildUI", "")
 					} forEach _baseEdges;
 				}
 			};
-
 		};
 	} ENDMETHOD;
 
@@ -883,6 +926,8 @@ CLASS("BuildUI", "")
 	METHOD("cancelMovingObjects") {
 		params [P_THISOBJECT];
 
+		if !(T_GETV("isMovingObjects")) exitWith {};
+
 		T_PRVAR(movingObjectGhosts);
 
 		["SetHQObjectHeight", "onEachFrame"] call BIS_fnc_removeStackedEventHandler;
@@ -961,3 +1006,5 @@ build_UI_setObjectMovable = {
 	OOP_INFO_2("'build_UI_setObjectMovable' method called with %1, %2", _obj, _val);
 	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);
 };
+
+NEW("BuildUI", []);
