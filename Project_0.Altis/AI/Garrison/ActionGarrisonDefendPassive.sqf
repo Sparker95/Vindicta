@@ -61,6 +61,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				
 				if (count _args > 0) then {
 					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+					// Poke group AI to switch mode faster
+					CALLM2(_groupAI, "postMethodAsync", "process", []);
 				};
 			};
 		} forEach _groups;

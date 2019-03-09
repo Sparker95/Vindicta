@@ -79,7 +79,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		_mrk setMarkerBrush "SolidFull";
 		_mrk setMarkerSize [10, 10];
 		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 1;
+		_mrk setMarkerAlpha 0.5;
+		
 		#endif
 		
 	} ENDMETHOD;
@@ -120,12 +121,18 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_G_POS, false);
 		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, false);
 		if (isNil "_pPos" && isNil "_pLoc") then {
-			_mrk setMarkerAlpha 0.5; // Hide the marker
+			_mrk setMarkerAlpha 0; // Hide the marker
 		} else {
-			_mrk setMarkerAlpha 1; // Show the marker
+			_mrk setMarkerAlpha 0.5; // Show the marker
 			pr _posDest = [0, 0, 0];
 			if (!isNil "_pPos") then {	_posDest = _pPos;	};
-			if (!isNil "_pLoc") then {	_posDest = [666, 666, 666];	};
+			if (!isNil "_pLoc") then {
+				if (_pLoc isEqualType "") then {
+					_posDest = CALLM0(_pLoc, "getPos");
+				} else {
+					_posDest = _pLoc;
+				};
+			};
 			pr _mrkPos = (_pPos vectorAdd _pos) vectorMultiply 0.5;
 			_mrk setMarkerPos _mrkPos;
 			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];

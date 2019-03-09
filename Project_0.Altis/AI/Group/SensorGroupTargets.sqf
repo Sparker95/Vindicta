@@ -11,10 +11,10 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 #define TARGET_AGE_TO_REVEAL 5
 
 // Time until targets are relayed to garrison leader
-#define TARGET_TIME_RELAY 4
+#define TARGET_TIME_RELAY 5
 
 // Update interval of this sensor
-#define UPDATE_INTERVAL 5
+#define UPDATE_INTERVAL 4
 
 // ----- Debugging definitions -----
 
@@ -109,7 +109,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				5 targetAge: Number - the actual target age in seconds (can be negative)
 				*/
 				pr _comTime = GETV(_thisObject, "comTime");
-				if (_comTime > TARGET_TIME_RELAY) then {
+				// Relay targets instantly if not attached to location
+				pr _loc = CALLM0(CALLM0(T_GETV("group"), "getGarrison"), "getLocation");
+				if (_comTime > TARGET_TIME_RELAY || _loc == "") then {
 
 					pr _observedTargets = _currentlyObservedObjects select {
 						( (side group (_x select 1)) in _otherSides)
@@ -157,6 +159,11 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						if (CALLM1(_garAI, "messageDone", _prevMsgID)) then {
 							pr _msgID = CALLM3(_garAI, "postMethodAsync", "handleStimulus", [_stim], true);
 							SETV(_thisObject, "prevMsgID", _msgID);
+							
+							// If there is no location, poke the AIGarrison to do processing ASAP
+							if (_loc == "") then {
+								CALLM2(_garAI, "postMethodAsync", "process", []);
+							};
 						//} else {
 						//	diag_log format [" ---- Previous stimulus has not been processed! MsgID: %1", _msgID];
 						};
