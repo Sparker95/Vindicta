@@ -118,8 +118,9 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		_unit setVariable ["suspicion", 0];									// final suspiciousness of player		
 		_unit setVariable ["timeSeen", 0];
 		_unit setVariable ["timeHostility", 0];
-		_unit setVariable ["incrementSusp", 0];								// suspicion value that increases for suspicious behavior being performed while seen
+		_unit setVariable ["incrementSusp", 0];								// suspicion value that increases for suspicious behavior being performed while seen	
 		_unit setVariable ["bSeen", false];									// true if unit is currently seen by an enemy
+		_unit setVariable ["bNotCaptive", false];								
 		_unit setVariable ["nearestEnemyDist", -1];							// distance to nearest unit in group that has spotted player
 		_unit setVariable ["nearestEnemy", objNull];						// enemy closest to player, taken from group that has spotted player last
 		_unit setVariable ["bodyExposure", 1.0];							// value for how exposed player is inside current vehicle seat
@@ -208,7 +209,14 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				if (!(isNull objectParent _unit)) then { _bInVeh = true; }; 						// is player unit in vehicle?
 				_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];
 
-				if (time > _timeSeen) then { _unit setVariable ["bSeen", false]; _unit setVariable ["incrementSusp", 0]; };
+				if (time > _timeSeen) then { 
+					_unit setVariable ["bSeen", false];
+					pr _timeSeen = _unit getVariable "timeSeen";
+					if (_timeSeen > 0) then { _timeSeen = 0; };
+					_timeSeen = _timeSeen - 1;
+					_unit setVariable ["timeSeen", _timeSeen];
+					if (_timeSeen < -2) then { _unit setVariable ["incrementSusp", 0]; };
+				};
 
 				0 call { // start exitWith scope
 
@@ -218,6 +226,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 					};*/
 					if (animationState _unit in g_UM_undercoverAnims) exitWith { _suspicion = 0; }; // Hotfix for ACE surrendering
 					if ( _unit getVariable ["ACE_isUnconscious", false] ) exitWith { _suspicion = 0; };
+					if ( (_unit getVariable "bNotCaptive") ) exitWith { _suspicion = 1; };
 
 					/*
 					--------------------------------------------------------------------------------------------------------------------------------------------
@@ -243,7 +252,12 @@ CLASS("undercoverMonitor", "MessageReceiver");
 							if (_bInVeh && count crew vehicle _unit > 1) then {
 
 								{
-									if (isPlayer _x && alive _x) then { _x setVariable [UNDERCOVER_WANTED, true, true]; };
+									pr _um = _x getVariable ["undercoverMonitor", ""];
+									if (_um != "") then { // Sanity check
+										pr _msg = MESSAGE_NEW();
+										MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
+										CALLM1(_um, "postMessage", _msg);
+									};
 								} forEach crew vehicle _unit;
 
 							}; // sets other units in vehicle wanted
@@ -358,6 +372,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				if ( _suspicion >= SUSPICIOUS && _suspicion < 1 ) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; };
 				if ( _suspicion >= 1 ) then { _unit setCaptive false; } else { _unit setCaptive true; };
 				_unit setVariable ["suspicion", _suspicion];
+				_unit setVariable ["bNotCaptive", false]; 
 
 				_unit setVariable [UNDERCOVER_SUSPICION, _suspicion, true];
 
@@ -396,17 +411,19 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				pr _nearestEnemy = (units _msgData) select _minDistIndex;
 				_unit setVariable ["nearestEnemy", _nearestEnemy];
 
-				if (_suspicion >= 1) then {
+				if (_suspicion >= 1 or !(captive _unit)) then {
 					 _unit setVariable [UNDERCOVER_WANTED, true, true];
 				}; // end SMON_MESSAGE_BEING_SPOTTED
 			};
 
 			// messages here will compromise this unit as if spotted while suspicion > 1
+			// fixes AI not shooting at vehicle with one captive unit in it
+			// sets unit wanted if visually exposed or temporarily not captive if hidden in vehicle
 			case SMON_MESSAGE_COMPROMISED: {
-
 				pr _unit = GETV(_thisObject, "unit");
+				if (UNDERCOVER_IS_UNIT_EXPOSED(_unit)) then {
 				_unit setVariable [UNDERCOVER_WANTED, true, true];
-
+				} else { _unit setVariable ["bNotCaptive", true]; };
 			}; // end SMON_MESSAGE_COMPROMISED
 		};
 
