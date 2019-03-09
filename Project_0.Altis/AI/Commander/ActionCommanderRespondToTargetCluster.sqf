@@ -90,10 +90,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				
 				// Find nearest location which belongs to this side
 				// Find locations controled by this side
+				pr _thisSide = GETV(_AI, "side");
 				private _friendlyLocations = CALLSM0("Location", "getAll") select {
-					pr _gar = CALLM0(_x, "getGarrisonMilitaryMain");
-					pr _garSide = CALLM0(_gar, "getSide");
-					_garSide == GETV(_AI, "side");
+					CALLM0(_x, "getSide") == _thisSide
 				};
 				
 				// Sort friendly locations by distance

@@ -561,8 +561,12 @@ CLASS("AICommander", "AI")
 		// Find locations controled by this side
 		private _friendlyLocations = _allLocations select {
 			pr _gar = CALLM0(_x, "getGarrisonMilitaryMain");
-			pr _garSide = CALLM0(_gar, "getSide");
-			_garSide == _side
+			if (_gar != "") then {
+				pr _garSide = CALLM0(_gar, "getSide");
+				_garSide == _side
+			} else {
+				false
+			};
 		};
 		
 		// Sort friendly locations by distance

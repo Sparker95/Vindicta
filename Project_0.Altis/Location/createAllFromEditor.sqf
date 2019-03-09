@@ -169,7 +169,7 @@ private _locations = entities "Project_0_LocationSector";
 	
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
-	while {(_cVehGround > 0) && _i < 2} do  {
+	while {(_cVehGround > 0) && _i < 1} do  {
 		private _args = [_template, T_VEH, T_VEH_MRAP_unarmed, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {

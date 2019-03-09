@@ -51,7 +51,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		pr _hG = GETV(_thisObject, "hG");
 		
 		#ifdef DEBUG
-		diag_log format ["[SensorGroupTargets::Update] Info: %1", _thisObject];
+		OOP_INFO_1("[SensorGroupTargets::Update] Info: %1", _thisObject);
 		#endif
 		
 		pr _side = side _hG;
@@ -122,7 +122,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						_observedTargets = _observedTargets apply {TARGET_NEW(_x select 1, _hG knowsAbout (_x select 1),  _x select 4, time-(_x select 5)+1)};
 					
 						#ifdef PRINT_SPOTTED_TARGETS
-							diag_log format ["[SensorGroupTargets::Update] Info: GroupHandle: %1, targets: %2", _hg, _observedTargets];
+							OOP_INFO_2("[SensorGroupTargets::Update] Info: GroupHandle: %1, targets: %2", _hg, _observedTargets);
 						#endif
 						// Send targets to garrison AI
 						// this->AI->agent->garrison->AI WTF??
@@ -170,7 +170,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 					};
 				#ifdef DEBUG
 				} else { // if (_comTime > TARGET_TIME_RELAY) then {
-					diag_log format ["[SensorGroupTargets::Update] Info: Group %1 is in combat state but combat timer has not reached the threshold!", _hg];
+					OOP_INFO_1("[SensorGroupTargets::Update] Info: Group %1 is in combat state but combat timer has not reached the threshold!", _hg);
 				#endif
 				};
 				
@@ -182,10 +182,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 			};
 		#ifdef DEBUG
 		} else {
-			diag_log format ["--- Group: %1 is not alive! Group's units: %2, isNull: %3", _hG, units _hG, isNull _hG];
+			OOP_INFO_3("--- Group: %1 is not alive! Group's units: %2, isNull: %3", _hG, units _hG, isNull _hG);
 			pr _AI = GETV(_thisObject, "AI");
 			pr _agent = GETV(_AI, "agent");
-			diag_log format [" Group data: %1 %2", _agent, GETV(_agent, "data")];
+			OOP_INFO_2(" Group data: %1 %2", _agent, GETV(_agent, "data"));
 		#endif
 		};
 		
@@ -222,10 +222,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 			// Receive targets from someone
 			case STIMULUS_TYPE_TARGETS: {
 				#ifdef PRINT_RECEIVED_TARGETS
-					diag_log format ["[SensorGroupTargets::handleStimulus] Info: %1 has received targets from %2: %3",
-					GETV(_thisObject, "group"),
-					STIMULUS_GET_SOURCE(_stimulus),
-					STIMULUS_GET_VALUE(_stimulus)];
+					OOP_INFO_3("[SensorGroupTargets::handleStimulus] Info: %1 has received targets from %2: %3", GETV(_thisObject, "group"), STIMULUS_GET_SOURCE(_stimulus), STIMULUS_GET_VALUE(_stimulus));
 				#endif
 				
 				// Reveal targets to this group
@@ -246,9 +243,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				pr _data = STIMULUS_GET_VALUE(_stimulus);
 				
 				#ifdef PRINT_RECEIVED_TARGETS
-					diag_log format ["[SensorGroupTargets::handleStimulus] Info: %1 is forgetting targets: %2",
-					GETV(_thisObject, "group"),
-					_data];
+					OOP_INFO_2("[SensorGroupTargets::handleStimulus] Info: %1 is forgetting targets: %2", GETV(_thisObject, "group"), _data);
 				#endif
 				
 				pr _hG = GETV(_thisObject, "hG");
