@@ -616,7 +616,7 @@ CLASS("BuildUI", "")
 
 	METHOD("highlightObjectOnEachFrame") {
 		params [P_THISOBJECT];
-		
+
 		if(T_GETV("isMovingObjects")) exitWith {};
 
 		T_PRVAR(activeObject);
@@ -624,7 +624,7 @@ CLASS("BuildUI", "")
 		if(count _activeObject == 0 or {cursorObject != _activeObject select 0}) then {
 
 			if(count _activeObject > 0) then {
-				CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
+				//CALL_STATIC_METHOD_1("BuildUI", "restoreSelectionObject", _activeObject);
 				_activeObject = [];
 				T_SETV("activeObject", _activeObject);
 			};
@@ -633,14 +633,47 @@ CLASS("BuildUI", "")
 				_activeObject = CALL_STATIC_METHOD_1("BuildUI", "createSelectionObject", cursorObject);
 				_activeObject params ["_obj", "_pos", "_dir", "_up"];
 				T_SETV("activeObject", _activeObject);
-				cursorObject setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
+				//cursorObject setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
 			};
 
 		} else {
 
 			if(count _activeObject != 0) then {
 				_activeObject params ["_obj", "_pos", "_dir", "_up"];
-				_obj setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
+				private _bounds = boundingBoxReal _obj;
+
+				// Vert positions where vert is max dot x + min dot ([1, 1, 1]-x)
+				private _verts = [
+					[0, 0, 0], // nlb
+					[1, 0, 0], // nrb
+					[1, 1, 0], // nrt
+					[0, 1, 0], // nlt
+					[0, 0, 1], // flb
+					[1, 0, 1], // frb
+					[1, 1, 1], // frt
+					[0, 1, 1]  // flt
+				];
+
+				// Pairs of verts to form edges of bounding box
+				private _edges = [
+					[0, 1],
+					[1, 2],
+					[2, 3],
+					[3, 4],
+					[5, 6],
+					[6, 7],
+					[7, 8],
+					[8, 9],
+					[0, 5],
+					[1, 6],
+					[2, 7],
+					[3, 8]
+				];
+
+				{
+					
+				} forEach _edges;
+				//_obj setPosWorld [_pos select 0, _pos select 1, (_pos select 2) + 0.02 + 0.02 * cos(time * 720)];
 			};
 
 		};
