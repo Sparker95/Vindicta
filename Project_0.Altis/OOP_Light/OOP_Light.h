@@ -69,6 +69,7 @@
 // ----------------------------------------------------------------------
 
 #ifndef ASP_ENABLE
+#define PROFILER_COUNTERS_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
 #endif
 
@@ -501,8 +502,9 @@ private _isPublic = IS_PUBLIC(objNameStr); \
 private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
 {FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
 if (_isPublic) then { \
-PUBLIC_VAR(OOP_PARENT_STR); \
-PUBLIC_VAR(OOP_PUBLIC_STR); \
+{FORCE_SET_MEM(objNameStr, _x, nil); PUBLIC_VAR(objNameStr, OOP_PARENT_STR);} forEach _oop_memList; \
+} else { \
+{FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
 }; \
 }
 
