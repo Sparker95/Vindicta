@@ -137,7 +137,7 @@
         }
         // {
         //     "label": "Run in SQF-VM",
-        //     "type": "shell",
+        //     "type": "process",
         //     "command": ".\\tools\\sqf-vm-compile.bat",
         //     "args": [
         //         "${relativeFile}"
