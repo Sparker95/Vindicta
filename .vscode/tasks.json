@@ -5,7 +5,7 @@
     "tasks": [
         {
             "label": "Compile with SQF-VM",
-            "type": "shell",
+            "type": "process",
             "command": "sqfvm.exe",
             "args": [
                 "-a",
@@ -40,7 +40,7 @@
         },
         {
             "label": "Run with SQF-VM (usually won't work due to unimplemented functions)",
-            "type": "shell",
+            "type": "process",
             "command": "sqfvm.exe",
             "args": [
                 "-a",
@@ -72,7 +72,7 @@
         },
         {
             "label": "Preprocess with SQF-VM",
-            "type": "shell",
+            "type": "process",
             "command": "sqfvm.exe",
             "args": [
                 "-a",
@@ -104,7 +104,7 @@
         },
         {
             "label": "Pretty print with SQF-VM (not working)",
-            "type": "shell",
+            "type": "process",
             "command": "sqfvm.exe",
             "args": [
                 "-a",
@@ -137,7 +137,7 @@
         }
         // {
         //     "label": "Run in SQF-VM",
-        //     "type": "shell",
+        //     "type": "process",
         //     "command": ".\\tools\\sqf-vm-compile.bat",
         //     "args": [
         //         "${relativeFile}"
