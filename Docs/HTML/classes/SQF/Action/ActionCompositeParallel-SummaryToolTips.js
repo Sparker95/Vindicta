@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Action.ActionCompositeParallel",{1:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">NYI</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:Action.ActionCompositeParallel",{1:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">NYI</div></div>",543:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Runs &quot;process&quot; of all actions</div></div>",544:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Calls &quot;terminate&quot; on all actions</div></div>"});
