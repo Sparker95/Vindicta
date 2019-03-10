@@ -9,8 +9,10 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 
 	// ID of the cluster we are responding to
 	VARIABLE("clusterID");
+	VARIABLE("clusterIDChanged");
 	VARIABLE("timeNextActivation");
 	VARIABLE("allocatedGarrisons");
+	VARIABLE("clusterGoalPos");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_clusterID", 0, [0]] ];
@@ -18,6 +20,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		T_SETV("clusterID", _clusterID);
 		T_SETV("timeNextActivation", 0); // To force instant replan/reallocation
 		T_SETV("allocatedGarrisons", []);
+		T_SETV("clusterIDChanged", false);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -44,6 +47,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
 		pr _center = _cluster call cluster_fnc_getCenter;
 		_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
+		T_SETV("clusterGoalPos", +_center);
 		
 		// Make a new garrison
 		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
@@ -137,6 +141,36 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		params [["_thisObject", "", [""]]];
 
 		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		
+		if (_state == ACTION_STATE_ACTIVE) then {		
+			// Check cluster position
+			pr _ID = T_GETV("clusterID");
+			pr _AI = T_GETV("AI");
+			pr _tc = CALLM1(_AI, "getTargetCluster", _ID);
+			// Fail if there is no cluster with this ID
+			if (count _tc == 0) then {
+				_state = ACTION_STATE_FAILED
+			} else {
+				pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
+				pr _center = _cluster call cluster_fnc_getCenter;
+				pr _newPos = _center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
+				pr _size = ((selectMax (_cluster call cluster_fnc_getSize)) + 300) max 300;
+				// If cluster position has changed significantly, or this action has been redirected to another cluster
+				if (_newPos distance2D T_GETV("clusterGoalPos") > _size || T_GETV("clusterIDChanged")) then {
+					// Loop through all garrisons and give them a new goal with proper coordinates
+					{
+						pr _garAI = CALLM0(_x, "getAI");
+						pr _parameters = [[TAG_G_POS, _center], [TAG_RADIUS, _size], [TAG_DURATION, 60*20]];
+						pr _args = ["GoalGarrisonClearArea", 0, _parameters, _AI];
+						CALLM2(_garAI, "postMethodAsync", "addExternalGoal", _args);
+					} forEach T_GETV("allocatedGarrisons");
+					
+					// Reset the 'cluster ID changed' flag
+					T_SETV("clusterIDChanged", false);
+				};
+			};			
+		};
+
 
 		// Return the current state
 		_state
@@ -167,6 +201,13 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 	METHOD("getTargetClusterID") {
 		params ["_thisObject"];
 		T_GETV("clusterID")
+	} ENDMETHOD;
+	
+	// Called by AICommander when this action has to be redirected to another target cluster
+	METHOD("setTargetClusterID") {
+		params ["_thisObject", ["_newClusterID", 0, [0]]];
+		T_SETV("clusterID", _newClusterID);
+		T_SETV("clusterIDChanged", true);
 	} ENDMETHOD;
 
 ENDCLASS;

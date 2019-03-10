@@ -448,9 +448,9 @@ CLASS("AICommander", "AI")
 	Method: onTargetClusterSplitted
 	Gets called when an already known cluster gets splitted into multiple new clusters.
 	
-	Parameters: _tc
+	Parameters: _tcsNew
 	
-	_tc - the new target cluster
+	_tcsNew - array of [_affinity, _newTargetCluster]
 	
 	Returns: nil
 	*/
@@ -461,32 +461,14 @@ CLASS("AICommander", "AI")
 		pr _IDsNew = []; { _IDsNew pushBack (_x select 1 select TARGET_CLUSTER_ID_ID)} forEach _tcsNew;
 		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new IDs: %2", _ID, _IDsNew);
 		
-	} ENDMETHOD;
-	
-	/*
-	Method: getTargetCluster
-	Returns a target cluster with specified ID
-	
-	Parameters: _ID
-	
-	_ID - ID of the target cluster
-	
-	Returns: target cluster structure or [] if nothing was found
-	*/
-	METHOD("getTargetCluster") {
-		params ["_thisObject", ["_ID", 0, [0]]];
+		// Sort new clusters by affinity
+		_tcsNew sort true; // Ascending
+		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
+		pr _newClusterID = _tcsNew select 0 select TARGET_CLUSTER_ID_ID;
+		// Notify the actions assigned to this cluster
 		
-		pr _targetClusters = T_GETV("targetClusters");
-		pr _ret = [];
-		{ // foreach _targetClusters
-			if (_x select TARGET_CLUSTER_ID_ID == _ID) exitWith {
-				_ret = _x;
-			};
-		} forEach _targetClusters;
 		
-		_ret
-	} ENDMETHOD;
-	
+	} ENDMETHOD;	
 	
 	/*
 	Method: onTargetClusterMerged
@@ -538,6 +520,31 @@ CLASS("AICommander", "AI")
 			};
 		};
 		
+	} ENDMETHOD;
+	
+	
+	/*
+	Method: getTargetCluster
+	Returns a target cluster with specified ID
+	
+	Parameters: _ID
+	
+	_ID - ID of the target cluster
+	
+	Returns: target cluster structure or [] if nothing was found
+	*/
+	METHOD("getTargetCluster") {
+		params ["_thisObject", ["_ID", 0, [0]]];
+		
+		pr _targetClusters = T_GETV("targetClusters");
+		pr _ret = [];
+		{ // foreach _targetClusters
+			if (_x select TARGET_CLUSTER_ID_ID == _ID) exitWith {
+				_ret = _x;
+			};
+		} forEach _targetClusters;
+		
+		_ret
 	} ENDMETHOD;
 	
 	/*
