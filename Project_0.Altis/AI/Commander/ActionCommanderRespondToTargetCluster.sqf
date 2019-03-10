@@ -149,17 +149,22 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			pr _tc = CALLM1(_AI, "getTargetCluster", _ID);
 			// Fail if there is no cluster with this ID
 			if (count _tc == 0) then {
+				OOP_ERROR_1("Target cluster with ID %1 doesn't exist!", _ID);
 				_state = ACTION_STATE_FAILED
 			} else {
 				pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
 				pr _center = _cluster call cluster_fnc_getCenter;
-				pr _newPos = _center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
+				_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
 				pr _size = ((selectMax (_cluster call cluster_fnc_getSize)) + 300) max 300;
 				// If cluster position has changed significantly, or this action has been redirected to another cluster
-				if (_newPos distance2D T_GETV("clusterGoalPos") > _size || T_GETV("clusterIDChanged")) then {
+				if (_center distance2D T_GETV("clusterGoalPos") > _size || T_GETV("clusterIDChanged")) then {
+
+					OOP_INFO_1("---- Retargeting assign garrisons to new position: %1", _center);
+
 					// Loop through all garrisons and give them a new goal with proper coordinates
 					{
-						pr _garAI = CALLM0(_x, "getAI");
+						OOP_INFO_1("   Retargeted garrison: %1", _x);
+						pr _garAI = CALLM0(_x select 0, "getAI");
 						pr _parameters = [[TAG_G_POS, _center], [TAG_RADIUS, _size], [TAG_DURATION, 60*20]];
 						pr _args = ["GoalGarrisonClearArea", 0, _parameters, _AI];
 						CALLM2(_garAI, "postMethodAsync", "addExternalGoal", _args);
@@ -167,6 +172,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 					
 					// Reset the 'cluster ID changed' flag
 					T_SETV("clusterIDChanged", false);
+					
+					// Update the position where we have assigned goals to
+					T_SETV("clusterGoalPos", _center);
 				};
 			};			
 		};
@@ -206,6 +214,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 	// Called by AICommander when this action has to be redirected to another target cluster
 	METHOD("setTargetClusterID") {
 		params ["_thisObject", ["_newClusterID", 0, [0]]];
+		OOP_INFO_1("SET TARGET CLUSTER ID: %1", _newClusterID);
 		T_SETV("clusterID", _newClusterID);
 		T_SETV("clusterIDChanged", true);
 	} ENDMETHOD;

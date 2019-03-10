@@ -69,7 +69,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 				OOP_INFO_3("Location %1 is observed by side: %2, unit: %3", _loc, _x, _enemyObjectsSide select _observedBySide);
 				
 				// Report to chat for now
-				systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, time];
+				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, time];
 				
 				// Report to the AICommander of the side that observes this location
 				private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_s]);

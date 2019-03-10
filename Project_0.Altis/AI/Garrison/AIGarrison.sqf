@@ -133,7 +133,7 @@ CLASS("AIGarrison", "AI_GOAP")
 					_posDest = _pLoc;
 				};
 			};
-			pr _mrkPos = (_pPos vectorAdd _pos) vectorMultiply 0.5;
+			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
 			_mrk setMarkerPos _mrkPos;
 			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);

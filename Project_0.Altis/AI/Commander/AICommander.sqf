@@ -81,6 +81,19 @@ CLASS("AICommander", "AI")
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
 		
+		// Check if there are any clusters without assigned actions
+		pr _actions = T_GETV("targetClusterActions");
+		{
+			pr _ID = _x select TARGET_CLUSTER_ID_ID;
+			pr _index = _actions findIf {CALLM0(_x, "getTargetClusterID") == _ID};
+			
+			// If we didn't find any actions assigned to this target cluster
+			if (_index == -1) then {
+				OOP_INFO_1("Target cluster with ID %1 has no actions assigned!", _ID);
+				CALLM1(_thisObject, "onTargetClusterCreated", _x);
+			};
+		} forEach T_GETV("targetClusters");
+		
 		// Process cluster actions
 		{
 			CALLM0(_x, "process");
@@ -198,7 +211,7 @@ CLASS("AICommander", "AI")
 				// Update time
 				_ldPrev set [CLD_ID_TIME, time];
 				
-				systemChat "Location data was updated";
+				//systemChat "Location data was updated";
 				
 				// Show notification if we haven't updated this data for quite some time
 				if (_side == _thisSide && _side != _locSide) then {
@@ -457,16 +470,21 @@ CLASS("AICommander", "AI")
 	METHOD("onTargetClusterSplitted") {
 		params ["_thisObject", "_tcOld", "_tcsNew"];
 		
-		pr _ID = _tcOld select TARGET_CLUSTER_ID_ID;
-		pr _IDsNew = []; { _IDsNew pushBack (_x select 1 select TARGET_CLUSTER_ID_ID)} forEach _tcsNew;
-		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new IDs: %2", _ID, _IDsNew);
+		pr _IDOld = _tcOld select TARGET_CLUSTER_ID_ID;
+		pr _a = _tcsNew apply {[_x select 0, _x select 1 select TARGET_CLUSTER_ID_ID]};
+		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new affinity and IDs: %2", _IDOld, _a);
 		
 		// Sort new clusters by affinity
-		_tcsNew sort true; // Ascending
+		_tcsNew sort false; // Descending
 		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
-		pr _newClusterID = _tcsNew select 0 select TARGET_CLUSTER_ID_ID;
+		pr _newClusterID = _tcsNew select 0 select 1 select TARGET_CLUSTER_ID_ID;
 		// Notify the actions assigned to this cluster
-		
+		OOP_INFO_1("Redirecting actions to new cluster, ID: %1", _newClusterID);
+		{
+			if (CALLM0(_x, "getTargetClusterID") == _IDOld) then {
+				CALLM1(_x, "setTargetClusterID", _newClusterID);
+			};
+		} forEach T_GETV("targetClusterActions");
 		
 	} ENDMETHOD;	
 	
@@ -485,7 +503,19 @@ CLASS("AICommander", "AI")
 		
 		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
 		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
-		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _ID);
+		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _IDnew);
+		
+		// Assign all actions from old IDs to new IDs
+		pr _actions = T_GETV("targetClusterActions");
+		{
+			pr _IDOld = _x;
+			{
+				pr _action = _x;
+				if (CALLM0(_action, "getTargetClusterID") == _IDOld) then {
+					CALLM1(_action, "setTargetClusterID", _IDnew);
+				};
+			} forEach T_GETV("targetClusterActions");
+		} forEach _IDsOld;
 		
 	} ENDMETHOD;
 	

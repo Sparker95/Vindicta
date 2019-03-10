@@ -221,7 +221,8 @@ CLASS(UNIT_CLASS_NAME, "");
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
-
+					_objectHandle allowFleeing 0;
+					
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 					//_objectHandle disableAI "PATH";
