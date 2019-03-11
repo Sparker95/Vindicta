@@ -539,28 +539,23 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			if (isNull _groupHandle) then {
+				private _side = _data select GROUP_DATA_ID_SIDE;
+				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
+			
+			_groupHandle setBehaviour "SAFE";
+			
 			{
 				private _unit = _x;
 				private _unitData = CALL_METHOD(_unit, "getMainData", []);
-
-				// Create a group handle if we have any infantry and the group handle doesn't exist yet
-				private _catID = _unitData select 0;
-				if (_catID == T_INF) then {
-					pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-					if (isNull _groupHandle) then {
-						private _side = _data select GROUP_DATA_ID_SIDE;
-						_groupHandle = createGroup [_side, false]; //side, delete when empty
-						_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
-					};
-				};
 				private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
 				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
-
-			// Set group default behaviour
-			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-			_groupHandle setBehaviour "SAFE";
 
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");

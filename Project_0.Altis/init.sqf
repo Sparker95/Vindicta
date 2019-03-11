@@ -4,6 +4,7 @@
 #include "Message\Message.hpp"
 #include "CriticalSection\CriticalSection.hpp"
 #include "AI\Commander\AICommander.hpp"
+#include "AI\Commander\LocationData.hpp"
 
 /*
 Dirty init.sqf

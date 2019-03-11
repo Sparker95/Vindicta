@@ -56,7 +56,17 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Send a random guy to perform repairs for now
 		if (count _infUnits > 0 || count _engineerUnits > 0) then {
-			pr _repairUnit = if (count _engineerUnits > 0) then {selectRandom _engineerUnits} else {selectRandom _infUnits};
+			// Just repair one vehicle at a time for now
+			pr _brokenVehicle = _brokenVehicles select 0;
+			pr _brokenVehicleHandle = CALLM0(_brokenVehicle, "getObjectHandle");
+		
+			pr _repairUnit = if (count _engineerUnits > 0) then {selectRandom _engineerUnits} else {
+				// Sort all units by distance to the broken vehicle
+				pr _infUnitsSorted = _infUnits apply {[CALLM0(_x, "getPos") distance2D _brokenVehicleHandle, _x]};
+				_infUnitsSorted sort true; // Ascending
+				// Return
+				_infUnitsSorted select 0 select 1
+			};
 			T_SETV("repairUnit", _repairUnit);
 			pr _repairUnitAI = CALLM0(_repairUnit, "getAI");
 			
@@ -68,8 +78,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			} forEach _brokenVehicles;
 			*/
 			
-			// Just repair one vehicle at a time for now
-			pr _brokenVehicle = _brokenVehicles select 0;
 			pr _args = ["GoalUnitRepairVehicle", 0, [["vehicle", _brokenVehicle]], _AI, false];
 			CALLM2(_repairUnitAI, "postMethodAsync", "addExternalGoal", _args);
 			

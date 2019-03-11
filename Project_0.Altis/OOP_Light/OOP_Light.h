@@ -496,7 +496,7 @@ _objNameStr \
 #define DESTRUCTOR_ASSERT_OBJECT(objNameStr)
 #endif
 
-#define DELETE(objNameStr) [] call { \
+#define DELETE(objNameStr) call { \
 DESTRUCTOR_ASSERT_OBJECT(objNameStr) \
 private _oop_classNameStr = OBJECT_PARENT_CLASS_STR(objNameStr); \
 private _oop_parents = GET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR); \
@@ -509,7 +509,6 @@ _oop_i = _oop_i - 1; \
 }; \
 private _isPublic = IS_PUBLIC(objNameStr); \
 private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
-{FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
 if (_isPublic) then { \
 {FORCE_SET_MEM(objNameStr, _x, nil); PUBLIC_VAR(objNameStr, OOP_PARENT_STR);} forEach _oop_memList; \
 } else { \

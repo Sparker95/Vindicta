@@ -81,6 +81,19 @@ CLASS("AICommander", "AI")
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
 		
+		// Check if there are any clusters without assigned actions
+		pr _actions = T_GETV("targetClusterActions");
+		{
+			pr _ID = _x select TARGET_CLUSTER_ID_ID;
+			pr _index = _actions findIf {CALLM0(_x, "getTargetClusterID") == _ID};
+			
+			// If we didn't find any actions assigned to this target cluster
+			if (_index == -1) then {
+				OOP_INFO_1("Target cluster with ID %1 has no actions assigned!", _ID);
+				CALLM1(_thisObject, "onTargetClusterCreated", _x);
+			};
+		} forEach T_GETV("targetClusters");
+		
 		// Process cluster actions
 		{
 			CALLM0(_x, "process");
@@ -198,7 +211,7 @@ CLASS("AICommander", "AI")
 				// Update time
 				_ldPrev set [CLD_ID_TIME, time];
 				
-				systemChat "Location data was updated";
+				//systemChat "Location data was updated";
 				
 				// Show notification if we haven't updated this data for quite some time
 				if (_side == _thisSide && _side != _locSide) then {
@@ -448,45 +461,32 @@ CLASS("AICommander", "AI")
 	Method: onTargetClusterSplitted
 	Gets called when an already known cluster gets splitted into multiple new clusters.
 	
-	Parameters: _tc
+	Parameters: _tcsNew
 	
-	_tc - the new target cluster
+	_tcsNew - array of [_affinity, _newTargetCluster]
 	
 	Returns: nil
 	*/
 	METHOD("onTargetClusterSplitted") {
 		params ["_thisObject", "_tcOld", "_tcsNew"];
 		
-		pr _ID = _tcOld select TARGET_CLUSTER_ID_ID;
-		pr _IDsNew = []; { _IDsNew pushBack (_x select 1 select TARGET_CLUSTER_ID_ID)} forEach _tcsNew;
-		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new IDs: %2", _ID, _IDsNew);
+		pr _IDOld = _tcOld select TARGET_CLUSTER_ID_ID;
+		pr _a = _tcsNew apply {[_x select 0, _x select 1 select TARGET_CLUSTER_ID_ID]};
+		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new affinity and IDs: %2", _IDOld, _a);
 		
-	} ENDMETHOD;
-	
-	/*
-	Method: getTargetCluster
-	Returns a target cluster with specified ID
-	
-	Parameters: _ID
-	
-	_ID - ID of the target cluster
-	
-	Returns: target cluster structure or [] if nothing was found
-	*/
-	METHOD("getTargetCluster") {
-		params ["_thisObject", ["_ID", 0, [0]]];
-		
-		pr _targetClusters = T_GETV("targetClusters");
-		pr _ret = [];
-		{ // foreach _targetClusters
-			if (_x select TARGET_CLUSTER_ID_ID == _ID) exitWith {
-				_ret = _x;
+		// Sort new clusters by affinity
+		_tcsNew sort false; // Descending
+		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
+		pr _newClusterID = _tcsNew select 0 select 1 select TARGET_CLUSTER_ID_ID;
+		// Notify the actions assigned to this cluster
+		OOP_INFO_1("Redirecting actions to new cluster, ID: %1", _newClusterID);
+		{
+			if (CALLM0(_x, "getTargetClusterID") == _IDOld) then {
+				CALLM1(_x, "setTargetClusterID", _newClusterID);
 			};
-		} forEach _targetClusters;
+		} forEach T_GETV("targetClusterActions");
 		
-		_ret
-	} ENDMETHOD;
-	
+	} ENDMETHOD;	
 	
 	/*
 	Method: onTargetClusterMerged
@@ -503,7 +503,19 @@ CLASS("AICommander", "AI")
 		
 		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
 		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
-		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _ID);
+		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _IDnew);
+		
+		// Assign all actions from old IDs to new IDs
+		pr _actions = T_GETV("targetClusterActions");
+		{
+			pr _IDOld = _x;
+			{
+				pr _action = _x;
+				if (CALLM0(_action, "getTargetClusterID") == _IDOld) then {
+					CALLM1(_action, "setTargetClusterID", _IDnew);
+				};
+			} forEach T_GETV("targetClusterActions");
+		} forEach _IDsOld;
 		
 	} ENDMETHOD;
 	
@@ -540,6 +552,31 @@ CLASS("AICommander", "AI")
 		
 	} ENDMETHOD;
 	
+	
+	/*
+	Method: getTargetCluster
+	Returns a target cluster with specified ID
+	
+	Parameters: _ID
+	
+	_ID - ID of the target cluster
+	
+	Returns: target cluster structure or [] if nothing was found
+	*/
+	METHOD("getTargetCluster") {
+		params ["_thisObject", ["_ID", 0, [0]]];
+		
+		pr _targetClusters = T_GETV("targetClusters");
+		pr _ret = [];
+		{ // foreach _targetClusters
+			if (_x select TARGET_CLUSTER_ID_ID == _ID) exitWith {
+				_ret = _x;
+			};
+		} forEach _targetClusters;
+		
+		_ret
+	} ENDMETHOD;
+	
 	/*
 	Method: allocateUnitsGroundQRF
 	Tries to find a location to send units from
@@ -561,8 +598,12 @@ CLASS("AICommander", "AI")
 		// Find locations controled by this side
 		private _friendlyLocations = _allLocations select {
 			pr _gar = CALLM0(_x, "getGarrisonMilitaryMain");
-			pr _garSide = CALLM0(_gar, "getSide");
-			_garSide == _side
+			if (_gar != "") then {
+				pr _garSide = CALLM0(_gar, "getSide");
+				_garSide == _side
+			} else {
+				false
+			};
 		};
 		
 		// Sort friendly locations by distance

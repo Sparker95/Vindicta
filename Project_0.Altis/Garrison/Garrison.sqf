@@ -870,6 +870,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		"ActionGarrisonLoadCargo",
 		"ActionGarrisonMountCrew",
 		"ActionGarrisonMountInfantry",
+		"ActionGarrisonMountCrewInfantry",
 		"ActionGarrisonMoveDismounted",
 		//"ActionGarrisonMoveMountedToPosition",
 		//"ActionGarrisonMoveMountedToLocation",

@@ -34,6 +34,22 @@ CLASS("ActionComposite", "Action")
 		CALLM(_thisObject, "deleteAllSubactions", []);
 	} ENDMETHOD;
 	
+	/*
+	Method: getFrontSubaction
+	Returns the first action in the subactions array, or "" if the array is empty.
+	
+	Returns: <Action> or ""
+	*/
+	
+	METHOD("getFrontSubaction") {
+		params [ "_thisObject" ];
+		private _sa = T_GETV("subactions");
+		if (count _sa == 0) then {
+			""
+		} else {
+			_sa select 0
+		};
+	} ENDMETHOD;
 	
 	// Serial and Parallel composite actions implement this method differently
 	/*virtual*/ METHOD("processSubactions") {	} ENDMETHOD;

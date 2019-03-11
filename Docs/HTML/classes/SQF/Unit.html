@@ -34,7 +34,7 @@
 
 <a name="createAI"></a><a name="Topic474"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">createAI</div>
- <div class="CBody"><p>Creates an AI object for this unit after it has been spawned or changed owner.</p><p>Parameters: _AIClassName</p><table class="CDefinitionList"><tr><td class="CDLEntry">_AIClassName</td><td class="CDLDefinition"><p>class name of <a href="../../index.html#SQFClass:AI" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,48);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >AI</a> object to create</p></td></tr></table><p>Access: meant for internal use!</p><p>Returns: Created <a href="../../index.html#SQFClass:AI" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,48);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >AI</a> object</p></div>
+ <div class="CBody"><p>Creates an AI object for this unit after it has been spawned or changed owner.</p><p>Parameters: _AIClassName</p><table class="CDefinitionList"><tr><td class="CDLEntry">_AIClassName</td><td class="CDLDefinition"><p>class name of <a href="../../index.html#SQFClass:AI" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,548);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >AI</a> object to create</p></td></tr></table><p>Access: meant for internal use!</p><p>Returns: Created <a href="../../index.html#SQFClass:AI" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,548);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >AI</a> object</p></div>
 </div>
 
 <a name="spawn"></a><a name="Topic475"></a><div class="CTopic TFunction LSQF">
@@ -102,6 +102,11 @@
  <div class="CBody"><p>Returns category ID, subcategory ID and class name of this unit</p><p>Returns: array: [_catID, _subcatID, _className]</p></div>
 </div>
 
+<a name="getEfficiency"></a><a name="Topic324"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getEfficiency</div>
+ <div class="CBody"><p>Returns efficiency vector of this unit</p><p>Returns: Efficiency vector</p></div>
+</div>
+
 <a name="getData"></a><a name="Topic488"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getData</div>
  <div class="CBody"><p>Access: Meant for internal use since you can break the <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object this way.</p><p>Returns: the internal data array of this unit.</p></div>
@@ -125,6 +130,16 @@
 <a name="(static)createUnitFromObjectHandle"></a><a name="Topic492"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)createUnitFromObjectHandle</div>
  <div class="CBody"><p>NYI Creates a unit and instantly attaches it to provided object handle.</p><p>Returns: <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a></p></div>
+</div>
+
+<a name="(static)getRequiredCrew"></a><a name="Topic562"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getRequiredCrew</div>
+ <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this garrison.</p><p>Parameters: _units</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>array of <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: [_nDrivers, _nTurrets]</p></div>
+</div>
+
+<a name="(static)getCargoInfantryCapacity"></a><a name="Topic563"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getCargoInfantryCapacity</div>
+ <div class="CBody"><p>Returns how many units can be loaded as cargo by all the vehicles from _units</p><p>Parameters: _units</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>array of <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: Number</p></div>
 </div>
 
 <a name="getVehaviour"></a><a name="Topic493"></a><div class="CTopic TFunction LSQF">
@@ -155,6 +170,11 @@
 <a name="isDrone"></a><a name="Topic498"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isDrone</div>
  <div class="CBody"><p>Returns true if given <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is drone</p><p>Returns: Bool</p></div>
+</div>
+
+<a name="isStatic"></a><a name="Topic564"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isStatic</div>
+ <div class="CBody"><p>Returns true if given <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> is one of static vehicles defined in Templates</p><p>Returns: Bool</p></div>
 </div>
 
 <a name="getSubagents"></a><a name="Topic499"></a><div class="CTopic TFunction LSQF">

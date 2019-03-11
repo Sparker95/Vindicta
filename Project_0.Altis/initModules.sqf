@@ -120,3 +120,4 @@ call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 // Initialize Camp class
 call compile preprocessFileLineNumbers "Camp\initClasses.sqf";
 
+diag_log "initModules ended!";

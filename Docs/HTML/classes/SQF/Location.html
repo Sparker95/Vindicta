@@ -56,6 +56,11 @@
  <div class="CBody"><p>Gets the main military garrison located at this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no garrison there</p></div>
 </div>
 
+<a name="getGarrisonMilAA"></a><a name="Topic556"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getGarrisonMilAA</div>
+ <div class="CBody"><p>Gets the main military garrison located at this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no garrison there</p></div>
+</div>
+
 <a name="setType"></a><a name="Topic287"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setType</div>
  <div class="CBody"><p>Set the Type.</p><p>Parameters: _type</p><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>String</p></td></tr></table><p>Returns: nil</p></div>
@@ -64,6 +69,26 @@
 <a name="getType"></a><a name="Topic288"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getType</div>
  <div class="CBody"><p>Returns type of this location</p><p>Returns: String</p></div>
+</div>
+
+<a name="getSide"></a><a name="Topic557"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getSide</div>
+ <div class="CBody"><p>Returns side of the garrison that controls this location.</p><p>Returns: Side, or Civilian if there is no garrison</p></div>
+</div>
+
+<a name="getCapacityInf"></a><a name="Topic558"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getCapacityInf</div>
+ <div class="CBody"><p>Returns type of this location</p><p>Returns: Integer</p></div>
+</div>
+
+<a name="getCurrentGarrison"></a><a name="Topic559"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getCurrentGarrison</div>
+ <div class="CBody"><p>Returns the current garrison attached to this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no current garrison</p></div>
+</div>
+
+<a name="countAvailableUnits"></a><a name="Topic560"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">countAvailableUnits</div>
+ <div class="CBody"><p>Returns an number of current units of this location</p><p>Returns: Integer</p></div>
 </div>
 
 <a name="addAllowedArea"></a><a name="Topic333"></a><div class="CTopic TFunction LSQF">
@@ -86,9 +111,9 @@
  <div class="CBody"><p>Calculates infantry capacity based on buildings in this location.</p><table class="CDefinitionList"><tr><td class="CDLEntry">Returns: Number</td><td class="CDLDefinition"><p>amount of infantry soldeirs that can stay here</p></td></tr></table><p>Author: Sparker 03.08.2018</p></div>
 </div>
 
-<a name="(static)createAllFromEditor"></a><a name="Topic324"></a><div class="CTopic TFunction LSQF">
+<a name="(static)createAllFromEditor"></a><a name="Topic297"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)createAllFromEditor</div>
- <div class="CBody"><p>Checks the game world for predefined game objects and markers and creates locations from them.</p><p>Author: Sparker 28.07.2018</p></div>
+ <div class="CBody"><p>Checks the game world for predefined game objects and markers and creates locations from them.&nbsp; This use custom Project_0 Module Location.</p></div>
 </div>
 
 <a name="(static)getLocationAtPos"></a><a name="Topic318"></a><div class="CTopic TFunction LSQF">
@@ -126,9 +151,9 @@
  <div class="CBody"><p>Checks spawn conditions of this location. Spawns garrisons if needed.</p></div>
 </div>
 
-<a name="initFromEditor"></a><a name="Topic297"></a><div class="CTopic TFunction LSQF">
+<a name="initFromEditor"></a><a name="Topic561"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">initFromEditor</div>
- <div class="CBody"><p>Initializes the location parameters from editor-plased objects.</p><p>Parameters: _marker</p><table class="CDefinitionList"><tr><td class="CDLEntry">_marker</td><td class="CDLDefinition"><p>the marker to initialize from</p></td></tr></table><p>Returns: nil</p><p>Author: Sparker 28.07.2018</p></div>
+ <div class="CBody"><p>Initializes the location parameters from editor-placed objects.</p><p>Parameters: _locationSector</p><table class="CDefinitionList"><tr><td class="CDLEntry">_locationSector</td><td class="CDLDefinition"><p>Object -&gt; Location Module</p></td></tr></table><p>Returns: nil</p><p>Author: Sparker 28.07.2018</p></div>
 </div>
 
 <a name="isInAllowedArea"></a><a name="Topic306"></a><div class="CTopic TFunction LSQF">

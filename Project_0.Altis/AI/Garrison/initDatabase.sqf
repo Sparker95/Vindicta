@@ -77,6 +77,13 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonMountInfantry",	_s,		[]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMountInfantry",	_s,		[	[WSP_GAR_ALL_INFANTRY_MOUNTED,	true]]] call AI_misc_fnc_setActionEffects;
 
+// Mount crew and infantry
+["ActionGarrisonMountCrewInfantry",	_s,		[ [WSP_GAR_VEHICLE_GROUPS_MERGED, true] ]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonMountCrewInfantry",	_s,		[	[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
+												[WSP_GAR_ALL_CREW_MOUNTED,		true]]] call AI_misc_fnc_setActionEffects;
+
+
+
 // Move mounted to position
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
 													[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
@@ -147,6 +154,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 #define C 1.0
 ["ActionGarrisonMountCrew",					C*0.4]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMountInfantry",				C*0.6]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonMountCrewInfantry",			C*0.7]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMounted",				C*2.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMountedCargo",			C*3.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveDismounted",			C*8.0]	call AI_misc_fnc_setActionCost;
@@ -162,6 +170,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // ---- Action precedence ----
 ["ActionGarrisonMountCrew",					5]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMountInfantry",				6]	call AI_misc_fnc_setActionPrecedence;
+["ActionGarrisonMountCrewInfantry",			6]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMoveMounted",				20]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMoveMountedCargo",			20]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonMoveDismounted",			20]	call AI_misc_fnc_setActionPrecedence;

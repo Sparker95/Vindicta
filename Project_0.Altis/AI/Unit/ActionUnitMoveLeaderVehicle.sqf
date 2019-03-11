@@ -151,7 +151,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		_state
 	} ENDMETHOD;
 	
-	// logic to run when the goal is satisfied
+	// logic to run when the goal is about to be terminated
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		

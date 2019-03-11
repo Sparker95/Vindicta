@@ -63,13 +63,24 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
+		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
 		pr _name = _thisObject + MRK_GOAL;
 		pr _mrk = createmarker [_name, CALLM0(_agent, "getPos")];
 		_mrk setMarkerType "n_unknown";
-		_mrk setMarkerColor ([CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor);
+		_mrk setMarkerColor _color;
 		_mrk setMarkerAlpha 1;
 		_mrk setMarkerText "new...";
 		// Arrow marker (todo)
+		
+		// Arrow marker
+		pr _name = _thisObject + MRK_ARROW;
+		pr _mrk = createMarker [_name, [0, 0, 0]];
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [10, 10];
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0.5;
+		
 		#endif
 		
 	} ENDMETHOD;
@@ -92,12 +103,41 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _mrk = _thisObject + MRK_GOAL;
 		
 		// Set text
-		pr _text = format ["%1, %2, %3, %4", _gar, T_GETV("currentGoal"), T_GETV("currentGoalParameters"), T_GETV("currentAction")];
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			_action = CALLM0(_action, "getFrontSubaction");
+		};
+		pr _text = format ["%1, %2, %3, %4", _gar, T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
 		_mrk setMarkerText _text;
 		
 		// Set pos
 		pr _pos = CALLM0(_gar, "getPos");
 		_mrk setMarkerPos _pos;
+		
+		// Update arrow marker
+		pr _mrk = _thisObject + MRK_ARROW;
+		pr _goalParameters = T_GETV("currentGoalParameters");
+		// See if location or position is passed
+		pr _pPos = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_G_POS, false);
+		pr _pLoc = CALLSM3("Action", "getParameterValue", _goalParameters, TAG_LOCATION, false);
+		if (isNil "_pPos" && isNil "_pLoc") then {
+			_mrk setMarkerAlpha 0; // Hide the marker
+		} else {
+			_mrk setMarkerAlpha 0.5; // Show the marker
+			pr _posDest = [0, 0, 0];
+			if (!isNil "_pPos") then {	_posDest = _pPos;	};
+			if (!isNil "_pLoc") then {
+				if (_pLoc isEqualType "") then {
+					_posDest = CALLM0(_pLoc, "getPos");
+				} else {
+					_posDest = _pLoc;
+				};
+			};
+			pr _mrkPos = (_posDest vectorAdd _pos) vectorMultiply 0.5;
+			_mrk setMarkerPos _mrkPos;
+			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];
+			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
+		};
 		
 	} ENDMETHOD;
 	#endif
