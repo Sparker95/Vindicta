@@ -431,6 +431,20 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _data = GETV(_thisObject, "data");
 		_data select GROUP_DATA_ID_SPAWNED
 	} ENDMETHOD;
+	
+	// 								I S   E M P T Y 
+	/*
+	Method: isEmpty
+	Returns true if group has no units in it
+
+	Returns: Bool
+	*/
+	METHOD("isEmpty") {
+		params [["_thisObject", "", [""]]];
+
+		pr _data = GETV(_thisObject, "data");
+		count (_data select GROUP_DATA_ID_UNITS) == 0
+	} ENDMETHOD;
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

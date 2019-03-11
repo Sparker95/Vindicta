@@ -53,7 +53,7 @@ CLASS("ActionUnitVehicleUnflip", "ActionUnit")
 		
 		OOP_INFO_0("PROCESS");
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 		

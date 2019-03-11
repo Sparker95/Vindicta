@@ -51,7 +51,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		_state

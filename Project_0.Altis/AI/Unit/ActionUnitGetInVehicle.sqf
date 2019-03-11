@@ -402,7 +402,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		params [["_thisObject", "", [""]]];
 		
 		pr _AI = GETV(_thisObject, "AI");
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			

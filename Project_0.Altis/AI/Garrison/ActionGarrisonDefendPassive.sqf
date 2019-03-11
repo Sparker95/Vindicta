@@ -80,7 +80,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		//diag_log "---- Garrison defend passive action!";
 		

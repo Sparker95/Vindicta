@@ -81,7 +81,7 @@ CLASS("ActionUnitSalute", "Action")
 		
 		diag_log "salute process was called!";
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// If action is not active now, do nothing
 		pr _state = GETV(_thisObject, "state");
