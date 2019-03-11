@@ -258,6 +258,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
 
+// Macros for calls to this
+#define T_CALLM(a, b) CALL_METHOD(_thisObject, a, b)
+#define T_CALLM0(a) CALL_METHOD_0(_thisObject, a)
+#define T_CALLM1(a, b) CALL_METHOD_1(_thisObject, a, b)
+#define T_CALLM2(a, b, c) CALL_METHOD_2(_thisObject, a, b, c)
+#define T_CALLM3(a, b, c, d) CALL_METHOD_3(_thisObject, a, b, c, d)
+#define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
+
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
 #define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d)
@@ -313,6 +321,7 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), 
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
 
 // ----------------------------------------
@@ -512,7 +521,9 @@ if (_isPublic) then { \
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
 
-#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else {"NoClass"}}
+#define LOG_SCOPE(scopeName) private _oop_logScope = scopeName
+#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }}}
+//#define LOG_1 _fnc_scriptName
 #define LOG_1 "fnc"
 
 // If ofstream addon is globally enabled
