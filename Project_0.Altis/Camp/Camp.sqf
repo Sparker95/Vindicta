@@ -1,5 +1,8 @@
 #include "camp.hpp"
 #include "..\Group\Group.hpp"
+#include "..\AI\Commander\AICommander.hpp"
+#include "..\AI\Commander\LocationData.hpp"
+
 /*
 Class: Camp
 Camp has garrisons at a static place and spawns units handle by location variable.
@@ -122,7 +125,7 @@ CLASS("Camp", "Location")
 			_i = _i + 1;
 		};
 
-		CALLM1(gAICommanderWest, "updateLocationData", [_thisObject]);
+		CALLM2(gAICommanderWest, "updateLocationData", _thisObject, CLD_UPDATE_LEVEL_UNITS);
 		OOP_INFO_1("new camp created: %1", _thisObject);
 	} ENDMETHOD;
 
