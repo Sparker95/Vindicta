@@ -37,7 +37,7 @@
 
 #define TIME_SEEN 5									// time it takes, in seconds, for player unit to go from "seen" to "unseen"
 #define TIME_HOSTILITY 10							// time in seconds player unit is overt after a hostile action
-#define TIME_UNSEEN_WANTED_EXIT -240				// time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
+#define TIME_UNSEEN_WANTED_EXIT -1200				// time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
 
 #define HINT_DISPTIME 8								// amount of time each hint is displayed
 
