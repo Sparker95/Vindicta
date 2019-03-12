@@ -270,6 +270,19 @@ CLASS("Garrison", "MessageReceiverEx");
 			[0, 0, 0]
 		};
 	} ENDMETHOD;
+	
+	//						I S   E M P T Y
+	/*
+	Method: isEmpty
+	Returns true if garrison is empty (has no units)
+
+	Returns: Bool
+	*/
+	METHOD("isEmpty") {
+		params ["_thisObject"];
+		(count T_GETV("units")) == 0
+	} ENDMETHOD;	
+	
 
 	//             F I N D   G R O U P S   B Y   T Y P E
 	/*

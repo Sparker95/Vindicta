@@ -87,7 +87,11 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	METHOD("delete") {
 		params ["_thisObject"];
+		
+		#ifdef DEBUG_GOAL_MARKERS
 		deleteMarker (_thisObject + MRK_GOAL);
+		deleteMarker (_thisObject + MRK_ARROW);
+		#endif
 	} ENDMETHOD;
 	
 	

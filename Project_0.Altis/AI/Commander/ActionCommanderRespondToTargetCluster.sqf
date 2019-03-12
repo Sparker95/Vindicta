@@ -51,6 +51,8 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		
 		// Make a new garrison
 		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
+		// Register it at the commander
+		CALLM1(_AI, "registerGarrison", _newGar);
 		
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
 		pr _success = false;
@@ -142,7 +144,21 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
-		if (_state == ACTION_STATE_ACTIVE) then {		
+		if (_state == ACTION_STATE_ACTIVE) then {
+			// Delete destroyed garrisons
+			pr _allocatedGarrisons = T_GETV("allocatedGarrisons");
+			pr _i = 0;
+			while {_i < count _allocatedGarrisons} do {
+				pr _gar = _allocatedGarrisons select _i select 0;
+				if (CALLM0(_gar, "isEmpty")) then {
+					OOP_INFO_1("---- Unreferensing a destroyed garrison: %1", _x);
+					_allocatedGarrisons deleteAt _i;
+					CALLM2(_gar, "postMethodAsync", "unref", []);
+				} else {
+					_i = _i + 1;
+				};
+			};
+			
 			// Check cluster position
 			pr _ID = T_GETV("clusterID");
 			pr _AI = T_GETV("AI");

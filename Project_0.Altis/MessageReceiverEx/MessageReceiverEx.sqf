@@ -1,5 +1,6 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
+#include "..\CriticalSection\CriticalSection.hpp"
 
 /*
 Class: MessageReceiver.MessageReceiverEx
@@ -8,7 +9,7 @@ It is useful for objects which need some methods to be executed synchronously or
 
 It works by overriding handleMessage method and making all String <Message> types represent method names to call.
 
-Author: Sparker
+Author: Sparker, Billw (reference count improvements)
 16.07.2018
 */
 
@@ -16,6 +17,20 @@ Author: Sparker
 
 CLASS("MessageReceiverEx", "MessageReceiver");
 
+	VARIABLE("refCount");
+
+	METHOD("new") {
+		params ["_thisObject"];
+		T_SETV("refCount", 0);
+	} ENDMETHOD;
+	
+	// todo check reference count on deletion
+	/*
+	METHOD("delete") {
+		params ["_thisObject"];
+	} ENDMETHOD;
+	*/
+	
 	/*
 	Method: handleMessage
 	See <MessageReceiver.handleMessage>.
@@ -117,5 +132,38 @@ CLASS("MessageReceiverEx", "MessageReceiver");
 		// Return whatever was returned by this object
 		_return
 	} ENDMETHOD;
+	
+	// - - - - REFERENCE COUNTER - - - -
+	
+	 METHOD("ref") {
+	 	params ["_thisObject"];
+	 	CRITICAL_SECTION_START
+        T_SETV("refCount", T_GETV("refCount") + 1);
+        CRITICAL_SECTION_END
+        nil // return this to make SQF happy (= operator returns nothing, not nil)
+    } ENDMETHOD;
+
+    METHOD("unref") {
+    	params ["_thisObject"];
+    	pr _mustDelete = false;
+    	
+    	// Start critical section
+    	CRITICAL_SECTION_START
+    	pr _refCount = T_GETV("refCount");
+        _refCount = _refCount - 1;
+        if(_refCount <= 0) then {
+            _mustDelete = true;
+        } else {
+        	T_SETV("refCount", _refCount);
+        };
+        CRITICAL_SECTION_END
+        
+        // If refcount is zero, delete the object outside of critical section, because child classes might need to synchronize with other threads
+        if (_mustDelete) then {
+        	DELETE(_thisObject);
+        };
+        
+        nil
+    } ENDMETHOD;
 
 ENDCLASS;
