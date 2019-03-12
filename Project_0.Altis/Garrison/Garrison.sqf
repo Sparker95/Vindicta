@@ -364,6 +364,13 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _units = GET_VAR(_thisObject, "units");
 		_units pushBackUnique _unit;
+		
+		// Notify AI object
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleUnitsAdded", [_unit]);
+		};
+		
 		CALL_METHOD(_unit, "setGarrison", [_thisObject]);
 		
 		// Add to the efficiency vector
@@ -389,6 +396,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 		
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
+		
+		// Notify AI of the garrison about unit removal
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleUnitsRemoved", [_unit]);
+		};
 		
 		private _units = GET_VAR(_thisObject, "units");
 		_units deleteAt (_units find _unit);

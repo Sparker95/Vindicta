@@ -11,10 +11,12 @@ Garrison moves on available vehicles
 CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	VARIABLE("repairUnit"); // The unit that will perform repairs on vehicles
+	VARIABLE("fubarcar"); // The broken vehicle, beyond all repair
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		T_SETV("repairUnit", "");
+		T_SETV("fubarcar", "");
 	} ENDMETHOD;
 
 
@@ -58,6 +60,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		if (count _infUnits > 0 || count _engineerUnits > 0) then {
 			// Just repair one vehicle at a time for now
 			pr _brokenVehicle = _brokenVehicles select 0;
+			T_SETV("fubarcar", _brokenVehicle);
 			pr _brokenVehicleHandle = CALLM0(_brokenVehicle, "getObjectHandle");
 		
 			pr _repairUnit = if (count _engineerUnits > 0) then {selectRandom _engineerUnits} else {
@@ -129,6 +132,47 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			CALLM2(_repairUnitAI, "postMethodAsync", "deleteExternalGoal", _args);
 		};
 		
+	} ENDMETHOD;
+	
+
+
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		{
+			CALLM1(_thisObject, "handleUnitsAdded", CALLM0(_x, "getUnits"));
+		} forEach _groups;
+		
+		nil
+	} ENDMETHOD;
+
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		{
+			CALLM1(_thisObject, "handleUnitsRemoved", CALLM0(_x, "getUnits"));
+		} forEach _groups;
+		
+		nil
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+			// Fail if either broken vehicle or repair unit is in the array with removed units
+			if (count ([T_GETV("fubarcar"), T_GETV("repairUnit")] arrayIntersect _units) != 0) then {
+				T_SETV("fubarcar", "");
+				T_SETV("repairUnit", "");
+				T_SETV("state", ACTION_STATE_FAILED);
+			};
+		
+		nil
+	} ENDMETHOD;
+
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+			
+		nil
 	} ENDMETHOD;
 
 ENDCLASS;

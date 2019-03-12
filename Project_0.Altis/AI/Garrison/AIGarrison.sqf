@@ -197,11 +197,13 @@ CLASS("AIGarrison", "AI_GOAP")
 			pr _groupAI = CALLM0(_x, "getAI");
 			if (!isNil "_groupAI") then {
 				if (_groupAI != "") then {
-					CALLM2(_groupAI, "deleteExternalGoal", "", _thisObject);
+					pr _args = ["", _thisObject]; // Any goal from this object
+					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
 				};
 			};
 		} forEach _groups;
 		
+		// Notify the current action
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
@@ -215,7 +217,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	/*
 	Method: handleUnitsRemoved
-	Handles what happens when units get removed from their group, for instance when they gets destroyed.
+	Handles what happens when units get removed from their garrison, for instance when they gets destroyed.
 	
 	Access: internal
 	
@@ -228,13 +230,29 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		
+		// Delete goals given by this object
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (_unitAI != "") then {
+				pr _args = ["", _thisObject]; // Any goal from this object
+				CALLM2(_unitAI, "postMethodAsync", "deleteExternalGoal", _args);
+			};
+		} forEach _units;
+		
+		// Notify the current action
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			// Call it directly since it is in the same thread
+			CALLM1(_action, "handleUnitsRemoved", _units);
+		};
+		
 		// Update health sensor
 		CALLM0(T_GETV("sensorHealth"), "update");
 	} ENDMETHOD;
 	
 	/*
 	Method: handleUnitsAdded
-	Handles what happens when units get added to a group.
+	Handles what happens when units get added to a garrison.
 	
 	Access: internal
 	
@@ -246,6 +264,13 @@ CLASS("AIGarrison", "AI_GOAP")
 	*/
 	METHOD("handleUnitsAdded") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		// Notify the current action
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			// Call it directly since it is in the same thread
+			CALLM1(_action, "handleUnitsRemoved", _units);
+		};
 		
 		// Update health sensor
 		CALLM0(T_GETV("sensorHealth"), "update");
