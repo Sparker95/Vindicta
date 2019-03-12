@@ -11,7 +11,9 @@
                 "-a",
                 "--parse-only",
                 "--load", "./../../Project_0.Altis",
-                "-i", "${file}"
+                "-i", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write"
                 //"./../../${relativeFile}" 
             ],
             "options": {
@@ -45,7 +47,9 @@
             "args": [
                 "-a",
                 "--load", "./../../Project_0.Altis",
-                "-i", "${file}"
+                "-i", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/tools/SQF-VM"
