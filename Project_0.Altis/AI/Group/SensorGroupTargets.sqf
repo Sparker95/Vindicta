@@ -73,6 +73,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 			};
 			
 			// Loop through potential targets and find players(also in vehicles) to send data to their UndercoverMonitor
+			pr _exposedVehicleCrew = [];
 			{
 				pr _o = _x select 1;
 				
@@ -91,12 +92,18 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 									// I can see you!
 									pr _args = [_x, _hG];
 									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _x, false);
+									
+									// Add the unit to the list of observed vehicle crew
+									_exposedVehicleCrew pushBack [1, _x, side group _x, "Man", getPos _o, 0];
 								};
 							};
 						} forEach (crew _o);					
 					};
 				};				
-			} forEach _currentlyObservedObjects;		
+			} forEach _currentlyObservedObjects;
+			
+			// Add exposed vehicle crew to the array
+			_currentlyObservedObjects append _exposedVehicleCrew;
 		
 			if ((behaviour (leader _hG)) isEqualTo "COMBAT") then {
 				// Find new enemies
@@ -114,7 +121,9 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				if (_comTime > TARGET_TIME_RELAY || _loc == "") then {
 
 					pr _observedTargets = _currentlyObservedObjects select {
-						( (side group (_x select 1)) in _otherSides)
+						pr _hO = _x select 1;
+						( (side group  _hO) in _otherSides) &&
+						(_hO getVariable [UNDERCOVER_WANTED, true]) // If there is no variable, then this unit has no undercoverMonitor, so he is always wanted if spotted
 					};
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {

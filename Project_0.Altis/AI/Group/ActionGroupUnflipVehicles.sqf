@@ -35,7 +35,9 @@ CLASS("ActionGroupUnflipVehicles", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
 		

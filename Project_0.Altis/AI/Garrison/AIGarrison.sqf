@@ -17,6 +17,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("targets");
 	
 	VARIABLE("sensorHealth");
+	VARIABLE("sensorState");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -31,6 +32,10 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		
+		pr _sensorState = NEW("SensorGarrisonState", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorState);
+		T_SETV("sensorState", _sensorState);
 		
 		
 		pr _loc = CALLM0(_agent, "getLocation");
@@ -87,7 +92,11 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	METHOD("delete") {
 		params ["_thisObject"];
+		
+		#ifdef DEBUG_GOAL_MARKERS
 		deleteMarker (_thisObject + MRK_GOAL);
+		deleteMarker (_thisObject + MRK_ARROW);
+		#endif
 	} ENDMETHOD;
 	
 	
@@ -193,11 +202,13 @@ CLASS("AIGarrison", "AI_GOAP")
 			pr _groupAI = CALLM0(_x, "getAI");
 			if (!isNil "_groupAI") then {
 				if (_groupAI != "") then {
-					CALLM2(_groupAI, "deleteExternalGoal", "", _thisObject);
+					pr _args = ["", _thisObject]; // Any goal from this object
+					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
 				};
 			};
 		} forEach _groups;
 		
+		// Notify the current action
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
@@ -211,7 +222,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	/*
 	Method: handleUnitsRemoved
-	Handles what happens when units get removed from their group, for instance when they gets destroyed.
+	Handles what happens when units get removed from their garrison, for instance when they gets destroyed.
 	
 	Access: internal
 	
@@ -224,13 +235,26 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		
-		// Update health sensor
-		CALLM0(T_GETV("sensorHealth"), "update");
+		// Delete goals given by this object
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (_unitAI != "") then {
+				pr _args = ["", _thisObject]; // Any goal from this object
+				CALLM2(_unitAI, "postMethodAsync", "deleteExternalGoal", _args);
+			};
+		} forEach _units;
+		
+		// Notify the current action
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			// Call it directly since it is in the same thread
+			CALLM1(_action, "handleUnitsRemoved", _units);
+		};
 	} ENDMETHOD;
 	
 	/*
 	Method: handleUnitsAdded
-	Handles what happens when units get added to a group.
+	Handles what happens when units get added to a garrison.
 	
 	Access: internal
 	
@@ -243,8 +267,12 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("handleUnitsAdded") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		
-		// Update health sensor
-		CALLM0(T_GETV("sensorHealth"), "update");
+		// Notify the current action
+		pr _action = T_GETV("currentAction");
+		if (_action != "") then {
+			// Call it directly since it is in the same thread
+			CALLM1(_action, "handleUnitsRemoved", _units);
+		};
 	} ENDMETHOD;
 	
 	
@@ -252,6 +280,28 @@ CLASS("AIGarrison", "AI_GOAP")
 		params ["_thisObject", ["_loc", "", [""]]];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
+	} ENDMETHOD;
+
+	// Updates world state properties related to composition of the garrison
+	// Here we have checks that must be run only when new units/groups are added or removed
+	METHOD("updateComposition") {
+		params ["_thisObject"];
+		
+		pr _gar = T_GETV("agent");
+		pr _worldState = T_GETV("worldState");		
+		
+		// Find medics
+		pr _medics = [_gar, [[T_INF, T_INF_medic], [T_INF, T_INF_recon_medic]]] call GETM(_gar, "findUnits");
+		pr _medicAvailable = (count _medics) > 0;
+		[_worldState, WSP_GAR_MEDIC_AVAILABLE, _medicAvailable] call ws_setPropertyValue;
+		
+		
+		
+		// Find engineers
+		pr _engineers = [_gar, [[T_INF, T_INF_engineer]]] call GETM(_gar, "findUnits");
+		pr _engineerAvailable = (count _engineers) > 0;
+		[_worldState, WSP_GAR_ENGINEER_AVAILABLE, _engineerAvailable] call ws_setPropertyValue;
+		
 	} ENDMETHOD;
 
 ENDCLASS;

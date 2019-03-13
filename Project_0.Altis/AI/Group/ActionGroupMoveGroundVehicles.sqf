@@ -30,6 +30,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
 		T_SETV("radius", _radius);
 		
+		T_SETV("time", time);
+		
 		T_SETV("speedLimit", SPEED_MIN);
 	} ENDMETHOD;
 	
@@ -101,13 +103,15 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hG = T_GETV("hG"); // Group handle
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");
 		
-		pr _dt = time - T_GETV("time");
+		pr _dt = time - T_GETV("time") + 0.001;
 		T_SETV("time", time);
 		
 		//Check the separation of the convoy

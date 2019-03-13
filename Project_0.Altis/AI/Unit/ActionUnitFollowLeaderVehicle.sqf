@@ -49,7 +49,7 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hO = GETV(_thisObject, "hO");
 		pr _dist = (vehicle _hO) distance (vehicle leader group _hO);

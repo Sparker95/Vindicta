@@ -147,6 +147,12 @@ nameStr profilerSetCounter _oop_cnt; };
 #define OOP_PARENT_STR "oop_parent"
 #define OOP_PUBLIC_STR "oop_public"
 
+// Other important strings
+#define OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR "oop_missionEndText"
+// CfgDebriefing class entry in description.ext which is shown when a critical OOP error happens
+#define OOP_ERROR_DEBRIEFING_CLASS_NAME	end_OOP_class_error
+#define OOP_ERROR_DEBRIEFING_CLASS_NAME_STR "end_OOP_class_error"
+
 // ----------------------------------------------------------------------
 // |          I N T E R N A L   A C C E S S   M E M B E R S             |
 // ----------------------------------------------------------------------
@@ -336,7 +342,6 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), 
  */
 
 #define CLASS(classNameStr, baseClassNameStr)	 \
-scopeName "scopeClass"; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -345,7 +350,10 @@ private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
 if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {breakOut "scopeClass";}; \
+	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+		missionNamespace setVariable [OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR, format ["Class %1 is not defined. File: %2", baseClassNameStr, __FILE__]]; \
+		endMission OOP_ERROR_DEBRIEFING_CLASS_NAME_STR; \
+	}; \
 	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
 	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
 	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \

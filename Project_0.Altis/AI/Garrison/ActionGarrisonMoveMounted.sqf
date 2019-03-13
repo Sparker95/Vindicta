@@ -108,7 +108,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			ACTION_STATE_FAILED
 		};
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		scopeName "s0";
 		

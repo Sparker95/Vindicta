@@ -21,6 +21,9 @@ CLASS("AICommander", "AI")
 	VARIABLE("notificationID");
 	VARIABLE("notifications"); // Array with [task name, task creation time]
 
+	// Friendly garrisons we can access
+	VARIABLE("garrisons");
+
 	VARIABLE("targets"); // Array of targets known by this Commander
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
@@ -50,6 +53,9 @@ CLASS("AICommander", "AI")
 		T_SETV("locationDataThis", _thisLDArray);
 		T_SETV("notificationID", 0);
 		T_SETV("notifications", []);
+		
+		T_SETV("garrisons", []);
+		
 		T_SETV("targets", []);
 		T_SETV("targetClusters", []);
 		T_SETV("nextClusterID", 0);
@@ -856,5 +862,41 @@ CLASS("AICommander", "AI")
 		
 	} ENDMETHOD;
 	
+	/*
+	Method: registerGarrison
+	Registers a garrison to be processed by this AICommander
 	
+	Parameters:
+	_gar - <Garrison>
+	
+	Returns: nil
+	*/
+	METHOD("registerGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		T_GETV("garrisons") pushBack _gar; // I need you for my army!
+		CALLM2(_gar, "postMethodAsync", "ref", []);
+		
+		nil
+	} ENDMETHOD;
+	
+	/*
+	Method: unregisterGarrison
+	Unregisters a garrison from this AICommander
+	
+	Parameters:
+	_gar - <Garrison>
+	
+	Returns: nil
+	*/
+	METHOD("unregisterGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _garrisons = T_GETV("garrisons");
+		_garrisons deleteAt (_garrisons find _gar); // Get out of my sight you useless garrison!
+		CALLM2(_gar, "postMethodAsync", "unref", []);
+		
+		nil
+	} ENDMETHOD;
+		
 ENDCLASS;

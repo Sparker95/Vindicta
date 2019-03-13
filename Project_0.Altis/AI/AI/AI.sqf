@@ -197,13 +197,15 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]] ];
 		pr _type = _stimulus select STIMULUS_ID_TYPE;
-		pr _sensors = GETV(_thisObject, "sensors");
-		{
-			pr _stimTypes = CALLM(_x, "getStimulusTypes", []);
-			if (_type in _stimTypes) then {
-				CALLM(_x, "stimulate", [_stimulus]);
-			};
-		} foreach _sensors;
+		if (_type in T_GETV("sensorStimulusTypes")) then {
+			pr _sensors = GETV(_thisObject, "sensors");
+			{
+				pr _stimTypes = CALLM(_x, "getStimulusTypes", []);
+				if (_type in _stimTypes) then {
+					CALLM(_x, "stimulate", [_stimulus]);
+				};
+			} foreach _sensors;
+		};
 	} ENDMETHOD;
 	
 	

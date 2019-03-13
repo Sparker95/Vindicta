@@ -27,7 +27,7 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;

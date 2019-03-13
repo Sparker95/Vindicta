@@ -9,7 +9,7 @@ Saves some common variables at construction.
 
 CLASS("SensorGarrison", "Sensor")
 
-	VARIABLE("gar"); // Group handle
+	VARIABLE("gar"); // Garrison
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |

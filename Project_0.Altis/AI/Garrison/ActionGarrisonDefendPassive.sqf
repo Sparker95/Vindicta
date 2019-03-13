@@ -43,7 +43,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
@@ -80,7 +80,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		//diag_log "---- Garrison defend passive action!";
 		
