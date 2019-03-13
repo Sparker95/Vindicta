@@ -1,3 +1,6 @@
+#include "OOP_light\OOP_Light.h"
+
+
 author="Sparker, Jeroen, Marvis, Sen, Billw";
 OnLoadName = "Project_0";
 OnLoadMission = "Project_0";
@@ -47,7 +50,21 @@ class CfgIdentities
 
 class CfgDebriefing
 {
+	// Used when all players die in MP
+	class OOP_ERROR_DEBRIEFING_CLASS_NAME
+	{
+		title = "OOP: critical error";
+		description = "A critical OOP error has happened. See 'OOP error' section.";
+	};
+};
 
+class CfgDebriefingSections
+{
+	class OOP_error
+	{
+		title = "OOP error";
+		variable = OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR;
+	};
 };
 
 class Params {

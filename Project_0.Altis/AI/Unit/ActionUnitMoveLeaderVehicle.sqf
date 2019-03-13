@@ -75,7 +75,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hO = GETV(_thisObject, "hO");
 		pr _dt = time - T_GETV("time"); // Time that has passed since previous call

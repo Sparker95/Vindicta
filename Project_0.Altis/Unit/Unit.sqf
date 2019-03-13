@@ -304,7 +304,11 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Killed
 		_hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
-		_hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+		
+		// HandleDamage for infantry
+		if (_data select UNIT_DATA_ID_CAT == T_INF) then {
+			_hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+		};
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {

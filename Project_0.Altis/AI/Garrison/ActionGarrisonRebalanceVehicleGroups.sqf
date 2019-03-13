@@ -105,7 +105,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		*/
 		
 		// Call the health sensor again so that it can update the world state properties
-		CALLM0(GETV(_AI, "sensorHealth"), "update");
+		CALLM0(GETV(_AI, "sensorState"), "update");
 		
 		pr _ws = GETV(_AI, "worldState");
 		
@@ -125,7 +125,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		T_SETV("state", _state);

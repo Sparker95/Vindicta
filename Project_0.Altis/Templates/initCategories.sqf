@@ -111,6 +111,9 @@ T_VEH_need_heli_crew = [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_
 T_VEH_need_plane_crew = [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo]; //Vehicles that need crew like T_INF_pilot
 T_VEH_static = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
 
+// Vehicles which should be occupied when in combat
+T_VEH_combat = T_VEH_need_basic_crew + T_VEH_need_crew;
+
 // Ground vehicles with potential infantry transport capability
 T_VEH_ground_infantry_cargo =
 [

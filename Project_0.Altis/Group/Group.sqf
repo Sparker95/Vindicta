@@ -231,8 +231,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (CALLM0(_thisObject, "isSpawned")) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != "") then {
-				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsRemoved", [[_unit]], true);
-				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+				CALLM3(_AI, "postMethodSync", "handleUnitsRemoved", [[_unit]], true);
 			};
 		};
 
@@ -430,6 +429,20 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		pr _data = GETV(_thisObject, "data");
 		_data select GROUP_DATA_ID_SPAWNED
+	} ENDMETHOD;
+	
+	// 								I S   E M P T Y 
+	/*
+	Method: isEmpty
+	Returns true if group has no units in it
+
+	Returns: Bool
+	*/
+	METHOD("isEmpty") {
+		params [["_thisObject", "", [""]]];
+
+		pr _data = GETV(_thisObject, "data");
+		count (_data select GROUP_DATA_ID_UNITS) == 0
 	} ENDMETHOD;
 
 

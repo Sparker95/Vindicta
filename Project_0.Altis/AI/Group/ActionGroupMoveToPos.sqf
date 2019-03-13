@@ -44,6 +44,8 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 
+		CALLM0(_thisObject, "failIfEmpty");
+
 		private _state = CALLM0(_thisObject, "activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {

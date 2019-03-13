@@ -3,6 +3,9 @@
 /*
 Class: ActionGroup.ActionGroupGetInVehiclesAsCrew
 All members of this group will mount all vehicles in this group.
+
+Parameter tags:
+"onlyCombat" - optional, default false. if true, units will occupy only combat vehicles.
 */
 
 #define pr private
@@ -11,9 +14,15 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 
 	VARIABLE("driversAI");
 	VARIABLE("turretsAI");
+	VARIABLE("onlyCombat");
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		
+		pr _onlyCombat = CALLSM3("Action", "getParameterValue", _parameters, "onlyCombat", false);
+		if (isNil "_onlyCombat") then {_onlyCombat = false;};
+		T_SETV("onlyCombat", _onlyCombat);
+		
 		T_SETV("driversAI", []);
 		T_SETV("turretsAI", []);
 	} ENDMETHOD;
@@ -27,6 +36,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _onlyCombat = T_GETV("onlyCombat");
 		
 		// Assign units to vehicles
 		pr _units = CALLM0(_group, "getUnits") - _unitsIgnore;
@@ -51,10 +61,16 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 			if ((_n_driver > 0) && (count _crew > 0)) then {
 				pr _newDriver = _crew select 0;
 				pr _driverAI = CALLM0(_newDriver, "getAI");
-				pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "DRIVER"], ["turretPath", 0]];
+				CALLM0(_vehicles select _i, "getMainData") params ["_catID", "_subcatID"];
+				// If group must occupy only combat capable vehicles
+				if ( !(_subcatID in T_VEH_combat) && _onlyCombat) then {
+					CALLM4(_driverAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+				} else {
+					pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "DRIVER"], ["turretPath", 0]];
+					// Add goal to this driver
+					CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
+				};
 				
-				// Add goal to this driver
-				CALLM4(_driverAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
 				
 				// Add the AI of this driver to the array
 				_driversAI pushBack _driverAI;
@@ -68,15 +84,22 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		pr _turretsAI = [];
 		for "_i" from 0 to ((count _vehicles) - 1) do {
 			(_vehiclesStdCrew select _i) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
+			CALLM0(_vehicles select _i, "getMainData") params ["_catID", "_subcatID"];
 			{
 				if (count _crew > 0) then {
+				
 					pr _newTurret = _crew select 0;
 					pr _turretAI = CALLM0(_newTurret, "getAI");
-					pr _turretPath = _x;
-					pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "TURRET"], ["turretPath", _turretPath]];
-					
-					// Add goal to this turret
-					CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);		
+					if ( !(_subcatID in T_VEH_combat) && _onlyCombat) then {
+						// If vehicle is not fight capable, just regroup near the leader
+						CALLM4(_turretAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+					} else {
+						pr _turretPath = _x;
+						pr _parameters = [["vehicle", _vehicles select _i], ["vehicleRole", "TURRET"], ["turretPath", _turretPath]];
+						
+						// Add goal to this turret
+						CALLM4(_turretAI, "addExternalGoal", "GoalUnitGetInVehicle", 0, _parameters, _AI);
+					};
 					
 					_turretsAI pushback _turretAI;
 					
@@ -99,7 +122,9 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		OOP_INFO_1("Process: state: %1", _state);
 		
@@ -159,6 +184,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 		{
 			pr _crewAI = CALLM0(_x, "getAI");
 			CALLM2(_crewAI, "deleteExternalGoal", "GoalUnitGetInVehicle", "");
+			CALLM2(_crewAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
 		} forEach _crew;
 		
 	} ENDMETHOD;

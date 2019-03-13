@@ -270,6 +270,19 @@ CLASS("Garrison", "MessageReceiverEx");
 			[0, 0, 0]
 		};
 	} ENDMETHOD;
+	
+	//						I S   E M P T Y
+	/*
+	Method: isEmpty
+	Returns true if garrison is empty (has no units)
+
+	Returns: Bool
+	*/
+	METHOD("isEmpty") {
+		params ["_thisObject"];
+		(count T_GETV("units")) == 0
+	} ENDMETHOD;	
+	
 
 	//             F I N D   G R O U P S   B Y   T Y P E
 	/*
@@ -351,7 +364,15 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _units = GET_VAR(_thisObject, "units");
 		_units pushBackUnique _unit;
-		CALL_METHOD(_unit, "setGarrison", [_thisObject]);
+		
+		// Notify AI object
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleUnitsAdded", [_unit]);
+			CALLM0(_AI, "updateComposition");
+		};
+		
+		CALLM1(_unit, "setGarrison", _thisObject);
 		
 		// Add to the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
@@ -377,11 +398,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 		
+		// Notify AI of the garrison about unit removal
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleUnitsRemoved", [_unit]);
+		};
+		
 		private _units = GET_VAR(_thisObject, "units");
 		_units deleteAt (_units find _unit);
 
 		// Set the garrison of this unit
 		CALLM1(_unit, "setGarrison", "");
+		
+		// Notify the AI object after the unit is added
+		if(_AI != "") then {
+			CALLM0(_AI, "updateComposition");
+		};
 
 		// Substract from the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
@@ -447,6 +479,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				pr _AI = T_GETV("AI");
 				if (_AI != "") then {
 					CALLM1(_AI, "handleGroupsAdded", [[_group]]);
+					CALLM0(_AI, "updateComposition");
 				};
 			};
 		} else {
@@ -477,8 +510,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		OOP_INFO_2("REMOVE GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
 		// Notify AI object if the garrison is spawned
+		pr _AI = T_GETV("AI");
 		if (T_GETV("spawned")) then {
-			pr _AI = T_GETV("AI");
 			if (_AI != "") then {
 				CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
 			};
@@ -497,6 +530,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach _groupUnits;
 		pr _groups = GET_VAR(_thisObject, "groups");
 		_groups deleteAt (_groups find _group);
+		
+		// If garrison is spawned, notify the AI object. updateComposition must be called after the group and its units are already removed from the garrison.
+		if (_AI != "") then {
+			CALLM0(_AI, "updateComposition");
+		};
 
 		CALLM1(_group, "setGarrison", "");
 

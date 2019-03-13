@@ -64,7 +64,9 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _group = GETV(T_GETV("AI"), "agent");
