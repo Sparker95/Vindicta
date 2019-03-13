@@ -8,18 +8,18 @@ class EditorData
 	toggles=5;
 	class ItemIDProvider
 	{
-		nextID=718;
+		nextID=727;
 	};
 	class MarkerIDProvider
 	{
-		nextID=5;
+		nextID=7;
 	};
 	class Camera
 	{
-		pos[]={8330.8018,207.5128,18195.293};
-		dir[]={0.88928002,-0.27755928,0.36352536};
-		up[]={0.25692368,0.96070671,0.10502729};
-		aside[]={0.37839308,-7.5087883e-008,-0.92564905};
+		pos[]={18737.979,42.549076,18149.389};
+		dir[]={0.79864943,-0.51366401,-0.31359094};
+		up[]={0.47813565,0.85798466,-0.1877405};
+		aside[]={-0.36549127,1.9394793e-007,-0.93083161};
 	};
 };
 binarizationWanted=0;
@@ -51,13 +51,14 @@ addons[]=
 	"A3_Modules_F_ObjectModifiers",
 	"A3_Ui_F",
 	"cba_modules",
-	"A3_Characters_F"
+	"A3_Characters_F",
+	"A3_Characters_F_Tank"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=18;
+		items=19;
 		class Item0
 		{
 			className="A3_Structures_F_Households";
@@ -184,6 +185,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item18
+		{
+			className="A3_Characters_F_Tank";
+			name="Arma 3 Tank - Characters and Clothing";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 randomSeed=16658724;
@@ -215,7 +223,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=331;
+		items=332;
 		class Item0
 		{
 			dataType="Object";
@@ -9602,7 +9610,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14190.887,32.647995,16007.999};
-				angles[]={0,3.1741602,-0};
+				angles[]={0,3.1741602,0};
 			};
 			side="Empty";
 			flags=5;
@@ -9840,7 +9848,7 @@ class Mission
 			};
 			id=660;
 			type="B_Truck_01_transport_F";
-			atlOffset=-3.8146973e-006;
+			atlOffset=5.7220459e-006;
 		};
 		class Item281
 		{
@@ -9857,7 +9865,7 @@ class Mission
 			};
 			id=661;
 			type="B_Truck_01_transport_F";
-			atlOffset=1.9073486e-006;
+			atlOffset=1.1444092e-005;
 		};
 		class Item282
 		{
@@ -10095,7 +10103,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14287.006,19.536081,18185.988};
-				angles[]={-0,4.2334585,6.2805333};
+				angles[]={0,4.2334585,6.2805333};
 			};
 			side="Empty";
 			flags=4;
@@ -10249,7 +10257,7 @@ class Mission
 			colorName="ColorCIV";
 			a=15.103516;
 			b=5.8545322;
-			angle=290.18552;
+			angle=290.18546;
 			id=673;
 		};
 		class Item292
@@ -11041,73 +11049,131 @@ class Mission
 		};
 		class Item330
 		{
+			dataType="Marker";
+			position[]={18778,13.243,18169};
+			name="respawn_west";
+			text="Default respawn";
+			type="respawn_unknown";
+			colorName="ColorWEST";
+			id=719;
+			atlOffset=0.00039482117;
+		};
+		class Item331
+		{
 			dataType="Group";
-			side="East";
+			side="West";
 			class Entities
 			{
-				items=1;
+				items=6;
 				class Item0
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={8378.2793,180.37309,18217.473};
+						position[]={18782,15.986713,18139.051};
 					};
-					side="East";
+					side="West";
 					flags=7;
 					class Attributes
 					{
+						isPlayer=1;
+						isPlayable=1;
 					};
-					id=717;
-					type="O_support_AMG_F";
-					class CustomAttributes
+					id=721;
+					type="B_G_Soldier_AR_F";
+					atlOffset=-9.5367432e-007;
+				};
+				class Item1
+				{
+					dataType="Object";
+					class PositionInfo
 					{
-						class Attribute0
-						{
-							property="speaker";
-							expression="_this setspeaker _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"STRING"
-										};
-									};
-									value="Male02PER";
-								};
-							};
-						};
-						class Attribute1
-						{
-							property="pitch";
-							expression="_this setpitch _value;";
-							class Value
-							{
-								class data
-								{
-									class type
-									{
-										type[]=
-										{
-											"SCALAR"
-										};
-									};
-									value=1;
-								};
-							};
-						};
-						nAttributes=2;
+						position[]={18781.385,16.455578,18134.686};
 					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						isPlayable=1;
+					};
+					id=722;
+					type="B_G_engineer_F";
+					atlOffset=-4.196167e-005;
+				};
+				class Item2
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={18785.236,16.708988,18133.16};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						isPlayable=1;
+					};
+					id=723;
+					type="B_G_officer_F";
+					atlOffset=8.9645386e-005;
+				};
+				class Item3
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={18782.531,16.689198,18132.512};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						isPlayable=1;
+					};
+					id=724;
+					type="B_G_Soldier_LAT2_F";
+					atlOffset=-0.00013542175;
+				};
+				class Item4
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={18787.045,16.531586,18135.557};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						isPlayable=1;
+					};
+					id=725;
+					type="B_G_Soldier_LAT_F";
+					atlOffset=2.8610229e-005;
+				};
+				class Item5
+				{
+					dataType="Object";
+					class PositionInfo
+					{
+						position[]={18779.178,16.564476,18133.301};
+					};
+					side="West";
+					flags=5;
+					class Attributes
+					{
+						isPlayable=1;
+					};
+					id=726;
+					type="B_G_Soldier_TL_F";
+					atlOffset=-7.4386597e-005;
 				};
 			};
 			class Attributes
 			{
 			};
-			id=716;
+			id=720;
+			atlOffset=-9.5367432e-007;
 		};
 	};
 	class Connections
