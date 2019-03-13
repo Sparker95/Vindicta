@@ -77,7 +77,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				//pr _ws = GETV(T_GETV("AI"), "worldState");
 				//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
 					// Update sensors affected by this action
-					CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
+					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
 					
 					_state = ACTION_STATE_COMPLETED;
 					breakTo "s0";

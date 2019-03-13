@@ -182,7 +182,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		private _subactions = GETV(_thisObject, "subactions");		
-		CALLM1(_subactions select 0, "handleUnitsRemoved", _groups);
+		CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
 	} ENDMETHOD;
 	
 	/*
@@ -193,7 +193,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	METHOD("handleUnitsAdded") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		private _subactions = GETV(_thisObject, "subactions");		
-		CALLM1(_subactions select 0, "handleUnitsAdded", _groups);
+		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
 	} ENDMETHOD;
 	
 

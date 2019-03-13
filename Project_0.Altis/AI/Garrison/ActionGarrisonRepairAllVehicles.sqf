@@ -107,7 +107,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _goalState = CALLM2(CALLM0(_repairUnit, "getAI"), "getExternalGoalActionState", "GoalUnitRepairVehicle", _AI);
 			if (_goalState == ACTION_STATE_COMPLETED) then {
 				// Update sensors affected by this action
-				CALLM0(GETV(_AI, "sensorHealth"), "update");
+				CALLM0(GETV(_AI, "sensorState"), "update");
 				
 				_state = ACTION_STATE_COMPLETED;
 			};

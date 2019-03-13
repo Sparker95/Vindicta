@@ -17,6 +17,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("targets");
 	
 	VARIABLE("sensorHealth");
+	VARIABLE("sensorState");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -31,6 +32,10 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		
+		pr _sensorState = NEW("SensorGarrisonState", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorState);
+		T_SETV("sensorState", _sensorState);
 		
 		
 		pr _loc = CALLM0(_agent, "getLocation");
@@ -245,9 +250,6 @@ CLASS("AIGarrison", "AI_GOAP")
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleUnitsRemoved", _units);
 		};
-		
-		// Update health sensor
-		CALLM0(T_GETV("sensorHealth"), "update");
 	} ENDMETHOD;
 	
 	/*
@@ -271,9 +273,6 @@ CLASS("AIGarrison", "AI_GOAP")
 			// Call it directly since it is in the same thread
 			CALLM1(_action, "handleUnitsRemoved", _units);
 		};
-		
-		// Update health sensor
-		CALLM0(T_GETV("sensorHealth"), "update");
 	} ENDMETHOD;
 	
 	
@@ -281,6 +280,28 @@ CLASS("AIGarrison", "AI_GOAP")
 		params ["_thisObject", ["_loc", "", [""]]];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
+	} ENDMETHOD;
+
+	// Updates world state properties related to composition of the garrison
+	// Here we have checks that must be run only when new units/groups are added or removed
+	METHOD("updateComposition") {
+		params ["_thisObject"];
+		
+		pr _gar = T_GETV("agent");
+		pr _worldState = T_GETV("worldState");		
+		
+		// Find medics
+		pr _medics = [_gar, [[T_INF, T_INF_medic], [T_INF, T_INF_recon_medic]]] call GETM(_gar, "findUnits");
+		pr _medicAvailable = (count _medics) > 0;
+		[_worldState, WSP_GAR_MEDIC_AVAILABLE, _medicAvailable] call ws_setPropertyValue;
+		
+		
+		
+		// Find engineers
+		pr _engineers = [_gar, [[T_INF, T_INF_engineer]]] call GETM(_gar, "findUnits");
+		pr _engineerAvailable = (count _engineers) > 0;
+		[_worldState, WSP_GAR_ENGINEER_AVAILABLE, _engineerAvailable] call ws_setPropertyValue;
+		
 	} ENDMETHOD;
 
 ENDCLASS;

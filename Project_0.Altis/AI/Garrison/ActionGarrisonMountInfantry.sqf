@@ -56,7 +56,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
 				 //Update sensors affected by this action
-				CALLM0(GETV(T_GETV("AI"), "sensorHealth"), "update");
+				CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
 				
 			//pr _ws = GETV(T_GETV("AI"), "worldState");
 			//if ([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
