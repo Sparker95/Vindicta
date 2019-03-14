@@ -760,7 +760,7 @@ CLASS("AICommander", "AI")
 					};
 					
 					// Do we need to find transport vehicles?
-					if (true) then { //_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
+					if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 						pr _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
 						pr _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
 						//ade_dumpcallstack;

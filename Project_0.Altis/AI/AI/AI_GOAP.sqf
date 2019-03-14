@@ -703,7 +703,7 @@ CLASS("AI_GOAP", "AI")
 				// Print the open and closed set
 				{
 					pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_x]);
-					OOP_INFO_0("  " + _nodeString);
+					OOP_INFO_0("[AI:AStar]  " + _nodeString);
 				} forEach _openSet;
 				
 				// Print the selected node
@@ -838,7 +838,7 @@ CLASS("AI_GOAP", "AI")
 						if ( (_closeSet findIf { /* ((_x select ASTAR_NODE_ID_ACTION) isEqualTo _possibleAction) && */ ((_x select ASTAR_NODE_ID_WS) isEqualTo _WSBeforeAction) }) != -1) then {
 							// Print debug text
 							#ifdef ASTAR_DEBUG
-								OOP_INFO_2("  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x);
+								OOP_INFO_2("[AI:AStar]  Found in close set:  [ WS: %1  Action: %2]", [_WSBeforeAction] call ws_toString, _x);
 							#endif
 						} else {
 							pr _n = ASTAR_NODE_NEW(_WSBeforeAction);
@@ -883,7 +883,7 @@ CLASS("AI_GOAP", "AI")
 								// Print debug text: neighbour node
 								#ifdef ASTAR_DEBUG
 									pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_n]);
-									OOP_INFO_0("  New node:            " + _nodeString);
+									OOP_INFO_0("[AI:AStar]  New node:            " + _nodeString);
 								#endif
 							} else {
 							
@@ -907,14 +907,14 @@ CLASS("AI_GOAP", "AI")
 									#ifdef ASTAR_DEBUG
 										pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
 										//        "  Found in close set:  "
-										OOP_INFO_1("  Updated in open set: %1", _nodeString);
+										OOP_INFO_1("[AI:AStar]  Updated in open set: %1", _nodeString);
 									#endif
 								} else {
 									
 									// Print debug text
 									#ifdef ASTAR_DEBUG
 										pr _nodeString = CALL_STATIC_METHOD("AI_GOAP", "AStarNodeToString", [_nodeOpen]);
-										OOP_INFO_1("  Found in open set:   %1", _nodeString);
+										OOP_INFO_1("[AI:AStar]  Found in open set:   %1", _nodeString);
 									#endif
 								};
 							}; // in open set?

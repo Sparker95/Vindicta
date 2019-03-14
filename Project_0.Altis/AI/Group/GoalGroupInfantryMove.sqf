@@ -1,5 +1,5 @@
 #include "common.hpp"
 
 // Class with predefined actions in initDatabase.sqf
-CLASS("GoalGroupMoveToPos", "Goal")
+CLASS("GoalGroupInfantryMove", "Goal")
 ENDCLASS;

@@ -38,8 +38,8 @@ private _locations = entities "Project_0_LocationSector";
 	// _waypoints = synchronizedObjects _locationSector;
 
 	if (_locSide == "east") then { 
-		_side = EAST; 
-		_template = tCSAT; 
+		_side = INDEPENDENT; //EAST; 
+		_template = tAAF; //tCSAT; 
 	};
 	if (_locSide == "west") then { 
 		_side = WEST; 

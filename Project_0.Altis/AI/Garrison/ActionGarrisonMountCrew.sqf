@@ -32,10 +32,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Do we need to mount or dismount?
 		if (_mount) then {
+			pr _args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
 			{
 				// Give goal to mount vehicles
 				pr _groupAI = CALLM0(_x, "getAI");
-				pr _args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
 				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 			} forEach _vehGroups;
 		} else {

@@ -671,7 +671,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_thisObject, "addGroup", _x);
 		} forEach _newInfGroups;
 		
-		CALLM1(_thisObject, "addGroup", _newVehGroup);
+		if (_newVehGroup != "") then {
+			CALLM1(_thisObject, "addGroup", _newVehGroup);
+		};
 		/*
 		{
 			pr _group = _x select 0;

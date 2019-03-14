@@ -2,7 +2,7 @@
 
 /*
 Class: ActionGroup.ActionGroupRegroup
-The whole group regroups around squad leader
+The whole group regroups around squad leader, units dismount their vehicles.
 */
 
 #define pr private

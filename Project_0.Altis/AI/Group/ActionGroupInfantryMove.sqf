@@ -1,12 +1,26 @@
 #include "common.hpp"
 
-CLASS("ActionGroupMoveToPos", "ActionGroup")
+/*
+Group will move to specified place on foot. Units will regroup around their squad leader, dismounting their vehicles.
+
+Parameter tags:
+TAG_POS
+
+Authors: Sen, Sparker
+*/
+
+#define pr private
+
+CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 	VARIABLE("pos");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-		T_SETV("pos", _parameters select 1);
+		
+		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
+		T_SETV("pos", _pos);
+		
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -16,7 +30,7 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 
 	 	// Set behaviour
 		private _hG = GETV(_thisObject, "hG");
-		_hG setBehaviour "SAFE";
+		_hG setBehaviour "AWARE";
 		{_x doFollow (leader _hG)} forEach (units _hG);
 		_hG setFormation "DIAMOND";
 
@@ -26,11 +40,20 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 		};
 
 		// Add a move waypoint
-		private _wp = _hG addWaypoint [_pos, 0, 0];
+		private _wp = _hG addWaypoint [_pos, 10, 0];
 		_wp setWaypointType "MOVE";
 		_wp setWaypointFormation "DIAMOND";
-		_wp setWaypointBehaviour "SAFE";
+		_wp setWaypointBehaviour "AWARE";
 		_hG setCurrentWaypoint _wp;
+		
+		// Give goals to units to regroup
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
+		pr _inf = CALLM0(_group, "getInfantryUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
+		} forEach _inf;
 
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -52,15 +75,12 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 			// check if one of the group is near _pos
 			private _hG = GETV(_thisObject, "hG");
 			private _destination = GETV(_thisObject, "pos");
-			private _isGroupNearPos = false;
-			{
-				private _unitPos = getPos _x;
-				private _distance = _destination distance _unitPos;
-				if (_distance < 20) exitWith { _isGroupNearPos = true; };
-			} forEach (units _hG);
+			private _isGroupNearPos = ((leader _hG) distance2D _destination) < 20;
 
 			// Return the current state
-			if (_isGroupNearPos) then { _state = ACTION_STATE_COMPLETED } else { _state = ACTION_STATE_ACTIVE };
+			if (_isGroupNearPos) then {
+				_state = ACTION_STATE_COMPLETED
+			};
 		};
 
 		T_SETV("state", _state);
@@ -71,9 +91,15 @@ CLASS("ActionGroupMoveToPos", "ActionGroup")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 
-		// Delete the goal
-		private _AI = T_GETV("AI") ;
-		CALLM2(_AI, "deleteExternalGoal", "GoalGroupMoveToPos", "");
+		// Delete given goals
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
+		pr _inf = CALLM0(_group, "getInfantryUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
+		} forEach _inf;
+
 	} ENDMETHOD;
 
 ENDCLASS;
