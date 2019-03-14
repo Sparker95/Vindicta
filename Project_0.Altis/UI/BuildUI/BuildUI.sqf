@@ -190,23 +190,25 @@ CLASS("BuildUI", "")
 		pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
 		pr _TimeFadeInTT = GETV(g_BuildUI, "TimeFadeInTT");
 		pr _ItemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
-		//pr _color = [1, 1, 1, 1] call BIS_fnc_colorRGBAtoHTML;
+		pr _color = [1, 1, 1, 1] call BIS_fnc_colorRGBAtoHTML;
+		pr _isMovingObj = GETV(g_BuildUI, "isMovingObjects");
 
 		pr _display = uinamespace getVariable "buildUI_display";
 
 		if (displayNull != _display) then {
 
-			/*if (_TimeFadeInTT > time) then {
+			if (_TimeFadeInTT > time) then {
 				pr _alpha = (-1 * ((_TimeFadeInTT) - (time + TIME_FADE_TT))) + 0.02;
 				_color = [1, 1, 1, _alpha] call BIS_fnc_colorRGBAtoHTML;
-			}; */
+
+			}; 
 
 			// item menu
 			if (_ItemCatOpen) then { 
 
 				// tooltips
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText "<t color=_color align='center' valign='bottom'>TAB:</t> <t align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>";
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText "<t color=_color align='center' valign='bottom'>Q/E:</t> <t t align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>";
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
 
 				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
 				(_display displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
@@ -222,14 +224,19 @@ CLASS("BuildUI", "")
 
 			} else { 
 				// tooltips
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText "<t align='center' valign='bottom'>TAB:</t> <t align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>";
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText "<t align='center' valign='bottom'>BACKSPACE: </t> <t align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t><t align='center' valign='bottom'>  |  ARROW KEYS: </t> <t align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>";
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>BACKSPACE: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t> <t color='%1' align='center' valign='bottom'>  |  ARROW KEYS: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>", _color];
 
 				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
 				{
 					(_display displayCtrl _x) ctrlShow false;
 					(_display displayCtrl _x) ctrlCommit 0;
 				} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+			};
+
+			if (_isMovingObj) then { 
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
 			};
 
 			// cat menu
@@ -416,8 +423,7 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'openItems' method called");
 		T_SETV("ItemCatOpen", true);
 		T_SETV("currentItemID", 0);
-		//T_SETV("timeFadeInTT", (time+TIME_FADE_TT));
-
+		T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_SETV("rotation", 0);
 		T_SETV("targetRotation", 0);
 
@@ -433,7 +439,7 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
 		T_SETV("currentItemID", 0);
-		//T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
+		T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_CALLM0("clearCarousel");
 		T_CALLM0("enterMoveMode");
 	} ENDMETHOD;
@@ -506,7 +512,6 @@ CLASS("BuildUI", "")
 	METHOD("makeItemTexts") {
 		params [P_THISOBJECT, "_ItemID"];
 		OOP_INFO_0("'makeItemTexts' method called");
-
 		pr _currentCatID = T_GETV("currentCatID");
 		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
 		pr _itemCatIndexSize = (count _itemCat) -1;
