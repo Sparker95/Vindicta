@@ -1,3 +1,4 @@
+
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
@@ -24,6 +25,7 @@ CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
 	VARIABLE("EHKeyDown");
+	VARIABLE("EHKeyDownID");				// event handler ID for removal of EH
 
 	VARIABLE("isMenuOpen");					// is the menu itself open?
 	VARIABLE("currentCatID");				// currently selected category index
@@ -72,6 +74,7 @@ CLASS("BuildUI", "")
 
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
+		T_SETV("EHKeyDownID", nil);
 
 		T_SETV("isMenuOpen", false);
 		T_SETV("activeObject", []);
@@ -154,8 +157,9 @@ CLASS("BuildUI", "")
 
 		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
 			params ["_control", "_dikCode", "_shiftState", "_ctrlState", "_altState"];
+			T_SETV("EHKeyDownID", (_this select 0)); // event handler ID
 			if(isNil "g_BuildUI") exitWith {
-				(findDisplay 46) displayRemoveAllEventHandlers "KeyDown";
+				_EHKeyDown = (findDisplay 46) displayRemoveEventHandler ["KeyDown", _this select 0];
 			};
 			CALLM4(g_BuildUI, "onKeyHandler", _dikCode, _shiftState, _ctrlState, _altState);
 		}];
@@ -330,7 +334,12 @@ CLASS("BuildUI", "")
 
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
-		(findDisplay 46) displayRemoveAllEventHandlers "keydown";
+		pr _EHKeyDownID = T_GETV("EHKeyDownID");
+		if !(isNil _EHKeyDownID) then {
+			(findDisplay 46) displayRemoveEventHandler ["KeyDown", _EHKeyDownID];
+			T_SETV("EHKeyDownID", nil);
+		}; 
+
 		T_SETV("EHKeyDown", nil);
 
 		// close item category and reset selected item ID to avoid problems
