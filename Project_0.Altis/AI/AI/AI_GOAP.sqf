@@ -215,7 +215,12 @@ CLASS("AI_GOAP", "AI")
 		if (_currentAction != "") then {
 			pr _actionState = CALLM(_currentAction, "process", []);
 			
-			OOP_INFO_2("CURRENT ACTION: %1, state: %2", _currentAction, _actionState);
+			pr _subaction = CALLM0(_currentAction, "getFrontSubaction");
+			if (_subaction == _currentAction) then { // If it's not a composite action
+				OOP_INFO_2("CURRENT ACTION: %1, state: %2", _currentAction, _actionState);
+			} else {
+				OOP_INFO_2("CURRENT ACTION: %1, subaction: %2, state: %3", _currentAction, _subaction, _actionState);
+			};
 			
 			// Set goal state			
 			//T_SETV("currentGoalState", _actionState);

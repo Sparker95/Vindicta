@@ -26,7 +26,7 @@ CLASS("GoalGroupClearArea", "Goal")
 		};
 		
 		// Now it's one of the vehicle groups
-		pr _args = [_AI, _parameters];
+		pr _args = [_AI, [["onlyCombat", true]] ]; // Only combat vehicle operators must stay in vehicles
 		pr _action = NEW("ActionGroupGetInVehiclesAsCrew", _args);
 		_action
 	} ENDMETHOD;
