@@ -686,7 +686,6 @@ CLASS("BuildUI", "")
 		pr _pos = player modelToWorld _offs;
 		pr _newObj = _type createVehicleLocal _pos;
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
-		CALL_STATIC_METHOD_2("BuildUI", "setObjectCreated", _newObj, true);
 		_newObj setVariable ["build_ui_newObject", true];
 
 		// Why is this necessary? I don't know but it is!
@@ -1001,17 +1000,6 @@ CLASS("BuildUI", "")
 		_obj getVariable ["build_ui_allowMove", false]
 	} ENDMETHOD;
 
-	// set on objects created by build menu, for deleting objects
-	STATIC_METHOD("setObjectCreated") {
-		params [P_THISCLASS, P_OBJECT("_obj"), P_BOOL("_set")];
-		_obj setVariable ["build_ui_objCreated", _set, true];
-	} ENDMETHOD;
-
-	STATIC_METHOD("isObjectCreated") {
-		params [P_THISCLASS, P_OBJECT("_obj")];
-		_obj getVariable ["build_ui_objCreated", false]
-	} ENDMETHOD;
-
 	STATIC_METHOD("addSelection") {
 		params [P_THISCLASS, P_ARRAY("_arr"), P_ARRAY("_obj")];
 		if((_obj select 0) in (_arr apply { _x select 0 })) exitWith {false};
@@ -1039,22 +1027,6 @@ CLASS("BuildUI", "")
 		_obj setPosWorld _pos;
 		_obj setVectorDirAndUp [_dir, _up];
 		_obj enableSimulation true;
-	} ENDMETHOD;
-
-	STATIC_METHOD("delActiveObject") {
-		params [P_THISCLASS];
-		pr _activeObject = T_GETV("activeObject");
-		if (_activeObject == []) exitWith { OOP_INFO_0("'delActiveObject': No active object."); };
-
-		// check if object was created by build menu to avoid deleting campfire or arsenal crate
-		pr _isObjCreated = CALL_STATIC_METHOD_1("BuildUI", "isObjectMovable", cursorObject);
-		if !(_isObjCreated) exitWith { OOP_INFO_0("'delActiveObject': This object was not created be the build menu."); };
-
-		// else delete object
-		deleteVehicle _activeObject;
-		_activeObject = [];
-		T_SETV("activeObject", _activeObject);
-		
 	} ENDMETHOD;
 
 ENDCLASS;
