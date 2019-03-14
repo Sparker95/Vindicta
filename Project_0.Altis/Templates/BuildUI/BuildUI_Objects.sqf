@@ -25,6 +25,7 @@ pr _catLights = [
 pr _catDeco = [
 	// format: Classname, Display name string
 	["Land_CampingChair_V2_F", "Camping Chair"],
+	["Land_WoodenLog_F", "Wooden Log"],
 	["Land_CampingTable_F", "Camping Table"],
 	["Land_WoodenTable_large_F", "Wooden Table"],
 	["Land_WoodPile_large_F", "Woodpile Cover"],
@@ -41,11 +42,14 @@ pr _catCamo = [
 pr _catCover = [
 	// format: Classname, Display name string
 	["Land_Rampart_F", "Rampart"],
+	["Land_CncShelter_F", "Concrete Shelter"],
 	["Land_SlumWall_01_s_2m_F", "Slumwall"],
 	["Land_SlumWall_01_s_4m_F", "Slumwall 2"],
 	["Land_Mound01_8m_F", "Stone Wall"],
 	["Land_TinWall_01_m_4m_v2_F", "Tin Wall"],
-	["Land_TinWall_01_m_4m_v1_F", "Tin Wall 2"]
+	["Land_TinWall_01_m_4m_v1_F", "Tin Wall 2"],
+	["Land_SandbagBarricade_01_hole_F", "Sandbag Wall Tall"],
+	["Land_SandbagBarricade_01_half_F", "Sandbag Wall Half"]
 ];
 
 pr _catRange = [
@@ -53,7 +57,8 @@ pr _catRange = [
 	["Land_Target_Dueling_01_F", "Dueling Target"],
 	["Zombie_PopUp_Moving_90deg_F", "Target Zombie 1"],
 	["Zombie_PopUp_Moving_F", "Target Zombie 2"],
-	["TargetP_Zom_F", "Target Zombie 3"]
+	["TargetP_Zom_F", "Target Zombie 3"],
+	["TargetP_Inf2_Acc2_F", "Target (Accuracy)"]
 ];
 
 
