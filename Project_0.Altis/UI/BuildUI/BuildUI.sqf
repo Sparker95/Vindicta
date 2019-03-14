@@ -7,6 +7,8 @@
 #include "..\Resources\BuildUI\BuildUI_Macros.h"
 #include "..\..\GlobalAssert.hpp"
 
+#define TIME_FADE_TT 0.84
+
 /*
 Class: BuildUI
 Initializes the build menu UI, handles opening and closing, and handles the building itself
@@ -32,6 +34,7 @@ CLASS("BuildUI", "")
 	VARIABLE("UICatTexts");					// array of strings for category names
 	VARIABLE("UIItemTexts");				// array of strings for item names in current category
 	VARIABLE("TimeFadeIn");					// fade in time for category change UI effect
+	VARIABLE("TimeFadeInTT");				// fade in time for tool tip text
 	VARIABLE("ItemCatOpen");				// true if item list should be shown
 	VARIABLE("playerEvents");				// handles to player event handlers when ui is open
 
@@ -63,6 +66,7 @@ CLASS("BuildUI", "")
 		T_SETV("currentCatID", 0);  			// index in g_buildUIObjects array of objects
 		T_SETV("currentItemID", 0);  			// index in g_buildUIObjects category subarray of objects
 		T_SETV("TimeFadeIn", 0);
+		T_SETV("TimeFadeInTT", 0);
 		T_SETV("UICatTexts", []);
 
 		pr _args = ["", "", "", "", ""];
@@ -184,13 +188,26 @@ CLASS("BuildUI", "")
 		pr _UICatTexts = GETV(g_BuildUI, "UICatTexts");
 		pr _UIItemTexts = GETV(g_BuildUI, "UIItemTexts");
 		pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
+		pr _TimeFadeInTT = GETV(g_BuildUI, "TimeFadeInTT");
 		pr _ItemCatOpen = GETV(g_BuildUI, "ItemCatOpen");
+		//pr _color = [1, 1, 1, 1] call BIS_fnc_colorRGBAtoHTML;
 
 		pr _display = uinamespace getVariable "buildUI_display";
 
 		if (displayNull != _display) then {
+
+			/*if (_TimeFadeInTT > time) then {
+				pr _alpha = (-1 * ((_TimeFadeInTT) - (time + TIME_FADE_TT))) + 0.02;
+				_color = [1, 1, 1, _alpha] call BIS_fnc_colorRGBAtoHTML;
+			}; */
+
 			// item menu
 			if (_ItemCatOpen) then { 
+
+				// tooltips
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText "<t color=_color align='center' valign='bottom'>TAB:</t> <t align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>";
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText "<t color=_color align='center' valign='bottom'>Q/E:</t> <t t align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>";
+
 				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
 				(_display displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
 				(_display displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
@@ -204,6 +221,10 @@ CLASS("BuildUI", "")
 				} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
 
 			} else { 
+				// tooltips
+				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText "<t align='center' valign='bottom'>TAB:</t> <t align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>";
+				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText "<t align='center' valign='bottom'>BACKSPACE: </t> <t align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t><t align='center' valign='bottom'>  |  ARROW KEYS: </t> <t align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>";
+
 				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
 				{
 					(_display displayCtrl _x) ctrlShow false;
@@ -395,6 +416,7 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'openItems' method called");
 		T_SETV("ItemCatOpen", true);
 		T_SETV("currentItemID", 0);
+		//T_SETV("timeFadeInTT", (time+TIME_FADE_TT));
 
 		T_SETV("rotation", 0);
 		T_SETV("targetRotation", 0);
@@ -411,6 +433,7 @@ CLASS("BuildUI", "")
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
 		T_SETV("currentItemID", 0);
+		//T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_CALLM0("clearCarousel");
 		T_CALLM0("enterMoveMode");
 	} ENDMETHOD;
@@ -759,7 +782,7 @@ CLASS("BuildUI", "")
 					// Apply limit
 					_coffs = 0 max (1 min _coffs); //if (_coffs > 0.7) then { 1 } else { 0 };
 
-					private _color = [1, 0, 1, _coffs];
+					private _color = [0, 0.812, 0.4, _coffs];
 					{
 						_x params ["_v0", "_v1"];
 						drawLine3D [_obj modelToWorld ((_verts select _v0) vectorAdd _zoffs), _obj modelToWorld ((_verts select _v1) vectorAdd _zoffs), _color];
