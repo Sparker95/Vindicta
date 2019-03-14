@@ -25,7 +25,6 @@ CLASS("BuildUI", "")
 
 	VARIABLE("activeBuildMenus");
 	VARIABLE("EHKeyDown");
-	VARIABLE("EHKeyDownID");				// event handler ID for removal of EH
 
 	VARIABLE("isMenuOpen");					// is the menu itself open?
 	VARIABLE("currentCatID");				// currently selected category index
@@ -74,7 +73,6 @@ CLASS("BuildUI", "")
 
 		T_SETV("activeBuildMenus", []);
 		T_SETV("EHKeyDown", nil);
-		T_SETV("EHKeyDownID", nil);
 
 		T_SETV("isMenuOpen", false);
 		T_SETV("activeObject", []);
@@ -114,7 +112,7 @@ CLASS("BuildUI", "")
 
 		OOP_INFO_1("Adding Open Build Menu action to %1.", _object);
 
-		pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayEGSpectator\Fps.paa' />  %1", "Open Build Menu"], {  
+		pr _id = _object addaction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu"], {  
 			params ["_target", "_caller", "_actionId", "_arguments"];
 			_arguments params [P_THISOBJECT];
 			T_CALLM0("openUI");
@@ -157,7 +155,6 @@ CLASS("BuildUI", "")
 
 		pr _EHKeyDown = (findDisplay 46) displayAddEventHandler ["KeyDown", {
 			params ["_control", "_dikCode", "_shiftState", "_ctrlState", "_altState"];
-			T_SETV("EHKeyDownID", (_this select 0)); // event handler ID
 			if(isNil "g_BuildUI") exitWith {
 				_EHKeyDown = (findDisplay 46) displayRemoveEventHandler ["KeyDown", _this select 0];
 			};
@@ -317,6 +314,12 @@ CLASS("BuildUI", "")
 				};
 				true; 
 			};
+
+			case """Delete""": { 
+
+				CALLSM0("BuildUI", "delActiveObject");
+				true; // disables default control 
+			};
 		};
 	} ENDMETHOD;
 
@@ -334,11 +337,8 @@ CLASS("BuildUI", "")
 
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
-		pr _EHKeyDownID = T_GETV("EHKeyDownID");
-		if !(isNil _EHKeyDownID) then {
-			(findDisplay 46) displayRemoveEventHandler ["KeyDown", _EHKeyDownID];
-			T_SETV("EHKeyDownID", nil);
-		}; 
+		pr _EHKeyDown = T_GETV("EHKeyDown");
+		(findDisplay 46) displayRemoveEventHandler ["KeyDown", _EHKeyDown];
 
 		T_SETV("EHKeyDown", nil);
 
@@ -658,6 +658,7 @@ CLASS("BuildUI", "")
 		pr _pos = player modelToWorld _offs;
 		pr _newObj = _type createVehicleLocal _pos;
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _newObj, true);
+		CALL_STATIC_METHOD_2("BuildUI", "setObjectCreated", _newObj, true);
 		_newObj setVariable ["build_ui_newObject", true];
 
 		// Why is this necessary? I don't know but it is!
@@ -972,6 +973,17 @@ CLASS("BuildUI", "")
 		_obj getVariable ["build_ui_allowMove", false]
 	} ENDMETHOD;
 
+	// set on objects created by build menu, for deleting objects
+	STATIC_METHOD("setObjectCreated") {
+		params [P_THISCLASS, P_OBJECT("_obj"), P_BOOL("_set")];
+		_obj setVariable ["build_ui_objCreated", _set, true];
+	} ENDMETHOD;
+
+	STATIC_METHOD("isObjectCreated") {
+		params [P_THISCLASS, P_OBJECT("_obj")];
+		_obj getVariable ["build_ui_objCreated", false]
+	} ENDMETHOD;
+
 	STATIC_METHOD("addSelection") {
 		params [P_THISCLASS, P_ARRAY("_arr"), P_ARRAY("_obj")];
 		if((_obj select 0) in (_arr apply { _x select 0 })) exitWith {false};
@@ -999,6 +1011,22 @@ CLASS("BuildUI", "")
 		_obj setPosWorld _pos;
 		_obj setVectorDirAndUp [_dir, _up];
 		_obj enableSimulation true;
+	} ENDMETHOD;
+
+	STATIC_METHOD("delActiveObject") {
+		params [P_THISCLASS];
+		pr _activeObject = T_GETV("activeObject");
+		if (_activeObject == []) exitWith { OOP_INFO_0("'delActiveObject': No active object."); };
+
+		// check if object was created by build menu to avoid deleting campfire or arsenal crate
+		pr _isObjCreated = CALL_STATIC_METHOD_1("BuildUI", "isObjectMovable", cursorObject);
+		if !(_isObjCreated) exitWith { OOP_INFO_0("'delActiveObject': This object was not created be the build menu."); };
+
+		// else delete object
+		deleteVehicle _activeObject;
+		_activeObject = [];
+		T_SETV("activeObject", _activeObject);
+		
 	} ENDMETHOD;
 
 ENDCLASS;
