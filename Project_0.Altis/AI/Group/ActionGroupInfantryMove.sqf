@@ -74,8 +74,10 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// check if one of the group is near _pos
 			private _hG = GETV(_thisObject, "hG");
+			private _leader = leader _hG;
 			private _destination = GETV(_thisObject, "pos");
-			private _isGroupNearPos = ((leader _hG) distance2D _destination) < 20;
+			// Leader is closer than 20 meters from destination, all units are less than 50m to the leader
+			private _isGroupNearPos = (((leader _hG) distance2D _destination) < 20) && ((units _hG) findIf { (_x distance2D _leader) > 50} == -1);
 
 			// Return the current state
 			if (_isGroupNearPos) then {

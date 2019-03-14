@@ -620,7 +620,7 @@ CLASS("AICommander", "AI")
 		_friendlyDistLoc sort true; // Ascending
 		
 		// ignore the nearest place
-		_friendlyDistLoc deleteAt 0;
+		//_friendlyDistLoc deleteAt 0;
 		
 		OOP_INFO_1("Friendly locations sorted: %1", _friendlyDistLoc);
 		
