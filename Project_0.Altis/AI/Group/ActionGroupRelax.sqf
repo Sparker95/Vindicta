@@ -53,7 +53,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		_hG setCurrentWaypoint _wp;
 		
 		// Give a goal to units
-		pr _units = CALLM0(_group, "getUnits");
+		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitDismountCurrentVehicle", 0, [], _AI);
@@ -85,7 +85,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		
 		// Delete the goal to dismount vehicles
 		pr _group = GETV(T_GETV("AI"), "agent");
-		pr _units = CALLM0(_group, "getUnits");
+		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitDismountCurrentVehicle", "");

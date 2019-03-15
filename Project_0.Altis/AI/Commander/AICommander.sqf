@@ -620,7 +620,7 @@ CLASS("AICommander", "AI")
 		_friendlyDistLoc sort true; // Ascending
 		
 		// ignore the nearest place
-		_friendlyDistLoc deleteAt 0;
+		//_friendlyDistLoc deleteAt 0;
 		
 		OOP_INFO_1("Friendly locations sorted: %1", _friendlyDistLoc);
 		
@@ -760,7 +760,7 @@ CLASS("AICommander", "AI")
 					};
 					
 					// Do we need to find transport vehicles?
-					if (true) then { //_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
+					if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 						pr _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
 						pr _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
 						//ade_dumpcallstack;

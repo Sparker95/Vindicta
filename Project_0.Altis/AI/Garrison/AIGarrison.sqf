@@ -37,7 +37,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(_thisObject, "addSensor", _sensorState);
 		T_SETV("sensorState", _sensorState);
 		
-		
 		pr _loc = CALLM0(_agent, "getLocation");
 		if (_loc != "") then {
 			pr _sensorObserved = NEW("SensorGarrisonLocationIsObserved", [_thisObject]);
@@ -52,6 +51,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_VEHICLE_GROUPS_BALANCED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
+		[_ws, WSP_GAR_HAS_VEHICLES, false] call ws_setPropertyValue;
 		pr _loc = CALLM0(_agent, "getLocation");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
 		if (_loc != "") then {
@@ -59,9 +59,11 @@ CLASS("AIGarrison", "AI_GOAP")
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		};
 		
-		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);
+		
+		// Update composition
+		CALLM0(_thisObject, "updateComposition");
 		
 		// Set process interval
 		CALLM1(_thisObject, "setProcessInterval", 1); //6);
@@ -295,12 +297,14 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _medicAvailable = (count _medics) > 0;
 		[_worldState, WSP_GAR_MEDIC_AVAILABLE, _medicAvailable] call ws_setPropertyValue;
 		
-		
-		
 		// Find engineers
 		pr _engineers = [_gar, [[T_INF, T_INF_engineer]]] call GETM(_gar, "findUnits");
 		pr _engineerAvailable = (count _engineers) > 0;
 		[_worldState, WSP_GAR_ENGINEER_AVAILABLE, _engineerAvailable] call ws_setPropertyValue;
+		
+		// Do we have vehicles ?
+		pr _haveVehicles = count CALLM0(_gar, "getVehicleUnits") > 0;
+		[_worldState, WSP_GAR_HAS_VEHICLES, _haveVehicles] call ws_setPropertyValue;
 		
 	} ENDMETHOD;
 

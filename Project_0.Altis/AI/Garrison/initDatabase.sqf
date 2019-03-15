@@ -86,9 +86,10 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 // Move mounted to position
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_ALL_CREW_MOUNTED,		true],
-													[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
-													[WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS,	true],
-													[WSP_GAR_VEHICLE_GROUPS_BALANCED, true]]] call AI_misc_fnc_setActionPreconditions;
+											[WSP_GAR_ALL_INFANTRY_MOUNTED,	true],
+											[WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS,	true],
+											[WSP_GAR_VEHICLE_GROUPS_BALANCED, true],
+											[WSP_GAR_HAS_VEHICLES, true]]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveMounted", _s,		[	[WSP_GAR_POSITION,	TAG_POS,	true],
 													[WSP_GAR_VEHICLES_POSITION,	TAG_POS,	true]]] call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 ["ActionGarrisonMoveMounted", 			[TAG_RADIUS]] call AI_misc_fnc_setActionParametersFromGoal;

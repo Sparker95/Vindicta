@@ -59,7 +59,12 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		while {!_success} do {
 			// Try to allocate the selected units
 			pr _eff = +(_tc select TARGET_CLUSTER_ID_EFFICIENCY);
-			_eff set [0, 7];
+			
+			// Change cluster efficiency before allocation
+			// Ensure allocatinb a bit more units than needed
+			_eff set [T_EFF_soft, 1.3*(_eff select T_EFF_soft) max 5]; // +30% to the amount of troops, but no less than 5
+			_eff set [T_EFF_medium, 1.3*(_eff select T_EFF_medium)];
+			
 			OOP_INFO_2("RESPOND TO TARGET: Trying to allocate units, pos: %1, eff: %2", _center, _eff);
 			pr _alloc = CALLM2(_AI, "allocateUnitsGroundQRF", _center, _eff);
 			// If we have failed to allocate units, break the loop
@@ -68,9 +73,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				OOP_WARNING_2("RESPOND TO TARGET: Failed to allocate units to pos: %1, eff: %2", _center, _eff);
 			};
 			
-			OOP_INFO_0("RESPOND TO TARGET: Successfully allocated units!");
-			
 			_alloc params ["_locationSrc", "_garrisonSrc", "_units", "_groupsAndUnits"];
+			
+			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
 			CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
 			CALLM0(_newGar, "spawn");
@@ -168,6 +173,20 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				OOP_ERROR_1("Target cluster with ID %1 doesn't exist!", _ID);
 				_state = ACTION_STATE_FAILED
 			} else {
+				
+				// Check if allocated garrisons still can destroy the target
+				pr _allocatedGarsEff = +T_EFF_null;
+				{
+					_x params ["_gar", "_loc"];
+					pr _garEff = CALLM0(_gar, "getEfficiencyTotal");
+					_allocatedGarsEff = VECTOR_ADD_9(_allocatedGarsEff, _garEff); // Sum up all efficiencies
+				} forEach _allocatedGarrisons;
+				// If can't destroy the threat, allocate more units
+				if (!([_allocatedGarsEff, _tc select TARGET_CLUSTER_ID_EFFICIENCY] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL)) then {
+					OOP_INFO_0("---- Allocating more units to respond to target cluster!");
+					CALLM0(_thisObject, "activate");
+				};
+			
 				pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
 				pr _center = _cluster call cluster_fnc_getCenter;
 				_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
@@ -175,7 +194,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				// If cluster position has changed significantly, or this action has been redirected to another cluster
 				if (_center distance2D T_GETV("clusterGoalPos") > _size || T_GETV("clusterIDChanged")) then {
 
-					OOP_INFO_1("---- Retargeting assign garrisons to new position: %1", _center);
+					OOP_INFO_1("---- Retargeting assigned garrisons to new position: %1", _center);
 
 					// Loop through all garrisons and give them a new goal with proper coordinates
 					{
