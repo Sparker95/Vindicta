@@ -12,7 +12,7 @@
 ----------------------------------------------------------------------------------------------
 */
 
-g_civUniforms = [
+g_UM_civUniforms = [
 	"U_BG_Guerilla2_1",
     "U_BG_Guerilla2_2",
     "U_BG_Guerilla2_3",
@@ -103,7 +103,7 @@ g_civUniforms = [
 ];
 
 
-g_civHeadgear = [
+g_UM_civHeadgear = [
     "H_Bandanna_blu",
     "H_Bandanna_camo",
     "H_Bandanna_cbr",
@@ -193,7 +193,7 @@ g_civHeadgear = [
     "H_StrawHat_dark"
 ];
 
-g_civVests = [
+g_UM_civVests = [
     "V_DeckCrew_blue_F",
     "V_DeckCrew_brown_F",
     "V_DeckCrew_green_F",
@@ -211,7 +211,7 @@ g_civVests = [
     "V_Safety_yellow_F"
 ];
 
-g_civFacewear = [
+g_UM_civFacewear = [
     "G_Aviator",
     "G_Combat",
     "G_Combat_Goggles_tna_F",
@@ -245,7 +245,7 @@ g_civFacewear = [
     "G_Tactical_Clear"
 ];
 
-g_civBackpacks = [
+g_UM_civBackpacks = [
 	"B_Messenger_Black_F",
     "B_Messenger_Coyote_F",
     "B_Messenger_Gray_F",
@@ -262,7 +262,7 @@ g_civBackpacks = [
 ----------------------------------------------------------------------------------------------
 */
 
-g_civItems = [
+g_UM_civItems = [
 	"ItemWatch",
 	"Toolkit",
 	"Medikit",
@@ -270,15 +270,26 @@ g_civItems = [
 ];
 
 // Exceptions for certain "dummy weapons" used in some innocent animations
-g_civWeapons = [
+g_UM_civWeapons = [
     "ACE_FakePrimaryWeapon",
     "Rifle_Base_F",
     "CarHorn",
     "TruckHorn",
     "Binocular",
     "Rangefinder",
+    "Laserdesignator",
+    "Laserdesignator_02",
+    "Laserdesignator_03",
     ""
 ];
+
+g_UM_suspWeapons = [
+    "Binocular",
+    "Rangefinder",
+    "Laserdesignator",
+    "Laserdesignator_02",
+    "Laserdesignator_03"
+]; 
 
 /* 
 ----------------------------------------------------------------------------------------------
