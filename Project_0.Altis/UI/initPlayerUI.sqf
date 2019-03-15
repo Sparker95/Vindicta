@@ -9,9 +9,9 @@ _cfg = missionConfigFile >> "MapUI";
 _idd = 12;
 [_cfg, _idd] call ui_fnc_createControlsFromConfig;
 
-rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register Undercover UI layer
+g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register Undercover UI layer
 uiNamespace setVariable ["undercoverUI_display", displayNull];		// set Undercover UI idd
-rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];
+g_rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];
 
 // Init abstract classes representing the UI
 CALLSM0("PlayerListUI", "new");

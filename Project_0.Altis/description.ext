@@ -118,17 +118,6 @@ class CfgRemoteExec
     };
 };
 
-
-// OOP GUI
-#include "UI\UI_OOP\dialog\define.hpp"
-#include "UI\UI_OOP\styles\style.hpp"
-#include "UI\UI_OOP\dialog\empty.hpp"
-#include "UI\UI_OOP\dialog\FakeDialog.hpp"
-#include "UI\UI_OOP\dialog\ctrlCreateDialog.hpp"
-#include "UI\UI_OOP\dialog\ctrlModifyDialog.hpp"
-#include "UI\UI_OOP\dialog\DisplayConfig.hpp"
-#include "UI\UI_OOP\dialog\helpDialog.hpp"
-
 // HUD UIs
 class RscTitles {
 
@@ -141,8 +130,9 @@ class RscTitles {
     };
 
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
-#include "UI\Resources\UndercoverUI_Debug\UIUndercoverDebug.h"
+#include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
 #include "UI\Resources\BuildUI\BuildUI.h"
+
 };
 
 class Extended_PreInit_EventHandlers {
