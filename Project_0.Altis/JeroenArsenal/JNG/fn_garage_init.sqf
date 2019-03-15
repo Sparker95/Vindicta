@@ -105,7 +105,7 @@ if(hasInterface)then{
 				params ["_object"];
 				alive player;
 			};
-			pr _conditions = {
+			pr _conditionColor = {
 				params ["_object"];
 				!isnull cursorObject && {!(_object isEqualTo cursorObject)}&&{_object distance cursorObject < MAX_DISTANCE_TO_STORE}
 			};
@@ -146,6 +146,8 @@ if(hasInterface)then{
             if(_type isEqualTo "garage")then{
                 [clientOwner, UINamespace getVariable "jn_object"] remoteExecCall ["jn_fnc_garage_requestClose",2];
             };
+			
+			UINamespace setVariable ["jn_type",""];
         }] call BIS_fnc_addScriptedEventHandler;
 
 	};

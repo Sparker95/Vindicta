@@ -293,8 +293,17 @@ CLASS("Action", "MessageReceiver")
 	/* virtual */ METHOD("getSubactions") { [] } ENDMETHOD;
 	
 	
+	/*
+	Method: getFrontSubaction
+	Returns this action. This function is here for common interface with ActionComposite.
 	
+	Returns: _thisObject
+	*/
 	
+	METHOD("getFrontSubaction") {
+		params [ "_thisObject" ];
+		_thisObject
+	} ENDMETHOD;	
 	
 	
 	
@@ -449,14 +458,17 @@ CLASS("Action", "MessageReceiver")
 	
 	_parameters - array with parameters
 	_tag - Number or String, parameter tag
+	_showError - Bool, default true, will show error if parameter with given tag is not found
 	
 	Returns: anything
 	*/
 	STATIC_METHOD("getParameterValue") {
-		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]]];
+		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]], ["_showError", true]];
 		pr _index = _parameters findif {_x select 0 == _tag};
 		if (_index == -1) then {
-			diag_log format ["[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters];
+			if (_showError) then {
+				OOP_INFO_3("[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters);
+			};
 			nil
 		} else {
 			(_parameters select _index) select 1

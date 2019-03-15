@@ -26,9 +26,21 @@ CLASS("GoalGroupClearArea", "Goal")
 		};
 		
 		// Now it's one of the vehicle groups
-		pr _args = [_AI, _parameters];
-		pr _action = NEW("ActionGroupGetInVehiclesAsCrew", _args);
-		_action
+		pr _actionSerial = NEW("ActionCompositeSerial", [_AI]);
+		pr _args = [_AI, [["onlyCombat", true]] ]; // Only combat vehicle operators must stay in vehicles
+		
+		// Create action to get in vehicles
+		pr _actionGetIn = NEW("ActionGroupGetInVehiclesAsCrew", _args);
+		
+		// Create action to move
+		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
+		pr _args = [_AI, [[TAG_POS, _pos], [TAG_RADIUS, 150]] ];
+		pr _actionMove = NEW("ActionGroupMoveGroundVehicles", _args);
+		
+		// Add actions
+		CALLM1(_actionSerial, "addSubactionToBack", _actionGetIn);
+		CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
+		_actionSerial
 	} ENDMETHOD;
 
 ENDCLASS;

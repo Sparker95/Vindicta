@@ -51,7 +51,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _groups = CALLM0(_gar, "getGroups");
 		{ // foreach _groups
 			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = ["GoalGroupClearArea", 0, [[TAG_POS, _pos], [TAG_RADIUS, _radius]], _AI];
+			pr _args = ["GoalGroupClearArea", 0, [[TAG_POS, _pos], [TAG_RADIUS, 100 /*_radius*/]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _groups;
 		
@@ -70,7 +70,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _AI = T_GETV("AI");

@@ -8,7 +8,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-CLASS("AIUnitVehicle", "AI")
+CLASS("AIUnitVehicle", "AI_GOAP")
 
 	// Assigned crew variables
 	VARIABLE("assignedDriver");

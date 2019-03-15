@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Goal.GoalUnitSurrender",{});

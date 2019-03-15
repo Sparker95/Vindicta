@@ -33,3 +33,10 @@
 #define UNIT_VR_ID_ROLE			0
 #define UNIT_VR_ID_TURRET_PATH	1
 #define UNIT_VR_DEFAULT			[UNIT_VR_NONE]
+
+
+
+
+// String names of public variables set on units
+#define UNIT_VAR_NAME_STR "__u"
+#define UNIT_EFFICIENCY_VAR_NAME_STR "__e"

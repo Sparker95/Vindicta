@@ -57,6 +57,7 @@ if(hasInterface)then{
 
             if(_type isEqualTo "ammo")then{
                 ["Close"] call jn_fnc_ammo_gui;
+				UINamespace setVariable ["jn_type",""];
             };
         }] call BIS_fnc_addScriptedEventHandler;
     };

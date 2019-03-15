@@ -1,4 +1,7 @@
-author="Sparker, Jeroen, Marvis, Sen";
+#include "OOP_light\OOP_Light.h"
+
+
+author="Sparker, Jeroen, Marvis, Sen, Billw";
 OnLoadName = "Project_0";
 OnLoadMission = "Project_0";
 
@@ -47,7 +50,21 @@ class CfgIdentities
 
 class CfgDebriefing
 {
+	// Used when all players die in MP
+	class OOP_ERROR_DEBRIEFING_CLASS_NAME
+	{
+		title = "OOP: critical error";
+		description = "A critical OOP error has happened. See 'OOP error' section.";
+	};
+};
 
+class CfgDebriefingSections
+{
+	class OOP_error
+	{
+		title = "OOP error";
+		variable = OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR;
+	};
 };
 
 class Params {
@@ -105,15 +122,17 @@ class CfgRemoteExec
 class RscTitles {
 
     class Default 
-        {
-            idd = -1;
-            fadein = 0;
-            fadeout = 0;
-            duration = 2;
-        };
+    {
+        idd = -1;
+        fadein = 0;
+        fadeout = 0;
+        duration = 2;
+    };
 
-    #include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
-    #include "UI\Resources\UndercoverUI\UndercoverUI.h"
+#include "UI\Resources\UndercoverUI\UndercoverUI.h"
+#include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
+#include "UI\Resources\BuildUI\BuildUI.h"
+
 };
 
 class Extended_PreInit_EventHandlers {

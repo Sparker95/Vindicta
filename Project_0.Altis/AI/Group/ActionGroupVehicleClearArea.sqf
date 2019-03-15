@@ -41,7 +41,9 @@ CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// This action is terminal because it's never over right now
 		

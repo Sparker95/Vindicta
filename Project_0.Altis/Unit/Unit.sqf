@@ -221,7 +221,8 @@ CLASS(UNIT_CLASS_NAME, "");
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
-
+					_objectHandle allowFleeing 0;
+					
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 					//_objectHandle disableAI "PATH";
@@ -277,7 +278,13 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Set variables of the object
 		if (!isNull _hO) then {
-			_hO setVariable ["unit", _thisObject];
+			// Variable with a reference to Unit object
+			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject];
+			pr _cat = _data select UNIT_DATA_ID_CAT;
+			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
+			
+			// Variable with the efficiency vector of this unit
+			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, (T_efficiency select _cat select _subcat)];
 			// That's all really
 		};
 
@@ -297,7 +304,11 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Killed
 		_hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
-		_hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+		
+		// HandleDamage for infantry
+		if (_data select UNIT_DATA_ID_CAT == T_INF) then {
+			_hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+		};
 
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
@@ -505,6 +516,19 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT, _data select UNIT_DATA_ID_CLASS_NAME]
 	} ENDMETHOD;
+	
+	//                    G E T   E F F I C I E N C Y
+	/*
+	Method: getEfficiency
+	Returns efficiency vector of this unit
+
+	Returns: Efficiency vector
+	*/
+	METHOD("getEfficiency") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		T_efficiency select (_data select UNIT_DATA_ID_CAT) select (_data select UNIT_DATA_ID_SUBCAT)
+	} ENDMETHOD;
 
 	//                        G E T   D A T A
 	/*
@@ -577,7 +601,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	*/
 	STATIC_METHOD("getUnitFromObjectHandle") {
 		params [ ["_thisClass", "", [""]], ["_objectHandle", objNull, [objNull]] ];
-		_objectHandle getVariable ["unit", ""]
+		_objectHandle getVariable [UNIT_VAR_NAME_STR, ""]
 	} ENDMETHOD;
 
 	/*
@@ -589,6 +613,51 @@ CLASS(UNIT_CLASS_NAME, "");
 	*/
 	STATIC_METHOD("createUnitFromObjectHandle") {
 	} ENDMETHOD;
+
+
+	/*
+	Method: (static)getRequiredCrew
+	Returns amount of needed drivers and turret operators for all vehicles in this garrison.
+
+	Parameters: _units
+
+	_units - array of <Unit> objects
+
+	Returns: [_nDrivers, _nTurrets]
+	*/
+	
+	STATIC_METHOD("getRequiredCrew") {
+		params ["_thisClass", ["_units", [], [[]]]];
+		
+		pr _nDrivers = 0;
+		pr _nTurrets = 0;
+		{
+			if (CALLM0(_x, "isVehicle")) then {
+				pr _className = CALLM0(_x, "getClassName");
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				_nDrivers = _nDrivers + _n_driver;
+				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+			};
+		} forEach _units;
+		[_nDrivers, _nTurrets]
+	} ENDMETHOD;
+	
+	/*
+	Function: (static)getCargoInfantryCapacity
+	Returns how many units can be loaded as cargo by all the vehicles from _units
+	
+	Parameters: _units
+	
+	_units - array of <Unit> objects
+	
+	Returns: Number
+	*/
+	STATIC_METHOD("getCargoInfantryCapacity") {
+		params ["_thisClass", ["_units", [], [[]]]];
+		pr _unitsClassNames = _units apply { pr _data = GETV(_x, "data"); _data select UNIT_DATA_ID_CLASS_NAME };
+		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
+	} ENDMETHOD;
+
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
@@ -685,6 +754,19 @@ CLASS(UNIT_CLASS_NAME, "");
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data select UNIT_DATA_ID_CAT == T_DRONE
+	} ENDMETHOD;
+	
+	//                         I S   S T A T I C
+	/*
+	Method: isStatic
+	Returns true if given <Unit> is one of static vehicles defined in Templates
+
+	Returns: Bool
+	*/
+	METHOD("isStatic") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
 	} ENDMETHOD;
 
 

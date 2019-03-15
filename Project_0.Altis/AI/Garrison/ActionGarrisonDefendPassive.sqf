@@ -43,7 +43,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
 					};
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
@@ -61,6 +61,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				
 				if (count _args > 0) then {
 					CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+					// Poke group AI to switch mode faster
+					CALLM2(_groupAI, "postMethodAsync", "process", []);
 				};
 			};
 		} forEach _groups;
@@ -78,7 +80,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		//diag_log "---- Garrison defend passive action!";
 		
@@ -116,9 +118,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					
 					case GROUP_TYPE_BUILDING_SENTRY: {
 						_args = if (_loc != "") then {
-							["GoalGroupOccupySentryPositions", 0, [], _AI];
+							["GoalGroupOccupySentryPositions", ""];
 						} else {
-							["GoalGroupRegroup", 0, [], _AI];
+							["GoalGroupRegroup", ""];
 						};
 					};
 					

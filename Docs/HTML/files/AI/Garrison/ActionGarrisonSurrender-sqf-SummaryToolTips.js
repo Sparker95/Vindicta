@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:AI/Garrison/ActionGarrisonSurrender.sqf",{});

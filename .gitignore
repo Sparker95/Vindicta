@@ -9,4 +9,5 @@ Project_0.Stratis/temp.sqf
 temp.sqf
 Project_0.Stratis/mission.sqm
 Project_0.Altis/mission.sqm
-.vscode
+.vscode/settings.json
+~tempMissionSP.Altis/mission.sqm

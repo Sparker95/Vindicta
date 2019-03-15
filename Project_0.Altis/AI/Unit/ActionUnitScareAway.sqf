@@ -76,7 +76,7 @@ CLASS("ActionUnitScareAway", "Action")
 		
 		diag_log "scare away process was called!";
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// If action is not active now, do nothing
 		pr _state = GETV(_thisObject, "state");

@@ -55,7 +55,7 @@
 // It's rather a fake one because it's always false for the sake of adding an action to the action list all the time
 #define WSP_GAR_VEHICLE_GROUPS_BALANCED					16
 
-// Area cleared
+// Clearing area
 #define WSP_GAR_CLEARING_AREA							17
 
 // Cargo
@@ -65,11 +65,12 @@
 // Location the garrison is attached to
 #define WSP_GAR_LOCATION								20
 
-
+// Vehicles available
+#define WSP_GAR_HAS_VEHICLES							21
 
 
 // Total amount of properties
-#define WSP_GAR_COUNT									21
+#define WSP_GAR_COUNT									22
 
 
 

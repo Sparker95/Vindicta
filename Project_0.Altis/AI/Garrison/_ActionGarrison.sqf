@@ -57,4 +57,41 @@ CLASS("ActionGarrison", "Action")
 		nil
 	} ENDMETHOD;
 	
+	
+	/*
+	Method: handleUnitsRemoved
+	Handles what happens when units get removed from their garrison, for instance when they gets destroyed, while this action is running.
+	
+	Access: internal
+	
+	Parameters: _units
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		nil
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happens when units get added to a garrison while this action is running.
+	
+	Access: internal
+	
+	Parameters: _unit
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		nil
+	} ENDMETHOD;
+	
 ENDCLASS;

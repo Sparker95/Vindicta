@@ -206,7 +206,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		switch (_vehRole) do {	
 			case "DRIVER": {
 				pr _driver = driver _hVeh;
-				if (!(isNull _driver) && !(_driver isEqualTo _hO)) then {
+				if ((alive _driver) && !(_driver isEqualTo _hO)) then {
 					// Return
 					true
 				} else {
@@ -402,7 +402,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		params [["_thisObject", "", [""]]];
 		
 		pr _AI = GETV(_thisObject, "AI");
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			

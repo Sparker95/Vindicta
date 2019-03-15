@@ -8,7 +8,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-CLASS("AIUnit", "AI")
+CLASS("AIUnit", "AI_GOAP")
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];

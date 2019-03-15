@@ -102,3 +102,6 @@ player addEventHandler ["AnimChanged", {
 
 // Create a suspiciousness monitor for player
 NEW("undercoverMonitor", [player]);
+
+// Create camp scroll menu
+player addAction ["Create Camp", "Camp\createCamp.sqf"];

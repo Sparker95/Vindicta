@@ -69,6 +69,7 @@
 // ----------------------------------------------------------------------
 
 #ifndef ASP_ENABLE
+#define PROFILER_COUNTERS_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
 #endif
 
@@ -145,6 +146,12 @@ nameStr profilerSetCounter _oop_cnt; };
 #define PARENTS_STR "parents"
 #define OOP_PARENT_STR "oop_parent"
 #define OOP_PUBLIC_STR "oop_public"
+
+// Other important strings
+#define OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR "oop_missionEndText"
+// CfgDebriefing class entry in description.ext which is shown when a critical OOP error happens
+#define OOP_ERROR_DEBRIEFING_CLASS_NAME	end_OOP_class_error
+#define OOP_ERROR_DEBRIEFING_CLASS_NAME_STR "end_OOP_class_error"
 
 // ----------------------------------------------------------------------
 // |          I N T E R N A L   A C C E S S   M E M B E R S             |
@@ -257,6 +264,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALLM3(a, b, c, d, e) CALL_METHOD_3(a, b, c, d, e)
 #define CALLM4(a, b, c, d, e, f) CALL_METHOD_4(a, b, c, d, e, f)
 
+// Macros for calls to this
+#define T_CALLM(a, b) CALL_METHOD(_thisObject, a, b)
+#define T_CALLM0(a) CALL_METHOD_0(_thisObject, a)
+#define T_CALLM1(a, b) CALL_METHOD_1(_thisObject, a, b)
+#define T_CALLM2(a, b, c) CALL_METHOD_2(_thisObject, a, b, c)
+#define T_CALLM3(a, b, c, d) CALL_METHOD_3(_thisObject, a, b, c, d)
+#define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
+
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
 #define CALLSM2(a, b, c, d) CALL_STATIC_METHOD_2(a, b, c, d)
@@ -301,6 +316,20 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 #define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
 NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
+// -----------------------------------------------------
+// |       M E T H O D   P A R A M E T E R S           |
+// -----------------------------------------------------
+
+#define P_THISOBJECT ["_thisObject", "", [""]]
+#define P_DEFAULT_PARAMS params [["_thisObject", "", [""]]]
+#define P_THISCLASS ["_thisClass", "", [""]]
+#define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
+#define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
+#define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
+#define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+
 // ----------------------------------------
 // |              C L A S S               |
 // ----------------------------------------
@@ -313,7 +342,6 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), 
  */
 
 #define CLASS(classNameStr, baseClassNameStr)	 \
-scopeName "scopeClass"; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -322,7 +350,10 @@ private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
 if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {breakOut "scopeClass";}; \
+	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+		missionNamespace setVariable [OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR, format ["Class %1 is not defined. File: %2", baseClassNameStr, __FILE__]]; \
+		endMission OOP_ERROR_DEBRIEFING_CLASS_NAME_STR; \
+	}; \
 	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
 	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
 	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \
@@ -473,7 +504,7 @@ _objNameStr \
 #define DESTRUCTOR_ASSERT_OBJECT(objNameStr)
 #endif
 
-#define DELETE(objNameStr) [] call { \
+#define DELETE(objNameStr) call { \
 DESTRUCTOR_ASSERT_OBJECT(objNameStr) \
 private _oop_classNameStr = OBJECT_PARENT_CLASS_STR(objNameStr); \
 private _oop_parents = GET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR); \
@@ -486,10 +517,10 @@ _oop_i = _oop_i - 1; \
 }; \
 private _isPublic = IS_PUBLIC(objNameStr); \
 private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
-{FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
 if (_isPublic) then { \
-PUBLIC_VAR(OOP_PARENT_STR); \
-PUBLIC_VAR(OOP_PUBLIC_STR); \
+{FORCE_SET_MEM(objNameStr, _x, nil); PUBLIC_VAR(objNameStr, OOP_PARENT_STR);} forEach _oop_memList; \
+} else { \
+{FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
 }; \
 }
 
@@ -498,7 +529,9 @@ PUBLIC_VAR(OOP_PUBLIC_STR); \
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
 
-#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else {"NoClass"}}
+#define LOG_SCOPE(scopeName) private _oop_logScope = scopeName
+#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }}}
+//#define LOG_1 _fnc_scriptName
 #define LOG_1 "fnc"
 
 // If ofstream addon is globally enabled
