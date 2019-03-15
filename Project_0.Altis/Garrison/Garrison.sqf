@@ -674,12 +674,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (_newVehGroup != "") then {
 			CALLM1(_thisObject, "addGroup", _newVehGroup);
 		};
-		/*
+		
 		{
 			pr _group = _x select 0;
 			CALLM1(_thisObject, "addGroup", _group);
 		} forEach _groupsAndUnits;
-		*/
 		
 		true
 		

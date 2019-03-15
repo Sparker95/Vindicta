@@ -17,9 +17,9 @@ private _locations = entities "Project_0_LocationSector";
 
 #define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
-//#define ADD_ARMED_MRAPS
+#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
-//#define ADD_APCS_IFVS
+#define ADD_APCS_IFVS
 
 {
 	private _locSector = _x;
@@ -154,7 +154,7 @@ private _locations = entities "Project_0_LocationSector";
 	// Some trucks
 	private _i = 0;
 	#ifdef ADD_TRUCKS
-	while {_cVehGround > 0 && _i < 3} do {
+	while {_cVehGround > 0 && _i < 2} do {
 		private _args = [_template, T_VEH, T_VEH_truck_inf, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
@@ -184,25 +184,29 @@ private _locations = entities "Project_0_LocationSector";
 	
 	#ifdef ADD_ARMED_MRAPS
 	// Some MRAPs
-	if (_cVehGround > 0) then {
-		[_template, _garMilMain, T_VEH, T_VEH_MRAP_HMG, -1] call _addVehGroup;
-		_cVehGround = _cVehGround - 1;
-	};
-	if (_cVehGround > 0) then {
-		[_template, _garMilMain, T_VEH, T_VEH_MRAP_GMG, -1] call _addVehGroup;
-		_cVehGround = _cVehGround - 1;
+	if (random 10 <= 5) then {
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_MRAP_HMG, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_MRAP_GMG, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
 	};
 	#endif
 
 	#ifdef ADD_APCS_IFVS
 	// Some APCs and IFVs
-	if (_cVehGround > 0) then {
-		[_template, _garMilMain, T_VEH, T_VEH_APC, -1] call _addVehGroup;
-		_cVehGround = _cVehGround - 1;
-	};
-	if (_cVehGround > 0) then {
-		[_template, _garMilMain, T_VEH, T_VEH_IFV, -1] call _addVehGroup;
-		_cVehGround = _cVehGround - 1;
+	if (random 10 <= 3) then {
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_APC, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
+		if (_cVehGround > 0) then {
+			[_template, _garMilMain, T_VEH, T_VEH_IFV, -1] call _addVehGroup;
+			_cVehGround = _cVehGround - 1;
+		};
 	};
 	#endif
 

@@ -219,7 +219,7 @@ CLASS("AI_GOAP", "AI")
 			if (_subaction == _currentAction) then { // If it's not a composite action
 				OOP_INFO_2("CURRENT ACTION: %1, state: %2", _currentAction, _actionState);
 			} else {
-				OOP_INFO_2("CURRENT ACTION: %1, subaction: %2, state: %3", _currentAction, _subaction, _actionState);
+				OOP_INFO_3("CURRENT ACTION: %1, subaction: %2, state: %3", _currentAction, _subaction, _actionState);
 			};
 			
 			// Set goal state			

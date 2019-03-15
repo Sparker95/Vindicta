@@ -73,9 +73,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				OOP_WARNING_2("RESPOND TO TARGET: Failed to allocate units to pos: %1, eff: %2", _center, _eff);
 			};
 			
-			OOP_INFO_0("RESPOND TO TARGET: Successfully allocated units!");
-			
 			_alloc params ["_locationSrc", "_garrisonSrc", "_units", "_groupsAndUnits"];
+			
+			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
 			CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
 			CALLM0(_newGar, "spawn");
