@@ -27,7 +27,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 		
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		T_SETV("radius", _radius);
 		
 		T_SETV("time", time);
@@ -103,7 +103,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		CALLM0(_thisObject, "failIfNoInfantry");
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		

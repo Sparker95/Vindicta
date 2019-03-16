@@ -32,7 +32,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 		
 		// Unpack radius
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		if (isNil "_radius") then {
 			// todo Try to figure out completion radius from location
 			//pr _radius = CALLM0(_loc, "getBoundingRadius"); // there is no such function
@@ -66,7 +66,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _groupAI = CALLM0(_x, "getAI");
 			
 			// Add new goal to move
-			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_RADIUS, _radius]], _AI];
+			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
 			
 		} forEach _vehGroups;

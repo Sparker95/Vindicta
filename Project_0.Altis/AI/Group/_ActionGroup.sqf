@@ -41,6 +41,23 @@ CLASS("ActionGroup", "Action")
 			T_GETV("state")
 		};
 	} ENDMETHOD;
+	
+	/*
+	Method: failIfNoInfantry
+	Sets this action to failed state if there are no infantry units.
+	
+	Returns: action state
+	*/
+	METHOD("failIfNoInfantry") {
+		params ["_thisObject"];
+		
+		if ((count CALLM0(T_GETV("group"), "getInfantryUnits")) == 0) then {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		} else {
+			T_GETV("state")
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: handleUnitsRemoved

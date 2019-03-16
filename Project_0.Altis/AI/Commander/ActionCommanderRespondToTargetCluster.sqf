@@ -11,8 +11,11 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 	VARIABLE("clusterID");
 	VARIABLE("clusterIDChanged");
 	VARIABLE("timeNextActivation");
-	VARIABLE("allocatedGarrisons");
+	VARIABLE("allocatedGarrisons"); // Array with [_garrison, _location]
 	VARIABLE("clusterGoalPos");
+
+	// Last time we send new info to the other garrison
+	VARIABLE("timeAssignedTargetsUpdate");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_clusterID", 0, [0]] ];
@@ -21,6 +24,8 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		T_SETV("timeNextActivation", 0); // To force instant replan/reallocation
 		T_SETV("allocatedGarrisons", []);
 		T_SETV("clusterIDChanged", false);
+		
+		T_SETV("timeAssignedTargetsUpdate", time);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
@@ -61,9 +66,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			pr _eff = +(_tc select TARGET_CLUSTER_ID_EFFICIENCY);
 			
 			// Change cluster efficiency before allocation
-			// Ensure allocatinb a bit more units than needed
-			_eff set [T_EFF_soft, 1.3*(_eff select T_EFF_soft) max 5]; // +30% to the amount of troops, but no less than 5
-			_eff set [T_EFF_medium, 1.3*(_eff select T_EFF_medium)];
+			// Ensure allocatin of a bit more units than needed
+			_eff set [T_EFF_soft, 1.6*(_eff select T_EFF_soft) max 5]; // +60% to the amount of troops, but no less than 5
+			_eff set [T_EFF_medium, 1.6*(_eff select T_EFF_medium)];
 			
 			OOP_INFO_2("RESPOND TO TARGET: Trying to allocate units, pos: %1, eff: %2", _center, _eff);
 			pr _alloc = CALLM2(_AI, "allocateUnitsGroundQRF", _center, _eff);
@@ -91,8 +96,10 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				
 				// Give the goal to the garrison
 				pr _cSize = _cluster call cluster_fnc_getSize;
+				// In this case radius is the distance where the Move action is going to be completed and the ClearArea action will start
+				// But currently ClearArea action uses a fixed radius of 100 meters (as I remember)
 				pr _radius = ((selectMax _cSize) + 300) max 300; // 300 meters from cluster border, but not less than 300 meters
-				pr _parameters = [[TAG_G_POS, _center], [TAG_RADIUS, _radius], [TAG_DURATION, 60*20]]; 
+				pr _parameters = [[TAG_G_POS, _center], [TAG_MOVE_RADIUS, _radius], [TAG_CLEAR_RADIUS, selectMax _cSize], [TAG_DURATION, 60*20]]; 
 				pr _garAI = CALLM0(_newGar, "getAI");
 				pr _args = ["GoalGarrisonClearArea", 0, _parameters, _AI];
 				CALLM2(_garAI, "postMethodAsync", "addExternalGoal", _args);
@@ -128,6 +135,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			// If move was not successfull, do the allocation and movement again
 		};
 		
+		// Send data with assigned targets to allocated garrisons
+		CALLM1(_thisObject, "assignTargetsToGarrisons", _cluster);
+		T_SETV("timeAssignedTargetsUpdate", time);
 		
 		pr _state = if (_success) then {			
 			ACTION_STATE_ACTIVE
@@ -190,9 +200,10 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
 				pr _center = _cluster call cluster_fnc_getCenter;
 				_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
-				pr _size = ((selectMax (_cluster call cluster_fnc_getSize)) + 300) max 300;
+				pr _cSize = _cluster call cluster_fnc_getSize;
+				pr _radius = ((selectMax _cSize) + 300) max 300; // 300 meters from cluster border, but not less than 300 meters
 				// If cluster position has changed significantly, or this action has been redirected to another cluster
-				if (_center distance2D T_GETV("clusterGoalPos") > _size || T_GETV("clusterIDChanged")) then {
+				if (_center distance2D T_GETV("clusterGoalPos") > 150 || T_GETV("clusterIDChanged")) then {
 
 					OOP_INFO_1("---- Retargeting assigned garrisons to new position: %1", _center);
 
@@ -200,7 +211,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 					{
 						OOP_INFO_1("   Retargeted garrison: %1", _x);
 						pr _garAI = CALLM0(_x select 0, "getAI");
-						pr _parameters = [[TAG_G_POS, _center], [TAG_RADIUS, _size], [TAG_DURATION, 60*20]];
+						pr _parameters = [[TAG_G_POS, _center], [TAG_MOVE_RADIUS, _radius], [TAG_CLEAR_RADIUS, selectMax _cSize], [TAG_DURATION, 60*20]];
 						pr _args = ["GoalGarrisonClearArea", 0, _parameters, _AI];
 						CALLM2(_garAI, "postMethodAsync", "addExternalGoal", _args);
 					} forEach T_GETV("allocatedGarrisons");
@@ -210,8 +221,18 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 					
 					// Update the position where we have assigned goals to
 					T_SETV("clusterGoalPos", _center);
+					
+					// Assign targets to garrisons again
+					CALLM1(_thisObject, "assignTargetsToGarrisons", _cluster);
+					T_SETV("timeAssignedTargetsUpdate", time);
 				};
-			};			
+			};
+			
+			// Assign targets periodycally
+			if (time - T_GETV("timeAssignedTargetsUpdate") > 30) then {
+				CALLM1(_thisObject, "assignTargetsToGarrisons", _tc select TARGET_CLUSTER_ID_CLUSTER);
+				T_SETV("timeAssignedTargetsUpdate", time);
+			};
 		};
 
 
@@ -236,6 +257,10 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			pr _args = ["GoalGarrisonClearArea", _AI];
 			CALLM2(_garAI, "postMethodAsync", "deleteExternalGoal", _args);
 			
+			// Unassign targets
+			_args = [[], [0, 0, 0]];
+			CALLM2(_garAI, "postMethodAsync", "assignTargets", _args);
+			
 		} forEach _array;
 		
 	} ENDMETHOD;
@@ -252,6 +277,21 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		OOP_INFO_1("SET TARGET CLUSTER ID: %1", _newClusterID);
 		T_SETV("clusterID", _newClusterID);
 		T_SETV("clusterIDChanged", true);
+	} ENDMETHOD;
+	
+	// Sends data with assigned targets to all allocated garrisons
+	METHOD("assignTargetsToGarrisons") {
+		params ["_thisObject", ["_cluster", [], [[]]]];
+		
+		pr _pos = _cluster call cluster_fnc_getCenter;
+		pr _targetsToAssign = (_cluster select CLUSTER_ID_OBJECTS) apply {_x select TARGET_COMMANDER_ID_OBJECT_HANDLE};
+		
+		pr _garrisons = T_GETV("allocatedGarrisons");
+		pr _args = [_targetsToAssign, _pos];
+		{
+			pr _garAI = CALLM0(_x select 0, "getAI");
+			CALLM2(_garAI, "postMethodAsync", "assignTargets", _args);
+		} forEach _garrisons;
 	} ENDMETHOD;
 
 ENDCLASS;
