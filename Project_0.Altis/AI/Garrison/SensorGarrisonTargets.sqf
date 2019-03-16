@@ -11,7 +11,7 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 5
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 30
+#define TARGET_MAX_AGE 60
 
 // ---- Debugging defines ----
 
@@ -106,6 +106,12 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			STIMULUS_SET_VALUE(_stim, +_knownTargets);
 			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
 		};
+		
+		// Check if we can see any of the assigned targets
+		pr _assignedTargets = GETV(_AI, "assignedTargets"); // Array with object handles
+		pr _seeAssignedTarget = count (_assignedTargets arrayIntersect (_knownTargets apply {_x select TARGET_ID_OBJECT_HANDLE})) > 0;
+		SETV(_AI, "awareOfAssignedTarget", _seeAssignedTarget);
+		OOP_INFO_1("AWARE of assigned targets: %1", _seeAssignedTarget);
 		
 	} ENDMETHOD;
 	

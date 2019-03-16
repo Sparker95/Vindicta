@@ -410,7 +410,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set the garrison of this unit
 		CALLM1(_unit, "setGarrison", "");
 		
-		// Notify the AI object after the unit is added
+		// Notify the AI object after the unit is removed
 		if(_AI != "") then {
 			CALLM0(_AI, "updateComposition");
 		};
@@ -901,7 +901,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		["GoalGarrisonRelax",
 		"GoalGarrisonRepairAllVehicles",
 		"GoalGarrisonDefendPassive",
-		"GoalGarrisonRebalanceVehicleGroups"]
+		"GoalGarrisonRebalanceVehicleGroups",
+		"GoalGarrisonAttackAssignedTargets"]
 	} ENDMETHOD;
 
 	METHOD("getPossibleActions") {

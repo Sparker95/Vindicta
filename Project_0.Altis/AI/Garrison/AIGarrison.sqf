@@ -16,8 +16,19 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Array of targets known by this garrison
 	VARIABLE("targets");
 	
+	// Array with assigned targets, array with object handles
+	VARIABLE("assignedTargets");
+	// Position of the assigned targets (the center of the cluster typically)
+	VARIABLE("assignedTargetsPos");
+	
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
+	
+	// Flags
+	
+	// This garrison is aware of any of the assigned targets
+	// Written by SensorGarrisonTargets
+	VARIABLE("awareOfAssignedTarget");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -61,6 +72,10 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);
+		SETV(_thisObject, "assignedTargets", []);
+		pr _t = [0, 0, 0];
+		SETV(_thisObject, "assignedTargetsPos", _t);
+		T_SETV("awareOfAssignedTarget", false);
 		
 		// Update composition
 		CALLM0(_thisObject, "updateComposition");
@@ -306,6 +321,19 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _haveVehicles = count CALLM0(_gar, "getVehicleUnits") > 0;
 		[_worldState, WSP_GAR_HAS_VEHICLES, _haveVehicles] call ws_setPropertyValue;
 		
+	} ENDMETHOD;
+	
+	// Sets the array with assigned targets
+	METHOD("assignTargets") {
+		params ["_thisObject", ["_targets", [], [[]]], ["_targetsPos", [], [[]]]];
+		
+		T_SETV("assignedTargets", _targets);
+		if (count _targetsPos > 0) then {
+			T_SETV("assignedTargetsPos", _targetsPos);
+		} else {
+			pr _posNull = [0, 0, 0];
+			T_SETV("assignedTargetsPos", _posNull);
+		};
 	} ENDMETHOD;
 
 ENDCLASS;
