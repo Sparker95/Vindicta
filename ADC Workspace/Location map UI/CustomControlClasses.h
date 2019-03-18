@@ -15,21 +15,26 @@ class Map_UI_text_base
 	text = "1";
 	font = "PuristaMedium";
 	lineSpacing = 1;
-
+	
 };
-class Map_UI_text_centered : Map_UI_text_base
+class CategoryTextControl
 {
 	style = 2;
+	text = "";
+	colorBackground[] = {0,0,0,0};
+	colorText[] = {1,1,1,1};
+	font = "PuristaMedium";
+	
 };
-class Map_UI_panel : Map_UI_text_base
+class Map_UI_panel : Map_UI_text_base 
 {
 	style = 0+16+512;
 	colorBackground[] = {0,0,0,0.5};
 	colorText[] = {1,1,1,1};
 	font = "PuristaMedium";
-
+	
 };
-class Map_UI_button : Map_UI_text_base
+class Map_UI_button : Map_UI_text_base 
 {
 	style = 2;
 	text = "";
@@ -49,10 +54,10 @@ class Map_UI_button : Map_UI_text_base
 	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.1,1.0};
 	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.1,1.0};
 	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.1,1.0};
-
+	
 };
-class Map_UI_text_scroll : Map_UI_text_base
+class Map_UI_text_scroll : Map_UI_text_base 
 {
-
+	
 };
 #endif

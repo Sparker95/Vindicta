@@ -28,6 +28,16 @@ CLASS(CLASS_NAME, "")
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "AddMemberMouseExit", _this) }];
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseExit", { CALLSM1(CLASS_NAME, "AddMemberMouseExit", _this) }];
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "AddMemberMouseEnter", _this) }];
+
+		(_mapDisplay displayCtrl IDC_HR_VALUE) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "HRValueMouseEnter", _this) }];
+	} ENDMETHOD;
+
+	STATIC_METHOD("HRValueMouseEnter") {
+		private _mapDisplay = findDisplay 12;
+		private _ctrl = _mapDisplay displayCtrl IDC_HR_VALUE;
+		private _gSideStatWest = missionNamespace getVariable "gSideStatWest";
+		private _HRValue = CALLM0(_gSideStatWest, "getHumanResources");
+		(_mapDisplay displayCtrl IDC_HR_VALUE) ctrlSetText (format ["%1", _HRValue]);
 	} ENDMETHOD;
 
 	// Start PlayerList EH

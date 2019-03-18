@@ -114,6 +114,10 @@ if (isServer) then {
 	// Create locations and other things
 	OOP_INFO_0("Init.sqf: Calling initWorld...");
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+	
+	// Create SideStats
+	private _args = [EAST, 5];
+	gSideStatWest = NEW("SideStat", _args);
 
 	// addMissionEventHandlers
 	private _onPlayerConnectedMissionEH = {
