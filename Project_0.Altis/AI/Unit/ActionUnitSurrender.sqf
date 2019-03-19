@@ -39,9 +39,10 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 		// TODO: when side system will be done need to check if unit is friendly or ennemy
 		private _hO = T_GETV("hO");
 		[_hO, {
+			if (!hasInterface) exitWith {};
 			params ["_hO"];
 			private _id = _hO addAction ["Ask to join you", "SideStat\askSurrenderedUnitToJoin.sqf", "", 1, true, true];
-		}] remoteExec ["spawn", -2, false];
+		}] remoteExec ["spawn", 0, false];
 	} ENDMETHOD;
 	
 ENDCLASS;

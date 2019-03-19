@@ -8,7 +8,7 @@ params ["_target", "_caller", "_actionId", "_arguments"];
 	if (!hasInterface) exitWith {};
 	params ["_target", "_actionId"];
 	_target removeAction _actionId;
-}] remoteExec ["call", -2, false];
+}] remoteExec ["call", 0, false];
 
 
 // This is sent to server
@@ -30,4 +30,3 @@ params ["_target", "_caller", "_actionId", "_arguments"];
 	[_target, _sentence, _caller, false] remoteExecCall ["Dialog_fnc_hud_createSentence", owner _caller];
 
 }] remoteExec ["spawn", 2, false];
-
