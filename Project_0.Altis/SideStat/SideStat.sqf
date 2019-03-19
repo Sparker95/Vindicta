@@ -30,7 +30,7 @@ CLASS("SideStat", "");
 	} ENDMETHOD;
 	
 	/*
-	Method: gethumanResources
+	Method: getHumanResources
 	Returns: integer - humanResources
 	*/
 	METHOD("getHumanResources") {

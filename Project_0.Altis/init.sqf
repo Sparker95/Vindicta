@@ -117,8 +117,9 @@ if (isServer) then {
 	
 	// Create SideStats
 	private _args = [EAST, 5];
-	gSideStatWest = NEW("SideStat", _args);
-	publicVariable "gSideStatWest";
+	SideStatWest = NEW("SideStat", _args);
+	gSideStatWestHR = CALLM0(SideStatWest, "getHumanResources");
+	publicVariable "gSideStatWestHR";
 
 	// create MissionEventHandlers
 	call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";

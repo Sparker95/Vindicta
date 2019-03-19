@@ -6,12 +6,14 @@ _onPlayerConnectedMissionEH = {
 	if (_owner == 2) exitWith{};
 	gPlayersList pushBackUnique _this;
 	publicVariable "gPlayersList";
+	diag_log format ["debug Conn gPlayersList %1", gPlayersList];
 };
 handlerCon = addMissionEventHandler ["PlayerConnected", _onPlayerConnectedMissionEH];
 
 _onPlayerDisconnectedMissionEH = {
 	gPlayersList = gPlayersList - [_this];
 	publicVariable "gPlayersList";
+	diag_log format ["debug Disco gPlayersList %1", gPlayersList];
 };
 handlerDecon = addMissionEventHandler ["PlayerDisconnected", _onPlayerDisconnectedMissionEH];
 
@@ -19,7 +21,7 @@ handlerDecon = addMissionEventHandler ["PlayerDisconnected", _onPlayerDisconnect
 // TODO: remove if player list is deleted on SP
 if (isServer && hasInterface) then {
 	gPlayersList pushBackUnique player;
+	publicVariable "gPlayersList";
 	diag_log format ["debug SP gPlayersList %1", gPlayersList];
 };
 
-publicVariable "gPlayersList";
