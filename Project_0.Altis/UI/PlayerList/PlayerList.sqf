@@ -35,8 +35,8 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("HRValueMouseEnter") {
 		private _mapDisplay = findDisplay 12;
 		private _ctrl = _mapDisplay displayCtrl IDC_HR_VALUE;
-		private _gSideStatWest = missionNamespace getVariable "gSideStatWest";
-		private _HRValue = CALLM0(_gSideStatWest, "getHumanResources");
+		OOP_DEBUG_1("gSideStatWest %1",  gSideStatWest);
+		private _HRValue = CALLM0(gSideStatWest, "getHumanResources");
 		(_mapDisplay displayCtrl IDC_HR_VALUE) ctrlSetText (format ["%1", _HRValue]);
 	} ENDMETHOD;
 
@@ -47,16 +47,17 @@ CLASS(CLASS_NAME, "")
 		_allHPs = allPlayers - _allHCs;
 		private _ctrlList = (findDisplay 12) displayCtrl IDC_PL_LISTPLAYERS;
 		lbClear _ctrlList;
-
+		
+		OOP_DEBUG_1("gPlayersList %1",  gPlayersList);
 		{
-			private _name = str _x;
-			private _playerUID = str (getPlayerUID _x);
+			private _name = str (_x select 2);
+			private _playerUID = str (_x select 1);
 			private _index =  _ctrlList lbAdd _name;
 			_ctrlList lbSetData [_index, _playerUID];
 			_ctrlList lbSetText [_index, name _x];
 			OOP_DEBUG_1("Text: %1", _ctrlList lbText _index);
 			OOP_DEBUG_1("lbData: %1", _ctrlList lbData _index);
-		} forEach allPlayers;
+		} forEach gPlayersList;
 	} ENDMETHOD;
 
 	STATIC_METHOD("PlayerListMouseButtonDown") {

@@ -19,12 +19,8 @@ Returns: nil
 
 params [["_thisObject", "", [""]], ["_pos", [], [[]]], ["_a", 0, [0]], ["_b", 0, [0]], ["_dir", 0, [0]]];
 
-OOP_INFO_4("ADD ALLOWED AREA: %1, %2, %3, %4", _pos, _a, _b, _dir);
-
 pr _areas = T_GETV("allowedAreas");
-
 _areas pushBack [_pos, _a, _b, _dir];
-
 SET_VAR_PUBLIC(_thisObject, "allowedAreas", _areas);
 
 nil

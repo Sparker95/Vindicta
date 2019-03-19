@@ -39,12 +39,12 @@ CLASS("SideStat", "");
 	} ENDMETHOD;
 	
 	/*
-	Method: incrementXHumanResources
+	Method: incrementHumanResourcesBy
 	Parameters: _valueToInc
 	_valueToInc - integer
 	Returns: nil
 	*/
-	METHOD("incrementXHumanResources") {
+	METHOD("incrementHumanResourcesBy") {
 		params ["_thisObject", "_valueToInc"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR + _valueToInc;
@@ -53,12 +53,12 @@ CLASS("SideStat", "");
 	} ENDMETHOD;
 
 	/*
-	Method: decrementXHumanResources 
+	Method: decrementHumanResourcesBy 
 	Parameters: _valueToDec
 	_valueToDec - integer
 	Returns: nil
 	*/
-	METHOD("decrementXHumanResources") {
+	METHOD("decrementHumanResourcesBy") {
 		params ["_thisObject", "_valueToDec"];
 		private _currentHR = T_GETV("humanResources");
 		private _nextHR = _currentHR - _valueToDec;

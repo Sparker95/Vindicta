@@ -211,8 +211,6 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 
-		OOP_INFO_1("setGarrisonMilitaryMain: %1", _garrison);
-
 		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
 		if (_garrison != "") then {
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
