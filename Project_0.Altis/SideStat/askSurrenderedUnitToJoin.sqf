@@ -11,19 +11,23 @@ params ["_target", "_caller", "_actionId", "_arguments"];
 }] remoteExec ["call", -2, false];
 
 
+// This is sent to server
 [[_caller, _target], {
 	params ["_caller", "_target"];
 	
 	private _maybe = random 2;
+	private _sentence = "";
 	if (_maybe > 1) then {
 		CALLM1(SideStatWest, "incrementHumanResourcesBy", 1);
 		gSideStatWestHR = CALLM0(SideStatWest, "getHumanResources");
 		publicVariable "gSideStatWestHR";
-		
-		[ "", {hint "ok cunt ill fight for ya";}] remoteExec ["spawn", owner _caller, false];
+
+		_sentence = "ok cunt ill fight for ya"; 
 	} else {
-		[ "", {hint "fuck ya mate";}] remoteExec ["spawn", owner _caller, false];
-	}
+		_sentence = "fuck ya mate"; 
+	};
+
+	[_target, _sentence, _caller, false] remoteExecCall ["Dialog_fnc_hud_createSentence", owner _caller];
 
 }] remoteExec ["spawn", 2, false];
 
