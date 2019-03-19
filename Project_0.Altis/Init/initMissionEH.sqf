@@ -1,19 +1,20 @@
 gPlayersList = [];
 
+// TODO: handle HC connections
 _onPlayerConnectedMissionEH = {
 	params ["_id", "_uid", "_name", "_jip", "_owner"];
 	
-	if (_owner == 2) exitWith{};
+	if (_owner == 2) exitWith {};
 	gPlayersList pushBackUnique _this;
 	publicVariable "gPlayersList";
-	diag_log format ["debug Conn gPlayersList %1", gPlayersList];
+	diag_log format ["debug EHConn gPlayersList %1", gPlayersList];
 };
 handlerCon = addMissionEventHandler ["PlayerConnected", _onPlayerConnectedMissionEH];
 
 _onPlayerDisconnectedMissionEH = {
 	gPlayersList = gPlayersList - [_this];
 	publicVariable "gPlayersList";
-	diag_log format ["debug Disco gPlayersList %1", gPlayersList];
+	diag_log format ["debug EHDisco gPlayersList %1", gPlayersList];
 };
 handlerDecon = addMissionEventHandler ["PlayerDisconnected", _onPlayerDisconnectedMissionEH];
 
