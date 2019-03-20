@@ -11,6 +11,8 @@
 #define IDD_LD_PANEL 7006
 #define IDC_PL_HEADER_LISTPLAYERS 8003
 #define IDC_PL_BUTTON_SHOW_PLAYERLIST 8004
+#define IDC_HR_LABEL 8050
+#define IDC_HR_VALUE 8051
 
 #include "CustomControlClasses.h"
 class MapUI
@@ -28,13 +30,49 @@ class MapUI
 			type = 0;
 			idc = IDD_LD_PANEL;
 			x = safeZoneX + safeZoneW * 0.73046875;
-			y = safeZoneY + safeZoneH * 0.44965278;
+			y = safeZoneY + safeZoneH * 0.37673612;
 			w = safeZoneW * 0.25976563;
-			h = safeZoneH * 0.53993056;
+			h = safeZoneH * 0.61284723;
 			style = 0;
 			text = "";
 			onMouseEnter = "diag_log 'on mouse enter!'";
 			onMouseExit = "diag_log 'on mouse exit!'";
+			
+		};
+		class HR_label : Map_UI_text_base 
+		{
+			type = 0;
+			idc = IDC_HR_LABEL;
+			x = safeZoneX + safeZoneW * 0.74023438;
+			y = safeZoneY + safeZoneH * 0.38715278;
+			w = safeZoneW * 0.02050782;
+			h = safeZoneH * 0.02951389;
+			style = 2;
+			text = "HR:";
+			
+		};
+		class HR_value : Map_UI_text_base 
+		{
+			type = 0;
+			idc = IDC_HR_VALUE;
+			x = safeZoneX + safeZoneW * 0.76464844;
+			y = safeZoneY + safeZoneH * 0.38715278;
+			w = safeZoneW * 0.03515625;
+			h = safeZoneH * 0.02951389;
+			style = 0;
+			text = "000";
+			
+		};
+		class LocationData_header : Map_UI_text_base 
+		{
+			type = 0;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.74;
+			y = safeZoneY + safeZoneH * 0.46;
+			w = safeZoneW * 0.24;
+			h = safeZoneH * 0.03;
+			style = 2;
+			text = "Location data";
 			
 		};
 		class LocationData_type : Map_UI_text_base 
@@ -79,18 +117,6 @@ class MapUI
 			w = safeZoneW * 0.23;
 			h = safeZoneH * 0.04;
 			text = "Side: ...";
-			
-		};
-		class LocationData_header : Map_UI_text_base 
-		{
-			type = 0;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.74;
-			y = safeZoneY + safeZoneH * 0.46;
-			w = safeZoneW * 0.24;
-			h = safeZoneH * 0.03;
-			style = 2;
-			text = "Location data";
 			
 		};
 		class LocationData_button : Map_UI_button 

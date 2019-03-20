@@ -114,20 +114,15 @@ if (isServer) then {
 	// Create locations and other things
 	OOP_INFO_0("Init.sqf: Calling initWorld...");
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
+	
+	// Create SideStats
+	private _args = [EAST, 5];
+	SideStatWest = NEW("SideStat", _args);
+	gSideStatWestHR = CALLM0(SideStatWest, "getHumanResources");
+	publicVariable "gSideStatWestHR";
 
-	// addMissionEventHandlers
-	private _onPlayerConnectedMissionEH = {
-		params ["_id", "_uid", "_name", "_jip", "_owner"];
-
-		OOP_DEBUG_1("player connected str this: %1", str _this);
-		OOP_DEBUG_1("player connected this: %1", _this);
-		OOP_DEBUG_1("player connected _id: %1", _id);
-		OOP_DEBUG_1("player connected _uid: %1", _uid);
-		OOP_DEBUG_1("player connected _name: %1", _name);
-		OOP_DEBUG_1("player connected _jip: %1", _jip);
-		OOP_DEBUG_1("player connected _owner: %1", _owner);
-	};
-	handlercon = addMissionEventHandler ["PlayerConnected", _onPlayerConnectedMissionEH];
+	// create MissionEventHandlers
+	call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";
 
 	// Add friendly locations to commanders
 	// Register garrisons of friendly locations

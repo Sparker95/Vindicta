@@ -7,7 +7,7 @@ Parameters: _unit
 
 _unit - Unit Infantry
 
-Author: Sen 01.03.2019
+Author: zalexki 01.03.2019
 Updated: Jeroen 03.03.2019 merging into single weaponholder
 */
 
