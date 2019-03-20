@@ -7,3 +7,4 @@
 
 #include "..\Group\Group.hpp"
 #include "..\Templates\Templates.hpp"
+#include "..\MessageTypes.hpp"

@@ -68,14 +68,6 @@ if (isServer || (!hasInterface && !isDedicated)) then {
 
 	// Location unit array provider
 	gLUAP = NEW("LocationUnitArrayProvider", []);
-	// Create a timer for gLUAP
-	private _msg = MESSAGE_NEW();
-	_msg set [MESSAGE_ID_DESTINATION, gLUAP];
-	_msg set [MESSAGE_ID_SOURCE, ""];
-	_msg set [MESSAGE_ID_DATA, 666];
-	_msg set [MESSAGE_ID_TYPE, 666];
-	private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
-	private _LUAPTimer = NEW("Timer", _args);
 };
 
 // Server only

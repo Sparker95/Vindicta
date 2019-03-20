@@ -27,6 +27,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE("AI"); // The AI brain of this garrison
 	VARIABLE("effTotal"); // Efficiency vector of all units
 	VARIABLE("effMobile"); // Efficiency vector of all units that can move
+	VARIABLE("timer"); // Timer that will be sending PROCESS messages here
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -66,6 +67,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
 		T_SETV("location", "");
+		
+		// Let there be timer!
+		pr _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
+		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
+		pr _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
+		
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -79,6 +89,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("DELETE GARRISON");
+		
+		// Delete our timer
+		DELETE(T_GETV("timer"));
 		
 		// Detach from location if was attached to it
 		pr _loc = T_GETV("location");
