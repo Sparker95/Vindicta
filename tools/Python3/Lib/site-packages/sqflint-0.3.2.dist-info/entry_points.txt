@@ -1,0 +1,3 @@
+[console_scripts]
+sqflint = sqflint:main
+

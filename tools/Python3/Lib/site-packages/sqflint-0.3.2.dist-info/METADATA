@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: sqflint
+Version: 0.3.2
+Summary: Parser, static analyzer and interpreter of SQF (Arma)
+Home-page: https://github.com/LordGolias/sqf
+Author: Lord Golias
+Author-email: lord.golias1@gmail.com
+License: BSD
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: BSD License
+
+UNKNOWN
+
+

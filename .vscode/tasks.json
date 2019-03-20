@@ -134,6 +134,69 @@
                     }
                 ]
             }
+        },
+        {
+            "label": "SQF Linter",
+            "type": "process",
+            "command": "${workspaceRoot}/tools/Python3/Scripts/python.exe",
+            "args": [
+                "sqf_linter.py"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "always"
+            },
+            "problemMatcher":
+            {
+                "owner": "sqf",
+                "fileLocation": ["absolute"],//, "${workspaceFolder}"],
+                "pattern": [
+                    {
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
+                        "line": 2,
+                        "column": 3,
+                        "severity": 1,
+                        "file": 4,
+                        "message": 5
+                    }
+                ]
+            }
+        },
+        {
+            "label": "SQF Validator",
+            "type": "process",
+            "command": "${workspaceRoot}/tools/Python3/Scripts/python.exe",
+            "args": [
+                "-m", 
+                "sqf_validator.py"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "always"
+            },
+            "problemMatcher":
+            {
+                "owner": "sqf",
+                "fileLocation": ["absolute"],//, "${workspaceFolder}"],
+                "pattern": [
+                    {
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
+                        "line": 2,
+                        "column": 3,
+                        "severity": 1,
+                        "file": 4,
+                        "message": 5
+                    }
+                ]
+            }
         }
         // {
         //     "label": "Run in SQF-VM",
