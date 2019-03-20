@@ -45,7 +45,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
 			
-			OOP_INFO_2("Analyzing vehicle group: %1, required drivers: %2, required turret operators: %3", _group, _nDrivers, _nTurrets);
+			OOP_INFO_3("Analyzing vehicle group: %1, required drivers: %2, required turret operators: %3", _group, _nDrivers, _nTurrets);
 			
 			pr _nMoreUnitsRequired = _nDrivers + _nTurrets - _nInf;
 			if (_nMoreUnitsRequired > 0) then {

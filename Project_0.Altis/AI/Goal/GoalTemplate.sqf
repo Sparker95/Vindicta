@@ -1,4 +1,5 @@
 #include "common.hpp"
+
 /*
 Template of a goal class
 */

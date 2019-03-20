@@ -48,7 +48,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 				};
 			} else {
 				// There is no garrison here, just attach here then
-				CALLM1(_loc, "postMethod", "setGarrisonMilitaryMain", [_gar]);
+				CALLM2(_loc, "postMethod", "setGarrisonMilitaryMain", [_gar]);
 				CALLM1(_gar, "setLocation", _loc);
 			};
 						
