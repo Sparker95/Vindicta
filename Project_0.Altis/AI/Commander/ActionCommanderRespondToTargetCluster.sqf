@@ -109,9 +109,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				// Find nearest location which belongs to this side
 				// Find locations controled by this side
 				pr _thisSide = GETV(_AI, "side");
-				private _friendlyLocations = CALLSM0("Location", "getAll") select {
-					CALLM0(_x, "getSide") == _thisSide
-				};
+				private _friendlyLocations = CALLM0(_AI, "getFriendlyLocations");
 				
 				// Sort friendly locations by distance
 				_friendlyDistLoc = _friendlyLocations apply {
@@ -229,7 +227,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			};
 			
 			// Assign targets periodycally
-			if (time - T_GETV("timeAssignedTargetsUpdate") > 30) then {
+			if (time - T_GETV("timeAssignedTargetsUpdate") > 30 && (count _tc > 0)) then {
 				CALLM1(_thisObject, "assignTargetsToGarrisons", _tc select TARGET_CLUSTER_ID_CLUSTER);
 				T_SETV("timeAssignedTargetsUpdate", time);
 			};

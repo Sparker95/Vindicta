@@ -83,7 +83,8 @@ private _locations = entities "Project_0_LocationSector";
 
 	// Add the main garrison to this location
 	private _garMilMain = NEW("Garrison", [_side]);
-	CALL_METHOD(_loc, "setGarrisonMilitaryMain", [_garMilMain]);
+	CALLM1(_garMilMain, "setLocation", _loc);
+	CALLM0(_loc, "registerGarrison", _garMilMain);
 
 	// Add default units to the garrison
 

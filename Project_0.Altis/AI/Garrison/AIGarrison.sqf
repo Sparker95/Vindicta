@@ -138,7 +138,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Set pos
 		pr _pos = CALLM0(_gar, "getPos");
-		_mrk setMarkerPos _pos;
+		_mrk setMarkerPos (_pos vectorAdd[20, 20, 0]);
 		
 		// Update arrow marker
 		pr _mrk = _thisObject + MRK_ARROW;

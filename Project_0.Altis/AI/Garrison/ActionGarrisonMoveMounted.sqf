@@ -72,16 +72,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} forEach _vehGroups;
 		
 		// Reset current location of this garrison
-		// todo redo this crap, it will fail with headless clients
-		pr _loc = CALLM0(_gar, "getLocation");
-		OOP_INFO_1("Garrison's location: %1", _loc);
-		if (_loc != "") then {
-			if (CALLM0(_loc, "getGarrisonMilitaryMain") == _gar) then { // If this garrison is the main garrison of its location
-				OOP_INFO_0("Posting method");
-				CALLM2(_loc, "postMethodAsync", "setGarrisonMilitaryMain", [""]); // This location will no longer control spawning of this garrison
-			};
-			CALLM1(_gar, "setLocation", ""); // This garrison is no longer attached to its location
-		};
+		CALLM0(_gar, "detachFromLocation");
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
 		pr _pos = CALLM0(_gar, "getPos");

@@ -19,9 +19,13 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("type");
 	VARIABLE("side");
 	VARIABLE("debugName");
+	
+	VARIABLE("garrisons");
+	/*
 	VARIABLE("garrisonCiv");
 	VARIABLE("garrisonMilAA");
 	VARIABLE("garrisonMilMain");
+	*/	
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
 	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
@@ -79,9 +83,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("debugName", "noname");
-		T_SETV("garrisonCiv", "");
-		T_SETV("garrisonMilAA", "");
-		T_SETV("garrisonMilMain", "");
+		T_SETV("garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
 		T_SETV("borderPatrolWaypoints", []);
@@ -198,6 +200,13 @@ CLASS("Location", "MessageReceiverEx")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	
+	
+	
+	
+	// Old useless crap, delete it!11
+	
 	/*
 	Method: setGarrisonMilitaryMain
 	Sets the main military garrison located at this location
@@ -208,6 +217,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: nil
 	*/
+	/*
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 
@@ -218,6 +228,7 @@ CLASS("Location", "MessageReceiverEx")
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
 		};
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: getGarrisonMilitaryMain
@@ -225,22 +236,58 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: <Garrison> or "" if there is no garrison there
 	*/
+	/*
 	METHOD("getGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilMain")
 	} ENDMETHOD;
-
+	*/
 	/*
 	Method: getGarrisonMilAA
 	Gets the main military garrison located at this location
 
 	Returns: <Garrison> or "" if there is no garrison there
 	*/
+	/*
 	METHOD("getGarrisonMilAA") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilAA")
 	} ENDMETHOD;
-
+	*/
+	
+	
+	METHOD("registerGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _gars = T_GETV("garrisons");
+		if (! (_gar in _gars)) then {
+			_gars pushBack _gar;
+			CALLM2(_gar, "postMethodAsync", "ref", []);
+		};
+		
+	} ENDMETHOD;
+	
+	METHOD("unregisterGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _gars = T_GETV("garrisons");
+		if (_gar in _gars) then {
+			_gars deleteAt (_gars find _gar);
+			CALLM2(_gar, "postMethodAsync", "unref", []);
+		};
+	} ENDMETHOD;
+	
+	
+	METHOD("getGarrisons") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		
+		if (_side == CIVILIAN) then {
+			T_GETV("garrisons")
+		} else {
+			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
+		};
+	} ENDMETHOD;
+	
 	/*
 	Method: setType
 	Set the Type.
@@ -273,6 +320,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: Side, or Civilian if there is no garrison
 	*/
+	/*
 	METHOD("getSide") {
 		params [ "_thisObject" ];
 		pr _gar = T_GETV("garrisonMilMain");
@@ -282,6 +330,7 @@ CLASS("Location", "MessageReceiverEx")
 			CALLM0(_gar, "getSide");
 		};
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: getCapacityInf

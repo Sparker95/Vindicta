@@ -18,6 +18,8 @@ Author: Sparker 12.07.2018
 
 CLASS("Garrison", "MessageReceiverEx");
 
+	STATIC_VARIABLE("all");
+
 	VARIABLE("units");
 	VARIABLE("groups");
 	VARIABLE("spawned");
@@ -76,6 +78,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 		
+		GETSV("Garrison", "all") pushBack _thisObject;
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -121,6 +124,28 @@ CLASS("Garrison", "MessageReceiverEx");
 			DELETE(_x);
 		} forEach _groups;
     
+    	pr _all = GETSV("Garrison", "all");
+    	_all deleteAt (_all find _thisObject);
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getAll
+	Returns all garrisons
+	
+	Parameters: _side
+	
+	_side - optional, Side of garrisons to returns. If side is not provided, returns all garrisons.
+
+	Returns: Array with <Garrison> objects
+	*/
+	STATIC_METHOD("getAll") {
+		params ["_thisClass", ["_side", sideEmpty]];
+		
+		if (_side == sideEmpty) then {
+			GETSV("Garrison", "all")
+		} else {
+			GETSV("Garrison", "all") select {CALLM0(_x, "getSide") == _side}
+		};
 	} ENDMETHOD;
 
 	/*
@@ -148,12 +173,35 @@ CLASS("Garrison", "MessageReceiverEx");
 	_location - <Location>
 	*/
 	METHOD("setLocation") {
-		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
+		params ["_thisObject", ["_location", "", [""]] ];
 		T_SETV("location", _location);
 		
 		if (T_GETV("spawned")) then {
 			pr _AI = T_GETV("AI");
 			CALLM1(_AI, "handleLocationChanged", _location);
+		};
+		
+		// Detach from current location if it exists
+		pr _currentLoc = T_GETV("location");
+		if (_currentLoc != "") then {
+			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+		};
+		
+		// Attach to another location
+		if (_location != "") then {
+			CALLM2(_location, "postMethodAsync", "registerGarrison", [_thisObject]);
+		};
+		
+		T_SETV("location", _location);
+		
+	} ENDMETHOD;
+	
+	METHOD("detachFromLocation") {
+		params ["_thisObject"];
+		
+		pr _currentLoc = T_GETV("location");
+		if (_currentLoc != "") then {
+			CALLM2(_currentLoc, "unregisterGarrison", _thisObject);
 		};
 	} ENDMETHOD;
 
@@ -276,11 +324,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getPos") {
 		params [["_thisObject", "", [""]]];
-		pr _units = T_GETV("units");
-		if (count _units > 0) then {
-			CALLM0(_units select 0, "getPos");
+		pr _loc = T_GETV("location");
+		if (_loc != "") then {
+			CALLM0(_loc, "getPos");
 		} else {
-			[0, 0, 0]
+			pr _units = T_GETV("units");
+			if (count _units > 0) then {
+				CALLM0(_units select 0, "getPos");
+			} else {
+				[0, 0, 0]
+			};
 		};
 	} ENDMETHOD;
 	
@@ -1056,3 +1109,5 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD_FILE("countUnits", "Garrison\countUnits.sqf");
 
 ENDCLASS;
+
+SETSV("Garrison", "all", []);

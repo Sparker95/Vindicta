@@ -119,28 +119,25 @@ if (isServer) then {
 	// Add friendly locations to commanders
 	// Register garrisons of friendly locations
 	// And start them
-	private _allLocs = CALLSM0("Location", "getAll");
+	private _allGars = CALLSM0("Garrison", "getAll");
 	{
 		private _AI = _x;
 		private _side = GETV(_x, "side");
 		{
-			private _loc = _x;
-			private _locSide = CALLM0(_loc, "getSide");
-			private _updateLevel = if (_locSide == _side || _locSide == CIVILIAN) then {
-				CLD_UPDATE_LEVEL_UNITS // Know about all units at this place
-			} else {
-				CLD_UPDATE_LEVEL_TYPE_UNKNOWN // Only know that there's something unexplored over here
-			};
-			CALLM2(_AI, "updateLocationData", _loc, _updateLevel);
+			private _loc = CALLM0(_x, "getLocation");
 			
-			private _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
-			if (_gar != "") then { // Just to be even more safe
-				CALLM1(_AI, "registerGarrison", _gar);
+			private _updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; // Only know that there's something unexplored over here
+			if (CALLM0(_x, "getSide") == _side) then { // If this garrison should belong to this commander
+				// Register at commander
+				CALLM1(_AI, "registerGarrison", _x);
+				_updateLevel = CLD_UPDATE_LEVEL_UNITS; // Know about all units at this place
 			};
-		} forEach _allLocs;
+			
+			if (_loc != "") then {
+				CALLM2(_AI, "updateLocationData", _loc, _updateLevel);
+			};
+		} forEach _allGars;
 
-		//CALLM0(_x, "updateFriendlyLocationsData");
-		
 		CALLM1(_x, "setProcessInterval", 10);
 		CALLM0(_x, "start");
 	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
