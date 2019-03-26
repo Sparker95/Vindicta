@@ -349,7 +349,7 @@ CLASS("Action", "MessageReceiver")
 	*/
 	METHOD("isFailed") {
 		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == ACTION_STATE_COMPLETED
+		(GETV(_thisObject, "state")) == ACTION_STATE_FAILED
 	} ENDMETHOD;
 	
 	
