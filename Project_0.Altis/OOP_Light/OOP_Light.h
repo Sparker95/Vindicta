@@ -95,6 +95,11 @@ nameStr profilerSetCounter _oop_cnt; };
 #define PROFILER_COUNTER_DEC(nameStr)
 #endif
 
+// Minimum amount of time for a function to take before its profile entry will be written out
+#ifndef OOP_PROFILE_MIN_T
+	#define OOP_PROFILE_MIN_T 0.1
+#endif
+
 /*
 #ifdef OOP_ASSERT
 	diag_log "[OOP] Warning: member assertion is enabled. Disable it for better performance.";
@@ -158,6 +163,14 @@ nameStr profilerSetCounter _oop_cnt; };
 // ----------------------------------------------------------------------
 
 #define FORCE_SET_MEM(objNameStr, memNameStr, value) NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
+#define FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
+	isNil { \
+		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), objNull]; \
+		if (_oldVal isEqualType "") then { CALLM0(_oldVal, "unref") }; \
+		if ((value) isEqualType "") then { CALLM0((value), "ref") }; \
+		NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value] \
+	}
+
 #define FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
 #define FORCE_SET_METHOD(classNameStr, methodNameStr, code) missionNamespace setVariable [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), code]
 #define FORCE_GET_MEM(objNameStr, memNameStr) ( NAMESPACE getVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr) )
@@ -175,7 +188,8 @@ nameStr profilerSetCounter _oop_cnt; };
 // -----------------------------------------------------
 
 #ifdef OOP_ASSERT
-	#define SET_MEM(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_SET_MEM(objNameStr, memNameStr, value)}
+	#define SET_MEM(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then {FORCE_SET_MEM(objNameStr, memNameStr, value)}
+	#define SET_MEM_REF(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then {FORCE_SET_MEM_REF(objNameStr, memNameStr, value)}
 	#define SET_STATIC_MEM(classNameStr, memNameStr, value) if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)}
 	#define GET_MEM(objNameStr, memNameStr) ( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_GET_MEM(objNameStr, memNameStr)}else{nil} )
 	#define GET_STATIC_MEM(classNameStr, memNameStr) ( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_GET_STATIC_MEM(classNameStr, memNameStr)}else{nil} )
@@ -184,6 +198,7 @@ nameStr profilerSetCounter _oop_cnt; };
 	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)}
 #else
 	#define SET_MEM(objNameStr, memNameStr, value) FORCE_SET_MEM(objNameStr, memNameStr, value)
+	#define SET_MEM_REF(objNameStr, memNameStr, value) FORCE_SET_MEM_REF(objNameStr, memNameStr, value)
 	#define SET_STATIC_MEM(classNameStr, memNameStr, value) FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)
 	#define GET_MEM(objNameStr, memNameStr) FORCE_GET_MEM(objNameStr, memNameStr)
 	#define GET_STATIC_MEM(classNameStr, memNameStr) FORCE_GET_STATIC_MEM(classNameStr, memNameStr)
@@ -193,6 +208,7 @@ nameStr profilerSetCounter _oop_cnt; };
 #endif
 
 #define SET_VAR(a, b, c) SET_MEM(a, b, c)
+#define SET_VAR_REF(a, b, c) SET_MEM_REF(a, b, c)
 #define SET_STATIC_VAR(a, b, c) SET_STATIC_MEM(a, b, c)
 #define GET_VAR(a, b) GET_MEM(a, b)
 #define GET_STATIC_VAR(a, b) GET_STATIC_MEM(a, b)
@@ -202,6 +218,7 @@ nameStr profilerSetCounter _oop_cnt; };
 
 // Shortened variants of macros
 #define SETV(a, b, c) SET_VAR(a, b, c)
+#define SETV_REF(a, b, c) SET_VAR_REF(a, b, c)
 #define SETSV(a, b, c) SET_STATIC_VAR(a, b, c)
 #define GETV(a, b) GET_VAR(a, b)
 #define GETSV(a, b) GET_STATIC_VAR(a, b)
@@ -209,6 +226,7 @@ nameStr profilerSetCounter _oop_cnt; };
 
 // Getting/setting variables of _thisObject
 #define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
+#define T_SETV_REF(varNameStr, varValue) SET_VAR_REF(_thisObject, varNameStr, varValue)
 #define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
 
 // Unpacking a _thisObject variable into a private _variable
@@ -251,7 +269,6 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define CALL_STATIC_METHOD_3(classNameStr, methodNameStr, a, b, c) (([classNameStr, a, b, c]) call GET_METHOD(classNameStr, methodNameStr))
 #define CALL_STATIC_METHOD_4(classNameStr, methodNameStr, a, b, c, d) (([classNameStr, a, b, c, d]) call GET_METHOD(classNameStr, methodNameStr))
 
-
 // Shortened variants of macros
 #define CALLM(a, b, c) CALL_METHOD(a, b, c)
 #define CALLCM(a, b, c) CALL_CLASS_METHOD(a, b, c)
@@ -290,31 +307,105 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP) ([classNameStr] + extraParams) remoteExecCall [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), targets, JIP];
 #endif
 
+// ----------------------------------------
+// |         A T T R I B U T E S          |
+// ----------------------------------------
+
+#define ATTR_REFCOUNTED 1
+#define ATTR_SERIALIZABLE 2
+#define ATTR_USERBASE 1000
+
+
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
 // -----------------------------------------------------
 
-#define VARIABLE(varNameStr) _oop_memList pushBackUnique varNameStr
+#define VARIABLE(varNameStr) _oop_memList pushBackUnique [varNameStr, []]
+#define VARIABLE_ATTR(varNameStr, attributes) _oop_memList pushBackUnique [varNameStr, attributes]
 
-#define STATIC_VARIABLE(varNameStr) _oop_staticMemList pushBackUnique varNameStr
+#define STATIC_VARIABLE(varNameStr) _oop_staticMemList pushBackUnique [varNameStr, []]
+#define STATIC_VARIABLE_ATTR(varNameStr, attributes) _oop_staticMemList pushBackUnique [varNameStr, attributes]
 
 #define MEMBER(memNameStr) VARIABLE(memNameStr)
 
 #define STATIC_MEMBER(memNameStr) STATIC_VARIABLE(memNameStr)
 
-#define METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr;  _oop_newMethodList pushBackUnique methodNameStr; \
-NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+#ifdef OOP_PROFILE
+	#define PROFILE_SCOPE_START(scopeName) \
+		private _profileTStart##scopeName = time;
 
-#define ENDMETHOD ]
+	#define PROFILE_SCOPE_END(scopeName, minT) \
+		private _totalProfileT##scopeName = time - _profileTStart##scopeName; \
+		if(_totalProfileT##scopeName > minT) then { \
+			OOP_PROFILE_2("%1 %2", #scopeName, _totalProfileT##scopeName); \
+		};
+		
+	#define METHOD(methodNameStr) \
+		_oop_methodList pushBackUnique methodNameStr;  \
+		_oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+			private _profileTStart = time; \
+			private _methodNameStr = methodNameStr; \
+			private _objOrClass = _this select 0; \
+			private _result = _this call
+	#define ENDMETHOD ;\
+			private _totalProfileT = time - _profileTStart; \
+			if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
+				OOP_PROFILE_3("%1.%2 %3", _objOrClass, _methodNameStr, _totalProfileT); \
+			}; \
+			if(!(isNil "_result")) then { _result } else { nil } \
+		} ]
+	#define METHOD_FILE(methodNameStr, path) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr), compile preprocessFileLineNumbers path]; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+			private _profileTStart = time; \
+			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr); \
+			private _result = _this call _fn; \
+			private _totalProfileT = time - _profileTStart; \
+			if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
+				OOP_PROFILE_1("%1", _totalProfileT); \
+			}; \
+			if(!(isNil "_result")) then { _result } else { nil } \
+		}]
 
-#define METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
-NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+	#define STATIC_METHOD(methodNameStr) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+			private _profileTStart = time; \
+			private _methodNameStr = methodNameStr; \
+			private _result = _this call
 
-#define STATIC_METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
-NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr), compile preprocessFileLineNumbers path]; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+			private _profileTStart = time; \
+			private _fn = NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr); \
+			private _result = _this call _fn; \
+			private _totalProfileT = time - _profileTStart; \
+			if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
+				OOP_PROFILE_1("%1", _totalProfileT); \
+			}; \
+			if(!(isNil "_result")) then { _result } else { nil } \
+		}]
+#else
+	#define METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr;  _oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+	#define ENDMETHOD ]
 
-#define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
-NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+	#define METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+
+	#define STATIC_METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+
+	#define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+#endif
 
 // -----------------------------------------------------
 // |       M E T H O D   P A R A M E T E R S           |
@@ -341,7 +432,7 @@ NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), 
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#define CLASS(classNameStr, baseClassNameStr)	 \
+#define CLASS(classNameStr, baseClassNameStr) \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -350,10 +441,7 @@ private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
 if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
-		missionNamespace setVariable [OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR, format ["Class %1 is not defined. File: %2", baseClassNameStr, __FILE__]]; \
-		endMission OOP_ERROR_DEBRIEFING_CLASS_NAME_STR; \
-	}; \
+	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {throw "invalid base class"}; \
 	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
 	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
 	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \
@@ -428,26 +516,7 @@ objNameStr \
 #define CONSTRUCTOR_ASSERT_CLASS(classNameStr)
 #endif
 
-#define NEW(classNameStr, extraParams) [] call { \
-CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
-private _oop_nextID = -1; \
-_oop_nul = isNil { \
-_oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
-if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0);	_oop_nextID = 0;}; \
-SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
-}; \
-private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
-FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \
-private _oop_parents = GET_SPECIAL_MEM(classNameStr, PARENTS_STR); \
-private _oop_i = 0; \
-private _oop_parentCount = count _oop_parents; \
-while {_oop_i < _oop_parentCount} do { \
-	([_objNameStr] + extraParams) call GET_METHOD((_oop_parents select _oop_i), "new"); \
-	_oop_i = _oop_i + 1; \
-}; \
-CALL_METHOD(_objNameStr, "new", extraParams); \
-_objNameStr \
-}
+#define NEW(classNameStr, extraParams) ([classNameStr, extraParams] call OOP_new)
 
 // -----------------------------------------------------------------------
 // |        C O N S T R U C T O R  O F  P U B L I C   O B J E C T        |
@@ -460,31 +529,7 @@ _objNameStr \
  * It doesn't mean the object's variables will be streamed across MP network, you still need to do it yourself.
  */
 
-#define NEW_PUBLIC(classNameStr, extraParams) [] call { \
-CONSTRUCTOR_ASSERT_CLASS(classNameStr) \
-private _oop_nextID = -1; \
-_oop_nul = isNil { \
-_oop_nextID = GET_SPECIAL_MEM(classNameStr, NEXT_ID_STR); \
-if (isNil "_oop_nextID") then { SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, 0); _oop_nextID = 0;}; \
-SET_SPECIAL_MEM(classNameStr, NEXT_ID_STR, _oop_nextID+1); \
-}; \
-private _objNameStr = OBJECT_NAME_STR(classNameStr, _oop_nextID); \
-FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, classNameStr); \
-PUBLIC_VAR(_objNameStr, OOP_PARENT_STR); \
-FORCE_SET_MEM(_objNameStr, OOP_PUBLIC_STR, 1); \
-PUBLIC_VAR(_objNameStr, OOP_PUBLIC_STR); \
-private _oop_parents = GET_SPECIAL_MEM(classNameStr, PARENTS_STR); \
-private _oop_i = 0; \
-private _oop_parentCount = count _oop_parents; \
-while {_oop_i < _oop_parentCount} do { \
-	([_objNameStr] + extraParams) call GET_METHOD((_oop_parents select _oop_i), "new"); \
-	_oop_i = _oop_i + 1; \
-}; \
-CALL_METHOD(_objNameStr, "new", extraParams); \
-_objNameStr \
-}
-
-
+#define NEW_PUBLIC(classNameStr, extraParams) ([classNameStr, extraParams] call OOP_new_public) 
 
 // ----------------------------------------
 // |         D E S T R U C T O R          |
@@ -504,32 +549,26 @@ _objNameStr \
 #define DESTRUCTOR_ASSERT_OBJECT(objNameStr)
 #endif
 
-#define DELETE(objNameStr) call { \
-DESTRUCTOR_ASSERT_OBJECT(objNameStr) \
-private _oop_classNameStr = OBJECT_PARENT_CLASS_STR(objNameStr); \
-private _oop_parents = GET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR); \
-private _oop_parentCount = count _oop_parents; \
-private _oop_i = _oop_parentCount - 1; \
-CALL_METHOD(objNameStr, "delete", []); \
-while {_oop_i > -1} do { \
-[objNameStr] call GET_METHOD((_oop_parents select _oop_i), "delete"); \
-_oop_i = _oop_i - 1; \
-}; \
-private _isPublic = IS_PUBLIC(objNameStr); \
-private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
-if (_isPublic) then { \
-{FORCE_SET_MEM(objNameStr, _x, nil); PUBLIC_VAR(objNameStr, OOP_PARENT_STR);} forEach _oop_memList; \
-} else { \
-{FORCE_SET_MEM(objNameStr, _x, nil);} forEach _oop_memList; \
-}; \
-}
+#define DELETE(objNameStr) ([objNameStr] call OOP_delete)
 
+// ---------------------------------------------
+// |         R E F   C O U N T I N G           |
+// ---------------------------------------------
+
+#define REF(objNameStr) CALLM0(objNameStr, "ref")
+#define UNREF(objNameStr) CALLM0(objNameStr, "unref")
+
+// ---------------------------------------------------
+// |         T H R E A D I N G    U T I L S          |
+// ---------------------------------------------------
+
+#define CRITICAL_SECTION private _null = isNil
 
 // ----------------------------------------------------------------------
 // |                   L O G G I N G   M A C R O S                      |
 // ----------------------------------------------------------------------
 
-#define LOG_SCOPE(scopeName) private _oop_logScope = scopeName
+#define LOG_SCOPE(logScopeName) private _oop_logScope = logScopeName
 #define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }}}
 //#define LOG_1 _fnc_scriptName
 #define LOG_1 "fnc"
@@ -549,6 +588,22 @@ if (_isPublic) then { \
 #define WRITE_LOG(text) __OFSTREAM_OUT(OFSTREAM_FILE, text)
 #else
 #define WRITE_LOG(text) diag_log text
+#endif
+
+#ifdef OOP_PROFILE
+#define OOP_PROFILE_0(str) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, str]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
+#define OOP_PROFILE_1(str, a) private _o_str = format ["[%1.%2] PROFILE: %3",LOG_0, LOG_1, format [str, a]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
+#define OOP_PROFILE_2(str, a, b) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
+#define OOP_PROFILE_3(str, a, b, c) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
+#define OOP_PROFILE_4(str, a, b, c, d) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
+#define OOP_PROFILE_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
+#else
+#define OOP_PROFILE_0(str)
+#define OOP_PROFILE_1(str, a)
+#define OOP_PROFILE_2(str, a, b)
+#define OOP_PROFILE_3(str, a, b, c)
+#define OOP_PROFILE_4(str, a, b, c, d)
+#define OOP_PROFILE_5(str, a, b, c, d, e)
 #endif
 
 #ifdef OOP_INFO

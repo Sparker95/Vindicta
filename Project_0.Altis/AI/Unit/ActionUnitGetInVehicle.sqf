@@ -16,17 +16,17 @@ Author: Sparker
 #ifdef DEBUG
 #define INFO_0(str) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, str];
 #define INFO_1(str, a) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a]];
-#define INFO_2(str, a) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b]];
-#define INFO_3(str, a) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c]];
-#define INFO_4(str, a) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c, d]];
-#define INFO_5(str, a) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c, d, e]];
+#define INFO_2(str, a, b) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b]];
+#define INFO_3(str, a, b, c) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c]];
+#define INFO_4(str, a, b, c, d) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c, d]];
+#define INFO_5(str, a, b, c, d, e) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c, d, e]];
 #else
 #define INFO_0(str)
 #define INFO_1(str, a)
-#define INFO_2(str, a)
-#define INFO_3(str, a)
-#define INFO_4(str, a)
-#define INFO_5(str, a)
+#define INFO_2(str, a, b)
+#define INFO_3(str, a, b, c)
+#define INFO_4(str, a, b, c, d)
+#define INFO_5(str, a, b, c, d, e)
 #endif
 
 CLASS("ActionUnitGetInVehicle", "ActionUnit")

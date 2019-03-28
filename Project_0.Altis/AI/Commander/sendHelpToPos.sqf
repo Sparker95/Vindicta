@@ -1,7 +1,7 @@
 #define OOP_DEBUG
 #define OOP_WARNING
 #define OFSTREAM_FILE "Help.rpt"
-#include "..\OOP_Light\OOP_Light.h"
+#include "..\..\OOP_Light\OOP_Light.h"
 
 /*
 Method: sendHelp
