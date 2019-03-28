@@ -376,6 +376,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _profileTStart = time; \
 			private _methodNameStr = methodNameStr; \
+			private _objOrClass = _this select 0; \
 			private _result = _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
