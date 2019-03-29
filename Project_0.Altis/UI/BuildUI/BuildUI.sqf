@@ -56,7 +56,7 @@ CLASS("BuildUI", "")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		OOP_INFO_1("'new' method called. ====================================");
+		OOP_INFO_0("'new' method called. ====================================");
 
 		if(!(isNil("g_BuildUI"))) exitWith {
 			OOP_ERROR_0("BuildUI already initialized! Make sure to delete it before trying to initialize it again!");

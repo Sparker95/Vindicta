@@ -6,18 +6,18 @@
         {
             "label": "Compile with SQF-VM",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
                 "--parse-only",
-                "--load", "./../../Project_0.Altis",
+                "--load", ".",
                 "-i", "${file}",
                 "--command-dummy-unary ofstream_new",
-                "--command-dummy-binary 4|ofstream_write"
-                //"./../../${relativeFile}" 
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
@@ -30,7 +30,7 @@
                 "fileLocation": ["absolute"],//, "${workspaceFolder}"],
                 "pattern": [
                     {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
                         "line": 2,
                         "column": 3,
                         "severity": 1,
@@ -41,18 +41,19 @@
             }
         },
         {
-            "label": "Run with SQF-VM (usually won't work due to unimplemented functions)",
+            "label": "Run with SQF-VM (sometimes won't work due to unimplemented functions)",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load", "./../../Project_0.Altis",
+                "--load", ".",
                 "-i", "${file}",
                 "--command-dummy-unary ofstream_new",
-                "--command-dummy-binary 4|ofstream_write"
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
@@ -64,7 +65,7 @@
                 "fileLocation": ["absolute"],
                 "pattern": [
                     {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
                         "line": 2,
                         "column": 3,
                         "severity": 1,
@@ -77,14 +78,17 @@
         {
             "label": "Preprocess with SQF-VM",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load", "./../../Project_0.Altis",
-                "-E", "${file}"
+                "--load", ".",
+                "-E", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
@@ -96,7 +100,7 @@
                 "fileLocation": ["absolute"],
                 "pattern": [
                     {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
                         "line": 2,
                         "column": 3,
                         "severity": 1,
@@ -109,15 +113,17 @@
         {
             "label": "Pretty print with SQF-VM (not working)",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load", "./../../Project_0.Altis",
-                "--pretty-print", "${file}" 
-                //"--pretty-print", "./../../${relativeFile}" 
+                "--load", ".",
+                "--pretty-print", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
@@ -129,7 +135,36 @@
                 "fileLocation": ["absolute"],
                 "pattern": [
                     {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
+                        "line": 2,
+                        "column": 3,
+                        "severity": 1,
+                        "file": 4,
+                        "message": 5
+                    }
+                ]
+            }
+        },
+        {
+            "label": "Parse ALL with SQF-VM",
+            "type": "process",
+            "command": "${workspaceRoot}/tools/sqf-vm-compile-all.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                // Reveal the output only if unrecognized errors occur.
+                "reveal": "always"
+            },
+            "problemMatcher":
+            {
+                "owner": "sqf",
+                "fileLocation": "absolute", //["relative", "${workspaceRoot}"],
+                "pattern": [
+                    {
+                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
                         "line": 2,
                         "column": 3,
                         "severity": 1,

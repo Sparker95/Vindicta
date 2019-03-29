@@ -190,7 +190,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			// If this cluster inherits from >1 clusters, it needs a new unique ID
 			if (_nAffAboveZero > 1) then {
 				_newTC set [TARGET_CLUSTER_ID_ID, -2]; // Needs a new ID
-				OOP_INFO_1("New target cluster inherits from multiple target clusters");
+				OOP_INFO_0("New target cluster inherits from multiple target clusters");
 			};
 			
 			// Add new target cluster to the array of target clusters			

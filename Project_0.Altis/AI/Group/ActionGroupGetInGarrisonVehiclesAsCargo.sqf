@@ -15,7 +15,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
-		SETV("freeVehicles", []); 
+		T_SETV("freeVehicles", []); 
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
