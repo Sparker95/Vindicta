@@ -574,13 +574,22 @@ objNameStr \
 //#define LOG_1 _fnc_scriptName
 #define LOG_1 "fnc"
 
+
+#ifdef ADE
+#define DUMP_CALLSTACK ade_dumpCallstack
+#else
+#define DUMP_CALLSTACK 
+#endif
+
 // If ofstream addon is globally enabled
 #ifdef OFSTREAM_ENABLE
 #define __OFSTREAM_OUT(fileName, text) ((ofstream_new fileName) ofstream_write(text))
 #define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
 #else
+
 #define __OFSTREAM_OUT(fileName, text) diag_log text
 #define WRITE_CRITICAL(text)
+
 #endif
 
 #define _OFSTREAM_FILE OFSTREAM_FILE

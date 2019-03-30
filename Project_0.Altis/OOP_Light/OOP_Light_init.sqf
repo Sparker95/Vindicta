@@ -1,11 +1,5 @@
 #include "OOP_Light.h"
 
-#ifdef ADE
-#define DUMP_CALLSTACK ade_dumpCallstack
-#else
-#define DUMP_CALLSTACK 
-#endif
-
 /*
  * This file contains some functions for OOP_Light, mainly for asserting classess, objects and members.
  * Author: Sparker

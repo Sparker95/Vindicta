@@ -182,7 +182,8 @@ CLASS("AI_GOAP", "AI")
 					} else {
 						// Terminate the current action (if it exists)
 						CALLM0(_thisObject, "deleteCurrentAction");
-						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", GETV(_thisObject, "worldState"), _wsGoal);
+						pr _wsCurr = GETV(_thisObject, "worldState");
+						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", _wsCurr, _wsGoal);
 					};
 				} else {
 					// Set a new action from the predefined action
@@ -661,7 +662,7 @@ CLASS("AI_GOAP", "AI")
 		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
 		
 		if (!_paramsGood) then {
-			ade_dumpCallstack;
+			DUMP_CALLSTACK;
 		};
 		
 		// Copy the array of possible actions becasue we are going to modify it

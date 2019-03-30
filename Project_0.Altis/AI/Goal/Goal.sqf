@@ -89,7 +89,7 @@ CLASS("Goal", "")
 		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
 
 		if (!_paramsGood) then {
-			ade_dumpCallstack;
+			DUMP_CALLSTACK;
 		};
 
 		// Return effects from the database
