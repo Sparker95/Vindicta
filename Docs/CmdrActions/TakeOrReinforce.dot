@@ -1,0 +1,29 @@
+digraph finite_state_machine {
+    graph [fontname = "helvetica" fontsize = 12];
+    node [fontname = "helvetica" fontsize = 12];
+    size=7
+    edge [fontname = "helvetica" fontsize = 10];
+    // size="8,5"
+    rankdir=LR;
+    subgraph cluster_key {
+        label="Key";
+        node[shape=plaintext height=0.1];
+        S[label="S: source"];
+        T[label="T: target"];
+        D[label="D: detachment"];
+        // { rank=source; S T D }
+    }
+
+    node [shape = doublecircle width = 1]; Start, Done;
+    node [shape = point width = 0.2]; start, end;
+
+    node [shape = circle width = 1];
+    start -> Start;
+    Start -> Done [ label = "S not valid or T not valid"];
+    Start -> Mobilizing [ label = "Split D from S" ];
+    Mobilizing -> Done [ label = "D not valid"];
+    Mobilizing -> Moving [ label = "Ready:\nMove D to T" ];
+    Moving -> Done [ label = "D arrived at T:\nMerge/occupy" ];
+    Moving -> Moving [ label = "T is invalid:\nChoose new T" ];
+    Done -> end;
+}
