@@ -691,5 +691,5 @@ objNameStr \
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
 #endif
 
-// Returns true if given object is public (was created with NEW_PUBLIC)
+// Returns true if given object is public, i.e. was created with NEW_PUBLIC
 #define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
