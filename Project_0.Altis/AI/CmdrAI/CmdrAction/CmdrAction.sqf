@@ -49,7 +49,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(state);
 		T_PRVAR(transitions);
 		while {_state != CMDR_ACTION_STATE_END} do {
-			private _newState = CALLMS("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
 			if(_newState == _state) then {
 				OOP_ERROR_2("Couldn't apply action %1 to sim, stuck in state %2", _thisObject, _state);
 			};
@@ -60,7 +60,7 @@ CLASS("CmdrAction", "RefCounted")
 		params [P_THISOBJECT, P_STRING("_world")];
 		T_PRVAR(state);
 		T_PRVAR(transitions);
-		private _newState = CALLMS("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+		private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
 		if(_newState != _state) then {
 			T_SETV("_state", _newState);
 		};
