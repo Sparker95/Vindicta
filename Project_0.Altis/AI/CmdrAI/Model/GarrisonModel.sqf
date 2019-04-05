@@ -1,40 +1,36 @@
 #include "..\..\..\OOP_Light\OOP_Light.h"
 
-// Collection of unitCount/vehCount and their orders
-CLASS("GarrisonModel", "RefCounted")
-	// Use realGarr as id? Won't work for garrison created in sim though
-	VARIABLE("id");
-	VARIABLE("realGarr");
-	VARIABLE("ownerState");
+// Model of a Real Garrison. This can either be the Actual model or the Sim model.
+// The Actual model represents the Real Garrison as it currently is. A Sim model
+// is a copy that is modified during simulations.
+CLASS("GarrisonModel", "ModelBase")
+	// Strength vector of the garrison.
 	VARIABLE("efficiency");
-	VARIABLE_ATTR("order", [ATTR_REFCOUNTED]);
+	//// Current order the garrison is following.
+	// TODO: do we want this? I think only real Garrison needs orders, model just has action.
+	//VARIABLE_ATTR("order", [ATTR_REFCOUNTED]);
 	VARIABLE_ATTR("currAction", [ATTR_REFCOUNTED]);
+	// Is the garrison currently in combat?
+	// TODO: maybe replace this with with "engagement score" indicating how engaged they are.
 	VARIABLE("inCombat");
+	// Position.
 	VARIABLE("pos");
-	VARIABLE("garrSide");
-
-	VARIABLE("outpostId");
+	// What side this garrison belongs to.
+	VARIABLE("side");
+	// Id of the location the garrison is currently occupying.
+	VARIABLE("locationId");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_ownerState"), P_STRING("_realGarr")];
-		T_SETV("id", -1);
-		T_SETV("ownerState", _ownerState);
-		T_SETV("efficiency", []);
 		T_SETV_REF("order", objNull);
 		T_SETV_REF("currAction", objNull);
-		T_SETV("inCombat", false);
-		T_SETV("pos", []);
-		T_SETV("garrSide", objNull);
-		T_SETV("outpostId", -1);
-
-		if(_realGarr isEqualTo "") then {
-			T_SETV("realGarr", objNull);
-			ASSERT_MSG(GETV(_ownerState, "isSim"), "State must be sim if you aren't setting realGarr");
-		} else {
-			T_SETV("realGarr", _realGarr);
-			ASSERT_MSG(!GETV(_ownerState, "isSim"), "State must NOT be sim if you are setting realGarr");
-			T_CALLM("syncFromRealGarr", []);
-		};
+		// These will get set in sync
+		// T_SETV("efficiency", []);
+		// T_SETV("inCombat", false);
+		// T_SETV("pos", []);
+		// T_SETV("side", objNull);
+		// T_SETV("locationId", -1);
+		T_CALLM("sync", []);
 	} ENDMETHOD;
 
 	METHOD("setId") {
@@ -42,34 +38,16 @@ CLASS("GarrisonModel", "RefCounted")
 		T_SETV("id", _id);
 	} ENDMETHOD;
 	
-	METHOD("syncFromRealGarr") {
+	METHOD("sync") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(realGarr);
+		T_PRVAR(realObject);
 		// If we have an assigned real garrison then sync from it
-		if(_realGarr isEqualType "") then {
-			OOP_DEBUG_1("Updating GarrisonModel from Garrison %1", _realGarr);
-			T_SETV("efficiency", GETV(_realGarr, "effTotal"));
-			T_SETV("pos", CALLM(_realGarr, "getPos", []));
-			T_SETV("garrSide", GETV(_realGarr, "side"));
+		if(_realObject isEqualType "") then {
+			OOP_DEBUG_1("Updating GarrisonModel from Garrison %1", _realObject);
+			T_SETV("efficiency", GETV(_realObject, "effTotal"));
+			T_SETV("pos", CALLM(_realObject, "getPos", []));
+			T_SETV("side", GETV(_realObject, "side"));
 		};
 	} ENDMETHOD;
-
-	METHOD("update") {
-		params [P_THISOBJECT];
-
-		T_CALLM("syncFromRealGarr", []);
-
-		// T_PRVAR(ownerState);
-		// // If we have an assigned owner state then ???
-		// if(_ownerState isEqualType "") then {
-
-		// }
-
-		// Update order? Yes, action shouldn't do it, orders are owned by garrison
-		T_PRVAR(order);
-
-		if(_order isEqualType "") then {
-			CALLM(_order, "update", [_thisObject]);
-		};
-	} ENDMETHOD;
+ENDCLASS;
