@@ -130,7 +130,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ 
+	METHOD("getStimulusTypes") {
 		[STIMULUS_TYPE_TARGETS]
 	} ENDMETHOD;
 	
@@ -139,7 +140,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ 
+	METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
 		pr _type = STIMULUS_GET_TYPE(_stimulus);

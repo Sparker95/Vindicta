@@ -1,5 +1,6 @@
 
 #include "..\..\..\OOP_Light\OOP_Light.h"
+#include "CmdrActionStates.hpp"
 
 CLASS("CmdrAction", "RefCounted")
 

@@ -42,7 +42,7 @@
 #undef ASP_ENABLE
 #undef OFSTREAM_ENABLE
 #undef OFSTREAM_FILE
-#define VM_LOG(t) diag_log str(t)
+#define VM_LOG(t) diag_log t
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #else
 #define VM_LOG(t)
