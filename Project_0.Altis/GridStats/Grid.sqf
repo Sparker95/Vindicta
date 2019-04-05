@@ -126,8 +126,115 @@ CLASS("Grid", "");
 		(_array select _xID) set [_yID, _value];
 	
 	} ENDMETHOD;
+
+	/*
+	Method: addValue
+	Adds value to element specified by world coordinates
 	
+	Parameters: _pos, _value
 	
+	_pos - array, position: [x, y] or [x, y, z], but only x and y matter.
+	_value - Number
+	
+	Returns: new value of the element.
+	*/
+	
+	METHOD("addValue") {
+		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, [0]]];
+	
+		_pos params ["_x", "_y"];
+		
+		pr _array = T_GETV("gridArray");
+		pr _cellSize = T_GETV("cellSize");
+	
+		pr _xID = floor(_x / _cellSize);
+		pr _yID = floor(_y / _cellSize);
+		
+		pr _v = (_array select _xID) select _yID;
+		_v = _v + _value;
+		(_array select _xID) set [_yID, _v];
+
+		_v
+	} ENDMETHOD;
+	
+	// - - - - - Getting values - - - - -
+
+	/*
+	Method: getValue
+	Gets value of the element specified by world coordinates
+	
+	Parameters: _pos
+	
+	_pos - array, position: [x, y] or [x, y, z], but only x and y matter.
+	
+	Returns: Number, value of the element.
+	*/
+
+	METHOD("getValue") {
+		params ["_thisObject", ["_pos", [], [[]]]];
+
+		_pos params ["_x", "_y"];
+		
+		pr _array = T_GETV("gridArray");
+		pr _cellSize = T_GETV("cellSize");
+	
+		pr _xID = floor(_x / _cellSize);
+		pr _yID = floor(_y / _cellSize);
+		
+		pr _v = (_array select _xID) select _yID;
+
+		_v
+	} ENDMETHOD;
+
+	// - - - - - Image processing - - - -
+	/*
+	Method: filter
+	Filters the grid through a kernel (2D array).
+	
+	Parameters: _kernel
+	
+	_kernel - square 2D array with numbers (coefficients). Size should be odd.
+	
+	Returns: Nothing
+	*/
+	METHOD("filter") {
+		params ["_thisObject", ["_kernel", [], [[]]]];
+
+		pr _kSize = count _kernel;
+		pr _kOffset = floor (_kSize / 2); // Kernel offset
+
+		pr _array = T_GETV("gridArray");
+		pr _cellSize = T_GETV("cellSize");
+
+		pr _nCellsX = ceil(worldSize / _cellSize); //Size of the grid measured in squares
+		pr _nCellsY = ceil(worldSize / _cellSize);
+
+		// Make a copy of the grid
+		pr _arrayCopy = +_array;
+
+		for "_xID" from _kOffset to (_nCellsX-_kOffset-1) do {
+			for "_yID" from _kOffset to (_nCellsY-_kOffset-1) do {
+				pr _acc = 0;
+				
+				// Do filtering
+				pr _kxID = 0; // Indexes of kernel
+				pr _kyID = 0;
+				for "_fxID" from (_xID - _kOffset) to (_xID + _kOffset) do {
+					_kyID = 0;
+					for "_fyID" from (_yID - _kOffset) to (_yID + _kOffset) do {
+						_acc = _acc + ((_arrayCopy # _fxID) # _fyID) * ((_kernel # _kxID) # _kyID);
+						_kyID = _kyID + 1;
+					};
+					_kxID = _kxID + 1;
+				};
+
+				// Write the accumulated value
+				(_array select _xID) set [_yID, _acc];
+			};
+		};
+
+		nil
+	} ENDMETHOD;
 	
 	// - - - - - Plotting grids - - - - -
 	/*
@@ -270,7 +377,6 @@ CLASS("Grid", "");
 	// - - - - - Manipulating values - - - - - -
 	
 	METHOD("edit") {
-	
 		params ["_thisObject", ["_value", 1.0], ["_scale", 1.0]];
 		
 		// Unplot previous grid
@@ -310,6 +416,8 @@ CLASS("Grid", "");
 				removeMissionEventHandler ["MapSingleClick", _eh];
 				systemChat format ["Finished editing %1", _grid];
 				SETSV("Grid", "currentGrid", nil);
+
+				hint "Finished editing";
 			};
 			
 			pr _value = GETSV("grid", "currentValue");
@@ -326,7 +434,34 @@ CLASS("Grid", "");
 	
 	} ENDMETHOD;
 	
+	/*
+	Method: copyFrom
+	Sets values to this grid from another grid.
 	
+	Parameters: _grid
 	
+	_grid - the <Grid> to copy from
+	
+	Returns: reference to this grid.
+	*/	
+	METHOD("copyFrom") {
+		params ["_thisObject", ["_grid", "", [""]]];
+
+		pr _gridArray = T_GETV("gridArray");
+		pr _gridArray1 = GETV(_grid, "gridArray");
+
+		// Bail if sizes are different
+		if (count _gridArray != count _gridArray1) exitWith {
+			OOP_ERROR_2("Wrong grid sizes: %1, %2", _thisObject, _grid);
+		};
+
+		pr _nx = count _gridArray;
+		pr _ny = count (_gridArray select 0);
+		for "_xID" from 0 to (_nx-1) do {
+			_gridArray set [_xID, +(_gridArray1 select _xID)];
+		};
+
+		_thisObject
+	} ENDMETHOD;
 	
 ENDCLASS;
