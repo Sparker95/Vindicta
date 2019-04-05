@@ -38,6 +38,17 @@
 // It's a global flag, must be defined here
 #define OOP_ASSERT
 
+#ifdef _SQF_VM
+#undef ASP_ENABLE
+#undef OFSTREAM_ENABLE
+#undef OFSTREAM_FILE
+#define VM_LOG(t) diag_log t
+#define VM_LOG_FMT(t, args) diag_log format ([t] + args)
+#else
+#define VM_LOG(t)
+#define VM_LOG_FMT(t, args)
+#endif
+
 // Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
 // You can either define it here or usage of OOP_INFO_, ..., macros will cause its automatic definition
 // ! ! ! It's currently totally disabled because recompiling breaks file names in callstacks ! ! !
@@ -70,9 +81,7 @@
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
 // ----------------------------------------------------------------------
-
 #ifndef ASP_ENABLE
-#define PROFILER_COUNTERS_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
 #endif
 
@@ -438,6 +447,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 
 #define CLASS(classNameStr, baseClassNameStr) \
+VM_LOG_FMT("[%1 <- %2] declaring class", [classNameStr] + [baseClassNameStr]); \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -691,9 +701,24 @@ objNameStr \
 // Exits current scope if provided object's class doesn't match specified class
 #ifdef OOP_ASSERT
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
+#define ASSERT_MSG(condition, msg) \
+if (!(condition)) then { \
+	OOP_ERROR_2("Assertion failed (%1): %2", { condition; }, msg); \
+}
+#define ASSERT(condition) \
+if (!(condition)) then { \
+	OOP_ERROR_1("Assertion failed (%1)", { condition; }); \
+}
 #else
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+#define ASSERT_MSG(condition, msg)
+#define ASSERT(condition)
 #endif
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC
 #define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
+
+if (isNil "OOP_Light_initialized") then {
+	OOP_Light_initialized = true;
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+};
