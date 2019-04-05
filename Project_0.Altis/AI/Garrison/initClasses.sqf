@@ -36,4 +36,6 @@ call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonHealth.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonLocationIsObserved.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonState.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\SensorGarrisonTargets.sqf";
+#ifndef _SQF_VM
 call compile preprocessFileLineNumbers "AI\Garrison\initDatabase.sqf";
+#endif

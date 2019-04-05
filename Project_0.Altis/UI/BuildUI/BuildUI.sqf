@@ -1044,4 +1044,7 @@ build_UI_setObjectMovable = {
 	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);
 };
 
+#ifndef _SQF_VM
 NEW("BuildUI", []);
+#endif
+

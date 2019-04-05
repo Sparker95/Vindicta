@@ -5,7 +5,7 @@
 
 #include "OOP_Light.h"
 
-call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+// call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
 CLASS("RefCountedTest", "RefCounted")
 	METHOD("new") {
