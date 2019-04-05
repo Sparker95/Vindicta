@@ -433,7 +433,8 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#define CLASS(classNameStr, baseClassNameStr) \
+
+#define CLASS(classNameStr, baseClassNameStr)
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -483,7 +484,7 @@ private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + toString [
 missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
 } forEach _oop_newMethodList;
 #else
-#define ENDCLASS
+#define ENDCLASS }
 #endif
 
 // ----------------------------------------------------------------------

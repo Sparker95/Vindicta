@@ -222,6 +222,7 @@ SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
 */
 
 // Make some test markers
+/*
 pr _testMarker = NEW("MapMarkerLocation", []);
 pr _pos = [333, 333];
 CALLM1(_testMarker, "setPos", _pos);
@@ -239,3 +240,4 @@ pr _pos = [666, 666];
 CALLM1(_testMarker, "setPos", _pos);
 pr _color = [0, 0.8, 0.8, 1];
 CALLM1(_testMarker, "setColor", _color);
+*/
