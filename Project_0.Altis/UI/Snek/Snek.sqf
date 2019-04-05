@@ -253,7 +253,10 @@ CLASS("Snek", "")
 		// Create new Snek instance
 		_snek = NEW("Snek", []);
 		SETSV("Snek", "snek", _snek);
-		
+
+		// Hint
+		hint "Snek game has been started!";
+
 	} ENDMETHOD;
 
 	// Call stop to stop the game	
@@ -265,8 +268,16 @@ CLASS("Snek", "")
 		if (_snek != "") then {
 			SETV(_snek, "flagTerminate", true);
 		};
-		SETSV("Snek", "snek", "");
+
+		hint "Snek game has been stopped!";
 	
+	} ENDMETHOD;
+
+	// Returns true if the game is running
+	STATIC_METHOD("isRunning") {
+
+		GETSV("Snek", "snek") != ""
+
 	} ENDMETHOD;
 
 
@@ -312,6 +323,7 @@ CLASS("Snek", "")
 		
 		// Add CBA wait and execute
 		[{CALLM0(_this, "onTimer");}, _thisObject, SNEK_DELAY] call CBA_fnc_waitAndExecute;
+
 	} ENDMETHOD;
 	
 	METHOD("delete") {
@@ -333,8 +345,12 @@ CLASS("Snek", "")
 		{
 			DELETE(_x);
 		} forEach T_GETV("pickups");
-		
-		
+
+		// Show score to player
+		systemChat format ["Your score: %1", (count _segments) - 1];
+
+		// Reset the global variable
+		SETSV("Snek", "snek", "");
 	} ENDMETHOD;
 	
 	/*
@@ -445,7 +461,28 @@ CLASS("Snek", "")
 				case DIR_RIGHT: {_xNew = _x + 1;};
 				case DIR_LEFT: {_xNew = _x - 1;};
 			};
-			
+
+			// Check if new position is outside of the world boundary
+			pr _posMax = floor (worldSize / SEGMENT_SIZE);
+			if (_yNew < 0 || _xNew < 0 || _xNew > _posMax || _yNew > _posMax) then {
+				CALLSM0("Snek", "stop");
+				systemChat "You crashed into a wall!";
+			};
+
+			// Check if Snek bites its tail
+			{
+				pr _sx = GETV(_x, "x");
+				pr _sy = GETV(_x, "y");
+				if (_xNew == _sx && _yNew == _sy) exitWith {
+					// Delete all segments above this segment
+					pr _i = _forEachIndex;
+					while {_i < (count _segments)} do {
+						pr _segment = _segments deleteAt _i;
+						DELETE(_segment);
+					};
+				};
+			} forEach _segments;
+
 			// Check if new position is on one of pickups
 			pr _pickups = T_GETV("pickups");
 			pr _i = 0;
@@ -465,6 +502,9 @@ CLASS("Snek", "")
 					
 					// Create a new pickup
 					CALLM0(_thisObject, "createRandomPickup");
+
+					// Show score to player
+					systemChat format ["Your score: %1", (count _segments) - 1];
 				} else {
 					_i = _i + 1;
 				};
@@ -498,3 +538,50 @@ CLASS("Snek", "")
 ENDCLASS;
 
 SETSV("Snek", "snek", "");
+
+
+// Map marker that starts the game
+
+CLASS("MapMarkerSnek", "MapMarker")
+
+	METHOD("new") {
+		params ["_thisObject"];
+
+		// Put the marker at the bottom left of the map
+		pr _pos = [0, 0];
+		CALLM1(_thisObject, "setPos", _pos);
+	} ENDMETHOD;
+
+	METHOD("onMouseButtonClick") {
+		params ["_thisObject", "_shift", "_ctrl", "_alt"];
+		
+		if (CALLSM0("Snek", "isRunning")) then {
+			CALLSM0("Snek", "stop");
+		} else {
+			CALLSM0("Snek", "start");
+		};
+	} ENDMETHOD;
+
+
+	METHOD("onDraw") {
+		/*
+		params ["_thisObject", "_control"];
+
+		pr _pos = T_GETV("pos");
+
+		_control drawIcon
+		[
+			"#(rgb,1,1,1)color(1,1,1,0.5)", // Texture
+			[0,1,0,1], //Color
+			_pos, // Pos
+			T_GETV("eWidthUI"), // Width
+			T_GETV("eHeightUI"), // Height
+			0, // Angle
+			_thisObject // Text
+		];
+		*/
+	} ENDMETHOD;
+
+ENDCLASS;
+
+NEW("MapMarkerSnek", []);
