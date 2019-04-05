@@ -687,8 +687,18 @@ objNameStr \
 // Exits current scope if provided object's class doesn't match specified class
 #ifdef OOP_ASSERT
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
+#define ASSERT_MSG(condition, msg) \
+if (!(condition)) then { \
+	OOP_ERROR_2("Assertion failed (%1): %2", { condition; }, msg); \
+}
+#define ASSERT(condition) \
+if (!(condition)) then { \
+	OOP_ERROR_1("Assertion failed (%1)", { condition; }); \
+}
 #else
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+#define ASSERT_MSG(condition, msg)
+#define ASSERT(condition)
 #endif
 
 // Returns true if given object is public (was created with NEW_PUBLIC)
