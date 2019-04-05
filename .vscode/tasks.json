@@ -12,6 +12,7 @@
                 "--parse-only",
                 "--load", ".",
                 "-i", "${file}",
+                "--disable-macro-warnings",
                 "--command-dummy-unary ofstream_new",
                 "--command-dummy-binary 4|ofstream_write",
                 "--command-dummy-unary createProfileScope"
@@ -46,6 +47,7 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
+                "--disable-macro-warnings",
                 "--load", ".",
                 "-i", "${file}",
                 "--command-dummy-unary ofstream_new",
@@ -83,6 +85,7 @@
                 "-a",
                 "--load", ".",
                 "-E", "${file}",
+                "--disable-macro-warnings",
                 "--command-dummy-unary ofstream_new",
                 "--command-dummy-binary 4|ofstream_write",
                 "--command-dummy-unary createProfileScope"
@@ -117,6 +120,7 @@
             "args": [
                 "-a",
                 "--load", ".",
+                "--disable-macro-warnings",
                 "--pretty-print", "${file}",
                 "--command-dummy-unary ofstream_new",
                 "--command-dummy-binary 4|ofstream_write",

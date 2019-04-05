@@ -30,7 +30,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ 
+	METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
 		// Loop throgh known targets and remove those who are older than some threshold or not alive any more

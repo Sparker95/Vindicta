@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "LocationData.hpp"
 
 /*
 Class: AI.AICommander

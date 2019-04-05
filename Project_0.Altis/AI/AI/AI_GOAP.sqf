@@ -525,8 +525,9 @@ CLASS("AI_GOAP", "AI")
 		{
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
-			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) ); // || (_actionState == -1));
-			(_actionState == ACTION_STATE_COMPLETED)  // || (_actionState == -1)
+			pr _completed = (_actionState == ACTION_STATE_COMPLETED);
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed ); // || (_actionState == -1));
+			_completed  // || (_actionState == -1)
 		} count _agents == (count _agents)
 	} ENDMETHOD;
 
