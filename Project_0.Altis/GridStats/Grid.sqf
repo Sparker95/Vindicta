@@ -1,3 +1,5 @@
+#include "common.hpp"
+
 /*
 Class: Grid
 2D array of numbers (like a black and white image).
@@ -5,8 +7,6 @@ Each grid occupies whole map and starts at [0, 0].
 
 Authors: Sparker(initial author), Sen(code porting)
 */
-
-#include "common.hpp"
 
 #define pr private
 
