@@ -30,8 +30,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ 
-	METHOD("update") {
+	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
 		// Loop throgh known targets and remove those who are older than some threshold or not alive any more
@@ -130,8 +129,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ 
-	METHOD("getStimulusTypes") {
+	/* virtual */ METHOD("getStimulusTypes") {
 		[STIMULUS_TYPE_TARGETS]
 	} ENDMETHOD;
 	
@@ -140,8 +138,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ 
-	METHOD("handleStimulus") {
+	/*virtual*/ METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
 		pr _type = STIMULUS_GET_TYPE(_stimulus);

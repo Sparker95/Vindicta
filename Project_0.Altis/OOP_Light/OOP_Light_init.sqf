@@ -1,5 +1,3 @@
-OOP_Light_initialized = true;
-
 #include "OOP_Light.h"
 
 /*

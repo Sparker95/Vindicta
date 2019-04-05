@@ -10,24 +10,24 @@
             "args": [
                 "-a",
                 "--parse-only",
-                "--load",
-                ".",
-                "-i",
-                "${file}",
-                "--disable-macro-warnings"
+                "--load", ".",
+                "-i", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
+                // Reveal the output only if unrecognized errors occur.
                 "reveal": "silent"
             },
-            "problemMatcher": {
+            "problemMatcher":
+            {
                 "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
+                "fileLocation": ["absolute"],//, "${workspaceFolder}"],
                 "pattern": [
                     {
                         "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
@@ -46,11 +46,11 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--disable-macro-warnings",
-                "--load",
-                ".",
-                "-i",
-                "${file}"
+                "--load", ".",
+                "-i", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Project_0.Altis"
@@ -59,11 +59,10 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
+            "problemMatcher":
+            {
                 "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
+                "fileLocation": ["absolute"],
                 "pattern": [
                     {
                         "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
@@ -82,11 +81,11 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load",
-                ".",
-                "-E",
-                "${file}",
-                "--disable-macro-warnings"
+                "--load", ".",
+                "-E", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Project_0.Altis"
@@ -95,11 +94,10 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
+            "problemMatcher":
+            {
                 "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
+                "fileLocation": ["absolute"],
                 "pattern": [
                     {
                         "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
@@ -118,11 +116,11 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load",
-                ".",
-                "--disable-macro-warnings",
-                "--pretty-print",
-                "${file}"
+                "--load", ".",
+                "--pretty-print", "${file}",
+                "--command-dummy-unary ofstream_new",
+                "--command-dummy-binary 4|ofstream_write",
+                "--command-dummy-unary createProfileScope"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Project_0.Altis"
@@ -131,11 +129,10 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
+            "problemMatcher":
+            {
                 "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
+                "fileLocation": ["absolute"],
                 "pattern": [
                     {
                         "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
@@ -158,50 +155,13 @@
             },
             "group": "build",
             "presentation": {
+                // Reveal the output only if unrecognized errors occur.
                 "reveal": "always"
             },
-            "problemMatcher": {
+            "problemMatcher":
+            {
                 "owner": "sqf",
-                "fileLocation": "absolute",
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
-        },
-        {
-            "label": "Test: initClasses",
-            "type": "process",
-            "command": "../tools/SQF-VM/sqfvm.exe",
-            "args": [
-                "-a",
-                "--disable-macro-warnings",
-                "--load",
-                ".",
-                "-i",
-                "${workspaceRoot}\\Project_0.Altis\\Tests\\TestInitClasses.sqf"
-            ],
-            "options": {
-                "cwd": "${workspaceRoot}/Project_0.Altis"
-            },
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "presentation": {
-                "reveal": "always"
-            },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
+                "fileLocation": "absolute", //["relative", "${workspaceRoot}"],
                 "pattern": [
                     {
                         "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
@@ -214,5 +174,36 @@
                 ]
             }
         }
+        // {
+        //     "label": "Run in SQF-VM",
+        //     "type": "process",
+        //     "command": ".\\tools\\sqf-vm-compile.bat",
+        //     "args": [
+        //         "${relativeFile}"
+        //     ],
+        //     "group": "build",
+        //     "presentation": {
+        //         // Reveal the output only if unrecognized errors occur.
+        //         "reveal": "silent"
+        //     },
+        //     "problemMatcher":
+        //     {
+        //         "owner": "sqf",
+        //         "fileLocation": ["absolute"],
+        //         "pattern": [
+        //             {
+        //                 "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.*)\\|C(.*)\\]  (.*)$",
+        //                 "line": 2,
+        //                 "column": 3,
+        //                 "severity": 1,
+        //                 "message": 4
+        //             },
+        //             {
+        //                 "regexp": "In file\\:  (.*)$",
+        //                 "file": 1,
+        //             }
+        //         ]
+        //     }
+        // }
     ]
 }

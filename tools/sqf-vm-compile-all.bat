@@ -3,7 +3,7 @@ cd /d "%~dp0SQF-VM"
 
 FOR /R "%~dp0../Project_0.Altis" %%G in (*.sqf) DO (
     rem echo sqfvm.exe -a --parse-only --load "./../.." -i "%%G"
-    sqfvm.exe -a --parse-only --load "./../../Project_0.Altis" -i "%%G" --disable-macro-warnings --command-dummy-unary ofstream_new --command-dummy-binary "4|ofstream_write" --command-dummy-unary createProfileScope
+    sqfvm.exe -a --parse-only --load "./../../Project_0.Altis" -i "%%G" --command-dummy-unary ofstream_new --command-dummy-binary "4|ofstream_write" --command-dummy-unary createProfileScope
 )
 
 rem sqfvm.exe -a --parse-only --load "./../../Project_0.Altis" -i "./../../%~1"

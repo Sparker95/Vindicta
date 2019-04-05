@@ -27,7 +27,6 @@ call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 
 
 // *Commander* AI
-call compile preprocessFileLineNumbers "AI\CmdrAI\initClasses.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\initClasses.sqf";
 
 // Garrison AI classes
@@ -41,6 +40,4 @@ call compile preprocessFileLineNumbers "AI\Group\initClasses.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
 
 // Virtual Route
-#ifndef _SQF_VM
 call compile preprocessFileLineNumbers "AI\VirtualRoute\init.sqf";
-#endif

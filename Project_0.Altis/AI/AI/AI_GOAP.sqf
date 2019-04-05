@@ -11,6 +11,7 @@
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
+#include "..\goalRelevance.hpp"
 #include "AI.hpp"
 
 /*
@@ -525,9 +526,8 @@ CLASS("AI_GOAP", "AI")
 		{
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
-			pr _completed = (_actionState == ACTION_STATE_COMPLETED);
-			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed ); // || (_actionState == -1));
-			_completed  // || (_actionState == -1)
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) ); // || (_actionState == -1));
+			(_actionState == ACTION_STATE_COMPLETED)  // || (_actionState == -1)
 		} count _agents == (count _agents)
 	} ENDMETHOD;
 

@@ -303,7 +303,6 @@ MapMarker_EH_Draw = {
 	} forEach _all;
 };
 
-#ifndef _SQF_VM
 0 spawn {
 	waitUntil {! isNull (findDisplay 12)};
 
@@ -383,4 +382,3 @@ MapMarker_EH_Draw = {
 		};
 	}];
 };
-#endif

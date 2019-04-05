@@ -17,7 +17,6 @@ private _mutex = GET_VAR(_thisObject, "mutex");
 
 //#define DEBUG
 
-#ifndef _SQF_VM // Don't want to run this in VM testing mode
 scriptName _thisObject;
 
 while {true} do {
@@ -26,14 +25,16 @@ while {true} do {
 	while {(count _msgQueue) > 0} do {
 		//Get a message from the front of the queue
 		pr _msg = 0;
-		CRITICAL_SECTION {
+		CRITICAL_SECTION_START
 			// Take the message from the front of the queue
 			_msg = _msgQueue select 0;
 			// Delete the message
 			_msgQueue deleteAt 0;
-		};
+		CRITICAL_SECTION_END
 		pr _msgID = _msg select MESSAGE_ID_SOURCE_ID;
-		OOP_DEBUG_1("[MessageLoop] Info: message in queue: %1", _msg);
+		#ifdef DEBUG
+		diag_log format ["[MessageLoop] Info: message in queue: %1", _msg];
+		#endif
 		//Get destination object
 		private _dest = _msg select MESSAGE_ID_DESTINATION;
 		//Call handleMessage
@@ -54,5 +55,3 @@ while {true} do {
 		};
 	};
 };
-
-#endif

@@ -209,8 +209,6 @@ ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
 
-#ifndef _SQF_VM
-
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
 	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
@@ -242,5 +240,4 @@ pr _pos = [666, 666];
 CALLM1(_testMarker, "setPos", _pos);
 pr _color = [0, 0.8, 0.8, 1];
 CALLM1(_testMarker, "setColor", _color);
-
-#endif
+*/
