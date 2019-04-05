@@ -12,9 +12,12 @@ Location has garrisons at a static place and spawns units.
 Author: Sparker 28.07.2018
 */
 
+#define pr private
+
 CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("type");
+	VARIABLE("side");
 	VARIABLE("debugName");
 	VARIABLE("garrisonCiv");
 	VARIABLE("garrisonMilAA");
@@ -44,7 +47,17 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+		T_SETV("debugName", _debugName);
+	} ENDMETHOD;
+
+	METHOD("setCapacityInf") {
+		params [["_thisObject", "", [""]], ["_capacityInf", "", [""]]];
+		T_SETV("capacityInf", parseNumber _capacityInf);
+	} ENDMETHOD;
+
+	METHOD("setSide") {
+		params [["_thisObject", "", [""]], ["_side", EAST, [EAST]]];
+		T_SETV("side", _side);
 	} ENDMETHOD;
 
 
@@ -77,6 +90,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("spawnState", 0);
 		T_SETV("capacityInf", 0);
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
+		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", 20);
@@ -251,6 +265,22 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getType") {
 		params [ ["_thisObject", "", [""]] ];
 		GET_VAR(_thisObject, "type")
+	} ENDMETHOD;
+	
+	/*
+	Method: getSide
+	Returns side of the garrison that controls this location.
+
+	Returns: Side, or Civilian if there is no garrison
+	*/
+	METHOD("getSide") {
+		params [ "_thisObject" ];
+		pr _gar = T_GETV("garrisonMilMain");
+		if (_gar == "") then {
+			CIVILIAN
+		} else {
+			CALLM0(_gar, "getSide");
+		};
 	} ENDMETHOD;
 
 	/*

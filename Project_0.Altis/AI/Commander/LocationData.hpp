@@ -20,6 +20,7 @@ Structure of the array: [infantry, vehicles, drones]
 infantry - [amount of subcategory 0, 1, 2, ...]
 vehicles - [amount of subcategory 0, 1, 2, ...]
 drones - [amount of subcategory 0, 1, 2, ...]
+If [], means unit amounts are not known
 */
 #define CLD_ID_UNIT_AMOUNT 2
 
@@ -33,9 +34,24 @@ drones - [amount of subcategory 0, 1, 2, ...]
 // Marker, makes sense only for clients
 #define CLD_ID_MARKER 5
 
-#define CLD_NEW() call { \
-private _return = [0, CIVILIAN, [[], [], []], [0, 0], 0, ""]; \
-(_return select CLD_ID_UNIT_AMOUNT select T_INF) resize T_INF_SIZE; \
-(_return select CLD_ID_UNIT_AMOUNT select T_VEH) resize T_VEH_SIZE; \
-(_return select CLD_ID_UNIT_AMOUNT select T_DRONE) resize T_DRONE_SIZE; \
-_return};
+#define CLD_UNIT_AMOUNT_UNKNOWN []
+#define CLD_UNIT_AMOUNT_FULL call { \
+	private _a = [[], [], []]; \
+	(_a select T_INF) resize T_INF_SIZE; \
+	(_a select T_VEH) resize T_VEH_SIZE; \
+	(_a select T_DRONE) resize T_DRONE_SIZE; \
+	_a};
+	
+#define CLD_SIDE_UNKNOWN sideUnknown
+
+#define CLD_NEW() [0, CIVILIAN, CLD_UNIT_AMOUNT_UNKNOWN, [0, 0], 0, ""]
+
+// Levels of gained intel
+// Only position is known
+#define CLD_UPDATE_LEVEL_TYPE_UNKNOWN	0
+// Only position and type are known
+#define CLD_UPDATE_LEVEL_TYPE			1
+// Type and side are known
+#define CLD_UPDATE_LEVEL_SIDE			2
+// Position, type and units are known
+#define CLD_UPDATE_LEVEL_UNITS			3

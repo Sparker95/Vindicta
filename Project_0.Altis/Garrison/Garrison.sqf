@@ -25,6 +25,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE("debugName");
 	VARIABLE("location");
 	VARIABLE("AI"); // The AI brain of this garrison
+	VARIABLE("effTotal"); // Efficiency vector of all units
+	VARIABLE("effMobile"); // Efficiency vector of all units that can move
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -32,7 +34,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	METHOD("setDebugName") {
 		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+		T_SETV("debugName", _debugName);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -49,18 +51,21 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 
-		OOP_INFO_1("%1", _side);
+		OOP_INFO_0("NEW GARRISON");
 
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
-		SET_VAR(_thisObject, "units", []);
-		SET_VAR(_thisObject, "groups", []);
-		SET_VAR(_thisObject, "spawned", false);
-		SET_VAR(_thisObject, "side", _side);
-		SET_VAR(_thisObject, "debugName", "");
-		//SET_VAR(_thisObject, "action", "");
-		SETV(_thisObject, "AI", "");
+		T_SETV("units", []);
+		T_SETV("groups", []);
+		T_SETV("spawned", false);
+		T_SETV("side", _side);
+		T_SETV("debugName", "");
+		//T_SETV("action", "");
+		T_SETV("AI", "");
+		T_SETV("effTotal", +T_EFF_null);
+		T_SETV("effMobile", +T_EFF_null);
+		T_SETV("location", "");
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -131,11 +136,13 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("setLocation") {
 		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
-		SET_VAR(_thisObject, "location", _location);
+		T_SETV("location", _location);
+		
+		if (T_GETV("spawned")) then {
+			pr _AI = T_GETV("AI");
+			CALLM1(_AI, "handleLocationChanged", _location);
+		};
 	} ENDMETHOD;
-
-
-
 
 
 
@@ -246,6 +253,36 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 		T_GETV("AI")
 	} ENDMETHOD;
+	
+	// 						G E T   P O S
+	/*
+	Method: getPos
+	Returns the position of the garrison. Just picks the first unit and returns its position.
+
+	Returns: Array
+	*/
+	METHOD("getPos") {
+		params [["_thisObject", "", [""]]];
+		pr _units = T_GETV("units");
+		if (count _units > 0) then {
+			CALLM0(_units select 0, "getPos");
+		} else {
+			[0, 0, 0]
+		};
+	} ENDMETHOD;
+	
+	//						I S   E M P T Y
+	/*
+	Method: isEmpty
+	Returns true if garrison is empty (has no units)
+
+	Returns: Bool
+	*/
+	METHOD("isEmpty") {
+		params ["_thisObject"];
+		(count T_GETV("units")) == 0
+	} ENDMETHOD;	
+	
 
 	//             F I N D   G R O U P S   B Y   T Y P E
 	/*
@@ -327,7 +364,19 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _units = GET_VAR(_thisObject, "units");
 		_units pushBackUnique _unit;
-		CALL_METHOD(_unit, "setGarrison", [_thisObject]);
+		
+		// Notify AI object
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleUnitsAdded", [_unit]);
+			CALLM0(_AI, "updateComposition");
+		};
+		
+		CALLM1(_unit, "setGarrison", _thisObject);
+		
+		// Add to the efficiency vector
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
+		CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
 
 		nil
 	} ENDMETHOD;
@@ -349,11 +398,26 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 		
+		// Notify AI of the garrison about unit removal
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleUnitsRemoved", [_unit]);
+		};
+		
 		private _units = GET_VAR(_thisObject, "units");
 		_units deleteAt (_units find _unit);
 
 		// Set the garrison of this unit
 		CALLM1(_unit, "setGarrison", "");
+		
+		// Notify the AI object after the unit is removed
+		if(_AI != "") then {
+			CALLM0(_AI, "updateComposition");
+		};
+
+		// Substract from the efficiency vector
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
+		CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
 
 		nil
 	} ENDMETHOD;
@@ -387,6 +451,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _units = GET_VAR(_thisObject, "units");
 		{
 			_units pushBackUnique _x;
+			
+			// Add to the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+			CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
 		} forEach _groupUnits;
 		private _groups = GET_VAR(_thisObject, "groups");
 		_groups pushBackUnique _group;
@@ -411,6 +479,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				pr _AI = T_GETV("AI");
 				if (_AI != "") then {
 					CALLM1(_AI, "handleGroupsAdded", [[_group]]);
+					CALLM0(_AI, "updateComposition");
 				};
 			};
 		} else {
@@ -438,11 +507,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("removeGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 		
-		OOP_INFO_2("REMOVE GROUP: %1, group units: %1", _group, CALLM0(_group, "getUnits"));
+		OOP_INFO_2("REMOVE GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
 		// Notify AI object if the garrison is spawned
+		pr _AI = T_GETV("AI");
 		if (T_GETV("spawned")) then {
-			pr _AI = T_GETV("AI");
 			if (_AI != "") then {
 				CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
 			};
@@ -453,9 +522,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _units = GET_VAR(_thisObject, "units");
 		{
 			_units deleteAt (_units find _x);
+			
+			// Substract from the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+			CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
+				
 		} forEach _groupUnits;
 		pr _groups = GET_VAR(_thisObject, "groups");
 		_groups deleteAt (_groups find _group);
+		
+		// If garrison is spawned, notify the AI object. updateComposition must be called after the group and its units are already removed from the garrison.
+		if (_AI != "") then {
+			CALLM0(_AI, "updateComposition");
+		};
 
 		CALLM1(_group, "setGarrison", "");
 
@@ -500,6 +579,111 @@ CLASS("Garrison", "MessageReceiverEx");
 		nil
 	} ENDMETHOD;
 	
+	/*
+	Method: addUnitsAndGroups
+	Moves all specified units and groups from another garrison to this one.
+	Before moving, it ensures that all provided units are still in this garrison.
+	New groups for infantry units and vehicle units are created.
+	ALl provided units and groups must originate in one garrison!
+	
+	Parameters: _garrison, _units, _groups
+	
+	_garSrc - source <Garrison>
+	_units - array of <Unit> objects
+	_groupsAndUnits - array of [_group, _units]
+	
+	Returns: Bool, true if move was performed properly
+	*/
+	METHOD("addUnitsAndGroups") {
+		params ["_thisObject", ["_garSrc", "", [""]], ["_units", [], [[]]], ["_groupsAndUnits", [], [[]]]];
+		
+		// Check if all units are still in the same garrison
+		pr _index = _units findIf {CALLM0(_x, "getGarrison") != _garSrc};
+		if (_index != -1) exitWith { false };
+		
+		// Check if all groups and their units are still in the same garrison
+		pr _index = _groupsAndUnits findIf {
+			_x params ["_group", "_groupUnits"];;
+			if (CALLM0(_group, "getGarrison") != _garSrc) then {
+				true;
+			} else {
+				pr _index1 = _groupUnits findIf {CALLM0(_x, "getGarrison") != _garSrc};
+				if (_index1 != -1) then {
+					true
+				} else{
+					false
+				};
+			};
+		};
+		if (_index != -1) exitWith { false };
+		
+		// If we are here then the composition is ok
+		// Move units first
+		pr _newInfGroups = [];
+		pr _newVehGroup = "";
+		pr _srcIsSpawned = T_GETV("spawned");
+		pr _side = T_GETV("side");
+		{
+			if (CALLM0(_x, "isInfantry")) then {
+				// Move the unit to the new group
+				// If there is no inf group yet, create one
+				// Also create a new group if the amount of troops is too big
+				pr _createNewGroup = if (count _newInfGroups == 0) then {
+					true
+				} else {
+					pr _lastGroup = _newInfGroups select (count _newInfGroups - 1);
+					if (count CALLM0(_lastGroup, "getUnits") > 6) then {
+						true	
+					} else { false };
+				};
+				// Create a new group if needed or pick an existing one
+				pr _group = if (_createNewGroup) then {
+					pr _args = [_side, GROUP_TYPE_IDLE];
+					_newGroup = NEW("Group", _args);
+					//if (_srcIsSpawned) then { // If the garrison is currently spawned, set proper state to the new group
+					//	CALLM0(_newGroup, "spawn");
+					//};
+					CALLM1(_garSrc, "addGroup", _newGroup);
+					_newInfGroups pushBack _newGroup;
+					_newGroup
+				} else {
+					_newInfGroups select (count _newInfGroups - 1)
+				};
+				// We have a group now, move the unit here
+				CALLM1(_group, "addUnit", _x);
+			} else {
+				// All vehicle groups go into one group
+				if (_newVehGroup == "") then {
+					pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC]; // todo We assume we aren't moving static vehicles anywhere right now
+					_newVehGroup = NEW("Group", _args);
+					//if (_srcIsSpawned) then { // If the garrison is currently spawned, set proper state to the new group
+					//	CALLM0(_newVehGroup, "spawn");
+					//};
+					CALLM1(_garSrc, "addGroup", _newVehGroup);
+				};
+				// Move the vehicle into the new group
+				CALLM1(_newVehGroup, "addUnit", _x);
+			};
+		} forEach _units;
+		
+		// Now move all groups into the new garrison
+		{
+			CALLM1(_thisObject, "addGroup", _x);
+		} forEach _newInfGroups;
+		
+		if (_newVehGroup != "") then {
+			CALLM1(_thisObject, "addGroup", _newVehGroup);
+		};
+		
+		{
+			pr _group = _x select 0;
+			CALLM1(_thisObject, "addGroup", _group);
+		} forEach _groupsAndUnits;
+		
+		true
+		
+	} ENDMETHOD;
+	
 	
 	/*
 	Method: getRequiredCrew
@@ -513,19 +697,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		pr _units = T_GETV("units");
 
-		pr _nDrivers = 0;
-		pr _nTurrets = 0;
-
-		{
-			if (CALLM0(_x, "isVehicle")) then {
-				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
-				_nDrivers = _nDrivers + _n_driver;
-				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
-			};
-		} forEach _units;
-
-		[_nDrivers, _nTurrets]
+		CALLSM1("Unit", "getRequiredCrew", _units)
 	} ENDMETHOD;
 	
 	/*
@@ -628,8 +800,94 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		
 		nil
+	} ENDMETHOD;
+	
+	/*
+	Method: addEfficiency
+	Adds values to efficiency vector
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("addEfficiency") {
+		params ["_thisObject", "_catID", "_subCatID"];
+		
+		pr _effAdd = T_efficiency select _catID select _subcatID;
+		
+		pr _effTotal = T_GETV("effTotal");
+		_effTotal = VECTOR_ADD_9(_effTotal, _effAdd);
+		T_SETV("effTotal", _effTotal);
+		 
+		// If the added unit is not static
+		if (! ([_catID, _subcatID] in T_static)) then {
+			pr _effMobile = T_GETV("effMobile");
+			_effMobile = VECTOR_ADD_9(_effMobile, _effAdd);
+			T_SETV("effMobile", _effMobile);
+		};
 	} ENDMETHOD;	
 	
+	/*
+	Method: subEfficiency
+	Substracts values to efficiency vector
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("substractEfficiency") {
+		params ["_thisObject", "_catID", "_subCatID"];
+		
+		pr _effSub = T_efficiency select _catID select _subcatID;
+		
+		pr _effTotal = T_GETV("effTotal"); 
+		_effTotal = VECTOR_SUB_9(_effTotal, _effSub);
+		T_SETV("effTotal", _effTotal);
+		
+		// If the removed unit is not static
+		if (! ([_catID, _subcatID] in T_static)) then {
+			pr _effMobile = T_GETV("effMobile");
+			_effMobile = VECTOR_SUB_9(_effMobile, _effSub);
+			T_SETV("effMobile", _effMobile);
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: getEfficiencyMobile
+	Returns efficiency of all mobile units
+	
+	Returns: Efficiency vector
+	*/
+	
+	METHOD("getEfficiencyMobile") {
+		params ["_thisObject"];
+		T_GETV("effMobile")
+	} ENDMETHOD;
+	
+	/*
+	Method: getEfficiencyTotal
+	Returns efficiency of all mobile units
+	
+	Returns: Efficiency vector
+	*/
+	
+	METHOD("getEfficiencyTotal") {
+		params ["_thisObject"];
+		T_GETV("effTotal")
+	} ENDMETHOD;
+	
+	/*
+	Method: spawnAndDetach
+	Spawnes the garrison and detaches it from its current location
+	
+	Returns: nil
+	*/
+	METHOD("spawnAndDetach") {
+		params ["_thisObject"];
+		CALLM0(_thisObject, "spawn");
+		CALLM1(_thisObject, "setLocation", "");
+		nil
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                                G O A P
@@ -643,7 +901,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		["GoalGarrisonRelax",
 		"GoalGarrisonRepairAllVehicles",
 		"GoalGarrisonDefendPassive",
-		"GoalGarrisonRebalanceVehicleGroups"]
+		"GoalGarrisonRebalanceVehicleGroups",
+		"GoalGarrisonAttackAssignedTargets"]
 	} ENDMETHOD;
 
 	METHOD("getPossibleActions") {
@@ -651,6 +910,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		"ActionGarrisonLoadCargo",
 		"ActionGarrisonMountCrew",
 		"ActionGarrisonMountInfantry",
+		"ActionGarrisonMountCrewInfantry",
 		"ActionGarrisonMoveDismounted",
 		//"ActionGarrisonMoveMountedToPosition",
 		//"ActionGarrisonMoveMountedToLocation",
@@ -705,9 +965,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("handleUnitKilled") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 
-		OOP_INFO_0("");
-
-		diag_log format ["[Garrison::handleUnitKilled] Info: %1", _unit];
+		OOP_INFO_1("HANDLE UNIT KILLED: %1", _unit);
 
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
@@ -742,7 +1000,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("handleGetInVehicle") {
 		params [["_thisObject", "", [""]], ["_unitVeh", "", [""]], ["_unitInf", "", [""]]];
 
-		OOP_INFO_0("");
+		OOP_INFO_2("HANDLE UNIT GET IN VEHICLE: %1, %2", _unitVeh, _unitInf);
 
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");

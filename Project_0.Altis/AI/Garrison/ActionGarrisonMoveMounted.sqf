@@ -32,9 +32,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		};
 		
 		// Unpack radius
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		if (isNil "_radius") then {
-			// Try to figure out completion radius from location
+			// todo Try to figure out completion radius from location
 			//pr _radius = CALLM0(_loc, "getBoundingRadius"); // there is no such function
 			// Just use 100 meters for now
 			T_SETV("radius", 100);
@@ -66,7 +66,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _groupAI = CALLM0(_x, "getAI");
 			
 			// Add new goal to move
-			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_RADIUS, _radius]], _AI];
+			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
 			
 		} forEach _vehGroups;
@@ -82,6 +82,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 			CALLM1(_gar, "setLocation", ""); // This garrison is no longer attached to its location
 		};
+		pr _ws = GETV(_AI, "worldState");
+		[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
+		pr _pos = CALLM0(_gar, "getPos");
+		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -104,7 +108,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			ACTION_STATE_FAILED
 		};
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		scopeName "s0";
 		
@@ -118,13 +122,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
 			
 			// Fail if any group has failed
-			if (CALLSM3("AI", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+			if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 				_state = ACTION_STATE_FAILED;
 				breakTo "s0";
 			};
 			
 			// Succede if all groups have completed the goal
-			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
 				OOP_INFO_0("All groups have arrived");
 				
 				// Set pos world state property

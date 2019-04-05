@@ -44,7 +44,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		
 		PROFILER_COUNTER_INC(GROUP_CLASS_NAME);
 		
-		OOP_INFO_2("side: %1, group type: %2", _side, _groupType);
+		OOP_INFO_2("NEW   side: %1, group type: %2", _side, _groupType);
 
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
@@ -66,7 +66,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		
 		PROFILER_COUNTER_DEC(GROUP_CLASS_NAME);
 		
-		OOP_INFO_0("");
+		OOP_INFO_0("DELETE");
 
 		pr _data = T_GETV("data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
@@ -116,7 +116,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("addUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("ADD UNIT: %1", _unit);
 
 		private _data = GET_VAR(_thisObject, "data");
 
@@ -157,6 +157,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Create group handle if it doesn't exist yet
 			if (isNull _newGroupHandle) then {
 				_newGroupHandle = createGroup [_data select GROUP_DATA_ID_SIDE, false]; //side, delete when empty
+				_newGroupHandle allowFleeing 0; // Never flee
 				_data set [GROUP_DATA_ID_GROUP_HANDLE, _newGroupHandle];
 			};
 
@@ -187,7 +188,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("addGroup") {
 		params [["_thisObject", "", [""]], ["_group", "", [""]], ["_delete", false]];
 
-		OOP_INFO_1("%1", _group);
+		OOP_INFO_1("ADD GROUP: %1", _group);
 
 		// Get units of the other group
 		pr _units = CALLM0(_group, "getUnits");
@@ -221,7 +222,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("removeUnit") {
 		params [["_thisObject", "", [""]], ["_unit", "", [""]]];
 
-		OOP_INFO_1("%1", _unit);
+		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 
 		pr _data = GETV(_thisObject, "data");
 		pr _units = _data select GROUP_DATA_ID_UNITS;
@@ -230,8 +231,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (CALLM0(_thisObject, "isSpawned")) then {
 			pr _AI = _data select GROUP_DATA_ID_AI;
 			if (_AI != "") then {
-				pr _msgID = CALLM3(_AI, "postMethodAsync", "handleUnitsRemoved", [[_unit]], true);
-				CALLM1(_AI, "waitUntilMessageDone", _msgID);
+				CALLM3(_AI, "postMethodSync", "handleUnitsRemoved", [[_unit]], true);
 			};
 		};
 
@@ -430,6 +430,20 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _data = GETV(_thisObject, "data");
 		_data select GROUP_DATA_ID_SPAWNED
 	} ENDMETHOD;
+	
+	// 								I S   E M P T Y 
+	/*
+	Method: isEmpty
+	Returns true if group has no units in it
+
+	Returns: Bool
+	*/
+	METHOD("isEmpty") {
+		params [["_thisObject", "", [""]]];
+
+		pr _data = GETV(_thisObject, "data");
+		count (_data select GROUP_DATA_ID_UNITS) == 0
+	} ENDMETHOD;
 
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -538,28 +552,23 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
 			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			if (isNull _groupHandle) then {
+				private _side = _data select GROUP_DATA_ID_SIDE;
+				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
+			
+			_groupHandle setBehaviour "SAFE";
+			
 			{
 				private _unit = _x;
 				private _unitData = CALL_METHOD(_unit, "getMainData", []);
-
-				// Create a group handle if we have any infantry and the group handle doesn't exist yet
-				private _catID = _unitData select 0;
-				if (_catID == T_INF) then {
-					pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-					if (isNull _groupHandle) then {
-						private _side = _data select GROUP_DATA_ID_SIDE;
-						_groupHandle = createGroup [_side, false]; //side, delete when empty
-						_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
-					};
-				};
 				private _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
 				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
-
-			// Set group default behaviour
-			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
-			_groupHandle setBehaviour "SAFE";
 
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");

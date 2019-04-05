@@ -23,9 +23,15 @@ tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 //a = [classesNATO, T_VEH, T_VEH_default] call t_fnc_select;
 //[classesNATO] call t_fnc_checkNil;
 
+// Initialize Build menu object templates
+call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
+
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 fnc_onPlayerRespawnServer = COMPILEFUNC("fn_onPlayerRespawnServer.sqf");
+
+//Initialize cluster module
+call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
 
 /*
 //Initialize garrison
@@ -46,9 +52,6 @@ call compile preprocessFileLineNumbers "UI\initFunctions.sqf";
 //Initialize sense module
 call compile preprocessFileLineNumbers "Sense\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Sense\initVariablesServer.sqf";
-
-//Initialize cluster module
-call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
 
 //Initialize script objects
 call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";
@@ -115,7 +118,12 @@ call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // Initialize Camp class
-call compile preprocessFileLineNumbers "Camp\Camp.sqf";
+call compile preprocessFileLineNumbers "Camp\initClasses.sqf";
 
 // Initialize Grid class
 call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
+
+// Initialize SideStat class
+call compile preprocessFileLineNumbers "SideStat\SideStat.sqf";
+
+diag_log "initModules ended!";

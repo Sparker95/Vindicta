@@ -18,6 +18,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	VARIABLE("time");
 	VARIABLE("triedRoads"); // Array with road pieces unit tried to achieve when it got stuck
 	VARIABLE("stuckCounter"); // How many times this has been stuck
+	VARIABLE("readdwp");
 	
 	// ------------ N E W ------------
 	
@@ -27,10 +28,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 		
-		T_SETV("stuckTimer", 0);
-		T_SETV("time", time);
-		T_SETV("triedRoads", []);
-		T_SETV("stuckCounter", 0);
+		T_SETV("readdwp", false);
 		
 	} ENDMETHOD;
 	
@@ -38,11 +36,28 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
+		T_SETV("stuckTimer", 0);
+		T_SETV("time", time);
+		T_SETV("triedRoads", []);
+		T_SETV("stuckCounter", 0);
+		
+		pr _hO = GETV(_thisObject, "hO");
+		pr _hG = group _hO;
+		
+		// Order to move
+		CALLM0(_thisObject, "addWaypoint");
+		
+		T_SETV("state", ACTION_STATE_ACTIVE);
+		ACTION_STATE_ACTIVE
+	} ENDMETHOD;
+	
+	METHOD("addWaypoint") {
+		params ["_thisObject"];
+		
 		pr _hO = GETV(_thisObject, "hO");
 		pr _hG = group _hO;
 		pr _pos = T_GETV("pos");
 		
-		// Order to move
 		// Delete all previous waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
@@ -54,18 +69,21 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		_wp setWaypointCombatMode "GREEN";
 		_hG setCurrentWaypoint _wp;
 		
-		T_SETV("state", ACTION_STATE_ACTIVE);
-		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hO = GETV(_thisObject, "hO");
 		pr _dt = time - T_GETV("time"); // Time that has passed since previous call
+		
+		if (T_GETV("readdwp")) then {
+			CALLM0(_thisObject, "addWaypoint");
+			T_SETV("readdwp", false);
+		};
 		
 		// My speed is small AF
 		if (speed _hO < 4) then {
@@ -95,13 +113,12 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 						pr _road = (_nr select 0) select 0;
 						_hO doMove (getpos _road);
 						_triedRoads pushBack _road;
-						T_SETV("stuckTimer", 0);
 					};
 				} else {
 					OOP_WARNING_0("Tried to move to nearest road too many times!");
 					// Allright this shit is serious
 					// We need serious measures now :/
-					if (_stuckCounter < 4) then {
+					if (_stuckCounter < 5) then {
 						OOP_WARNING_0("Rotating the leader vehicle!");
 						// Let's just try to rotate you?
 						pr _hVeh = vehicle _hO;
@@ -119,9 +136,8 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 					
 				};
 				
-				// Set state to inactive so that the action gets reactivated
-				_state = ACTION_STATE_INACTIVE;
-				
+				T_SETV("readdwp", true);
+				T_SETV("stuckTimer", 0);
 				T_SETV("stuckCounter", _stuckCounter + 1);
 			};
 		} else {
@@ -135,7 +151,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		_state
 	} ENDMETHOD;
 	
-	// logic to run when the goal is satisfied
+	// logic to run when the goal is about to be terminated
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		

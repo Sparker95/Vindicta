@@ -15,7 +15,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
-		SETV("freeVehicles", []); 
+		T_SETV("freeVehicles", []); 
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -64,7 +64,9 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfNoInfantry");
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _group = GETV(T_GETV("AI"), "agent");
@@ -111,7 +113,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 				};
 			} forEach _unitsInf;
 			
-			if (CALLSM3("AI", "allAgentsCompletedExternalGoal", _unitsInf, "GoalUnitGetInVehicle", "")) then {
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _unitsInf, "GoalUnitGetInVehicle", "")) then {
 			//if (_nGoalsCompleted == count _unitsInf) then {
 			//pr _ws = GETV(_AI, "worldState");
 			//if ([_ws, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {

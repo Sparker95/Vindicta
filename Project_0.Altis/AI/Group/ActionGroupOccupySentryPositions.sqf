@@ -46,10 +46,12 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		CALLM0(_thisObject, "failIfEmpty");
+		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		/*
-		Shout at subordinates
+		// Shout at subordinates
 		
 		if (random 100 < 4) then {
 			radio "Johny, stop fucking around, move into this house!";

@@ -15,7 +15,7 @@ y2 > y1
 (x1, y1)------*
 ---
 
-objectIDs - array with IDs of objects (integers)
+objectIDs - array with IDs of objects (integers, objects, arrays, anything)
 */
 
 cluster_fnc_newCluster =
@@ -68,14 +68,21 @@ cluster_fnc_distance =
 	*/
 	params ["_c1", "_c2"];
 
+	/*
 	_c1x1 = _c1 select 0;
     _c1y1 = _c1 select 1;
     _c1x2 = _c1 select 2;
     _c1y2 = _c1 select 3;
+    */
+    _c1 params ["_c1x1", "_c1y1", "_c1x2", "_c1y2"];
+    
+    /*
     _c2x1 = _c2 select 0;
     _c2y1 = _c2 select 1;
     _c2x2 = _c2 select 2;
     _c2y2 = _c2 select 3;
+    */
+    _c2 params ["_c2x1", "_c2y1", "_c2x2", "_c2y2"];
 
     _dx = 0;
     if( ! (	_c2x1 < _c1x2 && _c2x1 > _c1x1 ||
@@ -114,14 +121,21 @@ cluster_fnc_merge =
 	*/
 	params ["_c1", "_c2"];
 
+	/*
 	_c1x1 = _c1 select 0;
     _c1y1 = _c1 select 1;
     _c1x2 = _c1 select 2;
     _c1y2 = _c1 select 3;
+    */
+    _c1 params ["_c1x1", "_c1y1", "_c1x2", "_c1y2"];
+    
+    /*
     _c2x1 = _c2 select 0;
     _c2y1 = _c2 select 1;
     _c2x2 = _c2 select 2;
     _c2y2 = _c2 select 3;
+    */
+    _c2 params ["_c2x1", "_c2y1", "_c2x2", "_c2y2"];
 
     _allx = [_c1x1, _c1x2, _c2x1, _c2x2];
     _ally = [_c1y1, _c1y2, _c2y1, _c2y2];
@@ -138,6 +152,13 @@ cluster_fnc_merge =
 	_array append (_c2 select 4);
 };
 
+// Checks if point with given coordinates is inside border or lies right on it
+cluster_fnc_isInBorder = {
+	params ["_c", "_x", "_y"];
+	_c params ["_x1", "_y1", "_x2", "_y2"];
+	(_x >= _x1) && (_x <= _x2) && (_y >= _y1) && (_y <= _y2)
+};
+
 cluster_fnc_getCenter =
 {
 	/*
@@ -147,4 +168,13 @@ cluster_fnc_getCenter =
 	private _cx = 0.5*((_c select 0) + (_c select 2));
 	private _cy = 0.5*((_c select 1) + (_c select 3));
 	[_cx, _cy]
+};
+
+// Returns size in format [_width, _height]
+cluster_fnc_getSize = 
+{
+	private _c = _this;
+	private _w = ((_c select 2) - (_c select 0));
+	private _h = ((_c select 3) - (_c select 1));
+	[_w, _h]
 };

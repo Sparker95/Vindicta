@@ -13,6 +13,7 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 		private _hO = T_GETV("hO");
 		_hO spawn{
 			sleep random 6;
+			doStop _this;
 			_this call misc_fnc_actionDropAllWeapons;
 			_this action ["Surrender", _this];
 		};
@@ -27,9 +28,21 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		ACTION_STATE_COMPLETED
+	} ENDMETHOD;
+
+	METHOD("terminate") {
+		params [["_thisObject", "", [""]]];
+
+		// TODO: when side system will be done need to check if unit is friendly or ennemy
+		private _hO = T_GETV("hO");
+		[_hO, {
+			if (!hasInterface) exitWith {};
+			params ["_hO"];
+			private _id = _hO addAction ["Ask to join you", "SideStat\askSurrenderedUnitToJoin.sqf", "", 1, true, true];
+		}] remoteExec ["spawn", 0, false];
 	} ENDMETHOD;
 	
 ENDCLASS;

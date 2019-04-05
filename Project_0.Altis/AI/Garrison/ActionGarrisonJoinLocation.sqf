@@ -48,7 +48,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 				};
 			} else {
 				// There is no garrison here, just attach here then
-				CALLM1(_loc, "postMethod", "setGarrisonMilitaryMain", [_gar]);
+				CALLM2(_loc, "postMethod", "setGarrisonMilitaryMain", [_gar]);
 				CALLM1(_gar, "setLocation", _loc);
 			};
 						
@@ -67,7 +67,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 
 		// Return the current state
 		T_SETV("state", _state);

@@ -8,7 +8,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-CLASS("AIUnitInfantry", "AI")
+CLASS("AIUnitInfantry", "AI_GOAP")
 
 	// Object handle of the unit
 	VARIABLE("hO");

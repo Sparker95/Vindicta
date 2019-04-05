@@ -8,9 +8,9 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic48"></a><div class="CTopic TClass LSQF first">
+<a name="Topic548"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">AI</div>
- <div class="CBody"><p>This is the central class of AI framework.&nbsp; It handles arbitration of goals, receives data from sensors, stores world facts, runs an A* action planner.</p><p>It is also often used to store general data which is only needed for spawned units.</p><p>Lots of the code and architecture is derived from F.E.A.R. AI made by Jeff Orkin.</p><p>Author: Sparker 07.11.2018</p></div>
+ <div class="CBody"><p>Base class for AI_GOAP.&nbsp; It can manage world facts and sensors. Process method is empty.&nbsp; Author: Sparker 03.03.2019</p></div>
 </div>
 
 <a name="Variables"></a><a name="Topic49"></a><div class="CTopic TGroup LSQF">
@@ -26,10 +26,6 @@
  <div class="CTitle">currentAction</div>
 </div>
 
-<a name="currentGoal"></a><a name="Topic52"></a><div class="CTopic TVariable LSQF">
- <div class="CTitle">currentGoal</div>
-</div>
-
 <a name="Functions"></a><a name="Topic53"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
@@ -37,36 +33,6 @@
 <a name="addSensor"></a><a name="Topic54"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addSensor</div>
  <div class="CBody"><p>Adds a sensor to this AI object.</p><p>Parameters: _sensor</p><table class="CDefinitionList"><tr><td class="CDLEntry">_sensor</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Sensor" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,102);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Sensor</a> or &lt;SensorStimulatable&gt;</p></td></tr></table><p>Returns: nil</p></div>
-</div>
-
-<a name="addExternalGoal"></a><a name="Topic55"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">addExternalGoal</div>
- <div class="CBody"><p>Adds a goal to the list of external goals of this agent. By default it also deletes goals with same _goalClassName irrelevant of its source!</p><p>Parameters: _goalClassName, _bias, _parameters</p><table class="CDefinitionList"><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_bias</td><td class="CDLDefinition"><p>a number to be added to the relevance of the goal once it is calculated</p></td></tr><tr><td class="CDLEntry">_parameters</td><td class="CDLDefinition"><p>the array with parameters to be passed to the goal if it's activated, can be anything goal-specific</p></td></tr><tr><td class="CDLEntry">_sourceAI</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:AI" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,48);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >AI</a> object that gave this goal or &quot;&quot;, can be used to identify who gave this goal, for example, when deleting it through <a href="../../index.html#SQFClass:AI:deleteExternalGoal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,56);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >deleteExternalGoal</a></p></td></tr><tr><td class="CDLEntry">_deleteSimilarGoals</td><td class="CDLDefinition"><p>Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.</p></td></tr></table><p>Returns: nil</p></div>
-</div>
-
-<a name="deleteExternalGoal"></a><a name="Topic56"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">deleteExternalGoal</div>
- <div class="CBody"><p>Deletes an external goal having the same goalClassName and goalSource</p><p>Parameters: _goalClassName, _goalSource</p><table class="CDefinitionList"><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_goalSourceAI</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:AI" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,48);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >AI</a> object that gave this goal or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: nil</p></div>
-</div>
-
-<a name="getExternalGoalActionState"></a><a name="Topic57"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getExternalGoalActionState</div>
- <div class="CBody"><p>Returns the state of <a href="../../index.html#SQFClass:Action" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,11);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Action</a> which is executed in response to specified external <a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a>, or -1 if specified goal was not found.</p><p>Parameters: _goalClassName, _source</p><table class="CDefinitionList"><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Number, one of &lt;ACTION_STATE&gt;</p></div>
-</div>
-
-<a name="getExternalGoalParameters"></a><a name="Topic58"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getExternalGoalParameters</div>
- <div class="CBody"><p>Returns the parameters array of the external goal.</p><p>Parameters: _goalClassName, _source</p><table class="CDefinitionList"><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Array with goal parameters passed to it, or [] if this goal was not found.</p></div>
-</div>
-
-<a name="(static)allAgentsCompletedExternalGoal"></a><a name="Topic59"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">(static)allAgentsCompletedExternalGoal</div>
- <div class="CBody"><p>Returns true if all provided AI objects have completed an external goal.</p><p>Parameters: _agents, _goalClassName, _goalSource</p><table class="CDefinitionList"><tr><td class="CDLEntry">_agents</td><td class="CDLDefinition"><p>array of agent objects (Unit, Garrison, Group - must support getAI method)</p></td></tr><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Bool</p></div>
-</div>
-
-<a name="(static)anyAgentFailedExternalGoal"></a><a name="Topic60"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">(static)anyAgentFailedExternalGoal</div>
- <div class="CBody"><p>Returns true if any agent has failed the external goal.</p><p>Parameters: _agents, _goalClassName, _goalSource</p><table class="CDefinitionList"><tr><td class="CDLEntry">_agents</td><td class="CDLDefinition"><p>array of agent objects (Unit, Garrison, Group - must support getAI method)</p></td></tr><tr><td class="CDLEntry">_goalClassName</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Goal" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,84);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Goal</a> class name</p></td></tr><tr><td class="CDLEntry">_source</td><td class="CDLDefinition"><p>string, source of the goal, or &quot;&quot; to ignore this field. If &quot;&quot; is provided, source field will be ignored.</p></td></tr></table><p>Returns: Bool</p></div>
 </div>
 
 <a name="start"></a><a name="Topic61"></a><div class="CTopic TFunction LSQF">

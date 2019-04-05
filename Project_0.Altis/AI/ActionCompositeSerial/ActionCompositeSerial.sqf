@@ -10,6 +10,8 @@ Based on source from "Programming Game AI by Example" by Mat Buckland: http://ww
 Author: Sparker 05.08.2018
 */
 
+#define pr private
+
 CLASS("ActionCompositeSerial", "ActionComposite")
 
 	// ----------------------------------------------------------------------
@@ -80,6 +82,23 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		
 		// return
 		_statusOfSubactions
+	} ENDMETHOD;
+	
+	/*
+	Method: terminate
+	Calls "terminate" method of the front most action
+	
+	Returns: nil
+	*/
+	METHOD("terminate") {
+		params ["_thisObject"];
+		pr _subactions = T_GETV("subactions");
+		
+		// If there are still subactions left, terminate the front one
+		if (count _subactions > 0) then {
+			pr _a = _subactions select 0;
+			CALLM0(_a, "terminate");
+		};
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -163,7 +182,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		private _subactions = GETV(_thisObject, "subactions");		
-		CALLM1(_subactions select 0, "handleUnitsRemoved", _groups);
+		CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
 	} ENDMETHOD;
 	
 	/*
@@ -174,7 +193,7 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 	METHOD("handleUnitsAdded") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		private _subactions = GETV(_thisObject, "subactions");		
-		CALLM1(_subactions select 0, "handleUnitsAdded", _groups);
+		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
 	} ENDMETHOD;
 	
 

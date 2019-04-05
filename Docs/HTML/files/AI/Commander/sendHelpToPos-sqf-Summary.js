@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/Commander/sendHelpToPos.sqf","sendHelpToPos.sqf");NDSummary.OnSummaryLoaded("File:AI/Commander/sendHelpToPos.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[455,0,1,"Functions","Functions"],[456,0,0,"sendHelp","sendHelp"]]);

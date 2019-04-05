@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("all",["Function"],[["allocateUnitsGroundQRF",,[["AI.AICommander",,,,0,"File:AI/Commander/AICommander.sqf:AI.AICommander.allocateUnitsGroundQRF","SQFClass:AI.AICommander:allocateUnitsGroundQRF"]]]]);

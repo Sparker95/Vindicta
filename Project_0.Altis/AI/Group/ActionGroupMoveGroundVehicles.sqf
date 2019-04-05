@@ -27,8 +27,10 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 		
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		T_SETV("radius", _radius);
+		
+		T_SETV("time", time);
 		
 		T_SETV("speedLimit", SPEED_MIN);
 	} ENDMETHOD;
@@ -53,13 +55,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		_hG setCombatMode "GREEN"; // Hold fire, defend only
 		
 		// Give a waypoint to move
+		/*
 		pr _wp = _hG addWaypoint [_pos, 0];
 		_wp setWaypointType "MOVE";
 		_wp setWaypointFormation "COLUMN";
 		_wp setWaypointBehaviour "SAFE";
 		_wp setWaypointCombatMode "GREEN";
 		_hG setCurrentWaypoint _wp;
-		
+		*/
 		{
 			private _vehHandle = _x;
 			_vehHandle limitSpeed 666666; //Set the speed of all vehicles to unlimited
@@ -67,6 +70,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			//_vehHandle forceFollowRoad true;
 		} forEach _allVehicles;
 		(vehicle (leader _hG)) limitSpeed T_GETV("speedLimit");
+		
 		
 		// Give goals to all drivers except the lead driver
 		pr _leader = CALLM0(_group, "getLeader");
@@ -99,13 +103,15 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfNoInfantry");
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hG = T_GETV("hG"); // Group handle
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");
 		
-		pr _dt = time - T_GETV("time");
+		pr _dt = time - T_GETV("time") + 0.001;
 		T_SETV("time", time);
 		
 		//Check the separation of the convoy
