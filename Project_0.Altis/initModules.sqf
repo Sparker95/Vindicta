@@ -111,7 +111,7 @@ call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
 // Initialize AI classes
 call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 
-// UI classes
+// UI classes and functions
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 
 // Initialize suspiciosness monitor
