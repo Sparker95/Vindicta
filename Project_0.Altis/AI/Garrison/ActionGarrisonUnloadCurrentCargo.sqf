@@ -33,6 +33,10 @@ CLASS("ActionGarrisonUnloadCurrentCargo", "Action")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
@@ -42,6 +46,10 @@ CLASS("ActionGarrisonUnloadCurrentCargo", "Action")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -310,6 +310,54 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	/*
+	Method: (static)findSafePosOnRoad
+	Finds an empty position for a vehicle class name on road close to specified position.
+
+	Parameters: _startPos 
+	_startPos - start position where to start searching for a position.
+
+	Returns: Array, [_pos, _dir]
+	*/
+	STATIC_METHOD("findSafePosOnRoad") {
+		params ["_thisClass", ["_startPos", [], [[]]], ["_className", "", [""]] ];
+
+		// Try to find a safe position on a road for this vehicle
+		private _found = false;
+		private _searchRadius = 100;
+		pr _return = [];
+		while {!_found} do {
+			private _roads = _startPos nearRoads _searchRadius;
+			if (count _roads < 3) then {
+				// Search for more roads at the next iteration
+				_searchRadius = _searchRadius * 2;
+			} else {
+				_roads = _roads apply {[_x distance2D _startPos, _x]};
+				_roads sort true; // Ascending
+				private _i = 0;
+				while {_i < count _roads && !_found} do {
+					(_roads select _i) params ["_dist", "_road"];
+					private _rct = roadsConnectedTo _road;
+					if (count _rct > 0) then { // We better don't use terminal road pieces
+						// Check position if it's safe
+						private _dir = _road getDir (_rct select 0);
+						if (CALLSM3("Location", "isPosSafe", getPos _road, _dir, _className)) then {
+							_return = [getPos _road, _dir];
+							_found = true;
+						};
+					};
+					_i = _i + 1;
+				};
+				if (!_found) then {
+					// Failed to find a position here, increase the radius
+					_searchRadius = _searchRadius * 3;
+				};
+			};			
+		};
+
+		_return
+	} ENDMETHOD;
+
+	/*
 	Method: countAvailableUnits
 	Returns an number of current units of this location
 

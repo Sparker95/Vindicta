@@ -575,6 +575,17 @@ CLASS("AI_GOAP", "AI")
 		
 		SETV(_thisObject, "currentAction", _newAction);
 	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                G E T   C U R R E N T   A C T I O N
+	// |
+	// ----------------------------------------------------------------------
+	
+
+	METHOD("getCurrentAction") {
+		params [["_thisObject", "", [""]]];
+		T_GETV("currentAction")
+	} ENDMETHOD;
 	
 
 	// ----------------------------------------------------------------------

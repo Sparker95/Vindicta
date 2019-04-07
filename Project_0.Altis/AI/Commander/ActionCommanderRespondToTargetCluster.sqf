@@ -83,7 +83,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
 			CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
-			CALLM0(_newGar, "spawn");
+			//CALLM0(_newGar, "spawn");
 			
 			// Try to move the units
 			pr _args = [_garrisonSrc, _units, _groupsAndUnits];

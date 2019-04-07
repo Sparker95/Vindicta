@@ -39,10 +39,11 @@ CLASS("VirtualRoute", "")
 	Parameters: _from, _destination, _costFn, _speedFn
 
 	_from - Position to start from (nearest road to here will be the actual starting position).
-	_destination - Position to go to (nearest road to here will be the actual starting position).
+	_destination - Position to go to (nearest road to here will be the actual destination position).
 	_recalculateInterval - NOT IMPLEMENTED, Optional,.recalcuate the route at this interval when updating. Recommended > 60s.
 	_costFn - Optional, function to override cost evaluation for route nodes.
 	_speedFn - Optional, function to override convoy speed, called during update.
+	_async - Optional, bool, default true. If true, calculates the route in another thread. If false, calculates the route right now.
 	*/
 	METHOD("new") {
 		params [
@@ -51,7 +52,8 @@ CLASS("VirtualRoute", "")
 			"_destination",
 			["_recalculateInterval", -1],
 			["_costFn", ""],
-			["_speedFn", ""]
+			["_speedFn", ""],
+			["_async", true]
 		];
 		
 		T_SETV("from", _from);
@@ -94,7 +96,8 @@ CLASS("VirtualRoute", "")
 
 		T_SETV("complete", false);
 
-		[_thisObject] spawn {
+		// Function that calculates the route
+		pr _calcRoute = {
 			params ["_thisObject"];
 
 			T_PRVAR(from);
@@ -149,6 +152,13 @@ CLASS("VirtualRoute", "")
 			} catch {
 				T_SETV("failed", true);
 			};
+		};
+
+		// Calculate the route right now or asynchronously?
+		if (_async) then {
+			[_thisObject] spawn _calcRoute;
+		} else {
+			[_thisObject] call _calcRoute;
 		};
 	} ENDMETHOD;
 
@@ -357,12 +367,21 @@ CLASS("VirtualRoute", "")
 	} ENDMETHOD;
 
 	/*
-	Method: clearDebugDraw
+	Method: clearAllDebugDraw
 	Clear debug markers for all routes.
 	*/
 	STATIC_METHOD("clearAllDebugDraw") {
 		["gps_route"] call gps_test_fn_clear_markers;
 		["gps_waypoint"] call gps_test_fn_clear_markers;
+	} ENDMETHOD;
+
+	/*
+	Method: getPos
+	Returns: current position
+	*/
+	METHOD("getPos") {
+		params ["_thisObject"];
+		T_GETV("pos")
 	} ENDMETHOD;
 
 ENDCLASS;

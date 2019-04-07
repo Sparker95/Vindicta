@@ -62,10 +62,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("side", _side);
 		T_SETV("debugName", "");
 		//T_SETV("action", "");
-		T_SETV("AI", "");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
 		T_SETV("location", "");
+
+		// Create AI object
+		// Create an AI brain of this garrison and start it
+		pr _AI = NEW("AIGarrison", [_thisObject]);
+		SETV(_thisObject, "AI", _AI);
+		CALLM(_AI, "start", []); // Let's start the party! \o/
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -88,6 +93,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Despawn if spawned
 		CALLM0(_thisObject, "despawn");
+
+		// Delete the AI object
+		// We delete it instantly because Garrison AI is in the same thread
+		pr _AI = GETV(_thisObject, "AI");
+		DELETE(_AI);
+		SETV(_thisObject, "AI", "");
 		
 		pr _units = T_GETV("units");
 		pr _groups = T_GETV("groups");
@@ -138,10 +149,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
 		T_SETV("location", _location);
 		
-		if (T_GETV("spawned")) then {
-			pr _AI = T_GETV("AI");
-			CALLM1(_AI, "handleLocationChanged", _location);
-		};
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "handleLocationChanged", _location);
 	} ENDMETHOD;
 
 
@@ -257,18 +266,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	// 						G E T   P O S
 	/*
 	Method: getPos
-	Returns the position of the garrison. Just picks the first unit and returns its position.
+	Returns the position of the garrison. It's the same as position world state property.
 
 	Returns: Array
 	*/
 	METHOD("getPos") {
 		params [["_thisObject", "", [""]]];
-		pr _units = T_GETV("units");
-		if (count _units > 0) then {
-			CALLM0(_units select 0, "getPos");
-		} else {
-			[0, 0, 0]
-		};
+		pr _AI = T_GETV("AI");
+		pr _worldState = GETV(_AI, "worldState");
+		[_worldState, WSP_GAR_POSITION] call ws_fnc_getPropertyValue
 	} ENDMETHOD;
 	
 	//						I S   E M P T Y
@@ -281,7 +287,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("isEmpty") {
 		params ["_thisObject"];
 		(count T_GETV("units")) == 0
-	} ENDMETHOD;	
+	} ENDMETHOD;
+
+	//						I S   S P A W N E D
+	/*
+	Method: isSpawned
+	Returns true if garrison is BIS_fnc_setRespawnDelay
+
+	Returns: Bool
+	*/
+	METHOD("isSpawned") {
+		params ["_thisObject"];
+		T_GETV("spawned")
+	} ENDMETHOD;
 	
 
 	//             F I N D   G R O U P S   B Y   T Y P E

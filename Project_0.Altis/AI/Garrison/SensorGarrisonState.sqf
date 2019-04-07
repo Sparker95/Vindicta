@@ -20,6 +20,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		
 		pr _AI = GETV(_thisObject, "AI");
 		pr _gar = T_GETV("gar");
+		pr _isSpawned = CALLM0(_gar, "isSpawned");
 		pr _worldState = GETV(_AI, "worldState");
 		
 		// Check if all crew and infantry are in vehicles
@@ -28,33 +29,35 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		_groupTypes = [GROUP_TYPE_VEH_STATIC, GROUP_TYPE_VEH_NON_STATIC];
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		
-		// Query world states of vehicle groups and AND all their values
-		pr _allCrewMounted = true;
-		if (count _vehGroups == 0) then { // If there are no vehicle groups, set property to false
-			_allCrewMounted = false;
-		} else {
+		// Run checks which only make sense for a spawned garrison
+		if (_isSpawned) then {
+			// Query world states of vehicle groups and AND all their values
+			pr _allCrewMounted = true;
+			if (count _vehGroups == 0) then { // If there are no vehicle groups, set property to false
+				_allCrewMounted = false;
+			} else {
+				{
+					pr _groupAI = CALLM0(_x, "getAI");
+					pr _groupWS = GETV(_groupAI, "worldState");
+					pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
+					_allCrewMounted = _allCrewMounted && _val;
+				} forEach _vehGroups;
+			};
+			[_worldState, WSP_GAR_ALL_CREW_MOUNTED, _allCrewMounted] call ws_setPropertyValue;
+
+			// Query world state of infantry groups
+			pr _allInfMounted = true;
 			{
 				pr _groupAI = CALLM0(_x, "getAI");
 				pr _groupWS = GETV(_groupAI, "worldState");
 				pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
-				_allCrewMounted = _allCrewMounted && _val;
-			} forEach _vehGroups;
+				_allInfMounted = _allInfMounted && _val;
+			} forEach _infGroups;
+			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 		};
-		[_worldState, WSP_GAR_ALL_CREW_MOUNTED, _allCrewMounted] call ws_setPropertyValue;
-		
-		// Query world state of infantry groups
-		pr _allInfMounted = true;
-		{
-			pr _groupAI = CALLM0(_x, "getAI");
-			pr _groupWS = GETV(_groupAI, "worldState");
-			pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
-			_allInfMounted = _allInfMounted && _val;
-		} forEach _infGroups;
-		[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
-		
-		
-		
-		// Vehicle-related chekcs
+
+
+		// Vehicle-related checks
 		
 		// Check if all vehicles have enough crew
 		pr _nDriversAll = 0; // Amount of all drivers required for this garrison
@@ -108,7 +111,14 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		5
+		params ["_thisObject"];
+		pr _gar = T_GETV("gar");
+		// If garrison is not spawned, run the check less often
+		if (CALLM0(_gar, "isSpawned")) then {
+			5
+		} else {
+			60
+		};
 	} ENDMETHOD;	
 	
 ENDCLASS;

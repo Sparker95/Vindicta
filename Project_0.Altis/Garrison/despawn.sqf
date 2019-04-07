@@ -28,12 +28,6 @@ if (!_spawned) exitWith {
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
 
-// Delete the AI object
-// We delete it instantly because Garrison AI is in the same thread
-pr _AI = GETV(_thisObject, "AI");
-DELETE(_AI);
-SETV(_thisObject, "AI", "");
-
 private _units = GET_VAR(_thisObject, "units");
 private _groups = (GET_VAR(_thisObject, "groups"));
 private _groupsCopy = +_groups;
@@ -63,3 +57,9 @@ while {_i < count _groups} do
 		CALL_METHOD(_unit, "despawn", []);
 	};
 } forEach _units;
+
+// Call onGarrisonDespawned
+pr _action = CALLM0(T_GETV("AI"), "getCurrentAction");
+if (_action != "") then {
+	CALLM0(_action, "onGarrisonDespawned");
+};

@@ -50,7 +50,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _loc = CALLM0(_agent, "getLocation");
 		if (_loc != "") then {
-			pr _sensorObserved = NEW("SensorGarrisonLocationIsObserved", [_thisObject]);
+			pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 			CALLM1(_thisObject, "addSensor", _sensorObserved);
 		};
 		
@@ -67,6 +67,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
 		if (_loc != "") then {
 			pr _pos = CALLM0(_loc, "getPos");
+			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+		} else {
+			pr _pos = [0, 0, 0];
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		};
 		
@@ -295,8 +298,16 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	METHOD("handleLocationChanged") {
 		params ["_thisObject", ["_loc", "", [""]]];
+
+		// Set location world state property
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
+
+		// Set position world state property
+		if (_loc != "") then {
+			pr _pos = CALLM0(_loc, "getPos");
+			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+		};
 	} ENDMETHOD;
 
 	// Updates world state properties related to composition of the garrison
@@ -334,6 +345,19 @@ CLASS("AIGarrison", "AI_GOAP")
 			pr _posNull = [0, 0, 0];
 			T_SETV("assignedTargetsPos", _posNull);
 		};
+	} ENDMETHOD;
+
+	// Returns spawned state of attached garrison
+	METHOD("isSpawned") {
+		params ["_thisObject"];
+		CALLM0(T_GETV("agent"), "isSpawned")
+	} ENDMETHOD;
+
+	// Sets the position, because it is stored in the world state
+	METHOD("setPos") {
+		params ["_thisObject", "_pos"];
+		pr _ws = T_GETV("worldState");
+		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 	} ENDMETHOD;
 
 ENDCLASS;

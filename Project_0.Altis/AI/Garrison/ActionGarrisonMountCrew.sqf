@@ -54,48 +54,62 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
-		scopeName "s0";
-		
-		if (_state == ACTION_STATE_ACTIVE) then {
-			pr _gar = T_GETV("gar");
+		// Check if spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) then {
+			// If not spawned, just set world states instantly
 			pr _AI = T_GETV("AI");
-			pr _mount = T_GETV("mount");
-			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
-			
-			// Do we need to mount or dismount?
-			if (_mount) then {
-				// Fail this action if any group has failed
-				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
-					_state = ACTION_STATE_FAILED;
-					breakTo "s0";
-				};
+			pr _ws = GETV(_AI, "worldState");
+			[_ws, WSP_GAR_ALL_CREW_MOUNTED, true] call ws_setPropertyValue;
+
+			T_SETV("state", ACTION_STATE_COMPLETED);
+			ACTION_STATE_COMPLETED
+		} else {
+			pr _state = CALLM0(_thisObject, "activateIfInactive");
+			scopeName "s0";		
+			if (_state == ACTION_STATE_ACTIVE) then {
+				pr _gar = T_GETV("gar");
+				pr _AI = T_GETV("AI");
+				pr _mount = T_GETV("mount");
+				pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 				
-				// Complete the action when all vehicle groups have mounted
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
-				//pr _ws = GETV(T_GETV("AI"), "worldState");
-				//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
-					// Update sensors affected by this action
-					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
+				// Do we need to mount or dismount?
+				if (_mount) then {
+					// Fail this action if any group has failed
+					if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
+						_state = ACTION_STATE_FAILED;
+						breakTo "s0";
+					};
 					
-					_state = ACTION_STATE_COMPLETED;
-					breakTo "s0";
+					// Complete the action when all vehicle groups have mounted
+					if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
+					//pr _ws = GETV(T_GETV("AI"), "worldState");
+					//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
+						// Update sensors affected by this action
+						CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
+						
+						_state = ACTION_STATE_COMPLETED;
+						breakTo "s0";
+					};
+				} else {
+					// NYI
 				};
-			} else {
-				// NYI
 			};
+			
+			T_SETV("state", _state);
+			_state
 		};
-		
-		T_SETV("state", _state);
-		_state
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
 		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+
 		pr _mount = T_GETV("mount");
 		pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);

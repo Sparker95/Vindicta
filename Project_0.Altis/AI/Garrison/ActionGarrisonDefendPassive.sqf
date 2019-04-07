@@ -80,12 +80,14 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		CALLM0(_thisObject, "activateIfInactive");
 		
 		//diag_log "---- Garrison defend passive action!";
-		
-		
-		
+
 		// Return the current state
 		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
@@ -94,6 +96,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		// Remove assigned goals
 		pr _gar = GETV(T_GETV("AI"), "agent");
 		pr _loc = CALLM0(_gar, "getLocation");

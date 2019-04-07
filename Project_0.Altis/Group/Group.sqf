@@ -280,7 +280,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	// |                         G E T   V E H I C L E   U N I T S
 	/*
-	Method: getVehiucleUnits
+	Method: getVehicleUnits
 	Returns all vehicle units.
 
 	Returns: Array of units.
@@ -294,7 +294,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	// |                         G E T   D R O N E   U N I T S
 	/*
-	Method: getVehicleUnits
+	Method: getDroneUnits
 	Returns all drone units.
 
 	Returns: Array of units.
@@ -532,10 +532,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 
 
-	// |         S P A W N
+	// |         S P A W N   A T   L O C A T I O N
 	/*
-	Method: spawn
-	Spawns all the units in this group.
+	Method: spawnAtLocation
+	Spawns all the units in this group at specified location.
 
 	Parameters: _loc
 
@@ -543,10 +543,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("spawn") {
+	METHOD("spawnAtLocation") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
 
-		OOP_INFO_0("SPAWN");
+		OOP_INFO_0("SPAWN AT LOCATION");
 
 		pr _data = GETV(_thisObject, "data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
@@ -569,6 +569,77 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
+
+			// Create an AI for this group
+			CALLM0(_thisObject, "createAI");
+
+			// Set the spawned flag to true
+			_data set [GROUP_DATA_ID_SPAWNED, true];
+		} else {
+			OOP_WARNING_0("Already spawned");
+		};
+	} ENDMETHOD;
+
+	//	S P A W N   V E H I C L E S   A T   P O S 
+	/*
+	Method: spawnVehiclesOnRoad
+	Spawns vehicles in this group specified positions, one after another. Infantry units are spawned nearby.
+	This function is intended for vehicle groups to spawn them on a road.
+
+	Parameters: _vehPosAndDir, _startPos
+
+	_vehPosAndDir - array of [_pos, _dir] where vehicles will be spawned.
+	_startPos - optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.
+
+	Returns: nil
+	*/
+	METHOD("spawnVehiclesOnRoad") {
+		params ["_thisObject", ["_posAndDir", [], [[]]], ["_startPos", [], [[]]]];
+
+		pr _data = GETV(_thisObject, "data");
+		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			if (isNull _groupHandle) then {
+				private _side = _data select GROUP_DATA_ID_SIDE;
+				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
+			
+			_groupHandle setBehaviour "SAFE";
+			
+			// Handle vehicles first
+			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
+			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
+			if ((count _vehUnits > count _posAndDir) || (count _startPos > 0)) then {
+				if (count _vehUnits > count _posAndDir) then {
+					OOP_WARNING_0("Not enough positions for all vehicles!");
+				};
+				{
+					pr _className = CALLM0(_x, "getClassName");
+					pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _startPos, _className);
+					CALLM(_x, "spawn", _posAndDir);
+				} forEach _vehUnits;
+			} else {
+				{
+					CALLM(_x, "spawn", _posAndDir select _forEachIndex);
+				} forEach _vehUnits;
+			};
+
+			// Handle infantry
+			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+			// Get position around which infantry will be spawning
+			pr _infSpawnPos = if (count _startPos > 0) then {_startPos} else {_posAndDir select 0};
+			{
+				// todo improve this
+				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
+				CALLM2(_x, "spawn", _pos, 0);
+			} forEach _infUnits;
+
+
+			// todo Handle drones??
 
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");

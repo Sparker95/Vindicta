@@ -33,7 +33,11 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
-		// Loop throgh known targets and remove those who are older than some threshold or not alive any more
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		// Loop through known targets and remove those who are older than some threshold or not alive any more
 		pr _AI = GETV(_thisObject, "AI");
 		pr _knownTargets = GETV(_AI, "targets");
 		pr _targetsToForget = [];

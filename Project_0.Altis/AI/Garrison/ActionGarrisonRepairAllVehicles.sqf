@@ -98,6 +98,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
+
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
@@ -122,6 +126,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		pr _AI = T_GETV("AI");
 		
 		// Delete assigned goal

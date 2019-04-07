@@ -12,6 +12,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 	VARIABLE("pos"); // The destination position
 	VARIABLE("radius"); // Completion radius
+	VARIABLE("virtualRoute"); // VirtualRoute object
 
 	// ------------ N E W ------------
 	METHOD("new") {
@@ -41,7 +42,28 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} else {
 			T_SETV("radius", _radius);
 		};
+
+		if(CALLM0(_AI, "isSpawned")) then {
+			T_SETV("virtualRoute", ""); // If we are spawned we don't need the virtual route (for now)
+		} else {
+			pr _gar = GETV(_AI, "agent");
+			pr _from = CALLM0(_gar, "getPos");
+			pr _args = [_from, _pos, -1, "", "", false];
+			pr _vr = NEW("VirtualRoute", _args);
+			T_SETV("virtualRoute", _vr);
+		};
 		
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params ["_thisObject"];
+
+		// Delete the virtual route object
+		pr _vr = T_GETV("virtualRoute");
+		if (_vr != "") then {
+			DELETE(_vr);
+		};
+
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -99,51 +121,76 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		// Fail if not everyone is in vehicles
-		pr _everyoneIsMounted = CALLM0(_thisObject, "isEveryoneInVehicle");
-		OOP_INFO_1("Everyone is in vehicles: %1", _everyoneIsMounted);
-		if (! _everyoneIsMounted) exitWith {
-			OOP_INFO_0("ACTION FAILED because not everyone is in vehicles");
-			T_SETV("state", ACTION_STATE_FAILED);
-			ACTION_STATE_FAILED
-		};
-		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
-		scopeName "s0";
-		
-		if (_state == ACTION_STATE_ACTIVE) then {
-		
-			pr _gar = T_GETV("gar");
-			pr _AI = T_GETV("AI");
-			pr _pos = T_GETV("pos");
-		
-			pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
-			pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
-			
-			// Fail if any group has failed
-			if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
-				_state = ACTION_STATE_FAILED;
-				breakTo "s0";
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) then {
+			pr _state = T_GETV("state");
+
+			// Virtual Route
+			pr _vr = T_GETV("virtualRoute");
+
+			if (_state == ACTION_STATE_INACTIVE) then {
+				CALLM0(_vr, "start");
+				_state = ACTION_STATE_ACTIVE;
+			};
+
+			// Process the virtual convoy
+			if (_state == ACTION_STATE_ACTIVE) then {
+				// Run process of the virtual route and update position of the garrison
+				CALLM0(_vr, "process");
+				pr _pos = CALLM0(_vr, "getPos");
+				pr _AI = T_GETV("AI");
+				CALLM1(_AI, "setPos", _pos);
+			};
+
+			T_SETV("state", _state);
+			_state
+		} else {
+			// Fail if not everyone is in vehicles
+			pr _everyoneIsMounted = CALLM0(_thisObject, "isEveryoneInVehicle");
+			OOP_INFO_1("Everyone is in vehicles: %1", _everyoneIsMounted);
+			if (! _everyoneIsMounted) exitWith {
+				OOP_INFO_0("ACTION FAILED because not everyone is in vehicles");
+				T_SETV("state", ACTION_STATE_FAILED);
+				ACTION_STATE_FAILED
 			};
 			
-			// Succede if all groups have completed the goal
-			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
-				OOP_INFO_0("All groups have arrived");
+			pr _state = CALLM0(_thisObject, "activateIfInactive");
+			
+			scopeName "s0";
+			
+			if (_state == ACTION_STATE_ACTIVE) then {
+			
+				pr _gar = T_GETV("gar");
+				pr _AI = T_GETV("AI");
+				pr _pos = T_GETV("pos");
+			
+				pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
+				pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
 				
-				// Set pos world state property
-				pr _ws = GETV(_AI, "worldState");
-				[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-				[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+				// Fail if any group has failed
+				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+					_state = ACTION_STATE_FAILED;
+					breakTo "s0";
+				};
 				
-				_state = ACTION_STATE_COMPLETED;
-				breakTo "s0";
+				// Succede if all groups have completed the goal
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupMoveGroundVehicles", "")) then {
+					OOP_INFO_0("All groups have arrived");
+					
+					// Set pos world state property
+					pr _ws = GETV(_AI, "worldState");
+					[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+					[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+					
+					_state = ACTION_STATE_COMPLETED;
+					breakTo "s0";
+				};
 			};
+			
+			// Return the current state
+			T_SETV("state", _state);
+			_state
 		};
-		
-		// Return the current state
-		T_SETV("state", _state);
-		_state
 	} ENDMETHOD;
 	
 	// Returns true if everyone is in vehicles
@@ -173,6 +220,37 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);			
 		} forEach _vehGroups;
 		
+	} ENDMETHOD;
+
+	METHOD("onGarrisonSpawned") {
+		params ["_thisObject"];
+
+		// Delete the virtual route, we dont need it any more
+		pr _vr = T_GETV("virtualRoute");
+		DELETE(_vr);
+		T_SETV("virtualRoute", "");
+
+		// Reset action state so that it reactivates
+		T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
+	
+	METHOD("onGarrisonDespawned") {
+		params ["_thisObject"];
+
+		// Delete old virtual route if we had it (how is that possible??)
+		pr _vr = T_GETV("virtualRoute");
+		if (_vr != "") then {
+			DELETE(_vr);
+		};
+
+		// Create a new virtual route
+		pr _gar = T_GETV("gar");
+		pr _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, "", "", false];
+		pr _vr = NEW("VirtualRoute", _args);
+		T_SETV("virtualRoute", _vr);
+
+		// Reset action state so that it reactivates
+		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
 
 ENDCLASS;
