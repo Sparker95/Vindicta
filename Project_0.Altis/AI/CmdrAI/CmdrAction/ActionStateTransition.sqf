@@ -32,8 +32,8 @@ CLASS("ActionStateTransition", "")
 
 	METHOD("isValidFromState") {
 		params [P_THISOBJECT, P_NUMBER("_state"), P_BOOL("_isSim")];
-		if(_isSim) exitWith { _state in T_GETV("fromStatesSim") };
-		_state in T_GETV("fromStates")
+		private _states = if(_isSim) then { T_GETV("fromStatesSim") } else { T_GETV("fromStates") };
+		(_state in _states) or (CMDR_ACTION_STATE_ALL in _states)
 	} ENDMETHOD;
 
 	METHOD("getToState") {
@@ -46,6 +46,8 @@ CLASS("ActionStateTransition", "")
 		params [P_THISCLASS, P_STRING("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
 		private _isSim = GETV(_world, "isSim");
 
+		if(_state == CMDR_ACTION_STATE_END) exitWith { _state };
+
 		// For efficiency we will first filter to transitions whose fromStates include
 		// our current state, then sort by priority. Then we will check in decending
 		// order until we find one we can apply and attempt to apply it.
@@ -53,20 +55,22 @@ CLASS("ActionStateTransition", "")
 			select { CALLM(_x, "isValidFromState", [_state]+[_isSim]) }
 			apply { [GETV(_x, "priority"), _x] };
 
+
 		// Lower value is higher priority (0 is top most priority)
 		_matchingTransitions sort true;
-		private _foundIdx = _matchingTransitions findIf { CALLM(_x, "isAvailable", [_world]) };
+
+		private _foundIdx = _matchingTransitions findIf { CALLM(_x select 1, "isAvailable", [_world]) };
 		if(_foundIdx != -1) then {
-			private _selectedTransition = _matchingTransitions#_foundIdx;
+			private _selectedTransition = _matchingTransitions#_foundIdx#1;
 			private _applied = CALLM(_selectedTransition, "apply", [_world]);
-			if(_applied) exitWith {
+			if(_applied) then {
 				private _newState = CALLM(_selectedTransition, "getToState", [_isSim]);
-				_newState
+				_state = _newState
 			};
 		};
 		_state
 	} ENDMETHOD;
-	
+
 	// ----------------------------------+----------------------------------
 	// |                 V I R T U A L   F U N C T I O N S                 |
 	// ----------------------------------+----------------------------------
@@ -77,7 +81,7 @@ CLASS("ActionStateTransition", "")
 	*/
 	/* virtual */ METHOD("isAvailable") { 
 		params [P_THISOBJECT, P_STRING("_world")];
-		
+		FAILURE("isAvailable method must be implemented when deriving from ActionStateTransition");
 	} ENDMETHOD;
 
 	// /*
@@ -89,18 +93,17 @@ CLASS("ActionStateTransition", "")
 	// 	params [P_THISOBJECT, P_STRING("_simWorld")];
 		
 	// } ENDMETHOD;
-	
+
 	/*
 	Method: apply
-	    Implement in derived classes to attempt to apply the state transition.
+		Implement in derived classes to attempt to apply the state transition.
 	Return: true if the transition was applied successfully.
 	*/
 	/* virtual */ METHOD("apply") { 
 		params [P_THISOBJECT, P_STRING("_world")];
-		// Always apply successfully by default
-		true 
+		FAILURE("apply method must be implemented when deriving from ActionStateTransition");
 	} ENDMETHOD;
-	
+
 	// /*
 	// Method: applySim
 	//     Implement in derived classes to attempt to apply the state transition to sim world.
@@ -112,3 +115,110 @@ CLASS("ActionStateTransition", "")
 	// 	true 
 	// } ENDMETHOD;
 ENDCLASS;
+
+// Unit test
+#ifdef _SQF_VM
+
+#define CMDR_ACTION_STATE_TEST_1 2
+#define CMDR_ACTION_STATE_TEST_2 3
+
+// Dummy test classes
+CLASS("TestASTBase", "ActionStateTransition")
+	METHOD("new") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("isAvailable") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+		true
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("apply") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+		true
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("TestAST_Start_1", "TestASTBase")
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_START]);
+		T_SETV("toStateSim", CMDR_ACTION_STATE_TEST_1);
+	} ENDMETHOD;
+ENDCLASS;
+TestAST_Start_1 = NEW("TestAST_Start_1", []);
+
+CLASS("TestAST_1_2", "TestASTBase")
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_TEST_1]);
+		T_SETV("toStateSim", CMDR_ACTION_STATE_TEST_2);
+	} ENDMETHOD;
+ENDCLASS;
+TestAST_1_2 = NEW("TestAST_1_2", []);
+
+CLASS("TestAST_2_End", "TestASTBase")
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_TEST_2]);
+		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
+	} ENDMETHOD;
+ENDCLASS;
+TestAST_2_End = NEW("TestAST_2_End", []);
+
+CLASS("TestAST_1_End", "TestASTBase")
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("priority", CMDR_ACTION_PRIOR_HIGH);
+		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_TEST_1]);
+		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
+	} ENDMETHOD;
+ENDCLASS;
+TestAST_1_End = NEW("TestAST_1_End", []);
+
+["ActionStateTransition.new", {
+	private _obj = NEW("ActionStateTransition", [true]);
+	private _class = OBJECT_PARENT_CLASS_STR(_obj);
+	["Object exists", !(isNil "_class")] call test_Assert;
+	["Priority is correct", GETV(_obj, "priority") == CMDR_ACTION_PRIOR_LOW] call test_Assert;
+}] call test_AddTest;
+
+["ActionStateTransition.delete", {
+	private _obj = NEW("ActionStateTransition", [true]);
+	DELETE(_obj);
+	isNil { OBJECT_PARENT_CLASS_STR(_obj) }
+}] call test_AddTest;
+
+fn_Test_Transitions = {
+	params ["_transitions", "_expectedStates", "_world"];	
+	private _state = CMDR_ACTION_STATE_START;
+	{
+		_x params ["_desc", "_expected"];
+		_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+		[_desc, _state == _expected] call test_Assert;
+	} forEach _expectedStates;
+};
+
+["ActionStateTransition.selectAndApply", {
+	private _world = NEW("WorldModel", [true]);
+	[ 
+		[ TestAST_Start_1, TestAST_1_2, TestAST_2_End ],
+		[
+			["Start -> 1", CMDR_ACTION_STATE_TEST_1],
+			["1 -> 2", CMDR_ACTION_STATE_TEST_2],
+			["2 -> End", CMDR_ACTION_STATE_END]
+		],
+		_world
+	] call fn_Test_Transitions;
+	[ 
+		[ TestAST_Start_1, TestAST_1_2, TestAST_2_End, TestAST_1_End ],
+		[
+			["Start -> 1", CMDR_ACTION_STATE_TEST_1],
+			["1 -> End", CMDR_ACTION_STATE_END]
+		],
+		_world
+	] call fn_Test_Transitions;
+}] call test_AddTest;
+
+
+#endif

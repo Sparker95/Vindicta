@@ -28,7 +28,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("scoreResource", 1);
 		T_SETV("scoreStrategy", 1);
 		T_SETV("scoreCompleteness", 1);
-		T_SETV("complete", false);
+		//T_SETV("complete", false);
 		T_SETV("state", CMDR_ACTION_STATE_START);
 		T_SETV("transitions", []);
 	} ENDMETHOD;
@@ -55,9 +55,8 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(transitions);
 		while {_state != CMDR_ACTION_STATE_END} do {
 			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
-			if(_newState == _state) then {
-				OOP_ERROR_2("Couldn't apply action %1 to sim, stuck in state %2", _thisObject, _state);
-			};
+			ASSERT_MSG(_newState == _state, format ["Couldn't apply action %1 to sim, stuck in state %2"]+[_thisObject]+[_state]);
+			_state = _newState;
 		};
 	} ENDMETHOD;
 
@@ -90,3 +89,33 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 	
 ENDCLASS;
+
+
+// Unit test
+#ifdef _SQF_VM
+
+["CmdrAction.new", {
+	private _obj = NEW("CmdrAction", [true]);
+	private _class = OBJECT_PARENT_CLASS_STR(_obj);
+	["Object exists", !(isNil "_class")] call test_Assert;
+	["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
+}] call test_AddTest;
+
+["CmdrAction.delete", {
+	private _obj = NEW("CmdrAction", [true]);
+	DELETE(_obj);
+	isNil { OBJECT_PARENT_CLASS_STR(_obj) }
+}] call test_AddTest;
+
+["CmdrAction.getFinalScore", {
+	private _obj = NEW("CmdrAction", [true]);
+	CALLM(_obj, "getFinalScore", []) == 1
+}] call test_AddTest;
+
+// ["CmdrAction.applyToSim", {
+// 	private _obj = NEW("CmdrAction", [true]);
+// 	private _world = NEW("WorldModel", [true]);
+// 	// GETV(_obj, "applyToSim");
+// }] call test_AddTest;
+
+#endif

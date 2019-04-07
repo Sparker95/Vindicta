@@ -29,8 +29,7 @@ CLASS("ModelBase", "RefCounted")
 
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
-		OOP_ERROR_0("simCopy method must be implemented when deriving from ModelBase");
-		throw "Not implemented";
+		FAILURE("simCopy method must be implemented when deriving from ModelBase");
 	} ENDMETHOD;
 
 	METHOD("setId") {
@@ -40,8 +39,7 @@ CLASS("ModelBase", "RefCounted")
 	
 	METHOD("sync") {
 		params [P_THISOBJECT];
-		OOP_ERROR_0("sync method must be implemented when deriving from ModelBase");
-		throw "Not implemented";
+		FAILURE("sync method must be implemented when deriving from ModelBase");
 	} ENDMETHOD;
 
 	METHOD("update") {

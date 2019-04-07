@@ -44,6 +44,11 @@
 #undef OFSTREAM_FILE
 #define VM_LOG(t) diag_log t
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
+#define OOP_ASSERT
+#define OOP_DEBUG
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
 #else
 #define VM_LOG(t)
 #define VM_LOG_FMT(t, args)
@@ -702,15 +707,22 @@ objNameStr \
 #define ASSERT_MSG(condition, msg) \
 if (!(condition)) then { \
 	OOP_ERROR_2("Assertion failed (%1): %2", { condition; }, msg); \
+	throw [__FILE__, __LINE__, msg]; \
 }
 #define ASSERT(condition) \
 if (!(condition)) then { \
 	OOP_ERROR_1("Assertion failed (%1)", { condition; }); \
+	throw [__FILE__, __LINE__, msg]; \
 }
+#define FAILURE(msg) \
+OOP_ERROR_1("Failure: %1", msg); \
+throw [__FILE__, __LINE__, msg]; \
+
 #else
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
 #define ASSERT_MSG(condition, msg)
 #define ASSERT(condition)
+#define FAILURE(msg)
 #endif
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC

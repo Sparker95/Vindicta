@@ -378,18 +378,18 @@ ENDCLASS;
 	CALLM(_world, "addLocation", [_location]);
 	private _garrison = NEW("GarrisonModel", [_world]+[""]);
 	CALLM(_world, "addGarrison", [_garrison]);
-	
+
 	private _copy = CALLM(_world, "simCopy", []);
-	["Created", isNil { OBJECT_PARENT_CLASS_STR(_copy) }] call test_Assert;
+	["Created", !(isNil { OBJECT_PARENT_CLASS_STR(_copy) })] call test_Assert;
 	["Garrisons copied", {
 		private _w = GETV(_world, "garrisons");
 		private _c = GETV(_copy, "garrisons");
-		(_w apply { [_x, GETV(_x, "id")] }) isEqualTo (_c apply { [_x, GETV(_x, "id")] })
+		(_w apply { GETV(_x, "id") }) isEqualTo (_c apply { GETV(_x, "id") })
 	}] call test_Assert;
 	["Locations copied", {
 		private _w = GETV(_world, "locations");
 		private _c = GETV(_copy, "locations");
-		(_w apply { [_x, GETV(_x, "id")] }) isEqualTo (_c apply { [_x, GETV(_x, "id")] })
+		(_w apply { GETV(_x, "id") }) isEqualTo (_c apply { GETV(_x, "id") })
 	}] call test_Assert;
 }] call test_AddTest;
 
