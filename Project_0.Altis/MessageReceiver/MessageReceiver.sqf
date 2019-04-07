@@ -52,7 +52,9 @@ CLASS("MessageReceiver", "")
 		
 		PROFILER_COUNTER_INC("MessageReceiver");
 		
+#ifndef _SQF_VM
 		SETV(_thisObject, "owner", clientOwner);
+#endif
 		if (IS_PUBLIC(_thisObject)) then {
 			PUBLIC_VAR(_thisObject, "owner");
 		};

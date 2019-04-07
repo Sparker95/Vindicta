@@ -9,22 +9,28 @@ CLASS("ModelBase", "RefCounted")
 	VARIABLE("id");
 	// Optional object ref to the Real Object this Model represents. 
 	// If set to objNull then this is presumed to be a Sim Model.
-	VARIABLE("realObject");
+	VARIABLE("actual");
 	// World Model that owns this Object Model
-	VARIABLE("ownerState");
+	VARIABLE("world");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_ownerState"), P_STRING("_realObject")];
+		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("id", -1);
-		T_SETV("ownerState", _ownerState);
+		T_SETV("world", _world);
 
-		if(_realObject isEqualTo "") then {
-			T_SETV("realObject", objNull);
-			ASSERT_MSG(GETV(_ownerState, "isSim"), "State must be sim if you aren't setting realObject");
+		if (_actual isEqualTo "") then {
+			T_SETV("actual", objNull);
+			ASSERT_MSG(GETV(_world, "isSim"), "State must be sim if you aren't setting actual");
 		} else {
-			T_SETV("realObject", _realObject);
-			ASSERT_MSG(!GETV(_ownerState, "isSim"), "State must NOT be sim if you are setting realObject");
+			T_SETV("actual", _actual);
+			ASSERT_MSG(!GETV(_world, "isSim"), "State must NOT be sim if you are setting actual");
 		};
+	} ENDMETHOD;
+
+	METHOD("simCopy") {
+		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
+		OOP_ERROR_0("simCopy method must be implemented when deriving from ModelBase");
+		throw "Not implemented";
 	} ENDMETHOD;
 
 	METHOD("setId") {
@@ -41,9 +47,9 @@ CLASS("ModelBase", "RefCounted")
 	METHOD("update") {
 		params [P_THISOBJECT];
 		T_CALLM("sync", []);
-		// T_PRVAR(ownerState);
+		// T_PRVAR(world);
 		// // If we have an assigned owner state then ???
-		// if(_ownerState isEqualType "") then {
+		// if(_world isEqualType "") then {
 
 		// }
 

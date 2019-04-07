@@ -1,8 +1,8 @@
 #include "Templates.hpp"
 /*
-These arrays represent the efficiency  of all units in the templates.
+These arrays represent the efficiency of all units in the templates.
 
-efficiency categories:
+efficiency categories (a- is anti-):
 |	.	|	.	|	.	|	.	|	.	|	.	|	.	|
 [soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 */
@@ -17,10 +17,14 @@ T_EFF_aArmor =	6;
 T_EFF_aAir =	7;
 T_EFF_dummy = 	8; // For faster vector sum, we make it 3xVector3, sum up and glue back together
 
-T_EFF_null = 	[0, 0, 0, 0, 0, 0, 0, 0, 0]; // Empty vector with efficiency
-T_EFF_default = [1,	0, 0, 0, 1, 0, 0, 0, 1]; // Default value if there is no efficiency value on a unit
-
 private _eff = [];
+
+//==== PRESETS ====
+//									[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
+// Empty vector with efficiency
+T_EFF_null = 						[0,		0,		0,		0,		0,		0,		0,		0,		0];
+// Default value if there is no efficiency value on a unit
+T_EFF_default = 					[1,		0,		0,		0,		1,		0,		0,		0,		1];
 
 //==== INFANTRY ====
 private _eff_inf = [];

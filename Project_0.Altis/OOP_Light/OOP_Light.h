@@ -429,6 +429,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
+#define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
 
 // ----------------------------------------

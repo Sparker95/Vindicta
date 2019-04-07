@@ -185,7 +185,7 @@
                 "--load",
                 ".",
                 "-i",
-                "${workspaceRoot}\\Project_0.Altis\\Tests\\TestInitClasses.sqf"
+                "${workspaceRoot}\\Project_0.Altis\\Tests\\RunTests.sqf"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Project_0.Altis"

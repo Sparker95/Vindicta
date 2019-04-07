@@ -14,6 +14,9 @@ Access: Internal use.
 
 params [["_thisObject", "", [""]]];
 
+#ifdef _SQF_VM // Don't want to run this in VM testing mode
+diag_log format ["[TimerService::threadFunc] Disabled due to SQFvm mode"];
+#else
 diag_log format ["[TimerService::threadFunc] Info: thread started"];
 
 private _mutex = GET_VAR(_thisObject, "mutex");
@@ -53,3 +56,4 @@ while {true} do {
 	} forEach _timers;
 	MUTEX_UNLOCK(_mutex);
 };
+#endif

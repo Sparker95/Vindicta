@@ -30,15 +30,15 @@
 // 		T_PRVAR(ourGarrId);
 // 		T_PRVAR(theirGarrId);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrisonById", _theirGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
+// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
 
 // 		// Threat is just their strength scaled somewhat
 // 		// TODO: is scaling here necessary? should we apply a non-linear function?
 // 		private _scorePriority = CALLM0(_theirGarr, "getStrength") * 0.1;
 
 // 		// Resource is how much our garrison is *over* (required composition + required force), scaled by distance (further is lower)
-// 		private _ourGarrOverComp = CALLM1(_state, "getOverDesiredComp", _ourGarr);
+// 		private _ourGarrOverComp = CALLM1(_state, "getOverDesiredEff", _ourGarr);
 // 		// Enemy garrison composition
 // 		private _theirComp = CALLM0(_theirGarr, "getComp");
 // 		// How much over (required composition + required force) our garrison is
@@ -74,8 +74,8 @@
 // 		T_PRVAR(ourGarrId);
 // 		T_PRVAR(theirGarrId);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrisonById", _theirGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
+// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
 
 // 		// Enemy garrison composition
 // 		private _ourComp = CALLM0(_ourGarr, "getComp");
@@ -99,8 +99,8 @@
 // 		params [P_THISOBJECT, P_STRING("_state")];
 // 		T_PRVAR(ourGarrId);
 // 		T_PRVAR(theirGarrId);
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrisonById", _theirGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
+// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
 
 // 		T_PRVAR(stage);
 		
@@ -117,7 +117,7 @@
 // 			};
 // 			case "moving": {
 // 				T_PRVAR(splitGarrId);
-// 				private _splitGarr = CALLM1(_state, "getGarrisonById", _splitGarrId);
+// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
 // 				private _splitComp = CALLM0(_splitGarr, "getComp");
 // 				private _negSentComp = _splitComp apply { _x * -1 };
 // 				// TODO: better simulation!
@@ -126,7 +126,7 @@
 // 			case "take": {
 // 				T_PRVAR(splitGarrId);
 // 				T_PRVAR(targetOutpostId);
-// 				private _splitGarr = CALLM1(_state, "getGarrisonById", _splitGarrId);
+// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
 // 				private _outpost = CALLM1(_state, "getOutpostById", _targetOutpostId);
 // 				CALLM2(_state, "attachGarrison", _splitGarr, _outpost);
 // 			};
@@ -141,8 +141,8 @@
 // 		T_PRVAR(theirGarrId);
 // 		T_PRVAR(splitGarrId);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrisonById", _theirGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
+// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
 
 // 		// TODO: more interesting behaviour.
 // 		// State machine/steps:
@@ -181,7 +181,7 @@
 // 			};
 
 // 			case "moving": {
-// 				private _splitGarr = CALLM1(_state, "getGarrisonById", _splitGarrId);
+// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
 // 				private _splitPos = CALLM0(_splitGarr, "getPos");
 // 				if(CALLM0(_splitGarr, "isDead")) exitWith {
 // 					T_SETV("complete", true);
@@ -241,7 +241,7 @@
 // 			case "take": {
 // 				T_PRVAR(targetOutpostId);
 
-// 				private _splitGarr = CALLM1(_state, "getGarrisonById", _splitGarrId);
+// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
 // 				if(CALLM0(_splitGarr, "isDead")) exitWith {
 // 					T_SETV("complete", true);
 // 					OOP_INFO_3("AttackAction %1->%3->%2 completed: %3 died", _ourGarrId, _theirGarrId, _splitGarrId);
