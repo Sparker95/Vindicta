@@ -6,4 +6,4 @@ test_script:
 - cmd: >-
     cd c:\dev\Project_0.Altis
 
-    ..\tools\SQF-VM\sqfvm.exe -a --disable-macro-warnings --load . -i c:\dev\Project_0.Altis\Tests\TestInitClasses.sqf
+    ..\tools\SQF-VM\sqfvm.exe -a --disable-macro-warnings --load . -i c:\dev\Project_0.Altis\Tests\RunTests.sqf
