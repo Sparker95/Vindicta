@@ -131,6 +131,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				pr _pos = CALLM0(_vr, "getPos");
 				pr _AI = T_GETV("AI");
 				CALLM1(_AI, "setPos", _pos);
+
+				// Succede the action if the garrison is close enough to its destination
+				if (_pos distance T_GETV("pos") < T_GETV("radius")) then {
+					_state = ACTION_STATE_COMPLETED;
+				};
 			};
 
 			T_SETV("state", _state);
@@ -242,6 +247,35 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
+
+	METHOD("spawn") {
+		params ["_thisObject"];
+
+		pr _gar = T_GETV("gar");
+
+		// Spawn vehicle groups on the road according to convoy positions
+		pr _vr = T_GETV("virtualRoute");
+		if (_vr == "") exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
+
+		// Count all vehicles in garrison
+		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
+		pr _posAndDir = CALLM1(_vr, "getConvoyPositions", _nVeh);
+
+		// Iterate through all groups
+		pr _currentIndex = 0;
+		pr _groups = CALLM0(_gar, "getGroups");
+		{
+			pr _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
+			pr _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
+			CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+
+			_currentIndex = _currentIndex + _nVehThisGroup;
+		} forEach _groups;
+
+		// todo what happens with ungrouped units?? Why are there even ungrouped units at this point???
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;
