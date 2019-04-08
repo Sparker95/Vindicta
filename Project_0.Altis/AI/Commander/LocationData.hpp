@@ -34,6 +34,9 @@ If [], means unit amounts are not known
 // Marker, makes sense only for clients
 #define CLD_ID_MARKER 5
 
+// Location, ref to actual location object
+#define CLD_ID_LOCATION 6
+
 #define CLD_UNIT_AMOUNT_UNKNOWN []
 #define CLD_UNIT_AMOUNT_FULL call { \
 	private _a = [[], [], []]; \
@@ -44,7 +47,7 @@ If [], means unit amounts are not known
 	
 #define CLD_SIDE_UNKNOWN sideUnknown
 
-#define CLD_NEW() [0, CIVILIAN, CLD_UNIT_AMOUNT_UNKNOWN, [0, 0], 0, ""]
+#define CLD_NEW() [0, CIVILIAN, CLD_UNIT_AMOUNT_UNKNOWN, [0, 0], 0, "", ""]
 
 // Levels of gained intel
 // Only position is known

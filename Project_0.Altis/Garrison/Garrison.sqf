@@ -18,6 +18,8 @@ Author: Sparker 12.07.2018
 
 CLASS("Garrison", "MessageReceiverEx");
 
+	STATIC_VARIABLE("all");
+
 	VARIABLE("units");
 	VARIABLE("groups");
 	VARIABLE("spawned");
@@ -27,6 +29,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE("AI"); // The AI brain of this garrison
 	VARIABLE("effTotal"); // Efficiency vector of all units
 	VARIABLE("effMobile"); // Efficiency vector of all units that can move
+	VARIABLE("timer"); // Timer that will be sending PROCESS messages here
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -71,6 +74,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _AI = NEW("AIGarrison", [_thisObject]);
 		SETV(_thisObject, "AI", _AI);
 		CALLM(_AI, "start", []); // Let's start the party! \o/
+		
+		// Let there be timer!
+		pr _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
+		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
+		pr _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
+		
+		GETSV("Garrison", "all") pushBack _thisObject;
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -84,6 +97,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("DELETE GARRISON");
+		
+		// Delete our timer
+		DELETE(T_GETV("timer"));
 		
 		// Detach from location if was attached to it
 		pr _loc = T_GETV("location");
@@ -119,6 +135,28 @@ CLASS("Garrison", "MessageReceiverEx");
 			DELETE(_x);
 		} forEach _groups;
     
+    	pr _all = GETSV("Garrison", "all");
+    	_all deleteAt (_all find _thisObject);
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getAll
+	Returns all garrisons
+	
+	Parameters: _side
+	
+	_side - optional, Side of garrisons to returns. If side is not provided, returns all garrisons.
+
+	Returns: Array with <Garrison> objects
+	*/
+	STATIC_METHOD("getAll") {
+		params ["_thisClass", ["_side", sideEmpty]];
+		
+		if (_side == sideEmpty) then {
+			GETSV("Garrison", "all")
+		} else {
+			GETSV("Garrison", "all") select {CALLM0(_x, "getSide") == _side}
+		};
 	} ENDMETHOD;
 
 	/*
@@ -146,11 +184,37 @@ CLASS("Garrison", "MessageReceiverEx");
 	_location - <Location>
 	*/
 	METHOD("setLocation") {
-		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
+		params ["_thisObject", ["_location", "", [""]] ];
 		T_SETV("location", _location);
 		
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "handleLocationChanged", _location);
+
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "handleLocationChanged", _location);
+		
+		// Detach from current location if it exists
+		pr _currentLoc = T_GETV("location");
+		if (_currentLoc != "") then {
+			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+		};
+		
+		// Attach to another location
+		if (_location != "") then {
+			CALLM2(_location, "postMethodAsync", "registerGarrison", [_thisObject]);
+		};
+		
+		T_SETV("location", _location);
+		
+	} ENDMETHOD;
+	
+	METHOD("detachFromLocation") {
+		params ["_thisObject"];
+		
+		pr _currentLoc = T_GETV("location");
+		if (_currentLoc != "") then {
+			CALLM2(_currentLoc, "unregisterGarrison", _thisObject);
+		};
 	} ENDMETHOD;
 
 
@@ -272,9 +336,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getPos") {
 		params [["_thisObject", "", [""]]];
+
 		pr _AI = T_GETV("AI");
 		pr _worldState = GETV(_AI, "worldState");
 		[_worldState, WSP_GAR_POSITION] call ws_fnc_getPropertyValue
+		
 	} ENDMETHOD;
 	
 	//						I S   E M P T Y
@@ -1061,3 +1127,5 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD_FILE("countUnits", "Garrison\countUnits.sqf");
 
 ENDCLASS;
+
+SETSV("Garrison", "all", []);
