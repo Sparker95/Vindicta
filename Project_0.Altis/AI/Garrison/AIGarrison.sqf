@@ -63,15 +63,16 @@ CLASS("AIGarrison", "AI_GOAP")
 		[_ws, WSP_GAR_VEHICLE_GROUPS_BALANCED, false] call ws_setPropertyValue;
 		[_ws, WSP_GAR_CLEARING_AREA, [0, 0, 0]] call ws_setPropertyValue;
 		[_ws, WSP_GAR_HAS_VEHICLES, false] call ws_setPropertyValue;
+		// Location
 		pr _loc = CALLM0(_agent, "getLocation");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
-		if (_loc != "") then {
-			pr _pos = CALLM0(_loc, "getPos");
-			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+		// Position
+		pr _pos = if (_loc != "") then {
+			CALLM0(_loc, "getPos");
 		} else {
-			pr _pos = [0, 0, 0];
-			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+			[0, 0, 0];
 		};
+		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		
 		SETV(_thisObject, "worldState", _ws);
 		SETV(_thisObject, "targets", []);
@@ -90,7 +91,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Main marker
 		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
 		pr _name = _thisObject + MRK_GOAL;
-		pr _mrk = createmarker [_name, CALLM0(_agent, "getPos")];
+		pr _mrk = createmarker [_name, _pos];
 		_mrk setMarkerType "n_unknown";
 		_mrk setMarkerColor _color;
 		_mrk setMarkerAlpha 1;
@@ -141,7 +142,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Set pos
 		pr _pos = CALLM0(_gar, "getPos");
-		_mrk setMarkerPos (_pos vectorAdd[20, 20, 0]);
+		_mrk setMarkerPos (_pos vectorAdd [20, 20, 0]);
 		
 		// Update arrow marker
 		pr _mrk = _thisObject + MRK_ARROW;

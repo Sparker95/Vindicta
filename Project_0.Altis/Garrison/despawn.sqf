@@ -60,6 +60,7 @@ while {_i < count _groups} do
 
 // Call onGarrisonDespawned
 pr _action = CALLM0(T_GETV("AI"), "getCurrentAction");
+_action = CALLM0(_action, "getFrontSubaction");
 if (_action != "") then {
 	CALLM0(_action, "onGarrisonDespawned");
 };

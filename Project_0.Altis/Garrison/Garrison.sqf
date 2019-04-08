@@ -189,9 +189,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "handleLocationChanged", _location);
-
-		pr _AI = T_GETV("AI");
-		CALLM1(_AI, "handleLocationChanged", _location);
 		
 		// Detach from current location if it exists
 		pr _currentLoc = T_GETV("location");
@@ -339,7 +336,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		pr _AI = T_GETV("AI");
 		pr _worldState = GETV(_AI, "worldState");
-		[_worldState, WSP_GAR_POSITION] call ws_fnc_getPropertyValue
+		[_worldState, WSP_GAR_POSITION] call ws_getPropertyValue
 		
 	} ENDMETHOD;
 	
@@ -553,7 +550,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					// Can't spawn the added group because there is no location
 					OOP_ERROR_1("Can't spawn a new group while adding it because the garrison is not attached to a location. Group: %1", _group);
 				} else {
-					CALLM1(_group, "spawn", _loc);
+					CALLM1(_group, "spawnAtLocation", _loc);
 				};
 			};
 			_groupIsSpawned = CALLM0(_group, "isSpawned");
@@ -807,7 +804,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			if (isNil "_destGroup") then {
 				pr _args = [CALLM0(_thisObject, "getSide"), GROUP_TYPE_VEH_NON_STATIC];
 				_destGroup = NEW("Group", _args);
-				CALLM0(_destGroup, "spawn");
+				CALLM0(_destGroup, "spawnAtLocation");
 				CALLM1(_thisObject, "addGroup", _destGroup);
 				_vehGroups pushBack _destGroup;
 			};
@@ -856,7 +853,7 @@ CLASS("Garrison", "MessageReceiverEx");
 						// Create a group, add it to the garrison
 						pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC];
 						pr _newGroup = NEW("Group", _args);
-						CALLM0(_newGroup, "spawn");
+						CALLM0(_newGroup, "spawnAtLocation");
 						CALLM1(_thisObject, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle

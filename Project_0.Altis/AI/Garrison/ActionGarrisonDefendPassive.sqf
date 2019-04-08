@@ -98,7 +98,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 
 		// Remove assigned goals
 		pr _gar = GETV(T_GETV("AI"), "agent");

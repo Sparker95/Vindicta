@@ -16,25 +16,22 @@ pr _msgType = _msg select MESSAGE_ID_TYPE;
 
 if (_msgType == GARRISON_MESSAGE_PROCESS) then {
 	
-	OOP_INFO_0("...1");
+	//OOP_INFO_0("...1");
 	
 	pr _side = T_GETV("side");
-	pr _loc = T_GETV("location");
-	OOP_INFO_0("...2");
-	// For now, bail if there is no location
-	if (_loc == "") exitWith {};
-	OOP_INFO_0("...3");
-	OOP_INFO_1("Location: %1", _loc);
-	pr _thisPos = CALLM0(_loc, "getPos");
-	OOP_INFO_0("...4");
+	//OOP_INFO_0("...2");
+	//OOP_INFO_0("...3");
+	//OOP_INFO_1("Location: %1", _loc);
+	pr _thisPos = CALLM0(_thisObject, "getPos");
+	//OOP_INFO_0("...4");
 	pr _units = CALL_METHOD(gLUAP, "getUnitArray", [_side]);
-	OOP_INFO_0("...5");
+	//OOP_INFO_0("...5");
 	pr _dst = _units apply {_x distance _thisPos};
 	pr _speedMax = 200;
 	pr _dstMin = if (count _dst > 0) then {selectMin _dst;} else {_speedMax*10};
 	pr _dstSpawn = 1000; // Temporary, spawn distance
 	pr _timer = T_GETV("timer");
-	OOP_INFO_0("...6");
+	//OOP_INFO_0("...6");
 	switch (T_GETV("spawned")) do {
 		case false: { // Garrison is currently not spawned
 			if (_dstMin < _dstSpawn) then {

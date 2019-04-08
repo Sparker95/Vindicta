@@ -76,7 +76,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
 
 		CALLM0(_thisObject, "activateIfInactive");
 		

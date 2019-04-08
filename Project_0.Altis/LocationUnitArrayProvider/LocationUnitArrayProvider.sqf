@@ -89,7 +89,8 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		switch (_side) do {
 			case WEST: {GET_VAR(_thisObject, "spawnWest")};
 			case EAST: {GET_VAR(_thisObject, "spawnEast")};
-			case INDEPENDENT: {GET_VAR(_thisObject, "spawnInd")}
+			case INDEPENDENT: {GET_VAR(_thisObject, "spawnInd")};
+			default {[]};
 		};
 	} ENDMETHOD;
 

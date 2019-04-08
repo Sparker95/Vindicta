@@ -32,6 +32,7 @@ private _groups = GET_VAR(_thisObject, "groups");
 
 // Let the action handle spawning
 pr _action = CALLM0(T_GETV("AI"), "getCurrentAction");
+_action = CALLM0(_action, "getFrontSubaction");
 pr _spawningHandled = if (_action != "") then {
 	CALLM0(_action, "spawn");
 } else {
@@ -50,7 +51,7 @@ if (!_spawningHandled) then {
 		OOP_INFO_1("Spawning groups: %1", _groups);
 		{
 			private _group = _x;
-			CALLM(_group, "spawn", [_loc]);
+			CALLM(_group, "spawnAtLocation", [_loc]);
 		} forEach _groups;
 
 		// Spawn single units

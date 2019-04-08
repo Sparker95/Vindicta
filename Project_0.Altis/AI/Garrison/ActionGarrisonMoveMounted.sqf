@@ -206,6 +206,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		params [["_thisObject", "", [""]]];
 		
 		pr _gar = T_GETV("gar");
+
+		// Bail if not spawned
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		// Terminate given goals
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 		{

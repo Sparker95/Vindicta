@@ -8,3 +8,4 @@
 #include "..\Group\Group.hpp"
 #include "..\Templates\Templates.hpp"
 #include "..\MessageTypes.hpp"
+#include "..\AI\Garrison\garrisonWorldStateProperties.hpp"
