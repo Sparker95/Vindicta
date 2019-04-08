@@ -23,14 +23,14 @@ CLASS("CmdrAction", "RefCounted")
 	VARIABLE("transitions");
 
 	METHOD("new") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_ARRAY("_transitions")];
 		T_SETV("scorePriority", 1);
 		T_SETV("scoreResource", 1);
 		T_SETV("scoreStrategy", 1);
 		T_SETV("scoreCompleteness", 1);
 		//T_SETV("complete", false);
 		T_SETV("state", CMDR_ACTION_STATE_START);
-		T_SETV("transitions", []);
+		T_SETV("transitions", _transitions);
 	} ENDMETHOD;
 
 	METHOD("updateScore") {
@@ -53,9 +53,10 @@ CLASS("CmdrAction", "RefCounted")
 		params [P_THISOBJECT, P_STRING("_world")];
 		T_PRVAR(state);
 		T_PRVAR(transitions);
+		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 		while {_state != CMDR_ACTION_STATE_END} do {
 			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
-			ASSERT_MSG(_newState == _state, format ["Couldn't apply action %1 to sim, stuck in state %2"]+[_thisObject]+[_state]);
+			ASSERT_MSG(_newState != _state, format (["Couldn't apply action %1 to sim, stuck in state %2"]+[_thisObject]+[_state]));
 			_state = _newState;
 		};
 	} ENDMETHOD;
@@ -64,6 +65,7 @@ CLASS("CmdrAction", "RefCounted")
 		params [P_THISOBJECT, P_STRING("_world")];
 		T_PRVAR(state);
 		T_PRVAR(transitions);
+		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 		private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
 		if(_newState != _state) then {
 			T_SETV("_state", _newState);
@@ -94,28 +96,60 @@ ENDCLASS;
 // Unit test
 #ifdef _SQF_VM
 
+// Dummy test classes
+CLASS("AST_KillGarrison", "ActionStateTransition")
+	VARIABLE("garrisonId");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_NUMBER("_garrisonId")];
+		T_SETV("garrisonId", _garrisonId);
+		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_START]);
+		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("isAvailable") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+		T_PRVAR(garrisonId);
+		private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
+		!(isNil "_garrison")
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("apply") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+		T_PRVAR(garrisonId);
+		private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
+		CALLM(_garrison, "killed", []);
+		true
+	} ENDMETHOD;
+ENDCLASS;
+
 ["CmdrAction.new", {
-	private _obj = NEW("CmdrAction", [true]);
+	private _obj = NEW("CmdrAction", []);
 	private _class = OBJECT_PARENT_CLASS_STR(_obj);
 	["Object exists", !(isNil "_class")] call test_Assert;
 	["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
 }] call test_AddTest;
 
 ["CmdrAction.delete", {
-	private _obj = NEW("CmdrAction", [true]);
+	private _obj = NEW("CmdrAction", []);
 	DELETE(_obj);
 	isNil { OBJECT_PARENT_CLASS_STR(_obj) }
 }] call test_AddTest;
 
 ["CmdrAction.getFinalScore", {
-	private _obj = NEW("CmdrAction", [true]);
+	private _obj = NEW("CmdrAction", []);
 	CALLM(_obj, "getFinalScore", []) == 1
 }] call test_AddTest;
 
-// ["CmdrAction.applyToSim", {
-// 	private _obj = NEW("CmdrAction", [true]);
-// 	private _world = NEW("WorldModel", [true]);
-// 	// GETV(_obj, "applyToSim");
-// }] call test_AddTest;
+["CmdrAction.applyToSim", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison = NEW("GarrisonModel", [_world]+[""]);
+	private _ast = NEW("AST_KillGarrison", [GETV(_garrison, "id")]);
+	private _asts = [_ast];
+	private _obj = NEW("CmdrAction", [_asts]);
+	["Transitions correct", GETV(_obj, "transitions") isEqualTo _asts] call test_Assert;
+	CALLM(_obj, "applyToSim", [_world]);
+	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
+}] call test_AddTest;
 
 #endif

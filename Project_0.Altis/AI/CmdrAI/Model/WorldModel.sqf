@@ -137,10 +137,10 @@ CLASS("WorldModel", "")
 		_locations select _idx
 	} ENDMETHOD;
 
-	// METHOD("garrisonKilled") {
-	// 	params [P_THISOBJECT, P_STRING("_garrison")];
-	// 	T_CALLM("detachGarrison", [_garrison]);
-	// } ENDMETHOD;
+	METHOD("garrisonKilled") {
+		params [P_THISOBJECT, P_STRING("_garrison")];
+		//T_CALLM("detachGarrison", [_garrison]);
+	} ENDMETHOD;
 
 	// TODO: Optimize this
 	METHOD("getAliveGarrisons") {

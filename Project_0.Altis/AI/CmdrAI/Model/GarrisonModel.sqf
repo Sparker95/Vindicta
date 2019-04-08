@@ -31,6 +31,8 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("side", objNull);
 		T_SETV("locationId", -1);
 		T_CALLM("sync", []);
+		// Add self to world
+		CALLM(_world, "addGarrison", [_thisObject]);
 	} ENDMETHOD;
 
 	METHOD("simCopy") {
