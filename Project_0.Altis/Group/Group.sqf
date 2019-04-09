@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OOP_DEBUG
-#define OFSTREAM_FILE "Main.rpt"
+//#define OFSTREAM_FILE "Main.rpt"
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
@@ -596,6 +596,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("spawnVehiclesOnRoad") {
 		params ["_thisObject", ["_posAndDir", [], [[]]], ["_startPos", [], [[]]]];
 
+		OOP_INFO_2("SPAWN VEHICLES ON ROAD: _posAndDir: %1, _startPos: %2", _posAndDir, _startPos);
+
 		pr _data = GETV(_thisObject, "data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
 			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
@@ -624,14 +626,15 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				} forEach _vehUnits;
 			} else {
 				{
-					CALLM(_x, "spawn", _posAndDir select _forEachIndex);
+					(_posAndDir select _forEachIndex) params ["_pos", "_dir"];
+					CALLM2(_x, "spawn", _pos, _dir);
 				} forEach _vehUnits;
 			};
 
 			// Handle infantry
 			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
 			// Get position around which infantry will be spawning
-			pr _infSpawnPos = if (count _startPos > 0) then {_startPos} else {_posAndDir select 0};
+			pr _infSpawnPos = if (count _startPos > 0) then {_startPos} else {_posAndDir select 0 select 0};
 			{
 				// todo improve this
 				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere

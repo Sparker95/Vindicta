@@ -82,6 +82,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
+
+		// Handle the PROCESS message right now to make the garrison instantly switch to spawned state if required
+		CALLM1(_thisObject, "handleMessage", _msg);
 		
 		GETSV("Garrison", "all") pushBack _thisObject;
 	} ENDMETHOD;
@@ -553,22 +556,20 @@ CLASS("Garrison", "MessageReceiverEx");
 					CALLM1(_group, "spawnAtLocation", _loc);
 				};
 			};
-			_groupIsSpawned = CALLM0(_group, "isSpawned");
-			if (_groupIsSpawned) then { // If the group is finally spawned
-				// Notify the AI of the garrison about it
-				// Call the handleGroupsAdded directly since it's in the same thread
-				pr _AI = T_GETV("AI");
-				if (_AI != "") then {
-					CALLM1(_AI, "handleGroupsAdded", [[_group]]);
-					CALLM0(_AI, "updateComposition");
-				};
-			};
 		} else {
 			// If this garrison is not spawned, despawn the group as well
 			pr _groupIsSpawned = CALLM0(_group, "isSpawned");
 			if (_groupIsSpawned) then {
 				CALLM0(_group, "despawn");
 			};
+		};
+
+		// Notify the AI of the garrison
+		// Call the handleGroupsAdded directly since it's in the same thread
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleGroupsAdded", [[_group]]);
+			CALLM0(_AI, "updateComposition");
 		};
 
 		nil
@@ -592,10 +593,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Notify AI object if the garrison is spawned
 		pr _AI = T_GETV("AI");
-		if (T_GETV("spawned")) then {
-			if (_AI != "") then {
-				CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
-			};
+		if (_AI != "") then {
+			CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
 		};
 
 		// Remove this group and all its units from this garrison

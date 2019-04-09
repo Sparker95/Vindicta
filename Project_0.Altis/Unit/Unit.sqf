@@ -1,7 +1,7 @@
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
-#define OFSTREAM_FILE "Main.rpt"
+//#define OFSTREAM_FILE "Main.rpt"
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"
@@ -196,7 +196,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 
-		OOP_INFO_0("SPAWN");
+		OOP_INFO_2("SPAWN pos: %1, dir: %2", _pos, _dir);
 
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
