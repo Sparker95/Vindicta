@@ -37,6 +37,8 @@ fn_eff_sum = {
     (_this#0 + _this#1 + _this#2 + _this#3 + _this#4 + _this#5 + _this#6 + _this#7 + _this#8)
 };
 fn_eff_min_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(min);
+fn_eff_min = _DEF_EFF_BINARY_OP_EFF_EFF(min);
 fn_eff_max_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(max);
+fn_eff_max = _DEF_EFF_BINARY_OP_EFF_EFF(max);
 fn_eff_floor = _DEF_EFF_UNARY_OP_EFF(floor);
 fn_eff_ceil = _DEF_EFF_UNARY_OP_EFF(ceil);

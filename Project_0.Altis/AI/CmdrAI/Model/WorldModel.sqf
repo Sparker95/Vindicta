@@ -1,9 +1,4 @@
-#define OOP_INFO
-#define OOP_DEBUG
-#define OOP_WARNING
-#define OOP_ERROR
-#define OOP_ASSERT
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\common.hpp"
 
 CLASS("WorldModel", "")
 
@@ -139,7 +134,11 @@ CLASS("WorldModel", "")
 
 	METHOD("garrisonKilled") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
-		//T_CALLM("detachGarrison", [_garrison]);
+		// If we are a sim world then we need to perform updates that would otherwise be
+		// handled externally, in this case detaching a dead garrison from its outpost
+		if(T_GETV("isSim")) then {
+			T_CALLM("detachGarrison", [_garrison]);
+		};
 	} ENDMETHOD;
 
 	// TODO: Optimize this
@@ -194,49 +193,50 @@ CLASS("WorldModel", "")
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_STRING("_side")];
 		
-		// // max(base, nearest enemy forces * 2, threat map * 2);
-		// private _base = MIN_COMP;
+		// max(base, nearest enemy forces * 2, threat map * 2);
+		private _base = EFF_ZERO;
 
-		// // Nearest enemy garrison force * 2
-		// private _enemyForces = T_CALLM2("getNearestGarrisons", _pos, 2000) select {
-		// 	_x params ["_dist", "_garr"];
-		// 	CALLM0(_garr, "getSide") != _side
-		// } apply {
-		// 	_x params ["_dist", "_garr"];
-		// 	CALLM0(_garr, "getComp") apply { _x * 2 }
+		// Nearest enemy garrison force * 2
+		private _enemyForces = T_CALLM("getNearestGarrisons", [_pos]+[2000]) select {
+			_x params ["_dist", "_garr"];
+			GETV(_garr, "side") != _side
+		} apply {
+			_x params ["_dist", "_garr"];
+			EFF_MUL_SCALAR(GETV(_garr, "efficiency"), 2)
+		};
+
+		// TODO: Maybe should have outpost specific force requirements based on strategy?
+		private _nearEnemyComp = EFF_ZERO;
+		{
+			_nearEnemyComp = EFF_MAX(_nearEnemyComp, _x);
+			// [
+			// 	_nearEnemyComp#0 max _x#0,
+			// 	_nearEnemyComp#1 max _x#1
+			// ];
+		} forEach _enemyForces;
+
+		// private _nearEnemyComp = if(count _enemyForces > 0) then {
+		// 	_enemyForces#0
+		// } else { 
+		// 	[0,0] 
 		// };
-
-		// // TODO: Maybe should have outpost specific force requirements based on strategy?
-		// private _nearEnemyComp = [0, 0];
-		// {
-		// 	_nearEnemyComp = [
-		// 		_nearEnemyComp#0 max _x#0,
-		// 		_nearEnemyComp#1 max _x#1
-		// 	];
-		// } forEach _enemyForces;
-
-		// // private _nearEnemyComp = if(count _enemyForces > 0) then {
-		// // 	_enemyForces#0
-		// // } else { 
-		// // 	[0,0] 
-		// // };
 		
-		// // Threat map converted from strength into a composition of the same strength
-		// private _threatMapForce = if(_side == side_opf) then {
-		// 	T_PRVAR(threatMapOpf);
-		// 	private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
-		// 	[
-		// 		_strength * 0.7 / UNIT_STRENGTH,
-		// 		_strength * 0.3 / VEHICLE_STRENGTH
-		// 	]
-		// } else {
-		// 	[0,0]
-		// };
+		// Threat map converted from strength into a composition of the same strength
+		private _threatMapForce = if(_side == side_opf) then {
+			T_PRVAR(threatMapOpf);
+			private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
+			[
+				_strength * 0.7 / UNIT_STRENGTH,
+				_strength * 0.3 / VEHICLE_STRENGTH
+			]
+		} else {
+			[0,0]
+		};
 
-		// [
-		// 	ceil (_base#0 max (_nearEnemyComp#0 max _threatMapForce#0)),
-		// 	ceil (_base#1 max (_nearEnemyComp#1 max _threatMapForce#1))
-		// ]
+		[
+			ceil (_base#0 max (_nearEnemyComp#0 max _threatMapForce#0)),
+			ceil (_base#1 max (_nearEnemyComp#1 max _threatMapForce#1))
+		]
 
 		// TODO Return desired efficiency vector at this location
 		T_EFF_null
