@@ -7,6 +7,8 @@ efficiency categories (a- is anti-):
 [soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 */
 
+call compile preprocessfilelinenumbers "Templates\Efficiency.sqf";
+
 T_EFF_soft =	0;
 T_EFF_medium =	1;
 T_EFF_armor =	2;
