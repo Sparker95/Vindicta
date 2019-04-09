@@ -6,4 +6,4 @@
 #define OFSTREAM_FILE "Main.rpt"
 
 #include "..\Group\Group.hpp"
-#include "..\Templates\Templates.hpp"
+#include "..\Templates\Efficiency.hpp"

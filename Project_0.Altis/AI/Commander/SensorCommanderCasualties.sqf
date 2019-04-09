@@ -46,7 +46,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 					if ( _targets findIf {_hOKiller isEqualTo (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE)} != -1 ) exitWith {
 						// The damage caused by this cluster gets increased by _eff
 						pr _dmg = _TC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;
-						_TC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, VECTOR_ADD_9(_dmg, _eff)];
+						_TC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, EFF_ADD(_dmg, _eff)];
 						
 						OOP_INFO_0("Killer was found in target cluster");
 					};

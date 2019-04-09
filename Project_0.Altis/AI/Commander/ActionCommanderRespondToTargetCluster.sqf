@@ -189,7 +189,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				{
 					_x params ["_gar", "_loc"];
 					pr _garEff = CALLM0(_gar, "getEfficiencyTotal");
-					_allocatedGarsEff = VECTOR_ADD_9(_allocatedGarsEff, _garEff); // Sum up all efficiencies
+					_allocatedGarsEff = EFF_ADD(_allocatedGarsEff, _garEff); // Sum up all efficiencies
 				} forEach _allocatedGarrisons;
 				// If can't destroy the threat, allocate more units
 				if (!([_allocatedGarsEff, _tc select TARGET_CLUSTER_ID_EFFICIENCY] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL)) then {

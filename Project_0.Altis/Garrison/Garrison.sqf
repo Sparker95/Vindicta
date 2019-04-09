@@ -816,13 +816,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effAdd = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal");
-		_effTotal = VECTOR_ADD_9(_effTotal, _effAdd);
+		_effTotal = EFF_ADD(_effTotal, _effAdd);
 		T_SETV("effTotal", _effTotal);
 		 
 		// If the added unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = VECTOR_ADD_9(_effMobile, _effAdd);
+			_effMobile = EFF_ADD(_effMobile, _effAdd);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;	
@@ -841,13 +841,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effSub = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal"); 
-		_effTotal = VECTOR_SUB_9(_effTotal, _effSub);
+		_effTotal = EFF_SUB(_effTotal, _effSub);
 		T_SETV("effTotal", _effTotal);
 		
 		// If the removed unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = VECTOR_SUB_9(_effMobile, _effSub);
+			_effMobile = EFF_SUB(_effMobile, _effSub);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;

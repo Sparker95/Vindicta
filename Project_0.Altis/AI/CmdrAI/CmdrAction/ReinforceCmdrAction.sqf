@@ -40,7 +40,7 @@ CLASS("ReinforceAction", "CmdrAction")
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
-		private _detachComp = T_CALLM1("getDetachmentComp", _world);
+		private _detachComp = T_CALLM("getDetachmentComp", [_world]);
 		//CALLM1(_world, "getOverDesiredEff", _srcGarr);
 		private _detachCompStrength =
 			// units
@@ -48,10 +48,10 @@ CLASS("ReinforceAction", "CmdrAction")
 			// vehicles
 			_detachComp#1 * VEHICLE_STRENGTH;
 
-		private _srcGarrPos = CALLM0(_srcGarr, "getPos");
-		private _tgtGarrPos = CALLM0(_tgtGarr, "getPos");
+		private _srcGarrPos = GETV(_srcGarr, "getPos");
+		private _tgtGarrPos = GETV(_tgtGarr, "getPos");
 
-		private _distCoeff = CALLSM2("Action", "calcDistanceFalloff", _srcGarrPos, _tgtGarrPos);
+		private _distCoeff = CALLSM("Action", "calcDistanceFalloff", [_srcGarrPos]+[_tgtGarrPos]);
 
 		private _scoreResource = _detachCompStrength * _distCoeff;
 		// private _str = format ["%1->%2 _scorePriority = %3, _srcOverComp = %4, _srcOverCompScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverComp, _srcOverCompScore, _distCoeff, _scoreResource];
@@ -99,13 +99,13 @@ CLASS("ReinforceAction", "CmdrAction")
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtGarrId);
 
-		private _srcGarr = CALLM1(_world, "getGarrison", _srcGarrId);
-		private _tgtGarr = CALLM1(_world, "getGarrison", _tgtGarrId);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 
 		// How much resources tgt needs
-		private _tgtUnderComp = CALLM1(_world, "getOverDesiredEff", _tgtGarr) apply { 0 max (_x * -1) };
+		private _tgtUnderComp = CALLM(_world, "getOverDesiredEff", [_tgtGarr]) apply { 0 max (_x * -1) };
 		// How much resources src can spare.
-		private _srcOverComp = CALLM1(_world, "getOverDesiredEff", _srcGarr) apply { 0 max _x };
+		private _srcOverComp = CALLM(_world, "getOverDesiredEff", [_srcGarr]) apply { 0 max _x };
 
 		// Min of those values
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
