@@ -6,10 +6,6 @@
     } foreach _a; \
     _res \
 }
-    // [(_a select 0) fn (_b select 0), (_a select 1) fn (_b select 1), (_a select 2) fn (_b select 2), \
-    // (_a select 3) fn (_b select 3), (_a select 4) fn (_b select 4), (_a select 5) fn (_b select 5), \
-    // (_a select 6) fn (_b select 6), (_a select 7) fn (_b select 7), (_a select 8) fn (_b select 8)] \
-
 #define _DEF_EFF_BINARY_OP_EFF_SCALAR(fn) { \
     params ['_a', '_b']; \
     _a apply { _x fn _b } \
@@ -33,3 +29,33 @@ fn_eff_max_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(max);
 fn_eff_max = _DEF_EFF_BINARY_OP_EFF_EFF(max);
 fn_eff_floor = _DEF_EFF_UNARY_OP_EFF(floor);
 fn_eff_ceil = _DEF_EFF_UNARY_OP_EFF(ceil);
+// fn_eff_attack = {
+//     params ['_a', '_b'];
+//     private _res = [];
+//     {
+//         _res pushBack ((_b select _forEachIndex) - _x );
+//     } foreach (_a select [4, 4]);
+//     _res + [0,0,0,0]
+// };
+
+fn_eff_attack = {
+    params ['_attackers', '_defenders'];
+    private _res = [];
+    private _before = 0;
+    private _after = 0;
+    {
+        private _def = _defenders select _forEachIndex;
+        _before = _before + _def;
+        _def = 0 max (_def - _x);
+        _res pushBack _def;
+        _after = _after + _def;
+    } foreach (_attackers select [4, 4]);
+
+    // Avoid that divide by 0
+    if(_before == 0) exitWith { EFF_nul };
+
+    // Simulate losses to attack values
+    private _lossFactor = _after / _before;
+    _res + ((_defenders select [4,4]) apply { floor (_x * _lossFactor) })
+};
+

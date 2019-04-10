@@ -209,10 +209,6 @@ CLASS("WorldModel", "")
 		private _nearEnemyComp = EFF_ZERO;
 		{
 			_nearEnemyComp = EFF_MAX(_nearEnemyComp, _x);
-			// [
-			// 	_nearEnemyComp#0 max _x#0,
-			// 	_nearEnemyComp#1 max _x#1
-			// ];
 		} forEach _enemyForces;
 
 		// private _nearEnemyComp = if(count _enemyForces > 0) then {
@@ -221,88 +217,68 @@ CLASS("WorldModel", "")
 		// 	[0,0] 
 		// };
 		
-		// Threat map converted from strength into a composition of the same strength
-		private _threatMapForce = if(_side == side_opf) then {
-			T_PRVAR(threatMapOpf);
-			private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
-			[
-				_strength * 0.7 / UNIT_STRENGTH,
-				_strength * 0.3 / VEHICLE_STRENGTH
-			]
-		} else {
-			[0,0]
-		};
+		// // Threat map converted from strength into a composition of the same strength
+		// private _threatMapForce = if(_side == side_opf) then {
+		// 	T_PRVAR(threatMapOpf);
+		// 	private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
+		// 	[
+		// 		_strength * 0.7 / UNIT_STRENGTH,
+		// 		_strength * 0.3 / VEHICLE_STRENGTH
+		// 	]
+		// } else {
+		// 	[0,0]
+		// };
 
-		[
-			ceil (_base#0 max (_nearEnemyComp#0 max _threatMapForce#0)),
-			ceil (_base#1 max (_nearEnemyComp#1 max _threatMapForce#1))
-		]
-
-		// TODO Return desired efficiency vector at this location
-		T_EFF_null
+		// [
+		// 	ceil (_base#0 max (_nearEnemyComp#0 max _threatMapForce#0)),
+		// 	ceil (_base#1 max (_nearEnemyComp#1 max _threatMapForce#1))
+		// ]
+		EFF_CEIL(EFF_MAX(_base, _nearEnemyComp))
 	} ENDMETHOD;
 
 	// How much over desired efficiency is the garrison? Negative for under.
 	METHOD("getOverDesiredEff") {
 		params [P_THISOBJECT, P_STRING("_garr")];
 		
-		// private _pos = CALLM0(_garr, "getPos");
-		// private _garrSide = CALLM0(_garr, "getSide");
-		// private _comp = CALLM0(_garr, "getComp");
-		// private _desiredComp = T_CALLM2("getDesiredEff", _pos, _garrSide);
-		// [
-		// 	// units
-		// 	_comp#0 - _desiredComp#0,
-		// 	// vehicles
-		// 	_comp#1 - _desiredComp#1
-		// ]
+		private _pos = GETV(_garr, "pos");
+		private _side = GETV(_garr, "side");
+		private _eff = GETV(_garr, "efficiency");
+		private _desiredComp = T_CALLM("getDesiredEff", [_pos]+[_side]);
 		
-		// TODO Return much over desired efficiency at this location
-		T_EFF_null
+		EFF_SUB(_comp, _desiredComp)
 	} ENDMETHOD;
 
 	// How much over desired efficiency is the garrison, scaled. Negative for under.
 	METHOD("getOverDesiredEffScaled") {
 		params [P_THISOBJECT, P_STRING("_garr"), P_NUMBER("_compScalar")];
 		
-		// private _pos = CALLM0(_garr, "getPos");
-		// private _garrSide = CALLM0(_garr, "getSide");
-		// private _comp = [GETV(_garr, "unitCount"), GETV(_garr, "vehCount")];
-		// private _desiredComp = T_CALLM2("getDesiredEff", _pos, _garrSide);
-		// [
-		// 	// units
-		// 	_comp#0 - _compScalar * _desiredComp#0,
-		// 	// vehicles
-		// 	_comp#1 - _compScalar * _desiredComp#1
-		// ]
+		private _pos = GETV(_garr, "pos");
+		private _side = GETV(_garr, "side");
+		private _eff = GETV(_garr, "efficiency");
+		private _desiredComp = T_CALLM("getDesiredEff", [_pos]+[_side]);
 
-		// TODO Return much over desired efficiency at this location scaled
-		T_EFF_null
+		// TODO: is this right, or should it be scaling the final result? 
+		// How it is now will (under)exaggerate the desired composition
+
+		EFF_SUB(_comp, EFF_MUL_SCALAR(_desiredComp, _compScalar))
 	} ENDMETHOD;
 
 	// A scoring factor for how much a garrison desires reinforcement
 	METHOD("getReinforceRequiredScore") {
 		params [P_THISOBJECT, P_STRING("_garr")];
 
-		// // How much garr is *under* composition (so over comp * -1) with a non-linear function applied.
-		// // i.e. How much units/vehicles tgt needs.
-		// private _overComp = T_CALLM2("getOverDesiredEffScaled", _garr, 0.75);
-		// private _score = 
-		// 	// units
-		// 	(0 max (_overComp#0 * -1)) * UNIT_STRENGTH +
-		// 	// vehicles
-		// 	(0 max (_overComp#1 * -1)) * VEHICLE_STRENGTH;
+		// How much garr is *under* composition (so over comp * -1) with a non-linear function applied.
+		// i.e. How much units/vehicles tgt needs.
+		private _overComp = T_CALLM("getOverDesiredEffScaled", [_garr]+[0.75]);
+		private _score = EFF_SUM(EFF_MAX_SCALAR(EFF_MUL_SCALAR(_overComp, -1), 0));
 
-		// // apply non linear function to threat (https://www.desmos.com/calculator/wnlyulwf7m)
-		// // This models reinforcement desireability as relative to absolute power of 
-		// // missing comp rather than relative to ratio of missing comp/desired comp.
-		// // 
-		// _score = 0.1 * _score;
-		// _score = 0 max ( _score * _score * _score );
-		// _score
-		
-		// TODO Return a scoring factor for how much a garrison desires reinforcement
-		0
+		// apply non linear function to threat (https://www.desmos.com/calculator/wnlyulwf7m)
+		// This models reinforcement desireability as relative to absolute power of 
+		// missing comp rather than relative to ratio of missing comp/desired comp.
+		// 
+		_score = 0.1 * _score;
+		_score = 0 max ( _score * _score * _score );
+		_score
 	} ENDMETHOD;
 ENDCLASS;
 

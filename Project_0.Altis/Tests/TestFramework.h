@@ -1,3 +1,4 @@
-#include "..\OOP_Light\OOP_Light.h"
-
-call compile preprocessFileLineNumbers "initModules.sqf";
+if (isNil "TestFramework_init") then {
+    TestFramework_init = true;
+    call compile preprocessFile "Tests\TestFramework.sqf";
+};

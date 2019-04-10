@@ -1,5 +1,6 @@
 #include "..\OOP_Light\OOP_Light.h"
 
+
 test_Scope = "Unknown";
 test_Assert = {
 	params ["_test", "_resultOrCode"];
