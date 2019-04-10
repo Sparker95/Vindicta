@@ -103,20 +103,19 @@ CLASS("ReinforceAction", "CmdrAction")
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 
 		// How much resources tgt needs
-		private _tgtUnderComp = CALLM(_world, "getOverDesiredEff", [_tgtGarr]) apply { 0 max (_x * -1) };
+		private _tgtUnderComp = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_world, "getOverDesiredEff", [_tgtGarr]), -1), 0);
 		// How much resources src can spare.
-		private _srcOverComp = CALLM(_world, "getOverDesiredEff", [_srcGarr]) apply { 0 max _x };
+		private _srcOverComp = EFF_MAX_SCALAR(CALLM(_world, "getOverDesiredEff", [_srcGarr]), 0);
 
 		// Min of those values
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
-		private _compAvailable = [
-			0 max floor (_srcOverComp#0 min _tgtUnderComp#0),
-			0 max floor (_srcOverComp#1 min _tgtUnderComp#1)
-		];
+		private _compAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverComp, _tgtUnderComp)), 0);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
-		if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
+		if(EFF_SUM(EFF_MIN_SCALAR(EFF_SUB(_compAvailable, EFF_MIN), 0)) < 0) exitWith { EFF_ZERO };
+
+		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_compAvailable
 	} ENDMETHOD;
 

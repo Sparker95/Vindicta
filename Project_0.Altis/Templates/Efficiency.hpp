@@ -10,7 +10,9 @@
 
 #define T_EFF_CAN_DESTROY_ALL 4
 
+#define EFF_ADD_SCALAR(a, b) ([a, b] call fn_eff_add_scalar)
 #define EFF_ADD(a, b) ([a, b] call fn_eff_add)
+#define EFF_SUB_SCALAR(a, b) ([a, b] call fn_eff_diff_scalar)
 #define EFF_SUB(a, b) ([a, b] call fn_eff_diff)
 
 #define EFF_MUL_SCALAR(e, s) ([e, s] call fn_eff_mul_scalar)
