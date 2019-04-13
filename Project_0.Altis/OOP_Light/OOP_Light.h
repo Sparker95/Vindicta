@@ -464,6 +464,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
+diag_log format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -472,7 +473,10 @@ private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
 if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {throw "invalid base class"}; \
+	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+		private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
+		FAILURE(_msg); \
+	}; \
 	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
 	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
 	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \

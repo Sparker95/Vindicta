@@ -1,7 +1,9 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+
 //#define NAMESPACE uiNamespace
+
 #include "..\..\OOP_Light\OOP_Light.h"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -15,7 +17,7 @@ That's how we draw locations
 
 #define CLASS_NAME "MapMarkerLocation"
 
-CLASS(CLASS_NAME, "MapMarker");
+CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
@@ -242,5 +244,7 @@ pr _pos = [666, 666];
 CALLM1(_testMarker, "setPos", _pos);
 pr _color = [0, 0.8, 0.8, 1];
 CALLM1(_testMarker, "setColor", _color);
+*/
+
 
 #endif
