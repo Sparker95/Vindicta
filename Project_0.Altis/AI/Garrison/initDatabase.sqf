@@ -48,7 +48,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonDefendPassive", _s,		[[WSP_GAR_AWARE_OF_ENEMY, false]]] call AI_misc_fnc_setGoalEffects;
 
-["GoalGarrisonAttackAssignedTargets", _s, [[]]] call AI_misc_fnc_setGoalEffects; // Effects are procedural
+["GoalGarrisonAttackAssignedTargets", _s, []] call AI_misc_fnc_setGoalEffects; // Effects are procedural
 
 ["GoalGarrisonClearArea", _s,			[	[WSP_GAR_CLEARING_AREA, TAG_G_POS, true],
 											[WSP_GAR_POSITION, TAG_G_POS, true]]] call AI_misc_fnc_setGoalEffects;
