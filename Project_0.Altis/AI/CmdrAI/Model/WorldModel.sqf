@@ -33,25 +33,29 @@ CLASS("WorldModel", "")
 		T_PRVAR(garrisons);
 		T_PRVAR(locations);
 
-		private _copy = NEW("WorldModel", [true]);
-		private _simGarrisons = _garrisons apply { 
-			private _copy = CALLM(_x, "simCopy", [_copy]);
-			REF(_copy);
-			_copy
-		};
+		private _worldCopy = NEW("WorldModel", [true]);
+		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
+		// private _simGarrisons = _garrisons apply { 
+		// 	private _copy = CALLM(_x, "simCopy", [_worldCopy]);
+		// 	//REF(_copy);
+		// 	_copy
+		// };
+		// Don't need to do this, the copys are automatically registered
+		//SETV(_worldCopy, "garrisons", _simGarrisons);
+		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
+		// private _simLocations = _locations apply { 
+		// 	private _copy = CALLM(_x, "simCopy", [_worldCopy]);
+		// 	//REF(_copy);
+		// 	_copy
+		// };
+		// Don't need to do this, the copys are automatically registered
+		//SETV(_worldCopy, "locations", _simLocations);
 
-		SETV(_copy, "garrisons", _simGarrisons);
-		private _simLocations = _locations apply { 
-			private _copy = CALLM(_x, "simCopy", [_copy]);
-			REF(_copy);
-			_copy
-		};
-		SETV(_copy, "locations", _simLocations);
 		// Can copy it cos we don't write to it
 		//T_PRVAR(threatMapOpf);
 		//SETV(_copy, "threatMapOpf", _threatMapOpf);
 
-		_copy
+		_worldCopy
 	} ENDMETHOD;
 	
 	// METHOD("updateThreatMaps") {
@@ -87,9 +91,15 @@ CLASS("WorldModel", "")
 	METHOD("addGarrison") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		T_PRVAR(garrisons);
+
+		//#ifdef OOP_ASSERT
+		//private _existingId = GETV(_garrison, "id");
+		ASSERT_MSG(GETV(_garrison, "id") == MODEL_HANDLE_INVALID, "GarrisonModel is already attached to a WorldModel");
+		//#endif
+
 		REF(_garrison);
 		private _idx = _garrisons pushBack _garrison;
-		CALLM(_garrison, "setId", [_idx]);
+		SETV(_garrison, "id", _idx);
 		_idx
 	} ENDMETHOD;
 
@@ -111,9 +121,12 @@ CLASS("WorldModel", "")
 	METHOD("addLocation") {
 		params [P_THISOBJECT, P_STRING("_location")];
 		T_PRVAR(locations);
+		
+		ASSERT_MSG(GETV(_location, "id") == MODEL_HANDLE_INVALID, "LocationModel is already attached to a WorldModel");
+
 		REF(_location);
 		private _idx = _locations pushBack _location;
-		CALLM(_location, "setId", [_idx]);
+		SETV(_location, "id", _idx);
 		_idx
 	} ENDMETHOD;
 
@@ -136,9 +149,9 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		// If we are a sim world then we need to perform updates that would otherwise be
 		// handled externally, in this case detaching a dead garrison from its outpost
-		if(T_GETV("isSim")) then {
-			T_CALLM("detachGarrison", [_garrison]);
-		};
+		// if(T_GETV("isSim")) then {
+		// 	T_CALLM("detachGarrison", [_garrison]);
+		// };
 	} ENDMETHOD;
 
 	// TODO: Optimize this
@@ -194,7 +207,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_STRING("_side")];
 		
 		// max(base, nearest enemy forces * 2, threat map * 2);
-		private _base = EFF_MIN;
+		private _base = EFF_MIN_EFF;
 
 		// Nearest enemy garrison force * 2
 		private _enemyForces = T_CALLM("getNearestGarrisons", [_pos]+[2000]) select {
@@ -300,16 +313,17 @@ ENDCLASS;
 
 ["WorldModel.addGarrison", {
 	private _world = NEW("WorldModel", [true]);
-	private _garrison = NEW("GarrisonModel", [_world]+[""]);
-	private _id = CALLM(_world, "addGarrison", [_garrison]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	// This is called in the GarrisonModel constructor
+	//private _id = CALLM(_world, "addGarrison", [_garrison]);
 	["Added", count GETV(_world, "garrisons") == 1] call test_Assert;
-	["Id correct", _id == 0] call test_Assert;
+	["Id correct", GETV(_garrison, "id") == 0] call test_Assert;
 }] call test_AddTest;
 
 ["WorldModel.getGarrison", {
 	private _world = NEW("WorldModel", [true]);
-	private _garrison = NEW("GarrisonModel", [_world]+[""]);
-	private _id = CALLM(_world, "addGarrison", [_garrison]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	private _id = GETV(_garrison, "id");
 	private _got = CALLM(_world, "getGarrison", [_id]);
 	_got == _garrison
 }] call test_AddTest;
@@ -318,31 +332,31 @@ ENDCLASS;
 	private _actual = NEW("Garrison", [WEST]);
 	private _world = NEW("WorldModel", [false]);
 	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
-	CALLM(_world, "addGarrison", [_garrison]);
 	private _got = CALLM(_world, "findGarrisonByActual", [_actual]);
 	_got == _garrison
 }] call test_AddTest;
 
 ["WorldModel.addLocation", {
 	private _world = NEW("WorldModel", [true]);
-	private _location = NEW("LocationModel", [_world]+[""]);
-	private _id = CALLM(_world, "addLocation", [_location]);
+	private _location = NEW("LocationModel", [_world]);
+	// This is called in the LocationModel constructor
+	//private _id = CALLM(_world, "addLocation", [_location]);
 	["Added", count GETV(_world, "locations") == 1] call test_Assert;
-	["Id correct", _id == 0] call test_Assert;
+	["Id correct", GETV(_location, "id") == 0] call test_Assert;
 }] call test_AddTest;
 
 ["WorldModel.getLocation", {
 	private _world = NEW("WorldModel", [true]);
-	private _location = NEW("LocationModel", [_world]+[""]);
-	private _id = CALLM(_world, "addLocation", [_location]);
+	private _location = NEW("LocationModel", [_world]);
+	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
 	_got == _location
 }] call test_AddTest;
 
 ["WorldModel.findLocationByActual", {
 	private _world = NEW("WorldModel", [true]);
-	private _location = NEW("LocationModel", [_world]+[""]);
-	private _id = CALLM(_world, "addLocation", [_location]);
+	private _location = NEW("LocationModel", [_world]);
+	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
 	_got == _location
 }] call test_AddTest;
@@ -350,10 +364,8 @@ ENDCLASS;
 ["WorldModel.simCopy", {
 	private _world = NEW("WorldModel", [true]);
 
-	private _location = NEW("LocationModel", [_world]+[""]);
-	CALLM(_world, "addLocation", [_location]);
-	private _garrison = NEW("GarrisonModel", [_world]+[""]);
-	CALLM(_world, "addGarrison", [_garrison]);
+	private _location = NEW("LocationModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world]);
 
 	private _copy = CALLM(_world, "simCopy", []);
 	["Created", !(isNil { OBJECT_PARENT_CLASS_STR(_copy) })] call test_Assert;

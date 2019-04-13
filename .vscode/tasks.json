@@ -23,22 +23,39 @@
             "presentation": {
                 "reveal": "silent"
             },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
             "label": "Run with SQF-VM (sometimes won't work due to unimplemented functions)",
@@ -59,22 +76,39 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
             "label": "Preprocess with SQF-VM",
@@ -95,22 +129,39 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
             "label": "Pretty print with SQF-VM (not working)",
@@ -131,22 +182,39 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
             "label": "Parse ALL with SQF-VM",
@@ -160,23 +228,42 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": "absolute",
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "label": "Test: initClasses",
+            "label": "Test: All",
             "type": "process",
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
@@ -197,22 +284,39 @@
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher": {
-                "owner": "sqf",
-                "fileLocation": [
-                    "absolute"
-                ],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.*?)\\](.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }

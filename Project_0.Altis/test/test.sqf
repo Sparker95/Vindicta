@@ -1,4 +1,3 @@
 
-[1,2,3,4] findIf { _x == 4 }
-
-
+fn = { if(false) then { diag_log "blah"; } else { }; };
+private _rval = [] call fn;

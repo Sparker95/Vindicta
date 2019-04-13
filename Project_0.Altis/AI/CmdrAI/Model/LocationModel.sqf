@@ -1,4 +1,4 @@
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\common.hpp"
 
 // Collection of unitCount/vehCount and their orders
 CLASS("LocationModel", "ModelBase")
@@ -15,17 +15,25 @@ CLASS("LocationModel", "ModelBase")
 	VARIABLE("staging");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_ownerState"), P_STRING("_actual")];
+		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
 		T_SETV("side", objNull);
-		T_SETV("garrisonId", -1);
+		T_SETV("garrisonId", MODEL_HANDLE_INVALID);
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
+		
+		// Add self to world
+		CALLM(_world, "addLocation", [_thisObject]);
 	} ENDMETHOD;
 
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
-		private _copy = NEW("LocationModel", [_targetWorldModel]+[""]);
+		private _copy = NEW("LocationModel", [_targetWorldModel]);
+		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
+		ASSERT_MSG(T_GETV("id") == GETV(_copy, "id"), 
+			format ["%1 id (%2) out of sync with sim copy %3 id (%4)",
+			_thisObject, T_GETV("id"), _copy, GETV(_copy, "id")]);
+		//ASSERT_MSG(T_GETV("id") == GETV(_copy, "id"), "Id of the LocationModel copy is out of sync with the original. This indicates the world location list isn't being copied correctly?");
 		SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "side", T_GETV("side"));
@@ -33,11 +41,6 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_copy, "spawn", T_GETV("spawn"));
 		SETV(_copy, "staging", T_GETV("staging"));
 		_copy
-	} ENDMETHOD;
-
-	METHOD("setId") {
-		params [P_THISOBJECT, P_NUMBER("_id")];
-		T_SETV("id", _id);
 	} ENDMETHOD;
 	
 	METHOD("sync") {
@@ -49,6 +52,15 @@ CLASS("LocationModel", "ModelBase")
 			OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 			T_SETV("pos", CALLM(_actual, "getPos", []));
 			T_SETV("side", CALLM(_actual, "getSide", []));
+
+			private _garrisonActual = CALLM(_actual, "getGarrisonMilitaryMain", []);
+			if(!(_garrisonActual isEqualTo "")) then {
+				T_PRVAR(world);
+				private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
+				T_SETV("garrisonId", GETV(_garrison, "id"));
+			} else {
+				T_SETV("garrisonId", MODEL_HANDLE_INVALID);
+			};
 		};
 	} ENDMETHOD;
 	
@@ -56,10 +68,22 @@ CLASS("LocationModel", "ModelBase")
 		params [P_THISOBJECT];
 		T_PRVAR(garrisonId);
 		T_PRVAR(world);
-		if(_garrisonId != -1) exitWith { CALLM(_world, "getGarrison", [_garrisonId]) };
+		if(_garrisonId != MODEL_HANDLE_INVALID) exitWith { CALLM(_world, "getGarrison", [_garrisonId]) };
 		objNull
 	} ENDMETHOD;
+		
+	METHOD("clearGarrison") {
+		params [P_THISOBJECT];
+		T_SETV("garrisonId", MODEL_HANDLE_INVALID);
+	} ENDMETHOD;
 
+	METHOD("setGarrison") {
+		params [P_THISOBJECT, P_STRING("_garr")];
+		T_PRVAR(garrisonId);
+		ASSERT_MSG(_garrisonId == MODEL_HANDLE_INVALID, "Can't setGarrison if location is already occupied, use clearGarrison first");
+		T_SETV("garrisonId", GETV(_garr, "id"));
+	} ENDMETHOD;
+	
 	// METHOD("attachGarrison") {
 	// 	params [P_THISOBJECT, P_STRING("_garrison"), P_STRING("_outpost")];
 
@@ -125,14 +149,14 @@ ENDCLASS;
 
 ["LocationModel.new(sim)", {
 	private _world = NEW("WorldModel", [true]);
-	private _location = NEW("LocationModel", [_world]+[""]);
+	private _location = NEW("LocationModel", [_world]);
 	private _class = OBJECT_PARENT_CLASS_STR(_location);
 	!(isNil "_class")
 }] call test_AddTest;
 
 ["LocationModel.delete", {
 	private _world = NEW("WorldModel", [true]);
-	private _location = NEW("LocationModel", [_world]+[""]);
+	private _location = NEW("LocationModel", [_world]);
 	DELETE(_location);
 	private _class = OBJECT_PARENT_CLASS_STR(_location);
 	isNil "_class"

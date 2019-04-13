@@ -439,7 +439,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
-    // Check if the group is already in another garrison
+		// Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
 		if (_groupGarrison != "") then {
 			// Remove the group from its previous garrison

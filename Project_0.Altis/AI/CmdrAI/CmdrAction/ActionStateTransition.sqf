@@ -47,7 +47,7 @@ CLASS("ActionStateTransition", "")
 			private _selectedTransition = _matchingTransitions#_foundIdx#1;
 			private _applied = CALLM(_selectedTransition, "apply", [_world]);
 			if(_applied) then {
-				private _newState = GETV(_selectedTransition, "toState", [_isSim]);
+				private _newState = GETV(_selectedTransition, "toState");
 				_state = _newState
 			};
 		};

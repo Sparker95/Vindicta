@@ -451,7 +451,6 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
-VM_LOG_FMT("[%1 <- %2] declaring class", [classNameStr] + [baseClassNameStr]); \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -708,12 +707,12 @@ objNameStr \
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
 #define ASSERT_MSG(condition, msg) \
 if (!(condition)) then { \
-	OOP_ERROR_2("Assertion failed (%1): %2", { condition; }, msg); \
+	OOP_ERROR_2("Assertion failed (%1): %2", str({ condition; }), msg); \
 	throw [__FILE__, __LINE__, msg]; \
 }
 #define ASSERT(condition) \
 if (!(condition)) then { \
-	OOP_ERROR_1("Assertion failed (%1)", { condition; }); \
+	OOP_ERROR_1("Assertion failed (%1)", str({ condition; })); \
 	throw [__FILE__, __LINE__, msg]; \
 }
 #define FAILURE(msg) \

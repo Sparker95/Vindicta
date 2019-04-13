@@ -7,7 +7,7 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_action")];
-		T_SET("action", _action);
+		T_SETV("action", _action);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
 		T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
 		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_START]);
@@ -23,9 +23,9 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
 
 		private _detachedGarr = if(GETV(_world, "_isSim")) then {
-									T_CALLM(_srcGarr, "simDetach", [_detachEff]
+									CALLM(_srcGarr, "simSplit", [_detachEff])
 								} else {
-									T_CALLM(_srcGarr, "actualDetach", [_detachEff])
+									CALLM(_srcGarr, "actualSplit", [_detachEff])
 								};
 		if(!(_detachedGarr isEqualType "")) exitWith {
 			false
@@ -144,7 +144,7 @@ CLASS("ReinforceAction", "CmdrAction")
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
-		if(EFF_SUM(EFF_MIN_SCALAR(EFF_DIFF(_compAvailable, EFF_MIN), 0)) < 0) exitWith { EFF_ZERO };
+		if(EFF_SUM(EFF_MIN_SCALAR(EFF_DIFF(_compAvailable, EFF_MIN_EFF), 0)) < 0) exitWith { EFF_ZERO };
 
 		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_compAvailable

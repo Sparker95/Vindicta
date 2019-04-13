@@ -100,8 +100,8 @@ CLASS("AST_KillGarrison", "ActionStateTransition")
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_garrisonId")];
 		T_SETV("garrisonId", _garrisonId);
-		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_START]);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
+		T_SETV("toState", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("isAvailable") { 
@@ -144,7 +144,7 @@ ENDCLASS;
 	private _ast = NEW("AST_KillGarrison", [GETV(_garrison, "id")]);
 	private _asts = [_ast];
 	private _obj = NEW("CmdrAction", []);
-	SETV(_obj, "_transitions", _asts);
+	SETV(_obj, "transitions", _asts);
 	["Transitions correct", GETV(_obj, "transitions") isEqualTo _asts] call test_Assert;
 	CALLM(_obj, "applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;

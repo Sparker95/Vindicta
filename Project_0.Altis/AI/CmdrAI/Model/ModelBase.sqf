@@ -1,4 +1,4 @@
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\common.hpp"
 
 // Model of a Real Object. This can either be the Actual Model or the Sim Model.
 // The Actual Model represents the Real Object as it currently is. A Sim Model
@@ -15,7 +15,7 @@ CLASS("ModelBase", "RefCounted")
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
-		T_SETV("id", -1);
+		T_SETV("id", MODEL_HANDLE_INVALID);
 		T_SETV("world", _world);
 
 		if (_actual isEqualTo "") then {
@@ -32,10 +32,10 @@ CLASS("ModelBase", "RefCounted")
 		FAILURE("simCopy method must be implemented when deriving from ModelBase");
 	} ENDMETHOD;
 
-	METHOD("setId") {
-		params [P_THISOBJECT, P_NUMBER("_id")];
-		T_SETV("id", _id);
-	} ENDMETHOD;
+	// METHOD("setId") {
+	// 	params [P_THISOBJECT, P_NUMBER("_id")];
+	// 	T_SETV("id", _id);
+	// } ENDMETHOD;
 	
 	METHOD("sync") {
 		params [P_THISOBJECT];

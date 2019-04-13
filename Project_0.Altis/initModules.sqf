@@ -12,12 +12,10 @@ if(isNil "groupLogic") then
 };
 
 //Initialize templates
-VM_LOG("[initModules] Initialize templates");
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
 
 //Initialize the NATO template
-VM_LOG("[initModules] Initialize the NATO template");
 tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
 tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
@@ -26,16 +24,13 @@ tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 //[classesNATO] call t_fnc_checkNil;
 
 // Initialize Build menu object templates
-VM_LOG("[initModules] Initialize Build menu object templates");
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
 
 //Initialize misc functions
-VM_LOG("[initModules] Initialize misc functions");
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 fnc_onPlayerRespawnServer = COMPILEFUNC("fn_onPlayerRespawnServer.sqf");
 
 //Initialize cluster module
-VM_LOG("[initModules] Initialize cluster module");
 call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
 
 /*
@@ -70,86 +65,66 @@ call compile preprocessFileLineNumbers "Commander\initFunctions.sqf";
 // call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
 // Initialize MessageReceiver class
-VM_LOG("[initModules] Initialize MessageReceiver class");
 call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
 
 // Initialize MessageReceiverEx class
-VM_LOG("[initModules] Initialize MessageReceiverEx class");
 call compile preprocessFileLineNumbers "MessageReceiverEx\MessageReceiverEx.sqf";
 
 // Initialize MessageLoop class
-VM_LOG("[initModules] Initialize MessageLoop class");
 call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 
 // Mod compatibility global variables
-VM_LOG("[initModules] Mod compatibility global variables");
 call compile preprocessFileLineNumbers "modCompatBools.sqf";
 
 // Initialize Commander class
-VM_LOG("[initModules] Initialize Commander class");
 call compile preprocessFileLineNumbers "Commander\Commander.sqf";
 
 // Initialize Unit class
-VM_LOG("[initModules] Initialize Unit class");
 call compile preprocessFileLineNumbers "Unit\Unit.sqf";
 
 // Initialize Group class
-VM_LOG("[initModules] Initialize Group class");
 call compile preprocessFileLineNumbers "Group\Group.sqf";
 
 // Initialize Garrison class
-VM_LOG("[initModules] Initialize Garrison class");
 call compile preprocessFileLineNumbers "Garrison\Garrison.sqf";
 
 // Initialize Location class
-VM_LOG("[initModules] Initialize Location class");
 call compile preprocessFileLineNumbers "Location\Location.sqf";
 
 // Initialize Timer class
-VM_LOG("[initModules] Initialize Timer class");
 call compile preprocessFileLineNumbers "Timer\Timer.sqf";
 
 // Initialize TimerService class
-VM_LOG("[initModules] Initialize TimerService class");
 call compile preprocessFileLineNumbers "TimerService\TimerService.sqf";
 
 // Initialize DebugPrinter class
-VM_LOG("[initModules] Initialize DebugPrinter class");
 call compile preprocessFileLineNumbers "DebugPrinter\DebugPrinter.sqf";
 
 // Initialize LocationUnitArrayprovider class
-VM_LOG("[initModules] Initialize LocationUnitArrayProvider class");
 call compile preprocessFileLineNumbers "LocationUnitArrayProvider\LocationUnitArrayProvider.sqf";
 
 // Initialize AnimObject class
-VM_LOG("[initModules] Initialize AnimObject class");
 call compile preprocessFileLineNumbers "AnimObject\AnimObject.sqf";
 
 // Initialize AnimObject inherited classes
-VM_LOG("[initModules] Initialize AnimObjects inherited classes");
 call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
 
 // Initialize AI classes
-VM_LOG("[initModules] Initialize AI classes");
 call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 
 // UI classes
-VM_LOG("[initModules] Initialize UI class");
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 
 // Initialize suspiciosness monitor
-VM_LOG("[initModules] Initialize suspiciosness monitor");
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
 // Initialize Camp class
-VM_LOG("[initModules] Initialize Camp class");
 call compile preprocessFileLineNumbers "Camp\initClasses.sqf";
 
 // Initialize Grid class
 call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
 
 // Initialize SideStat class
-VM_LOG("[initModules] Initialize SideStat class");
 call compile preprocessFileLineNumbers "SideStat\SideStat.sqf";
 
 diag_log "[initModules] done!";

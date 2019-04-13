@@ -1,4 +1,4 @@
-#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\common.hpp"
 
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
@@ -29,7 +29,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", objNull);
-		T_SETV("locationId", -1);
+		T_SETV("locationId", MODEL_HANDLE_INVALID);
 		T_CALLM("sync", []);
 		// Add self to world
 		CALLM(_world, "addGarrison", [_thisObject]);
@@ -37,8 +37,13 @@ CLASS("GarrisonModel", "ModelBase")
 
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
-		private _copy = NEW("GarrisonModel", [_targetWorldModel]+[""]);
-		SETV(_copy, "id", T_GETV("id"));
+		private _copy = NEW("GarrisonModel", [_targetWorldModel]);
+		ASSERT_MSG(T_GETV("id") == GETV(_copy, "id"), 
+			format ["%1 id (%2) out of sync with sim copy %3 id (%4)",
+			_thisObject, T_GETV("id"), _copy, GETV(_copy, "id")]);
+
+		//	"Id of the GarrisonModel copy is out of sync with the original. This indicates the world garrison list isn't being copied correctly?");
+		//SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		//SETV_REF(_copy, "order", T_GETV("order"));
 		SETV_REF(_copy, "action", T_GETV("action"));
@@ -47,11 +52,6 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_copy, "side", T_GETV("side"));
 		SETV(_copy, "locationId", T_GETV("locationId"));
 		_copy
-	} ENDMETHOD;
-
-	METHOD("setId") {
-		params [P_THISOBJECT, P_NUMBER("_id")];
-		T_SETV("id", _id);
 	} ENDMETHOD;
 	
 	METHOD("sync") {
@@ -64,10 +64,15 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("efficiency", GETV(_actual, "effTotal"));
 			T_SETV("pos", CALLM(_actual, "getPos", []));
 			T_SETV("side", GETV(_actual, "side"));
+
 			private _locationActual = CALLM(_actual, "getLocation", []);
-			T_PRVAR(world);
-			private _location = CALLM(_world, "findLocationByActual", [_locationActual]);
-			T_SETV("locationId", GETV(_location, "id"));
+			if(!(_locationActual isEqualTo "")) then {
+				T_PRVAR(world);
+				private _location = CALLM(_world, "findLocationByActual", [_locationActual]);
+				T_SETV("locationId", GETV(_location, "id"));
+			} else {
+				T_SETV("locationId", MODEL_HANDLE_INVALID);
+			};
 		};
 	} ENDMETHOD;
 
@@ -75,9 +80,18 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT];
 		T_PRVAR(world);
 		T_SETV("efficiency", []);
+		T_CALLM("detachFromLocation", []);
 		CALLM(_world, "garrisonKilled", [_thisObject]);
 	} ENDMETHOD;
 
+	METHOD("detachFromLocation") {
+		params [P_THISOBJECT];
+		private _location = T_CALLM("getLocation", []);
+		if(_location isEqualType "") then {
+			CALLM(_location, "clearGarrison", []);
+		};
+	} ENDMETHOD;
+	
 	METHOD("getAction") {
 		params [P_THISOBJECT];
 		T_GETV("action")
@@ -108,25 +122,28 @@ CLASS("GarrisonModel", "ModelBase")
 	} ENDMETHOD;
 
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
-	METHOD("simDetach") {
-		params [P_THISOBJECT, P_ARRAY("_detachEff")];
+	METHOD("simSplit") {
+		params [P_THISOBJECT, P_ARRAY("_splitEff")];
 		
 		private _detachment =NEW("GarrisonModel", [_world]);
 
 		T_PRVAR(efficiency);
 		// Make sure to hard cap detachment so we don't drop below min eff
-		_detachEff = EFF_MIN(_detachEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN)));
+		private _effa = EFF_DIFF(_efficiency, EFF_MIN_EFF);
+		_effa = EFF_FLOOR_0(_effa);
+		_effa = EFF_MIN(_splitEff, _effa);
+		_splitEff = _effa; //EFF_MIN(_splitEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN_EFF)));
 
-		SETV(_detachment, "efficiency", _detachEff);
-		_efficiency = EFF_DIFF(_efficiency, _detachEff);
+		SETV(_detachment, "efficiency", _splitEff);
+		_efficiency = EFF_DIFF(_efficiency, _splitEff);
 		T_SETV("efficiency", _efficiency);
 
 		_detachment
 	} ENDMETHOD;
 
 	// TODO: cleanup the logging
-	METHOD("actualDetach") {
-		params [P_THISOBJECT, P_ARRAY("_detachEff")];
+	METHOD("actualSplit") {
+		params [P_THISOBJECT, P_ARRAY("_splitEff")];
 
 		T_PRVAR(actual);
 
@@ -143,10 +160,12 @@ CLASS("GarrisonModel", "ModelBase")
 		// Allocate units per each efficiency category
 		private _j = 0;
 		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
-			// Exit now if we have allocated enough units to deal with the threat
-			if (([_effAllocated, _requiredEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) exitWith {
+			// Exit now if we have allocated enough units
+			if(EFF_SUM(EFF_FLOOR_0(EFF_DIFF(_effAllocated, _splitEff))) == 0) exitWith {};
 
-			};
+			// if (([_effAllocated, _splitEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) exitWith {
+
+			// };
 			
 			// For every unit, set element 0 to efficiency value with index _i
 			{_x set [0, _x#1#_i];} forEach _units;
@@ -154,9 +173,9 @@ CLASS("GarrisonModel", "ModelBase")
 			_units sort false; // Descending
 			
 			// Add units until there are enough of them
-			private _requiredEffCat = _requiredEff#_j; // Required efficiency in this category
+			private _splitEffCat = _splitEff#_j; // Required efficiency in this category
 			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _requiredEffCat) && (_pickUnitID < count _units)} do {
+			while {(_effAllocated#_i < _splitEffCat) && (_pickUnitID < count _units)} do {
 				private _unit = _units#_pickUnitID#2;
 				private _group = CALLM0(_unit, "getGroup");
 				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
@@ -199,7 +218,7 @@ CLASS("GarrisonModel", "ModelBase")
 		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
 		
 		// Check if we have allocated enough units
-		//if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
+		//if ([_effAllocated, _splitEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
 		
 		//OOP_INFO_0("   Allocated units can destroy the threat");
 		
@@ -237,7 +256,7 @@ CLASS("GarrisonModel", "ModelBase")
 			};
 		};
 
-		bool _allocated = true;
+		private _allocated = true;
 
 		// Do we need to find transport vehicles?
 		if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
@@ -273,9 +292,10 @@ CLASS("GarrisonModel", "ModelBase")
 				// Add more vehicles while we can
 				private _i = 0;
 				while {(_nMoreCargoSeatsRequired > 0) && (_i < count _availableVehiclesCapacity)} do {
-					OOP_INFO_2("   Added vehicle: %1, with cargo capacity: %2", _availableVehiclesCapacity#_i#1, _availableVehiclesCapacity#_i#0);
-					_allocatedUnits pushBack (_availableVehiclesCapacity#_i#1);
-					_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - (_availableVehiclesCapacity#_i#0);
+					_availableVehiclesCapacity#_i params ["_cap", "_veh"];
+					OOP_INFO_2("   Added vehicle: %1, with cargo capacity: %2", _veh, _cap);
+					_allocatedUnits pushBack _veh;
+					_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - _cap;
 					_i = _i + 1;
 				};
 				
@@ -333,7 +353,7 @@ CLASS("GarrisonModel", "ModelBase")
 			// This shouldn't ever happen because we check all the failure constraints before we got here.
 			FAILURE("Couldn't move units to new garrison");
 			objNull
-		}
+		};
 
 		OOP_INFO_0("Successfully split garrison");
 
@@ -360,17 +380,53 @@ ENDCLASS;
 
 ["GarrisonModel.new(sim)", {
 	private _world = NEW("WorldModel", [true]);
-	private _garrison = NEW("GarrisonModel", [_world]+[""]);
+	private _garrison = NEW("GarrisonModel", [_world]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	!(isNil "_class")
 }] call test_AddTest;
 
 ["GarrisonModel.delete", {
 	private _world = NEW("WorldModel", [true]);
-	private _garrison = NEW("GarrisonModel", [_world]+[""]);
+	private _garrison = NEW("GarrisonModel", [_world]);
 	DELETE(_garrison);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	isNil "_class"
 }] call test_AddTest;
 
+["GarrisonModel.simSplit", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
+	private _eff2 = EFF_MIN_EFF;
+	private _effr = EFF_DIFF(_eff1, _eff2);
+	SETV(_garrison, "efficiency", _eff1);
+	private _splitGarr = CALLM(_garrison, "simSplit", [_eff2]);
+	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
+	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+}] call test_AddTest;
+
+Test_group_args = [WEST, 0]; // Side, group type
+Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
+
+["GarrisonModel.actualSplit", {
+	private _actual = NEW("Garrison", [WEST]);
+	private _group = NEW("Group", Test_group_args);
+	private _eff1 = +T_EFF_null;
+	for "_i" from 0 to 20 do
+	{
+		private _unit = NEW("Unit", Test_unit_args + [_group]);
+		CALLM(_actual, "addUnit", [_unit]);
+		private _unitEff = CALLM(_unit, "getEfficiency", []);
+		_eff1 = EFF_ADD(_eff1, _unitEff);
+	};
+	private _world = NEW("WorldModel", [false]);
+	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
+	["Initial eff", GETV(_garrison, "efficiency") isEqualTo _eff1] call test_Assert;
+	private _eff2 = EFF_MIN_EFF;
+	private _effr = EFF_DIFF(_eff1, _eff2);
+	SETV(_garrison, "efficiency", _eff1);
+	private _splitGarr = CALLM(_garrison, "actualSplit", [_eff2]);
+	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
+	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+}] call test_AddTest;
 #endif
