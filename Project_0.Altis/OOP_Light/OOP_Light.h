@@ -39,14 +39,29 @@
 #define OOP_ASSERT
 
 #ifdef _SQF_VM
+
 #undef ASP_ENABLE
 #undef OFSTREAM_ENABLE
 #undef OFSTREAM_FILE
 #define VM_LOG(t) diag_log t
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
+#define OOP_ASSERT
+#define OOP_DEBUG
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+
+#define TIME_NOW 0
+#define CLIENT_OWNER objNull
+
 #else
+
 #define VM_LOG(t)
 #define VM_LOG_FMT(t, args)
+
+#define TIME_NOW time
+#define CLIENT_OWNER clientOwner
+
 #endif
 
 // Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
@@ -432,6 +447,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
+#define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
 
 // ----------------------------------------
@@ -447,7 +463,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 
 #define CLASS(classNameStr, baseClassNameStr) \
-VM_LOG_FMT("[%1 <- %2] declaring class", [classNameStr] + [baseClassNameStr]); \
+call { \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -495,9 +511,10 @@ _fnc_array deleteAt 0; \
 _fnc_array deleteAt ((count _fnc_array) - 1); \
 private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + toString [10] + format ["#line 1 '%1'", CLASS_METHOD_NAME_STR(_oop_classNameStr, _x)] + toString [10] + (toString _fnc_array); \
 missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
-} forEach _oop_newMethodList;
+} forEach _oop_newMethodList; \
+}
 #else
-#define ENDCLASS
+#define ENDCLASS }
 #endif
 
 // ----------------------------------------------------------------------
@@ -703,16 +720,23 @@ objNameStr \
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
 #define ASSERT_MSG(condition, msg) \
 if (!(condition)) then { \
-	OOP_ERROR_2("Assertion failed (%1): %2", { condition; }, msg); \
+	OOP_ERROR_2("Assertion failed (%1): %2", str({ condition; }), msg); \
+	throw [__FILE__, __LINE__, msg]; \
 }
 #define ASSERT(condition) \
 if (!(condition)) then { \
-	OOP_ERROR_1("Assertion failed (%1)", { condition; }); \
+	OOP_ERROR_1("Assertion failed (%1)", str({ condition; })); \
+	throw [__FILE__, __LINE__, msg]; \
 }
+#define FAILURE(msg) \
+OOP_ERROR_1("Failure: %1", msg); \
+throw [__FILE__, __LINE__, msg]
+
 #else
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
 #define ASSERT_MSG(condition, msg)
 #define ASSERT(condition)
+#define FAILURE(msg)
 #endif
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC

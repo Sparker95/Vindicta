@@ -1,7 +1,6 @@
 #include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
 #include "..\GlobalAssert.hpp"
 
 /*
@@ -213,7 +212,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
-			CALLM2(_currentLoc, "unregisterGarrison", _thisObject);
+			CALLM(_currentLoc, "unregisterGarrison", [_thisObject]);
 		};
 	} ENDMETHOD;
 
@@ -523,7 +522,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
-    // Check if the group is already in another garrison
+		// Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
 		if (_groupGarrison != "") then {
 			// Remove the group from its previous garrison
@@ -896,13 +895,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effAdd = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal");
-		_effTotal = VECTOR_ADD_9(_effTotal, _effAdd);
+		_effTotal = EFF_ADD(_effTotal, _effAdd);
 		T_SETV("effTotal", _effTotal);
 		 
 		// If the added unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = VECTOR_ADD_9(_effMobile, _effAdd);
+			_effMobile = EFF_ADD(_effMobile, _effAdd);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;	
@@ -921,13 +920,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effSub = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal"); 
-		_effTotal = VECTOR_SUB_9(_effTotal, _effSub);
+		_effTotal = EFF_DIFF(_effTotal, _effSub);
 		T_SETV("effTotal", _effTotal);
 		
 		// If the removed unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = VECTOR_SUB_9(_effMobile, _effSub);
+			_effMobile = EFF_DIFF(_effMobile, _effSub);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;

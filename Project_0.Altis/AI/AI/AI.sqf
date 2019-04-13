@@ -179,11 +179,11 @@ CLASS("AI", "MessageReceiverEx")
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 			//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
 			// If timeNextUpdate is 0, we never update this sensor
-			if (_timeNextUpdate != 0 && time > _timeNextUpdate) then {
+			if (_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate) then {
 				//OOP_INFO_0("  Calling UPDATE!");
 				CALLM(_sensor, "update", []);
 				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
-				SETV(_sensor, "timeNextUpdate", time + _interval);
+				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
 			};
 		} forEach _sensors;
 	} ENDMETHOD;

@@ -1,0 +1,9 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+clone_folder: c:\dev
+build: off
+test_script:
+- cmd: >-
+    cd c:\dev\Project_0.Altis
+
+    ..\tools\SQF-VM\sqfvm.exe -a --disable-macro-warnings --load . -i c:\dev\Project_0.Altis\Tests\RunTests.sqf

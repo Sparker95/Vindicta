@@ -101,7 +101,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			{
 				_hO = _x select TARGET_ID_OBJECT_HANDLE;
 				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
-				_eff = VECTOR_ADD_9(_eff, _objEff);
+				_eff = EFF_ADD(_eff, _objEff);
 			} forEach _clusterTargets;
 			_clustersEfficiency pushBack _eff;
 		} forEach _newClusters;
@@ -150,7 +150,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			{
 				_hO = _x select TARGET_COMMANDER_ID_OBJECT_HANDLE;
 				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
-				_eff = VECTOR_ADD_9(_eff, _objEff);
+				_eff = EFF_ADD(_eff, _objEff);
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
 			} forEach _clusterTargets;
@@ -179,7 +179,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _c = _affinityNewOld / _sumAffinityRow;
 					pr _damageToAdd = (_oldTargetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE) apply {_c * _x};
 					pr _newTCDamage = _newTC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;
-					_newTCDamage = VECTOR_ADD_9(_newTCDamage, _damageToAdd);
+					_newTCDamage = EFF_ADD(_newTCDamage, _damageToAdd);
 					_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, _newTCDamage];
 					
 					// Increase counter of affinity above zero

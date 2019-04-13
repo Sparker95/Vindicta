@@ -8,7 +8,7 @@
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\..\Cluster\Cluster.hpp"
-#include "..\..\Templates\Templates.hpp"
+#include "..\..\Templates\Efficiency.hpp"
 #include "..\Action\Action.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "..\WorldFact\WorldFact.hpp"

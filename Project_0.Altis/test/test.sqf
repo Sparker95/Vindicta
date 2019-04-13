@@ -1,3 +1,3 @@
-diag_log "in test.sqf: test_init set to true";
-test_init = true;
-#include "test.hpp"
+
+fn = { if(false) then { diag_log "blah"; } else { }; };
+private _rval = [] call fn;

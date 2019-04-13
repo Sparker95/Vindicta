@@ -694,7 +694,7 @@ CLASS("AICommander", "AI")
 							};
 							pr _unitEff = _units select _pickUnitID select 1;
 							// Add to the allocated efficiency vector
-							_effAllocated = VECTOR_ADD_9(_effAllocated, _unitEff);
+							_effAllocated = EFF_ADD(_effAllocated, _unitEff);
 							//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
 						};
 						_pickUnitID = _pickUnitID + 1;

@@ -35,7 +35,7 @@
 // 		T_PRVAR(ourGarrId);
 // 		T_PRVAR(targetOutpostId);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
 // 		private _targetOutpost = CALLM1(_state, "getOutpostById", _targetOutpostId);
 // 		private _targetOutpostPos = CALLM0(_targetOutpost, "getPos");
 
@@ -50,10 +50,10 @@
 // 		private _availableComp = T_CALLM1("getDetachmentComp", _state);
 
 // 		// // Resource is how much our garrison is *over* (required composition + required force), scaled by distance (further is lower)
-// 		// //private _ourGarrOverComp = CALLM1(_state, "getOverDesiredComp", _ourGarr);
+// 		// //private _ourGarrOverComp = CALLM1(_state, "getOverDesiredEff", _ourGarr);
 // 		// // Enemy garrison composition
 // 		// private _garrSide = CALLM0(_ourGarr, "getSide");
-// 		// // private _targetOutpostDesiredComp = CALLM2(_state, "getDesiredComp", _targetOutpostPos, _garrSide);
+// 		// // private _targetOutpostDesiredComp = CALLM2(_state, "getDesiredEff", _targetOutpostPos, _garrSide);
 
 // 		// // What is the composition dictated by the target outpost?
 // 		// private _targetComp = if(_targetGarr isEqualType "") then { 
@@ -61,7 +61,7 @@
 // 		// 	CALLM0(_targetGarr, "getComp") apply { _x * 1.5 }
 // 		// } else { 
 // 		// 	// If it is unoccupied we want 0.5 times the desired force at least to take it
-// 		// 	CALLM2(_state, "getDesiredComp", _targetOutpostPos, _garrSide) apply { _x * 0.5 }
+// 		// 	CALLM2(_state, "getDesiredEff", _targetOutpostPos, _garrSide) apply { _x * 0.5 }
 // 		// };
 
 // 		// // _targetComp = [
@@ -118,7 +118,7 @@
 // 		} else { 
 // 			T_PRVAR(ourGarrId);
 // 			// If it is unoccupied we want to send 1/2 our comp
-// 			private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
+// 			private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
 // 			private _ourComp = CALLM0(_ourGarr, "getComp");
 // 			[
 // 				ceil (_ourComp#0 * 0.5),
@@ -139,7 +139,7 @@
 // 		T_PRVAR(ourGarrId);
 // 		//T_PRVAR(targetOutpostId);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
 // 		private _ourComp = CALLM0(_ourGarr, "getComp");
 // 		private _desiredComp = T_CALLM1("getDesiredDetatchmentComp", _state);
 
@@ -172,7 +172,7 @@
 // 		T_PRVAR(targetOutpostId);
 // 		T_PRVAR(stage);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
 // 		private _ourSide = CALLM0(_ourGarr, "getSide");
 // 		private _targetOutpost = CALLM1(_state, "getOutpostById", _targetOutpostId);
 // 		//private _targetOutpostPos = CALLM0(_targetOutpost, "getPos");
@@ -195,7 +195,7 @@
 // 			};
 // 			case "moving": {
 // 				T_PRVAR(detachedGarrId);
-// 				private _detachedGarr = CALLM1(_state, "getGarrisonById", _detachedGarrId);
+// 				private _detachedGarr = CALLM1(_state, "getGarrison", _detachedGarrId);
 // 				CALLM2(_state, "attachGarrison", _detachedGarr, _targetOutpost);
 // 			};
 // 		};
@@ -213,7 +213,7 @@
 // 		T_PRVAR(targetOutpostId);
 // 		T_PRVAR(stage);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrisonById", _ourGarrId);
+// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
 // 		private _ourSide = CALLM0(_ourGarr, "getSide");
 // 		private _targetOutpost = CALLM1(_state, "getOutpostById", _targetOutpostId);
 
@@ -257,7 +257,7 @@
 
 // 			case "moving": {
 // 				T_PRVAR(detachedGarrId);
-// 				private _detachedGarr = CALLM1(_state, "getGarrisonById", _detachedGarrId);
+// 				private _detachedGarr = CALLM1(_state, "getGarrison", _detachedGarrId);
 // 				if(CALLM0(_detachedGarr, "isDead")) exitWith {
 // 					CALLM0(_detachedGarr, "clearAction");
 // 					T_SETV("complete", true);

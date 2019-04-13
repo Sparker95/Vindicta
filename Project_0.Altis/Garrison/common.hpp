@@ -6,6 +6,6 @@
 //#define OFSTREAM_FILE "Main.rpt"
 
 #include "..\Group\Group.hpp"
-#include "..\Templates\Templates.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\AI\Garrison\garrisonWorldStateProperties.hpp"
+#include "..\Templates\Efficiency.hpp"

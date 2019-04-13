@@ -12,6 +12,8 @@ Handle message incoming into a garrison object.
 params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 //diag_log format ["[Garrison] Info: HandleMessage: %1", _msg];
 
+#ifndef _SQF_VM // No messages in testing mode
+
 pr _msgType = _msg select MESSAGE_ID_TYPE;
 
 if (_msgType == GARRISON_MESSAGE_PROCESS) then {
@@ -63,5 +65,7 @@ if (_msgType == GARRISON_MESSAGE_PROCESS) then {
 		}; // case 1
 	}; // switch spawn state
 };
+
+#endif
 
 nil

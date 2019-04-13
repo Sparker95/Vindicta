@@ -6,7 +6,9 @@ Class: AI.AIGarrison
 
 #define pr private
 
+#ifndef _SQF_VM
 #define DEBUG_GOAL_MARKERS
+#endif
 
 #define MRK_GOAL	"_goal"
 #define MRK_ARROW	"_arrow"

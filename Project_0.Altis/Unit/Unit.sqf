@@ -832,3 +832,17 @@ CLASS(UNIT_CLASS_NAME, "");
 ENDCLASS;
 
 SET_STATIC_MEM("Unit", "all", []);
+
+#ifdef _SQF_VM
+
+Test_group_args = [WEST, 0]; // Side, group type
+Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
+
+["Unit.new", {
+	private _group = NEW("Group", Test_group_args);
+	private _obj = NEW("Unit", Test_unit_args + [_group]);
+	private _class = OBJECT_PARENT_CLASS_STR(_obj);
+	!(isNil "_class")
+}] call test_AddTest;
+
+#endif
