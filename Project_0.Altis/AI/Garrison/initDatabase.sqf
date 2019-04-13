@@ -2,6 +2,8 @@
 #include "..\goalRelevance.hpp"
 #include "..\parameterTags.hpp"
 
+#ifndef _SQF_VM
+
 private _s = WSP_GAR_COUNT;
 
 /*
@@ -188,3 +190,5 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonRepairAllVehicles", 		1]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonClearArea", 				40]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonJoinLocation", 				43] call AI_misc_fnc_setActionPrecedence;
+
+#endif

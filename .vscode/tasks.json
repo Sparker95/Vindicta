@@ -317,6 +317,20 @@
                     ]
                 }
             ]
+        },
+        {
+            "label": "Generate All initClasses",
+            "type": "process",
+            "command": "generateAllInitClasses.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/batch"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": []
         }
     ]
 }
