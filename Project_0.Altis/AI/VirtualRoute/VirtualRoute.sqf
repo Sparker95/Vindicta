@@ -277,7 +277,7 @@ CLASS("VirtualRoute", "")
 			pr _currPos = _startPos;
 			pr _index = 0;
 			pr _nextPos = getPos (_route select (_index + 1));
-			for "_i" from 0 to _number do {
+			for "_i" from 0 to (_number-1) do {
 				_convoyPositions pushBack [_currPos, _currPos getDir _nextPos];
 				pr _distNext = _currPos distance _nextPos;
 				pr _distRemaining = _spacing;
@@ -294,7 +294,7 @@ CLASS("VirtualRoute", "")
 			pr _currPos = _pos;
 			pr _index = _nextIdx - 1;
 			pr _prevPos = getPos (_route select _index);
-			for "_i" from 0 to _number do {
+			for "_i" from 0 to (_number-1) do {
 				_convoyPositions pushBack [_currPos, _prevPos getDir _currPos];
 				pr _distPrev = _currPos distance _prevPos;
 				pr _distRemaining = _spacing;
