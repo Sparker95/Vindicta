@@ -115,7 +115,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			// Create a Virtual Route if it doesnt exist yet
 			pr _vr = T_GETV("virtualRoute");
 			if (_vr == "") then {
-				CALLM0(_thisObject, "createVirtualRoute");
+				_vr = CALLM0(_thisObject, "createVirtualRoute");
 			};
 
 			if (_state == ACTION_STATE_INACTIVE) then {
@@ -262,6 +262,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, "", "", false];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
+
+		_vr
 	} ENDMETHOD;
 
 	METHOD("spawn") {
