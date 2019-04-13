@@ -11,6 +11,11 @@ if(isNil "groupLogic") then
 	groupLogic = createGroup sideLogic;
 };
 
+if (isNil "OOP_Light_initialized") then {
+	OOP_Light_initialized = true;
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+};
+
 //Initialize templates
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
@@ -112,7 +117,7 @@ call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
 // Initialize AI classes
 call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 
-// UI classes
+// UI classes and functions
 call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 
 // Initialize suspiciosness monitor

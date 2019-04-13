@@ -745,8 +745,3 @@ throw [__FILE__, __LINE__, msg]
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC
 #define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
-
-if (isNil "OOP_Light_initialized") then {
-	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
-};
