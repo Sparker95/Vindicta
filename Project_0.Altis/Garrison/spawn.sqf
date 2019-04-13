@@ -105,5 +105,8 @@ if (!_spawningHandled) then {
 
 // Call onGarrisonSpawned
 if (_action != "") then {
+	OOP_INFO_1("Calling %1.onGarrisonSpawned", _action);
 	CALLM0(_action, "onGarrisonSpawned");
+} else {
+	OOP_INFO_0("SPAWN: no current action");
 };

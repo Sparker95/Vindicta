@@ -15,11 +15,11 @@ private _radius = 0;
 private _loc = objNull;
 private _locations = entities "Project_0_LocationSector";
 
-#define ADD_TRUCKS
+//#define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
-#define ADD_ARMED_MRAPS
+//#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
-#define ADD_APCS_IFVS
+//#define ADD_APCS_IFVS
 
 {
 	private _locSector = _x;
@@ -84,7 +84,7 @@ private _locations = entities "Project_0_LocationSector";
 	// Add the main garrison to this location
 	private _garMilMain = NEW("Garrison", [_side]);
 	CALLM1(_garMilMain, "setLocation", _loc);
-	CALLM0(_loc, "registerGarrison", _garMilMain);
+	CALLM1(_loc, "registerGarrison", _garMilMain);
 
 	// Add default units to the garrison
 
@@ -166,11 +166,11 @@ private _locations = entities "Project_0_LocationSector";
 		};
 		_i = _i + 1;
 	};
-	#endif ADD_TRUCKS
-	
+	#endif
+
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
-	while {(_cVehGround > 0) && _i < 1} do  {
+	while {(_cVehGround > 0) && _i < 5} do  {
 		private _args = [_template, T_VEH, T_VEH_MRAP_unarmed, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {

@@ -61,7 +61,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					if (isNil "_receivingGroup") then {
 						pr _args = [CALLM0(_group, "getSide"), GROUP_TYPE_IDLE];
 						_receivingGroup = NEW("Group", _args);
-						CALLM0(_receivingGroup, "spawn");
+						CALLM0(_receivingGroup, "spawnAtLocation");
 						CALLM1(_gar, "addGroup", _receivingGroup);
 						_freeGroups pushBack _receivingGroup;
 					};

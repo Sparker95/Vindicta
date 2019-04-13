@@ -62,5 +62,8 @@ while {_i < count _groups} do
 pr _action = CALLM0(T_GETV("AI"), "getCurrentAction");
 _action = CALLM0(_action, "getFrontSubaction");
 if (_action != "") then {
+	OOP_INFO_1("Calling %1.onGarrisonDespawned", _action);
 	CALLM0(_action, "onGarrisonDespawned");
+} else {
+	OOP_INFO_0("DESPAWN: no current action");
 };

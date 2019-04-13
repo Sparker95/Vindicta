@@ -91,6 +91,73 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 		
 	} ENDMETHOD;
 
+	/*
+	Method: handleUnitsAdded
+	Calls the same method for all subactions.
+	*/
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");
+		{
+			CALLM1(_subactions select 0, "handleUnitsAdded", _units);
+		} forEach _subactions;
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsRemoved
+	Calls the same method for all subactions.
+	*/
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");
+		{
+			CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
+		} forEach _subactions;
+	} ENDMETHOD;	
 
+	/*
+	Method: handleGroupsAdded
+	Calls the same method of all subaction.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		pr _subactions = T_GETV("subactions");
+		{
+			CALLM1(_x, "handleGroupsAdded", _groups);
+		} forEach _subactions;
+		
+		nil
+	} ENDMETHOD;
+
+
+	/*
+	Method: handleGroupsRemoved
+	Calls the same method of all subaction.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		pr _subactions = T_GETV("subactions");
+		{
+			CALLM1(_x, "handleGroupsRemoved", _groups);
+		} forEach _subactions;
+		
+		nil
+	} ENDMETHOD;
 
 ENDCLASS;

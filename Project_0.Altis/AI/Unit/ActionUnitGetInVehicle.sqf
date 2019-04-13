@@ -10,16 +10,16 @@ Author: Sparker
 
 #define pr private
 
-#define DEBUG
+//#define DEBUG
 #define CLASS_NAME "ActionUnitGetInVehicle"
 
 #ifdef DEBUG
-#define INFO_0(str) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, str];
-#define INFO_1(str, a) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a]];
-#define INFO_2(str, a, b) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b]];
-#define INFO_3(str, a, b, c) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c]];
-#define INFO_4(str, a, b, c, d) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c, d]];
-#define INFO_5(str, a, b, c, d, e) diag_log format ["[%1.%2] Info: %3", CLASS_NAME, _thisObject, format [str, a, b, c, d, e]];
+#define INFO_0(str) OOP_INFO_0(str)
+#define INFO_1(str, a) OOP_INFO_1(str, a)
+#define INFO_2(str, a, b) OOP_INFO_2(str, a, b)
+#define INFO_3(str, a, b, c) OOP_INFO_3(str, a, b, c)
+#define INFO_4(str, a, b, c, d) OOP_INFO_4(str, a, b, c, d)
+#define INFO_5(str, a, b, c, d, e) OOP_INFO_5(str, a, b, c, d, e)
 #else
 #define INFO_0(str)
 #define INFO_1(str, a)

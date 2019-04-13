@@ -43,14 +43,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			T_SETV("radius", _radius);
 		};
 
-		if(CALLM0(_AI, "isSpawned")) then {
-			T_SETV("virtualRoute", ""); // If we are spawned we don't need the virtual route (for now)
-		} else {
-			pr _gar = GETV(_AI, "agent");
-			pr _from = CALLM0(_gar, "getPos");
-			pr _args = [_from, _pos, -1, "", "", false];
-			pr _vr = NEW("VirtualRoute", _args);
-			T_SETV("virtualRoute", _vr);
+		T_SETV("virtualRoute", "");
+		// Create a VirtualRoute in advance
+		if(!CALLM0(_AI, "isSpawned")) then {
+			CALLM0(_thisObject, "createVirtualRoute");
 		};
 		
 	} ENDMETHOD;
@@ -116,8 +112,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		if (!CALLM0(_gar, "isSpawned")) then {
 			pr _state = T_GETV("state");
 
-			// Virtual Route
+			// Create a Virtual Route if it doesnt exist yet
 			pr _vr = T_GETV("virtualRoute");
+			if (_vr == "") then {
+				CALLM0(_thisObject, "createVirtualRoute");
+			};
 
 			if (_state == ACTION_STATE_INACTIVE) then {
 				CALLM0(_vr, "start");
@@ -141,6 +140,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		} else {
+			// Delete the Virtual Route object if it exists, we don't need it any more
+			pr _vr = T_GETV("virtualRoute");
+			if (_vr != "") then {
+				DELETE(_vr);
+				T_SETV("virtualRoute", "");
+			};
+
 			// Fail if not everyone is in vehicles
 			pr _everyoneIsMounted = CALLM0(_thisObject, "isEveryoneInVehicle");
 			OOP_INFO_1("Everyone is in vehicles: %1", _everyoneIsMounted);
@@ -225,11 +231,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("onGarrisonSpawned") {
 		params ["_thisObject"];
 
-		// Delete the virtual route, we dont need it any more
-		pr _vr = T_GETV("virtualRoute");
-		DELETE(_vr);
-		T_SETV("virtualRoute", "");
-
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
@@ -237,7 +238,20 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("onGarrisonDespawned") {
 		params ["_thisObject"];
 
-		// Delete old virtual route if we had it (how is that possible??)
+		// Create a new VirtualRoute since old one might be invalid
+		CALLM0(_thisObject, "createVirtualRoute");
+
+		// Reset action state so that it reactivates
+		T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
+
+	// Creates a new VirtualRoute object, deletes the old one
+	METHOD("createVirtualRoute") {
+		params ["_thisObject"];
+
+		pr _gar = T_GETV("gar");
+
+		// Delete old virtual route if we had it
 		pr _vr = T_GETV("virtualRoute");
 		if (_vr != "") then {
 			DELETE(_vr);
@@ -246,11 +260,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Create a new virtual route
 		pr _gar = T_GETV("gar");
 		pr _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, "", "", false];
-		pr _vr = NEW("VirtualRoute", _args);
+		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
-
-		// Reset action state so that it reactivates
-		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
 
 	METHOD("spawn") {
