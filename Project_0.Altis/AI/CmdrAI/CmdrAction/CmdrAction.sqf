@@ -23,14 +23,14 @@ CLASS("CmdrAction", "RefCounted")
 	VARIABLE("transitions");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_ARRAY("_transitions")];
+		params [P_THISOBJECT];
 		T_SETV("scorePriority", 1);
 		T_SETV("scoreResource", 1);
 		T_SETV("scoreStrategy", 1);
 		T_SETV("scoreCompleteness", 1);
 		//T_SETV("complete", false);
 		T_SETV("state", CMDR_ACTION_STATE_START);
-		T_SETV("transitions", _transitions);
+		T_SETV("transitions", []);
 	} ENDMETHOD;
 
 	METHOD("updateScore") {
@@ -66,10 +66,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(state);
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
-		private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
-		if(_newState != _state) then {
-			T_SETV("_state", _newState);
-		};
+		CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
 	} ENDMETHOD;
 
 	METHOD("getLabel") {
@@ -143,10 +140,11 @@ ENDCLASS;
 
 ["CmdrAction.applyToSim", {
 	private _world = NEW("WorldModel", [true]);
-	private _garrison = NEW("GarrisonModel", [_world]+[""]);
+	private _garrison = NEW("GarrisonModel", [_world]);
 	private _ast = NEW("AST_KillGarrison", [GETV(_garrison, "id")]);
 	private _asts = [_ast];
-	private _obj = NEW("CmdrAction", [_asts]);
+	private _obj = NEW("CmdrAction", []);
+	SETV(_obj, "_transitions", _asts);
 	["Transitions correct", GETV(_obj, "transitions") isEqualTo _asts] call test_Assert;
 	CALLM(_obj, "applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;

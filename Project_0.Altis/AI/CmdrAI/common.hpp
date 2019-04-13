@@ -6,6 +6,10 @@
 
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Templates\Efficiency.hpp"
+#include "CmdrAction\CmdrActionStates.hpp"
 
 #define EFF_ZERO T_EFF_null
-#define EFF_MIN T_EFF_default
+
+// Minimum efficiency of a garrison.
+// Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
+#define EFF_MIN [6, 0, 0, 0, 6, 0, 0, 0]

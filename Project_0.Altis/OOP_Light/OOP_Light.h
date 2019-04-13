@@ -450,6 +450,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 
 #define CLASS(classNameStr, baseClassNameStr) \
+call { \
 VM_LOG_FMT("[%1 <- %2] declaring class", [classNameStr] + [baseClassNameStr]); \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
@@ -498,9 +499,10 @@ _fnc_array deleteAt 0; \
 _fnc_array deleteAt ((count _fnc_array) - 1); \
 private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + toString [10] + format ["#line 1 '%1'", CLASS_METHOD_NAME_STR(_oop_classNameStr, _x)] + toString [10] + (toString _fnc_array); \
 missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
-} forEach _oop_newMethodList;
+} forEach _oop_newMethodList; \
+}
 #else
-#define ENDCLASS
+#define ENDCLASS }
 #endif
 
 // ----------------------------------------------------------------------
@@ -716,7 +718,7 @@ if (!(condition)) then { \
 }
 #define FAILURE(msg) \
 OOP_ERROR_1("Failure: %1", msg); \
-throw [__FILE__, __LINE__, msg]; \
+throw [__FILE__, __LINE__, msg]
 
 #else
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)

@@ -194,7 +194,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_STRING("_side")];
 		
 		// max(base, nearest enemy forces * 2, threat map * 2);
-		private _base = EFF_ZERO;
+		private _base = EFF_MIN;
 
 		// Nearest enemy garrison force * 2
 		private _enemyForces = T_CALLM("getNearestGarrisons", [_pos]+[2000]) select {
@@ -245,7 +245,7 @@ CLASS("WorldModel", "")
 		private _eff = GETV(_garr, "efficiency");
 		private _desiredComp = T_CALLM("getDesiredEff", [_pos]+[_side]);
 		
-		EFF_SUB(_comp, _desiredComp)
+		EFF_DIFF(_comp, _desiredComp)
 	} ENDMETHOD;
 
 	// How much over desired efficiency is the garrison, scaled. Negative for under.
@@ -260,15 +260,15 @@ CLASS("WorldModel", "")
 		// TODO: is this right, or should it be scaling the final result? 
 		// How it is now will (under)exaggerate the desired composition
 
-		EFF_SUB(_comp, EFF_MUL_SCALAR(_desiredComp, _compScalar))
+		EFF_MUL_SCALAR(EFF_DIFF(_comp, _desiredComp), _compScalar)
 	} ENDMETHOD;
 
 	// A scoring factor for how much a garrison desires reinforcement
 	METHOD("getReinforceRequiredScore") {
 		params [P_THISOBJECT, P_STRING("_garr")];
 
-		// How much garr is *under* composition (so over comp * -1) with a non-linear function applied.
-		// i.e. How much units/vehicles tgt needs.
+		// How much garr is *under* desired efficiency (so over comp * -1) with a non-linear function applied.
+		// i.e. How much more efficiency tgt needs.
 		private _overComp = T_CALLM("getOverDesiredEffScaled", [_garr]+[0.75]);
 		private _score = EFF_SUM(EFF_MAX_SCALAR(EFF_MUL_SCALAR(_overComp, -1), 0));
 

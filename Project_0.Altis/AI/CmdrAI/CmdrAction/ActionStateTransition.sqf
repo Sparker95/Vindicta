@@ -1,6 +1,5 @@
-
-#include "..\..\..\OOP_Light\OOP_Light.h"
-#include "CmdrActionStates.hpp"
+//#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\common.hpp"
 
 CLASS("ActionStateTransition", "")
 
@@ -11,13 +10,7 @@ CLASS("ActionStateTransition", "")
 	VARIABLE("fromStates");
 	// State this transition results in
 	VARIABLE("toState");
-	// We have separate state requirements for executing on sim so a transition
-	// function can perform operations in a more efficient manner, e.g. skipping multiple
-	// steps, or being valid from more states.
-	// State(s) this transition is valid from when executing on sim
-	VARIABLE("fromStatesSim");
-	// State this transition results in on sim
-	VARIABLE("toStateSim");
+
 	/*
 	Parameters: 
 	*/
@@ -26,25 +19,16 @@ CLASS("ActionStateTransition", "")
 		T_SETV("priority", CMDR_ACTION_PRIOR_LOW);
 		T_SETV("fromStates", []);
 		T_SETV("toState", CMDR_ACTION_STATE_END);
-		T_SETV("fromStatesSim", []);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 
 	METHOD("isValidFromState") {
-		params [P_THISOBJECT, P_NUMBER("_state"), P_BOOL("_isSim")];
-		private _states = if(_isSim) then { T_GETV("fromStatesSim") } else { T_GETV("fromStates") };
+		params [P_THISOBJECT, P_NUMBER("_state")];
+		private _states = T_GETV("fromStates");
 		(_state in _states) or (CMDR_ACTION_STATE_ALL in _states)
-	} ENDMETHOD;
-
-	METHOD("getToState") {
-		params [P_THISOBJECT, P_BOOL("_isSim")];
-		if(_isSim) exitWith { T_GETV("toStateSim") };
-		T_GETV("toState")
 	} ENDMETHOD;
 
 	STATIC_METHOD("selectAndApply") {
 		params [P_THISCLASS, P_STRING("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
-		private _isSim = GETV(_world, "isSim");
 
 		if(_state == CMDR_ACTION_STATE_END) exitWith { _state };
 
@@ -55,7 +39,6 @@ CLASS("ActionStateTransition", "")
 			select { CALLM(_x, "isValidFromState", [_state]+[_isSim]) }
 			apply { [GETV(_x, "priority"), _x] };
 
-
 		// Lower value is higher priority (0 is top most priority)
 		_matchingTransitions sort true;
 
@@ -64,7 +47,7 @@ CLASS("ActionStateTransition", "")
 			private _selectedTransition = _matchingTransitions#_foundIdx#1;
 			private _applied = CALLM(_selectedTransition, "apply", [_world]);
 			if(_applied) then {
-				private _newState = CALLM(_selectedTransition, "getToState", [_isSim]);
+				private _newState = GETV(_selectedTransition, "toState", [_isSim]);
 				_state = _newState
 			};
 		};
@@ -81,7 +64,7 @@ CLASS("ActionStateTransition", "")
 	*/
 	/* virtual */ METHOD("isAvailable") { 
 		params [P_THISOBJECT, P_STRING("_world")];
-		FAILURE("isAvailable method must be implemented when deriving from ActionStateTransition");
+		true
 	} ENDMETHOD;
 
 	// /*
@@ -119,6 +102,8 @@ ENDCLASS;
 // Unit test
 #ifdef _SQF_VM
 
+AST_test = NEW("ActionStateTransition", []);
+
 #define CMDR_ACTION_STATE_TEST_1 2
 #define CMDR_ACTION_STATE_TEST_2 3
 
@@ -142,17 +127,18 @@ ENDCLASS;
 CLASS("TestAST_Start_1", "TestASTBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_START]);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_TEST_1);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
+		T_SETV("toState", CMDR_ACTION_STATE_TEST_1);
 	} ENDMETHOD;
 ENDCLASS;
+
 TestAST_Start_1 = NEW("TestAST_Start_1", []);
 
 CLASS("TestAST_1_2", "TestASTBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_TEST_1]);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_TEST_2);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
+		T_SETV("toState", CMDR_ACTION_STATE_TEST_2);
 	} ENDMETHOD;
 ENDCLASS;
 TestAST_1_2 = NEW("TestAST_1_2", []);
@@ -160,8 +146,8 @@ TestAST_1_2 = NEW("TestAST_1_2", []);
 CLASS("TestAST_2_End", "TestASTBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_TEST_2]);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_2]);
+		T_SETV("toState", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 ENDCLASS;
 TestAST_2_End = NEW("TestAST_2_End", []);
@@ -170,8 +156,8 @@ CLASS("TestAST_1_End", "TestASTBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("priority", CMDR_ACTION_PRIOR_HIGH);
-		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_TEST_1]);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_END);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
+		T_SETV("toState", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 ENDCLASS;
 TestAST_1_End = NEW("TestAST_1_End", []);

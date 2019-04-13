@@ -24,7 +24,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		T_SETV("timeNextActivation", 0); // To force instant replan/reallocation
 		T_SETV("allocatedGarrisons", []);
 		T_SETV("clusterIDChanged", false);
-		
+
 		T_SETV("timeAssignedTargetsUpdate", time);
 	} ENDMETHOD;
 

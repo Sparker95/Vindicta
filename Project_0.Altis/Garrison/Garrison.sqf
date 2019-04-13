@@ -841,13 +841,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effSub = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal"); 
-		_effTotal = EFF_SUB(_effTotal, _effSub);
+		_effTotal = EFF_DIFF(_effTotal, _effSub);
 		T_SETV("effTotal", _effTotal);
 		
 		// If the removed unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = EFF_SUB(_effMobile, _effSub);
+			_effMobile = EFF_DIFF(_effMobile, _effSub);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;
