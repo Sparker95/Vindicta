@@ -38,9 +38,12 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		private _copy = NEW("GarrisonModel", [_targetWorldModel]);
-		ASSERT_MSG(T_GETV("id") == GETV(_copy, "id"), 
-			format ["%1 id (%2) out of sync with sim copy %3 id (%4)",
-			_thisObject, T_GETV("id"), _copy, GETV(_copy, "id")]);
+		
+		#ifdef OOP_ASSERT
+		private _idsEqual = T_GETV("id") == GETV(_copy, "id");
+		private _msg = format ["%1 id (%2) out of sync with sim copy %3 id (%4)", _thisObject, T_GETV("id"), _copy, GETV(_copy, "id")];
+		ASSERT_MSG(_idsEqual, _msg);
+		#endif
 
 		//	"Id of the GarrisonModel copy is out of sync with the original. This indicates the world garrison list isn't being copied correctly?");
 		//SETV(_copy, "id", T_GETV("id"));

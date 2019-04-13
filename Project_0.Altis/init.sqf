@@ -16,7 +16,7 @@ add inits here until it's so fucked up, then redo it all over again
 
 
 // Initialize OOP classes and other things
-//call compile preprocessFileLineNumbers "initModules.sqf";
+call compile preprocessFileLineNumbers "initModules.sqf";
 
 // If a client, wait for the server to finish its initialization
 if (!isServer) then {
