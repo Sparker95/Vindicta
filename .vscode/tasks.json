@@ -331,6 +331,40 @@
                 "reveal": "always"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Watch Arma RPT",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                }
+            },
+            "command": "Get-Content",
+            "args": [
+                "${file}",
+                "-Wait",
+                "-Tail", "10000"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "oop",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\"\\[OOP\\] (.+)\\: file: ([a-zA-Z]\\:.*?), line\\: (.+), (.*)\"",
+                            "severity": 1,
+                            "file": 2,
+                            "line": 3,
+                            "message": 4
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
