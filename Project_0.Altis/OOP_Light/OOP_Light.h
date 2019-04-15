@@ -32,7 +32,8 @@
 
 // Enables output to external file with ofstream in all OOP classes
 // It's a global flag, must be defined here
-#define OFSTREAM_ENABLE
+
+//#define OFSTREAM_ENABLE
 
 //Enables checks for member accesses at runtime
 // It's a global flag, must be defined here

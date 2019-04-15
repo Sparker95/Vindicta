@@ -125,7 +125,9 @@ CLASS("GarrisonModel", "ModelBase")
 	} ENDMETHOD;
 
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
-	METHOD("simSplit") {
+
+	// SPLIT
+	METHOD("splitSim") {
 		params [P_THISOBJECT, P_ARRAY("_splitEff")];
 		
 		private _detachment =NEW("GarrisonModel", [_world]);
@@ -145,8 +147,8 @@ CLASS("GarrisonModel", "ModelBase")
 	} ENDMETHOD;
 
 	// TODO: cleanup the logging
-	METHOD("actualSplit") {
-		params [P_THISOBJECT, P_ARRAY("_splitEff")];
+	METHOD("splitActual") {
+		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_BOOL("_requireTransport")];
 
 		T_PRVAR(actual);
 
@@ -262,7 +264,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _allocated = true;
 
 		// Do we need to find transport vehicles?
-		if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
+		if (_requireTransport) then {
 			private _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
 			private _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
 			//ade_dumpcallstack;
@@ -367,6 +369,56 @@ CLASS("GarrisonModel", "ModelBase")
 		_newGarr
 	} ENDMETHOD;
 	
+	// MOVE TO POS
+	METHOD("moveSim") {
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		SETV("pos", _pos);
+	} ENDMETHOD;
+
+	METHOD("moveActual") {
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		T_PRVAR(actual);
+		private _AI = CALLM(_actual, "getAI", []);
+		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
+		private _args = ["GoalGarrisonMove", 0, _parameters, _thisObject];
+		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
+	} ENDMETHOD;
+
+	// MERGE WITH ANOTHER GARRISON
+	METHOD("mergeSim") {
+		params [P_THISOBJECT, P_STRING("_otherGarr")];
+		T_PRVAR(efficiency);
+		private _otherEff = GETV(_otherGarr, "efficiency");
+		private _newOtherEff = EFF_ADD(_efficiency, _otherEff);
+		SETV(_otherGarr, "efficiency", _newOtherEff);
+		T_CALLM("killed", []);
+	} ENDMETHOD;
+
+	METHOD("mergeActual") {
+		params [P_THISOBJECT, P_STRING("_otherGarr")];
+		T_PRVAR(actual);
+		private _otherActual = GETV(_otherGarr, "actual");
+		CALLM(_otherActual, "addGarrison", [_actual]+[true]);
+	} ENDMETHOD;
+
+	// MERGE WITH ANOTHER GARRISON
+	METHOD("joinLocationSim") {
+		params [P_THISOBJECT, P_STRING("_location")];
+		CALLM(_location, "setGarrison", [_thisObject]);
+		private _id = GETV(_location, "id");
+		SETV("locationId", _id);
+	} ENDMETHOD;
+
+	METHOD("joinLocationActual") {
+		params [P_THISOBJECT, P_STRING("_location")];
+		T_PRVAR(actual);
+		private _locationActual = GETV(_location, "actual");
+
+		private _AI = CALLM(_actual, "getAI", []);
+		private _parameters = [[TAG_LOCATION, _locationActual]];
+		private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];
+		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
+	} ENDMETHOD;
 ENDCLASS;
 
 
@@ -403,7 +455,7 @@ ENDCLASS;
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);
 	SETV(_garrison, "efficiency", _eff1);
-	private _splitGarr = CALLM(_garrison, "simSplit", [_eff2]);
+	private _splitGarr = CALLM(_garrison, "splitSim", [_eff2]);
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
 	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
 }] call test_AddTest;
@@ -428,7 +480,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);
 	SETV(_garrison, "efficiency", _eff1);
-	private _splitGarr = CALLM(_garrison, "actualSplit", [_eff2]);
+	private _splitGarr = CALLM(_garrison, "splitActual", [_eff2]);
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
 	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
 }] call test_AddTest;

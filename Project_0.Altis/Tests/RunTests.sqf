@@ -50,7 +50,7 @@ except__
 {
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
-	throw _exception;
+	//throw _exception;
 };
 
 diag_log "----------------------------------------------------------------------";
@@ -63,7 +63,7 @@ except__
 {
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
-	throw _exception;
+	//throw _exception;
 };
 
 diag_log "----------------------------------------------------------------------";

@@ -1,6 +1,6 @@
 #include "..\common.hpp"
 
-#define CMDR_ACTION_STATE_SPLIT CMDR_ACTION_STATE_CUSTOM+1
+#define CMDR_ACTION_STATE_SPLIT 	CMDR_ACTION_STATE_CUSTOM+1
 
 CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 	VARIABLE("action");
@@ -10,8 +10,6 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		T_SETV("action", _action);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
 		T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
-		T_SETV("fromStatesSim", [CMDR_ACTION_STATE_START]);
-		T_SETV("toStateSim", CMDR_ACTION_STATE_SPLIT);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") { 
@@ -23,9 +21,42 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
 
 		private _detachedGarr = if(GETV(_world, "_isSim")) then {
-									CALLM(_srcGarr, "simSplit", [_detachEff])
+									CALLM(_srcGarr, "splitSim", [_detachEff])
 								} else {
-									CALLM(_srcGarr, "actualSplit", [_detachEff])
+									CALLM(_srcGarr, "splitActual", [_detachEff])
+								};
+		if(!(_detachedGarr isEqualType "")) exitWith {
+			false
+		};
+		SETV(_action, "detachedGarrId", GETV(_detachedGarr, "id"));
+		true
+	} ENDMETHOD;
+ENDCLASS;
+
+#define CMDR_ACTION_STATE_MOVING 	CMDR_ACTION_STATE_CUSTOM+2
+
+CLASS("MoveGarrison", "ActionStateTransition")
+	VARIABLE("action");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_STRING("_action")];
+		T_SETV("action", _action);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_SPLIT]);
+		T_SETV("toState", CMDR_ACTION_STATE_MOVING);
+	} ENDMETHOD;
+
+	/* override */ METHOD("apply") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		T_PRVAR(action);
+		private _detachedGarrId = GETV(_action, "detachedGarrId");
+		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		CALLM(_detachedGarr, );
+
+		private _detachedGarr = if(GETV(_world, "_isSim")) then {
+									CALLM(_srcGarr, "splitSim", [_detachEff])
+								} else {
+									CALLM(_srcGarr, "splitActual", [_detachEff])
 								};
 		if(!(_detachedGarr isEqualType "")) exitWith {
 			false

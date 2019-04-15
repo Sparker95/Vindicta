@@ -135,7 +135,7 @@ OOP_assert_member = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil. Attempt to access member: %1", _memNameStr];
+		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		DUMP_CALLSTACK;
 		false;

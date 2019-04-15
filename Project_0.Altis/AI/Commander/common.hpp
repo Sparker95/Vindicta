@@ -1,3 +1,4 @@
+#define OOP_DEBUG
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
