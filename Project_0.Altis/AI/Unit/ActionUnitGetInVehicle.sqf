@@ -376,6 +376,13 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			pr _success = CALLM0(_thisObject, "assignVehicle");
 			if (_success) then {
 				INFO_0("ACTIVATEd successfully");
+
+				// If we were just spawned, just teleport into the vehicle
+				pr _AI = T_GETV("AI");
+				if (GETV(_AI, "new")) then {
+					CALLM0(_AI, "moveInAssignedVehicle");
+					SETV(_AI, "new", false);
+				};
 				
 				// Calculate ETA
 				pr _hO = T_GETV("hO");

@@ -27,6 +27,12 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+
 		pr _hO = T_GETV("hO");
 		pr _pos = T_GETV("pos");
 		_hO doMove _pos;
