@@ -1,6 +1,8 @@
 #include "..\common.hpp"
 
-// Collection of unitCount/vehCount and their orders
+// Model of a Real Location. This can either be the Actual model or the Sim model.
+// The Actual model represents the Real Location as it currently is. A Sim model
+// is a copy that is modified during simulations.
 CLASS("LocationModel", "ModelBase")
 	// Location position
 	VARIABLE("pos");

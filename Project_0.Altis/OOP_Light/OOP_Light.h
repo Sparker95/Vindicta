@@ -450,6 +450,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
 
 // ----------------------------------------
 // |              C L A S S               |
