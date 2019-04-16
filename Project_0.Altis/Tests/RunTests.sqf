@@ -5,9 +5,13 @@ if (isNil "OOP_Light_initialized") then {
 	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
 };
 
+tests_Total = 0;
+tests_Failed = 0;
+
 test_Scope = "Unknown";
 test_Assert = {
 	params ["_test", "_resultOrCode"];
+	tests_Total = tests_Total + 1;
 	private _result = if(_resultOrCode isEqualType {}) then {
 		call _resultOrCode
 	} else {
@@ -15,6 +19,7 @@ test_Assert = {
 	};
 	if !(_result) then {
 		diag_log format ["  --- TEST !FAILED! ---  [%1] %2", test_Scope, _test];
+		tests_Failed = tests_Failed + 1;
 	};
 	//  else {
 	// 	//diag_log format ["  --- TEST  PASSED  ---  [%1] %2", test_Scope, _test];
@@ -83,8 +88,27 @@ diag_log "----------------------------------------------------------------------
 	{
 		diag_log format ["  --- TEST !FAILED! ---  [%1] EXCEPTION OCCURRED: %2", test_Scope, _exception];
 		[_callstack, _exception] call test_DumpCallstack;
+		tests_Failed = tests_Failed + 1;
+		tests_Total = tests_Total + 1;
 	}
 } forEach allTests;
 diag_log "----------------------------------------------------------------------";
 diag_log "|                               D O N E                              |";
 diag_log "----------------------------------------------------------------------";
+
+frac_failed = tests_Failed / tests_Total;
+
+bar = "";
+
+for "_i" from 0 to floor (70 * (1 - frac_failed) - 1) do {
+	bar = bar + "#";
+};
+
+for "_i" from 0 to ceil (70 * (frac_failed) - 1) do {
+	bar = bar + "-";
+};
+diag_log "";
+diag_log bar;
+diag_log format["%1 out of %2 PASSED", tests_Total - tests_Failed, tests_Total];
+
+exit__ tests_Failed;

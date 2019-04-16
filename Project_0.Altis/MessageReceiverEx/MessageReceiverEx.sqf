@@ -99,10 +99,15 @@ CLASS("MessageReceiverEx", "MessageReceiver");
 	// Returns: the ID of the posted message
 	METHOD("postMethodAsync") {
 		params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnMsgID", false]];
+#ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_TYPE, _methodName];
 		_msg set [MESSAGE_ID_DATA, _methodParams]; // Array to return data to, method parameters
-		private _return = CALLM2(_thisObject, "postMessage", _msg, _returnMsgID);
+		private _return = T_CALLM("postMessage", [_msg]+[_returnMsgID]);
+#else
+		// What shall we do for async fire and forget?
+		private _return = -1;
+#endif
 
 		// Return the message ID (if it was requested)
 		_return
@@ -123,12 +128,16 @@ CLASS("MessageReceiverEx", "MessageReceiver");
 	*/
 	METHOD("postMethodSync") {
 		params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]] ];
+#ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_TYPE, _methodName];
 		_msg set [MESSAGE_ID_DATA, _methodParams];
-		private _msgID = CALLM2(_thisObject, "postMessage", _msg, true);
-		pr _return = CALLM1(_thisObject, "waitUntilMessageDone", _msgID);
-
+		private _msgID = T_CALLM("postMessage", [_msg]+[true]);
+		pr _return = T_CALLM("waitUntilMessageDone", [_msgID]);
+#else
+		// In testing just call the function synchronously
+		pr _return = T_CALLM(_methodName, _methodParams);
+#endif
 		// Return whatever was returned by this object
 		_return
 	} ENDMETHOD;

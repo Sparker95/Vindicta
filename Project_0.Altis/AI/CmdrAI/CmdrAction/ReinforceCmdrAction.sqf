@@ -51,17 +51,14 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		T_PRVAR(action);
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-		CALLM(_detachedGarr, );
-
-		private _detachedGarr = if(GETV(_world, "_isSim")) then {
-									CALLM(_srcGarr, "splitSim", [_detachEff])
-								} else {
-									CALLM(_srcGarr, "splitActual", [_detachEff])
-								};
-		if(!(_detachedGarr isEqualType "")) exitWith {
-			false
+		private _tgtGarrId = GETV(_action, "tgtGarrId");
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		private _tgtPos = GETV(_tgtGarr, "pos");
+		if(GETV(_world, "_isSim")) then {
+			CALLM(_detachedGarr, "moveSim", [_tgtPos]);
+		} else {
+			CALLM(_detachedGarr, "moveActual", [_tgtPos]);
 		};
-		SETV(_action, "detachedGarrId", GETV(_detachedGarr, "id"));
 		true
 	} ENDMETHOD;
 ENDCLASS;

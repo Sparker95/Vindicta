@@ -678,7 +678,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Check if all units are still in the same garrison
 		pr _index = _units findIf {CALLM0(_x, "getGarrison") != _garSrc};
-		if (_index != -1) exitWith { false };
+		if (_index != -1) exitWith { 
+			OOP_WARNING_0("Units being added must all be in the same source garrison");
+			false 
+		};
 		
 		// Check if all groups and their units are still in the same garrison
 		pr _index = _groupsAndUnits findIf {
@@ -694,7 +697,10 @@ CLASS("Garrison", "MessageReceiverEx");
 				};
 			};
 		};
-		if (_index != -1) exitWith { false };
+		if (_index != -1) exitWith { 
+			OOP_WARNING_0("Groups being added must all be in the same source garrison");
+			false
+		};
 		
 		// If we are here then the composition is ok
 		// Move units first

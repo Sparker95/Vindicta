@@ -166,7 +166,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _j = 0;
 		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
 			// Exit now if we have allocated enough units
-			if(EFF_SUM(EFF_FLOOR_0(EFF_DIFF(_effAllocated, _splitEff))) == 0) exitWith {};
+			if(EFF_SUM(EFF_FLOOR_0(EFF_DIFF(_splitEff, _effAllocated))) == 0) exitWith {};
 
 			// if (([_effAllocated, _splitEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) exitWith {
 
@@ -338,21 +338,21 @@ CLASS("GarrisonModel", "ModelBase")
 		// Not needed, it is registered in the WorldModel via the GarrisonModel, and commander can access it via that.
 		//CALLM1(_AI, "registerGarrison", _newGarrActual);
 
-		private _location = T_CALLM("getLocation", []);
-		if(!(_location isEqualType "")) exitWith {
-			// TODO: Garrisons shouldn't need to be assigned to a location to be splittable, it makes 
-			// no sense.
-			FAILURE("Garrison needs to be assigned to location");
-			objNull
-		};
+		// private _location = T_CALLM("getLocation", []);
+		// if(!(_location isEqualType "")) exitWith {
+		// 	// TODO: Garrisons shouldn't need to be assigned to a location to be splittable, it makes 
+		// 	// no sense.
+		// 	FAILURE("Garrison needs to be assigned to location");
+		// 	objNull
+		// };
 
-		private _locationActual = GETV(_location, "actual");
-		ASSERT_MSG(_locationActual isEqualType "", "Actual LocationModel required");
-		CALLM(_newGarrActual, "setLocation", [_locationActual]); // This garrison will spawn here if needed
-		CALLM(_newGarrActual, "spawn", []);
+		// private _locationActual = GETV(_location, "actual");
+		// ASSERT_MSG(_locationActual isEqualType "", "Actual LocationModel required");
+		// CALLM(_newGarrActual, "setLocation", [_locationActual]); // This garrison will spawn here if needed
+		//CALLM(_newGarrActual, "spawn", []);
 		
 		// Try to move the units
-		private _args = [_locationActual, _allocatedUnits, _allocatedGroupsAndUnits];
+		private _args = [_actual, _allocatedUnits, _allocatedGroupsAndUnits];
 		private _moveSuccess = CALLM(_newGarrActual, "postMethodSync", ["addUnitsAndGroups"]+[_args]);
 		if (!_moveSuccess) exitWith {
 			// This shouldn't ever happen because we check all the failure constraints before we got here.
@@ -372,7 +372,7 @@ CLASS("GarrisonModel", "ModelBase")
 	// MOVE TO POS
 	METHOD("moveSim") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
-		SETV("pos", _pos);
+		T_SETV("pos", _pos);
 	} ENDMETHOD;
 
 	METHOD("moveActual") {
@@ -406,7 +406,7 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_location")];
 		CALLM(_location, "setGarrison", [_thisObject]);
 		private _id = GETV(_location, "id");
-		SETV("locationId", _id);
+		T_SETV("locationId", _id);
 	} ENDMETHOD;
 
 	METHOD("joinLocationActual") {
@@ -461,26 +461,37 @@ ENDCLASS;
 }] call test_AddTest;
 
 Test_group_args = [WEST, 0]; // Side, group type
-Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
+Test_unit_args = [tNATO, T_INF, T_INF_default, -1];
 
 ["GarrisonModel.actualSplit", {
 	private _actual = NEW("Garrison", [WEST]);
 	private _group = NEW("Group", Test_group_args);
 	private _eff1 = +T_EFF_null;
-	for "_i" from 0 to 20 do
+	for "_i" from 0 to 19 do
 	{
 		private _unit = NEW("Unit", Test_unit_args + [_group]);
-		CALLM(_actual, "addUnit", [_unit]);
+		//CALLM(_actual, "addUnit", [_unit]);
 		private _unitEff = CALLM(_unit, "getEfficiency", []);
 		_eff1 = EFF_ADD(_eff1, _unitEff);
 	};
+
+	CALLM(_actual, "addGroup", [_group]);
+	
 	private _world = NEW("WorldModel", [false]);
 	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
 	["Initial eff", GETV(_garrison, "efficiency") isEqualTo _eff1] call test_Assert;
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);
 	SETV(_garrison, "efficiency", _eff1);
+
 	private _splitGarr = CALLM(_garrison, "splitActual", [_eff2]);
+	// Sync the Models
+	CALLM(_garrison, "sync", []);
+	CALLM(_splitGarr, "sync", []);
+
+	// diag_log format["%1, %2", GETV(_garrison, "efficiency"), _effr];
+	// diag_log format["%1, %2", GETV(_splitGarr, "efficiency"), _eff2];
+
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
 	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
 }] call test_AddTest;
