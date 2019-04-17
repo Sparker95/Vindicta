@@ -170,7 +170,7 @@ CLASS("WorldModel", "")
 		{
 			private _garrison = _x;
 			private _pos = GETV(_garrison, "pos");
-			private _dist = _pos distance2D _center;
+			private _dist = _pos distance _center;
 			if(_dist <= _maxDist) then {
 				_nearestGarrisons pushBack [_dist, _garrison];
 			};
@@ -189,7 +189,7 @@ CLASS("WorldModel", "")
 		{
 			private _location = _x;
 			private _pos = GETV(_location, "pos");
-			private _dist = _pos distance2D _center;
+			private _dist = _pos distance _center;
 			if(_dist <= _maxDist) then {
 				_nearestLocations pushBack [_dist, _location];
 			};
@@ -202,6 +202,7 @@ CLASS("WorldModel", "")
 	// |                   S C O R I N G   T O O L K I T                    |
 	// ----------------------------------------------------------------------
 
+	// TODO This needs to be looking at Clusters not Garrisons!
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_STRING("_side")];
@@ -381,4 +382,55 @@ ENDCLASS;
 	}] call test_Assert;
 }] call test_AddTest;
 
+["WorldModel.getAliveGarrisons", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison1 = NEW("GarrisonModel", [_world]);
+	private _garrison2 = NEW("GarrisonModel", [_world]);
+	
+	["Initial", count CALLM(_world, "getAliveGarrisons", []) == 2] call test_Assert;
+	CALLM(_garrison1, "killed", []);
+	["Updates correctly 1", count CALLM(_world, "getAliveGarrisons", []) == 1] call test_Assert;
+	CALLM(_garrison2, "killed", []);
+	["Updates correctly 2", count CALLM(_world, "getAliveGarrisons", []) == 0] call test_Assert;
+}] call test_AddTest;
+
+["WorldModel.getNearestGarrisons", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison1 = NEW("GarrisonModel", [_world]);
+	SETV(_garrison1, "pos", [500, 0, 0]);
+	private _garrison2 = NEW("GarrisonModel", [_world]);
+	SETV(_garrison2, "pos", [1000, 0, 0]);
+	private _center = [0,0,0];
+	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[0]) == 0] call test_Assert;
+	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;
+	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 2] call test_Assert;
+	CALLM(_garrison2, "killed", []);
+	["Excluding dead", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 1] call test_Assert;
+}] call test_AddTest;
+
+["WorldModel.getNearestLocations", {
+	private _world = NEW("WorldModel", [true]);
+	private _location1 = NEW("LocationModel", [_world]);
+	SETV(_location1, "pos", [500, 0, 0]);
+	private _location2 = NEW("LocationModel", [_world]);
+	SETV(_location2, "pos", [1000, 0, 0]);
+	private _center = [0,0,0];
+	["Dist test none", count CALLM(_world, "getNearestLocations", [_center]+[0]) == 0] call test_Assert;
+	["Dist test some", count CALLM(_world, "getNearestLocations", [_center]+[501]) == 1] call test_Assert;
+	["Dist test all", count CALLM(_world, "getNearestLocations", [_center]+[1001]) == 2] call test_Assert;
+}] call test_AddTest;
+
+["WorldModel.getDesiredEff", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison1 = NEW("GarrisonModel", [_world]);
+	SETV(_garrison1, "pos", [500, 0, 0]);
+	private _garrison2 = NEW("GarrisonModel", [_world]);
+	SETV(_garrison2, "pos", [1000, 0, 0]);
+	private _center = [0,0,0];
+	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[0]) == 0] call test_Assert;
+	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;
+	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 2] call test_Assert;
+	CALLM(_garrison2, "killed", []);
+	["Excluding dead", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 1] call test_Assert;
+}] call test_AddTest;
 #endif

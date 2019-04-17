@@ -5,13 +5,13 @@ if (isNil "OOP_Light_initialized") then {
 	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
 };
 
-tests_Total = 0;
-tests_Failed = 0;
+asserts_Failed = 0;
+asserts_Passed = 0;
+test_Okay = true;
 
 test_Scope = "Unknown";
 test_Assert = {
 	params ["_test", "_resultOrCode"];
-	tests_Total = tests_Total + 1;
 	private _result = if(_resultOrCode isEqualType {}) then {
 		call _resultOrCode
 	} else {
@@ -19,8 +19,12 @@ test_Assert = {
 	};
 	if !(_result) then {
 		diag_log format ["  --- TEST !FAILED! ---  [%1] %2", test_Scope, _test];
-		tests_Failed = tests_Failed + 1;
+		asserts_Failed = asserts_Failed + 1;
+		test_Okay = false;
+	} else {
+		asserts_Passed = asserts_Passed + 1;
 	};
+	nil
 	//  else {
 	// 	//diag_log format ["  --- TEST  PASSED  ---  [%1] %2", test_Scope, _test];
 	// 	nil
@@ -74,9 +78,11 @@ except__
 diag_log "----------------------------------------------------------------------";
 diag_log "|                      R U N N I N G   T E S T S                     |";
 diag_log "----------------------------------------------------------------------";
+tests_Failed = 0;
 {
 	_x params ["_name", '_code'];
 	test_Scope = _name;
+	test_Okay = true;
 	//diag_log format ["TESTING %1 ...", _name];
 	{
 		private _rval = [] call _code;
@@ -88,15 +94,17 @@ diag_log "----------------------------------------------------------------------
 	{
 		diag_log format ["  --- TEST !FAILED! ---  [%1] EXCEPTION OCCURRED: %2", test_Scope, _exception];
 		[_callstack, _exception] call test_DumpCallstack;
+		test_Okay = false;
+	};
+	if(!test_Okay) then {
 		tests_Failed = tests_Failed + 1;
-		tests_Total = tests_Total + 1;
-	}
+	};
 } forEach allTests;
 diag_log "----------------------------------------------------------------------";
 diag_log "|                               D O N E                              |";
 diag_log "----------------------------------------------------------------------";
 
-frac_failed = tests_Failed / tests_Total;
+frac_failed = tests_Failed / count allTests;
 
 bar = "";
 
@@ -109,6 +117,7 @@ for "_i" from 0 to ceil (70 * (frac_failed) - 1) do {
 };
 diag_log "";
 diag_log bar;
-diag_log format["%1 out of %2 PASSED", tests_Total - tests_Failed, tests_Total];
+diag_log format["%1 out of %2 TESTS PASSED", count allTests - tests_Failed, count allTests];
+diag_log format["%1 ASSERTS PASSED, %2 FAILED", asserts_Passed, asserts_Failed];
 
 exit__ tests_Failed;

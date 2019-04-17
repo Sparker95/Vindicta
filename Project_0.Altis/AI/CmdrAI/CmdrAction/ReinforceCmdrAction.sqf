@@ -33,16 +33,70 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 	} ENDMETHOD;
 ENDCLASS;
 
-#define CMDR_ACTION_STATE_MOVING 	CMDR_ACTION_STATE_CUSTOM+2
+#define CMDR_ACTION_STATE_ARRIVED 	CMDR_ACTION_STATE_CUSTOM+2
 
+// TODO: Split into Move and Retarget, see Docs\CmdrActions\TakeOrReinforce.dot.
+// Need to handle target dying etc etc.
 CLASS("MoveGarrison", "ActionStateTransition")
+	VARIABLE("action");
+	VARIABLE("moving");
+	VARIABLE("radius");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_STRING("_action"), P_STRING("_radius")];
+		T_SETV("action", _action);
+		T_SETV("moving", false);
+		T_SETV("radius", _radius);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_SPLIT]);
+		T_SETV("toState", CMDR_ACTION_STATE_ARRIVED);
+	} ENDMETHOD;
+
+	/* override */ METHOD("apply") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		T_PRVAR(action);
+		T_PRVAR(moving);
+		T_PRVAR(radius);
+
+		private _detachedGarrId = GETV(_action, "detachedGarrId");
+		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		private _tgtGarrId = GETV(_action, "tgtGarrId");
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		private _tgtPos = GETV(_tgtGarr, "pos");
+		private _arrived = false;
+		if(!_moving) then {
+			// Start moving
+			if(GETV(_world, "_isSim")) then {
+				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
+				// Sim is instant, so we have arrived
+				_arrived = true;
+			} else {
+				CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
+				T_SETV("moving", true);
+			};
+		} else {
+			// Are we there yet?
+			private _done = CALLM(_detachedGarr, "moveActualComplete", []);
+			private _detachedGarrPos = GETV(_detachedGarr, "pos");
+			if((_detachedGarrPos distance _tgtPos) < _radius * 1.5) then {
+				_arrived = true;
+			} else {
+				// Move again cos we didn't get there yet!
+				T_SETV("moving", false);
+			};
+		};
+		_arrived
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("MergeGarrison", "ActionStateTransition")
 	VARIABLE("action");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_action")];
 		T_SETV("action", _action);
-		T_SETV("fromStates", [CMDR_ACTION_STATE_SPLIT]);
-		T_SETV("toState", CMDR_ACTION_STATE_MOVING);
+		T_SETV("fromStates", [CMDR_ACTION_STATE_ARRIVED]);
+		T_SETV("toState", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") { 
@@ -53,11 +107,11 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		private _tgtPos = GETV(_tgtGarr, "pos");
+
 		if(GETV(_world, "_isSim")) then {
-			CALLM(_detachedGarr, "moveSim", [_tgtPos]);
+			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
 		} else {
-			CALLM(_detachedGarr, "moveActual", [_tgtPos]);
+			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
 		};
 		true
 	} ENDMETHOD;
@@ -75,10 +129,12 @@ CLASS("ReinforceAction", "CmdrAction")
 		T_SETV("tgtGarrId", _tgtGarrId);
 		T_SETV("detachedGarrId", -1);
 
-		private _asts = [
-			NEW("ReinforceSplitGarrison", [_thisObject])
+		private _transitions = [
+			NEW("ReinforceSplitGarrison", [_thisObject]),
+			NEW("MoveGarrison", [_thisObject]+[200]),
+			NEW("MergeGarrison", [_thisObject])
 		];
-
+		T_SETV("transitions", _transitions);
 	} ENDMETHOD;
 
 	METHOD("getLabel") {
@@ -119,37 +175,6 @@ CLASS("ReinforceAction", "CmdrAction")
 		T_SETV("scoreResource", _scoreResource);
 	} ENDMETHOD;
 
-	// METHOD("applyToSim") {
-	// 	params [P_THISOBJECT, P_STRING("_world")];
-
-	// 	T_PRVAR(complete);
-	// 	if(_complete) exitWith {
-	// 		OOP_WARNING_0("applyToSim after action is complete");
-	// 	};
-
-	// 	T_PRVAR(srcGarrId);
-	// 	T_PRVAR(tgtGarrId);
-	// 	private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-	// 	private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-
-	// 	T_PRVAR(stage);
-
-	// 	// If we didn't start the action yet then we need to subtract from srcGarr
-	// 	if(_stage == "new") then {
-	// 		private _sentEff = T_CALLM1("getDetachmentEff", _world);
-	// 		private _negSentEff = _sentEff apply { _x * -1 };
-	// 		// Remove from source garrison
-	// 		CALLM1(_srcGarr, "modComp", _negSentComp);
-	// 		// Add to target garrison
-	// 		CALLM1(_tgtGarr, "modComp", _sentEff);
-	// 	} else {
-	// 		T_PRVAR(detachedGarrId);
-
-	// 		private _detachedGarr = CALLM1(_world, "getGarrison", _detachedGarrId);
-	// 		CALLM1(_tgtGarr, "mergeGarrison", _detachedGarr);
-	// 	};
-	// } ENDMETHOD;
-
 	// Get composition of reinforcements we should send from src to tgt. 
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
@@ -177,115 +202,4 @@ CLASS("ReinforceAction", "CmdrAction")
 		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_compAvailable
 	} ENDMETHOD;
-
-	// METHOD("update") {
-	// 	params [P_THISOBJECT, P_STRING("_world")];
-
-	// 	T_PRVAR(complete);
-	// 	if(_complete) exitWith {
-	// 		OOP_WARNING_0("update after action is complete");
-	// 	};
-
-	// 	T_PRVAR(srcGarrId);
-	// 	T_PRVAR(tgtGarrId);
-
-	// 	private _srcGarr = CALLM1(_world, "getGarrison", _srcGarrId);
-	// 	private _tgtGarr = CALLM1(_world, "getGarrison", _tgtGarrId);
-
-	// 	T_PRVAR(stage);
-
-	// 	switch(_stage) do {
-	// 		case "new": {
-	// 			OOP_INFO_2("ReinforceAction g%1->g%2 starting", _srcGarrId, _tgtGarrId);
-
-	// 			// We only care about the source garrison being dead at this point, after this 
-	// 			// detachment has already left.
-	// 			// TODO: use actual intel to determine if/when target is dead.
-	// 			if(CALLM0(_srcGarr, "isDead")) exitWith {
-	// 				T_SETV("complete", true);
-	// 				OOP_INFO_2("ReinforceAction g%1->g%2 completed: g%1 died", _srcGarrId, _tgtGarrId);
-	// 			};
-
-	// 			if(CALLM0(_tgtGarr, "isDead")) exitWith {
-	// 				// TODO: What do if target garrison is dead? Should still go there probably?
-	// 				// Maybe fall back and wait? Return to origin?
-	// 				// Probably we want to abort this action and just let commander decide what to 
-	// 				// do with a floating free garrison.
-	// 				T_SETV("complete", true);
-	// 				OOP_INFO_2("ReinforceAction g%1->g%2 completed: g%2 died", _srcGarrId, _tgtGarrId);
-	// 			};
-
-	// 			// We didn't split the source garrison yet, so do it now.
-	// 			private _detachedEff = T_CALLM1("getDetachmentEff", _world);
-	// 			if(_detachedEff#0 == 0 and _detachedEff#1 == 0) exitWith {
-	// 				T_SETV("complete", true);
-	// 				OOP_INFO_2("ReinforceAction g%1->g%2 completed: detachment comp was empty", _srcGarrId, _tgtGarrId);
-	// 			};
-	// 			private _detachedGarr = CALLM1(_srcGarr, "splitGarrison", _detachedEff);
-	// 			private _detachedGarrId = CALLM1(_world, "addGarrison", _detachedGarr);
-	// 			T_SETV("detachedGarrId", _detachedGarrId);
-
-	// 			// Assign action to the detached garrison.
-	// 			CALLM1(_detachedGarr, "setAction", _thisObject);
-
-	// 			// Next stage
-	// 			T_SETV("stage", "moving");
-
-	// 			OOP_INFO_4("ReinforceAction g%1->g%2 sending g%3 %4", _srcGarrId, _tgtGarrId, _detachedGarrId, _detachedEff);
-	// 		};
-	// 		case "moving": {
-	// 			T_PRVAR(detachedGarrId);
-
-	// 			private _detachedGarr = CALLM1(_world, "getGarrison", _detachedGarrId);
-	// 			private _detachedPos = CALLM0(_detachedGarr, "getPos");
-	// 			//OOP_INFO_4("ReinforceAction g%1->g%3->g%2 pos: g%4", _srcGarrId, _tgtGarrId, _detachedGarrId, _detachedPos);
-	// 			if(CALLM0(_detachedGarr, "isDead")) exitWith {
-	// 				CALLM0(_detachedGarr, "clearAction");
-	// 				T_SETV("complete", true);
-	// 				OOP_INFO_3("ReinforceAction g%1->g%3->g%2 completed: g%3 died", _srcGarrId, _tgtGarrId, _detachedGarrId);
-	// 			};
-
-	// 			// If target is dead then rtb
-	// 			if(CALLM0(_tgtGarr, "isDead")) exitWith {
-	// 				// TODO: What do if target garrison is dead? Should still go there probably?
-	// 				// Maybe fall back and wait? Return to origin?
-	// 				// Probably we want to abort this action and just let commander decide what to 
-	// 				// do with a floating free garrison.
-
-	// 				// RTB
-	// 				//CALLM0(_detachedGarr, "cancelOrder");
-	// 				// Give another move order as we didn't reach target yet.
-	// 				private _targetPos = CALLM0(_srcGarr, "getPos");
-	// 				private _args = [ format["g%1 rtb to g%2", _detachedGarr, _srcGarrId], _detachedGarrId, _targetPos];
-	// 				private _moveOrder = NEW("MoveOrder", _args);
-	// 				CALLM1(_detachedGarr, "giveOrder", _moveOrder);
-	// 				// Set target to source
-	// 				T_SETV("tgtGarrId", _srcGarrId);
-	// 				OOP_INFO_3("ReinforceAction g%1->g%3->g%2 rtb: g%2 already dead", _srcGarrId, _tgtGarrId, _detachedGarrId);
-	// 			};
-
-	// 			if(CALLM0(_detachedGarr, "isOrderEfflete")) then {
-	// 				OOP_INFO_3("ReinforceAction g%1->g%3->g%2 move order completed", _srcGarrId, _tgtGarrId, _detachedGarrId);
-					
-	// 				private _targetPos = CALLM0(_tgtGarr, "getPos");
-	// 				private _dist = _detachedPos distance _targetPos;
-	// 				OOP_INFO_4("ReinforceAction g%1->g%3->g%2 dist: %4", _srcGarrId, _tgtGarrId, _detachedGarrId, _dist);
-	// 				// If we reached the target then merge the garrisons
-	// 				if(_dist < 100) then {
-	// 					OOP_INFO_3("ReinforceAction g%1->g%3->g%2 merging g%3 to target", _srcGarrId, _tgtGarrId, _detachedGarrId);
-	// 					CALLM1(_tgtGarr, "mergeGarrison", _detachedGarr);
-	// 					CALLM0(_detachedGarr, "clearAction");
-	// 					T_SETV("complete", true);
-	// 				} else {
-	// 					OOP_INFO_3("ReinforceAction g%1->g%3->g%2 moving g%3 to target", _srcGarrId, _tgtGarrId, _detachedGarr);
-
-	// 					// Give another move order as we didn't reach target yet.
-	// 					private _args = [ format["g%1 reinforcing g%2", _detachedGarrId, _tgtGarrId], _detachedGarrId, _targetPos];
-	// 					private _moveOrder = NEW("MoveOrder", _args);
-	// 					CALLM1(_detachedGarr, "giveOrder", _moveOrder);
-	// 				};
-	// 			};
-	// 		};
-	// 	};
-	// } ENDMETHOD;
 ENDCLASS;

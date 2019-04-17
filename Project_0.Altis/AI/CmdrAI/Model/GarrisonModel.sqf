@@ -25,7 +25,7 @@ CLASS("GarrisonModel", "ModelBase")
 		//T_SETV_REF("order", objNull);
 		T_SETV_REF("action", objNull);
 		// These will get set in sync
-		T_SETV("efficiency", []);
+		T_SETV("efficiency", T_EFF_null);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", objNull);
@@ -125,6 +125,9 @@ CLASS("GarrisonModel", "ModelBase")
 	} ENDMETHOD;
 
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
+	// Does this make sense? Could the sim/actual split be handled in a single functions
+	// instead? Need the concept of operations that take time, and they only apply to 
+	// Actual not sim. 
 
 	// SPLIT
 	METHOD("splitSim") {
@@ -384,6 +387,15 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
 	} ENDMETHOD;
 
+	METHOD("moveActualComplete") {
+		params [P_THISOBJECT];
+		T_PRVAR(actual);
+		private _AI = CALLM(_actual, "getAI", []);
+		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonMove"]+[_AI]);
+		_goalState == ACTION_STATE_COMPLETED
+	} ENDMETHOD;
+	
+
 	// MERGE WITH ANOTHER GARRISON
 	METHOD("mergeSim") {
 		params [P_THISOBJECT, P_STRING("_otherGarr")];
@@ -419,6 +431,14 @@ CLASS("GarrisonModel", "ModelBase")
 		private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];
 		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
 	} ENDMETHOD;
+
+	METHOD("joinLocationActualComplete") {
+		params [P_THISOBJECT];
+		T_PRVAR(actual);
+		private _AI = CALLM(_actual, "getAI", []);
+		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonJoinLocation"]+[_AI]);
+		_goalState == ACTION_STATE_COMPLETED
+	} ENDMETHOD;
 ENDCLASS;
 
 
@@ -446,6 +466,21 @@ ENDCLASS;
 	DELETE(_garrison);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	isNil "_class"
+}] call test_AddTest;
+
+["GarrisonModel.killed", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	CALLM(_garrison, "killed", []);
+	CALLM(_garrison, "isDead", [])
+}] call test_AddTest;
+
+["GarrisonModel.isDead", {
+	private _world = NEW("WorldModel", [true]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	["False before killed", !CALLM(_garrison, "isDead", [])] call test_Assert;
+	CALLM(_garrison, "killed", []);
+	["True after killed", CALLM(_garrison, "isDead", [])] call test_Assert;
 }] call test_AddTest;
 
 ["GarrisonModel.simSplit", {
