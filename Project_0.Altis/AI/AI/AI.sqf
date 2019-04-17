@@ -169,7 +169,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("updateSensors") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_forceUpdate", false]];
 		pr _sensors = GETV(_thisObject, "sensors");
 		//OOP_INFO_1("Updating sensors: %1", _sensors);
 		{
@@ -179,7 +179,7 @@ CLASS("AI", "MessageReceiverEx")
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 			//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
 			// If timeNextUpdate is 0, we never update this sensor
-			if (_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate) then {
+			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
 				//OOP_INFO_0("  Calling UPDATE!");
 				CALLM(_sensor, "update", []);
 				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
@@ -300,6 +300,9 @@ CLASS("AI", "MessageReceiverEx")
 			private _args = [_thisObject, _processInterval, _msg, AI_TIMER_SERVICE]; // message receiver, interval, message, timer service
 			private _timer = NEW("Timer", _args);
 			SETV(_thisObject, "timer", _timer);
+
+			// Post a message to process immediately to accelerate start up
+			CALLM1(_thisObject, "postMessage", +_msg);
 		};
 		nil
 	} ENDMETHOD;

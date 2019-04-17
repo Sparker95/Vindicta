@@ -110,3 +110,6 @@ if (_action != "") then {
 } else {
 	OOP_INFO_0("SPAWN: no current action");
 };
+
+// Call AI "process" method to accelerate decision taking
+CALLM1(T_GETV("AI"), "process", true); // Pass the _accelerate=true flag to update sensors sooner

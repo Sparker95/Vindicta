@@ -4,11 +4,19 @@
 Class: ActionUnit.ActionUnitFlee
 */
 
+#define pr private
+
 CLASS("ActionUnitFlee", "ActionUnit")
 	
 	METHOD("activate") {
 		params ["_thisObject"];
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+
 		private _unit = T_GETV("hO");
 		private _panicAnimsErectAndKneeled = [
 			"ApanPercMstpSnonWnonDnon_G01", "ApanPercMstpSnonWnonDnon_G02", "ApanPercMstpSnonWnonDnon_G03",

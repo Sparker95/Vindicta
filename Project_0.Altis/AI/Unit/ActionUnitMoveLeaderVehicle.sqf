@@ -36,6 +36,12 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			//SETV(_AI, "new", false); // Dont reset the flag
+		};
+
 		T_SETV("stuckTimer", 0);
 		T_SETV("time", time);
 		T_SETV("triedRoads", []);

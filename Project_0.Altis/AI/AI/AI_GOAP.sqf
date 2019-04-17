@@ -87,7 +87,7 @@ CLASS("AI_GOAP", "AI")
 	// ----------------------------------------------------------------------
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_accelerate", false]];
 		
 		OOP_INFO_0("PROCESS");
 		
@@ -113,7 +113,7 @@ CLASS("AI_GOAP", "AI")
 		*/
 		
 		// Update all sensors
-		CALLM0(_thisObject, "updateSensors");
+		CALLM1(_thisObject, "updateSensors", _accelerate);
 		
 		// Update all world facts (delete old facts)
 		CALLM0(_thisObject, "updateWorldFacts");
@@ -349,12 +349,13 @@ CLASS("AI_GOAP", "AI")
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
 	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
 	_deleteSimilarGoals - Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.
-	
+	_callProcess - Bool, optional default true. If true, also calls process method inside this function call to accelerate goal arbitration.
+
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true], ["_callProcess", true]];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
@@ -382,6 +383,11 @@ CLASS("AI_GOAP", "AI")
 		
 		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
+		// Call process method to accelerate goal arbitration
+		if (_callProcess) then {
+			CALLM0(_thisObject, "process");
+		};
+
 		nil
 	} ENDMETHOD;
 	

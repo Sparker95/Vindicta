@@ -40,6 +40,12 @@ CLASS("ActionUnitSalute", "Action")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			//SETV(_AI, "new", false);
+		};
+
 		SETV(_thisObject, "activationTime", time);
 		
 		pr _oh = GETV(_thisObject, "objectHandle");

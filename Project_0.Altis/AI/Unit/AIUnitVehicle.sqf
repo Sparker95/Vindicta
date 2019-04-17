@@ -15,6 +15,10 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
 
+	// Indicates that this AI is new and was created recently
+	// This flag aids acceleration of actions that were given to AI when it was just spawned
+	VARIABLE("new");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -26,6 +30,9 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		// Initialize sensors
 		
 		//SETV(_thisObject, "worldState", _ws);
+
+		// Set "new" flag
+		T_SETV("new", true);
 	} ENDMETHOD;
 	
 	METHOD("delete") {

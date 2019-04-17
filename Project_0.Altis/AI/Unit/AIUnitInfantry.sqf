@@ -22,6 +22,10 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	// Sentry position
 	VARIABLE("sentryPos");
 
+	// Indicates that this AI is new and was created recently
+	// This flag aids acceleration of actions that were given to AI when it was just spawned
+	VARIABLE("new");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -46,6 +50,9 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		pr _sensorCivNear = NEW("SensorUnitCivNear", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCivNear]);
 		
+		// Set "new" flag
+		T_SETV("new", true);
+
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	
