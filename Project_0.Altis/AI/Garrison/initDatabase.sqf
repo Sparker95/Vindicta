@@ -27,6 +27,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonJoinLocation",			12] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
+["GoalGarrisonMove",					11] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
 ["GoalGarrisonRelax",					1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 //["GoalGarrisonJoinLocation",			30] call AI_misc_fnc_setGoalIntrinsicRelevance;

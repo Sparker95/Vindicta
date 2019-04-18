@@ -284,10 +284,14 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _groups = CALLM0(_gar, "getGroups");
 		{
 			pr _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
-			pr _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
-			CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
-
-			_currentIndex = _currentIndex + _nVehThisGroup;
+			if (_nVehThisGroup > 0) then {
+				pr _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
+				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+				_currentIndex = _currentIndex + _nVehThisGroup;
+			} else {
+				pr _posAndDirThisGroup = _posAndDir select [0, 1];
+				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+			};
 		} forEach _groups;
 
 		// todo what happens with ungrouped units?? Why are there even ungrouped units at this point???

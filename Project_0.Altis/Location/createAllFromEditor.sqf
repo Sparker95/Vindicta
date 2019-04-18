@@ -15,7 +15,7 @@ private _radius = 0;
 private _loc = objNull;
 private _locations = entities "Project_0_LocationSector";
 
-//#define ADD_TRUCKS
+#define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
 //#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
@@ -66,7 +66,7 @@ private _locations = entities "Project_0_LocationSector";
 	private _args = [T_INF, [GROUP_TYPE_IDLE]];
 	private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
 	//if (_cInf < 5) then {_cInf = 5};
-	_cInf = 5 + random 5;
+	_cInf = 12; //5 + random 5;
 
 	// // Wheeled and tracked vehicle capacity
 	_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
@@ -170,7 +170,7 @@ private _locations = entities "Project_0_LocationSector";
 
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
-	while {(_cVehGround > 0) && _i < 5} do  {
+	while {(_cVehGround > 0) && _i < 1} do  {
 		private _args = [_template, T_VEH, T_VEH_MRAP_unarmed, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
