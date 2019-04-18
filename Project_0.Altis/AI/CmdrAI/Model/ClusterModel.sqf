@@ -12,7 +12,7 @@ CLASS("ClusterModel", "ModelBase")
 	VARIABLE("eff");
 	// Cluster efficiency damage caused
 	VARIABLE("damage");
-	
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_actual")];
 		T_SETV("pos", []);

@@ -7,6 +7,7 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
+#define PLAN_INTERVAL 30
 #define pr private
 
 CLASS("AICommander", "AI")
@@ -28,7 +29,11 @@ CLASS("AICommander", "AI")
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 	
 	VARIABLE("targetClusterActions"); // Array with ActionCommanderRespondToTargetCluster
-	
+
+	VARIABLE("lastPlanningTime");
+	VARIABLE("cmdrAI");
+	VARIABLE("worldModel");
+
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
@@ -75,7 +80,11 @@ CLASS("AICommander", "AI")
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
-		
+		T_SETV("lastPlanningTime", TIME_NOW);
+		private _cmdrAI = NEW("CmdrAI", [_side]);
+		T_SETV("cmdrAI", _cmdrAI);
+		private _worldModel = NEW("WorldModel", []);
+		T_SETV("worldModel", _worldModel);
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -117,6 +126,14 @@ CLASS("AICommander", "AI")
 			} else {
 				_i = _i + 1;
 			};
+		};
+
+		T_PRVAR(cmdrAI);
+		CALLM(cmdrAI, "plan", []);
+		T_PRVAR(lastPlanningTime);
+		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+			T_SETV("lastPlanningTime", TIME_NOW);
+			CALLM(cmdrAI, "plan", []);
 		};
 	} ENDMETHOD;
 	
@@ -861,7 +878,11 @@ CLASS("AICommander", "AI")
 		
 		T_GETV("garrisons") pushBack _gar; // I need you for my army!
 		CALLM2(_gar, "postMethodAsync", "ref", []);
-		
+
+		T_PRVAR(worldModel);
+		private _garrisonModel = NEW("GarrisonModel", [_gar]);
+		CALLM(_worldModel, "addGarrison", [_garrisonModel]);
+
 		nil
 	} ENDMETHOD;
 	
@@ -877,10 +898,15 @@ CLASS("AICommander", "AI")
 	METHOD("unregisterGarrison") {
 		params ["_thisObject", ["_gar", "", [""]]];
 		
+		// Remove from model first
+		T_PRVAR(worldModel);
+		private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
+		CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
+
 		pr _garrisons = T_GETV("garrisons");
 		_garrisons deleteAt (_garrisons find _gar); // Get out of my sight you useless garrison!
 		CALLM2(_gar, "postMethodAsync", "unref", []);
-		
+
 		nil
 	} ENDMETHOD;
 		

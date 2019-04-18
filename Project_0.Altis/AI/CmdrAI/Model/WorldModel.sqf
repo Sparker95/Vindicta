@@ -24,6 +24,22 @@ CLASS("WorldModel", "")
 		{ UNREF(_x) } forEach _locations;
 	} ENDMETHOD;
 
+	METHOD("sync") {
+		params [P_THISOBJECT];
+		T_PRVAR(garrisons);
+		T_PRVAR(locations);
+
+		// sync existing garrisons
+		{
+			CALLM(_x, "sync", []);
+		} forEach _garrisons;
+
+		// sync existing locations
+		{
+			CALLM(_x, "sync", []);
+		} forEach _locations;
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                       M E T H O D  N A M E                         |
 	// ----------------------------------------------------------------------
