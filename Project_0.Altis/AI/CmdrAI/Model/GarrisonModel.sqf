@@ -145,7 +145,7 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("isDepleted") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		EFF_LT(_efficiency, EFF_MIN_EFF)
+		!EFF_GT(_efficiency, EFF_MIN_EFF)
 	} ENDMETHOD;
 
 	METHOD("getLocation") {

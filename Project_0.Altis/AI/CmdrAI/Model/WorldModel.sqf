@@ -7,11 +7,14 @@ CLASS("WorldModel", "")
 	VARIABLE("locations");
 	VARIABLE("threatMaps");
 
+	VARIABLE("reinforceRequiredScoreCache");
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_BOOL("_isSim")];
 		T_SETV("isSim", _isSim);
 		T_SETV("garrisons", []);
 		T_SETV("locations", []);
+		T_SETV("reinforceRequiredScoreCache", []);
 		//T_SETV("lastSpawnT", simtime);
 		//T_SETV("threatMaps", [] call ws_fnc_newGridArray);
 	} ENDMETHOD;
@@ -261,52 +264,71 @@ CLASS("WorldModel", "")
 	// |                   S C O R I N G   T O O L K I T                    |
 	// ----------------------------------------------------------------------
 
-	// TODO This needs to be looking at Clusters not Garrisons!
+	METHOD("resetScoringCache") {
+		params [P_THISOBJECT];
+		T_PRVAR(garrisons);
+		private _cache = [];
+		_cache resize (count _garrisons);
+		T_SETV("reinforceRequiredScoreCache", _cache);
+	} ENDMETHOD;
+	
+	// METHOD("clearScoringCacheForGarrison") {
+	// 	params [P_THISOBJECT, P_STRING("_garrison")];
+	// 	T_PRVAR("garrisonsReinf")
+	// 	T_SETV("reinforceRequiredScoreCache", []);
+	// } ENDMETHOD;
+
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_SIDE("_side")];
-		
-		// max(base, nearest enemy forces * 2, threat map * 2);
-		private _base = EFF_MIN_EFF;
 
-		// Nearest enemy garrison force * 2
-		private _enemyForces = T_CALLM("getNearestGarrisons", [_pos]+[2000]) select {
-			_x params ["_dist", "_garr"];
-			GETV(_garr, "side") != _side
-		} apply {
-			_x params ["_dist", "_garr"];
-			EFF_MUL_SCALAR(GETV(_garr, "efficiency"), 2)
-		};
+		// TODO: This needs to be looking at Clusters not Garrisons!
+		// TODO: Implement, grids etc.
+		// TODO: Cache it
 
-		// TODO: Maybe should have outpost specific force requirements based on strategy?
-		private _nearEnemyEff = EFF_ZERO;
-		{
-			_nearEnemyEff = EFF_MAX(_nearEnemyEff, _x);
-		} forEach _enemyForces;
+		EFF_MIN_EFF
 
-		// private _nearEnemyEff = if(count _enemyForces > 0) then {
-		// 	_enemyForces#0
-		// } else { 
-		// 	[0,0] 
-		// };
-		
-		// // Threat map converted from strength into a composition of the same strength
-		// private _threatMapForce = if(_side == side_opf) then {
-		// 	T_PRVAR(threatMapOpf);
-		// 	private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
-		// 	[
-		// 		_strength * 0.7 / UNIT_STRENGTH,
-		// 		_strength * 0.3 / VEHICLE_STRENGTH
-		// 	]
-		// } else {
-		// 	[0,0]
+		// // max(base, nearest enemy forces * 2, threat map * 2);
+		// private _base = EFF_MIN_EFF;
+
+		// // Nearest enemy garrison force * 2
+		// private _enemyForces = T_CALLM("getNearestGarrisons", [_pos]+[2000]) select {
+		// 	_x params ["_dist", "_garr"];
+		// 	GETV(_garr, "side") != _side
+		// } apply {
+		// 	_x params ["_dist", "_garr"];
+		// 	EFF_MUL_SCALAR(GETV(_garr, "efficiency"), 2)
 		// };
 
-		// [
-		// 	ceil (_base#0 max (_nearEnemyEff#0 max _threatMapForce#0)),
-		// 	ceil (_base#1 max (_nearEnemyEff#1 max _threatMapForce#1))
-		// ]
-		EFF_CEIL(EFF_MAX(_base, _nearEnemyEff))
+		// // TODO: Maybe should have outpost specific force requirements based on strategy?
+		// private _nearEnemyEff = EFF_ZERO;
+		// {
+		// 	_nearEnemyEff = EFF_MAX(_nearEnemyEff, _x);
+		// } forEach _enemyForces;
+
+		// // private _nearEnemyEff = if(count _enemyForces > 0) then {
+		// // 	_enemyForces#0
+		// // } else { 
+		// // 	[0,0] 
+		// // };
+		
+		// // // Threat map converted from strength into a composition of the same strength
+		// // private _threatMapForce = if(_side == side_opf) then {
+		// // 	T_PRVAR(threatMapOpf);
+		// // 	private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
+		// // 	[
+		// // 		_strength * 0.7 / UNIT_STRENGTH,
+		// // 		_strength * 0.3 / VEHICLE_STRENGTH
+		// // 	]
+		// // } else {
+		// // 	[0,0]
+		// // };
+
+		// // [
+		// // 	ceil (_base#0 max (_nearEnemyEff#0 max _threatMapForce#0)),
+		// // 	ceil (_base#1 max (_nearEnemyEff#1 max _threatMapForce#1))
+		// // ]
+		// EFF_CEIL(EFF_MAX(_base, _nearEnemyEff))
 	} ENDMETHOD;
 
 	// How much over desired efficiency is the garrison? Negative for under.
@@ -342,18 +364,25 @@ CLASS("WorldModel", "")
 	METHOD("getReinforceRequiredScore") {
 		params [P_THISOBJECT, P_STRING("_garr")];
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
+		T_PRVAR(reinforceRequiredScoreCache);
+		
+		private _garrId = GETV(_gar, "id");
+		private _cacheVal = _reinforceRequiredScoreCache#_garrId;
+
+		if !(isNil "_cacheVal") exitWith { _cacheVal };
 
 		// How much garr is *under* desired efficiency (so over comp * -1) with a non-linear function applied.
 		// i.e. How much more efficiency tgt needs.
 		private _overEff = T_CALLM("getOverDesiredEffScaled", [_garr]+[0.75]);
 		private _score = EFF_SUM(EFF_MAX_SCALAR(EFF_MUL_SCALAR(_overEff, -1), 0));
-
+	 
 		// apply non linear function to threat (https://www.desmos.com/calculator/wnlyulwf7m)
 		// This models reinforcement desireability as relative to absolute power of 
 		// missing comp rather than relative to ratio of missing comp/desired comp.
 		// 
 		_score = 0.1 * _score;
 		_score = 0 max ( _score * _score * _score );
+		_reinforceRequiredScoreCache set [_garrId, _score];
 		_score
 	} ENDMETHOD;
 ENDCLASS;

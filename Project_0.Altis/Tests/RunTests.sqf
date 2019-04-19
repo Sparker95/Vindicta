@@ -108,13 +108,21 @@ frac_failed = tests_Failed / count allTests;
 
 bar = "";
 
-for "_i" from 0 to floor (70 * (1 - frac_failed) - 1) do {
-	bar = bar + "#";
+pb_full = floor (70 * (1 - frac_failed));
+pb_empty = 70 - pb_full;
+
+if(pb_full > 0) then {
+	for "_i" from 1 to pb_full do {
+		bar = bar + "#";
+	};
 };
 
-for "_i" from 0 to ceil (70 * (frac_failed) - 1) do {
-	bar = bar + "-";
+if(pb_empty > 0) then {
+	for "_i" from 1 to pb_empty do {
+		bar = bar + "-";
+	};
 };
+
 diag_log "";
 diag_log bar;
 diag_log format["%1 out of %2 TESTS PASSED", count allTests - tests_Failed, count allTests];

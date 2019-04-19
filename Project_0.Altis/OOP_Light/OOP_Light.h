@@ -782,7 +782,7 @@ objNameStr \
 #define NOT_FOUND -1
 // For use with sort
 #define ASCENDING true
-#define DECENDING false
+#define DESCENDING false
 // Is the object handle valid?
 //#define NOT_NULL_OBJECT(object) ((object isEqualType "") and {!(object isEqualTo "")})
 #define IS_NULL_OBJECT(object) (!(object isEqualType "") or {object isEqualTo ""})

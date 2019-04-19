@@ -179,8 +179,6 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
-		// TODO:OPT cache these scores!
-		private _scorePriority = CALLM(_world, "getReinforceRequiredScore", [_tgtGarr]);
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
@@ -194,9 +192,15 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos]+[_tgtGarrPos]);
 
 		private _scoreResource = _detachEffStrength * _distCoeff;
+
+		// TODO:OPT cache these scores!
+		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_world, "getReinforceRequiredScore", [_tgtGarr])};
+
 		// private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
 		// OOP_INFO_0(_str);
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score [p %5, r %6]", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]);
+		if(_scorePriority > 0 and _scoreResource > 0) then {
+			OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score [p %5, r %6]", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]);
+		};
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
 	} ENDMETHOD;
@@ -227,7 +231,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
-		if(EFF_SUM(EFF_MIN_SCALAR(EFF_DIFF(_compAvailable, EFF_MIN_EFF), 0)) < 0) exitWith { EFF_ZERO };
+		if(!EFF_GT(_compAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
 
 		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_compAvailable

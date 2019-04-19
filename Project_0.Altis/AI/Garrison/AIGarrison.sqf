@@ -139,7 +139,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		if (_action != "") then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-		pr _text = format ["%1, %2, %3, %4", _gar, T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
+		pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
 		_mrk setMarkerText _text;
 		
 		// Set pos

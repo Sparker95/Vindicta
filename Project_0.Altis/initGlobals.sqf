@@ -6,6 +6,9 @@
 #include "AI\Commander\AICommander.hpp"
 #include "AI\Commander\LocationData.hpp"
 
+// Global flags
+gFlagAllCommanders = false;
+
 // Main timer service
 gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
 
@@ -57,27 +60,36 @@ if (isServer) then {
 	gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
 
 	// Message loops for commander AI
-	gMessageLoopCommanderWest = NEW("MessageLoop", []);
+	//gMessageLoopCommanderWest = NEW("MessageLoop", []);
 	gMessageLoopCommanderInd = NEW("MessageLoop", []);
-	gMessageLoopCommanderEast = NEW("MessageLoop", []);
+	//gMessageLoopCommanderEast = NEW("MessageLoop", []);
 
 	// Commander AIs
-	// West
-	gCommanderWest = NEW("Commander", []);
-	private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
-	gAICommanderWest = NEW_PUBLIC("AICommander", _args);
-	publicVariable "gAICommanderWest";
+	gCommanders = [];
+	if(gFlagAllCommanders) then {
+		// West
+		gCommanderWest = NEW("Commander", []);
+		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
+		publicVariable "gAICommanderWest";
+		gCommanders pushBack gAICommanderWest;
+	};
+	
 	// Independent
 	gCommanderInd = NEW("Commander", []);
 	private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
 	gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 	publicVariable "gAICommanderInd";
-	// East
-	gCommanderEast = NEW("Commander", []);
-	private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
-	gAICommanderEast = NEW_PUBLIC("AICommander", _args);
-	publicVariable "gAICommanderEast";
+	gCommanders pushBack gAICommanderInd;
 
+	if(gFlagAllCommanders) then {
+		// East
+		gCommanderEast = NEW("Commander", []);
+		private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
+		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
+		publicVariable "gAICommanderEast";
+		gCommanders pushBack gAICommanderEast;
+	};
 
 	// Create locations and other things
 	OOP_INFO_0("Init.sqf: Calling initWorld...");
@@ -116,7 +128,7 @@ if (isServer) then {
 
 		CALLM1(_x, "setProcessInterval", 10);
 		CALLM0(_x, "start");
-	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
+	} forEach gCommanders;
 };
 
 #endif
