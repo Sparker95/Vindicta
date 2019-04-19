@@ -12,12 +12,14 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
 	} ENDMETHOD;
 
-	/* override */ METHOD("apply") { 
+	/* override */ METHOD("apply") {
 		params [P_THISOBJECT, P_STRING("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_PRVAR(action);
 		private _srcGarrId = GETV(_action, "srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
 		private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
 
 		private _detachedGarr = if(GETV(_world, "_isSim")) then {
@@ -25,9 +27,13 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 								} else {
 									CALLM(_srcGarr, "splitActual", [_detachEff])
 								};
-		if(!(_detachedGarr isEqualType "")) exitWith {
+		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
+			OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
 			false
 		};
+		OOP_DEBUG_MSG("[w %1 a %2] Detached %3 from %4", [_world]+[_action]+[_detachedGarr]+[_srcGarr]);
+
+		CALLM(_detachedGarr, "setAction", [_action]);
 		SETV(_action, "detachedGarrId", GETV(_detachedGarr, "id"));
 		true
 	} ENDMETHOD;
@@ -43,7 +49,8 @@ CLASS("MoveGarrison", "ActionStateTransition")
 	VARIABLE("radius");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_action"), P_STRING("_radius")];
+		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_radius")];
+
 		T_SETV("action", _action);
 		T_SETV("moving", false);
 		T_SETV("radius", _radius);
@@ -53,6 +60,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 
 	/* override */ METHOD("apply") { 
 		params [P_THISOBJECT, P_STRING("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_PRVAR(action);
 		T_PRVAR(moving);
@@ -60,15 +68,20 @@ CLASS("MoveGarrison", "ActionStateTransition")
 
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		ASSERT_OBJECT(_detachedGarr);
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
+
 		private _tgtPos = GETV(_tgtGarr, "pos");
 		private _arrived = false;
 		if(!_moving) then {
 			// Start moving
+			OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
 			if(GETV(_world, "_isSim")) then {
 				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
 				// Sim is instant, so we have arrived
+				OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
 				_arrived = true;
 			} else {
 				CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
@@ -77,12 +90,16 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		} else {
 			// Are we there yet?
 			private _done = CALLM(_detachedGarr, "moveActualComplete", []);
-			private _detachedGarrPos = GETV(_detachedGarr, "pos");
-			if((_detachedGarrPos distance _tgtPos) < _radius * 1.5) then {
-				_arrived = true;
-			} else {
-				// Move again cos we didn't get there yet!
-				T_SETV("moving", false);
+			if(_done) then {
+				private _detachedGarrPos = GETV(_detachedGarr, "pos");
+				if((_detachedGarrPos distance _tgtPos) < _radius * 1.5) then {
+					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: complete, reached target", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
+					_arrived = true;
+				} else {
+					// Move again cos we didn't get there yet!
+					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: complete, didn't reach target, moving again", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
+					T_SETV("moving", false);
+				};
 			};
 		};
 		_arrived
@@ -94,6 +111,7 @@ CLASS("MergeGarrison", "ActionStateTransition")
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_action")];
+
 		T_SETV("action", _action);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_ARRIVED]);
 		T_SETV("toState", CMDR_ACTION_STATE_END);
@@ -101,23 +119,27 @@ CLASS("MergeGarrison", "ActionStateTransition")
 
 	/* override */ METHOD("apply") { 
 		params [P_THISOBJECT, P_STRING("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_PRVAR(action);
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		ASSERT_OBJECT(_detachedGarr);
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
 
 		if(GETV(_world, "_isSim")) then {
 			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
 		} else {
 			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
 		};
+		OOP_DEBUG_MSG("[w %1 a %2] Merged %3 to %4", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]);
 		true
 	} ENDMETHOD;
 ENDCLASS;
 
-CLASS("ReinforceAction", "CmdrAction")
+CLASS("ReinforceCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("tgtGarrId");
 	VARIABLE("detachedGarrId");
@@ -139,6 +161,7 @@ CLASS("ReinforceAction", "CmdrAction")
 
 	METHOD("getLabel") {
 		params [P_THISOBJECT];
+
 		T_PRVAR(tgtGarrId);
 		T_PRVAR(stage);
 		format ["reinf o%1 - %2", _tgtGarrId, _stage]
@@ -146,12 +169,15 @@ CLASS("ReinforceAction", "CmdrAction")
 
 	METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtGarrId);
 
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
 
 		// TODO:OPT cache these scores!
 		private _scorePriority = CALLM(_world, "getReinforceRequiredScore", [_tgtGarr]);
@@ -165,12 +191,12 @@ CLASS("ReinforceAction", "CmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 
-		private _distCoeff = CALLSM("Action", "calcDistanceFalloff", [_srcGarrPos]+[_tgtGarrPos]);
+		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos]+[_tgtGarrPos]);
 
 		private _scoreResource = _detachEffStrength * _distCoeff;
 		// private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
 		// OOP_INFO_0(_str);
-
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score [p %5, r %6]", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]);
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
 	} ENDMETHOD;
@@ -180,11 +206,15 @@ CLASS("ReinforceAction", "CmdrAction")
 	// TODO: factor out logic for working out detachments for various situations
 	METHOD("getDetachmentEff") {
 		params [P_THISOBJECT, P_STRING("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtGarrId);
 
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
 
 		// How much resources tgt needs
 		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_world, "getOverDesiredEff", [_tgtGarr]), -1), 0);

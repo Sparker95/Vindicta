@@ -73,7 +73,7 @@ CLASS("WorldModel", "")
 
 		_worldCopy
 	} ENDMETHOD;
-	
+
 	// METHOD("updateThreatMaps") {
 	// 	params [P_THISOBJECT];
 
@@ -106,11 +106,14 @@ CLASS("WorldModel", "")
 
 	METHOD("addGarrison") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
+
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		ASSERT_MSG(GETV(_garrison, "id") == MODEL_HANDLE_INVALID, "GarrisonModel is already attached to a WorldModel");
+
 		T_PRVAR(garrisons);
 
 		//#ifdef OOP_ASSERT
 		//private _existingId = GETV(_garrison, "id");
-		ASSERT_MSG(GETV(_garrison, "id") == MODEL_HANDLE_INVALID, "GarrisonModel is already attached to a WorldModel");
 		//#endif
 
 		REF(_garrison);
@@ -127,18 +130,39 @@ CLASS("WorldModel", "")
 
 	METHOD("findGarrisonByActual") {
 		params [P_THISOBJECT, P_STRING("_actual")];
+
+		ASSERT_OBJECT_CLASS(_actual, "Garrison");
 		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Garrison by Actual in a Sim Model");
+
 		T_PRVAR(garrisons);
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
-		if(_idx == -1) exitWith { objNull };
+		if(_idx == NOT_FOUND) exitWith { objNull };
 		_garrisons select _idx
+	} ENDMETHOD;
+
+	METHOD("findOrAddGarrisonByActual") {
+		params [P_THISOBJECT, P_STRING("_actual")];
+
+		ASSERT_OBJECT_CLASS(_actual, "Garrison");
+		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Garrison by Actual in a Sim Model");
+
+		T_PRVAR(garrisons);
+		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
+		if(_idx == NOT_FOUND) then { 
+			private _newGarrison = NEW("GarrisonModel", [_thisObject]+[_actual]);
+			_newGarrison
+		} else {
+			_garrisons select _idx
+		}
 	} ENDMETHOD;
 
 	METHOD("addLocation") {
 		params [P_THISOBJECT, P_STRING("_location")];
-		T_PRVAR(locations);
 		
+		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 		ASSERT_MSG(GETV(_location, "id") == MODEL_HANDLE_INVALID, "LocationModel is already attached to a WorldModel");
+		
+		T_PRVAR(locations);
 
 		REF(_location);
 		private _idx = _locations pushBack _location;
@@ -154,13 +178,32 @@ CLASS("WorldModel", "")
 
 	METHOD("findLocationByActual") {
 		params [P_THISOBJECT, P_STRING("_actual")];
+
+		ASSERT_OBJECT_CLASS(_actual, "Location");
 		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
+		
 		T_PRVAR(locations);
 		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
-		if(_idx == -1) exitWith { objNull };
+		if(_idx == NOT_FOUND) exitWith { objNull };
 		_locations select _idx
 	} ENDMETHOD;
 
+	METHOD("findOrAddLocationByActual") {
+		params [P_THISOBJECT, P_STRING("_actual")];
+
+		ASSERT_OBJECT_CLASS(_actual, "Location");
+		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
+
+		T_PRVAR(locations);
+		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
+		if(_idx == NOT_FOUND) then { 
+			private _newLocation = NEW("LocationModel", [_thisObject]+[_actual]);
+			_newLocation
+		} else {
+			_locations select _idx
+		}
+	} ENDMETHOD;
+	
 	METHOD("garrisonKilled") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		// If we are a sim world then we need to perform updates that would otherwise be
@@ -221,7 +264,7 @@ CLASS("WorldModel", "")
 	// TODO This needs to be looking at Clusters not Garrisons!
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
-		params [P_THISOBJECT, P_ARRAY("_pos"), P_STRING("_side")];
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_SIDE("_side")];
 		
 		// max(base, nearest enemy forces * 2, threat map * 2);
 		private _base = EFF_MIN_EFF;
@@ -236,12 +279,12 @@ CLASS("WorldModel", "")
 		};
 
 		// TODO: Maybe should have outpost specific force requirements based on strategy?
-		private _nearEnemyComp = EFF_ZERO;
+		private _nearEnemyEff = EFF_ZERO;
 		{
-			_nearEnemyComp = EFF_MAX(_nearEnemyComp, _x);
+			_nearEnemyEff = EFF_MAX(_nearEnemyEff, _x);
 		} forEach _enemyForces;
 
-		// private _nearEnemyComp = if(count _enemyForces > 0) then {
+		// private _nearEnemyEff = if(count _enemyForces > 0) then {
 		// 	_enemyForces#0
 		// } else { 
 		// 	[0,0] 
@@ -260,47 +303,50 @@ CLASS("WorldModel", "")
 		// };
 
 		// [
-		// 	ceil (_base#0 max (_nearEnemyComp#0 max _threatMapForce#0)),
-		// 	ceil (_base#1 max (_nearEnemyComp#1 max _threatMapForce#1))
+		// 	ceil (_base#0 max (_nearEnemyEff#0 max _threatMapForce#0)),
+		// 	ceil (_base#1 max (_nearEnemyEff#1 max _threatMapForce#1))
 		// ]
-		EFF_CEIL(EFF_MAX(_base, _nearEnemyComp))
+		EFF_CEIL(EFF_MAX(_base, _nearEnemyEff))
 	} ENDMETHOD;
 
 	// How much over desired efficiency is the garrison? Negative for under.
 	METHOD("getOverDesiredEff") {
 		params [P_THISOBJECT, P_STRING("_garr")];
-		
+		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
+
 		private _pos = GETV(_garr, "pos");
 		private _side = GETV(_garr, "side");
 		private _eff = GETV(_garr, "efficiency");
-		private _desiredComp = T_CALLM("getDesiredEff", [_pos]+[_side]);
+		private _desiredEff = T_CALLM("getDesiredEff", [_pos]+[_side]);
 		
-		EFF_DIFF(_comp, _desiredComp)
+		EFF_DIFF(_eff, _desiredEff)
 	} ENDMETHOD;
 
 	// How much over desired efficiency is the garrison, scaled. Negative for under.
 	METHOD("getOverDesiredEffScaled") {
-		params [P_THISOBJECT, P_STRING("_garr"), P_NUMBER("_compScalar")];
-		
+		params [P_THISOBJECT, P_STRING("_garr"), P_NUMBER("_scalar")];
+		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
+
 		private _pos = GETV(_garr, "pos");
 		private _side = GETV(_garr, "side");
 		private _eff = GETV(_garr, "efficiency");
-		private _desiredComp = T_CALLM("getDesiredEff", [_pos]+[_side]);
+		private _desiredEff = T_CALLM("getDesiredEff", [_pos]+[_side]);
 
 		// TODO: is this right, or should it be scaling the final result? 
 		// How it is now will (under)exaggerate the desired composition
 
-		EFF_MUL_SCALAR(EFF_DIFF(_comp, _desiredComp), _compScalar)
+		EFF_MUL_SCALAR(EFF_DIFF(_eff, _desiredEff), _scalar)
 	} ENDMETHOD;
 
 	// A scoring factor for how much a garrison desires reinforcement
 	METHOD("getReinforceRequiredScore") {
 		params [P_THISOBJECT, P_STRING("_garr")];
+		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 
 		// How much garr is *under* desired efficiency (so over comp * -1) with a non-linear function applied.
 		// i.e. How much more efficiency tgt needs.
-		private _overComp = T_CALLM("getOverDesiredEffScaled", [_garr]+[0.75]);
-		private _score = EFF_SUM(EFF_MAX_SCALAR(EFF_MUL_SCALAR(_overComp, -1), 0));
+		private _overEff = T_CALLM("getOverDesiredEffScaled", [_garr]+[0.75]);
+		private _score = EFF_SUM(EFF_MAX_SCALAR(EFF_MUL_SCALAR(_overEff, -1), 0));
 
 		// apply non linear function to threat (https://www.desmos.com/calculator/wnlyulwf7m)
 		// This models reinforcement desireability as relative to absolute power of 

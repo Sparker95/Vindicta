@@ -54,7 +54,7 @@ CLASS("ClusterModel", "ModelBase")
 		// 	private _garrisonActual = CALLM(_actual, "getGarrisonMilitaryMain", []);
 		// 	if(!(_garrisonActual isEqualTo "")) then {
 		// 		T_PRVAR(world);
-		// 		private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
+		// 		private _garrison = CALLM(_world, "getOrAddGarrisonByActual", [_garrisonActual]);
 		// 		T_SETV("garrisonId", GETV(_garrison, "id"));
 		// 	} else {
 		// 		T_SETV("garrisonId", MODEL_HANDLE_INVALID);

@@ -14,7 +14,7 @@ _data	- for "circle":
 
 */
 
-params [["_thisObject", "", [""]], ["_type", "", [""]], ["_data", 50, [0, []]] ];
+params [["_thisObject", "", [""]], ["_type", "", [""]], ["_data", [50], [0, []]] ];
 
 switch (_type) do {
 	case "circle" : {
@@ -28,6 +28,7 @@ switch (_type) do {
 		private _d  = 0;
 		private _locPos = GET_VAR(_thisObject, "pos");
 		private _pos = 0;
+#ifndef _SQF_VM // getPos not implemented, probably surfaceIsWater isn't either.
 		while {_i < 8} do
 		{
 			_d = _radius;
@@ -44,6 +45,7 @@ switch (_type) do {
 			//Test
 			//createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];
 		};
+#endif
 		SET_VAR(_thisObject, "borderPatrolWaypoints", _wp);
 	};
 	

@@ -54,11 +54,13 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(state);
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
+
 		while {_state != CMDR_ACTION_STATE_END} do {
 			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
 			ASSERT_MSG(_newState != _state, format (["Couldn't apply action %1 to sim, stuck in state %2"]+[_thisObject]+[_state]));
 			_state = _newState;
 		};
+		// We don't update member var "state" here, this is just a sim
 	} ENDMETHOD;
 
 	METHOD("update") {
@@ -66,7 +68,14 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(state);
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
-		CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+		
+		_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+		T_SETV("state", _state)
+	} ENDMETHOD;
+
+	METHOD("isComplete") {
+		params [P_THISOBJECT];
+		T_GETV("state") == CMDR_ACTION_STATE_END
 	} ENDMETHOD;
 
 	METHOD("getLabel") {

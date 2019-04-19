@@ -33,7 +33,7 @@
 // Enables output to external file with ofstream in all OOP classes
 // It's a global flag, must be defined here
 
-//#define OFSTREAM_ENABLE
+#define OFSTREAM_ENABLE
 
 //Enables checks for member accesses at runtime
 // It's a global flag, must be defined here
@@ -47,8 +47,8 @@
 #define VM_LOG(t) diag_log t
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
-#define OOP_DEBUG
-#define OOP_INFO
+#undef OOP_DEBUG
+#undef OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
 
@@ -204,8 +204,14 @@ nameStr profilerSetCounter _oop_cnt; };
 #define FORCE_GET_MEM(objNameStr, memNameStr) ( NAMESPACE getVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr) )
 #define FORCE_GET_STATIC_MEM(classNameStr, memNameStr) ( NAMESPACE getVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) )
 #define FORCE_GET_METHOD(classNameStr, methodNameStr) ( NAMESPACE getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
+
+#ifndef _SQF_VM
 #define FORCE_PUBLIC_MEM(objNameStr, memNameStr) publicVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr)
 #define FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr) publicVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr)
+#else
+#define FORCE_PUBLIC_MEM(objNameStr, memNameStr)
+#define FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)
+#endif
 
 //Special members don't use run time checks
 #define SET_SPECIAL_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_SPECIAL_MEM_NAME_STR(classNameStr, memNameStr), value]
@@ -422,6 +428,10 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 			if(!(isNil "_result")) then { _result } else { nil } \
 		}]
 #else
+	#define PROFILE_SCOPE_START(scopeName)
+
+	#define PROFILE_SCOPE_END(scopeName, minT)
+
 	#define METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr;  _oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 	#define ENDMETHOD ]
@@ -447,6 +457,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
@@ -638,6 +649,7 @@ objNameStr \
 #endif
 
 #ifdef OOP_PROFILE
+#define OOP_PROFILE_MSG(str, a) private _o_str = format ["[%1.%2] PROFILE: %3",LOG_0, LOG_1, format ([str]+a)]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
 #define OOP_PROFILE_0(str) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, str]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
 #define OOP_PROFILE_1(str, a) private _o_str = format ["[%1.%2] PROFILE: %3",LOG_0, LOG_1, format [str, a]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
 #define OOP_PROFILE_2(str, a, b) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
@@ -645,6 +657,7 @@ objNameStr \
 #define OOP_PROFILE_4(str, a, b, c, d) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
 #define OOP_PROFILE_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] PROFILE: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; __OFSTREAM_OUT("oop_profile.rpt", _o_str)
 #else
+#define OOP_PROFILE_MSG(str, a)
 #define OOP_PROFILE_0(str)
 #define OOP_PROFILE_1(str, a)
 #define OOP_PROFILE_2(str, a, b)
@@ -654,6 +667,7 @@ objNameStr \
 #endif
 
 #ifdef OOP_INFO
+#define OOP_INFO_MSG(str, a) private _o_str = format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format ([str]+a)]; WRITE_LOG(_o_str)
 #define OOP_INFO_0(str) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
 #define OOP_INFO_1(str, a) private _o_str = format ["[%1.%2] INFO: %3",LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
 #define OOP_INFO_2(str, a, b) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
@@ -661,6 +675,7 @@ objNameStr \
 #define OOP_INFO_4(str, a, b, c, d) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_INFO_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
+#define OOP_INFO_MSG(str, a)
 #define OOP_INFO_0(str)
 #define OOP_INFO_1(str, a)
 #define OOP_INFO_2(str, a, b)
@@ -670,6 +685,7 @@ objNameStr \
 #endif
 
 #ifdef OOP_WARNING
+#define OOP_WARNING_MSG(str, a) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format ([str]+a)]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_WARNING_0(str) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_WARNING_1(str, a) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_WARNING_2(str, a, b) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
@@ -677,6 +693,7 @@ objNameStr \
 #define OOP_WARNING_4(str, a, b, c, d) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_WARNING_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] WARNING: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #else
+#define OOP_WARNING_MSG(str, a)
 #define OOP_WARNING_0(str)
 #define OOP_WARNING_1(str, a)
 #define OOP_WARNING_2(str, a, b)
@@ -686,6 +703,7 @@ objNameStr \
 #endif
 
 #ifdef OOP_ERROR
+#define OOP_ERROR_MSG(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
@@ -693,6 +711,7 @@ objNameStr \
 #define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #else
+#define OOP_ERROR_MSG(str, a)
 #define OOP_ERROR_0(str)
 #define OOP_ERROR_1(str, a)
 #define OOP_ERROR_2(str, a, b)
@@ -702,6 +721,7 @@ objNameStr \
 #endif
 
 #ifdef OOP_DEBUG
+#define OOP_DEBUG_MSG(str, a) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_0(str) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_1(str, a) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_2(str, a, b) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str)
@@ -709,6 +729,7 @@ objNameStr \
 #define OOP_DEBUG_4(str, a, b, c, d) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
+#define OOP_DEBUG_MSG(str, a)
 #define OOP_DEBUG_0(str)
 #define OOP_DEBUG_1(str, a)
 #define OOP_DEBUG_2(str, a, b)
@@ -723,27 +744,47 @@ objNameStr \
 // ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
 // Exits current scope if provided object's class doesn't match specified class
 #ifdef OOP_ASSERT
-#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
-#define ASSERT_MSG(condition, msg) \
-if (!(condition)) then { \
-	OOP_ERROR_2("Assertion failed (%1): %2", str({ condition; }), msg); \
-	throw [__FILE__, __LINE__, msg]; \
-}
-#define ASSERT(condition) \
-if (!(condition)) then { \
-	OOP_ERROR_1("Assertion failed (%1)", str({ condition; })); \
-	throw [__FILE__, __LINE__, msg]; \
-}
-#define FAILURE(msg) \
-OOP_ERROR_1("Failure: %1", msg); \
-throw [__FILE__, __LINE__, msg]
-
+	#define ASSERT_OBJECT(objNameStr) ([objNameStr, __FILE__, __LINE__] call OOP_assert_object)
+	#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) ([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)
+	#define ASSERT_MSG(condition, msg) \
+		if (!(condition)) then { \
+			private _str = str({ condition; }); \
+			OOP_ERROR_2("Assertion failed (%1): %2", _str, msg); \
+			DUMP_CALLSTACK; \
+			throw [__FILE__, __LINE__, msg]; \
+		}
+	#define ASSERT(condition) \
+		if (!(condition)) then { \
+			private _str = str({ condition; }); \
+			OOP_ERROR_1("Assertion failed (%1)", _str); \
+			DUMP_CALLSTACK; \
+			throw [__FILE__, __LINE__, msg]; \
+		}
+	#define FAILURE(msg) \
+		OOP_ERROR_1("Failure: %1", msg); \
+		DUMP_CALLSTACK; \
+		throw [__FILE__, __LINE__, msg]
 #else
-#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
-#define ASSERT_MSG(condition, msg)
-#define ASSERT(condition)
-#define FAILURE(msg)
+	#define ASSERT_OBJECT(object)
+	#define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+	#define ASSERT_MSG(condition, msg)
+	#define ASSERT(condition)
+	#define FAILURE(msg)
 #endif
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC
 #define IS_PUBLIC(objNameStr) (! (isNil {GET_MEM(objNameStr, OOP_PUBLIC_STR)} ) )
+
+// ----------------------------------------------------------------------
+// |                               M I S C                              |
+// ----------------------------------------------------------------------
+// Index find and findIf return when they don't find anything
+#define NOT_FOUND -1
+// For use with sort
+#define ASCENDING true
+#define DECENDING false
+// Is the object handle valid?
+//#define NOT_NULL_OBJECT(object) ((object isEqualType "") and {!(object isEqualTo "")})
+#define IS_NULL_OBJECT(object) (!(object isEqualType "") or {object isEqualTo ""})
+// Value to assign to an object handle to indicate it is deliberately invalid.
+#define NULL_OBJECT objNull

@@ -106,7 +106,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Detach from location if was attached to it
 		pr _loc = T_GETV("location");
 		if (_loc != "") then {
-			CALLM2(_loc, "postMethodSync", "setGarrisonMilitaryMain", "");
+			CALLM(_loc, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
 		};
 		
 		// Despawn if spawned
@@ -635,7 +635,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("addGarrison") {
 		params[["_thisObject", "", [""]], ["_garrison", "", [""]], ["_delete", false] ];
-		
+
 		OOP_INFO_3("ADD GARRISON: %1, garrison groups: %2, garrison units: %3", _garrison, CALLM0(_garrison, "getGroups"), CALLM0(_garrison, "getUnits"));
 		
 		// Move all groups

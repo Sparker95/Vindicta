@@ -6,6 +6,7 @@
 
 #define MODEL_HANDLE_INVALID -1
 
+#define OFSTREAM_FILE "CmdrAI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Templates\Efficiency.hpp"
 #include "CmdrAction\CmdrActionStates.hpp"

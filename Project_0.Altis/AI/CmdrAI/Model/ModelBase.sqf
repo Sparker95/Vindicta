@@ -15,13 +15,16 @@ CLASS("ModelBase", "RefCounted")
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_DYNAMIC("_actual")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+
 		T_SETV("id", MODEL_HANDLE_INVALID);
 		T_SETV("world", _world);
 
-		if (isNil "_actual") then {
-			T_SETV("actual", objNull);
+		if (isNil "_actual" or {IS_NULL_OBJECT(_actual)}) then {
+			T_SETV("actual", NULL_OBJECT);
 			ASSERT_MSG(GETV(_world, "isSim"), "State must be sim if you aren't setting actual");
 		} else {
+			ASSERT_OBJECT(_actual);
 			T_SETV("actual", _actual);
 			ASSERT_MSG(!GETV(_world, "isSim"), "State must NOT be sim if you are setting actual");
 		};

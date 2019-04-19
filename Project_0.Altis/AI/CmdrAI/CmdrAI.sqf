@@ -2,7 +2,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
-#define OOP_PROFILE
+// #define OOP_PROFILE
 
 #include "common.hpp"
 
@@ -12,7 +12,7 @@ CLASS("CmdrAI", "")
 	VARIABLE("activeActions");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_side")];
+		params [P_THISOBJECT, P_SIDE("_side")];
 		T_SETV("side", _side);
 		T_SETV("activeActions", []);
 	} ENDMETHOD;
@@ -30,9 +30,9 @@ CLASS("CmdrAI", "")
 	// } ENDMETHOD;
 
 	// METHOD("isValidTakeOutpostTarget") {
-	// 	params [P_THISOBJECT, P_STRING("_outpost")];
+	// 	params [P_THISOBJECT, P_STRING("_location")];
 	// 	T_PRVAR(side);
-	// 	CALLM0(_outpost, "getSide") != _side
+	// 	CALLM0(_location, "getSide") != _side
 	// } ENDMETHOD;
 	
 	// fn_isValidAttackTarget = {
@@ -52,36 +52,37 @@ CLASS("CmdrAI", "")
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
-		// Garrison must be alive
-		private _garrisons = CALLM0(_world, "getAliveGarrisons") select { 
-			// Must be on our side
-			(CALLM0(_x, "getSide") == _side) and 
-			// Must have at least a minimum strength
-			{CALLM0(_x, "getStrength") > 10} and 
-			// Must not be engaged in another action
-			{ ! (GETV(_x, "currAction") isEqualType "") }
-		};
+		// // Garrison must be alive
+		// // TODO: optimize this into a single garrison function maybe?
+		// private _garrisons = CALLM(_world, "getAliveGarrisons", []) select { 
+		// 	// Must be on our side
+		// 	( GETV(_x, "side") == _side ) and 
+		// 	// Must have at least a minimum strength
+		// 	{ !CALLM(_x, "isDepleted", []) } and 
+		// 	// Must not be engaged in another action
+		// 	{ !CALLM(_x, "isBusy", []) }
+		// };
 
-		private _outposts = GETV(_world, "outposts") select {
-			private _outpost = _x;
-			// Only try to take empty or enemy outposts
-			CALLM0(_outpost, "getSide") != _side and
-			// Don't make duplicate take actions for the same outpost
-			_activeActions findIf { 
-				OBJECT_PARENT_CLASS_STR(_x) == "TakeOutpostAction" and 
-				{ GETV(_x, "targetOutpostId") == GETV(_outpost, "id") }
-			} == -1
-		};
+		// private _locations = GETV(_world, "locations") select {
+		// 	private _location = _x;
+		// 	// Only try to take empty or enemy locations
+		// 	GETV(_location, "side") != _side and
+		// 	// Don't make duplicate take actions for the same location
+		// 	_activeActions findIf { 
+		// 		OBJECT_PARENT_CLASS_STR(_x) == "TakeOutpostCmdrAction" and 
+		// 		{ GETV(_x, "targetOutpostId") == GETV(_location, "id") }
+		// 	} == NOT_FOUND
+		// };
 
 		private _actions = [];
-		{
-			private _garrisonId = GETV(_x, "id");
-			{
-				private _outpostId = GETV(_x, "id");
-				private _params = [_garrisonId, GETV(_x, "id")];
-				_actions pushBack NEW("TakeOutpostAction", _params);
-			} forEach _outposts;
-		} forEach _garrisons;
+		// {
+		// 	private _garrisonId = GETV(_x, "id");
+		// 	{
+		// 		private _locationId = GETV(_x, "id");
+		// 		private _params = [_garrisonId, GETV(_x, "id")];
+		// 		_actions pushBack NEW("TakeOutpostCmdrAction", _params);
+		// 	} forEach _locations;
+		// } forEach _garrisons;
 
 		_actions
 	} ENDMETHOD;
@@ -123,24 +124,24 @@ CLASS("CmdrAI", "")
 		params [P_THISOBJECT, P_STRING("_world")];
 		T_PRVAR(side);
 
-		private _ourGarrisons = CALLM0(_world, "getAliveGarrisons") select { 
+		private _tgtGarrisons = CALLM(_world, "getAliveGarrisons", []) select { 
 			// Must be on our side
-			CALLM0(_x, "getSide") == _side and 
+			GETV(_x, "side") == _side and 
 			// Not involved in another reinforce action
 			{
-				private _action = GETV(_x, "currAction");
-				!(_action isEqualType "") or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceAction" }
+				private _action = CALLM(_x, "getAction", []);
+				IS_NULL_OBJECT(_action) or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceCmdrAction" }
 			}
 		};
 
 		T_PRVAR(side);
-		
+
 		// Source garrisons must have a minimum strength
-		private _srcGarrisons = _ourGarrisons select { 
+		private _srcGarrisons = _tgtGarrisons select { 
 			// Must have at least a minimum strength
-			(CALLM0(_x, "getStrength") > 10) and 
+			!CALLM(_x, "isDepleted", []) and 
 			// Not involved in another action already
-			{ !(GETV(_x, "currAction") isEqualType "") }
+			{ !CALLM(_x, "isBusy", []) }
 		};
 
 		private _actions = [];
@@ -150,9 +151,9 @@ CLASS("CmdrAI", "")
 				private _tgtGarrison = _x;
 				if(_srcGarrison != _tgtGarrison) then {
 					private _params = [GETV(_srcGarrison, "id"), GETV(_tgtGarrison, "id")];
-					_actions pushBack (NEW("ReinforceAction", _params));
+					_actions pushBack (NEW("ReinforceCmdrAction", _params));
 				};
-			} forEach _ourGarrisons;
+			} forEach _tgtGarrisons;
 		} forEach _srcGarrisons;
 
 		_actions
@@ -166,24 +167,24 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 		private _actions = [];
 
+		// TODO: generate roadblock actions
+
 		_actions
 	} ENDMETHOD;
 
 	METHOD("update") {
-		params [P_THISOBJECT, P_STRING("_commander")];
+		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(world);
+		//T_PRVAR(world);
 		T_PRVAR(activeActions);
-		
-		// sync world
-		private _realGarrisons = GETV(_commander, "garrisons");
 
+		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G - - - - -   on %3 active actions", [_thisObject]+[_world]+[count _activeActions]);
 
 		// Update actions in real world
-		{ CALLM1(_x, "update", _world) } forEach _activeActions;
+		{ CALLM(_x, "update", [_world]) } forEach _activeActions;
 
 		// Remove complete actions
-		private _completeActions = _activeActions select { GETV(_x, "complete") };
+		private _completeActions = _activeActions select { CALLM(_x, "isComplete", []) };
 
 		// Unref completed actions
 		{
@@ -196,69 +197,90 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 
 	METHOD("plan") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_STRING("_world")];
 
-		T_PRVAR(world);
+		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G - - - - -", [_thisObject]+[_world]);
+
+		//T_PRVAR(world);
 		T_PRVAR(activeActions);
 
-		OOP_DEBUG_0("Copying simworld ...");
+		OOP_DEBUG_MSG("[c %1 w %2] Creating new simworld from %2", [_thisObject]+[_world]);
 
 		// Copy world to simworld
-		private _simWorld = CALLM0(_world, "simCopy");
+		private _simWorld = CALLM(_world, "simCopy", []);
 
-		OOP_DEBUG_0("Applying %1 active actions to simworld new actions ...");
+		OOP_DEBUG_MSG("[c %1 w %2] Applying %3 active actions to simworld", [_thisObject]+[_world]+[count _activeActions]);
 
 		PROFILE_SCOPE_START(ApplyActive);
-		// Apply active actions to the simworld
+		// Apply effects of active actions to the simworld
 		{
-			CALLM1(_x, "applyToSim", _simWorld);
+			CALLM(_x, "applyToSim", [_simWorld]);
 		} forEach _activeActions;
 		PROFILE_SCOPE_END(ApplyActive, 0.1);
 
-		OOP_DEBUG_0("Generating new actions ...");
+		OOP_DEBUG_MSG("[c %1 w %2] Generating new actions", [_thisObject]+[_world]);
 
 		PROFILE_SCOPE_START(GenerateActions);
-		// Generate possible actions
+		// Generate possible new actions based on the simworld
+		// (i.e. taking into account expected outcomes of currently active actions)
 		private _newActions = 
-			  T_CALLM1("generateTakeOutpostActions", _simWorld) 
+			  T_CALLM("generateTakeOutpostActions", [_simWorld])
+			// TODO: general attack actions (QRF)
 			//+ T_CALLM1("generateAttackActions", _simWorld) 
-			+ T_CALLM1("generateReinforceActions", _simWorld) 
+			+ T_CALLM("generateReinforceActions", [_simWorld]) 
+			// TODO: roadblocks/outposts etc. Maybe this is up to garrison AI itself?
 			//+ T_CALLM1("generateRoadblockActions", _simWorld)
 			;
 		PROFILE_SCOPE_END(GenerateActions, 0.1);
 
+		OOP_DEBUG_MSG("[c %1 w %2] Generated %3 new actions, updating plan", [_thisObject]+[_world]+[count _newActions]);
+
 		PROFILE_SCOPE_START(PlanActions);
 		// Plan new actions
 		while { count _newActions > 0 } do {
+			OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject]+[_world]+[count _newActions]);
+
 			PROFILE_SCOPE_START(UpdateScores);
+			// Update scores of potential actions against the simworld state
 			{
 				CALLM1(_x, "updateScore", _simWorld);
 			} forEach _newActions;
 			PROFILE_SCOPE_END(UpdateScores, 0.1);
 
-			_newActions = [_newActions, [], { CALLM0(_x, "getFinalScore") }, "DECEND"] call BIS_fnc_sortBy;
+			// Sort the actions by their scores
+			private _scoresAndActions = _newActions apply { [CALLM(_x, "getFinalScore", []), _x] };
+			_scoresAndActions sort ASCENDING;
 
-			private _bestAction = _newActions deleteAt 0;
-			private _bestActionScore = CALLM0(_bestAction, "getFinalScore");
+			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
 
+			// Get the best scoring action
+			(_scoresAndActions deleteAt 0) params ["_bestActionScore", "_bestAction"];
+			// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
+
+			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
 			if(_bestActionScore <= 0.001) exitWith {};
 
+			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the sim", [_thisObject]+[_world]+[_bestAction]+[_bestActionScore]);
+
+			// Add the best action to our active actions list
 			REF(_bestAction);
 			_activeActions pushBack _bestAction;
 
 			PROFILE_SCOPE_START(ApplyNewActionToSim);
-			// Apply new action to simworld
-			CALLM1(_bestAction, "applyToSim", _simWorld);
+			// Apply the new action effects to simworld, so next loop scores update appropriately
+			// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
+			// models in the sim so that other reinforce actions will take it into account in their scoring.
+			// Probably other reinforce actions with the same source or target would have lower scores now).
+			CALLM(_bestAction, "applyToSim", [_simWorld]);
 			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
 		};
 		PROFILE_SCOPE_END(PlanActions, 0.1);
 
-		// Delete any remaining actions
+		OOP_DEBUG_MSG("[c %1 w %2] Done updating plan, cleaning up %3 unused new actions", [_thisObject]+[_world]+[count _newActions]);
+		// Delete any remaining discarded actions
 		{
 			DELETE(_x);
 		} forEach _newActions;
-
-		T_SETV("activeActions", _activeActions);
 	} ENDMETHOD;
 
 ENDCLASS;

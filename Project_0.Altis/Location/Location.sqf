@@ -82,6 +82,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gMessageLoopLocation") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
+		T_SETV("side", CIVILIAN);
 		T_SETV("debugName", "noname");
 		T_SETV("garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
@@ -95,7 +96,7 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
 		// Setup basic border
-		CALLM2(_thisObject, "setBorder", "circle", 20);
+		CALLM2(_thisObject, "setBorder", "circle", [20]);
 
 		// Create timer object
 		private _msg = MESSAGE_NEW();

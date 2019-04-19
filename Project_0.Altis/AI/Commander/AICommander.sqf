@@ -42,8 +42,9 @@ CLASS("AICommander", "AI")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
 		
-		ASSERT_OBJECT_CLASS(_msgLoop, "MessageLoop");
+		OOP_INFO_1("Initializing Commander for side %1", str(_side));
 		
+		ASSERT_OBJECT_CLASS(_msgLoop, "MessageLoop");
 		T_SETV("side", _side);
 		T_SETV("msgLoop", _msgLoop);
 		T_SETV("locationDataWest", []);
@@ -85,6 +86,11 @@ CLASS("AICommander", "AI")
 		T_SETV("cmdrAI", _cmdrAI);
 		private _worldModel = NEW("WorldModel", []);
 		T_SETV("worldModel", _worldModel);
+
+		// Register locations
+		private _locations = CALLSM("Location", "getAll", []);
+		OOP_INFO_1("Registering %1 locations with Model", count _locations);
+		{ NEW("LocationModel", [_worldModel]+[_x]) } forEach _locations;
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -119,7 +125,7 @@ CLASS("AICommander", "AI")
 		while {_i < count (_nots)} do {
 			(_nots select _i) params ["_task", "_time"];
 			// If this notification ahs been here for too long
-			if (time - _time > 120) then {
+			if (TIME_NOW - _time > 120) then {
 				[_task, T_GETV("side")] call BIS_fnc_deleteTask;
 				// Delete this notification from the list				
 				_nots deleteAt _i;
@@ -129,11 +135,12 @@ CLASS("AICommander", "AI")
 		};
 
 		T_PRVAR(cmdrAI);
-		CALLM(cmdrAI, "plan", []);
+		T_PRVAR(worldModel);
+		CALLM(_cmdrAI, "update", [_worldModel]);
 		T_PRVAR(lastPlanningTime);
 		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
 			T_SETV("lastPlanningTime", TIME_NOW);
-			CALLM(cmdrAI, "plan", []);
+			CALLM(_cmdrAI, "plan", [_worldModel]);
 		};
 	} ENDMETHOD;
 	
@@ -198,7 +205,7 @@ CLASS("AICommander", "AI")
 			pr _locPos = _ldNew select CLD_ID_POS;
 			pr _locSide = _ldNew select CLD_ID_SIDE;
 			pr _entry = _ld findIf {(_x select CLD_ID_POS) isEqualTo _locPos};
-			if (_entry == -1) then {
+			if (_entry == NOT_FOUND) then {
 				// Add new entry
 				_ld pushBack _ldNew;
 				
@@ -207,7 +214,10 @@ CLASS("AICommander", "AI")
 				if (_side == _thisSide && _side != _locSide) then {
 					CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
 				};
-				
+
+				// Register with the World Model
+				T_PRVAR(worldModel);
+				CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
 			} else {
 				pr _ldPrev = _ld select _entry;
 				_ldPrev params ["_type", "_side", "_unitAmount", "_pos", "_time"];
@@ -231,13 +241,13 @@ CLASS("AICommander", "AI")
 				};
 				
 				// Update time
-				_ldPrev set [CLD_ID_TIME, time];
+				_ldPrev set [CLD_ID_TIME, TIME_NOW];
 				
 				//systemChat "Location data was updated";
 				
 				// Show notification if we haven't updated this data for quite some time
 				if (_side == _thisSide && _side != _locSide) then {
-					if ((time - _time) > 600) then {
+					if ((TIME_NOW - _time) > 600) then {
 						CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
 					};
 				};
@@ -266,14 +276,14 @@ CLASS("AICommander", "AI")
 				pr _descr = format ["Friendly units have discovered an enemy location at %1", mapGridPosition _locPos];
 				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Discovered location", ""], _locPos + [0], "CREATED", 0, false, "scout", true] call BIS_fnc_taskCreate;
 				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, time];
+				_nots pushBack [_tsk, TIME_NOW];
 			};
 			
 			case "UPDATED": {
 				pr _descr = format ["Updated data on enemy garrisons at %1", mapGridPosition _locPos];
 				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Updated data on location", ""], _locPos + [0], "CREATED", 0, false, "intel", true] call BIS_fnc_taskCreate;
 				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, time];
+				_nots pushBack [_tsk, TIME_NOW];
 			};
 		};
 		T_SETV("notificationID", _id + 1);
@@ -298,7 +308,7 @@ CLASS("AICommander", "AI")
 		_value set [CLD_ID_POS, _locPos];
 		
 		// Set time
-		_value set [CLD_ID_TIME, time];
+		_value set [CLD_ID_TIME, TIME_NOW];
 		
 		// Set type
 		if (_updateLevel >= CLD_UPDATE_LEVEL_TYPE) then {
@@ -880,8 +890,7 @@ CLASS("AICommander", "AI")
 		CALLM2(_gar, "postMethodAsync", "ref", []);
 
 		T_PRVAR(worldModel);
-		private _garrisonModel = NEW("GarrisonModel", [_gar]);
-		CALLM(_worldModel, "addGarrison", [_garrisonModel]);
+		NEW("GarrisonModel", [_worldModel]+[_gar]);
 
 		nil
 	} ENDMETHOD;
