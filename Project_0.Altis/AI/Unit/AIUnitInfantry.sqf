@@ -85,6 +85,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 			if (_assignedVehAI != "") then { // sanity checks
 				pr _unit = T_GETV("agent");
 				CALLM1(_assignedVehAI, "unassignUnit", _unit);
+			} else {
+				OOP_WARNING_1("AI of assigned vehicle %1 doesn't exist", _assignedVehicle);
 			};
 			
 			T_SETV("assignedVehicle", nil);
@@ -92,6 +94,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		};
 		pr _hO = GETV(_thisObject, "hO");
 		unassignVehicle _hO;
+		[_hO] orderGetIn false;
 	} ENDMETHOD;
 	
 	/*
