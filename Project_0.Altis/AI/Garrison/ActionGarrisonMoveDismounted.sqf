@@ -106,6 +106,16 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 			if (_state == ACTION_STATE_ACTIVE) then {
+				// Update position
+				pr _infUnits = CALLM0(_gar, "getInfantryUnits");
+				pr _index = _infUnits findIf {CALLM0(_x, "isAlive")};
+				if (_index != -1) then {
+					pr _unit = _infUnits select _index;
+					pr _hO = CALLM0(_unit, "getObjectHandle");
+					pr _pos = getPos _hO;
+					CALLM1(_AI, "setPos", _pos);
+				};
+
 				pr _groups = CALLM0(_gar, "getGroups");
 				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _groups, "GoalGroupInfantryMove", _AI)) then {
 					_state = ACTION_STATE_COMPLETED;

@@ -164,7 +164,17 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 				pr _gar = T_GETV("gar");
 				pr _AI = T_GETV("AI");
+
+				// Update position of this garrison object
+				pr _units = CALLM0(_gar, "getUnits");
 				pr _pos = T_GETV("pos");
+				pr _index = _units findIf {CALLM0(_x, "isAlive")};
+				if (_index != -1) then {
+					pr _unit = _units select _index;
+					pr _hO = CALLM0(_unit, "getObjectHandle");
+					_pos = getPos _hO;
+				};
+				CALLM1(_AI, "setPos", _pos);
 			
 				pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
 				pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
@@ -180,9 +190,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					OOP_INFO_0("All groups have arrived");
 					
 					// Set pos world state property
-					pr _ws = GETV(_AI, "worldState");
-					[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-					[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+					// todo fix this, implement AIGarrison.setVehiclesPos function
+					//pr _ws = GETV(_AI, "worldState");
+					//[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+					//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
 					
 					_state = ACTION_STATE_COMPLETED;
 					breakTo "s0";
