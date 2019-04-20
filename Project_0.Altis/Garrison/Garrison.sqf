@@ -212,7 +212,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
-			CALLM(_currentLoc, "unregisterGarrison", [_thisObject]);
+			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+			T_SETV("location", "");
 		};
 	} ENDMETHOD;
 

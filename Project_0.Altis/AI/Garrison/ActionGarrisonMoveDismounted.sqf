@@ -52,6 +52,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach CALLM0(_gar, "getGroups");
 		
+		// Reset current location of this garrison
+		CALLM0(_gar, "detachFromLocation");
+		pr _ws = GETV(_AI, "worldState");
+		[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
+		pr _pos = CALLM0(_gar, "getPos");
+		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
