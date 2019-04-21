@@ -36,7 +36,7 @@ CLASS("ActionStateTransition", "")
 		// our current state, then sort by priority. Then we will check in decending
 		// order until we find one we can apply and attempt to apply it.
 		private _matchingTransitions = _transitions 
-			select { CALLM(_x, "isValidFromState", [_state]+[_isSim]) }
+			select { CALLM(_x, "isValidFromState", [_state]) }
 			apply { [GETV(_x, "priority"), _x] };
 
 		// Lower value is higher priority (0 is top most priority)

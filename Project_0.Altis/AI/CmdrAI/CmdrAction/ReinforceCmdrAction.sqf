@@ -22,7 +22,7 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		ASSERT_OBJECT(_srcGarr);
 		private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
 
-		private _detachedGarr = if(GETV(_world, "_isSim")) then {
+		private _detachedGarr = if(GETV(_world, "isSim")) then {
 									CALLM(_srcGarr, "splitSim", [_detachEff])
 								} else {
 									CALLM(_srcGarr, "splitActual", [_detachEff])
@@ -73,12 +73,13 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
+		private _isSim = GETV(_world, "isSim");
 		private _tgtPos = GETV(_tgtGarr, "pos");
 		private _arrived = false;
 		if(!_moving) then {
 			// Start moving
 			OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-			if(GETV(_world, "_isSim")) then {
+			if(_isSim) then {
 				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
 				// Sim is instant, so we have arrived
 				OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
@@ -89,7 +90,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 			};
 		} else {
 			// Are we there yet?
-			private _done = CALLM(_detachedGarr, "moveActualComplete", []);
+			private _done = _isSim or { CALLM(_detachedGarr, "moveActualComplete", []) };
 			if(_done) then {
 				private _detachedGarrPos = GETV(_detachedGarr, "pos");
 				if((_detachedGarrPos distance _tgtPos) < _radius * 1.5) then {
@@ -129,7 +130,7 @@ CLASS("MergeGarrison", "ActionStateTransition")
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
-		if(GETV(_world, "_isSim")) then {
+		if(GETV(_world, "isSim")) then {
 			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
 		} else {
 			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
@@ -159,15 +160,27 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		T_SETV("transitions", _transitions);
 	} ENDMETHOD;
 
-	METHOD("getLabel") {
+	METHOD("delete") {
 		params [P_THISOBJECT];
-
-		T_PRVAR(tgtGarrId);
-		T_PRVAR(stage);
-		format ["reinf o%1 - %2", _tgtGarrId, _stage]
+		deleteMarkerLocal _thisObject + "_line";
+		deleteMarkerLocal _thisObject + "_label";
 	} ENDMETHOD;
 
-	METHOD("updateScore") {
+	/* override */ METHOD("getLabel") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(srcGarrId);
+		T_PRVAR(tgtGarrId);
+
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
+
+		format ["reinf o%1 - %2", _srcGarr, _tgtGarr]
+	} ENDMETHOD;
+
+	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
@@ -178,7 +191,6 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
-
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
@@ -196,11 +208,15 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		// TODO:OPT cache these scores!
 		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_world, "getReinforceRequiredScore", [_tgtGarr])};
 
-		// private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
-		// OOP_INFO_0(_str);
-		if(_scorePriority > 0 and _scoreResource > 0) then {
-			OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score [p %5, r %6]", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]);
-		};
+		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
+		//OOP_INFO_0(_str);
+		// if(_scorePriority > 0 and _scoreResource > 0) then {
+		private _srcEff = GETV(_srcGarr, "efficiency");
+		private _tgtEff = GETV(_tgtGarr, "efficiency");
+
+		OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]+[_detachEff]+[_detachEffStrength]+[_distCoeff]+[_srcEff]+[_tgtEff]);
+
+		// };
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
 	} ENDMETHOD;
@@ -229,11 +245,37 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
 		private _compAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
 
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _compAvailable = %7", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_tgtUnderEff]+[_srcOverEff]+[_compAvailable]);
+
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
-		if(!EFF_GT(_compAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
+		if(!EFF_GTE(_compAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
 
 		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_compAvailable
 	} ENDMETHOD;
+	
+	/* override */ METHOD("debugDraw") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(srcGarrId);
+		T_PRVAR(tgtGarrId);
+
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
+
+		private _srcGarrPos = GETV(_srcGarr, "pos");
+		private _tgtGarrPos = GETV(_tgtGarr, "pos");
+
+		[_srcGarrPos, _tgtGarrPos, "ColorBlack", 5, _thisObject + "_line"] call misc_fnc_mapDrawLine;
+
+		private _mrk = createmarker [_thisObject + "_label", _srcGarrPos];
+		_mrk setMarkerType "mil_objective";
+		_mrk setMarkerColor "ColorWhite";
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText T_CALLM("getLabel", []);
+	} ENDMETHOD;
+
 ENDCLASS;

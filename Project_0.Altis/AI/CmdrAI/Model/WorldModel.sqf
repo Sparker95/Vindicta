@@ -5,7 +5,8 @@ CLASS("WorldModel", "")
 	VARIABLE("isSim");
 	VARIABLE("garrisons");
 	VARIABLE("locations");
-	VARIABLE("threatMaps");
+	VARIABLE("clusters");
+	VARIABLE("threatGrid");
 
 	VARIABLE("reinforceRequiredScoreCache");
 
@@ -14,98 +15,118 @@ CLASS("WorldModel", "")
 		T_SETV("isSim", _isSim);
 		T_SETV("garrisons", []);
 		T_SETV("locations", []);
+		T_SETV("clusters", []);
+		private _threatGrid = NEW("Grid", []);
+		T_SETV("threatGrid", _threatGrid);
+
 		T_SETV("reinforceRequiredScoreCache", []);
-		//T_SETV("lastSpawnT", simtime);
-		//T_SETV("threatMaps", [] call ws_fnc_newGridArray);
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
 		T_PRVAR(garrisons);
+		{ UNREF(_x); } forEach _garrisons;
 		T_PRVAR(locations);
-		{ UNREF(_x) } forEach _garrisons;
-		{ UNREF(_x) } forEach _locations;
+		{ UNREF(_x); } forEach _locations;
+		T_PRVAR(clusters);
+		{ UNREF(_x); } forEach _clusters;
 	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                       C O P Y / U P D A T E                        |
+	// ----------------------------------------------------------------------
 
 	METHOD("sync") {
 		params [P_THISOBJECT];
-		T_PRVAR(garrisons);
-		T_PRVAR(locations);
 
 		// sync existing garrisons
-		{
-			CALLM(_x, "sync", []);
-		} forEach _garrisons;
+		//T_PRVAR(garrisons);
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
 		// sync existing locations
-		{
-			CALLM(_x, "sync", []);
-		} forEach _locations;
+		T_PRVAR(locations);
+		{ CALLM(_x, "sync", []); } forEach _locations;
+
+		// sync existing clusters
+		//T_PRVAR(clusters);
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
+
 	} ENDMETHOD;
 
-	// ----------------------------------------------------------------------
-	// |                       M E T H O D  N A M E                         |
-	// ----------------------------------------------------------------------
 	METHOD("simCopy") {
 		params [P_THISOBJECT];
 
-		T_PRVAR(garrisons);
-		T_PRVAR(locations);
-
 		private _worldCopy = NEW("WorldModel", [true]);
-		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
-		// private _simGarrisons = _garrisons apply { 
-		// 	private _copy = CALLM(_x, "simCopy", [_worldCopy]);
-		// 	//REF(_copy);
-		// 	_copy
-		// };
-		// Don't need to do this, the copys are automatically registered
-		//SETV(_worldCopy, "garrisons", _simGarrisons);
-		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
-		// private _simLocations = _locations apply { 
-		// 	private _copy = CALLM(_x, "simCopy", [_worldCopy]);
-		// 	//REF(_copy);
-		// 	_copy
-		// };
-		// Don't need to do this, the copys are automatically registered
-		//SETV(_worldCopy, "locations", _simLocations);
 
-		// Can copy it cos we don't write to it
-		//T_PRVAR(threatMapOpf);
-		//SETV(_copy, "threatMapOpf", _threatMapOpf);
+		// Copy garrisons
+		T_PRVAR(garrisons);
+		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
+
+		// Copy locations
+		T_PRVAR(locations);
+		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
+
+		// Copy clusters
+		T_PRVAR(clusters);
+		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _clusters;
+
+		// Can copy the grid ref as we don't write to it
+		T_PRVAR(threatGrid);
+		SETV(_worldCopy, "threatGrid", _threatGrid);
 
 		_worldCopy
 	} ENDMETHOD;
 
-	// METHOD("updateThreatMaps") {
-	// 	params [P_THISOBJECT];
+	METHOD("updateThreatMaps") {
+		params [P_THISOBJECT];
 
-	// 	// private _new_grid = [] call ws_fnc_newGridArray;
-	// 	// [] call ws_fnc_unplotGrid;
+		// private _new_grid = [] call ws_fnc_newGridArray;
+		// [] call ws_fnc_unplotGrid;
 
-	// 	// for "_i" from 0 to 5 + random(20) do {
-	// 	// 	private _pos = [] call BIS_fnc_randomPos;
+		// for "_i" from 0 to 5 + random(20) do {
+		// 	private _pos = [] call BIS_fnc_randomPos;
 
-	// 	// 	for "_j" from 0 to 5 + random(20) do {
-	// 	// 		private _pos2 = [[[_pos, 1000]]] call BIS_fnc_randomPos;
-	// 	// 		[_new_grid, _pos2 select 0, _pos2 select 1, 10 * (sqrt (1 + random(100)))] call ws_fnc_setValue; 
-	// 	// 	};
-	// 	// };
+		// 	for "_j" from 0 to 5 + random(20) do {
+		// 		private _pos2 = [[[_pos, 1000]]] call BIS_fnc_randomPos;
+		// 		[_new_grid, _pos2 select 0, _pos2 select 1, 10 * (sqrt (1 + random(100)))] call ws_fnc_setValue; 
+		// 	};
+		// };
 
-	// 	T_PRVAR(threatMapOpf);
-	// 	private _aliveGarrisons = T_CALLM0("getAliveGarrisons");
+		T_PRVAR(threatGrid);
+		T_PRVAR(clusters);
 
-	// 	private _threatMapOpfCopy = [] call ws_fnc_newGridArray;
-	// 	[_threatMapOpfCopy, _threatMapOpf] call ws_fnc_copyGrid;
-	// 	{
-	// 		private _pos = CALLM0(_x, "getPos");
-	// 		private _strength = CALLM0(_x, "getStrength");
-	// 		[_threatMapOpfCopy, _pos#0, _pos#1, _strength] call ws_fnc_setValue;
-	// 	} forEach (_aliveGarrisons select { CALLM0(_x, "getSide") == side_guer });
+		// Clear grid
+		CALLM(_threatGrid, "setValueAll", [0]);
 
-	// 	[_threatMapOpfCopy, _threatMapOpf] call ws_fnc_filterSmooth;
-	// 	[_threatMapOpf, 100] call ws_fnc_plotGrid;
-	// } ENDMETHOD;
+		{
+			private _pos = GETV(_x, "pos") apply { _x - 1000 };
+			private _size = GETV(_x, "size") apply { _x + 2000 };
+			private _strength = EFF_SUM(GETV(_x, "efficiency"));
+			CALLM(_threatGrid, "maxRect", [_pos]+[_size]+[_strength])
+		} forEach _clusters;
+
+#ifdef DEBUG_CMDRAI
+		CALLM(_threatGrid, "unplot", []);
+		CALLM(_threatGrid, "plot", [30]);
+#endif
+		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
+
+		// private _threatGridOpfCopy = [] call ws_fnc_newGridArray;
+		// [_threatGridOpfCopy, _threatGridOpf] call ws_fnc_copyGrid;
+		// {
+		// 	private _pos = CALLM0(_x, "getPos");
+		// 	private _strength = CALLM0(_x, "getStrength");
+		// 	[_threatGridOpfCopy, _pos#0, _pos#1, _strength] call ws_fnc_setValue;
+		// } forEach (_aliveGarrisons select { CALLM0(_x, "getSide") == side_guer });
+
+		// [_threatGridOpfCopy, _threatGridOpf] call ws_fnc_filterSmooth;
+		// [_threatGridOpf, 100] call ws_fnc_plotGrid;
+	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                G A R R I S O N   F U N C T I O N S                 |
+	// ----------------------------------------------------------------------
 
 	METHOD("addGarrison") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
@@ -139,7 +160,7 @@ CLASS("WorldModel", "")
 
 		T_PRVAR(garrisons);
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
-		if(_idx == NOT_FOUND) exitWith { objNull };
+		if(_idx == NOT_FOUND) exitWith { NULL_OBJECT };
 		_garrisons select _idx
 	} ENDMETHOD;
 
@@ -159,54 +180,6 @@ CLASS("WorldModel", "")
 		}
 	} ENDMETHOD;
 
-	METHOD("addLocation") {
-		params [P_THISOBJECT, P_STRING("_location")];
-		
-		ASSERT_OBJECT_CLASS(_location, "LocationModel");
-		ASSERT_MSG(GETV(_location, "id") == MODEL_HANDLE_INVALID, "LocationModel is already attached to a WorldModel");
-		
-		T_PRVAR(locations);
-
-		REF(_location);
-		private _idx = _locations pushBack _location;
-		SETV(_location, "id", _idx);
-		_idx
-	} ENDMETHOD;
-
-	METHOD("getLocation") {
-		params [P_THISOBJECT, P_NUMBER("_id")];
-		T_PRVAR(locations);
-		_locations select _id
-	} ENDMETHOD;
-
-	METHOD("findLocationByActual") {
-		params [P_THISOBJECT, P_STRING("_actual")];
-
-		ASSERT_OBJECT_CLASS(_actual, "Location");
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
-		
-		T_PRVAR(locations);
-		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
-		if(_idx == NOT_FOUND) exitWith { objNull };
-		_locations select _idx
-	} ENDMETHOD;
-
-	METHOD("findOrAddLocationByActual") {
-		params [P_THISOBJECT, P_STRING("_actual")];
-
-		ASSERT_OBJECT_CLASS(_actual, "Location");
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
-
-		T_PRVAR(locations);
-		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
-		if(_idx == NOT_FOUND) then { 
-			private _newLocation = NEW("LocationModel", [_thisObject]+[_actual]);
-			_newLocation
-		} else {
-			_locations select _idx
-		}
-	} ENDMETHOD;
-	
 	METHOD("garrisonKilled") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		// If we are a sim world then we need to perform updates that would otherwise be
@@ -237,8 +210,61 @@ CLASS("WorldModel", "")
 				_nearestGarrisons pushBack [_dist, _garrison];
 			};
 		} forEach T_CALLM("getAliveGarrisons", []);
-		_nearestGarrisons sort true;
+		_nearestGarrisons sort ASCENDING;
 		_nearestGarrisons
+	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                L O C A T I O N   F U N C T I O N S                 |
+	// ----------------------------------------------------------------------
+
+	METHOD("addLocation") {
+		params [P_THISOBJECT, P_STRING("_location")];
+		ASSERT_OBJECT_CLASS(_location, "LocationModel");
+
+		ASSERT_MSG(GETV(_location, "id") == MODEL_HANDLE_INVALID, "LocationModel is already attached to a WorldModel");
+
+		T_PRVAR(locations);
+
+		REF(_location);
+		private _idx = _locations pushBack _location;
+		SETV(_location, "id", _idx);
+		_idx
+	} ENDMETHOD;
+
+	METHOD("getLocation") {
+		params [P_THISOBJECT, P_NUMBER("_id")];
+
+		T_PRVAR(locations);
+		_locations select _id
+	} ENDMETHOD;
+
+	METHOD("findLocationByActual") {
+		params [P_THISOBJECT, P_STRING("_actual")];
+		ASSERT_OBJECT_CLASS(_actual, "Location");
+
+		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
+		
+		T_PRVAR(locations);
+		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
+		if(_idx == NOT_FOUND) exitWith { NULL_OBJECT };
+		_locations select _idx
+	} ENDMETHOD;
+
+	METHOD("findOrAddLocationByActual") {
+		params [P_THISOBJECT, P_STRING("_actual")];
+		ASSERT_OBJECT_CLASS(_actual, "Location");
+
+		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
+
+		T_PRVAR(locations);
+		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
+		if(_idx == NOT_FOUND) then { 
+			private _newLocation = NEW("LocationModel", [_thisObject]+[_actual]);
+			_newLocation
+		} else {
+			_locations select _idx
+		}
 	} ENDMETHOD;
 
 	METHOD("getNearestLocations") {
@@ -256,8 +282,109 @@ CLASS("WorldModel", "")
 				_nearestLocations pushBack [_dist, _location];
 			};
 		} forEach _locations;
-		_nearestLocations sort true;
+		_nearestLocations sort ASCENDING;
 		_nearestLocations
+	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |               C L U S T E R   F U ... N C T I O N S                |
+	// ----------------------------------------------------------------------
+
+	METHOD("addCluster") {
+		params [P_THISOBJECT, P_STRING("_cluster")];
+		ASSERT_OBJECT_CLASS(_cluster, "ClusterModel");
+
+		ASSERT_MSG(GETV(_cluster, "id") == MODEL_HANDLE_INVALID, "ClusterModel is already attached to a WorldModel");
+		
+		T_PRVAR(clusters);
+
+		REF(_cluster);
+		private _idx = _clusters pushBack _cluster;
+		SETV(_cluster, "id", _idx);
+		_idx
+	} ENDMETHOD;
+
+	METHOD("getCluster") {
+		params [P_THISOBJECT, P_NUMBER("_id")];
+		T_PRVAR(clusters);
+		_clusters select _id
+	} ENDMETHOD;
+
+	METHOD("findClusterByActual") {
+		params [P_THISOBJECT, P_ARRAY("_actual")];
+		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
+
+		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Cluster by Actual in a Sim Model");
+
+		T_PRVAR(clusters);
+		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
+		if(_idx == NOT_FOUND) exitWith { NULL_OBJECT };
+		_clusters select _idx
+	} ENDMETHOD;
+
+	METHOD("findOrAddClusterByActual") {
+		params [P_THISOBJECT, P_ARRAY("_actual")];
+		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
+
+		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Cluster by Actual in a Sim Model");
+
+		T_PRVAR(clusters);
+		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
+		if(_idx == NOT_FOUND) then { 
+			private _newCluster = NEW("ClusterModel", [_thisObject]+[_actual]);
+			_newLocation
+		} else {
+			_clusters select _idx
+		}
+	} ENDMETHOD;
+
+	METHOD("getAliveClusters") {
+		params [P_THISOBJECT];
+		T_PRVAR(clusters);
+		_clusters select { !CALLM(_x, "isDead", []) }
+	} ENDMETHOD;
+
+	METHOD("getNearestClusters") {
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
+
+		T_PRVAR(clusters);
+
+		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
+		private _nearestClusters = [];
+		{
+			private _cluster = _x;
+			private _pos = GETV(_cluster, "pos");
+			private _radius = GETV(_cluster, "radius");
+			private _dist = _pos distance _center;
+			if(_dist <= (_maxDist + _radius)) then {
+				_nearestClusters pushBack [_dist, _cluster];
+			};
+		} forEach T_CALLM("getAliveClusters", []);
+		_nearestClusters sort ASCENDING;
+		_nearestClusters
+	} ENDMETHOD;
+
+	// This updates a ClusterModel to point directly to a new Actual cluster.
+	// This allows us to retarget actions onto new clusters when they merge or split.
+	METHOD("retargetClusterByActual") {
+		params [P_THISOBJECT, P_ARRAY("_origActual"), P_ARRAY("_newActual")];
+		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_origActual);
+		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_newActual);
+
+		// This call will do our asserting for us
+		private _cluster = T_CALLM("findClusterByActual", [_origActual]);
+		ASSERT_OBJECT(_cluster);
+		SETV(_cluster, "actual", +_newActual);
+	} ENDMETHOD;
+
+	METHOD("deleteClusterByActual") {
+		params [P_THISOBJECT, P_ARRAY("_actual")];
+		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
+
+		// This call will do our asserting for us
+		private _cluster = T_CALLM("findClusterByActual", [_actual]);
+		ASSERT_OBJECT(_cluster);
+		CALLM(_cluster, "killed", +_newActual);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -280,13 +407,19 @@ CLASS("WorldModel", "")
 
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
-		params [P_THISOBJECT, P_ARRAY("_pos"), P_SIDE("_side")];
+		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.
 		// TODO: Cache it
-
 		EFF_MIN_EFF
+
+		//T_PRVAR(threatGrid);
+		
+		//private _threat = CALLM(_threatGrid, "getValue", [_pos]);
+		
+		// _threat is a float so how
+		//EFF_MAX(_threat, EFF_MUL_SCALAR(EFF_MIN_EFF, 2))
 
 		// // max(base, nearest enemy forces * 2, threat map * 2);
 		// private _base = EFF_MIN_EFF;
@@ -313,9 +446,9 @@ CLASS("WorldModel", "")
 		// // };
 		
 		// // // Threat map converted from strength into a composition of the same strength
-		// // private _threatMapForce = if(_side == side_opf) then {
-		// // 	T_PRVAR(threatMapOpf);
-		// // 	private _strength = [_threatMapOpf, _pos#0, _pos#1] call ws_fnc_getValue;
+		// // private _threatGridForce = if(_side == side_opf) then {
+		// // 	T_PRVAR(threatGridOpf);
+		// // 	private _strength = [_threatGridOpf, _pos#0, _pos#1] call ws_fnc_getValue;
 		// // 	[
 		// // 		_strength * 0.7 / UNIT_STRENGTH,
 		// // 		_strength * 0.3 / VEHICLE_STRENGTH
@@ -325,8 +458,8 @@ CLASS("WorldModel", "")
 		// // };
 
 		// // [
-		// // 	ceil (_base#0 max (_nearEnemyEff#0 max _threatMapForce#0)),
-		// // 	ceil (_base#1 max (_nearEnemyEff#1 max _threatMapForce#1))
+		// // 	ceil (_base#0 max (_nearEnemyEff#0 max _threatGridForce#0)),
+		// // 	ceil (_base#1 max (_nearEnemyEff#1 max _threatGridForce#1))
 		// // ]
 		// EFF_CEIL(EFF_MAX(_base, _nearEnemyEff))
 	} ENDMETHOD;
@@ -337,9 +470,8 @@ CLASS("WorldModel", "")
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 
 		private _pos = GETV(_garr, "pos");
-		private _side = GETV(_garr, "side");
 		private _eff = GETV(_garr, "efficiency");
-		private _desiredEff = T_CALLM("getDesiredEff", [_pos]+[_side]);
+		private _desiredEff = T_CALLM("getDesiredEff", [_pos]);
 		
 		EFF_DIFF(_eff, _desiredEff)
 	} ENDMETHOD;
@@ -350,9 +482,8 @@ CLASS("WorldModel", "")
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 
 		private _pos = GETV(_garr, "pos");
-		private _side = GETV(_garr, "side");
 		private _eff = GETV(_garr, "efficiency");
-		private _desiredEff = T_CALLM("getDesiredEff", [_pos]+[_side]);
+		private _desiredEff = T_CALLM("getDesiredEff", [_pos]);
 
 		// TODO: is this right, or should it be scaling the final result? 
 		// How it is now will (under)exaggerate the desired composition
@@ -366,7 +497,7 @@ CLASS("WorldModel", "")
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
 		T_PRVAR(reinforceRequiredScoreCache);
 		
-		private _garrId = GETV(_gar, "id");
+		private _garrId = GETV(_garr, "id");
 		private _cacheVal = _reinforceRequiredScoreCache#_garrId;
 
 		if !(isNil "_cacheVal") exitWith { _cacheVal };
@@ -511,17 +642,4 @@ ENDCLASS;
 	["Dist test all", count CALLM(_world, "getNearestLocations", [_center]+[1001]) == 2] call test_Assert;
 }] call test_AddTest;
 
-["WorldModel.getDesiredEff", {
-	private _world = NEW("WorldModel", [true]);
-	private _garrison1 = NEW("GarrisonModel", [_world]);
-	SETV(_garrison1, "pos", [500, 0, 0]);
-	private _garrison2 = NEW("GarrisonModel", [_world]);
-	SETV(_garrison2, "pos", [1000, 0, 0]);
-	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[0]) == 0] call test_Assert;
-	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;
-	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 2] call test_Assert;
-	CALLM(_garrison2, "killed", []);
-	["Excluding dead", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 1] call test_Assert;
-}] call test_AddTest;
 #endif

@@ -3,8 +3,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\..\..\OOP_Light\OOP_Light.h"
-#include "CmdrActionStates.hpp"
+#include "..\common.hpp"
 
 CLASS("CmdrAction", "RefCounted")
 
@@ -33,7 +32,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("transitions", []);
 	} ENDMETHOD;
 
-	METHOD("updateScore") {
+	/* virtual */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_state")];
 	} ENDMETHOD;
 
@@ -71,6 +70,10 @@ CLASS("CmdrAction", "RefCounted")
 		
 		_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
 		T_SETV("state", _state)
+		
+		#ifdef DEBUG_CMDRAI
+		T_CALLM("debugDraw", []);
+		#endif
 	} ENDMETHOD;
 
 	METHOD("isComplete") {
@@ -83,6 +86,10 @@ CLASS("CmdrAction", "RefCounted")
 		""
 	} ENDMETHOD;
 
+	/* virtual */ METHOD("debugDraw") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+	
 	// Toolkit for scoring actions -----------------------------------------
 
 	// Get a value that falls off from 1 to 0 with distance, scaled by k.

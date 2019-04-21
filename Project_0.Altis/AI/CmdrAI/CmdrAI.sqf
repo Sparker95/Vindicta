@@ -196,19 +196,27 @@ CLASS("CmdrAI", "")
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G - - - - -   on %3 active actions", [_thisObject]+[_world]+[count _activeActions]);
 
 		// Update actions in real world
-		{ CALLM(_x, "update", [_world]) } forEach _activeActions;
+		{ 
+			OOP_DEBUG_MSG("[c %1 w %2] Updating action %3", [_thisObject]+[_world]+[_x]);
+			CALLM(_x, "update", [_world]);
+		} forEach _activeActions;
 
 		// Remove complete actions
-		private _completeActions = _activeActions select { CALLM(_x, "isComplete", []) };
+		//private _completeActions = _activeActions select { CALLM(_x, "isComplete", []) };
+
+		{ 
+			OOP_DEBUG_MSG("[c %1 w %2] Completed action %3, removing", [_thisObject]+[_world]+[_x]);
+			_activeActions deleteAt (_activeActions find _x);
+			UNREF(_x);
+		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
+
+		//_activeActions = _activeActions - _completeActions;
+		//T_SETV("activeActions", _activeActions);
 
 		// Unref completed actions
-		{
-			UNREF(_x);
-		} forEach _completeActions;
-
-		_activeActions = _activeActions - _completeActions;
-
-		T_SETV("activeActions", _activeActions);
+		// {
+		// 	UNREF(_x);
+		// } forEach _completeActions;
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G   D O N E - - - - -", [_thisObject]+[_world]);
 	} ENDMETHOD;
@@ -275,7 +283,8 @@ CLASS("CmdrAI", "")
 			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
 
 			// Get the best scoring action
-			(_scoresAndActions deleteAt 0) params ["_bestActionScore", "_bestAction"];
+			(_scoresAndActions select 0) params ["_bestActionScore", "_bestAction"];
+
 			// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
 
 			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
@@ -288,6 +297,8 @@ CLASS("CmdrAI", "")
 			// Add the best action to our active actions list
 			REF(_bestAction);
 			_activeActions pushBack _bestAction;
+			// Remove it from the possible actions list
+			_newActions deleteAt (_newActions find _bestAction);
 
 			PROFILE_SCOPE_START(ApplyNewActionToSim);
 			// Apply the new action effects to simworld, so next loop scores update appropriately
@@ -308,5 +319,10 @@ CLASS("CmdrAI", "")
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G   D O N E - - - - -", [_thisObject]+[_world]);
 	} ENDMETHOD;
-
+	
+	// METHOD("clustersSplit") {
+	// 	params [P_THISOBJECT, P_ARRAY("origCluster"), P_ARRAY("newClusters")];
+		
+	// } ENDMETHOD;
+	
 ENDCLASS;

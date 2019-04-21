@@ -1,4 +1,7 @@
 #include "..\common.hpp"
+#include "..\..\..\Group\Group.hpp"
+#include "..\..\parameterTags.hpp"
+#include "..\..\Action\Action.hpp"
 
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
@@ -26,7 +29,7 @@ CLASS("GarrisonModel", "ModelBase")
 		//T_SETV_REF("order", objNull);
 		T_SETV_REF("action", objNull);
 		// These will get set in sync
-		T_SETV("efficiency", T_EFF_null);
+		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", objNull);
@@ -139,7 +142,7 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		count _efficiency == 0
+		_efficiency isEqualTo []
 	} ENDMETHOD;
 
 	METHOD("isDepleted") {
@@ -175,6 +178,7 @@ CLASS("GarrisonModel", "ModelBase")
 		_splitEff = _effa; //EFF_MIN(_splitEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN_EFF)));
 
 		SETV(_detachment, "efficiency", _splitEff);
+		SETV(_detachment, "pos", GETV("pos"));
 		_efficiency = EFF_DIFF(_efficiency, _splitEff);
 		T_SETV("efficiency", _efficiency);
 
@@ -364,13 +368,14 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Make a new garrison
 		private _newGarrActual = NEW("Garrison", [GETV(_actual, "side")]);
+
 		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
 		// update phase.
 		private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
 
 		// Register it at the commander
 		// Not needed, it is registered in the WorldModel via the GarrisonModel, and commander can access it via that.
-		//CALLM1(_AI, "registerGarrison", _newGarrActual);
+		CALLM(_AI, "registerGarrison", [_newGarrActual]);
 
 		// private _location = T_CALLM("getLocation", []);
 		// if(!(_location isEqualType "")) exitWith {
@@ -430,7 +435,6 @@ CLASS("GarrisonModel", "ModelBase")
 		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonMove"]+[_AI]);
 		_goalState == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
-	
 
 	// MERGE WITH ANOTHER GARRISON
 	METHOD("mergeSim") {

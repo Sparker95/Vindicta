@@ -8,3 +8,4 @@ misc_fnc_boundingBoxReal = compile preprocessFileLineNumbers "Misc\fn_boundingBo
 misc_fnc_getVehicleWidth = compile preprocessFileLineNumbers "Misc\fn_getVehicleWidth.sqf";
 misc_fnc_isVehicleFlipped = compile preprocessFileLineNumbers "Misc\fn_isVehicleFlipped.sqf";
 misc_fnc_actionDropAllWeapons = compile preprocessFileLineNumbers "Misc\fn_actionDropAllWeapons.sqf";
+misc_fnc_mapDrawLine = compile preprocessFileLineNumbers "Misc\fn_mapDrawLine.sqf";

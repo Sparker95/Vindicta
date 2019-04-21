@@ -7,7 +7,7 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
-#define PLAN_INTERVAL 30
+#define PLAN_INTERVAL 5
 #define pr private
 
 CLASS("AICommander", "AI")
@@ -113,12 +113,12 @@ CLASS("AICommander", "AI")
 				CALLM1(_thisObject, "onTargetClusterCreated", _x);
 			};
 		} forEach T_GETV("targetClusters");
-		
+
 		// Process cluster actions
 		{
 			CALLM0(_x, "process");
 		} forEach T_GETV("targetClusterActions");
-		
+
 		// Delete old notifications
 		pr _nots = T_GETV("notifications");
 		pr _i = 0;
@@ -134,11 +134,14 @@ CLASS("AICommander", "AI")
 			};
 		};
 
-		T_PRVAR(cmdrAI);
 		T_PRVAR(worldModel);
+		CALLM(_worldModel, "sync", []);
+
+		T_PRVAR(cmdrAI);
 		CALLM(_cmdrAI, "update", [_worldModel]);
 		T_PRVAR(lastPlanningTime);
 		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+			CALLM(_worldModel, "updateThreatMaps", []);
 			T_SETV("lastPlanningTime", TIME_NOW);
 			CALLM(_cmdrAI, "plan", [_worldModel]);
 		};
@@ -483,8 +486,11 @@ CLASS("AICommander", "AI")
 		T_GETV("targetClusterActions") pushBack _newAction;
 		
 		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
+
+		T_PRVAR(worldModel);
+		NEW("ClusterModel", [_worldModel]+[[_thisObject]+[_ID]]);
 	} ENDMETHOD;
-	
+
 	/*
 	Method: onTargetClusterSplitted
 	Gets called when an already known cluster gets splitted into multiple new clusters.
@@ -501,11 +507,13 @@ CLASS("AICommander", "AI")
 		pr _IDOld = _tcOld select TARGET_CLUSTER_ID_ID;
 		pr _a = _tcsNew apply {[_x select 0, _x select 1 select TARGET_CLUSTER_ID_ID]};
 		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new affinity and IDs: %2", _IDOld, _a);
-		
+
 		// Sort new clusters by affinity
-		_tcsNew sort false; // Descending
+		_tcsNew sort DESCENDING;
+
 		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
 		pr _newClusterID = _tcsNew select 0 select 1 select TARGET_CLUSTER_ID_ID;
+
 		// Notify the actions assigned to this cluster
 		OOP_INFO_1("Redirecting actions to new cluster, ID: %1", _newClusterID);
 		{
@@ -513,9 +521,12 @@ CLASS("AICommander", "AI")
 				CALLM1(_x, "setTargetClusterID", _newClusterID);
 			};
 		} forEach T_GETV("targetClusterActions");
-		
+
+		T_PRVAR(worldModel);
+		// Retarget in the model
+		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject]+[_IDOld]]+[[_thisObject]+[_newClusterID]]);
 	} ENDMETHOD;	
-	
+
 	/*
 	Method: onTargetClusterMerged
 	Gets called when old clusters get merged into a new one
@@ -528,15 +539,19 @@ CLASS("AICommander", "AI")
 	*/
 	METHOD("onTargetClustersMerged") {
 		params ["_thisObject", "_tcsOld", "_tcNew"];
-		
+
 		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
 		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
 		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _IDnew);
-		
+
+		T_PRVAR(worldModel);
+
 		// Assign all actions from old IDs to new IDs
 		pr _actions = T_GETV("targetClusterActions");
 		{
 			pr _IDOld = _x;
+			// Retarget in the model
+			CALLM(_worldModel, "retargetClusterByActual", [[_thisObject]+[_IDOld]]+[[_thisObject]+[_IDnew]]);
 			{
 				pr _action = _x;
 				if (CALLM0(_action, "getTargetClusterID") == _IDOld) then {
@@ -544,7 +559,7 @@ CLASS("AICommander", "AI")
 				};
 			} forEach T_GETV("targetClusterActions");
 		} forEach _IDsOld;
-		
+
 	} ENDMETHOD;
 	
 	/*

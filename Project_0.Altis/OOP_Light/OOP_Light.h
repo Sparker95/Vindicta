@@ -461,6 +461,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
 
 // ----------------------------------------
@@ -749,7 +750,7 @@ objNameStr \
 	#define ASSERT_MSG(condition, msg) \
 		if (!(condition)) then { \
 			private _str = str({ condition; }); \
-			OOP_ERROR_2("Assertion failed (%1): %2", _str, msg); \
+			OOP_ERROR_2("Assertion failed: %2", _str, msg); \
 			DUMP_CALLSTACK; \
 			throw [__FILE__, __LINE__, msg]; \
 		}

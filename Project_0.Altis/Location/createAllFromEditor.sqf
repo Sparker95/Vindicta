@@ -66,12 +66,13 @@ private _locations = entities "Project_0_LocationSector";
 	private _args = [T_INF, [GROUP_TYPE_IDLE]];
 	private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
 	//if (_cInf < 5) then {_cInf = 5};
-	_cInf = 5 + random 5;
+	_cInf = if(_locName == "Altis Airfield") then {60} else {2}; // _locCapacityInf*2;
+	//_cInf = 5 + random 5;
 
 	// // Wheeled and tracked vehicle capacity
 	_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
 	private _cVehGround = CALL_METHOD(_loc, "getUnitCapacity", _args);
-	_cVehGround = 10;
+	_cVehGround = if(_locName == "Altis Airfield") then {10} else {0};
 
 	// Static HMG capacity
 	private _args = [T_PL_HMG_GMG_high, GROUP_TYPE_ALL];
@@ -129,15 +130,15 @@ private _locations = entities "Project_0_LocationSector";
 	};
 
 	// Add default infantry groups
-	/*
 	private _i = 0;
 	while {_cInf > 0 && _i < 666} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;
 		_i = _i + 1;
 	};
-	*/
+	
 
 	// Add building sentries
+	#ifdef ADD_SENTRY
 	if (_cBuildingSentry > 0) then {
 		private _args = [_side, GROUP_TYPE_BUILDING_SENTRY];
 		private _sentryGroup = NEW("Group", _args);
@@ -149,6 +150,7 @@ private _locations = entities "Project_0_LocationSector";
 		};
 		CALL_METHOD(_garMilMain, "addGroup", [_sentryGroup]);
 	};
+	#endif
 
 
 	// Add default vehicles
@@ -219,6 +221,7 @@ private _locations = entities "Project_0_LocationSector";
 	};
 	#endif
 
+	#ifdef ADD_STATICS
 	// Static weapons
 	if (_cHMGGMG > 0) then {
 		// temp cap of amount of static guns
@@ -235,5 +238,6 @@ private _locations = entities "Project_0_LocationSector";
 		};
 		CALL_METHOD(_garMilMain, "addGroup", [_staticGroup]);
 	};
+	#endif
 
 } forEach _locations;

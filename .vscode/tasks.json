@@ -21,7 +21,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -74,7 +77,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -127,7 +133,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -180,7 +189,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -226,7 +238,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -282,7 +297,10 @@
                 "isDefault": true
             },
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -344,11 +362,15 @@
             "args": [
                 "${file}",
                 "-Wait",
-                "-Tail", "10000"
+                "-Tail",
+                "10"
             ],
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
