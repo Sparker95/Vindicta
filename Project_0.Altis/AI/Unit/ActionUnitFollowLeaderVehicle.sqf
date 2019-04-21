@@ -31,7 +31,7 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
 		if (GETV(_AI, "new")) then {
-			//SETV(_AI, "new", false);
+			SETV(_AI, "new", false);
 		};
 
 		pr _hO = GETV(_thisObject, "hO");

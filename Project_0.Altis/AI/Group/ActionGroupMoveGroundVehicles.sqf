@@ -46,6 +46,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
 		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
 		
+		// Regroup units by distance
+		pr _distAndUnits = (CALLM0(_group, "getUnits") - [CALLM0(_group, "getLeader")]) apply {
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			[_hO distance _vehLead, _x];
+		};
+		_distAndUnits sort true; // Ascending
+		CALLM2(_group, "postMethodAsync", "sort", [_distAndUnits apply {_x select 1}]); // Post message to sort the group
+
 		// Delete all previous waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
@@ -89,7 +97,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _leaderAI = CALLM0(_leader, "getAI");
 		pr _parameters = [[TAG_POS, _pos]];
 		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
-		
+
 		// Set time last called
 		T_SETV("time", time);
 		

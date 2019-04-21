@@ -90,7 +90,7 @@ CLASS("Camp", "Location")
 		private _cInf = CALL_METHOD(_thisObject, "getUnitCapacity", _args);
 
 		private _garMilMain = NEW("Garrison", [_side]);
-		CALL_METHOD(_thisObject, "setGarrisonMilitaryMain", [_garMilMain]);
+		CALLM1(_garMilMain, "setLocation", _thisObject);
 
 		// Add infantry
 		private _addInfGroup = {

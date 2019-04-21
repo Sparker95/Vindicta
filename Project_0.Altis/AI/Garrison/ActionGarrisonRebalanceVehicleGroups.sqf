@@ -103,6 +103,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 		} forEach _vehGroups;
 		*/
+
+		// Delete empty groups
+		CALLM0(_gar, "deleteEmptyGroups");
 		
 		// Call the health sensor again so that it can update the world state properties
 		CALLM0(GETV(_AI, "sensorState"), "update");

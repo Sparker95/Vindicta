@@ -125,10 +125,11 @@ CLASS("AIGarrison", "AI_GOAP")
 	
 	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("process") {
-		params ["_thisObject"];
+		params ["_thisObject", ["_accelerate", false]];
 		
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", []);
+		OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
 		
 		// Update the markers
 		pr _gar = T_GETV("agent");

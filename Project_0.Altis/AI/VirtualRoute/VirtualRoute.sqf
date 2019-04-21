@@ -246,14 +246,15 @@ CLASS("VirtualRoute", "")
 
 	/*
 	Method: getConvoyPositions
-	Return a set of positions and directions for convoy vehicles
+	Return a set of positions and directions for convoy vehicles.
 
 	Parameters: _number, _spacing
 
 	_number - Number of positions to return.
 	_spacing - Optional, default 20, Spacing between positions.
 
-	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...]
+	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...].
+	First array element corresponds to the lead vehicle.
 	*/
 	METHOD("getConvoyPositions") {
 		params [
@@ -290,6 +291,7 @@ CLASS("VirtualRoute", "")
 				};
 				_currPos = _currPos vectorAdd (vectorNormalized (_nextPos vectorDiff _currPos) vectorMultiply _distRemaining);
 			};
+			reverse _convoyPositions;
 		} else {
 			pr _currPos = _pos;
 			pr _index = _nextIdx - 1;
@@ -307,7 +309,6 @@ CLASS("VirtualRoute", "")
 				};
 				_currPos = _currPos vectorAdd (vectorNormalized (_prevPos vectorDiff _currPos) vectorMultiply _distRemaining);
 			};
-			reverse _convoyPositions;
 		};
 
 		_convoyPositions

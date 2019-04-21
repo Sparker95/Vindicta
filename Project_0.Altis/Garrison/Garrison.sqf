@@ -212,7 +212,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
-			CALLM(_currentLoc, "unregisterGarrison", [_thisObject]);
+			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+			T_SETV("location", "");
 		};
 	} ENDMETHOD;
 
@@ -620,6 +621,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		nil
 	} ENDMETHOD;
 
+	/*
+	Method: deleteEmptyGroups
+	DeletesEmptyGroups in this garrison
+	
+	Returns: nil
+	*/
+
+	METHOD("deleteEmptyGroups") {
+		params ["_thisObject"];
+
+		pr _groups = T_GETV("groups");
+		pr _emptyGroups = _groups select {CALLM0(_x, "isEmpty")};
+		{
+			DELETE(_x);
+		} forEach _emptyGroups;
+	} ENDMETHOD;
 
 	/*
 	Method: addGarrison

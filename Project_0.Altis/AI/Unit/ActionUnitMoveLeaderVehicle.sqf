@@ -39,7 +39,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
 		if (GETV(_AI, "new")) then {
-			//SETV(_AI, "new", false); // Dont reset the flag
+			SETV(_AI, "new", false);
 		};
 
 		T_SETV("stuckTimer", 0);

@@ -64,7 +64,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_to", "", [""]]];
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -164,7 +164,17 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 				pr _gar = T_GETV("gar");
 				pr _AI = T_GETV("AI");
+
+				// Update position of this garrison object
+				pr _units = CALLM0(_gar, "getUnits");
 				pr _pos = T_GETV("pos");
+				pr _index = _units findIf {CALLM0(_x, "isAlive")};
+				if (_index != -1) then {
+					pr _unit = _units select _index;
+					pr _hO = CALLM0(_unit, "getObjectHandle");
+					_pos = getPos _hO;
+				};
+				CALLM1(_AI, "setPos", _pos);
 			
 				pr _args = [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC];
 				pr _vehGroups = CALLM1(_gar, "findGroupsByType", _args);
@@ -180,9 +190,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					OOP_INFO_0("All groups have arrived");
 					
 					// Set pos world state property
-					pr _ws = GETV(_AI, "worldState");
-					[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-					[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
+					// todo fix this, implement AIGarrison.setVehiclesPos function
+					//pr _ws = GETV(_AI, "worldState");
+					//[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+					//[_ws, WSP_GAR_VEHICLES_POSITION, _pos] call ws_setPropertyValue;
 					
 					_state = ACTION_STATE_COMPLETED;
 					breakTo "s0";
@@ -278,16 +289,30 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
 		pr _posAndDir = CALLM1(_vr, "getConvoyPositions", _nVeh);
+		//reverse _posAndDir;
 
 		// Iterate through all groups
 		pr _currentIndex = 0;
 		pr _groups = CALLM0(_gar, "getGroups");
 		{
 			pr _nVehThisGroup = count CALLM0(_x, "getVehicleUnits");
-			pr _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
-			CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+			if (_nVehThisGroup > 0) then {
+				pr _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
+				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
 
-			_currentIndex = _currentIndex + _nVehThisGroup;
+				// Make leader the first human in the group
+				pr _units = CALLM0(_x, "getUnits");
+				pr _index = _units findIf {CALLM0(_x, "isInfantry")};
+				if (_index != -1) then {
+					pr _leaderHandle = CALLM0(_units select _index, "getObjectHandle");
+					pr _hG = CALLM0(_x, "getGroupHandle");
+					_hG selectLeader _leaderHandle;
+				};
+				_currentIndex = _currentIndex + _nVehThisGroup;
+			} else {
+				pr _posAndDirThisGroup = _posAndDir select [0, 1];
+				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+			};
 		} forEach _groups;
 
 		// todo what happens with ungrouped units?? Why are there even ungrouped units at this point???

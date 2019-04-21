@@ -114,6 +114,8 @@ CLASS("AI_GOAP", "AI")
 		
 		// Update all sensors
 		CALLM1(_thisObject, "updateSensors", _accelerate);
+
+		OOP_INFO_1("PROCESS: world state: %1", [GETV(_thisObject, "worldState")] call ws_toString);
 		
 		// Update all world facts (delete old facts)
 		CALLM0(_thisObject, "updateWorldFacts");

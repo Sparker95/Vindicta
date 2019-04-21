@@ -181,6 +181,7 @@ CLASS("AI", "MessageReceiverEx")
 			// If timeNextUpdate is 0, we never update this sensor
 			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
 				//OOP_INFO_0("  Calling UPDATE!");
+				OOP_INFO_1("Updating sensor: %1", _sensor);
 				CALLM(_sensor, "update", []);
 				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
 				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
