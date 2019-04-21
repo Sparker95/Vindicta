@@ -73,7 +73,8 @@ CLASS("GarrisonModel", "ModelBase")
 			OOP_DEBUG_1("Updating GarrisonModel from Actual Garrison %1", _actual);
 
 			T_SETV("efficiency", GETV(_actual, "effTotal"));
-			T_SETV("pos", CALLM(_actual, "getPos", []));
+			private _actualPos = CALLM(_actual, "getPos", []);
+			T_SETV("pos", _actualPos);
 			T_SETV("side", GETV(_actual, "side"));
 
 			private _locationActual = CALLM(_actual, "getLocation", []);
@@ -178,7 +179,7 @@ CLASS("GarrisonModel", "ModelBase")
 		_splitEff = _effa; //EFF_MIN(_splitEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN_EFF)));
 
 		SETV(_detachment, "efficiency", _splitEff);
-		SETV(_detachment, "pos", GETV("pos"));
+		SETV(_detachment, "pos", T_GETV("pos"));
 		_efficiency = EFF_DIFF(_efficiency, _splitEff);
 		T_SETV("efficiency", _efficiency);
 
@@ -367,15 +368,21 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!_allocated) exitWith { objNull };
 
 		// Make a new garrison
-		private _newGarrActual = NEW("Garrison", [GETV(_actual, "side")]);
+		private _side = GETV(_actual, "side");
+		private _newGarrActual = NEW("Garrison", [_side]);
+		private _pos = CALLM(_actual, "getPos", []);
+		CALLM(_newGarrActual, "setPos", [_pos]);
 
 		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
 		// update phase.
-		private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
+		// private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
 
 		// Register it at the commander
-		// Not needed, it is registered in the WorldModel via the GarrisonModel, and commander can access it via that.
-		CALLM(_AI, "registerGarrison", [_newGarrActual]);
+		#ifndef _SQF_VM
+		private _newGarr = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGarrActual]);
+		#else
+		private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
+		#endif
 
 		// private _location = T_CALLM("getLocation", []);
 		// if(!(_location isEqualType "")) exitWith {

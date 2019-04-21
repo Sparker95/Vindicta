@@ -57,7 +57,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		// Make a new garrison
 		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
 		// Register it at the commander
-		CALLM1(_AI, "registerGarrison", _newGar);
+		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
 		
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
 		pr _success = false;

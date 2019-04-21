@@ -66,15 +66,7 @@ if (isServer) then {
 
 	// Commander AIs
 	gCommanders = [];
-	if(gFlagAllCommanders) then {
-		// West
-		gCommanderWest = NEW("Commander", []);
-		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
-		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
-		publicVariable "gAICommanderWest";
-		gCommanders pushBack gAICommanderWest;
-	};
-	
+
 	// Independent
 	gCommanderInd = NEW("Commander", []);
 	private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
@@ -83,18 +75,27 @@ if (isServer) then {
 	gCommanders pushBack gAICommanderInd;
 
 	if(gFlagAllCommanders) then {
+
+		// West
+		gCommanderWest = NEW("Commander", []);
+		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
+		publicVariable "gAICommanderWest";
+		gCommanders pushBack gAICommanderWest;
+
 		// East
 		gCommanderEast = NEW("Commander", []);
 		private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		publicVariable "gAICommanderEast";
 		gCommanders pushBack gAICommanderEast;
+
 	};
 
 	// Create locations and other things
 	OOP_INFO_0("Init.sqf: Calling initWorld...");
 	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
-	
+
 	// Create SideStats
 	private _args = [EAST, 5];
 	SideStatWest = NEW("SideStat", _args);
@@ -117,10 +118,10 @@ if (isServer) then {
 			private _updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; // Only know that there's something unexplored over here
 			if (CALLM0(_x, "getSide") == _side) then { // If this garrison should belong to this commander
 				// Register at commander
-				CALLM1(_AI, "registerGarrison", _x);
+				CALL_STATIC_METHOD("AICommander", "registerGarrison", [_x]);
 				_updateLevel = CLD_UPDATE_LEVEL_UNITS; // Know about all units at this place
 			};
-			
+
 			if (_loc != "") then {
 				CALLM2(_AI, "updateLocationData", _loc, _updateLevel);
 			};

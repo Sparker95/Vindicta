@@ -69,10 +69,12 @@ CLASS("CmdrAction", "RefCounted")
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 		
 		_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
-		T_SETV("state", _state)
+		T_SETV("state", _state);
 		
 		#ifdef DEBUG_CMDRAI
-		T_CALLM("debugDraw", []);
+		if(!GETV(_world, "isSim")) then {
+			T_CALLM("debugDraw", []);
+		};
 		#endif
 	} ENDMETHOD;
 

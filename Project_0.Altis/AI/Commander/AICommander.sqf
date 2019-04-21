@@ -898,16 +898,20 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("registerGarrison") {
-		params ["_thisObject", ["_gar", "", [""]]];
-		
-		T_GETV("garrisons") pushBack _gar; // I need you for my army!
-		CALLM2(_gar, "postMethodAsync", "ref", []);
+	STATIC_METHOD("registerGarrison") {
+		params [P_THISCLASS, P_STRING("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		private _side = GETV(_gar, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
-		T_PRVAR(worldModel);
-		NEW("GarrisonModel", [_worldModel]+[_gar]);
-
-		nil
+		private _newModel = NULL_OBJECT;
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			T_GETV("garrisons") pushBack _gar; // I need you for my army!
+			CALLM2(_gar, "postMethodAsync", "ref", []);
+			T_PRVAR(worldModel);
+			_newModel = NEW("GarrisonModel", [_worldModel]+[_gar]);
+		};
+		_newModel
 	} ENDMETHOD;
 	
 	/*
@@ -919,18 +923,21 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("unregisterGarrison") {
-		params ["_thisObject", ["_gar", "", [""]]];
-		
-		// Remove from model first
-		T_PRVAR(worldModel);
-		private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
-		CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
+	STATIC_METHOD("unregisterGarrison") {
+		params [P_THISCLASS, P_STRING("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		private _side = GETV(_gar, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			// Remove from model first
+			T_PRVAR(worldModel);
+			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
+			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 
-		pr _garrisons = T_GETV("garrisons");
-		_garrisons deleteAt (_garrisons find _gar); // Get out of my sight you useless garrison!
-		CALLM2(_gar, "postMethodAsync", "unref", []);
-
+			pr _garrisons = T_GETV("garrisons");
+			_garrisons deleteAt (_garrisons find _gar); // Get out of my sight you useless garrison!
+			CALLM2(_gar, "postMethodAsync", "unref", []);
+		};
 		nil
 	} ENDMETHOD;
 		

@@ -327,6 +327,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("AI")
 	} ENDMETHOD;
 	
+	// 						S E T   P O S
+	// Sets the position, because it is stored in the world state
+	METHOD("setPos") {
+		params ["_thisObject", "_pos"];
+		pr _AI = T_GETV("AI");
+		CALLM(_AI, "setPos", [_pos]);
+	} ENDMETHOD;
+
 	// 						G E T   P O S
 	/*
 	Method: getPos
@@ -338,9 +346,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 
 		pr _AI = T_GETV("AI");
-		pr _worldState = GETV(_AI, "worldState");
-		[_worldState, WSP_GAR_POSITION] call ws_getPropertyValue
-		
+		CALLM(_AI, "getPos", [])
 	} ENDMETHOD;
 	
 	//						I S   E M P T Y

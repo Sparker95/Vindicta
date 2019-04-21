@@ -76,30 +76,28 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		private _isSim = GETV(_world, "isSim");
 		private _tgtPos = GETV(_tgtGarr, "pos");
 		private _arrived = false;
-		if(!_moving) then {
-			// Start moving
-			OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-			if(_isSim) then {
-				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
-				// Sim is instant, so we have arrived
+		if(_isSim) then {
+			CALLM(_detachedGarr, "moveSim", [_tgtPos]);
+			_arrived = true;
+		} else {
+			if(!_moving) then {
+				// Start moving
 				OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-				_arrived = true;
-			} else {
 				CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
 				T_SETV("moving", true);
-			};
-		} else {
-			// Are we there yet?
-			private _done = _isSim or { CALLM(_detachedGarr, "moveActualComplete", []) };
-			if(_done) then {
-				private _detachedGarrPos = GETV(_detachedGarr, "pos");
-				if((_detachedGarrPos distance _tgtPos) < _radius * 1.5) then {
-					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: complete, reached target", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-					_arrived = true;
-				} else {
-					// Move again cos we didn't get there yet!
-					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: complete, didn't reach target, moving again", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-					T_SETV("moving", false);
+			} else {
+				// Are we there yet?
+				private _done = CALLM(_detachedGarr, "moveActualComplete", []);
+				if(_done) then {
+					private _detachedGarrPos = GETV(_detachedGarr, "pos");
+					if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
+						OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+						_arrived = true;
+					} else {
+						// Move again cos we didn't get there yet!
+						OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+						T_SETV("moving", false);
+					};
 				};
 			};
 		};
@@ -169,15 +167,24 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 	/* override */ METHOD("getLabel") {
 		params [P_THISOBJECT];
 
+
 		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
-
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		ASSERT_OBJECT(_srcGarr);
+		private _srcAc = GETV(_srcGarr, "actual");
+		private _srcEff = GETV(_srcGarr, "efficiency");
+		T_PRVAR(tgtGarrId);
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_tgtGarr);
-
-		format ["reinf o%1 - %2", _srcGarr, _tgtGarr]
+		private _tgtAc = GETV(_tgtGarr, "actual");
+		private _tgtEff = GETV(_tgtGarr, "efficiency");
+		T_PRVAR(detachedGarrId);
+		if(_detachedGarrId == -1) then {
+			format ["reinf %1%2 -> %3%4", _srcAc, _srcEff, _tgtAc, _tgtEff]
+		} else {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			private _detachedAc = GETV(_detachedGarr, "actual");
+			private _detachedEff = GETV(_detachedGarr, "efficiency");
+			format ["reinf %1%2 -> %3%4 -> %5%6", _srcAc, _srcEff, _detachedAc, _detachedEff, _tgtAc, _tgtEff]
+		};
 	} ENDMETHOD;
 
 	/* override */ METHOD("updateScore") {
@@ -254,19 +261,18 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_compAvailable
 	} ENDMETHOD;
-	
+
 	/* override */ METHOD("debugDraw") {
 		params [P_THISOBJECT];
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtGarrId);
-
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
+		private _srcGarrPos = GETV(_srcGarr, "pos");
+
+		T_PRVAR(tgtGarrId);
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
-
-		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 
 		[_srcGarrPos, _tgtGarrPos, "ColorBlack", 5, _thisObject + "_line"] call misc_fnc_mapDrawLine;
