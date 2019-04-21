@@ -289,6 +289,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
 		pr _posAndDir = CALLM1(_vr, "getConvoyPositions", _nVeh);
+		//reverse _posAndDir;
 
 		// Iterate through all groups
 		pr _currentIndex = 0;
@@ -298,6 +299,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			if (_nVehThisGroup > 0) then {
 				pr _posAndDirThisGroup = _posAndDir select [_currentIndex, _nVehThisGroup];
 				CALLM1(_x, "spawnVehiclesOnRoad", _posAndDirThisGroup);
+
+				// Make leader the first human in the group
+				pr _units = CALLM0(_x, "getUnits");
+				pr _index = _units findIf {CALLM0(_x, "isInfantry")};
+				if (_index != -1) then {
+					pr _leaderHandle = CALLM0(_units select _index, "getObjectHandle");
+					pr _hG = CALLM0(_x, "getGroupHandle");
+					_hG selectLeader _leaderHandle;
+				};
 				_currentIndex = _currentIndex + _nVehThisGroup;
 			} else {
 				pr _posAndDirThisGroup = _posAndDir select [0, 1];

@@ -706,7 +706,64 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 	} ENDMETHOD;
 
+	// |         S O R T
+	/*
+	Method: sort
+	Makes passed units rejoin this group in specified order. Useful for reorganizing formation for convoys.
 
+	Parameters: _unitsSorted
+
+	_unitsSorted - Array with <Unit> objects
+
+	Returns: nil
+	*/
+
+	METHOD("sort") {
+		params ["_thisObject", ["_unitsSorted", [], [[]]]];
+
+		pr _data = T_GETV("data");
+		if (! (_data select GROUP_DATA_ID_SPAWNED)) exitWith {
+			OOP_ERROR_0("sortByVehicleOrder: group is not spawned!");
+		};
+
+		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		OOP_INFO_1("Group handle: %1", _hG);
+		_hG deleteGroupWhenEmpty false;
+
+		// Create a temporary group
+		pr _side = _data select GROUP_DATA_ID_SIDE;
+		pr _tempGroupHandle = createGroup _side;
+
+		// Make all passed units join the new temporary group
+		pr _objectHandles = _unitsSorted apply {
+			CALLM0(_x, "getObjectHandle")
+		};
+		_objectHandles joinSilent _tempGroupHandle;
+
+		OOP_INFO_1("Group handle: %1", _hG);
+
+		// Restore the old group if it's null now after everyone has left it
+		if (isNull _hG) then {
+			_hG = createGroup [_side, false]; //side, delete when empty
+			_data set [GROUP_DATA_ID_GROUP_HANDLE, _hG];
+		};
+
+		OOP_INFO_1("Group handle: %1", _hG);
+
+		// Make all passed units rejoin the group
+		pr _hPrev = objNull;
+		{
+			[_x] joinSilent _hG;
+			if (!isNull _hPrev) then {
+				_x doFollow _hPrev;
+			};
+			_hPrev = _x;
+		} forEach _objectHandles;
+
+		OOP_INFO_1("Group handle: %1", _hG);
+
+		deleteGroup _tempGroupHandle;
+	} ENDMETHOD;
 
 
 

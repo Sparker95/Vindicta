@@ -218,6 +218,9 @@ CLASS(UNIT_CLASS_NAME, "");
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
+					if (isNull _groupHandle) then {
+						OOP_ERROR_0("Spawn: group handle is null!");
+					};
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side

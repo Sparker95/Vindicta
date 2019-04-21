@@ -46,6 +46,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _allVehicles = (CALLM0(_group, "getUnits") select {CALLM0(_x, "isVehicle")}) apply {CALLM0(_x, "getObjectHandle")};
 		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
 		
+		// Regroup units by distance
+		pr _distAndUnits = CALLM0(_group, "getUnits") apply {
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			[_hO distance _vehLead, _x];
+		};
+		_distAndUnits sort true; // Ascending
+		CALLM2(_group, "postMethodAsync", "sort", [_distAndUnits apply {_x select 1}]);
+
 		// Delete all previous waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
