@@ -710,6 +710,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	/*
 	Method: sort
 	Makes passed units rejoin this group in specified order. Useful for reorganizing formation for convoys.
+	!!!WARNING!!! If you pass an array with all units in the group, then group handle will be changed!
 
 	Parameters: _unitsSorted
 
@@ -745,6 +746,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Restore the old group if it's null now after everyone has left it
 		if (isNull _hG) then {
 			_hG = createGroup [_side, false]; //side, delete when empty
+			_hG allowFleeing 0;
 			_data set [GROUP_DATA_ID_GROUP_HANDLE, _hG];
 		};
 
@@ -754,9 +756,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _hPrev = objNull;
 		{
 			[_x] joinSilent _hG;
-			if (!isNull _hPrev) then {
-				_x doFollow _hPrev;
-			};
+			//if (!isNull _hPrev) then {
+			//	_x doFollow _hPrev;
+			//};
 			_hPrev = _x;
 		} forEach _objectHandles;
 
