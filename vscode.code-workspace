@@ -49,6 +49,15 @@
 			"**/squads": true,
 			"**/*.sqm*": true,
 			"**/~*": true
+		},
+		"todo-tree.showTagsFromOpenFilesOnly": false,
+		"todo-tree.defaultHighlight": {
+			"icon": "tasklist",
+			"type": "text",
+			"foreground": "gray",
+			"background": "blue",
+			"opacity": 40,
+			"iconColour": "white"
 		}
 	}
 }

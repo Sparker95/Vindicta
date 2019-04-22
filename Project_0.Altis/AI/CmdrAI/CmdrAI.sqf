@@ -50,7 +50,7 @@ CLASS("CmdrAI", "")
 	// };
 
 	METHOD("generateTakeOutpostActions") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
@@ -90,7 +90,7 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 
 	METHOD("generateAttackActions") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 
 		private _garrisons = GETV(_world, "garrisons");
 
@@ -123,49 +123,77 @@ CLASS("CmdrAI", "")
 	// };
 
 	METHOD("generateReinforceActions") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		T_PRVAR(side);
 
-		private _garrisons = CALLM(_world, "getAliveGarrisons", []) select { 
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+			// Must be on our side and not involved in another action
+			if((GETV(_x, "side") != _side) or { CALLM(_x, "isBusy", []) }) then {
+				false
+			} else {
+				// Not involved in another reinforce action
+				//private _action = CALLM(_x, "getAction", []);
+				//if(!IS_NULL_OBJECT(_action) and { OBJECT_PARENT_CLASS_STR(_action) == "ReinforceCmdrAction" }) exitWith {false};
+
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+
+				// Must have at least a minimum strength of twice min efficiency
+				//private _eff = GETV(_x, "efficiency");
+				// !CALLM(_x, "isDepleted", []) and 
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			}
+		};
+
+		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
+		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
 			// Must be on our side
-			GETV(_x, "side") == _side and 
-			// Not involved in another reinforce action
-			{
+			if(GETV(_x, "side") != _side) then {
+				false
+			} else {
+				// Not involved in another reinforce action
 				private _action = CALLM(_x, "getAction", []);
-				IS_NULL_OBJECT(_action) or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceCmdrAction" }
+				if(!IS_NULL_OBJECT(_action) and { OBJECT_PARENT_CLASS_STR(_action) == "ReinforceCmdrAction" }) then {
+					false
+				} else {
+					// Must be under desired efficiency by at least min reinforcement size
+					// private _eff = GETV(_x, "efficiency");
+					private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
+					!EFF_GT(_overDesiredEff, EFF_MUL_SCALAR(EFF_MIN_EFF, -1))
+				}
 			}
 		};
 
 		T_PRVAR(side);
 
-		// Source garrisons must have a minimum eff
-		private _srcGarrisons = _garrisons select { 
-			// Must have at least a minimum strength of twice min efficiency
-			private _eff = GETV(_x, "efficiency");
-			EFF_GTE(_eff, EFF_MUL_SCALAR(EFF_MIN_EFF, 2)) and 
-			// !CALLM(_x, "isDepleted", []) and 
-			// Not involved in another action already
-			{ !CALLM(_x, "isBusy", []) }
-		};
+		// // Source garrisons must have a minimum eff
+		// private _srcGarrisons = _nowGarrisons select { 
+		// 	// Must have at least a minimum strength of twice min efficiency
+		// 	private _eff = GETV(_x, "efficiency");
+		// 	EFF_GTE(_eff, EFF_MUL_SCALAR(EFF_MIN_EFF, 2)) and 
+		// 	// !CALLM(_x, "isDepleted", []) and 
+		// 	// Not involved in another action already
+		// 	{ !CALLM(_x, "isBusy", []) }
+		// };
 
-		private _tgtGarrisons = _garrisons select { 
-			// Must have at least a minimum strength of twice min efficiency
-			private _eff = GETV(_x, "efficiency");
-			private _overDesiredEff = CALLM(_world, "getOverDesiredEff", [_x]);
-			!EFF_GT(_overDesiredEff, EFF_ZERO)
-		};
+		// private _tgtGarrisons = _garrisons select { 
+		// 	// Must have at least a minimum strength of twice min efficiency
+		// 	private _eff = GETV(_x, "efficiency");
+		// 	private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
+		// 	!EFF_GT(_overDesiredEff, EFF_ZERO)
+		// };
 
 		private _actions = [];
 		{
-			private _srcGarrison = _x;
-			private _srcPos = GETV(_srcGarrison, "pos");
+			private _srcId = GETV(_x, "id");
+			//private _srcPos = GETV(_x, "pos");
 			{
-				private _tgtGarrison = _x;
-				private _tgtPos = GETV(_tgtGarrison, "pos");
-				if(_srcGarrison != _tgtGarrison 
+				private _tgtId = GETV(_x, "id");
+				//private _tgtPos = GETV(_x, "pos");
+				if(_srcId != _tgtId 
 					// and {_srcPos distance _tgtPos < REINF_MAX_DIST}
 					) then {
-					private _params = [GETV(_srcGarrison, "id"), GETV(_tgtGarrison, "id")];
+					private _params = [_srcId, _tgtId];
 					_actions pushBack (NEW("ReinforceCmdrAction", _params));
 				};
 			} forEach _tgtGarrisons;
@@ -175,7 +203,7 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 
 	METHOD("generateRoadblockActions") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 
 		private _garrisons = GETV(_world, "garrisons");
 
@@ -229,17 +257,19 @@ CLASS("CmdrAI", "")
 		//T_PRVAR(world);
 		T_PRVAR(activeActions);
 
-		OOP_DEBUG_MSG("[c %1 w %2] Creating new simworld from %2", [_thisObject]+[_world]);
+		OOP_DEBUG_MSG("[c %1 w %2] Creating new simworlds from %2", [_thisObject]+[_world]);
 
-		// Copy world to simworld
-		private _simWorld = CALLM(_world, "simCopy", []);
+		// Copy world to simworld, now and future
+		private _simWorldNow = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_NOW]);
+		private _simWorldFuture = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 
-		OOP_DEBUG_MSG("[c %1 w %2] Applying %3 active actions to simworld", [_thisObject]+[_world]+[count _activeActions]);
+		OOP_DEBUG_MSG("[c %1 w %2] Applying %3 active actions to simworlds", [_thisObject]+[_world]+[count _activeActions]);
 
 		PROFILE_SCOPE_START(ApplyActive);
 		// Apply effects of active actions to the simworld
 		{
-			CALLM(_x, "applyToSim", [_simWorld]);
+			CALLM(_x, "applyToSim", [_simWorldNow]);
+			CALLM(_x, "applyToSim", [_simWorldFuture]);
 		} forEach _activeActions;
 		PROFILE_SCOPE_END(ApplyActive, 0.1);
 
@@ -249,12 +279,12 @@ CLASS("CmdrAI", "")
 		// Generate possible new actions based on the simworld
 		// (i.e. taking into account expected outcomes of currently active actions)
 		private _newActions = 
-			  T_CALLM("generateTakeOutpostActions", [_simWorld])
+			  T_CALLM("generateTakeOutpostActions", [_simWorldNow]+[_simWorldFuture])
 			// TODO: general attack actions (QRF)
-			//+ T_CALLM1("generateAttackActions", _simWorld) 
-			+ T_CALLM("generateReinforceActions", [_simWorld]) 
+			//+ T_CALLM1("generateAttackActions", _simWorldNow) 
+			+ T_CALLM("generateReinforceActions", [_simWorldNow]+[_simWorldFuture]) 
 			// TODO: roadblocks/outposts etc. Maybe this is up to garrison AI itself?
-			//+ T_CALLM1("generateRoadblockActions", _simWorld)
+			//+ T_CALLM1("generateRoadblockActions", _simWorldNow)
 			;
 		PROFILE_SCOPE_END(GenerateActions, 0.1);
 
@@ -263,16 +293,18 @@ CLASS("CmdrAI", "")
 		PROFILE_SCOPE_START(PlanActions);
 
 		private _newActionsCount = 0;
+
 		// Plan new actions
 		while { count _newActions > 0 and _newActionsCount < 5 } do {
 			OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject]+[_world]+[count _newActions]);
 
-			CALLM(_world, "resetScoringCache", []);
+			CALLM(_simWorldNow, "resetScoringCache", []);
+			CALLM(_simWorldFuture, "resetScoringCache", []);
 
 			PROFILE_SCOPE_START(UpdateScores);
 			// Update scores of potential actions against the simworld state
 			{
-				CALLM1(_x, "updateScore", _simWorld);
+				CALLM(_x, "updateScore", [_simWorldNow]+[_simWorldFuture]);
 			} forEach _newActions;
 			PROFILE_SCOPE_END(UpdateScores, 0.1);
 
@@ -292,7 +324,7 @@ CLASS("CmdrAI", "")
 				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of 0.001, terminating planning", [_thisObject]+[_world]+[_bestAction]+[_bestActionScore]);
 			};
 
-			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the sim", [_thisObject]+[_world]+[_bestAction]+[_bestActionScore]);
+			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject]+[_world]+[_bestAction]+[_bestActionScore]);
 
 			// Add the best action to our active actions list
 			REF(_bestAction);
@@ -305,7 +337,9 @@ CLASS("CmdrAI", "")
 			// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
 			// models in the sim so that other reinforce actions will take it into account in their scoring.
 			// Probably other reinforce actions with the same source or target would have lower scores now).
-			CALLM(_bestAction, "applyToSim", [_simWorld]);
+			CALLM(_bestAction, "applyToSim", [_simWorldNow]);
+			CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
+
 			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
 		};
 		PROFILE_SCOPE_END(PlanActions, 0.1);

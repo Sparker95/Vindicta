@@ -5,6 +5,16 @@
 
 #include "..\common.hpp"
 
+// DOING:
+// How to deal with this case: action requires resources, but they aren't available yet.
+// 		Required resources should come from original world state? That would allow duplicate use...
+// 		Actually the problem is temporality. Resouces in the future doesn't = resource now.
+//		e.g. Deciding if you can reinforce FROM somewhere requires the resource now
+//			 Deciding if you should reinforce TO somewhere should take into account future resources
+//			 Applying reinforce action should take from src resources now, and apply to tgt in the future.
+//		So sim should have now and future?
+// 
+// Reinforce is taking too much resource.
 CLASS("CmdrAction", "RefCounted")
 
 	// The priority of this action in relation to other actions of the same or different type.
@@ -33,7 +43,7 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("updateScore") {
-		params [P_THISOBJECT, P_STRING("_state")];
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 	} ENDMETHOD;
 
 	METHOD("getFinalScore") {
@@ -54,16 +64,45 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 
+		T_CALLM("pushState", []);
+		// Actually this isn't right, multiple actions can happen instantly. Actions themselves should decide if they 
+		// can apply based on the sim world type they are passed.
+		// // For sim now world only apply the current action transition.
+		// if(GETV(_world, "type") == WORLD_TYPE_SIM_NOW) then {
+		// 	// Don't do anything if we are already at the end.
+		// 	if(_state != CMDR_ACTION_STATE_END) then {
+		// 		CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+		// 	};
+		// } else {
+		private _worldType = GETV(_world, "type");
+		ASSERT_MSG(_worldType != WORLD_TYPE_REAL, "Cannot applyToSim on real world!");
 		while {_state != CMDR_ACTION_STATE_END} do {
 			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
-			ASSERT_MSG(_newState != _state, format (["Couldn't apply action %1 to sim, stuck in state %2"]+[_thisObject]+[_state]));
+			// State transitions are allowed to fail for NOW world sim (so they can limit changes to those that would happen instantly)
+			ASSERT_MSG(_worldType == WORLD_TYPE_SIM_NOW or _newState != _state, format (["Couldn't apply action %1 to sim future, stuck in state %2"]+[_thisObject]+[_state]));
+			if(_newState == _state) exitWith {};
 			_state = _newState;
 		};
-		// We don't update member var "state" here, this is just a sim
+		//};
+		T_CALLM("popState", []);
+		// We don't update any member variables here, this is just a sim.
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("pushState") {
+		params [P_THISOBJECT];
+		
+	} ENDMETHOD;
+	
+	/* virtual */ METHOD("popState") {
+		params [P_THISOBJECT];
+		
 	} ENDMETHOD;
 
 	METHOD("update") {
 		params [P_THISOBJECT, P_STRING("_world")];
+		
+		ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
+
 		T_PRVAR(state);
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
@@ -72,9 +111,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("state", _state);
 		
 		#ifdef DEBUG_CMDRAI
-		if(!GETV(_world, "isSim")) then {
-			T_CALLM("debugDraw", []);
-		};
+		T_CALLM("debugDraw", [_world]);
 		#endif
 	} ENDMETHOD;
 
@@ -84,7 +121,7 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	METHOD("getLabel") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_STRING("_world")];
 		""
 	} ENDMETHOD;
 
@@ -157,7 +194,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["CmdrAction.applyToSim", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _ast = NEW("AST_KillGarrison", [GETV(_garrison, "id")]);
 	private _asts = [_ast];

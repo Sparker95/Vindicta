@@ -20,19 +20,44 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		private _srcGarrId = GETV(_action, "srcGarrId");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
+		//private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
 
-		private _detachedGarr = if(GETV(_world, "isSim")) then {
-									CALLM(_srcGarr, "splitSim", [_detachEff])
+		// Get the previously calculated efficiency
+		private _detachEff = GETV(_action, "detachmentEff");
+
+		ASSERT_MSG(EFF_GTE(_detachEff, EFF_MIN_EFF), "Detachment efficiency is below min allowed");
+
+		// Apply split to all sim worlds as it always happens immediately at the start of action
+		// TODO: we need to check if this actually works.
+		// TODO: some kind of failure ability for actions in general.
+
+		// Split can happen instantly so apply it to now and future sim worlds.
+		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
+									CALLM(_srcGarr, "splitSim", [_detachEff]+[[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]])
 								} else {
-									CALLM(_srcGarr, "splitActual", [_detachEff])
+									CALLM(_srcGarr, "splitActual", [_detachEff]+[[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]])
 								};
+
 		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
 			OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
 			false
 		};
+		
+		private _finalDetachEff = GETV(_detachedGarr, "efficiency");
+		// We want this to be impossible.
+		ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachEff), "Final detachment efficiency is below requested");
+
+		// This shouldn't be possible and if it does happen then we would need to do something with the resultant understaffed garrison.
+		// if(!EFF_GTE(_finalDetachEff, _detachEff)) exitWith {
+		// 	OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
+		// 	false
+		// };
+
 		OOP_DEBUG_MSG("[w %1 a %2] Detached %3 from %4", [_world]+[_action]+[_detachedGarr]+[_srcGarr]);
 
+		// DOING: HOW TO FIX THIS? ASTS need to save state, sometimes they modify the Action. How to 
+		// apply them to simworlds in this case without breaking action state for real world?
+		// simCopy actions as well? Probably make sense.
 		CALLM(_detachedGarr, "setAction", [_action]);
 		SETV(_action, "detachedGarrId", GETV(_detachedGarr, "id"));
 		true
@@ -73,34 +98,45 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
-		private _isSim = GETV(_world, "isSim");
 		private _tgtPos = GETV(_tgtGarr, "pos");
 		private _arrived = false;
-		if(_isSim) then {
-			CALLM(_detachedGarr, "moveSim", [_tgtPos]);
-			_arrived = true;
-		} else {
-			if(!_moving) then {
-				// Start moving
-				OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-				CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
-				T_SETV("moving", true);
-			} else {
-				// Are we there yet?
-				private _done = CALLM(_detachedGarr, "moveActualComplete", []);
-				if(_done) then {
-					private _detachedGarrPos = GETV(_detachedGarr, "pos");
-					if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
-						OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
-						_arrived = true;
-					} else {
-						// Move again cos we didn't get there yet!
-						OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
-						T_SETV("moving", false);
+		switch(GETV(_world, "type")) do {
+			// Move can't be applied instantly
+			case WORLD_TYPE_SIM_NOW: {};
+			// Move completes at some point in the future
+			case WORLD_TYPE_SIM_FUTURE: {
+				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
+				_arrived = true;
+			};
+			case WORLD_TYPE_REAL: {
+				if(!_moving) then {
+					// Start moving
+					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
+					CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
+					T_SETV("moving", true);
+				} else {
+					// Are we there yet?
+					private _done = CALLM(_detachedGarr, "moveActualComplete", []);
+					if(_done) then {
+						private _detachedGarrPos = GETV(_detachedGarr, "pos");
+						if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
+							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							_arrived = true;
+						} else {
+							// Move again cos we didn't get there yet!
+							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							T_SETV("moving", false);
+						};
 					};
 				};
 			};
 		};
+		// if(GETV(_world, "type") == WORLD_TYPE_) then {
+		// 	CALLM(_detachedGarr, "moveSim", [_tgtPos]);
+		// 	_arrived = true;
+		// } else {
+			
+		// };
 		_arrived
 	} ENDMETHOD;
 ENDCLASS;
@@ -128,7 +164,8 @@ CLASS("MergeGarrison", "ActionStateTransition")
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
-		if(GETV(_world, "isSim")) then {
+		// Merge can happen instantly so apply it to now and future sim worlds.
+		if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
 		} else {
 			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
@@ -141,13 +178,16 @@ ENDCLASS;
 CLASS("ReinforceCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("tgtGarrId");
+	VARIABLE("detachmentEff");
 	VARIABLE("detachedGarrId");
+	VARIABLE("pushedState");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
 
 		T_SETV("srcGarrId", _srcGarrId);
 		T_SETV("tgtGarrId", _tgtGarrId);
+		T_SETV("detachmentEff", EFF_ZERO);
 		T_SETV("detachedGarrId", -1);
 
 		private _transitions = [
@@ -160,12 +200,25 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		deleteMarkerLocal _thisObject + "_line";
-		deleteMarkerLocal _thisObject + "_label";
+		deleteMarker _thisObject + "_line";
+		deleteMarker _thisObject + "_label";
+	} ENDMETHOD;
+
+	
+	/* virtual */ METHOD("pushState") {
+		params [P_THISOBJECT];
+		T_PRVAR(detachedGarrId);
+		T_SETV("pushedState", [_detachedGarrId]);
+	} ENDMETHOD;
+	
+	/* virtual */ METHOD("popState") {
+		params [P_THISOBJECT];
+		T_PRVAR(pushedState);
+		T_SETV("detachedGarrId", _pushedState select 0);
 	} ENDMETHOD;
 
 	/* override */ METHOD("getLabel") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_STRING("_world")];
 
 
 		T_PRVAR(srcGarrId);
@@ -188,21 +241,28 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 	/* override */ METHOD("updateScore") {
-		params [P_THISOBJECT, P_STRING("_world")];
-		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
+		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtGarrId);
 
-		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		// TODO: do this properly wrt to now and future
+		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
-		private _detachEff = T_CALLM("getDetachmentEff", [_world]);
-		//CALLM1(_world, "getOverDesiredEff", _srcGarr);
+		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow]+[_worldFuture]);
+		// Save the calculation for use if we decide to perform the action 
+		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
+		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
+		T_SETV("detachmentEff", _detachEff);
+
+		//CALLM1(_worldNow, "getOverDesiredEff", _srcGarr);
 		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -213,7 +273,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _scoreResource = _detachEffStrength * _distCoeff;
 
 		// TODO:OPT cache these scores!
-		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_world, "getReinforceRequiredScore", [_tgtGarr])};
+		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
 
 		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
 		//OOP_INFO_0(_str);
@@ -221,7 +281,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]+[_detachEff]+[_detachEffStrength]+[_distCoeff]+[_srcEff]+[_tgtEff]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]+[_detachEff]+[_detachEffStrength]+[_distCoeff]+[_srcEff]+[_tgtEff]);
 
 		// };
 		T_SETV("scorePriority", _scorePriority);
@@ -232,38 +292,39 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
 	METHOD("getDetachmentEff") {
-		params [P_THISOBJECT, P_STRING("_world")];
-		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
+		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtGarrId);
 
-		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
-		// How much resources tgt needs
-		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_world, "getOverDesiredEff", [_tgtGarr]), -1), 0);
 		// How much resources src can spare.
-		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_world, "getOverDesiredEff", [_srcGarr]), 0);
+		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
+		// How much resources tgt needs
+		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
 
 		// Min of those values
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
-		private _compAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
+		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _compAvailable = %7", [_world]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_tgtUnderEff]+[_srcOverEff]+[_compAvailable]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_tgtUnderEff]+[_srcOverEff]+[_effAvailable]);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
-		if(!EFF_GTE(_compAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
+		if(!EFF_GTE(_effAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
 
-		//if(_compAvailable#0 < MIN_COMP#0 or _compAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
-		_compAvailable
+		//if(_effAvailable#0 < MIN_COMP#0 or _effAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
+		_effAvailable
 	} ENDMETHOD;
 
 	/* override */ METHOD("debugDraw") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_STRING("_world")];
 
 		T_PRVAR(srcGarrId);
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
@@ -281,7 +342,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		_mrk setMarkerType "mil_objective";
 		_mrk setMarkerColor "ColorWhite";
 		_mrk setMarkerAlpha 1;
-		_mrk setMarkerText T_CALLM("getLabel", []);
+		_mrk setMarkerText T_CALLM("getLabel", [_world]);
 	} ENDMETHOD;
 
 ENDCLASS;

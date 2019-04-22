@@ -32,7 +32,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
-		T_SETV("side", objNull);
+		T_SETV("side", WEST);
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
 		T_CALLM("sync", []);
 		// Add self to world
@@ -70,13 +70,13 @@ CLASS("GarrisonModel", "ModelBase")
 		// If we have an assigned real garrison then sync from it
 		if(!IS_NULL_OBJECT(_actual)) then {
 			ASSERT_OBJECT_CLASS(_actual, "Garrison");
-			OOP_DEBUG_1("Updating GarrisonModel from Actual Garrison %1", _actual);
 
-			T_SETV("efficiency", GETV(_actual, "effTotal"));
+			T_SETV("efficiency", GETV(_actual, "effMobile"));
 			private _actualPos = CALLM(_actual, "getPos", []);
-			T_SETV("pos", _actualPos);
+			T_SETV("pos", +_actualPos);
 			T_SETV("side", GETV(_actual, "side"));
 
+			OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
 			private _locationActual = CALLM(_actual, "getLocation", []);
 			if(!IS_NULL_OBJECT(_locationActual)) then {
 				T_PRVAR(world);
@@ -101,6 +101,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_CALLM("detachFromLocation", []);
 		CALLM(_world, "garrisonKilled", [_thisObject]);
 		T_CALLM("clearAction", []);
+		OOP_DEBUG_MSG("Killed %1", [_thisObject]);
 	} ENDMETHOD;
 
 	METHOD("attachToLocation") {
@@ -110,6 +111,7 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(T_GETV("locationId") == MODEL_HANDLE_INVALID, "Garrison already attached to another location");
 
 		CALLM(_location, "addGarrison", [_thisObject]);
+		OOP_DEBUG_MSG("Attached %1 to location %2", [_thisObject]+[_location]);
 	} ENDMETHOD;
 
 	METHOD("detachFromLocation") {
@@ -117,6 +119,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _location = T_CALLM("getLocation", []);
 		if(!IS_NULL_OBJECT(_location)) then {
 			CALLM(_location, "removeGarrison", [_thisObject]);
+			OOP_DEBUG_MSG("Detached %1 from location %2", [_thisObject]+[_location]);
 		};
 	} ENDMETHOD;
 
@@ -166,30 +169,41 @@ CLASS("GarrisonModel", "ModelBase")
 	// Actual not sim. 
 
 	// SPLIT
+	// Flags defined in CmdrAI/common.hpp
 	METHOD("splitSim") {
-		params [P_THISOBJECT, P_ARRAY("_splitEff")];
+		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
 		
-		private _detachment =NEW("GarrisonModel", [_world]);
 
 		T_PRVAR(efficiency);
 		// Make sure to hard cap detachment so we don't drop below min eff
-		private _effa = EFF_DIFF(_efficiency, EFF_MIN_EFF);
-		_effa = EFF_FLOOR_0(_effa);
-		_effa = EFF_MIN(_splitEff, _effa);
-		_splitEff = _effa; //EFF_MIN(_splitEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN_EFF)));
+		private _effAllocated = EFF_DIFF(_efficiency, EFF_MIN_EFF);
+		_effAllocated = EFF_FLOOR_0(_effAllocated);
+		_effAllocated = EFF_MIN(_splitEff, _effAllocated);
+		//_splitEff = _effAllocated; //EFF_MIN(_splitEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN_EFF)));
 
-		SETV(_detachment, "efficiency", _splitEff);
-		SETV(_detachment, "pos", T_GETV("pos"));
-		_efficiency = EFF_DIFF(_efficiency, _splitEff);
-		T_SETV("efficiency", _efficiency);
+		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
+			OOP_WARNING_MSG("ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
+			NULL_OBJECT
+		};
+
+		private _detachment =NEW("GarrisonModel", [_world]);
+		SETV(_detachment, "efficiency", _effAllocated);
+		SETV(_detachment, "pos", +T_GETV("pos"));
+		private _newEfficiency = EFF_DIFF(_efficiency, _effAllocated);
+		T_SETV("efficiency", _newEfficiency);
+		OOP_DEBUG_MSG("Sim split %1%2->%3 to %4%5", [_thisObject]+[_efficiency]+[_newEfficiency]+[_detachment]+[_effAllocated]);
 
 		_detachment
 	} ENDMETHOD;
 
+	// Split garrison.
+	// Flags defined in CmdrAI/common.hpp
 	// TODO: cleanup the logging
+	// TODO: factor into separate functions: build a unit/armor composition, select transport, generate the actual garrison.
 	METHOD("splitActual") {
-		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_BOOL("_requireTransport")];
-	
+		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
+
+		ASSERT_MSG(EFF_SUM(_splitEff) > 0, "_splitEff can't be zero");
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		
@@ -214,7 +228,7 @@ CLASS("GarrisonModel", "ModelBase")
 			// For every unit, set element 0 to efficiency value with index _i
 			{_x set [0, _x#1#_i];} forEach _units;
 			// Sort units in this efficiency category
-			_units sort false; // Descending
+			_units sort DESCENDING;
 			
 			// Add units until there are enough of them
 			private _splitEffCat = _splitEff#_j; // Required efficiency in this category
@@ -260,7 +274,12 @@ CLASS("GarrisonModel", "ModelBase")
 		};
 		
 		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
-		
+
+		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
+			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
+			NULL_OBJECT
+		};
+
 		// Check if we have allocated enough units
 		//if ([_effAllocated, _splitEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
 		
@@ -303,7 +322,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _allocated = true;
 
 		// Do we need to find transport vehicles?
-		if (_requireTransport) then {
+		if (ASSIGN_TRANSPORT in _flags) then {
 			private _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
 			private _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
 			//ade_dumpcallstack;
@@ -365,7 +384,7 @@ CLASS("GarrisonModel", "ModelBase")
 		}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 		
 		// We couldn't complete allocation so return a failure
-		if(!_allocated) exitWith { objNull };
+		if(!_allocated and FAIL_WITHOUT_FULL_TRANSPORT in _flags) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
 		private _side = GETV(_actual, "side");
@@ -376,13 +395,6 @@ CLASS("GarrisonModel", "ModelBase")
 		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
 		// update phase.
 		// private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
-
-		// Register it at the commander
-		#ifndef _SQF_VM
-		private _newGarr = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGarrActual]);
-		#else
-		private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
-		#endif
 
 		// private _location = T_CALLM("getLocation", []);
 		// if(!(_location isEqualType "")) exitWith {
@@ -396,17 +408,25 @@ CLASS("GarrisonModel", "ModelBase")
 		// ASSERT_MSG(_locationActual isEqualType "", "Actual LocationModel required");
 		// CALLM(_newGarrActual, "setLocation", [_locationActual]); // This garrison will spawn here if needed
 		//CALLM(_newGarrActual, "spawn", []);
-		
+
 		// Try to move the units
 		private _args = [_actual, _allocatedUnits, _allocatedGroupsAndUnits];
 		private _moveSuccess = CALLM(_newGarrActual, "postMethodSync", ["addUnitsAndGroups"]+[_args]);
 		if (!_moveSuccess) exitWith {
 			// This shouldn't ever happen because we check all the failure constraints before we got here.
 			FAILURE("Couldn't move units to new garrison");
-			objNull
+			NULL_OBJECT
 		};
 
 		OOP_INFO_0("Successfully split garrison");
+
+
+		// Register it at the commander (do it after adding the units so the sync is correct)
+		#ifndef _SQF_VM
+		private _newGarr = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGarrActual]);
+		#else
+		private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
+		#endif
 
 		//// Detach from the location
 		//CALLM(_newGarrActual, "postMethodAsync", ["setLocation"]+[[""]]);
@@ -439,11 +459,11 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
-		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonMove"]+[_AI]);
+		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonMove"]+[_thisObject]);
 		_goalState == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 
-	// MERGE WITH ANOTHER GARRISON
+	// MERGE TO ANOTHER GARRISON
 	METHOD("mergeSim") {
 		params [P_THISOBJECT, P_STRING("_otherGarr")];
 		ASSERT_OBJECT_CLASS(_otherGarr, "GarrisonModel");
@@ -452,6 +472,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _otherEff = GETV(_otherGarr, "efficiency");
 		private _newOtherEff = EFF_ADD(_efficiency, _otherEff);
 		SETV(_otherGarr, "efficiency", _newOtherEff);
+		OOP_DEBUG_MSG("Merged %1%2 to %3%4->%5", [_thisObject]+[_efficiency]+[_otherGarr]+[_otherEff]+[_newOtherEff]);
 		T_CALLM("killed", []);
 	} ENDMETHOD;
 
@@ -466,7 +487,7 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_otherActual, "addGarrison", [_actual]+[true]);
 	} ENDMETHOD;
 
-	// MERGE WITH ANOTHER GARRISON
+	// JOIN LOCATION
 	METHOD("joinLocationSim") {
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
@@ -509,21 +530,21 @@ ENDCLASS;
 
 ["GarrisonModel.new(actual)", {
 	private _actual = NEW("Garrison", [WEST]);
-	private _world = NEW("WorldModel", [false]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	!(isNil "_class")
 }] call test_AddTest;
 
 ["GarrisonModel.new(sim)", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	!(isNil "_class")
 }] call test_AddTest;
 
 ["GarrisonModel.delete", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	DELETE(_garrison);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
@@ -531,14 +552,14 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["GarrisonModel.killed", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	CALLM(_garrison, "killed", []);
 	CALLM(_garrison, "isDead", [])
 }] call test_AddTest;
 
 ["GarrisonModel.isDead", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	["False before killed", !CALLM(_garrison, "isDead", [])] call test_Assert;
 	CALLM(_garrison, "killed", []);
@@ -546,7 +567,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["GarrisonModel.simSplit", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
 	private _eff2 = EFF_MIN_EFF;
@@ -574,7 +595,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_default, -1];
 
 	CALLM(_actual, "addGroup", [_group]);
 	
-	private _world = NEW("WorldModel", [false]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
 	["Initial eff", GETV(_garrison, "efficiency") isEqualTo _eff1] call test_Assert;
 	private _eff2 = EFF_MIN_EFF;

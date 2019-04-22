@@ -2,7 +2,7 @@
 
 CLASS("WorldModel", "")
 
-	VARIABLE("isSim");
+	VARIABLE("type");
 	VARIABLE("garrisons");
 	VARIABLE("locations");
 	VARIABLE("clusters");
@@ -11,8 +11,8 @@ CLASS("WorldModel", "")
 	VARIABLE("reinforceRequiredScoreCache");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_BOOL("_isSim")];
-		T_SETV("isSim", _isSim);
+		params [P_THISOBJECT, P_NUMBER("_type")];
+		T_SETV("type", _type);
 		T_SETV("garrisons", []);
 		T_SETV("locations", []);
 		T_SETV("clusters", []);
@@ -20,7 +20,6 @@ CLASS("WorldModel", "")
 		T_SETV("threatGrid", _threatGrid);
 
 		T_SETV("reinforceRequiredScoreCache", []);
-
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -55,9 +54,10 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("simCopy") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_NUMBER("_type")];
+		ASSERT_MSG(_type == WORLD_TYPE_SIM_NOW or _type == WORLD_TYPE_SIM_FUTURE, "_type must be a sim world type.");
 
-		private _worldCopy = NEW("WorldModel", [true]);
+		private _worldCopy = NEW("WorldModel", [_type]);
 
 		// Copy garrisons
 		T_PRVAR(garrisons);
@@ -139,11 +139,30 @@ CLASS("WorldModel", "")
 		//#ifdef OOP_ASSERT
 		//private _existingId = GETV(_garrison, "id");
 		//#endif
-
+		OOP_DEBUG_MSG("Adding GarrisonModel %1 to WorldModel", [_garrison]);
 		REF(_garrison);
 		private _idx = _garrisons pushBack _garrison;
 		SETV(_garrison, "id", _idx);
 		_idx
+	} ENDMETHOD;
+
+	METHOD("removeGarrison") {
+		params [P_THISOBJECT, P_STRING("_garrison")];
+
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		ASSERT_MSG(GETV(_garrison, "id") != MODEL_HANDLE_INVALID, "GarrisonModel is not attached to a WorldModel");
+
+		// We don't really remove it at the moment, just mark it dead.
+		// TODO: removing garrisons properly? That means refactor of whole ID system tho.. Maybe faster though if we can use hash table lookup.
+		OOP_DEBUG_MSG("Removing GarrisonModel %1 from WorldModel", [_garrison]);
+		CALLM(_garrison, "killed", []);
+
+		//T_PRVAR(garrisons);
+
+		// REF(_garrison);
+		// private _idx = _garrisons pushBack _garrison;
+		// SETV(_garrison, "id", _idx);
+		// _idx
 	} ENDMETHOD;
 
 	METHOD("getGarrison") {
@@ -156,7 +175,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_STRING("_actual")];
 
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Garrison by Actual in a Sim Model");
+		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Garrison by Actual in a Sim Model");
 
 		T_PRVAR(garrisons);
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
@@ -168,7 +187,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_STRING("_actual")];
 
 		ASSERT_OBJECT_CLASS(_actual, "Garrison");
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Garrison by Actual in a Sim Model");
+		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Garrison by Actual in a Sim Model");
 
 		T_PRVAR(garrisons);
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
@@ -184,7 +203,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		// If we are a sim world then we need to perform updates that would otherwise be
 		// handled externally, in this case detaching a dead garrison from its outpost
-		// if(T_GETV("isSim")) then {
+		// if(T_GETV("type") != WORLD_TYPE_REAL) then {
 		// 	T_CALLM("detachGarrison", [_garrison]);
 		// };
 	} ENDMETHOD;
@@ -243,7 +262,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_STRING("_actual")];
 		ASSERT_OBJECT_CLASS(_actual, "Location");
 
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
+		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Location by Actual in a Sim Model");
 		
 		T_PRVAR(locations);
 		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
@@ -255,7 +274,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_STRING("_actual")];
 		ASSERT_OBJECT_CLASS(_actual, "Location");
 
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Location by Actual in a Sim Model");
+		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Location by Actual in a Sim Model");
 
 		T_PRVAR(locations);
 		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
@@ -314,7 +333,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
 
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Cluster by Actual in a Sim Model");
+		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Cluster by Actual in a Sim Model");
 
 		T_PRVAR(clusters);
 		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
@@ -326,7 +345,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_actual);
 
-		ASSERT_MSG(!T_GETV("isSim"), "Trying to find Cluster by Actual in a Sim Model");
+		ASSERT_MSG(T_GETV("type") == WORLD_TYPE_REAL, "Trying to find Cluster by Actual in a Sim Model");
 
 		T_PRVAR(clusters);
 		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
@@ -412,7 +431,7 @@ CLASS("WorldModel", "")
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.
 		// TODO: Cache it
-		EFF_MIN_EFF
+		EFF_MUL_SCALAR(EFF_MIN_EFF, 2)
 
 		//T_PRVAR(threatGrid);
 		
@@ -495,12 +514,12 @@ CLASS("WorldModel", "")
 	METHOD("getReinforceRequiredScore") {
 		params [P_THISOBJECT, P_STRING("_garr")];
 		ASSERT_OBJECT_CLASS(_garr, "GarrisonModel");
-		T_PRVAR(reinforceRequiredScoreCache);
+		//T_PRVAR(reinforceRequiredScoreCache);
 		
-		private _garrId = GETV(_garr, "id");
-		private _cacheVal = _reinforceRequiredScoreCache#_garrId;
+		//private _garrId = GETV(_garr, "id");
+		//private _cacheVal = _reinforceRequiredScoreCache#_garrId;
 
-		if !(isNil "_cacheVal") exitWith { _cacheVal };
+		//if !(isNil "_cacheVal") exitWith { _cacheVal };
 
 		// How much garr is *under* desired efficiency (so over comp * -1) with a non-linear function applied.
 		// i.e. How much more efficiency tgt needs.
@@ -513,7 +532,7 @@ CLASS("WorldModel", "")
 		// 
 		_score = 0.1 * _score;
 		_score = 0 max ( _score * _score * _score );
-		_reinforceRequiredScoreCache set [_garrId, _score];
+		//_reinforceRequiredScoreCache set [_garrId, _score];
 		_score
 	} ENDMETHOD;
 ENDCLASS;
@@ -522,20 +541,20 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 ["WorldModel.new", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _class = OBJECT_PARENT_CLASS_STR(_world);
 	["Object exists", !(isNil "_class")] call test_Assert;
-	["isSim", GETV(_world, "isSim")] call test_Assert;
+	["World type correct", GETV(_world, "type") == WORLD_TYPE_SIM_NOW] call test_Assert;
 }] call test_AddTest;
 
 ["WorldModel.delete", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	DELETE(_world);
 	isNil { OBJECT_PARENT_CLASS_STR(_world) }
 }] call test_AddTest;
 
 ["WorldModel.addGarrison", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	// This is called in the GarrisonModel constructor
 	//private _id = CALLM(_world, "addGarrison", [_garrison]);
@@ -544,7 +563,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.getGarrison", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _id = GETV(_garrison, "id");
 	private _got = CALLM(_world, "getGarrison", [_id]);
@@ -553,14 +572,14 @@ ENDCLASS;
 
 ["WorldModel.findGarrisonByActual", {
 	private _actual = NEW("Garrison", [WEST]);
-	private _world = NEW("WorldModel", [false]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
 	private _got = CALLM(_world, "findGarrisonByActual", [_actual]);
 	_got == _garrison
 }] call test_AddTest;
 
 ["WorldModel.addLocation", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _location = NEW("LocationModel", [_world]);
 	// This is called in the LocationModel constructor
 	//private _id = CALLM(_world, "addLocation", [_location]);
@@ -569,7 +588,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.getLocation", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _location = NEW("LocationModel", [_world]);
 	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
@@ -577,7 +596,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.findLocationByActual", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _location = NEW("LocationModel", [_world]);
 	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
@@ -585,12 +604,12 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.simCopy", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 
 	private _location = NEW("LocationModel", [_world]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 
-	private _copy = CALLM(_world, "simCopy", []);
+	private _copy = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	["Created", !(isNil { OBJECT_PARENT_CLASS_STR(_copy) })] call test_Assert;
 	["Garrisons copied", {
 		private _w = GETV(_world, "garrisons");
@@ -605,7 +624,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.getAliveGarrisons", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison1 = NEW("GarrisonModel", [_world]);
 	private _garrison2 = NEW("GarrisonModel", [_world]);
 	
@@ -617,7 +636,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.getNearestGarrisons", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison1 = NEW("GarrisonModel", [_world]);
 	SETV(_garrison1, "pos", [500, 0, 0]);
 	private _garrison2 = NEW("GarrisonModel", [_world]);
@@ -631,7 +650,7 @@ ENDCLASS;
 }] call test_AddTest;
 
 ["WorldModel.getNearestLocations", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _location1 = NEW("LocationModel", [_world]);
 	SETV(_location1, "pos", [500, 0, 0]);
 	private _location2 = NEW("LocationModel", [_world]);

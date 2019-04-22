@@ -21,7 +21,7 @@ private _spawned = GET_VAR(_thisObject, "spawned");
 OOP_INFO_0("DESPAWN");
 
 if (!_spawned) exitWith {
-	OOP_ERROR_0("Already despawned");
+	OOP_WARNING_0("Already despawned");
 };
 
 // Reset spawned flag

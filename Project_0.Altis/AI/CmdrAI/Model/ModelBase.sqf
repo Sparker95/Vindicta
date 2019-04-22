@@ -22,10 +22,10 @@ CLASS("ModelBase", "RefCounted")
 
 		if (isNil "_actual") then { //  or {IS_NULL_OBJECT(_actual)}
 			T_SETV("actual", NULL_OBJECT);
-			ASSERT_MSG(GETV(_world, "isSim"), "State must be sim if you aren't setting actual");
+			ASSERT_MSG(GETV(_world, "type") != WORLD_TYPE_REAL, "State must be sim if you aren't setting actual");
 		} else {
 			T_SETV("actual", _actual);
-			ASSERT_MSG(!GETV(_world, "isSim"), "State must NOT be sim if you are setting actual");
+			ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "State must NOT be sim if you are setting actual");
 		};
 	} ENDMETHOD;
 

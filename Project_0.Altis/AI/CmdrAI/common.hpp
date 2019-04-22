@@ -6,7 +6,17 @@
 
 #define DEBUG_CMDRAI
 
-#define MODEL_HANDLE_INVALID -1
+#define MODEL_HANDLE_INVALID 		-1
+
+// Flags for WorldModel.new type parameter.
+#define WORLD_TYPE_REAL					0	// Real world model
+#define WORLD_TYPE_SIM_NOW				1	// Sim model with only current effects of actions applied
+#define WORLD_TYPE_SIM_FUTURE			2	// Sim model with current and future effects of actions applied
+
+// Flags for GarrisonModel.splitActual flags parameter
+#define ASSIGN_TRANSPORT				1	// Attempt to assign transport for the new garrison
+#define FAIL_WITHOUT_FULL_TRANSPORT		2	// Fail if we couldn't assign transport to the new garrison (ASSIGN_TRANSPORT required)
+#define FAIL_UNDER_EFF					3	// Fail if the split garrison didn't meet efficiency requirements
 
 #define OFSTREAM_FILE "CmdrAI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"

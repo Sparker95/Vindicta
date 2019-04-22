@@ -186,7 +186,7 @@ fn_Test_Transitions = {
 };
 
 ["ActionStateTransition.selectAndApply", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	[ 
 		[ TestAST_Start_1, TestAST_1_2, TestAST_2_End ],
 		[

@@ -59,6 +59,8 @@ if (isServer) then {
 	gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
 	gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
 
+	gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient];
+
 	// Message loops for commander AI
 	//gMessageLoopCommanderWest = NEW("MessageLoop", []);
 	gMessageLoopCommanderInd = NEW("MessageLoop", []);
@@ -108,7 +110,7 @@ if (isServer) then {
 	// Add friendly locations to commanders
 	// Register garrisons of friendly locations
 	// And start them
-	private _allGars = CALLSM0("Garrison", "getAll");
+	private _allGars = CALLSM0("Garrison", "getAll") - gSpecialGarrisons;
 	{
 		private _AI = _x;
 		private _side = GETV(_x, "side");

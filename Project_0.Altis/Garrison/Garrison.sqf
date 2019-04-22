@@ -99,27 +99,20 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("DELETE GARRISON");
-		
-		// Delete our timer
-		DELETE(T_GETV("timer"));
-		
+
+		// Despawn if spawned
+		if(T_GETV("spawned")) then {
+			CALLM(_thisObject, "despawn", []);
+		};
+
 		// Detach from location if was attached to it
-		pr _loc = T_GETV("location");
-		if (_loc != "") then {
-			CALLM(_loc, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
+		T_PRVAR(location);
+		if (!IS_NULL_OBJECT(_location)) then {
+			CALLM(_location, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
 		};
 		
-		// Despawn if spawned
-		CALLM0(_thisObject, "despawn");
-
-		// Delete the AI object
-		// We delete it instantly because Garrison AI is in the same thread
-		pr _AI = GETV(_thisObject, "AI");
-		DELETE(_AI);
-		SETV(_thisObject, "AI", "");
-		
-		pr _units = T_GETV("units");
-		pr _groups = T_GETV("groups");
+		T_PRVAR(units);
+		T_PRVAR(groups);
 		
 		if (count _units != 0) then {
 			OOP_ERROR_1("Deleting garrison which has units: %1", _units);
@@ -136,9 +129,23 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			DELETE(_x);
 		} forEach _groups;
-    
-    	pr _all = GETSV("Garrison", "all");
-    	_all deleteAt (_all find _thisObject);
+
+		private _all = GETSV("Garrison", "all");
+		_all deleteAt (_all find _thisObject);
+
+		// Finally unregister from the AICommander if registered. We DON'T register in constructor
+		// because some garrisons don't want to be registered. However unregistering will just
+		// do nothing for garrisons that were never registered.
+		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
+		
+		// Delete the AI object
+		// We delete it instantly because Garrison AI is in the same thread
+		T_PRVAR(AI);
+		DELETE(_AI);
+		T_SETV("AI", "");
+		
+		// Delete our timer
+		DELETE(T_GETV("timer"));
 	} ENDMETHOD;
 
 	/*

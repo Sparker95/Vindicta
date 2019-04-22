@@ -134,16 +134,21 @@ CLASS("AICommander", "AI")
 			};
 		};
 
-		T_PRVAR(worldModel);
-		CALLM(_worldModel, "sync", []);
 
 		T_PRVAR(cmdrAI);
+		T_PRVAR(worldModel);
+		// Sync before update
+		CALLM(_worldModel, "sync", []);
 		CALLM(_cmdrAI, "update", [_worldModel]);
+		// Sync after update
+		CALLM(_worldModel, "sync", []);
+		
 		T_PRVAR(lastPlanningTime);
 		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
 			CALLM(_worldModel, "updateThreatMaps", []);
 			T_SETV("lastPlanningTime", TIME_NOW);
 			CALLM(_cmdrAI, "plan", [_worldModel]);
+
 		};
 	} ENDMETHOD;
 	
@@ -906,6 +911,7 @@ CLASS("AICommander", "AI")
 
 		private _newModel = NULL_OBJECT;
 		if(!IS_NULL_OBJECT(_thisObject)) then {
+			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 			T_GETV("garrisons") pushBack _gar; // I need you for my army!
 			CALLM2(_gar, "postMethodAsync", "ref", []);
 			T_PRVAR(worldModel);
@@ -929,14 +935,18 @@ CLASS("AICommander", "AI")
 		private _side = GETV(_gar, "side");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			// Remove from model first
-			T_PRVAR(worldModel);
-			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
-			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
-
-			pr _garrisons = T_GETV("garrisons");
-			_garrisons deleteAt (_garrisons find _gar); // Get out of my sight you useless garrison!
-			CALLM2(_gar, "postMethodAsync", "unref", []);
+			T_PRVAR(garrisons);
+			// Check the garrison is registered
+			private _idx = _garrisons find _gar;
+			if(_idx != NOT_FOUND) then {
+				OOP_DEBUG_MSG("Unregistering garrison %1", [_gar]);
+				// Remove from model first
+				T_PRVAR(worldModel);
+				private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
+				CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
+				_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
+				CALLM2(_gar, "postMethodAsync", "unref", []);
+			};
 		};
 		nil
 	} ENDMETHOD;
