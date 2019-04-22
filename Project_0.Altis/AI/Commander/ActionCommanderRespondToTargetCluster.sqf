@@ -30,7 +30,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];
+		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("ACTIVATE");
 

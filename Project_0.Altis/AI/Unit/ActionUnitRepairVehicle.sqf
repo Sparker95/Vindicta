@@ -26,7 +26,7 @@ CLASS("ActionUnitRepairVehicle", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
