@@ -50,11 +50,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(_thisObject, "addSensor", _sensorState);
 		T_SETV("sensorState", _sensorState);
 		
-		pr _loc = CALLM0(_agent, "getLocation");
-		if (_loc != "") then {
-			pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
-			CALLM1(_thisObject, "addSensor", _sensorObserved);
-		};
+		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorObserved);
 		
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
