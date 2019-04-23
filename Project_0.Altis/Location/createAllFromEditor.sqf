@@ -64,7 +64,7 @@ private _locations = entities "Project_0_LocationSector";
 	CALL_METHOD(_loc, "setDebugName", [_locName]);
 	CALL_METHOD(_loc, "setSide", [_side]);
 	CALL_METHOD(_loc, "setType", [_locType]);
-	CALL_METHOD(_loc, "setCapacityInf", [ format["%1", _locCapacityInf]; ]);
+	CALL_METHOD(_loc, "setCapacityInf", [_locCapacityInf]);
 
 	// Output the capacity of this garrison
 	// Infantry capacity
