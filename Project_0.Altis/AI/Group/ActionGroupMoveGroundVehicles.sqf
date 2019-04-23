@@ -81,32 +81,37 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		} forEach _allVehicles;
 		(vehicle (leader _hG)) limitSpeed T_GETV("speedLimit");
 		
-		
-		// Give goals to all drivers except the lead driver
-		pr _leader = CALLM0(_group, "getLeader");
-		pr _groupUnits = CALLM0(_group, "getUnits");
-		{
-			if (CALLM0(_x, "isInfantry") && (_x != _leader)) then {
-				pr _unitAI = CALLM0(_x, "getAI");
-				if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
-					// Add goal
-					CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
-				};
-			};
-		} forEach _groupUnits;
-		
-		// Lead vehicle gets a special goal
-		pr _leaderAI = CALLM0(_leader, "getAI");
-		pr _parameters = [[TAG_POS, _pos]];
-		CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
-
 		// Set time last called
 		T_SETV("time", time);
-		
-		// Return ACTIVE state
-		T_SETV("state", ACTION_STATE_ACTIVE);
-		ACTION_STATE_ACTIVE
-		
+
+		// Give goals to all drivers except the lead driver
+		pr _leader = CALLM0(_group, "getLeader");
+		if (CALLM0(_leader, "isAlive")) then {
+			pr _groupUnits = CALLM0(_group, "getUnits");
+			{
+				if (CALLM0(_x, "isInfantry") && (_x != _leader)) then {
+					pr _unitAI = CALLM0(_x, "getAI");
+					if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
+						// Add goal
+						CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
+					};
+				};
+			} forEach _groupUnits;
+			
+			// Lead vehicle gets a special goal
+			pr _leaderAI = CALLM0(_leader, "getAI");
+			pr _parameters = [[TAG_POS, _pos]];
+			CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
+
+			// Return ACTIVE state
+			T_SETV("state", ACTION_STATE_ACTIVE);
+			ACTION_STATE_ACTIVE
+		} else {
+			// Fail if leader is not alive
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+
 	} ENDMETHOD;
 	
 	// Logic to run each update-step
@@ -116,59 +121,58 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		CALLM0(_thisObject, "failIfNoInfantry");
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
-		pr _hG = T_GETV("hG"); // Group handle
-		pr _pos = T_GETV("pos");
-		pr _radius = T_GETV("radius");
-		
-		pr _dt = time - T_GETV("time") + 0.001;
-		T_SETV("time", time);
-		
-		//Check the separation of the convoy
-		private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
-		#ifdef DEBUG_FORMATION
-		diag_log format [">>> Current separation: %1", _sCur];
-		#endif
-		if(_sCur > 3*SEPARATION) then
-		{
-			//We are driving too fast!
-			pr _speedLimit = T_GETV("speedLimit");
-			if(_speedLimit > SPEED_MIN) then
+
+		if (_state == ACTION_STATE_ACTIVE) then {
+			pr _hG = T_GETV("hG"); // Group handle
+			pr _pos = T_GETV("pos");
+			pr _radius = T_GETV("radius");
+			
+			pr _dt = time - T_GETV("time") + 0.001;
+			T_SETV("time", time);
+			
+			//Check the separation of the convoy
+			private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
+			#ifdef DEBUG_FORMATION
+			diag_log format [">>> Current separation: %1", _sCur];
+			#endif
+			if(_sCur > 3*SEPARATION) then
 			{
-				_speedLimit = (_speedLimit - _dt*2) max SPEED_MIN;
-				T_SETV("speedLimit", _speedLimit);
-				(vehicle (leader _hG)) limitSpeed _speedLimit;
-				#ifdef DEBUG_FORMATION
-				diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
-				#endif
+				//We are driving too fast!
+				pr _speedLimit = T_GETV("speedLimit");
+				if(_speedLimit > SPEED_MIN) then
+				{
+					_speedLimit = (_speedLimit - _dt*2) max SPEED_MIN;
+					T_SETV("speedLimit", _speedLimit);
+					(vehicle (leader _hG)) limitSpeed _speedLimit;
+					#ifdef DEBUG_FORMATION
+					diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
+					#endif
+				};
+			}
+			else
+			{
+				//We are driving too slow!
+				pr _speedLimit = T_GETV("speedLimit");
+				if(_speedLimit < SPEED_MAX) then
+				{
+					_speedLimit = (_speedLimit + _dt*4) min SPEED_MAX;
+					T_SETV("speedLimit", _speedLimit);
+					(vehicle (leader _hG)) limitSpeed _speedLimit;
+					#ifdef DEBUG_FORMATION
+					diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
+					#endif
+				};
 			};
-		}
-		else
-		{
-			//We are driving too slow!
-			pr _speedLimit = T_GETV("speedLimit");
-			if(_speedLimit < SPEED_MAX) then
-			{
-				_speedLimit = (_speedLimit + _dt*4) min SPEED_MAX;
-				T_SETV("speedLimit", _speedLimit);
-				(vehicle (leader _hG)) limitSpeed _speedLimit;
-				#ifdef DEBUG_FORMATION
-				diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
-				#endif
+			
+			
+			// Check if enough vehicles have arrived
+			// For now just check if leader is there
+			pr _radius = T_GETV("radius");
+			if (( (vehicle leader _hG) distance _pos ) < _radius) then {
+				OOP_INFO_0("Arrived at destionation");
+				_state = ACTION_STATE_COMPLETED
 			};
 		};
-		
-		
-		// Check if enough vehicles have arrived
-		// For now just check if leader is there
-		pr _radius = T_GETV("radius");
-		if (( (vehicle leader _hG) distance _pos ) < _radius) then {
-			OOP_INFO_0("Arrived at destionation");
-			_state = ACTION_STATE_COMPLETED
-		};
-		
-		
-		
 		
 		_state
 	} ENDMETHOD;
