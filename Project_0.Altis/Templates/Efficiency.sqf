@@ -1,6 +1,7 @@
 #include "Efficiency.hpp"
 
-#define _DEF_EFF_BINARY_OP_EFF_EFF(fn) { \
+#define _DEF_EFF_BINARY_OP_EFF_EFF(fn) \
+{ \
     params ['_a', '_b']; \
     private _res = []; \
     { \
@@ -8,22 +9,27 @@
     } foreach _a; \
     _res \
 }
-#define _DEF_EFF_BINARY_OP_EFF_SCALAR(fn) { \
+#define _DEF_EFF_BINARY_OP_EFF_SCALAR(fn) \
+{ \
     params ['_a', '_b']; \
     _a apply { _x fn _b } \
 }
-#define _DEF_EFF_UNARY_OP_EFF(fn) { \
+#define _DEF_EFF_UNARY_OP_EFF(fn) \
+{ \
     _this apply { fn _x } \
 }
-#define _DEF_SUB_BINARY_OP_SUB_SUB(fn) { \
+#define _DEF_SUB_BINARY_OP_SUB_SUB(fn) \
+{ \
     params ['_a', '_b']; \
     [(_a select 0) fn (_b select 0), (_a select 1) fn (_b select 1), (_a select 2) fn (_b select 2), (_a select 3) fn (_b select 3)] \
 }
-#define _DEF_SUB_BINARY_OP_SUB_SCALAR(fn) { \
+#define _DEF_SUB_BINARY_OP_SUB_SCALAR(fn) \
+{ \
     params ['_a', '_b']; \
     [(_a select 0) fn _b, (_a select 1) fn _b, (_a select 2) fn _b, (_a select 3) fn _b] \
 }
-#define _DEF_SUB_UNARY_OP_SUB(fn) { \
+#define _DEF_SUB_UNARY_OP_SUB(fn) \
+{ \
     [fn (_this select 0), fn (_this select 1), fn (_this select 2), fn (_this select 3)] \
 }
 
