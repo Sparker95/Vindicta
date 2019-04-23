@@ -3,12 +3,17 @@
 #include "OOP_Light\OOP_Light.h"
 #define COMPILEFUNC(path) compile preprocessFileLineNumbers path
 
-diag_log "initModules was called!";
+diag_log "[initModules] starting...";
 
 //Initialize the group for logic objects
 if(isNil "groupLogic") then
 {
 	groupLogic = createGroup sideLogic;
+};
+
+if (isNil "OOP_Light_initialized") then {
+	OOP_Light_initialized = true;
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
 };
 
 //Initialize templates
@@ -60,8 +65,9 @@ call compile preprocessFileLineNumbers "scriptObject\scriptObject.sqf";
 call compile preprocessFileLineNumbers "Commander\initFunctions.sqf";
 */
 
-// Initialize OOP_Light
-call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
+// // Initialize OOP_Light
+// VM_LOG("[initModules] Initialize OOP_Light");
+// call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf";
 
 // Initialize MessageReceiver class
 call compile preprocessFileLineNumbers "MessageReceiver\MessageReceiver.sqf";
@@ -75,7 +81,7 @@ call compile preprocessFileLineNumbers "MessageLoop\MessageLoop.sqf";
 // Mod compatibility global variables
 call compile preprocessFileLineNumbers "modCompatBools.sqf";
 
-// Initialize Unit class
+// Initialize Commander class
 call compile preprocessFileLineNumbers "Commander\Commander.sqf";
 
 // Initialize Unit class
@@ -126,4 +132,4 @@ call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
 // Initialize SideStat class
 call compile preprocessFileLineNumbers "SideStat\SideStat.sqf";
 
-diag_log "initModules ended!";
+diag_log "[initModules] done!";

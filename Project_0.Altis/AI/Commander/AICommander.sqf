@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "LocationData.hpp"
 
 /*
 Class: AI.AICommander
@@ -263,39 +262,16 @@ CLASS("AICommander", "AI")
 		T_SETV("notificationID", _id + 1);
 	} ENDMETHOD;
 	
-	// Updates knowledge about friendly locations
-	METHOD("updateFriendlyLocationsData") {
-		params [["_thisObject", "", [""]]];
-		
-		pr _thisSide = T_GETV("side");
-		
-		// Now find all locations that are of this side
-		pr _friendlyLocs = [];
-		pr _allLocs = CALL_STATIC_METHOD("Location", "getAll", []);
-		{
-			pr _loc = _x;
-			pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
-			pr _garSide = CALLM0(_gar, "getSide");
-			if (_garSide == _thisSide) then {
-				_friendlyLocs pushBack _loc;
-			};
-		} forEach _allLocs;
-		
-		OOP_INFO_1("Adding locations to database: %1", _friendlyLocs);
-		
-		// Update data on these locations
-		{
-			CALLM2(_thisObject, "updateLocationData", _x, CLD_UPDATE_LEVEL_UNITS);
-		} forEach _friendlyLocs;
-	} ENDMETHOD;
-	
 	// Creates a LocationData array from Location
 	STATIC_METHOD("createCLDFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 		
-		pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
+		pr _gar = CALLM0(_loc, "getGarrisons") select 0;
+		if (isNil "_gar") then {
+			_gar = "";
+		};
 		
 		pr _value = CLD_NEW();
 		
@@ -328,19 +304,38 @@ CLASS("AICommander", "AI")
 		// Set unit count
 		if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
 			pr _CLD_full = CLD_UNIT_AMOUNT_FULL;
-			{
-				_x params ["_catID", "_catSize"];
-				pr _query = [[_catID, 0]];
-				for "_subcatID" from 0 to (_catSize - 1) do {
-					(_query select 0) set [1, _subcatID];
-					pr _amount = CALLM1(_gar, "countUnits", _query);
-					(_CLD_full select _catID) set [_subcatID, _amount];
-				};
-			} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
+			if (_gar != "") then {
+				{
+					_x params ["_catID", "_catSize"];
+					pr _query = [[_catID, 0]];
+					for "_subcatID" from 0 to (_catSize - 1) do {
+						(_query select 0) set [1, _subcatID];
+						pr _amount = CALLM1(_gar, "countUnits", _query);
+						(_CLD_full select _catID) set [_subcatID, _amount];
+					};
+				} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
+			};
 			_value set [CLD_ID_UNIT_AMOUNT, _CLD_full];
 		};
 		
+		// Set ref to location object
+		_value set [CLD_ID_LOCATION, _loc];
+		
 		_value
+	} ENDMETHOD;
+	
+	// Returns known locations which are assumed to be controlled by this AICommander
+	METHOD("getFriendlyLocations") {
+		params ["_thisObject"];
+		
+		pr _thisSide = T_GETV("side");
+		pr _friendlyLocs = T_GETV("locationDataThis") select {
+			_x select CLD_ID_SIDE == _thisSide
+		} apply {
+			_x select CLD_ID_LOCATION
+		};
+		
+		_friendlyLocs		
 	} ENDMETHOD;
 	
 	// Generates a new target cluster ID
@@ -602,27 +597,18 @@ CLASS("AICommander", "AI")
 		private _allLocations = CALLSM0("Location", "getAll");
 		
 		// Find locations controled by this side
-		private _friendlyLocations = _allLocations select {
-			pr _gar = CALLM0(_x, "getGarrisonMilitaryMain");
-			if (_gar != "") then {
-				pr _garSide = CALLM0(_gar, "getSide");
-				_garSide == _side
-			} else {
-				false
-			};
-		};
+		private _friendlyLocations = CALLM0(_thisObject, "getFriendlyLocations");
 		
-		// Sort friendly locations by distance
-		_friendlyDistLoc = _friendlyLocations apply {
-			pr _locPos = CALLM0(_x, "getPos");
-			[_locPos distance2D _pos, _x]
-		};
-		_friendlyDistLoc sort true; // Ascending
+		// Select garrisons that are attached to locations
+		pr _friendlyDistGar = (T_GETV("garrisons") select { // Select only garrisons attached to locations for now
+			CALLM0(_x, "getLocation") != ""
+		}) apply {[CALLM0(_x, "getPos") distance2D _pos, _x]};
+		_friendlyDistGar sort true; // Ascending
+		
+		OOP_INFO_1("Friendly garrisons: %1", _friendlyDistGar);
 		
 		// ignore the nearest place
 		//_friendlyDistLoc deleteAt 0;
-		
-		OOP_INFO_1("Friendly locations sorted: %1", _friendlyDistLoc);
 		
 		// Find location that can deal with the threat
 		pr _allocatedUnits = []; // Array with units we have allocated
@@ -635,18 +621,17 @@ CLASS("AICommander", "AI")
 		pr _effAllocated = +T_EFF_null; // Efficiency of units allocated so far
 		pr _allocated = false;
 		scopeName "s0";
-		{ // forEach _friendlyDistLoc;
+		{ // forEach _friendlyDistGar;
 			scopeName "scopeLocLoop";
-			_x params ["_dist", "_loc"];
+			_x params ["_dist", "_gar"];
 			
-			OOP_INFO_3("Analyzing location: %1, pos: %2, distance: %3", _loc, CALLM0(_loc, "getPos"), _dist);
+			OOP_INFO_3("Analyzing garrison: %1, pos: %2, distance: %3", _gar, CALLM0(_gar, "getPos"), _dist);
 			
-			pr _gar = CALLM0(_loc, "getGarrisonMilitaryMain");
 			pr _garEff = CALLM0(_gar, "getEfficiencyMobile");
 			
 			// Return values
 			_garrison = _gar;
-			_location = _loc;
+			_location = CALLM0(_gar, "getLocation");
 			
 			
 			// If units at this garrison can destroy the threat
@@ -709,7 +694,7 @@ CLASS("AICommander", "AI")
 							};
 							pr _unitEff = _units select _pickUnitID select 1;
 							// Add to the allocated efficiency vector
-							_effAllocated = VECTOR_ADD_9(_effAllocated, _unitEff);
+							_effAllocated = EFF_ADD(_effAllocated, _unitEff);
 							//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
 						};
 						_pickUnitID = _pickUnitID + 1;
@@ -836,7 +821,7 @@ CLASS("AICommander", "AI")
 			} else {
 				OOP_INFO_0("  This location can NOT destroy the threat");
 			};
-		} forEach _friendlyDistLoc;
+		} forEach _friendlyDistGar;
 		
 		if (_allocated) then {
 			// Success!

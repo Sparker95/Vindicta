@@ -28,7 +28,7 @@ CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");		

@@ -35,7 +35,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [["_thisObject", "", [""]]];
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -72,6 +72,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
+
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
@@ -100,6 +104,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
 		

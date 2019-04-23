@@ -1,7 +1,6 @@
 #include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
 
 // Class: Garrison
 /*
@@ -27,12 +26,6 @@ if (!_spawned) exitWith {
 
 // Reset spawned flag
 SET_VAR(_thisObject, "spawned", false);
-
-// Delete the AI object
-// We delete it instantly because Garrison AI is in the same thread
-pr _AI = GETV(_thisObject, "AI");
-DELETE(_AI);
-SETV(_thisObject, "AI", "");
 
 private _units = GET_VAR(_thisObject, "units");
 private _groups = (GET_VAR(_thisObject, "groups"));
@@ -63,3 +56,19 @@ while {_i < count _groups} do
 		CALL_METHOD(_unit, "despawn", []);
 	};
 } forEach _units;
+
+// Call onGarrisonDespawned
+pr _AI = T_GETV("AI");
+pr _action = CALLM0(_AI, "getCurrentAction");
+if (_action != "") then {
+	_action = CALLM0(_action, "getFrontSubaction");
+	if (_action != "") then {
+		OOP_INFO_1("Calling %1.onGarrisonDespawned", _action);
+		CALLM0(_action, "onGarrisonDespawned");
+	} else {
+		OOP_INFO_0("DESPAWN: no current action");
+	};
+};
+
+// Update process interval of AI
+CALLM1(_AI, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);

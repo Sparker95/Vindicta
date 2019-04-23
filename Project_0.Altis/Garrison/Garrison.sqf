@@ -1,7 +1,6 @@
 #include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
-#include "..\MessageTypes.hpp"
 #include "..\GlobalAssert.hpp"
 
 /*
@@ -18,6 +17,8 @@ Author: Sparker 12.07.2018
 
 CLASS("Garrison", "MessageReceiverEx");
 
+	STATIC_VARIABLE("all");
+
 	VARIABLE("units");
 	VARIABLE("groups");
 	VARIABLE("spawned");
@@ -27,6 +28,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE("AI"); // The AI brain of this garrison
 	VARIABLE("effTotal"); // Efficiency vector of all units
 	VARIABLE("effMobile"); // Efficiency vector of all units that can move
+	VARIABLE("timer"); // Timer that will be sending PROCESS messages here
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -43,13 +45,14 @@ CLASS("Garrison", "MessageReceiverEx");
 	/*
 	Method: new
 
-	Parameters: _side
+	Parameters: _side, _pos
 
 	_side - side of this garrison
+	_pos - optional, default position to set to the garrison
 	*/
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
+		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_pos", [], [[]]]];
 
 		OOP_INFO_0("NEW GARRISON");
 
@@ -62,10 +65,33 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("side", _side);
 		T_SETV("debugName", "");
 		//T_SETV("action", "");
-		T_SETV("AI", "");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
 		T_SETV("location", "");
+
+		// Create AI object
+		// Create an AI brain of this garrison and start it
+		pr _AI = NEW("AIGarrison", [_thisObject]);
+		SETV(_thisObject, "AI", _AI);
+		CALLM(_AI, "start", []); // Let's start the party! \o/
+
+		// Set position if it was specified
+		if (count _pos > 0) then {
+			CALLM1(_AI, "setPos", _pos);
+		};
+		
+		// Let there be timer!
+		pr _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
+		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
+		pr _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
+
+		// Handle the PROCESS message right now to make the garrison instantly switch to spawned state if required
+		CALLM1(_thisObject, "handleMessage", _msg);
+		
+		GETSV("Garrison", "all") pushBack _thisObject;
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -80,6 +106,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("DELETE GARRISON");
 		
+		// Delete our timer
+		DELETE(T_GETV("timer"));
+		
 		// Detach from location if was attached to it
 		pr _loc = T_GETV("location");
 		if (_loc != "") then {
@@ -88,6 +117,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Despawn if spawned
 		CALLM0(_thisObject, "despawn");
+
+		// Delete the AI object
+		// We delete it instantly because Garrison AI is in the same thread
+		pr _AI = GETV(_thisObject, "AI");
+		DELETE(_AI);
+		SETV(_thisObject, "AI", "");
 		
 		pr _units = T_GETV("units");
 		pr _groups = T_GETV("groups");
@@ -108,6 +143,28 @@ CLASS("Garrison", "MessageReceiverEx");
 			DELETE(_x);
 		} forEach _groups;
     
+    	pr _all = GETSV("Garrison", "all");
+    	_all deleteAt (_all find _thisObject);
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getAll
+	Returns all garrisons
+	
+	Parameters: _side
+	
+	_side - optional, Side of garrisons to returns. If side is not provided, returns all garrisons.
+
+	Returns: Array with <Garrison> objects
+	*/
+	STATIC_METHOD("getAll") {
+		params ["_thisClass", ["_side", sideEmpty]];
+		
+		if (_side == sideEmpty) then {
+			GETSV("Garrison", "all")
+		} else {
+			GETSV("Garrison", "all") select {CALLM0(_x, "getSide") == _side}
+		};
 	} ENDMETHOD;
 
 	/*
@@ -135,13 +192,49 @@ CLASS("Garrison", "MessageReceiverEx");
 	_location - <Location>
 	*/
 	METHOD("setLocation") {
-		params [["_thisObject", "", [""]], ["_location", "", [""]] ];
+		params ["_thisObject", ["_location", "", [""]] ];
 		T_SETV("location", _location);
 		
-		if (T_GETV("spawned")) then {
-			pr _AI = T_GETV("AI");
-			CALLM1(_AI, "handleLocationChanged", _location);
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "handleLocationChanged", _location);
+		
+		// Detach from current location if it exists
+		pr _currentLoc = T_GETV("location");
+		if (_currentLoc != "") then {
+			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
 		};
+		
+		// Attach to another location
+		if (_location != "") then {
+			CALLM2(_location, "postMethodAsync", "registerGarrison", [_thisObject]);
+		};
+		
+		T_SETV("location", _location);
+		
+	} ENDMETHOD;
+	
+	METHOD("detachFromLocation") {
+		params ["_thisObject"];
+		
+		pr _currentLoc = T_GETV("location");
+		if (_currentLoc != "") then {
+			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+			T_SETV("location", "");
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: setPos
+	Sets the position of this garrison. Note that position can be updated later on its own by garrison's actions.
+
+	Parameters: _pos
+
+	_pos - position
+	*/
+	METHOD("setPos") {
+		params ["_thisObject", ["_pos", [], [[]]]];
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "setPos", _pos);
 	} ENDMETHOD;
 
 
@@ -257,18 +350,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	// 						G E T   P O S
 	/*
 	Method: getPos
-	Returns the position of the garrison. Just picks the first unit and returns its position.
+	Returns the position of the garrison. It's the same as position world state property.
 
 	Returns: Array
 	*/
 	METHOD("getPos") {
 		params [["_thisObject", "", [""]]];
-		pr _units = T_GETV("units");
-		if (count _units > 0) then {
-			CALLM0(_units select 0, "getPos");
-		} else {
-			[0, 0, 0]
-		};
+
+		pr _AI = T_GETV("AI");
+		pr _worldState = GETV(_AI, "worldState");
+		[_worldState, WSP_GAR_POSITION] call ws_getPropertyValue
+		
 	} ENDMETHOD;
 	
 	//						I S   E M P T Y
@@ -281,7 +373,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("isEmpty") {
 		params ["_thisObject"];
 		(count T_GETV("units")) == 0
-	} ENDMETHOD;	
+	} ENDMETHOD;
+
+	//						I S   S P A W N E D
+	/*
+	Method: isSpawned
+	Returns true if garrison is BIS_fnc_setRespawnDelay
+
+	Returns: Bool
+	*/
+	METHOD("isSpawned") {
+		params ["_thisObject"];
+		T_GETV("spawned")
+	} ENDMETHOD;
 	
 
 	//             F I N D   G R O U P S   B Y   T Y P E
@@ -439,7 +543,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 		
-    // Check if the group is already in another garrison
+		// Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
 		if (_groupGarrison != "") then {
 			// Remove the group from its previous garrison
@@ -469,17 +573,7 @@ CLASS("Garrison", "MessageReceiverEx");
 					// Can't spawn the added group because there is no location
 					OOP_ERROR_1("Can't spawn a new group while adding it because the garrison is not attached to a location. Group: %1", _group);
 				} else {
-					CALLM1(_group, "spawn", _loc);
-				};
-			};
-			_groupIsSpawned = CALLM0(_group, "isSpawned");
-			if (_groupIsSpawned) then { // If the group is finally spawned
-				// Notify the AI of the garrison about it
-				// Call the handleGroupsAdded directly since it's in the same thread
-				pr _AI = T_GETV("AI");
-				if (_AI != "") then {
-					CALLM1(_AI, "handleGroupsAdded", [[_group]]);
-					CALLM0(_AI, "updateComposition");
+					CALLM1(_group, "spawnAtLocation", _loc);
 				};
 			};
 		} else {
@@ -488,6 +582,14 @@ CLASS("Garrison", "MessageReceiverEx");
 			if (_groupIsSpawned) then {
 				CALLM0(_group, "despawn");
 			};
+		};
+
+		// Notify the AI of the garrison
+		// Call the handleGroupsAdded directly since it's in the same thread
+		pr _AI = T_GETV("AI");
+		if (_AI != "") then {
+			CALLM1(_AI, "handleGroupsAdded", [[_group]]);
+			CALLM0(_AI, "updateComposition");
 		};
 
 		nil
@@ -511,10 +613,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Notify AI object if the garrison is spawned
 		pr _AI = T_GETV("AI");
-		if (T_GETV("spawned")) then {
-			if (_AI != "") then {
-				CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
-			};
+		if (_AI != "") then {
+			CALLM1(_AI, "handleGroupsRemoved", [_group]); // We call it synchronously because Garrison AI is in the same thread.
 		};
 
 		// Remove this group and all its units from this garrison
@@ -541,6 +641,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		nil
 	} ENDMETHOD;
 
+	/*
+	Method: deleteEmptyGroups
+	DeletesEmptyGroups in this garrison
+	
+	Returns: nil
+	*/
+
+	METHOD("deleteEmptyGroups") {
+		params ["_thisObject"];
+
+		pr _groups = T_GETV("groups");
+		pr _emptyGroups = _groups select {CALLM0(_x, "isEmpty")};
+		{
+			DELETE(_x);
+		} forEach _emptyGroups;
+	} ENDMETHOD;
 
 	/*
 	Method: addGarrison
@@ -723,7 +839,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			if (isNil "_destGroup") then {
 				pr _args = [CALLM0(_thisObject, "getSide"), GROUP_TYPE_VEH_NON_STATIC];
 				_destGroup = NEW("Group", _args);
-				CALLM0(_destGroup, "spawn");
+				CALLM0(_destGroup, "spawnAtLocation");
 				CALLM1(_thisObject, "addGroup", _destGroup);
 				_vehGroups pushBack _destGroup;
 			};
@@ -772,7 +888,7 @@ CLASS("Garrison", "MessageReceiverEx");
 						// Create a group, add it to the garrison
 						pr _args = [_side, GROUP_TYPE_VEH_NON_STATIC];
 						pr _newGroup = NEW("Group", _args);
-						CALLM0(_newGroup, "spawn");
+						CALLM0(_newGroup, "spawnAtLocation");
 						CALLM1(_thisObject, "addGroup", _newGroup);
 						
 						// Get crew of this vehicle
@@ -816,13 +932,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effAdd = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal");
-		_effTotal = VECTOR_ADD_9(_effTotal, _effAdd);
+		_effTotal = EFF_ADD(_effTotal, _effAdd);
 		T_SETV("effTotal", _effTotal);
 		 
 		// If the added unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = VECTOR_ADD_9(_effMobile, _effAdd);
+			_effMobile = EFF_ADD(_effMobile, _effAdd);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;	
@@ -841,13 +957,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _effSub = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal"); 
-		_effTotal = VECTOR_SUB_9(_effTotal, _effSub);
+		_effTotal = EFF_DIFF(_effTotal, _effSub);
 		T_SETV("effTotal", _effTotal);
 		
 		// If the removed unit is not static
 		if (! ([_catID, _subcatID] in T_static)) then {
 			pr _effMobile = T_GETV("effMobile");
-			_effMobile = VECTOR_SUB_9(_effMobile, _effSub);
+			_effMobile = EFF_DIFF(_effMobile, _effSub);
 			T_SETV("effMobile", _effMobile);
 		};
 	} ENDMETHOD;
@@ -1042,4 +1158,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// Counts amount of units with specific type
 	METHOD_FILE("countUnits", "Garrison\countUnits.sqf");
 
+	// Handle PROCESS message
+	METHOD_FILE("process", "Garrison\process.sqf");
+
 ENDCLASS;
+
+SETSV("Garrison", "all", []);

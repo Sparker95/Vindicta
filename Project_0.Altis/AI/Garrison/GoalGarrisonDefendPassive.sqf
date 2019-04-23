@@ -18,7 +18,7 @@ CLASS("GoalGarrisonDefendPassive", "Goal")
 		
 		// Check if the garrison knows about any enemies
 		pr _ws = GETV(_AI, "worldState");
-		if ([_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_propertyExistsAndEquals) then {
+		if ([_ws, WSP_GAR_AWARE_OF_ENEMY, true] call ws_propertyExistsAndEquals && CALLM0(_AI, "isSpawned")) then {
 			GET_STATIC_VAR(_thisClass, "relevance")
 			} else {
 			0

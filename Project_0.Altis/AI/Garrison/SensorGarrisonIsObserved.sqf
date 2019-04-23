@@ -15,7 +15,7 @@ Author: Sparker 28.01.2019
 // ---- Debugging defines ----
 
 
-CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
+CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 
 	/*
 	METHOD("new") {
@@ -35,17 +35,22 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 		
 		//diag_log "UPDATE";
 		
+		// Bail if not spawned
 		pr _gar = T_GETV("gar");
-		pr _side = CALLM0(_gar, "getSide");
-		pr _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
-		
-		// Bail if this garrison has no location
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		// Bail if there is no location (for now)
 		pr _loc = CALLM0(_gar, "getLocation");
 		if (_loc == "") exitWith {};
-		pr _locPos = CALLM0(_loc, "getPos");
+
+		pr _side = CALLM0(_gar, "getSide");
+		pr _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
+
+		
+		pr _pos = CALLM0(_gar, "getPos");
 		
 		// Get units that can spawn this location that are also within spawn range
-		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _locPos) < 2000) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
+		pr _enemyObjects = (CALLM1(gLUAP, "getUnitArray", _side)) select { ((_x in allPlayers) || (_x isEqualTo (leader group _x))) && ((_x distance _pos) < 2000) && (alive _x) && ((side group _x) != _side)}; // todo retrieve the proper spawn distance
 		
 		// Get units of this garrison
 		pr _thisUnits = CALLM0(_gar, "getUnits");
@@ -73,7 +78,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 				
 				// Report to the AICommander of the side that observes this location
 				private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_s]);
-				if (_AICommander != "") then {
+				if (_AICommander != "" && _loc != "") then {
 				
 					//OOP_INFO_1("Reporting to AICommander: %1", _AICommander);
 				
@@ -84,7 +89,7 @@ CLASS("SensorGarrisonLocationIsObserved", "SensorGarrison")
 					
 					//OOP_INFO_1("Sending stimulus: %1", _stim);
 					
-					// Send the stimulus
+					// Send the stimulus if this garrison is attached to a location
 					CALLM2(_AICommander, "postMethodAsync", "handleStimulus", [_stim]);
 				};
 			};

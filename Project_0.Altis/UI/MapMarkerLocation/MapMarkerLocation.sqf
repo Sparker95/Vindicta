@@ -1,7 +1,9 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+
 //#define NAMESPACE uiNamespace
+
 #include "..\..\OOP_Light\OOP_Light.h"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -15,7 +17,7 @@ That's how we draw locations
 
 #define CLASS_NAME "MapMarkerLocation"
 
-CLASS(CLASS_NAME, "MapMarker");
+CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
@@ -209,6 +211,8 @@ ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
 
+#ifndef _SQF_VM
+
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
 	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
@@ -241,3 +245,6 @@ CALLM1(_testMarker, "setPos", _pos);
 pr _color = [0, 0.8, 0.8, 1];
 CALLM1(_testMarker, "setColor", _color);
 */
+
+
+#endif

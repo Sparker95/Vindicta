@@ -38,6 +38,32 @@
 // It's a global flag, must be defined here
 #define OOP_ASSERT
 
+#ifdef _SQF_VM
+
+#undef ASP_ENABLE
+#undef OFSTREAM_ENABLE
+#undef OFSTREAM_FILE
+#define VM_LOG(t) diag_log t
+#define VM_LOG_FMT(t, args) diag_log format ([t] + args)
+#define OOP_ASSERT
+#define OOP_DEBUG
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+
+#define TIME_NOW 0
+#define CLIENT_OWNER objNull
+
+#else
+
+#define VM_LOG(t)
+#define VM_LOG_FMT(t, args)
+
+#define TIME_NOW time
+#define CLIENT_OWNER clientOwner
+
+#endif
+
 // Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
 // You can either define it here or usage of OOP_INFO_, ..., macros will cause its automatic definition
 // ! ! ! It's currently totally disabled because recompiling breaks file names in callstacks ! ! !
@@ -64,12 +90,13 @@
 // Define it at the top of the file per every class where you need to count objects
 //#define PROFILER_COUNTERS_ENABLE
 
+// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
+#define ADE
+
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
 // ----------------------------------------------------------------------
-
 #ifndef ASP_ENABLE
-#define PROFILER_COUNTERS_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
 #endif
 
@@ -420,6 +447,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
+#define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
 
 // ----------------------------------------
@@ -435,6 +463,8 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 
 #define CLASS(classNameStr, baseClassNameStr) \
+call { \
+diag_log format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -443,7 +473,10 @@ private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
 if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then {throw "invalid base class"}; \
+	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+		private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
+		FAILURE(_msg); \
+	}; \
 	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
 	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
 	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \
@@ -482,9 +515,10 @@ _fnc_array deleteAt 0; \
 _fnc_array deleteAt ((count _fnc_array) - 1); \
 private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + toString [10] + format ["#line 1 '%1'", CLASS_METHOD_NAME_STR(_oop_classNameStr, _x)] + toString [10] + (toString _fnc_array); \
 missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
-} forEach _oop_newMethodList;
+} forEach _oop_newMethodList; \
+}
 #else
-#define ENDCLASS
+#define ENDCLASS }
 #endif
 
 // ----------------------------------------------------------------------
@@ -688,8 +722,25 @@ objNameStr \
 // Exits current scope if provided object's class doesn't match specified class
 #ifdef OOP_ASSERT
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr) if (!([objNameStr, classNameStr, __FILE__, __LINE__] call OOP_assert_objectClass)) exitWith {}
+#define ASSERT_MSG(condition, msg) \
+if (!(condition)) then { \
+	OOP_ERROR_2("Assertion failed (%1): %2", str({ condition; }), msg); \
+	throw [__FILE__, __LINE__, msg]; \
+}
+#define ASSERT(condition) \
+if (!(condition)) then { \
+	OOP_ERROR_1("Assertion failed (%1)", str({ condition; })); \
+	throw [__FILE__, __LINE__, msg]; \
+}
+#define FAILURE(msg) \
+OOP_ERROR_1("Failure: %1", msg); \
+throw [__FILE__, __LINE__, msg]
+
 #else
 #define ASSERT_OBJECT_CLASS(objNameStr, classNameStr)
+#define ASSERT_MSG(condition, msg)
+#define ASSERT(condition)
+#define FAILURE(msg)
 #endif
 
 // Returns true if given object is public, i.e. was created with NEW_PUBLIC

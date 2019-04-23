@@ -11,7 +11,6 @@
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
-#include "..\goalRelevance.hpp"
 #include "AI.hpp"
 
 /*
@@ -30,7 +29,7 @@ Author: Sparker 07.11.2018
 #define pr private
 
 // Will output to .rpt which goals each AI is choosing from
-#define DEBUG_POSSIBLE_GOALS
+//#define DEBUG_POSSIBLE_GOALS
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -88,9 +87,9 @@ CLASS("AI_GOAP", "AI")
 	// ----------------------------------------------------------------------
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_accelerate", false]];
 		
-		OOP_INFO_0("PROCESS");
+		//OOP_INFO_0("PROCESS");
 		
 		pr _agent = GETV(_thisObject, "agent");
 		
@@ -114,7 +113,9 @@ CLASS("AI_GOAP", "AI")
 		*/
 		
 		// Update all sensors
-		CALLM0(_thisObject, "updateSensors");
+		CALLM1(_thisObject, "updateSensors", _accelerate);
+
+		OOP_INFO_1("PROCESS: world state: %1", [GETV(_thisObject, "worldState")] call ws_toString);
 		
 		// Update all world facts (delete old facts)
 		CALLM0(_thisObject, "updateWorldFacts");
@@ -350,12 +351,13 @@ CLASS("AI_GOAP", "AI")
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
 	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
 	_deleteSimilarGoals - Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.
-	
+	_callProcess - Bool, optional default true. If true, also calls process method inside this function call to accelerate goal arbitration.
+
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true], ["_callProcess", true]];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
@@ -383,6 +385,11 @@ CLASS("AI_GOAP", "AI")
 		
 		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
+		// Call process method to accelerate goal arbitration
+		if (_callProcess) then {
+			CALLM0(_thisObject, "process");
+		};
+
 		nil
 	} ENDMETHOD;
 	
@@ -526,8 +533,9 @@ CLASS("AI_GOAP", "AI")
 		{
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
-			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) ); // || (_actionState == -1));
-			(_actionState == ACTION_STATE_COMPLETED)  // || (_actionState == -1)
+			pr _completed = (_actionState == ACTION_STATE_COMPLETED);
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed ); // || (_actionState == -1));
+			_completed  // || (_actionState == -1)
 		} count _agents == (count _agents)
 	} ENDMETHOD;
 
@@ -574,6 +582,17 @@ CLASS("AI_GOAP", "AI")
 		};
 		
 		SETV(_thisObject, "currentAction", _newAction);
+	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                G E T   C U R R E N T   A C T I O N
+	// |
+	// ----------------------------------------------------------------------
+	
+
+	METHOD("getCurrentAction") {
+		params [["_thisObject", "", [""]]];
+		T_GETV("currentAction")
 	} ENDMETHOD;
 	
 

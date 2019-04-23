@@ -2,6 +2,8 @@
 #include "..\goalRelevance.hpp"
 #include "..\parameterTags.hpp"
 
+#ifndef _SQF_VM
+
 private _s = WSP_GAR_COUNT;
 
 /*
@@ -24,6 +26,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGarrisonRebalanceVehicleGroups",	25] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 ["GoalGarrisonJoinLocation",			12] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
+["GoalGarrisonMove",					11] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 ["GoalGarrisonRelax",					1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
@@ -48,7 +52,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonDefendPassive", _s,		[[WSP_GAR_AWARE_OF_ENEMY, false]]] call AI_misc_fnc_setGoalEffects;
 
-["GoalGarrisonAttackAssignedTargets", _s, [[]]] call AI_misc_fnc_setGoalEffects; // Effects are procedural
+["GoalGarrisonAttackAssignedTargets", _s, []] call AI_misc_fnc_setGoalEffects; // Effects are procedural
 
 ["GoalGarrisonClearArea", _s,			[	[WSP_GAR_CLEARING_AREA, TAG_G_POS, true],
 											[WSP_GAR_POSITION, TAG_G_POS, true]]] call AI_misc_fnc_setGoalEffects;
@@ -163,7 +167,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonMountCrewInfantry",			C*0.7]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMounted",				C*2.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMountedCargo",			C*3.0]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonMoveDismounted",			C*8.0]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonMoveDismounted",			C*7.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonLoadCargo",					C*2.0] 	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonUnloadCurrentCargo", 		C*0.3]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonDefendPassive", 			C*1.0]	call AI_misc_fnc_setActionCost;
@@ -188,3 +192,5 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonRepairAllVehicles", 		1]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonClearArea", 				40]	call AI_misc_fnc_setActionPrecedence;
 ["ActionGarrisonJoinLocation", 				43] call AI_misc_fnc_setActionPrecedence;
+
+#endif

@@ -17,9 +17,9 @@ private _locations = entities "Project_0_LocationSector";
 
 #define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
-#define ADD_ARMED_MRAPS
+//#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
-#define ADD_APCS_IFVS
+//#define ADD_APCS_IFVS
 
 {
 	private _locSector = _x;
@@ -66,7 +66,7 @@ private _locations = entities "Project_0_LocationSector";
 	private _args = [T_INF, [GROUP_TYPE_IDLE]];
 	private _cInf = CALL_METHOD(_loc, "getUnitCapacity", _args);
 	//if (_cInf < 5) then {_cInf = 5};
-	_cInf = 5 + random 5;
+	_cInf = 12; //5 + random 5;
 
 	// // Wheeled and tracked vehicle capacity
 	_args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
@@ -83,7 +83,8 @@ private _locations = entities "Project_0_LocationSector";
 
 	// Add the main garrison to this location
 	private _garMilMain = NEW("Garrison", [_side]);
-	CALL_METHOD(_loc, "setGarrisonMilitaryMain", [_garMilMain]);
+	CALLM1(_garMilMain, "setLocation", _loc);
+	CALLM1(_loc, "registerGarrison", _garMilMain);
 
 	// Add default units to the garrison
 
@@ -122,19 +123,22 @@ private _locations = entities "Project_0_LocationSector";
 
 	// Add patrol groups
 	private _i = 0;
-	while {_cInf > 0 && _i < 3} do {
+	while {/*_cInf > 0 &&*/ _i < 3} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf, GROUP_TYPE_PATROL] call _addInfGroup;
 		_i = _i + 1;
 	};
 
 	// Add default infantry groups
-	/*
+
 	private _i = 0;
-	while {_cInf > 0 && _i < 666} do {
+	/*
+	//while {_cInf > 0 && _i < 1} do {
+	while {_i < 1} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;
 		_i = _i + 1;
 	};
 	*/
+
 
 	// Add building sentries
 	if (_cBuildingSentry > 0) then {
@@ -154,7 +158,7 @@ private _locations = entities "Project_0_LocationSector";
 	// Some trucks
 	private _i = 0;
 	#ifdef ADD_TRUCKS
-	while {_cVehGround > 0 && _i < 2} do {
+	while {_cVehGround > 0 && _i < 3} do {
 		private _args = [_template, T_VEH, T_VEH_truck_inf, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
@@ -165,8 +169,8 @@ private _locations = entities "Project_0_LocationSector";
 		};
 		_i = _i + 1;
 	};
-	#endif ADD_TRUCKS
-	
+	#endif
+
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
 	while {(_cVehGround > 0) && _i < 1} do  {

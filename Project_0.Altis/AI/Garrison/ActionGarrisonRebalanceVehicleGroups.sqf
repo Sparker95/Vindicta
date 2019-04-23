@@ -19,7 +19,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -61,7 +61,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					if (isNil "_receivingGroup") then {
 						pr _args = [CALLM0(_group, "getSide"), GROUP_TYPE_IDLE];
 						_receivingGroup = NEW("Group", _args);
-						CALLM0(_receivingGroup, "spawn");
+						CALLM0(_receivingGroup, "spawnAtLocation");
 						CALLM1(_gar, "addGroup", _receivingGroup);
 						_freeGroups pushBack _receivingGroup;
 					};
@@ -103,6 +103,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 		} forEach _vehGroups;
 		*/
+
+		// Delete empty groups
+		CALLM0(_gar, "deleteEmptyGroups");
 		
 		// Call the health sensor again so that it can update the world state properties
 		CALLM0(GETV(_AI, "sensorState"), "update");

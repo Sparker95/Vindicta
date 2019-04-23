@@ -1,3 +1,7 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 
 /*
@@ -24,6 +28,10 @@ AI_misc_fnc_setGoalEffects = {
 	
 	// Set world state parameters from the effects array
 	{
+		if (count _x == 0) exitWith {
+			OOP_ERROR_1("setGoalEffects: wrong parameters: %1", _this);
+		};
+
 		_x params ["_key", "_value", ["_isParameter", false]];
 		if (_isParameter) then {
 			[_ws, _key, _value] call ws_setPropertyGoalParameterTag;
@@ -44,6 +52,10 @@ AI_misc_fnc_setActionEffects = {
 	
 	// Set world state parameters from the effects array
 	{
+		if (count _x == 0) exitWith {
+			OOP_ERROR_1("setActionEffects: wrong parameters: %1", _this);
+		};
+
 		_x params ["_key", "_value", ["_isParameter", false]];
 		if (_isParameter) then {
 			[_ws, _key, _value] call ws_setPropertyActionParameterTag;
@@ -64,6 +76,10 @@ AI_misc_fnc_setActionPreconditions = {
 	
 	// Set world state parameters from the effects array
 	{
+		if (count _x == 0) exitWith {
+			OOP_ERROR_1("setActionPreconditions: wrong parameters: %1", _this);
+		};
+
 		_x params ["_key", "_value", ["_isParameter", false]];
 		if (_isParameter) then {
 			[_ws, _key, _value] call ws_setPropertyActionParameterTag;

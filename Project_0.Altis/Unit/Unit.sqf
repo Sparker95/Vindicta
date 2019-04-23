@@ -196,7 +196,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 
-		OOP_INFO_0("SPAWN");
+		OOP_INFO_2("SPAWN pos: %1, dir: %2", _pos, _dir);
 
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
@@ -218,6 +218,9 @@ CLASS(UNIT_CLASS_NAME, "");
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
+					if (isNull _groupHandle) then {
+						OOP_ERROR_0("Spawn: group handle is null!");
+					};
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
@@ -832,3 +835,17 @@ CLASS(UNIT_CLASS_NAME, "");
 ENDCLASS;
 
 SET_STATIC_MEM("Unit", "all", []);
+
+#ifdef _SQF_VM
+
+Test_group_args = [WEST, 0]; // Side, group type
+Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
+
+["Unit.new", {
+	private _group = NEW("Group", Test_group_args);
+	private _obj = NEW("Unit", Test_unit_args + [_group]);
+	private _class = OBJECT_PARENT_CLASS_STR(_obj);
+	!(isNil "_class")
+}] call test_AddTest;
+
+#endif

@@ -24,18 +24,18 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		T_SETV("timeNextActivation", 0); // To force instant replan/reallocation
 		T_SETV("allocatedGarrisons", []);
 		T_SETV("clusterIDChanged", false);
-		
-		T_SETV("timeAssignedTargetsUpdate", time);
+
+		T_SETV("timeAssignedTargetsUpdate", TIME_NOW);
 	} ENDMETHOD;
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];
+		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("ACTIVATE");
 
 		// If the timer to replan hasn't expired yet, leave
-		if (! (time > T_GETV("timeNextActivation"))) exitWith {
+		if (! (TIME_NOW > T_GETV("timeNextActivation"))) exitWith {
 			ACTION_STATE_INACTIVE
 		};
 
@@ -55,8 +55,8 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		T_SETV("clusterGoalPos", +_center);
 		
 		// Make a new garrison
-		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
-		// Register it at the commander
+		pr _args = [GETV(_AI, "side")];
+		pr _newGar = NEW("Garrison", _args);
 		CALLM1(_AI, "registerGarrison", _newGar);
 		
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
@@ -82,8 +82,15 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			
 			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
-			CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
-			CALLM0(_newGar, "spawn");
+			if (_locationSrc != "") then {
+				CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+			};
+
+			// Set position of the new garrison and call its process method again to set it to spawned state if needed
+			pr _newPos = CALLM0(_garrisonSrc, "getPos");
+			CALLM1(_newGar, "setPos", _newPos);
+			CALLM0(_newGar, "process");
+			//CALLM0(_newGar, "spawn");
 			
 			// Try to move the units
 			pr _args = [_garrisonSrc, _units, _groupsAndUnits];
@@ -109,9 +116,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				// Find nearest location which belongs to this side
 				// Find locations controled by this side
 				pr _thisSide = GETV(_AI, "side");
-				private _friendlyLocations = CALLSM0("Location", "getAll") select {
-					CALLM0(_x, "getSide") == _thisSide
-				};
+				private _friendlyLocations = CALLM0(_AI, "getFriendlyLocations");
 				
 				// Sort friendly locations by distance
 				_friendlyDistLoc = _friendlyLocations apply {
@@ -137,14 +142,14 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		
 		// Send data with assigned targets to allocated garrisons
 		CALLM1(_thisObject, "assignTargetsToGarrisons", _cluster);
-		T_SETV("timeAssignedTargetsUpdate", time);
+		T_SETV("timeAssignedTargetsUpdate", TIME_NOW);
 		
 		pr _state = if (_success) then {			
 			ACTION_STATE_ACTIVE
 		} else {
 			// Set timer for future replan
 			OOP_WARNING_0("RESPOND TO TARGET: Next replan in 20 seconds!");
-			T_SETV("timeNextActivation", time + 20);
+			T_SETV("timeNextActivation", TIME_NOW + 20);
 			ACTION_STATE_INACTIVE
 		};
 		
@@ -189,7 +194,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 				{
 					_x params ["_gar", "_loc"];
 					pr _garEff = CALLM0(_gar, "getEfficiencyTotal");
-					_allocatedGarsEff = VECTOR_ADD_9(_allocatedGarsEff, _garEff); // Sum up all efficiencies
+					_allocatedGarsEff = EFF_ADD(_allocatedGarsEff, _garEff); // Sum up all efficiencies
 				} forEach _allocatedGarrisons;
 				// If can't destroy the threat, allocate more units
 				if (!([_allocatedGarsEff, _tc select TARGET_CLUSTER_ID_EFFICIENCY] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL)) then {
@@ -224,14 +229,14 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 					
 					// Assign targets to garrisons again
 					CALLM1(_thisObject, "assignTargetsToGarrisons", _cluster);
-					T_SETV("timeAssignedTargetsUpdate", time);
+					T_SETV("timeAssignedTargetsUpdate", TIME_NOW);
 				};
 			};
 			
 			// Assign targets periodycally
-			if (time - T_GETV("timeAssignedTargetsUpdate") > 30) then {
+			if (TIME_NOW - T_GETV("timeAssignedTargetsUpdate") > 30 && (count _tc > 0)) then {
 				CALLM1(_thisObject, "assignTargetsToGarrisons", _tc select TARGET_CLUSTER_ID_CLUSTER);
-				T_SETV("timeAssignedTargetsUpdate", time);
+				T_SETV("timeAssignedTargetsUpdate", TIME_NOW);
 			};
 		};
 

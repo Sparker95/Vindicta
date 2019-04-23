@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\..\\..\\..\\AppData\\Local\\Arma 3"
+		},
+		{
+			"path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Arma 3\\Logs"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.rpt": "log"
+		},
+		"logFileHighlighter.customPatterns": [
+			{
+				"pattern": "INFO:",
+				"foreground": "Gray"
+			},
+			{
+				"pattern": "WARNING:",
+				"foreground": "Yellow"
+			},
+			{
+				"pattern": "ERROR:",
+				"foreground": "Red"
+			}
+		]
+	}
+}

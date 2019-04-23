@@ -17,7 +17,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
@@ -25,7 +25,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Find all non-vehicle groups
 		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
 		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
-		
+		 
 		// Give goals to these groups
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
@@ -45,34 +45,49 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
-		if (_state == ACTION_STATE_ACTIVE) then {
-			pr _gar = T_GETV("gar");
-			pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
-			pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) then {
+
+			pr _AI = T_GETV("AI");
+			pr _ws = GETV(_AI, "worldState");
+			[_ws, WSP_GAR_ALL_INFANTRY_MOUNTED, true] call ws_setPropertyValue;
+
+			T_SETV("state", ACTION_STATE_COMPLETED);
+			ACTION_STATE_COMPLETED
+		} else {
+			pr _state = CALLM0(_thisObject, "activateIfInactive");
 			
-			// This action is completed when all infantry groups have mounted
-			
-			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
-				 //Update sensors affected by this action
-				CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
+			if (_state == ACTION_STATE_ACTIVE) then {
+				pr _gar = T_GETV("gar");
+				pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
+				pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 				
-			//pr _ws = GETV(T_GETV("AI"), "worldState");
-			//if ([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
-				_state = ACTION_STATE_COMPLETED		
+				// This action is completed when all infantry groups have mounted
+				
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
+					//Update sensors affected by this action
+					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
+					
+				//pr _ws = GETV(T_GETV("AI"), "worldState");
+				//if ([_ws, WSP_GAR_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue) then {
+					_state = ACTION_STATE_COMPLETED		
+				};
 			};
+			
+			// Return the current state
+			T_SETV("state", _state);
+			_state
 		};
-		
-		// Return the current state
-		T_SETV("state", _state);
-		_state
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		// Delete goals given by this action
 		pr _gar = T_GETV("gar");
 		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];

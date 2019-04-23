@@ -18,8 +18,11 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 	/* virtual */ METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _AI = GETV(_thisObject, "AI");
+		// Bail if not spawned
 		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		pr _AI = GETV(_thisObject, "AI");
 		pr _worldState = GETV(_AI, "worldState");
 		
 		// Find soldiers and check if they all are allright

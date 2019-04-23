@@ -19,9 +19,13 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("type");
 	VARIABLE("side");
 	VARIABLE("debugName");
+	
+	VARIABLE("garrisons");
+	/*
 	VARIABLE("garrisonCiv");
 	VARIABLE("garrisonMilAA");
 	VARIABLE("garrisonMilMain");
+	*/	
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
 	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
@@ -79,9 +83,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("debugName", "noname");
-		T_SETV("garrisonCiv", "");
-		T_SETV("garrisonMilAA", "");
-		T_SETV("garrisonMilMain", "");
+		T_SETV("garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
 		T_SETV("borderPatrolWaypoints", []);
@@ -198,6 +200,13 @@ CLASS("Location", "MessageReceiverEx")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	
+	
+	
+	
+	// Old useless crap, delete it!11
+	
 	/*
 	Method: setGarrisonMilitaryMain
 	Sets the main military garrison located at this location
@@ -208,6 +217,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: nil
 	*/
+	/*
 	METHOD("setGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 
@@ -218,6 +228,7 @@ CLASS("Location", "MessageReceiverEx")
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
 		};
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: getGarrisonMilitaryMain
@@ -225,22 +236,58 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: <Garrison> or "" if there is no garrison there
 	*/
+	/*
 	METHOD("getGarrisonMilitaryMain") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilMain")
 	} ENDMETHOD;
-
+	*/
 	/*
 	Method: getGarrisonMilAA
 	Gets the main military garrison located at this location
 
 	Returns: <Garrison> or "" if there is no garrison there
 	*/
+	/*
 	METHOD("getGarrisonMilAA") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilAA")
 	} ENDMETHOD;
-
+	*/
+	
+	
+	METHOD("registerGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _gars = T_GETV("garrisons");
+		if (! (_gar in _gars)) then {
+			_gars pushBack _gar;
+			CALLM2(_gar, "postMethodAsync", "ref", []);
+		};
+		
+	} ENDMETHOD;
+	
+	METHOD("unregisterGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _gars = T_GETV("garrisons");
+		if (_gar in _gars) then {
+			_gars deleteAt (_gars find _gar);
+			CALLM2(_gar, "postMethodAsync", "unref", []);
+		};
+	} ENDMETHOD;
+	
+	
+	METHOD("getGarrisons") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		
+		if (_side == CIVILIAN) then {
+			T_GETV("garrisons")
+		} else {
+			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
+		};
+	} ENDMETHOD;
+	
 	/*
 	Method: setType
 	Set the Type.
@@ -273,6 +320,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: Side, or Civilian if there is no garrison
 	*/
+	/*
 	METHOD("getSide") {
 		params [ "_thisObject" ];
 		pr _gar = T_GETV("garrisonMilMain");
@@ -282,6 +330,7 @@ CLASS("Location", "MessageReceiverEx")
 			CALLM0(_gar, "getSide");
 		};
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: getCapacityInf
@@ -307,6 +356,54 @@ CLASS("Location", "MessageReceiverEx")
 		if (_garrison == "") then { _garrison = GETV(_thisObject, "garrisonMilMain"); };
 		if (_garrison == "") then { OOP_WARNING_1("No garrison found for location %1", _thisObject); };
 		_garrison
+	} ENDMETHOD;
+
+	/*
+	Method: (static)findSafePosOnRoad
+	Finds an empty position for a vehicle class name on road close to specified position.
+
+	Parameters: _startPos 
+	_startPos - start position where to start searching for a position.
+
+	Returns: Array, [_pos, _dir]
+	*/
+	STATIC_METHOD("findSafePosOnRoad") {
+		params ["_thisClass", ["_startPos", [], [[]]], ["_className", "", [""]] ];
+
+		// Try to find a safe position on a road for this vehicle
+		private _found = false;
+		private _searchRadius = 100;
+		pr _return = [];
+		while {!_found} do {
+			private _roads = _startPos nearRoads _searchRadius;
+			if (count _roads < 3) then {
+				// Search for more roads at the next iteration
+				_searchRadius = _searchRadius * 2;
+			} else {
+				_roads = _roads apply {[_x distance2D _startPos, _x]};
+				_roads sort true; // Ascending
+				private _i = 0;
+				while {_i < count _roads && !_found} do {
+					(_roads select _i) params ["_dist", "_road"];
+					private _rct = roadsConnectedTo _road;
+					if (count _rct > 0) then { // We better don't use terminal road pieces
+						// Check position if it's safe
+						private _dir = _road getDir (_rct select 0);
+						if (CALLSM3("Location", "isPosSafe", getPos _road, _dir, _className)) then {
+							_return = [getPos _road, _dir];
+							_found = true;
+						};
+					};
+					_i = _i + 1;
+				};
+				if (!_found) then {
+					// Failed to find a position here, increase the radius
+					_searchRadius = _searchRadius * 3;
+				};
+			};			
+		};
+
+		_return
 	} ENDMETHOD;
 
 	/*
