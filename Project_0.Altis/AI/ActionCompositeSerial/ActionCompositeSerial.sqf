@@ -1,4 +1,7 @@
 #define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Action\Action.hpp"
 

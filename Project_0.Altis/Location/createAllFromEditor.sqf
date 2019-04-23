@@ -132,7 +132,7 @@ gSetupMode = "bill"; // "default";
 
 	// Add patrol groups
 	private _i = 0;
-	while {_cInf > 0 && _i < 3} do {
+	while {/*_cInf > 0 &&*/ _i < 3} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf, GROUP_TYPE_PATROL] call _addInfGroup;
 		_i = _i + 1;
 	};
@@ -144,6 +144,7 @@ gSetupMode = "bill"; // "default";
 		_i = _i + 1;
 	};
 	
+
 
 	// Add building sentries
 	#ifdef ADD_SENTRY
@@ -163,7 +164,7 @@ gSetupMode = "bill"; // "default";
 	// Some trucks
 	private _i = 0;
 	#ifdef ADD_TRUCKS
-	while {_cVehGround > 0 && _i < 2} do {
+	while {_cVehGround > 0 && _i < 3} do {
 		private _newUnit = NEW("Unit", [_template]+[T_VEH]+[T_VEH_truck_inf]+[-1]+[""]);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
 			CALL_METHOD(_garMilMain, "addUnit", [_newUnit]);
@@ -177,7 +178,7 @@ gSetupMode = "bill"; // "default";
 
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
-	while {(_cVehGround > 0) && _i < 5} do  {
+	while {(_cVehGround > 0) && _i < 1} do  {
 		private _newUnit = NEW("Unit", [_template]+[T_VEH]+[T_VEH_MRAP_unarmed]+[-1]+[""]);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
 			CALL_METHOD(_garMilMain, "addUnit", [_newUnit]);

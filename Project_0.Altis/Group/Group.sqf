@@ -351,6 +351,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	/*
 	Method: getLeader
 	Returns the leader of the group.
+	!!! Warning: might return a dead unit!
 
 	Returns: <Unit> object
 	*/
