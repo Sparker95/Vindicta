@@ -15,7 +15,7 @@ private _radius = 0;
 private _loc = objNull;
 private _locations = entities "Project_0_LocationSector";
 
-//#define ADD_TRUCKS
+#define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
 //#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
@@ -123,19 +123,22 @@ private _locations = entities "Project_0_LocationSector";
 
 	// Add patrol groups
 	private _i = 0;
-	while {_cInf > 0 && _i < 3} do {
+	while {/*_cInf > 0 &&*/ _i < 3} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_sentry, _cInf, GROUP_TYPE_PATROL] call _addInfGroup;
 		_i = _i + 1;
 	};
 
 	// Add default infantry groups
-	/*
+
 	private _i = 0;
-	while {_cInf > 0 && _i < 666} do {
+	/*
+	//while {_cInf > 0 && _i < 1} do {
+	while {_i < 1} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;
 		_i = _i + 1;
 	};
 	*/
+
 
 	// Add building sentries
 	if (_cBuildingSentry > 0) then {
@@ -155,7 +158,7 @@ private _locations = entities "Project_0_LocationSector";
 	// Some trucks
 	private _i = 0;
 	#ifdef ADD_TRUCKS
-	while {_cVehGround > 0 && _i < 2} do {
+	while {_cVehGround > 0 && _i < 3} do {
 		private _args = [_template, T_VEH, T_VEH_truck_inf, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
@@ -170,7 +173,7 @@ private _locations = entities "Project_0_LocationSector";
 
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
-	while {(_cVehGround > 0) && _i < 5} do  {
+	while {(_cVehGround > 0) && _i < 1} do  {
 		private _args = [_template, T_VEH, T_VEH_MRAP_unarmed, -1, ""];
 		private _newUnit = NEW("Unit", _args);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {

@@ -55,8 +55,8 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		T_SETV("clusterGoalPos", +_center);
 		
 		// Make a new garrison
-		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
-		// Register it at the commander
+		pr _args = [GETV(_AI, "side")];
+		pr _newGar = NEW("Garrison", _args);
 		CALLM1(_AI, "registerGarrison", _newGar);
 		
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
@@ -82,7 +82,14 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			
 			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
-			CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+			if (_locationSrc != "") then {
+				CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+			};
+
+			// Set position of the new garrison and call its process method again to set it to spawned state if needed
+			pr _newPos = CALLM0(_garrisonSrc, "getPos");
+			CALLM1(_newGar, "setPos", _newPos);
+			CALLM0(_newGar, "process");
 			//CALLM0(_newGar, "spawn");
 			
 			// Try to move the units
