@@ -200,6 +200,89 @@ CLASS("GarrisonModel", "ModelBase")
 	// Flags defined in CmdrAI/common.hpp
 	// TODO: cleanup the logging
 	// TODO: factor into separate functions: build a unit/armor composition, select transport, generate the actual garrison.
+	METHOD("generateDetachment") {
+		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
+
+		ASSERT_MSG(count _splitEff == count T_EFF_Null, "_splitEff is not a valid efficiency vector (length is wrong)");
+		ASSERT_MSG(EFF_SUM(_splitEff) > 0, "_splitEff can't be zero");
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when actual is not valid");
+
+
+		private _units = CALLM0(_actual, "getUnits") select {! CALLM0(_x, "isStatic")};
+		_units = _units apply {private _eff = CALLM0(_x, "getEfficiency"); [0, _eff, _x]};
+		_allocatedUnits = [];
+		_allocatedGroupsAndUnits = [];
+		_allocatedCrew = [];
+		_allocatedVehicles = [];
+		_effAllocated = +T_EFF_null;
+
+		// Allocate units per each efficiency category
+		private _j = 0;
+		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
+			// Exit now if we have allocated enough units
+			if(EFF_GTE(_effAllocated, _splitEff)) exitWith {};
+
+			// if (([_effAllocated, _splitEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) exitWith {
+
+			// };
+			
+			// For every unit, set element 0 to efficiency value with index _i
+			{_x set [0, _x#1#_i];} forEach _units;
+			// Sort units in this efficiency category
+			_units sort DESCENDING;
+			
+			// Add units until there are enough of them
+			private _splitEffCat = _splitEff#_j; // Required efficiency in this category
+			private _pickUnitID = 0;
+			while {(_effAllocated#_i < _splitEffCat) && (_pickUnitID < count _units)} do {
+				private _unit = _units#_pickUnitID#2;
+				private _group = CALLM0(_unit, "getGroup");
+				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
+				// Try not to take troops from vehicle groups
+				private _ignore = (CALLM0(_unit, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC]);
+				
+				if (!_ignore) then {
+					// If it was a vehicle, and it had crew in its group, add the crew as well
+					if (CALLM0(_unit, "isVehicle")) then {
+						private _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
+						// If there are more than one unit in a vehicle's group, then add the whole group
+						if (count _groupUnits > 1) then {
+							_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
+							// Add allocated crew to array
+							{
+								if (CALLM0(_x, "isInfantry")) then {
+									_allocatedCrew pushBack _x;
+								};
+							} forEach (CALLM0(_group, "getUnits"));
+						} else {
+							_allocatedUnits pushBackUnique _unit;
+						};
+						_allocatedVehicles pushBack _unit;
+						OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
+					} else {
+						OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
+						_allocatedUnits pushBack _unit;
+					};
+					private _unitEff = _units#_pickUnitID#1;
+					// Add to the allocated efficiency vector
+					_effAllocated = EFF_ADD(_effAllocated, _unitEff);
+					//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
+				};
+				_pickUnitID = _pickUnitID + 1;
+			};
+			
+			_j = _j + 1;
+		};
+		
+		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
+
+		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
+			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
+			NULL_OBJECT
+		};
+	} ENDMETHOD;
+
 	METHOD("splitActual") {
 		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
 
