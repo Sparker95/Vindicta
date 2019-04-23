@@ -94,7 +94,6 @@ CLASS("WorldModel", "")
 		// };
 
 		T_PRVAR(threatGrid);
-		T_PRVAR(clusters);
 
 		// Clear grid
 		CALLM(_threatGrid, "setValueAll", [0]);
@@ -104,7 +103,7 @@ CLASS("WorldModel", "")
 			private _size = GETV(_x, "size") apply { _x + 2000 };
 			private _strength = EFF_SUM(GETV(_x, "efficiency"));
 			CALLM(_threatGrid, "maxRect", [_pos]+[_size]+[_strength])
-		} forEach _clusters;
+		} forEach T_CALLM("getAliveClusters", []);
 
 #ifdef DEBUG_CMDRAI
 		CALLM(_threatGrid, "unplot", []);
