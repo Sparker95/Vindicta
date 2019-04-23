@@ -28,12 +28,17 @@ private _locations = entities "Project_0_LocationSector";
 	private _locType = _locSector getVariable ["Type", ""];
 	private _locSide = _locSector getVariable ["Side", ""];
 	private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
-	private _locCivPresUnitCount = _locSector getVariable ["CivilianPresence_UnitCount", ""];
+	private _locCivPresUnitCount = _locSector getVariable ["CivPresUnitCount", ""];
 	private _template = "";
 	private _side = "";
 
 	if (_locType == "city") exitWith{};
+
+	OOP_DEBUG_1("_locName %1", _locName);
+	OOP_DEBUG_1("_locCapacityInf %1", _locCapacityInf);
+	OOP_DEBUG_1("_locCivPresUnitCount %1", _locCivPresUnitCount);
 	
+
 	// TODO: use synced waypoints to help AIs
 	// _waypoints = synchronizedObjects _locationSector;
 
@@ -59,7 +64,7 @@ private _locations = entities "Project_0_LocationSector";
 	CALL_METHOD(_loc, "setDebugName", [_locName]);
 	CALL_METHOD(_loc, "setSide", [_side]);
 	CALL_METHOD(_loc, "setType", [_locType]);
-	CALL_METHOD(_loc, "setCapacityInf", [_locCapacityInf]);
+	CALL_METHOD(_loc, "setCapacityInf", [ format["%1", _locCapacityInf]; ]);
 
 	// Output the capacity of this garrison
 	// Infantry capacity
