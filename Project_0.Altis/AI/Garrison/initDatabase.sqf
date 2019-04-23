@@ -167,7 +167,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["ActionGarrisonMountCrewInfantry",			C*0.7]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMounted",				C*2.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonMoveMountedCargo",			C*3.0]	call AI_misc_fnc_setActionCost;
-["ActionGarrisonMoveDismounted",			C*8.0]	call AI_misc_fnc_setActionCost;
+["ActionGarrisonMoveDismounted",			C*7.0]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonLoadCargo",					C*2.0] 	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonUnloadCurrentCargo", 		C*0.3]	call AI_misc_fnc_setActionCost;
 ["ActionGarrisonDefendPassive", 			C*1.0]	call AI_misc_fnc_setActionCost;

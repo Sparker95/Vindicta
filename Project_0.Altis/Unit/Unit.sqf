@@ -1,7 +1,7 @@
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
-//#define OFSTREAM_FILE "Main.rpt"
+#define OFSTREAM_FILE "Main.rpt"
 #include "Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Mutex\Mutex.hpp"

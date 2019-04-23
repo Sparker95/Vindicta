@@ -15,4 +15,5 @@
 #include "..\..\Group\Group.hpp"
 #include "..\commonStructs.hpp"
 #include "garrisonWorldStateProperties.hpp"
+#include "AIGarrison.hpp"
 #include "..\Group\groupWorldStateProperties.hpp"
