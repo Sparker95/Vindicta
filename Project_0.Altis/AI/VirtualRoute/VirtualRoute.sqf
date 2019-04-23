@@ -96,6 +96,8 @@ CLASS("VirtualRoute", "")
 
 		T_SETV("complete", false);
 
+		T_SETV("currSpeed_ms", 0);
+
 		// Function that calculates the route
 		pr _calcRoute = {
 			params ["_thisObject"];
@@ -192,7 +194,8 @@ CLASS("VirtualRoute", "")
 		params ["_thisObject"];
 		
 		T_PRVAR(stopped);
-		if( _stopped ) exitWith {};
+		T_PRVAR(calculated);
+		if(_stopped or !_calculated) exitWith {};
 
 		T_PRVAR(last_t);
 		// Time since last update
@@ -267,6 +270,7 @@ CLASS("VirtualRoute", "")
 		T_PRVAR(pos);
 		T_PRVAR(nextIdx);
 		T_PRVAR(route);
+		ASSERT_MSG(T_GETV("calculated"), "Can't call getConvoyPositions until route has finished calculating");
 		
 		pr _startPos = getPos (_route select 0);
 
