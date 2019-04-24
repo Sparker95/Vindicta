@@ -76,7 +76,7 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("pos", +_actualPos);
 			T_SETV("side", GETV(_actual, "side"));
 
-			OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
 			private _locationActual = CALLM(_actual, "getLocation", []);
 			if(!IS_NULL_OBJECT(_locationActual)) then {
 				T_PRVAR(world);
@@ -216,8 +216,7 @@ CLASS("GarrisonModel", "ModelBase")
 		_effAllocated = +T_EFF_null;
 		
 		// Allocate units per each efficiency category
-		private _j = 0;
-		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
+		for "_i" from T_EFF_SOFT to T_EFF_ANTI_AIR do {
 			// Exit now if we have allocated enough units
 			if(EFF_GTE(_effAllocated, _splitEff)) exitWith {};
 
@@ -231,9 +230,8 @@ CLASS("GarrisonModel", "ModelBase")
 			_units sort DESCENDING;
 			
 			// Add units until there are enough of them
-			private _splitEffCat = _splitEff#_j; // Required efficiency in this category
 			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _splitEffCat) && (_pickUnitID < count _units)} do {
+			while {(_effAllocated#_i < _splitEff#_i) && (_pickUnitID < count _units)} do {
 				private _unit = _units#_pickUnitID#2;
 				private _group = CALLM0(_unit, "getGroup");
 				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
@@ -269,8 +267,6 @@ CLASS("GarrisonModel", "ModelBase")
 				};
 				_pickUnitID = _pickUnitID + 1;
 			};
-			
-			_j = _j + 1;
 		};
 		
 		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);

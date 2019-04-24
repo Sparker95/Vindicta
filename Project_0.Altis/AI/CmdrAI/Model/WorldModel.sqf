@@ -138,7 +138,9 @@ CLASS("WorldModel", "")
 		//#ifdef OOP_ASSERT
 		//private _existingId = GETV(_garrison, "id");
 		//#endif
-		OOP_DEBUG_MSG("Adding GarrisonModel %1 to WorldModel", [_garrison]);
+
+		//OOP_DEBUG_MSG("Adding GarrisonModel %1 to WorldModel", [_garrison]);
+
 		REF(_garrison);
 		private _idx = _garrisons pushBack _garrison;
 		SETV(_garrison, "id", _idx);

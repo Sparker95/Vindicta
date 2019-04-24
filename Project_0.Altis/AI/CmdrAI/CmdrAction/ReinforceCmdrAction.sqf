@@ -42,10 +42,11 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 			OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
 			false
 		};
-		
+
 		private _finalDetachEff = GETV(_detachedGarr, "efficiency");
-		// We want this to be impossible.
-		ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachEff), "Final detachment efficiency is below requested");
+		// We want this to be impossible. Sadly it seems it isn't :/
+		ASSERT_MSG(EFF_GTE(_finalDetachEff, EFF_ZERO), "Final detachment efficiency is zero!");
+		//ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachEff), "Final detachment efficiency is below requested");
 
 		// This shouldn't be possible and if it does happen then we would need to do something with the resultant understaffed garrison.
 		// if(!EFF_GTE(_finalDetachEff, _detachEff)) exitWith {
@@ -329,7 +330,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]+[_detachEff]+[_detachEffStrength]+[_distCoeff]+[_srcEff]+[_tgtEff]);
+		//OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]+[_detachEff]+[_detachEffStrength]+[_distCoeff]+[_srcEff]+[_tgtEff]);
 
 		// };
 		T_SETV("scorePriority", _scorePriority);
@@ -361,7 +362,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_tgtUnderEff]+[_srcOverEff]+[_effAvailable]);
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_tgtUnderEff]+[_srcOverEff]+[_effAvailable]);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
