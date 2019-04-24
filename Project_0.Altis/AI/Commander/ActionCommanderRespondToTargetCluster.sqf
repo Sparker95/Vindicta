@@ -83,13 +83,13 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
 
 			if (_locationSrc != "") then {
-				CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+				CALLM2(_newGar, "postMethodAsync", "setLocation", [_locationSrc]); // This garrison will spawn here if needed
 			};
 
 			// Set position of the new garrison and call its process method again to set it to spawned state if needed
 			pr _newPos = CALLM0(_garrisonSrc, "getPos");
-			CALLM1(_newGar, "setPos", _newPos);
-			CALLM0(_newGar, "process");
+			CALLM2(_newGar, "postMethodAsync", "setPos", [_newPos]);
+			CALLM2(_newGar, "postMethodAsync", "process", []);
 			//CALLM0(_newGar, "spawn");
 			
 			// Try to move the units

@@ -1,6 +1,4 @@
 #include "common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
 
 // Class: Garrison
 /*
@@ -19,6 +17,8 @@ params [["_thisObject", "", [""]]];
 private _spawned = GET_VAR(_thisObject, "spawned");
 
 OOP_INFO_0("DESPAWN");
+
+ASSERT_THREAD(_thisObject);
 
 if (!_spawned) exitWith {
 	OOP_WARNING_0("Already despawned");
