@@ -275,7 +275,7 @@ CLASS("GarrisonModel", "ModelBase")
 		
 		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
 
-		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
+		if(!EFF_GTE(_effAllocated, _splitEff) && (FAIL_UNDER_EFF in _flags)) exitWith {
 			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
 			NULL_OBJECT
 		};
@@ -384,7 +384,7 @@ CLASS("GarrisonModel", "ModelBase")
 		}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 		
 		// We couldn't complete allocation so return a failure
-		if(!_allocated and FAIL_WITHOUT_FULL_TRANSPORT in _flags) exitWith { NULL_OBJECT };
+		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
 		private _side = GETV(_actual, "side");

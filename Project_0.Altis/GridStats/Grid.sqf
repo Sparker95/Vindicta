@@ -356,12 +356,12 @@ CLASS("Grid", "");
 					} else {
 						if (_val > 0) then {
 							// Positive
-							pr _alpha = ((_val/_scale) max 0.1) min 0.7;
+							pr _alpha = ((_val/_scale) max 0.1) min 0.5;
 							_mrk setMarkerColorLocal "ColorRed";
 							_mrk setMarkerAlphaLocal _alpha;
 						} else {
 							// Negative
-							pr _alpha = ((-_val/_scale) max 0.1) min 0.7;
+							pr _alpha = ((-_val/_scale) max 0.1) min 0.5;
 							_mrk setMarkerColorLocal "ColorBlue";
 							_mrk setMarkerAlphaLocal _alpha;
 						};
