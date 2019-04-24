@@ -13,7 +13,15 @@ OOP_error = {
 	params["_file", "_line", "_text"];
 	private _msg = format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
 	diag_log _msg;
-	throw [_file, _line, _msg];
+	try
+	{
+		throw [_file, _line, _msg];
+	}
+	catch
+	{
+		terminate _thisScript;
+		throw _exception;
+	}
 };
 
 // Print error when a member is not found
