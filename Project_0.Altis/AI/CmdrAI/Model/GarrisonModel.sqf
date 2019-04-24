@@ -488,7 +488,9 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		private _otherActual = GETV(_otherGarr, "actual");
-		CALLM(_otherActual, "addGarrison", [_actual]+[true]);
+		CALLM(_otherActual, "postMethodAsync", "addGarrison", [[_actual]+[true]]);
+		
+		//CALLM(_otherActual, "addGarrison", [_actual]+[true]);
 	} ENDMETHOD;
 
 	// JOIN LOCATION
