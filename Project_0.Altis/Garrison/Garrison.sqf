@@ -1,7 +1,4 @@
 #include "common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
-#include "..\GlobalAssert.hpp"
 
 /*
 Class: Garrison
@@ -89,7 +86,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("timer", _timer);
 
 		// Handle the PROCESS message right now to make the garrison instantly switch to spawned state if required
-		CALLM1(_thisObject, "handleMessage", _msg);
+		//CALLM1(_thisObject, "handleMessage", _msg);
 		
 		GETSV("Garrison", "all") pushBack _thisObject;
 	} ENDMETHOD;
@@ -105,6 +102,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("DELETE GARRISON");
+
+		ASSERT_THREAD(_thisObject);
 
 		// Detach from location if was attached to it
 		T_PRVAR(location);
@@ -200,6 +199,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("setLocation") {
 		params ["_thisObject", ["_location", "", [""]] ];
+
+		ASSERT_THREAD(_thisObject);
+
 		T_SETV("location", _location);
 		
 		pr _AI = T_GETV("AI");
@@ -222,6 +224,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("detachFromLocation") {
 		params ["_thisObject"];
+
+		ASSERT_THREAD(_thisObject);
 		
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
@@ -240,6 +244,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("setPos") {
 		params ["_thisObject", ["_pos", [], [[]]]];
+
+		ASSERT_THREAD(_thisObject);
+
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "setPos", _pos);
 	} ENDMETHOD;
@@ -460,6 +467,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_1("ADD UNIT: %1", _unit);
 
+		ASSERT_THREAD(_thisObject);
+
 		// Check if the unit is already in a garrison
 		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
 		if(_unitGarrison != "") then {
@@ -514,6 +523,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
 		
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
+
+		ASSERT_THREAD(_thisObject);
 		
 		// Notify AI of the garrison about unit removal
 		pr _AI = T_GETV("AI");
@@ -555,6 +566,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 
 		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
+
+		ASSERT_THREAD(_thisObject);
 		
 		// Check if the group is already in another garrison
 		private _groupGarrison = CALL_METHOD(_group, "getGarrison", []);
@@ -623,6 +636,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 		
 		OOP_INFO_2("REMOVE GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
+
+		ASSERT_THREAD(_thisObject);
 		
 		// Notify AI object if the garrison is spawned
 		pr _AI = T_GETV("AI");
@@ -664,6 +679,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("deleteEmptyGroups") {
 		params ["_thisObject"];
 
+		ASSERT_THREAD(_thisObject);
+
 		pr _groups = T_GETV("groups");
 		pr _emptyGroups = _groups select {CALLM0(_x, "isEmpty")};
 		{
@@ -687,6 +704,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[["_thisObject", "", [""]], ["_garrison", "", [""]], ["_delete", false] ];
 
 		OOP_INFO_3("ADD GARRISON: %1, garrison groups: %2, garrison units: %3", _garrison, CALLM0(_garrison, "getGroups"), CALLM0(_garrison, "getUnits"));
+
+		ASSERT_THREAD(_thisObject);
 		
 		// Move all groups
 		pr _groups = +CALLM0(_garrison, "getGroups");
@@ -725,6 +744,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("addUnitsAndGroups") {
 		params ["_thisObject", ["_garSrc", "", [""]], ["_units", [], [[]]], ["_groupsAndUnits", [], [[]]]];
+
+		ASSERT_THREAD(_thisObject);
 		
 		// Check if all units are still in the same garrison
 		pr _index = _units findIf {CALLM0(_x, "getGarrison") != _garSrc};
@@ -848,6 +869,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("mergeVehicleGroups") {
 		params [["_thisObject", "", [""]], ["_merge", false, [false]]];
+
+		ASSERT_THREAD(_thisObject);
 		
 		if (_merge) then {
 			// Find all vehicle groups
@@ -1019,6 +1042,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("spawnAndDetach") {
 		params ["_thisObject"];
+
+		ASSERT_THREAD(_thisObject);
+
 		CALLM0(_thisObject, "spawn");
 		CALLM1(_thisObject, "setLocation", "");
 		nil
@@ -1102,6 +1128,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_1("HANDLE UNIT KILLED: %1", _unit);
 
+		ASSERT_THREAD(_thisObject);
+
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
 		if (_group != "") then {
@@ -1136,6 +1164,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]], ["_unitVeh", "", [""]], ["_unitInf", "", [""]]];
 
 		OOP_INFO_2("HANDLE UNIT GET IN VEHICLE: %1, %2", _unitVeh, _unitInf);
+
+		ASSERT_THREAD(_thisObject);
 
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");
