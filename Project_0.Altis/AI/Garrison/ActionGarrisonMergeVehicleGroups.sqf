@@ -28,7 +28,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		pr _gar = T_GETV("gar");
 		pr _merge = T_GETV("merge");

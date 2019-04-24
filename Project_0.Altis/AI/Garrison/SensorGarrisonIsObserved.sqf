@@ -39,10 +39,14 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 
+		// Bail if there is no location (for now)
+		pr _loc = CALLM0(_gar, "getLocation");
+		if (_loc == "") exitWith {};
+
 		pr _side = CALLM0(_gar, "getSide");
 		pr _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 
-		pr _loc = CALLM0(_gar, "getLocation");
+		
 		pr _pos = CALLM0(_gar, "getPos");
 		
 		// Get units that can spawn this location that are also within spawn range
@@ -74,7 +78,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				
 				// Report to the AICommander of the side that observes this location
 				private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_s]);
-				if (_AICommander != "" && _loc != "") then {
+				if (!IS_NULL_OBJECT(_AICommander) && _loc != "") then {
 				
 					//OOP_INFO_1("Reporting to AICommander: %1", _AICommander);
 				

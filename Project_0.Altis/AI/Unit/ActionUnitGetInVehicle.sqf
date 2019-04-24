@@ -10,7 +10,7 @@ Author: Sparker
 
 #define pr private
 
-//#define DEBUG
+#define DEBUG
 #define CLASS_NAME "ActionUnitGetInVehicle"
 
 #ifdef DEBUG
@@ -94,7 +94,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _AI = GETV(_thisObject, "AI");
 		pr _unitVeh = GETV(_thisObject, "unitVeh");
 		
-		OOP_INFO_2("Asigning vehicle: %1, role: %2", _unitVeh, _vehRole);
+		INFO_2("Asigning vehicle: %1, role: %2", _unitVeh, _vehRole);
 		
 		switch (_vehRole) do {	
 		/*

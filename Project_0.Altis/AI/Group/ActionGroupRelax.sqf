@@ -19,7 +19,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		// Set behaviour
 		pr _AI = T_GETV("AI");

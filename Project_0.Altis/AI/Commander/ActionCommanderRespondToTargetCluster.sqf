@@ -30,7 +30,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];
+		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("ACTIVATE");
 
@@ -53,7 +53,6 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		pr _center = _cluster call cluster_fnc_getCenter;
 		_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
 		T_SETV("clusterGoalPos", +_center);
-
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
 		pr _success = false;
 		while {!_success} do {
@@ -82,7 +81,14 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			// Register it at the commander
 			CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
 
-			CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+			if (_locationSrc != "") then {
+				CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+			};
+
+			// Set position of the new garrison and call its process method again to set it to spawned state if needed
+			pr _newPos = CALLM0(_garrisonSrc, "getPos");
+			CALLM1(_newGar, "setPos", _newPos);
+			CALLM0(_newGar, "process");
 			//CALLM0(_newGar, "spawn");
 			
 			// Try to move the units

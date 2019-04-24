@@ -33,7 +33,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		CALLSM1("Location", "getNearestLocation", _locPos) params ["_loc", "_dist"];
 		
 		if (_dist < 0.5) then {
-			pr _locGars = CALLM1(_loc, "getGarrisons", T_GETV("side"));
+			pr _locGars = CALLM1(_loc, "getGarrisons", GETV(_gar, "side"));
 			pr _locGar = if (count _locGars == 0) then {""} else {_locGars select 0};
 			if (_locGar != "") then {
 				// There is a garrison here already, check side

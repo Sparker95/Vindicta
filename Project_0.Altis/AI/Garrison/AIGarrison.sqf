@@ -50,11 +50,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(_thisObject, "addSensor", _sensorState);
 		T_SETV("sensorState", _sensorState);
 		
-		pr _loc = CALLM0(_agent, "getLocation");
-		if (_loc != "") then {
-			pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
-			CALLM1(_thisObject, "addSensor", _sensorObserved);
-		};
+		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorObserved);
 		
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
@@ -87,7 +84,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM0(_thisObject, "updateComposition");
 		
 		// Set process interval
-		CALLM1(_thisObject, "setProcessInterval", 1); //6);
+		CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 		
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
@@ -128,7 +125,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		params ["_thisObject", ["_accelerate", false]];
 		
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
-		OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
+		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
 		
 		// Update the markers
@@ -370,5 +367,18 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_POSITION] call ws_getPropertyValue;
 	} ENDMETHOD;
+	// Gets called after the garrison is spawned
+	// Not used right now
+	/*
+	METHOD("onGarrisonSpawned") {
+		params ["_thisObject"];
+
+	} ENDMETHOD;
+
+	// Gets called after the garrison is spawned
+	METHOD("onGarrisonDespawned") {
+
+	} ENDMETHOD;
+	*/
 
 ENDCLASS;

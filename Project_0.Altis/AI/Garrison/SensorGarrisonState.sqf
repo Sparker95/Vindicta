@@ -47,12 +47,16 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 
 			// Query world state of infantry groups
 			pr _allInfMounted = true;
-			{
-				pr _groupAI = CALLM0(_x, "getAI");
-				pr _groupWS = GETV(_groupAI, "worldState");
-				pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
-				_allInfMounted = _allInfMounted && _val;
-			} forEach _infGroups;
+			if (count _infGroups == 0) then {
+				_allInfMounted = false;
+			} else {
+				{
+					pr _groupAI = CALLM0(_x, "getAI");
+					pr _groupWS = GETV(_groupAI, "worldState");
+					pr _val = [_groupWS, WSP_GROUP_ALL_INFANTRY_MOUNTED] call ws_getPropertyValue;
+					_allInfMounted = _allInfMounted && _val;
+				} forEach _infGroups;
+			};
 			[_worldState, WSP_GAR_ALL_INFANTRY_MOUNTED, _allInfMounted] call ws_setPropertyValue;
 		};
 

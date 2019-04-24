@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OOP_DEBUG
-//#define OFSTREAM_FILE "Main.rpt"
+#define OFSTREAM_FILE "Main.rpt"
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"
@@ -351,6 +351,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	/*
 	Method: getLeader
 	Returns the leader of the group.
+	!!! Warning: might return a dead unit!
 
 	Returns: <Unit> object
 	*/

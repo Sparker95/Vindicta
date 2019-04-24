@@ -45,13 +45,14 @@ CLASS("Garrison", "MessageReceiverEx");
 	/*
 	Method: new
 
-	Parameters: _side
+	Parameters: _side, _pos
 
 	_side - side of this garrison
+	_pos - optional, default position to set to the garrison
 	*/
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
+		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]], ["_pos", [], [[]]]];
 
 		OOP_INFO_0("NEW GARRISON");
 
@@ -73,6 +74,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _AI = NEW("AIGarrison", [_thisObject]);
 		SETV(_thisObject, "AI", _AI);
 		CALLM(_AI, "start", []); // Let's start the party! \o/
+
+		// Set position if it was specified
+		if (count _pos > 0) then {
+			CALLM1(_AI, "setPos", _pos);
+		};
 		
 		// Let there be timer!
 		pr _msg = MESSAGE_NEW();
@@ -100,17 +106,17 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("DELETE GARRISON");
 
-		// Despawn if spawned
-		if(T_GETV("spawned")) then {
-			CALLM(_thisObject, "despawn", []);
-		};
-
 		// Detach from location if was attached to it
 		T_PRVAR(location);
 		if (!IS_NULL_OBJECT(_location)) then {
 			CALLM(_location, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
 		};
 		
+		// Despawn if spawned
+		if(T_GETV("spawned")) then {
+			CALLM(_thisObject, "despawn", []);
+		};
+
 		T_PRVAR(units);
 		T_PRVAR(groups);
 		
@@ -222,6 +228,20 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
 			T_SETV("location", "");
 		};
+	} ENDMETHOD;
+
+	/*
+	Method: setPos
+	Sets the position of this garrison. Note that position can be updated later on its own by garrison's actions.
+
+	Parameters: _pos
+
+	_pos - position
+	*/
+	METHOD("setPos") {
+		params ["_thisObject", ["_pos", [], [[]]]];
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "setPos", _pos);
 	} ENDMETHOD;
 
 
@@ -1156,6 +1176,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// Counts amount of units with specific type
 	METHOD_FILE("countUnits", "Garrison\countUnits.sqf");
+
+	// Handle PROCESS message
+	METHOD_FILE("process", "Garrison\process.sqf");
 
 ENDCLASS;
 

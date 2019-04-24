@@ -1,23 +1,15 @@
 #include "common.hpp"
 
 /*
-Class: ActionGroup.ActionGroupRegroup
-The whole group regroups around squad leader, units dismount their vehicles.
+Class: ActionGroup.ActionGroupNothing
+Every unit in the group will receive a GoalUnitNothing goal.
 */
 
 #define pr private
 
-#define THIS_ACTION_NAME "MyAction"
-
-CLASS("ActionGroupRegroup", "ActionGroup")
+CLASS("ActionGroupNothing", "ActionGroup")
 	
 	// ------------ N E W ------------
-	/*
-	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
-
-	} ENDMETHOD;
-	*/	
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
@@ -35,29 +27,37 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 		// Add goals to units
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
-		pr _inf = CALLM0(_group, "getInfantryUnits");
+		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
-		} forEach _inf;
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitNothing", 0, [], _AI);
+		} forEach _units;
 		
 		// Return ACTIVE state
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
-		
 	} ENDMETHOD;
 	
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		//CALLM0(_thisObject, "failIfEmpty");
 		
-		CALLM0(_thisObject, "activateIfInactive");
-		
-		// This action is terminal because it's never over right now
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
+
+		if (_state == ACTION_STATE_ACTIVE) then {
+			pr _group = T_GETV("group");
+			pr _units = CALLM0(_group, "getUnits");
+			pr _AI = T_GETV("AI");
+			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _units, "GoalUnitNothing", _AI)) then {
+				_state = ACTION_STATE_COMPLETED;
+			};
+		};
 		
 		// Return the current state
-		ACTION_STATE_ACTIVE
+		T_SETV("state", _state);
+		_state
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
@@ -67,11 +67,11 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 		// Delete given goals
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
-		pr _inf = CALLM0(_group, "getInfantryUnits");
+		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryRegroup", "");
-		} forEach _inf;
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
+		} forEach _units;
 		
 	} ENDMETHOD;
 
