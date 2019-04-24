@@ -373,7 +373,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [["_thisObject", "", [""]]];
 
 		pr _AI = T_GETV("AI");
-		CALLM(_AI, "getPos", [])
+		CALLM0(_AI, "getPos")
 	} ENDMETHOD;
 	
 	//						I S   E M P T Y
@@ -583,8 +583,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			if (!_groupIsSpawned) then {
 				pr _loc = T_GETV("location");
 				if (_loc == "") then {
-					// Can't spawn the added group because there is no location
-					OOP_ERROR_1("Can't spawn a new group while adding it because the garrison is not attached to a location. Group: %1", _group);
+					pr _pos = CALLM0(_thisObject, "getPos");
+					CALLM1(_group, "spawnAtPos", _pos);
 				} else {
 					CALLM1(_group, "spawnAtLocation", _loc);
 				};

@@ -547,7 +547,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	METHOD("spawnAtLocation") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
 
-		OOP_INFO_0("SPAWN AT LOCATION");
+		OOP_INFO_1("SPAWN AT LOCATION: %1", _loc);
 
 		pr _data = GETV(_thisObject, "data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
@@ -655,6 +655,67 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 	} ENDMETHOD;
 
+	//	S P A W N   A T   P O S 
+	/*
+	Method: spawnAtPos
+	Vehicles are spawned at road nearest to the provided position, infantry units are spawned at provided position.
+
+	Parameters: _pos
+
+	_pos - position
+
+	Returns: nil
+	*/
+	METHOD("spawnAtPos") {
+		params ["_thisObject", ["_pos", [], [[]]]];
+
+		OOP_INFO_1("SPAWN AT POS: %1", _pos);
+
+		pr _data = GETV(_thisObject, "data");
+		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			if (isNull _groupHandle) then {
+				private _side = _data select GROUP_DATA_ID_SIDE;
+				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
+			
+			_groupHandle setBehaviour "SAFE";
+			
+			// Handle vehicles first
+			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
+			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
+			{
+				pr _className = CALLM0(_x, "getClassName");
+				pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+				CALLM(_x, "spawn", _posAndDir);
+			} forEach _vehUnits;
+
+			// Handle infantry
+			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+			// Get position around which infantry will be spawning
+			pr _infSpawnPos = _pos;
+			{
+				// todo improve this
+				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
+				CALLM2(_x, "spawn", _pos, 0);
+			} forEach _infUnits;
+
+
+			// todo Handle drones??
+
+			// Create an AI for this group
+			CALLM0(_thisObject, "createAI");
+
+			// Set the spawned flag to true
+			_data set [GROUP_DATA_ID_SPAWNED, true];
+		} else {
+			OOP_WARNING_0("Already spawned");
+		};
+	} ENDMETHOD;
 
 
 	// |         D E S P A W N
