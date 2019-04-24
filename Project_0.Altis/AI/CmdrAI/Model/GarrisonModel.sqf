@@ -76,7 +76,7 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("pos", +_actualPos);
 			T_SETV("side", GETV(_actual, "side"));
 
-			OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
 			private _locationActual = CALLM(_actual, "getLocation", []);
 			if(!IS_NULL_OBJECT(_locationActual)) then {
 				T_PRVAR(world);

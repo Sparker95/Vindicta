@@ -55,7 +55,8 @@ CLASS("LocationModel", "ModelBase")
 		// If we have an assigned Reak Object then sync from it
 		if(!IS_NULL_OBJECT(_actual)) then {
 			ASSERT_OBJECT_CLASS(_actual, "Location");
-			OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
+
+			//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
 			T_SETV("pos", GETV(_actual, "pos"));
 

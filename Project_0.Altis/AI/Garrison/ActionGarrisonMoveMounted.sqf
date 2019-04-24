@@ -299,7 +299,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
-		pr _posAndDir = if(!GETV(_vr, "completed") || GETV(_vr, "failed")) then {
+		pr _posAndDir = if(!GETV(_vr, "complete") || GETV(_vr, "failed")) then {
 			pr _vals = [];
 			pr _garPos = CALLM0(_gar, "getPos");
 			for "_i" from 1 to _nVeh do {
