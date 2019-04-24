@@ -44,8 +44,8 @@
 #undef ASP_ENABLE
 #undef OFSTREAM_ENABLE
 #undef OFSTREAM_FILE
-#define VM_LOG(t) diag_log t
-#define VM_LOG_FMT(t, args) diag_log format ([t] + args)
+#define VM_LOG(t) diag_log text t
+#define VM_LOG_FMT(t, args) diag_log text format ([t] + args)
 #define OOP_ASSERT
 #undef OOP_DEBUG
 #undef OOP_INFO
@@ -478,7 +478,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
-diag_log format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
+diag_log text format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -636,17 +636,17 @@ objNameStr \
 #define WRITE_CRITICAL(text) ((ofstream_new "Critical.rpt") ofstream_write(text))
 #else
 
-#define __OFSTREAM_OUT(fileName, text) diag_log text
-#define WRITE_CRITICAL(text)
+#define __OFSTREAM_OUT(fileName, str) diag_log text str
+#define WRITE_CRITICAL(str)
 
 #endif
 
 #define _OFSTREAM_FILE OFSTREAM_FILE
 
 #ifdef OFSTREAM_FILE
-#define WRITE_LOG(text) __OFSTREAM_OUT(OFSTREAM_FILE, text)
+#define WRITE_LOG(str) __OFSTREAM_OUT(OFSTREAM_FILE, str)
 #else
-#define WRITE_LOG(text) diag_log text
+#define WRITE_LOG(str) diag_log text str
 #endif
 
 #ifdef OOP_PROFILE

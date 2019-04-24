@@ -127,7 +127,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			if (_state == ACTION_STATE_ACTIVE) then {
 				// Run process of the virtual route and update position of the garrison
 				CALLM0(_vr, "process");
-				if(GETV(_vr, "complete")) then {
+				if(GETV(_vr, "calculated")) then {
 					pr _pos = CALLM0(_vr, "getPos");
 					pr _AI = T_GETV("AI");
 					CALLM1(_AI, "setPos", _pos);
@@ -299,7 +299,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
-		pr _posAndDir = if(!GETV(_vr, "complete") || GETV(_vr, "failed")) then {
+		pr _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
 			pr _vals = [];
 			pr _garPos = CALLM0(_gar, "getPos");
 			for "_i" from 1 to _nVeh do {

@@ -345,7 +345,7 @@ CLASS("VirtualRoute", "")
 		
 		CALLM0(_thisObject, "clearDebugDraw");
 		
-		if(!T_GETV("complete")) exitWith {};
+		if(!T_GETV("calculated")) exitWith {};
 
 		T_PRVAR(route);
 

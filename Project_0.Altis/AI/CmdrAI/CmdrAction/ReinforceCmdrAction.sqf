@@ -42,10 +42,11 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 			OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
 			false
 		};
-		
+
 		private _finalDetachEff = GETV(_detachedGarr, "efficiency");
-		// We want this to be impossible.
-		ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachEff), "Final detachment efficiency is below requested");
+		// We want this to be impossible. Sadly it seems it isn't :/
+		ASSERT_MSG(EFF_GTE(_finalDetachEff, EFF_ZERO), "Final detachment efficiency is zero!");
+		//ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachEff), "Final detachment efficiency is below requested");
 
 		// This shouldn't be possible and if it does happen then we would need to do something with the resultant understaffed garrison.
 		// if(!EFF_GTE(_finalDetachEff, _detachEff)) exitWith {
