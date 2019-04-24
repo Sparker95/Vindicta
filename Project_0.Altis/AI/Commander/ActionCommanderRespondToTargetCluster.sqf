@@ -54,11 +54,6 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 		_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
 		T_SETV("clusterGoalPos", +_center);
 		
-		// Make a new garrison
-		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
-		// Register it at the commander
-		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
-		
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
 		pr _success = false;
 		while {!_success} do {
