@@ -31,7 +31,8 @@ private _units = GET_VAR(_thisObject, "units");
 private _groups = GET_VAR(_thisObject, "groups");
 
 // Let the action handle spawning
-pr _action = CALLM0(T_GETV("AI"), "getCurrentAction");
+pr _AI = T_GETV("AI");
+pr _action = CALLM0(_AI, "getCurrentAction");
 if(_action != "") then { _action = CALLM0(_action, "getFrontSubaction"); };
 pr _spawningHandled = if (_action != "") then {
 	CALLM0(_action, "spawn");
@@ -111,5 +112,8 @@ if (_action != "") then {
 	OOP_INFO_0("SPAWN: no current action");
 };
 
+// Update process interval of AI
+CALLM1(_AI, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_SPAWNED);
+
 // Call AI "process" method to accelerate decision taking
-CALLM1(T_GETV("AI"), "process", true); // Pass the _accelerate=true flag to update sensors sooner
+CALLM1(_AI, "process", true); // Pass the _accelerate=true flag to update sensors sooner

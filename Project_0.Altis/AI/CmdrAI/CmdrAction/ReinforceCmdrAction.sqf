@@ -72,6 +72,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 	VARIABLE("action");
 	VARIABLE("moving");
 	VARIABLE("radius");
+	VARIABLE("noTarget");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_radius")];
@@ -79,8 +80,45 @@ CLASS("MoveGarrison", "ActionStateTransition")
 		T_SETV("action", _action);
 		T_SETV("moving", false);
 		T_SETV("radius", _radius);
+		T_SETV("noTarget", false);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_SPLIT]);
 		T_SETV("toState", CMDR_ACTION_STATE_ARRIVED);
+	} ENDMETHOD;
+
+	METHOD("selectNewTarget") {
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		T_PRVAR(action);
+
+		private _srcGarrId = GETV(_action, "srcGarrId");
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
+
+		// Prefer to go back to src garrison
+		private _newTgtGarr = NULL_OBJECT;
+		if(!CALLM(_srcGarr, "isDead", [])) then {
+			_newTgtGarr = _srcGarr;
+		} else {
+			private _detachedGarrId = GETV(_action, "detachedGarrId");
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			ASSERT_OBJECT(_detachedGarr);
+
+			private _pos = GETV(_detachedGarr, "pos");
+			// select the nearest friendly garrison
+			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]+[4000]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
+			if(count _nearGarrs == 0) then {
+				_nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
+			};
+			if(count _nearGarrs > 0) then {
+				_newTgtGarr = _nearGarrs#0;
+			};
+		};
+		_newTgtGarr
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("isAvailable") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+		!T_GETV("noTarget")
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") { 
@@ -111,32 +149,42 @@ CLASS("MoveGarrison", "ActionStateTransition")
 			case WORLD_TYPE_REAL: {
 				if(!_moving) then {
 					// Start moving
-					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4 @%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
+					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
 					CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
 					T_SETV("moving", true);
 				} else {
-					// Are we there yet?
-					private _done = CALLM(_detachedGarr, "moveActualComplete", []);
-					if(_done) then {
-						private _detachedGarrPos = GETV(_detachedGarr, "pos");
-						if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
-							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
-							_arrived = true;
+					// If target is dead then we better cancel move and pick a new one.
+					if(CALLM(_tgtGarr, "isDead", [])) then {
+						private _newTgtGarr = T_CALLM("selectNewTarget", [_world]);
+						if(IS_NULL_OBJECT(_newTgtGarr)) then {
+							// TODO: Now what?
+							// We just cancel the action for now. Maybe another action will pick up this garrison?
+							T_SETV("noTarget", true);
 						} else {
-							// Move again cos we didn't get there yet!
-							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							OOP_DEBUG_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world]+[_action]+[_tgtGarr]+[_newTgtGarr]);
 							T_SETV("moving", false);
+							private _newTgtGarrId = GETV(_newTgtGarr, "id");
+							// Update the target Id in the action.
+							SETV(_action, "tgtGarrId", _newTgtGarrId);
+						};
+					} else {
+						// Are we there yet?
+						private _done = CALLM(_detachedGarr, "moveActualComplete", []);
+						if(_done) then {
+							private _detachedGarrPos = GETV(_detachedGarr, "pos");
+							if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
+								OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+								_arrived = true;
+							} else {
+								// Move again cos we didn't get there yet!
+								OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+								T_SETV("moving", false);
+							};
 						};
 					};
 				};
 			};
 		};
-		// if(GETV(_world, "type") == WORLD_TYPE_) then {
-		// 	CALLM(_detachedGarr, "moveSim", [_tgtPos]);
-		// 	_arrived = true;
-		// } else {
-			
-		// };
 		_arrived
 	} ENDMETHOD;
 ENDCLASS;

@@ -47,7 +47,7 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
-		
+
 		// Get position of the target cluster
 		pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
 		pr _center = _cluster call cluster_fnc_getCenter;
@@ -82,6 +82,11 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			
 			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
+			// Make a new garrison
+			pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
+			// Register it at the commander
+			CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
+
 			if (_locationSrc != "") then {
 				CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
 			};

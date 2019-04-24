@@ -15,7 +15,7 @@ Author: Sparker, Billw (reference count improvements)
 
 #define pr private
 
-CLASS("MessageReceiverEx", "MessageReceiver");
+CLASS("MessageReceiverEx", "MessageReceiver")
 
 	VARIABLE("refCount");
 

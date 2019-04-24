@@ -106,17 +106,17 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("DELETE GARRISON");
 
-		// Despawn if spawned
-		if(T_GETV("spawned")) then {
-			CALLM(_thisObject, "despawn", []);
-		};
-
 		// Detach from location if was attached to it
 		T_PRVAR(location);
 		if (!IS_NULL_OBJECT(_location)) then {
 			CALLM(_location, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
 		};
 		
+		// Despawn if spawned
+		if(T_GETV("spawned")) then {
+			CALLM(_thisObject, "despawn", []);
+		};
+
 		T_PRVAR(units);
 		T_PRVAR(groups);
 		

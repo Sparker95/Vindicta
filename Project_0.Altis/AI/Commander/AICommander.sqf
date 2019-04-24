@@ -176,15 +176,13 @@ CLASS("AICommander", "AI")
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		switch (_side) do {
 			case WEST: {
-				gAICommanderWest
+				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
 			};
-			
 			case EAST: {
-				gAICommanderEast
+				if(isNil "gAICommanderEast") then { NULL_OBJECT } else { gAICommanderEast }
 			};
-			
 			case INDEPENDENT: {
-				gAICommanderInd
+				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
 			};
 		};
 	} ENDMETHOD;

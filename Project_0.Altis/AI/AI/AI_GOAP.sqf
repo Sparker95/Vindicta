@@ -29,7 +29,7 @@ Author: Sparker 07.11.2018
 #define pr private
 
 // Will output to .rpt which goals each AI is choosing from
-#define DEBUG_POSSIBLE_GOALS
+//#define DEBUG_POSSIBLE_GOALS
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -89,7 +89,7 @@ CLASS("AI_GOAP", "AI")
 	METHOD("process") {
 		params [["_thisObject", "", [""]], ["_accelerate", false]];
 		
-		OOP_INFO_0("PROCESS");
+		//OOP_INFO_0("PROCESS");
 		
 		pr _agent = GETV(_thisObject, "agent");
 		

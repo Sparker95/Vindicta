@@ -2,7 +2,7 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OOP_DEBUG
-//#define OFSTREAM_FILE "Main.rpt"
+#define OFSTREAM_FILE "Main.rpt"
 #include "Group.hpp"
 #include "..\Unit\Unit.hpp"
 #include "..\OOP_Light\OOP_Light.h"

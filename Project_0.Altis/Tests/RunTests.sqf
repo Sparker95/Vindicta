@@ -2,7 +2,7 @@
 
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_initssd.sqf"; 
 };
 
 asserts_Failed = 0;
@@ -42,7 +42,7 @@ test_DumpCallstack = {
 	{
 			_x params ["_namespace", "_scope", "_callstack", "_line", "_col", "_file", "_err"];
 			//if(_forEachIndex == 0) then {
-			diag_log format ["          [ERR][L%1|C%2|%3] %4/%5: %6", _line, _col, _file, _forEachIndex+1, count _cs, _ex];
+			diag_log format ["          [ERR][L%1|C%2|%3] %4/%5: %6 (%7 %8 %9 %10)", _line, _col, _file, _forEachIndex+1, count _cs, _ex, _namespace, _scope, _callstack, _err];
 			//} else {
 			// diag_log format ["          %1(%2,%3)", _file, _line, _col];
 			//};

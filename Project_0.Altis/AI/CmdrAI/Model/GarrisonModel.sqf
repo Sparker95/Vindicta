@@ -275,7 +275,7 @@ CLASS("GarrisonModel", "ModelBase")
 		
 		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
 
-		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
+		if(!EFF_GTE(_effAllocated, _splitEff) && (FAIL_UNDER_EFF in _flags)) exitWith {
 			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
 			NULL_OBJECT
 		};
@@ -384,7 +384,7 @@ CLASS("GarrisonModel", "ModelBase")
 		}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 		
 		// We couldn't complete allocation so return a failure
-		if(!_allocated and FAIL_WITHOUT_FULL_TRANSPORT in _flags) exitWith { NULL_OBJECT };
+		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
 		private _side = GETV(_actual, "side");
@@ -449,8 +449,16 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
 		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
-		private _args = ["GoalGarrisonMove", 0, _parameters, _thisObject];
-		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
+		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[["GoalGarrisonMove"]+[0]+[_parameters]+[_thisObject]]);
+	} ENDMETHOD;
+
+	METHOD("cancelMoveActual") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		private _AI = CALLM(_actual, "getAI", []);
+		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal"]+[["GoalGarrisonMove"]+[_thisObject]]);
 	} ENDMETHOD;
 
 	METHOD("moveActualComplete") {
