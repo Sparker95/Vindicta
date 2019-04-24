@@ -224,7 +224,7 @@ CLASS("WorldModel", "")
 			private _garrison = _x;
 			private _pos = GETV(_garrison, "pos");
 			private _dist = _pos distance _center;
-			if(_dist <= _maxDist) then {
+			if(_maxDist == 0 or _dist <= _maxDist) then {
 				_nearestGarrisons pushBack [_dist, _garrison];
 			};
 		} forEach T_CALLM("getAliveGarrisons", []);
@@ -641,7 +641,7 @@ ENDCLASS;
 	private _garrison2 = NEW("GarrisonModel", [_world]);
 	SETV(_garrison2, "pos", [1000, 0, 0]);
 	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[0]) == 0] call test_Assert;
+	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;
 	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 2] call test_Assert;
 	CALLM(_garrison2, "killed", []);

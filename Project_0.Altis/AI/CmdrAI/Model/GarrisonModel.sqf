@@ -449,8 +449,16 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
 		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
-		private _args = ["GoalGarrisonMove", 0, _parameters, _thisObject];
-		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
+		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[["GoalGarrisonMove"]+[0]+[_parameters]+[_thisObject]]);
+	} ENDMETHOD;
+
+	METHOD("cancelMoveActual") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		private _AI = CALLM(_actual, "getAI", []);
+		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal"]+[["GoalGarrisonMove"]+[_thisObject]]);
 	} ENDMETHOD;
 
 	METHOD("moveActualComplete") {
