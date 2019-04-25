@@ -351,6 +351,9 @@ CLASS("CmdrAI", "")
 			DELETE(_x);
 		} forEach _newActions;
 
+		DELETE(_simWorldNow);
+		DELETE(_simWorldFuture);
+
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G   D O N E - - - - -", [_thisObject]+[_world]);
 	} ENDMETHOD;
 	

@@ -39,7 +39,7 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 								};
 
 		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
-			OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
+			OOP_WARNING_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
 			false
 		};
 
@@ -54,7 +54,7 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 		// 	false
 		// };
 
-		OOP_DEBUG_MSG("[w %1 a %2] Detached %3 from %4", [_world]+[_action]+[_detachedGarr]+[_srcGarr]);
+		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world]+[_action]+[_detachedGarr]+[_srcGarr]);
 
 		// DOING: HOW TO FIX THIS? ASTS need to save state, sometimes they modify the Action. How to 
 		// apply them to simworlds in this case without breaking action state for real world?
@@ -155,7 +155,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 					{
 						CALLM(_detachedGarr, "cancelMoveActual", []);
 						_moving = false;
-						T_SETV(_moving, "false");
+						T_SETV("moving", false);
 					};
 					private _newTgtGarr = T_CALLM("selectNewTarget", [_world]);
 					if(IS_NULL_OBJECT(_newTgtGarr)) then {
@@ -163,7 +163,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 						// We just cancel the action for now. Maybe another action will pick up this garrison?
 						T_SETV("noTarget", true);
 					} else {
-						OOP_DEBUG_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world]+[_action]+[_tgtGarr]+[_newTgtGarr]);
+						OOP_INFO_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world]+[_action]+[_tgtGarr]+[_newTgtGarr]);
 						T_SETV("moving", false);
 						private _newTgtGarrId = GETV(_newTgtGarr, "id");
 						// Update the target Id in the action.
@@ -175,7 +175,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 				private _tgtPos = GETV(_tgtGarr, "pos");
 				if(!_moving) then {
 					// Start moving
-					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
+					OOP_INFO_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
 					CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
 					T_SETV("moving", true);
 				} else {
@@ -184,11 +184,11 @@ CLASS("MoveGarrison", "ActionStateTransition")
 					if(_done) then {
 						private _detachedGarrPos = GETV(_detachedGarr, "pos");
 						if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
-							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
 							_arrived = true;
 						} else {
 							// Move again cos we didn't get there yet!
-							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
 							T_SETV("moving", false);
 						};
 					};
@@ -229,8 +229,11 @@ CLASS("MergeGarrison", "ActionStateTransition")
 			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
 		} else {
 			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
+			CALLM(_detachedGarr, "killed", []);
+			private _rc = GETV(_action, "refCount");
+			OOP_INFO_MSG("[w %1 a %2] After merged action has ref count %3", [_world]+[_action]+[_rc]);
 		};
-		OOP_DEBUG_MSG("[w %1 a %2] Merged %3 to %4", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]);
+		OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]);
 		true
 	} ENDMETHOD;
 ENDCLASS;
@@ -260,8 +263,8 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		deleteMarker _thisObject + "_line";
-		deleteMarker _thisObject + "_label";
+		deleteMarker (_thisObject + "_line");
+		deleteMarker (_thisObject + "_label");
 	} ENDMETHOD;
 
 	
@@ -279,7 +282,6 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 	/* override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
-
 
 		T_PRVAR(srcGarrId);
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);

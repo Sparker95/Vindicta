@@ -39,6 +39,11 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_world, "addGarrison", [_thisObject]);
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_CALLM("killed", []);
+	} ENDMETHOD;
+
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");

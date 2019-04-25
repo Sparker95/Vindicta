@@ -15,7 +15,7 @@ private _radius = 0;
 private _loc = objNull;
 private _locations = entities "Project_0_LocationSector";
 
-gSetupMode = "random";  //"bill"; // "default"; // "bill";
+gSetupMode = "random"; //"random"; "default"; "sparker"; "bill"; 
 
 #define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
