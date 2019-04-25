@@ -790,6 +790,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+
+		// Bail if the group has only one unit
+		if (count (units _hG) < 2) exitWith {};
+
 		OOP_INFO_1("Group handle: %1", _hG);
 		_hG deleteGroupWhenEmpty false;
 
@@ -798,12 +802,20 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _tempGroupHandle = createGroup _side;
 
 		// Make all passed units join the new temporary group
+		{
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			[_hO] joinSilent _tempGroupHandle;
+			[_hO] joinSilent _hG;
+		} forEach _unitsSorted;
+
+		/*
 		pr _objectHandles = _unitsSorted apply {
 			CALLM0(_x, "getObjectHandle")
 		};
 		_objectHandles joinSilent _tempGroupHandle;
+		*/
 
-		OOP_INFO_1("Group handle: %1", _hG);
+		//OOP_INFO_1("Group handle: %1", _hG);
 
 		// Restore the old group if it's null now after everyone has left it
 		if (isNull _hG) then {
@@ -812,9 +824,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			_data set [GROUP_DATA_ID_GROUP_HANDLE, _hG];
 		};
 
-		OOP_INFO_1("Group handle: %1", _hG);
+		//OOP_INFO_1("Group handle: %1", _hG);
 
 		// Make all passed units rejoin the group
+		/*
 		pr _hPrev = objNull;
 		{
 			[_x] joinSilent _hG;
@@ -823,8 +836,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			//};
 			_hPrev = _x;
 		} forEach _objectHandles;
+		*/
 
-		OOP_INFO_1("Group handle: %1", _hG);
+		//OOP_INFO_1("Group handle: %1", _hG);
 
 		deleteGroup _tempGroupHandle;
 	} ENDMETHOD;
