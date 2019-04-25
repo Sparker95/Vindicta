@@ -695,7 +695,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	Parameters: _garrison, _delete
 	
 	_garrison - <Garrison> object
-	_delete - Bool, optional, deletes the _garrison, default: false
+	_delete - Bool, optional, deletes the _garrison, default: false. Deletion doesn't happen immediately.
 	
 	Returns: nil
 	*/

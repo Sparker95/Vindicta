@@ -7,7 +7,7 @@
 #include "AI\Commander\LocationData.hpp"
 
 // Global flags
-gFlagAllCommanders = false;
+gFlagAllCommanders = true; //false;
 
 // Main timer service
 gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
@@ -62,21 +62,22 @@ if (isServer) then {
 	gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient];
 
 	// Message loops for commander AI
-	//gMessageLoopCommanderWest = NEW("MessageLoop", []);
 	gMessageLoopCommanderInd = NEW("MessageLoop", []);
-	//gMessageLoopCommanderEast = NEW("MessageLoop", []);
 
 	// Commander AIs
 	gCommanders = [];
 
 	// Independent
-	gCommanderInd = NEW("Commander", []);
+	gCommanderInd = NEW("Commander", []); // all commanders are equal
 	private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
 	gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 	publicVariable "gAICommanderInd";
 	gCommanders pushBack gAICommanderInd;
 
-	if(gFlagAllCommanders) then {
+	if(gFlagAllCommanders) then { // but some are more equal
+
+		gMessageLoopCommanderWest = NEW("MessageLoop", []);
+		gMessageLoopCommanderEast = NEW("MessageLoop", []);
 
 		// West
 		gCommanderWest = NEW("Commander", []);

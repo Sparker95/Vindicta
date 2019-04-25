@@ -11,7 +11,7 @@
 #ifdef OOP_ASSERT
 #define ASSERT_THREAD(objNameStr) \
 try { \
-	private _properThread = GETV(CALLM0(objNameStr, "getMessageLoop"), "scriptHandle") isEqualTo _thisScript; \
+	private _properThread = (GETV(CALLM0(objNameStr, "getMessageLoop"), "scriptHandle") isEqualTo _thisScript) || (isNil "_thisScript"); \
 	private _msg = format ["method is called in wrong thread. File: %1, line: %2", __FILE__, __LINE__]; \
 	ASSERT_MSG(_properThread, _msg); \
 } catch { \
