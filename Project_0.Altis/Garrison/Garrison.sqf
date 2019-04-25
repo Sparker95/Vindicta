@@ -721,7 +721,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Delete the other garrison if needed
 		if (_delete) then {
-			DELETE(_garrison);
+			// TODO: we need to work out how to do this properly.
+			// DELETE(_garrison);
+			// HACK: Just unregister with AICommander for now so the model gets cleaned up
+			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		};
 		
 		nil

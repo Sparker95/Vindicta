@@ -132,55 +132,64 @@ CLASS("MoveGarrison", "ActionStateTransition")
 
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-		ASSERT_OBJECT(_detachedGarr);
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_detachedGarr);
 		ASSERT_OBJECT(_tgtGarr);
 
-		private _tgtPos = GETV(_tgtGarr, "pos");
 		private _arrived = false;
+
 		switch(GETV(_world, "type")) do {
 			// Move can't be applied instantly
 			case WORLD_TYPE_SIM_NOW: {};
 			// Move completes at some point in the future
 			case WORLD_TYPE_SIM_FUTURE: {
+				private _tgtPos = GETV(_tgtGarr, "pos");
 				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
 				_arrived = true;
 			};
 			case WORLD_TYPE_REAL: {
+				// If target is dead then we better cancel move and pick a new one.
+				if(CALLM(_tgtGarr, "isDead", [])) then {
+					if(_moving) then
+					{
+						CALLM(_detachedGarr, "cancelMoveActual", []);
+						_moving = false;
+						T_SETV(_moving, "false");
+					};
+					private _newTgtGarr = T_CALLM("selectNewTarget", [_world]);
+					if(IS_NULL_OBJECT(_newTgtGarr)) then {
+						// TODO: Now what?
+						// We just cancel the action for now. Maybe another action will pick up this garrison?
+						T_SETV("noTarget", true);
+					} else {
+						OOP_DEBUG_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world]+[_action]+[_tgtGarr]+[_newTgtGarr]);
+						T_SETV("moving", false);
+						private _newTgtGarrId = GETV(_newTgtGarr, "id");
+						// Update the target Id in the action.
+						SETV(_action, "tgtGarrId", _newTgtGarrId);
+						_tgtGarr = _newTgtGarr;
+					};
+				};
+
+				private _tgtPos = GETV(_tgtGarr, "pos");
 				if(!_moving) then {
 					// Start moving
 					OOP_DEBUG_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
 					CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
 					T_SETV("moving", true);
 				} else {
-					// If target is dead then we better cancel move and pick a new one.
-					if(CALLM(_tgtGarr, "isDead", [])) then {
-						private _newTgtGarr = T_CALLM("selectNewTarget", [_world]);
-						if(IS_NULL_OBJECT(_newTgtGarr)) then {
-							// TODO: Now what?
-							// We just cancel the action for now. Maybe another action will pick up this garrison?
-							T_SETV("noTarget", true);
+					// Are we there yet?
+					private _done = CALLM(_detachedGarr, "moveActualComplete", []);
+					if(_done) then {
+						private _detachedGarrPos = GETV(_detachedGarr, "pos");
+						if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
+							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							_arrived = true;
 						} else {
-							OOP_DEBUG_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world]+[_action]+[_tgtGarr]+[_newTgtGarr]);
+							// Move again cos we didn't get there yet!
+							OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
 							T_SETV("moving", false);
-							private _newTgtGarrId = GETV(_newTgtGarr, "id");
-							// Update the target Id in the action.
-							SETV(_action, "tgtGarrId", _newTgtGarrId);
-						};
-					} else {
-						// Are we there yet?
-						private _done = CALLM(_detachedGarr, "moveActualComplete", []);
-						if(_done) then {
-							private _detachedGarrPos = GETV(_detachedGarr, "pos");
-							if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
-								OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
-								_arrived = true;
-							} else {
-								// Move again cos we didn't get there yet!
-								OOP_DEBUG_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
-								T_SETV("moving", false);
-							};
 						};
 					};
 				};
@@ -208,10 +217,12 @@ CLASS("MergeGarrison", "ActionStateTransition")
 		T_PRVAR(action);
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-		ASSERT_OBJECT(_detachedGarr);
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_detachedGarr);
 		ASSERT_OBJECT(_tgtGarr);
+		ASSERT_MSG(!CALLM(_detachedGarr, "isDead", []), "Garrison to merge from is dead");
+		ASSERT_MSG(!CALLM(_tgtGarr, "isDead", []), "Garrison to merge to is dead");
 
 		// Merge can happen instantly so apply it to now and future sim worlds.
 		if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
