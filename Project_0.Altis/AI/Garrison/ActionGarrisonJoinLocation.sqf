@@ -33,25 +33,16 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 		CALLSM1("Location", "getNearestLocation", _locPos) params ["_loc", "_dist"];
 		
 		if (_dist < 0.5) then {
-			pr _locGars = CALLM1(_loc, "getGarrisons", T_GETV("side"));
-			pr _locGar = if (count _locGars == 0) then {""} else {_locGars select 0};
-			if (_locGar != "") then {
-				// There is a garrison here already, check side
-				pr _locGarSide = CALLM0(_locGar, "getSide");
-				pr _side = CALLM0(_gar, "getSide");
-				if (_side == _locGarSide) then {
-					// All's good, need to merge two garrisons now
-					pr _args = [_gar, true]; // true will delete this garrison
-					CALLM2(_locGar, "postMethodAsync", "addGarrison", _args); // The other garrison can be on another computer
-				} else {
-					OOP_ERROR_2("Garrison sides don't match: this side: %1, location side: %2", _side, _locGarSide);
-					ACTION_STATE_FAILED
-				};
+			pr _side = CALLM0(_gar, "getSide");
+			pr _locGars = CALLM(_loc, "getGarrisons", [_side]);
+			if (count _locGars > 0) then {
+				// All's good, need to merge two garrisons now
+				pr _args = [_gar, true]; // true will delete this garrison
+				CALLM2(_locGars select 0, "postMethodAsync", "addGarrison", _args); // The other garrison can be on another computer
 			} else {
-				// There is no garrison here, just attach here then
+				// There is no friendly garrison here, just attach here then
 				CALLM1(_gar, "setLocation", _loc);
 			};
-						
 			ACTION_STATE_COMPLETED
 		} else {
 			OOP_ERROR_1("There is no location at %1!", _locPos);

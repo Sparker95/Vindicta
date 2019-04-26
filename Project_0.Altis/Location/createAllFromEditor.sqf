@@ -15,13 +15,14 @@ private _radius = 0;
 private _loc = objNull;
 private _locations = entities "Project_0_LocationSector";
 
-gSetupMode = "bill"; // "default";
+gSetupMode = "random"; //"random"; "default"; "sparker"; "bill"; 
 
-//#define ADD_TRUCKS
+#define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
 //#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
 //#define ADD_APCS_IFVS
+#define ADD_STATICS
 
 {
 	private _locSector = _x;
@@ -72,8 +73,6 @@ gSetupMode = "bill"; // "default";
 	// Building sentry capacity
 	private _cBuildingSentry = 0;
 
-	// private _args = [T_INF, [GROUP_TYPE_IDLE]];
-
 	switch(gSetupMode) do {
 		case "bill": { 
 			_cInf = if(_locName == "Altis Airfield") then {60} else {2};
@@ -83,13 +82,19 @@ gSetupMode = "bill"; // "default";
 			_cInf = 12;
 			_cVehGround = 4;
 		};
+		case "random": {
+			if(random 5 <= 1) then {
+				_cInf = 60;
+				_cVehGround = 20;
+			} else {
+				_cInf = 10;
+				_cVehGround = 2;
+			}
+		};
 		default {
 			_cInf = CALL_METHOD(_loc, "getUnitCapacity", [T_INF]+[[GROUP_TYPE_IDLE]]);
-			//private _args = [T_PL_tracked_wheeled, GROUP_TYPE_ALL];
 			_cVehGround = CALL_METHOD(_loc, "getUnitCapacity", [T_PL_tracked_wheeled]+[GROUP_TYPE_ALL]);
-			//private _args = [T_PL_HMG_GMG_high, GROUP_TYPE_ALL];
 			_cHMGGMG = CALL_METHOD(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high]+[GROUP_TYPE_ALL]);
-			//private _args = [T_INF, [GROUP_TYPE_BUILDING_SENTRY]];
 			_cBuildingSentry = CALL_METHOD(_loc, "getUnitCapacity", [T_INF]+[[GROUP_TYPE_BUILDING_SENTRY]]);
 		};
 	};
@@ -139,7 +144,9 @@ gSetupMode = "bill"; // "default";
 
 	// Add default infantry groups
 	private _i = 0;
-	while {_cInf > 0 && _i < 666} do {
+	
+	//while {_cInf > 0 && _i < 1} do {
+	while {_cInf > 0} do {
 		_cInf = [_template, _garMilMain, T_GROUP_inf_rifle_squad, _cInf, GROUP_TYPE_IDLE] call _addInfGroup;
 		_i = _i + 1;
 	};

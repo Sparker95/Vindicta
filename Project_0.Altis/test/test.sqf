@@ -1,1 +1,7 @@
-private somegarbage = sdqsd dsqdsq dsqds;
+
+[] spawn { try {
+throw "whatevs";
+}catch{
+diag_log _exception;
+};
+};

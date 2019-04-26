@@ -94,7 +94,6 @@ CLASS("WorldModel", "")
 		// };
 
 		T_PRVAR(threatGrid);
-		T_PRVAR(clusters);
 
 		// Clear grid
 		CALLM(_threatGrid, "setValueAll", [0]);
@@ -104,7 +103,7 @@ CLASS("WorldModel", "")
 			private _size = GETV(_x, "size") apply { _x + 2000 };
 			private _strength = EFF_SUM(GETV(_x, "efficiency"));
 			CALLM(_threatGrid, "maxRect", [_pos]+[_size]+[_strength])
-		} forEach _clusters;
+		} forEach T_CALLM("getAliveClusters", []);
 
 #ifdef DEBUG_CMDRAI
 		CALLM(_threatGrid, "unplot", []);
@@ -139,7 +138,9 @@ CLASS("WorldModel", "")
 		//#ifdef OOP_ASSERT
 		//private _existingId = GETV(_garrison, "id");
 		//#endif
-		OOP_DEBUG_MSG("Adding GarrisonModel %1 to WorldModel", [_garrison]);
+
+		//OOP_DEBUG_MSG("Adding GarrisonModel %1 to WorldModel", [_garrison]);
+
 		REF(_garrison);
 		private _idx = _garrisons pushBack _garrison;
 		SETV(_garrison, "id", _idx);
@@ -225,7 +226,7 @@ CLASS("WorldModel", "")
 			private _garrison = _x;
 			private _pos = GETV(_garrison, "pos");
 			private _dist = _pos distance _center;
-			if(_dist <= _maxDist) then {
+			if(_maxDist == 0 or _dist <= _maxDist) then {
 				_nearestGarrisons pushBack [_dist, _garrison];
 			};
 		} forEach T_CALLM("getAliveGarrisons", []);
@@ -642,7 +643,7 @@ ENDCLASS;
 	private _garrison2 = NEW("GarrisonModel", [_world]);
 	SETV(_garrison2, "pos", [1000, 0, 0]);
 	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[0]) == 0] call test_Assert;
+	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;
 	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 2] call test_Assert;
 	CALLM(_garrison2, "killed", []);

@@ -39,6 +39,11 @@ CLASS("GarrisonModel", "ModelBase")
 		CALLM(_world, "addGarrison", [_thisObject]);
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_CALLM("killed", []);
+	} ENDMETHOD;
+
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
@@ -76,7 +81,7 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("pos", +_actualPos);
 			T_SETV("side", GETV(_actual, "side"));
 
-			OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
 			private _locationActual = CALLM(_actual, "getLocation", []);
 			if(!IS_NULL_OBJECT(_locationActual)) then {
 				T_PRVAR(world);
@@ -299,8 +304,7 @@ CLASS("GarrisonModel", "ModelBase")
 		_effAllocated = +T_EFF_null;
 		
 		// Allocate units per each efficiency category
-		private _j = 0;
-		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
+		for "_i" from T_EFF_SOFT to T_EFF_ANTI_AIR do {
 			// Exit now if we have allocated enough units
 			if(EFF_GTE(_effAllocated, _splitEff)) exitWith {};
 
@@ -314,9 +318,8 @@ CLASS("GarrisonModel", "ModelBase")
 			_units sort DESCENDING;
 			
 			// Add units until there are enough of them
-			private _splitEffCat = _splitEff#_j; // Required efficiency in this category
 			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _splitEffCat) && (_pickUnitID < count _units)} do {
+			while {(_effAllocated#_i < _splitEff#_i) && (_pickUnitID < count _units)} do {
 				private _unit = _units#_pickUnitID#2;
 				private _group = CALLM0(_unit, "getGroup");
 				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
@@ -352,13 +355,11 @@ CLASS("GarrisonModel", "ModelBase")
 				};
 				_pickUnitID = _pickUnitID + 1;
 			};
-			
-			_j = _j + 1;
 		};
 		
 		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
 
-		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
+		if(!EFF_GTE(_effAllocated, _splitEff) && (FAIL_UNDER_EFF in _flags)) exitWith {
 			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
 			NULL_OBJECT
 		};
@@ -467,7 +468,7 @@ CLASS("GarrisonModel", "ModelBase")
 		}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
 		
 		// We couldn't complete allocation so return a failure
-		if(!_allocated and FAIL_WITHOUT_FULL_TRANSPORT in _flags) exitWith { NULL_OBJECT };
+		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
 		private _side = GETV(_actual, "side");
@@ -532,8 +533,16 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
 		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
-		private _args = ["GoalGarrisonMove", 0, _parameters, _thisObject];
-		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
+		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[["GoalGarrisonMove"]+[0]+[_parameters]+[_thisObject]]);
+	} ENDMETHOD;
+
+	METHOD("cancelMoveActual") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		private _AI = CALLM(_actual, "getAI", []);
+		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal"]+[["GoalGarrisonMove"]+[_thisObject]]);
 	} ENDMETHOD;
 
 	METHOD("moveActualComplete") {
@@ -567,7 +576,10 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		private _otherActual = GETV(_otherGarr, "actual");
-		CALLM(_otherActual, "addGarrison", [_actual]+[true]);
+		private _args = [_actual, true];
+		CALLM2(_otherActual, "postMethodAsync", "addGarrison", _args);
+		
+		//CALLM(_otherActual, "addGarrison", [_actual]+[true]);
 	} ENDMETHOD;
 
 	// JOIN LOCATION

@@ -34,10 +34,10 @@
 #define EFF_SIMULATE_ATTACK(attacker, defender) 	([attacker, defender] call fn_eff_simulate_attack)
 
 #define EFF_EQUAL(a, b)								(a isEqualTo b)
-#define EFF_GT(a, b)							([a, b] call fn_eff_gt)
-#define EFF_GTE(a, b)							([a, b] call fn_eff_gte)
-#define EFF_LT(a, b)							([a, b] call fn_eff_lt)
-#define EFF_LTE(a, b)							([a, b] call fn_eff_lte)
+#define EFF_GT(a, b)								([a, b] call fn_eff_gt)
+#define EFF_GTE(a, b)								([a, b] call fn_eff_gte)
+#define EFF_LT(a, b)								([a, b] call fn_eff_lt)
+#define EFF_LTE(a, b)								([a, b] call fn_eff_lte)
 
 
 #define EFF_DEF_SUB(e) 								(e call fn_eff_def_sub)

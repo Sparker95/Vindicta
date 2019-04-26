@@ -47,17 +47,12 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
-		
+
 		// Get position of the target cluster
 		pr _cluster = _tc select TARGET_CLUSTER_ID_CLUSTER;
 		pr _center = _cluster call cluster_fnc_getCenter;
 		_center append [0]; // Originally center is 2D vector, now we make it 3D to be safe
 		T_SETV("clusterGoalPos", +_center);
-		
-		// Make a new garrison
-		pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
-		// Register it at the commander
-		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
 		
 		// Allocate units and split garrison in a loop, until there is a successfull allocation
 		pr _success = false;
@@ -82,14 +77,19 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			
 			OOP_INFO_2("RESPOND TO TARGET: Successfully allocated units! Units: %1, Groups and units: %2", _units, _groupsAndUnits);
 			
+			// Make a new garrison
+			pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
+			// Register it at the commander
+			CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
+
 			if (_locationSrc != "") then {
-				CALLM1(_newGar, "setLocation", _locationSrc); // This garrison will spawn here if needed
+				CALLM2(_newGar, "postMethodAsync", "setLocation", [_locationSrc]); // This garrison will spawn here if needed
 			};
 
 			// Set position of the new garrison and call its process method again to set it to spawned state if needed
 			pr _newPos = CALLM0(_garrisonSrc, "getPos");
-			CALLM1(_newGar, "setPos", _newPos);
-			CALLM0(_newGar, "process");
+			CALLM2(_newGar, "postMethodAsync", "setPos", [_newPos]);
+			CALLM2(_newGar, "postMethodAsync", "process", []);
 			//CALLM0(_newGar, "spawn");
 			
 			// Try to move the units

@@ -107,7 +107,13 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 		
-		_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+		private _oldState = CMDR_ACTION_STATE_NONE;
+		// Apply states until we are blocked.
+		while {_state != _oldState} do 
+		{
+			_oldState = _state;
+			_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_oldState]+[_transitions]);
+		};
 		T_SETV("state", _state);
 		
 		#ifdef DEBUG_CMDRAI

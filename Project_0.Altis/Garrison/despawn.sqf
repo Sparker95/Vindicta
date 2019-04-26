@@ -1,6 +1,4 @@
 #include "common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
 
 // Class: Garrison
 /*
@@ -19,6 +17,8 @@ params [["_thisObject", "", [""]]];
 private _spawned = GET_VAR(_thisObject, "spawned");
 
 OOP_INFO_0("DESPAWN");
+
+ASSERT_THREAD(_thisObject);
 
 if (!_spawned) exitWith {
 	OOP_WARNING_0("Already despawned");
@@ -58,7 +58,8 @@ while {_i < count _groups} do
 } forEach _units;
 
 // Call onGarrisonDespawned
-pr _action = CALLM0(T_GETV("AI"), "getCurrentAction");
+pr _AI = T_GETV("AI");
+pr _action = CALLM0(_AI, "getCurrentAction");
 if (_action != "") then {
 	_action = CALLM0(_action, "getFrontSubaction");
 	if (_action != "") then {
@@ -68,3 +69,6 @@ if (_action != "") then {
 		OOP_INFO_0("DESPAWN: no current action");
 	};
 };
+
+// Update process interval of AI
+CALLM1(_AI, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);

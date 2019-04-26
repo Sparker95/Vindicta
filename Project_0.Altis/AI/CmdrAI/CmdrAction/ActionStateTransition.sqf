@@ -40,7 +40,7 @@ CLASS("ActionStateTransition", "")
 			apply { [GETV(_x, "priority"), _x] };
 
 		// Lower value is higher priority (0 is top most priority)
-		_matchingTransitions sort true;
+		_matchingTransitions sort ASCENDING;
 
 		private _foundIdx = _matchingTransitions findIf { CALLM(_x select 1, "isAvailable", [_world]) };
 		if(_foundIdx != -1) then {
@@ -50,6 +50,10 @@ CLASS("ActionStateTransition", "")
 				private _newState = GETV(_selectedTransition, "toState");
 				_state = _newState
 			};
+		} else {
+			// If we can't apply any transitions then go directly to END
+			// TODO: can we do something better than terminate?
+			_state = CMDR_ACTION_STATE_END;
 		};
 		_state
 	} ENDMETHOD;

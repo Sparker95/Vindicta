@@ -22,3 +22,4 @@
 #include "..\Group\groupWorldStateProperties.hpp"
 #include "LocationData.hpp"
 #include "AICommander.hpp"
+#include "..\..\MessageReceiver\MessageReceiver.hpp"

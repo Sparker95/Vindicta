@@ -176,15 +176,13 @@ CLASS("AICommander", "AI")
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		switch (_side) do {
 			case WEST: {
-				gAICommanderWest
+				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
 			};
-			
 			case EAST: {
-				gAICommanderEast
+				if(isNil "gAICommanderEast") then { NULL_OBJECT } else { gAICommanderEast }
 			};
-			
 			case INDEPENDENT: {
-				gAICommanderInd
+				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
 			};
 		};
 	} ENDMETHOD;
@@ -911,6 +909,8 @@ CLASS("AICommander", "AI")
 
 		private _newModel = NULL_OBJECT;
 		if(!IS_NULL_OBJECT(_thisObject)) then {
+			ASSERT_THREAD(_thisObject);
+
 			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 			T_GETV("garrisons") pushBack _gar; // I need you for my army!
 			CALLM2(_gar, "postMethodAsync", "ref", []);
@@ -919,7 +919,7 @@ CLASS("AICommander", "AI")
 		};
 		_newModel
 	} ENDMETHOD;
-	
+
 	/*
 	Method: unregisterGarrison
 	Unregisters a garrison from this AICommander
@@ -935,20 +935,28 @@ CLASS("AICommander", "AI")
 		private _side = GETV(_gar, "side");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			T_PRVAR(garrisons);
-			// Check the garrison is registered
-			private _idx = _garrisons find _gar;
-			if(_idx != NOT_FOUND) then {
-				OOP_DEBUG_MSG("Unregistering garrison %1", [_gar]);
-				// Remove from model first
-				T_PRVAR(worldModel);
-				private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
-				CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
-				_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
-				CALLM2(_gar, "postMethodAsync", "unref", []);
-			};
+			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
+		} else {
+			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar]+[_side]);
 		};
-		nil
+	} ENDMETHOD;
+
+	METHOD("_unregisterGarrison") {
+		params [P_THISOBJECT, P_STRING("_gar")];
+		ASSERT_THREAD(_thisObject);
+
+		T_PRVAR(garrisons);
+		// Check the garrison is registered
+		private _idx = _garrisons find _gar;
+		if(_idx != NOT_FOUND) then {
+			OOP_DEBUG_MSG("Unregistering garrison %1", [_gar]);
+			// Remove from model first
+			T_PRVAR(worldModel);
+			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
+			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
+			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
+			CALLM2(_gar, "postMethodAsync", "unref", []);
+		};
 	} ENDMETHOD;
 		
 ENDCLASS;
