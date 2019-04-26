@@ -20,3 +20,7 @@ try { \
 #else
 #define ASSERT_THREAD(objNameStr)
 #endif
+
+#ifdef _SQF_VM 
+#define ASSERT_THREAD(objNameStr)
+#endif

@@ -201,6 +201,7 @@ CLASS("GarrisonModel", "ModelBase")
 		_detachment
 	} ENDMETHOD;
 
+	// ****** W I P - don't use it
 	// Split garrison.
 	// Flags defined in CmdrAI/common.hpp
 	// TODO: cleanup the logging
@@ -220,34 +221,30 @@ CLASS("GarrisonModel", "ModelBase")
 		_allocatedGroupsAndUnits = [];
 		_allocatedCrew = [];
 		_allocatedVehicles = [];
-		_effAllocated = +T_EFF_null;
+		_allocatedEff = +T_EFF_null;
 
 		// Allocate units per each efficiency category
 		private _j = 0;
 		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
 			// Exit now if we have allocated enough units
-			if(EFF_GTE(_effAllocated, _splitEff)) exitWith {};
+			if(EFF_GTE(_allocatedEff, _splitEff)) exitWith {};
 
-			// if (([_effAllocated, _splitEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) exitWith {
-
-			// };
-			
 			// For every unit, set element 0 to efficiency value with index _i
 			{_x set [0, _x#1#_i];} forEach _units;
+
 			// Sort units in this efficiency category
 			_units sort DESCENDING;
-			
+
 			// Add units until there are enough of them
-			private _splitEffCat = _splitEff#_j; // Required efficiency in this category
 			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _splitEffCat) && (_pickUnitID < count _units)} do {
+			while {(_allocatedEff#_i < _splitEff#_i) && (_pickUnitID < count _units)} do {
 				private _unit = _units#_pickUnitID#2;
 				private _group = CALLM0(_unit, "getGroup");
 				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
 				// Try not to take troops from vehicle groups
 				private _ignore = (CALLM0(_unit, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC]);
 				
-				if (!_ignore) then {
+				if (!_ignore) then {							
 					// If it was a vehicle, and it had crew in its group, add the crew as well
 					if (CALLM0(_unit, "isVehicle")) then {
 						private _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
@@ -271,20 +268,52 @@ CLASS("GarrisonModel", "ModelBase")
 					};
 					private _unitEff = _units#_pickUnitID#1;
 					// Add to the allocated efficiency vector
-					_effAllocated = EFF_ADD(_effAllocated, _unitEff);
-					//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
+					_allocatedEff = EFF_ADD(_allocatedEff, _unitEff);
+					//OOP_INFO_1("     New efficiency value: %1", _allocatedEff);
 				};
 				_pickUnitID = _pickUnitID + 1;
 			};
-			
-			_j = _j + 1;
 		};
 		
-		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
+		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _allocatedEff);
 
-		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
-			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_effAllocated]);
-			NULL_OBJECT
+		if(!EFF_GTE(_allocatedEff, _splitEff) && (FAIL_UNDER_EFF in _flags)) exitWith {
+			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff]+[_allocatedEff]);
+			[]
+		};
+
+		private _nCrewRequired = CALLSM1("Unit", "getRequiredCrew", _allocatedVehicles);
+		_nCrewRequired params ["_nDrivers", "_nTurrets"];
+		private _nInfAllocated = { CALLM0(_x, "isInfantry") } count _allocatedUnits;
+
+		// Do we need to find crew for vehicles?
+		if ((_nDrivers + _nTurrets) > (_nInfAllocated + count _allocatedCrew)) then {
+			private _nMoreCrewRequired = _nDrivers + _nTurrets - _nInfAllocated - (count _allocatedCrew);
+			OOP_INFO_1("Allocating additional crew: %1 units", _nMoreCrewRequired);
+			private _freeInfUnits = CALLM0(_actual, "getInfantryUnits") select {
+				if (_x in _allocatedUnits) then { false } else {
+					private _group = CALLM0(_x, "getGroup");
+					if (_group == "") then { false } else {
+						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL, GROUP_TYPE_BUILDING_SENTRY]) then {
+							true
+						} else {false};
+					};
+				};
+			};
+			
+			// Are there enough units left?
+			if (count _freeInfUnits < _nMoreCrewRequired) then {
+				// Not enough infantry here to equip all the vehicles we have allocated
+				// Go check other locations
+				OOP_INFO_0("   Failed to allocate additional crew");
+				breakTo "scopeLocLoop";
+			} else {
+				private _crewToAdd = _freeInfUnits select [0, _nMoreCrewRequired];
+				
+				OOP_INFO_1("   Successfully allocated additional crew: %1", _crewToAdd);
+				// Add the allocated units to the array
+				_allocatedUnits append _crewToAdd;
+			};
 		};
 	} ENDMETHOD;
 
@@ -308,12 +337,9 @@ CLASS("GarrisonModel", "ModelBase")
 			// Exit now if we have allocated enough units
 			if(EFF_GTE(_effAllocated, _splitEff)) exitWith {};
 
-			// if (([_effAllocated, _splitEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) exitWith {
-
-			// };
-			
 			// For every unit, set element 0 to efficiency value with index _i
 			{_x set [0, _x#1#_i];} forEach _units;
+
 			// Sort units in this efficiency category
 			_units sort DESCENDING;
 			

@@ -162,7 +162,6 @@ CLASS("AST_KillGarrison", "ActionStateTransition")
 		params [P_THISOBJECT, P_NUMBER("_garrisonId")];
 		T_SETV("garrisonId", _garrisonId);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-		T_SETV("toState", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("isAvailable") { 
@@ -177,7 +176,7 @@ CLASS("AST_KillGarrison", "ActionStateTransition")
 		T_PRVAR(garrisonId);
 		private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
 		CALLM(_garrison, "killed", []);
-		true
+		CMDR_ACTION_STATE_END
 	} ENDMETHOD;
 ENDCLASS;
 

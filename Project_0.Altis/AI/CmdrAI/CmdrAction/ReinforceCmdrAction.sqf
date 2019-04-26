@@ -4,12 +4,31 @@
 
 CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 	VARIABLE("action");
+	VARIABLE("successState");
+	VARIABLE("failState");
+
+	// Inputs
+	VARIABLE("srcGarrId");
+	VARIABLE("detachmentEff");
+
+	// DOING: bindings for inputs and outputs, not straight up values. We need 
+	// later actions to be able to access these values.
+	// Options:
+	// 1- Store directly to action. If the variable doesn't exist then it won't work, and all the names have to match.
+	// 2- Value container. Simple, just make it an array and pass by ref!
+	// 3- Make them read/write functions instead of values, like std::bind kind of thing.
+	//
+	// 2 seems simplest. Wrap it into macros for GET+SET value?
+
+
+	// Outputs
+	VARIABLE("detachedGarrId");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_action")];
+		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_successState"), P_NUMBER("_failState")];
 		T_SETV("action", _action);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-		T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
+		// T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
