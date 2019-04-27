@@ -33,7 +33,8 @@
     [fn (_this select 0), fn (_this select 1), fn (_this select 2), fn (_this select 3)] \
 }
 
-#define _DEF_EFF_BOOL_OP_EFF_EFF(fn) { \
+#define _DEF_EFF_BOOL_OP_EFF_EFF(fn) 
+{ \
     params ['_a', '_b']; \
     private _res = true; \
     { \
