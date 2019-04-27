@@ -112,10 +112,10 @@ gSetupMode = "random"; //"random"; "default"; "sparker"; "bill";
 
 		// Create an empty group
 		private _side = CALL_METHOD(_gar, "getSide", []);
-		private _newGroup = NEW("Group", [_side]+[_type]);
+		private _newGroup = NEW("Group", [_side ARG _type]);
 
 		// Create units from template
-		private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template]+[_subcatID]);
+		private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template ARG _subcatID]);
 		CALL_METHOD(_gar, "addGroup", [_newGroup]);
 
 		// Return remaining capacity

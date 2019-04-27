@@ -33,13 +33,15 @@ CLASS("LocationModel", "ModelBase")
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
 		private _copy = NEW("LocationModel", [_targetWorldModel]);
+
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
 		#ifdef OOP_ASSERT
 		private _idsEqual = T_GETV("id") == GETV(_copy, "id");
 		private _msg = format ["%1 id (%2) out of sync with sim copy %3 id (%4)", _thisObject, T_GETV("id"), _copy, GETV(_copy, "id")];
 		ASSERT_MSG(_idsEqual, _msg);
 		#endif
-		SETV(_copy, "id", T_GETV("id"));
+		// SETV(_copy, "id", T_GETV("id"));
+		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "side", T_GETV("side"));
 		SETV(_copy, "garrisonIds", +T_GETV("garrisonIds"));

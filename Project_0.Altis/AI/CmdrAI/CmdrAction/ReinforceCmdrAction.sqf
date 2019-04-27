@@ -2,6 +2,8 @@
 
 #define CMDR_ACTION_STATE_SPLIT 	CMDR_ACTION_STATE_CUSTOM+1
 
+#define LABEL(model) GETV(model, "label")
+
 CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 	VARIABLE("action");
 
@@ -33,13 +35,13 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 
 		// Split can happen instantly so apply it to now and future sim worlds.
 		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
-									CALLM(_srcGarr, "splitSim", [_detachEff]+[[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]])
+									CALLM(_srcGarr, "splitSim", [_detachEff ARG [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]])
 								} else {
-									CALLM(_srcGarr, "splitActual", [_detachEff]+[[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]])
+									CALLM(_srcGarr, "splitActual", [_detachEff ARG [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]])
 								};
 
 		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
-			OOP_WARNING_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
+			OOP_WARNING_MSG("[w %1 a %2] Failed to detach from %3", [_world ARG _action ARG LABEL(_srcGarr)]);
 			false
 		};
 
@@ -50,11 +52,11 @@ CLASS("ReinforceSplitGarrison", "ActionStateTransition")
 
 		// This shouldn't be possible and if it does happen then we would need to do something with the resultant understaffed garrison.
 		// if(!EFF_GTE(_finalDetachEff, _detachEff)) exitWith {
-		// 	OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world]+[_action]+[_srcGarr]);
+		// 	OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world ARG _action ARG _srcGarr]);
 		// 	false
 		// };
 
-		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world]+[_action]+[_detachedGarr]+[_srcGarr]);
+		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_srcGarr)]);
 
 		// DOING: HOW TO FIX THIS? ASTS need to save state, sometimes they modify the Action. How to 
 		// apply them to simworlds in this case without breaking action state for real world?
@@ -106,7 +108,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 
 			private _pos = GETV(_detachedGarr, "pos");
 			// select the nearest friendly garrison
-			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]+[4000]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
+			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos ARG 4000]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
 			if(count _nearGarrs == 0) then {
 				_nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
 			};
@@ -132,6 +134,13 @@ CLASS("MoveGarrison", "ActionStateTransition")
 
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		// If the detachment died then we just finish the whole action immediately
+		if(CALLM(_detachedGarr, "isDead", [])) exitWith { 
+			OOP_WARNING_MSG("[w %1 a %2] Detached garrison %3 is dead so can't complete move to %4 (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
+			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
+			true
+		};
+
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_detachedGarr);
@@ -163,7 +172,7 @@ CLASS("MoveGarrison", "ActionStateTransition")
 						// We just cancel the action for now. Maybe another action will pick up this garrison?
 						T_SETV("noTarget", true);
 					} else {
-						OOP_INFO_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world]+[_action]+[_tgtGarr]+[_newTgtGarr]);
+						OOP_INFO_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world ARG _action ARG LABEL(_tgtGarr) ARG LABEL(_newTgtGarr)]);
 						T_SETV("moving", false);
 						private _newTgtGarrId = GETV(_newTgtGarr, "id");
 						// Update the target Id in the action.
@@ -175,8 +184,8 @@ CLASS("MoveGarrison", "ActionStateTransition")
 				private _tgtPos = GETV(_tgtGarr, "pos");
 				if(!_moving) then {
 					// Start moving
-					OOP_INFO_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]+[_tgtPos]);
-					CALLM(_detachedGarr, "moveActual", [_tgtPos]+[_radius]);
+					OOP_INFO_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world ARG _action ARG (_detachedGarr) ARG (_tgtGarr) ARG _tgtPos]);
+					CALLM(_detachedGarr, "moveActual", [_tgtPos ARG _radius]);
 					T_SETV("moving", true);
 				} else {
 					// Are we there yet?
@@ -184,11 +193,11 @@ CLASS("MoveGarrison", "ActionStateTransition")
 					if(_done) then {
 						private _detachedGarrPos = GETV(_detachedGarr, "pos");
 						if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
-							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world ARG _action ARG LABEL(_detachedGarr) ARG _detachedGarrPos ARG LABEL(_tgtGarr) ARG _tgtPos ARG _radius]);
 							_arrived = true;
 						} else {
 							// Move again cos we didn't get there yet!
-							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world]+[_action]+[_detachedGarr]+[_detachedGarrPos]+[_tgtGarr]+[_tgtPos]+[_radius]);
+							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world ARG _action ARG LABEL(_detachedGarr) ARG _detachedGarrPos ARG LABEL(_tgtGarr) ARG _tgtPos ARG _radius]);
 							T_SETV("moving", false);
 						};
 					};
@@ -217,23 +226,36 @@ CLASS("MergeGarrison", "ActionStateTransition")
 		T_PRVAR(action);
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		ASSERT_OBJECT(_detachedGarr);
+		// If the detachment or target died then we just finish the whole action immediately
+		if(CALLM(_detachedGarr, "isDead", [])) exitWith { 
+			OOP_WARNING_MSG("[w %1 a %2] Detached garrison %3 is dead so can't merge to %4 (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
+			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
+			true
+		};
+
 		private _tgtGarrId = GETV(_action, "tgtGarrId");
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_detachedGarr);
 		ASSERT_OBJECT(_tgtGarr);
-		ASSERT_MSG(!CALLM(_detachedGarr, "isDead", []), "Garrison to merge from is dead");
-		ASSERT_MSG(!CALLM(_tgtGarr, "isDead", []), "Garrison to merge to is dead");
+		// If the detachment or target died then we just finish the whole action immediately
+		if(CALLM(_tgtGarr, "isDead", [])) exitWith { 
+			OOP_WARNING_MSG("[w %1 a %2] Target garrison %4 is dead so can't merge %3 to it (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
+			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
+			true 
+		};
+
+		// ASSERT_MSG(!CALLM(_detachedGarr, "isDead", []), "Garrison to merge from is dead");
+		// ASSERT_MSG(!CALLM(_tgtGarr, "isDead", []), "Garrison to merge to is dead");
 
 		// Merge can happen instantly so apply it to now and future sim worlds.
 		if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
 		} else {
 			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
-			CALLM(_detachedGarr, "killed", []);
-			private _rc = GETV(_action, "refCount");
-			OOP_INFO_MSG("[w %1 a %2] After merged action has ref count %3", [_world]+[_action]+[_rc]);
+			//private _rc = GETV(_action, "refCount");
+			//OOP_INFO_MSG("[w %1 a %2] After merged action has ref count %3", [_world ARG _action ARG _rc]);
 		};
-		OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4", [_world]+[_action]+[_detachedGarr]+[_tgtGarr]);
+		OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
 		true
 	} ENDMETHOD;
 ENDCLASS;
@@ -255,7 +277,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 		private _transitions = [
 			NEW("ReinforceSplitGarrison", [_thisObject]),
-			NEW("MoveGarrison", [_thisObject]+[200]),
+			NEW("MoveGarrison", [_thisObject ARG 200]),
 			NEW("MergeGarrison", [_thisObject])
 		];
 		T_SETV("transitions", _transitions);
@@ -285,20 +307,20 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 		T_PRVAR(srcGarrId);
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		private _srcAc = GETV(_srcGarr, "actual");
+		//private _srcAc = GETV(_srcGarr, "actual");
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		T_PRVAR(tgtGarrId);
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		private _tgtAc = GETV(_tgtGarr, "actual");
+		//private (_tgtGarr) = GETV(_tgtGarr, "actual");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 		T_PRVAR(detachedGarrId);
 		if(_detachedGarrId == -1) then {
-			format ["reinf %1%2 -> %3%4", _srcAc, _srcEff, _tgtAc, _tgtEff]
+			format ["reinf %1%2 -> %3%4", LABEL(_srcGarr), _srcEff, LABEL(_tgtGarr), _tgtEff]
 		} else {
 			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-			private _detachedAc = GETV(_detachedGarr, "actual");
+			//private _detachedAc = GETV(_detachedGarr, "actual");
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
-			format ["reinf %1%2 -> %3%4 -> %5%6", _srcAc, _srcEff, _detachedAc, _detachedEff, _tgtAc, _tgtEff]
+			format ["reinf %1%2 -> %3%4 -> %5%6", LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, LABEL(_tgtGarr), _tgtEff]
 		};
 	} ENDMETHOD;
 
@@ -318,7 +340,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
-		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow]+[_worldFuture]);
+		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
 		// Save the calculation for use if we decide to perform the action 
 		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
 		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
@@ -330,7 +352,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos]+[_tgtGarrPos]);
+		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
 
 		private _scoreResource = _detachEffStrength * _distCoeff;
 
@@ -343,7 +365,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 
-		//OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_scorePriority]+[_scoreResource]+[_detachEff]+[_detachEffStrength]+[_distCoeff]+[_srcEff]+[_tgtEff]);
+		//OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _scorePriority ARG _scoreResource ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _srcEff ARG _tgtEff]);
 
 		// };
 		T_SETV("scorePriority", _scorePriority);
@@ -375,7 +397,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
 
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow]+[_thisObject]+[_srcGarr]+[_tgtGarr]+[_tgtUnderEff]+[_srcOverEff]+[_effAvailable]);
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _tgtUnderEff ARG _srcOverEff ARG _effAvailable]);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.

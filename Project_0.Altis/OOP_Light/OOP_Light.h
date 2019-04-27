@@ -781,6 +781,8 @@ objNameStr \
 // ----------------------------------------------------------------------
 // |                               M I S C                              |
 // ----------------------------------------------------------------------
+#define ARG ,
+
 // Index find and findIf return when they don't find anything
 #define NOT_FOUND -1
 // For use with sort

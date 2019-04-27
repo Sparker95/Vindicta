@@ -137,11 +137,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _all = GETSV("Garrison", "all");
 		_all deleteAt (_all find _thisObject);
-
-		// Finally unregister from the AICommander if registered. We DON'T register in constructor
-		// because some garrisons don't want to be registered. However unregistering will just
-		// do nothing for garrisons that were never registered.
-		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		
 		// Delete the AI object
 		// We delete it instantly because Garrison AI is in the same thread
@@ -153,6 +148,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		DELETE(T_GETV("timer"));
 	} ENDMETHOD;
 
+	// METHOD("kill") {
+	// 	params [P_THISOBJECT];
+		
+	// } ENDMETHOD;
+	
 	/*
 	Method: (static)getAll
 	Returns all garrisons

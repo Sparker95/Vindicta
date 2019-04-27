@@ -13,6 +13,8 @@ CLASS("ModelBase", "RefCounted")
 	// World Model that owns this Object Model
 	VARIABLE("world");
 
+	VARIABLE("label");
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_DYNAMIC("_actual")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
@@ -21,11 +23,13 @@ CLASS("ModelBase", "RefCounted")
 		T_SETV("world", _world);
 
 		if (isNil "_actual") then { //  or {IS_NULL_OBJECT(_actual)}
-			T_SETV("actual", NULL_OBJECT);
 			ASSERT_MSG(GETV(_world, "type") != WORLD_TYPE_REAL, "State must be sim if you aren't setting actual");
+			T_SETV("actual", NULL_OBJECT);
+			T_SETV("label", "(model)" + str _thisObject);
 		} else {
-			T_SETV("actual", _actual);
 			ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "State must NOT be sim if you are setting actual");
+			T_SETV("actual", _actual);
+			T_SETV("label", str _actual);
 		};
 	} ENDMETHOD;
 

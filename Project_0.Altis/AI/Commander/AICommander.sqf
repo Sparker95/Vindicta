@@ -140,11 +140,12 @@ CLASS("AICommander", "AI")
 		// Sync before update
 		CALLM(_worldModel, "sync", []);
 		CALLM(_cmdrAI, "update", [_worldModel]);
-		// Sync after update
-		CALLM(_worldModel, "sync", []);
 		
 		T_PRVAR(lastPlanningTime);
 		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+			// Sync after update
+			CALLM(_worldModel, "sync", []);
+
 			CALLM(_worldModel, "updateThreatMaps", []);
 			T_SETV("lastPlanningTime", TIME_NOW);
 			CALLM(_cmdrAI, "plan", [_worldModel]);
