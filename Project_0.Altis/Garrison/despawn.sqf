@@ -1,6 +1,4 @@
 #include "common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
 
 // Class: Garrison
 /*
@@ -20,8 +18,10 @@ private _spawned = GET_VAR(_thisObject, "spawned");
 
 OOP_INFO_0("DESPAWN");
 
+ASSERT_THREAD(_thisObject);
+
 if (!_spawned) exitWith {
-	OOP_ERROR_0("Already despawned");
+	OOP_WARNING_0("Already despawned");
 };
 
 // Reset spawned flag

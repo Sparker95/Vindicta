@@ -96,6 +96,8 @@ CLASS("VirtualRoute", "")
 
 		T_SETV("complete", false);
 
+		T_SETV("currSpeed_ms", 0);
+
 		// Function that calculates the route
 		pr _calcRoute = {
 			params ["_thisObject"];
@@ -108,7 +110,7 @@ CLASS("VirtualRoute", "")
 			private _endRoute = [_destination, 1000, gps_blacklistRoads] call bis_fnc_nearestRoad;
 
 			if (isNull _endRoute or isNull _startRoute) exitWith {
-				T_SETV("failed", false);
+				T_SETV("failed", true);
 			};
 
 			// TODO: either add a way to remove fake nodes again OR just use the nearest node instead of adding fake ones
@@ -118,6 +120,10 @@ CLASS("VirtualRoute", "")
 			try {
 				// This gets the node to node path.
 				private _path = [_startRoute,_endRoute,_costFn] call gps_core_fnc_generateNodePath;
+				if(count _path <= 1) then {
+					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
+					throw "failed";
+				};
 				// This fills in all the actual roads between the nodes.
 				private _fullPath = [_path] call gps_core_fnc_generatePathHelpers;
 
@@ -191,8 +197,11 @@ CLASS("VirtualRoute", "")
 	METHOD("process") {
 		params ["_thisObject"];
 		
+		T_PRVAR(failed);
 		T_PRVAR(stopped);
-		if( _stopped ) exitWith {};
+		T_PRVAR(complete);
+		T_PRVAR(calculated);
+		if(_failed or _stopped or _complete or !_calculated) exitWith {};
 
 		T_PRVAR(last_t);
 		// Time since last update
@@ -267,6 +276,10 @@ CLASS("VirtualRoute", "")
 		T_PRVAR(pos);
 		T_PRVAR(nextIdx);
 		T_PRVAR(route);
+
+		// TODO: we could return some useful defaults here instead?
+		ASSERT_MSG(!T_GETV("failed"), "Route calculation failed, cannot get convoy positions");
+		ASSERT_MSG(T_GETV("calculated"), "Can't call getConvoyPositions until route has finished calculating");
 		
 		pr _startPos = getPos (_route select 0);
 
@@ -331,6 +344,8 @@ CLASS("VirtualRoute", "")
 		];
 		
 		CALLM0(_thisObject, "clearDebugDraw");
+		
+		if(!T_GETV("calculated")) exitWith {};
 
 		T_PRVAR(route);
 

@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
 
 // Class: Garrison
 /*
@@ -17,6 +16,8 @@ Returns: nil
 params [["_thisObject", "", [""]]];
 
 OOP_INFO_0("SPAWN");
+
+ASSERT_THREAD(_thisObject);
 
 private _spawned = GET_VAR(_thisObject, "spawned");
 

@@ -436,7 +436,7 @@ CLASS("Snek", "")
 	METHOD("onTimer") {
 		params ["_thisObject"];
 		
-		OOP_INFO("ON TIMER");
+		OOP_INFO_0("ON TIMER");
 		
 		// Terminate the game if it was asked to be terminated
 		if (T_GETV("flagTerminate")) exitWith {

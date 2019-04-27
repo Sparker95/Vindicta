@@ -31,7 +31,7 @@
 // 	} ENDMETHOD;
 
 // 	METHOD("updateScore") {
-// 		params [P_THISOBJECT, P_STRING("_state")];
+// 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 // 		T_PRVAR(ourGarrId);
 // 		T_PRVAR(targetOutpostId);
 

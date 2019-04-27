@@ -1,9 +1,10 @@
 #include "common.hpp"
-#include "..\OOP_Light\OOP_Light.h"
 
 #define pr private
 
 params ["_thisObject"];
+
+ASSERT_THREAD(_thisObject);
 
 pr _side = T_GETV("side");
 //OOP_INFO_0("...2");

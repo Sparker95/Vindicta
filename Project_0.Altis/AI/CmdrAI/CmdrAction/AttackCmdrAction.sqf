@@ -26,7 +26,7 @@
 // 	} ENDMETHOD;
 
 // 	METHOD("updateScore") {
-// 		params [P_THISOBJECT, P_STRING("_state")];
+// 		params [P_THISOBJECT, P_STRING("_simWorld"), P_STRING("_realWorld")];
 // 		T_PRVAR(ourGarrId);
 // 		T_PRVAR(theirGarrId);
 

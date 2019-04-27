@@ -3,8 +3,6 @@
 Handle message incoming into a garrison object.
 */
 
-#include "..\OOP_Light\OOP_Light.h"
-#include "..\Message\Message.hpp"
 //#include "..\Garrison\Garrison.hpp"
 
 #define pr private

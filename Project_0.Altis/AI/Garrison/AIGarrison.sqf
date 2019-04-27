@@ -137,7 +137,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		if (_action != "") then {
 			_action = CALLM0(_action, "getFrontSubaction");
 		};
-		pr _text = format ["%1, %2, %3, %4", _gar, T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
+		pr _text = format ["%1 (%2), %3, %4, %5", _gar, CALLM(_gar, "getEfficiencyMobile", []), T_GETV("currentGoal"), T_GETV("currentGoalParameters"), _action];
 		_mrk setMarkerText _text;
 		
 		// Set pos
@@ -361,6 +361,12 @@ CLASS("AIGarrison", "AI_GOAP")
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 	} ENDMETHOD;
 
+	// Sets the position, because it is stored in the world state
+	METHOD("getPos") {
+		params ["_thisObject", "_pos"];
+		pr _ws = T_GETV("worldState");
+		[_ws, WSP_GAR_POSITION] call ws_getPropertyValue;
+	} ENDMETHOD;
 	// Gets called after the garrison is spawned
 	// Not used right now
 	/*

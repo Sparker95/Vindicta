@@ -103,11 +103,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		ACTION_STATE_ACTIVE
 		
 	} ENDMETHOD;
-	
+
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		
+
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) then {
 			pr _state = T_GETV("state");
@@ -127,13 +127,24 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			if (_state == ACTION_STATE_ACTIVE) then {
 				// Run process of the virtual route and update position of the garrison
 				CALLM0(_vr, "process");
-				pr _pos = CALLM0(_vr, "getPos");
-				pr _AI = T_GETV("AI");
-				CALLM1(_AI, "setPos", _pos);
+				if(GETV(_vr, "calculated")) then {
+					pr _pos = CALLM0(_vr, "getPos");
+					pr _AI = T_GETV("AI");
+					CALLM1(_AI, "setPos", _pos);
 
-				// Succede the action if the garrison is close enough to its destination
-				if (_pos distance T_GETV("pos") < T_GETV("radius")) then {
-					_state = ACTION_STATE_COMPLETED;
+					// Succede the action if the garrison is close enough to its destination
+					if (_pos distance T_GETV("pos") < T_GETV("radius")) then {
+						_state = ACTION_STATE_COMPLETED;
+					};
+				} else { 
+					if(GETV(_vr, "failed")) then {
+						T_PRVAR(gar);
+						pr _garPos = CALLM0(_gar, "getPos");
+						T_PRVAR(pos);
+						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos]+[_pos]+[_pos distance _garPos]);
+						// TODO: maybe we want to do something else here?
+						_state = ACTION_STATE_COMPLETED;
+					};
 				};
 			};
 
@@ -288,7 +299,16 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
-		pr _posAndDir = CALLM1(_vr, "getConvoyPositions", _nVeh);
+		pr _posAndDir = if(!GETV(_vr, "calculated") || GETV(_vr, "failed")) then {
+			pr _vals = [];
+			pr _garPos = CALLM0(_gar, "getPos");
+			for "_i" from 1 to _nVeh do {
+				_vals pushBack [_garPos, 0];
+			};
+			_vals
+		} else {
+			CALLM1(_vr, "getConvoyPositions", _nVeh)
+		};
 		//reverse _posAndDir;
 
 		// Iterate through all groups
