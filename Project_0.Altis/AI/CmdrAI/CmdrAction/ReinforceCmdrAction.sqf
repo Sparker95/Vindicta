@@ -134,17 +134,18 @@ CLASS("MoveGarrison", "ActionStateTransition")
 
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		ASSERT_OBJECT(_detachedGarr);
+
+		private _tgtGarrId = GETV(_action, "tgtGarrId");
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
+
 		// If the detachment died then we just finish the whole action immediately
 		if(CALLM(_detachedGarr, "isDead", [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Detached garrison %3 is dead so can't complete move to %4 (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
 			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
 			true
 		};
-
-		private _tgtGarrId = GETV(_action, "tgtGarrId");
-		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_detachedGarr);
-		ASSERT_OBJECT(_tgtGarr);
 
 		private _arrived = false;
 
@@ -227,6 +228,11 @@ CLASS("MergeGarrison", "ActionStateTransition")
 		private _detachedGarrId = GETV(_action, "detachedGarrId");
 		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
 		ASSERT_OBJECT(_detachedGarr);
+
+		private _tgtGarrId = GETV(_action, "tgtGarrId");
+		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+		ASSERT_OBJECT(_tgtGarr);
+
 		// If the detachment or target died then we just finish the whole action immediately
 		if(CALLM(_detachedGarr, "isDead", [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Detached garrison %3 is dead so can't merge to %4 (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
@@ -234,9 +240,6 @@ CLASS("MergeGarrison", "ActionStateTransition")
 			true
 		};
 
-		private _tgtGarrId = GETV(_action, "tgtGarrId");
-		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_tgtGarr);
 		// If the detachment or target died then we just finish the whole action immediately
 		if(CALLM(_tgtGarr, "isDead", [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Target garrison %4 is dead so can't merge %3 to it (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
@@ -289,7 +292,6 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_label");
 	} ENDMETHOD;
 
-	
 	/* virtual */ METHOD("pushState") {
 		params [P_THISOBJECT];
 		T_PRVAR(detachedGarrId);
@@ -422,7 +424,8 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 
 		[_srcGarrPos, _tgtGarrPos, "ColorBlack", 5, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
-		private _mrk = createmarker [_thisObject + "_label", _srcGarrPos];
+		private _centerPos = _srcGarrPos vectorAdd ((_tgtGarrPos vectorDiff _srcGarrPos) apply { _x * 0.5 });
+		private _mrk = createmarker [_thisObject + "_label", _centerPos];
 		_mrk setMarkerType "mil_objective";
 		_mrk setMarkerColor "ColorWhite";
 		_mrk setMarkerAlpha 1;

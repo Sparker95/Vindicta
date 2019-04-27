@@ -8,7 +8,7 @@ class EditorData
 	toggles=5;
 	class ItemIDProvider
 	{
-		nextID=727;
+		nextID=728;
 	};
 	class MarkerIDProvider
 	{
@@ -52,13 +52,14 @@ addons[]=
 	"A3_Ui_F",
 	"cba_modules",
 	"A3_Characters_F",
-	"A3_Characters_F_Tank"
+	"A3_Characters_F_Tank",
+	"A3_Modules_F_Curator_Curator"
 };
 class AddonsMetaData
 {
 	class List
 	{
-		items=19;
+		items=20;
 		class Item0
 		{
 			className="A3_Structures_F_Households";
@@ -192,6 +193,13 @@ class AddonsMetaData
 			author="Bohemia Interactive";
 			url="https://www.arma3.com";
 		};
+		class Item19
+		{
+			className="A3_Modules_F_Curator";
+			name="Arma 3 Zeus Update - Scripted Modules";
+			author="Bohemia Interactive";
+			url="https://www.arma3.com";
+		};
 	};
 };
 randomSeed=16658724;
@@ -203,6 +211,7 @@ class Mission
 {
 	class Intel
 	{
+		resistanceWest=0;
 		timeOfChanges=1800.0002;
 		startWeather=0.30000001;
 		startWind=0.1;
@@ -4690,7 +4699,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -4708,8 +4717,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -4721,7 +4730,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -4957,7 +4966,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -4975,8 +4984,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -4988,7 +4997,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5088,7 +5097,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5106,8 +5115,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -5119,7 +5128,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5220,7 +5229,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5238,8 +5247,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -5251,7 +5260,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5451,7 +5460,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5469,8 +5478,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -5482,7 +5491,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5583,7 +5592,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5601,8 +5610,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -5614,7 +5623,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5714,7 +5723,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5732,8 +5741,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -5745,7 +5754,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5846,7 +5855,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5864,8 +5873,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -5877,7 +5886,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -5978,7 +5987,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -5996,8 +6005,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6009,7 +6018,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6110,7 +6119,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6128,8 +6137,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6141,7 +6150,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6242,7 +6251,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6260,8 +6269,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6273,7 +6282,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6374,7 +6383,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6392,8 +6401,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6405,7 +6414,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6549,7 +6558,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6567,8 +6576,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6580,7 +6589,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6681,7 +6690,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6699,8 +6708,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6712,7 +6721,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6813,7 +6822,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6831,8 +6840,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6844,7 +6853,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -6945,7 +6954,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -6963,8 +6972,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -6976,7 +6985,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7077,7 +7086,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7095,8 +7104,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7108,7 +7117,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7210,7 +7219,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7228,8 +7237,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7241,7 +7250,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7342,7 +7351,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7360,8 +7369,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7373,7 +7382,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7474,7 +7483,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7492,8 +7501,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7505,7 +7514,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7605,7 +7614,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7623,8 +7632,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7636,7 +7645,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7736,7 +7745,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7754,8 +7763,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7767,7 +7776,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -7928,7 +7937,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -7946,8 +7955,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -7959,7 +7968,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -8059,7 +8068,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8077,8 +8086,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8090,7 +8099,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -8189,7 +8198,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8207,8 +8216,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8320,7 +8329,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8338,8 +8347,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8351,7 +8360,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -8451,7 +8460,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8469,8 +8478,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8482,7 +8491,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -8582,7 +8591,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8600,8 +8609,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8613,7 +8622,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -8713,7 +8722,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8731,8 +8740,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8744,7 +8753,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -8845,7 +8854,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -8863,8 +8872,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -8876,7 +8885,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -9020,7 +9029,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -9038,8 +9047,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -9051,7 +9060,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -9151,7 +9160,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -9169,8 +9178,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -9182,7 +9191,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -9283,7 +9292,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -9301,8 +9310,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -9314,7 +9323,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=0;
+							value=5;
 						};
 					};
 				};
@@ -9415,7 +9424,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -9433,8 +9442,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -9446,7 +9455,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=1;
+							value=5;
 						};
 					};
 				};
@@ -9974,7 +9983,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -9992,8 +10001,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -10170,7 +10179,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -10188,8 +10197,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -10257,7 +10266,7 @@ class Mission
 			colorName="ColorCIV";
 			a=15.103516;
 			b=5.8545322;
-			angle=290.18546;
+			angle=290.18539;
 			id=673;
 		};
 		class Item292
@@ -10366,7 +10375,7 @@ class Mission
 				class Attribute2
 				{
 					property="Project_0_LocationSector_CapacityInfantry";
-					expression="false";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
 					class Value
 					{
 						class data
@@ -10384,8 +10393,8 @@ class Mission
 				};
 				class Attribute3
 				{
-					property="Project_0_LocationSector_CivUnitCount";
-					expression="_this setVariable [""#unitCount"",_value]";
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
 					class Value
 					{
 						class data
@@ -10979,25 +10988,39 @@ class Mission
 		};
 		class Item329
 		{
+			dataType="Marker";
+			position[]={18778,13.243,18169};
+			name="respawn_west";
+			text="Default respawn";
+			type="respawn_unknown";
+			colorName="ColorWEST";
+			id=719;
+			atlOffset=0.00039482117;
+		};
+		class Item330
+		{
 			dataType="Group";
-			side="East";
+			side="West";
 			class Entities
 			{
-				items=1;
+				items=6;
 				class Item0
 				{
 					dataType="Object";
 					class PositionInfo
 					{
-						position[]={12485,74.382195,15172.05};
+						position[]={18782,15.986714,18139.051};
 					};
-					side="East";
+					side="West";
 					flags=7;
 					class Attributes
 					{
+						name="player1";
+						isPlayer=1;
+						isPlayable=1;
 					};
-					id=715;
-					type="O_support_AMG_F";
+					id=721;
+					type="B_G_Soldier_AR_F";
 					class CustomAttributes
 					{
 						class Attribute0
@@ -11015,7 +11038,7 @@ class Mission
 											"STRING"
 										};
 									};
-									value="Male02PER";
+									value="Male01GRE";
 								};
 							};
 						};
@@ -11034,54 +11057,12 @@ class Mission
 											"SCALAR"
 										};
 									};
-									value=1;
+									value=0.99000001;
 								};
 							};
 						};
 						nAttributes=2;
 					};
-				};
-			};
-			class Attributes
-			{
-			};
-			id=714;
-		};
-		class Item330
-		{
-			dataType="Marker";
-			position[]={18778,13.243,18169};
-			name="respawn_west";
-			text="Default respawn";
-			type="respawn_unknown";
-			colorName="ColorWEST";
-			id=719;
-			atlOffset=0.00039482117;
-		};
-		class Item331
-		{
-			dataType="Group";
-			side="West";
-			class Entities
-			{
-				items=6;
-				class Item0
-				{
-					dataType="Object";
-					class PositionInfo
-					{
-						position[]={18782,15.986713,18139.051};
-					};
-					side="West";
-					flags=7;
-					class Attributes
-					{
-						isPlayer=1;
-						isPlayable=1;
-					};
-					id=721;
-					type="B_G_Soldier_AR_F";
-					atlOffset=-9.5367432e-007;
 				};
 				class Item1
 				{
@@ -11173,7 +11154,99 @@ class Mission
 			{
 			};
 			id=720;
-			atlOffset=-9.5367432e-007;
+		};
+		class Item331
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={18694,15.358108,18105};
+				angles[]={6.2113094,0,6.2551923};
+			};
+			name="zeus";
+			init="call{if (isServer) then {  " \n "    [] spawn { " \n "        sleep 5;  " \n "        while {true} do {  " \n "            {  " \n "                _x addCuratorEditableObjects [allUnits, true];  " \n "                _x addCuratorEditableObjects [vehicles, true];  " \n "                sleep 10;  " \n "            } forEach allCurators;   " \n "        };  " \n "    };   " \n "};}";
+			id=727;
+			type="ModuleCurator_F";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="ModuleCurator_F_Owner";
+					expression="_this setVariable ['Owner',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="player1";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="ModuleCurator_F_Forced";
+					expression="_this setVariable ['Forced',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=0;
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="ModuleCurator_F_Name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="";
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="ModuleCurator_F_Addons";
+					expression="_this setVariable ['Addons',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=3;
+						};
+					};
+				};
+				nAttributes=4;
+			};
 		};
 	};
 	class Connections
