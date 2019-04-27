@@ -65,6 +65,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		
 		// Check if all vehicles have enough crew
 		pr _nDriversAll = 0; // Amount of all drivers required for this garrison
+		pr _nSeatsAll = 0; // Amount of all seats that all the vehicles can provide (driver seats, turrets, cargo seats)
 		pr _vehGroupsStatic = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 		pr _vehGroupsNonStatic = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
 		
@@ -74,8 +75,9 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _haveTurretsStatic = true;
 		
 		{
-			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
+			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets", "_nCargo"];
 			_nDriversAll = _nDriversAll + _nDrivers; // All 
+			_nSeatsAll = _nSeatsAll + _nDrivers + _nTurrets + _nCargo;
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
 			if (_nTurrets > _nInf) then { _haveTurretsStatic = false; };
 		} forEach _vehGroupsStatic;
@@ -86,9 +88,10 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _haveTurretsNonStatic = true;
 		pr _haveDriversNonStatic = true;
 		{
-			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
+			CALLM0(_x, "getRequiredCrew") params ["_nDrivers", "_nTurrets", "_nCargo"];
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
 			_nDriversAll = _nDriversAll + _nDrivers; // All 
+			_nSeatsAll = _nSeatsAll + _nDrivers + _nTurrets + _nCargo;
 			if (_nDrivers > _nInf) then {_haveDriversNonStatic = false;};
 			if (_nTurrets > (_nInf-_nDrivers)) then {_haveTurretsNonStatic = false;};
 			if (! _haveTurretsNonStatic && ! _haveDriversNonStatic) exitWith{}; // Terminate the loop if we already know that this group is unbalanced
@@ -103,9 +106,12 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _query = [[T_INF, -1]];
 		pr _nInfGarrison = CALLM1(_gar, "countUnits", _query);
 		pr _enoughHumansForAllVehicles = true;
-		if (_nInfGarrison < _nDriversAll) then { _enoughHumansForAllVehicles = false; };
-		
+		if (_nInfGarrison < _nDriversAll) then { _enoughHumansForAllVehicles = false; };		
 		[_worldState, WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES, _enoughHumansForAllVehicles] call ws_setPropertyValue;
+
+		// Check if there are anough seats for all humans
+		pr _enoughVehicles = _nInfGarrison <= _nSeatsAll;
+		[_worldState, WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, _enoughVehicles] call ws_setPropertyValue;
 		
 	} ENDMETHOD;
 	

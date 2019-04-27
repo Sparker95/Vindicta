@@ -219,6 +219,24 @@ OOP_assert_member_is_not_ref = {
 	true;
 };
 
+/*
+Asserts member attributes (private, etc) and prints an error if they are violated.
+Assumes that the member existance has been already asserted successfully.
+
+_extObject - the object that accesses the member of _objNameStr
+_extClass - the class that accesses this member
+*/
+OOP_assert_member_attributes = {
+	params ["_objNameStr", "_memNameStr", ["_extObject", ""], ["_extClass", ""], "_file", "_line"];
+
+	if ([_objNameStr, _memNameStr, ATTR_PRIVATE] call OOP_member_has_attr) then {
+		if (_extObject != _objNameStr) then {
+			private _errorText = format ["%1.%2 is unreachable (private)", _objNameStr, _memNameStr];
+			[_file, _line, _errorText] call OOP_error;
+		};
+	};
+};
+
 //Check method and print error if it's not found
 OOP_assert_method = {
 	params["_classNameStr", "_methodNameStr", "_file", "_line"];
