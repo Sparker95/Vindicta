@@ -224,10 +224,10 @@ nameStr profilerSetCounter _oop_cnt; };
 // -----------------------------------------------------
 
 #ifdef OOP_ASSERT
-	#define SET_MEM(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then {FORCE_SET_MEM(objNameStr, memNameStr, value)}
-	#define SET_MEM_REF(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then {FORCE_SET_MEM_REF(objNameStr, memNameStr, value)}
+	#define SET_MEM(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then { [objNameStr, memNameStr, _thisObject, __FILE__, __LINE__] call OOP_assert_member_attributes; FORCE_SET_MEM(objNameStr, memNameStr, value)}
+	#define SET_MEM_REF(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then { [objNameStr, memNameStr, _thisObject, __FILE__, __LINE__] call OOP_assert_member_attributes; FORCE_SET_MEM_REF(objNameStr, memNameStr, value)}
 	#define SET_STATIC_MEM(classNameStr, memNameStr, value) if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)}
-	#define GET_MEM(objNameStr, memNameStr) ( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_GET_MEM(objNameStr, memNameStr)}else{nil} )
+	#define GET_MEM(objNameStr, memNameStr) ( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { [objNameStr, memNameStr, _thisObject, __FILE__, __LINE__] call OOP_assert_member_attributes; FORCE_GET_MEM(objNameStr, memNameStr)}else{nil} )
 	#define GET_STATIC_MEM(classNameStr, memNameStr) ( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_GET_STATIC_MEM(classNameStr, memNameStr)}else{nil} )
 	#define GET_METHOD(classNameStr, methodNameStr) ( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then {FORCE_GET_METHOD(classNameStr, methodNameStr)}else{nil} )
 	#define PUBLIC_MEM(objNameStr, memNameStr) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_PUBLIC_MEM(objNameStr, memNameStr)}
@@ -349,6 +349,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 #define ATTR_REFCOUNTED 1
 #define ATTR_SERIALIZABLE 2
+#define ATTR_PRIVATE 3
 #define ATTR_USERBASE 1000
 
 
