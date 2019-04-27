@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("unr",["Function"],[["unregisterGarrison",,[["AI.AICommander",,,,0,"File:AI/Commander/AICommander.sqf:AI.AICommander.unregisterGarrison","SQFClass:AI.AICommander:unregisterGarrison"]]]]);

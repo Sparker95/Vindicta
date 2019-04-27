@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sid",["Class"],[["SideStat",,[[,,,,0,"File:SideStat/SideStat.sqf:SideStat","SQFClass:SideStat"]]]]);

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("dec",["Function"],[["decrementHumanResourcesBy",,[["SideStat",,,,0,"File:SideStat/SideStat.sqf:SideStat.decrementHumanResourcesBy","SQFClass:SideStat:decrementHumanResourcesBy"]]]]);

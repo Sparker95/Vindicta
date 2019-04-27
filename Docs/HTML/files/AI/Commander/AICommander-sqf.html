@@ -27,14 +27,9 @@
  <div class="CBody"><p>Gets called on creation of a totally new target cluster</p><p>Parameters: _tc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_tc</td><td class="CDLDefinition"><p>the new target cluster</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="AI.AICommander.onTargetClusterSplitted"></a><a name="Topic55"></a><div class="CTopic TFunction LSQF">
+<a name="AI.AICommander.onTargetClusterSplitted"></a><a name="Topic76"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">onTargetClusterSplitted</div>
- <div class="CBody"><p>Gets called when an already known cluster gets splitted into multiple new clusters.</p><p>Parameters: _tc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_tc</td><td class="CDLDefinition"><p>the new target cluster</p></td></tr></table><p>Returns: nil</p></div>
-</div>
-
-<a name="AI.AICommander.getTargetCluster"></a><a name="Topic56"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getTargetCluster</div>
- <div class="CBody"><p>Returns a target cluster with specified ID</p><p>Parameters: _ID</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ID</td><td class="CDLDefinition"><p>ID of the target cluster</p></td></tr></table><p>Returns: target cluster structure or [] if nothing was found</p></div>
+ <div class="CBody"><p>Gets called when an already known cluster gets splitted into multiple new clusters.</p><p>Parameters: _tcsNew</p><table class="CDefinitionList"><tr><td class="CDLEntry">_tcsNew</td><td class="CDLDefinition"><p>array of [_affinity, _newTargetCluster]</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 <a name="AI.AICommander.onTargetClusterMerged"></a><a name="Topic57"></a><div class="CTopic TFunction LSQF">
@@ -47,9 +42,24 @@
  <div class="CBody"><p>Gets called on deletion of a cluster because these enemies are not spotted any more</p><p>Parameters: _tc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_tc</td><td class="CDLDefinition"><p>the new target cluster</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="AI.AICommander.allocateUnitsGroundQRF"></a><a name="Topic59"></a><div class="CTopic TFunction LSQF last">
+<a name="AI.AICommander.getTargetCluster"></a><a name="Topic56"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getTargetCluster</div>
+ <div class="CBody"><p>Returns a target cluster with specified ID</p><p>Parameters: _ID</p><table class="CDefinitionList"><tr><td class="CDLEntry">_ID</td><td class="CDLDefinition"><p>ID of the target cluster</p></td></tr></table><p>Returns: target cluster structure or [] if nothing was found</p></div>
+</div>
+
+<a name="AI.AICommander.allocateUnitsGroundQRF"></a><a name="Topic59"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">allocateUnitsGroundQRF</div>
  <div class="CBody"><p>Tries to find a location to send units from</p><p>Parameters: _pos, _requiredEff</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position where to send QRF to</p></td></tr><tr><td class="CDLEntry">_requiredEff</td><td class="CDLDefinition"><p>efficiency vector</p></td></tr></table><p>Returns: [_location, _garrison, _units, _groupsAndGroups]</p></div>
+</div>
+
+<a name="AI.AICommander.registerGarrison"></a><a name="Topic77"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">registerGarrison</div>
+ <div class="CBody"><p>Registers a garrison to be processed by this AICommander</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">_gar</td><td class="CDLDefinition"><p><a href="../../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a></p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="AI.AICommander.unregisterGarrison"></a><a name="Topic537"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">unregisterGarrison</div>
+ <div class="CBody"><p>Unregisters a garrison from this AICommander</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">_gar</td><td class="CDLDefinition"><p><a href="../../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a></p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 </body></html>
