@@ -11,6 +11,7 @@ call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMergeVehicleGr
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrew.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountCrewInfantry.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMountInfantry.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveCombined.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveDismounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMounted.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonMoveMountedCargo.sqf";

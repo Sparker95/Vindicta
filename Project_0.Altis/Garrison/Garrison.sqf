@@ -1078,6 +1078,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		"ActionGarrisonMoveDismounted",
 		//"ActionGarrisonMoveMountedToPosition",
 		//"ActionGarrisonMoveMountedToLocation",
+		"ActionGarrisonMoveCombined",
 		"ActionGarrisonMoveMounted",
 		"ActionGarrisonMoveMountedCargo",
 		"ActionGarrisonRelax",
