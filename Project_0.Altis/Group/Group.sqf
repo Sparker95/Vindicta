@@ -1072,9 +1072,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	/*
 	Method: getRequiredCrew
-	Returns amount of needed drivers and turret operators for all vehicles in this group.
+	Returns amount of needed drivers and turret operators for all vehicles in this group. Also returns amount of available cargo seats.
 
-	Returns: [_nDrivers, _nTurrets]
+	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 
 	METHOD("getRequiredCrew") {
@@ -1084,19 +1084,21 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
+		pr _nCargo = 0;
 
 		{
 			if (CALLM0(_x, "isVehicle")) then {
 				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
 				_nDrivers = _nDrivers + _n_driver;
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+				_nCargo = _nCargo + (count _psgTurrets) + _n_cargo;
 			};
 		} forEach _units;
 
-		OOP_INFO_2("getRequiredCrew: drivers: %1, turrets: %2", _nDrivers, _nTurrets);
+		OOP_INFO_3("getRequiredCrew: drivers: %1, turrets: %2, cargo: %3", _nDrivers, _nTurrets, _nCargo);
 
-		[_nDrivers, _nTurrets]
+		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 
 ENDCLASS;

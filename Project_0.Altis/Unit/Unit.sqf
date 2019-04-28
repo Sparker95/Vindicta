@@ -628,7 +628,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	_units - array of <Unit> objects
 
-	Returns: [_nDrivers, _nTurrets]
+	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 	
 	STATIC_METHOD("getRequiredCrew") {
@@ -636,15 +636,17 @@ CLASS(UNIT_CLASS_NAME, "");
 		
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
+		pr _nCargo = 0;
 		{
 			if (CALLM0(_x, "isVehicle")) then {
 				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
 				_nDrivers = _nDrivers + _n_driver;
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+				_nCargo = _nCargo + (count _psgTurrets) + _n_cargo;
 			};
 		} forEach _units;
-		[_nDrivers, _nTurrets]
+		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 	
 	/*
