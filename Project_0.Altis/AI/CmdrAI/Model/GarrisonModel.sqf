@@ -46,7 +46,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
-		T_SETV("side", WEST);
+		T_SETV("side", sideUnknown);
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
 		T_CALLM("sync", []);
 		// Add self to world
@@ -95,13 +95,14 @@ CLASS("GarrisonModel", "ModelBase")
 			if(EFF_LTE(_newEff, EFF_ZERO)) then {
 				T_CALLM("killed", []);
 			} else {
+				private _actualSide = CALLM(_actual, "getSide", []);
+				T_SETV("side", _actualSide);
+				
 				T_SETV("efficiency", _newEff);
 				
 				private _actualPos = CALLM(_actual, "getPos", []);
 				T_SETV("pos", +_actualPos);
 
-				private _actualSide = CALLM(_actual, "getSide", []);
-				T_SETV("side", _actualSide);
 
 				//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
 				private _locationActual = CALLM(_actual, "getLocation", []);
