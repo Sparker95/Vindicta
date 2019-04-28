@@ -17,7 +17,7 @@ private _locations = entities "Project_0_LocationSector";
 
 gSetupMode = "random"; //"random"; "default"; "sparker"; "bill"; 
 
-//#define ADD_TRUCKS
+#define ADD_TRUCKS
 #define ADD_UNARMED_MRAPS
 //#define ADD_ARMED_MRAPS
 //#define ADD_TANKS
@@ -176,7 +176,7 @@ gSetupMode = "random"; //"random"; "default"; "sparker"; "bill";
 	// Some trucks
 	private _i = 0;
 	#ifdef ADD_TRUCKS
-	while {_cVehGround > 0 && _i < 0} do {
+	while {_cVehGround > 0 && _i < 3} do {
 		private _newUnit = NEW("Unit", [_template]+[T_VEH]+[T_VEH_truck_inf]+[-1]+[""]);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
 			CALL_METHOD(_garMilMain, "addUnit", [_newUnit]);
@@ -190,7 +190,7 @@ gSetupMode = "random"; //"random"; "default"; "sparker"; "bill";
 
 	#ifdef ADD_UNARMED_MRAPS
 	_i = 0;
-	while {(_cVehGround > 0) && _i < 3} do  {
+	while {(_cVehGround > 0) && _i < 1} do  {
 		private _newUnit = NEW("Unit", [_template]+[T_VEH]+[T_VEH_MRAP_unarmed]+[-1]+[""]);
 		if (CALL_METHOD(_newUnit, "isValid", [])) then {
 			CALL_METHOD(_garMilMain, "addUnit", [_newUnit]);

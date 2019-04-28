@@ -84,7 +84,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _groupAI = CALLM0(_x, "getAI");
 			
 			// Add new goal to move
-			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius]], _AI];
+			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius], [TAG_MAX_SPEED_KMH, 11]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
 			
 		} forEach _vehGroups;

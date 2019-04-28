@@ -1,27 +1,20 @@
 #include "common.hpp"
 
 /*
-Group will move to specified place on foot. Units will regroup around their squad leader, dismounting their vehicles.
+Group will follow the last vehicle in the first vehicle group.
 
-Parameter tags:
-TAG_POS
 
 Authors: Sen, Sparker
 */
 
 #define pr private
 
-CLASS("ActionGroupInfantryMove", "ActionGroup")
-
-	VARIABLE("pos");
+CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 
 	VARIABLE("waypointUpdateTime");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
-		
-		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		T_SETV("pos", _pos);
 		
 		T_SETV("waypointUpdateTime", time);
 
@@ -30,7 +23,6 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 	// logic to run when the goal is activated
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
-		private _pos = T_GETV("pos");
 
 	 	// Set behaviour
 		private _hG = GETV(_thisObject, "hG");
@@ -72,36 +64,45 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// Give a new waypoint periodycally
-			if ((time - T_GETV("waypointUpdateTime")) > 10) then {
+			if ((time - T_GETV("waypointUpdateTime")) > 17) then {
 				pr _group = T_GETV("group");
 				pr _gar = CALLM0(_group, "getGarrison");
 				pr _vehGroups = CALLM(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC]);
 				if (count _vehGroups >= 1) then {	
 					// Find the vehicle furthest from the leader
-					pr _vehGroup = _vehGroup select 0;
+					pr _vehGroup = _vehGroups select 0;
 					pr _vehUnits = CALLM0(_vehGroup, "getVehicleUnits");
 					pr _vehGroupLeader = CALLM0(_vehGroup, "getLeader");
 					pr _hLeader = CALLM0(_vehGroupLeader, "getObjectHandle");
 					pr _hVehicles = _vehUnits apply {
-						pr _hO = CALLM0(_x, "getGroupHandle");
+						pr _hO = CALLM0(_x, "getObjectHandle");
 						[_hO distance2D _hLeader, _hO]
 					};
 					_hVehicles sort false; // Descending
-					
-					// Delete all old waypoints and add a new one
+
+					// Object handle of the last vehicle
+					pr _hOVeh = _hVehicles select 0 select 1;
+
 					pr _hG = T_GETV("hG");
-					while {(count (waypoints _hG)) > 0} do {
-						deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
+					if (((leader _hG) distance _hOVeh) > 30) then {
+						// Delete all old waypoints and add a new one
+						while {(count (waypoints _hG)) > 0} do {
+							deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
+						};
+
+						// Find pos to the left of the last vehicle to make them stay on the left side of the road
+						// Infantry loves to move on the left side for some reason
+						pr _pos = _hOVeh getPos [9, (getDir _hOVeh) - 90];
+
+						private _wp = _hG addWaypoint [_pos, 4, 0];
+						_wp setWaypointType "MOVE";
+						_wp setWaypointFormation "COLUMN";
+						_wp setWaypointBehaviour "AWARE";
+						_wp setWaypointSpeed "FULL";
+						_hG setCurrentWaypoint _wp;
+
+						T_SETV("waypointUpdateTime", time);
 					};
-
-					private _wp = _hG addWaypoint [getPos (_hVehicles select 0 select 1), 30, 0];
-					_wp setWaypointType "MOVE";
-					_wp setWaypointFormation "COLUMN";
-					_wp setWaypointBehaviour "AWARE";
-					_wp setWaypointSpeed "FULL";
-					_hG setCurrentWaypoint _wp;
-
-					T_SETV("waypointUpdateTime", time);
 				};
 			};
 		};
