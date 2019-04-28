@@ -33,7 +33,7 @@ if (_thisObject != "") then {
 		if (_garAI != "") then {
 			if (!isNull _killer) then { // If there is an existing killer
 				pr _stim = STIMULUS_NEW();
-				STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_thisObject_DESTROYED);
+				STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
 				pr _value = [_thisObject, _killer];
 				STIMULUS_SET_VALUE(_stim, _value);
 				CALLM2(_garAI, "postMethodAsync", "handleStimulus", [_stim]);

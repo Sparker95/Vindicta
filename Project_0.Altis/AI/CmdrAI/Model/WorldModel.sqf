@@ -65,16 +65,20 @@ CLASS("WorldModel", "")
 
 		// Copy garrisons
 		T_PRVAR(garrisons);
+		OOP_DEBUG_MSG("simCopy %1 garrisons", [count _garrisons]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
 
 		// Copy locations
 		T_PRVAR(locations);
+		OOP_DEBUG_MSG("simCopy %1 locations", [count _locations]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
 
 		// Copy clusters
 		T_PRVAR(clusters);
+		OOP_DEBUG_MSG("simCopy %1 clusters", [count _clusters]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _clusters;
 
+		OOP_DEBUG_MSG("simCopy threatGrid", []);
 		// Can copy the grid ref as we don't write to it
 		T_PRVAR(threatGrid);
 		SETV(_worldCopy, "threatGrid", _threatGrid);

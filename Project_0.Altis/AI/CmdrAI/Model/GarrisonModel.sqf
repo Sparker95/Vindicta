@@ -5,9 +5,16 @@
 
 GarrisonModel_getThread = {
 	params ["_garrisonModel"];
-	private _side = GETV(_garrisonModel, "side");
-	private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
-	GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
+	// Can't use normal accessor because it would cause an infinite loop!
+	private _side = FORCE_GET_MEM(_garrisonModel, "side");
+	if(!isNil "_side") then {
+		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_AICommander)) then {
+			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
+		} else {
+			nil
+		}
+	}
 };
 
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
@@ -568,6 +575,16 @@ ENDCLASS;
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
+	!(isNil "_class")
+}] call test_AddTest;
+
+["GarrisonModel.simCopy", {
+	private _actual = NEW("Garrison", [WEST]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
+	private _simWorld = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _copy = CALLM(_garrison, "simCopy", [_simWorld]);
+	private _class = OBJECT_PARENT_CLASS_STR(_copy);
 	!(isNil "_class")
 }] call test_AddTest;
 

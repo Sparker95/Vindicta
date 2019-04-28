@@ -425,7 +425,15 @@ OOP_assert_member_access = {
 		false
 	};
 #endif
-	private _thisClass = if (!isNil "_thisObject") then { OBJECT_PARENT_CLASS_STR(_thisObject) } else { nil };
+	private _thisClass = if(!isNil "_thisClass") then { 
+			_thisClass
+		} else {
+			if (!isNil "_thisObject") then { 
+				OBJECT_PARENT_CLASS_STR(_thisObject) 
+			} else {
+				nil
+			}
+		};
 	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
 };
 
@@ -698,6 +706,12 @@ CLASS("AttrTestBase1", "")
 		T_SETV("var_get_only", true);
 		T_GETV("var_get_only")
 	} ENDMETHOD;
+
+	STATIC_METHOD("validStaticPrivateAccessTest") {
+		params [P_THISCLASS, P_STRING("_obj")];
+		GETV(_obj, "var_private")
+	} ENDMETHOD;
+	
 ENDCLASS;
 
 CLASS("AttrTestDerived1", "AttrTestBase1")
@@ -759,6 +773,7 @@ ENDCLASS;
 	["valid default access", { CALLM(_base, "validDefaultAccessTest", []) }] call test_Assert;
 	["valid private access", { CALLM(_base, "validPrivateAccessTest", []) }] call test_Assert;
 	["valid get only access", { CALLM(_base, "validGetOnlyAccessTest", []) }] call test_Assert;
+	["valid static private access", { CALLSM("AttrTestBase1", "validStaticPrivateAccessTest", [_base]) }] call test_Assert;	
 
 	["valid external get only access", { GETV(_base, "var_get_only"); true }] call test_Assert;
 	["invalid external private access",
