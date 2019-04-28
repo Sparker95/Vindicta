@@ -7,7 +7,7 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
-#define PLAN_INTERVAL 5
+#define PLAN_INTERVAL 120
 #define pr private
 
 CLASS("AICommander", "AI")
@@ -147,9 +147,10 @@ CLASS("AICommander", "AI")
 			CALLM(_worldModel, "sync", []);
 
 			CALLM(_worldModel, "updateThreatMaps", []);
-			T_SETV("lastPlanningTime", TIME_NOW);
 			CALLM(_cmdrAI, "plan", [_worldModel]);
 
+			// Make it after planning so we get a gap
+			T_SETV("lastPlanningTime", TIME_NOW);
 		};
 	} ENDMETHOD;
 	
@@ -184,6 +185,9 @@ CLASS("AICommander", "AI")
 			};
 			case INDEPENDENT: {
 				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
+			};
+			default {
+				NULL_OBJECT
 			};
 		};
 	} ENDMETHOD;
@@ -905,7 +909,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("registerGarrison") {
 		params [P_THISCLASS, P_STRING("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = GETV(_gar, "side");
+		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
 		private _newModel = NULL_OBJECT;
@@ -933,7 +937,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("unregisterGarrison") {
 		params [P_THISCLASS, P_STRING("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = GETV(_gar, "side");
+		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
