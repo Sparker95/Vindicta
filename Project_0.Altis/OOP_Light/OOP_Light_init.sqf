@@ -13,6 +13,7 @@ OOP_error = {
 	params["_file", "_line", "_text"];
 	private _msg = format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
 	diag_log _msg;
+	DUMP_CALLSTACK;
 	// Doesn't really work :/
 	// try
 	// {
@@ -74,7 +75,7 @@ OOP_assert_class = {
 	//Check if it's a class
 	if(isNil "_memList") then {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	} else {true};
 };
@@ -85,7 +86,7 @@ OOP_assert_objectClass = {
 
 	if(!(_objNameStr isEqualType "")) then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 
@@ -94,7 +95,7 @@ OOP_assert_objectClass = {
 	//Check if it's an object
 	if(isNil "_classNameStr") then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	} else {
 		private _parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
@@ -102,7 +103,7 @@ OOP_assert_objectClass = {
 			true // all's fine
 		} else {
 			[_file, _line, _objNameStr, _classNameStr, _expectedClassNameStr] call OOP_error_wrongClass;
-			DUMP_CALLSTACK;
+			// DUMP_CALLSTACK;
 			false
 		};
 	};
@@ -114,7 +115,7 @@ OOP_assert_object = {
 
 	if(!(_objNameStr isEqualType "")) then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 
@@ -123,7 +124,7 @@ OOP_assert_object = {
 	//Check if it's an object
 	if(isNil "_classNameStr") then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	} else {
 		true;
@@ -138,7 +139,7 @@ OOP_assert_staticMember = {
 	//Check if it's a class
 	if(isNil "_memList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 	//Check static member
@@ -146,7 +147,7 @@ OOP_assert_staticMember = {
 	private _valid = (_memList findIf { _x#0 == _memNameStr }) != -1;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 	};
 	//Return value
 	_valid
@@ -161,7 +162,7 @@ OOP_assert_member = {
 	if(isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 	//Get member list of this class
@@ -171,10 +172,22 @@ OOP_assert_member = {
 	private _valid = _memIdx != -1;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 	};
 	//Return value
 	_valid
+};
+
+OOP_static_member_has_attr = {
+	params["_classNameStr", "_memNameStr", "_attr"];
+	// NO asserting here, it should be done already before calling this
+	// Get static  member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
+	// Get the member by name
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	// Return existance of attr
+	private _allAttr = (_memList select _memIdx)#1;
+	(_attr in _allAttr)
 };
 
 OOP_member_has_attr = {
@@ -182,7 +195,7 @@ OOP_member_has_attr = {
 	// NO asserting here, it should be done already before calling this
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-	// Get member list of this class
+		// Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	// Get the member by name
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
@@ -199,7 +212,7 @@ OOP_assert_member_is_ref = {
 	if(!([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
 		private _errorText = format ["%1.%2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 	true;
@@ -213,28 +226,93 @@ OOP_assert_member_is_not_ref = {
 	if(([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
 		private _errorText = format ["%1.%2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 	true;
 };
 
-/*
-Asserts member attributes (private, etc) and prints an error if they are violated.
-Assumes that the member existance has been already asserted successfully.
+OOP_assert_class_member_access = {
+	params ["_classNameStr", "_memNameStr", "_isPrivate", "_isProtected", "_file", "_line"];
 
-_extObject - the object that accesses the member of _objNameStr
-*/
-OOP_assert_member_attributes = {
-	params ["_objNameStr", "_memNameStr", ["_extObject", ""], ["_extClass", ""], "_file", "_line"];
+	// If the class we access from is the same as the one that owns the member then we are fine regardless
+	if(!isNil "_thisClass" and {_thisClass isEqualTo _classNameStr}) exitWith { true };
 
-	if ([_objNameStr, _memNameStr, ATTR_PRIVATE] call OOP_member_has_attr) then {
-		if (_extObject != _objNameStr) then {
-			private _errorText = format ["%1.%2 is unreachable (private)", _objNameStr, _memNameStr];
-			[_file, _line, _errorText] call OOP_error;
-		};
+	// If it isn't private or protected then we are fine
+	if(!_isPrivate and !_isProtected) exitWith { true };
+
+	// If we aren't in a class function at all then private or protected would be definition be violated.
+	if(isNil "_thisClass") exitWith {
+		private _errorText = format ["%1.%2 is unreachable (private or protected)", _classNameStr, _memNameStr];
+		[_file, _line, _errorText] call OOP_error;
+		false
 	};
+
+	// If the member is protected then we can also allow access from any descendent class (we already checked for the same class above)
+	if(_isProtected) then { 
+		// TODO: does this actually work? Might just be all member vars are owned by the object and we need to inspect the _oop_memLists instead.
+		if(_classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)) exitWith { 
+			true 
+		} else {
+			private _errorText = format ["%1.%2 is unreachable from %3 (protected)", _classNameStr, _memNameStr, _thisClass];
+			[_file, _line, _errorText] call OOP_error;
+			false
+		}
+	} else {
+		// We already checked for same class at the top of this function, so it is an error if we get here.
+		private _errorText = format ["%1.%2 is unreachable from %3 (private)", _classNameStr, _memNameStr, _thisClass];
+		[_file, _line, _errorText] call OOP_error;
+		false
+	}
 };
+
+OOP_assert_static_member_access = {
+	params ["_classNameStr", "_memNameStr", "_file", "_line"];
+	
+	private _isPrivate = [_classNameStr, _memNameStr, ATTR_PRIVATE] call OOP_static_member_has_attr;
+
+	// Can't be private AND protected, they are mutually exclusive (we should assert this during class declaration, not here)
+	private _isProtected = !_isPrivate and { [_classNameStr, _memNameStr, ATTR_PROTECTED] call OOP_static_member_has_attr };
+
+	[_classNameStr, _memNameStr, _isPrivate, _isProtected, _file, _line] call OOP_assert_class_member_access;
+};
+
+OOP_assert_get_static_member_access = { _this call OOP_assert_static_member_access; };
+OOP_assert_set_static_member_access = { 
+	params ["_classNameStr", "_memNameStr", "_file", "_line"];
+	
+	private _isGetOnly = [_classNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_static_member_has_attr;
+	if(_isGetOnly) exitWith { false };
+	_this call OOP_assert_static_member_access;
+};
+
+OOP_assert_member_access = {
+	params ["_objNameStr", "_memNameStr", "_file", "_line"];
+	
+	// If we are accessing from within the same object we obviously have private member access
+	if (!isNil "_thisObject" and {_thisObject isEqualTo _objNameStr}) exitWith { true };
+
+
+	private _isPrivate = [_objNameStr, _memNameStr, ATTR_PRIVATE] call OOP_member_has_attr;
+
+	// Can't be private AND protected, they are mutually exclusive (we should assert this during class declaration, not here)
+	private _isProtected = !_isPrivate and { [_objNameStr, _memNameStr, ATTR_PROTECTED] call OOP_member_has_attr };
+
+	// Get the class of the object that owns the member
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	private _thisClass = if (!isNil "_thisObject") then { OBJECT_PARENT_CLASS_STR(_thisObject) } else {nil};
+	[_classNameStr, _memNameStr, _isPrivate, _isProtected, _file, _line] call OOP_assert_class_member_access;
+};
+
+OOP_assert_get_member_access = OOP_assert_member_access; //{ _this call OOP_assert_member_access; };
+OOP_assert_set_member_access = { 
+	params ["_objNameStr", "_memNameStr", "_file", "_line"];
+	
+	private _isGetOnly = [_objNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_member_has_attr;
+	if(_isGetOnly) exitWith { false };
+	_this call OOP_assert_member_access;
+};
+
 
 //Check method and print error if it's not found
 OOP_assert_method = {
@@ -243,7 +321,7 @@ OOP_assert_method = {
 	if (isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 
@@ -252,14 +330,14 @@ OOP_assert_method = {
 	//Check if it's a class
 	if(isNil "_methodList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 		false;
 	};
 	//Check method
 	private _valid = _methodNameStr in _methodList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
-		DUMP_CALLSTACK;
+		// DUMP_CALLSTACK;
 	};
 	//Return value
 	_valid

@@ -224,14 +224,43 @@ nameStr profilerSetCounter _oop_cnt; };
 // -----------------------------------------------------
 
 #ifdef OOP_ASSERT
-	#define SET_MEM(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then { [objNameStr, memNameStr, _thisObject, __FILE__, __LINE__] call OOP_assert_member_attributes; FORCE_SET_MEM(objNameStr, memNameStr, value)}
-	#define SET_MEM_REF(objNameStr, memNameStr, value) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then { [objNameStr, memNameStr, _thisObject, __FILE__, __LINE__] call OOP_assert_member_attributes; FORCE_SET_MEM_REF(objNameStr, memNameStr, value)}
-	#define SET_STATIC_MEM(classNameStr, memNameStr, value) if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value)}
-	#define GET_MEM(objNameStr, memNameStr) ( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { [objNameStr, memNameStr, _thisObject, __FILE__, __LINE__] call OOP_assert_member_attributes; FORCE_GET_MEM(objNameStr, memNameStr)}else{nil} )
-	#define GET_STATIC_MEM(classNameStr, memNameStr) ( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_GET_STATIC_MEM(classNameStr, memNameStr)}else{nil} )
-	#define GET_METHOD(classNameStr, methodNameStr) ( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then {FORCE_GET_METHOD(classNameStr, methodNameStr)}else{nil} )
-	#define PUBLIC_MEM(objNameStr, memNameStr) if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then {FORCE_PUBLIC_MEM(objNameStr, memNameStr)}
-	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then {FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr)}
+	#define SET_MEM(objNameStr, memNameStr, value) \
+		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then { \
+			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access; \
+			FORCE_SET_MEM(objNameStr, memNameStr, value) \
+		}
+	#define SET_MEM_REF(objNameStr, memNameStr, value) \
+		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then { \
+			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access; \
+			FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
+		}
+	#define SET_STATIC_MEM(classNameStr, memNameStr, value) \
+		if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
+			[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_static_member_access; \
+			FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) \
+		}
+	#define GET_MEM(objNameStr, memNameStr) \
+		( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { \
+			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_member_access; \
+			FORCE_GET_MEM(objNameStr, memNameStr) \
+		}else{nil} )
+	#define GET_STATIC_MEM(classNameStr, memNameStr) \
+		( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
+			[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_static_member_access; \
+			FORCE_GET_STATIC_MEM(classNameStr, memNameStr) \
+		}else{nil} )
+	#define GET_METHOD(classNameStr, methodNameStr) \
+		( if([classNameStr, methodNameStr, __FILE__, __LINE__] call OOP_assert_method) then { \
+			FORCE_GET_METHOD(classNameStr, methodNameStr) \
+		}else{nil} )
+	#define PUBLIC_MEM(objNameStr, memNameStr) \
+		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { \
+			FORCE_PUBLIC_MEM(objNameStr, memNameStr) \
+		}
+	#define PUBLIC_STATIC_MEM(classNameStr, memNameStr) \
+		if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
+			FORCE_PUBLIC_STATIC_MEM(classNameStr, memNameStr) \
+		}
 #else
 	#define SET_MEM(objNameStr, memNameStr, value) FORCE_SET_MEM(objNameStr, memNameStr, value)
 	#define SET_MEM_REF(objNameStr, memNameStr, value) FORCE_SET_MEM_REF(objNameStr, memNameStr, value)
@@ -350,6 +379,8 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define ATTR_REFCOUNTED 1
 #define ATTR_SERIALIZABLE 2
 #define ATTR_PRIVATE 3
+#define ATTR_PROTECTED 4
+#define ATTR_GET_ONLY 5
 #define ATTR_USERBASE 1000
 
 
@@ -368,6 +399,8 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define STATIC_MEMBER(memNameStr) STATIC_VARIABLE(memNameStr)
 
 #ifdef OOP_PROFILE
+	#define _OOP_FUNCTION_WRAPPERS
+
 	#define PROFILE_SCOPE_START(scopeName) \
 		private _profileTStart##scopeName = time;
 
@@ -376,76 +409,102 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 		if(_totalProfileT##scopeName > minT) then { \
 			OOP_PROFILE_2("%1 %2", #scopeName, _totalProfileT##scopeName); \
 		};
-		
+
+	#define OOP_FUNC_HEADER_PROFILE private _profileTStart = time
+	#define OOP_FUNC_FOOTER_PROFILE \
+		private _totalProfileT = time - _profileTStart; \
+		if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
+			OOP_PROFILE_3("%1.%2 %3", _objOrClass, _methodNameStr, _totalProfileT); \
+		}
+#else
+	#define PROFILE_SCOPE_START(scopeName)
+	#define PROFILE_SCOPE_END(scopeName, minT)
+	#define OOP_FUNC_HEADER_PROFILE
+	#define OOP_FUNC_FOOTER_PROFILE
+#endif
+
+#ifdef OOP_ASSERT
+#define _OOP_FUNCTION_WRAPPERS
+#endif
+
+// If some enabled functionality requires function wrappers we set them here. If you want to conditionally add more stuff to the wrapped functions
+// (e.g. additional asserts, parameter manipulation etc.) then define them as macros and then include them in the wrapped blocks in the same manner
+// that OOP_PROFILE does.
+#ifdef _OOP_FUNCTION_WRAPPERS
 	#define METHOD(methodNameStr) \
 		_oop_methodList pushBackUnique methodNameStr;  \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
-			private _profileTStart = time; \
+			private _thisClass = nil; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
-			private _result = _this call
-	#define ENDMETHOD ;\
-			private _totalProfileT = time - _profileTStart; \
-			if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
-				OOP_PROFILE_3("%1.%2 %3", _objOrClass, _methodNameStr, _totalProfileT); \
-			}; \
-			if(!(isNil "_result")) then { _result } else { nil } \
+			OOP_FUNC_HEADER_PROFILE; \
+			private _result = ([0] apply { _this call
+
+	#define ENDMETHOD }) select 0;\
+			OOP_FUNC_FOOTER_PROFILE; \
+			if !(isNil "_result") then { _result } else { nil } \
 		} ]
+
 	#define METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
-			private _profileTStart = time; \
-			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr); \
-			private _result = _this call _fn; \
-			private _totalProfileT = time - _profileTStart; \
-			if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
-				OOP_PROFILE_1("%1", _totalProfileT); \
-			}; \
-			if(!(isNil "_result")) then { _result } else { nil } \
+			private _thisClass = nil; \
+			private _methodNameStr = methodNameStr; \
+			private _objOrClass = _this select 0; \
+			OOP_FUNC_HEADER_PROFILE; \
+			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), "inner" + methodNameStr); \
+			private _result = ([0] apply { _this call _fn }) select 0; \
+			OOP_FUNC_FOOTER_PROFILE; \
+			if !(isNil "_result") then { _result } else { nil } \
 		}]
 
 	#define STATIC_METHOD(methodNameStr) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
-			private _profileTStart = time; \
+			private _thisObject = nil; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
-			private _result = _this call
+			OOP_FUNC_HEADER_PROFILE; \
+			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
-			private _profileTStart = time; \
-			private _fn = NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr); \
-			private _result = _this call _fn; \
-			private _totalProfileT = time - _profileTStart; \
-			if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
-				OOP_PROFILE_1("%1", _totalProfileT); \
-			}; \
-			if(!(isNil "_result")) then { _result } else { nil } \
+			private _thisObject = nil; \
+			private _methodNameStr = methodNameStr; \
+			private _objOrClass = _this select 0; \
+			OOP_FUNC_HEADER_PROFILE; \
+			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, "inner" + methodNameStr); \
+			private _result = ([0] apply { _this call _fn}) select 0; \
+			OOP_FUNC_FOOTER_PROFILE; \
+			if !(isNil "_result") then { _result } else { nil } \
 		}]
 #else
-	#define PROFILE_SCOPE_START(scopeName)
-
-	#define PROFILE_SCOPE_END(scopeName, minT)
-
-	#define METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr;  _oop_newMethodList pushBackUnique methodNameStr; \
+	#define METHOD(methodNameStr) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 	#define ENDMETHOD ]
 
-	#define METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
+	#define METHOD_FILE(methodNameStr, path) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
-	#define STATIC_METHOD(methodNameStr) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
+	#define STATIC_METHOD(methodNameStr) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
-	#define STATIC_METHOD_FILE(methodNameStr, path) _oop_methodList pushBackUnique methodNameStr; _oop_newMethodList pushBackUnique methodNameStr; \
+	#define STATIC_METHOD_FILE(methodNameStr, path) \
+		_oop_methodList pushBackUnique methodNameStr; \
+		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 #endif
 
@@ -615,7 +674,7 @@ objNameStr \
 // |         T H R E A D I N G    U T I L S          |
 // ---------------------------------------------------
 
-#define CRITICAL_SECTION private _null = isNil
+#define CRITICAL_SECTION isNil
 
 // ----------------------------------------------------------------------
 // |                   L O G G I N G   M A C R O S                      |
