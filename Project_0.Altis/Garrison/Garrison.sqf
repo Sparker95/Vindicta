@@ -15,17 +15,18 @@ Author: Sparker 12.07.2018
 CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
+	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
+	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
 
-	VARIABLE("units");
-	VARIABLE("groups");
-	VARIABLE("spawned");
-	VARIABLE("side");
-	VARIABLE("debugName");
-	VARIABLE("location");
-	VARIABLE("AI"); // The AI brain of this garrison
-	VARIABLE("effTotal"); // Efficiency vector of all units
-	VARIABLE("effMobile"); // Efficiency vector of all units that can move
-	VARIABLE("timer"); // Timer that will be sending PROCESS messages here
+	VARIABLE_ATTR("side", 		[ATTR_PRIVATE]);
+	VARIABLE_ATTR("units", 		[ATTR_PRIVATE]);
+	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("debugName", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("location", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
+	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
+	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -1022,7 +1023,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyMobile") {
 		params ["_thisObject"];
-		T_GETV("effMobile")
+		+T_GETV("effMobile")
 	} ENDMETHOD;
 	
 	/*
@@ -1034,7 +1035,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyTotal") {
 		params ["_thisObject"];
-		T_GETV("effTotal")
+		+T_GETV("effTotal")
 	} ENDMETHOD;
 	
 	/*

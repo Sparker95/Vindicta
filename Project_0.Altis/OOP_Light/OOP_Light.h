@@ -379,8 +379,11 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define ATTR_REFCOUNTED 1
 #define ATTR_SERIALIZABLE 2
 #define ATTR_PRIVATE 3
-#define ATTR_PROTECTED 4
+// Needs more work to implement this (walking classes to find the first place a member was defined etc.)
+// #define ATTR_PROTECTED 4
 #define ATTR_GET_ONLY 5
+#define ATTR_THREAD_AFFINITY_ID 6
+#define ATTR_THREAD_AFFINITY(getThreadFn) [ATTR_THREAD_AFFINITY_ID, getThreadFn]
 #define ATTR_USERBASE 1000
 
 
