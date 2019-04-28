@@ -26,7 +26,7 @@ Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 
 
 CLASS(UNIT_CLASS_NAME, "");
-	VARIABLE("data");
+	VARIABLE_ATTR("data", [ATTR_PRIVATE]);
 	STATIC_VARIABLE("all");
 
 	//                              N E W
