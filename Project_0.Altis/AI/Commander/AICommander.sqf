@@ -7,6 +7,7 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
+#define DEBUG_COMMANDER
 #define PLAN_INTERVAL 120
 #define pr private
 
@@ -39,6 +40,11 @@ CLASS("AICommander", "AI")
 	VARIABLE("clusterMarkers");
 	#endif
 
+	#ifdef DEBUG_COMMANDER
+	VARIABLE("state");
+	VARIABLE("stateStart");
+	#endif
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
 		
@@ -69,7 +75,33 @@ CLASS("AICommander", "AI")
 		T_SETV("nextMarkerID", 0);
 		T_SETV("clusterMarkers", []);
 		#endif
-		
+
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "none");
+		T_SETV("stateStart", 0);
+		[_thisObject, _side] spawn {
+			params ["_thisObject", "_side"];
+			private _pos = switch (_side) do {
+				case WEST: { [0, -500, 0 ] };
+				case EAST: { [0, -1000, 0 ] };
+				case INDEPENDENT: { [0, -1500, 0 ] };
+			};
+			private _mrk = createmarker [_thisObject + "_label", _pos];
+			_mrk setMarkerType "mil_objective";
+			_mrk setMarkerColor (switch (_side) do {
+				case WEST: {"ColorWEST"};
+				case EAST: {"ColorEAST"};
+				case INDEPENDENT: {"ColorGUER"};
+				default {"ColorCIV"};
+			});
+			_mrk setMarkerAlpha 1;
+			while{true} do {
+				sleep 5;
+				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), TIME_NOW - T_GETV("stateStart")]);
+			};
+		};
+		#endif
+
 		// Array with ActionCommanderRespondToTargetCluster
 		T_SETV("targetClusterActions", []);
 		
@@ -98,8 +130,18 @@ CLASS("AICommander", "AI")
 		
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
 		
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "update sensors");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
+
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
+		
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "update clusters");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
 		
 		// Check if there are any clusters without assigned actions
 		pr _actions = T_GETV("targetClusterActions");
@@ -135,6 +177,11 @@ CLASS("AICommander", "AI")
 		};
 
 
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "model sync");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
+
 		T_PRVAR(cmdrAI);
 		T_PRVAR(worldModel);
 		// Sync before update
@@ -143,6 +190,11 @@ CLASS("AICommander", "AI")
 		
 		T_PRVAR(lastPlanningTime);
 		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+			#ifdef DEBUG_COMMANDER
+			T_SETV("state", "model planning");
+			T_SETV("stateStart", TIME_NOW);
+			#endif
+
 			// Sync after update
 			CALLM(_worldModel, "sync", []);
 
@@ -152,6 +204,10 @@ CLASS("AICommander", "AI")
 			// Make it after planning so we get a gap
 			T_SETV("lastPlanningTime", TIME_NOW);
 		};
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "inactive");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------

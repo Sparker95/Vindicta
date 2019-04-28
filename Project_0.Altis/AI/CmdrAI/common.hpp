@@ -2,7 +2,6 @@
 #define OOP_DEBUG
 #define OOP_WARNING
 #define OOP_ERROR
-#define OOP_ASSERT
 
 #define DEBUG_CMDRAI
 
