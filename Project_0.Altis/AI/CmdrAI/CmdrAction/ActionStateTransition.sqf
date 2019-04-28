@@ -36,11 +36,11 @@ CLASS("ActionStateTransition", "")
 		// our current state, then sort by priority. Then we will check in decending
 		// order until we find one we can apply and attempt to apply it.
 		private _matchingTransitions = _transitions 
-			select { CALLM(_x, "isValidFromState", [_state]+[_isSim]) }
+			select { CALLM(_x, "isValidFromState", [_state]) }
 			apply { [GETV(_x, "priority"), _x] };
 
 		// Lower value is higher priority (0 is top most priority)
-		_matchingTransitions sort true;
+		_matchingTransitions sort ASCENDING;
 
 		private _foundIdx = _matchingTransitions findIf { CALLM(_x select 1, "isAvailable", [_world]) };
 		if(_foundIdx != -1) then {
@@ -50,6 +50,10 @@ CLASS("ActionStateTransition", "")
 				private _newState = GETV(_selectedTransition, "toState");
 				_state = _newState
 			};
+		} else {
+			// If we can't apply any transitions then go directly to END
+			// TODO: can we do something better than terminate?
+			_state = CMDR_ACTION_STATE_END;
 		};
 		_state
 	} ENDMETHOD;
@@ -186,7 +190,7 @@ fn_Test_Transitions = {
 };
 
 ["ActionStateTransition.selectAndApply", {
-	private _world = NEW("WorldModel", [true]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	[ 
 		[ TestAST_Start_1, TestAST_1_2, TestAST_2_End ],
 		[

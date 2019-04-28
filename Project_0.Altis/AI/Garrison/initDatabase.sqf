@@ -23,6 +23,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonClearArea",				32] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
+
 ["GoalGarrisonRebalanceVehicleGroups",	25] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 ["GoalGarrisonJoinLocation",			12] call AI_misc_fnc_setGoalIntrinsicRelevance;
@@ -41,6 +42,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 ["GoalGarrisonRelax", _s,				[]] call AI_misc_fnc_setGoalEffects;
 
+// Parameters: TAG_G_POS, TAG_MOVE_RADIUS
 ["GoalGarrisonMove", _s,			[	[WSP_GAR_POSITION, TAG_G_POS, true]]] call AI_misc_fnc_setGoalEffects;
 //["GoalGarrisonMove", _s,				[[WSP_GAR_ALL_CREW_MOUNTED, true]]] call AI_misc_fnc_setGoalEffects;
 

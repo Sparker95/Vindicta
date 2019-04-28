@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupRegroup.sqf",{95:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">The whole group regroups around squad leader</div></div>"});
+NDSummary.OnToolTipsLoaded("File:AI/Group/ActionGroupRegroup.sqf",{89:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">The whole group regroups around squad leader, units dismount their vehicles.</div></div>"});

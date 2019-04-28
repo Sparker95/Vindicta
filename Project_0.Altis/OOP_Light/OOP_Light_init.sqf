@@ -11,7 +11,18 @@ OOP_Light_initialized = true;
 // Prints an error message with supplied text, file and line number
 OOP_error = {
 	params["_file", "_line", "_text"];
-	diag_log format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
+	private _msg = format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
+	diag_log _msg;
+	// Doesn't really work :/
+	// try
+	// {
+	// 	throw [_file, _line, _msg];
+	// }
+	// catch
+	// {
+	// 	terminate _thisScript;
+	// 	throw _exception;
+	// }
 };
 
 // Print error when a member is not found
@@ -72,6 +83,12 @@ OOP_assert_class = {
 OOP_assert_objectClass = {
 	params["_objNameStr", "_expectedClassNameStr", "_file", "_line"];
 
+	if(!(_objNameStr isEqualType "")) then {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		DUMP_CALLSTACK;
+		false;
+	};
+
 	//Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
@@ -94,6 +111,13 @@ OOP_assert_objectClass = {
 //Check object and print error if it's not an OOP object
 OOP_assert_object = {
 	params["_objNameStr", "_file", "_line"];
+
+	if(!(_objNameStr isEqualType "")) then {
+		[_file, _line, _objNameStr] call OOP_error_notObject;
+		DUMP_CALLSTACK;
+		false;
+	};
+
 	//Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
@@ -135,7 +159,7 @@ OOP_assert_member = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	//Check if it's an object
 	if(isNil "_classNameStr") exitWith {
-		private _errorText = format ["class name is nil. Attempt to access member: %1", _memNameStr];
+		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		DUMP_CALLSTACK;
 		false;

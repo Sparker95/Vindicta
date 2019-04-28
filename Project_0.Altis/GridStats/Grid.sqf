@@ -8,6 +8,12 @@ Each grid occupies whole map and starts at [0, 0].
 Authors: Sparker(initial author), Sen(code porting)
 */
 
+#ifndef _SQF_VM
+#define WORLD_SIZE worldSize
+#else
+#define WORLD_SIZE 20000
+#endif
+
 #define pr private
 
 CLASS("Grid", "");
@@ -20,6 +26,7 @@ CLASS("Grid", "");
 	STATIC_VARIABLE("currentScale");
 	
 	VARIABLE("cellSize");
+	VARIABLE("gridSize");
 	VARIABLE("gridArray");
 
 	/*
@@ -34,16 +41,15 @@ CLASS("Grid", "");
 	METHOD("new") {
 		params ["_thisObject", ["_cellSize", 500]];
 
-		private _nCellsX = ceil(worldSize / _cellSize); //Size of the grid measured in squares
-		private _nCellsY = ceil(worldSize / _cellSize);
-		
+		private _gridSize = ceil(WORLD_SIZE / _cellSize); //Size of the grid measured in squares
+		T_SETV("gridSize", _gridSize);
 		T_SETV("cellSize", _cellSize);
 		
 		private _gridArray = [];
-		_gridArray resize _nCellsX;
+		_gridArray resize _gridSize;
 		{
 			pr _a = [];
-			_a resize _nCellsY;
+			_a resize _gridSize;
 			_gridArray set [_forEachIndex, _a apply {0}];
 		} forEach _gridArray;
 
@@ -71,10 +77,6 @@ CLASS("Grid", "");
 		params ["_thisObject"];
 		T_GETV("cellSize")
 	} ENDMETHOD;
-
-
-
-
 
 	// - - - - Setting values - - - -
 
@@ -156,7 +158,82 @@ CLASS("Grid", "");
 
 		_v
 	} ENDMETHOD;
-	
+
+	METHOD("applyRect") {
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_CODE("_fn")];
+
+		_pos params ["_x", "_y"];
+		_size params ["_w", "_h"];
+
+		T_PRVAR(gridArray);
+		T_PRVAR(cellSize);
+		T_PRVAR(gridSize);
+		private _xID = 0 max floor(_x / _cellSize) min (_gridSize-1);
+		private _yID = 0 max floor(_y / _cellSize) min (_gridSize-1);
+
+		// This is a bit awkward using ceil and then -1. It is intended to ensure that a rect that is 
+		// entirely out of bounds doesn't still draw a line down the edge of the map, as it would if 
+		// it was floor and no -1 (due to the stupid inclusive for loops)
+		private _x2ID = (0 max ceil((_x + _w) / _cellSize) min (_gridSize-1)) - 1;
+		private _y2ID = (0 max ceil((_y + _h) / _cellSize) min (_gridSize-1)) - 1;
+
+		for "_i" from _xID to _x2ID do {
+			private _row = _gridArray#_i;
+			for "_j" from _yID to _y2ID do {
+				private _val = _row#_j;
+				private _newVal = [[_i, _j], _val] call _fn;
+				_row set [_j, _newVal];
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("applyCircle") {
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius"), P_CODE("_fn")];
+
+		_pos params ["_x", "_y"];
+		_size params ["_w", "_h"];
+
+		T_PRVAR(gridArray);
+		T_PRVAR(cellSize);
+
+		// Wrap the default fn with some special behaviour for circles: calculate distance to center and
+		// only call into _fn if we are inside the circle. Pass dist so it can be used for falloff or whatever.
+		private _circleFn = {
+			params ["_ij", "_origVal"];
+			private _pos = _ij apply {(_x + 0.5) * _cellSize};
+			private _dist = _pos distance _center;
+			// Might want to do some kind of coverage here?
+			if(_dist <= _radius + _cellSize * 0.5) then {
+				[_ij, _dist, _origVal] call _fn
+			} else {
+				_origVal
+			}
+		};
+
+		private _pos = [_center#0 - _radius, _center#1 - _radius];
+		private _size = [_radius * 2, _radius * 2];
+		T_CALLM("applyRect", [_pos]+[_size]+[_circleFn]);
+	} ENDMETHOD;
+
+	// Set value to max of the current and new values
+	METHOD("maxRect") {
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_NUMBER("_value")];
+		private _fnMax = {
+			params ["_ij", "_origVal"];
+			_origVal max _value
+		};
+		T_CALLM("applyRect", [_pos]+[_size]+[_fnMax]);
+	} ENDMETHOD;
+
+	// Set value to max of the current and new values in a circle
+	METHOD("maxCircle") {
+		params [P_THISOBJECT, P_ARRAY("_center"), P_ARRAY("_radius"), P_NUMBER("_value")];
+		private _fnMax = {
+			params ["_ij", "_dist", "_origVal"];
+			_origVal max _value
+		};
+		T_CALLM("applyCircle", [_center]+[_radius]+[_fnMax]);
+	} ENDMETHOD;
 	// - - - - - Getting values - - - - -
 
 	/*
@@ -174,13 +251,13 @@ CLASS("Grid", "");
 		params ["_thisObject", ["_pos", [], [[]]]];
 
 		_pos params ["_x", "_y"];
-		
+
 		pr _array = T_GETV("gridArray");
 		pr _cellSize = T_GETV("cellSize");
-	
+
 		pr _xID = floor(_x / _cellSize);
 		pr _yID = floor(_y / _cellSize);
-		
+
 		pr _v = (_array select _xID) select _yID;
 
 		_v
@@ -206,8 +283,8 @@ CLASS("Grid", "");
 		pr _array = T_GETV("gridArray");
 		pr _cellSize = T_GETV("cellSize");
 
-		pr _nCellsX = ceil(worldSize / _cellSize); //Size of the grid measured in squares
-		pr _nCellsY = ceil(worldSize / _cellSize);
+		pr _nCellsX = ceil(WORLD_SIZE / _cellSize); //Size of the grid measured in squares
+		pr _nCellsY = ceil(WORLD_SIZE / _cellSize);
 
 		// Make a copy of the grid
 		pr _arrayCopy = +_array;
@@ -222,7 +299,7 @@ CLASS("Grid", "");
 				for "_fxID" from (_xID - _kOffset) to (_xID + _kOffset) do {
 					_kyID = 0;
 					for "_fyID" from (_yID - _kOffset) to (_yID + _kOffset) do {
-						_acc = _acc + ((_arrayCopy # _fxID) # _fyID) * ((_kernel # _kxID) # _kyID);
+						_acc = _acc + (_arrayCopy#_fxID#_fyID) * (_kernel#_kxID#_kyID);
 						_kyID = _kyID + 1;
 					};
 					_kxID = _kxID + 1;
@@ -250,42 +327,44 @@ CLASS("Grid", "");
 	*/
 	METHOD("plot") {
 		params ["_thisObject", ["_scale", 1, [1]], ["_plotZero", false]];
-		
+
 		CALLM0(_thisObject, "unplot");
-		
+
 		pr _array = T_GETV("gridArray");
 		pr _cellSize = T_GETV("cellSize");
 		pr _halfSize = _cellSize * 0.5;
-		pr _n = count _array;
-		
+		pr _n = count _array - 1;
+
 		for "_x" from 0 to _n do {
 			pr _col = _array select _x;
 			for "_y" from 0 to _n do {
 				pr _val = _col select _y;
-				
-				// Create marker
-				pr _mrkName = format ["%1x%2y%3", _thisObject, _x, _y];
-				pr _mrk = createMarkerLocal [_mrkName, [_cellSize*_x + _halfSize, _cellSize*_y + _halfSize, 0]];
-				_mrk setMarkerShapeLocal "RECTANGLE";
-				_mrk setMarkerBrushLocal "SolidFull";
-				_mrk setMarkerSizeLocal [_halfSize, _halfSize];
-				
-				// Set marker color and alpha
-				if (_val == 0 && _plotZero) then {
-					// Zero
-					_mrk setMarkerColorLocal "ColorGreen";
-					_mrk setMarkerAlphaLocal 0.1;
-				} else {
-					if (_val > 0) then {
-						// Positive
-						pr _alpha = ((_val/_scale) max 0.1) min 1.0;
-						_mrk setMarkerColorLocal "ColorRed";
-						_mrk setMarkerAlphaLocal _alpha;
+
+				if(_val != 0 or _plotZero) then {
+					// Create marker
+					pr _mrkName = format ["%1x%2y%3", _thisObject, _x, _y];
+					pr _mrk = createMarkerLocal [_mrkName, [_cellSize*_x + _halfSize, _cellSize*_y + _halfSize, 0]];
+					_mrk setMarkerShapeLocal "RECTANGLE";
+					_mrk setMarkerBrushLocal "SolidFull";
+					_mrk setMarkerSizeLocal [_halfSize, _halfSize];
+					
+					// Set marker color and alpha
+					if (_val == 0 && _plotZero) then {
+						// Zero
+						_mrk setMarkerColorLocal "ColorGreen";
+						_mrk setMarkerAlphaLocal 0.1;
 					} else {
-						// Negative
-						pr _alpha = ((-_val/_scale) max 0.1) min 1.0;
-						_mrk setMarkerColorLocal "ColorBlue";
-						_mrk setMarkerAlphaLocal _alpha;
+						if (_val > 0) then {
+							// Positive
+							pr _alpha = ((_val/_scale) max 0.1) min 0.5;
+							_mrk setMarkerColorLocal "ColorRed";
+							_mrk setMarkerAlphaLocal _alpha;
+						} else {
+							// Negative
+							pr _alpha = ((-_val/_scale) max 0.1) min 0.5;
+							_mrk setMarkerColorLocal "ColorBlue";
+							_mrk setMarkerAlphaLocal _alpha;
+						};
 					};
 				};
 			};
@@ -304,7 +383,7 @@ CLASS("Grid", "");
 		params ["_thisObject"];
 		
 		pr _array = T_GETV("gridArray");
-		pr _n = count _array;
+		pr _n = count _array - 1;
 		
 		for "_x" from 0 to _n do {
 			pr _col = _array select _x;
@@ -411,7 +490,7 @@ CLASS("Grid", "");
 			
 			pr _grid = GETSV("grid", "currentGrid");
 			
-			if (_x < 0 || _y < 0 || _x > worldSize || _y > worldSize) exitWith {
+			if (_x < 0 || _y < 0 || _x > WORLD_SIZE || _y > WORLD_SIZE) exitWith {
 				pr _eh = GETSV("Grid", "mapSingleClickEH");
 				removeMissionEventHandler ["MapSingleClick", _eh];
 				systemChat format ["Finished editing %1", _grid];

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("bui",["Class"],[["BuildUI",,[[,,,,0,"File:UI/BuildUI/BuildUI.sqf:BuildUI","SQFClass:BuildUI"]]]]);

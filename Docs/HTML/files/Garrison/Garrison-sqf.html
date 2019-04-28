@@ -17,13 +17,18 @@
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="Garrison.new"></a><a name="Topic210"></a><div class="CTopic TFunction LSQF">
+<a name="Garrison.new"></a><a name="Topic101"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
- <div class="CBody"><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>side of this garrison</p></td></tr></table></div>
+ <div class="CBody"><p>Parameters: _side, _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>side of this garrison</p></td></tr><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>optional, default position to set to the garrison</p></td></tr></table></div>
 </div>
 
 <a name="Garrison.delete"></a><a name="Topic211"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
+</div>
+
+<a name="Garrison.(static)getAll"></a><a name="Topic540"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getAll</div>
+ <div class="CBody"><p>Returns all garrisons</p><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>optional, Side of garrisons to returns. If side is not provided, returns all garrisons.</p></td></tr></table><p>Returns: Array with <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> objects</p></div>
 </div>
 
 <a name="Garrison.getMessageLoop"></a><a name="Topic212"></a><div class="CTopic TFunction LSQF">
@@ -34,6 +39,11 @@
 <a name="Garrison.setLocation"></a><a name="Topic213"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setLocation</div>
  <div class="CBody"><p>Sets the location of this garrison</p><p>Parameters: _location</p><table class="CDefinitionList"><tr><td class="CDLEntry">_location</td><td class="CDLDefinition"><p><a href="../../index.html#File:Location/Location.sqf:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a></p></td></tr></table></div>
+</div>
+
+<a name="Garrison.setPos"></a><a name="Topic541"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">setPos</div>
+ <div class="CBody"><p>Sets the position of this garrison. Note that position can be updated later on its own by garrison's actions.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table></div>
 </div>
 
 <a name="Garrison.getSide"></a><a name="Topic214"></a><div class="CTopic TFunction LSQF">
@@ -76,9 +86,19 @@
  <div class="CBody"><p>Returns the AI object of this garrison.</p><p>Returns: Array of <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects.</p></div>
 </div>
 
-<a name="Garrison.getPos"></a><a name="Topic70"></a><div class="CTopic TFunction LSQF">
+<a name="Garrison.getPos"></a><a name="Topic565"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getPos</div>
- <div class="CBody"><p>Returns the position of the garrison. Just picks the first unit and returns its position.</p><p>Returns: Array</p></div>
+ <div class="CBody"><p>Returns the position of the garrison. It's the same as position world state property.</p><p>Returns: Array</p></div>
+</div>
+
+<a name="Garrison.isEmpty"></a><a name="Topic566"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isEmpty</div>
+ <div class="CBody"><p>Returns true if garrison is empty (has no units)</p><p>Returns: Bool</p></div>
+</div>
+
+<a name="Garrison.isSpawned"></a><a name="Topic567"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isSpawned</div>
+ <div class="CBody"><p>Returns true if garrison is BIS_fnc_setRespawnDelay</p><p>Returns: Bool</p></div>
 </div>
 
 <a name="Garrison.findGroupsByType"></a><a name="Topic222"></a><div class="CTopic TFunction LSQF">
@@ -111,9 +131,14 @@
  <div class="CBody"><p>Removes an existing group from this garrison.&nbsp; You don't need to call this. Use addGroup when you need to move groups between garrisons.</p><p>Parameters: _group</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#File:Group/Group.hpp:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="Garrison.addGarrison"></a><a name="Topic549"></a><div class="CTopic TFunction LSQF">
+<a name="Garrison.deleteEmptyGroups"></a><a name="Topic568"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">deleteEmptyGroups</div>
+ <div class="CBody"><p>DeletesEmptyGroups in this garrison</p><p>Returns: nil</p></div>
+</div>
+
+<a name="Garrison.addGarrison"></a><a name="Topic569"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addGarrison</div>
- <div class="CBody"><p>Moves all units and groups from another garrison to this one.</p><p>Parameters: _garrison, _delete</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr><tr><td class="CDLEntry">_delete</td><td class="CDLDefinition"><p>Bool, optional, deletes the _garrison, default: false</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Moves all units and groups from another garrison to this one.</p><p>Parameters: _garrison, _delete</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr><tr><td class="CDLEntry">_delete</td><td class="CDLDefinition"><p>Bool, optional, deletes the _garrison, default: false. Deletion doesn't happen immediately.</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 <a name="Garrison.addUnitsAndGroups"></a><a name="Topic550"></a><div class="CTopic TFunction LSQF">

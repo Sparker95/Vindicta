@@ -1,3 +1,4 @@
+#define OOP_DEBUG
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
@@ -21,3 +22,4 @@
 #include "..\Group\groupWorldStateProperties.hpp"
 #include "LocationData.hpp"
 #include "AICommander.hpp"
+#include "..\..\MessageReceiver\MessageReceiver.hpp"

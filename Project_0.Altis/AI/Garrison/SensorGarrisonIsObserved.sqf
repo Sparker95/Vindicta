@@ -78,7 +78,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				
 				// Report to the AICommander of the side that observes this location
 				private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_s]);
-				if (_AICommander != "" && _loc != "") then {
+				if (!IS_NULL_OBJECT(_AICommander) && _loc != "") then {
 				
 					//OOP_INFO_1("Reporting to AICommander: %1", _AICommander);
 				

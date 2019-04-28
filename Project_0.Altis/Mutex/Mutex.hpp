@@ -28,3 +28,13 @@ Returns: true if successful, false if the mutex has already been locked
 */
 
 #define MUTEX_TRY_LOCK(mutex) if((mutex pushBackUnique 0) == 0) then {true} else {false}
+#define MUTEX_IS_LOCKED(mutex) (count mutex > 0)
+
+#ifndef _SQF_VM
+#define MUTEX_SCOPED_LOCK(mutex) for [{private _runOnce = true; waitUntil {(mutex pushBackUnique 0) == 0}}, {_runOnce}, {mutex deleteAt 0; _runOnce = false}] do
+#else
+#define MUTEX_SCOPED_LOCK(mutex) call
+#endif 
+// MUTEX_SCOPED_LOCK(mutex) {
+// 	// blah blah
+// };

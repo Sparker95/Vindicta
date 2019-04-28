@@ -9,6 +9,7 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
+                "--no-execute-print",
                 "--parse-only",
                 "--load",
                 ".",
@@ -21,7 +22,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -63,6 +67,7 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
+                "--no-execute-print",
                 "--disable-macro-warnings",
                 "--load",
                 ".",
@@ -74,7 +79,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -116,6 +124,7 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
+                "--no-execute-print",
                 "--load",
                 ".",
                 "-E",
@@ -127,7 +136,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -171,6 +183,7 @@
                 "-a",
                 "--load",
                 ".",
+                "--no-execute-print",
                 "--disable-macro-warnings",
                 "--pretty-print",
                 "${file}"
@@ -180,7 +193,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -226,7 +242,10 @@
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -268,6 +287,7 @@
             "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
+                "--no-execute-print",
                 "--disable-macro-warnings",
                 "--load",
                 ".",
@@ -282,7 +302,10 @@
                 "isDefault": true
             },
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {
@@ -344,11 +367,15 @@
             "args": [
                 "${file}",
                 "-Wait",
-                "-Tail", "10000"
+                "-Tail",
+                "10"
             ],
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
             "problemMatcher": [
                 {

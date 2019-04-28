@@ -124,7 +124,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
-		CALL_METHOD(_group, "removeUnit", [_thisObject]);
+		if(_group != "") then {
+			CALL_METHOD(_group, "removeUnit", [_thisObject]);
+		};
 
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");

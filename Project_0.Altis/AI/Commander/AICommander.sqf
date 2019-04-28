@@ -7,6 +7,7 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
+#define PLAN_INTERVAL 5
 #define pr private
 
 CLASS("AICommander", "AI")
@@ -28,7 +29,11 @@ CLASS("AICommander", "AI")
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 	
 	VARIABLE("targetClusterActions"); // Array with ActionCommanderRespondToTargetCluster
-	
+
+	VARIABLE("lastPlanningTime");
+	VARIABLE("cmdrAI");
+	VARIABLE("worldModel");
+
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
@@ -37,8 +42,9 @@ CLASS("AICommander", "AI")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
 		
-		ASSERT_OBJECT_CLASS(_msgLoop, "MessageLoop");
+		OOP_INFO_1("Initializing Commander for side %1", str(_side));
 		
+		ASSERT_OBJECT_CLASS(_msgLoop, "MessageLoop");
 		T_SETV("side", _side);
 		T_SETV("msgLoop", _msgLoop);
 		T_SETV("locationDataWest", []);
@@ -75,7 +81,16 @@ CLASS("AICommander", "AI")
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
-		
+		T_SETV("lastPlanningTime", TIME_NOW);
+		private _cmdrAI = NEW("CmdrAI", [_side]);
+		T_SETV("cmdrAI", _cmdrAI);
+		private _worldModel = NEW("WorldModel", []);
+		T_SETV("worldModel", _worldModel);
+
+		// Register locations
+		private _locations = CALLSM("Location", "getAll", []);
+		OOP_INFO_1("Registering %1 locations with Model", count _locations);
+		{ NEW("LocationModel", [_worldModel]+[_x]) } forEach _locations;
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -98,25 +113,43 @@ CLASS("AICommander", "AI")
 				CALLM1(_thisObject, "onTargetClusterCreated", _x);
 			};
 		} forEach T_GETV("targetClusters");
-		
+
 		// Process cluster actions
 		{
 			CALLM0(_x, "process");
 		} forEach T_GETV("targetClusterActions");
-		
+
 		// Delete old notifications
 		pr _nots = T_GETV("notifications");
 		pr _i = 0;
 		while {_i < count (_nots)} do {
 			(_nots select _i) params ["_task", "_time"];
 			// If this notification ahs been here for too long
-			if (time - _time > 120) then {
+			if (TIME_NOW - _time > 120) then {
 				[_task, T_GETV("side")] call BIS_fnc_deleteTask;
 				// Delete this notification from the list				
 				_nots deleteAt _i;
 			} else {
 				_i = _i + 1;
 			};
+		};
+
+
+		T_PRVAR(cmdrAI);
+		T_PRVAR(worldModel);
+		// Sync before update
+		CALLM(_worldModel, "sync", []);
+		CALLM(_cmdrAI, "update", [_worldModel]);
+		
+		T_PRVAR(lastPlanningTime);
+		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+			// Sync after update
+			CALLM(_worldModel, "sync", []);
+
+			CALLM(_worldModel, "updateThreatMaps", []);
+			T_SETV("lastPlanningTime", TIME_NOW);
+			CALLM(_cmdrAI, "plan", [_worldModel]);
+
 		};
 	} ENDMETHOD;
 	
@@ -144,15 +177,13 @@ CLASS("AICommander", "AI")
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
 		switch (_side) do {
 			case WEST: {
-				gAICommanderWest
+				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
 			};
-			
 			case EAST: {
-				gAICommanderEast
+				if(isNil "gAICommanderEast") then { NULL_OBJECT } else { gAICommanderEast }
 			};
-			
 			case INDEPENDENT: {
-				gAICommanderInd
+				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
 			};
 		};
 	} ENDMETHOD;
@@ -181,7 +212,7 @@ CLASS("AICommander", "AI")
 			pr _locPos = _ldNew select CLD_ID_POS;
 			pr _locSide = _ldNew select CLD_ID_SIDE;
 			pr _entry = _ld findIf {(_x select CLD_ID_POS) isEqualTo _locPos};
-			if (_entry == -1) then {
+			if (_entry == NOT_FOUND) then {
 				// Add new entry
 				_ld pushBack _ldNew;
 				
@@ -190,7 +221,10 @@ CLASS("AICommander", "AI")
 				if (_side == _thisSide && _side != _locSide) then {
 					CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
 				};
-				
+
+				// Register with the World Model
+				T_PRVAR(worldModel);
+				CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
 			} else {
 				pr _ldPrev = _ld select _entry;
 				_ldPrev params ["_type", "_side", "_unitAmount", "_pos", "_time"];
@@ -214,13 +248,13 @@ CLASS("AICommander", "AI")
 				};
 				
 				// Update time
-				_ldPrev set [CLD_ID_TIME, time];
+				_ldPrev set [CLD_ID_TIME, TIME_NOW];
 				
 				//systemChat "Location data was updated";
 				
 				// Show notification if we haven't updated this data for quite some time
 				if (_side == _thisSide && _side != _locSide) then {
-					if ((time - _time) > 600) then {
+					if ((TIME_NOW - _time) > 600) then {
 						CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
 					};
 				};
@@ -249,14 +283,14 @@ CLASS("AICommander", "AI")
 				pr _descr = format ["Friendly units have discovered an enemy location at %1", mapGridPosition _locPos];
 				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Discovered location", ""], _locPos + [0], "CREATED", 0, false, "scout", true] call BIS_fnc_taskCreate;
 				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, time];
+				_nots pushBack [_tsk, TIME_NOW];
 			};
 			
 			case "UPDATED": {
 				pr _descr = format ["Updated data on enemy garrisons at %1", mapGridPosition _locPos];
 				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Updated data on location", ""], _locPos + [0], "CREATED", 0, false, "intel", true] call BIS_fnc_taskCreate;
 				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, time];
+				_nots pushBack [_tsk, TIME_NOW];
 			};
 		};
 		T_SETV("notificationID", _id + 1);
@@ -281,7 +315,7 @@ CLASS("AICommander", "AI")
 		_value set [CLD_ID_POS, _locPos];
 		
 		// Set time
-		_value set [CLD_ID_TIME, time];
+		_value set [CLD_ID_TIME, TIME_NOW];
 		
 		// Set type
 		if (_updateLevel >= CLD_UPDATE_LEVEL_TYPE) then {
@@ -456,8 +490,11 @@ CLASS("AICommander", "AI")
 		T_GETV("targetClusterActions") pushBack _newAction;
 		
 		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
+
+		T_PRVAR(worldModel);
+		NEW("ClusterModel", [_worldModel]+[[_thisObject]+[_ID]]);
 	} ENDMETHOD;
-	
+
 	/*
 	Method: onTargetClusterSplitted
 	Gets called when an already known cluster gets splitted into multiple new clusters.
@@ -474,11 +511,13 @@ CLASS("AICommander", "AI")
 		pr _IDOld = _tcOld select TARGET_CLUSTER_ID_ID;
 		pr _a = _tcsNew apply {[_x select 0, _x select 1 select TARGET_CLUSTER_ID_ID]};
 		OOP_INFO_2("TARGET CLUSTER SPLITTED, old ID: %1, new affinity and IDs: %2", _IDOld, _a);
-		
+
 		// Sort new clusters by affinity
-		_tcsNew sort false; // Descending
+		_tcsNew sort DESCENDING;
+
 		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
 		pr _newClusterID = _tcsNew select 0 select 1 select TARGET_CLUSTER_ID_ID;
+
 		// Notify the actions assigned to this cluster
 		OOP_INFO_1("Redirecting actions to new cluster, ID: %1", _newClusterID);
 		{
@@ -486,9 +525,12 @@ CLASS("AICommander", "AI")
 				CALLM1(_x, "setTargetClusterID", _newClusterID);
 			};
 		} forEach T_GETV("targetClusterActions");
-		
+
+		T_PRVAR(worldModel);
+		// Retarget in the model
+		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject]+[_IDOld]]+[[_thisObject]+[_newClusterID]]);
 	} ENDMETHOD;	
-	
+
 	/*
 	Method: onTargetClusterMerged
 	Gets called when old clusters get merged into a new one
@@ -501,15 +543,19 @@ CLASS("AICommander", "AI")
 	*/
 	METHOD("onTargetClustersMerged") {
 		params ["_thisObject", "_tcsOld", "_tcNew"];
-		
+
 		pr _IDnew = _tcNew select TARGET_CLUSTER_ID_ID;
 		pr _IDsOld = []; { _IDsOld pushBack (_x select TARGET_CLUSTER_ID_ID)} forEach _tcsOld;
 		OOP_INFO_2("TARGET CLUSTER MERGED, old IDs: %1, new ID: %2", _IDsOld, _IDnew);
-		
+
+		T_PRVAR(worldModel);
+
 		// Assign all actions from old IDs to new IDs
 		pr _actions = T_GETV("targetClusterActions");
 		{
 			pr _IDOld = _x;
+			// Retarget in the model
+			CALLM(_worldModel, "retargetClusterByActual", [[_thisObject]+[_IDOld]]+[[_thisObject]+[_IDnew]]);
 			{
 				pr _action = _x;
 				if (CALLM0(_action, "getTargetClusterID") == _IDOld) then {
@@ -517,7 +563,7 @@ CLASS("AICommander", "AI")
 				};
 			} forEach T_GETV("targetClusterActions");
 		} forEach _IDsOld;
-		
+
 	} ENDMETHOD;
 	
 	/*
@@ -856,15 +902,25 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("registerGarrison") {
-		params ["_thisObject", ["_gar", "", [""]]];
-		
-		T_GETV("garrisons") pushBack _gar; // I need you for my army!
-		CALLM2(_gar, "postMethodAsync", "ref", []);
-		
-		nil
+	STATIC_METHOD("registerGarrison") {
+		params [P_THISCLASS, P_STRING("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		private _side = GETV(_gar, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		private _newModel = NULL_OBJECT;
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			ASSERT_THREAD(_thisObject);
+
+			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
+			T_GETV("garrisons") pushBack _gar; // I need you for my army!
+			CALLM2(_gar, "postMethodAsync", "ref", []);
+			T_PRVAR(worldModel);
+			_newModel = NEW("GarrisonModel", [_worldModel]+[_gar]);
+		};
+		_newModel
 	} ENDMETHOD;
-	
+
 	/*
 	Method: unregisterGarrison
 	Unregisters a garrison from this AICommander
@@ -874,14 +930,34 @@ CLASS("AICommander", "AI")
 	
 	Returns: nil
 	*/
-	METHOD("unregisterGarrison") {
-		params ["_thisObject", ["_gar", "", [""]]];
-		
-		pr _garrisons = T_GETV("garrisons");
-		_garrisons deleteAt (_garrisons find _gar); // Get out of my sight you useless garrison!
-		CALLM2(_gar, "postMethodAsync", "unref", []);
-		
-		nil
+	STATIC_METHOD("unregisterGarrison") {
+		params [P_THISCLASS, P_STRING("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		private _side = GETV(_gar, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
+		} else {
+			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar]+[_side]);
+		};
+	} ENDMETHOD;
+
+	METHOD("_unregisterGarrison") {
+		params [P_THISOBJECT, P_STRING("_gar")];
+		ASSERT_THREAD(_thisObject);
+
+		T_PRVAR(garrisons);
+		// Check the garrison is registered
+		private _idx = _garrisons find _gar;
+		if(_idx != NOT_FOUND) then {
+			OOP_DEBUG_MSG("Unregistering garrison %1", [_gar]);
+			// Remove from model first
+			T_PRVAR(worldModel);
+			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
+			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
+			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
+			CALLM2(_gar, "postMethodAsync", "unref", []);
+		};
 	} ENDMETHOD;
 		
 ENDCLASS;

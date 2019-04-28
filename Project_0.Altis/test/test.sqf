@@ -1,3 +1,7 @@
 
-fn = { if(false) then { diag_log "blah"; } else { }; };
-private _rval = [] call fn;
+[] spawn { try {
+throw "whatevs";
+}catch{
+diag_log _exception;
+};
+};
