@@ -69,7 +69,7 @@ CLASS("MessageReceiver", "")
 		
 		PROFILER_COUNTER_DEC("MessageReceiver");
 		
-		CRITICAL_SECTION_START
+		CRITICAL_SECTION {
 			private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
 			diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
 			// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
@@ -79,7 +79,7 @@ CLASS("MessageReceiver", "")
 				T_SETV("owner", nil);
 				PUBLIC_VAR(_thisObject, "owner");
 			};
-		CRITICAL_SECTION_END
+		};
 	} ENDMETHOD;
 
 	/*

@@ -11,9 +11,14 @@ OOP_Light_initialized = true;
 // Prints an error message with supplied text, file and line number
 OOP_error = {
 	params["_file", "_line", "_text"];
+	#ifdef _SQF_VM
+	// In testing we just throw the message so we can test against it
+	throw _text;
+	#else
 	private _msg = format ["[OOP] Error: file: %1, line: %2, %3", _file, _line, _text];
 	diag_log _msg;
 	DUMP_CALLSTACK;
+	#endif
 	// Doesn't really work :/
 	// try
 	// {
@@ -195,13 +200,55 @@ OOP_member_has_attr = {
 	// NO asserting here, it should be done already before calling this
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-		// Get member list of this class
+	// Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	// Get the member by name
 	private _memIdx = _memList findIf { _x#0 == _memNameStr };
 	// Return existance of attr
 	private _allAttr = (_memList select _memIdx)#1;
 	(_attr in _allAttr)
+};
+
+// Get an extended attribute for a static variable (one that contains values)
+OOP_static_member_get_attr_ex = {
+	params["_classNameStr", "_memNameStr", "_attr"];
+	// NO asserting here, it should be done already before calling this
+	// Get static  member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, STATIC_MEM_LIST_STR);
+	// Get the member by name
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	if(_memIdx == -1) then {
+		diag_log format["OOP_static_member_get_attr_ex: _this = %1, _memList = %2", _this, _memList];
+	};
+	// Return existance of attr
+	private _allAttr = (_memList select _memIdx)#1;
+	private _idx = _allAttr findIf { _x isEqualType [] and {_x#0 == _attr} };
+	if(_idx == NOT_FOUND) then {
+		false
+	} else {
+		_allAttr select _idx
+	}
+};
+
+// Get an extended attribute (one that contains values)
+OOP_member_get_attr_ex = {
+	params["_objNameStr", "_memNameStr", "_attr"];
+	// NO asserting here, it should be done already before calling this
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	// Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	// Get the member by name
+	private _memIdx = _memList findIf { _x#0 == _memNameStr };
+	// Return existance of attr
+	private _allAttr = (_memList select _memIdx)#1;
+
+	private _idx = _allAttr findIf { _x isEqualType [] and {_x#0 == _attr} };
+	if(_idx == NOT_FOUND) then {
+		false
+	} else {
+		_allAttr#_idx
+	}
 };
 
 // Check member is ref and print error if it's not
@@ -232,85 +279,163 @@ OOP_assert_member_is_not_ref = {
 	true;
 };
 
+// #define DEBUG_OOP_ASSERT_FUNCS
+
+OOP_are_in_same_class_heirarchy = {
+	params ["_classNameStr"];
+	// If we aren't in a class member function at all
+	if(isNil "_thisClass") exitWith { false	};
+	// If we are in the same class
+	if(_thisClass isEqualTo _classNameStr) exitWith { true };
+	// If we are in a descendant class
+	_classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)
+};
+
 OOP_assert_class_member_access = {
-	params ["_classNameStr", "_memNameStr", "_isPrivate", "_isProtected", "_file", "_line"];
+	params ["_classNameStr", "_memNameStr", "_isGet", "_isPrivate", "_isGetOnly", "_file", "_line"];
 
-	// If the class we access from is the same as the one that owns the member then we are fine regardless
-	if(!isNil "_thisClass" and {_thisClass isEqualTo _classNameStr}) exitWith { true };
-
-	// If it isn't private or protected then we are fine
-	if(!_isPrivate and !_isProtected) exitWith { true };
-
-	// If we aren't in a class function at all then private or protected would be definition be violated.
-	if(isNil "_thisClass") exitWith {
-		private _errorText = format ["%1.%2 is unreachable (private or protected)", _classNameStr, _memNameStr];
+	#ifdef DEBUG_OOP_ASSERT_FUNCS
+	diag_log format ["_classNameStr = %1, _memNameStr = %2, _isGet = %3, _isPrivate = %4, _isGetOnly = %5, _thisClass = %6", 
+		_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly,
+		if(!isNil "_thisClass") then { _thisClass } else { nil }
+	];
+	#endif
+	// If it isn't private or get only then we are fine
+	if(!_isPrivate and !_isGetOnly) exitWith { 
+		#ifdef DEBUG_OOP_ASSERT_FUNCS
+		diag_log "OK: !_isPrivate";
+		#endif
+		true 
+	};
+	// If it is both private and get-only then it is a declaration error, these are mutually exclusive
+	if(_isPrivate and _isGetOnly) exitWith {
+		private _errorText = format ["%1.%2 is marked private AND get-only, but they are intended to be mutually exclusive (get-only implies private set and public get)", _classNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false
 	};
 
-	// If the member is protected then we can also allow access from any descendent class (we already checked for the same class above)
-	if(_isProtected) then { 
-		// TODO: does this actually work? Might just be all member vars are owned by the object and we need to inspect the _oop_memLists instead.
-		if(_classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)) exitWith { 
-			true 
-		} else {
-			private _errorText = format ["%1.%2 is unreachable from %3 (protected)", _classNameStr, _memNameStr, _thisClass];
-			[_file, _line, _errorText] call OOP_error;
-			false
-		}
-	} else {
-		// We already checked for same class at the top of this function, so it is an error if we get here.
-		private _errorText = format ["%1.%2 is unreachable from %3 (private)", _classNameStr, _memNameStr, _thisClass];
+	// Private and get only rules:
+	// Private is violated if access is outside of the class heirarchy that owns the variable regardless always
+	// Get-only is violated if set access is outside of the class heirarchy always
+
+	private _inSameHeirarchy = [_classNameStr] call OOP_are_in_same_class_heirarchy;
+	// If we are in the same class heirarchy then private and get-only are fine
+	if(_inSameHeirarchy) exitWith { true };
+	// At this point we know we are accessing from outside the class heirarchy
+	// Check we aren't attempting to set a get-only variable
+	if(!_isGet and _isGetOnly) exitWith {
+		private _errorText = format ["%1.%2 is get-only outside of its own class heirarchy", _classNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
 		false
-	}
+	};
+	// If the variable isn't private then we are fine.
+	if(!_isPrivate) exitWith { true };
+
+	// // If it is not private, and is get only and we aren't 
+
+	// // If the class we access from is the same as the one that owns the member then we are fine regardless
+	// if(!isNil "_thisClass" and {_thisClass isEqualTo _classNameStr}) exitWith { 
+	// 	#ifdef DEBUG_OOP_ASSERT_FUNCS
+	// 	diag_log "OK: _thisClass isEqualTo _classNameStr";
+	// 	#endif
+	// 	true
+	// };
+
+	// // If we aren't in a class function at all then private would by violated.
+	// if(_isPrivate and {isNil "_thisClass"}) exitWith {
+	// 	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	// 	[_file, _line, _errorText] call OOP_error;
+	// 	false
+	// };
+
+	// // Check if the object we are accessing is a parent of the class we are in (this is fine)
+	// // We could also allow access of members in derived classes but this is likely a design flaw anyway.
+	// // This code would allow it:
+	// // 	or {_thisClass in GET_SPECIAL_MEM(_classNameStr, PARENTS_STR)}
+	// if(_classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)) exitWith {
+	// 	#ifdef DEBUG_OOP_ASSERT_FUNCS
+	// 	diag_log "OK: _classNameStr in GET_SPECIAL_MEM(_thisClass, PARENTS_STR)";
+	// 	#endif
+	// 	true 
+	// };
+	private _errorText = format ["%1.%2 is unreachable (private)", _classNameStr, _memNameStr];
+	[_file, _line, _errorText] call OOP_error;
+	false
+};
+
+OOP_assert_is_in_required_thread = {
+	params ["_objOrClass", "_classNameStr", "_memNameStr", "_threadAffinityFn", "_file", "_line"];
+	private _requiredThread = [_objOrClass] call _threadAffinityFn;
+	if(!isNil "_thisScript" and !isNil "_requiredThread" and  {!(_requiredThread isEqualTo _thisScript)}) exitWith {
+		private _errorText = format ["%1.%2 is accessed from the wrong thread, expected '%3' got '%4'", _classNameStr, _memNameStr, _requiredThread, _thisScript];
+		[_file, _line, _errorText] call OOP_error;
+		false
+	};
+	true
 };
 
 OOP_assert_static_member_access = {
-	params ["_classNameStr", "_memNameStr", "_file", "_line"];
+	params ["_classNameStr", "_memNameStr", "_isGet", "_file", "_line"];
 	
+#ifndef _SQF_VM
+	private _threadAffinity = [_classNameStr, _memNameStr, ATTR_THREAD_AFFINITY_ID] call OOP_static_member_get_attr_ex;
+	if((_threadAffinity isEqualType []) and {!([_classNameStr, _classNameStr, _memNameStr, _threadAffinity#1, _file, _line] call OOP_assert_is_in_required_thread)}) exitWith {
+		false
+	};
+#endif
 	private _isPrivate = [_classNameStr, _memNameStr, ATTR_PRIVATE] call OOP_static_member_has_attr;
-
-	// Can't be private AND protected, they are mutually exclusive (we should assert this during class declaration, not here)
-	private _isProtected = !_isPrivate and { [_classNameStr, _memNameStr, ATTR_PROTECTED] call OOP_static_member_has_attr };
-
-	[_classNameStr, _memNameStr, _isPrivate, _isProtected, _file, _line] call OOP_assert_class_member_access;
+	private _isGetOnly = [_classNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_static_member_has_attr;
+	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
 };
 
-OOP_assert_get_static_member_access = { _this call OOP_assert_static_member_access; };
+OOP_assert_get_static_member_access = { 
+	params ["_classNameStr", "_memNameStr", "_file", "_line"];
+	[_classNameStr, _memNameStr, true, _file, _line] call OOP_assert_static_member_access; 
+};
 OOP_assert_set_static_member_access = { 
 	params ["_classNameStr", "_memNameStr", "_file", "_line"];
 	
-	private _isGetOnly = [_classNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_static_member_has_attr;
-	if(_isGetOnly) exitWith { false };
-	_this call OOP_assert_static_member_access;
+	//private _isGetOnly = [_classNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_static_member_has_attr;
+	//if(_isGetOnly) exitWith { false };
+	[_classNameStr, _memNameStr, false, _file, _line] call OOP_assert_static_member_access;
 };
 
 OOP_assert_member_access = {
-	params ["_objNameStr", "_memNameStr", "_file", "_line"];
-	
-	// If we are accessing from within the same object we obviously have private member access
+	params ["_objNameStr", "_memNameStr", "_isGet", "_file", "_line"];
+
+	#ifdef DEBUG_OOP_ASSERT_FUNCS
+	diag_log format ["OOP_assert_member_access: _objNameStr = %1, _memNameStr = %2, _isGet = %3, _thisObject = %4, _thisClass = %5", 
+		_objNameStr, _memNameStr, _isGet,
+		if(!isNil "_thisObject") then { _thisObject } else { nil },
+		if(!isNil "_thisClass") then { _thisClass } else { nil }
+	];
+	#endif
+
+	// EARLY OUT: If we are accessing from within the same object we have no access restrictions
 	if (!isNil "_thisObject" and {_thisObject isEqualTo _objNameStr}) exitWith { true };
 
-
 	private _isPrivate = [_objNameStr, _memNameStr, ATTR_PRIVATE] call OOP_member_has_attr;
-
-	// Can't be private AND protected, they are mutually exclusive (we should assert this during class declaration, not here)
-	private _isProtected = !_isPrivate and { [_objNameStr, _memNameStr, ATTR_PROTECTED] call OOP_member_has_attr };
+	private _isGetOnly = [_objNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_member_has_attr;
 
 	// Get the class of the object that owns the member
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-	private _thisClass = if (!isNil "_thisObject") then { OBJECT_PARENT_CLASS_STR(_thisObject) } else {nil};
-	[_classNameStr, _memNameStr, _isPrivate, _isProtected, _file, _line] call OOP_assert_class_member_access;
+#ifndef _SQF_VM
+	private _threadAffinity = [_objNameStr, _memNameStr, ATTR_THREAD_AFFINITY_ID] call OOP_member_get_attr_ex;
+	if((_threadAffinity isEqualType []) and {!([_objNameStr, _classNameStr, _memNameStr, _threadAffinity#1, _file, _line] call OOP_assert_is_in_required_thread)}) exitWith {
+		false
+	};
+#endif
+	private _thisClass = if (!isNil "_thisObject") then { OBJECT_PARENT_CLASS_STR(_thisObject) } else { nil };
+	[_classNameStr, _memNameStr, _isGet, _isPrivate, _isGetOnly, _file, _line] call OOP_assert_class_member_access;
 };
 
-OOP_assert_get_member_access = OOP_assert_member_access; //{ _this call OOP_assert_member_access; };
+OOP_assert_get_member_access = {
+	params ["_objNameStr", "_memNameStr", "_file", "_line"];
+	[_objNameStr, _memNameStr, true, _file, _line] call OOP_assert_member_access; 
+};
 OOP_assert_set_member_access = { 
 	params ["_objNameStr", "_memNameStr", "_file", "_line"];
-	
-	private _isGetOnly = [_objNameStr, _memNameStr, ATTR_GET_ONLY] call OOP_member_has_attr;
-	if(_isGetOnly) exitWith { false };
-	_this call OOP_assert_member_access;
+	[_objNameStr, _memNameStr, false, _file, _line] call OOP_assert_member_access;
 };
 
 
@@ -541,3 +666,127 @@ CLASS("RefCounted", "")
 		};
 	} ENDMETHOD;
 ENDCLASS;
+
+#ifdef _SQF_VM
+
+CLASS("AttrTestBase1", "")
+	VARIABLE("var_default");
+	VARIABLE_ATTR("var_private", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("var_get_only", [ATTR_GET_ONLY]);
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("var_default", true);
+		T_SETV("var_private", true);
+		T_SETV("var_get_only", true);
+	} ENDMETHOD;
+
+	METHOD("validDefaultAccessTest") {
+		params [P_THISOBJECT];
+		T_SETV("var_default", true);
+		T_GETV("var_default")
+	} ENDMETHOD;
+	
+	METHOD("validPrivateAccessTest") {
+		params [P_THISOBJECT];
+		T_SETV("var_private", true);
+		T_GETV("var_private")
+	} ENDMETHOD;
+		
+	METHOD("validGetOnlyAccessTest") {
+		params [P_THISOBJECT];
+		T_SETV("var_get_only", true);
+		T_GETV("var_get_only")
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("AttrTestDerived1", "AttrTestBase1")
+	METHOD("new") {
+		params [P_THISOBJECT];
+		
+	} ENDMETHOD;
+	
+	METHOD("validDerviedDefaultAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		SETV(_base, "var_default", true);
+		GETV(_base, "var_default")
+	} ENDMETHOD;
+	
+	METHOD("validDerviedPrivateAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		SETV(_base, "var_private", true);
+		GETV(_base, "var_private")
+	} ENDMETHOD;
+		
+	METHOD("validDerviedGetOnlyAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		SETV(_base, "var_get_only", true);
+		GETV(_base, "var_get_only")
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("AttrTestNotDerived1", "")
+	METHOD("new") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+	
+	METHOD("validNonDerivedDefaultAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		SETV(_base, "var_default", true);
+		GETV(_base, "var_default")
+	} ENDMETHOD;
+	
+	METHOD("invalidNonDerivedPrivateAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		SETV(_base, "var_private", true);
+		GETV(_base, "var_private")
+	} ENDMETHOD;
+		
+	METHOD("validNonDerivedGetOnlyAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		GETV(_base, "var_get_only")
+	} ENDMETHOD;
+
+	METHOD("invalidNonDerivedGetOnlyAccessTest") {
+		params [P_THISOBJECT, P_STRING("_base")];
+		SETV(_base, "var_get_only", true)
+	} ENDMETHOD;
+ENDCLASS;
+
+["OOP variable attributes", {
+	private _base = NEW("AttrTestBase1", []);
+
+	["valid default access", { CALLM(_base, "validDefaultAccessTest", []) }] call test_Assert;
+	["valid private access", { CALLM(_base, "validPrivateAccessTest", []) }] call test_Assert;
+	["valid get only access", { CALLM(_base, "validGetOnlyAccessTest", []) }] call test_Assert;
+
+	["valid external get only access", { GETV(_base, "var_get_only"); true }] call test_Assert;
+	["invalid external private access",
+		{ GETV(_base, "var_private") },
+		"AttrTestBase1.var_private is unreachable (private)"
+	] call test_Assert_Throws;
+	["invalid external get only access",
+		{ SETV(_base, "var_get_only", true) },
+		"AttrTestBase1.var_get_only is get-only outside of its own class heirarchy"
+	] call test_Assert_Throws;
+
+	private _derived = NEW("AttrTestDerived1", []);
+	["valid derived default access", { CALLM(_derived, "validDerviedDefaultAccessTest", [_base]) }] call test_Assert;
+	["valid derived private access", { CALLM(_derived, "validDerviedPrivateAccessTest", [_base]) }] call test_Assert;
+	["valid derived get only access", { CALLM(_derived, "validDerviedGetOnlyAccessTest", [_base]) }] call test_Assert;
+
+	private _nonDerived = NEW("AttrTestNotDerived1", []);
+	["valid non-derived default access", { CALLM(_nonDerived, "validNonDerivedDefaultAccessTest", [_base]) }] call test_Assert;
+	["invalid non-derived private access",
+		{ CALLM(_nonDerived, "invalidNonDerivedPrivateAccessTest", [_base]) },
+		"AttrTestBase1.var_private is unreachable (private)"
+	] call test_Assert_Throws;
+	["valid non-derived get only access", { CALLM(_nonDerived, "validNonDerivedGetOnlyAccessTest", [_base]) }] call test_Assert;
+	["invalid non-derived get only access",
+		{ CALLM(_nonDerived, "invalidNonDerivedGetOnlyAccessTest", [_base]) },
+		"AttrTestBase1.var_get_only is get-only outside of its own class heirarchy"
+	] call test_Assert_Throws;
+
+}] call test_AddTest;
+
+#endif
