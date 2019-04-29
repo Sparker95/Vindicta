@@ -35,7 +35,7 @@ CLASS("GarrisonModel", "ModelBase")
 	// What side this garrison belongs to.
 	VARIABLE_ATTR("side", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	// Id of the location the garrison is currently occupying.
-	VARIABLE_ATTR("locationId", [ATTR_PRIVATE]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
