@@ -529,6 +529,8 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
 
+#define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
+
 // ----------------------------------------
 // |              C L A S S               |
 // ----------------------------------------

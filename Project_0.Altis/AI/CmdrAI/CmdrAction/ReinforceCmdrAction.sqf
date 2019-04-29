@@ -287,6 +287,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 	VARIABLE("tgtGarrId");
 	VARIABLE("detachmentEff");
 	VARIABLE("detachedGarrId");
+
 	VARIABLE("pushedState");
 
 	METHOD("new") {
@@ -297,8 +298,12 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		T_SETV("detachmentEff", EFF_ZERO);
 		T_SETV("detachedGarrId", -1);
 
+		private _srcGarrIdVar = MAKE_AST_VALUE(-1);
+		private _splitGarrIdVar = MAKE_AST_VALUE(-1);
+		private _detachmentEffVar = MAKE_AST_VALUE([]);
 		private _transitions = [
-			NEW("ReinforceSplitGarrison", [_thisObject]),
+			NEW("AST_SplitGarrison", [_thisObject]),
+			NEW("AST_AssignActionToGarrison", [_thisObject ARG ]),
 			NEW("MoveGarrison", [_thisObject ARG 200]),
 			NEW("MergeGarrison", [_thisObject])
 		];
