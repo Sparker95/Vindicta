@@ -1,284 +1,41 @@
 #include "..\common.hpp"
 
-#define CMDR_ACTION_STATE_SPLIT 	CMDR_ACTION_STATE_CUSTOM+1
+#define CMDR_ACTION_STATE_SPLIT				CMDR_ACTION_STATE_CUSTOM+1
+#define CMDR_ACTION_STATE_READY				CMDR_ACTION_STATE_CUSTOM+2
+#define CMDR_ACTION_STATE_MOVED				CMDR_ACTION_STATE_CUSTOM+3
+#define CMDR_ACTION_STATE_TARGET_DEAD		CMDR_ACTION_STATE_CUSTOM+4
 
-#define LABEL(model) GETV(model, "label")
+#define CMDR_ACTION_STATE_ARRIVED 			CMDR_ACTION_STATE_CUSTOM+5
 
-CLASS("ReinforceSplitGarrison", "ActionStateTransition")
-	VARIABLE("action");
-	VARIABLE("successState");
-	VARIABLE("failState");
-
-	// Inputs
-	VARIABLE("srcGarrId");
-	VARIABLE("detachmentEff");
-
-	// DOING: bindings for inputs and outputs, not straight up values. We need 
-	// later actions to be able to access these values.
-	// Options:
-	// 1- Store directly to action. If the variable doesn't exist then it won't work, and all the names have to match.
-	// 2- Value container. Simple, just make it an array and pass by ref!
-	// 3- Make them read/write functions instead of values, like std::bind kind of thing.
-	//
-	// 2 seems simplest. Wrap it into macros for GET+SET value?
-
-
-	// Outputs
-	VARIABLE("detachedGarrId");
+// Reads the position of a garrison into a position variable for use in other commands
+CLASS("AST_SelectNewTarget", "ActionStateTransition")
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrId", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("target", [ATTR_PRIVATE]);
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_successState"), P_NUMBER("_failState")];
-		T_SETV("action", _action);
-		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-		// T_SETV("toState", CMDR_ACTION_STATE_SPLIT);
+		params [P_THISOBJECT, 
+			P_ARRAY("_fromStates"),				// States it is valid from
+			P_AST_STATE("_successState"),		// state on success (can't fail)
+			// inputs
+			P_AST_VAR("_garrId"),
+			// outputs
+			P_AST_VAR("_target")+				// new target
+		];
+		T_SETV("fromStates", _fromStates);
+		T_SETV("successState", _successState);
+		T_SETV("garrId", _garrId);
+		T_SETV("target", _target);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-		T_PRVAR(action);
-		private _srcGarrId = GETV(_action, "srcGarrId");
-		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		ASSERT_OBJECT(_srcGarr);
-		//private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
-
-		// Get the previously calculated efficiency
-		private _detachEff = GETV(_action, "detachmentEff");
-
-		ASSERT_MSG(EFF_GTE(_detachEff, EFF_MIN_EFF), "Detachment efficiency is below min allowed");
-
-		// Apply split to all sim worlds as it always happens immediately at the start of action
-		// TODO: we need to check if this actually works.
-		// TODO: some kind of failure ability for actions in general.
-
-		// Split can happen instantly so apply it to now and future sim worlds.
-		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
-									CALLM(_srcGarr, "splitSim", [_detachEff ARG [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]])
-								} else {
-									CALLM(_srcGarr, "splitActual", [_detachEff ARG [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]])
-								};
-
-		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
-			OOP_WARNING_MSG("[w %1 a %2] Failed to detach from %3", [_world ARG _action ARG LABEL(_srcGarr)]);
-			false
-		};
-
-		private _finalDetachEff = GETV(_detachedGarr, "efficiency");
-		// We want this to be impossible. Sadly it seems it isn't :/
-		ASSERT_MSG(EFF_GTE(_finalDetachEff, EFF_ZERO), "Final detachment efficiency is zero!");
-		//ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachEff), "Final detachment efficiency is below requested");
-
-		// This shouldn't be possible and if it does happen then we would need to do something with the resultant understaffed garrison.
-		// if(!EFF_GTE(_finalDetachEff, _detachEff)) exitWith {
-		// 	OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world ARG _action ARG _srcGarr]);
-		// 	false
-		// };
-
-		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_srcGarr)]);
-
-		// DOING: HOW TO FIX THIS? ASTS need to save state, sometimes they modify the Action. How to 
-		// apply them to simworlds in this case without breaking action state for real world?
-		// simCopy actions as well? Probably make sense.
-		CALLM(_detachedGarr, "setAction", [_action]);
-		SETV(_action, "detachedGarrId", GETV(_detachedGarr, "id"));
-		true
-	} ENDMETHOD;
-ENDCLASS;
-
-#define CMDR_ACTION_STATE_ARRIVED 	CMDR_ACTION_STATE_CUSTOM+2
-
-// TODO: Split into Move and Retarget, see Docs\CmdrActions\TakeOrReinforce.dot.
-// Need to handle target dying etc etc.
-CLASS("MoveGarrison", "ActionStateTransition")
-	VARIABLE("action");
-	VARIABLE("moving");
-	VARIABLE("radius");
-	VARIABLE("noTarget");
-
-	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_radius")];
-
-		T_SETV("action", _action);
-		T_SETV("moving", false);
-		T_SETV("radius", _radius);
-		T_SETV("noTarget", false);
-		T_SETV("fromStates", [CMDR_ACTION_STATE_SPLIT]);
-		T_SETV("toState", CMDR_ACTION_STATE_ARRIVED);
-	} ENDMETHOD;
-
-	METHOD("selectNewTarget") {
-		params [P_THISOBJECT, P_STRING("_world")];
-
-		T_PRVAR(action);
-
-		private _srcGarrId = GETV(_action, "srcGarrId");
-		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		ASSERT_OBJECT(_srcGarr);
-
-		// Prefer to go back to src garrison
-		private _newTgtGarr = NULL_OBJECT;
-		if(!CALLM(_srcGarr, "isDead", [])) then {
-			_newTgtGarr = _srcGarr;
-		} else {
-			private _detachedGarrId = GETV(_action, "detachedGarrId");
-			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-			ASSERT_OBJECT(_detachedGarr);
-
-			private _pos = GETV(_detachedGarr, "pos");
-			// select the nearest friendly garrison
-			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos ARG 4000]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
-			if(count _nearGarrs == 0) then {
-				_nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
-			};
-			if(count _nearGarrs > 0) then {
-				_newTgtGarr = _nearGarrs#0;
-			};
-		};
-		_newTgtGarr
-	} ENDMETHOD;
-
-	/* virtual */ METHOD("isAvailable") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		!T_GETV("noTarget")
-	} ENDMETHOD;
-
-	/* override */ METHOD("apply") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-
-		T_PRVAR(action);
-		T_PRVAR(moving);
-		T_PRVAR(radius);
-
-		private _detachedGarrId = GETV(_action, "detachedGarrId");
-		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-		ASSERT_OBJECT(_detachedGarr);
-
-		private _tgtGarrId = GETV(_action, "tgtGarrId");
-		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_tgtGarr);
-
-		// If the detachment died then we just finish the whole action immediately
-		if(CALLM(_detachedGarr, "isDead", [])) exitWith { 
-			OOP_WARNING_MSG("[w %1 a %2] Detached garrison %3 is dead so can't complete move to %4 (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
-			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
-			true
-		};
-
-		private _arrived = false;
-
-		switch(GETV(_world, "type")) do {
-			// Move can't be applied instantly
-			case WORLD_TYPE_SIM_NOW: {};
-			// Move completes at some point in the future
-			case WORLD_TYPE_SIM_FUTURE: {
-				private _tgtPos = GETV(_tgtGarr, "pos");
-				CALLM(_detachedGarr, "moveSim", [_tgtPos]);
-				_arrived = true;
-			};
-			case WORLD_TYPE_REAL: {
-				// If target is dead then we better cancel move and pick a new one.
-				if(CALLM(_tgtGarr, "isDead", [])) then {
-					if(_moving) then
-					{
-						CALLM(_detachedGarr, "cancelMoveActual", []);
-						_moving = false;
-						T_SETV("moving", false);
-					};
-					private _newTgtGarr = T_CALLM("selectNewTarget", [_world]);
-					if(IS_NULL_OBJECT(_newTgtGarr)) then {
-						// TODO: Now what?
-						// We just cancel the action for now. Maybe another action will pick up this garrison?
-						T_SETV("noTarget", true);
-					} else {
-						OOP_INFO_MSG("[w %1 a %2] Target %3 is dead, picking %4 as a new target", [_world ARG _action ARG LABEL(_tgtGarr) ARG LABEL(_newTgtGarr)]);
-						T_SETV("moving", false);
-						private _newTgtGarrId = GETV(_newTgtGarr, "id");
-						// Update the target Id in the action.
-						SETV(_action, "tgtGarrId", _newTgtGarrId);
-						_tgtGarr = _newTgtGarr;
-					};
-				};
-
-				private _tgtPos = GETV(_tgtGarr, "pos");
-				if(!_moving) then {
-					// Start moving
-					OOP_INFO_MSG("[w %1 a %2] Move %3 to %4@%5: started", [_world ARG _action ARG (_detachedGarr) ARG (_tgtGarr) ARG _tgtPos]);
-					CALLM(_detachedGarr, "moveActual", [_tgtPos ARG _radius]);
-					T_SETV("moving", true);
-				} else {
-					// Are we there yet?
-					private _done = CALLM(_detachedGarr, "moveActualComplete", []);
-					if(_done) then {
-						private _detachedGarrPos = GETV(_detachedGarr, "pos");
-						if((_detachedGarrPos distance _tgtPos) <= _radius * 1.5) then {
-							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, reached target within %7m", [_world ARG _action ARG LABEL(_detachedGarr) ARG _detachedGarrPos ARG LABEL(_tgtGarr) ARG _tgtPos ARG _radius]);
-							_arrived = true;
-						} else {
-							// Move again cos we didn't get there yet!
-							OOP_INFO_MSG("[w %1 a %2] Move %3@%4 to %5@%6: complete, didn't reach target within %7m, moving again", [_world ARG _action ARG LABEL(_detachedGarr) ARG _detachedGarrPos ARG LABEL(_tgtGarr) ARG _tgtPos ARG _radius]);
-							T_SETV("moving", false);
-						};
-					};
-				};
-			};
-		};
-		_arrived
-	} ENDMETHOD;
-ENDCLASS;
-
-CLASS("MergeGarrison", "ActionStateTransition")
-	VARIABLE("action");
-
-	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_action")];
-
-		T_SETV("action", _action);
-		T_SETV("fromStates", [CMDR_ACTION_STATE_ARRIVED]);
-		T_SETV("toState", CMDR_ACTION_STATE_END);
-	} ENDMETHOD;
-
-	/* override */ METHOD("apply") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-
-		T_PRVAR(action);
-		private _detachedGarrId = GETV(_action, "detachedGarrId");
-		private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-		ASSERT_OBJECT(_detachedGarr);
-
-		private _tgtGarrId = GETV(_action, "tgtGarrId");
-		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
-		ASSERT_OBJECT(_tgtGarr);
-
-		// If the detachment or target died then we just finish the whole action immediately
-		if(CALLM(_detachedGarr, "isDead", [])) exitWith { 
-			OOP_WARNING_MSG("[w %1 a %2] Detached garrison %3 is dead so can't merge to %4 (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
-			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
-			true
-		};
-
-		// If the detachment or target died then we just finish the whole action immediately
-		if(CALLM(_tgtGarr, "isDead", [])) exitWith { 
-			OOP_WARNING_MSG("[w %1 a %2] Target garrison %4 is dead so can't merge %3 to it (aborting the action)", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
-			// HACK: Return true to indicate we "succeeded" until AST can support failure conditions.
-			true 
-		};
-
-		// ASSERT_MSG(!CALLM(_detachedGarr, "isDead", []), "Garrison to merge from is dead");
-		// ASSERT_MSG(!CALLM(_tgtGarr, "isDead", []), "Garrison to merge to is dead");
-
-		// Merge can happen instantly so apply it to now and future sim worlds.
-		if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
-			CALLM(_detachedGarr, "mergeSim", [_tgtGarr]);
-		} else {
-			CALLM(_detachedGarr, "mergeActual", [_tgtGarr]);
-			//private _rc = GETV(_action, "refCount");
-			//OOP_INFO_MSG("[w %1 a %2] After merged action has ref count %3", [_world ARG _action ARG _rc]);
-		};
-		OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_tgtGarr)]);
-		true
+		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
+		ASSERT_OBJECT(_garr);
+		// TODO: select new target (copy from old MoveGarrison command)
+		T_SET_AST_VAR("target", ...);
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -298,13 +55,44 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		T_SETV("detachmentEff", EFF_ZERO);
 		T_SETV("detachedGarrId", -1);
 
-		private _srcGarrIdVar = MAKE_AST_VALUE(-1);
-		private _splitGarrIdVar = MAKE_AST_VALUE(-1);
-		private _detachmentEffVar = MAKE_AST_VALUE([]);
+		//private _srcGarrIdVar = T_CALLM("createVariable", -1);
+		private _splitGarrIdVar = T_CALLM("createVariable", -1);
+		private _targetVar = T_CALLM("createVariable", [_tgtGarrId]+[TARGET_TYPE_GARRISON]);
+		//private _detachmentEffVar = T_CALLM("createVariable", EFF_ZERO);
 		private _transitions = [
-			NEW("AST_SplitGarrison", [_thisObject]),
-			NEW("AST_AssignActionToGarrison", [_thisObject ARG ]),
-			NEW("MoveGarrison", [_thisObject ARG 200]),
+			NEW("AST_SplitGarrison", 
+				[_thisObject]+ 						// This action (for debugging context)
+				[[CMDR_ACTION_STATE_START]]+ 		// First action we do
+				[CMDR_ACTION_STATE_SPLIT]+ 			// State change if successful
+				[CMDR_ACTION_STATE_END]+ 			// State change if failed (go straight to end of action)
+				[MAKE_AST_VAR(_srcGarrId)]+ 		// Garrison to split (constant)
+				[MAKE_AST_VAR(_detachmentEffVar)]+ 	// Efficiency we want the detachment to have (constant)
+				[MAKE_AST_VAR([ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF])]+ // Flags for split operation
+				[_splitGarrIdVar] 					// variable to recieve Id of the garrison after it is split
+				),
+			NEW("AST_AssignActionToGarrison", 
+				[_thisObject]+ 						// This action, gets assigned to the garrison
+				[[CMDR_ACTION_STATE_SPLIT]]+ 		// Do this after splitting
+				[CMDR_ACTION_STATE_READY]+ 			// State change when successful (can't fail)
+				[_splitGarrIdVar] 					// Id of garrison to assign the action to
+				),
+			NEW("AST_MoveGarrison",
+				[_thisObject]+ 						// This action (for debugging context)
+				[[CMDR_ACTION_STATE_READY]]+ 		
+				[CMDR_ACTION_STATE_MOVED]+ 			// State change when successful
+				[CMDR_ACTION_STATE_END]+ 			// State change when garrison is dead (just terminate the action)
+				[CMDR_ACTION_STATE_TARGET_DEAD]+ 	// State change when target is dead
+				[_splitGarrIdVar]+ 					// Id of garrison to move
+				[_targetVar]+ 						// Target to move to (initially the target garrison)
+				[MAKE_AST_VAR(200)] 				// Radius to move within
+			),
+			NEW("AST_SelectNewTarget",
+				[[CMDR_ACTION_STATE_TARGET_DEAD]]+ 	// We select a new target when the old one is dead
+				[CMDR_ACTION_STATE_READY]+ 			// State change when successful
+				[_splitGarrIdVar]+ 					// It of the garrison we are moving (for context)
+				[_targetVar] 						// New target
+			),
+			// DOING: AST for this
 			NEW("MergeGarrison", [_thisObject])
 		];
 		T_SETV("transitions", _transitions);

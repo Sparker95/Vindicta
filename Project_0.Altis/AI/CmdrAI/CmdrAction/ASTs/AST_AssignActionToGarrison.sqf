@@ -10,12 +10,14 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition")
 
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),
-			P_AST_STATE("_successState"),
+			P_OOP_OBJECT("_action"),			// Action to assign to the garrison
+			P_ARRAY("_fromStates"),				// States it is valid from
+			P_AST_STATE("_successState"),		// State to transition do after completion
 			// inputs
-			P_AST_VAR("_garrId")];
+			P_AST_VAR("_garrId")];				// Id of the garrison to assign the action to
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 		T_SETV("action", _action);
+		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("garrId", _srcGarrId);
 	} ENDMETHOD;

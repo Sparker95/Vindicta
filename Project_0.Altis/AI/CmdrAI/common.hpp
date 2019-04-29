@@ -24,6 +24,8 @@
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
 
+#define LABEL(model) GETV(model, "label")
+
 #define EFF_ZERO T_EFF_null
 
 // Minimum efficiency of a garrison.

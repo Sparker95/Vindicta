@@ -31,6 +31,9 @@ CLASS("CmdrAction", "RefCounted")
 	// State transition functions
 	VARIABLE("transitions");
 
+	VARIABLE("variables");
+	VARIABLE("variablesStack");
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("scorePriority", 1);
@@ -40,10 +43,20 @@ CLASS("CmdrAction", "RefCounted")
 		//T_SETV("complete", false);
 		T_SETV("state", CMDR_ACTION_STATE_START);
 		T_SETV("transitions", []);
+		T_SETV("variables", []);
+		T_SETV("variablesStack", []);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+	} ENDMETHOD;
+
+	METHOD("createVariable") {
+		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
+		T_PRVAR(variables);
+		private _var = MAKE_AST_VAR(_initialValue);
+		_variables pushBack _var;
+		_var
 	} ENDMETHOD;
 
 	METHOD("getFinalScore") {
@@ -64,7 +77,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(transitions);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 
-		T_CALLM("pushState", []);
+		T_CALLM("pushVariables", []);
 		// Actually this isn't right, multiple actions can happen instantly. Actions themselves should decide if they 
 		// can apply based on the sim world type they are passed.
 		// // For sim now world only apply the current action transition.
@@ -84,18 +97,32 @@ CLASS("CmdrAction", "RefCounted")
 			_state = _newState;
 		};
 		//};
-		T_CALLM("popState", []);
+		T_CALLM("popVariables", []);
 		// We don't update any member variables here, this is just a sim.
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("pushState") {
+	METHOD("pushVariables") {
 		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
 		
+		// Copy the variable contents and push onto stack. This will NOT deepcopy arrays. They should never be modified, only replaced.
+		_variablesStack pushBack ({ MAKE_AST_VAR(GET_AST_VAR(_x)) } apply _variables);
 	} ENDMETHOD;
-	
-	/* virtual */ METHOD("popState") {
+
+	METHOD("popVariables") {
 		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
 		
+		ASSERT_MSG(count _variablesStack > 0, "Variables stack is empty");
+
+		// pop the copy of the variables
+		private _copy = _variablesStack deleteAt (count _variablesStack - 1);
+		// copy the values back into the variable array
+		{
+			SET_AST_VAR(_variables select _forEachIndex, GET_AST_VAR(_x));
+		} forEach _copy;
 	} ENDMETHOD;
 
 	METHOD("update") {
