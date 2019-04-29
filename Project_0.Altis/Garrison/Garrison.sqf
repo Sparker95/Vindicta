@@ -27,6 +27,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
 	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
 	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
+	VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
