@@ -202,6 +202,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("setLocation") {
 		params ["_thisObject", ["_location", "", [""]] ];
 
+		__MUTEX_LOCK
+
 		ASSERT_THREAD(_thisObject);
 
 		T_SETV("location", _location);
@@ -222,6 +224,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		T_SETV("location", _location);
 		
+		__MUTEX_UNLOCK
+		
 	} ENDMETHOD;
 	
 	METHOD("detachFromLocation") {
@@ -229,11 +233,15 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 		
+		__MUTEX_LOCK
+		
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
 			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
 			T_SETV("location", "");
 		};
+		
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 	/*
@@ -249,8 +257,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		__MUTEX_LOCK
+
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "setPos", _pos);
+		
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 
@@ -271,7 +283,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getSide") {
 		params [["_thisObject", "", [""]]];
-		GET_VAR(_thisObject, "side")
+		__MUTEX_LOCK
+		private _return = GET_VAR(_thisObject, "side");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 
@@ -284,7 +299,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getLocation") {
 		params [["_thisObject", "", [""]]];
-		GET_VAR(_thisObject, "location")
+		__MUTEX_LOCK
+		private _return = GET_VAR(_thisObject, "location");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 
@@ -297,7 +315,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getGroups") {
 		params [["_thisObject", "", [""]]];
-		GET_VAR(_thisObject, "groups")
+		__MUTEX_LOCK
+		pr _return = GET_VAR(_thisObject, "groups");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	// 						G E T   U N I T S
@@ -309,7 +330,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getUnits") {
 		params [["_thisObject", "", [""]]];
+		__MUTEX_LOCK
 		T_GETV("units")
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 	// |                         G E T  I N F A N T R Y  U N I T S
@@ -321,8 +344,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getInfantryUnits") {
 		params [["_thisObject", "", [""]]];
+		__MUTEX_LOCK
 		private _unitList = T_GETV("units");
-		_unitList select {CALLM0(_x, "isInfantry")}
+		private _return = _unitList select {CALLM0(_x, "isInfantry")};
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	// |                         G E T   V E H I C L E   U N I T S
@@ -334,8 +360,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getVehicleUnits") {
 		params [["_thisObject", "", [""]]];
+		__MUTEX_LOCK
 		private _unitList = T_GETV("units");
-		_unitList select {CALLM0(_x, "isVehicle")}
+		private _return = _unitList select {CALLM0(_x, "isVehicle")};
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -347,8 +376,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getDroneUnits") {
 		params [["_thisObject", "", [""]]];
+		__MUTEX_LOCK
 		private _unitList = T_GETV("units");
-		_unitList select {CALLM0(_x, "isDrone")}
+		private _return = _unitList select {CALLM0(_x, "isDrone")};
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	// 						G E T   A I
@@ -358,7 +390,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: Array of <Unit> objects.
 	*/
-	METHOD("getAI") {
+	METHOD("getAI") { // Don't do any mutex here, it's not like AI object is going to change ever
 		params [["_thisObject", "", [""]]];
 		T_GETV("AI")
 	} ENDMETHOD;
@@ -367,8 +399,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	// Sets the position, because it is stored in the world state
 	METHOD("setPos") {
 		params ["_thisObject", "_pos"];
+		__MUTEX_LOCK
 		pr _AI = T_GETV("AI");
 		CALLM(_AI, "setPos", [_pos]);
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 	// 						G E T   P O S
@@ -380,9 +414,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getPos") {
 		params [["_thisObject", "", [""]]];
-
+		__MUTEX_LOCK
 		pr _AI = T_GETV("AI");
-		CALLM0(_AI, "getPos")
+		private _return = CALLM0(_AI, "getPos");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 	
 	//						I S   E M P T Y
@@ -394,7 +430,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isEmpty") {
 		params ["_thisObject"];
-		(count T_GETV("units")) == 0
+		__MUTEX_LOCK
+		private _return = (count T_GETV("units")) == 0;
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	//						I S   S P A W N E D
@@ -406,7 +445,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isSpawned") {
 		params ["_thisObject"];
-		T_GETV("spawned")
+		__MUTEX_LOCK
+		private _return = T_GETV("spawned");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 	
 
@@ -424,6 +466,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("findGroupsByType") {
 		params [["_thisObject", "", [""]], ["_types", 0, [0, []]]];
 
+		__MUTEX_LOCK
+
 		if (_types isEqualType 0) then {_types = [_types]};
 
 		pr _groups = GETV(_thisObject, "groups");
@@ -433,6 +477,9 @@ CLASS("Garrison", "MessageReceiverEx");
 				_return pushBack _x;
 			};
 		} forEach _groups;
+		
+		__MUTEX_UNLOCK
+		
 		_return
 	} ENDMETHOD;
 
@@ -444,7 +491,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("countAllUnits") {
 		params [["_thisObject", "", [""]]];
-		count T_GETV("units")
+		__MUTEX_LOCK
+		private _return = count T_GETV("units");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -466,6 +516,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("addUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
+
+		__MUTEX_LOCK
 
 		OOP_INFO_1("ADD UNIT: %1", _unit);
 
@@ -506,6 +558,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
 		CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
 
+		__MUTEX_UNLOCK
+
 		nil
 	} ENDMETHOD;
 
@@ -523,6 +577,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("removeUnit") {
 		params[["_thisObject", "", [""]], ["_unit", "", [""]] ];
+		
+		__MUTEX_LOCK
 		
 		OOP_INFO_1("REMOVE UNIT: %1", _unit);
 
@@ -548,6 +604,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Substract from the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
 		CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
+
+		__MUTEX_UNLOCK
 
 		nil
 	} ENDMETHOD;
