@@ -316,7 +316,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getGroups") {
 		params [["_thisObject", "", [""]]];
 		__MUTEX_LOCK
-		pr _return = GET_VAR(_thisObject, "groups");
+		pr _return = +GET_VAR(_thisObject, "groups");
 		__MUTEX_UNLOCK
 		_return
 	} ENDMETHOD;
@@ -331,8 +331,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getUnits") {
 		params [["_thisObject", "", [""]]];
 		__MUTEX_LOCK
-		T_GETV("units")
+		private _return = +T_GETV("units");
 		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 
 	// |                         G E T  I N F A N T R Y  U N I T S
@@ -625,6 +626,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 
+		__MUTEX_LOCK
+
 		OOP_INFO_2("ADD GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 
 		ASSERT_THREAD(_thisObject);
@@ -678,6 +681,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM0(_AI, "updateComposition");
 		};
 
+		__MUTEX_UNLOCK
+
 		nil
 	} ENDMETHOD;
 
@@ -695,6 +700,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("removeGroup") {
 		params[["_thisObject", "", [""]], ["_group", "", [""]] ];
 		
+		__MUTEX_LOCK
+
 		OOP_INFO_2("REMOVE GROUP: %1, group units: %2", _group, CALLM0(_group, "getUnits"));
 
 		ASSERT_THREAD(_thisObject);
@@ -726,6 +733,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		CALLM1(_group, "setGarrison", "");
 
+		__MUTEX_UNLOCK
+
 		nil
 	} ENDMETHOD;
 
@@ -741,11 +750,15 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		__MUTEX_LOCK
+
 		pr _groups = T_GETV("groups");
 		pr _emptyGroups = _groups select {CALLM0(_x, "isEmpty")};
 		{
 			DELETE(_x);
 		} forEach _emptyGroups;
+
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 	/*
@@ -762,6 +775,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("addGarrison") {
 		params[["_thisObject", "", [""]], ["_garrison", "", [""]], ["_delete", false] ];
+
+		__MUTEX_LOCK
 
 		OOP_INFO_3("ADD GARRISON: %1, garrison groups: %2, garrison units: %3", _garrison, CALLM0(_garrison, "getGroups"), CALLM0(_garrison, "getUnits"));
 
@@ -786,6 +801,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			// HACK: Just unregister with AICommander for now so the model gets cleaned up
 			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		};
+
+		__MUTEX_UNLOCK
 		
 		nil
 	} ENDMETHOD;
@@ -809,11 +826,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		params ["_thisObject", ["_garSrc", "", [""]], ["_units", [], [[]]], ["_groupsAndUnits", [], [[]]]];
 
 		ASSERT_THREAD(_thisObject);
+
+		__MUTEX_LOCK
 		
 		// Check if all units are still in the same garrison
 		pr _index = _units findIf {CALLM0(_x, "getGarrison") != _garSrc};
 		if (_index != -1) exitWith { 
 			OOP_WARNING_0("Units being added must all be in the same source garrison");
+			__MUTEX_UNLOCK
 			false 
 		};
 		
@@ -833,6 +853,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		if (_index != -1) exitWith { 
 			OOP_WARNING_0("Groups being added must all be in the same source garrison");
+			__MUTEX_UNLOCK
 			false
 		};
 		
@@ -899,6 +920,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_thisObject, "addGroup", _group);
 		} forEach _groupsAndUnits;
 		
+		__MUTEX_UNLOCK
+
 		true
 		
 	} ENDMETHOD;
@@ -914,9 +937,14 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getRequiredCrew") {
 		params [["_thisObject", "", [""]]];
 
-		pr _units = T_GETV("units");
+		__MUTEX_LOCK
 
-		CALLSM1("Unit", "getRequiredCrew", _units)
+		pr _units = T_GETV("units");
+		private _return = CALLSM1("Unit", "getRequiredCrew", _units);
+
+		__MUTEX_UNLOCK
+
+		_return
 	} ENDMETHOD;
 	
 	/*
@@ -935,6 +963,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 		
+		__MUTEX_LOCK
+
 		if (_merge) then {
 			// Find all vehicle groups
 			pr _vehGroups = CALLM1(_thisObject, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC);
@@ -1019,6 +1049,8 @@ CLASS("Garrison", "MessageReceiverEx");
 				};
 			} forEach _vehGroups;
 		};
+
+		__MUTEX_UNLOCK
 		
 		nil
 	} ENDMETHOD;
@@ -1034,6 +1066,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addEfficiency") {
 		params ["_thisObject", "_catID", "_subCatID"];
 		
+		__MUTEX_LOCK
+
 		pr _effAdd = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal");
@@ -1046,6 +1080,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_effMobile = EFF_ADD(_effMobile, _effAdd);
 			T_SETV("effMobile", _effMobile);
 		};
+
+		__MUTEX_UNLOCK
 	} ENDMETHOD;	
 	
 	/*
@@ -1059,6 +1095,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("substractEfficiency") {
 		params ["_thisObject", "_catID", "_subCatID"];
 		
+		__MUTEX_LOCK
+
 		pr _effSub = T_efficiency select _catID select _subcatID;
 		
 		pr _effTotal = T_GETV("effTotal"); 
@@ -1071,6 +1109,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_effMobile = EFF_DIFF(_effMobile, _effSub);
 			T_SETV("effMobile", _effMobile);
 		};
+
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 	
 	/*
@@ -1082,7 +1122,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyMobile") {
 		params ["_thisObject"];
-		+T_GETV("effMobile")
+		__MUTEX_LOCK
+		private _return = +T_GETV("effMobile");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 	
 	/*
@@ -1094,7 +1137,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyTotal") {
 		params ["_thisObject"];
-		+T_GETV("effTotal")
+		__MUTEX_LOCK
+		pr _return = +T_GETV("effTotal");
+		__MUTEX_UNLOCK
+		_return
 	} ENDMETHOD;
 	
 	/*
@@ -1108,8 +1154,13 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		__MUTEX_LOCK
+
 		CALLM0(_thisObject, "spawn");
 		CALLM1(_thisObject, "setLocation", "");
+
+		__MUTEX_UNLOCK
+
 		nil
 	} ENDMETHOD;
 
@@ -1194,6 +1245,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		__MUTEX_LOCK
+
 		// Call handleUnitKilled of the group of this unit
 		pr _group = CALLM0(_unit, "getGroup");
 		if (_group != "") then {
@@ -1208,6 +1261,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Remove the unit from this garrison
 		CALLM1(_thisObject, "removeUnit", _unit);
+
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 	/*
@@ -1231,6 +1286,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		__MUTEX_LOCK
+
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");
 		if (_garDest == "") then {
@@ -1249,6 +1306,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Move the vehicle into the other garrison
 			CALLM1(_garDest, "addUnit", _unitVeh);
 		};
+		__MUTEX_UNLOCK
 	} ENDMETHOD;
 
 
