@@ -43,7 +43,7 @@ CLASS("WorldModel", "")
 		//T_PRVAR(garrisons);
 
 		// Is this too long a critical section?
-		CRITICAL_SECTION {
+		//CRITICAL_SECTION {
 			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
 			// sync existing locations
@@ -53,7 +53,7 @@ CLASS("WorldModel", "")
 			// sync existing clusters
 			//T_PRVAR(clusters);
 			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
-		};
+		//};
 
 	} ENDMETHOD;
 

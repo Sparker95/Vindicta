@@ -150,6 +150,7 @@ nameStr profilerSetCounter _oop_cnt; };
 #define SPECIAL_SEPARATOR "_spm_"
 #define STATIC_SEPARATOR "_stm_"
 #define METHOD_SEPARATOR "_fnc_"
+#define INNER_PREFIX "inner_"
 
 // ----------------------------------------------------------------------
 // |          I N T E R N A L   N A M E   F O R M A T T I N G           |
@@ -172,6 +173,9 @@ nameStr profilerSetCounter _oop_cnt; };
 
 //Gets parent class of an object
 #define OBJECT_PARENT_CLASS_STR(objNameStr) (FORCE_GET_MEM(objNameStr, OOP_PARENT_STR))
+
+//String name of an inner method
+#define INNER_METHOD_NAME_STR(methodNameStr) (INNER_PREFIX + methodNameStr)
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"
@@ -452,13 +456,13 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	#define METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr), compile preprocessFileLineNumbers path]; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
-			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), "inner" + methodNameStr); \
+			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn }) select 0; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
@@ -477,13 +481,13 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, "inner" + methodNameStr), compile preprocessFileLineNumbers path]; \
+		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
-			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, "inner" + methodNameStr); \
+			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn}) select 0; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
@@ -563,6 +567,8 @@ if (baseClassNameStr != "") then { \
 	private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
 	{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
 	FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
+	_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
+	if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
 	} forEach (_oop_methodList - ["new", "delete", "copy"]); \
 }; \
 SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
