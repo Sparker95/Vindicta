@@ -3,6 +3,11 @@
 /*
 Class: ActionGroup.ActionGroupMoveGroundVehicles
 Handles moving of a group with multiple or single ground vehicles.
+
+Tags:
+TAG_POS
+TAG_MOVE_RADIUS
+TAG_MAX_SPEED_KMH
 */
 
 #define pr private
@@ -18,7 +23,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	
 	VARIABLE("pos");
 	VARIABLE("radius"); // Completion radius
-	VARIABLE("speedLimit");
+	VARIABLE("speedLimit"); // The current speed limit
+	VARIABLE("maxSpeed"); // The maximum speed in this action, can be received as parameter
 	VARIABLE("time");
 	
 	METHOD("new") {
@@ -29,6 +35,12 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		T_SETV("radius", _radius);
+
+		pr _maxSpeedKmh = CALLSM2("Action", "getParameterValue", _parameters, TAG_MAX_SPEED_KMH);
+		if (isNil "_maxSpeedKmh") then {
+			_maxSpeedKmh = SPEED_MAX;
+		};
+		T_SETV("maxSpeed", _maxSpeedKmh);
 		
 		T_SETV("time", time);
 		
@@ -155,7 +167,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				pr _speedLimit = T_GETV("speedLimit");
 				if(_speedLimit < SPEED_MAX) then
 				{
-					_speedLimit = (_speedLimit + _dt*4) min SPEED_MAX;
+					_speedLimit = (_speedLimit + _dt*4) min T_GETV("maxSpeed");
 					T_SETV("speedLimit", _speedLimit);
 					(vehicle (leader _hG)) limitSpeed _speedLimit;
 					#ifdef DEBUG_FORMATION

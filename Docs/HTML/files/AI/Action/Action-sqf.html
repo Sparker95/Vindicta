@@ -139,9 +139,29 @@
  <div class="CBody"><p>Returns the precedence of this action.&nbsp; Actions executed first should have lower precedence.&nbsp; Precedence is only needed for actions that are used by planner.</p><p>Returns: Number</p></div>
 </div>
 
-<a name="Action.(static)getParameterValue"></a><a name="Topic547"></a><div class="CTopic TFunction LSQF last">
+<a name="Action.(static)getParameterValue"></a><a name="Topic547"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)getParameterValue</div>
  <div class="CBody"><p>Takes an array with parameters and returns value of parameter with given tag, or nil if such a parameter was not found.&nbsp; If the parameter is not found, it will diag_log an error message.</p><p>Parameters: _parameters, _tag</p><table class="CDefinitionList"><tr><td class="CDLEntry">_parameters</td><td class="CDLDefinition"><p>array with parameters</p></td></tr><tr><td class="CDLEntry">_tag</td><td class="CDLDefinition"><p>Number or String, parameter tag</p></td></tr><tr><td class="CDLEntry">_showError</td><td class="CDLDefinition"><p>Bool, default true, will show error if parameter with given tag is not found</p></td></tr></table><p>Returns: anything</p></div>
+</div>
+
+<a name="Action.handleGroupsAdded"></a><a name="Topic530"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">handleGroupsAdded</div>
+ <div class="CBody"><p>Override in your action to perform special handling of what happens when groups are added while your action is running.&nbsp; By default it doesn't do anything.</p><p>Parameters: _groups</p><table class="CDefinitionList"><tr><td class="CDLEntry">_groups</td><td class="CDLDefinition"><p>Array of <a href="../../../index.html#File:Group/Group.hpp:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a></p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="Action.handleGroupsRemoved"></a><a name="Topic531"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">handleGroupsRemoved</div>
+ <div class="CBody"><p>Override in your action to perform special handling of what happens when groups are removed while your action is running.&nbsp; By default it doesn't do anything.</p><p>Parameters: _groups</p><table class="CDefinitionList"><tr><td class="CDLEntry">_groups</td><td class="CDLDefinition"><p>Array of <a href="../../../index.html#File:Group/Group.hpp:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a></p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="Action.handleUnitsRemoved"></a><a name="Topic532"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">handleUnitsRemoved</div>
+ <div class="CBody"><p>Handles what happens when units get removed from their garrison, for instance when they gets destroyed, while this action is running.</p><p>Access: internal</p><p>Parameters: _units</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>Array of <a href="../../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="Action.handleUnitsAdded"></a><a name="Topic533"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">handleUnitsAdded</div>
+ <div class="CBody"><p>Handles what happens when units get added to a garrison while this action is running.</p><p>Access: internal</p><p>Parameters: _unit</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>Array of <a href="../../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 </body></html>

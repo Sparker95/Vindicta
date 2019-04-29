@@ -29,6 +29,7 @@ CLASS("ClusterModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_world"), P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_OR_NULL(_actual);
 
+		T_SETV("label", _actual);
 		T_SETV("pos", []);
 		T_SETV("size", []);
 		T_SETV("radius", 0);
@@ -43,6 +44,7 @@ CLASS("ClusterModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 
 		private _copy = NEW("ClusterModel", [_targetWorldModel]);
+
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
 		#ifdef OOP_ASSERT
 		private _idsEqual = T_GETV("id") == GETV(_copy, "id");
@@ -50,7 +52,8 @@ CLASS("ClusterModel", "ModelBase")
 		ASSERT_MSG(_idsEqual, _msg);
 		#endif
 
-		SETV(_copy, "id", T_GETV("id"));
+		SETV(_copy, "label", T_GETV("label"));
+		//SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "size", +T_GETV("size"));
 		SETV(_copy, "radius", T_GETV("radius"));
@@ -65,7 +68,7 @@ CLASS("ClusterModel", "ModelBase")
 		T_PRVAR(actual);
 		_actual params ["_ai", "_clusterId"];
 		private _targetCluster = CALLM(_ai, "getTargetCluster", [_clusterId]);
-		if(_targetCluster isEqualTo []) then {
+		if(_targetCluster isEqualTo [] or {EFF_LTE(_targetCluster select TARGET_CLUSTER_ID_EFFICIENCY, EFF_ZERO)}) then {
 			T_CALLM("killed", []);
 		} else {
 			private _cluster = _targetCluster select TARGET_CLUSTER_ID_CLUSTER;
@@ -89,7 +92,7 @@ CLASS("ClusterModel", "ModelBase")
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		_efficiency isEqualTo []
+		_efficiency isEqualTo [] or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;
 ENDCLASS;
 

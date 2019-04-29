@@ -41,15 +41,19 @@ CLASS("WorldModel", "")
 
 		// sync existing garrisons
 		//T_PRVAR(garrisons);
-		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
-		// sync existing locations
-		T_PRVAR(locations);
-		{ CALLM(_x, "sync", []); } forEach _locations;
+		// Is this too long a critical section?
+		CRITICAL_SECTION {
+			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
-		// sync existing clusters
-		//T_PRVAR(clusters);
-		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
+			// sync existing locations
+			T_PRVAR(locations);
+			{ CALLM(_x, "sync", []); } forEach _locations;
+
+			// sync existing clusters
+			//T_PRVAR(clusters);
+			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
+		};
 
 	} ENDMETHOD;
 
@@ -61,16 +65,20 @@ CLASS("WorldModel", "")
 
 		// Copy garrisons
 		T_PRVAR(garrisons);
+		OOP_DEBUG_MSG("simCopy %1 garrisons", [count _garrisons]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
 
 		// Copy locations
 		T_PRVAR(locations);
+		OOP_DEBUG_MSG("simCopy %1 locations", [count _locations]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
 
 		// Copy clusters
 		T_PRVAR(clusters);
+		OOP_DEBUG_MSG("simCopy %1 clusters", [count _clusters]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _clusters;
 
+		OOP_DEBUG_MSG("simCopy threatGrid", []);
 		// Can copy the grid ref as we don't write to it
 		T_PRVAR(threatGrid);
 		SETV(_worldCopy, "threatGrid", _threatGrid);
@@ -627,7 +635,9 @@ ENDCLASS;
 ["WorldModel.getAliveGarrisons", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison1 = NEW("GarrisonModel", [_world]);
+	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
 	private _garrison2 = NEW("GarrisonModel", [_world]);
+	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	
 	["Initial", count CALLM(_world, "getAliveGarrisons", []) == 2] call test_Assert;
 	CALLM(_garrison1, "killed", []);
@@ -640,8 +650,10 @@ ENDCLASS;
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison1 = NEW("GarrisonModel", [_world]);
 	SETV(_garrison1, "pos", [500, 0, 0]);
+	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
 	private _garrison2 = NEW("GarrisonModel", [_world]);
 	SETV(_garrison2, "pos", [1000, 0, 0]);
+	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	private _center = [0,0,0];
 	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;

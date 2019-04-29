@@ -15,17 +15,18 @@ Author: Sparker 12.07.2018
 CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
+	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
+	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
 
-	VARIABLE("units");
-	VARIABLE("groups");
-	VARIABLE("spawned");
-	VARIABLE("side");
-	VARIABLE("debugName");
-	VARIABLE("location");
-	VARIABLE("AI"); // The AI brain of this garrison
-	VARIABLE("effTotal"); // Efficiency vector of all units
-	VARIABLE("effMobile"); // Efficiency vector of all units that can move
-	VARIABLE("timer"); // Timer that will be sending PROCESS messages here
+	VARIABLE_ATTR("side", 		[ATTR_PRIVATE]);
+	VARIABLE_ATTR("units", 		[ATTR_PRIVATE]);
+	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("debugName", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("location", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
+	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
+	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -137,11 +138,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _all = GETSV("Garrison", "all");
 		_all deleteAt (_all find _thisObject);
-
-		// Finally unregister from the AICommander if registered. We DON'T register in constructor
-		// because some garrisons don't want to be registered. However unregistering will just
-		// do nothing for garrisons that were never registered.
-		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		
 		// Delete the AI object
 		// We delete it instantly because Garrison AI is in the same thread
@@ -153,6 +149,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		DELETE(T_GETV("timer"));
 	} ENDMETHOD;
 
+	// METHOD("kill") {
+	// 	params [P_THISOBJECT];
+		
+	// } ENDMETHOD;
+	
 	/*
 	Method: (static)getAll
 	Returns all garrisons
@@ -1022,7 +1023,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyMobile") {
 		params ["_thisObject"];
-		T_GETV("effMobile")
+		+T_GETV("effMobile")
 	} ENDMETHOD;
 	
 	/*
@@ -1034,7 +1035,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyTotal") {
 		params ["_thisObject"];
-		T_GETV("effTotal")
+		+T_GETV("effTotal")
 	} ENDMETHOD;
 	
 	/*
@@ -1078,6 +1079,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		"ActionGarrisonMoveDismounted",
 		//"ActionGarrisonMoveMountedToPosition",
 		//"ActionGarrisonMoveMountedToLocation",
+		"ActionGarrisonMoveCombined",
 		"ActionGarrisonMoveMounted",
 		"ActionGarrisonMoveMountedCargo",
 		"ActionGarrisonRelax",

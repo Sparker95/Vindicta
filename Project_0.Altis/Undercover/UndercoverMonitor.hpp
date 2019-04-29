@@ -10,10 +10,7 @@
 #define UNDERCOVER_IS_UNIT_SUSPICIOUS(unit) unit getVariable [UNDERCOVER_SUSPICIOUS, false]
 #define UNDERCOVER_GET_SUSPICION(unit) unit getVariable [UNDERCOVER_SUSPICION, 0]
 
-// ----------------------------------------------------------------------
-// |                U N D E R C O V E R  D E F I N E S                  |
-// ----------------------------------------------------------------------
-
+// suspicion values for various actions
 #define SUSPICIOUS 0.6								// suspiciousness gained while being "suspicious" 
 #define SUSP_CROUCH 0.1								// suspiciousness gained crouching
 #define SUSP_PRONE 0.2								// suspiciousness gained prone
@@ -30,10 +27,10 @@
 #define SUSP_FACEWEAR 0.1							// suspiciousness gained for mil facewear
 #define SUSP_BACKPACK 0.3							// suspiciousness gained for mil backpack
 
-// values for
-#define SUSP_VEH_DIST 100							// distance at which suspiciousness starts increasing based on SUSP_VEH_DIST_MULT 
+
+#define SUSP_VEH_DIST 300							// distance at which suspiciousness starts increasing based on SUSP_VEH_DIST_MULT 
 #define SUSP_VEH_DIST_MIN 15						// distance at which player is too close to be undercover with suspicious gear in a vehicle
-#define SUSP_VEH_DIST_MULT 1.12/SUSP_VEH_DIST;		// multiplier for distance-based fade-in of suspiciousness variable
+#define SUSP_VEH_DIST_MULT 1.02/SUSP_VEH_DIST		// multiplier for distance-based fade-in of suspiciousness variable
 
 #define TIME_SEEN 5									// time it takes, in seconds, for player unit to go from "seen" to "unseen"
 #define TIME_HOSTILITY 10							// time in seconds player unit is overt after a hostile action
@@ -42,3 +39,17 @@
 #define HINT_DISPTIME 8								// amount of time each hint is displayed
 
 #define WANTED_CIRCLE_RADIUS 500
+
+
+// Hint keys for which hint should be displayed. Higher value = higher relevance
+#define HK_INCAPACITATED 105
+#define HK_SURRENDER 100
+#define HK_HOSTILITY 95
+#define HK_CLOSINGIN 90
+#define HK_WEAPON 80
+#define HK_MILVEH 75
+#define HK_SUSPGEARVEH 70
+#define HK_SUSPBEHAVIOR 60
+#define HK_SUSPGEAR 50
+#define HK_ALLOWEDAREA 46
+#define HK_OFFROAD 45

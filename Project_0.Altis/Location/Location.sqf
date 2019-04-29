@@ -55,8 +55,8 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	METHOD("setCapacityInf") {
-		params [["_thisObject", "", [""]], ["_capacityInf", "", [""]]];
-		T_SETV("capacityInf", parseNumber _capacityInf);
+		params [["_thisObject", "", [""]], ["_capacityInf", 0, [0]]];
+		T_SETV("capacityInf", _capacityInf);
 	} ENDMETHOD;
 
 	METHOD("setSide") {

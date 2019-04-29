@@ -182,6 +182,7 @@ ENDCLASS;
 
 ["CmdrAction.new", {
 	private _obj = NEW("CmdrAction", []);
+	
 	private _class = OBJECT_PARENT_CLASS_STR(_obj);
 	["Object exists", !(isNil "_class")] call test_Assert;
 	["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;

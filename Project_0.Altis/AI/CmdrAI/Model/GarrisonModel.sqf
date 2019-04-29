@@ -3,25 +3,39 @@
 #include "..\..\parameterTags.hpp"
 #include "..\..\Action\Action.hpp"
 
+GarrisonModel_getThread = {
+	params ["_garrisonModel"];
+	// Can't use normal accessor because it would cause an infinite loop!
+	private _side = FORCE_GET_MEM(_garrisonModel, "side");
+	if(!isNil "_side") then {
+		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_AICommander)) then {
+			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
+		} else {
+			nil
+		}
+	}
+};
+
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
 // is a copy that is modified during simulations.
 CLASS("GarrisonModel", "ModelBase")
 	// Strength vector of the garrison.
-	VARIABLE("efficiency");
+	VARIABLE_ATTR("efficiency", [ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	//// Current order the garrison is following.
 	// TODO: do we want this? I think only real Garrison needs orders, model just has action.
 	//VARIABLE_ATTR("order", [ATTR_REFCOUNTED]);
-	VARIABLE_ATTR("action", [ATTR_REFCOUNTED]);
+	VARIABLE_ATTR("action", [ATTR_REFCOUNTED]+[ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	// Is the garrison currently in combat?
 	// TODO: maybe replace this with with "engagement score" indicating how engaged they are.
-	VARIABLE("inCombat");
+	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	// Position.
-	VARIABLE("pos");
+	VARIABLE_ATTR("pos", [ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	// What side this garrison belongs to.
-	VARIABLE("side");
+	VARIABLE_ATTR("side", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	// Id of the location the garrison is currently occupying.
-	VARIABLE("locationId");
+	VARIABLE_ATTR("locationId", [ATTR_PRIVATE]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -32,7 +46,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
-		T_SETV("side", WEST);
+		T_SETV("side", sideUnknown);
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
 		T_CALLM("sync", []);
 		// Add self to world
@@ -41,7 +55,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		T_CALLM("killed", []);
+		// T_CALLM("killed", []);
 	} ENDMETHOD;
 
 	METHOD("simCopy") {
@@ -58,6 +72,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		//	"Id of the GarrisonModel copy is out of sync with the original. This indicates the world garrison list isn't being copied correctly?");
 		//SETV(_copy, "id", T_GETV("id"));
+		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		//SETV_REF(_copy, "order", T_GETV("order"));
 		SETV_REF(_copy, "action", T_GETV("action"));
@@ -76,23 +91,32 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!IS_NULL_OBJECT(_actual)) then {
 			ASSERT_OBJECT_CLASS(_actual, "Garrison");
 
-			T_SETV("efficiency", GETV(_actual, "effMobile"));
-			private _actualPos = CALLM(_actual, "getPos", []);
-			T_SETV("pos", +_actualPos);
-			T_SETV("side", GETV(_actual, "side"));
-
-			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
-			private _locationActual = CALLM(_actual, "getLocation", []);
-			if(!IS_NULL_OBJECT(_locationActual)) then {
-				T_PRVAR(world);
-				private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
-				T_SETV("locationId", GETV(_location, "id"));
-				// Don't call the proper functions because it deals with updating the LocationModel
-				// and we don't need to do that in sync (LocationModel sync does it)
-				//T_CALLM("attachToLocation", [_location]);
+			private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
+			if(EFF_LTE(_newEff, EFF_ZERO)) then {
+				T_CALLM("killed", []);
 			} else {
-				T_SETV("locationId", MODEL_HANDLE_INVALID);
-				//T_CALLM("detachFromLocation", []);
+				private _actualSide = CALLM(_actual, "getSide", []);
+				T_SETV("side", _actualSide);
+				
+				T_SETV("efficiency", _newEff);
+				
+				private _actualPos = CALLM(_actual, "getPos", []);
+				T_SETV("pos", +_actualPos);
+
+
+				//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+				private _locationActual = CALLM(_actual, "getLocation", []);
+				if(!IS_NULL_OBJECT(_locationActual)) then {
+					T_PRVAR(world);
+					private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+					T_SETV("locationId", GETV(_location, "id"));
+					// Don't call the proper functions because it deals with updating the LocationModel
+					// and we don't need to do that in sync (LocationModel sync does it)
+					//T_CALLM("attachToLocation", [_location]);
+				} else {
+					T_SETV("locationId", MODEL_HANDLE_INVALID);
+					//T_CALLM("detachFromLocation", []);
+				};
 			};
 		};
 	} ENDMETHOD;
@@ -151,7 +175,7 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		_efficiency isEqualTo []
+		_efficiency isEqualTo [] or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;
 
 	METHOD("isDepleted") {
@@ -497,7 +521,7 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
-		private _side = GETV(_actual, "side");
+		private _side = CALLM(_actual, "getSide", []);
 		private _newGarrActual = NEW("Garrison", [_side]);
 		private _pos = CALLM(_actual, "getPos", []);
 		CALLM(_newGarrActual, "setPos", [_pos]);
@@ -604,7 +628,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _otherActual = GETV(_otherGarr, "actual");
 		private _args = [_actual, true];
 		CALLM2(_otherActual, "postMethodAsync", "addGarrison", _args);
-		
+		T_CALLM("killed", []);
 		//CALLM(_otherActual, "addGarrison", [_actual]+[true]);
 	} ENDMETHOD;
 
@@ -664,9 +688,20 @@ ENDCLASS;
 	!(isNil "_class")
 }] call test_AddTest;
 
+["GarrisonModel.simCopy", {
+	private _actual = NEW("Garrison", [WEST]);
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
+	private _simWorld = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _copy = CALLM(_garrison, "simCopy", [_simWorld]);
+	private _class = OBJECT_PARENT_CLASS_STR(_copy);
+	!(isNil "_class")
+}] call test_AddTest;
+
 ["GarrisonModel.delete", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	DELETE(_garrison);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	isNil "_class"
@@ -675,6 +710,7 @@ ENDCLASS;
 ["GarrisonModel.killed", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	CALLM(_garrison, "killed", []);
 	CALLM(_garrison, "isDead", [])
 }] call test_AddTest;
@@ -682,6 +718,7 @@ ENDCLASS;
 ["GarrisonModel.isDead", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	["False before killed", !CALLM(_garrison, "isDead", [])] call test_Assert;
 	CALLM(_garrison, "killed", []);
 	["True after killed", CALLM(_garrison, "isDead", [])] call test_Assert;

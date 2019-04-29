@@ -31,12 +31,17 @@ gSetupMode = "random"; //"random"; "default"; "sparker"; "bill";
 	private _locType = _locSector getVariable ["Type", ""];
 	private _locSide = _locSector getVariable ["Side", ""];
 	private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
-	private _locCivPresUnitCount = _locSector getVariable ["CivilianPresence_UnitCount", ""];
+	private _locCivPresUnitCount = _locSector getVariable ["CivPresUnitCount", ""];
 	private _template = "";
 	private _side = "";
 
 	if (_locType == "city") exitWith{};
+
+	OOP_DEBUG_1("_locName %1", _locName);
+	OOP_DEBUG_1("_locCapacityInf %1", _locCapacityInf);
+	OOP_DEBUG_1("_locCivPresUnitCount %1", _locCivPresUnitCount);
 	
+
 	// TODO: use synced waypoints to help AIs
 	// _waypoints = synchronizedObjects _locationSector;
 
@@ -112,10 +117,10 @@ gSetupMode = "random"; //"random"; "default"; "sparker"; "bill";
 
 		// Create an empty group
 		private _side = CALL_METHOD(_gar, "getSide", []);
-		private _newGroup = NEW("Group", [_side]+[_type]);
+		private _newGroup = NEW("Group", [_side ARG _type]);
 
 		// Create units from template
-		private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template]+[_subcatID]);
+		private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template ARG _subcatID]);
 		CALL_METHOD(_gar, "addGroup", [_newGroup]);
 
 		// Return remaining capacity
