@@ -14,15 +14,20 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),
-			P_AST_STATE("_successState"),
-			P_AST_STATE("_fromGarrDeadState"), 
-			P_AST_STATE("_targetDeadState"), 
+			P_OOP_OBJECT("_action"),			// Source action for debugging purposes
+			P_ARRAY("_fromStates"),				// States it is valid from
+			P_AST_STATE("_successState"),		// State upon successful join
+			P_AST_STATE("_fromGarrDeadState"), 	// State if the fromGarr is dead (should really not get this far if it is)
+			P_AST_STATE("_targetDeadState"), 	// State if the target is dead (if is a garrison)
 			// inputs
-			P_AST_VAR("_fromGarrId"), 
-			P_AST_VAR("_target"), 
+			P_AST_VAR("_fromGarrId"), 			// Id of garrison to merge/join from
+			P_AST_VAR("_target")				// Target to merge/join to (garrison or location)
+		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
+
 		T_SETV("action", _action);
+		T_SETV("fromStates", _fromStates);
+
 		T_SETV("successState", _successState);
 		T_SETV("fromGarrDeadState", _fromGarrDeadState);
 		T_SETV("targetDeadState", _targetDeadState);
@@ -48,7 +53,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		private _targetDead = switch(_targetType) do {
 			case TARGET_TYPE_GARRISON: {
 				private _toGarr = CALLM(_world, "getGarrison", [_target]);
-				if(CALLM(_toGarr, "isDead", []))) then {
+				if(CALLM(_toGarr, "isDead", [])) then {
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]);
 					false
 				} else {

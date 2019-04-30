@@ -84,15 +84,12 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 
 		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_srcGarr)]);
 
-		// DOING: HOW TO FIX THIS? ASTS need to save state, sometimes they modify the Action. How to 
-		// apply them to simworlds in this case without breaking action state for real world?
-		// simCopy actions as well? Probably make sense.
-
-		// CALLM(_detachedGarr, "setAction", [_action]);
 		T_SET_AST_VAR("detachedGarrId", GETV(_detachedGarr, "id"));
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;
+
+
 
 // ORIGINAL
 

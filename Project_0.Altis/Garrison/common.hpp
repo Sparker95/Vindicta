@@ -18,6 +18,10 @@
 #include "..\MutexRecursive\MutexRecursive.hpp"
 
 // Mutex used in this file
-#define __MUTEX_NEW		MUTEX_RECURSIVE_NEW();
+#ifndef _SQF_VM
 #define __MUTEX_LOCK	private __mutex = T_GETV("mutex"); MUTEX_RECURSIVE_LOCK(__mutex);
 #define __MUTEX_UNLOCK	MUTEX_RECURSIVE_UNLOCK(__mutex);
+#else
+#define __MUTEX_LOCK	
+#define __MUTEX_UNLOCK	
+#endif

@@ -26,7 +26,7 @@ CLASS("GarrisonModel", "ModelBase")
 	//// Current order the garrison is following.
 	// TODO: do we want this? I think only real Garrison needs orders, model just has action.
 	//VARIABLE_ATTR("order", [ATTR_REFCOUNTED]);
-	VARIABLE_ATTR("action", [ATTR_REFCOUNTED]+[ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("action", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
 	// Is the garrison currently in combat?
 	// TODO: maybe replace this with with "engagement score" indicating how engaged they are.
 	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
@@ -41,7 +41,7 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 
 		//T_SETV_REF("order", objNull);
-		T_SETV_REF("action", objNull);
+		T_SETV("action", NULL_OBJECT);
 		// These will get set in sync
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("inCombat", false);
@@ -55,7 +55,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
-		// T_CALLM("killed", []);
+		T_CALLM("killed", []);
 	} ENDMETHOD;
 
 	METHOD("simCopy") {
@@ -75,7 +75,12 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		//SETV_REF(_copy, "order", T_GETV("order"));
-		SETV_REF(_copy, "action", T_GETV("action"));
+		T_PRVAR(action);
+		// Copy it properly so the action gets register/unregister messages
+		if(!IS_NULL_OBJECT(_action)) then {
+			CALLM(_copy, "setAction", [_action]);
+		};
+		//SETV(_copy, "action", T_GETV("action"));
 		SETV(_copy, "inCombat", T_GETV("inCombat"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "side", T_GETV("side"));
@@ -164,12 +169,19 @@ CLASS("GarrisonModel", "ModelBase")
 
 	METHOD("setAction") {
 		params [P_THISOBJECT, P_STRING("_action")];
-		T_SETV_REF("action", _action);
+		// Clear previous action first
+		T_CALLM("clearAction", []);
+		T_SETV("action", _action);
+		CALLM(_action, "registerGarrison", [_thisObject]);
 	} ENDMETHOD;
 
 	METHOD("clearAction") {
 		params [P_THISOBJECT];
-		T_SETV_REF("action", objNull);
+		private _currentAction = T_GETV("action");
+		if(!IS_NULL_OBJECT(_currentAction)) then {
+			CALLM(_currentAction, "unregisterGarrison", [_thisObject]);
+		};
+		T_SETV("action", NULL_OBJECT);
 	} ENDMETHOD;
 
 	METHOD("isDead") {

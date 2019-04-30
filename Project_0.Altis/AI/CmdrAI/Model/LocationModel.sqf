@@ -88,6 +88,12 @@ CLASS("LocationModel", "ModelBase")
 		};
 	} ENDMETHOD;
 	
+	METHOD("isEmpty") {
+		params [P_THISOBJECT];
+		T_PRVAR(garrisonIds);
+		count _garrisonIds == 0
+	} ENDMETHOD;
+	
 	METHOD("addGarrison") {
 		params [P_THISOBJECT, P_STRING("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");

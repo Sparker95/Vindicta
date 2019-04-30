@@ -306,7 +306,7 @@ CLASS("WorldModel", "")
 			private _location = _x;
 			private _pos = GETV(_location, "pos");
 			private _dist = _pos distance _center;
-			if(_dist <= _maxDist) then {
+			if(_maxDist == 0 or _dist <= _maxDist) then {
 				_nearestLocations pushBack [_dist, _location];
 			};
 		} forEach _locations;
@@ -669,7 +669,7 @@ ENDCLASS;
 	private _location2 = NEW("LocationModel", [_world]);
 	SETV(_location2, "pos", [1000, 0, 0]);
 	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestLocations", [_center]+[0]) == 0] call test_Assert;
+	["Dist test none", count CALLM(_world, "getNearestLocations", [_center]+[1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestLocations", [_center]+[501]) == 1] call test_Assert;
 	["Dist test all", count CALLM(_world, "getNearestLocations", [_center]+[1001]) == 2] call test_Assert;
 }] call test_AddTest;

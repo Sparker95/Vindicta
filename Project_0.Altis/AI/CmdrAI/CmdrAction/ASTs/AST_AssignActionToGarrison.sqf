@@ -1,6 +1,5 @@
 #include "..\..\common.hpp"
 
-
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -31,3 +30,22 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition")
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;
+
+#ifdef _SQF_VM
+
+["AST_AssignActionToGarrison.new", {
+	private _action = NEW("CmdrAction", []);
+	private _obj = NEW("AST_AssignActionToGarrison", [_action]+[[CMDR_ACTION_STATE_START]]+[CMDR_ACTION_STATE_END]+[MAKE_AST_VAR(0)]);
+	
+	private _class = OBJECT_PARENT_CLASS_STR(_obj);
+	["Object exists", !(isNil "_class")] call test_Assert;
+	//["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
+}] call test_AddTest;
+
+// ["AST_AssignActionToGarrison.apply", {
+// 	//private _obj = NEW("CmdrAction", []);
+// 	//CALLM(_obj, "getFinalScore", []) == 1
+// }] call test_AddTest;
+
+
+#endif

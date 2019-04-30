@@ -53,7 +53,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		private _targetPos = switch(_targetType) do {
 			case TARGET_TYPE_GARRISON: {
 				private _garr = CALLM(_world, "getGarrison", [_target]);
-				if(CALLM(_garr, "isDead", []))) then {
+				if(CALLM(_garr, "isDead", [])) then {
 					false
 				} else {
 					CALLM(_garr, "getPos", [])

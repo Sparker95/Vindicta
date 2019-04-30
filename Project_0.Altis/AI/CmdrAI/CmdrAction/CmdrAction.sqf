@@ -18,21 +18,24 @@
 CLASS("CmdrAction", "RefCounted")
 
 	// The priority of this action in relation to other actions of the same or different type.
-	VARIABLE("scorePriority");
+	VARIABLE_ATTR("scorePriority", [ATTR_PRIVATE]);
 	// The resourcing available for this action.
-	VARIABLE("scoreResource");
+	VARIABLE_ATTR("scoreResource", [ATTR_PRIVATE]);
 	// How strongly this action correlates with the current strategy.
-	VARIABLE("scoreStrategy");
+	VARIABLE_ATTR("scoreStrategy", [ATTR_PRIVATE]);
 	// How close to being complete this action is (>1)
-	VARIABLE("scoreCompleteness");
+	VARIABLE_ATTR("scoreCompleteness", [ATTR_PRIVATE]);
+
+	// State transition functions
+	VARIABLE_ATTR("transitions", [ATTR_PRIVATE]);
+
+	VARIABLE_ATTR("variables", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("variablesStack", [ATTR_PRIVATE]);
+
+	VARIABLE_ATTR("garrisons", [ATTR_PRIVATE]);
 
 	// Current state of the action
-	VARIABLE("state");
-	// State transition functions
-	VARIABLE("transitions");
-
-	VARIABLE("variables");
-	VARIABLE("variablesStack");
+	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -45,6 +48,39 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("transitions", []);
 		T_SETV("variables", []);
 		T_SETV("variablesStack", []);
+		T_SETV("garrisons", []);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_PRVAR(garrisons);
+
+		// Clean up this action from the garrisons it is assigned to
+		{
+			if(CALLM(_x, "getAction", []) == _thisObject) then {
+				CALLM(_x, "clearAction", []);
+			} else {
+				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x]+[_thisObject]);
+			};
+		} foreach +_garrisons;
+	} ENDMETHOD;
+
+	METHOD("registerGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		T_PRVAR(garrisons);
+		_garrisons pushBack _garrison;
+	} ENDMETHOD;
+
+	METHOD("unregisterGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		T_PRVAR(garrisons);
+		private _idx = _garrisons find _garrison;
+		if(_idx == NOT_FOUND) exitWith {
+			OOP_WARNING_MSG("Garrison %1 is not registered with action %2, so can't be unregistered", [_garrison]+[_thisObject]);
+		};
+		_garrisons deleteAt _idx;
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("updateScore") {
@@ -107,7 +143,9 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(variablesStack);
 		
 		// Copy the variable contents and push onto stack. This will NOT deepcopy arrays. They should never be modified, only replaced.
-		_variablesStack pushBack ({ MAKE_AST_VAR(GET_AST_VAR(_x)) } apply _variables);
+		//_variablesStack pushBack (_variables apply { MAKE_AST_VAR(GET_AST_VAR(_x)) });
+		//_variablesStack pushBack +_variables;
+		_variablesStack pushBack (_variables apply { +_x });
 	} ENDMETHOD;
 
 	METHOD("popVariables") {
@@ -181,6 +219,20 @@ ENDCLASS;
 // Unit test
 #ifdef _SQF_VM
 
+// Test AST Variables
+
+["AST_VAR", {
+	private _var = MAKE_AST_VAR(-1);
+	private _var2 = _var;
+
+	["AST_VAR is an array length 1", count _var == 1] call test_Assert;
+	["AST_VAR content correct", _var#0 == -1] call test_Assert;
+	["GET_AST_VAR", GET_AST_VAR(_var) == -1] call test_Assert;
+	SET_AST_VAR(_var, 1);
+	["SET_AST_VAR", GET_AST_VAR(_var) == 1] call test_Assert;
+	["AST_VAR share value works", GET_AST_VAR(_var2) == 1] call test_Assert;
+}] call test_AddTest;
+
 // Dummy test classes
 CLASS("AST_KillGarrison", "ActionStateTransition")
 	VARIABLE("garrisonId");
@@ -221,6 +273,41 @@ ENDCLASS;
 	isNil { OBJECT_PARENT_CLASS_STR(_obj) }
 }] call test_AddTest;
 
+["CmdrAction.registerGarrison", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _thisObject = NEW("CmdrAction", []);
+	private _garrison = NEW("GarrisonModel", [_world]);
+
+	CALLM(_garrison, "setAction", [_thisObject]);
+	["Garrison registered correctly", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
+	
+	DELETE(_garrison);
+	["Garrison unregistered correctly", (GETV(_thisObject, "garrisons") find _garrison) == NOT_FOUND] call test_Assert;
+
+	_garrison = NEW("GarrisonModel", [_world]);
+	CALLM(_garrison, "setAction", [_thisObject]);
+	["Garrison registered correctly 2", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
+	DELETE(_thisObject);
+	["Action cleared from garrison on delete", CALLM(_garrison, "getAction", []) == NULL_OBJECT] call test_Assert;
+}] call test_AddTest;
+
+["CmdrAction.createVariable, pushVariables, popVariables", {
+	private _thisObject = NEW("CmdrAction", []);
+	private _var = CALLM(_thisObject, "createVariable", [0]);
+	private _var2 = CALLM(_thisObject, "createVariable", [["test"]]);
+	["Var is of correct form", _var isEqualTo [0]] call test_Assert;
+	["Var2 is of correct form", _var2 isEqualTo [["test"]]] call test_Assert;
+	CALLM(_thisObject, "pushVariables", []);
+	SET_AST_VAR(_var, 1);
+	GET_AST_VAR(_var2) set [0, "check"];
+	["Var is changed before popVariables", _var isEqualTo [1]] call test_Assert;
+	["Var2 is changed before popVariables", _var2 isEqualTo [["check"]]] call test_Assert;
+	CALLM(_thisObject, "popVariables", []);
+	["Var is restored after popVariables", _var isEqualTo [0]] call test_Assert;
+	["Var2 is restored after popVariables", _var2 isEqualTo [["test"]]] call test_Assert;
+	diag_log str(_var2);
+}] call test_AddTest;
+
 ["CmdrAction.getFinalScore", {
 	private _obj = NEW("CmdrAction", []);
 	CALLM(_obj, "getFinalScore", []) == 1
@@ -231,10 +318,12 @@ ENDCLASS;
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _ast = NEW("AST_KillGarrison", [GETV(_garrison, "id")]);
 	private _asts = [_ast];
-	private _obj = NEW("CmdrAction", []);
-	SETV(_obj, "transitions", _asts);
-	["Transitions correct", GETV(_obj, "transitions") isEqualTo _asts] call test_Assert;
-	CALLM(_obj, "applyToSim", [_world]);
+	private _thisObject = NEW("CmdrAction", []);
+
+	SETV(_thisObject, "transitions", _asts);
+	["Transitions correct", GETV(_thisObject, "transitions") isEqualTo _asts] call test_Assert;
+
+	CALLM(_thisObject, "applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
 }] call test_AddTest;
 
