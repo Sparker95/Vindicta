@@ -626,8 +626,7 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		private _otherActual = GETV(_otherGarr, "actual");
-		private _args = [_actual, true];
-		CALLM2(_otherActual, "postMethodAsync", "addGarrison", _args);
+		CALLM2(_otherActual, "postMethodAsync", "addGarrison", [_actual]+[true]);
 		T_CALLM("killed", []);
 		//CALLM(_otherActual, "addGarrison", [_actual]+[true]);
 	} ENDMETHOD;
@@ -650,23 +649,23 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		private _locationActual = GETV(_location, "actual");
-
-		private _AI = CALLM(_actual, "getAI", []);
-		private _parameters = [[TAG_LOCATION, _locationActual]];
-		private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];
-		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
+		CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
+		// private _AI = CALLM(_actual, "getAI", []);
+		// private _parameters = [[TAG_LOCATION, _locationActual]];
+		// private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];
+		// CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[_args]);
 	} ENDMETHOD;
 
-	METHOD("joinLocationActualComplete") {
-		params [P_THISOBJECT];
+	// METHOD("joinLocationActualComplete") {
+	// 	params [P_THISOBJECT];
 
-		T_PRVAR(actual);
-		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+	// 	T_PRVAR(actual);
+	// 	ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
-		private _AI = CALLM(_actual, "getAI", []);
-		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonJoinLocation"]+[_AI]);
-		_goalState == ACTION_STATE_COMPLETED
-	} ENDMETHOD;
+	// 	private _AI = CALLM(_actual, "getAI", []);
+	// 	private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonJoinLocation"]+[_AI]);
+	// 	_goalState == ACTION_STATE_COMPLETED
+	// } ENDMETHOD;
 ENDCLASS;
 
 

@@ -101,14 +101,21 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_garrison, "locationId", T_GETV("id"));
 	} ENDMETHOD;
 
-	// TODO: implement to support multiple garrisons
-	// METHOD("getGarrison") {
-	// 	params [P_THISOBJECT];
-	// 	T_PRVAR(garrisonIds);
-	// 	T_PRVAR(world);
-	// 	if(_garrisonId != MODEL_HANDLE_INVALID) exitWith { CALLM(_world, "getGarrison", [_garrisonId]) };
-	// 	objNull
-	// } ENDMETHOD;
+	METHOD("getGarrison") {
+		params [P_THISOBJECT, P_SIDE("_side")];
+		T_PRVAR(garrisonIds);
+		T_PRVAR(world);
+		
+		private _foundGarr = NULL_OBJECT;
+		{
+			private _garr = CALLM(_world, "getGarrison", [_x]);
+			if(_side == GETV(_garr, "side")) exitWith {
+				_foundGarr = _garr; _garr
+			}
+		} forEach _garrisonIds;
+
+		_foundGarr
+	} ENDMETHOD;
 		
 	METHOD("removeGarrison") {
 		params [P_THISOBJECT, P_STRING("_garrison")];

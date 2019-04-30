@@ -41,9 +41,9 @@ ENDCLASS;
 
 CLASS("ReinforceCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
-	VARIABLE("tgtGarrId");
-	VARIABLE("detachmentEff");
-	VARIABLE("detachedGarrId");
+	VARIABLE("targetVar");
+	VARIABLE("detachmentEffVar");
+	VARIABLE("detachedGarrIdVar");
 
 	VARIABLE("pushedState");
 
@@ -51,14 +51,17 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
 
 		T_SETV("srcGarrId", _srcGarrId);
-		T_SETV("tgtGarrId", _tgtGarrId);
-		T_SETV("detachmentEff", EFF_ZERO);
-		T_SETV("detachedGarrId", -1);
+		
+		private _detachmentEffVar = T_CALLM("createVariable", EFF_ZERO);
+		T_SETV("detachmentEffVar", T_CALLM("createVariable", EFF_ZERO));
+
+		private _splitGarrIdVar = T_CALLM("createVariable", -1);
+		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
 		//private _srcGarrIdVar = T_CALLM("createVariable", -1);
-		private _splitGarrIdVar = T_CALLM("createVariable", -1);
 		private _targetVar = T_CALLM("createVariable", [_tgtGarrId]+[TARGET_TYPE_GARRISON]);
-		//private _detachmentEffVar = T_CALLM("createVariable", EFF_ZERO);
+		T_SETV("targetVar", _targetVar);
+
 		private _transitions = [
 			NEW("AST_SplitGarrison", 
 				[_thisObject]+ 						// This action (for debugging context)
@@ -66,7 +69,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 				[CMDR_ACTION_STATE_SPLIT]+ 			// State change if successful
 				[CMDR_ACTION_STATE_END]+ 			// State change if failed (go straight to end of action)
 				[MAKE_AST_VAR(_srcGarrId)]+ 		// Garrison to split (constant)
-				[MAKE_AST_VAR(_detachmentEffVar)]+ 	// Efficiency we want the detachment to have (constant)
+				[_detachmentEffVar]+ 	// Efficiency we want the detachment to have (constant)
 				[MAKE_AST_VAR([ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF])]+ // Flags for split operation
 				[_splitGarrIdVar] 					// variable to recieve Id of the garrison after it is split
 				),
@@ -89,11 +92,17 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 			NEW("AST_SelectNewTarget",
 				[[CMDR_ACTION_STATE_TARGET_DEAD]]+ 	// We select a new target when the old one is dead
 				[CMDR_ACTION_STATE_READY]+ 			// State change when successful
-				[_splitGarrIdVar]+ 					// It of the garrison we are moving (for context)
+				[_splitGarrIdVar]+ 					// Id of the garrison we are moving (for context)
 				[_targetVar] 						// New target
 			),
-			// DOING: AST for this
-			NEW("MergeGarrison", [_thisObject])
+			NEW("AST_MergeOrJoinTarget",
+				[[CMDR_ACTION_STATE_MOVED]]+ 		// Merge once we reach the destination (whatever it is)
+				[CMDR_ACTION_STATE_END]+ 			// Once merged we are done
+				[CMDR_ACTION_STATE_END]+ 			// If the detachment is dead then we can just end the action
+				[CMDR_ACTION_STATE_TARGET_DEAD]+ 	// If the target is dead then reselect a new target
+				[_splitGarrIdVar]+ 					// Id of the garrison we are merging
+				[_targetVar] 						// Target to merge to (garrison or location is valid)
+			)
 		];
 		T_SETV("transitions", _transitions);
 	} ENDMETHOD;
@@ -104,18 +113,6 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		deleteMarker (_thisObject + "_label");
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("pushState") {
-		params [P_THISOBJECT];
-		T_PRVAR(detachedGarrId);
-		T_SETV("pushedState", [_detachedGarrId]);
-	} ENDMETHOD;
-	
-	/* virtual */ METHOD("popState") {
-		params [P_THISOBJECT];
-		T_PRVAR(pushedState);
-		T_SETV("detachedGarrId", _pushedState select 0);
-	} ENDMETHOD;
-
 	/* override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -123,11 +120,19 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		//private _srcAc = GETV(_srcGarr, "actual");
 		private _srcEff = GETV(_srcGarr, "efficiency");
-		T_PRVAR(tgtGarrId);
+
+		T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
+
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// DOING: Formatting for the label here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
 		//private (_tgtGarr) = GETV(_tgtGarr, "actual");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
-		T_PRVAR(detachedGarrId);
+
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 		if(_detachedGarrId == -1) then {
 			format ["reinf %1%2 -> %3%4", LABEL(_srcGarr), _srcEff, LABEL(_tgtGarr), _tgtEff]
 		} else {
@@ -158,7 +163,7 @@ CLASS("ReinforceCmdrAction", "CmdrAction")
 		// Save the calculation for use if we decide to perform the action 
 		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
 		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
-		T_SETV("detachmentEff", _detachEff);
+		T_SET_AST_VAR("detachmentEffVar", _detachEff);
 
 		//CALLM1(_worldNow, "getOverDesiredEff", _srcGarr);
 		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
