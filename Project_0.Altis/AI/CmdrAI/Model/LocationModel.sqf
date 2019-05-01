@@ -104,7 +104,6 @@ CLASS("LocationModel", "ModelBase")
 		ASSERT_MSG((_garrisonIds find _garrisonId) == NOT_FOUND, "Garrison already occupying this Location");
 		// ASSERT_MSG(_garrisonId == MODEL_HANDLE_INVALID, "Can't setGarrison if location is already occupied, use clearGarrison first");
 		_garrisonIds pushBack _garrisonId;
-		SETV(_garrison, "locationId", T_GETV("id"));
 	} ENDMETHOD;
 
 	METHOD("getGarrison") {
@@ -132,7 +131,7 @@ CLASS("LocationModel", "ModelBase")
 		private _foundIdx = _garrisonIds find GETV(_garrison, "id");
 		ASSERT_MSG(_foundIdx != NOT_FOUND, "Garrison was not assigned to this Location");
 		_garrisonIds deleteAt _foundIdx;
-		SETV(_garrison, "locationId", MODEL_HANDLE_INVALID);
+		//SETV(_garrison, "locationId", MODEL_HANDLE_INVALID);
 		//T_SETV("garrisonId", MODEL_HANDLE_INVALID);
 	} ENDMETHOD;
 

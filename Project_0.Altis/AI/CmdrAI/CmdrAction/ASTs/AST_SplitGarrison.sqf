@@ -90,7 +90,109 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 ENDCLASS;
 
 
+#ifdef _SQF_VM
 
+#define CMDR_ACTION_STATE_FAILED CMDR_ACTION_STATE_CUSTOM+1
+
+["AST_SplitGarrison.new", {
+	private _action = NEW("CmdrAction", []);
+	private _thisObject = NEW("AST_SplitGarrison", 
+		[_action]+
+		[[CMDR_ACTION_STATE_START]]+
+		[CMDR_ACTION_STATE_END]+
+		[CMDR_ACTION_STATE_FAILED]+
+		[MAKE_AST_VAR(0)]+
+		[MAKE_AST_VAR(EFF_MIN)]+
+		[MAKE_AST_VAR([])]+
+		[MAKE_AST_VAR(0)]
+	);
+	
+	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
+	["Object exists", !(isNil "_class")] call test_Assert;
+}] call test_AddTest;
+
+["AST_SplitGarrison.apply(sim)", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
+	private _eff2 = EFF_MIN_EFF;
+	private _effr = EFF_DIFF(_eff1, _eff2);
+	SETV(_garrison, "efficiency", _eff1);
+
+	private _splitGarrIdVar = MAKE_AST_VAR(-1);
+	private _action = NEW("CmdrAction", []);
+	private _thisObject = NEW("AST_SplitGarrison", 
+		[_action]+
+		[[CMDR_ACTION_STATE_START]]+
+		[CMDR_ACTION_STATE_END]+
+		[CMDR_ACTION_STATE_FAILED]+
+		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
+		[MAKE_AST_VAR(_eff2)]+
+		[MAKE_AST_VAR([])]+
+		[_splitGarrIdVar]
+	);
+
+	private _endState = CALLM(_thisObject, "apply", [_world]);
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
+	["Split garrison var is valid", GET_AST_VAR(_splitGarrIdVar) != -1] call test_Assert;
+	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_splitGarrIdVar)]);
+	["Split garrison is valid", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
+	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
+	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+}] call test_AddTest;
+
+
+["AST_SplitGarrison.apply(actual)", {
+	private _actual = NEW("Garrison", [WEST]);
+	private _group = NEW("Group", Test_group_args);
+	private _eff1 = +T_EFF_null;
+	for "_i" from 0 to 19 do
+	{
+		private _unit = NEW("Unit", Test_unit_args + [_group]);
+		//CALLM(_actual, "addUnit", [_unit]);
+		private _unitEff = CALLM(_unit, "getEfficiency", []);
+		_eff1 = EFF_ADD(_eff1, _unitEff);
+	};
+
+	CALLM(_actual, "addGroup", [_group]);
+	
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
+	["Initial eff", GETV(_garrison, "efficiency") isEqualTo _eff1] call test_Assert;
+	private _eff2 = EFF_MIN_EFF;
+	private _effr = EFF_DIFF(_eff1, _eff2);
+	SETV(_garrison, "efficiency", _eff1);
+
+	private _splitGarrIdVar = MAKE_AST_VAR(-1);
+	private _action = NEW("CmdrAction", []);
+	private _thisObject = NEW("AST_SplitGarrison", 
+		[_action]+
+		[[CMDR_ACTION_STATE_START]]+
+		[CMDR_ACTION_STATE_END]+
+		[CMDR_ACTION_STATE_FAILED]+
+		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
+		[MAKE_AST_VAR(_eff2)]+
+		[MAKE_AST_VAR([])]+
+		[_splitGarrIdVar]
+	);
+	
+	private _endState = CALLM(_thisObject, "apply", [_world]);
+	
+
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
+	["Split garrison var is valid", GET_AST_VAR(_splitGarrIdVar) != -1] call test_Assert;
+	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_splitGarrIdVar)]);
+	["Split garrison is valid", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
+
+	// Sync the Models
+	CALLM(_garrison, "sync", []);
+	CALLM(_splitGarr, "sync", []);
+
+	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
+	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+}] call test_AddTest;
+
+#endif
 // ORIGINAL
 
 

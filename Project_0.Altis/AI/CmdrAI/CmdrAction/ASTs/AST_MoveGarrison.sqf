@@ -13,7 +13,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),
+			P_OOP_OBJECT("_action"),			// Owner action for debugging purposes
 			P_ARRAY("_fromStates"),				// States it is valid from
 			P_AST_STATE("_successState"),		// if we reached the target
 			P_AST_STATE("_failGarrisonDead"), 	// if the garrison we are moving died
@@ -31,7 +31,6 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		T_SETV("failGarrisonDead", _failGarrisonDead);
 		T_SETV("failTargetDead", _failTargetDead);
 		T_SETV("moving", false);
-
 		T_SETV("garrId", _garrId);
 		T_SETV("target", _target);
 		T_SETV("radius", _radius);
@@ -48,25 +47,34 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			T_GETV("failGarrisonDead")
 		};
 
-		T_GET_AST_VAR("target") params ["_targetType", "_target"];
+		//T_GET_AST_VAR("target") params ["_targetType", "_target"];
 
-		private _targetPos = switch(_targetType) do {
-			case TARGET_TYPE_GARRISON: {
-				private _garr = CALLM(_world, "getGarrison", [_target]);
-				if(CALLM(_garr, "isDead", [])) then {
-					false
-				} else {
-					CALLM(_garr, "getPos", [])
-				}
-			};
-			case TARGET_TYPE_LOCATION: {
-				private _loc = CALLM(_world, "getLocation", [_target]);
-				CALLM(_loc, "getPos", [])
-			};
-			case TARGET_TYPE_POSITION: {
-				_target
-			};
-		};
+		private _targetPos = [_world, T_GET_AST_VAR("target")] call Target_fnc_GetPos;
+		// switch(_targetType) do {
+		// 	case TARGET_TYPE_GARRISON: {
+		// 		ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON target type expects a garrison ID");
+		// 		private _garr = CALLM(_world, "getGarrison", [_target]);
+		// 		ASSERT_OBJECT(_garr);
+		// 		_targetPos = if(CALLM(_garr, "isDead", [])) then {
+		// 			false
+		// 		} else {
+		// 			GETV(_garr, "pos")
+		// 		};
+		// 	};
+		// 	case TARGET_TYPE_LOCATION: {
+		// 		ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION target type expects a location ID");
+		// 		private _loc = CALLM(_world, "getLocation", [_target]);
+		// 		ASSERT_OBJECT(_loc);
+		// 		_targetPos = GETV(_loc, "pos");
+		// 	};
+		// 	case TARGET_TYPE_POSITION: {
+		// 		ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION target type expects a position [x,y,z]");
+		// 		_targetPos = _target;
+		// 	};
+		// 	default {
+		// 		FAILURE("Target is not valid");
+		// 	};
+		// };
 		if(!(_targetPos isEqualType [])) exitWith { T_GETV("failTargetDead") };
 
 		private _arrived = false;
@@ -111,6 +119,101 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 	} ENDMETHOD;
 ENDCLASS;
 
+
+#ifdef _SQF_VM
+
+#define CMDR_ACTION_STATE_FAILED_GARRISON_DEAD CMDR_ACTION_STATE_CUSTOM+1
+#define CMDR_ACTION_STATE_FAILED_TARGET_DEAD CMDR_ACTION_STATE_CUSTOM+2
+
+["AST_MoveGarrison.new", {
+	private _action = NEW("CmdrAction", []);
+	private _thisObject = NEW("AST_MoveGarrison", 
+		[_action]+
+		[[CMDR_ACTION_STATE_START]]+
+		[CMDR_ACTION_STATE_END]+
+		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
+		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
+		[MAKE_AST_VAR(0)]+
+		[MAKE_AST_VAR([TARGET_TYPE_GARRISON, 0])]+
+		[MAKE_AST_VAR(200)]
+	);
+	
+	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
+	["Object exists", !(isNil "_class")] call test_Assert;
+}] call test_AddTest;
+
+AST_MoveGarrison_test_fn = {
+	params ["_world", "_garrison", "_target"];
+	private _action = NEW("CmdrAction", []);
+	private _thisObject = NEW("AST_MoveGarrison", 
+		[_action]+
+		[[CMDR_ACTION_STATE_START]]+
+		[CMDR_ACTION_STATE_END]+
+		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
+		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
+		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
+		[MAKE_AST_VAR(_target)]+
+		[MAKE_AST_VAR(200)]
+	);
+	CALLM(_thisObject, "apply", [_world])
+};
+
+#define TARGET_POS [1, 2, 3]
+
+["AST_MoveGarrison.apply(sim, garrison=dead)", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	private _endState = [_world, _garrison, [TARGET_TYPE_POSITION, TARGET_POS]] call AST_MoveGarrison_test_fn;
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_GARRISON_DEAD] call test_Assert;
+}] call test_AddTest;
+
+["AST_MoveGarrison.apply(sim, target=pos)", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
+	private _target = [TARGET_TYPE_POSITION, TARGET_POS];
+	private _endState = [_world, _garrison, _target] call AST_MoveGarrison_test_fn;
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
+	["Garrison pos correct", GETV(_garrison, "pos") isEqualTo TARGET_POS] call test_Assert;
+}] call test_AddTest;
+
+["AST_MoveGarrison.apply(sim, target=garrison)", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
+	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	SETV(_targetGarrison, "efficiency", EFF_MIN_EFF);
+	SETV(_targetGarrison, "pos", TARGET_POS);
+
+	private _endState = [_world, _garrison, [TARGET_TYPE_GARRISON, GETV(_targetGarrison, "id")]] call AST_MoveGarrison_test_fn;
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
+	["Garrison pos correct", GETV(_garrison, "pos") isEqualTo TARGET_POS] call test_Assert;
+}] call test_AddTest;
+
+["AST_MoveGarrison.apply(sim, target=garrison+dead)", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
+	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	SETV(_targetGarrison, "pos", TARGET_POS);
+
+	private _endState = [_world, _garrison, [TARGET_TYPE_GARRISON, GETV(_targetGarrison, "id")]] call AST_MoveGarrison_test_fn;
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_TARGET_DEAD] call test_Assert;
+}] call test_AddTest;
+
+["AST_MoveGarrison.apply(sim, target=location)", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
+	private _garrison = NEW("GarrisonModel", [_world]);
+	SETV(_garrison, "efficiency", EFF_MIN_EFF);
+	private _targetLocation = NEW("LocationModel", [_world]);
+	SETV(_targetLocation, "pos", TARGET_POS);
+
+	private _endState = [_world, _garrison, [TARGET_TYPE_LOCATION, GETV(_targetLocation, "id")]] call AST_MoveGarrison_test_fn;
+	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
+	["Garrison pos correct", GETV(_garrison, "pos") isEqualTo TARGET_POS] call test_Assert;
+}] call test_AddTest;
+
+#endif
 // ORIGINAL:
 // // TODO: Split into Move and Retarget, see Docs\CmdrActions\TakeOrReinforce.dot.
 // // Need to handle target dying etc etc.

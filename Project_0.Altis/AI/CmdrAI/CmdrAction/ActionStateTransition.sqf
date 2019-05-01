@@ -40,7 +40,7 @@ CLASS("ActionStateTransition", "")
 		_matchingTransitions sort ASCENDING;
 
 		private _foundIdx = _matchingTransitions findIf { CALLM(_x select 1, "isAvailable", [_world]) };
-		if(_foundIdx != -1) then {
+		if(_foundIdx != NOT_FOUND) then {
 			private _selectedTransition = _matchingTransitions#_foundIdx#1;
 			private _newState = CALLM(_selectedTransition, "apply", [_world]);
 			ASSERT_MSG(_newState isEqualType 0, "ActionStateTransition apply should return a new state value, or CMDR_ACTION_STATE_NONE if unchanged");

@@ -43,7 +43,7 @@ CLASS("GarrisonModel", "ModelBase")
 		//T_SETV_REF("order", objNull);
 		T_SETV("action", NULL_OBJECT);
 		// These will get set in sync
-		T_SETV("efficiency", +T_EFF_null);
+		T_SETV("efficiency", +EFF_ZERO);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", sideUnknown);
@@ -131,7 +131,7 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT];
 
 		T_PRVAR(world);
-		T_SETV("efficiency", []);
+		T_SETV("efficiency", +EFF_ZERO);
 		T_CALLM("detachFromLocation", []);
 		CALLM(_world, "garrisonKilled", [_thisObject]);
 		T_CALLM("clearAction", []);
@@ -145,6 +145,7 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(T_GETV("locationId") == MODEL_HANDLE_INVALID, "Garrison already attached to another location");
 
 		CALLM(_location, "addGarrison", [_thisObject]);
+		T_SETV("locationId", GETV(_location, "id"));
 		OOP_DEBUG_MSG("Attached %1 to location %2", [_thisObject]+[_location]);
 	} ENDMETHOD;
 
@@ -153,6 +154,7 @@ CLASS("GarrisonModel", "ModelBase")
 		private _location = T_CALLM("getLocation", []);
 		if(!IS_NULL_OBJECT(_location)) then {
 			CALLM(_location, "removeGarrison", [_thisObject]);
+			T_SETV("locationId", MODEL_HANDLE_INVALID);
 			OOP_DEBUG_MSG("Detached %1 from location %2", [_thisObject]+[_location]);
 		};
 	} ENDMETHOD;
@@ -187,7 +189,7 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		_efficiency isEqualTo [] or {EFF_LTE(_efficiency, EFF_ZERO)}
+		_efficiency isEqualTo EFF_ZERO //or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;
 
 	METHOD("isDepleted") {
@@ -648,7 +650,7 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
 
-		CALLM(_location, "setGarrison", [_thisObject]);
+		CALLM(_location, "addGarrison", [_thisObject]);
 		private _id = GETV(_location, "id");
 		T_SETV("locationId", _id);
 	} ENDMETHOD;
