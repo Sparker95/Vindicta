@@ -89,6 +89,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			};
 			case WORLD_TYPE_REAL: {
 				private _radius = T_GET_AST_VAR("radius");
+				T_PRVAR(moving);
 				if(!_moving) then {
 					// Start moving
 					OOP_INFO_MSG("[w %1] Move %3 to %4: started", [_world ARG _garr ARG _targetPos]);
