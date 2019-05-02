@@ -28,11 +28,11 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
-		private _splitGarrIdVar = T_CALLM("createVariable", [-1]);
+		private _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
 		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		private _targetVar = T_CALLM("createVariable", []);
+		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
 
 		private _splitAST_Args = [
@@ -89,6 +89,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 		deleteMarker (_thisObject + "_line");
+		deleteMarker (_thisObject + "_line2");
 		deleteMarker (_thisObject + "_label");
 	} ENDMETHOD;
 
@@ -101,7 +102,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
 		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
-		if(_detachedGarrId == -1) then {
+		if(_detachedGarrId == MODEL_HANDLE_INVALID) then {
 			format ["reinf %1%2 -> %3", LABEL(_srcGarr), _srcEff, _targetName]
 		} else {
 			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
@@ -118,7 +119,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 
-		private _targetPos = [_world, T_GET_AST_VAR("target")] call Target_fnc_GetPos;
+		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
 		[_srcGarrPos, _targetPos, "ColorBlack", 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
@@ -130,8 +131,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		_mrk setMarkerText T_CALLM("getLabel", [_world]);
 
 		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
-		if(_detachedGarrId != -1) then {
-			private _detachedGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
 			ASSERT_OBJECT(_detachedGarr);
 			private _detachedGarrPos = GETV(_detachedGarr, "pos");
 			[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;

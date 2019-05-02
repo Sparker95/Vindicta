@@ -40,7 +40,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		T_PRVAR(action);
 		private _fromGarrId = T_GET_AST_VAR("fromGarrId");
 		ASSERT_MSG(_fromGarrId isEqualType 0, "fromGarrId should be a garrison Id");
-		private _fromGarr = CALLM(_world, "getGarrison", []);
+		private _fromGarr = CALLM(_world, "getGarrison", [_fromGarrId]);
 		ASSERT_OBJECT(_fromGarr);
 
 		// If the detachment or target died then we just finish the whole action immediately
@@ -67,7 +67,6 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 					} else {
 						CALLM(_fromGarr, "mergeActual", [_toGarr]);
 					};
-					OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]);
 					false
 				};
 			};

@@ -598,6 +598,8 @@ CLASS("GarrisonModel", "ModelBase")
 		private _AI = CALLM(_actual, "getAI", []);
 		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _radius]];
 		CALLM(_AI, "postMethodAsync", ["addExternalGoal"]+[["GoalGarrisonMove"]+[0]+[_parameters]+[_thisObject]]);
+
+		OOP_INFO_MSG("Moving %1 to %2 within %3", [LABEL(_thisObject)]+[_pos]+[_radius]);
 	} ENDMETHOD;
 
 	METHOD("cancelMoveActual") {
@@ -607,6 +609,8 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
 		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal"]+[["GoalGarrisonMove"]+[_thisObject]]);
+
+		OOP_INFO_MSG("Cancelled move of %1", [LABEL(_thisObject)]);
 	} ENDMETHOD;
 
 	METHOD("moveActualComplete") {
@@ -616,6 +620,9 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 		private _AI = CALLM(_actual, "getAI", []);
 		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonMove"]+[_thisObject]);
+		if(_goalState == ACTION_STATE_COMPLETED) then {
+			OOP_INFO_MSG("Move of %1 complete", [LABEL(_thisObject)]);
+		};
 		_goalState == ACTION_STATE_COMPLETED
 	} ENDMETHOD;
 
@@ -639,9 +646,11 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
+		OOP_INFO_MSG("Merging %1 to %2", [LABEL(_thisObject)]+[LABEL(_otherGarr)]);
 		private _otherActual = GETV(_otherGarr, "actual");
 		CALLM2(_otherActual, "postMethodAsync", "addGarrison", [_actual]+[true]);
 		T_CALLM("killed", []);
+		OOP_INFO_MSG("Merged %1 to %2", [LABEL(_thisObject)]+[LABEL(_otherGarr)]);
 		//CALLM(_otherActual, "addGarrison", [_actual]+[true]);
 	} ENDMETHOD;
 
@@ -664,6 +673,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		private _locationActual = GETV(_location, "actual");
 		CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
+		OOP_INFO_MSG("Joined %1 to %2", [LABEL(_thisObject)]+[LABEL(_location)]);
 		// private _AI = CALLM(_actual, "getAI", []);
 		// private _parameters = [[TAG_LOCATION, _locationActual]];
 		// private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];

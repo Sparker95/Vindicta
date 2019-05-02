@@ -32,6 +32,11 @@ CLASS("WorldModel", "")
 		{ UNREF(_x); } forEach _clusters;
 	} ENDMETHOD;
 
+	METHOD("isReal") {
+		params [P_THISOBJECT];
+		T_GETV("type") == WORLD_TYPE_REAL
+	} ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                       C O P Y / U P D A T E                        |
 	// ----------------------------------------------------------------------

@@ -29,7 +29,6 @@ CLASS("ClusterModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_world"), P_ARRAY("_actual")];
 		ASSERT_CLUSTER_ACTUAL_OR_NULL(_actual);
 
-		T_SETV("label", _actual);
 		T_SETV("pos", []);
 		T_SETV("size", []);
 		T_SETV("radius", 0);

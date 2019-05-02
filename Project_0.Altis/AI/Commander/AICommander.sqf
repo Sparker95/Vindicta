@@ -8,7 +8,7 @@ Author: Sparker 12.11.2018
 */
 
 #define DEBUG_COMMANDER
-#define PLAN_INTERVAL 120
+#define PLAN_INTERVAL 30
 #define pr private
 
 CLASS("AICommander", "AI")

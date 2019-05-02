@@ -43,7 +43,7 @@ Target_fnc_GetLabel = {
 			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON target type expects a garrison ID");
 			private _garr = CALLM(_world, "getGarrison", [_target]);
 			ASSERT_OBJECT(_garr);
-			_targetName = LABEL(_garr) + str GETV(_tgtGarr, "efficiency");
+			_targetName = LABEL(_garr) + str GETV(_garr, "efficiency");
 		};
 		case TARGET_TYPE_LOCATION: {
 			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION target type expects a location ID");
