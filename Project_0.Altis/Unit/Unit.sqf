@@ -261,7 +261,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 
 		CRITICAL_SECTION_END
@@ -366,7 +367,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
-			OOP_WARNING_0("Already despawned");
+			OOP_ERROR_0("Already despawned");
+			DUMP_CALLSTACK;
 		};
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);

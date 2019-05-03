@@ -21,7 +21,8 @@ OOP_INFO_0("DESPAWN");
 ASSERT_THREAD(_thisObject);
 
 if (!_spawned) exitWith {
-	OOP_WARNING_0("Already despawned");
+	OOP_ERROR_0("Already despawned");
+	DUMP_CALLSTACK;
 };
 
 // Reset spawned flag

@@ -292,7 +292,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
-			CALLM1(_action, "handleUnitsRemoved", _units);
+			CALLM1(_action, "handleUnitsAdded", _units);
 		};
 	} ENDMETHOD;
 	

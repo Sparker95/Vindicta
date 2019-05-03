@@ -126,6 +126,33 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			// NYI
 		};
 		
-	} ENDMETHOD; 
+	} ENDMETHOD;
+
+
+	// Handle units/groups added/removed
+
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
 
 ENDCLASS;

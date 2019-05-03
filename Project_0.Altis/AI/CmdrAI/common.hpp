@@ -2,7 +2,6 @@
 #define OOP_DEBUG
 #define OOP_WARNING
 #define OOP_ERROR
-#define OOP_ASSERT
 
 #define DEBUG_CMDRAI
 
@@ -25,6 +24,8 @@
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
 
+#define LABEL(model) GETV(model, "label")
+
 #define EFF_ZERO T_EFF_null
 
 // Minimum efficiency of a garrison.
@@ -45,4 +46,21 @@
 #else
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)
 #define ASSERT_CLUSTER_ACTUAL_NOT_NULL(actual)
+#endif
+
+#ifdef OOP_INFO
+#define OOP_INFO_MSG_REAL_ONLY(world, fmt, args) \
+	if(CALLM(world, "isReal", [])) then { \
+		OOP_INFO_MSG(fmt, args); \
+	};
+#else
+#define OOP_INFO_MSG_REAL_ONLY(world, fmt, args)
+#endif
+#ifdef OOP_DEBUG
+#define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args) \
+	if(CALLM(world, "isReal", [])) then { \
+		OOP_DEBUG_MSG(fmt, args); \
+	};
+#else
+#define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args)
 #endif

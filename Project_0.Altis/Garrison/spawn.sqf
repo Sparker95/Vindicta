@@ -22,7 +22,8 @@ ASSERT_THREAD(_thisObject);
 private _spawned = GET_VAR(_thisObject, "spawned");
 
 if (_spawned) exitWith {
-	OOP_ERROR_0("Can't spawn a garrison which is already spawned");
+	OOP_ERROR_0("Already spawned");
+	DUMP_CALLSTACK;
 };
 
 // Set spawned flag
