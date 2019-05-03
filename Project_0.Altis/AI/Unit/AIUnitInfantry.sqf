@@ -79,7 +79,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		// Unassign this inf unit from its current vehicle
 		pr _assignedVehicle = T_GETV("assignedVehicle");
 		if (!isNil "_assignedVehicle") then {
-			OOP_INFO_1("assigned vehicle: %1", _assignedVehicle);
+			OOP_INFO_1("previously assigned vehicle: %1", _assignedVehicle);
 			
 			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
 			if (_assignedVehAI != "") then { // sanity checks
@@ -110,6 +110,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]] ];
 
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
+
+		OOP_INFO_2("Assigning %1 as a DRIVER of %2", _thisObject, _veh);
 
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");
@@ -169,6 +171,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 	METHOD("assignAsTurret") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]], ["_turretPath", [], [[]]] ];
 		
+		OOP_INFO_3("Assigning %1 as a TURRET %2 of %3", _thisObject, _turretPath, _veh);
+
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
 		
 		// Unassign this inf unit from its current vehicle
@@ -206,6 +210,8 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
 		
+		OOP_INFO_3("Assigning %1 as CARGO INDEX %2 of %3", _thisObject, _cargoIndex, _veh);
+
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");
 		

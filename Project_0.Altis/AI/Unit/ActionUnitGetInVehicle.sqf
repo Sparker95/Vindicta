@@ -94,7 +94,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _AI = GETV(_thisObject, "AI");
 		pr _unitVeh = GETV(_thisObject, "unitVeh");
 		
-		INFO_2("Asigning vehicle: %1, role: %2", _unitVeh, _vehRole);
+		INFO_2("Assigning vehicle: %1, role: %2", _unitVeh, _vehRole);
 		
 		switch (_vehRole) do {	
 		/*
@@ -423,7 +423,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			// Check if the seat is occupied by someone else
 			if (CALLM0(_thisObject, "seatIsOccupied")) then {
 				INFO_0("Seat is occupied");
-				if (_vehRole == "CARGO") then {// If it's cargo seat, try to chose a new one
+				if (_vehRole == "CARGO") then {// If it's cargo seat, try to choose a new one
 					pr _success = CALLM0(_thisObject, "assignVehicle");
 					if (_success) then {
 						INFO_0("Assigned new seat");
@@ -465,6 +465,8 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				
 					// Execute vehicle assignment
 					CALLM0(_AI, "executeVehicleAssignment");
+					// Order get in
+					[_hO] orderGetIn true;
 				
 					// Check if the unit is in the required seat
 					if (CALLM0(_thisObject, "isAtAssignedSeat")) then {
@@ -515,10 +517,12 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						doGetOut _hO;
 					};
 					
+					T_SETV("state", ACTION_STATE_ACTIVE);
 					ACTION_STATE_ACTIVE
 				};
 			}; // else
 		} else { // state == active
+			T_SETV("state", _state);
 			_state
 		};
 	} ENDMETHOD;
