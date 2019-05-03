@@ -126,7 +126,7 @@ if (isServer) then {
 			};
 
 			if (_loc != "") then {
-				CALLM2(_AI, "updateLocationData", _loc, _updateLevel);
+				CALLM4(_AI, "updateLocationData", _loc, _updateLevel, sideUnknown, false); // false - don't show notification
 			};
 		} forEach _allGars;
 

@@ -195,8 +195,10 @@ CLASS("AICommander", "AI")
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true]];
 		
+		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
+
 		pr _thisSide = T_GETV("side");
 		
 		pr _ld = switch (_side) do {
@@ -222,7 +224,7 @@ CLASS("AICommander", "AI")
 				
 				systemChat "Discovered new location";
 				
-				if (_side == _thisSide && _side != _locSide) then {
+				if (_side == _thisSide && _side != _locSide && _showNotification) then {
 					CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
 				};
 
@@ -257,7 +259,7 @@ CLASS("AICommander", "AI")
 				//systemChat "Location data was updated";
 				
 				// Show notification if we haven't updated this data for quite some time
-				if (_side == _thisSide && _side != _locSide) then {
+				if (_side == _thisSide && _side != _locSide && _showNotification) then {
 					if ((TIME_NOW - _time) > 600) then {
 						CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
 					};
@@ -278,6 +280,8 @@ CLASS("AICommander", "AI")
 	METHOD("showLocationNotification") {
 		params ["_thisObject", ["_locPos", [], [[]]], ["_state", "", [""]]];
 		
+		//OOP_INFO_0("SHOW LOCATION NOTIFICATION");
+
 		//ade_dumpCallstack;
 		
 		pr _id = T_GETV("notificationID");
