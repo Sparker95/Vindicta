@@ -1,3 +1,8 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#include "..\..\OOP_Light\OOP_Light.h"
+
 #define pr private
 
 // What happens to a vehicle when a non-engineer AI repairs it
@@ -26,6 +31,12 @@ AI_misc_fnc_repairWithoutEngineer = {
 AI_misc_fnc_isAnyWheelDamaged = {
 	params [["_veh", objNull, [objNull]]];
 	
+	if (isNull _veh) exitWith {
+		OOP_ERROR_0("isAnyWheelDamaged: _veh is null!");
+		DUMP_CALLSTACK;
+		false
+	};
+
 	(getAllHitPointsDamage _veh) params ["_names", "_selections", "_damages"];
 	pr _repairNames = ["wheel", "track"];
 	pr _return = false;

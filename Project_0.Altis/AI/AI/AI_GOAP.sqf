@@ -262,6 +262,14 @@ CLASS("AI_GOAP", "AI")
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);
 				};
+
+				case ACTION_STATE_REPLAN : {
+					// Probably we should replan our goal at the next iteration
+					SETV(_thisObject, "currentGoal", "");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
+				};
 			};
 		};
 		

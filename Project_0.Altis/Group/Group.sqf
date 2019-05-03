@@ -577,7 +577,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -651,7 +652,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -713,7 +715,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -764,7 +767,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to false
 			_data set [GROUP_DATA_ID_SPAWNED, false];
 		} else {
-			OOP_WARNING_0("Already despawned");
+			OOP_ERROR_0("Already despawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
