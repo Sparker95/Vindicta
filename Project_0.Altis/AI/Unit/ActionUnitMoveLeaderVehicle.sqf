@@ -42,7 +42,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			SETV(_AI, "new", false);
 		};
 
-		T_SETV("stuckTimer", 0);
+		T_SETV("stuckTimer", TIMER_STUCK_THRESHOLD-4);
 		T_SETV("time", time);
 		T_SETV("triedRoads", []);
 		T_SETV("stuckCounter", 0);
