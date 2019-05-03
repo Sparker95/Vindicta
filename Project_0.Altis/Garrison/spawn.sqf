@@ -19,6 +19,10 @@ OOP_INFO_0("SPAWN");
 
 ASSERT_THREAD(_thisObject);
 
+if(T_CALLM("isDestroyed", [])) exitWith {
+	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+};
+
 private _spawned = GET_VAR(_thisObject, "spawned");
 
 if (_spawned) exitWith {
