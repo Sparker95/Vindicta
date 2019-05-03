@@ -3,34 +3,31 @@
 #define OOP_WARNING
 
 #include "..\..\OOP_Light\OOP_Light.h"
-
 #include "VirtualRoute.hpp"
 
 #define pr private
 
 CLASS("VirtualRoute", "")
 
-	VARIABLE("from");
-	VARIABLE("destination");
+	VARIABLE_ATTR("recalculateInterval", [ATTR_PRIVATE]);
 
-	VARIABLE("recalculateInterval");
+	VARIABLE_ATTR("costFn", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("speedFn", [ATTR_PRIVATE]);
 
-	VARIABLE("costFn");
-	VARIABLE("speedFn");
+	VARIABLE_ATTR("route", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("pos", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("nextIdx", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("currSpeed_ms", [ATTR_PRIVATE]);
 
-	VARIABLE("calculated");
-	VARIABLE("failed");
+	VARIABLE_ATTR("stopped", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("last_t", [ATTR_PRIVATE]);
 
-	VARIABLE("route");
-	VARIABLE("waypoints");
-	VARIABLE("pos");
-	VARIABLE("nextIdx");
-	VARIABLE("currSpeed_ms");
-
-	VARIABLE("stopped");
-	VARIABLE("last_t");
-
-	VARIABLE("complete");
+	VARIABLE_ATTR("from", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("destination", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("calculated", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("failed", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("waypoints", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("complete", [ATTR_GET_ONLY]);
 	
 	/*
 	Method: new

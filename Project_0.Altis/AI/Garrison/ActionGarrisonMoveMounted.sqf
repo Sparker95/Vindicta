@@ -133,7 +133,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					CALLM1(_AI, "setPos", _pos);
 
 					// Succede the action if the garrison is close enough to its destination
-					if (_pos distance T_GETV("pos") < T_GETV("radius")) then {
+					if (_pos distance T_GETV("pos") < T_GETV("radius") or {GETV(_vr, "complete")}) then {
 						_state = ACTION_STATE_COMPLETED;
 					};
 				} else { 

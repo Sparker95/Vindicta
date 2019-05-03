@@ -25,3 +25,5 @@
 #define __MUTEX_LOCK	
 #define __MUTEX_UNLOCK	
 #endif
+
+#define IS_GARRISON_DESTROYED(obj) (GETV(obj, "effTotal") isEqualTo [])

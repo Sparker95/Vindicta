@@ -571,7 +571,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Register it at the commander (do it after adding the units so the sync is correct)
 		#ifndef _SQF_VM
-		private _newGarr = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGarrActual]);
+		private _newGarr = CALLM(_newGarrActual, "activate", []);
 		#else
 		private _newGarr = NEW("GarrisonModel", [_world]+[_newGarrActual]);
 		#endif
@@ -582,7 +582,7 @@ CLASS("GarrisonModel", "ModelBase")
 		// return the New detachment garrison model
 		_newGarr
 	} ENDMETHOD;
-	
+
 	// MOVE TO POS
 	METHOD("moveSim") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];

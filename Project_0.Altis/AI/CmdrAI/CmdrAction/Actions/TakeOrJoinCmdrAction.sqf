@@ -17,25 +17,42 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		T_SETV("srcGarrId", _srcGarrId);
 
-		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
-		// (it is a constant for this action so it doesn't need to be saved and restored)
-		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
-
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
 		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
 		T_SETV("detachmentEffVar", _detachmentEffVar);
 
+		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
+		private _targetVar = T_CALLM("createVariable", [[]]);
+		T_SETV("targetVar", _targetVar);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		{ DELETE(_x) } forEach T_GETV("transitions");
+
+		deleteMarker (_thisObject + "_line");
+		deleteMarker (_thisObject + "_line2");
+		deleteMarker (_thisObject + "_label");
+	} ENDMETHOD;
+
+	/* protected override */ METHOD("createTransitions") {
+		T_PRVAR(srcGarrId);
+		T_PRVAR(detachmentEffVar);
+		T_PRVAR(targetVar);
+
+		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
+		// (it is a constant for this action so it doesn't need to be saved and restored)
+		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+			
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
 		private _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
 		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
-		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		private _targetVar = T_CALLM("createVariable", [[]]);
-		T_SETV("targetVar", _targetVar);
-
-		private _splitAST_Args = [
+		params [P_THISOBJECT];
+				private _splitAST_Args = [
 				_thisObject,						// This action (for debugging context)
 				[CMDR_ACTION_STATE_START], 			// First action we do
 				CMDR_ACTION_STATE_SPLIT, 			// State change if successful
@@ -82,18 +99,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				_targetVar]; 						// New target
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
-		private _transitions = [_splitAST, _assignAST, _moveAST, _mergeAST, _newTargetAST];
-		T_SETV("transitions", _transitions);
+		[_splitAST, _assignAST, _moveAST, _mergeAST, _newTargetAST]
 	} ENDMETHOD;
-
-	METHOD("delete") {
-		params [P_THISOBJECT];
-		deleteMarker (_thisObject + "_line");
-		deleteMarker (_thisObject + "_line2");
-		deleteMarker (_thisObject + "_label");
-	} ENDMETHOD;
-
-	/* override */ METHOD("getLabel") {
+	
+	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		T_PRVAR(srcGarrId);
@@ -111,7 +120,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 
-	/* override */ METHOD("debugDraw") {
+	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		T_PRVAR(srcGarrId);

@@ -12,6 +12,8 @@ Author: Sparker 12.07.2018
 
 #define pr private
 
+#define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject])
+
 CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
@@ -71,7 +73,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Create an AI brain of this garrison and start it
 		pr _AI = NEW("AIGarrison", [_thisObject]);
 		SETV(_thisObject, "AI", _AI);
-		CALLM(_AI, "start", []); // Let's start the party! \o/
 
 		// Set position if it was specified
 		if (count _pos > 0) then {
@@ -86,10 +87,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 
+		GETSV("Garrison", "all") pushBack _thisObject;
+
 		// Handle the PROCESS message right now to make the garrison instantly switch to spawned state if required
 		//CALLM1(_thisObject, "handleMessage", _msg);
-		
-		GETSV("Garrison", "all") pushBack _thisObject;
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -104,19 +105,35 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("DELETE GARRISON");
 		
-		ASSERT_MSG(T_CALLM("isDestroyed", []), "Garrison should be destroyed before it is deleted");
+		ASSERT_MSG(IS_GARRISON_DESTROYED(_thisObject), "Garrison should be destroyed before it is deleted");
 	} ENDMETHOD;
 
+	// ----------------------------------------------------------------------
+	// |                          A C T I V A T E                           |
+	// ----------------------------------------------------------------------
+	/*
+	Method: activate
+
+	Start AI, register with commander and global garrison list
+	*/
+	METHOD("activate") {
+		params [P_THISOBJECT];
+
+		CALLM(T_GETV("AI"), "start", []); // Let's start the party! \o/
+		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject])
+	} ENDMETHOD;
+	
 	METHOD("isAlive") {
 		params [P_THISOBJECT];
 		// No mutex lock because this is expected to be atomic
-		!(T_GETV("effTotal") isEqualTo [])
+		!IS_GARRISON_DESTROYED(_thisObject)
+		//(T_GETV("effTotal") isEqualTo [])
 	} ENDMETHOD;
 
 	METHOD("isDestroyed") {
 		params [P_THISOBJECT];
 		// No mutex lock because this is expected to be atomic
-	 	(T_GETV("effTotal") isEqualTo [])
+	 	IS_GARRISON_DESTROYED(_thisObject)
 	} ENDMETHOD;
 
 	METHOD("destroy") {
@@ -126,7 +143,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 
-		ASSERT_MSG(!T_CALLM("isDestroyed", []), "Garrison is already destroyed");
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_WARNING_MSG("Garrison %1 is already destroyed", []);
+		};
 
 		ASSERT_THREAD(_thisObject);
 
@@ -231,13 +250,12 @@ CLASS("Garrison", "MessageReceiverEx");
 	_location - <Location>
 	*/
 	METHOD("setLocation") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_location") ];
-		ASSERT_OBJECT_CLASS(_location, "Location");
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -256,6 +274,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Attach to another location
 		if (_location != "") then {
+			ASSERT_OBJECT_CLASS(_location, "Location");
 			CALLM2(_location, "postMethodAsync", "registerGarrison", [_thisObject]);
 		};
 		
@@ -272,8 +291,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -302,8 +321,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -335,8 +354,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			sideUnknown
 		};
@@ -358,8 +377,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
@@ -381,8 +400,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -402,8 +421,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -423,8 +442,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -445,8 +464,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -467,8 +486,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -489,13 +508,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
-		T_GETV("AI")
+		private _AI = T_GETV("AI");
 		__MUTEX_UNLOCK;
+		_AI
 	} ENDMETHOD;
 	
 	// 						S E T   P O S
@@ -504,8 +524,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 		pr _AI = T_GETV("AI");
@@ -524,8 +544,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -546,8 +566,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			true
 		};
@@ -567,8 +587,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			false
 		};
@@ -594,8 +614,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			[]
 		};
@@ -625,8 +645,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			0
 		};
@@ -658,8 +678,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
 		};
@@ -726,8 +746,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
 		};
@@ -780,8 +800,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
 		};
@@ -861,8 +881,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
 		};
@@ -917,8 +937,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -949,8 +969,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
 		};
@@ -1007,8 +1027,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -1122,8 +1142,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -1153,8 +1173,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -1261,8 +1281,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -1295,8 +1315,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
@@ -1327,8 +1347,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
@@ -1349,8 +1369,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
@@ -1464,8 +1484,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
@@ -1513,8 +1533,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
@@ -1557,8 +1577,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
-		if(T_CALLM("isDestroyed", [])) exitWith {
-			OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 

@@ -130,6 +130,7 @@ CLASS("AICommander", "AI")
 		
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
 		
+		// U P D A T E   S E N S O R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update sensors");
 		T_SETV("stateStart", TIME_NOW);
@@ -138,6 +139,7 @@ CLASS("AICommander", "AI")
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
 		
+		// U P D A T E   C L U S T E R S
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "update clusters");
 		T_SETV("stateStart", TIME_NOW);
@@ -176,7 +178,7 @@ CLASS("AICommander", "AI")
 			};
 		};
 
-
+		// C M D R A I   P L A N N I N G
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "model sync");
 		T_SETV("stateStart", TIME_NOW);
@@ -204,6 +206,18 @@ CLASS("AICommander", "AI")
 			// Make it after planning so we get a gap
 			T_SETV("lastPlanningTime", TIME_NOW);
 		};
+
+		// C L E A N U P
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "cleanup");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
+
+		private _deadGarrisons = T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) };
+		{
+			CALLM2(_x, "postMethodAsync", "destroy", []);
+		} forEach _deadGarrisons;
+
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
 		T_SETV("stateStart", TIME_NOW);

@@ -80,8 +80,9 @@ CLASS("ActionCommanderRespondToTargetCluster", "Action")
 			// Make a new garrison
 			pr _newGar = NEW("Garrison", [GETV(_AI, "side")]);
 			// Register it at the commander
-			CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
-
+			//CALL_STATIC_METHOD("AICommander", "registerGarrison", [_newGar]);
+			CALLM(_newGar, "activate", []);
+			
 			if (_locationSrc != "") then {
 				CALLM2(_newGar, "postMethodAsync", "setLocation", [_locationSrc]); // This garrison will spawn here if needed
 			};
