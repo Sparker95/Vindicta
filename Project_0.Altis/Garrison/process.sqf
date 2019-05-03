@@ -2,9 +2,13 @@
 
 #define pr private
 
-params ["_thisObject"];
+params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
+
+if(T_CALLM("isDestroyed", [])) exitWith {
+	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+};
 
 pr _side = T_GETV("side");
 //OOP_INFO_0("...2");

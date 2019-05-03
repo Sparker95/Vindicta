@@ -119,9 +119,9 @@ if (isServer) then {
 			private _loc = CALLM0(_x, "getLocation");
 			
 			private _updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; // Only know that there's something unexplored over here
-			if (CALLM0(_x, "getSide") == _side) then { // If this garrison should belong to this commander
-				// Register at commander
-				CALL_STATIC_METHOD("AICommander", "registerGarrison", [_x]);
+			if (CALLM0(_x, "getSide") == _side) then { // If this garrison should belong to this commander	
+				// Activate the Garrison
+				CALLM(_x, "activate", []);
 				_updateLevel = CLD_UPDATE_LEVEL_UNITS; // Know about all units at this place
 			};
 

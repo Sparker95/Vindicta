@@ -65,6 +65,10 @@ CLASS("CmdrAction", "RefCounted")
 		} foreach +_garrisons;
 	} ENDMETHOD;
 
+	/* protected virtual */ METHOD("createTransitions") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+	
 	METHOD("registerGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
@@ -107,10 +111,21 @@ CLASS("CmdrAction", "RefCounted")
 		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness
 	} ENDMETHOD;
 
+	
+	/* private */ METHOD("getTransitions") {
+		params [P_THISOBJECT];
+		T_PRVAR(transitions);
+		if(count _transitions == 0) then {
+			_transitions = T_CALLM("createTransitions", []);
+			T_SETV("transitions", _transitions);
+		};
+		_transitions
+	} ENDMETHOD;
+
 	METHOD("applyToSim") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		T_PRVAR(state);
-		T_PRVAR(transitions);
+		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 
 		T_CALLM("pushVariables", []);
@@ -130,7 +145,7 @@ CLASS("CmdrAction", "RefCounted")
 		_state
 	} ENDMETHOD;
 
-	METHOD("pushVariables") {
+	/* private */ METHOD("pushVariables") {
 		params [P_THISOBJECT];
 		T_PRVAR(variables);
 		T_PRVAR(variablesStack);
@@ -141,7 +156,7 @@ CLASS("CmdrAction", "RefCounted")
 		_variablesStack pushBack (_variables apply { +_x });
 	} ENDMETHOD;
 
-	METHOD("popVariables") {
+	/* private */ METHOD("popVariables") {
 		params [P_THISOBJECT];
 		T_PRVAR(variables);
 		T_PRVAR(variablesStack);
@@ -162,7 +177,7 @@ CLASS("CmdrAction", "RefCounted")
 		ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
 
 		T_PRVAR(state);
-		T_PRVAR(transitions);
+		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 		
 		private _oldState = CMDR_ACTION_STATE_NONE;
@@ -184,12 +199,12 @@ CLASS("CmdrAction", "RefCounted")
 		T_GETV("state") == CMDR_ACTION_STATE_END
 	} ENDMETHOD;
 
-	METHOD("getLabel") {
+	/* protected virtual */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		""
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("debugDraw") {
+	/* protected virtual */ METHOD("debugDraw") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 	
