@@ -78,7 +78,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		// Despawn if spawned
-		CALLM0(_thisObject, "despawn");
+		if (CALLM0(_thisObject, "isSpawned")) then {
+			CALLM0(_thisObject, "despawn");
+		};
 
 		// Report an error if we are deleting a group with units in it
 		if(count _units > 0) then {
@@ -754,7 +756,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Delete the group handle
 			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
 			if (count units _groupHandle > 0) then {
-				diag_log format ["[Group] Warning: group is not empty at despawning: %1. Units remaining:", _data];
+				OOP_WARNING_1("Group is not empty at despawning: %1. Units remaining:", _data);
 				{
 					diag_log format ["  %1,  alive: %2", _x, alive _x];
 				} forEach (units _groupHandle);
