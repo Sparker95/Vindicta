@@ -15,6 +15,11 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON]+[_tgtGarrId]);
+
+#ifdef DEBUG_CMDRAI
+		T_SETV("debugColor", "ColorWhite");
+		T_SETV("debugSymbol", "mil_join")
+#endif
 	} ENDMETHOD;
 
 	/* override */ METHOD("updateScore") {

@@ -60,7 +60,7 @@ CLASS("LocationModel", "ModelBase")
 
 			//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
-			T_SETV("pos", GETV(_actual, "pos"));
+			T_SETV("pos", CALLM(_actual, "getPos", []));
 
 			private _side = GETV(_actual, "side");
 			T_SETV("side", _side);

@@ -12,6 +12,11 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("detachmentEffVar");
 	VARIABLE("detachedGarrIdVar");
 
+#ifdef DEBUG_CMDRAI
+	VARIABLE("debugColor");
+	VARIABLE("debugSymbol");
+#endif
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
@@ -32,9 +37,11 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
+#ifdef DEBUG_CMDRAI
 		deleteMarker (_thisObject + "_line");
-		deleteMarker (_thisObject + "_line2");
+		//deleteMarker (_thisObject + "_line2");
 		deleteMarker (_thisObject + "_label");
+#endif
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("createTransitions") {
@@ -112,11 +119,11 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
 		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 		if(_detachedGarrId == MODEL_HANDLE_INVALID) then {
-			format ["reinf %1%2 -> %3", LABEL(_srcGarr), _srcEff, _targetName]
+			format ["%1 %2%3 -> %4", _thisObject, LABEL(_srcGarr), _srcEff, _targetName]
 		} else {
 			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
-			format ["reinf %1%2 -> %3%4 -> %5", LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName]
+			format ["%1 %2%3 -> %4%5 -> %6", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName]
 		};
 	} ENDMETHOD;
 
@@ -130,22 +137,26 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
-		[_srcGarrPos, _targetPos, "ColorBlack", 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
+		T_PRVAR(debugColor);
+		T_PRVAR(debugSymbol);
+
+		[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
 		private _centerPos = _srcGarrPos vectorAdd ((_targetPos vectorDiff _srcGarrPos) apply { _x * 0.5 });
 		private _mrk = createmarker [_thisObject + "_label", _centerPos];
-		_mrk setMarkerType "mil_objective";
-		_mrk setMarkerColor "ColorWhite";
+		_mrk setMarkerType _debugSymbol;
+		_mrk setMarkerColor _debugColor;
+		_mrk setMarkerPos _centerPos;
 		_mrk setMarkerAlpha 1;
 		_mrk setMarkerText T_CALLM("getLabel", [_world]);
 
-		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
-		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
-			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-			ASSERT_OBJECT(_detachedGarr);
-			private _detachedGarrPos = GETV(_detachedGarr, "pos");
-			[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
-		};
+		// private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		// if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+		// 	private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		// 	ASSERT_OBJECT(_detachedGarr);
+		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
+		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
+		// };
 	} ENDMETHOD;
 
 ENDCLASS;

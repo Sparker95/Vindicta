@@ -44,21 +44,13 @@ CLASS("WorldModel", "")
 	METHOD("sync") {
 		params [P_THISOBJECT];
 
-		// sync existing garrisons
-		//T_PRVAR(garrisons);
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
-		// Is this too long a critical section?
-		//CRITICAL_SECTION {
-			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
+		// sync existing locations
+		{ CALLM(_x, "sync", []); } forEach T_GETV("locations");
 
-			// sync existing locations
-			T_PRVAR(locations);
-			{ CALLM(_x, "sync", []); } forEach _locations;
-
-			// sync existing clusters
-			//T_PRVAR(clusters);
-			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
-		//};
+		// sync existing clusters
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
 
 	} ENDMETHOD;
 
@@ -272,6 +264,14 @@ CLASS("WorldModel", "")
 		_locations select _id
 	} ENDMETHOD;
 
+	METHOD("getLocations") {
+		params [P_THISOBJECT, P_NUMBER("_id")];
+
+		T_PRVAR(locations);
+		// Copy it, necessary?
+		+_locations
+	} ENDMETHOD;
+
 	METHOD("findLocationByActual") {
 		params [P_THISOBJECT, P_STRING("_actual")];
 		ASSERT_OBJECT_CLASS(_actual, "Location");
@@ -329,11 +329,15 @@ CLASS("WorldModel", "")
 
 		ASSERT_MSG(GETV(_cluster, "id") == MODEL_HANDLE_INVALID, "ClusterModel is already attached to a WorldModel");
 		
+
 		T_PRVAR(clusters);
 
 		REF(_cluster);
 		private _idx = _clusters pushBack _cluster;
 		SETV(_cluster, "id", _idx);
+
+		OOP_DEBUG_MSG("Cluster %1 added to world model", [LABEL(_cluster)]);
+
 		_idx
 	} ENDMETHOD;
 
@@ -404,10 +408,13 @@ CLASS("WorldModel", "")
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_origActual);
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_newActual);
 
+
 		// This call will do our asserting for us
 		private _cluster = T_CALLM("findClusterByActual", [_origActual]);
 		ASSERT_OBJECT(_cluster);
 		SETV(_cluster, "actual", +_newActual);
+
+		OOP_DEBUG_MSG("Cluster %1 retargetted to %2", [LABEL(_cluster)]+[_newActual]);
 	} ENDMETHOD;
 
 	METHOD("deleteClusterByActual") {
@@ -417,7 +424,8 @@ CLASS("WorldModel", "")
 		// This call will do our asserting for us
 		private _cluster = T_CALLM("findClusterByActual", [_actual]);
 		ASSERT_OBJECT(_cluster);
-		CALLM(_cluster, "killed", +_newActual);
+		CALLM(_cluster, "killed", []);
+		OOP_DEBUG_MSG("Cluster %1 deleted from world model", [LABEL(_cluster)]);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

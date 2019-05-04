@@ -3,39 +3,39 @@
 #include "..\..\parameterTags.hpp"
 #include "..\..\Action\Action.hpp"
 
-GarrisonModel_getThread = {
-	params ["_garrisonModel"];
-	// Can't use normal accessor because it would cause an infinite loop!
-	private _side = FORCE_GET_MEM(_garrisonModel, "side");
-	if(!isNil "_side") then {
-		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
-		if(!IS_NULL_OBJECT(_AICommander)) then {
-			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
-		} else {
-			nil
-		}
-	}
-};
+// GarrisonModel_getThread = {
+// 	params ["_garrisonModel"];
+// 	// Can't use normal accessor because it would cause an infinite loop!
+// 	private _side = FORCE_GET_MEM(_garrisonModel, "side");
+// 	if(!isNil "_side") then {
+// 		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+// 		if(!IS_NULL_OBJECT(_AICommander)) then {
+// 			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
+// 		} else {
+// 			nil
+// 		}
+// 	}
+// };
 
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
 // is a copy that is modified during simulations.
 CLASS("GarrisonModel", "ModelBase")
 	// Strength vector of the garrison.
-	VARIABLE_ATTR("efficiency", [ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("efficiency", []);
 	//// Current order the garrison is following.
 	// TODO: do we want this? I think only real Garrison needs orders, model just has action.
 	//VARIABLE_ATTR("order", [ATTR_REFCOUNTED]);
-	VARIABLE_ATTR("action", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("action", [ATTR_GET_ONLY]);
 	// Is the garrison currently in combat?
 	// TODO: maybe replace this with with "engagement score" indicating how engaged they are.
-	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]);
 	// Position.
-	VARIABLE_ATTR("pos", [ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("pos", []);
 	// What side this garrison belongs to.
-	VARIABLE_ATTR("side", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("side", [ATTR_GET_ONLY]);
 	// Id of the location the garrison is currently occupying.
-	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -88,6 +88,42 @@ CLASS("GarrisonModel", "ModelBase")
 		_copy
 	} ENDMETHOD;
 
+	METHOD("_sync") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
+
+		if(CALLM(_actual, "isDestroyed", [])) exitWith {
+			T_CALLM("killed", []);
+		};
+
+		private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
+		if(EFF_LTE(_newEff, EFF_ZERO)) then {
+			T_CALLM("killed", []);
+		} else {
+			private _actualSide = CALLM(_actual, "getSide", []);
+			T_SETV("side", _actualSide);
+			
+			T_SETV("efficiency", _newEff);
+			
+			private _actualPos = CALLM(_actual, "getPos", []);
+			T_SETV("pos", +_actualPos);
+
+
+			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			private _locationActual = CALLM(_actual, "getLocation", []);
+			if(!IS_NULL_OBJECT(_locationActual)) then {
+				T_PRVAR(world);
+				private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+				T_SETV("locationId", GETV(_location, "id"));
+				// Don't call the proper functions because it deals with updating the LocationModel
+				// and we don't need to do that in sync (LocationModel sync does it)
+				//T_CALLM("attachToLocation", [_location]);
+			} else {
+				T_SETV("locationId", MODEL_HANDLE_INVALID);
+				//T_CALLM("detachFromLocation", []);
+			};
+		};
+	} ENDMETHOD;
+	
 	METHOD("sync") {
 		params [P_THISOBJECT];
 
@@ -96,33 +132,35 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!IS_NULL_OBJECT(_actual)) then {
 			ASSERT_OBJECT_CLASS(_actual, "Garrison");
 
-			private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
-			if(EFF_LTE(_newEff, EFF_ZERO)) then {
-				T_CALLM("killed", []);
-			} else {
-				private _actualSide = CALLM(_actual, "getSide", []);
-				T_SETV("side", _actualSide);
+			CALLM(_actual, "runLocked", [_thisObject]+["_sync"]+[[_actual]]);
+
+			// private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
+			// if(EFF_LTE(_newEff, EFF_ZERO)) then {
+			// 	T_CALLM("killed", []);
+			// } else {
+			// 	private _actualSide = CALLM(_actual, "getSide", []);
+			// 	T_SETV("side", _actualSide);
 				
-				T_SETV("efficiency", _newEff);
+			// 	T_SETV("efficiency", _newEff);
 				
-				private _actualPos = CALLM(_actual, "getPos", []);
-				T_SETV("pos", +_actualPos);
+			// 	private _actualPos = CALLM(_actual, "getPos", []);
+			// 	T_SETV("pos", +_actualPos);
 
 
-				//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
-				private _locationActual = CALLM(_actual, "getLocation", []);
-				if(!IS_NULL_OBJECT(_locationActual)) then {
-					T_PRVAR(world);
-					private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
-					T_SETV("locationId", GETV(_location, "id"));
-					// Don't call the proper functions because it deals with updating the LocationModel
-					// and we don't need to do that in sync (LocationModel sync does it)
-					//T_CALLM("attachToLocation", [_location]);
-				} else {
-					T_SETV("locationId", MODEL_HANDLE_INVALID);
-					//T_CALLM("detachFromLocation", []);
-				};
-			};
+			// 	//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			// 	private _locationActual = CALLM(_actual, "getLocation", []);
+			// 	if(!IS_NULL_OBJECT(_locationActual)) then {
+			// 		T_PRVAR(world);
+			// 		private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+			// 		T_SETV("locationId", GETV(_location, "id"));
+			// 		// Don't call the proper functions because it deals with updating the LocationModel
+			// 		// and we don't need to do that in sync (LocationModel sync does it)
+			// 		//T_CALLM("attachToLocation", [_location]);
+			// 	} else {
+			// 		T_SETV("locationId", MODEL_HANDLE_INVALID);
+			// 		//T_CALLM("detachFromLocation", []);
+			// 	};
+			// };
 		};
 	} ENDMETHOD;
 
@@ -672,7 +710,8 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		private _locationActual = GETV(_location, "actual");
-		CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
+		// CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
+		CALLM2(_actual, "postMethodAsync", "setLocation", [_locationActual]);
 		OOP_INFO_MSG("Joined %1 to %2", [LABEL(_thisObject)]+[LABEL(_location)]);
 		// private _AI = CALLM(_actual, "getAI", []);
 		// private _parameters = [[TAG_LOCATION, _locationActual]];

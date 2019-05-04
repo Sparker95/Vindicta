@@ -15,6 +15,12 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_SETV("tgtLocId", _tgtLocId);
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION]+[_tgtLocId]);
+
+#ifdef DEBUG_CMDRAI
+		T_SETV("debugColor", "ColorBlue");
+		T_SETV("debugSymbol", "mil_flag")
+#endif
+
 	} ENDMETHOD;
 
 	/* override */ METHOD("updateScore") {
@@ -48,17 +54,19 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _scoreResource = _detachEffStrength * _distCoeff;
 
+		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
-		private _scorePriority = if(_scoreResource == 0) then {
-			0
-		} else {
-			// ******************************************************************************************
-			// ******************************************************************************************
-			// DOING: UPDATE THIS FROM THE ORIGINAL ACTION
-			// ******************************************************************************************
-			// ******************************************************************************************
-			// CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtLoc])
-		};
+		private _scorePriority = 1; 
+		// if(_scoreResource == 0) then {
+		// 	0
+		// } else {
+		// 	// ******************************************************************************************
+		// 	// ******************************************************************************************
+		// 	// DOING: UPDATE THIS FROM THE ORIGINAL ACTION
+		// 	// ******************************************************************************************
+		// 	// ******************************************************************************************
+		// 	// CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtLoc])
+		// };
 
 		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtLocId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
 		//OOP_INFO_0(_str);
@@ -100,7 +108,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtRequiredEff)), 0);
 
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtRequiredEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _tgtUnderEff ARG _srcOverEff ARG _effAvailable]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 getDetachmentEff: _tgtRequiredEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtLoc ARG _tgtRequiredEff ARG _srcOverEff ARG _effAvailable]);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.

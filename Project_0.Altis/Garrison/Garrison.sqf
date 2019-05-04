@@ -107,7 +107,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		ASSERT_MSG(IS_GARRISON_DESTROYED(_thisObject), "Garrison should be destroyed before it is deleted");
 	} ENDMETHOD;
-
+	
 	// ----------------------------------------------------------------------
 	// |                          A C T I V A T E                           |
 	// ----------------------------------------------------------------------
@@ -122,20 +122,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM(T_GETV("AI"), "start", []); // Let's start the party! \o/
 		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject])
 	} ENDMETHOD;
-	
-	METHOD("isAlive") {
-		params [P_THISOBJECT];
-		// No mutex lock because this is expected to be atomic
-		!IS_GARRISON_DESTROYED(_thisObject)
-		//(T_GETV("effTotal") isEqualTo [])
-	} ENDMETHOD;
 
-	METHOD("isDestroyed") {
-		params [P_THISOBJECT];
-		// No mutex lock because this is expected to be atomic
-	 	IS_GARRISON_DESTROYED(_thisObject)
-	} ENDMETHOD;
+	// ----------------------------------------------------------------------
+	// |                           D E S T R O Y                            |
+	// ----------------------------------------------------------------------
+	/*
+	Method: destroy
 
+	This starts the delete process for this garrison. It sets the garrison to 
+	destroyed state (isDestroyed returns true, isAlive returns false), removes
+	all units and groups, deletes the timer and AI components.
+	*/
 	METHOD("destroy") {
 		params [P_THISOBJECT];
 		
@@ -206,7 +203,38 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: (static)getAll
+	Method: isAlive
+
+	Is this Garrison ready to be used?
+	*/
+	METHOD("isAlive") {
+		params [P_THISOBJECT];
+		// No mutex lock because this is expected to be atomic
+		!IS_GARRISON_DESTROYED(_thisObject)
+		//(T_GETV("effTotal") isEqualTo [])
+	} ENDMETHOD;
+
+	/*
+	Method: isDestroyed
+
+	Is this Garrison ready to be used?
+	*/
+	METHOD("isDestroyed") {
+		params [P_THISOBJECT];
+		// No mutex lock because this is expected to be atomic
+	 	IS_GARRISON_DESTROYED(_thisObject)
+	} ENDMETHOD;
+
+
+	METHOD("runLocked") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_obj"), P_STRING("_funcName"), P_ARRAY("_args")];
+		__MUTEX_LOCK;
+		CALLM(_obj, _funcName, _args);
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	/*
+	Method: (static) getAll
 	Returns all garrisons
 	
 	Parameters: _side
@@ -655,6 +683,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	// METHOD("") {
+	// 	params [P_THISOBJECT];
+		
+	// } ENDMETHOD;
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                A D D I N G / R E M O V I N G   U N I T S   A N D   G R O U P S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
