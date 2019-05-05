@@ -573,6 +573,50 @@ OOP_new_public = {
 	_objNameStr
 };
 
+// Create a copy of an object
+OOP_copy = {
+	params ["_objNameStr"];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	CONSTRUCTOR_ASSERT_CLASS(_classNameStr);
+
+	// Get new ID for the new object
+	private _oop_nextID = -1;
+	_oop_nul = isNil {
+		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
+		if (isNil "_oop_nextID") then { 
+			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, 0); _oop_nextID = 0;
+		};
+		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID+1);
+	};
+
+	private _newObjNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
+
+	FORCE_SET_MEM(_newObjNameStr, OOP_PARENT_STR, _classNameStr);
+	
+	CALL_METHOD(_newObjNameStr, "copy", [_objNameStr]);
+
+	_objNameStr
+};
+
+// Default copy, this is what you get if you don't overwrite "copy" method of your class
+OOP_copy_default = {
+	params ["_thisObject", "_srcObject"];
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	{
+		private _value = FORCE_GET_MEM(_srcObject, _x);
+		if (!isNil _value) then {
+			// Check if it's an array, array is special, it needs a deeeep copy
+			if (_value isEqualType []) then {
+				FORCE_SET_MEM(_thisObject, _x, +_value);
+			} else {
+				FORCE_SET_MEM(_thisObject, _x, _value);
+			};
+		};
+	} forEach _memList;
+};
+
 OOP_deref_var = {
 	params ["_objNameStr", "_memName", "_memAttr"];
 	if(ATTR_REFCOUNTED in _memAttr) then {
