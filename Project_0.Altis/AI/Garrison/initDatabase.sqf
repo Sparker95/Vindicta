@@ -86,7 +86,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 // Mount infantry
 ["ActionGarrisonMountInfantry",	_s,		[]] call AI_misc_fnc_setActionPreconditions;
-["ActionGarrisonMountInfantry",	_s,		[	[WSP_GAR_ALL_INFANTRY_MOUNTED,	true]]] call AI_misc_fnc_setActionEffects;
+["ActionGarrisonMountInfantry",	_s,		[	[WSP_GAR_ALL_INFANTRY_MOUNTED,	TAG_MOUNT, true]]] call AI_misc_fnc_setActionEffects;
 
 // Mount crew and infantry
 ["ActionGarrisonMountCrewInfantry",	_s,		[ [WSP_GAR_VEHICLE_GROUPS_MERGED, true] ]] call AI_misc_fnc_setActionPreconditions;

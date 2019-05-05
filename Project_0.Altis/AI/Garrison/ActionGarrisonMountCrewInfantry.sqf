@@ -12,7 +12,7 @@ CLASS("ActionGarrisonMountCrewInfantry", "ActionCompositeParallelGarrison")
 		
 		pr _args = [_AI, [[TAG_MOUNT, true]]];
 		pr _a0 = NEW("ActionGarrisonMountCrew", _args);
-		pr _args = [_AI, []];
+		pr _args = [_AI, [[TAG_MOUNT, true]]];
 		pr _a1 = NEW("ActionGarrisonMountInfantry", _args);
 		{
 			CALLM1(_thisObject, "addSubactionToFront", _x);
