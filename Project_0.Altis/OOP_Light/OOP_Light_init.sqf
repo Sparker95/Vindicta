@@ -574,7 +574,7 @@ OOP_new_public = {
 };
 
 // Create a copy of an object
-OOP_copy = {
+OOP_clone = {
 	params ["_objNameStr"];
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
@@ -596,22 +596,23 @@ OOP_copy = {
 	
 	CALL_METHOD(_newObjNameStr, "copy", [_objNameStr]);
 
-	_objNameStr
+	_newObjNameStr
 };
 
 // Default copy, this is what you get if you don't overwrite "copy" method of your class
-OOP_copy_default = {
+OOP_clone_default = {
 	params ["_thisObject", "_srcObject"];
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	{
-		private _value = FORCE_GET_MEM(_srcObject, _x);
-		if (!isNil _value) then {
+		_x params ["_varName"]; //, "_attributes"]; don't need attributes for now
+		private _value = FORCE_GET_MEM(_srcObject, _varName);
+		if (!isNil "_value") then {
 			// Check if it's an array, array is special, it needs a deeeep copy
 			if (_value isEqualType []) then {
-				FORCE_SET_MEM(_thisObject, _x, +_value);
+				FORCE_SET_MEM(_thisObject, _varName, +_value);
 			} else {
-				FORCE_SET_MEM(_thisObject, _x, _value);
+				FORCE_SET_MEM(_thisObject, _varName, _value);
 			};
 		};
 	} forEach _memList;

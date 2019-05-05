@@ -581,7 +581,7 @@ SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
 PROFILER_COUNTER_INIT(_oop_classNameStr); \
 METHOD("new") {} ENDMETHOD; \
 METHOD("delete") {} ENDMETHOD; \
-METHOD("copy") OOP_copy_default ENDMETHOD; \
+METHOD("copy") OOP_clone_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
 VARIABLE(OOP_PUBLIC_STR);
 
@@ -676,10 +676,10 @@ objNameStr \
 #define DELETE(objNameStr) ([objNameStr] call OOP_delete)
 
 // ----------------------------------------
-// |                C O P Y               |
+// |              C L O N E               |
 // ----------------------------------------
 
-#define COPY(objNameStr) ([objNameStr] call OOP_copy)
+#define CLONE(objNameStr) ([objNameStr] call OOP_clone)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |
