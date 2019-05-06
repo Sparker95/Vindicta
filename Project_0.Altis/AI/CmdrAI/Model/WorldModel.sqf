@@ -6,7 +6,16 @@ CLASS("WorldModel", "")
 	VARIABLE("garrisons");
 	VARIABLE("locations");
 	VARIABLE("clusters");
+	// Threat is historic enemy forces in the area
+	VARIABLE("rawThreatGrid");
+	// This is the rawThreatGrid with post processing applied
 	VARIABLE("threatGrid");
+	// Danger is historic friendly casualties. 
+	VARIABLE("rawDangerGrid");
+	// This is the rawDangerGrid with post processing applied
+	VARIABLE("dangerGrid");
+
+	VARIABLE("lastGridUpdate");
 
 	VARIABLE("reinforceRequiredScoreCache");
 
@@ -16,8 +25,17 @@ CLASS("WorldModel", "")
 		T_SETV("garrisons", []);
 		T_SETV("locations", []);
 		T_SETV("clusters", []);
+
+		private _rawThreatGrid = NEW("Grid", []);
+		T_SETV("rawThreatGrid", _rawThreatGrid);
 		private _threatGrid = NEW("Grid", []);
 		T_SETV("threatGrid", _threatGrid);
+		private _rawDangerGrid = NEW("Grid", []);
+		T_SETV("rawDangerGrid", _rawDangerGrid);
+		private _dangerGrid = NEW("Grid", []);
+		T_SETV("dangerGrid", _dangerGrid);
+
+		T_SETV("lastGridUpdate", TIME_NOW);
 
 		T_SETV("reinforceRequiredScoreCache", []);
 	} ENDMETHOD;
@@ -30,13 +48,19 @@ CLASS("WorldModel", "")
 		{ UNREF(_x); } forEach _locations;
 		T_PRVAR(clusters);
 		{ UNREF(_x); } forEach _clusters;
+		if(T_CALLM("isReal", [])) then {
+			DELETE(T_GETV("rawThreatGrid"));
+			DELETE(T_GETV("threatGrid"));
+			DELETE(T_GETV("rawDangerGrid"));
+			DELETE(T_GETV("dangerGrid"));
+		};
 	} ENDMETHOD;
 
 	METHOD("isReal") {
 		params [P_THISOBJECT];
 		T_GETV("type") == WORLD_TYPE_REAL
 	} ENDMETHOD;
-	
+
 	// ----------------------------------------------------------------------
 	// |                       C O P Y / U P D A T E                        |
 	// ----------------------------------------------------------------------
@@ -62,23 +86,25 @@ CLASS("WorldModel", "")
 
 		// Copy garrisons
 		T_PRVAR(garrisons);
-		OOP_DEBUG_MSG("simCopy %1 garrisons", [count _garrisons]);
+		//OOP_DEBUG_MSG("simCopy %1 garrisons", [count _garrisons]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
 
 		// Copy locations
 		T_PRVAR(locations);
-		OOP_DEBUG_MSG("simCopy %1 locations", [count _locations]);
+		//OOP_DEBUG_MSG("simCopy %1 locations", [count _locations]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
 
 		// Copy clusters
 		T_PRVAR(clusters);
-		OOP_DEBUG_MSG("simCopy %1 clusters", [count _clusters]);
+		//OOP_DEBUG_MSG("simCopy %1 clusters", [count _clusters]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _clusters;
 
-		OOP_DEBUG_MSG("simCopy threatGrid", []);
-		// Can copy the grid ref as we don't write to it
+		//OOP_DEBUG_MSG("simCopy threatGrid", []);
+		// Can copy the grid ref as we don't write to it, and we don't need the raw ones in the sim
 		T_PRVAR(threatGrid);
 		SETV(_worldCopy, "threatGrid", _threatGrid);
+		T_PRVAR(dangerGrid);
+		SETV(_worldCopy, "dangerGrid", _dangerGrid);
 
 		_worldCopy
 	} ENDMETHOD;
@@ -98,21 +124,48 @@ CLASS("WorldModel", "")
 		// 	};
 		// };
 
-		T_PRVAR(threatGrid);
+		T_PRVAR(rawThreatGrid);
+		T_PRVAR(rawDangerGrid);
 
-		// Clear grid
-		CALLM(_threatGrid, "setValueAll", [0]);
+		#define THREAT_FADE_RATE 0.8
+		#define DANGER_FADE_RATE 0.99
+		#define FADE_RATE_PERIOD 60
+		#define POW(a, b) (exp ((b) * log (a)))
 
+		// Fade grids over time
+		T_PRVAR(lastGridUpdate);
+		private _dt = TIME_NOW - _lastGridUpdate;
+		T_SETV("lastGridUpdate", TIME_NOW);
+
+		private _threatFade = POW(THREAT_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		CALLM(_rawThreatGrid, "fade", [_threatFade]);
+		private _dangerFade = POW(DANGER_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		CALLM(_rawDangerGrid, "fade", [_dangerFade]);
+
+		#define THREAT_GRID_CLUSTER_OVERSIZE 100
 		{
-			private _pos = GETV(_x, "pos") apply { _x - 1000 };
-			private _size = GETV(_x, "size") apply { _x + 2000 };
-			private _strength = EFF_SUM(GETV(_x, "efficiency"));
-			CALLM(_threatGrid, "maxRect", [_pos]+[_size]+[_strength])
+			private _pos = GETV(_x, "pos") apply { _x - THREAT_GRID_CLUSTER_OVERSIZE };
+			private _size = GETV(_x, "size") apply { _x + 2 * THREAT_GRID_CLUSTER_OVERSIZE };
+			private _threat = EFF_SUM(GETV(_x, "efficiency"));
+			private _danger = EFF_SUM(GETV(_x, "damage"));
+			CALLM(_rawThreatGrid, "maxRect", [_pos]+[_size]+[_threat]);
+			CALLM(_rawDangerGrid, "maxRect", [_pos]+[_size]+[_danger]);
 		} forEach T_CALLM("getAliveClusters", []);
+
+		T_PRVAR(threatGrid);
+		T_PRVAR(dangerGrid);
+
+		CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
+		CALLM(_dangerGrid, "copyFrom", [_rawDangerGrid]);
+
+		CALLM(_threatGrid, "smooth5x5", []);
+		CALLM(_dangerGrid, "smooth5x5", []);
 
 #ifdef DEBUG_CMDRAI
 		CALLM(_threatGrid, "unplot", []);
 		CALLM(_threatGrid, "plot", [30]);
+		CALLM(_dangerGrid, "unplot", []);
+		CALLM(_dangerGrid, "plot", [60]+[false]+["BDiagonal"]);
 #endif
 		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
@@ -336,7 +389,7 @@ CLASS("WorldModel", "")
 		private _idx = _clusters pushBack _cluster;
 		SETV(_cluster, "id", _idx);
 
-		OOP_DEBUG_MSG("Cluster %1 added to world model", [LABEL(_cluster)]);
+		OOP_DEBUG_MSG("Cluster %1 (%2) added to world model", [LABEL(_cluster)]+[_cluster]);
 
 		_idx
 	} ENDMETHOD;

@@ -570,10 +570,10 @@ CLASS("AICommander", "AI")
 		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
 		T_GETV("targetClusterActions") pushBack _newAction;
 		
-		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
+		OOP_INFO_MSG("---- Created new action to respond to target cluster %1", [_tc]);
 
 		T_PRVAR(worldModel);
-		NEW("ClusterModel", [_worldModel]+[[_thisObject]+[_ID]]);
+		NEW("ClusterModel", [_worldModel]+[_args]);
 	} ENDMETHOD;
 
 	/*

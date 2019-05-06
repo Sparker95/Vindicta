@@ -264,6 +264,43 @@ CLASS("Grid", "");
 	} ENDMETHOD;
 
 	// - - - - - Image processing - - - -
+
+
+	METHOD("apply") {
+		params [P_THISOBJECT, P_CODE("_fn"), P_ARRAY("_args")];
+
+		T_PRVAR(gridArray);
+		T_PRVAR(cellSize);
+		T_PRVAR(gridSize);
+
+		private _xID = 0;
+		private _yID = 0;
+
+		// This is a bit awkward using ceil and then -1. It is intended to ensure that a rect that is 
+		// entirely out of bounds doesn't still draw a line down the edge of the map, as it would if 
+		// it was floor and no -1 (due to the stupid inclusive for loops)
+		private _x2ID = (_gridSize-1);
+		private _y2ID = (_gridSize-1);
+
+		for "_i" from _xID to _x2ID do {
+			private _row = _gridArray#_i;
+			for "_j" from _yID to _y2ID do {
+				private _val = _row#_j;
+				private _newVal = [[_i, _j], _val, _args] call _fn;
+				_row set [_j, _newVal];
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("fade") {
+		params [P_THISOBJECT, P_NUMBER("_factor")];
+		private _fadeFn = {
+			params ["_pos", "_val"];
+			_val * _factor
+		};
+		T_CALLM("apply", [_fadeFn]);
+	} ENDMETHOD;
+	
 	/*
 	Method: filter
 	Filters the grid through a kernel (2D array).
@@ -312,6 +349,19 @@ CLASS("Grid", "");
 
 		nil
 	} ENDMETHOD;
+
+	METHOD("smooth5x5") {
+		params [P_THISOBJECT];
+		private _kernel = [
+			[1 / 273, 4 / 273, 7 / 273, 4 / 273, 1 / 273],
+			[4 / 273, 16 / 273, 26 / 273, 16 / 273, 4 / 273],
+			[7 / 273, 26 / 273, 41 / 273, 26 / 273, 7 / 273],
+			[4 / 273, 16 / 273, 26 / 273, 16 / 273, 4 / 273],
+			[1 / 273, 4 / 273, 7 / 273, 4 / 273, 1 / 273]
+		];
+		T_CALLM("filter", [_kernel]);
+	} ENDMETHOD;
+	
 	
 	// - - - - - Plotting grids - - - - -
 	/*
@@ -322,11 +372,18 @@ CLASS("Grid", "");
 	
 	_scale - value which will result to alpha 1.0.
 	_plotZero - bool, optional, default false. If true, zero values will be plotted as green squares.
+	_brush - brush to use when drawing, default "SolidFull"
+	_colors - array[3], optional, default ["ColorGreen", "ColorRed", "ColorBlue"]. Colors to use for zero, positive and negative respectively
 	
 	Returns: nil
 	*/
 	METHOD("plot") {
-		params ["_thisObject", ["_scale", 1, [1]], ["_plotZero", false]];
+		params ["_thisObject", 
+			["_scale", 1, [1]], 
+			["_plotZero", false, [false]], 
+			["_brush", "SolidFull", [""]],
+			["_colors", ["ColorGreen", "ColorRed", "ColorBlue"], [[]], 3]
+		];
 
 		CALLM0(_thisObject, "unplot");
 
@@ -345,24 +402,24 @@ CLASS("Grid", "");
 					pr _mrkName = format ["%1x%2y%3", _thisObject, _x, _y];
 					pr _mrk = createMarkerLocal [_mrkName, [_cellSize*_x + _halfSize, _cellSize*_y + _halfSize, 0]];
 					_mrk setMarkerShapeLocal "RECTANGLE";
-					_mrk setMarkerBrushLocal "SolidFull";
+					_mrk setMarkerBrushLocal _brush;
 					_mrk setMarkerSizeLocal [_halfSize, _halfSize];
 					
 					// Set marker color and alpha
 					if (_val == 0 && _plotZero) then {
 						// Zero
-						_mrk setMarkerColorLocal "ColorGreen";
+						_mrk setMarkerColorLocal _colors#0;
 						_mrk setMarkerAlphaLocal 0.1;
 					} else {
 						if (_val > 0) then {
 							// Positive
 							pr _alpha = ((_val/_scale) max 0.1) min 0.5;
-							_mrk setMarkerColorLocal "ColorRed";
+							_mrk setMarkerColorLocal _colors#1;
 							_mrk setMarkerAlphaLocal _alpha;
 						} else {
 							// Negative
 							pr _alpha = ((-_val/_scale) max 0.1) min 0.5;
-							_mrk setMarkerColorLocal "ColorBlue";
+							_mrk setMarkerColorLocal _colors#2;
 							_mrk setMarkerAlphaLocal _alpha;
 						};
 					};

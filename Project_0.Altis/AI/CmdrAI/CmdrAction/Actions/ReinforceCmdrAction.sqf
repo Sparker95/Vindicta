@@ -51,8 +51,16 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
+		private _dist = _srcGarrPos distance _tgtGarrPos;
+		private _transportationScore = if(_dist < 1000) then {
+			1
+		} else {
+			// We will force transport on top of scoring if we need to.
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]+[CHEAT_TRANSPORT]);
+			CALLM(_srcGarr, "transportationScore", [_detachEff])
+		};
 
-		private _scoreResource = _detachEffStrength * _distCoeff;
+		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 
 		// TODO:OPT cache these scores!
 		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
@@ -62,8 +70,10 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// if(_scorePriority > 0 and _scoreResource > 0) then {
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
-
-		//OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _scorePriority ARG _scoreResource ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _srcEff ARG _tgtEff]);
+		
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] 
+			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		// };
 		T_SETV("scorePriority", _scorePriority);

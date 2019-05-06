@@ -70,11 +70,7 @@ CLASS("CmdrAI", "")
 		// Take tgt locations from future, so we take into account all in progress actions.
 		private _tgtLocations = CALLM(_worldFuture, "getLocations", []) select { 
 			// Must not have any of our garrisons already present (or this would be reinforcement action)
-			if(!IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))) then {
-				false
-			} else {
-				true
-			}
+			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
 		};
 
 		private _actions = [];

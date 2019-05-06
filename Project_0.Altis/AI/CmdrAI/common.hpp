@@ -16,6 +16,7 @@
 #define ASSIGN_TRANSPORT				1	// Attempt to assign transport for the new garrison
 #define FAIL_WITHOUT_FULL_TRANSPORT		2	// Fail if we couldn't assign transport to the new garrison (ASSIGN_TRANSPORT required)
 #define FAIL_UNDER_EFF					3	// Fail if the split garrison didn't meet efficiency requirements
+#define CHEAT_TRANSPORT					4	// Spawn trucks if they are not available and transport is requested
 
 #define OFSTREAM_FILE "CmdrAI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"

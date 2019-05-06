@@ -9,6 +9,7 @@
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("targetVar");
+	VARIABLE("splitFlagsVar");
 	VARIABLE("detachmentEffVar");
 	VARIABLE("detachedGarrIdVar");
 
@@ -30,6 +31,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
+
+		// Flags to use when splitting off the detachment garrison		
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]]);
+		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -47,6 +52,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	/* protected override */ METHOD("createTransitions") {
 		T_PRVAR(srcGarrId);
 		T_PRVAR(detachmentEffVar);
+		T_PRVAR(splitFlagsVar);
 		T_PRVAR(targetVar);
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
@@ -66,7 +72,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_srcGarrIdVar, 						// Garrison to split (constant)
 				_detachmentEffVar, 					// Efficiency we want the detachment to have (constant)
-				MAKE_AST_VAR([ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]), // Flags for split operation
+				_splitFlagsVar, // Flags for split operation
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 

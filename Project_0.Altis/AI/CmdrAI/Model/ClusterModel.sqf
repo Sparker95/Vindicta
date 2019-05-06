@@ -35,6 +35,11 @@ CLASS("ClusterModel", "ModelBase")
 		T_SETV("efficiency", +T_EFF_null);
 		T_SETV("damage", +T_EFF_null);
 		
+		// Sync
+		if(!(_actual isEqualTo [])) then {
+			private _synced = T_CALLM("sync", []);
+			ASSERT_MSG(_synced, "ClusterModel couldn't perform initial sync. Cluster should be available in AICommander before creating the model.");
+		};
 		// Add self to world
 		CALLM(_world, "addCluster", [_thisObject]);
 	} ENDMETHOD;
@@ -67,16 +72,20 @@ CLASS("ClusterModel", "ModelBase")
 		T_PRVAR(actual);
 		_actual params ["_ai", "_clusterId"];
 		private _targetCluster = CALLM(_ai, "getTargetCluster", [_clusterId]);
-		if(_targetCluster isEqualTo [] or {EFF_LTE(_targetCluster select TARGET_CLUSTER_ID_EFFICIENCY, EFF_ZERO)}) then {
+		// or {EFF_LTE(_targetCluster select TARGET_CLUSTER_ID_EFFICIENCY, EFF_ZERO)}
+		if(_targetCluster isEqualTo []) then {
 			T_CALLM("killed", []);
+			false
 		} else {
+			OOP_WARNING_MSG("Syncing cluster %1 (%2) from %3", [LABEL(_thisObject)]+[_thisObject]+[_targetCluster]);
 			private _cluster = _targetCluster select TARGET_CLUSTER_ID_CLUSTER;
 			T_SETV("pos", (_cluster call cluster_fnc_getCenter) + [0]);
 			private _newSize = _cluster call cluster_fnc_getSize;
 			T_SETV("size", +_newSize);
 			T_SETV("radius", ((selectMax _newSize) + 300) max 300);
-			T_SETV("efficiency", _targetCluster select TARGET_CLUSTER_ID_EFFICIENCY);
+			T_SETV("efficiency", +(_targetCluster select TARGET_CLUSTER_ID_EFFICIENCY));
 			T_SETV("damage", _targetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE);
+			true
 		};
 	} ENDMETHOD;
 
@@ -91,7 +100,8 @@ CLASS("ClusterModel", "ModelBase")
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		_efficiency isEqualTo [] or {EFF_LTE(_efficiency, EFF_ZERO)}
+		_efficiency isEqualTo [] 
+		// or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;
 ENDCLASS;
 

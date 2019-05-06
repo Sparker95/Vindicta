@@ -665,9 +665,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	/*
 	Method: countAllUnits
-	Returns all units of this garrison.
-
-	Returns: Array of <Unit> objects.
+	Returns: total number of units in this garrison.
 	*/
 	METHOD("countAllUnits") {
 		params [P_THISOBJECT];
@@ -683,10 +681,48 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-	// METHOD("") {
-	// 	params [P_THISOBJECT];
+	/*
+	Method: getTransportCapacity
+	Count number of passenger seats available in all vehicles of the categories specified.
+	Parameters: _vehicleCategories
+
+	_vehicleCategories - Array of vehicle categories, defaults to T_VEH_ground_infantry_cargo
+	Returns: number of seats available.
+	*/
+	METHOD("getTransportCapacity") {
+		params [P_THISOBJECT, P_ARRAY("_vehicleCategories")];
 		
-	// } ENDMETHOD;
+		__MUTEX_LOCK;
+		
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			0
+		};
+
+		if(count _vehicleCategories == 0) then {
+			_vehicleCategories = T_VEH_ground_infantry_cargo;
+		};
+
+		// Get available seats for transportation for any matching vehicles
+		private _transportCapacityPerUnit = T_CALLM("getUnits", []) apply {
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+			if(_catID == T_VEH and {_subcatID in _vehicleCategories}) then {
+				CALLSM1("Unit", "getCargoInfantryCapacity", [_x])
+			} else {
+				0
+			};
+		};
+		// Sum the available seats.
+		private _transportCapacity = 0;
+		{
+			_transportCapacity = _transportCapacity + _x;
+		} foreach _transportCapacityPerUnit;
+		__MUTEX_UNLOCK;
+
+		_transportCapacity
+	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                A D D I N G / R E M O V I N G   U N I T S   A N D   G R O U P S
@@ -759,6 +795,21 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 
 		nil
+	} ENDMETHOD;
+
+	METHOD("addUnits") {
+		params[P_THISOBJECT, P_ARRAY("_units")];
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			nil
+		};
+		{
+			T_CALLM("addUnit", [_x]);
+		} forEach _units;
+		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
 

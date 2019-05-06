@@ -667,7 +667,21 @@ CLASS(UNIT_CLASS_NAME, "");
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
 	} ENDMETHOD;
 
-
+	/*
+	Function: (static) getTemplateForSide
+	Get the appropriate unit template for the side specified
+	
+	Parameters: _side
+	
+	_side - side (WEST/EAST/INDEPENDENT/etc.)
+	
+	Returns: Template
+	*/
+	STATIC_METHOD("getTemplateForSide") {
+		params [P_THISCLASS, P_SIDE("_side")];
+		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
+	} ENDMETHOD;
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

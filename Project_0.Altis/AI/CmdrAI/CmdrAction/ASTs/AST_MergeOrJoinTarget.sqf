@@ -91,7 +91,6 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 					};
 					OOP_INFO_MSG("[w %1 a %2] Joined %3 to %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_loc)]);
 				};
-				_targetDead = false;
 			};
 			case TARGET_TYPE_POSITION: {
 				FAILURE("Target must be a garrison or location");

@@ -23,7 +23,9 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("garrisonIds", []);
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
-		T_CALLM("sync", []);
+		if(!IS_NULL_OBJECT(_actual)) then {
+			T_CALLM("sync", []);
+		};
 		// Add self to world
 		CALLM(_world, "addLocation", [_thisObject]);
 	} ENDMETHOD;
@@ -118,7 +120,6 @@ CLASS("LocationModel", "ModelBase")
 				_foundGarr = _garr; _garr
 			}
 		} forEach _garrisonIds;
-
 		_foundGarr
 	} ENDMETHOD;
 		
