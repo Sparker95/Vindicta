@@ -9,10 +9,15 @@ All infantry mounts vehicles as passengers
 
 CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
+	VARIABLE("mount");
+
 	// ------------ N E W ------------
 	
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+
+		pr _mount = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOUNT);
+		T_SETV("mount", _mount);
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -26,10 +31,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
 		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		 
+		// Do we need to mount or dismount?
+		pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInGarrisonVehiclesAsCargo"] select T_GETV("mount");
+		pr _args = [_goalClassName, 0, [], _AI];
+
 		// Give goals to these groups
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = ["GoalGroupGetInGarrisonVehiclesAsCargo", 0, [], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _infGroups;
 		
@@ -64,7 +72,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				
 				// This action is completed when all infantry groups have mounted
 				
-				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, "GoalGroupGetInGarrisonVehiclesAsCargo", "")) then {
+				// Did we need to mount or dismount?
+				pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInGarrisonVehiclesAsCargo"] select T_GETV("mount");
+
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _infGroups, _goalClassName, "")) then {
 					//Update sensors affected by this action
 					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
 					
