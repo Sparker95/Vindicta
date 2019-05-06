@@ -129,7 +129,7 @@ ENDCLASS;
 	SETV(_garrison, "pos", SRC_POS);
 
 	private _targetGarrison = NEW("GarrisonModel", [_world]);
-	private _targetEff = [1,0,0,0,0,0,0,0];
+	private _targetEff = [0,0,0,0,0,0,0,0];
 	SETV(_targetGarrison, "efficiency", _targetEff);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 

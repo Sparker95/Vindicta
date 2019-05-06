@@ -19,14 +19,9 @@ params [
 	"_startRoute",
 	"_goalRoute",
 	"_namespace",
-	["_costFunction", { 
-		params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute"];
-		_base_cost
-	}],
-	["_distanceFunction", { 
-		params ["_current", "_next", "_startRoute", "_goalRoute"];
-		_goalRoute distance _next
-	}],
+	"_costFunction",
+	"_distanceFunction",
+	"_callbackArgs",
 	["_debugDraw", false]
 ];
 
@@ -53,11 +48,11 @@ for "_i" from 0 to 1 step 0 do {
 	{
 		_x params ["_next","_cost"];
 		
-		_new_cost = ([_cost_so_far,RID(_current)] call misc_fnc_hashTable_find) + ([_cost, _current, _next, _startRoute, _goalRoute] call _costFunction);
+		_new_cost = ([_cost_so_far,RID(_current)] call misc_fnc_hashTable_find) + ([_cost, _current, _next, _startRoute, _goalRoute, _callbackArgs] call _costFunction);
 		if (!([_cost_so_far,RID(_next)] call misc_fnc_hashTable_exists)) then {
 			_counter = _counter + 1;
 			[_cost_so_far,RID(_next),_new_cost] call misc_fnc_hashTable_set;
-			_priority = _new_cost + ([_current, _next, _startRoute, _goalRoute] call _distanceFunction);
+			_priority = _new_cost + ([_current, _next, _startRoute, _goalRoute, _callbackArgs] call _distanceFunction);
 			[_frontier,_priority,_counter,_next] call misc_fnc_PQ_insert;
 			
 			if(_debugDraw and !(isNil "gps_test_fnc_mapDrawLine")) then {
@@ -75,7 +70,7 @@ for "_i" from 0 to 1 step 0 do {
 			if (_new_cost < ([_cost_so_far,RID(_next)] call misc_fnc_hashTable_find)) then {
 				_counter = _counter + 1;
 				[_cost_so_far,RID(_next),_new_cost] call misc_fnc_hashTable_set;
-				_priority = _new_cost + ([_current, _next, _startRoute, _goalRoute] call _distanceFunction);
+				_priority = _new_cost + ([_current, _next, _startRoute, _goalRoute, _callbackArgs] call _distanceFunction);
 				[_frontier,_priority,_counter,_next] call misc_fnc_PQ_insert;
 
 				if(_debugDraw and !(isNil "gps_test_fnc_mapDrawLine")) then {

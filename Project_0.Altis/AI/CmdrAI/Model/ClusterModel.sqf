@@ -77,7 +77,7 @@ CLASS("ClusterModel", "ModelBase")
 			T_CALLM("killed", []);
 			false
 		} else {
-			OOP_WARNING_MSG("Syncing cluster %1 (%2) from %3", [LABEL(_thisObject)]+[_thisObject]+[_targetCluster]);
+			//OOP_DEBUG_MSG("Syncing cluster %1 (%2) from %3", [LABEL(_thisObject)]+[_thisObject]+[_targetCluster]);
 			private _cluster = _targetCluster select TARGET_CLUSTER_ID_CLUSTER;
 			T_SETV("pos", (_cluster call cluster_fnc_getCenter) + [0]);
 			private _newSize = _cluster call cluster_fnc_getSize;

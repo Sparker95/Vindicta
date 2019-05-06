@@ -39,7 +39,7 @@
 // As well as other assertions
 // It's a global flag, must be defined here
 
-// #define OOP_ASSERT
+#define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 #ifdef _SQF_VM

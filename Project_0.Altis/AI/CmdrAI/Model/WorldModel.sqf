@@ -6,6 +6,9 @@ CLASS("WorldModel", "")
 	VARIABLE("garrisons");
 	VARIABLE("locations");
 	VARIABLE("clusters");
+
+	VARIABLE("gridMutex");
+
 	// Threat is historic enemy forces in the area
 	VARIABLE("rawThreatGrid");
 	// This is the rawThreatGrid with post processing applied
@@ -26,16 +29,24 @@ CLASS("WorldModel", "")
 		T_SETV("locations", []);
 		T_SETV("clusters", []);
 
-		private _rawThreatGrid = NEW("Grid", []);
-		T_SETV("rawThreatGrid", _rawThreatGrid);
-		private _threatGrid = NEW("Grid", []);
-		T_SETV("threatGrid", _threatGrid);
-		private _rawDangerGrid = NEW("Grid", []);
-		T_SETV("rawDangerGrid", _rawDangerGrid);
-		private _dangerGrid = NEW("Grid", []);
-		T_SETV("dangerGrid", _dangerGrid);
-
-		T_SETV("lastGridUpdate", TIME_NOW);
+		if(_type == WORLD_TYPE_REAL) then {
+			private _gridArgs = [500, +T_EFF_null];
+			private _rawThreatGrid = NEW("Grid", _gridArgs);
+			private _threatGrid = NEW("Grid", _gridArgs);
+			private _rawDangerGrid = NEW("Grid", _gridArgs);
+			private _dangerGrid = NEW("Grid", _gridArgs);
+			T_SETV("rawThreatGrid", _rawThreatGrid);
+			T_SETV("threatGrid", _threatGrid);
+			T_SETV("rawDangerGrid", _rawDangerGrid);
+			T_SETV("dangerGrid", _dangerGrid);
+			T_SETV("lastGridUpdate", TIME_NOW);
+			T_SETV("gridMutex", MUTEX_NEW());
+		} else {
+			T_SETV("rawThreatGrid", objNull);
+			T_SETV("threatGrid", objNull);
+			T_SETV("rawDangerGrid", objNull);
+			T_SETV("dangerGrid", objNull);
+		};
 
 		T_SETV("reinforceRequiredScoreCache", []);
 	} ENDMETHOD;
@@ -142,12 +153,12 @@ CLASS("WorldModel", "")
 		private _dangerFade = POW(DANGER_FADE_RATE, _dt / FADE_RATE_PERIOD);
 		CALLM(_rawDangerGrid, "fade", [_dangerFade]);
 
-		#define THREAT_GRID_CLUSTER_OVERSIZE 100
+		#define THREAT_GRID_CLUSTER_OVERSIZE 500
 		{
 			private _pos = GETV(_x, "pos") apply { _x - THREAT_GRID_CLUSTER_OVERSIZE };
 			private _size = GETV(_x, "size") apply { _x + 2 * THREAT_GRID_CLUSTER_OVERSIZE };
-			private _threat = EFF_SUM(GETV(_x, "efficiency"));
-			private _danger = EFF_SUM(GETV(_x, "damage"));
+			private _threat = GETV(_x, "efficiency");
+			private _danger = GETV(_x, "damage");
 			CALLM(_rawThreatGrid, "maxRect", [_pos]+[_size]+[_threat]);
 			CALLM(_rawDangerGrid, "maxRect", [_pos]+[_size]+[_danger]);
 		} forEach T_CALLM("getAliveClusters", []);
@@ -155,17 +166,20 @@ CLASS("WorldModel", "")
 		T_PRVAR(threatGrid);
 		T_PRVAR(dangerGrid);
 
-		CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-		CALLM(_dangerGrid, "copyFrom", [_rawDangerGrid]);
+		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 
-		CALLM(_threatGrid, "smooth5x5", []);
-		CALLM(_dangerGrid, "smooth5x5", []);
+			CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
+			CALLM(_dangerGrid, "copyFrom", [_rawDangerGrid]);
+
+			//CALLM(_threatGrid, "smooth5x5", []);
+			//CALLM(_dangerGrid, "smooth5x5", []);
+		};
 
 #ifdef DEBUG_CMDRAI
 		CALLM(_threatGrid, "unplot", []);
-		CALLM(_threatGrid, "plot", [30]);
+		CALLM(_threatGrid, "plot", [20]+[false]+["SolidFull"]+[["ColorGreen"]+["ColorYellow"]+["ColorBlue"]]+[[0.02]+[0.5]]);
 		CALLM(_dangerGrid, "unplot", []);
-		CALLM(_dangerGrid, "plot", [60]+[false]+["BDiagonal"]);
+		CALLM(_dangerGrid, "plot", [20]+[false]+["DiagGrid"]+[["ColorGreen"]+["ColorPink"]+["ColorBlue"]]+[[0.1]+[1]]);
 #endif
 		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
@@ -181,6 +195,26 @@ CLASS("WorldModel", "")
 		// [_threatGridOpf, 100] call ws_fnc_plotGrid;
 	} ENDMETHOD;
 
+	METHOD("getThreat") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+
+		private _threat = 0;
+
+		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+			//T_PRVAR(threatGrid);
+			T_PRVAR(dangerGrid);
+
+			_threat = CALLM(_dangerGrid, "getValue", [_pos]);
+
+			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
+			// CALLM(_dangerGrid, "copyFrom", [_rawDangerGrid]);
+
+			// CALLM(_threatGrid, "smooth5x5", []);
+			// CALLM(_dangerGrid, "smooth5x5", []);
+		};
+		_threat
+	} ENDMETHOD;
+	
 	// ----------------------------------------------------------------------
 	// |                G A R R I S O N   F U N C T I O N S                 |
 	// ----------------------------------------------------------------------
@@ -503,10 +537,25 @@ CLASS("WorldModel", "")
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
+		T_PRVAR(threatGrid);
+		if(_threatGrid isEqualTo objNull) exitWith {
+			EFF_MIN_EFF
+		};
+		T_PRVAR(dangerGrid);
+
+		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
+		private _dangerEff = CALLM(_dangerGrid, "getValue", [_pos]);
+		private _dmgSum = EFF_SUM(_dangerEff);
+		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
+		_dmgSum = (0.015 * _dmgSum);
+		private _forceMul = 1.5 max (1 + _dmgSum * _dmgSum * _dmgSum * _dmgSum);
+		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _dangerEff);
+		private _effMax = EFF_MAX(_threatEff, EFF_MIN_EFF);
+		_effMax
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.
 		// TODO: Cache it
-		EFF_MUL_SCALAR(EFF_MIN_EFF, 2)
+		// EFF_MUL_SCALAR(EFF_MIN_EFF, 2)
 
 		//T_PRVAR(threatGrid);
 		

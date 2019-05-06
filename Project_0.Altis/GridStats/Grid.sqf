@@ -28,6 +28,7 @@ CLASS("Grid", "");
 	VARIABLE("cellSize");
 	VARIABLE("gridSize");
 	VARIABLE("gridArray");
+	VARIABLE("defaultValue");
 
 	/*
 	Method: new
@@ -39,18 +40,19 @@ CLASS("Grid", "");
 	*/
 
 	METHOD("new") {
-		params ["_thisObject", ["_cellSize", 500]];
+		params ["_thisObject", ["_cellSize", 500], ["_defaultValue", 0, [0, []]]];
 
 		private _gridSize = ceil(WORLD_SIZE / _cellSize); //Size of the grid measured in squares
 		T_SETV("gridSize", _gridSize);
 		T_SETV("cellSize", _cellSize);
+		T_SETV("defaultValue", _defaultValue);
 		
 		private _gridArray = [];
 		_gridArray resize _gridSize;
 		{
 			pr _a = [];
 			_a resize _gridSize;
-			_gridArray set [_forEachIndex, _a apply {0}];
+			_gridArray set [_forEachIndex, _a apply  { +_defaultValue }];
 		} forEach _gridArray;
 
 		T_SETV("gridArray", _gridArray);
@@ -91,7 +93,7 @@ CLASS("Grid", "");
 	Returns: nil
 	*/
 	METHOD("setValueAll") {
-		params ["_thisObject", ["_value", 0, [0]]];
+		params ["_thisObject", ["_value", 0, [0, []]]];
 		
 		pr _gridArray = T_GETV("gridArray");
 		pr _n = count _gridArray;
@@ -115,7 +117,7 @@ CLASS("Grid", "");
 	*/
 	
 	METHOD("setValue") {
-		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, [0]]];
+		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, [0, []]]];
 	
 		_pos params ["_x", "_y"];
 		
@@ -142,7 +144,7 @@ CLASS("Grid", "");
 	*/
 	
 	METHOD("addValue") {
-		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, [0]]];
+		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, [0, []]]];
 	
 		_pos params ["_x", "_y"];
 		
@@ -153,7 +155,14 @@ CLASS("Grid", "");
 		pr _yID = floor(_y / _cellSize);
 		
 		pr _v = (_array select _xID) select _yID;
-		_v = _v + _value;
+		if(_v isEqualType 0) then {
+			_v = _v + _value;
+		} else {
+			_v = +_v;
+			{
+				_v set [_forEachIndex, (_v select _forEachIndex) + _x];
+			} forEach _value;
+		};
 		(_array select _xID) set [_yID, _v];
 
 		_v
@@ -217,21 +226,47 @@ CLASS("Grid", "");
 
 	// Set value to max of the current and new values
 	METHOD("maxRect") {
-		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_NUMBER("_value")];
-		private _fnMax = {
-			params ["_ij", "_origVal"];
-			_origVal max _value
-		};
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), ["_value", 0, [0, []]]];
+
+		private _fnMax =
+			if(_value isEqualType 0) then {
+				{
+					params ["_ij", "_origVal"];
+					_origVal max _value
+				}
+			} else {
+				{
+					params ["_ij", "_origVal"];
+					_origVal = +_origVal;
+					{
+						_origVal set [_forEachIndex, (_origVal select _forEachIndex) max _x];
+					} forEach _value;
+					_origVal
+				}
+			};
+		
 		T_CALLM("applyRect", [_pos]+[_size]+[_fnMax]);
 	} ENDMETHOD;
 
 	// Set value to max of the current and new values in a circle
 	METHOD("maxCircle") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_ARRAY("_radius"), P_NUMBER("_value")];
-		private _fnMax = {
-			params ["_ij", "_dist", "_origVal"];
-			_origVal max _value
-		};
+		params [P_THISOBJECT, P_ARRAY("_center"), P_ARRAY("_radius"), ["_value", 0, [0, []]]];
+		private _fnMax =
+			if(_value isEqualType 0) then {
+				{
+					params ["_ij", "_dist", "_origVal"];
+					_origVal max _value
+				}
+			} else {
+				{
+					params ["_ij", "_dist", "_origVal"];
+					_origVal = +_origVal;
+					{
+						_origVal set [_forEachIndex, (_origVal select _forEachIndex) max _x];
+					} forEach _value;
+					_origVal
+				}
+			};
 		T_CALLM("applyCircle", [_center]+[_radius]+[_fnMax]);
 	} ENDMETHOD;
 	// - - - - - Getting values - - - - -
@@ -294,10 +329,19 @@ CLASS("Grid", "");
 
 	METHOD("fade") {
 		params [P_THISOBJECT, P_NUMBER("_factor")];
-		private _fadeFn = {
-			params ["_pos", "_val"];
-			_val * _factor
-		};
+		T_PRVAR(defaultValue);
+		private _fadeFn =
+			if(_defaultValue isEqualType 0) then {
+				{
+					params ["_pos", "_val"];
+					_val * _factor
+				}
+			} else {
+				{
+					params ["_pos", "_val"];
+					_val apply { _x * _factor}
+				}
+			};
 		T_CALLM("apply", [_fadeFn]);
 	} ENDMETHOD;
 	
@@ -326,24 +370,51 @@ CLASS("Grid", "");
 		// Make a copy of the grid
 		pr _arrayCopy = +_array;
 
-		for "_xID" from _kOffset to (_nCellsX-_kOffset-1) do {
-			for "_yID" from _kOffset to (_nCellsY-_kOffset-1) do {
-				pr _acc = 0;
-				
-				// Do filtering
-				pr _kxID = 0; // Indexes of kernel
-				pr _kyID = 0;
-				for "_fxID" from (_xID - _kOffset) to (_xID + _kOffset) do {
-					_kyID = 0;
-					for "_fyID" from (_yID - _kOffset) to (_yID + _kOffset) do {
-						_acc = _acc + (_arrayCopy#_fxID#_fyID) * (_kernel#_kxID#_kyID);
-						_kyID = _kyID + 1;
+		T_PRVAR(defaultValue);
+		if(_defaultValue isEqualType 0) then {
+			for "_xID" from _kOffset to (_nCellsX-_kOffset-1) do {
+				for "_yID" from _kOffset to (_nCellsY-_kOffset-1) do {
+					pr _acc = 0;
+					
+					// Do filtering
+					pr _kxID = 0; // Indexes of kernel
+					pr _kyID = 0;
+					for "_fxID" from (_xID - _kOffset) to (_xID + _kOffset) do {
+						_kyID = 0;
+						for "_fyID" from (_yID - _kOffset) to (_yID + _kOffset) do {
+							_acc = _acc + (_arrayCopy#_fxID#_fyID) * (_kernel#_kxID#_kyID);
+							_kyID = _kyID + 1;
+						};
+						_kxID = _kxID + 1;
 					};
-					_kxID = _kxID + 1;
-				};
 
-				// Write the accumulated value
-				(_array select _xID) set [_yID, _acc];
+					// Write the accumulated value
+					(_array select _xID) set [_yID, _acc];
+				};
+			};
+		} else {
+			for "_xID" from _kOffset to (_nCellsX-_kOffset-1) do {
+				for "_yID" from _kOffset to (_nCellsY-_kOffset-1) do {
+					pr _acc = _defaultValue apply { 0 };
+					
+					// Do filtering
+					pr _kxID = 0; // Indexes of kernel
+					pr _kyID = 0;
+					for "_fxID" from (_xID - _kOffset) to (_xID + _kOffset) do {
+						_kyID = 0;
+						for "_fyID" from (_yID - _kOffset) to (_yID + _kOffset) do {
+							private _origVal = (_arrayCopy#_fxID#_fyID);
+							private _coeff =  (_kernel#_kxID#_kyID);
+							{
+								_acc set [_forEachIndex, (_acc select _forEachIndex) + _x * _coeff];
+							} forEach _origVal;
+						};
+						_kxID = _kxID + 1;
+					};
+
+					// Write the accumulated value
+					(_array select _xID) set [_yID, _acc];
+				};
 			};
 		};
 
@@ -382,7 +453,8 @@ CLASS("Grid", "");
 			["_scale", 1, [1]], 
 			["_plotZero", false, [false]], 
 			["_brush", "SolidFull", [""]],
-			["_colors", ["ColorGreen", "ColorRed", "ColorBlue"], [[]], 3]
+			["_colors", ["ColorGreen", "ColorRed", "ColorBlue"], [[]], 3],
+			["_alphaRange", [0.02, 0.5], [[]]]
 		];
 
 		CALLM0(_thisObject, "unplot");
@@ -392,10 +464,26 @@ CLASS("Grid", "");
 		pr _halfSize = _cellSize * 0.5;
 		pr _n = count _array - 1;
 
+		T_PRVAR(defaultValue);
+		private _getValFn =
+			if(_defaultValue isEqualType 0) then {
+				{
+					_this * _factor
+				}
+			} else {
+				{
+					private _val = 0;
+					{
+						_val = _val + _x;
+					} foreach _this;
+					_val
+				}
+			};
+
 		for "_x" from 0 to _n do {
 			pr _col = _array select _x;
 			for "_y" from 0 to _n do {
-				pr _val = _col select _y;
+				pr _val = (_col select _y) call _getValFn;
 
 				if(_val != 0 or _plotZero) then {
 					// Create marker
@@ -409,16 +497,16 @@ CLASS("Grid", "");
 					if (_val == 0 && _plotZero) then {
 						// Zero
 						_mrk setMarkerColorLocal _colors#0;
-						_mrk setMarkerAlphaLocal 0.1;
+						_mrk setMarkerAlphaLocal _alphaRange#0;
 					} else {
 						if (_val > 0) then {
 							// Positive
-							pr _alpha = ((_val/_scale) max 0.1) min 0.5;
+							pr _alpha = ((_val/_scale) max _alphaRange#0) min _alphaRange#1;
 							_mrk setMarkerColorLocal _colors#1;
 							_mrk setMarkerAlphaLocal _alpha;
 						} else {
 							// Negative
-							pr _alpha = ((-_val/_scale) max 0.1) min 0.5;
+							pr _alpha = ((-_val/_scale) max _alphaRange#0) min _alphaRange#1;
 							_mrk setMarkerColorLocal _colors#2;
 							_mrk setMarkerAlphaLocal _alpha;
 						};
@@ -481,7 +569,18 @@ CLASS("Grid", "");
 		pr _array = T_GETV("gridArray");
 		pr _halfSize = _cellSize * 0.5;
 		
-		pr _val = (_array select _x) select _y;
+		T_PRVAR(defaultValue);
+
+		pr _val =
+			if(_defaultValue isEqualType 0) then {
+				(_array select _x) select _y
+			} else {
+				private _v = 0;
+				{
+					_v = _v + _x;
+				} foreach ((_array select _x) select _y);
+				_v
+			};
 		
 		// Create marker
 		pr _mrk = createMarkerLocal [_mrkName, [_cellSize*_x + _halfSize, _cellSize*_y + _halfSize, 0]];
@@ -510,66 +609,65 @@ CLASS("Grid", "");
 		
 	} ENDMETHOD;
 	
-	// - - - - - Manipulating values - - - - - -
-	
-	METHOD("edit") {
-		params ["_thisObject", ["_value", 1.0], ["_scale", 1.0]];
+	// // - - - - - Manipulating values - - - - - -	
+	// METHOD("edit") {
+	// 	params ["_thisObject", ["_value", 1.0], ["_scale", 1.0]];
 		
-		// Unplot previous grid
-		pr _grid = GETSV("Grid", "currentGrid");
-		if (!isNil "_grid") then {
-			if (_grid != "") then {
-				CALLM0(_grid, "unplot");
-			};
-		};
+	// 	// Unplot previous grid
+	// 	pr _grid = GETSV("Grid", "currentGrid");
+	// 	if (!isNil "_grid") then {
+	// 		if (_grid != "") then {
+	// 			CALLM0(_grid, "unplot");
+	// 		};
+	// 	};
 		
-		SETSV("Grid", "currentGrid", _thisObject);
-		SETSV("Grid", "currentValue", _value);
-		SETSV("Grid", "currentScale", _scale);
+	// 	SETSV("Grid", "currentGrid", _thisObject);
+	// 	SETSV("Grid", "currentValue", _value);
+	// 	SETSV("Grid", "currentScale", _scale);
 		
-		// Plot the grid
-		CALLM2(_thisObject, "plot", _scale, true);
+	// 	// Plot the grid
+	// 	CALLM2(_thisObject, "plot", _scale, true);
 		
-		// Remove previous EH if it exists
-		pr _eh = GETSV("Grid", "mapSingleClickEH");
-		if (!isNil "_eh") then {
-			removeMissionEventHandler ["MapSingleClick", _eh];
-		};
+	// 	// Remove previous EH if it exists
+	// 	pr _eh = GETSV("Grid", "mapSingleClickEH");
+	// 	if (!isNil "_eh") then {
+	// 		removeMissionEventHandler ["MapSingleClick", _eh];
+	// 	};
 		
-		// Hint instructions
-		hint "Click: set value\nShift+click: set to 0\nClick outside of map: finish editing";
+	// 	// Hint instructions
+	// 	hint "Click: set value\nShift+click: set to 0\nClick outside of map: finish editing";
 		
-		// Add new EH
-		_eh = addMissionEventHandler ["MapSingleClick", {
-			params ["_units", "_pos", "_alt", "_shift"];
+	// 	// Add new EH
+	// 	_eh = addMissionEventHandler ["MapSingleClick", {
+	// 		params ["_units", "_pos", "_alt", "_shift"];
 			
-			_pos params ["_x", "_y"];
+	// 		_pos params ["_x", "_y"];
 			
-			pr _grid = GETSV("grid", "currentGrid");
+	// 		pr _grid = GETSV("grid", "currentGrid");
 			
-			if (_x < 0 || _y < 0 || _x > WORLD_SIZE || _y > WORLD_SIZE) exitWith {
-				pr _eh = GETSV("Grid", "mapSingleClickEH");
-				removeMissionEventHandler ["MapSingleClick", _eh];
-				systemChat format ["Finished editing %1", _grid];
-				SETSV("Grid", "currentGrid", nil);
+	// 		if (_x < 0 || _y < 0 || _x > WORLD_SIZE || _y > WORLD_SIZE) exitWith {
+	// 			pr _eh = GETSV("Grid", "mapSingleClickEH");
+	// 			removeMissionEventHandler ["MapSingleClick", _eh];
+	// 			systemChat format ["Finished editing %1", _grid];
+	// 			SETSV("Grid", "currentGrid", nil);
 
-				hint "Finished editing";
-			};
+	// 			hint "Finished editing";
+	// 		};
 			
-			pr _value = GETSV("grid", "currentValue");
-			pr _scale = GETSV("grid", "currentScale");
+	// 		pr _value = GETSV("grid", "currentValue");
+	// 		pr _scale = GETSV("grid", "currentScale");
 			
-			if (_shift) then { _value = 0 };
+	// 		if (_shift) then { _value = 0 };
 			
-			CALLM2(_grid, "setValue", _pos, _value);
-			CALLM3(_grid, "plotCell", _pos, _scale, true);
-			//CALLM2(_grid, "plot", _scale, true);
-		}];
+	// 		CALLM2(_grid, "setValue", _pos, _value);
+	// 		CALLM3(_grid, "plotCell", _pos, _scale, true);
+	// 		//CALLM2(_grid, "plot", _scale, true);
+	// 	}];
 		
-		SETSV("Grid", "mapSingleClickEH", _eh);
+	// 	SETSV("Grid", "mapSingleClickEH", _eh);
 	
-	} ENDMETHOD;
-	
+	// } ENDMETHOD;
+
 	/*
 	Method: copyFrom
 	Sets values to this grid from another grid.

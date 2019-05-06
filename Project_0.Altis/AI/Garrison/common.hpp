@@ -3,6 +3,7 @@
 #define OOP_WARNING
 #define OFSTREAM_FILE "AI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\Templates\Efficiency.hpp"
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
 #include "..\..\MessageTypes.hpp"

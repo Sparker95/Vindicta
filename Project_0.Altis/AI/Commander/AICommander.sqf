@@ -346,9 +346,6 @@ CLASS("AICommander", "AI")
 		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "updateLocationData", _args, _thisSide, _JIPID);
 	} ENDMETHOD;
 	
-	
-	
-	
 	// Shows notification and keeps track of it to delete some time later
 	METHOD("showLocationNotification") {
 		params ["_thisObject", ["_locPos", [], [[]]], ["_state", "", [""]]];
@@ -972,6 +969,12 @@ CLASS("AICommander", "AI")
 			[]
 		};
 		
+	} ENDMETHOD;
+	
+	METHOD("getThreat") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "getThreat", [_pos])
 	} ENDMETHOD;
 	
 	/*
