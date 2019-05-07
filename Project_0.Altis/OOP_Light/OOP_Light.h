@@ -309,6 +309,9 @@ nameStr profilerSetCounter _oop_cnt; };
 // Returns true if reference passed is pointing at a valid object 
 #define IS_OOP_OBJECT(objNameStr) (! (isNil {GET_OBJECT_CLASS(_objNameStr)}))
 
+// Returns variable names of this class
+#define GET_CLASS_MEMBERS(classNameStr) GET_SPECIAL_MEM(classNameStr, MEM_LIST_STR)
+
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
 // -----------------------------------------------------
@@ -684,10 +687,10 @@ objNameStr \
 #define ASSIGN(destObjNameStr, srcObjNameStr) CALL_METHOD(destObjNameStr, "assign", [srcObjNameStr])
 
 // ----------------------------------------
-// |                 U P D A T E          |
+// |             U P D A T E              |
 // ----------------------------------------
 // Same as assign but copies only existing variables of an object (those that are not nil)
-#define ASSIGN_NOT_NIL(destObjNameStr, srcObjNameStr) CALL_METHOD(destObjNameStr, "assign", [srcObjNameStr ARG false])
+#define UPDATE(destObjNameStr, srcObjNameStr) [destObjNameStr, srcObjNameStr, false] call OOP_assign_default;
 
 
 // ----------------------------------------

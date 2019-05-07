@@ -638,7 +638,7 @@ OOP_assign_default = {
 	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
 	{
 		_x params ["_varName"]; //, "_attributes"];
-		private _value = FORCE_GET_MEM(_srcObject);
+		private _value = FORCE_GET_MEM(_srcObject, _varName);
 		if (!isNil "_value") then {
 			// Check if it's an array, array is special, it needs a deeeep copy
 			if (_value isEqualType []) then {
@@ -680,7 +680,7 @@ OOP_deserialize = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 	#ifdef OOP_ASSERT
-	if (! [_objNameStr, __FILE__, __LINE__] call OOP_assert_object) exitWith {};
+	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
 	#endif
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
