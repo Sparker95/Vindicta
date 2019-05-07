@@ -1,3 +1,5 @@
+#include "mapUI_Macros.h"
+
 #include "CustomControlClasses.h"
 class mapUI
 {
@@ -83,7 +85,7 @@ class mapUI
 			w = safeZoneW * 0.11979167;
 			h = safeZoneH * 0.02685186;
 			style = 0+0;
-			text = "PERSONAL ASSISTANT";
+			text = "SETTINGS";
 			borderSize = 0;
 			colorBackground[] = {0,0,0,1};
 			colorBackgroundActive[] = {1,1,1,1};
@@ -135,10 +137,183 @@ class mapUI
 			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
 			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
 			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
+			blinkingPeriod = 0;
 			shadow = 0;
 			tooltip = "Create a camp at your current location.";
 			tooltipColorBox[] = {0,0,0,1};
 			tooltipColorText[] = {1,1,1,1};
+			
+		};
+		class MUI_PANELA_HEADLINE
+		{
+			type = 0;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.86;
+			y = safeZoneY + safeZoneH * 0.05;
+			w = safeZoneW * 0.135;
+			h = safeZoneH * 0.023;
+			style = 2;
+			text = "Camp Foxtrot";
+			colorBackground[] = {0,0.2699,0.5715,1};
+			colorText[] = {1,1,1,1};
+			font = "EtelkaMonospacePro";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85);
+			shadow = 1;
+			
+		};
+		class MUI_PANELA_LISTBOX
+		{
+			type = 5;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.86;
+			y = safeZoneY + safeZoneH * 0.18;
+			w = safeZoneW * 0.135;
+			h = safeZoneH * 0.72;
+			style = 16;
+			colorBackground[] = {0.1,0.1,0.1,0.7};
+			colorDisabled[] = {0.2,0.2,0.2,1};
+			colorSelect[] = {1,1,1,1};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
+			maxHistoryDelay = 0;
+			rowHeight = 0;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			soundSelect[] = {"\A3\ui_f\data\sound\RscListbox\soundSelect",0.09,1.0};
+			shadow = 0;
+			class ListScrollBar
+			{
+				color[] = {1,1,1,1};
+				thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
+				arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
+				arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
+				border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
+				
+			};
+			
+		};
+		class MUI_PANELA_TAB1
+		{
+			type = 1;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.86;
+			y = safeZoneY + safeZoneH * 0.078;
+			w = safeZoneW * 0.045;
+			h = safeZoneH * 0.068;
+			style = 2;
+			text = "LEFT";
+			borderSize = 0;
+			colorBackground[] = {0,0,0,1};
+			colorBackgroundActive[] = {1,1,1,1};
+			colorBackgroundDisabled[] = {0,0,0,1};
+			colorBorder[] = {0,0,0,0};
+			colorDisabled[] = {0.2,0.2,0.2,1};
+			colorFocused[] = {1,1,1,1};
+			colorShadow[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaSemiBold";
+			offsetPressedX = 0.01;
+			offsetPressedY = 0.01;
+			offsetX = 0.01;
+			offsetY = 0.01;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
+			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
+			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
+			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
+			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
+			blinkingPeriod = 0;
+			shadow = 0;
+			tooltip = "Create a camp at your current location.";
+			tooltipColorBox[] = {0,0,0,1};
+			tooltipColorText[] = {1,1,1,1};
+			
+		};
+		class MUI_PANELA_TAB2
+		{
+			type = 1;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.95;
+			y = safeZoneY + safeZoneH * 0.078;
+			w = safeZoneW * 0.045;
+			h = safeZoneH * 0.068;
+			style = 2;
+			text = "RIGHT";
+			borderSize = 0;
+			colorBackground[] = {0,0,0,1};
+			colorBackgroundActive[] = {1,1,1,1};
+			colorBackgroundDisabled[] = {0,0,0,1};
+			colorBorder[] = {0,0,0,0};
+			colorDisabled[] = {0.2,0.2,0.2,1};
+			colorFocused[] = {1,1,1,1};
+			colorShadow[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaSemiBold";
+			offsetPressedX = 0.01;
+			offsetPressedY = 0.01;
+			offsetX = 0.01;
+			offsetY = 0.01;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
+			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
+			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
+			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
+			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
+			blinkingPeriod = 0;
+			shadow = 0;
+			tooltip = "Create a camp at your current location.";
+			tooltipColorBox[] = {0,0,0,1};
+			tooltipColorText[] = {1,1,1,1};
+			
+		};
+		class MUI_PANELA_TAB3
+		{
+			type = 1;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.9048;
+			y = safeZoneY + safeZoneH * 0.078;
+			w = safeZoneW * 0.045;
+			h = safeZoneH * 0.068;
+			style = 2;
+			text = "CENTER";
+			borderSize = 0;
+			colorBackground[] = {0,0,0,1};
+			colorBackgroundActive[] = {1,1,1,1};
+			colorBackgroundDisabled[] = {0,0,0,1};
+			colorBorder[] = {0,0,0,0};
+			colorDisabled[] = {0.2,0.2,0.2,1};
+			colorFocused[] = {1,1,1,1};
+			colorShadow[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaSemiBold";
+			offsetPressedX = 0.01;
+			offsetPressedY = 0.01;
+			offsetX = 0.01;
+			offsetY = 0.01;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
+			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
+			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
+			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
+			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
+			blinkingPeriod = 0;
+			shadow = 0;
+			tooltip = "Create a camp at your current location.";
+			tooltipColorBox[] = {0,0,0,1};
+			tooltipColorText[] = {1,1,1,1};
+			
+		};
+		class MUI_PANELA_TABNAME
+		{
+			type = 0;
+			idc = -1;
+			x = safeZoneX + safeZoneW * 0.86;
+			y = safeZoneY + safeZoneH * 0.14;
+			w = safeZoneW * 0.135;
+			h = safeZoneH * 0.03;
+			style = 2;
+			text = "TAB/CATEGORY TITLE";
+			colorBackground[] = {0,0,0,1};
+			colorText[] = {1,1,1,1};
+			font = "EtelkaMonospacePro";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.94);
+			shadow = 0;
 			
 		};
 		
