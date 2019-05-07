@@ -130,6 +130,29 @@ T_VEH_ground_infantry_cargo =
 	T_VEH_truck_cargo
 ];
 
+// Ground vehicles primarially for infantry transport
+T_VEH_ground_transport =
+[
+	T_VEH_car_unarmed,
+	T_VEH_MRAP_unarmed,
+	T_VEH_MRAP_HMG,
+	T_VEH_MRAP_GMG,
+	T_VEH_IFV,
+	T_VEH_APC,
+	T_VEH_truck_inf
+];
+
+// Ground vehicles with combat capabilities
+T_VEH_ground_combat =
+[
+	T_VEH_car_armed,
+	T_VEH_MRAP_HMG,
+	T_VEH_MRAP_GMG,
+	T_VEH_IFV,
+	T_VEH_APC,
+	T_VEH_MBT
+];
+
 //Drones
 T_DRONE = 2;
 T_DRONE_SIZE = 11;

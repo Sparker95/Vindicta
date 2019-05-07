@@ -23,7 +23,9 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("garrisonIds", []);
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
-		T_CALLM("sync", []);
+		if(!IS_NULL_OBJECT(_actual)) then {
+			T_CALLM("sync", []);
+		};
 		// Add self to world
 		CALLM(_world, "addLocation", [_thisObject]);
 	} ENDMETHOD;
@@ -60,7 +62,7 @@ CLASS("LocationModel", "ModelBase")
 
 			//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
-			T_SETV("pos", GETV(_actual, "pos"));
+			T_SETV("pos", CALLM(_actual, "getPos", []));
 
 			private _side = GETV(_actual, "side");
 			T_SETV("side", _side);
@@ -118,7 +120,6 @@ CLASS("LocationModel", "ModelBase")
 				_foundGarr = _garr; _garr
 			}
 		} forEach _garrisonIds;
-
 		_foundGarr
 	} ENDMETHOD;
 		

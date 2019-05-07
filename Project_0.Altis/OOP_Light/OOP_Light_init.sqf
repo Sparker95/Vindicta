@@ -6,6 +6,8 @@ OOP_Light_initialized = true;
  * This file contains some functions for OOP_Light, mainly for asserting classess, objects and members.
  * Author: Sparker
  * 02.06.2018
+ * 
+ * TODO: refactor the many assert functions for better performance.
 */
 
 // Prints an error message with supplied text, file and line number
@@ -80,18 +82,18 @@ OOP_assert_class = {
 	//Check if it's a class
 	if(isNil "_memList") then {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
-		// DUMP_CALLSTACK;
 		false;
-	} else {true};
+	} else {
+		true;
+	};
 };
 
 //Check object class and print error if it differs from supplied
 OOP_assert_objectClass = {
 	params["_objNameStr", "_expectedClassNameStr", "_file", "_line"];
 
-	if(!(_objNameStr isEqualType "")) then {
+	if(!(_objNameStr isEqualType "")) exitWith {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		// DUMP_CALLSTACK;
 		false;
 	};
 
@@ -100,7 +102,6 @@ OOP_assert_objectClass = {
 	//Check if it's an object
 	if(isNil "_classNameStr") then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		// DUMP_CALLSTACK;
 		false;
 	} else {
 		private _parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
@@ -108,7 +109,6 @@ OOP_assert_objectClass = {
 			true // all's fine
 		} else {
 			[_file, _line, _objNameStr, _classNameStr, _expectedClassNameStr] call OOP_error_wrongClass;
-			// DUMP_CALLSTACK;
 			false
 		};
 	};
@@ -118,9 +118,8 @@ OOP_assert_objectClass = {
 OOP_assert_object = {
 	params["_objNameStr", "_file", "_line"];
 
-	if(!(_objNameStr isEqualType "")) then {
+	if(!(_objNameStr isEqualType "")) exitWith {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		// DUMP_CALLSTACK;
 		false;
 	};
 
@@ -129,7 +128,6 @@ OOP_assert_object = {
 	//Check if it's an object
 	if(isNil "_classNameStr") then {
 		[_file, _line, _objNameStr] call OOP_error_notObject;
-		// DUMP_CALLSTACK;
 		false;
 	} else {
 		true;
@@ -144,15 +142,12 @@ OOP_assert_staticMember = {
 	//Check if it's a class
 	if(isNil "_memList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
-		// DUMP_CALLSTACK;
 		false;
 	};
 	//Check static member
-	
 	private _valid = (_memList findIf { _x#0 == _memNameStr }) != -1;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
-		// DUMP_CALLSTACK;
 	};
 	//Return value
 	_valid
@@ -167,7 +162,6 @@ OOP_assert_member = {
 	if(isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to access member: %1.%2", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		// DUMP_CALLSTACK;
 		false;
 	};
 	//Get member list of this class
@@ -177,7 +171,6 @@ OOP_assert_member = {
 	private _valid = _memIdx != -1;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _memNameStr] call OOP_error_memberNotFound;
-		// DUMP_CALLSTACK;
 	};
 	//Return value
 	_valid
@@ -259,7 +252,6 @@ OOP_assert_member_is_ref = {
 	if(!([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
 		private _errorText = format ["%1.%2 doesn't have ATTR_REFCOUNTED attribute but is being accessed by a REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		// DUMP_CALLSTACK;
 		false;
 	};
 	true;
@@ -273,7 +265,6 @@ OOP_assert_member_is_not_ref = {
 	if(([_objNameStr, _memNameStr, ATTR_REFCOUNTED] call OOP_member_has_attr)) exitWith {
 		private _errorText = format ["%1.%2 has ATTR_REFCOUNTED attribute but is being accessed via a non REF function.", _objNameStr, _memNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		// DUMP_CALLSTACK;
 		false;
 	};
 	true;
@@ -454,7 +445,6 @@ OOP_assert_method = {
 	if (isNil "_classNameStr") exitWith {
 		private _errorText = format ["class name is nil. Attempt to call method: %1", _methodNameStr];
 		[_file, _line, _errorText] call OOP_error;
-		// DUMP_CALLSTACK;
 		false;
 	};
 
@@ -463,14 +453,12 @@ OOP_assert_method = {
 	//Check if it's a class
 	if(isNil "_methodList") exitWith {
 		[_file, _line, _classNameStr] call OOP_error_notClass;
-		// DUMP_CALLSTACK;
 		false;
 	};
 	//Check method
 	private _valid = _methodNameStr in _methodList;
 	if(!_valid) then {
 		[_file, _line, _classNameStr, _methodNameStr] call OOP_error_methodNotFound;
-		// DUMP_CALLSTACK;
 	};
 	//Return value
 	_valid

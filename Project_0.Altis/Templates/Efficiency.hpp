@@ -39,7 +39,8 @@
 #define EFF_LT(a, b)								([a, b] call fn_eff_lt)
 #define EFF_LTE(a, b)								([a, b] call fn_eff_lte)
 
-
+#define EFF_MASK_DEF(e)								EFF_MUL(e, T_EFF_def_mask)
+#define EFF_MASK_ATT(e)								EFF_MUL(e, T_EFF_att_mask)
 #define EFF_DEF_SUB(e) 								(e call fn_eff_def_sub)
 #define EFF_ATT_SUB(e) 								(e call fn_eff_att_sub)
 

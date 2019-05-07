@@ -24,6 +24,8 @@ private _eff = [];
 //											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 // Empty vector with efficiency
 T_EFF_null = 								[0,		0,		0,		0,		0,		0,		0,		0];
+T_EFF_att_mask = 							[0,		0,		0,		0,		1,		1,		1,		1];
+T_EFF_def_mask =							[1,		1,		1,		1,		0,		0,		0,		0];
 // Default value if there is no efficiency value on a unit
 T_EFF_default = 							[1,		0,		0,		0,		1,		0,		0,		0];
 

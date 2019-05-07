@@ -38,7 +38,9 @@
 // Enables checks for member accesses at runtime
 // As well as other assertions
 // It's a global flag, must be defined here
+
 #define OOP_ASSERT
+// #define OOP_ASSERT_ACCESS
 
 #ifdef _SQF_VM
 #define TEXT_
@@ -48,6 +50,7 @@
 #define VM_LOG(t) diag_log t
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
+#define OOP_ASSERT_ACCESS
 #undef OOP_DEBUG
 #undef OOP_INFO
 #define OOP_WARNING
@@ -227,30 +230,42 @@ nameStr profilerSetCounter _oop_cnt; };
 // |           A C C E S S   M E M B E R S             |
 // -----------------------------------------------------
 
+#ifdef OOP_ASSERT_ACCESS
+#define ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr) 			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access
+#define ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr) 	[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_static_member_access
+#define ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr) 			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_member_access
+#define ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr)	[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_static_member_access
+#else
+#define ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr) 			
+#define ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr) 	
+#define ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr) 			
+#define ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr)	
+#endif
+
 #ifdef OOP_ASSERT
 	#define SET_MEM(objNameStr, memNameStr, value) \
 		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_not_ref) then { \
-			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access; \
+			ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr); \
 			FORCE_SET_MEM(objNameStr, memNameStr, value) \
 		}
 	#define SET_MEM_REF(objNameStr, memNameStr, value) \
 		if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member_is_ref) then { \
-			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_member_access; \
+			ASSERT_SET_MEMBER_ACCESS(objNameStr, memNameStr); \
 			FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
 		}
 	#define SET_STATIC_MEM(classNameStr, memNameStr, value) \
 		if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
-			[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_set_static_member_access; \
+			ASSERT_SET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr); \
 			FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) \
 		}
 	#define GET_MEM(objNameStr, memNameStr) \
 		( if([objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_member) then { \
-			[objNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_member_access; \
+			ASSERT_GET_MEMBER_ACCESS(objNameStr, memNameStr); \
 			FORCE_GET_MEM(objNameStr, memNameStr) \
 		}else{nil} )
 	#define GET_STATIC_MEM(classNameStr, memNameStr) \
 		( if([classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_staticMember) then { \
-			[classNameStr, memNameStr, __FILE__, __LINE__] call OOP_assert_get_static_member_access; \
+			ASSERT_GET_STATIC_MEMBER_ACCESS(classNameStr, memNameStr); \
 			FORCE_GET_STATIC_MEM(classNameStr, memNameStr) \
 		}else{nil} )
 	#define GET_METHOD(classNameStr, methodNameStr) \
@@ -390,7 +405,6 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 #define ATTR_THREAD_AFFINITY(getThreadFn) [ATTR_THREAD_AFFINITY_ID, getThreadFn]
 #define ATTR_USERBASE 1000
 
-
 // -----------------------------------------------------
 // |       M E M B E R   D E C L A R A T I O N S       |
 // -----------------------------------------------------
@@ -430,7 +444,7 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	#define OOP_FUNC_FOOTER_PROFILE
 #endif
 
-#ifdef OOP_ASSERT
+#ifdef OOP_ASSERT_ACCESS
 #define _OOP_FUNCTION_WRAPPERS
 #endif
 
