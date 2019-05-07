@@ -618,6 +618,82 @@ OOP_clone_default = {
 	} forEach _memList;
 };
 
+// Default assignment, this is what you get if you don't overwrite "assign" method of your class
+// It just iterates through all variables and copies their values
+// This method assumes the same classes of the two objects
+OOP_assign_default = {
+	params ["_destObject", "_srcObject", ["_copyNil", true]];
+
+	private _destClassNameStr = OBJECT_PARENT_CLASS_STR(_destObject);
+	private _srcClassNameStr = OBJECT_PARENT_CLASS_STR(_srcObject);
+
+	// Ensure destination and source are of the same classes
+	#ifdef OOP_ASSERT
+	if (_destClassNameStr != _srcClassNameStr) exitWith {
+		[__FILE__, __LINE__, format ["destination and source classes don't match for objects %1 and %2", _destObject, _srcObject]] call OOP_error;
+	};
+	#endif
+
+	// Get member list and copy everything
+	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
+	{
+		_x params ["_varName"]; //, "_attributes"];
+		private _value = FORCE_GET_MEM(_srcObject);
+		if (!isNil "_value") then {
+			// Check if it's an array, array is special, it needs a deeeep copy
+			if (_value isEqualType []) then {
+				FORCE_SET_MEM(_destObject, _varName, +_value);
+			} else {
+				FORCE_SET_MEM(_destObject, _varName, _value);
+			};
+		} else {
+			if (_copyNil) then {
+				FORCE_SET_MEM(_destObject, _varName, nil);
+			};
+		};
+	} forEach _memList;
+};
+
+// Pack all variables into an array
+OOP_serialize = {
+	params ["_objNameStr"];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array pushBack GETV(_objNameStr, _varName);
+	} forEach (_memList - [[OOP_PARENT_STR, []], [OOP_PUBLIC_STR, []]]);
+
+	_array
+};
+
+// Unpack all variables from an array into an existing object
+OOP_deserialize = {
+	params ["_objNameStr", "_array"];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	#ifdef OOP_ASSERT
+	if (! [_objNameStr, __FILE__, __LINE__] call OOP_assert_object) exitWith {};
+	#endif
+
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _iVarName = 0;
+	private _copyMemList = _memList - [[OOP_PARENT_STR, []], [OOP_PUBLIC_STR, []]];
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array select _i;
+		(_copyMemList select _iVarName) params ["_varName"];
+		SET_VAR(_objNameStr, _varName, _value);
+		_iVarName = _iVarName + 1;
+	};
+};
+
 OOP_deref_var = {
 	params ["_objNameStr", "_memName", "_memAttr"];
 	if(ATTR_REFCOUNTED in _memAttr) then {

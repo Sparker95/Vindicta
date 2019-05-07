@@ -303,16 +303,11 @@ nameStr profilerSetCounter _oop_cnt; };
 #define __STRINGIFY(s) #s
 #define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, __STRINGIFY(varName))
 
-// todo add macros to check object validity
-/*
-#define IS_VALID(objNameStr)
-private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-	//Check if it's an object
-	if(isNil "_classNameStr") exitWith {
-		[_file, _line, _objNameStr] call OOP_error_notObject;
-		false;
-	};
-*/
+// Returns object class name
+#define GET_OBJECT_CLASS(_objNameStr) OBJECT_PARENT_CLASS_STR(_objNameStr)
+
+// Returns true if reference passed is pointing at a valid object 
+#define IS_OOP_OBJECT(objNameStr) (! (isNil {GET_OBJECT_CLASS(_objNameStr)}))
 
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
@@ -582,6 +577,7 @@ PROFILER_COUNTER_INIT(_oop_classNameStr); \
 METHOD("new") {} ENDMETHOD; \
 METHOD("delete") {} ENDMETHOD; \
 METHOD("copy") OOP_clone_default ENDMETHOD; \
+METHOD("assign") OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
 VARIABLE(OOP_PUBLIC_STR);
 
@@ -680,6 +676,34 @@ objNameStr \
 // ----------------------------------------
 
 #define CLONE(objNameStr) ([objNameStr] call OOP_clone)
+
+// ----------------------------------------
+// |             A S S I G N              |
+// ----------------------------------------
+
+#define ASSIGN(destObjNameStr, srcObjNameStr) CALL_METHOD(destObjNameStr, "assign", [srcObjNameStr])
+
+// ----------------------------------------
+// |                 U P D A T E          |
+// ----------------------------------------
+// Same as assign but copies only existing variables of an object (those that are not nil)
+#define ASSIGN_NOT_NIL(destObjNameStr, srcObjNameStr) CALL_METHOD(destObjNameStr, "assign", [srcObjNameStr ARG false])
+
+
+// ----------------------------------------
+// |          S E R I A L I Z E           |
+// ----------------------------------------
+// Packs variables into an array and returns the array
+#define SERIALIZE(objNameStr) ([objNameStr] call OOP_serialize)
+#define SERIALIZED_CLASS_NAME(array) (array select 0)
+#define SERIALIZED_OBJECT_NAME(array) (array select 1)
+
+// ----------------------------------------
+// |        D E S E R I A L I Z E         |
+// ----------------------------------------
+// Returns ref to the object passed in the array
+// Object must exist before you can DESERIALIZE an array into it!
+#define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |

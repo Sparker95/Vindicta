@@ -1,10 +1,16 @@
 #include "..\OOP_Light\OOP_Light.h"
 
+/*
+Classes of intel items
+Author: Sparker 05.05.2019
+*/
+
 CLASS("Intel", "")
 
 	VARIABLE("timeCreated");
 	VARIABLE("timeUpdated");
 	VARIABLE("intelSource");
+	VARIABLE("source"); // Ref to the source intel item
 
 	METHOD("new") {
 		params ["_thisObject"];
