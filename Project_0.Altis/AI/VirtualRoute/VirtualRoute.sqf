@@ -128,6 +128,7 @@ CLASS("VirtualRoute", "")
 
 			try {
 				// This gets the node to node path.
+				// TODO: add cancellation token so we can cancel route calulation on delete (token = array wrapping a bool)
 				private _path = [_startRoute,_endRoute,_costFn,"",_callbackArgs] call gps_core_fnc_generateNodePath;
 				if(count _path <= 1) then {
 					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
@@ -164,7 +165,7 @@ CLASS("VirtualRoute", "")
 
 				// Set it last
 				T_SETV("calculated", true);
-
+				
 				if(_debugDraw) then {
 					T_CALLM("debugDraw", []);
 				};
@@ -183,12 +184,26 @@ CLASS("VirtualRoute", "")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
+
+		T_CALLM("waitUntilCalculated", []);
+
 		T_PRVAR(debugDraw);
 		if(_debugDraw) then {
 			T_CALLM("clearDebugDraw", []);
 		};
 	} ENDMETHOD;
-	
+
+	METHOD("waitUntilCalculated") {
+		params [P_THISOBJECT];
+		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
+		// able to wait for it I guess?
+		if(!T_GETV("calculated") and !T_GETV("failed")) then {
+			waitUntil {
+				T_GETV("calculated") or T_GETV("failed")
+			};
+		};
+	} ENDMETHOD;
+
 	/*
 	Method: start
 	Start moving during process calls.
@@ -297,7 +312,7 @@ CLASS("VirtualRoute", "")
 		T_PRVAR(pos);
 		T_PRVAR(nextIdx);
 		T_PRVAR(route);
-
+		
 		// TODO: we could return some useful defaults here instead?
 		ASSERT_MSG(!T_GETV("failed"), "Route calculation failed, cannot get convoy positions");
 		ASSERT_MSG(T_GETV("calculated"), "Can't call getConvoyPositions until route has finished calculating");
