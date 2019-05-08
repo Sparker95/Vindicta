@@ -15,7 +15,7 @@ _inf set [T_INF_SL, ["rhsusf_army_ocp_squadleader"]];
 _inf set [T_INF_TL, ["rhsusf_army_ocp_teamleader"]];
 _inf set [T_INF_officer, ["rhsusf_army_ocp_officer"]];
 _inf set [T_INF_GL, ["rhsusf_army_ocp_grenadier"]];
-_inf set [T_INF_rifleman, ["rhsusf_army_ocp_rifleman_m4"]];
+_inf set [T_INF_rifleman, ["rhsusf_army_ocp_rifleman_m4", "rhsusf_army_ucp_rifleman_m16"]];
 _inf set [T_INF_marksman, ["rhsusf_army_ocp_marksman"]];
 _inf set [T_INF_sniper, ["rhsusf_army_ocp_sniper_m24sws"]];
 _inf set [T_INF_spotter, ["rhsusf_army_ocp_rifleman_m590"]];
@@ -51,34 +51,39 @@ _inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
 
 
 //==== Vehicles ====
-
 _veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhsusf_m1025_w_m2"]];
 
-_veh set [T_VEH_car_unarmed, ["rhsusf_m1025_w"]];
-_veh set [T_VEH_car_armed, ["rhsusf_m1025_w_m2"]];
-_veh set [T_VEH_MRAP_unarmed, ["rhsusf_m1025_w_m2"]];
-_veh set [T_VEH_MRAP_HMG, ["rhsusf_M1220_usarmy_wd"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsusf_M1220_M2_usarmy_wd"]];
-_veh set [T_VEH_IFV, ["rhsusf_M1220_MK19_usarmy_wd"]];
-_veh set [T_VEH_APC, ["RHS_M2A3_wd"]];
-_veh set [T_VEH_MBT, ["rhsusf_m113_usarmy_M240"]];
-_veh set [T_VEH_MRLS, ["rhsusf_m1a1aimwd_usarmy"]];
-_veh set [T_VEH_SPA, ["rhsusf_M142_usarmy_WD"]];
+
+
+_veh set [T_VEH_car_unarmed, ["rhsusf_m1025_w", "rhsusf_CGRCAT1A2_usmc_wd"]];
+_veh set [T_VEH_car_armed, ["rhsusf_m1025_w_m2", "rhsusf_CGRCAT1A2_M2_usmc_wd"]];
+_veh set [T_VEH_MRAP_unarmed, ["rhsusf_M1220_usarmy_wd", "rhsusf_M1232_usarmy_wd", "rhsusf_CGRCAT1A2_usmc_wd"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsusf_M1220_M153_M2_usarmy_wd", "rhsusf_M1220_M2_usarmy_wd", "rhsusf_M1230_M2_usarmy_wd", "rhsusf_M1232_M2_usarmy_wd", "rhsusf_M1237_M2_usarmy_wd"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsusf_M1220_MK19_usarmy_wd", "rhsusf_M1230_MK19_usarmy_wd", "rhsusf_M1232_MK19_usarmy_wd", "rhsusf_M1237_MK19_usarmy_wd"]];
+_veh set [T_VEH_IFV, ["RHS_M2A2_wd", "RHS_M2A2_BUSKI_WD", "RHS_M2A3_wd", "RHS_M2A3_BUSKI_wd", "RHS_M2A3_BUSKIII_wd", "RHS_M6_wd"]];
+_veh set [T_VEH_APC, ["rhsusf_m113_usarmy_supply", "rhsusf_m113_usarmy", "rhsusf_m113_usarmy_M240", "rhsusf_m113_usarmy_MK19", "rhsusf_m113_usarmy_unarmed"]];
+_veh set [T_VEH_MBT, ["rhsusf_m1a1aimwd_usarmy", "rhsusf_m1a1aim_tuski_wd", "rhsusf_m1a2sep1wd_usarmy", "rhsusf_m1a2sep1tuskiwd_usarmy", "rhsusf_m1a2sep1tuskiiwd_usarmy"]];
+_veh set [T_VEH_MRLS, ["rhsusf_M142_usarmy_WD"]];
+_veh set [T_VEH_SPA, ["rhsusf_m109_usarmy"]];
 _veh set [T_VEH_SPAA, ["rhsusf_m109_usarmy"]];
+
 _veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_WD"]];
 _veh set [T_VEH_stat_GMG_high, ["RHS_MK19_TriPod_WD"]];
 _veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_WD"]];
 _veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_WD"]];
 _veh set [T_VEH_stat_AA, ["RHS_Stinger_AA_pod_WD"]];
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_WD"]];
-_veh set [T_VEH_stat_mortar_light, ["B_T_Mortar_01_F"]];
-_veh set [T_VEH_stat_mortar_heavy, ["B_T_Mortar_01_F"]];
-_veh set [T_VEH_heli_light, ["RHS_UH60M"]];
+
+_veh set [T_VEH_stat_mortar_light, ["RHS_M252_WD"]];
+_veh set [T_VEH_stat_mortar_heavy, ["RHS_M252_WD"]];
+
+_veh set [T_VEH_heli_light, ["RHS_UH60M", "RHS_UH60M2"]];
 _veh set [T_VEH_heli_heavy, ["RHS_CH_47F"]];
 _veh set [T_VEH_heli_cargo, ["RHS_CH_47F"]];
-_veh set [T_VEH_heli_attack, ["RHS_AH64D_wd"]];
+_veh set [T_VEH_heli_attack, ["RHS_AH64D_wd", "RHS_AH1Z_wd"]];
+
 _veh set [T_VEH_plane_attack, ["RHS_A10"]];
 _veh set [T_VEH_plane_fighter , ["rhsusf_f22"]];
 _veh set [T_VEH_plane_cargo, ["RHS_C130J"]];
@@ -87,11 +92,12 @@ _veh set [T_VEH_plane_VTOL, ["RHS_C130J"]];
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F"]];
 _veh set [T_VEH_boat_armed, ["B_Boat_Armed_01_minigun_F"]];
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
-_veh set [T_VEH_truck_inf, ["rhsusf_M1078A1P2_B_M2_WD_fmtv_usarmy"]];
-_veh set [T_VEH_truck_cargo, ["rhsusf_M1083A1P2_WD_flatbed_fmtv_usarmy"]];
+
+_veh set [T_VEH_truck_inf, ["rhsusf_M1078A1P2_WD_fmtv_usarmy", "rhsusf_M1083A1P2_WD_fmtv_usarmy", "rhsusf_M1083A1P2_B_M2_WD_fmtv_usarmy"]];
+_veh set [T_VEH_truck_cargo, ["rhsusf_M1078A1P2_B_WD_flatbed_fmtv_usarmy", "rhsusf_M1078A1P2_B_M2_WD_flatbed_fmtv_usarmy", "rhsusf_M1083A1P2_B_M2_WD_flatbed_fmtv_usarmy", "rhsusf_M1084A1P2_B_M2_WD_fmtv_usarmy"]];
 _veh set [T_VEH_truck_ammo, ["rhsusf_M977A4_AMMO_usarmy_wd"]];
 _veh set [T_VEH_truck_repair, ["rhsusf_M977A4_REPAIR_usarmy_wd"]];
-_veh set [T_VEH_truck_medical , ["rhsusf_M1083A1P2_WD_fmtv_usarmy"]];
+_veh set [T_VEH_truck_medical , ["rhsusf_M1083A1P2_WD_fmtv_usarmy", "rhsusf_M1085A1P2_B_WD_Medical_fmtv_usarmy"]];
 _veh set [T_VEH_truck_fuel, ["rhsusf_M978A4_usarmy_wd"]];
 _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
