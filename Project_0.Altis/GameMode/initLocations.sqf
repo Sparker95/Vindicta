@@ -1,4 +1,4 @@
-#include "..\common.hpp"
+#include "common.hpp"
 
 // Class: GameModeBase
 /*
@@ -113,62 +113,6 @@ fnc_addVehGroup = {
 	private _cBuildingSentry = 0;
 
 	T_CALLM("getLocationInitialForces", [_loc]) params ["_cInf", "_cVehGround", "_cHMGGMG", "_cBuildingSentry"];
-
-	// switch(gSetupMode) do {
-	// 	case "bill": { 
-	// 		_cInf = if(_locName == "Altis Airfield") then {60} else {2};
-	// 		_cVehGround = if(_locName == "Altis Airfield") then {10} else {0};
-	// 	};
-	// 	case "sparker": {
-	// 		_cInf = 12;
-	// 		_cVehGround = 4;
-	// 	};
-	// 	case "random": {
-	// 		if(random 5 <= 1) then {
-	// 			_cInf = 60;
-	// 			_cVehGround = 20;
-	// 		} else {
-	// 			_cInf = 10;
-	// 			_cVehGround = 2;
-	// 		}
-	// 	};
-	// 	case "bases": {
-	// 		if(_locType == "base") then {
-	// 			_cInf = CALL_METHOD(_loc, "getUnitCapacity", [T_INF]+[[GROUP_TYPE_IDLE]]);
-	// 			_cVehGround = CALL_METHOD(_loc, "getUnitCapacity", [T_PL_tracked_wheeled]+[GROUP_TYPE_ALL]);
-	// 			_cHMGGMG = CALL_METHOD(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high]+[GROUP_TYPE_ALL]);
-	// 			_cBuildingSentry = CALL_METHOD(_loc, "getUnitCapacity", [T_INF]+[[GROUP_TYPE_BUILDING_SENTRY]]);
-	// 			[_loc, _side, _cInf, _template] spawn {
-	// 				params ["_loc", "_side", "_targetCInf", "_template"];
-	// 				while{true} do {
-	// 					sleep 120;
-	// 					private _unitCount = CALLM(_loc, "countAvailableUnits", [_side]);
-	// 					if(_unitCount >= 6 and _unitCount < _targetCInf) then {
-	// 						private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
-	// 						private _garrison = _garrisons#0;
-	// 						private _remaining = _targetCInf - _unitCount;
-	// 						systemChat format["Spawning %1 units at %2", _remaining, _loc];
-	// 						while {_remaining > 0} do {
-	// 							private _args = [_template, _garrison, T_GROUP_inf_sentry, _remaining, GROUP_TYPE_PATROL];
-	// 							_remaining = CALLM2(_garrison, "postMethodSync", fnc_addInfGroup, _args);
-	// 							//[_template, _garrison, T_GROUP_inf_sentry, _remaining, GROUP_TYPE_PATROL] call fnc_addInfGroup;
-	// 						};
-	// 					};
-	// 				};
-	// 		 	};
-	// 		};
-	// 		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
-	// 		if(!IS_NULL_OBJECT(_cmdr)) then {
-	// 			CALLM(_cmdr, "registerLocation", [_loc]);
-	// 		};
-	// 	};
-	// 	default {
-	// 		_cInf = CALL_METHOD(_loc, "getUnitCapacity", [T_INF]+[[GROUP_TYPE_IDLE]]);
-	// 		_cVehGround = CALL_METHOD(_loc, "getUnitCapacity", [T_PL_tracked_wheeled]+[GROUP_TYPE_ALL]);
-	// 		_cHMGGMG = CALL_METHOD(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high]+[GROUP_TYPE_ALL]);
-	// 		_cBuildingSentry = CALL_METHOD(_loc, "getUnitCapacity", [T_INF]+[[GROUP_TYPE_BUILDING_SENTRY]]);
-	// 	};
-	// };
 
 	if(_cInf > 0) then {
 		// Add the main garrison to this location

@@ -1,18 +1,6 @@
 #define OOP_INFO
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
-#include "Message\Message.hpp"
-#include "CriticalSection\CriticalSection.hpp"
-#include "AI\Commander\AICommander.hpp"
-#include "AI\Commander\LocationData.hpp"
-
-/*
-Dirty init.sqf
-add inits here until it's so fucked up, then redo it all over again
-*/
-
-//==== Locations initialization
-// player allowDamage false;
 
 // If a client, wait for the server to finish its initialization
 if (!isServer) then {
@@ -27,11 +15,16 @@ if (!isServer) then {
 	OOP_INFO_0(_str);
 };
 
-// Initialize global objects in unscheduled
-CRITICAL_SECTION_START
+CRITICAL_SECTION {
 
-gGameMode = NEW("BasesGameMode", []);
-CALLM(gGameMode, "init", []);
+	gGameMode = NEW("BasesGameMode", []);
+	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];
+	CALLM(gGameMode, "init", []);
+	diag_log format["Initialized game mode %1", GETV(gGameMode, "name")];
+
+	serverInitDone = 1;
+	publicVariable "serverInitDone";
+};
 
 // OOP_INFO_0("Init.sqf: Creating global objects...");
 
@@ -230,8 +223,3 @@ while {true}do{
 
 };
 */
-
-serverInitDone = 1;
-publicVariable "serverInitDone";
-
-CRITICAL_SECTION_END

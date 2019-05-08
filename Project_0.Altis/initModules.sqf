@@ -28,6 +28,10 @@ tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 //a = [classesNATO, T_VEH, T_VEH_default] call t_fnc_select;
 //[classesNATO] call t_fnc_checkNil;
 
+
+// Initialize GameModes
+call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
+
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
 
