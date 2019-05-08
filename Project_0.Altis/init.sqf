@@ -30,43 +30,46 @@ if (!isServer) then {
 // Initialize global objects in unscheduled
 CRITICAL_SECTION_START
 
-OOP_INFO_0("Init.sqf: Creating global objects...");
+gGameMode = NEW("BasesGameMode", []);
+CALLM(gGameMode, "init", []);
 
-// Init global objects
-call compile preprocessFileLineNumbers "initGlobals.sqf";
+// OOP_INFO_0("Init.sqf: Creating global objects...");
 
-// Headless Clients only
-if (!hasInterface && !isDedicated) then {
-	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
-	OOP_INFO_0(_str);
-	systemChat _str;
+// // Init global objects
+// call compile preprocessFileLineNumbers "initGlobals.sqf";
 
-	// Test: ask the server to create an object and pass it to this computer
-	[clientOwner, {
-		private _remoteOwner = _this;
-		diag_log format ["---- Connected headless client with owner ID: %1. RemoteExecutedOwner: %2, isRemoteExecuted: %3", _remoteOwner, remoteExecutedOwner, isRemoteExecuted];
-		diag_log format ["all players: %1, all headless clients: %2", allPlayers, entities "HeadlessClient_F"];
-		diag_log format ["Owners of headless clients: %1", (entities "HeadlessClient_F") apply {owner _x}];
+// // Headless Clients only
+// if (!hasInterface && !isDedicated) then {
+// 	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
+// 	OOP_INFO_0(_str);
+// 	systemChat _str;
 
-		private _args = ["Remote DebugPrinter test", gMessageLoopMain];
-		remoteDebugPrinter = NEW("DebugPrinter", _args);
-		CALLM(remoteDebugPrinter, "setOwner", [_remoteOwner]); // Transfer it to the machine that has connected
-		diag_log format ["---- Created a debug printer for the headless client: %1", remoteDebugPrinter];
+// 	// Test: ask the server to create an object and pass it to this computer
+// 	[clientOwner, {
+// 		private _remoteOwner = _this;
+// 		diag_log format ["---- Connected headless client with owner ID: %1. RemoteExecutedOwner: %2, isRemoteExecuted: %3", _remoteOwner, remoteExecutedOwner, isRemoteExecuted];
+// 		diag_log format ["all players: %1, all headless clients: %2", allPlayers, entities "HeadlessClient_F"];
+// 		diag_log format ["Owners of headless clients: %1", (entities "HeadlessClient_F") apply {owner _x}];
 
-	}] remoteExec ["spawn", 2, false];
-};
+// 		private _args = ["Remote DebugPrinter test", gMessageLoopMain];
+// 		remoteDebugPrinter = NEW("DebugPrinter", _args);
+// 		CALLM(remoteDebugPrinter, "setOwner", [_remoteOwner]); // Transfer it to the machine that has connected
+// 		diag_log format ["---- Created a debug printer for the headless client: %1", remoteDebugPrinter];
 
-// Only players
-if (hasInterface) then {
-	diag_log "----- Player detected!";
+// 	}] remoteExec ["spawn", 2, false];
+// };
 
-	0 spawn {
-		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
-		call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
-	};
-};
+// // Only players
+// if (hasInterface) then {
+// 	diag_log "----- Player detected!";
 
-OOP_INFO_0("Init.sqf: Init done!");
+// 	0 spawn {
+// 		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+// 		call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+// 	};
+// };
+
+// OOP_INFO_0("Init.sqf: Init done!");
 
 
 
