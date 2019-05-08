@@ -77,7 +77,7 @@ _veh set [T_VEH_stat_AA, ["RHS_Stinger_AA_pod_WD"]];
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_WD"]];
 
 _veh set [T_VEH_stat_mortar_light, ["RHS_M252_WD"]];
-_veh set [T_VEH_stat_mortar_heavy, ["RHS_M252_WD"]];
+_veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_WD"]];
 
 _veh set [T_VEH_heli_light, ["RHS_UH60M", "RHS_UH60M2"]];
 _veh set [T_VEH_heli_heavy, ["RHS_CH_47F"]];
@@ -123,19 +123,19 @@ _drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //==== Groups ====
 _group = [];
 _group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_default, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_squad"]];
+_group set [T_GROUP_DEFAULT, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team"]];
 _group set [T_GROUP_inf_AA_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_AA"]];
 _group set [T_GROUP_inf_AT_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_heavy_AT"]];
 _group set [T_GROUP_inf_rifle_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_squad"]];
-_group set [T_GROUP_inf_assault_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team"]];
+_group set [T_GROUP_inf_assault_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_MG"]];
 _group set [T_GROUP_inf_weapons_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_weaponsquad"]];
 _group set [T_GROUP_inf_fire_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team"]];
-_group set [T_GROUP_inf_recon_patrol, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usmc_wd" >> "rhs_group_nato_usmc_recon_wd_infantry" >> "rhs_group_nato_usmc_recon_wd_infantry_team"]];
+_group set [T_GROUP_inf_recon_patrol, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usmc_wd" >> "rhs_group_nato_usmc_recon_wd_infantry" >> "rhs_group_nato_usmc_recon_wd_infantry_team_support"]];
 _group set [T_GROUP_inf_recon_sentry, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usmc_wd" >> "rhs_group_nato_usmc_recon_wd_infantry" >> "rhs_group_nato_usmc_recon_wd_infantry_team_lite"]];
 _group set [T_GROUP_inf_recon_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usmc_wd" >> "rhs_group_nato_usmc_recon_wd_infantry" >> "rhs_group_nato_usmc_recon_wd_infantry_team"]];
 _group set [T_GROUP_inf_recon_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usmc_wd" >> "rhs_group_nato_usmc_recon_wd_infantry" >> "rhs_group_nato_usmc_recon_wd_infantry_team_fast"]];
-_group set [T_GROUP_inf_sentry, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_squad"]];
-_group set [T_GROUP_inf_sniper_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_squad_sniper"]];
+_group set [T_GROUP_inf_sentry, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_support"]];
+_group set [T_GROUP_inf_sniper_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_socom_marsoc" >> "rhs_group_nato_marsoc_infantry" >> "rhs_group_nato_marsoc_infantry_team"]];
 
 
 
