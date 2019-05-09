@@ -84,24 +84,7 @@ if (!_spawningHandled) then {
 			if (CALL_METHOD(_x, "getGroup", []) == "") then {
 				pr _className = CALLM0(_unit, "getClassName");
 
-				// Search for a free position in an area
-				private _found = false;
-				private _searchRadius = 50;
-				pr _posAndDir = [];
-				while {!_found} do {
-					for "_i" from 0 to 8 do {
-						pr _pos = _garPos vectorAdd [-_searchRadius + 2*_searchRadius, -_searchRadius + 2*_searchRadius, 0];
-						if (CALLSM3("Location", "isPosSafe", _pos, 0, _className) && ! (surfaceIsWater _pos)) exitWith {
-							_posAndDir = [_pos, 0];
-							_found = true;
-						};
-					};
-					
-					if (!_found) then {
-						// Search in a larger area at the next iteration
-						_searchRadius = _searchRadius * 2;
-					};			
-				};
+				pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _garPos);
 
 				// After a good place has been found, spawn it
 				CALL_METHOD(_unit, "spawn", _posAndDir);

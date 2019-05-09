@@ -1,5 +1,7 @@
 #include "common.hpp"
 
+#define pr private
+
 CLASS("BasesGameMode", "GameModeBase")
 
 	METHOD("new") {
@@ -33,10 +35,15 @@ CLASS("BasesGameMode", "GameModeBase")
 					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", [_side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 					CALLM1(_gar, "setLocation", _loc);
 					CALLM1(_loc, "registerGarrison", _gar);
-					CALLM(_gar, "activate", []);
-					
-					CALLM(_cmdr, "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_UNITS ARG sideUnknown ARG false]);
+					CALLM0(_gar, "activate");
 				};
+
+				// Send intel to commanders
+				{
+					pr _sideCommander = GETV(_x, "side");
+					pr _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_UNITS ARG sideUnknown ARG false]);
+				} forEach gCommanders;
 			};
 
 		} forEach GET_STATIC_VAR("Location", "all");
