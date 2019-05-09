@@ -13,6 +13,7 @@ CLASS("VirtualRoute", "")
 
 	VARIABLE_ATTR("costFn", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("speedFn", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("callbackArgs", [ATTR_PRIVATE]);
 
 	VARIABLE_ATTR("route", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("pos", [ATTR_PRIVATE]);
@@ -28,6 +29,9 @@ CLASS("VirtualRoute", "")
 	VARIABLE_ATTR("failed", [ATTR_GET_ONLY]);
 	VARIABLE_ATTR("waypoints", [ATTR_GET_ONLY]);
 	VARIABLE_ATTR("complete", [ATTR_GET_ONLY]);
+
+	VARIABLE_ATTR("debugDraw", [ATTR_PRIVATE]);
+
 	
 	/*
 	Method: new
@@ -50,16 +54,22 @@ CLASS("VirtualRoute", "")
 			["_recalculateInterval", -1],
 			["_costFn", ""],
 			["_speedFn", ""],
-			["_async", true]
+			["_callbackArgs", []],
+			["_async", true],
+			["_debugDraw", false]
 		];
 		
 		T_SETV("from", _from);
 		T_SETV("destination", _destination);
 		T_SETV("recalculateInterval", _recalculateInterval);
 
+		T_SETV("callbackArgs", _callbackArgs);
+
+		T_SETV("debugDraw", _debugDraw);
+
 		if(_costFn isEqualType "") then {
 			pr _default_costFn = {
-				params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute"];
+				params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
 				_base_cost
 			};
 			T_SETV("costFn", _default_costFn);
@@ -69,7 +79,7 @@ CLASS("VirtualRoute", "")
 
 		if(_speedFn isEqualType "") then {
 			pr _default_speedFn = {
-				params ["_road", "_next_road"];
+				params ["_road", "_next_road", "_callbackArgs"];
 				if([_road] call misc_fnc_isHighWay) exitWith {
 					60 * 0.277778
 				};
@@ -102,9 +112,11 @@ CLASS("VirtualRoute", "")
 			T_PRVAR(from);
 			T_PRVAR(destination);
 			T_PRVAR(costFn);
+			T_PRVAR(callbackArgs);
+			T_PRVAR(debugDraw);
 
-			private _startRoute = [_from, 1000, gps_blacklistRoads] call bis_fnc_nearestRoad;
-			private _endRoute = [_destination, 1000, gps_blacklistRoads] call bis_fnc_nearestRoad;
+			private _startRoute = [_from, 2000, gps_blacklistRoads] call bis_fnc_nearestRoad;
+			private _endRoute = [_destination, 2000, gps_blacklistRoads] call bis_fnc_nearestRoad;
 
 			if (isNull _endRoute or isNull _startRoute) exitWith {
 				T_SETV("failed", true);
@@ -116,7 +128,7 @@ CLASS("VirtualRoute", "")
 
 			try {
 				// This gets the node to node path.
-				private _path = [_startRoute,_endRoute,_costFn] call gps_core_fnc_generateNodePath;
+				private _path = [_startRoute,_endRoute,_costFn,"",_callbackArgs] call gps_core_fnc_generateNodePath;
 				if(count _path <= 1) then {
 					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
 					throw "failed";
@@ -147,11 +159,15 @@ CLASS("VirtualRoute", "")
 				T_PRVAR(speedFn);
 
 				// Speed for first section
-				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1] call _speedFn;
+				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1, _callbackArgs] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
 
 				// Set it last
 				T_SETV("calculated", true);
+
+				if(_debugDraw) then {
+					T_CALLM("debugDraw", []);
+				};
 			} catch {
 				T_SETV("failed", true);
 			};
@@ -165,6 +181,14 @@ CLASS("VirtualRoute", "")
 		};
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_PRVAR(debugDraw);
+		if(_debugDraw) then {
+			T_CALLM("clearDebugDraw", []);
+		};
+	} ENDMETHOD;
+	
 	/*
 	Method: start
 	Start moving during process calls.
@@ -336,8 +360,8 @@ CLASS("VirtualRoute", "")
 	METHOD("debugDraw") {
 		params [
 			"_thisObject",
-			["_routeColor", "ColorBlue"],
-			["_waypointColor", "ColorWhite"]
+			["_routeColor", "ColorBlack"],
+			["_waypointColor", "ColorBlack"]
 		];
 		
 		CALLM0(_thisObject, "clearDebugDraw");
@@ -357,15 +381,15 @@ CLASS("VirtualRoute", "")
 				["start", _start],
 				["end", _end],
 				["color", _routeColor],
-				["size", 10],
+				["size", 8],
 				["id", "gps_route" + _thisObject + str _start + str _end]
 			] call gps_test_fnc_mapDrawLine; 
 		};
 
-		T_PRVAR(waypoints);
-		{
-			[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
-		} forEach _waypoints;
+		// T_PRVAR(waypoints);
+		// {
+		// 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
+		// } forEach _waypoints;
 		// pr _waypoints = T_GETV("waypoints");
 	} ENDMETHOD;
 
@@ -376,7 +400,7 @@ CLASS("VirtualRoute", "")
 	METHOD("clearDebugDraw") {
 		params ["_thisObject"];
 		["gps_route" + _thisObject] call gps_test_fn_clear_markers;
-		["gps_waypoint" + _thisObject] call gps_test_fn_clear_markers;
+		//["gps_waypoint" + _thisObject] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
 
 	/*

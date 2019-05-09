@@ -259,7 +259,8 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _ID = CALLM0(_AI, "getNewTargetClusterID");
 					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
 					//ade_dumpcallstack;
-					CALLM1(_AI, "onTargetClusterCreated", _newTC);
+					// We don't register it here, the commander does it
+					//CALLM1(_AI, "onTargetClusterCreated", _newTC);
 				} else {
 					// It inherits from one old cluster, need to find what it inherits from
 					pr _i = 0;

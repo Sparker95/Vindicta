@@ -54,6 +54,41 @@ CLASS("CmdrAI", "")
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+			// Must be on our side, not involved in another action and at a location 
+			// TODO: make it at a base only?
+			if((GETV(_x, "side") != _side) or { CALLM(_x, "isBusy", []) } or { IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) }) then {
+				false
+			} else {
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+				// Must have at least a minimum available eff
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			}
+		};
+
+		// Take tgt locations from future, so we take into account all in progress actions.
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", []) select { 
+			// Must not have any of our garrisons already present (or this would be reinforcement action)
+			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
+		};
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			//private _srcLocId = GETV(_x, "locationId");
+			{
+				private _tgtId = GETV(_x, "id");
+				//if(_tgtId != _srcLocId) then {
+				private _params = [_srcId, _tgtId];
+				_actions pushBack (NEW("TakeLocationCmdrAction", _params));
+				//};
+			} forEach _tgtLocations;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 TakeOutpost actions from %2 garrisons to %3 locations", [count _actions]+[count _srcGarrisons]+[count _tgtLocations]);
+		//T_PRVAR(side);
+
 		// // Garrison must be alive
 		// // TODO: optimize this into a single garrison function maybe?
 		// private _garrisons = CALLM(_world, "getAliveGarrisons", []) select { 
@@ -76,7 +111,7 @@ CLASS("CmdrAI", "")
 		// 	} == NOT_FOUND
 		// };
 
-		private _actions = [];
+		//private _actions = [];
 		// {
 		// 	private _garrisonId = GETV(_x, "id");
 		// 	{
@@ -92,9 +127,9 @@ CLASS("CmdrAI", "")
 	METHOD("generateAttackActions") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 
-		private _garrisons = GETV(_world, "garrisons");
+		// private _garrisons = CALLM(_world, "getAliveGarrisons");
 
-		T_PRVAR(side);
+		//T_PRVAR(side);
 
 		private _actions = [];
 
@@ -198,6 +233,8 @@ CLASS("CmdrAI", "")
 				};
 			} forEach _tgtGarrisons;
 		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 Reinforce actions from %2 garrisons to %3 garrisons", [count _actions]+[count _srcGarrisons]+[count _tgtGarrisons]);
 
 		_actions
 	} ENDMETHOD;

@@ -50,20 +50,22 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	Returns: nil
 	*/
 	METHOD("handleMessage") {
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT, P_ARRAY("_msg")];
 		private _msgType = _msg select MESSAGE_ID_TYPE; // Message type is the function name
+		private _return = nil;
 		if (_msgType isEqualType "") then {
 			_methodParams = (_msg select MESSAGE_ID_DATA);
-			//diag_log format ["----- postMethodAsync: methodParams is array: %1", _methodParams isEqualType []];
-			private _return = (CALL_METHOD(_thisObject, _msgType, _methodParams));
-			// Did the method return anything?
-			if (isNil "_return") then {	_return = 0; };
-			_return
+			_return = (CALL_METHOD(_thisObject, _msgType, _methodParams));
 		} else {
-			private _return = CALL_METHOD(_thisObject, "handleMessageEx", [_msg]);
-			if (isNil "_return") then {	_return = 0; };
-			_return
+			if(_msgType isEqualType {}) then {
+				_methodParams = (_msg select MESSAGE_ID_DATA);
+				_return = _methodParams call _msgType;
+			} else {
+				_return = CALL_METHOD(_thisObject, "handleMessageEx", [_msg]);
+			};
 		};
+		// Did the method return anything?
+		if (isNil "_return") then {	0 } else { _return }
 	} ENDMETHOD;
 
 	/*
@@ -78,7 +80,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	Returns: you can return whatever you need from here to later retrieve it by waitUntilMessageDone.
 	*/
 	METHOD("handleMessageEx") {
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
+		params [P_THISOBJECT , ["_msg", [], [[]]] ];
 		diag_log format ["[MessageReceiverEx] handleMessageEx: %1", [_msg]];
 		false
 	} ENDMETHOD;
@@ -89,7 +91,7 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Parameters: _methodName, _methodParams, _returnMsgID
 
-	_methodName - String, name of the method that will be called
+	_methodNameOrCode - String, name of the method that will be called, OR code/function to run.
 	_methodParams - Array with parameters to be passed to the method
 	_returnMsgID - Optional, Bool, see <MessageReceiver.postMessage>
 
@@ -98,10 +100,10 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 	//
 	// Returns: the ID of the posted message
 	METHOD("postMethodAsync") {
-		params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]], ["_returnMsgID", false]];
+		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], ["_methodParams", [], [[]]], ["_returnMsgID", false]];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
-		_msg set [MESSAGE_ID_TYPE, _methodName];
+		_msg set [MESSAGE_ID_TYPE, _methodNameOrCode];
 		_msg set [MESSAGE_ID_DATA, _methodParams]; // Array to return data to, method parameters
 		private _return = T_CALLM("postMessage", [_msg]+[_returnMsgID]);
 #else
@@ -121,22 +123,22 @@ CLASS("MessageReceiverEx", "MessageReceiver")
 
 	Parameters: _methodName, _methodParams
 
-	_methodName - String, name of the method that will be called
+	_methodNameOrCode - String, name of the method that will be called, OR code/function to run.
 	_methodParams - Array with parameters to be passed to the method
 
 	Returns: whatever was returned by this object
 	*/
 	METHOD("postMethodSync") {
-		params [["_thisObject", "", [""]], ["_methodName", "", [""]], ["_methodParams", [], [[]]] ];
+		params [P_THISOBJECT, ["_methodNameOrCode", "", ["", {}]], ["_methodParams", [], [[]]] ];
 #ifndef _SQF_VM
 		private _msg = MESSAGE_NEW();
-		_msg set [MESSAGE_ID_TYPE, _methodName];
+		_msg set [MESSAGE_ID_TYPE, _methodNameOrCode];
 		_msg set [MESSAGE_ID_DATA, _methodParams];
 		private _msgID = T_CALLM("postMessage", [_msg]+[true]);
 		pr _return = T_CALLM("waitUntilMessageDone", [_msgID]);
 #else
 		// In testing just call the function synchronously
-		pr _return = T_CALLM(_methodName, _methodParams);
+		pr _return = if(_methodNameOrCode isEqualType "") then { T_CALLM(_methodNameOrCode, _methodParams) } else { _methodParams call _methodNameOrCode };
 #endif
 		// Return whatever was returned by this object
 		_return

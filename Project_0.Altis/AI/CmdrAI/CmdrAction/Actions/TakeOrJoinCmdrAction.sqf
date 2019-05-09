@@ -9,8 +9,14 @@
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("targetVar");
+	VARIABLE("splitFlagsVar");
 	VARIABLE("detachmentEffVar");
 	VARIABLE("detachedGarrIdVar");
+
+#ifdef DEBUG_CMDRAI
+	VARIABLE("debugColor");
+	VARIABLE("debugSymbol");
+#endif
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
@@ -25,6 +31,10 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
+
+		// Flags to use when splitting off the detachment garrison		
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]]);
+		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -32,14 +42,17 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		{ DELETE(_x) } forEach T_GETV("transitions");
 
+#ifdef DEBUG_CMDRAI
 		deleteMarker (_thisObject + "_line");
-		deleteMarker (_thisObject + "_line2");
+		//deleteMarker (_thisObject + "_line2");
 		deleteMarker (_thisObject + "_label");
+#endif
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("createTransitions") {
 		T_PRVAR(srcGarrId);
 		T_PRVAR(detachmentEffVar);
+		T_PRVAR(splitFlagsVar);
 		T_PRVAR(targetVar);
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
@@ -59,7 +72,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_srcGarrIdVar, 						// Garrison to split (constant)
 				_detachmentEffVar, 					// Efficiency we want the detachment to have (constant)
-				MAKE_AST_VAR([ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]), // Flags for split operation
+				_splitFlagsVar, // Flags for split operation
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
@@ -112,11 +125,11 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
 		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 		if(_detachedGarrId == MODEL_HANDLE_INVALID) then {
-			format ["reinf %1%2 -> %3", LABEL(_srcGarr), _srcEff, _targetName]
+			format ["%1 %2%3 -> %4", _thisObject, LABEL(_srcGarr), _srcEff, _targetName]
 		} else {
 			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
 			private _detachedEff = GETV(_detachedGarr, "efficiency");
-			format ["reinf %1%2 -> %3%4 -> %5", LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName]
+			format ["%1 %2%3 -> %4%5 -> %6", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName]
 		};
 	} ENDMETHOD;
 
@@ -130,22 +143,26 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
-		[_srcGarrPos, _targetPos, "ColorBlack", 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
+		T_PRVAR(debugColor);
+		T_PRVAR(debugSymbol);
+
+		[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
 		private _centerPos = _srcGarrPos vectorAdd ((_targetPos vectorDiff _srcGarrPos) apply { _x * 0.5 });
 		private _mrk = createmarker [_thisObject + "_label", _centerPos];
-		_mrk setMarkerType "mil_objective";
-		_mrk setMarkerColor "ColorWhite";
+		_mrk setMarkerType _debugSymbol;
+		_mrk setMarkerColor _debugColor;
+		_mrk setMarkerPos _centerPos;
 		_mrk setMarkerAlpha 1;
 		_mrk setMarkerText T_CALLM("getLabel", [_world]);
 
-		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
-		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
-			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-			ASSERT_OBJECT(_detachedGarr);
-			private _detachedGarrPos = GETV(_detachedGarr, "pos");
-			[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
-		};
+		// private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		// if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+		// 	private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		// 	ASSERT_OBJECT(_detachedGarr);
+		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
+		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
+		// };
 	} ENDMETHOD;
 
 ENDCLASS;

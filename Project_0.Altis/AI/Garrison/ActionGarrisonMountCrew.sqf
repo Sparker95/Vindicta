@@ -31,16 +31,15 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 		
 		// Do we need to mount or dismount?
-		if (_mount) then {
-			pr _args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
-			{
-				// Give goal to mount vehicles
-				pr _groupAI = CALLM0(_x, "getAI");
-				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
-			} forEach _vehGroups;
-		} else {
-			// NYI
-		};
+		pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
+		pr _args = [_goalClassName, 0, [], _AI];
+
+		// Give goals to groups
+		{
+			// Give goal to mount vehicles
+			pr _groupAI = CALLM0(_x, "getAI");
+			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+		} forEach _vehGroups;
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -74,25 +73,24 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 				
 				// Do we need to mount or dismount?
-				if (_mount) then {
-					// Fail this action if any group has failed
-					if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
-						_state = ACTION_STATE_FAILED;
-						breakTo "s0";
-					};
+
+				pr _goalClassName = ["GoalGroupRegroup", "GoalGroupGetInVehiclesAsCrew"] select T_GETV("mount");
+
+				// Fail this action if any group has failed
+				if (CALLSM3("AI_GOAP", "anyAgentFailedExternalGoal", _vehGroups, _goalClassName, _AI)) then {
+					_state = ACTION_STATE_FAILED;
+					breakTo "s0";
+				};
+				
+				// Complete the action when all vehicle groups have mounted
+				if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, _goalClassName, _AI)) then {
+				//pr _ws = GETV(T_GETV("AI"), "worldState");
+				//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
+					// Update sensors affected by this action
+					CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
 					
-					// Complete the action when all vehicle groups have mounted
-					if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _vehGroups, "GoalGroupGetInVehiclesAsCrew", _AI)) then {
-					//pr _ws = GETV(T_GETV("AI"), "worldState");
-					//if ([_ws, WSP_GAR_ALL_CREW_MOUNTED] call ws_getPropertyValue) then {			
-						// Update sensors affected by this action
-						CALLM0(GETV(T_GETV("AI"), "sensorState"), "update");
-						
-						_state = ACTION_STATE_COMPLETED;
-						breakTo "s0";
-					};
-				} else {
-					// NYI
+					_state = ACTION_STATE_COMPLETED;
+					breakTo "s0";
 				};
 			};
 			

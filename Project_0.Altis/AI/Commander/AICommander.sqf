@@ -29,7 +29,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("targets"); // Array of targets known by this Commander
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
-	
+
 	VARIABLE("targetClusterActions"); // Array with ActionCommanderRespondToTargetCluster
 
 	VARIABLE("lastPlanningTime");
@@ -71,7 +71,7 @@ CLASS("AICommander", "AI")
 		T_SETV("targets", []);
 		T_SETV("targetClusters", []);
 		T_SETV("nextClusterID", 0);
-		
+
 		// Create intel database
 		pr _intelDB = NEW("IntelDatabaseServer", [_side]);
 		T_SETV("intelDB", _intelDB);
@@ -87,9 +87,9 @@ CLASS("AICommander", "AI")
 		[_thisObject, _side] spawn {
 			params ["_thisObject", "_side"];
 			private _pos = switch (_side) do {
-				case WEST: { [0, -500, 0 ] };
-				case EAST: { [0, -1000, 0 ] };
-				case INDEPENDENT: { [0, -1500, 0 ] };
+				case WEST: { [0, -1000, 0 ] };
+				case EAST: { [0, -1500, 0 ] };
+				case INDEPENDENT: { [0, -500, 0 ] };
 			};
 			private _mrk = createmarker [_thisObject + "_label", _pos];
 			_mrk setMarkerType "mil_objective";
@@ -124,10 +124,13 @@ CLASS("AICommander", "AI")
 		private _worldModel = NEW("WorldModel", []);
 		T_SETV("worldModel", _worldModel);
 
-		// Register locations
-		private _locations = CALLSM("Location", "getAll", []);
-		OOP_INFO_1("Registering %1 locations with Model", count _locations);
-		{ NEW("LocationModel", [_worldModel]+[_x]) } forEach _locations;
+		// // Register locations
+		// private _locations = CALLSM("Location", "getAll", []);
+		// OOP_INFO_1("Registering %1 locations with Model", count _locations);
+		// { 
+		// 	T_CALLM()
+		// 	NEW("LocationModel", [_worldModel]+[_x]) 
+		// } forEach _locations;
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -521,10 +524,10 @@ CLASS("AICommander", "AI")
 		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
 		T_GETV("targetClusterActions") pushBack _newAction;
 		
-		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
+		OOP_INFO_MSG("---- Created new action to respond to target cluster %1", [_tc]);
 
 		T_PRVAR(worldModel);
-		NEW("ClusterModel", [_worldModel]+[[_thisObject]+[_ID]]);
+		NEW("ClusterModel", [_worldModel]+[_args]);
 	} ENDMETHOD;
 
 	/*
@@ -925,6 +928,12 @@ CLASS("AICommander", "AI")
 		
 	} ENDMETHOD;
 	
+	METHOD("getThreat") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "getThreat", [_pos])
+	} ENDMETHOD;
+	
 	/*
 	Method: registerGarrison
 	Registers a garrison to be processed by this AICommander
@@ -951,6 +960,28 @@ CLASS("AICommander", "AI")
 			_newModel = NEW("GarrisonModel", [_worldModel]+[_gar]);
 		};
 		_newModel
+	} ENDMETHOD;
+
+	/*
+	Method: registerLocation
+	Registers a location to be known by this AICommander
+	
+	Parameters:
+	_loc - <Location>
+	
+	Returns: nil
+	*/
+	METHOD("registerLocation") {
+		params [P_THISOBJECT, P_STRING("_loc")];
+		ASSERT_OBJECT_CLASS(_loc, "Location");
+
+		private _newModel = NULL_OBJECT;
+		OOP_DEBUG_MSG("Registering location %1", [_loc]);
+		//T_GETV("locations") pushBack _loc; // I need you for my army!
+		// CALLM2(_loc, "postMethodAsync", "ref", []);
+		T_PRVAR(worldModel);
+		// Just creating the location model is registering it with CmdrAI
+		NEW("LocationModel", [_worldModel]+[_loc]);
 	} ENDMETHOD;
 
 	/*

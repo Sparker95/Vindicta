@@ -107,7 +107,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		ASSERT_MSG(IS_GARRISON_DESTROYED(_thisObject), "Garrison should be destroyed before it is deleted");
 	} ENDMETHOD;
-
+	
 	// ----------------------------------------------------------------------
 	// |                          A C T I V A T E                           |
 	// ----------------------------------------------------------------------
@@ -122,20 +122,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM(T_GETV("AI"), "start", []); // Let's start the party! \o/
 		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject])
 	} ENDMETHOD;
-	
-	METHOD("isAlive") {
-		params [P_THISOBJECT];
-		// No mutex lock because this is expected to be atomic
-		!IS_GARRISON_DESTROYED(_thisObject)
-		//(T_GETV("effTotal") isEqualTo [])
-	} ENDMETHOD;
 
-	METHOD("isDestroyed") {
-		params [P_THISOBJECT];
-		// No mutex lock because this is expected to be atomic
-	 	IS_GARRISON_DESTROYED(_thisObject)
-	} ENDMETHOD;
+	// ----------------------------------------------------------------------
+	// |                           D E S T R O Y                            |
+	// ----------------------------------------------------------------------
+	/*
+	Method: destroy
 
+	This starts the delete process for this garrison. It sets the garrison to 
+	destroyed state (isDestroyed returns true, isAlive returns false), removes
+	all units and groups, deletes the timer and AI components.
+	*/
 	METHOD("destroy") {
 		params [P_THISOBJECT];
 		
@@ -206,7 +203,38 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: (static)getAll
+	Method: isAlive
+
+	Is this Garrison ready to be used?
+	*/
+	METHOD("isAlive") {
+		params [P_THISOBJECT];
+		// No mutex lock because this is expected to be atomic
+		!IS_GARRISON_DESTROYED(_thisObject)
+		//(T_GETV("effTotal") isEqualTo [])
+	} ENDMETHOD;
+
+	/*
+	Method: isDestroyed
+
+	Is this Garrison ready to be used?
+	*/
+	METHOD("isDestroyed") {
+		params [P_THISOBJECT];
+		// No mutex lock because this is expected to be atomic
+	 	IS_GARRISON_DESTROYED(_thisObject)
+	} ENDMETHOD;
+
+
+	METHOD("runLocked") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_obj"), P_STRING("_funcName"), P_ARRAY("_args")];
+		__MUTEX_LOCK;
+		CALLM(_obj, _funcName, _args);
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	/*
+	Method: (static) getAll
 	Returns all garrisons
 	
 	Parameters: _side
@@ -637,9 +665,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	/*
 	Method: countAllUnits
-	Returns all units of this garrison.
-
-	Returns: Array of <Unit> objects.
+	Returns: total number of units in this garrison.
 	*/
 	METHOD("countAllUnits") {
 		params [P_THISOBJECT];
@@ -655,6 +681,49 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	/*
+	Method: getTransportCapacity
+	Count number of passenger seats available in all vehicles of the categories specified.
+	Parameters: _vehicleCategories
+
+	_vehicleCategories - Array of vehicle categories, defaults to T_VEH_ground_infantry_cargo
+	Returns: number of seats available.
+	*/
+	METHOD("getTransportCapacity") {
+		params [P_THISOBJECT, P_ARRAY("_vehicleCategories")];
+		
+		__MUTEX_LOCK;
+		
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			0
+		};
+
+		if(count _vehicleCategories == 0) then {
+			_vehicleCategories = T_VEH_ground_infantry_cargo;
+		};
+
+		// Get available seats for transportation for any matching vehicles
+		private _transportCapacityPerUnit = T_CALLM("getUnits", []) apply {
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+			if(_catID == T_VEH and {_subcatID in _vehicleCategories}) then {
+				CALLSM1("Unit", "getCargoInfantryCapacity", [_x])
+			} else {
+				0
+			};
+		};
+		// Sum the available seats.
+		private _transportCapacity = 0;
+		{
+			_transportCapacity = _transportCapacity + _x;
+		} foreach _transportCapacityPerUnit;
+		__MUTEX_UNLOCK;
+
+		_transportCapacity
+	} ENDMETHOD;
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                A D D I N G / R E M O V I N G   U N I T S   A N D   G R O U P S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -726,6 +795,21 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 
 		nil
+	} ENDMETHOD;
+
+	METHOD("addUnits") {
+		params[P_THISOBJECT, P_ARRAY("_units")];
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			nil
+		};
+		{
+			T_CALLM("addUnit", [_x]);
+		} forEach _units;
+		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
 

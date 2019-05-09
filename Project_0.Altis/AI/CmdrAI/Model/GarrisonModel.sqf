@@ -3,39 +3,41 @@
 #include "..\..\parameterTags.hpp"
 #include "..\..\Action\Action.hpp"
 
-GarrisonModel_getThread = {
-	params ["_garrisonModel"];
-	// Can't use normal accessor because it would cause an infinite loop!
-	private _side = FORCE_GET_MEM(_garrisonModel, "side");
-	if(!isNil "_side") then {
-		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
-		if(!IS_NULL_OBJECT(_AICommander)) then {
-			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
-		} else {
-			nil
-		}
-	}
-};
+// GarrisonModel_getThread = {
+// 	params ["_garrisonModel"];
+// 	// Can't use normal accessor because it would cause an infinite loop!
+// 	private _side = FORCE_GET_MEM(_garrisonModel, "side");
+// 	if(!isNil "_side") then {
+// 		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+// 		if(!IS_NULL_OBJECT(_AICommander)) then {
+// 			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
+// 		} else {
+// 			nil
+// 		}
+// 	}
+// };
 
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
 // is a copy that is modified during simulations.
 CLASS("GarrisonModel", "ModelBase")
 	// Strength vector of the garrison.
-	VARIABLE_ATTR("efficiency", [ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("efficiency", []);
+	// Available transportation (free seats in trucks)
+	VARIABLE_ATTR("transport", []);
 	//// Current order the garrison is following.
 	// TODO: do we want this? I think only real Garrison needs orders, model just has action.
 	//VARIABLE_ATTR("order", [ATTR_REFCOUNTED]);
-	VARIABLE_ATTR("action", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("action", [ATTR_GET_ONLY]);
 	// Is the garrison currently in combat?
 	// TODO: maybe replace this with with "engagement score" indicating how engaged they are.
-	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("inCombat", [ATTR_PRIVATE]);
 	// Position.
-	VARIABLE_ATTR("pos", [ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("pos", []);
 	// What side this garrison belongs to.
-	VARIABLE_ATTR("side", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("side", []);
 	// Id of the location the garrison is currently occupying.
-	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]+[ATTR_THREAD_AFFINITY(GarrisonModel_getThread)]);
+	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -44,11 +46,14 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("action", NULL_OBJECT);
 		// These will get set in sync
 		T_SETV("efficiency", +EFF_ZERO);
+		T_SETV("transport", 0);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", sideUnknown);
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
-		T_CALLM("sync", []);
+		if(!IS_NULL_OBJECT(_actual)) then {
+			T_CALLM("sync", []);
+		};
 		// Add self to world
 		CALLM(_world, "addGarrison", [_thisObject]);
 	} ENDMETHOD;
@@ -74,6 +79,7 @@ CLASS("GarrisonModel", "ModelBase")
 		//SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
+		SETV(_copy, "transport", +T_GETV("transport"));
 		//SETV_REF(_copy, "order", T_GETV("order"));
 		T_PRVAR(action);
 		// Copy it properly so the action gets register/unregister messages
@@ -88,6 +94,46 @@ CLASS("GarrisonModel", "ModelBase")
 		_copy
 	} ENDMETHOD;
 
+	/* private */ METHOD("_sync") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
+
+		if(CALLM(_actual, "isDestroyed", [])) exitWith {
+			T_CALLM("killed", []);
+		};
+
+		private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
+		if(EFF_LTE(_newEff, EFF_ZERO)) then {
+			T_CALLM("killed", []);
+		} else {
+			private _actualSide = CALLM(_actual, "getSide", []);
+			T_SETV("side", _actualSide);
+			
+			T_SETV("efficiency", _newEff);
+
+			// Get seats only for trucks as we care about this most
+			private _seats = CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]]);
+			T_SETV("transport", _seats);
+			
+			private _actualPos = CALLM(_actual, "getPos", []);
+			T_SETV("pos", +_actualPos);
+
+
+			//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			private _locationActual = CALLM(_actual, "getLocation", []);
+			if(!IS_NULL_OBJECT(_locationActual)) then {
+				T_PRVAR(world);
+				private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+				T_SETV("locationId", GETV(_location, "id"));
+				// Don't call the proper functions because it deals with updating the LocationModel
+				// and we don't need to do that in sync (LocationModel sync does it)
+				//T_CALLM("attachToLocation", [_location]);
+			} else {
+				T_SETV("locationId", MODEL_HANDLE_INVALID);
+				//T_CALLM("detachFromLocation", []);
+			};
+		};
+	} ENDMETHOD;
+	
 	METHOD("sync") {
 		params [P_THISOBJECT];
 
@@ -96,33 +142,35 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!IS_NULL_OBJECT(_actual)) then {
 			ASSERT_OBJECT_CLASS(_actual, "Garrison");
 
-			private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
-			if(EFF_LTE(_newEff, EFF_ZERO)) then {
-				T_CALLM("killed", []);
-			} else {
-				private _actualSide = CALLM(_actual, "getSide", []);
-				T_SETV("side", _actualSide);
+			CALLM(_actual, "runLocked", [_thisObject]+["_sync"]+[[_actual]]);
+
+			// private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
+			// if(EFF_LTE(_newEff, EFF_ZERO)) then {
+			// 	T_CALLM("killed", []);
+			// } else {
+			// 	private _actualSide = CALLM(_actual, "getSide", []);
+			// 	T_SETV("side", _actualSide);
 				
-				T_SETV("efficiency", _newEff);
+			// 	T_SETV("efficiency", _newEff);
 				
-				private _actualPos = CALLM(_actual, "getPos", []);
-				T_SETV("pos", +_actualPos);
+			// 	private _actualPos = CALLM(_actual, "getPos", []);
+			// 	T_SETV("pos", +_actualPos);
 
 
-				//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
-				private _locationActual = CALLM(_actual, "getLocation", []);
-				if(!IS_NULL_OBJECT(_locationActual)) then {
-					T_PRVAR(world);
-					private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
-					T_SETV("locationId", GETV(_location, "id"));
-					// Don't call the proper functions because it deals with updating the LocationModel
-					// and we don't need to do that in sync (LocationModel sync does it)
-					//T_CALLM("attachToLocation", [_location]);
-				} else {
-					T_SETV("locationId", MODEL_HANDLE_INVALID);
-					//T_CALLM("detachFromLocation", []);
-				};
-			};
+			// 	//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject]+[_actual]+[_actualPos]);
+			// 	private _locationActual = CALLM(_actual, "getLocation", []);
+			// 	if(!IS_NULL_OBJECT(_locationActual)) then {
+			// 		T_PRVAR(world);
+			// 		private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
+			// 		T_SETV("locationId", GETV(_location, "id"));
+			// 		// Don't call the proper functions because it deals with updating the LocationModel
+			// 		// and we don't need to do that in sync (LocationModel sync does it)
+			// 		//T_CALLM("attachToLocation", [_location]);
+			// 	} else {
+			// 		T_SETV("locationId", MODEL_HANDLE_INVALID);
+			// 		//T_CALLM("detachFromLocation", []);
+			// 	};
+			// };
 		};
 	} ENDMETHOD;
 
@@ -132,6 +180,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		T_PRVAR(world);
 		T_SETV("efficiency", +EFF_ZERO);
+		T_SETV("transport", 0);
 		T_CALLM("detachFromLocation", []);
 		CALLM(_world, "garrisonKilled", [_thisObject]);
 		T_CALLM("clearAction", []);
@@ -229,11 +278,21 @@ CLASS("GarrisonModel", "ModelBase")
 			NULL_OBJECT
 		};
 
-		private _detachment =NEW("GarrisonModel", [_world]);
+		private _detachment = NEW("GarrisonModel", [_world]);
 		SETV(_detachment, "efficiency", _effAllocated);
 		SETV(_detachment, "pos", +T_GETV("pos"));
+		SETV(_detachment, "side", T_GETV("side"));
 		private _newEfficiency = EFF_DIFF(_efficiency, _effAllocated);
 		T_SETV("efficiency", _newEfficiency);
+
+		if(ASSIGN_TRANSPORT in _flags) then {
+			private _transportRequired = CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_effAllocated]);
+			SETV(_detachment, "transport", _transportRequired);
+			T_PRVAR(transport);
+			private _newTransport = 0 max (_transport - _transportRequired);
+			T_SETV("transport", _newTransport);
+		};
+
 		OOP_DEBUG_MSG("Sim split %1%2->%3 to %4%5", [_thisObject]+[_efficiency]+[_newEfficiency]+[_detachment]+[_effAllocated]);
 
 		_detachment
@@ -361,8 +420,23 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(EFF_SUM(_splitEff) > 0, "_splitEff can't be zero");
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
-		
-		private _units = CALLM0(_actual, "getUnits") select {! CALLM0(_x, "isStatic")};
+
+		private _side = CALLM(_actual, "getSide", []);
+		private _units = CALLM0(_actual, "getUnits") select { 
+			// Not interested in statics
+			!CALLM0(_x, "isStatic") and 
+			// Only want infantry or combat vehicles (not transports, we will assign them after)
+			{ 
+				CALLM0(_x, "isInfantry") or
+				{
+					CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
+					_catID == T_VEH and
+					{
+						_subcatID in T_VEH_ground_combat
+					}
+				}
+			}
+		};
 		_units = _units apply {private _eff = CALLM0(_x, "getEfficiency"); [0, _eff, _x]};
 		_allocatedUnits = [];
 		_allocatedGroupsAndUnits = [];
@@ -371,9 +445,9 @@ CLASS("GarrisonModel", "ModelBase")
 		_effAllocated = +T_EFF_null;
 		
 		// Allocate units per each efficiency category
-		for "_i" from T_EFF_SOFT to T_EFF_ANTI_AIR do {
+		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
 			// Exit now if we have allocated enough units
-			if(EFF_GTE(_effAllocated, _splitEff)) exitWith {};
+			if(EFF_GTE(_effAllocated, EFF_MASK_ATT(_splitEff))) exitWith {};
 
 			// For every unit, set element 0 to efficiency value with index _i
 			{_x set [0, _x#1#_i];} forEach _units;
@@ -469,6 +543,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		private _allocated = true;
 
+		private _extraUnits = [];
 		// Do we need to find transport vehicles?
 		if (ASSIGN_TRANSPORT in _flags) then {
 			private _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
@@ -485,18 +560,11 @@ CLASS("GarrisonModel", "ModelBase")
 				// Get all remaining vehicles in this garrison, sort them by their cargo infantry capacity
 				private _availableVehicles = CALLM0(_actual, "getUnits") select {
 					CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-					if (_x in _allocatedVehicles || _catID != T_VEH) then { // Don't consider vehicles we have already taken and non-vehicles
-						false
-					} else {
-						if (_subcatID in T_VEH_ground_infantry_cargo) then {
-							true
-						} else {
-							false
-						};
-					};
+					// Don't consider vehicles we have already taken and non-transport vehicles
+					!(_x in _allocatedVehicles) and {_catID == T_VEH and {_subcatID in T_VEH_ground_transport}}
 				}; // select
 				private _availableVehiclesCapacity = _availableVehicles apply {[CALLSM1("Unit", "getCargoInfantryCapacity", [_x]), _x]};
-				_availableVehiclesCapacity sort false; // Descending
+				_availableVehiclesCapacity sort DESCENDING;
 				
 				OOP_INFO_1("   Available additional vehicles with cargo capacity: %1", _availableVehiclesCapacity);
 				
@@ -515,10 +583,23 @@ CLASS("GarrisonModel", "ModelBase")
 					OOP_INFO_0("   Successfully allocated additional vehicles!");
 					// Success
 				} else {
-					// Not enough vehicles for everyone!
-					// Check other locations then
-					OOP_INFO_0("   Failed to allocate additional vehicles!");
-					_allocated = false;
+					if(CHEAT_TRANSPORT in _flags) then {
+						OOP_INFO_MSG("   %1 more seats required and CHEAT_TRANSPORT specified, creating more trucks", [_nMoreCargoSeatsRequired]);
+						// Make trucks until we have enough
+						private _template = CALL_STATIC_METHOD("Unit", "getTemplateForSide", [_side]);
+						while {_nMoreCargoSeatsRequired > 0} do {
+							private _veh = NEW("Unit", [_template]+[T_VEH]+[T_VEH_truck_inf]+[-1]+[""]);
+							_extraUnits pushBack _veh;
+							private _cap = CALLSM1("Unit", "getCargoInfantryCapacity", [_veh]);
+							_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - _cap;
+							OOP_INFO_2("   Created truck: %1, with cargo capacity: %2", _veh, _cap);
+						};
+					} else {
+						// Not enough vehicles for everyone!
+						// Check other locations then
+						OOP_INFO_0("   Failed to allocate additional vehicles (CHEAT_TRANSPORT not specified)!");
+						_allocated = false;
+					};
 				}; // if (_nMoreCargoSeatsRequired <= 0)
 			} else { // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
 				// We don't need more vehicles, it's fine
@@ -535,7 +616,6 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
-		private _side = CALLM(_actual, "getSide", []);
 		private _newGarrActual = NEW("Garrison", [_side]);
 		private _pos = CALLM(_actual, "getPos", []);
 		CALLM(_newGarrActual, "setPos", [_pos]);
@@ -561,13 +641,15 @@ CLASS("GarrisonModel", "ModelBase")
 		private _args = [_actual, _allocatedUnits, _allocatedGroupsAndUnits];
 		private _moveSuccess = CALLM(_newGarrActual, "postMethodSync", ["addUnitsAndGroups"]+[_args]);
 		if (!_moveSuccess) exitWith {
-			// This shouldn't ever happen because we check all the failure constraints before we got here.
-			FAILURE("Couldn't move units to new garrison");
+			OOP_WARNING_MSG("Couldn't move units to new garrison", []);
 			NULL_OBJECT
 		};
 
-		OOP_INFO_0("Successfully split garrison");
+		if(count _extraUnits > 0) then {
+			CALLM(_newGarrActual, "postMethodSync", ["addUnits"]+[[_extraUnits]]);
+		};
 
+		OOP_INFO_0("Successfully split garrison");
 
 		// Register it at the commander (do it after adding the units so the sync is correct)
 		#ifndef _SQF_VM
@@ -635,6 +717,11 @@ CLASS("GarrisonModel", "ModelBase")
 		private _otherEff = GETV(_otherGarr, "efficiency");
 		private _newOtherEff = EFF_ADD(_efficiency, _otherEff);
 		SETV(_otherGarr, "efficiency", _newOtherEff);
+
+		T_PRVAR(transport);
+		private _otherTransport = GETV(_otherGarr, "transport");
+		SETV(_otherGarr, "transport", _otherTransport + _transport);
+
 		OOP_DEBUG_MSG("Merged %1%2 to %3%4->%5", [_thisObject]+[_efficiency]+[_otherGarr]+[_otherEff]+[_newOtherEff]);
 		T_CALLM("killed", []);
 	} ENDMETHOD;
@@ -658,7 +745,7 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("joinLocationSim") {
 		params [P_THISOBJECT, P_STRING("_location")];
 		ASSERT_OBJECT_CLASS(_location, "LocationModel");
-
+		
 		CALLM(_location, "addGarrison", [_thisObject]);
 		private _id = GETV(_location, "id");
 		T_SETV("locationId", _id);
@@ -672,7 +759,8 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
 		private _locationActual = GETV(_location, "actual");
-		CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
+		// CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
+		CALLM2(_actual, "postMethodAsync", "setLocation", [_locationActual]);
 		OOP_INFO_MSG("Joined %1 to %2", [LABEL(_thisObject)]+[LABEL(_location)]);
 		// private _AI = CALLM(_actual, "getAI", []);
 		// private _parameters = [[TAG_LOCATION, _locationActual]];
@@ -690,6 +778,19 @@ CLASS("GarrisonModel", "ModelBase")
 	// 	private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonJoinLocation"]+[_AI]);
 	// 	_goalState == ACTION_STATE_COMPLETED
 	// } ENDMETHOD;
+
+	// -------------------- S C O R I N G   T O O L K I T / U T I L S -------------------
+	STATIC_METHOD("transportRequired") {
+		params [P_THISOBJECT, P_ARRAY("_eff")];
+		_eff#0
+	} ENDMETHOD;
+
+	METHOD("transportationScore") {
+		params [P_THISOBJECT, P_ARRAY("_eff")];
+		// TODO: non linearity
+		0 max (T_GETV("transport") - CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_eff]));
+	} ENDMETHOD;
+	
 ENDCLASS;
 
 

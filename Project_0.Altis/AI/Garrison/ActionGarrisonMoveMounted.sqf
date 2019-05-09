@@ -5,10 +5,10 @@ Garrison moves on available vehicles
 
 #define pr private
 
+#define DEBUG_ROUTE
 #define THIS_ACTION_NAME "ActionGarrisonMoveMounted"
 
 CLASS(THIS_ACTION_NAME, "ActionGarrison")
-
 
 	VARIABLE("pos"); // The destination position
 	VARIABLE("radius"); // Completion radius
@@ -271,17 +271,28 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("createVirtualRoute") {
 		params ["_thisObject"];
 
-		pr _gar = T_GETV("gar");
+		private _gar = T_GETV("gar");
 
 		// Delete old virtual route if we had it
-		pr _vr = T_GETV("virtualRoute");
+		private _vr = T_GETV("virtualRoute");
 		if (_vr != "") then {
 			DELETE(_vr);
 		};
 
 		// Create a new virtual route
-		pr _gar = T_GETV("gar");
-		pr _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, "", "", false];
+		private _gar = T_GETV("gar");
+
+		private _side = CALLM(_gar, "getSide", []);
+		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		private _threatCostFn = {
+			params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
+			_callbackArgs params ["_cmdr"];
+			private _threat = CALLM(_cmdr, "getThreat", [getPos _next]);
+			_base_cost + EFF_SUM(_threat) * 20
+		};
+
+		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], false, true];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
 

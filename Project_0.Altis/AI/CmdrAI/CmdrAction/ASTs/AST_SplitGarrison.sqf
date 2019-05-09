@@ -55,15 +55,15 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		ASSERT_MSG(EFF_GTE(_detachmentEff, EFF_MIN_EFF), "Detachment efficiency is below min allowed");
 
 		// Apply split to all sim worlds as it always happens immediately at the start of action
-		// TODO: we need to check if this actually works.
-		// TODO: some kind of failure ability for actions in general.
-
+		// TODO: better evalulation of efficiency requirements (and application to sim especially)
+		// Currently this will only apply changes to attack part of sim efficiency vector.
+		//private _attackEfficiency = EFF_MASK_ATT(_detachmentEff);
 		// Split can happen instantly so apply it to now and future sim worlds.
 		private _splitFlags = T_GET_AST_VAR("splitFlags");
 		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 									CALLM(_srcGarr, "splitSim", [_detachmentEff ARG _splitFlags])
 								} else {
-									CALLM(_srcGarr, "splitActual", [_detachmentEff ARG _splitFlags])
+									CALLM(_srcGarr, "splitActual", [EFF_MASK_ATT(_detachmentEff) ARG _splitFlags])
 								};
 
 		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
