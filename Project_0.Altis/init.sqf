@@ -62,7 +62,9 @@ if (hasInterface) then {
 
 	0 spawn {
 		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
-		call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+		isNil {
+			call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+		};
 	};
 };
 

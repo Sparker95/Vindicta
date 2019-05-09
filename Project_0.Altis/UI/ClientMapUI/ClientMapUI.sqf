@@ -143,16 +143,8 @@ CLASS(CLASS_NAME, "")
 
 	// Formats location data and shows it on the location data panel
 	STATIC_METHOD("updateLocationDataPanel") {
-		params ["_thisClass", ["_pos", [], [[]]]];
+		params ["_thisClass", ["_intel", "", [""]]];
 
-		diag_log format ["Updating location data panel: %1", _pos];
-
-		// Was a proper position provided or should we show nothing?
-		pr _ld = if (count _pos != 0) then {
-			CALL_STATIC_METHOD(CLASS_NAME, "getLocationData", [_pos]);
-		} else {
-			[]
-		};
 		pr _typeText = "...";
 		pr _timeText = "...";
 		pr _compositionText = "...";
@@ -160,21 +152,21 @@ CLASS(CLASS_NAME, "")
 		private _listNamePlayersText = "";
 
 		// Did we find a location in the database?
-		if ((count _ld) != 0) then {
+		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
 
 			diag_log format ["Location data was found in the database"];
 
-			_typeText = switch (_ld select CLD_ID_TYPE) do {
+			_typeText = switch (GETV(_intel, "type")) do {
 				case LOCATION_TYPE_OUTPOST: {"Outpost"};
 				case LOCATION_TYPE_CAMP: {"Camp"};
 				case LOCATION_TYPE_BASE: {"Base"};
 				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
 			};
 			
-			_timeText = str round random 100;
-			_sideText = str (_ld select CLD_ID_SIDE);
+			_timeText = str GETV(_intel, "timeUpdated");
+			_sideText = str GETV(_intel, "side");
 
-			pr _ua = _ld select CLD_ID_UNIT_AMOUNT;
+			pr _ua = GETV(_intel, "unitData");
 			if (count _ua > 0) then {
 				_compositionText = "";
 				// Amount of infrantry
