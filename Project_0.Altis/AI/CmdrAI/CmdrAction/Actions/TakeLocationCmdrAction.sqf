@@ -72,31 +72,12 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
-		private _scorePriority = 1; 
+		private _scorePriority = 1;
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
-			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-		// if(_scoreResource == 0) then {
-		// 	0
-		// } else {
-		// 	// ******************************************************************************************
-		// 	// ******************************************************************************************
-		// 	// DOING: UPDATE THIS FROM THE ORIGINAL ACTION
-		// 	// ******************************************************************************************
-		// 	// ******************************************************************************************
-		// 	// CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtLoc])
-		// };
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
+		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
-		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtLocId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
-		//OOP_INFO_0(_str);
-		// if(_scorePriority > 0 and _scoreResource > 0) then {
-		//private _srcEff = GETV(_srcGarr, "efficiency");
-		//private _tgtEff = GETV(_tgtLoc, "efficiency");
-
-		//OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _scorePriority ARG _scoreResource ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _srcEff ARG _tgtEff]);
-
-		// };
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
 	} ENDMETHOD;

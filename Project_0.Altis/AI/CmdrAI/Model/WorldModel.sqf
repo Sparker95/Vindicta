@@ -14,9 +14,9 @@ CLASS("WorldModel", "")
 	// This is the rawThreatGrid with post processing applied
 	VARIABLE("threatGrid");
 	// Danger is historic friendly casualties. 
-	VARIABLE("rawDangerGrid");
-	// This is the rawDangerGrid with post processing applied
-	VARIABLE("dangerGrid");
+	VARIABLE("rawDamageGrid");
+	// This is the rawDamageGrid with post processing applied
+	VARIABLE("damageGrid");
 
 	VARIABLE("lastGridUpdate");
 
@@ -33,19 +33,19 @@ CLASS("WorldModel", "")
 			private _gridArgs = [500, +T_EFF_null];
 			private _rawThreatGrid = NEW("Grid", _gridArgs);
 			private _threatGrid = NEW("Grid", _gridArgs);
-			private _rawDangerGrid = NEW("Grid", _gridArgs);
-			private _dangerGrid = NEW("Grid", _gridArgs);
+			private _rawDamageGrid = NEW("Grid", _gridArgs);
+			private _damageGrid = NEW("Grid", _gridArgs);
 			T_SETV("rawThreatGrid", _rawThreatGrid);
 			T_SETV("threatGrid", _threatGrid);
-			T_SETV("rawDangerGrid", _rawDangerGrid);
-			T_SETV("dangerGrid", _dangerGrid);
+			T_SETV("rawDamageGrid", _rawDamageGrid);
+			T_SETV("damageGrid", _damageGrid);
 			T_SETV("lastGridUpdate", TIME_NOW);
 			T_SETV("gridMutex", MUTEX_NEW());
 		} else {
 			T_SETV("rawThreatGrid", objNull);
 			T_SETV("threatGrid", objNull);
-			T_SETV("rawDangerGrid", objNull);
-			T_SETV("dangerGrid", objNull);
+			T_SETV("rawDamageGrid", objNull);
+			T_SETV("damageGrid", objNull);
 		};
 
 		T_SETV("reinforceRequiredScoreCache", []);
@@ -62,8 +62,8 @@ CLASS("WorldModel", "")
 		if(T_CALLM("isReal", [])) then {
 			DELETE(T_GETV("rawThreatGrid"));
 			DELETE(T_GETV("threatGrid"));
-			DELETE(T_GETV("rawDangerGrid"));
-			DELETE(T_GETV("dangerGrid"));
+			DELETE(T_GETV("rawDamageGrid"));
+			DELETE(T_GETV("damageGrid"));
 		};
 	} ENDMETHOD;
 
@@ -114,8 +114,8 @@ CLASS("WorldModel", "")
 		// Can copy the grid ref as we don't write to it, and we don't need the raw ones in the sim
 		T_PRVAR(threatGrid);
 		SETV(_worldCopy, "threatGrid", _threatGrid);
-		T_PRVAR(dangerGrid);
-		SETV(_worldCopy, "dangerGrid", _dangerGrid);
+		T_PRVAR(damageGrid);
+		SETV(_worldCopy, "damageGrid", _damageGrid);
 
 		_worldCopy
 	} ENDMETHOD;
@@ -136,10 +136,10 @@ CLASS("WorldModel", "")
 		// };
 
 		T_PRVAR(rawThreatGrid);
-		T_PRVAR(rawDangerGrid);
+		T_PRVAR(rawDamageGrid);
 
 		#define THREAT_FADE_RATE 0.8
-		#define DANGER_FADE_RATE 0.99
+		#define DAMAGE_FADE_RATE 0.99
 		#define FADE_RATE_PERIOD 60
 		#define POW(a, b) (exp ((b) * log (a)))
 
@@ -150,36 +150,36 @@ CLASS("WorldModel", "")
 
 		private _threatFade = POW(THREAT_FADE_RATE, _dt / FADE_RATE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
-		private _dangerFade = POW(DANGER_FADE_RATE, _dt / FADE_RATE_PERIOD);
-		CALLM(_rawDangerGrid, "fade", [_dangerFade]);
+		private _damageFade = POW(DAMAGE_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		CALLM(_rawDamageGrid, "fade", [_damageFade]);
 
 		#define THREAT_GRID_CLUSTER_OVERSIZE 500
 		{
 			private _pos = GETV(_x, "pos") apply { _x - THREAT_GRID_CLUSTER_OVERSIZE };
 			private _size = GETV(_x, "size") apply { _x + 2 * THREAT_GRID_CLUSTER_OVERSIZE };
 			private _threat = GETV(_x, "efficiency");
-			private _danger = GETV(_x, "damage");
+			private _damage = GETV(_x, "damage");
 			CALLM(_rawThreatGrid, "maxRect", [_pos]+[_size]+[_threat]);
-			CALLM(_rawDangerGrid, "maxRect", [_pos]+[_size]+[_danger]);
+			// CALLM(_rawDamageGrid, "maxRect", [_pos]+[_size]+[_damage]);
 		} forEach T_CALLM("getAliveClusters", []);
 
 		T_PRVAR(threatGrid);
-		T_PRVAR(dangerGrid);
+		T_PRVAR(damageGrid);
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 
 			CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			CALLM(_dangerGrid, "copyFrom", [_rawDangerGrid]);
+			CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
 
 			//CALLM(_threatGrid, "smooth5x5", []);
-			//CALLM(_dangerGrid, "smooth5x5", []);
+			//CALLM(_damageGrid, "smooth5x5", []);
 		};
 
 #ifdef DEBUG_CMDRAI
-		CALLM(_threatGrid, "unplot", []);
+		//CALLM(_threatGrid, "unplot", []);
 		CALLM(_threatGrid, "plot", [20]+[false]+["SolidFull"]+[["ColorGreen"]+["ColorYellow"]+["ColorBlue"]]+[[0.02]+[0.5]]);
-		CALLM(_dangerGrid, "unplot", []);
-		CALLM(_dangerGrid, "plot", [20]+[false]+["DiagGrid"]+[["ColorGreen"]+["ColorPink"]+["ColorBlue"]]+[[0.1]+[1]]);
+		//CALLM(_damageGrid, "unplot", []);
+		CALLM(_damageGrid, "plot", [20]+[false]+["DiagGrid"]+[["ColorGreen"]+["ColorPink"]+["ColorBlue"]]+[[0.1]+[1]]);
 #endif
 		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
@@ -202,19 +202,25 @@ CLASS("WorldModel", "")
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			//T_PRVAR(threatGrid);
-			T_PRVAR(dangerGrid);
+			T_PRVAR(damageGrid);
 
-			_threat = CALLM(_dangerGrid, "getValue", [_pos]);
+			_threat = CALLM(_damageGrid, "getValue", [_pos]);
 
 			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			// CALLM(_dangerGrid, "copyFrom", [_rawDangerGrid]);
+			// CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
 
 			// CALLM(_threatGrid, "smooth5x5", []);
-			// CALLM(_dangerGrid, "smooth5x5", []);
+			// CALLM(_damageGrid, "smooth5x5", []);
 		};
 		_threat
 	} ENDMETHOD;
-	
+
+	METHOD("addDamage") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
+		T_PRVAR(rawDamageGrid);
+		CALLM(_rawDamageGrid, "addValue", [_pos]+[_effDamage]);
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                G A R R I S O N   F U N C T I O N S                 |
 	// ----------------------------------------------------------------------
@@ -541,15 +547,15 @@ CLASS("WorldModel", "")
 		if(_threatGrid isEqualTo objNull) exitWith {
 			EFF_MIN_EFF
 		};
-		T_PRVAR(dangerGrid);
+		T_PRVAR(damageGrid);
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
-		private _dangerEff = CALLM(_dangerGrid, "getValue", [_pos]);
-		private _dmgSum = EFF_SUM(_dangerEff);
+		private _damageEff = CALLM(_damageGrid, "getValue", [_pos]);
+		private _dmgSum = EFF_SUM(_damageEff);
 		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
 		_dmgSum = (0.015 * _dmgSum);
 		private _forceMul = 1.5 max (1 + _dmgSum * _dmgSum * _dmgSum * _dmgSum);
-		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _dangerEff);
+		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _damageEff);
 		private _effMax = EFF_MAX(_threatEff, EFF_MIN_EFF);
 		_effMax
 		// TODO: This needs to be looking at Clusters not Garrisons!

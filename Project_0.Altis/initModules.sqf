@@ -24,6 +24,10 @@ tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
 tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 
+
+// Initialize GameModes
+call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
+
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
 
