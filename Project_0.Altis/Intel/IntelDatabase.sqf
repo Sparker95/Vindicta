@@ -1,3 +1,7 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\CriticalSection\CriticalSection.hpp"
 
@@ -48,6 +52,8 @@ CLASS("IntelDatabase", "")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
+			OOP_INFO_1("ADD INTEL: %1", _item);
+
 			// Add to the array of items
 			T_GETV("items") pushBack _item;
 
@@ -76,6 +82,8 @@ CLASS("IntelDatabase", "")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
+			OOP_INFO_2("UPDATE INTEL: %1", _itemDst, _itemSrc);
+
 			pr _items = T_GETV("items");
 			if (_itemDst in _items) then { // Make sure we have this intel item
 				// Backup the source so that it doesn't get overwritten in update
@@ -103,6 +111,8 @@ CLASS("IntelDatabase", "")
 		pr _return = false;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_srcItem")];
+
+			OOP_INFO_1("UPDATE FROM SOURCE: %1", _srcItem);
 
 			// Check if we have an item with given source
 			pr _hashmap = T_GETV("linkedItems");
@@ -145,8 +155,8 @@ CLASS("IntelDatabase", "")
 					pr _dbValue = FORCE_GET_MEM(_dbItem, _varName);
 					!(isNil "_queryValue") && !([_queryValue] isEqualTo [_dbValue]) // Variable exists in query and is not equal to the var in db, or var in db is nil
 				};
-				pr _valueprint = if (_index != -1) then {_memList select _index} else {"nothing"};
-				diag_log format ["Database item: %1, index: %2, variable: %3", _dbItem, _index, _valueprint];
+				//pr _valueprint = if (_index != -1) then {_memList select _index} else {"nothing"};
+				//diag_log format ["Database item: %1, index: %2, variable: %3", _dbItem, _index, _valueprint];
 				_index == -1 // We didn't find mismatched variables that exist in query
 			};
 		};
@@ -173,10 +183,11 @@ CLASS("IntelDatabase", "")
 
 			pr _items = T_GETV("items");
 			_index = _items findIf {
+				pr _dbItem = _x;
 				_memList findIf {
 					_x params ["_varName"];
 					pr _queryValue = FORCE_GET_MEM(_queryItem, _varName);
-					pr _dbValue = FORCE_GET_MEM(_queryItem, _varName);
+					pr _dbValue = FORCE_GET_MEM(_dbItem, _varName);
 					!(isNil "_queryValue") && !([_queryValue] isEqualTo [_dbValue]) // Variable exists in query and is not equal to the var in db, or var in db is nil
 				} == -1 // We didn't find mismatched variables that exist in query
 			};

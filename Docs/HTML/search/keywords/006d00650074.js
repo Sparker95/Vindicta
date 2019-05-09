@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("met",["Variable"],[["method",,[["Intel",,,,0,"File:Intel/Intel.sqf:Intel.method","SQFClass:Intel:method"]]]]);

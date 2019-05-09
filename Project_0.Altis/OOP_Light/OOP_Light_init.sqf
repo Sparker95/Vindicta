@@ -661,14 +661,21 @@ OOP_serialize = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 
+	// Select only members that are serializable
+	// Todo: increase speed of this by precalculating it in CLASS macro!
+	_memList = _memList select {
+		_x params ["_varName", "_attributes"];
+		ATTR_SERIALIZABLE in _attributes
+	};
+
 	private _array = [];
 	_array pushBack _classNameStr;
 	_array pushBack _objNameStr;
 
 	{
 		_x params ["_varName"];
-		_array pushBack GETV(_objNameStr, _varName);
-	} forEach (_memList - [[OOP_PARENT_STR, []], [OOP_PUBLIC_STR, []]]);
+		_array append [GETV(_objNameStr, _varName)];
+	} forEach _memList;
 
 	_array
 };
@@ -685,7 +692,13 @@ OOP_deserialize = {
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	private _iVarName = 0;
-	private _copyMemList = _memList - [[OOP_PARENT_STR, []], [OOP_PUBLIC_STR, []]];
+
+	// Select only members that are serializable
+	private _copyMemList = _memList select {
+		_x params ["_varName", "_attributes"];
+		ATTR_SERIALIZABLE in _attributes
+	};
+
 	for "_i" from 2 to ((count _array) - 1) do {
 		private _value = _array select _i;
 		(_copyMemList select _iVarName) params ["_varName"];

@@ -40,7 +40,7 @@ intel3 = NEW("Intel", []);
 //CALLM1(db1, "updateIntelFromSource", intel1);
 
 SETV(intel0, "timeCreated", 456);
-SETV(intel1, "timeCreated", 456);
+SETV(intel1, "timeCreated", 899);
 SETV(intel2, "timeCreated", 123);
 SETV(intel3, "timeCreated", 456);
 
@@ -57,5 +57,6 @@ CALLM1(db1, "addIntel", intelLinked0);
 
 // Query items
 intelQuery = NEW("Intel", []);
-SETV(intelQuery, "timeCreated", 456);
+SETV(intelQuery, "timeCreated", 22456);
 queryResult = CALLM1(db0, "findFirstIntel", intelQuery);
+queryResult

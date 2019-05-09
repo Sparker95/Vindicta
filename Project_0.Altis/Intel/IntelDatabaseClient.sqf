@@ -1,3 +1,7 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 
 /*
@@ -17,6 +21,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
+			// Call base class method
 			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "addIntel", [_item]);
 
 			// Add the new data to client's UI
@@ -31,6 +36,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 			CALLM1(_itemDst, "clientUpdate", _itemSrc);
 
+			// Call base class method
 			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "updateIntel", [_itemDst ARG _itemSrc]); // It will copy values
 		};
 	} ENDMETHOD;
@@ -39,7 +45,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-			CALLM1(_itemDst, "clientRemove", _itemSrc);
+			CALLM1(_item, "clientRemove", _item);
 
 			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]); // It will copy values
 		};
@@ -85,6 +91,8 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			if (!IS_OOP_OBJECT(_intelObjName)) then {
 				NEW_EXISTING(_intelClassName, _intelObjName);
 			};
+
+			OOP_INFO_1("Received serial intel object: %1", _serialIntel);
 
 			// Unpack serialized intel object
 			DESERIALIZE(_intelObjName, _serialIntel);
