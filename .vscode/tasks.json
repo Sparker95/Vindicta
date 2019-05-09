@@ -235,10 +235,10 @@
         {
             "label": "Parse ALL with SQF-VM",
             "type": "process",
-            "command": "${workspaceRoot}/tools/sqf-vm-compile-all.bat",
+            "command": "${workspaceRoot}/tools/sqf-vm/sqf-vm-compile-all.bat",
             "args": [],
             "options": {
-                "cwd": "${workspaceRoot}/tools"
+                "cwd": "${workspaceRoot}/tools/sqf-vm"
             },
             "group": "build",
             "presentation": {
