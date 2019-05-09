@@ -59,9 +59,11 @@ CLASS("GameModeBase", "")
 			T_CALLM("initLocations", []);
 			T_CALLM("initSideStats", []);
 			T_CALLM("initMissionEventHandlers", []);
-			T_CALLM("registerKnownLocations", []);
+			T_CALLM("startCommanders", []);
+			//T_CALLM("registerKnownLocations", []);
 
 			T_CALLM("initServerOnly", []);
+
 		};
 		if (hasInterface || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -99,6 +101,8 @@ CLASS("GameModeBase", "")
 		};
 		T_CALLM("postInitAll", []);
 	} ENDMETHOD;
+
+	
 
 	// -------------------------------------------------------------------------
 	// |                  V I R T U A L   F U N C T I O N S                    |
@@ -189,8 +193,16 @@ CLASS("GameModeBase", "")
 		};
 	} ENDMETHOD;
 
+	METHOD("startCommanders") {
+		params [P_THISOBJECT];
+		{
+			CALLM(_x, "setProcessInterval", [10]);
+			CALLM(_x, "start", []);
+		} forEach gCommanders;
+	} ENDMETHOD;
+
+
 	// Create locations
-	///* private */ METHOD_FILE("initLocations", "GameMode\initLocations.sqf");
 	METHOD("initLocations") {
 		params [P_THISOBJECT];
 
@@ -244,24 +256,8 @@ CLASS("GameModeBase", "")
 	STATIC_METHOD("createGarrison") {
 		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry")];
 		
-		// TODO: use synced waypoints to help AIs
-		// _waypoints = synchronizedObjects _locationSector;
-
-		// // Output the capacity of this garrison
-		// // Infantry capacity
-		// private _cInf = 0;
-		// // Wheeled and tracked vehicle capacity
-		// private _cVehGround = 0;
-		// // Static HMG capacity
-		// private _cHMGGMG = 0;
-		// // Building sentry capacity
-		// private _cBuildingSentry = 0;
-
-		//T_CALLM("getLocationInitialForces", [_loc]) params ["_cInf", "_cVehGround", "_cHMGGMG", "_cBuildingSentry"];
-
-		//if(_cInf > 0) then {
-			// Add the main garrison to this location
 		private _gar = NEW("Garrison", [_side]);
+		OOP_INFO_MSG("Creating garrison %1 for side %2, %3 inf, %4 veh, %5 hmg/gmg, %6 sentries", [_gar ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 
 		// Add default units to the garrison
 
@@ -280,10 +276,10 @@ CLASS("GameModeBase", "")
 			//|      |Min veh of this type
 			//|      |    |Max veh of this type
 			//|      |    |            |Veh type                          
-			[  0.5,   0,  -1,           T_VEH_MRAP_HMG],
-			[  0.5,   0,  -1,           T_VEH_MRAP_GMG],
-			[  0.3,   0,  -1,           T_VEH_APC],
-			[  0.1,   0,  -1,           T_VEH_MBT]
+			[  0.5,   0,  3,           T_VEH_MRAP_HMG],
+			[  0.5,   0,  3,           T_VEH_MRAP_GMG],
+			[  0.3,   0,  2,           T_VEH_APC],
+			[  0.1,   0,  1,           T_VEH_MBT]
 		];
 
 		{
@@ -292,27 +288,16 @@ CLASS("GameModeBase", "")
 			while{(_cInf > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
 				CALLM(_gar, "createAddInfGroup", [_side ARG _groupTemplate ARG _groupBehaviour])
 					params ["_newGroup", "_unitCount"];
+				OOP_INFO_MSG("%1: Created inf group %2 with %3 units", [_gar ARG _newGroup ARG _unitCount]);
 				_cInf = _cInf - _unitCount;
 				_i = _i + 1;
 			};
 		} forEach _infSpec;
 
-		{
-			_x params ["_chance", "_min", "_max", "_type"];
-			if(random 1 <= _chance) then {
-				private _i = 0;
-				while{(_cVehGround > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
-					CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG T_VEH_APC ARG -1]);
-					_cVehGround = _cVehGround - 1;
-					_i = _i + 1;
-				};
-			};
-		} forEach _vehGroupSpec;
 		
 		private _template = GET_TEMPLATE(_side);
-		
+
 		// Add building sentries
-		#ifdef ADD_SENTRY
 		if (_cBuildingSentry > 0) then {
 			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
 			while {_cBuildingSentry > 0} do {
@@ -320,41 +305,51 @@ CLASS("GameModeBase", "")
 				private _newUnit = NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
 				_cBuildingSentry = _cBuildingSentry - 1;
 			};
+			OOP_INFO_MSG("%1: Created sentry group %2", [_gar ARG _sentryGroup]);
 			CALL_METHOD(_gar, "addGroup", [_sentryGroup]);
 		};
-		#endif
 
 		// Add default vehicles
 		// Some trucks
 		private _i = 0;
-		#ifdef ADD_TRUCKS
 		while {_cVehGround > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				CALL_METHOD(_gar, "addUnit", [_newUnit]);
+				OOP_INFO_MSG("%1: Added truck %2", [_gar ARG _newUnit]);
 				_cVehGround = _cVehGround - 1;
 			} else {
 				DELETE(_newUnit);
 			};
 			_i = _i + 1;
 		};
-		#endif
 
-		#ifdef ADD_UNARMED_MRAPS
 		_i = 0;
 		while {(_cVehGround > 0) && _i < 1} do  {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_MRAP_unarmed ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				CALL_METHOD(_gar, "addUnit", [_newUnit]);
+				OOP_INFO_MSG("%1: Added unarmed mrap %2", [_gar ARG _newUnit]);
 				_cVehGround = _cVehGround - 1;
 			} else {
 				DELETE(_newUnit);
 			};
 			_i = _i + 1;
 		};
-		#endif
 
-		#ifdef ADD_STATICS
+		{
+			_x params ["_chance", "_min", "_max", "_type"];
+			if(random 1 <= _chance) then {
+				private _i = 0;
+				while{(_cVehGround > 0 or _i < _min) and (_max == -1 or _i < _max)} do {
+					private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG T_VEH_APC ARG -1]);
+					OOP_INFO_MSG("%1: Created veh group %2", [_gar ARG _newGroup]);
+					_cVehGround = _cVehGround - 1;
+					_i = _i + 1;
+				};
+			};
+		} forEach _vehGroupSpec;
+
 		// Static weapons
 		if (_cHMGGMG > 0) then {
 			// temp cap of amount of static guns
@@ -367,10 +362,9 @@ CLASS("GameModeBase", "")
 				CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
 				_cHMGGMG = _cHMGGMG - 1;
 			};
+			OOP_INFO_MSG("%1: Added static group %2", [_gar ARG _staticGroup]);
 			CALL_METHOD(_gar, "addGroup", [_staticGroup]);
 		};
-		#endif
-		//};
 		_gar
 	} ENDMETHOD;
 
@@ -389,36 +383,6 @@ CLASS("GameModeBase", "")
 	/* private */ METHOD("initMissionEventHandlers") {
 		params [P_THISOBJECT];
 		call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";
-	} ENDMETHOD;
-
-	// Add friendly locations to commanders
-	/* private */ METHOD("registerKnownLocations") {
-		params [P_THISOBJECT];
-
-		// Register garrisons of friendly locations
-		// And start them
-		private _allGars = CALLSM0("Garrison", "getAll") - gSpecialGarrisons;
-		{
-			private _AI = _x;
-			private _side = GETV(_x, "side");
-			{
-				private _loc = CALLM0(_x, "getLocation");
-				
-				private _updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; // Only know that there's something unexplored over here
-				if (CALLM0(_x, "getSide") == _side) then { // If this garrison should belong to this commander	
-					// Activate the Garrison
-					CALLM(_x, "activate", []);
-					_updateLevel = CLD_UPDATE_LEVEL_UNITS; // Know about all units at this place
-				};
-
-				if (_loc != "") then {
-					CALLM4(_AI, "updateLocationData", _loc, _updateLevel, sideUnknown, false); // false - don't show notification
-				};
-			} forEach _allGars;
-
-			CALLM1(_x, "setProcessInterval", 10);
-			CALLM0(_x, "start");
-		} forEach gCommanders;
 	} ENDMETHOD;
 
 	/* private */ METHOD("fn") {

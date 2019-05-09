@@ -20,18 +20,29 @@ CLASS("BasesGameMode", "GameModeBase")
 		{
 			private _loc = _x;
 			private _side = GETV(_loc, "side");
-			private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
-			private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
-			private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
-			private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);
-			
-			private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", [_side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-			CALLM1(_gar, "setLocation", _loc);
-			CALLM1(_loc, "registerGarrison", _gar);
+			private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
-		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == "base" });
+			if(!IS_NULL_OBJECT(_cmdr)) then {
+				CALLM(_cmdr, "registerLocation", [_loc]);
+				if(GETV(_x, "type") == "base") then {
+					private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+					private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+					private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
+					private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);
+					
+					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", [_side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+					CALLM1(_gar, "setLocation", _loc);
+					CALLM1(_loc, "registerGarrison", _gar);
+					CALLM(_gar, "activate", []);
+					
+					CALLM(_cmdr, "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_UNITS ARG sideUnknown ARG false]);
+				};
+			};
+
+		} forEach GET_STATIC_VAR("Location", "all");
 
 		// TODO: fix this to correctly spawn at selected bases contingent on the critera we decide.
+		// Move this to an existing thread?
 		[] spawn {
 			while{true} do {
 				sleep 120;
@@ -47,7 +58,7 @@ CLASS("BasesGameMode", "GameModeBase")
 						private _remaining = _targetCInf - _unitCount;
 						systemChat format["Spawning %1 units at %2", _remaining, _loc];
 						while {_remaining > 0} do {
-							CALLM2(_gar, "postMethodSync", "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_PATROL])
+							CALLM2(_garrison, "postMethodSync", "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_PATROL])
 								params ["_newGroup", "_unitCount"];
 							_remaining = _remaining - _unitCount;
 						};
