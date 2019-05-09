@@ -47,6 +47,14 @@ _var = _unit getVariable "timeSeen";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetText format ["Time seen: %1", _var];
 
+_var = _unit getUnitTrait "camouflageCoef";
+if (isNil "_var") then { _var = "Undefined"; };
+((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T12) ctrlSetText format ["CamoCoef: %1", _var];
+
+_var = _unit getVariable "compromised";
+if (isNil "_var") then { _var = "Undefined"; };
+((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T13) ctrlSetText format ["Compromised: %1", _var];
+
 _var = _unit getVariable "bWanted";
 if (isNil "_var") then { 
 	_var = "Undefined"; 

@@ -234,6 +234,8 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				_unit setVariable [UNDERCOVER_EXPOSED, true, true];
 
 				if ((time > _timeCompromised) or !(_bInVeh)) then { _unit setVariable ["compromised", false]; };
+
+				// condition for resetting player to unseen by enemy
 				if (time > _timeSeen) then { 
 					_unit setVariable ["bSeen", false];
 					pr _timeSeen = _unit getVariable "timeSeen";
@@ -261,6 +263,8 @@ CLASS("undercoverMonitor", "MessageReceiver");
 
 					if (UNDERCOVER_IS_UNIT_WANTED(_unit)) exitWith { // start WANTED routine
 
+						OOP_INFO_0("WANTED!");
+
 						// create marker, kind of like GTA's red circle you have to escape to lose the police
 						if (_bSeen) then {
 							pr _mrkLastHost = createMarkerLocal ["mrkLastHostility", position _unit];
@@ -279,9 +283,9 @@ CLASS("undercoverMonitor", "MessageReceiver");
 						_suspicion = 1;
 
 						// conditions for going back to UNDERCOVER state
-						if ( ((position _unit) distance2D (getMarkerPos "mrkLastHostility")) > WANTED_CIRCLE_RADIUS) exitWith { [_unit] call fnc_UM_removeWanted; };
-						if ((_timeSeen - time) < TIME_UNSEEN_WANTED_EXIT) exitWith { [_unit] call fnc_UM_removeWanted; };
-						if ({alive _x} count units group _nearestEnemy == 0 ) exitWith { [_unit] call fnc_UM_removeWanted; }; // no unit from group that last spotted player unit is alive
+						if ( ((position _unit) distance2D (getMarkerPos "mrkLastHostility")) > WANTED_CIRCLE_RADIUS) exitWith { [_unit] call fnc_UM_removeWanted; OOP_INFO_0("No longer WANTED, reason: Left wanted radius."); };
+						if ((_timeSeen - time) < TIME_UNSEEN_WANTED_EXIT) exitWith { [_unit] call fnc_UM_removeWanted; OOP_INFO_0("No longer WANTED, reason: Unseen for long enough."); };
+						if ({alive _x} count units group _nearestEnemy == 0 ) exitWith { [_unit] call fnc_UM_removeWanted; OOP_INFO_0("No longer WANTED, reason: Killed last group that spotted player."); }; // no unit from group that last spotted player unit is alive
 
 					}; // end WANTED routine
 
@@ -304,7 +308,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				 	};	// check for being at enemy location and allowed area
 				 	if (_suspicion >= 1) exitWith { _suspicion = 1; }; // exitWith for being inside outpost
 					if ( (vehicle _unit nearRoads SUSP_NOROADS) isEqualTo [] ) then { 
-						_suspicion = _suspicion + SUSP_OFFROAD; 
+						_suspicion = _suspicion + SUSP_OFFROAD;
 						_hintKeys pushback HK_OFFROAD;
 					}; // offroad suspicion penalty
 
@@ -318,8 +322,6 @@ CLASS("undercoverMonitor", "MessageReceiver");
 					#ifdef DEBUG 
 						_unit setVariable ["distance", _distance];
 					#endif
-
-					OOP_INFO_1("End on foot/vehicle suspicion: %1", _suspicion);
 
 					switch (_bInVeh) do {
 
@@ -403,6 +405,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 									pr _msg = MESSAGE_NEW();
 									MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
 									CALLM1(_um, "postMessage", _msg);
+									OOP_INFO_0("SMON_MESSAGE_COMPROMISED sent to all occupants.");
 								};
 							};
 						} forEach crew vehicle _unit;		
@@ -456,6 +459,8 @@ CLASS("undercoverMonitor", "MessageReceiver");
 			// fixes AI not shooting at vehicle with one captive unit in it
 			// sets unit wanted if visually exposed or temporarily not captive if hidden in vehicle
 			case SMON_MESSAGE_COMPROMISED: {
+				OOP_INFO_0("SMON_MESSAGE_COMPROMISED received.");
+
 				pr _unit = GETV(_thisObject, "unit");
 				_unit setVariable ["compromised", true];
 				_unit setVariable ["timeCompromised", time + 4];
