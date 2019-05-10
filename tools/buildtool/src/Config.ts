@@ -1,4 +1,5 @@
 export interface Preset {
+
     /** 
      * Path to folder with mission.sqm relative to "missionsFolder".
      * If mission.sqm is in root of "missionsFolder" should be empty string.

@@ -10,7 +10,7 @@ import { resolve } from "path";
 import { MissionPaths } from "./src";
 import { Preset, FolderStructureInfo } from "./src";
 
-const ROOT_DIR = resolve('..');
+const ROOT_DIR = resolve('../..');
 
 const presets: Preset[] = require('./_presets.json');
 
@@ -35,7 +35,6 @@ for (let preset of presets) {
     const mission = new MissionPaths(preset, paths);
     const taskName = [preset.missionName, preset.map].join('.');
 
-
     taskNames.push('mission_' + taskName);
 
     gulp.task('mission_' + taskName, gulp.series(
@@ -53,10 +52,8 @@ for (let preset of presets) {
 
         /** Copy config files to output dir */
         function copyConfigFiles() {
-            return gulp.src(
-                preset.configFiles
-                )
-                .pipe(gulp.dest(mission.getOutputDir().concat('config')));
+            return gulp.src(mission.getMissionConfigFilePaths())
+                .pipe(gulp.dest(resolve(mission.getOutputDir(), 'config')));
         },
         // /** Replace variables values in configuration file */
         // function replaceVariables() {
@@ -122,7 +119,9 @@ for (let preset of presets) {
 // Main tasks
 gulp.task('clean', () => {
     return gulp.src(paths.workDir)
-        .pipe(vinylPaths(del));
+        .pipe(vinylPaths(function (paths: string[]) {
+            return del(paths,  {force: true});
+        }));
 });
 
 gulp.task('build', gulp.series(taskNames));

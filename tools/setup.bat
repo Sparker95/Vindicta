@@ -12,8 +12,8 @@ if ERRORLEVEL 1 (
 rem CD into build tool directory
 cd /d "%~dp0buildtool"
 
-rem Build missions
-call npx gulp
+rem Install dependencies and build missions
+call npm install --loglevel=error
 
 cd ..
 

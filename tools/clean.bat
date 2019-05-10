@@ -13,7 +13,7 @@ rem CD into build tool directory
 cd /d "%~dp0buildtool"
 
 rem Build missions
-call npx gulp
+call npx gulp clean
 
 cd ..
 

@@ -36,8 +36,7 @@ export class MissionPaths {
     public getMissionSqmPath(): string {
         return path.resolve(
             this.folderStructure.missionsFolder,
-            this.preset.sourceFolder,
-            'mission.sqm'
+            'mission.' + this.preset.map + '.sqm'
         );
     }
 
@@ -62,11 +61,11 @@ export class MissionPaths {
      * Get path to file with mission configuration.
      * As defined in preset.
      */
-    public getMissionConfigFilePath(): string {
-        return path.resolve(
-            this.getOutputDir(),
-            this.preset.configFile
-        );
+    public getMissionConfigFilePaths(): string[] {
+        var workDir = this.folderStructure.missionsFolder;
+        return this.preset.configFiles.map(function (f) {
+            return path.resolve(workDir, f);
+        });
     }
 
 }
