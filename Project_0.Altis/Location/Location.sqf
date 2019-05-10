@@ -443,6 +443,42 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	/*
+	Method: (static)findSafePos
+	Finds a safe spawn position for a vehicle with given class name.
+
+
+	Parameters: _className, _pos
+
+	_className - String, vehicle class name
+	_startPos - position where to start searching from
+
+	Returns: [_pos, _dir]
+	*/
+	STATIC_METHOD("findSafeSpawnPos") {
+		params ["_thisObject", ["_className", "", [""]], ["_startPos", [], [[]]]];
+
+		private _found = false;
+		private _searchRadius = 50;
+		pr _posAndDir = [];
+		while {!_found} do {
+			for "_i" from 0 to 16 do {
+				pr _pos = _startPos vectorAdd [-_searchRadius + random(2*_searchRadius), -_searchRadius + random(2*_searchRadius), 0];
+				if (CALLSM3("Location", "isPosSafe", _pos, 0, _className) && ! (surfaceIsWater _pos)) exitWith {
+					_posAndDir = [_pos, 0];
+					_found = true;
+				};
+			};
+			
+			if (!_found) then {
+				// Search in a larger area at the next iteration
+				_searchRadius = _searchRadius * 2;
+			};			
+		};
+
+		_posAndDir
+	} ENDMETHOD;
+
+	/*
 	Method: countAvailableUnits
 	Returns an number of current units of this location
 

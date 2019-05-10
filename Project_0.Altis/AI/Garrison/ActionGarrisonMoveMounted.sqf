@@ -292,7 +292,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			_base_cost + EFF_SUM(_threat) * 20
 		};
 
-		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], false, true];
+		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], true, true];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
 
@@ -306,7 +306,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Spawn vehicle groups on the road according to convoy positions
 		pr _vr = T_GETV("virtualRoute");
-		if (_vr == "") exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
+		if (_vr == "" || !GETV(_vr, "calculated")) exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");

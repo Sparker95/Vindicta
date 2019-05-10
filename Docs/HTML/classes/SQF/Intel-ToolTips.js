@@ -1,0 +1,1 @@
+NDContentPage.OnToolTipsLoaded({277:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Location has garrisons at a static place and spawns units.</div></div>",599:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Intel base class. It stores variables that describe intel. It is a base class for more intel types.</div></div>"});

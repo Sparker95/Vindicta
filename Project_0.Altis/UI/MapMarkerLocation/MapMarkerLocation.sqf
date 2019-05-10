@@ -21,13 +21,15 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
+	VARIABLE("intel"); // Intel object associated with this
 	STATIC_VARIABLE("selectedLocationMarkers");
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params ["_thisObject", ["_intel", "", [""]]];
 		CALLM2(_thisObject, "setEventSize", 20, 20);
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
+		T_SETV("intel", _intel);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -143,11 +145,11 @@ CLASS(CLASS_NAME, "MapMarker")
 
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
-				pr _pos = T_GETV("pos");
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_pos]);
+				pr _intel = T_GETV("intel");
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_intel]);
 			} else {
 				// Deselect everything
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
 			};
 		};
 	} ENDMETHOD;
@@ -203,7 +205,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
 
 			// Update location data panel
-			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
 		};
 	} ENDMETHOD;
 

@@ -31,6 +31,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
 	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
 	VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
+	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
 
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
@@ -68,6 +69,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
 		T_SETV("location", "");
+		T_SETV("active", false);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
@@ -78,8 +80,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (count _pos > 0) then {
 			CALLM1(_AI, "setPos", _pos);
 		};
-		
-		// Let there be timer!
+
+		// Create a timer to call process method
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
@@ -114,13 +116,21 @@ CLASS("Garrison", "MessageReceiverEx");
 	/*
 	Method: activate
 
-	Start AI, register with commander and global garrison list
+	Start AI
+	Registers with commander and global garrison list
+	Sets "active" variable to true
 	*/
 	METHOD("activate") {
 		params [P_THISOBJECT];
 
+		// Start AI object
 		CALLM(T_GETV("AI"), "start", []); // Let's start the party! \o/
-		CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject])
+
+		// Set 'active' flag
+		T_SETV("active", true);
+
+		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
+		_return
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -778,7 +788,31 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		private _units = GET_VAR(_thisObject, "units");
 		_units pushBackUnique _unit;
-		
+
+		// Spawn or despawn the unit if needed
+		if (T_GETV("spawned")) then {
+			pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
+			if (!_unitIsSpawned) then {
+				pr _loc = T_GETV("location");
+				if (_loc == "") then {
+					pr _pos = CALLM0(_thisObject, "getPos");
+					pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _pos);
+					CALL_METHOD(_unit, "spawn", _posAndDir);
+				} else {
+					pr _unitData = CALL_METHOD(_unit, "getMainData", []);
+					pr _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
+					pr _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
+					CALL_METHOD(_unit, "spawn", _posAndDir);
+				};
+			};
+		} else {
+			// If this garrison is not spawned, despawn the group as well
+			pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
+			if (_unitIsSpawned) then {
+				CALLM0(_unit, "despawn");
+			};
+		};
+
 		// Notify AI object
 		pr _AI = T_GETV("AI");
 		if (_AI != "") then {
@@ -1714,6 +1748,30 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// Handle PROCESS message
 	METHOD_FILE("process", "Garrison\process.sqf");
+
+	// Static helpers
+
+	
+	METHOD("createAddInfGroup") {
+		params [P_THISOBJECT, "_side", "_subcatID", ["_type", GROUP_TYPE_IDLE]];
+		// Create an empty group
+		private _newGroup = NEW("Group", [_side ARG _type]);
+		// Create units from template
+		private _count = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [GET_TEMPLATE(_side) ARG _subcatID]);
+		T_CALLM("addGroup", [_newGroup]);
+		[_newGroup, _count]
+	} ENDMETHOD;
+	
+	METHOD("createAddVehGroup") {
+		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
+		// Create an empty group
+		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
+		private _newUnit = NEW("Unit", [GET_TEMPLATE(_side) ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
+		// Create crew for the vehicle
+		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
+		T_CALLM("addGroup", [_newGroup]);
+		_newGroup
+	} ENDMETHOD;
 
 ENDCLASS;
 

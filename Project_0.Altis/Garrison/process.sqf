@@ -6,6 +6,9 @@ params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
 
+// Bail if not active
+if (!T_GETV("active")) exitWith {};
+
 if(T_CALLM("isDestroyed", [])) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 };

@@ -28,6 +28,7 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 		
 		pr _AI = T_GETV("AI");
 		pr _targetClusters = GETV(_AI, "targetClusters");
+		pr _worldModel = GETV(_AI, "worldModel");
 		
 		// Try to match killers of all destroyed units to clusters
 		pr _value = STIMULUS_GET_VALUE(_stimulus);
@@ -36,9 +37,10 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 		OOP_INFO_2("Received casualties: %1, from: %2", _value, _src);
 		
 		{ // for each casualties
-			_x params ["_catID", "_subcatID", "_hOKiller"];
+			_x params ["_catID", "_subcatID", "_hOKiller", "_pos"];
 			if (!isNull _hOKiller) then {
 				pr _eff = T_efficiency select _catID select _subcatID;
+				private _killerFound = false;
 				{ // for each target clusters
 					pr _TC = _x;
 					pr _targets = _TC select TARGET_CLUSTER_ID_CLUSTER select CLUSTER_ID_OBJECTS; // Array with TARGET_COMMANDER structures
@@ -47,10 +49,11 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 						// The damage caused by this cluster gets increased by _eff
 						pr _dmg = _TC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;
 						_TC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, EFF_ADD(_dmg, _eff)];
-						
+						_killerFound = true;
 						OOP_INFO_0("Killer was found in target cluster");
 					};
 				} forEach _targetClusters;
+				CALLM(_worldModel, "addDamage", [_pos]+[_eff]);
 			};
 		} forEach _value;
 	} ENDMETHOD;

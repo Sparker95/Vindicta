@@ -21,6 +21,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("locationDataThis"); // Points to one of the above arrays depending on its side
 	VARIABLE("notificationID");
 	VARIABLE("notifications"); // Array with [task name, task creation time]
+	VARIABLE("intelDB"); // Intel database
 
 	// Friendly garrisons we can access
 	VARIABLE("garrisons");
@@ -70,6 +71,10 @@ CLASS("AICommander", "AI")
 		T_SETV("targets", []);
 		T_SETV("targetClusters", []);
 		T_SETV("nextClusterID", 0);
+
+		// Create intel database
+		pr _intelDB = NEW("IntelDatabaseServer", [_side]);
+		T_SETV("intelDB", _intelDB);
 
 		#ifdef DEBUG_CLUSTERS
 		T_SETV("nextMarkerID", 0);
@@ -280,102 +285,52 @@ CLASS("AICommander", "AI")
 			case INDEPENDENT: {T_GETV("locationDataInd")};
 			default { _side = _thisSide; T_GETV("locationDataThis")};
 		};
+				
+		// Check if we have intel about such location already
+		pr _intelQuery = NEW("IntelLocation", [_side]);
+		SETV(_intelQuery, "location", _loc);
+		pr _intelDB = T_GETV("intelDB");
+		pr _intelResult = CALLM1(_intelDB, "findFirstIntel", _intelQuery);
+
+		OOP_INFO_1("Intel query result: %1;", _intelResult);
 		
-		pr _args = [_loc, _updateType];
-		pr _ldNew = CALL_STATIC_METHOD("AICommander", "createCLDFromLocation", _args);
-	
-		if (_ldNew isEqualTo []) then {
-			OOP_ERROR_1("Can't update location data: %1", _loc);
+		if (_intelResult != "") then {
+			// There is an intel item with this location
+
+			OOP_INFO_1("Intel was found in existing database: %1", _loc);
+
+			// Create intel item from location, update the old item
+			pr _args = [_loc, _updateType];
+			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+
+			CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+
+			// Delete the intel object that we have created temporary
+			DELETE(_intel);
 		} else {
-			// Check if this location already exists
-			pr _locPos = _ldNew select CLD_ID_POS;
-			pr _locSide = _ldNew select CLD_ID_SIDE;
-			pr _entry = _ld findIf {(_x select CLD_ID_POS) isEqualTo _locPos};
-			if (_entry == NOT_FOUND) then {
-				// Add new entry
-				_ld pushBack _ldNew;
-				
-				systemChat "Discovered new location";
-				
-				if (_side == _thisSide && _side != _locSide && _showNotification) then {
-					CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
-				};
-
-				// Register with the World Model
-				T_PRVAR(worldModel);
-				CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
-			} else {
-				pr _ldPrev = _ld select _entry;
-				_ldPrev params ["_type", "_side", "_unitAmount", "_pos", "_time"];
-				_ldNew params ["_typeNew", "_sideNew", "_unitAmountNew", "_posNew", "_timeNew"];
-				
-				// Update only specific fields
-				
-				// Update type
-				if (_typeNew != LOCATION_TYPE_UNKNOWN) then {
-					_ldPrev set [CLD_ID_TYPE, _typeNew];
-				};
-				
-				// Update side
-				if (_sideNew != CLD_SIDE_UNKNOWN) then {
-					_ldPrev set [CLD_ID_SIDE, _sideNew];
-				};
-				
-				// Update units
-				if (count _unitAmountNew > 0) then {
-					_ldPrev set [CLD_ID_UNIT_AMOUNT, _unitAmountNew];
-				};
-				
-				// Update time
-				_ldPrev set [CLD_ID_TIME, TIME_NOW];
-				
-				//systemChat "Location data was updated";
-				
-				// Show notification if we haven't updated this data for quite some time
-				if (_side == _thisSide && _side != _locSide && _showNotification) then {
-					if ((TIME_NOW - _time) > 600) then {
-						CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
-					};
-				};
-			};
-		};
-		
-		// Broadcast new data to clients, add it to JIP queue
-		pr _JIPID = (_thisObject+"_JIP_"+(str _side)); // We use this object as JIP id because it's a string :D
-		pr _args = [_ld, _side];
-		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "updateLocationData", _args, _thisSide, _JIPID);
-	} ENDMETHOD;
-	
-	// Shows notification and keeps track of it to delete some time later
-	METHOD("showLocationNotification") {
-		params ["_thisObject", ["_locPos", [], [[]]], ["_state", "", [""]]];
-		
-		//OOP_INFO_0("SHOW LOCATION NOTIFICATION");
-
-		//ade_dumpCallstack;
-		
-		pr _id = T_GETV("notificationID");
-		pr _nots = T_GETV("notifications");
-		switch (_state) do {
-			case "DISCOVERED": {
-				pr _descr = format ["Friendly units have discovered an enemy location at %1", mapGridPosition _locPos];
-				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Discovered location", ""], _locPos + [0], "CREATED", 0, false, "scout", true] call BIS_fnc_taskCreate;
-				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, TIME_NOW];
-			};
+			// There is no intel item with this location
 			
-			case "UPDATED": {
-				pr _descr = format ["Updated data on enemy garrisons at %1", mapGridPosition _locPos];
-				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Updated data on location", ""], _locPos + [0], "CREATED", 0, false, "intel", true] call BIS_fnc_taskCreate;
-				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, TIME_NOW];
-			};
+			OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
+
+			// Create intel from location, add it
+			pr _args = [_loc, _updateType];
+			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+			
+			OOP_INFO_1("Created intel item from location: %1", _intel);
+			//[_intel] call OOP_dumpAllVariables;
+
+			CALLM1(_intelDB, "addIntel", _intel);
+			// Don't delete the intel object now! It's in the database from now.
+
+			// Register with the World Model
+			T_PRVAR(worldModel);
+			CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
 		};
-		T_SETV("notificationID", _id + 1);
+		
 	} ENDMETHOD;
 	
 	// Creates a LocationData array from Location
-	STATIC_METHOD("createCLDFromLocation") {
+	STATIC_METHOD("createIntelFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
@@ -385,32 +340,32 @@ CLASS("AICommander", "AI")
 			_gar = "";
 		};
 		
-		pr _value = CLD_NEW();
+		pr _value = NEW("IntelLocation", []);
 		
 		// Set position
 		pr _locPos = +(CALLM0(_loc, "getPos"));
 		_locPos resize 2;
-		_value set [CLD_ID_POS, _locPos];
+		SETV(_value, "pos", _locPos);
 		
 		// Set time
-		_value set [CLD_ID_TIME, TIME_NOW];
+		//SETV(_value, "", set [CLD_ID_TIME, TIME_NOW];
 		
 		// Set type
 		if (_updateLevel >= CLD_UPDATE_LEVEL_TYPE) then {
-			_value set [CLD_ID_TYPE, CALLM0(_loc, "getType")]; // todo add types for locations at some point?
+			SETV(_value, "type", CALLM0(_loc, "getType")); // todo add types for locations at some point?
 		} else {
-			_value set [CLD_ID_TYPE, LOCATION_TYPE_UNKNOWN]; // todo add types for locations at some point?
+			SETV(_value, "type", LOCATION_TYPE_UNKNOWN);
 		};
 		
 		// Set side
 		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
 			if (_gar != "") then {
-				_value set [CLD_ID_SIDE, CALLM0(_gar, "getSide")];
+				SETV(_value, "side", CALLM0(_gar, "getSide"));
 			} else {
-				_value set [CLD_ID_SIDE, CLD_SIDE_UNKNOWN];
+				SETV(_value, "side", CLD_SIDE_UNKNOWN);
 			};
 		} else {
-			_value set [CLD_ID_SIDE, CLD_SIDE_UNKNOWN];
+			SETV(_value, "side", CLD_SIDE_UNKNOWN);
 		};
 		
 		// Set unit count
@@ -427,11 +382,13 @@ CLASS("AICommander", "AI")
 					};
 				} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
 			};
-			_value set [CLD_ID_UNIT_AMOUNT, _CLD_full];
+			SETV(_value, "unitData", _CLD_full);
+		} else {
+			SETV(_value, "unitData", CLD_UNIT_AMOUNT_UNKNOWN);
 		};
 		
 		// Set ref to location object
-		_value set [CLD_ID_LOCATION, _loc];
+		SETV(_value, "location", _loc);
 		
 		_value
 	} ENDMETHOD;
@@ -457,95 +414,7 @@ CLASS("AICommander", "AI")
 		T_SETV("nextClusterID", _nextID + 1);
 		_nextID
 	} ENDMETHOD;
-	
-	// Generates a new unique cluster ID
-	/*
-	METHOD("createNewTargetCluster") {
-		params ["_thisObject", "_cluster", "_efficiency"];
-		pr _targetClusters = T_GETV("targetClusters");
-		pr _nextID = T_GETV("nextClusterID");
-		T_SETV("nextClusterID", _nextID + 1);
-		_targetClusters pushBack TARGET_CLUSTER_NEW(_nextID, _cluster, _efficiency);
 		
-		// Create debug markers
-		#ifdef DEBUG_CLUSTERS
-		
-		pr _clusterMarkers = T_GETV("clusterMarkers");
-		pr _side = T_GETV("side");
-		
-		
-		pr _colorEnemy = switch (_side) do {
-			case WEST: {"ColorWEST"};
-			case EAST: {"ColorEAST"};
-			case INDEPENDENT: {"ColorGUER"};
-			default {"ColorCIV"};
-		};
-				
-		// Create marker for the cluster
-		pr _c = _cluster;
-		pr _nextMarkerID = T_GETV("nextMarkerID");
-		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-		pr _cCenter = _cluster call cluster_fnc_getCenter;
-		pr _mrk = createMarker [_name, _cCenter];
-		pr _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
-		pr _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
-		_mrk setMarkerShape "RECTANGLE";
-		_mrk setMarkerBrush "SolidFull";
-		_mrk setMarkerSize [_width, _height];
-		_mrk setMarkerColor _colorEnemy;
-		_mrk setMarkerAlpha 0.3;
-		_clusterMarkers pushBack _mrk;
-		
-		// Add markers for spotted units
-		{
-			pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-			pr _mrk = createmarker [_name, _x select TARGET_ID_POS];
-			_mrk setMarkerType "mil_box";
-			_mrk setMarkerColor _colorEnemy;
-			_mrk setMarkerAlpha 0.5;
-			_mrk setMarkerText "";
-			_clusterMarkers pushBack _mrk;
-			//_mrk setMarkerText (format ["%1", round ((_e select 2) select _i)]); //Enemy age
-			
-		} forEach (_cluster select CLUSTER_ID_OBJECTS);
-		
-		// Add marker with efficiency text
-		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-		pr _mrk = createmarker [_name, _cCenter];
-		_mrk setMarkerType "mil_dot";
-		_mrk setMarkerColor "ColorPink";
-		_mrk setMarkerAlpha 1.0;
-		_mrk setMarkerText (str _efficiency);
-		_clusterMarkers pushBack _mrk;
-		
-		T_SETV("nextMarkerID", _nextMarkerID);
-		
-		
-		#endif
-	} ENDMETHOD;
-	*/
-	
-	/*
-	// Deletes all target clusters
-	METHOD("deleteAllTargetClusters") {
-		params ["_thisObject"];
-		pr _targetClusters = T_GETV("targetClusters");
-		while {count _targetClusters > 0} do {
-			_targetClusters deleteAt 0;
-		};
-		
-		#ifdef DEBUG_CLUSTERS
-		
-		pr _clusterMarkers = T_GETV("clusterMarkers");
-		{
-			deleteMarker _x;
-		} forEach _clusterMarkers;
-		T_SETV("clusterMarkers", []);
-		
-		#endif
-	} ENDMETHOD;
-	*/
-	
 	/*
 	Method: onTargetClusterCreated
 	Gets called on creation of a totally new target cluster
