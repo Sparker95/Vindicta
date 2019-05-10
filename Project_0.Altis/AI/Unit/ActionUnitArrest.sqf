@@ -15,6 +15,8 @@ CLASS("ActionUnitArrest", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 
+		OOP_INFO_0("ActionUnitArrest: Activated.");
+
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
 		if (GETV(_AI, "new")) then {
@@ -29,6 +31,8 @@ CLASS("ActionUnitArrest", "ActionUnit")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("ActionUnitArrest: Process.");
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 
@@ -37,11 +41,12 @@ CLASS("ActionUnitArrest", "ActionUnit")
 	} ENDMETHOD;
 	
 	// logic to run when the goal is about to be terminated
-	/*
+
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("ActionUnitArrest: Terminated.");	
 		
 	} ENDMETHOD; 
-	*/
 
 ENDCLASS;

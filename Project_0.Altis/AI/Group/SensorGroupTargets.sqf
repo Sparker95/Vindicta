@@ -81,7 +81,6 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 					// It's a Man and a player
 
 					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o)) then {
-						systemChat format ["Suspicious unit found: %1", _o];
 						pr _AI = T_GETV("AI");
 						SETV(_AI, "suspTarget", _o);
 					};

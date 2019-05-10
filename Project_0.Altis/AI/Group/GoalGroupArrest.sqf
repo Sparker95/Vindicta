@@ -17,10 +17,10 @@ CLASS("GoalGroupArrest", "Goal")
 			pr _suspTarget = GETV(_AI, "suspTarget");
 
 			if !(isNil "_suspTarget") then { 
-				OOP_INFO_1("GoalGroupArrest target: ", _suspTarget);
-				_relevance = 30;
+				OOP_INFO_1("GoalGroupArrest target: %1", _suspTarget);
+					_relevance = 30; 
 			} else {
-				OOP_INFO_0("Evaluating relevance.");
+				OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
 				_relevance = 0;
 			};
 			
@@ -31,6 +31,14 @@ CLASS("GoalGroupArrest", "Goal")
 
 	STATIC_METHOD("createPredefinedAction") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+
+		OOP_INFO_0("GoalGroupArrest: Creating predefined action.");
+
+		pr _target = GETV(_AI, "suspTarget");
+		pr _args = [_AI, _target];
+		pr _action = NEW("ActionGroupArrest", _args);
+
+		OOP_INFO_0("GoalGroupArrest: Predefined action created.");
 
 	} ENDMETHOD;
 

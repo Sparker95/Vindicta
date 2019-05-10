@@ -13,7 +13,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];	
 		
 		// Set behaviour
 		pr _hG = GETV(_thisObject, "hG");
@@ -70,7 +70,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitArrest", "");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
 		} forEach _units;
 		
 	} ENDMETHOD;
