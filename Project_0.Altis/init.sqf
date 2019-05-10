@@ -2,6 +2,7 @@
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
 
+#ifndef _SQF_VM
 // No saving
 enableSaving [ false, false ]; // Saving disabled without autosave.
 
@@ -17,6 +18,7 @@ if (!IS_SERVER) then {
 	systemChat _str;
 	OOP_INFO_0(_str);
 };
+#endif
 
 CRITICAL_SECTION {
 	//gGameMode = NEW("AITestBenchGameMode", []); //"BasesGameMode", []);
