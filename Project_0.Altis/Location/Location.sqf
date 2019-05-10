@@ -5,20 +5,36 @@
 #include "Location.hpp"
 #include "..\MessageTypes.hpp"
 
+#ifndef _SQF_VM
+#define DEBUG_LOCATION_MARKERS
+#endif
+
 /*
 Class: Location
 Location has garrisons at a static place and spawns units.
 
 Author: Sparker 28.07.2018
 */
+#ifdef DEBUG_LOCATION_MARKERS
+#define UPDATE_DEBUG_MARKER T_CALLM("updateMarker", [])
+#else
+#define UPDATE_DEBUG_MARKER
+#endif
+
+#define pr private
 
 CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("type");
+	VARIABLE("side");
 	VARIABLE("debugName");
+	
+	VARIABLE("garrisons");
+	/*
 	VARIABLE("garrisonCiv");
 	VARIABLE("garrisonMilAA");
 	VARIABLE("garrisonMilMain");
+	*/	
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
 	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
@@ -28,7 +44,6 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("spawnState"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
 	VARIABLE("capacityInf"); // Infantry capacity
-	VARIABLE("cpModule"); //civilian module
 	STATIC_VARIABLE("all");
 
 
@@ -44,11 +59,19 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: nil
 	*/
 	METHOD("setDebugName") {
-		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+		params [P_THISOBJECT, ["_debugName", "", [""]]];
+		T_SETV("debugName", _debugName);
 	} ENDMETHOD;
 
+	METHOD("setCapacityInf") {
+		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
+		T_SETV("capacityInf", _capacityInf);
+	} ENDMETHOD;
 
+	METHOD("setSide") {
+		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
+		T_SETV("side", _side);
+	} ENDMETHOD;
 
 	// |                              N E W
 	/*
@@ -59,17 +82,16 @@ CLASS("Location", "MessageReceiverEx")
 	_pos - position of this location
 	*/
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_pos", [], [[]]] ];
+		params [P_THISOBJECT, ["_pos", [], [[]]] ];
 
 		// Check existance of neccessary global objects
 		if (isNil "gTimerServiceMain") exitWith {"[MessageLoop] Error: global timer service doesn't exist!";};
 		if (isNil "gMessageLoopLocation") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
+		T_SETV("side", CIVILIAN);
 		T_SETV("debugName", "noname");
-		T_SETV("garrisonCiv", "");
-		T_SETV("garrisonMilAA", "");
-		T_SETV("garrisonMilMain", "");
+		T_SETV("garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
 		T_SETV("borderPatrolWaypoints", []);
@@ -77,11 +99,11 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("spawnPosTypes", []);
 		T_SETV("spawnState", 0);
 		T_SETV("capacityInf", 0);
-		T_SETV("cpModule",objnull);
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
+		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
 		// Setup basic border
-		CALLM2(_thisObject, "setBorder", "circle", 20);
+		CALLM2(_thisObject, "setBorder", "circle", [20]);
 
 		// Create timer object
 		private _msg = MESSAGE_NEW();
@@ -97,15 +119,39 @@ CLASS("Location", "MessageReceiverEx")
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray pushBack _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
+
+		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 
-
+	#ifdef DEBUG_LOCATION_MARKERS
+	METHOD("updateMarker") {
+		params [P_THISOBJECT];
+		deleteMarker _thisObject;
+		deleteMarker (_thisObject + "_label");
+		T_PRVAR(pos);
+		if(count _pos > 0) then {
+			private _mrk = createmarker [_thisObject, _pos];
+			_mrk setMarkerType "mil_box";
+			_mrk setMarkerColor "ColorYellow";
+			_mrk setMarkerAlpha 1;
+			_mrk setMarkerText "";
+			_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
+			_mrk setMarkerType "Empty";
+			_mrk setMarkerColor "ColorYellow";
+			_mrk setMarkerAlpha 1;
+			T_PRVAR(debugName);
+			T_PRVAR(type);
+			_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _debugName, _type];
+		};
+	} ENDMETHOD;
+	#endif
+	
 	// |                            D E L E T E                             |
 	/*
 	Method: delete
 	*/
 	METHOD("delete") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 
 		SET_VAR(_thisObject, "debugName", nil);
 		SET_VAR(_thisObject, "garrisonCiv", nil);
@@ -128,6 +174,11 @@ CLASS("Location", "MessageReceiverEx")
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray deleteAt (_allArray find _thisObject);
 		PUBLIC_STATIC_VAR("Location", "all");
+
+		#ifdef DEBUG_LOCATION_MARKERS
+		deleteMarker _thisObject;
+		deleteMarker _thisObject + "_label";
+		#endif
 	} ENDMETHOD;
 
 
@@ -158,7 +209,7 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: Array, position
 	*/
 	METHOD("getPos") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT ];
 		GETV(_thisObject, "pos")
 	} ENDMETHOD;
 
@@ -172,7 +223,7 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: Array of positions
 	*/
 	METHOD("getPatrolWaypoints") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT ];
 		GETV(_thisObject, "borderPatrolWaypoints")
 	} ENDMETHOD;
 
@@ -181,11 +232,16 @@ CLASS("Location", "MessageReceiverEx")
 		gMessageLoopLocation
 	} ENDMETHOD;
 
-
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	
+	
+	
+	
+	
+	// Old useless crap, delete it!11
+	
 	/*
 	Method: setGarrisonMilitaryMain
 	Sets the main military garrison located at this location
@@ -196,8 +252,9 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: nil
 	*/
+	/*
 	METHOD("setGarrisonMilitaryMain") {
-		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		params [P_THISOBJECT, ["_garrison", "", [""]] ];
 
 		OOP_INFO_1("setGarrisonMilitaryMain: %1", _garrison);
 
@@ -206,6 +263,7 @@ CLASS("Location", "MessageReceiverEx")
 			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
 		};
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: getGarrisonMilitaryMain
@@ -213,22 +271,58 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: <Garrison> or "" if there is no garrison there
 	*/
+	/*
 	METHOD("getGarrisonMilitaryMain") {
-		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		params [P_THISOBJECT, ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilMain")
 	} ENDMETHOD;
-
+	*/
 	/*
 	Method: getGarrisonMilAA
 	Gets the main military garrison located at this location
 
 	Returns: <Garrison> or "" if there is no garrison there
 	*/
+	/*
 	METHOD("getGarrisonMilAA") {
-		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+		params [P_THISOBJECT, ["_garrison", "", [""]] ];
 		GET_VAR(_thisObject, "garrisonMilAA")
 	} ENDMETHOD;
-
+	*/
+	
+	
+	METHOD("registerGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _gars = T_GETV("garrisons");
+		if (! (_gar in _gars)) then {
+			_gars pushBack _gar;
+			CALLM2(_gar, "postMethodAsync", "ref", []);
+		};
+		
+	} ENDMETHOD;
+	
+	METHOD("unregisterGarrison") {
+		params ["_thisObject", ["_gar", "", [""]]];
+		
+		pr _gars = T_GETV("garrisons");
+		if (_gar in _gars) then {
+			_gars deleteAt (_gars find _gar);
+			CALLM2(_gar, "postMethodAsync", "unref", []);
+		};
+	} ENDMETHOD;
+	
+	
+	METHOD("getGarrisons") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		
+		if (_side == CIVILIAN) then {
+			T_GETV("garrisons")
+		} else {
+			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
+		};
+	} ENDMETHOD;
+	
 	/*
 	Method: setType
 	Set the Type.
@@ -240,8 +334,9 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: nil
 	*/
 	METHOD("setType") {
-		params [["_thisObject", "", [""]], ["_type", "", [""]]];
+		params [P_THISOBJECT, ["_type", "", [""]]];
 		SET_VAR_PUBLIC(_thisObject, "type", _type);
+		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 
 	/*
@@ -251,9 +346,27 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: String
 	*/
 	METHOD("getType") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT ];
 		GET_VAR(_thisObject, "type")
 	} ENDMETHOD;
+	
+	/*
+	Method: getSide
+	Returns side of the garrison that controls this location.
+
+	Returns: Side, or Civilian if there is no garrison
+	*/
+	/*
+	METHOD("getSide") {
+		params [ "_thisObject" ];
+		pr _gar = T_GETV("garrisonMilMain");
+		if (_gar == "") then {
+			CIVILIAN
+		} else {
+			CALLM0(_gar, "getSide");
+		};
+	} ENDMETHOD;
+	*/
 
 	/*
 	Method: getCapacityInf
@@ -262,23 +375,107 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: Integer
 	*/
 	METHOD("getCapacityInf") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT ];
 		GET_VAR(_thisObject, "capacityInf")
 	} ENDMETHOD;
 
+	// /*
+	// Method: getCurrentGarrison
+	// Returns the current garrison attached to this location
+
+	// Returns: <Garrison> or "" if there is no current garrison
+	// */
+	// METHOD("getCurrentGarrison") {
+	// 	params [ P_THISOBJECT ];
+
+	// 	private _garrison = GETV(_thisObject, "garrisonMilAA");
+	// 	if (_garrison == "") then { _garrison = GETV(_thisObject, "garrisonMilMain"); };
+	// 	if (_garrison == "") then { OOP_WARNING_1("No garrison found for location %1", _thisObject); };
+	// 	_garrison
+	// } ENDMETHOD;
+
 	/*
-	Method: getCurrentGarrison
-	Returns the current garrison attached to this location
+	Method: (static)findSafePosOnRoad
+	Finds an empty position for a vehicle class name on road close to specified position.
 
-	Returns: <Garrison> or "" if there is no current garrison
+	Parameters: _startPos 
+	_startPos - start position where to start searching for a position.
+
+	Returns: Array, [_pos, _dir]
 	*/
-	METHOD("getCurrentGarrison") {
-		params [ ["_thisObject", "", [""]] ];
+	STATIC_METHOD("findSafePosOnRoad") {
+		params ["_thisClass", ["_startPos", [], [[]]], ["_className", "", [""]] ];
 
-		private _garrison = GETV(_thisObject, "garrisonMilAA");
-		if (_garrison == "") then { _garrison = GETV(_thisObject, "garrisonMilMain"); };
-		if (_garrison == "") then { OOP_WARNING_1("No garrison found for location %1", _thisObject); };
-		_garrison
+		// Try to find a safe position on a road for this vehicle
+		private _found = false;
+		private _searchRadius = 100;
+		pr _return = [];
+		while {!_found} do {
+			private _roads = _startPos nearRoads _searchRadius;
+			if (count _roads < 3) then {
+				// Search for more roads at the next iteration
+				_searchRadius = _searchRadius * 2;
+			} else {
+				_roads = _roads apply {[_x distance2D _startPos, _x]};
+				_roads sort true; // Ascending
+				private _i = 0;
+				while {_i < count _roads && !_found} do {
+					(_roads select _i) params ["_dist", "_road"];
+					private _rct = roadsConnectedTo _road;
+					if (count _rct > 0) then { // We better don't use terminal road pieces
+						// Check position if it's safe
+						private _dir = _road getDir (_rct select 0);
+						if (CALLSM3("Location", "isPosSafe", getPos _road, _dir, _className)) then {
+							_return = [getPos _road, _dir];
+							_found = true;
+						};
+					};
+					_i = _i + 1;
+				};
+				if (!_found) then {
+					// Failed to find a position here, increase the radius
+					_searchRadius = _searchRadius * 3;
+				};
+			};			
+		};
+
+		_return
+	} ENDMETHOD;
+
+	/*
+	Method: (static)findSafePos
+	Finds a safe spawn position for a vehicle with given class name.
+
+
+	Parameters: _className, _pos
+
+	_className - String, vehicle class name
+	_startPos - position where to start searching from
+
+	Returns: [_pos, _dir]
+	*/
+	STATIC_METHOD("findSafeSpawnPos") {
+		params ["_thisObject", ["_className", "", [""]], ["_startPos", [], [[]]]];
+
+		private _found = false;
+		private _searchRadius = 50;
+		pr _posAndDir = [];
+		while {!_found} do {
+			for "_i" from 0 to 16 do {
+				pr _pos = _startPos vectorAdd [-_searchRadius + random(2*_searchRadius), -_searchRadius + random(2*_searchRadius), 0];
+				if (CALLSM3("Location", "isPosSafe", _pos, 0, _className) && ! (surfaceIsWater _pos)) exitWith {
+					_posAndDir = [_pos, 0];
+					_found = true;
+				};
+			};
+			
+			if (!_found) then {
+				// Search in a larger area at the next iteration
+				_searchRadius = _searchRadius * 2;
+			};			
+		};
+
+		_posAndDir
 	} ENDMETHOD;
 
 	/*
@@ -288,17 +485,16 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: Integer
 	*/
 	METHOD("countAvailableUnits") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT, P_SIDE("_side") ];
 
-		private _garrison = CALLM0(_thisObject, "getCurrentGarrison");
-		if (_garrison == "") exitWith { 0 };
+		private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
+		if (count _garrisons == 0) exitWith { 0 };
 
-		private _countAllUnits = CALLM0(_garrison, "countAllUnits");
-		private _getRequiredUnits = CALLM0(_garrison, "getRequiredCrew");
-		private _minimumUnits = 0;
-		{ _minimumUnits = _minimumUnits + _x; } forEach _getRequiredUnits;
-
-		_countAllUnits - _minimumUnits
+		private _sum = 0;
+		{
+			_sum = _sum + CALLM0(_x, "countAllUnits");
+		} forEach _garrisons;
+		_sum
 	} ENDMETHOD;
 
 	// File-based methods

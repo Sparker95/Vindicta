@@ -6,6 +6,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
+#include "..\..\Location\Location.hpp"
 
 
 /*
@@ -20,6 +21,7 @@ Singleton class that performs things related to map user interface
 CMUI_ColorWEST = [0,0.3,0.6,1];
 CMUI_ColorEAST = [0.5,0,0,1];
 CMUI_ColorIND = [0,0.5,0,1];
+CMUI_ColorUnknown = [0.4,0,0.5,1];
 
 CLASS(CLASS_NAME, "")
 
@@ -83,24 +85,23 @@ CLASS(CLASS_NAME, "")
 		pr _type = _cld select CLD_ID_TYPE;
 		pr _pos = _cld select CLD_ID_POS;
 		pr _side = _CLD select CLD_ID_SIDE;
-		pr _text = "";
+		pr _text = if (_type != LOCATION_TYPE_UNKNOWN) then {
+			pr _t = CALL_STATIC_METHOD("ClientMapUI", "getNearestLocationName", [_pos]);
+			if (_t == "") then { // Check if we have got an empty string
+				format ["%1 %2", _side, _type]
+			} else {
+				_t
+			};
+		} else {
+			"??"
+		};
 
 		pr _color = switch(_side) do {
 			case WEST: {CMUI_ColorWEST};
 			case EAST: {CMUI_ColorEAST};
 			case INDEPENDENT: {CMUI_ColorInd};
+			default {CMUI_ColorUnknown};
 		};
-
-		pr _nameTown = "";
-		_nameTown = CALL_STATIC_METHOD("ClientMapUI", "getNamePrefix", [_pos]);
-		pr _nameLocMrkTxt = "";
-		_nameLocMrkTxt = CALL_STATIC_METHOD("ClientMapUI", "getNearestMarkerText", [_pos]);
-
-		if (_nameLocMrkTxt != "") then {
-			_text = format ["%1", _nameLocMrkTxt];
-		} else {
-			_text = format ["%1 Outpost", _nameTown];
-		}; // prioritize custom location name over generated one
 
 		CALLM1(_mapMarker, "setPos", _pos);
 		CALLM1(_mapMarker, "setText", _text);
@@ -142,48 +143,50 @@ CLASS(CLASS_NAME, "")
 
 	// Formats location data and shows it on the location data panel
 	STATIC_METHOD("updateLocationDataPanel") {
-		params ["_thisClass", ["_pos", [], [[]]]];
+		params ["_thisClass", ["_intel", "", [""]]];
 
-		diag_log format ["Updating location data panel: %1", _pos];
-
-		// Was a proper position provided or should we show nothing?
-		pr _ld = if (count _pos != 0) then {
-			CALL_STATIC_METHOD(CLASS_NAME, "getLocationData", [_pos]);
-		} else {
-			[]
-		};
-		pr _typeText = "unknown";
-		pr _timeText = "unknown";
-		pr _compositionText = "unknown";
-		pr _sideText = "unknown";
+		pr _typeText = "...";
+		pr _timeText = "...";
+		pr _compositionText = "...";
+		pr _sideText = "...";
 		private _listNamePlayersText = "";
 
 		// Did we find a location in the database?
-		if ((count _ld) != 0) then {
+		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
 
 			diag_log format ["Location data was found in the database"];
 
-			_typeText = "outpost";
-			_timeText = "666 seconds ago";
-			_sideText = str (_ld select CLD_ID_SIDE);
-			_compositionText = "";
+			_typeText = switch (GETV(_intel, "type")) do {
+				case LOCATION_TYPE_OUTPOST: {"Outpost"};
+				case LOCATION_TYPE_CAMP: {"Camp"};
+				case LOCATION_TYPE_BASE: {"Base"};
+				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
+			};
+			
+			_timeText = str GETV(_intel, "timeUpdated");
+			_sideText = str GETV(_intel, "side");
 
-			pr _ua = _ld select CLD_ID_UNIT_AMOUNT;
-			// Amount of infrantry
-			pr _ninf = 0;
-			{_ninf = _ninf + _x;} forEach (_ua select T_INF);
-			_compositionText = _compositionText + (format ["Soldiers: %1\n", _ninf]);
-			// Count vehicles
-			pr _uaveh = _ua select T_VEH;
-			{
-				// If there are some vehicles of this subcategory
-				if (_x > 0) then {
-					pr _subcatID = _forEachIndex;
-					pr _vehName = T_NAMES select T_VEH select _subcatID;
-					pr _str = format ["%1: %2\n", _vehName, _x];
-					_compositionText = _compositionText + _str;
-				};
-			} forEach _uaveh;
+			pr _ua = GETV(_intel, "unitData");
+			if (count _ua > 0) then {
+				_compositionText = "";
+				// Amount of infrantry
+				pr _ninf = 0;
+				{_ninf = _ninf + _x;} forEach (_ua select T_INF);
+				_compositionText = _compositionText + (format ["Soldiers: %1\n", _ninf]);
+				// Count vehicles
+				pr _uaveh = _ua select T_VEH;
+				{
+					// If there are some vehicles of this subcategory
+					if (_x > 0) then {
+						pr _subcatID = _forEachIndex;
+						pr _vehName = T_NAMES select T_VEH select _subcatID;
+						pr _str = format ["%1: %2\n", _vehName, _x];
+						_compositionText = _compositionText + _str;
+					};
+				} forEach _uaveh;
+			} else {
+				_compositionText = "<Unknown>";
+			};
 			diag_log format ["Composition text: %1", _compositionText];
 		} else {
 			diag_log format ["Location data was NOT found in the database"];
@@ -203,29 +206,16 @@ CLASS(CLASS_NAME, "")
 		pr _idcs = [];
 	} ENDMETHOD;
 
-
-	// Returns nearest town's or city's name as String for use as outpost name
-	STATIC_METHOD("getNamePrefix") {
-		params ["_thisClass", "_pos"];
-		pr _locations = nearestLocations [_pos, ["NameCity", "NameCityCapital", "NameVillage"], 4000];
-		pr _nearestLocName = text (_locations select 0);
-		pr _return = "Unknown";
-
-		if (_nearestLocName != "") then { _return = _nearestLocName; };
-
-		_return
-	} ENDMETHOD;
-
 	// Returns marker text of closest marker
-	STATIC_METHOD("getNearestMarkerText") {
+	STATIC_METHOD("getNearestLocationName") {
 		params ["_thisClass", "_pos"];
 		pr _return = "";
 
 		{
-     		if(((getMarkerPos _x) distance _pos) < 100) exitWith {
-          		_return = markerText _x;
+     		if(((getPos _x) distance _pos) < 100) exitWith {
+          		_return =  _x getVariable ["Name", ""];
      		};
-		} forEach allMapMarkers;
+		} forEach entities "Project_0_LocationSector";
 
 		_return
 	} ENDMETHOD;
