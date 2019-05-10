@@ -11,14 +11,31 @@ class mapUI
 	};
 	class Controls
 	{
-		class MUI_PANELB_1
+		class MUI_PANELB_DECOLINE
 		{
 			type = 0;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.20989584;
-			y = safeZoneY + safeZoneH * 0.95833334;
-			w = safeZoneW * 0.58020834;
-			h = safeZoneH * 0.03148149;
+			idc = IDC_DECO1;
+			x = safeZoneX + safeZoneW * 0.21;
+			y = safeZoneY + safeZoneH * 0.983;
+			w = safeZoneW * 0.58;
+			h = safeZoneH * 0.01;
+			style = 0;
+			text = "";
+			colorBackground[] = {1,1,1,1};
+			colorText[] = {1,1,1,0};
+			font = "PuristaMedium";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			shadow = 2;
+			
+		};
+		class MUI_PANELB_HINTS
+		{
+			type = 0;
+			idc = IDC_HINTPANEL;
+			x = safeZoneX + safeZoneW * 0.21;
+			y = safeZoneY + safeZoneH * 0.96;
+			w = safeZoneW * 0.58;
+			h = safeZoneH * 0.032;
 			style = 2;
 			text = "ALERT: Alert this garrison to an impending attack. All units in this garrison will switch into combat state.";
 			colorBackground[] = {0.1,0.1,0.1,1};
@@ -28,14 +45,14 @@ class mapUI
 			shadow = 2;
 			
 		};
-		class MUI_PANELB_2
+		class MUI_PANELB_BUTTONS
 		{
 			type = 0;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.20989584;
+			idc = IDC_BUTTONPANEL;
+			x = safeZoneX + safeZoneW * 0.21;
 			y = safeZoneY + safeZoneH * 0.925;
-			w = safeZoneW * 0.58020834;
-			h = safeZoneH * 0.03425926;
+			w = safeZoneW * 0.58;
+			h = safeZoneH * 0.034;
 			style = 0;
 			text = "";
 			colorBackground[] = {0,0,0,0.5};
@@ -47,11 +64,11 @@ class mapUI
 		class MUI_PANELB_BUTTON_1
 		{
 			type = 1;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.44010417;
-			y = safeZoneY + safeZoneH * 0.92870371;
-			w = safeZoneW * 0.11979167;
-			h = safeZoneH * 0.02685186;
+			idc = IDC_BUTTON2;
+			x = safeZoneX + safeZoneW * 0.44;
+			y = safeZoneY + safeZoneH * 0.93;
+			w = safeZoneW * 0.12;
+			h = safeZoneH * 0.027;
 			style = 0+0;
 			text = "FAST TRAVEL";
 			borderSize = 0;
@@ -79,11 +96,11 @@ class mapUI
 		class MUI_PANELB_BUTTON_2
 		{
 			type = 1;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.56614584;
-			y = safeZoneY + safeZoneH * 0.92870371;
-			w = safeZoneW * 0.11979167;
-			h = safeZoneH * 0.02685186;
+			idc = IDC_BUTTON3;
+			x = safeZoneX + safeZoneW * 0.58;
+			y = safeZoneY + safeZoneH * 0.93;
+			w = safeZoneW * 0.12;
+			h = safeZoneH * 0.027;
 			style = 0+0;
 			text = "SETTINGS";
 			borderSize = 0;
@@ -111,11 +128,11 @@ class mapUI
 		class MUI_PANELB_BUTTON_3
 		{
 			type = 1;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.3140625;
-			y = safeZoneY + safeZoneH * 0.92870371;
-			w = safeZoneW * 0.11979167;
-			h = safeZoneH * 0.02685186;
+			idc = IDC_BUTTON1;
+			x = safeZoneX + safeZoneW * 0.30;
+			y = safeZoneY + safeZoneH * 0.93;
+			w = safeZoneW * 0.12;
+			h = safeZoneH * 0.027;
 			style = 0+0;
 			text = "CREATE CAMP";
 			borderSize = 0;
@@ -147,7 +164,7 @@ class mapUI
 		class MUI_PANELA_HEADLINE
 		{
 			type = 0;
-			idc = -1;
+			idc = IDC_HEADLINE;
 			x = safeZoneX + safeZoneW * 0.86;
 			y = safeZoneY + safeZoneH * 0.05;
 			w = safeZoneW * 0.135;
@@ -166,7 +183,7 @@ class mapUI
 			type = 5;
 			idc = -1;
 			x = safeZoneX + safeZoneW * 0.86;
-			y = safeZoneY + safeZoneH * 0.18;
+			y = safeZoneY + safeZoneH * 0.17;
 			w = safeZoneW * 0.135;
 			h = safeZoneH * 0.72;
 			style = 16;
@@ -194,10 +211,10 @@ class mapUI
 		class MUI_PANELA_TAB1
 		{
 			type = 1;
-			idc = -1;
+			idc = IDC_TAB1;
 			x = safeZoneX + safeZoneW * 0.86;
 			y = safeZoneY + safeZoneH * 0.078;
-			w = safeZoneW * 0.045;
+			w = safeZoneW * 0.0455;
 			h = safeZoneH * 0.068;
 			style = 2;
 			text = "LEFT";
@@ -230,7 +247,7 @@ class mapUI
 		class MUI_PANELA_TAB2
 		{
 			type = 1;
-			idc = -1;
+			idc = IDC_TAB3;
 			x = safeZoneX + safeZoneW * 0.95;
 			y = safeZoneY + safeZoneH * 0.078;
 			w = safeZoneW * 0.045;
@@ -266,8 +283,8 @@ class mapUI
 		class MUI_PANELA_TAB3
 		{
 			type = 1;
-			idc = -1;
-			x = safeZoneX + safeZoneW * 0.9048;
+			idc = IDC_TAB2;
+			x = safeZoneX + safeZoneW * 0.905;
 			y = safeZoneY + safeZoneH * 0.078;
 			w = safeZoneW * 0.045;
 			h = safeZoneH * 0.068;
@@ -302,11 +319,11 @@ class mapUI
 		class MUI_PANELA_TABNAME
 		{
 			type = 0;
-			idc = -1;
+			idc = IDC_TABCAT;
 			x = safeZoneX + safeZoneW * 0.86;
 			y = safeZoneY + safeZoneH * 0.14;
 			w = safeZoneW * 0.135;
-			h = safeZoneH * 0.03;
+			h = safeZoneH * 0.027;
 			style = 2;
 			text = "TAB/CATEGORY TITLE";
 			colorBackground[] = {0,0,0,1};
