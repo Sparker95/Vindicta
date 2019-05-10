@@ -8,12 +8,16 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-CLASS("AIUnitVehicle", "AI")
+CLASS("AIUnitVehicle", "AI_GOAP")
 
 	// Assigned crew variables
 	VARIABLE("assignedDriver");
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
 	VARIABLE("assignedTurrets"); // Array of [unit, turret path]
+
+	// Indicates that this AI is new and was created recently
+	// This flag aids acceleration of actions that were given to AI when it was just spawned
+	VARIABLE("new");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -26,6 +30,9 @@ CLASS("AIUnitVehicle", "AI")
 		// Initialize sensors
 		
 		//SETV(_thisObject, "worldState", _ws);
+
+		// Set "new" flag
+		T_SETV("new", true);
 	} ENDMETHOD;
 	
 	METHOD("delete") {

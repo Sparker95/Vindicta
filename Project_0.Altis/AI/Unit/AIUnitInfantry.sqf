@@ -8,7 +8,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-CLASS("AIUnitInfantry", "AI")
+CLASS("AIUnitInfantry", "AI_GOAP")
 
 	// Object handle of the unit
 	VARIABLE("hO");
@@ -21,6 +21,10 @@ CLASS("AIUnitInfantry", "AI")
 	
 	// Sentry position
 	VARIABLE("sentryPos");
+
+	// Indicates that this AI is new and was created recently
+	// This flag aids acceleration of actions that were given to AI when it was just spawned
+	VARIABLE("new");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -46,6 +50,9 @@ CLASS("AIUnitInfantry", "AI")
 		pr _sensorCivNear = NEW("SensorUnitCivNear", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCivNear]);
 		
+		// Set "new" flag
+		T_SETV("new", true);
+
 		//SETV(_thisObject, "worldState", _ws);
 	} ENDMETHOD;
 	
@@ -72,12 +79,14 @@ CLASS("AIUnitInfantry", "AI")
 		// Unassign this inf unit from its current vehicle
 		pr _assignedVehicle = T_GETV("assignedVehicle");
 		if (!isNil "_assignedVehicle") then {
-			OOP_INFO_1("assigned vehicle: %1", _assignedVehicle);
+			OOP_INFO_1("previously assigned vehicle: %1", _assignedVehicle);
 			
 			pr _assignedVehAI = CALLM0(_assignedVehicle, "getAI");
 			if (_assignedVehAI != "") then { // sanity checks
 				pr _unit = T_GETV("agent");
 				CALLM1(_assignedVehAI, "unassignUnit", _unit);
+			} else {
+				OOP_WARNING_1("AI of assigned vehicle %1 doesn't exist", _assignedVehicle);
 			};
 			
 			T_SETV("assignedVehicle", nil);
@@ -85,6 +94,7 @@ CLASS("AIUnitInfantry", "AI")
 		};
 		pr _hO = GETV(_thisObject, "hO");
 		unassignVehicle _hO;
+		[_hO] orderGetIn false;
 	} ENDMETHOD;
 	
 	/*
@@ -100,6 +110,8 @@ CLASS("AIUnitInfantry", "AI")
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]] ];
 
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
+
+		OOP_INFO_2("Assigning %1 as a DRIVER of %2", _thisObject, _veh);
 
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");
@@ -159,6 +171,8 @@ CLASS("AIUnitInfantry", "AI")
 	METHOD("assignAsTurret") {
 		params [ ["_thisObject", "", [""]], ["_veh", "", [""]], ["_turretPath", [], [[]]] ];
 		
+		OOP_INFO_3("Assigning %1 as a TURRET %2 of %3", _thisObject, _turretPath, _veh);
+
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
 		
 		// Unassign this inf unit from its current vehicle
@@ -196,6 +210,8 @@ CLASS("AIUnitInfantry", "AI")
 		
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
 		
+		OOP_INFO_3("Assigning %1 as CARGO INDEX %2 of %3", _thisObject, _cargoIndex, _veh);
+
 		// Unassign this inf unit from its current vehicle
 		CALLM0(_thisObject, "unassignVehicle");
 		

@@ -114,8 +114,18 @@ pr _attachItem = [];
 //fuel
 pr _fuel = _vehicle call JN_fnc_fuel_get;
 pr _fuelCap = _vehicle call JN_fnc_fuel_getCapacity;
+
+//fuel cargo
 pr _fuelcargo = _vehicle call JN_fnc_fuel_getCargo;
 pr _fuelcargoCap = _vehicle call JN_fnc_fuel_getCargoCapacity;
+
+//fuel cargo
+pr _ammocargo = _vehicle call JN_fnc_ammo_getCargo;
+pr _ammocargoCap = _vehicle call JN_fnc_ammo_getCargoCapacity;
+
+//fuel cargo
+pr _repaircargo = _vehicle call JN_fnc_repair_getCargo;
+pr _repaircargoCap = _vehicle call JN_fnc_repair_getCargoCapacity;
 
 //set defaults
 pr _beingChanged = "";

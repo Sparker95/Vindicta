@@ -8,6 +8,8 @@ Author: Sparker 26.11.2018
 
 #define RETURN 
 
+//#define DEBUG
+
 CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	
 	// ------------ N E W ------------
@@ -20,42 +22,78 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
+		#ifdef DEBUG
+		OOP_INFO_0("ACTIVATE");
+		#endif
+
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+		
 		pr _hO = GETV(_thisObject, "hO");
+		/*
 		if (vehicle _hO isEqualTo _hO) then {
 			// We are done here
 			// Good job
 			// Outstanding
 			
+			#ifdef DEBUG
+			OOP_INFO_0("Completed at activation");
+			#endif
+			
 			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 			RETURN ACTION_STATE_COMPLETED;
 		} else {
+		*/
 			// Unassign from vehicle
+			
 			pr _AI = GETV(_thisObject, "AI");
+			
+			#ifdef DEBUG
+			OOP_INFO_1("Unassigning %1 from vehicle", _AI);
+			#endif
+			
 			CALLM0(_AI, "unassignVehicle");
 		
 			// Set state
 			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 			// Return ACTIVE state
 			RETURN ACTION_STATE_ACTIVE;
-		};		
+		//};		
 	} ENDMETHOD;
 	
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		#ifdef DEBUG
+		OOP_INFO_0("PROCESS");
+		#endif
+		
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _hO = GETV(_thisObject, "hO");
 			// Did we dismount already?
 			if ((vehicle _hO) isEqualTo _hO) then {
+			
+				#ifdef DEBUG
+				OOP_INFO_0("Unit has dismounted");
+				#endif
+			
 				// If yes, the action is complete
 				SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 				
 				// Return
 				RETURN ACTION_STATE_COMPLETED;
 			} else {
+			
+				#ifdef DEBUG
+				OOP_INFO_0("Unit has not dismounted");
+				#endif
+			
 				// If not, order to dismount
 				_hO action ["getOut", vehicle _hO];
 				

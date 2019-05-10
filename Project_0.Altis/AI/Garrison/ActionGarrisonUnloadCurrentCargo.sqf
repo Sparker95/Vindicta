@@ -19,7 +19,7 @@ CLASS("ActionGarrisonUnloadCurrentCargo", "Action")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -33,7 +33,11 @@ CLASS("ActionGarrisonUnloadCurrentCargo", "Action")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
@@ -42,6 +46,10 @@ CLASS("ActionGarrisonUnloadCurrentCargo", "Action")
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 	} ENDMETHOD;
 
 ENDCLASS;

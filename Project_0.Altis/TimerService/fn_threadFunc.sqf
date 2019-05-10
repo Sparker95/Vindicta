@@ -14,6 +14,9 @@ Access: Internal use.
 
 params [["_thisObject", "", [""]]];
 
+#ifdef _SQF_VM // Don't want to run this in VM testing mode
+diag_log format ["[TimerService::threadFunc] Disabled due to SQFvm mode"];
+#else
 diag_log format ["[TimerService::threadFunc] Info: thread started"];
 
 private _mutex = GET_VAR(_thisObject, "mutex");
@@ -44,7 +47,7 @@ while {true} do {
 				//diag_log format [" --- Timer posted message to: %1,  msgID: %2", _msgReceiver, _newID];
 			} else {
 				private _msg = _x select TIMER_DATA_ID_MESSAGE;
-				diag_log format ["[TimerService::threadFunc] Info: Message not posted: %1,  msgID: %2", _msg, _msgID];
+				OOP_WARNING_MSG("[TimerService::threadFunc] Info: Message not posted: %1,  msgID: %2", [_msg]+[_msgID]);
 			};
 			
 			// Set the time when the timer will fire next time
@@ -53,3 +56,4 @@ while {true} do {
 	} forEach _timers;
 	MUTEX_UNLOCK(_mutex);
 };
+#endif

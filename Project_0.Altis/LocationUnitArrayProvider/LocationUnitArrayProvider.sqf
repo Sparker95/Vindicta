@@ -1,4 +1,5 @@
 #include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
 
 /*
 Class: LocationUnitArrayProvider
@@ -11,6 +12,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	VARIABLE("spawnWest"); //These units can spawn West locations
 	VARIABLE("spawnEast"); // These units can spawn East locations
 	VARIABLE("spawnInd"); // These units can spawn Independant locations
+	VARIABLE("timer");
 
 	// |                              N E W
 	/*
@@ -24,6 +26,13 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		SET_VAR(_thisObject, "spawnWest", []);
 		SET_VAR(_thisObject, "spawnEast", []);
 		SET_VAR(_thisObject, "spawnInd", []);
+		
+		// Create a timer for gLUAP
+		private _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		private _args = [_thisObject, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+		private _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
 	} ENDMETHOD;
 
 
@@ -33,7 +42,8 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-
+		
+		DELETE(T_GETV("timer"));
 	} ENDMETHOD;
 
 
@@ -79,7 +89,8 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		switch (_side) do {
 			case WEST: {GET_VAR(_thisObject, "spawnWest")};
 			case EAST: {GET_VAR(_thisObject, "spawnEast")};
-			case INDEPENDENT: {GET_VAR(_thisObject, "spawnInd")}
+			case INDEPENDENT: {GET_VAR(_thisObject, "spawnInd")};
+			default {[]};
 		};
 	} ENDMETHOD;
 

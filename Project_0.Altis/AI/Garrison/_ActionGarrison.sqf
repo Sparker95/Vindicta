@@ -20,41 +20,35 @@ CLASS("ActionGarrison", "Action")
 		SETV(_thisObject, "gar", _gar);
 	} ENDMETHOD;
 
-
-
 	/*
-	Method: handleGroupsAdded
-	Override in your action to perform special handling of what happens when groups are added while your action is running.
-	By default it doesn't do anything.
+	Method: spawn
+	Gets called from Garrison.spawn. It must perform non-standard spawning of garrison while this action is active.
 	
-	Parameters: _groups
-	
-	_groups - Array of <Group>
-	
-	Returns: nil
+	Returns: Bool. Return true if you have handled spawning here. If you return false, Garrison.spawn will perform spawning on its own.
 	*/
-	METHOD("handleGroupsAdded") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		
-		nil
+	METHOD("spawn") {
+		params ["_thisObject"];
+		false
 	} ENDMETHOD;
 
-
 	/*
-	Method: handleGroupsRemoved
-	Override in your action to perform special handling of what happens when groups are removed while your action is running.
-	By default it doesn't do anything.
+	Method: onGarrisonSpawned
+	Gets called after the garrison has been spawned.
 	
-	Parameters: _groups
-	
-	_groups - Array of <Group>
-	
-	Returns: nil
+	Returns: Nothing.
 	*/
-	METHOD("handleGroupsRemoved") {
-		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
-		
-		nil
+	METHOD("onGarrisonSpawned") {
+		params ["_thisObject"];
 	} ENDMETHOD;
 	
+	/*
+	Method: onGarrisonDespawned
+	Gets called after the garrison has been despawned.
+	
+	Returns: Nothing.
+	*/
+	METHOD("onGarrisonDespawned") {
+		params ["_thisObject"];
+	} ENDMETHOD;
+
 ENDCLASS;

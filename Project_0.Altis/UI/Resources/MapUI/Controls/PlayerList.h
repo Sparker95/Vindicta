@@ -5,14 +5,8 @@ class PlayerList_Panel : Map_UI_panel
     y = safeZoneY + safeZoneH * 0.43923612;
     w = safeZoneW * 0.25976563;
     h = safeZoneH * 0.53993056;
-    style = 0;
     text = "";
     colorBackground[] = {0,0,0,0.5};
-    colorText[] = {1,1,1,1};
-    font = "PuristaMedium";
-    lineSpacing = 1;
-    onMouseEnter = "";
-    onMouseExit = "";
     show = 0;
     enable = 0;
 };

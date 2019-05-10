@@ -1,20 +1,6 @@
 #define OOP_INFO
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
-#include "Message\Message.hpp"
-#include "CriticalSection\CriticalSection.hpp"
-
-/*
-Dirty init.sqf
-add inits here until it's so fucked up, then redo it all over again
-*/
-
-//==== Locations initialization
-// player allowDamage false;
-
-
-// Initialize OOP classes and other things
-//call compile preprocessFileLineNumbers "initModules.sqf";
 
 // If a client, wait for the server to finish its initialization
 if (!isServer) then {
@@ -29,146 +15,45 @@ if (!isServer) then {
 	OOP_INFO_0(_str);
 };
 
-// Initialize global objects in unscheduled
-CRITICAL_SECTION_START
+CRITICAL_SECTION {
 
-OOP_INFO_0("Init.sqf: Creating global objects...");
+	gGameMode = NEW("AITestBenchGameMode", []); //"BasesGameMode", []);
+	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];
+	CALLM(gGameMode, "init", []);
+	diag_log format["Initialized game mode %1", GETV(gGameMode, "name")];
 
-// Init global objects
-
-// Main timer service
-gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
-
-// Headless clients and server only
-if (isServer || (!hasInterface && !isDedicated)) then {
-	// Main message loop for garrisons
-	gMessageLoopMain = NEW("MessageLoop", []);
-	CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
-
-	// Global debug printer for tests
-	private _args = ["TestDebugPrinter", gMessageLoopMain];
-	gDebugPrinter = NEW("DebugPrinter", _args);
-
-	// Message loop for group AI
-	gMessageLoopGroupAI = NEW("MessageLoop", []);
-	CALL_METHOD(gMessageLoopGroupAI, "setDebugName", ["Group AI thread"]);
-
-	// Message loop for Stimulus Manager
-	gMessageLoopStimulusManager = NEW("MessageLoop", []);
-	CALL_METHOD(gMessageLoopStimulusManager, "setDebugName", ["Stimulus Manager thread"]);
-
-	// Global Stimulus Manager
-	gStimulusManager = NEW("StimulusManager", []);
-
-	// Message loop for locations
-	gMessageLoopLocation = NEW("MessageLoop", []);
-	CALL_METHOD(gMessageLoopLocation, "setDebugName", ["Location thread"]);
-
-	// Location unit array provider
-	gLUAP = NEW("LocationUnitArrayProvider", []);
-	// Create a timer for gLUAP
-	private _msg = MESSAGE_NEW();
-	_msg set [MESSAGE_ID_DESTINATION, gLUAP];
-	_msg set [MESSAGE_ID_SOURCE, ""];
-	_msg set [MESSAGE_ID_DATA, 666];
-	_msg set [MESSAGE_ID_TYPE, 666];
-	private _args = [gLUAP, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
-	private _LUAPTimer = NEW("Timer", _args);
+	serverInitDone = 1;
+	publicVariable "serverInitDone";
 };
 
-// Server only
-if (isServer) then {
+// OOP_INFO_0("Init.sqf: Creating global objects...");
 
-	// Garrison objects to track players and player owned vehicles
-	gGarrisonPlayersWest = NEW("Garrison", [WEST]);
-	gGarrisonPlayersEast = NEW("Garrison", [EAST]);
-	gGarrisonPlayersInd = NEW("Garrison", [INDEPENDENT]);
-	gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
-	gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
+// // Init global objects
+// call compile preprocessFileLineNumbers "initGlobals.sqf";
 
-	// Message loops for commander AI
-	gMessageLoopCommanderWest = NEW("MessageLoop", []);
-	gMessageLoopCommanderInd = NEW("MessageLoop", []);
-	gMessageLoopCommanderEast = NEW("MessageLoop", []);
+// // Headless Clients only
+// if (!hasInterface && !isDedicated) then {
+// 	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
+// 	OOP_INFO_0(_str);
+// 	systemChat _str;
 
-	// Commander AIs
-	// West
-	gCommanderWest = NEW("Commander", []);
-	private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
-	gAICommanderWest = NEW_PUBLIC("AICommander", _args);
-	publicVariable "gAICommanderWest";
-	// Independent
-	gCommanderInd = NEW("Commander", []);
-	private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
-	gAICommanderInd = NEW_PUBLIC("AICommander", _args);
-	publicVariable "gAICommanderInd";
-	// East
-	gCommanderEast = NEW("Commander", []);
-	private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
-	gAICommanderEast = NEW_PUBLIC("AICommander", _args);
-	publicVariable "gAICommanderEast";
+// 	// Test: ask the server to create an object and pass it to this computer
+// 	[clientOwner, {
+// 		private _remoteOwner = _this;
+// 		diag_log format ["---- Connected headless client with owner ID: %1. RemoteExecutedOwner: %2, isRemoteExecuted: %3", _remoteOwner, remoteExecutedOwner, isRemoteExecuted];
+// 		diag_log format ["all players: %1, all headless clients: %2", allPlayers, entities "HeadlessClient_F"];
+// 		diag_log format ["Owners of headless clients: %1", (entities "HeadlessClient_F") apply {owner _x}];
 
-
-	// Create locations and other things
-	OOP_INFO_0("Init.sqf: Calling initWorld...");
-	call compile preprocessFileLineNumbers "Init\initWorld.sqf";
-
-	// addMissionEventHandlers
-	private _onPlayerConnectedMissionEH = {
-		params ["_id", "_uid", "_name", "_jip", "_owner"];
-
-		OOP_DEBUG_1("player connected str this: %1", str _this);
-		OOP_DEBUG_1("player connected this: %1", _this);
-		OOP_DEBUG_1("player connected _id: %1", _id);
-		OOP_DEBUG_1("player connected _uid: %1", _uid);
-		OOP_DEBUG_1("player connected _name: %1", _name);
-		OOP_DEBUG_1("player connected _jip: %1", _jip);
-		OOP_DEBUG_1("player connected _owner: %1", _owner);
-	};
-	handlercon = addMissionEventHandler ["PlayerConnected", _onPlayerConnectedMissionEH];
-
-	// Add friendly locations to commanders
-	// And start them
-	{
-		CALLM0(_x, "updateFriendlyLocationsData");
-		CALLM1(_x, "setProcessInterval", 10);
-		CALLM0(_x, "start");
-	} forEach [gAICommanderWest, gAICommanderInd, gAICommanderEast];
-};
-
-
-// Headless Clients only
-if (!hasInterface && !isDedicated) then {
-	private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
-	OOP_INFO_0(_str);
-	systemChat _str;
-
-	// Test: ask the server to create an object and pass it to this computer
-	[clientOwner, {
-		private _remoteOwner = _this;
-		diag_log format ["---- Connected headless client with owner ID: %1. RemoteExecutedOwner: %2, isRemoteExecuted: %3", _remoteOwner, remoteExecutedOwner, isRemoteExecuted];
-		diag_log format ["all players: %1, all headless clients: %2", allPlayers, entities "HeadlessClient_F"];
-		diag_log format ["Owners of headless clients: %1", (entities "HeadlessClient_F") apply {owner _x}];
-
-		private _args = ["Remote DebugPrinter test", gMessageLoopMain];
-		remoteDebugPrinter = NEW("DebugPrinter", _args);
-		CALLM(remoteDebugPrinter, "setOwner", [_remoteOwner]); // Transfer it to the machine that has connected
-		diag_log format ["---- Created a debug printer for the headless client: %1", remoteDebugPrinter];
-
-	}] remoteExec ["spawn", 2, false];
-};
+// 		private _args = ["Remote DebugPrinter test", gMessageLoopMain];
+// 		remoteDebugPrinter = NEW("DebugPrinter", _args);
+// 		CALLM(remoteDebugPrinter, "setOwner", [_remoteOwner]); // Transfer it to the machine that has connected
+// 		diag_log format ["---- Created a debug printer for the headless client: %1", remoteDebugPrinter];
+// 	}] remoteExec ["spawn", 2, false];
+// };
 
 // Only players
-if (hasInterface) then {
-	diag_log "----- Player detected!";
 
-	0 spawn {
-		waitUntil {!((finddisplay 12) isEqualTo displayNull)};
-		call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
-	};
-};
-
-OOP_INFO_0("Init.sqf: Init done!");
+// OOP_INFO_0("Init.sqf: Init done!");
 
 
 
@@ -329,8 +214,3 @@ while {true}do{
 
 };
 */
-
-serverInitDone = 1;
-publicVariable "serverInitDone";
-
-CRITICAL_SECTION_END

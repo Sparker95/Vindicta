@@ -9,7 +9,7 @@ Author: Sparker 12.11.2018
 
 #define pr private
 
-CLASS("AIGroup", "AI")
+CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
 

@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sid",["Variable","Class"],[["side",,[["Intel.IntelLocation",,,,0,"File:Intel/Intel.sqf:Intel.IntelLocation.side","SQFClass:Intel.IntelLocation:side"]]],["SideStat",,[[,,,,1,"File:SideStat/SideStat.sqf:SideStat","SQFClass:SideStat"]]]]);

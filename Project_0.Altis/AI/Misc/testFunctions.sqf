@@ -15,7 +15,7 @@ AI_misc_fnc_forceUnitAction = {
 	params [ ["_objectHandle", objNull, [objNull]], ["_actionClassName", "", [""]], ["_parameters", []], ["_updateInterval", 1, [1]] ];
 
 	// Find the AI of this objectHandle
-	pr _unit = _objectHandle getVariable "unit";
+	pr _unit = _objectHandle getVariable "__u";
 	if (isNil "_unit") exitWith { diag_log "Error: object handle is not a unit!"; };
 
 	// Get the unit's group
@@ -61,7 +61,7 @@ AI_misc_fnc_forceGroupAction = {
 	params [ ["_objectHandle", objNull, [objNull]], ["_actionClassName", "", [""]], ["_parameters", []], ["_updateInterval", 3, [1]] ];
 
 	// Find the AI of this objectHandle
-	pr _unit = _objectHandle getVariable "unit";
+	pr _unit = _objectHandle getVariable "__u";
 	if (isNil "_unit") exitWith { diag_log "Error: object handle is not a unit!"; };
 
 	// Get the unit's group
@@ -103,7 +103,7 @@ AI_misc_fnc_addGroupGoal = {
 	params [ ["_objectHandle", objNull, [objNull]], ["_goalClassName", "", [""]], ["_parameters", []]];
 
 	// Find the AI of this objectHandle
-	pr _unit = _objectHandle getVariable "unit";
+	pr _unit = _objectHandle getVariable "__u";
 	if (isNil "_unit") exitWith { diag_log "Error: object handle is not a unit!"; };
 
 	// Get the unit's group
@@ -127,7 +127,7 @@ call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 AI_misc_fnc_addGarrisonGoal = {
 	params [ ["_objectHandle", objNull, [objNull]], ["_goalClassName", "", [""]], ["_parameters", []]];
 
-	pr _unit = _objectHandle getVariable "unit";
+	pr _unit = _objectHandle getVariable "__u";
 	if (isNil "_unit") exitWith { diag_log "Error: object handle is not a unit!"; };
 
 	// Get the unit's garrison
@@ -137,9 +137,9 @@ AI_misc_fnc_addGarrisonGoal = {
 	if (isNil "_garAI") exitWith {diag_log "Error: garrison AI is not found!";};
 
 	// Delete previously given external goals
-	CALLM2(_garAI, "deleteExternalGoal", "", _goalSource);
+	//CALLM2(_garAI, "deleteExternalGoal", "", _goalSource);
 
-	CALLM4(_garAI, "addExternalGoal", _goalClassName, 0, _parameters, _goalSource);
+	CALLM(_garAI, "postMethodAsync", ["addExternalGoal" ARG [_goalClassName ARG 0 ARG _parameters ARG _goalSource]]);
 
 	_gar
 };

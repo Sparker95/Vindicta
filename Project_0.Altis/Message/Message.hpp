@@ -33,11 +33,12 @@ macro: MESSAGE_NEW()
 
 Returns: a new <Message>
 */
-#define MESSAGE_NEW() ["", "", clientOwner, MESSAGE_ID_NOT_REQUESTED, 0, 0]
+
+#define MESSAGE_NEW() ["", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, 0]
 
 /*Macro: MESSAGE_NEW_SHORT(destination, type)
 Creates a short message which only has destination and type*/
-#define MESSAGE_NEW_SHORT(dest, type) [dest, "", clientOwner, MESSAGE_ID_NOT_REQUESTED, type, 0]
+#define MESSAGE_NEW_SHORT(dest, type) [dest, "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, type, 0]
 
 //msgID value if it was not requested to return it
 //needed for MessageReceiver and MessageLoop classes

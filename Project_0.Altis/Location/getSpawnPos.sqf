@@ -126,10 +126,16 @@ if(_found) then {//If the spawn position has been found
 		_return = [_posReturn, _dirReturn];
 } else {
 	//Provide default spawn position
-	private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
-	private _locPos = GET_VAR(_thisObject, "pos");
-	_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
-	diag_log format ["[Location::getSpawnPos] Warning: spawn position not for unit: %1. Returning default position.", [_catID, _subcatID, _groupType]];
+	if (_catID == T_INF) then {
+		private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
+		private _locPos = GET_VAR(_thisObject, "pos");
+		_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
+		diag_log format ["[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID, _subcatID, _groupType]];
+	} else {
+		// Try to find a safe position on a road for this vehicle
+		private _locPos = GET_VAR(_thisObject, "pos");
+		_return = CALLSM2("Location", "findSafePosOnRoad", _locPos, _className);
+	};
 };
 
 _return

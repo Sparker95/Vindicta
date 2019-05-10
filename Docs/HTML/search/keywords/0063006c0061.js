@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("cla",["Macro"],[["CLASS",,[[,,,,0,"File:UI_OOP/oop.h:CLASS"]]],["CLASS_EXTENDS",,[[,,,,0,"File:UI_OOP/oop.h:CLASS_EXTENDS"]]]]);

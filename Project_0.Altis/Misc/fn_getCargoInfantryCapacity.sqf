@@ -23,7 +23,6 @@ for "_i" from 0 to ((count _vehArray) - 1) do
 {
 	private _veh = _vehArray select _i;
 	
-	diag_log format ["%1", _veh];
 	
 	if (_veh isEqualType objNull) then {_veh = typeOf _veh};
 	
@@ -33,6 +32,7 @@ for "_i" from 0 to ((count _vehArray) - 1) do
 	
 	private _n_cargo = getNumber (_vehCfg >> "transportSoldier");
 	
+	// diag_log format ["%1 %2 turrets %3 cargo seats", _veh, (count _psgTurrets), _n_cargo];
 	_nCargoSeats = _nCargoSeats + (count _psgTurrets) + _n_cargo;
 };
 

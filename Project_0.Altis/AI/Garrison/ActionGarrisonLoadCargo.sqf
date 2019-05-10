@@ -19,7 +19,7 @@ CLASS("ActionGarrisonLoadCargo", "Action")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
@@ -33,7 +33,7 @@ CLASS("ActionGarrisonLoadCargo", "Action")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE

@@ -293,8 +293,17 @@ CLASS("Action", "MessageReceiver")
 	/* virtual */ METHOD("getSubactions") { [] } ENDMETHOD;
 	
 	
+	/*
+	Method: getFrontSubaction
+	Returns this action. This function is here for common interface with ActionComposite.
 	
+	Returns: _thisObject
+	*/
 	
+	METHOD("getFrontSubaction") {
+		params [ "_thisObject" ];
+		_thisObject
+	} ENDMETHOD;	
 	
 	
 	
@@ -340,7 +349,7 @@ CLASS("Action", "MessageReceiver")
 	*/
 	METHOD("isFailed") {
 		params [["_thisObject", "", [""]]];
-		(GETV(_thisObject, "state")) == ACTION_STATE_COMPLETED
+		(GETV(_thisObject, "state")) == ACTION_STATE_FAILED
 	} ENDMETHOD;
 	
 	
@@ -449,18 +458,97 @@ CLASS("Action", "MessageReceiver")
 	
 	_parameters - array with parameters
 	_tag - Number or String, parameter tag
+	_showError - Bool, default true, will show error if parameter with given tag is not found
 	
 	Returns: anything
 	*/
 	STATIC_METHOD("getParameterValue") {
-		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]]];
+		params [ ["_thisClass", "", [""]], ["_parameters", [], [[]]], ["_tag", "", ["", 0]], ["_showError", true]];
 		pr _index = _parameters findif {_x select 0 == _tag};
 		if (_index == -1) then {
-			diag_log format ["[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters];
+			if (_showError) then {
+				OOP_INFO_3("[%1::getParameterValue] Error: parameter with tag %2 was not found in parameters array: %3", _thisClass, _tag, _parameters);
+			};
 			nil
 		} else {
 			(_parameters select _index) select 1
 		};
+	} ENDMETHOD;
+
+
+
+	// Virtual methods for hierarchy compatibility, handle units/groups added/removed
+
+	/*
+	Method: handleGroupsAdded
+	Override in your action to perform special handling of what happens when groups are added while your action is running.
+	By default it doesn't do anything.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		nil
+	} ENDMETHOD;
+
+
+	/*
+	Method: handleGroupsRemoved
+	Override in your action to perform special handling of what happens when groups are removed while your action is running.
+	By default it doesn't do anything.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		nil
+	} ENDMETHOD;
+	
+	
+	/*
+	Method: handleUnitsRemoved
+	Handles what happens when units get removed from their garrison, for instance when they gets destroyed, while this action is running.
+	
+	Access: internal
+	
+	Parameters: _units
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		nil
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsAdded
+	Handles what happens when units get added to a garrison while this action is running.
+	
+	Access: internal
+	
+	Parameters: _unit
+	
+	_units - Array of <Unit> objects
+	
+	Returns: nil
+	*/
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		nil
 	} ENDMETHOD;
 	
 ENDCLASS;

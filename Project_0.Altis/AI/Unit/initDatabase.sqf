@@ -21,6 +21,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalUnitDismountCurrentVehicle",	50] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitFlee",					100] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
+["GoalUnitNothing",					1] call AI_misc_fnc_setGoalIntrinsicRelevance;
+
 ["GoalUnitVehicleUnflip",			10] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
 // ---- Goal effects ----
@@ -39,6 +41,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalUnitDismountCurrentVehicle", "ActionUnitDismountCurrentVehicle"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitVehicleUnflip", "ActionUnitVehicleUnflip"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalUnitFlee", "ActionUnitFlee"] call AI_misc_fnc_setGoalPredefinedAction;
+
+["GoalUnitNothing", "ActionUnitNothing"] call AI_misc_fnc_setGoalPredefinedAction;
 
 
 

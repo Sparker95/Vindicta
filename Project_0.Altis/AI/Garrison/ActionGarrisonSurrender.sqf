@@ -4,6 +4,8 @@
 Class: ActionGarrison.ActionGarrisonSurrender
 */
 
+#define pr private
+
 CLASS("ActionGarrisonSurrender", "ActionGarrison")
 
 	METHOD("activate") {
@@ -28,7 +30,12 @@ CLASS("ActionGarrisonSurrender", "ActionGarrison")
 
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		CALLM(_thisObject, "activateIfInactive", []);
+
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
+
+		CALLM0(_thisObject, "activateIfInactive");
 
 		ACTION_STATE_COMPLETED
 	} ENDMETHOD;

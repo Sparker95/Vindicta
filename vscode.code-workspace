@@ -1,0 +1,63 @@
+{
+	"folders": [
+		{
+			"path": "Project_0.Altis",
+			"name": "Mission Root"
+		},
+		{
+			"path": "..\\..\\..\\..\\AppData\\Local\\Arma 3",
+			"name": "RPTs"
+		},
+		{
+			"path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Arma 3\\Logs",
+			"name": "arma3ostream logs"
+		},
+		{
+			"path": ".",
+			"name": "Project Root"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"*.rpt": "log"
+		},
+		"logFileHighlighter.customPatterns": [
+			{
+				"pattern": "INFO:",
+				"foreground": "Gray"
+			},
+			{
+				"pattern": "WARNING:",
+				"foreground": "Yellow"
+			},
+			{
+				"pattern": "ERROR:",
+				"foreground": "Red"
+			}
+		],
+		"files.exclude": {
+			"**/*.bidmp": true,
+			"**/*.mdmp": true,
+			"**/AnimDataCache": true,
+			"**/DataCache": true,
+			"**/MonetizedServersCache": true,
+			"**/MPMissionsCache": true,
+			"**/OfficialServersCache": true,
+			"**/SteamMissionsCache": true,
+			"**/SteamPreviewCache": true,
+			"**/mpStat*.*": true,
+			"**/squads": true,
+			"**/*.sqm*": true,
+			"**/~*": true
+		},
+		"todo-tree.showTagsFromOpenFilesOnly": false,
+		"todo-tree.defaultHighlight": {
+			"icon": "tasklist",
+			"type": "text",
+			"foreground": "gray",
+			"background": "blue",
+			"opacity": 40,
+			"iconColour": "white"
+		}
+	}
+}

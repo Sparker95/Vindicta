@@ -1,12 +1,4 @@
-#define OOP_INFO
-#include "..\..\OOP_Light\OOP_Light.h"
-#include "..\..\Message\Message.hpp"
-#include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
-#include "..\stimulusTypes.hpp"
-#include "..\commonStructs.hpp"
-#include "..\Stimulus\Stimulus.hpp"
-
+#include "common.hpp"
 
 /*
 Sensor for commander that receives data about composition of a location.
@@ -64,7 +56,7 @@ CLASS("SensorCommanderLocation", "SensorStimulatable")
 		
 		OOP_INFO_1("Received location data: %1", _stimulus);
 		pr _AI = T_GETV("AI");
-		CALLM1(_AI, "updateLocationData", _stimulus select STIMULUS_ID_VALUE); // stimulus value is location
+		CALLM2(_AI, "updateLocationData", _stimulus select STIMULUS_ID_VALUE, CLD_UPDATE_LEVEL_UNITS); // stimulus value is location
 	} ENDMETHOD;
 	
 ENDCLASS;

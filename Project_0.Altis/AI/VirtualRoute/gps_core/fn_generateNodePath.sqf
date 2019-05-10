@@ -7,22 +7,27 @@
   @Return : ARRAY - Array of road nodes
 **/
 
+private _defaultCostFunction = { 
+		//params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
+		_base_cost
+};
+private _defaultDistanceFunction = { 
+		params ["_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
+		_goalRoute distance _next
+};
 params [
 	["_startRoute",objNull,[objNull]],
 	["_goalRoute",objNull,[objNull]],
-	["_costFunction", { 
-		params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute"];
-		_base_cost
-	}],
-	["_distanceFunction", { 
-		params ["_current", "_next", "_startRoute", "_goalRoute"];
-		_goalRoute distance _next
-	}]
+	["_costFunction", ""],
+	["_distanceFunction", ""],
+  ["_callbackArgs", []]
 ];
 
+if(_costFunction isEqualType "") then {_costFunction = _defaultCostFunction; };
+if(_distanceFunction isEqualType "") then {_distanceFunction = _defaultDistanceFunction; };
 private _start_t = time;
 diag_log format ["[generateNodePath] %1, %2", _startRoute, _goalRoute];
-private _came_from = [_startRoute,_goalRoute,gps_allCrossRoadsWithWeight,_costFunction,_distanceFunction] call gps_core_fnc_aStar;
+private _came_from = [_startRoute, _goalRoute, gps_allCrossRoadsWithWeight, _costFunction, _distanceFunction, _callbackArgs] call gps_core_fnc_aStar;
 
 if(_came_from isEqualTo []) then { throw "PATH_NOT_FOUND_CAMEFROM" };
 diag_log format ["[generateNodePath] came_from: %1", _came_from];

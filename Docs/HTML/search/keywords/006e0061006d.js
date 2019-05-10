@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("nam",["Macro"],[["NAMESPACE",,[[,,,,0,"File:UI_OOP/oop.h:NAMESPACE"]]]]);

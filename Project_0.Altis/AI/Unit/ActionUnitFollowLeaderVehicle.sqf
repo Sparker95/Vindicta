@@ -28,6 +28,12 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+
 		pr _hO = GETV(_thisObject, "hO");
 		
 		// Order to follow leader
@@ -49,7 +55,7 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hO = GETV(_thisObject, "hO");
 		pr _dist = (vehicle _hO) distance (vehicle leader group _hO);
@@ -83,7 +89,6 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 						pr _road = (_nr select 0) select 0;
 						_hO doMove (getpos _road);
 						_triedRoads pushBack _road;
-						T_SETV("stuckTimer", 0);
 					};
 				} else {
 					// Allright this shit is serious
@@ -102,10 +107,9 @@ CLASS("ActionUnitFollowLeaderVehicle", "ActionUnit")
 						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
 						_hVeh setPos _newPos;
 					};
-
-					
 				};				
 				
+				T_SETV("stuckTimer", 0);
 				T_SETV("stuckCounter", _stuckCounter + 1);
 			};
 		} else {

@@ -1,3 +1,6 @@
+@echo off 
+
+cd /d "%~dp0"
 REM use CALL command to call multiple .bat files!
 set missionFolder=Project_0.Altis
 

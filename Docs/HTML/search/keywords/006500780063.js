@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("exc",["Macro"],[["EXCEPTION",,[[,,,,0,"File:UI_OOP/oop.h:EXCEPTION"]]]]);

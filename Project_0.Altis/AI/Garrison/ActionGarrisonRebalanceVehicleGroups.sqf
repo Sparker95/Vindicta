@@ -19,7 +19,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -45,7 +45,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
 			pr _nInf = count CALLM0(_x, "getInfantryUnits");
 			
-			OOP_INFO_2("Analyzing vehicle group: %1, required drivers: %2, required turret operators: %3", _group, _nDrivers, _nTurrets);
+			OOP_INFO_3("Analyzing vehicle group: %1, required drivers: %2, required turret operators: %3", _group, _nDrivers, _nTurrets);
 			
 			pr _nMoreUnitsRequired = _nDrivers + _nTurrets - _nInf;
 			if (_nMoreUnitsRequired > 0) then {
@@ -61,7 +61,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					if (isNil "_receivingGroup") then {
 						pr _args = [CALLM0(_group, "getSide"), GROUP_TYPE_IDLE];
 						_receivingGroup = NEW("Group", _args);
-						CALLM0(_receivingGroup, "spawn");
+						CALLM0(_receivingGroup, "spawnAtLocation");
 						CALLM1(_gar, "addGroup", _receivingGroup);
 						_freeGroups pushBack _receivingGroup;
 					};
@@ -103,9 +103,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 		} forEach _vehGroups;
 		*/
+
+		// Delete empty groups
+		CALLM0(_gar, "deleteEmptyGroups");
 		
 		// Call the health sensor again so that it can update the world state properties
-		CALLM0(GETV(_AI, "sensorHealth"), "update");
+		CALLM0(GETV(_AI, "sensorState"), "update");
 		
 		pr _ws = GETV(_AI, "worldState");
 		
@@ -125,7 +128,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		T_SETV("state", _state);

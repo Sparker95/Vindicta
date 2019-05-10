@@ -17,13 +17,23 @@
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="new"></a><a name="Topic210"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic101"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
- <div class="CBody"><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>side of this garrison</p></td></tr></table></div>
+ <div class="CBody"><p>Parameters: _side, _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>side of this garrison</p></td></tr><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>optional, default position to set to the garrison</p></td></tr></table></div>
 </div>
 
 <a name="delete"></a><a name="Topic211"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
+</div>
+
+<a name="activate"></a><a name="Topic200"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">activate</div>
+ <div class="CBody"><p>Start AI, register with commander and global garrison list</p></div>
+</div>
+
+<a name="(static)getAll"></a><a name="Topic540"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getAll</div>
+ <div class="CBody"><p>Returns all garrisons</p><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>optional, Side of garrisons to returns. If side is not provided, returns all garrisons.</p></td></tr></table><p>Returns: Array with <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> objects</p></div>
 </div>
 
 <a name="getMessageLoop"></a><a name="Topic212"></a><div class="CTopic TFunction LSQF">
@@ -34,6 +44,11 @@
 <a name="setLocation"></a><a name="Topic213"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setLocation</div>
  <div class="CBody"><p>Sets the location of this garrison</p><p>Parameters: _location</p><table class="CDefinitionList"><tr><td class="CDLEntry">_location</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a></p></td></tr></table></div>
+</div>
+
+<a name="setPos"></a><a name="Topic541"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">setPos</div>
+ <div class="CBody"><p>Sets the position of this garrison. Note that position can be updated later on its own by garrison's actions.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table></div>
 </div>
 
 <a name="getSide"></a><a name="Topic214"></a><div class="CTopic TFunction LSQF">
@@ -76,9 +91,29 @@
  <div class="CBody"><p>Returns the AI object of this garrison.</p><p>Returns: Array of <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects.</p></div>
 </div>
 
+<a name="getPos"></a><a name="Topic565"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getPos</div>
+ <div class="CBody"><p>Returns the position of the garrison. It's the same as position world state property.</p><p>Returns: Array</p></div>
+</div>
+
+<a name="isEmpty"></a><a name="Topic566"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isEmpty</div>
+ <div class="CBody"><p>Returns true if garrison is empty (has no units)</p><p>Returns: Bool</p></div>
+</div>
+
+<a name="isSpawned"></a><a name="Topic201"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isSpawned</div>
+ <div class="CBody"><p>Returns true if garrison is spawned</p><p>Returns: Bool</p></div>
+</div>
+
 <a name="findGroupsByType"></a><a name="Topic222"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">findGroupsByType</div>
  <div class="CBody"><p>Finds groups in this garrison that have the same type as _type</p><p>Parameters: _type</p><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>Number, one of &lt;GROUP_TYPE&gt;, or Array with such numbers</p></td></tr></table><p>Returns: Array with <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> objects.</p></div>
+</div>
+
+<a name="countAllUnits"></a><a name="Topic198"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">countAllUnits</div>
+ <div class="CBody"><p>Returns all units of this garrison.</p><p>Returns: Array of <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects.</p></div>
 </div>
 
 <a name="addUnit"></a><a name="Topic223"></a><div class="CTopic TFunction LSQF">
@@ -101,6 +136,21 @@
  <div class="CBody"><p>Removes an existing group from this garrison.&nbsp; You don't need to call this. Use addGroup when you need to move groups between garrisons.</p><p>Parameters: _group</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unit</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
+<a name="deleteEmptyGroups"></a><a name="Topic568"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">deleteEmptyGroups</div>
+ <div class="CBody"><p>DeletesEmptyGroups in this garrison</p><p>Returns: nil</p></div>
+</div>
+
+<a name="addGarrison"></a><a name="Topic569"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">addGarrison</div>
+ <div class="CBody"><p>Moves all units and groups from another garrison to this one.</p><p>Parameters: _garrison, _delete</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr><tr><td class="CDLEntry">_delete</td><td class="CDLDefinition"><p>Bool, optional, deletes the _garrison, default: false. Deletion doesn't happen immediately.</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="addUnitsAndGroups"></a><a name="Topic550"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">addUnitsAndGroups</div>
+ <div class="CBody"><p>Moves all specified units and groups from another garrison to this one.&nbsp; Before moving, it ensures that all provided units are still in this garrison.&nbsp; New groups for infantry units and vehicle units are created.&nbsp; ALl provided units and groups must originate in one garrison!</p><p>Parameters: _garrison, _units, _groups</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garSrc</td><td class="CDLDefinition"><p>source <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a></p></td></tr><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>array of <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr><tr><td class="CDLEntry">_groupsAndUnits</td><td class="CDLDefinition"><p>array of [_group, _units]</p></td></tr></table><p>Returns: Bool, true if move was performed properly</p></div>
+</div>
+
 <a name="getRequiredCrew"></a><a name="Topic227"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getRequiredCrew</div>
  <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this garrison.</p><p>Returns: [_nDrivers, _nTurrets]</p></div>
@@ -109,6 +159,31 @@
 <a name="mergeVehicleGroups"></a><a name="Topic228"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">mergeVehicleGroups</div>
  <div class="CBody"><p>Merges or splits vehicle group(s)</p><p>Parameters: _merge</p><table class="CDefinitionList"><tr><td class="CDLEntry">_merge</td><td class="CDLDefinition"><p>Bool, true to merge, false to split</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="addEfficiency"></a><a name="Topic551"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">addEfficiency</div>
+ <div class="CBody"><p>Adds values to efficiency vector</p><p>Private use!</p><p>Returns: nil</p></div>
+</div>
+
+<a name="subEfficiency"></a><a name="Topic552"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">subEfficiency</div>
+ <div class="CBody"><p>Substracts values to efficiency vector</p><p>Private use!</p><p>Returns: nil</p></div>
+</div>
+
+<a name="getEfficiencyMobile"></a><a name="Topic553"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getEfficiencyMobile</div>
+ <div class="CBody"><p>Returns efficiency of all mobile units</p><p>Returns: Efficiency vector</p></div>
+</div>
+
+<a name="getEfficiencyTotal"></a><a name="Topic554"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getEfficiencyTotal</div>
+ <div class="CBody"><p>Returns efficiency of all mobile units</p><p>Returns: Efficiency vector</p></div>
+</div>
+
+<a name="spawnAndDetach"></a><a name="Topic555"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">spawnAndDetach</div>
+ <div class="CBody"><p>Spawnes the garrison and detaches it from its current location</p><p>Returns: nil</p></div>
 </div>
 
 <a name="getSubagents"></a><a name="Topic229"></a><div class="CTopic TFunction LSQF">
@@ -126,7 +201,12 @@
  <div class="CBody"><p>Called when someone enters a vehicle that belongs to this garrison.</p><p>Must be called inside the garrison thread through postMethodAsync, not inside event handler.</p><p>Parameters: _unitVeh, _unitInf</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unitVeh</td><td class="CDLDefinition"><p>the vehicle</p></td></tr><tr><td class="CDLEntry">_unitInf</td><td class="CDLDefinition"><p>the unit that entered the vehicle</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="countUnits"></a><a name="Topic207"></a><div class="CTopic TFunction LSQF">
+<a name="findUnits"></a><a name="Topic205"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">findUnits</div>
+ <div class="CBody"><p>Returns an array of units with specified category and subcategory</p><p>Parameters: _query</p><table class="CDefinitionList"><tr><td class="CDLEntry">_query</td><td class="CDLDefinition"><p>array of [_catID, _subcatID].&nbsp; _subcatID can be -1 if you don't care about a subcategory match.</p></td></tr></table><p>Returns: Array of units <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> class</p></div>
+</div>
+
+<a name="countUnits"></a><a name="Topic206"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">countUnits</div>
  <div class="CBody"><p>Counts amount of units with specified category and subcategory</p><p>Parameters: _query</p><table class="CDefinitionList"><tr><td class="CDLEntry">_query</td><td class="CDLDefinition"><p>array of [_catID, _subcatID].&nbsp; _subcatID can be -1 if you don't care about a subcategory match.</p></td></tr></table><p>Returns: Array of units <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> class</p></div>
 </div>
@@ -134,11 +214,6 @@
 <a name="spawn"></a><a name="Topic204"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">spawn</div>
  <div class="CBody"><p>Despawns all groups and units in this garrison.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Returns: nil</p></div>
-</div>
-
-<a name="findUnits"></a><a name="Topic201"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">findUnits</div>
- <div class="CBody"><p>Returns an array of units with specified category and subcategory</p><p>Parameters: _query</p><table class="CDefinitionList"><tr><td class="CDLEntry">_query</td><td class="CDLDefinition"><p>array of [_catID, _subcatID].&nbsp; _subcatID can be -1 if you don't care about a subcategory match.</p></td></tr></table><p>Returns: Array of units <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> class</p></div>
 </div>
 
 <a name="spawn"></a><a name="Topic193"></a><div class="CTopic TFunction LSQF last">

@@ -92,6 +92,13 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		//Set the closest WP as current
 		_hG setCurrentWaypoint [_hG, _closestWPID];
 		
+		// Give a goal to units
+		pr _units = CALLM0(_group, "getInfantryUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitNothing", 0, [], _AI);
+		} forEach _units;
+
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 		
@@ -104,7 +111,9 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
@@ -118,6 +127,16 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		
 		// Delete all waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
+
+				
+		// Delete given goals
+		pr _AI = T_GETV("AI");
+		pr _group = GETV(_AI, "agent");
+		pr _units = CALLM0(_group, "getUnits");
+		{
+			pr _unitAI = CALLM0(_x, "getAI");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
+		} forEach _units;
 		
 	} ENDMETHOD;
 

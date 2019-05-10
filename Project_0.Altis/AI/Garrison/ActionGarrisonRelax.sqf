@@ -74,7 +74,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
+
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		ACTION_STATE_ACTIVE
@@ -84,6 +88,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		// Delete assigned patrol goals
 		pr _AI = GETV(_thisObject, "AI");
 		pr _gar = GETV(_AI, "agent");

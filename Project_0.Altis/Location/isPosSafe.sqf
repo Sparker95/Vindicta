@@ -93,7 +93,7 @@ _arrow setPosATL _posCheck;
 */
 
 //diag_log format ["%1 %2", _posCheck, _bx];
-_o = nearestObjects [_posCheck, ["allVehicles"], _bx max 1.7, true];
+_o = nearestObjects [_posCheck, ["allVehicles"], (_bx*1.3) max 1.7, true];
 //player setPos _pos;
 //diag_log format ["fn_isPosSafe: near objects %1: %2", _bx, _o];
 _i = 0;

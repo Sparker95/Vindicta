@@ -1,7 +1,9 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+
 //#define NAMESPACE uiNamespace
+
 #include "..\..\OOP_Light\OOP_Light.h"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -15,17 +17,19 @@ That's how we draw locations
 
 #define CLASS_NAME "MapMarkerLocation"
 
-CLASS(CLASS_NAME, "MapMarker");
+CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
+	VARIABLE("intel"); // Intel object associated with this
 	STATIC_VARIABLE("selectedLocationMarkers");
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params ["_thisObject", ["_intel", "", [""]]];
 		CALLM2(_thisObject, "setEventSize", 20, 20);
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
+		T_SETV("intel", _intel);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -141,11 +145,11 @@ CLASS(CLASS_NAME, "MapMarker");
 
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
-				pr _pos = T_GETV("pos");
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_pos]);
+				pr _intel = T_GETV("intel");
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_intel]);
 			} else {
 				// Deselect everything
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
 			};
 		};
 	} ENDMETHOD;
@@ -201,13 +205,15 @@ CLASS(CLASS_NAME, "MapMarker");
 			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
 
 			// Update location data panel
-			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
 		};
 	} ENDMETHOD;
 
 ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
+
+#ifndef _SQF_VM
 
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
@@ -222,6 +228,7 @@ SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
 */
 
 // Make some test markers
+/*
 pr _testMarker = NEW("MapMarkerLocation", []);
 pr _pos = [333, 333];
 CALLM1(_testMarker, "setPos", _pos);
@@ -239,3 +246,7 @@ pr _pos = [666, 666];
 CALLM1(_testMarker, "setPos", _pos);
 pr _color = [0, 0.8, 0.8, 1];
 CALLM1(_testMarker, "setColor", _color);
+*/
+
+
+#endif

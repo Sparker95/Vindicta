@@ -2,7 +2,7 @@
 
 /*
 Class: ActionGroup.ActionGroupRegroup
-The whole group regroups around squad leader
+The whole group regroups around squad leader, units dismount their vehicles.
 */
 
 #define pr private
@@ -21,7 +21,7 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		// Set behaviour
 		pr _hG = GETV(_thisObject, "hG");
@@ -50,7 +50,9 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "failIfEmpty");
+		
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// This action is terminal because it's never over right now
 		

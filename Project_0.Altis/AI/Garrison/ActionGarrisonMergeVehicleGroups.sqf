@@ -28,7 +28,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		pr _gar = T_GETV("gar");
 		pr _merge = T_GETV("merge");
@@ -38,7 +38,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _AI = T_GETV("AI");
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, _merge] call ws_setPropertyValue;
-		
+
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 		
@@ -51,7 +51,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		// Return the current state
 		_state

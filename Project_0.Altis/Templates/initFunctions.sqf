@@ -8,3 +8,4 @@ t_fnc_isValid = compile preprocessfilelinenumbers "Templates\fn_isValid.sqf";
 t_fnc_getEfficiency = compile preprocessFileLineNumbers "Templates\fn_getEfficiency.sqf";
 t_fnc_convertConfigGroup = compile preprocessFileLineNumbers "Templates\fn_convertConfigGroup.sqf";
 t_fnc_getDefaultCrew = compile preprocessFileLineNumbers "Templates\fn_getDefaultCrew.sqf";
+t_fnc_canDestroy = compile preprocessFileLineNumbers "Templates\fn_canDestroy.sqf";

@@ -25,8 +25,14 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+
 		pr _hO = T_GETV("hO");
 		pr _pos = T_GETV("pos");
 		_hO doMove _pos;
@@ -50,7 +56,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		pr _state = CALLM(_thisObject, "activateIfInactive", []);
+		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		if (_state == ACTION_STATE_ACTIVE) then {
 		

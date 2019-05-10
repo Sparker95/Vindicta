@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("deb",["Class"],[["DebugPrinter",,[["MessageReceiver",,,,0,"File:DebugPrinter/DebugPrinter.sqf:MessageReceiver.DebugPrinter","SQFClass:MessageReceiver.DebugPrinter"]]]]);
+NDSearch.OnPrefixDataLoaded("deb",["Function","Class"],[["debugDraw",,[[,,,,0,"File:AI/VirtualRoute/VirtualRoute.sqf:debugDraw"]]],["DebugPrinter",,[["MessageReceiver",,,,1,"File:DebugPrinter/DebugPrinter.sqf:MessageReceiver.DebugPrinter","SQFClass:MessageReceiver.DebugPrinter"]]]]);

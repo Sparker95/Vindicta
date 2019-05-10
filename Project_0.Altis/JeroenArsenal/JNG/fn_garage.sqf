@@ -109,9 +109,6 @@ switch _mode do {
 		//["TabSelectLeft",[_display,0],true] call jn_fnc_garage;
 
 		["showMessage",[_display,"Jeroen (Not) Limited Garage"]] call jn_fnc_arsenal;
-
-		//how current resources
-		["ShowStats",[_display]] call jn_fnc_garage;
 		
 		["jn_fnc_garage"] call bis_fnc_endLoadingScreen;
 	};
@@ -558,6 +555,7 @@ switch _mode do {
 			case IDC_JNG_TAB_STATIC: {
 				DECOMPILE_DATA
 				["Preview", [_display,_data,_index]] call jn_fnc_garage;
+				["ShowStats",[_display,_data,_index]] call jn_fnc_garage;
 			};
 			case IDC_JNG_TAB_REPAIR: {
 
@@ -1791,12 +1789,25 @@ switch _mode do {
 			[_center,_attachment, false,false] call jn_fnc_logistics_load;
 		};
 
-		//Load fuel and fuelcargo
+		//Load fuel
 		[_center, _fuelCap] 		call JN_fnc_fuel_setCapacity;//must be done before setting fuel value
 		[_center, _fuel] 			call JN_fnc_fuel_set;
+		
+		//load fuelCargo
 		if(_fuelcargoCap > 0)then{
 			[_center,_fuelcargoCap,_fuelcargo] call jn_fnc_fuel_addActionRefuel;
 		};
+		
+		//load ammoCargo
+		if(_ammocargoCap > 0)then{
+			[_center,_ammocargoCap,_ammocargo] call JN_fnc_ammo_addActionRearm;
+		};
+		
+		//load repairCargo
+		if(_repaircargoCap > 0)then{
+			[_center,_repaircargoCap,_repaircargo] call JN_fnc_repair_addActionRepair;
+		};
+		
 		
 		_center//return
 	};
@@ -1878,8 +1889,10 @@ switch _mode do {
 
 	///////////////////////////////////////////////////////////////////////////////////////////
 	case "ShowStats": {
-		params ["_display"];
-		
+		params ["_display","_data","_index"];
+
+		SPLIT_SAVE
+
 		pr _ctrlStats = _display displayctrl IDC_RSCDISPLAYARSENAL_STATS_STATS;
 		pr _ctrlStatsPos = ctrlposition _ctrlStats;
 		_ctrlStatsPos set [0,0];
@@ -1889,27 +1902,11 @@ switch _mode do {
 		pr _barMin = 0.01;
 		pr _barMax = 1;
 
-		pr _object = UINamespace getVariable "jn_object";
-
-		_statControls = [
-			[IDC_RSCDISPLAYARSENAL_STATS_STAT1,IDC_RSCDISPLAYARSENAL_STATS_STATTEXT1, "xxxxxx"],
-			[IDC_RSCDISPLAYARSENAL_STATS_STAT2,IDC_RSCDISPLAYARSENAL_STATS_STATTEXT2, "xxxxxx"],
-			[IDC_RSCDISPLAYARSENAL_STATS_STAT3,IDC_RSCDISPLAYARSENAL_STATS_STATTEXT3, "xxxxxx"],
-			[IDC_RSCDISPLAYARSENAL_STATS_STAT4,IDC_RSCDISPLAYARSENAL_STATS_STATTEXT4, " ?? paint Liters ??"],
-			[IDC_RSCDISPLAYARSENAL_STATS_STAT5,IDC_RSCDISPLAYARSENAL_STATS_STATTEXT5, " ?? and ideas what else ??"]
-		];
-
-		{
-			_ctrlStat = _display displayctrl (_x select 0);
-			_ctrlText = _display displayctrl (_x select 1);
-
-			_ctrlStat progresssetposition 0;
-			_ctrlText ctrlsettext (_x select 2);
-		} forEach _statControls;
-		
-		["UpdatePoints",[_object getVariable ["jng_fuel",0],STATTYPE_FUEL]] call jn_fnc_garage;
-		["UpdatePoints",[_object getVariable ["jng_ammoPoints",0],STATTYPE_AMMO]] call jn_fnc_garage;
-		["UpdatePoints",[_object getVariable ["jng_repairPoints",0],STATTYPE_REPAIR]] call jn_fnc_garage;
+		["UpdatePoints",[round((1-getdammage _center)*100),100, STATTYPE_DAMAGE]] call jn_fnc_garage;
+		["UpdatePoints",[_fuel,_fuelCap, STATTYPE_FUEL]] call jn_fnc_garage;
+		["UpdatePoints",[_fuelcargo, _fuelcargoCap, STATTYPE_FUELCARGO]] call jn_fnc_garage;
+		["UpdatePoints",[_ammocargo, _ammocargoCap, STATTYPE_AMMOCARGO]] call jn_fnc_garage;
+		["UpdatePoints",[_repaircargo, _repaircargoCap, STATTYPE_REPAIRCARGO]] call jn_fnc_garage;
 		
 		_ctrlStats ctrlsetfade 0;
 		_ctrlStats ctrlcommit FADE_DELAY;
@@ -1948,26 +1945,30 @@ switch _mode do {
 	
 		///////////////////////////////////////////////////////////////////////////////////////////
 	case "UpdatePoints":{
-		params["_amount","_type"];
+		params["_amount","_amountMax","_type"];
+		pr _procentage = if(_amountMax != 0)then{_amount/_amountMax}else{0};
 		
 		pr _object = UINamespace getVariable "jn_object";
 		
 		pr _ctrlStat = _display displayctrl (IDC_RSCDISPLAYARSENAL_STATS_STAT1 +_type);
 		pr _ctrlText = _display displayctrl (IDC_RSCDISPLAYARSENAL_STATS_STATTEXT1 +_type);
 		
-		_ctrlStat progresssetposition 1;//TODO
-		
+		_ctrlStat progresssetposition _procentage;
+
 		_text = switch _type do{
+			case STATTYPE_DAMAGE:{
+				"Healt: %1%"
+			};
 			case STATTYPE_FUEL:{
-				_object setVariable ["jng_fuel",_amount];
-				"Fuel: %1"
+				"Fuel: %1L"
 			};
-			case STATTYPE_AMMO:{
-				_object setVariable ["jng_ammoPoints",_amount];
+			case STATTYPE_FUELCARGO:{
+				"Fuel cargo: %1L"
+			};
+			case STATTYPE_AMMOCARGO:{
 				"Ammo points: %1x"
-			};
-			case STATTYPE_REPAIR:{
-				_object setVariable ["jng_repairPoints",_amount];
+						};
+			case STATTYPE_REPAIRCARGO:{
 				"Repair points: %1x"
 			};
 		};

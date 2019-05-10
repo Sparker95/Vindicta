@@ -1,10 +1,12 @@
 #include "..\defineCommon.inc"
 
+#define STATTYPE_DAMAGE 0
+#define STATTYPE_FUEL 1
+#define STATTYPE_FUELCARGO 2
+#define STATTYPE_AMMOCARGO 3
+#define STATTYPE_REPAIRCARGO 4
+#define STATTYPES [STATTYPE_FUEL,STATTYPE_FUELCARGO,STATTYPE_AMMO,STATTYPE_REPAIR]
 
-#define STATTYPE_FUEL 0
-#define STATTYPE_AMMO 1
-#define STATTYPE_REPAIR 2
-#define STATTYPES [STATTYPE_FUEL,STATTYPE_AMMO,STATTYPE_REPAIR]
 #define FADE_DELAY	0.15
 
 #define IDC_JNG_TAB_CAR TYPE_CAR
@@ -63,15 +65,19 @@
 		"_fuel",\
 		"_fuelCap",\
 		"_fuelcargo",\
-		"_fuelcargoCap"\
+		"_fuelcargoCap",\
+		"_ammocargo",\
+		"_ammocargoCap",\
+		"_repaircargo",\
+		"_repaircargoCap"\
 	];\
 	
 #define COMPILE_SAVE\
-	if(isnil "_name" || isnil "_beingChanged" || isnil "_locked" || isnil "_lockedName"  || isnil "_type" || isnil "_texture" || isnil "_animations" || isnil "_ammoClassic"|| isnil "_ammoPylon"|| isnil "_ammoClassic" || isnil "_damage" || isnil "_fuel" || isnil "_fuelCap" || isnil "_fuelcargo" || isnil "_fuelcargoCap" || isnil "_fuelCap")then{\
+	if(isnil "_name" || isnil "_beingChanged" || isnil "_locked" || isnil "_lockedName"  || isnil "_type" || isnil "_texture" || isnil "_animations" || isnil "_ammoClassic"|| isnil "_ammoPylon"|| isnil "_ammoClassic" || isnil "_damage" || isnil "_fuel" || isnil "_fuelCap" || isnil "_fuelcargo" || isnil "_fuelcargoCap" || isnil "_ammocargo" || isnil "_ammocargoCap" || isnil "_repaircargo" || isnil "_repaircargoCap")then{\
 		["ERROR COMPILE_SAVE JGA"] call BIS_fnc_error;\
 		diag_log "ERROR COMPILE_SAVE JGA";\
 	};\
-	pr _data = [_name, _beingChanged, _locked, _lockedName, _type, _texture, _animations, _ammoClassic, _ammoPylon, _damage, _attachItem, _fuel, _fuelCap,_fuelcargo,_fuelcargoCap];\
+	pr _data = [_name, _beingChanged, _locked, _lockedName, _type, _texture, _animations, _ammoClassic, _ammoPylon, _damage, _attachItem, _fuel, _fuelCap,_fuelcargo,_fuelcargoCap,_ammocargo,_ammocargoCap,_repaircargo,_repaircargoCap];\
 	pr _datastr = str _data;
 	
 #define SPLIT_REARM\

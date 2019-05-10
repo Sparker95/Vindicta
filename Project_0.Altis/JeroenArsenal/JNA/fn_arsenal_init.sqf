@@ -294,11 +294,13 @@ if(hasInterface)then{
 
             if(_type isEqualTo "arsenal")then{
                 [clientOwner, UINamespace getVariable "jn_object"] remoteExecCall ["jn_fnc_arsenal_requestClose",2];
+				UINamespace setVariable ["jn_type",""];
             };
 
             if(_type isEqualTo "container")then{
                 ["Close"] call jn_fnc_arsenal_container;
                 [clientOwner, UINamespace getVariable "jn_object"] remoteExecCall ["jn_fnc_arsenal_requestClose",2];
+				UINamespace setVariable ["jn_type",""];
             };
         }] call BIS_fnc_addScriptedEventHandler;
     };

@@ -40,6 +40,12 @@ CLASS("ActionUnitSalute", "Action")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+
 		SETV(_thisObject, "activationTime", time);
 		
 		pr _oh = GETV(_thisObject, "objectHandle");
@@ -81,7 +87,7 @@ CLASS("ActionUnitSalute", "Action")
 		
 		diag_log "salute process was called!";
 		
-		CALLM(_thisObject, "activateIfInactive", []);
+		CALLM0(_thisObject, "activateIfInactive");
 		
 		// If action is not active now, do nothing
 		pr _state = GETV(_thisObject, "state");

@@ -12,15 +12,17 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // The actual relevance returned by goal can be different from the one which is set below
 
 ["GoalGroupRelax",								1] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupNothing",							2] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupPatrol",								30] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupRegroup",							35] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInVehiclesAsCrew",				40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInGarrisonVehiclesAsCargo",		40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupOccupySentryPositions",				50] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupMoveGroundVehicles",					60] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupInfantryMove",						61] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupInfantryFollowGroundVehicles",		62] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupUnflipVehicles",						70] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupClearArea",							80] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupMoveToPos",							100] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupSurrender",							150] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupFlee", 								200] call AI_misc_fnc_setGoalIntrinsicRelevance;
 
@@ -41,9 +43,11 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupOccupySentryPositions", "ActionGroupOccupySentryPositions"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupMoveGroundVehicles", "ActionGroupMoveGroundVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupUnflipVehicles", "ActionGroupUnflipVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
-["GoalGroupMoveToPos", "ActionGroupMoveToPos"] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupInfantryMove", "ActionGroupInfantryMove"] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupInfantryFollowGroundVehicles", "ActionGroupInfantryFollowGroundVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupSurrender", "ActionGroupSurrender"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupflee", "ActionGroupFlee"] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupNothing", "ActionGroupNothing"] call AI_misc_fnc_setGoalPredefinedAction;
 
 
 

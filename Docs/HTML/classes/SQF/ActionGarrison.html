@@ -17,14 +17,19 @@
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="handleGroupsAdded"></a><a name="Topic76"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">handleGroupsAdded</div>
- <div class="CBody"><p>Override in your action to perform special handling of what happens when groups are added while your action is running.&nbsp; By default it doesn't do anything.</p><p>Parameters: _groups</p><table class="CDefinitionList"><tr><td class="CDLEntry">_groups</td><td class="CDLDefinition"><p>Array of <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a></p></td></tr></table><p>Returns: nil</p></div>
+<a name="spawn"></a><a name="Topic534"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">spawn</div>
+ <div class="CBody"><p>Gets called from Garrison.spawn. It must perform non-standard spawning of garrison while this action is active.</p><p>Returns: Bool. Return true if you have handled spawning here. If you return false, Garrison.spawn will perform spawning on its own.</p></div>
 </div>
 
-<a name="handleGroupsRemoved"></a><a name="Topic77"></a><div class="CTopic TFunction LSQF last">
- <div class="CTitle">handleGroupsRemoved</div>
- <div class="CBody"><p>Override in your action to perform special handling of what happens when groups are removed while your action is running.&nbsp; By default it doesn't do anything.</p><p>Parameters: _groups</p><table class="CDefinitionList"><tr><td class="CDLEntry">_groups</td><td class="CDLDefinition"><p>Array of <a href="../../index.html#SQFClass:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a></p></td></tr></table><p>Returns: nil</p></div>
+<a name="onGarrisonSpawned"></a><a name="Topic535"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">onGarrisonSpawned</div>
+ <div class="CBody"><p>Gets called after the garrison has been spawned.</p><p>Returns: Nothing.</p></div>
+</div>
+
+<a name="onGarrisonDespawned"></a><a name="Topic536"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">onGarrisonDespawned</div>
+ <div class="CBody"><p>Gets called after the garrison has been despawned.</p><p>Returns: Nothing.</p></div>
 </div>
 
 </body></html>
