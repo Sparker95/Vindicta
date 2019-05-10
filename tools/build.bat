@@ -12,6 +12,8 @@ if ERRORLEVEL 1 (
 rem CD into build tool directory
 cd /d "%~dp0buildtool"
 
+rem Clean first, never want to do iterative build, it makes no sense
+call npx gulp clean
 rem Build missions
 call npx gulp
 
