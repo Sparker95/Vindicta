@@ -28,7 +28,7 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_item);
-			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], T_GETV("side"), _item);
+			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], T_GETV("side"), _item);
 		};
 	} ENDMETHOD;
 
@@ -41,7 +41,7 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_itemDst);
-			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], T_GETV("side"), _itemDst);
+			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], T_GETV("side"), _itemDst);
 		};
 	} ENDMETHOD;
 
