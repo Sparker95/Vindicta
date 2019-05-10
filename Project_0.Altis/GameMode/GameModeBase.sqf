@@ -25,7 +25,7 @@ CLASS("GameModeBase", "")
 
 		T_CALLM("preInitAll", []);
 
-		if(isServer || IS_HEADLESSCLIENT) then {
+		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
 			gMessageLoopMain = NEW("MessageLoop", []);
 			CALL_METHOD(gMessageLoopMain, "setDebugName", ["Main thread"]);
@@ -54,18 +54,19 @@ CLASS("GameModeBase", "")
 
 			T_CALLM("initServerOrHC", []);
 		};
-		if(isServer) then {
+		if(IS_SERVER) then {
 			T_CALLM("initCommanders", []);
+			#ifndef _SQF_VM
 			T_CALLM("initLocations", []);
 			T_CALLM("initSideStats", []);
 			T_CALLM("initMissionEventHandlers", []);
-			//T_CALLM("startCommanders", []);
+			T_CALLM("startCommanders", []);
+			#endif
 			//T_CALLM("registerKnownLocations", []);
 
 			T_CALLM("initServerOnly", []);
-
 		};
-		if (hasInterface || IS_HEADLESSCLIENT) then {
+		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
 		};
 		if (IS_HEADLESSCLIENT) then {
@@ -90,7 +91,7 @@ CLASS("GameModeBase", "")
 
 			T_CALLM("initHCOnly", []);
 		};
-		if(hasInterface) then {
+		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
 			0 spawn {
 				waitUntil {!((finddisplay 12) isEqualTo displayNull)};
@@ -169,7 +170,7 @@ CLASS("GameModeBase", "")
 		gCommanderInd = NEW("Commander", []); // all commanders are equal
 		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
 		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
-		publicVariable "gAICommanderInd";
+		PUBLIC_VARIABLE "gAICommanderInd";
 		gCommanders pushBack gAICommanderInd;
 
 		if(gFlagAllCommanders) then { // but some are more equal
@@ -181,14 +182,14 @@ CLASS("GameModeBase", "")
 			gCommanderWest = NEW("Commander", []);
 			private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
 			gAICommanderWest = NEW_PUBLIC("AICommander", _args);
-			publicVariable "gAICommanderWest";
+			PUBLIC_VARIABLE "gAICommanderWest";
 			gCommanders pushBack gAICommanderWest;
 
 			// East
 			gCommanderEast = NEW("Commander", []);
 			private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
 			gAICommanderEast = NEW_PUBLIC("AICommander", _args);
-			publicVariable "gAICommanderEast";
+			PUBLIC_VARIABLE "gAICommanderEast";
 			gCommanders pushBack gAICommanderEast;
 		};
 	} ENDMETHOD;
@@ -390,7 +391,7 @@ CLASS("GameModeBase", "")
 		private _args = [EAST, 5];
 		SideStatWest = NEW("SideStat", _args);
 		gSideStatWestHR = CALLM0(SideStatWest, "getHumanResources");
-		publicVariable "gSideStatWestHR";
+		PUBLIC_VARIABLE "gSideStatWestHR";
 	} ENDMETHOD;
 
 	// create MissionEventHandlers

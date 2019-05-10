@@ -43,6 +43,7 @@
 // #define OOP_ASSERT_ACCESS
 
 #ifdef _SQF_VM
+
 #define TEXT_
 #undef ASP_ENABLE
 #undef OFSTREAM_ENABLE
@@ -58,8 +59,13 @@
 
 #define TIME_NOW 0
 #define CLIENT_OWNER objNull
+#define IS_SERVER true
+#define HAS_INTERFACE true
+#define IS_HEADLESSCLIENT false
+#define PUBLIC_VARIABLE isNil
 
 #else
+
 #define TEXT_ text
 
 #define VM_LOG(t)
@@ -67,6 +73,10 @@
 
 #define TIME_NOW time
 #define CLIENT_OWNER clientOwner
+#define IS_SERVER isServer
+#define HAS_INTERFACE hasInterface
+#define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
+#define PUBLIC_VARIABLE publicVariable
 
 #endif
 
@@ -98,6 +108,12 @@
 
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
+
+// ----------------------------------------------------------------------
+// |               C O N F I G   E N T R Y   P O I N T                  |
+// ----------------------------------------------------------------------
+
+#include "..\config\oop_config.hpp"
 
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
