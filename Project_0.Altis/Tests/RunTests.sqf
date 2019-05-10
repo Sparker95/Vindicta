@@ -74,7 +74,7 @@ if (isNil "OOP_Light_initialized") then {
 };
 
 diag_log "----------------------------------------------------------------------";
-diag_log "|               I N I T I A L I Z I N G   C L A S S E S              |";
+diag_log "|               I N I T I A L I Z I N G   M O D U L E S              |";
 diag_log "----------------------------------------------------------------------";
 {
 	call compile preprocessFileLineNumbers "initModules.sqf";
@@ -87,10 +87,10 @@ except__
 };
 
 diag_log "----------------------------------------------------------------------";
-diag_log "|               I N I T I A L I Z I N G   G L O B A L S              |";
+diag_log "|                  I N I T I A L I Z I N G   M A I N                 |";
 diag_log "----------------------------------------------------------------------";
 {
-	call compile preprocessFileLineNumbers "initGlobals.sqf";
+	call compile preprocessFileLineNumbers "init.sqf";
 }
 except__
 {

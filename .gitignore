@@ -14,3 +14,5 @@ Project_0.Altis/mission.sqm
 .vscode/ipch/*
 Project_0.Altis/.vscode/ipch/*
 temp/*
+node_modules
+_build

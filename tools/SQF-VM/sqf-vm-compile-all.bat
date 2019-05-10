@@ -1,5 +1,5 @@
 @echo off 
-cd /d "%~dp0SQF-VM"
+cd /d "%~dp0"
 
 FOR /R "%~dp0../Project_0.Altis" %%G in (*.sqf) DO (
     rem echo sqfvm.exe -a --parse-only --load "./../.." -i "%%G"
