@@ -1,51 +1,53 @@
 #define OOP_INFO
-#define OOP_DEBUG
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
 
 // Class: Location
 /*
 Method: initFromEditor
-Initializes the location parameters from editor-placed objects.
+Initializes the location parameters from editor-plased objects.
 
-Parameters: _locationSector
+Parameters: _marker
 
-_locationSector - Object -> Location Module
+_marker - the marker to initialize from
 
 Returns: nil
 
 Author: Sparker 28.07.2018
 */
 
-params ["_thisObject", "_locationSector"];
+#define pr private
 
-// Setup location's border from location module properties
-private _locSize = _locationSector getVariable ["objectArea", ""];
+params [ ["_thisObject", "", [""]], ["_marker", "", [""]] ];
 
-if (_locSize select 0 == _locSize select 1) then { // if width==height, make it a circle
-	private _radius = _locSize select 0;
+// Setup location's border from marker properties
+private _mrkSize = getMarkerSize _marker;
+if(_mrkSize select 0 == _mrkSize select 1) then { // if width==height, make it a circle
+	private _radius = _mrkSize select 0;
 	private _args = ["circle", _radius];
 	CALL_METHOD(_thisObject, "setBorder", _args);
 } else { // If width!=height, make border a rectangle
-	private _dir = direction _locationSector;
-	private _args = ["rectangle", [_locSize select 0, _locSize select 1, _dir] ];
+	private _dir = markerDir _marker;
+	private _args = ["rectangle", [_mrkSize select 0, _mrkSize select 1, _dir] ];
 	CALL_METHOD(_thisObject, "setBorder", _args);
 };
 
 // Setup marker allowed areas
-private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
+pr _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0}) select {
 	CALLM1(_thisObject, "isInBorder", markerPos _x)
 };
+OOP_INFO_1("Allowed areas inside this location: %1", _allowedAreas);
 {
-	private _pos = markerPos _x;
+	pr _pos = markerPos _x;
 	(markerSize _x) params ["_a", "_b"];
-	private _dir = markerDir _x;
+	pr _dir = markerDir _x;
 	OOP_INFO_1("Adding allowed area: %1", _x);
 	CALLM4(_thisObject, "addAllowedArea", _pos, _a, _b, _dir);
 } forEach _allowedAreas;
 
 // Setup location's spawn positions
 private _radius = GET_VAR(_thisObject, "boundingRadius");
+diag_log format ["Bounding radius: %1", _radius];
 private _locPos = GET_VAR(_thisObject, "pos");
 private _no = _locPos nearObjects _radius;
 
@@ -57,7 +59,6 @@ private _bc = []; //Building capacity
 private _inf_capacity = 0;
 private _position = [];
 private _bdir = 0; //Building direction
-
 {
 	_object = _x;
 	if(CALL_METHOD(_thisObject, "isInBorder", [_object])) then
@@ -109,6 +110,6 @@ private _bdir = 0; //Building direction
 			deleteVehicle _object;
 		};
 	};
-} forEach _no;
+}forEach _no;
 
 CALL_METHOD(_thisObject, "calculateInfantryCapacity", []);

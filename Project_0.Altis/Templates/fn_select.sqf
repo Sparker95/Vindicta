@@ -15,7 +15,7 @@ private _return = nil;
 
 if(count _template <= _catID) then
 {
-	diag_log format ["fn_select.sqf: Template/Category not found: %1, _tpl: %2", _catID, _template];
+	diag_log format ["fn_select.sqf: Template: category not found: %1", _catID];
 	nil
 }
 else
@@ -23,7 +23,7 @@ else
 	private _cat = _template select _catID;
 	if (isNil "_cat") then
 	{
-		diag_log format ["fn_select.sqf: Template: category is Nil : %1", _catID];
+		diag_log format ["fn_select.sqf: Template: category not found: %1", _catID];
 	}
 	else
 	{
