@@ -79,11 +79,6 @@ class CfgFunctions {
 	{
 		class randomThings
 		{
-			// Call initModules.sqf in preinit because we need to compile functions/classes before JIP functions are called
-			class initModules {
-				preInit = 1;
-				file = "initModules.sqf";
-			};
             class preInit {
 				preInit = 1;
 				file = "preInit.sqf";

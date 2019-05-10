@@ -59,7 +59,7 @@ CLASS("GameModeBase", "")
 			T_CALLM("initLocations", []);
 			T_CALLM("initSideStats", []);
 			T_CALLM("initMissionEventHandlers", []);
-			T_CALLM("startCommanders", []);
+			//T_CALLM("startCommanders", []);
 			//T_CALLM("registerKnownLocations", []);
 
 			T_CALLM("initServerOnly", []);
@@ -252,7 +252,13 @@ CLASS("GameModeBase", "")
 	// 		case INDEPENDENT: { tAAF };
 	// 	}
 	// } ENDMETHOD;
-	
+
+	//#define ADD_TRUCKS
+	//#define ADD_UNARMED_MRAPS
+	//#define ADD_ARMED_MRAPS
+	//#define ADD_TANKS
+	#define ADD_APCS_IFVS
+	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
 		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry")];
 		
@@ -312,6 +318,7 @@ CLASS("GameModeBase", "")
 		// Add default vehicles
 		// Some trucks
 		private _i = 0;
+		#ifdef ADD_TRUCKS
 		while {_cVehGround > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
@@ -323,8 +330,11 @@ CLASS("GameModeBase", "")
 			};
 			_i = _i + 1;
 		};
+		#endif
 
+		// Unarmed MRAPs
 		_i = 0;
+		#ifdef ADD_UNARMED_MRAPS
 		while {(_cVehGround > 0) && _i < 1} do  {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_MRAP_unarmed ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
@@ -336,7 +346,10 @@ CLASS("GameModeBase", "")
 			};
 			_i = _i + 1;
 		};
+		#endif
 
+		// APCs
+		#ifdef ADD_APCS_IFVS
 		{
 			_x params ["_chance", "_min", "_max", "_type"];
 			if(random 1 <= _chance) then {
@@ -349,6 +362,7 @@ CLASS("GameModeBase", "")
 				};
 			};
 		} forEach _vehGroupSpec;
+		#endif
 
 		// Static weapons
 		if (_cHMGGMG > 0) then {
