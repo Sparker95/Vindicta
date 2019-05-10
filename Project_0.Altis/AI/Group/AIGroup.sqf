@@ -12,6 +12,7 @@ Author: Sparker 12.11.2018
 CLASS("AIGroup", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
+	VARIABLE("suspTarget");	// "suspicious" players collected by SensorGroupTargets
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -20,6 +21,8 @@ CLASS("AIGroup", "AI_GOAP")
 		
 		// Make sure that the needed MessageLoop exists
 		ASSERT_GLOBAL_OBJECT(gMessageLoopGroupAI);
+
+		T_SETV("suspTarget", nil);
 		
 		// Initialize the world state
 		//pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent

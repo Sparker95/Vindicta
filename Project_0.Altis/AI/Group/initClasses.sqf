@@ -1,6 +1,7 @@
 // Auto generated file
 call compile preprocessFileLineNumbers "AI\Group\AIGroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_ActionGroup.sqf";
+call compile preprocessFileLineNumbers "AI\Group\ActionGroupArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupFlee.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupGetInGarrisonVehiclesAsCargo.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupGetInVehiclesAsCrew.sqf";
@@ -16,6 +17,7 @@ call compile preprocessFileLineNumbers "AI\Group\ActionGroupRelax.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupVehicleClearArea.sqf";
+call compile preprocessFileLineNumbers "AI\Group\GoalGroupArrest.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupClearArea.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupFlee.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupGetInGarrisonVehiclesAsCargo.sqf";

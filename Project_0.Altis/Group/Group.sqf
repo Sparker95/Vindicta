@@ -900,7 +900,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 	*/
 	METHOD("getPossibleGoals") {
 		//["GoalGroupRelax"]
-		["GoalGroupUnflipVehicles"]
+		["GoalGroupUnflipVehicles", "GoalGroupArrest"]
 	} ENDMETHOD;
 
 
