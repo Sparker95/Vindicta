@@ -1,7 +1,5 @@
 #include "common.hpp"
 
-#define pr private
-
 CLASS("BasesGameMode", "GameModeBase")
 
 	METHOD("new") {
@@ -40,8 +38,8 @@ CLASS("BasesGameMode", "GameModeBase")
 
 				// Send intel to commanders
 				{
-					pr _sideCommander = GETV(_x, "side");
-					pr _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+					private _sideCommander = GETV(_x, "side");
+					private _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
 					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
 				} forEach gCommanders;
 			};

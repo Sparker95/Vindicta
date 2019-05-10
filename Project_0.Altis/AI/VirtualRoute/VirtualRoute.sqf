@@ -151,7 +151,7 @@ CLASS("VirtualRoute", "")
 					};
 				};
 				_waypoints pushBack getPos (_fullPath select (count _fullPath - 1));
-				
+
 				T_SETV("waypoints", _waypoints);
 
 				T_SETV("nextIdx", 1);
@@ -166,9 +166,11 @@ CLASS("VirtualRoute", "")
 				// Set it last
 				T_SETV("calculated", true);
 				
+#ifndef RELEASE_BUILD
 				if(_debugDraw) then {
 					T_CALLM("debugDraw", []);
 				};
+#endif
 			} catch {
 				T_SETV("failed", true);
 			};

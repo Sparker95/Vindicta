@@ -19,8 +19,9 @@ Author: Sparker 21.12.2018
 // Will print to the RPT targets received from groups
 //#define PRINT_RECEIVED_TARGETS
 
-
+#ifndef RELEASE_BUILD
 #define DEBUG_CLUSTERS
+#endif
 
 //#define DEBUG_TARGETS
 

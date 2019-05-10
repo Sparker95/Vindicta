@@ -5,8 +5,12 @@
 #include "Location.hpp"
 #include "..\MessageTypes.hpp"
 
-#ifndef _SQF_VM
+#ifndef RELEASE_BUILD
 #define DEBUG_LOCATION_MARKERS
+#endif
+
+#ifdef _SQF_VM
+#undef DEBUG_LOCATION_MARKERS
 #endif
 
 /*
@@ -543,8 +547,6 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Checks if player is in any of the allowed areas
 	METHOD_FILE("isInAllowedArea", "Location\isInAllowedArea.sqf");
-
-	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
 ENDCLASS;
 
 SET_STATIC_VAR("Location", "all", []);

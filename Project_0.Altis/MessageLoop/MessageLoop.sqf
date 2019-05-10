@@ -12,7 +12,9 @@ Author: Sparker
 15.06.2018
 */
 
-//#define DEBUG
+#ifndef RELEASE_BUILD
+#define DEBUG_MESSAGE_LOOP
+#endif
 
 #define pr private
 
@@ -93,7 +95,7 @@ CLASS("MessageLoop", "");
 	Returns: nil
 	*/
 	METHOD("postMessage") {
-		#ifdef DEBUG
+		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
 		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]]];

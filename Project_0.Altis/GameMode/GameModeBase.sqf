@@ -245,19 +245,10 @@ CLASS("GameModeBase", "")
 
 	} ENDMETHOD;
 
-	// STATIC_METHOD("getTemplateForSide") {
-	// 	params [P_THISCLASS, P_SIDE("_side")];
-	// 	switch(_side) do {
-	// 		case WEST: { tNATO };
-	// 		case EAST: { tCSAT };
-	// 		case INDEPENDENT: { tAAF };
-	// 	}
-	// } ENDMETHOD;
-
-	//#define ADD_TRUCKS
-	//#define ADD_UNARMED_MRAPS
-	//#define ADD_ARMED_MRAPS
-	//#define ADD_TANKS
+	#define ADD_TRUCKS
+	#define ADD_UNARMED_MRAPS
+	#define ADD_ARMED_MRAPS
+	#define ADD_TANKS
 	#define ADD_APCS_IFVS
 	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
