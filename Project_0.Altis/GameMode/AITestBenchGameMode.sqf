@@ -40,11 +40,21 @@ CLASS("AITestBenchGameMode", "GameModeBase")
 					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", [_side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 
 					// Add an APC
+					
 					_x params ["_chance", "_min", "_max", "_type"];
 					private _i = 0;
 					while{(_i < 1)} do {
 						private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG T_VEH_APC ARG -1]);
 						OOP_INFO_MSG("%1: Created veh group %2", [_gar ARG _newGroup]);
+						_i = _i + 1;
+					};
+					
+
+					// Add infantry groups
+					private _i = 0;
+					while{_i < 3} do {
+						CALLM(_gar, "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_IDLE]); // T_GROUP_inf_rifle_squad
+						OOP_INFO_MSG("%1: Created inf group %2 with %3 units", [_gar ARG _newGroup ARG _unitCount]);
 						_i = _i + 1;
 					};
 
@@ -59,7 +69,7 @@ CLASS("AITestBenchGameMode", "GameModeBase")
 				{
 					pr _sideCommander = GETV(_x, "side");
 					pr _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_UNITS ARG sideUnknown ARG false]);
+					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
 				} forEach gCommanders;
 			};
 

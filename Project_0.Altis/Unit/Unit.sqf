@@ -63,7 +63,10 @@ CLASS(UNIT_CLASS_NAME, "");
 			_valid = true;
 		};
 
-		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);  diag_log format ["[Unit::new] Error: created invalid unit: %1", _this] };
+		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);
+			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
+			DUMP_CALLSTACK
+		};
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 

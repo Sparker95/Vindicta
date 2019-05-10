@@ -62,45 +62,53 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 	Returns: nil
 	*/
 	STATIC_METHOD("updateIntelClient") {
-		params [P_THISCLASS, P_ARRAY("_serialIntel")];
+		CRITICAL_SECTION {
+			params [P_THISCLASS, P_ARRAY("_serialIntel")];
 
-		// Get class name and object name from the array
-		pr _intelClassName = SERIALIZED_CLASS_NAME(_serialIntel);
-		pr _intelObjName = SERIALIZED_OBJECT_NAME(_serialIntel);
+			//diag_log format ["_thisObject: %1", _thisObject];
+			//ade_dumpCallstack;
+			//if (true) exitWith {};
 
-		// Check if we have such an intel object
-		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intelObjName)) then {
-			// We already have it, let's update it in the database then!
+			// Get class name and object name from the array
+			pr _intelClassName = SERIALIZED_CLASS_NAME(_serialIntel);
+			pr _intelObjName = SERIALIZED_OBJECT_NAME(_serialIntel);
 
-			// Create a temporary intel object to deserialize new data into it
-			pr _tempIntel = NEW(_intelClassName, []);
+			// Check if we have such an intel object
+			if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intelObjName)) then {
+				// We already have it, let's update it in the database then!
 
-			// Unpack serialized intel object into a temporary one
-			DESERIALIZE(_tempIntel, _serialIntel);
+				// Create a temporary intel object to deserialize new data into it
+				pr _tempIntel = NEW(_intelClassName, []);
 
-			// Update existing intel item from the temp object
-			CALLM2(gIntelDatabaseClient, "updateIntel", _intelObjName, _tempIntel);
+				// Unpack serialized intel object into a temporary one
+				DESERIALIZE(_tempIntel, _serialIntel);
 
-			// Delete the temporary object
-			DELETE(_tempIntel);
-		} else {
-			// Create an intel object and add it to database
+				// Update existing intel item from the temp object
+				CALLM2(gIntelDatabaseClient, "updateIntel", _intelObjName, _tempIntel);
 
-			// Create a new intel object with existing ref if needed
-			// If we self host it's possible that we already have an Intel object with this ref in mission namespace
-			if (!IS_OOP_OBJECT(_intelObjName)) then {
-				NEW_EXISTING(_intelClassName, _intelObjName);
+				// Delete the temporary object
+				DELETE(_tempIntel);
+			} else {
+				// Create an intel object and add it to database
+
+				// Create a new intel object with existing ref if needed
+				// If we self host it's possible that we already have an Intel object with this ref in mission namespace
+				if (!IS_OOP_OBJECT(_intelObjName)) then {
+					NEW_EXISTING(_intelClassName, _intelObjName);
+				};
+
+				OOP_INFO_1("Received serial intel object: %1", _serialIntel);
+
+				//diag_log format ["_thisObject: %1", _thisObject];
+				//ade_dumpCallstack;
+
+				// Unpack serialized intel object
+				DESERIALIZE(_intelObjName, _serialIntel);
+
+				// Add the intel item to database
+				CALLM1(gIntelDatabaseClient, "addIntel", _intelObjName);
 			};
-
-			OOP_INFO_1("Received serial intel object: %1", _serialIntel);
-
-			// Unpack serialized intel object
-			DESERIALIZE(_intelObjName, _serialIntel);
-
-			// Add the intel item to database
-			CALLM1(gIntelDatabaseClient, "addIntel", _intelObjName);
 		};
-
 	} ENDMETHOD;
 
 ENDCLASS;

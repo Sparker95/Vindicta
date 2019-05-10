@@ -48,7 +48,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 			// Query world state of infantry groups
 			pr _allInfMounted = true;
 			if (count _infGroups == 0) then {
-				_allInfMounted = false;
+				_allInfMounted = true;
 			} else {
 				{
 					pr _groupAI = CALLM0(_x, "getAI");
