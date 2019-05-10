@@ -42,7 +42,7 @@ CLASS("BasesGameMode", "GameModeBase")
 				{
 					pr _sideCommander = GETV(_x, "side");
 					pr _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_UNITS ARG sideUnknown ARG false]);
+					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
 				} forEach gCommanders;
 			};
 

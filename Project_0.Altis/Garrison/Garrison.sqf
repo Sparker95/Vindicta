@@ -1766,7 +1766,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
-		private _newUnit = NEW("Unit", [GET_TEMPLATE(_side) ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
+		private _template = GET_TEMPLATE(_side);
+		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
 		// Create crew for the vehicle
 		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
 		T_CALLM("addGroup", [_newGroup]);
