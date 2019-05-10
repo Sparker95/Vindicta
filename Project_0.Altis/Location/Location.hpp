@@ -21,6 +21,7 @@
 
 #define LOCATION_SPT_DEFAULT [[], [], [], 0]
 
+#define LOCATION_TYPE_UNKNOWN "unknown"
 #define LOCATION_TYPE_CAMP "camp"
 #define LOCATION_TYPE_BASE "base"
 #define LOCATION_TYPE_OUTPOST "outpost"
