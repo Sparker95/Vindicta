@@ -57,8 +57,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("NEW GARRISON");
 
-		OOP_INFO_1("%1", _side);
-
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
