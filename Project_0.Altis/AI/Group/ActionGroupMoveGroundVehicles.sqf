@@ -17,7 +17,9 @@ TAG_MAX_SPEED_KMH
 #define SPEED_MAX 60
 #define SPEED_MIN 8
 
+#ifndef RELEASE_BUILD
 #define DEBUG_FORMATION
+#endif
 
 CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	

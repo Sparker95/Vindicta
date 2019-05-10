@@ -37,8 +37,6 @@ MsgRcvr_fnc_setMsgDone = {
 	};
 };
 
-#define DEBUG
-
 CLASS("MessageReceiver", "")
 
 	VARIABLE("owner");

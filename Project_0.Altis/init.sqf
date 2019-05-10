@@ -2,6 +2,9 @@
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
 
+// No saving
+enableSaving [ false, false ]; // Saving disabled without autosave.
+
 // If a client, wait for the server to finish its initialization
 if (!IS_SERVER) then {
 	private _str = format ["Waiting for server init, time: %1", diag_tickTime];

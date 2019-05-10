@@ -3,8 +3,6 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#define DEBUG_CMDRAI
-
 #define MODEL_HANDLE_INVALID 		-1
 
 // Flags for WorldModel.new type parameter.
@@ -24,6 +22,10 @@
 #include "..\..\Mutex\Mutex.hpp"
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
+
+#ifndef RELEASE_BUILD
+#define DEBUG_CMDRAI
+#endif
 
 #define LABEL(model) GETV(model, "label")
 
