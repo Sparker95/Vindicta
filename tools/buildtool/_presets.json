@@ -4,7 +4,7 @@
         "missionName": "Project_0-dev",
         "map": "Altis",
         "configFiles": [
-            "configs/dev/root_config.hpp"
+            "configs/dev/oop_config.hpp"
         ]
     },
     {
@@ -12,7 +12,7 @@
         "missionName": "Project_0-release",
         "map": "Altis",
         "configFiles": [
-            "configs/release/root_config.hpp"
+            "configs/release/oop_config.hpp"
         ]
     }
 ]

@@ -11,5 +11,3 @@
 #include "..\AI\Commander\AICommander.hpp"
 #include "..\AI\Commander\LocationData.hpp"
 #include "..\Group\Group.hpp"
-
-#define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
