@@ -22,6 +22,65 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 #endif
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_PRVAR(intel);
+		if(!IS_NULL_OBJECT(_intel)) then {
+			DELETE(_intel);
+		};
+	} ENDMETHOD;
+	
+
+	/* protected override */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+
+		T_PRVAR(intel);
+		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		if(_intelNotCreated) then
+		{
+			// Create new intel object and fill in the constant values
+			_intel = NEW("IntelCommanderActionAttack", []);
+
+			T_PRVAR(srcGarrId);
+			T_PRVAR(tgtLocId);
+			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+			ASSERT_OBJECT(_srcGarr);
+			private _tgtLoc = CALLM(_world, "getLocation", [_tgtLocId]);
+			ASSERT_OBJECT(_tgtLoc);
+
+			CALLM(_intel, "create", []);
+
+			SETV(_intel, "type", "Take Location");
+			SETV(_intel, "side", GETV(_srcGarr, "side"));
+			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
+			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
+			SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
+			SETV(_intel, "location", GETV(_tgtLoc, "actual"));
+			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
+		};
+
+		// Update progress of the detachment
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			SETV(_intel, "garrison", GETV(_detachedGarr, "actual"));
+			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+		};
+
+		// If we just created this intel then register it now 
+		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
+		if(_intelNotCreated) then {
+			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intel", _intelClone);
+		} else {
+			CALLM(_intel, "updateInDb", []);
+		};
+	} ENDMETHOD;
+
 	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
@@ -85,7 +144,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	// Get composition of reinforcements we should send from src to tgt. 
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
-	METHOD("getDetachmentEff") {
+	/* private */ METHOD("getDetachmentEff") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");

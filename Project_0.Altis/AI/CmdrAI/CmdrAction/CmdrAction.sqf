@@ -192,6 +192,10 @@ CLASS("CmdrAction", "RefCounted")
 		};
 		T_SETV("state", _state);
 		
+		if(CALLM(_world, "isReal", [])) then {
+			T_CALLM("updateIntel", [_world]);
+		};
+
 		#ifdef DEBUG_CMDRAI
 		T_CALLM("debugDraw", [_world]);
 		#endif
@@ -200,6 +204,10 @@ CLASS("CmdrAction", "RefCounted")
 	METHOD("isComplete") {
 		params [P_THISOBJECT];
 		T_GETV("state") == CMDR_ACTION_STATE_END
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_STRING("_world")];
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("getLabel") {

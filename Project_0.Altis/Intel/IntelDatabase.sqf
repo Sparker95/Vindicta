@@ -84,7 +84,7 @@ CLASS("IntelDatabase", "")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
-			OOP_INFO_2("UPDATE INTEL: %1", _itemDst, _itemSrc);
+			OOP_INFO_2("UPDATE INTEL: %1 from %2", _itemDst, _itemSrc);
 
 			pr _items = T_GETV("items");
 			if (_itemDst in _items) then { // Make sure we have this intel item
@@ -144,6 +144,7 @@ CLASS("IntelDatabase", "")
 
 		pr _clone = CLONE(_item);
 		SETV(_clone, "dbEntry", _item);
+		SETV(_clone, "db", _thisObject);
 		OOP_INFO_1("ADD INTEL: %1", _item);
 
 		CRITICAL_SECTION {
@@ -175,12 +176,32 @@ CLASS("IntelDatabase", "")
 	*/
 	METHOD("updateIntelFromClone") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
-		OOP_INFO_2("UPDATE INTEL: %1", _itemDst, _itemSrc);
 
 		pr _dbEntry = GETV(_item, "dbEntry");
 		ASSERT_OBJECT(_dbEntry);
 
 		T_CALLM("updateIntel", [_dbEntry ARG _item]);
+	} ENDMETHOD;
+
+	/*
+	Method: removeIntelForClone
+	Deletes an item from this database. Doesn't delete the item object from memory.
+
+	Parameters: _item
+
+	_item - the <Intel> item to delete
+
+	Returns: nil
+	*/
+	METHOD("removeIntelForClone") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		pr _dbEntry = GETV(_item, "dbEntry");
+		ASSERT_OBJECT(_dbEntry);
+		pr _items = T_GETV("items");
+		_items deleteAt (_items find _dbEntry);
+
+		nil
 	} ENDMETHOD;
 
 	/*

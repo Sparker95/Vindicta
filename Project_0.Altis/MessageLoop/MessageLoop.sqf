@@ -13,7 +13,7 @@ Author: Sparker
 */
 
 #ifndef RELEASE_BUILD
-#define DEBUG_MESSAGE_LOOP
+//#define DEBUG_MESSAGE_LOOP
 #endif
 
 #define pr private

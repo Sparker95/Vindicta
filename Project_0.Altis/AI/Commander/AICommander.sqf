@@ -859,7 +859,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	STATIC_METHOD("registerGarrison") {
-		params [P_THISCLASS, P_STRING("_gar")];
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
@@ -887,7 +887,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	METHOD("registerLocation") {
-		params [P_THISOBJECT, P_STRING("_loc")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 
 		private _newModel = NULL_OBJECT;
@@ -909,7 +909,7 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	STATIC_METHOD("unregisterGarrison") {
-		params [P_THISCLASS, P_STRING("_gar")];
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
@@ -938,4 +938,22 @@ CLASS("AICommander", "AI")
 		};
 	} ENDMETHOD;
 		
+			
+	/*
+	Method: registerIntelCommanderAction
+	Registers a piece of intel on an action that this Commander owns.
+	Parameters:
+	_intel - <IntelCommanderAction>
+	
+	Returns: nil
+	*/
+	STATIC_METHOD("registerIntelCommanderAction") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
+		private _side = GETV(_intel, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		T_PRVAR(intelDB);
+		CALLM(_intelDB, "addIntelClone", [_intel])
+	} ENDMETHOD;
 ENDCLASS;

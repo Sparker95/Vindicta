@@ -49,6 +49,11 @@ CLASS("Intel", "")
 	subsequent updateIntelClone operations. */
 	VARIABLE("dbEntry");
 
+	/* variable: db
+	Reference to the intel database that owns this intel. This is set in
+	addIntelClone, and enables the updateInDb function. */
+	VARIABLE("db");
+
 	/*
 	Method: new
 	Constructor. Takes no arguments.
@@ -56,6 +61,52 @@ CLASS("Intel", "")
 	METHOD("new") {
 		params ["_thisObject"];
 	} ENDMETHOD;
+
+	/*
+	Method: delete
+	Destructor. Takes no arguments. Will remove item from associated intelDb if it was created using addIntelClone.
+	*/
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		// If db is valid then we can directly remove our matching intel entry from it.
+		private _db = T_GETV("db");
+		if(!isNil "_db") then {
+			CALLM(_db, "removeIntelForClone", [_thisObject]);
+		};
+	} ENDMETHOD;
+	
+
+	/*
+	Method: isCreated
+	Returns: Bool, true if this Intel object has been created already (assigned dateCreated and initialized by owner).
+	*/
+	METHOD("isCreated") {
+		params [P_THISOBJECT];
+		private _dateCreated = T_GETV("dateCreated");
+		!(isNil "_dateCreated")
+	} ENDMETHOD;
+	
+	/*
+	Method: create
+	Set dateCreated to now to indicate that this object is valid.
+	*/
+	METHOD("create") {
+		params [P_THISOBJECT];
+		T_SETV("dateCreated", date);
+	} ENDMETHOD;
+
+	/*
+	Method: updateInDb
+	Valid only for intel created using addIntelClone. This will updateIntelFromClone directly
+	to the database that owns this intel.
+	*/
+	METHOD("updateInDb") {
+		params [P_THISOBJECT];
+		private _db = T_GETV("db");
+		ASSERT_MSG(!isNil "_db", "This intel wasn't created using addIntelClone so you can't use updateInDb.");
+		CALLM(_db, "updateIntelFromClone", [_thisObject]);
+	} ENDMETHOD;
+	
 
 	/*
 	Method: clientAdd
@@ -208,16 +259,16 @@ CLASS("IntelCommanderAction", "Intel")
 	Side of the faction that has planned to do this*/
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
 
-	/* variable: src
-	Where the action starts from */
-	VARIABLE_ATTR("src", [ATTR_SERIALIZABLE]);
+	// /* variable: src
+	// Where the action starts from */
+	// VARIABLE_ATTR("src", [ATTR_SERIALIZABLE]);
 	/* variable: posSrc
 	Source position*/
 	VARIABLE_ATTR("posSrc", [ATTR_SERIALIZABLE]);
 
-	/* variable: tgt
-	Where the action is going to */
-	VARIABLE_ATTR("tgt", [ATTR_SERIALIZABLE]);
+	// /* variable: tgt
+	// Where the action is going to */
+	// VARIABLE_ATTR("tgt", [ATTR_SERIALIZABLE]);
 	/* variable: posTgt
 	Target position*/
 	VARIABLE_ATTR("posTgt", [ATTR_SERIALIZABLE]);
@@ -253,9 +304,12 @@ Class: Intel.IntelCommanderActionReinforce
 Intel about reinforcement commander action
 */
 CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
-	/* variable: garrison
+	/* variable: srcGarrison
+	The source garrison that sent the reinforcements. Probably players have no use to this.*/
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+	/* variable: tgtGarrison
 	The destination garrison that will be reinforced. Probably players have no use to this.*/
-	VARIABLE_ATTR("garrison", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 ENDCLASS;
 
 /*
@@ -273,9 +327,14 @@ Class: Intel.IntelCommanderActionAttack
 Intel about action to attack something.
 */
 CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
+	/* variable: srcGarrison
+	The source garrison that sent the attack. Probably players have no use to this.*/
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
 	/* variable: type
 	The type of attack: QRF, basic attack, something else. IDK the formet of this now!*/
 	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
 ENDCLASS;
 
 /*
