@@ -17,7 +17,10 @@
 	
 */
 
-params["_vehicleFrom","_rearmCargoCapacity",["_rearmCargo",0]];
+params["_vehicleFrom",["_rearmCargo",-1]];
+
+private _rearmCargoCapacity = getNumber(configfile >> "CfgVehicles" >> typeOf _vehicleFrom >> "jn_transportAmmo");
+if(_rearmCargo == -1 || {_rearmCargo > _rearmCargoCapacity})then{_rearmCargo = _rearmCargoCapacity};
 
 //check if it already has a action
 if !isnil(_vehicleFrom getVariable "rearmAction_id")exitWith{diag_log ("JN_ammo already init for object: "+str _vehicleFrom)};
