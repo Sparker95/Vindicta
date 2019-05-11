@@ -19,13 +19,13 @@ Intel base class. It stores variables that describe intel. It is a base class fo
 
 CLASS("Intel", "")
 
-	/* variable: timeCreated 
-	Time when this intel was created initially*/
-	VARIABLE_ATTR("timeCreated", [ATTR_SERIALIZABLE]); 
+	/* variable: dateCreated 
+	Date when this intel was created initially in format returned by date command*/
+	VARIABLE_ATTR("dateCreated", [ATTR_SERIALIZABLE]); 
 
-	/* variable: timeUpdated 
-	Time when this intel was updated*/
-	VARIABLE_ATTR("timeUpdated", [ATTR_SERIALIZABLE]);
+	/* variable: dateUpdated 
+	Date when this intel was updated in format returned by date command*/
+	VARIABLE_ATTR("dateUpdated", [ATTR_SERIALIZABLE]);
 
 	/* variable: pos
 	Position*/
@@ -218,9 +218,9 @@ CLASS("IntelCommanderAction", "Intel")
 	Transport method (ground/air/water). Format is yet unknown.*/
 	VARIABLE_ATTR("transportMethod", [ATTR_SERIALIZABLE]);
 
-	/* variable: timeDeparture
-	Departure time*/
-	VARIABLE_ATTR("timeDeparture", [ATTR_SERIALIZABLE]);
+	/* variable: dateDeparture
+	Departure date*/
+	VARIABLE_ATTR("dateDeparture", [ATTR_SERIALIZABLE]);
 
 	/* variable: strength
 	Strength of the units allocated for this job. Format is yet unknown.*/
