@@ -274,6 +274,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		gMessageLoopMain
 	} ENDMETHOD;
 
+	// ----------------------------------------------------------------------
+	// |                           P R O C E S S                            |
+	// ----------------------------------------------------------------------
+	METHOD("process") {
+		params [P_THISOBJECT];
+		T_CALLM("updateSpawnState", []);
+	} ENDMETHOD;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                           S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -365,8 +373,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		pr _AI = T_GETV("AI");
-		CALLM1(_AI, "setPos", _pos);
-		
+		CALLM(_AI, "setPos", [_pos]);
+
+		// Position change might change spawn state so update it before returning.
+		T_CALLM("updateSpawnState", []);
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
@@ -1736,7 +1746,6 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
-
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx
 	METHOD_FILE("handleMessageEx", "Garrison\handleMessageEx.sqf");
 
@@ -1746,9 +1755,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// Despawns the whole garrison
 	METHOD_FILE("despawn", "Garrison\despawn.sqf");
 
-	// Handle PROCESS message
-	METHOD_FILE("process", "Garrison\process.sqf");
-
+	// Update spawn state of the garrison
+	METHOD_FILE("updateSpawnState", "Garrison\updateSpawnState.sqf");
+	
 	// Static helpers
 
 	
