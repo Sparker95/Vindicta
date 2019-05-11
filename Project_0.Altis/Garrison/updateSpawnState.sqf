@@ -6,6 +6,8 @@ params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
 
+OOP_INFO_0("UPDATE SPAWN STATE");
+
 // Bail if not active
 if (!T_GETV("active")) exitWith {};
 

@@ -364,6 +364,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		OOP_INFO_1("SET POS: %1", _pos);
+
 		__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
@@ -1150,6 +1152,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addUnitsAndGroups") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units"), P_ARRAY("_groupsAndUnits")];
 		ASSERT_OBJECT_CLASS(_garSrc, "Garrison");
+
+		OOP_INFO_1("ADD UNITS AND GROUPS: %1", _this);
 
 		ASSERT_THREAD(_thisObject);
 
