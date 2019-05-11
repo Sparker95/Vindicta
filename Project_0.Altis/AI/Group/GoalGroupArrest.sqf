@@ -17,7 +17,7 @@ CLASS("GoalGroupArrest", "Goal")
 			pr _suspTarget = GETV(_AI, "suspTarget");
 
 			if !(isNil "_suspTarget") then { 
-				OOP_INFO_1("GoalGroupArrest target: %1", _suspTarget);
+				//OOP_INFO_1("GoalGroupArrest target: %1", _suspTarget);
 					_relevance = 30; 
 			} else {
 				OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
@@ -35,10 +35,14 @@ CLASS("GoalGroupArrest", "Goal")
 		OOP_INFO_0("GoalGroupArrest: Creating predefined action.");
 
 		pr _target = GETV(_AI, "suspTarget");
-		pr _args = [_AI, _target];
-		pr _action = NEW("ActionGroupArrest", _args);
+		pr _parameters = [_AI, [["target", _target]]];
+		OOP_INFO_1("GoalGroupArrest: Target: %1", _target);
+
+		pr _action = NEW("ActionGroupArrest", _parameters);
 
 		OOP_INFO_0("GoalGroupArrest: Predefined action created.");
+
+		_action
 
 	} ENDMETHOD;
 

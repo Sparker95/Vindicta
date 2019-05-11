@@ -8,30 +8,47 @@ Tell group to arrest a suspicious player unit.
 #define pr private
 
 CLASS("ActionGroupArrest", "ActionGroup")
+
+	VARIABLE("target");
 	
 	// ------------ N E W ------------
+	METHOD("new") {
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+
+		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
+		OOP_INFO_1("ActionGroupArrest: Target: %1", _target);
+
+		T_SETV("target", _target);
+
+	} ENDMETHOD;
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];	
+		params [["_thisObject", "", [""]]];	
 		
+		OOP_INFO_0("ActionGroupArrest: Activated.");
+		pr _target = T_GETV("target");
+		OOP_INFO_1("ActionGroupArrest: Activated: Target: %1", _target);
+
+		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+
 		// Set behaviour
 		pr _hG = GETV(_thisObject, "hG");
 		_hG setBehaviour "AWARE";
 		_hG setSpeedMode "NORMAL";
 		{_x doFollow (leader _hG)} forEach (units _hG);
-		
-		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-		
-		// Add goals to units
+
 		pr _AI = T_GETV("AI");
 		pr _group = GETV(_AI, "agent");
-		pr _units = CALLM0(_group, "getUnits");
-		{
-			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, [], _AI);
-		} forEach _units;
+		pr _groupUnits = CALLM0(_group, "getUnits");
+				
+		// we only want one unit from the group to arrest the target
+		pr _unit = (_groupUnits) select 0;
+		systemChat format ["%1 will be arresting you today!", _unit];
+
+		pr _unitAI = CALLM0(_unit, "getAI");
+		pr _parameters = [["target", _target]];
+		CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
 		
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -41,6 +58,8 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("ActionGroupArrest: Processing.");
 		
 		//CALLM0(_thisObject, "failIfEmpty");
 		
@@ -52,11 +71,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 			pr _AI = T_GETV("AI");
 			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _units, "GoalUnitArrest", _AI)) then {
 				_state = ACTION_STATE_COMPLETED;
+				OOP_INFO_0("ActionGroupArrest: Completed.");
 			};
 		};
 		
 		// Return the current state
 		T_SETV("state", _state);
+		OOP_INFO_1("ActionGroupArrest: State: %1", _state);
 		_state
 	} ENDMETHOD;
 	
