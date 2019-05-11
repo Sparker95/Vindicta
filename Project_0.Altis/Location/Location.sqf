@@ -575,9 +575,6 @@ CLASS("Location", "MessageReceiverEx")
 	// Despawns the location
 	METHOD_FILE("despawn", "Location\despawn.sqf");
 
-
-	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
-
 ENDCLASS;
 
 SET_STATIC_VAR("Location", "all", []);
