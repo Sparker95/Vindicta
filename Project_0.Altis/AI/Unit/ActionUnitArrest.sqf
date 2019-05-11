@@ -26,8 +26,8 @@ CLASS("ActionUnitArrest", "Action")
 	VARIABLE("stateChanged");
 	VARIABLE("spawnHandle");
 	VARIABLE("screamTime");
+
 	// ------------ N E W ------------
-	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
 
@@ -85,10 +85,9 @@ CLASS("ActionUnitArrest", "Action")
 				
 				if (GETV(_thisObject, "stateChanged")) then {
 					diag_log "START STATE 0";
-					SETV(_thisObject, "stateChanged",false);
-					
-					SETV(_thisObject,"stateTimer",time);		
-					
+					SETV(_thisObject, "stateChanged", false);
+					SETV(_thisObject,"stateTimer", time);		
+
 					_oh dotarget _target;
 					
 					pr _handle = [_target,_oh] spawn {
