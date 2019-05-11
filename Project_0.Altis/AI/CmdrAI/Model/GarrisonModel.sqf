@@ -618,7 +618,7 @@ CLASS("GarrisonModel", "ModelBase")
 		// Make a new garrison
 		private _newGarrActual = NEW("Garrison", [_side]);
 		private _pos = CALLM(_actual, "getPos", []);
-		CALLM(_newGarrActual, "setPos", [_pos]);
+		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 
 		// This self registers with the world. From now on we just modify the _newGarrActual itself, the Model gets updated automatically during its
 		// update phase.

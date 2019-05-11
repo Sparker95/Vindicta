@@ -37,6 +37,8 @@ CLASS("CmdrAction", "RefCounted")
 	// Current state of the action
 	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
+	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("scorePriority", 1);
@@ -49,6 +51,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("variables", []);
 		T_SETV("variablesStack", []);
 		T_SETV("garrisons", []);
+		T_SETV("intel", NULL_OBJECT);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -189,6 +192,10 @@ CLASS("CmdrAction", "RefCounted")
 		};
 		T_SETV("state", _state);
 		
+		if(CALLM(_world, "isReal", [])) then {
+			T_CALLM("updateIntel", [_world]);
+		};
+
 		#ifdef DEBUG_CMDRAI
 		T_CALLM("debugDraw", [_world]);
 		#endif
@@ -197,6 +204,10 @@ CLASS("CmdrAction", "RefCounted")
 	METHOD("isComplete") {
 		params [P_THISOBJECT];
 		T_GETV("state") == CMDR_ACTION_STATE_END
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_STRING("_world")];
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("getLabel") {

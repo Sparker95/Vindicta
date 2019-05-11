@@ -84,7 +84,7 @@ CLASS("IntelDatabase", "")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_itemDst"), P_OOP_OBJECT("_itemSrc")];
 
-			OOP_INFO_2("UPDATE INTEL: %1", _itemDst, _itemSrc);
+			OOP_INFO_2("UPDATE INTEL: %1 from %2", _itemDst, _itemSrc);
 
 			pr _items = T_GETV("items");
 			if (_itemDst in _items) then { // Make sure we have this intel item
@@ -127,6 +127,81 @@ CLASS("IntelDatabase", "")
 			};
 		};
 		_return
+	} ENDMETHOD;
+
+	/*
+	Method: addIntelClone
+	Adds item to the database and returns a modifiable clone.
+	Don't modify _item after passing it in, modify the clone instead.
+	Parameters: _item
+
+	_item - <Intel> item
+
+	Returns: clone of _item that can be used in further updateIntelFromClone operations.
+	*/
+	METHOD("addIntelClone") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		pr _clone = CLONE(_item);
+		SETV(_clone, "dbEntry", _item);
+		SETV(_clone, "db", _thisObject);
+		OOP_INFO_1("ADD INTEL: %1", _item);
+
+		CRITICAL_SECTION {
+			// Add to the array of items
+			T_GETV("items") pushBack _item;
+
+#ifdef OOP_ASSERT
+			// Add link from the source to this item
+			pr _source = GETV(_item, "source");
+			// If the intel item is linked to the source intel item, add the source to hashmap
+			if (!isNil "_source") then {
+				FAILURE("Use addIntel for intel items from other sources, addIntelClone is only for cmdrs own intel!")
+			};
+#endif
+		};
+
+		_clone
+	} ENDMETHOD;
+
+	/*
+	Method: updateIntelFromClone
+	Updates item in this database from a modified clone previously returned by addIntelClone
+
+	Parameters: _item
+
+	_item - <Intel> object returned by addIntelClone.
+
+	Returns: nil
+	*/
+	METHOD("updateIntelFromClone") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		pr _dbEntry = GETV(_item, "dbEntry");
+		ASSERT_OBJECT(_dbEntry);
+
+		T_CALLM("updateIntel", [_dbEntry ARG _item]);
+	} ENDMETHOD;
+
+	/*
+	Method: removeIntelForClone
+	Deletes an item from this database. Doesn't delete the item object from memory.
+
+	Parameters: _item
+
+	_item - the <Intel> item to delete
+
+	Returns: nil
+	*/
+	METHOD("removeIntelForClone") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		pr _dbEntry = GETV(_item, "dbEntry");
+		ASSERT_OBJECT(_dbEntry);
+		pr _items = T_GETV("items");
+		_items deleteAt (_items find _dbEntry);
+
+		nil
 	} ENDMETHOD;
 
 	/*

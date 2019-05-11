@@ -274,6 +274,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		gMessageLoopMain
 	} ENDMETHOD;
 
+	// ----------------------------------------------------------------------
+	// |                           P R O C E S S                            |
+	// ----------------------------------------------------------------------
+	METHOD("process") {
+		params [P_THISOBJECT];
+		// Check spawn state if active
+		if (T_GETV("active")) then { T_CALLM("updateSpawnState", []); };
+	} ENDMETHOD;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                           S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -356,6 +365,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		OOP_INFO_1("SET POS: %1", _pos);
+
 		__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
@@ -365,8 +376,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		pr _AI = T_GETV("AI");
-		CALLM1(_AI, "setPos", _pos);
-		
+		CALLM(_AI, "setPos", [_pos]);
+
+		// Position change might change spawn state so update it before returning.
+		T_CALLM("updateSpawnState", []);
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
@@ -554,21 +567,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _AI = T_GETV("AI");
 		__MUTEX_UNLOCK;
 		_AI
-	} ENDMETHOD;
-	
-	// 						S E T   P O S
-	// Sets the position, because it is stored in the world state
-	METHOD("setPos") {
-		params [P_THISOBJECT, P_POSITION("_pos")];
-		__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
-		};
-		pr _AI = T_GETV("AI");
-		CALLM(_AI, "setPos", [_pos]);
-		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
 	// 						G E T   P O S
@@ -1140,6 +1138,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addUnitsAndGroups") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units"), P_ARRAY("_groupsAndUnits")];
 		ASSERT_OBJECT_CLASS(_garSrc, "Garrison");
+
+		OOP_INFO_1("ADD UNITS AND GROUPS: %1", _this);
 
 		ASSERT_THREAD(_thisObject);
 
@@ -1736,7 +1736,6 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
-
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx
 	METHOD_FILE("handleMessageEx", "Garrison\handleMessageEx.sqf");
 
@@ -1746,9 +1745,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// Despawns the whole garrison
 	METHOD_FILE("despawn", "Garrison\despawn.sqf");
 
-	// Handle PROCESS message
-	METHOD_FILE("process", "Garrison\process.sqf");
-
+	// Update spawn state of the garrison
+	METHOD_FILE("updateSpawnState", "Garrison\updateSpawnState.sqf");
+	
 	// Static helpers
 
 	
