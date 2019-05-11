@@ -72,6 +72,7 @@ CLASS("Intel", "")
 		private _db = T_GETV("db");
 		if(!isNil "_db") then {
 			CALLM(_db, "removeIntelForClone", [_thisObject]);
+			DELETE(T_GETV("dbEntry"));
 		};
 	} ENDMETHOD;
 	

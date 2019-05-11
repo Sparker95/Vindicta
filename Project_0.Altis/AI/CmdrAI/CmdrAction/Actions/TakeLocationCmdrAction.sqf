@@ -22,15 +22,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 #endif
 	} ENDMETHOD;
 
-	METHOD("delete") {
-		params [P_THISOBJECT];
-		T_PRVAR(intel);
-		if(!IS_NULL_OBJECT(_intel)) then {
-			DELETE(_intel);
-		};
-	} ENDMETHOD;
-	
-
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -61,15 +52,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
 		};
 
-		// Update progress of the detachment
-		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
-		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
-			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-			SETV(_intel, "garrison", GETV(_detachedGarr, "actual"));
-			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
-			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
-			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
-		};
+		T_CALLM("updateIntelFromDetachment", [_intel]);
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)

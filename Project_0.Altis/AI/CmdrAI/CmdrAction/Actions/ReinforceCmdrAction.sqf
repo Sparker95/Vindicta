@@ -22,6 +22,48 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 #endif
 	} ENDMETHOD;
 
+	/* protected override */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+
+		T_PRVAR(intel);
+		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		if(_intelNotCreated) then
+		{
+			// Create new intel object and fill in the constant values
+			_intel = NEW("IntelCommanderActionAttack", []);
+
+			T_PRVAR(srcGarrId);
+			T_PRVAR(tgtGarrId);
+			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+			ASSERT_OBJECT(_srcGarr);
+			private _tgtGarr = CALLM(_world, "getGarrison", [_tgtGarrId]);
+			ASSERT_OBJECT(_tgtGarr);
+
+			CALLM(_intel, "create", []);
+
+			SETV(_intel, "type", "Reinforce garrison");
+			SETV(_intel, "side", GETV(_srcGarr, "side"));
+			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
+			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
+			SETV(_intel, "tgtGarrison", GETV(_tgtGarr, "actual"));
+			// SETV(_intel, "location", GETV(_tgtGarr, "actual"));
+			SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
+		};
+
+		T_CALLM("updateIntelFromDetachment", [_intel]);
+
+		// If we just created this intel then register it now 
+		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
+		if(_intelNotCreated) then {
+			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intel", _intelClone);
+		} else {
+			CALLM(_intel, "updateInDb", []);
+		};
+	} ENDMETHOD;
+
 	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");

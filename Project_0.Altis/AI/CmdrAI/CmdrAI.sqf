@@ -188,6 +188,16 @@ CLASS("CmdrAI", "")
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G   D O N E - - - - -", [_thisObject]+[_world]);
 	} ENDMETHOD;
 
+	STATIC_METHOD("getActionGlobalPriority") {
+		params [P_THISCLASS, P_OOP_OBJECT("_action")];
+		private _class = GET_OBJECT_CLASS(_action);
+		switch(GET_OBJECT_CLASS(_action)) do {
+			case "QRFCmdrAction": { 100 };
+			case "ReinforceCmdrAction": { 10 };
+			default { 1 };
+		}
+	} ENDMETHOD;
+	
 	METHOD("plan") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -248,7 +258,7 @@ CLASS("CmdrAI", "")
 			PROFILE_SCOPE_END(UpdateScores, 0.1);
 
 			// Sort the actions by their scores
-			private _scoresAndActions = _newActions apply { [CALLM(_x, "getFinalScore", []), _x] };
+			private _scoresAndActions = _newActions apply { [CALLM(_x, "getFinalScore", []) * CALLSM("CmdrAI", "getActionGlobalPriority", [_x]), _x] };
 			_scoresAndActions sort DESCENDING;
 
 			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;

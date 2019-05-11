@@ -133,6 +133,22 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 
+	METHOD("updateIntelFromDetachment") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+		
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
+		
+		// Update progress of the detachment
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			SETV(_intel, "garrison", GETV(_detachedGarr, "actual"));
+			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+		};
+	} ENDMETHOD;
+	
 	/* protected override */ METHOD("debugDraw") {
 		params [P_THISOBJECT, P_STRING("_world")];
 

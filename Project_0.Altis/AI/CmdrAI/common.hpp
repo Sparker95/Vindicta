@@ -27,6 +27,7 @@
 #define DEBUG_CMDRAI
 #endif
 
+// Shortcuts
 #define LABEL(model) GETV(model, "label")
 
 #define EFF_ZERO T_EFF_null
