@@ -8,9 +8,6 @@ ASSERT_THREAD(_thisObject);
 
 OOP_INFO_0("UPDATE SPAWN STATE");
 
-// Bail if not active
-if (!T_GETV("active")) exitWith {};
-
 if(T_CALLM("isDestroyed", [])) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 };
