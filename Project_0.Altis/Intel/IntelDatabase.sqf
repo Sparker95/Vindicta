@@ -34,8 +34,10 @@ CLASS("IntelDatabase", "")
 
 		T_SETV("items", []);
 		T_SETV("side", _side);
+		#ifndef _SQF_VM
 		pr _namespace = [false] call CBA_fnc_createNamespace;
 		T_SETV("linkedItems", _namespace);
+		#endif
 	} ENDMETHOD;
 
 	/*

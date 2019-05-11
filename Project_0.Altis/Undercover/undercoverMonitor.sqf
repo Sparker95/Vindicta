@@ -23,7 +23,10 @@ gMsgLoopUndercover = NEW("MessageLoop", []);
 CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 
 #define pr private
-//#define DEBUG
+
+#ifndef RELEASE_BUILD
+//#define DEBUG_UNDERCOVER_MONITOR
+#endif
 
 	// ----------------------------------------------------------------------
 	// |                       S Q F  F U N C T I O N S 					|
@@ -171,7 +174,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		}];
 
 		// show debug UI
-		#ifdef DEBUG
+		#ifdef DEBUG_UNDERCOVER_MONITOR
 		g_rscLayerUndercoverDebug = ["rscLayerUndercoverDebug"] call BIS_fnc_rscLayer;
 		g_rscLayerUndercoverDebug cutRsc ["UndercoverUIDebug", "PLAIN", -1, false];
 		#endif
@@ -266,7 +269,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 							pr _mrkLastHost = createMarkerLocal ["mrkLastHostility", position _unit];
 							"mrkLastHostility" setMarkerAlphaLocal 0.0;
 
-							#ifdef DEBUG
+							#ifdef DEBUG_UNDERCOVER_MONITOR
 								"mrkLastHostility" setMarkerBrushLocal "SOLID";
 								"mrkLastHostility" setMarkerAlphaLocal 0.5;
 								"mrkLastHostility" setMarkerColorLocal "ColorBlue";
@@ -315,7 +318,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 						_enemyBehavior = behaviour _nearestEnemy;
 					}; // get distance to nearestEnemy
 
-					#ifdef DEBUG 
+					#ifdef DEBUG_UNDERCOVER_MONITOR 
 						_unit setVariable ["distance", _distance];
 					#endif
 
@@ -412,13 +415,13 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				OOP_INFO_1("HINT KEYS: %1", _hintKeys);
 
 				// update debug UI
-				#ifdef DEBUG
+				#ifdef DEBUG_UNDERCOVER_MONITOR
 				[_unit] call fnc_UIUndercoverDebug;
 				g_rscLayerUndercover cutRsc ["Default", "PLAIN", -1, false];
 				#endif
 
 				// update normal UI
-				#ifndef DEBUG
+				#ifndef DEBUG_UNDERCOVER_MONITOR
 				pr _args = [_unit, _suspicion, _hintKeys];
 				CALL_STATIC_METHOD("UndercoverUI", "drawUI", _args); // draw UI
 				#endif

@@ -7,7 +7,10 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
+#ifndef RELEASE_BUILD
 #define DEBUG_COMMANDER
+#endif
+
 #define PLAN_INTERVAL 30
 #define pr private
 

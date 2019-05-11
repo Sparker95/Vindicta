@@ -5,7 +5,10 @@ Garrison moves on available vehicles
 
 #define pr private
 
+#ifndef RELEASE_BUILD
 #define DEBUG_ROUTE
+#endif
+
 #define THIS_ACTION_NAME "ActionGarrisonMoveMounted"
 
 CLASS(THIS_ACTION_NAME, "ActionGarrison")

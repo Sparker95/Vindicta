@@ -40,6 +40,11 @@ private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" =
 	private _pos = markerPos _x;
 	(markerSize _x) params ["_a", "_b"];
 	private _dir = markerDir _x;
+	
+	#ifdef RELEASE_BUILD
+	_x setMarkerAlpha 0;
+	#endif
+	
 	OOP_INFO_1("Adding allowed area: %1", _x);
 	CALLM4(_thisObject, "addAllowedArea", _pos, _a, _b, _dir);
 } forEach _allowedAreas;

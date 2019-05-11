@@ -7,10 +7,10 @@ jobs:
       - checkout
       - run:
           name: Validate Config style
-          command: python tools/config_style_checker.py
+          command: python tools/SQF-validate/config_style_checker.py
       - run:
           name: Validate SQF
-          command: python tools/sqf_validator.py
+          command: python tools/SQF-validate/sqf_validator.py
 
 
   # linting:
