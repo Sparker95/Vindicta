@@ -130,6 +130,60 @@ CLASS("IntelDatabase", "")
 	} ENDMETHOD;
 
 	/*
+	Method: addIntelClone
+	Adds item to the database and returns a modifiable clone.
+	Don't modify _item after passing it in, modify the clone instead.
+	Parameters: _item
+
+	_item - <Intel> item
+
+	Returns: clone of _item that can be used in further updateIntelFromClone operations.
+	*/
+	METHOD("addIntelClone") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		pr _clone = CLONE(_item);
+		SETV(_clone, "dbEntry", _item);
+		OOP_INFO_1("ADD INTEL: %1", _item);
+
+		CRITICAL_SECTION {
+			// Add to the array of items
+			T_GETV("items") pushBack _item;
+
+#ifdef OOP_ASSERT
+			// Add link from the source to this item
+			pr _source = GETV(_item, "source");
+			// If the intel item is linked to the source intel item, add the source to hashmap
+			if (!isNil "_source") then {
+				FAILURE("Use addIntel for intel items from other sources, addIntelClone is only for cmdrs own intel!")
+			};
+#endif
+		};
+
+		_clone
+	} ENDMETHOD;
+
+	/*
+	Method: updateIntelFromClone
+	Updates item in this database from a modified clone previously returned by addIntelClone
+
+	Parameters: _item
+
+	_item - <Intel> object returned by addIntelClone.
+
+	Returns: nil
+	*/
+	METHOD("updateIntelFromClone") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+		OOP_INFO_2("UPDATE INTEL: %1", _itemDst, _itemSrc);
+
+		pr _dbEntry = GETV(_item, "dbEntry");
+		ASSERT_OBJECT(_dbEntry);
+
+		T_CALLM("updateIntel", [_dbEntry ARG _item]);
+	} ENDMETHOD;
+
+	/*
 	Method: queryIntel
 	Returns an array of <Intel> objects in this database that match a query.
 	The algorithm checks if all non-nil member variables of _queryItem are equal to the same member variables in 

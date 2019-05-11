@@ -37,6 +37,8 @@ CLASS("CmdrAction", "RefCounted")
 	// Current state of the action
 	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
+	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("scorePriority", 1);
@@ -49,6 +51,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("variables", []);
 		T_SETV("variablesStack", []);
 		T_SETV("garrisons", []);
+		T_SETV("intel", NULL_OBJECT);
 	} ENDMETHOD;
 
 	METHOD("delete") {

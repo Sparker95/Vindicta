@@ -43,6 +43,12 @@ CLASS("Intel", "")
 	Reference to the source <Intel> item this object is linked with.*/
 	VARIABLE_ATTR("source", [ATTR_SERIALIZABLE]);
 
+	/* variable: dbEntry
+	Reference to the dbEntry copy of this intel item. This is filled in by 
+	the intelDb when the item is added via addIntelClone, and used in 
+	subsequent updateIntelClone operations. */
+	VARIABLE("dbEntry");
+
 	/*
 	Method: new
 	Constructor. Takes no arguments.
@@ -202,13 +208,27 @@ CLASS("IntelCommanderAction", "Intel")
 	Side of the faction that has planned to do this*/
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
 
+	/* variable: src
+	Where the action starts from */
+	VARIABLE_ATTR("src", [ATTR_SERIALIZABLE]);
 	/* variable: posSrc
 	Source position*/
 	VARIABLE_ATTR("posSrc", [ATTR_SERIALIZABLE]);
 
-	/* variable: locationSrc
-	Source location*/
-	VARIABLE_ATTR("locationSrc", [ATTR_SERIALIZABLE]);
+	/* variable: tgt
+	Where the action is going to */
+	VARIABLE_ATTR("tgt", [ATTR_SERIALIZABLE]);
+	/* variable: posTgt
+	Target position*/
+	VARIABLE_ATTR("posTgt", [ATTR_SERIALIZABLE]);
+
+	/* variable: garrison
+	Garrison undertaking the action, if any */
+	VARIABLE_ATTR("garrison", [ATTR_SERIALIZABLE]);
+
+	/* variable: posCurrent
+	Current position of the garrison that is executing this action. Commander should update it periodycally. */
+	VARIABLE_ATTR("posCurrent", [ATTR_SERIALIZABLE]);
 
 	/* variable: route
 	The route that the vehicles or troops will follow. Format is yet unknown.*/
@@ -226,9 +246,6 @@ CLASS("IntelCommanderAction", "Intel")
 	Strength of the units allocated for this job. Format is yet unknown.*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
 
-	/* variable: posCurrent
-	Current position of the garrison that is executing this action. Commander should update it periodycally. */
-	VARIABLE_ATTR("posCurrent", [ATTR_SERIALIZABLE]);
 ENDCLASS;
 
 /*
