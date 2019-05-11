@@ -213,19 +213,16 @@ CLASS("GameModeBase", "")
 			private _locType = _locSector getVariable ["Type", ""];
 			private _locSide = _locSector getVariable ["Side", ""];
 			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
-			private _locCivPresUnitCount = _locSector getVariable ["CivPresUnitCount", ""];
+			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 			private _template = "";
 			private _side = "";
 
-			if (_locType == "city") exitWith{};
-
 			OOP_DEBUG_1("_locName %1", _locName);
 			OOP_DEBUG_1("_locCapacityInf %1", _locCapacityInf);
-			OOP_DEBUG_1("_locCivPresUnitCount %1", _locCivPresUnitCount);
-			
-			if (_locSide == "none") exitWith { OOP_WARNING_1("No side for Location Sector %1", _locationSector); };
+			OOP_DEBUG_1("_locCapacityCiv %1", _locCapacityCiv);
 			
 			private _side = switch (_locSide) do{
+				case "civilian": { CIVILIAN };//might not need this
 				case "west": { WEST };
 				case "east": { EAST };
 				case "independant": { INDEPENDENT };
@@ -239,7 +236,7 @@ CLASS("GameModeBase", "")
 			CALL_METHOD(_loc, "setSide", [_side]);
 			CALL_METHOD(_loc, "setType", [_locType]);
 			CALL_METHOD(_loc, "setCapacityInf", [_locCapacityInf]);
-
+			CALL_METHOD(_loc, "setCapacityCiv", [_locCapacityCiv]);
 		} forEach (entities "Project_0_LocationSector");
 
 	} ENDMETHOD;

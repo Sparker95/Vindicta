@@ -2,13 +2,27 @@
 //initilises every thing to emulate the bis_civilianPresence modules
 
 //Created by: Jeroen Notenbomer
-
-//#define DEBUG
+#define DEBUG
 
 #define INT_RESOLUTION 50	//in meters, average distance between spawn/way points
 
-params ["_pos","_size","_rotation"];
+params ["_pos","_border"];
+
 _pos set [2,0];
+
+private ["_size","_rotation"];
+if(_border isEqualType 0)then{//circle
+	_size = [_border,_border];
+	_rotation = 0;
+}else{//square
+	_size = _border;
+	_rotation = _border#2;
+};
+
+//TODO
+//need to make location use proper border
+
+
 private _unitTypes = missionNameSpace getVariable "CivPresence_unitTypes";
 
 //we only need to do this ones

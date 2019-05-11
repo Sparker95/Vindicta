@@ -26,7 +26,7 @@ CLASS("BasesGameMode", "GameModeBase")
 
 			if(!IS_NULL_OBJECT(_cmdr)) then {
 				CALLM(_cmdr, "registerLocation", [_loc]);
-				if(GETV(_x, "type") == "base") then {
+				if(GETV(_loc, "type") == "base") then {
 					private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 					private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 					private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);

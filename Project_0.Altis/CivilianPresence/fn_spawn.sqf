@@ -2,6 +2,8 @@
 
 params [["_module",objnull,[objnull]]];
 
+diag_log("JEROENHERE: SPAWN");
+
 if(isnull _module)exitWith{};
 
 _module setVariable ["#active",true];
