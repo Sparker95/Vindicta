@@ -14,8 +14,6 @@ Location garrison data
 Commander actions
 - Source position
 - Source Location
-- Destination position
-- Destination Location
 - Route
 - Transport method - ground, air
 - Departure time
