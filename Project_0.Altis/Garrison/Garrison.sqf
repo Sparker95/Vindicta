@@ -279,7 +279,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	// ----------------------------------------------------------------------
 	METHOD("process") {
 		params [P_THISOBJECT];
-		T_CALLM("updateSpawnState", []);
+		// Check spawn state if active
+		if (T_GETV("active")) then { T_CALLM("updateSpawnState", []); };
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -363,6 +364,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, P_POSITION("_pos")];
 
 		ASSERT_THREAD(_thisObject);
+
+		OOP_INFO_1("SET POS: %1", _pos);
 
 		__MUTEX_LOCK;
 
@@ -564,21 +567,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _AI = T_GETV("AI");
 		__MUTEX_UNLOCK;
 		_AI
-	} ENDMETHOD;
-	
-	// 						S E T   P O S
-	// Sets the position, because it is stored in the world state
-	METHOD("setPos") {
-		params [P_THISOBJECT, P_POSITION("_pos")];
-		__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
-		};
-		pr _AI = T_GETV("AI");
-		CALLM(_AI, "setPos", [_pos]);
-		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
 	// 						G E T   P O S
@@ -1150,6 +1138,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("addUnitsAndGroups") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_units"), P_ARRAY("_groupsAndUnits")];
 		ASSERT_OBJECT_CLASS(_garSrc, "Garrison");
+
+		OOP_INFO_1("ADD UNITS AND GROUPS: %1", _this);
 
 		ASSERT_THREAD(_thisObject);
 
