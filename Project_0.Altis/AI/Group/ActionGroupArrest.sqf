@@ -9,7 +9,8 @@ Tell group to arrest a suspicious player unit.
 
 CLASS("ActionGroupArrest", "ActionGroup")
 
-	VARIABLE("target");
+	VARIABLE("target");		// player being arrested
+	VARIABLE("unit");		// unit arresting player
 	
 	// ------------ N E W ------------
 	METHOD("new") {
@@ -24,7 +25,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];	
+		params [["_thisObject", "", [""]]];
 		
 		OOP_INFO_0("ActionGroupArrest: Activated.");
 		pr _target = T_GETV("target");
@@ -43,8 +44,9 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _groupUnits = CALLM0(_group, "getUnits");
 				
 		// we only want one unit from the group to arrest the target
-		pr _unit = (_groupUnits) select 0;
-		systemChat format ["%1 will be arresting you today!", _unit];
+		pr _unit = _groupUnits select random (count _groupUnits);
+		OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
+		OOP_INFO_1("ActionGroupArrest: unit arresting player: %1", _unit);
 
 		pr _unitAI = CALLM0(_unit, "getAI");
 		pr _parameters = [["target", _target]];
@@ -80,10 +82,27 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		OOP_INFO_1("ActionGroupArrest: State: %1", _state);
 		_state
 	} ENDMETHOD;
+
+	// Handle unit being killed/removed from group during action
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+
+		T_SETV("state", ACTION_STATE_FAILED);
+		
+	} ENDMETHOD;
+
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+
+	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("ActionGroupArrest: Terminating.");
 		
 		// Delete given goals
 		pr _AI = T_GETV("AI");
@@ -91,7 +110,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _units = CALLM0(_group, "getUnits");
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
-			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitNothing", "");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitArrest", "");
 		} forEach _units;
 		
 	} ENDMETHOD;

@@ -129,7 +129,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		_unit setVariable ["timeHostility", 0];
 		_unit setVariable ["incrementSusp", 0];								// suspicion value that increases for suspicious behavior being performed while seen	
 		_unit setVariable ["bSeen", false];									// true if unit is currently seen by an enemy	
-		_unit setVariable ["compromised", false];
+		_unit setVariable ["compromised", false];							// true if player was compromised (made overt) by another script							
 		_unit setVariable ["timeCompromised", 0];							// time when unit was compromised in vehicle						
 		_unit setVariable ["nearestEnemyDist", -1];							// distance to nearest unit in group that has spotted player
 		_unit setVariable ["nearestEnemy", objNull];						// enemy closest to player, taken from group that has spotted player last
@@ -223,6 +223,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				pr _bInVeh = false;
 				pr _bInAllowedArea = false;
 				pr _suspicion = 0;
+				pr _camouflage = 0;																	// value subtracted from camouflage coefficient trait
 				pr _timeHostility = _unit getVariable "timeHostility";
 				pr _timeSeen = _unit getVariable "timeSeen";
 				pr _timeCompromised = _unit getVariable "timeCompromised";

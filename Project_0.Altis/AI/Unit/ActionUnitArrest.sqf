@@ -77,6 +77,7 @@ CLASS("ActionUnitArrest", "Action")
 		
 		diag_log format ["stateMachine %1",GETV(_thisObject, "stateMachine")];
 		pr _state = ACTION_STATE_ACTIVE;
+
 		scopename "switch";
 		switch (GETV(_thisObject, "stateMachine")) do {
 			//follow/move to
@@ -119,7 +120,7 @@ CLASS("ActionUnitArrest", "Action")
 						if(time > GETV(_thisObject,"screamTime") && (_target getVariable ["isMoving", false]))then{
 							
 							SETV(_thisObject,"screamTime",time +2);
-							if(selectRandom [true,false])then{
+							if(selectRandom [true,false]) then {
 								//[_oh,"Stop!",_target] call Dialog_fnc_hud_createSentence;
 								_oh say "stop";
 							}else{
@@ -151,17 +152,17 @@ CLASS("ActionUnitArrest", "Action")
 					pr _handle = [_oh,_target] spawn {
 						params["_oh","_target"];
 						pr _currentWeapon = currentWeapon _oh;
-						pr _animation = call{
-							if(_currentWeapon isequalto primaryWeapon _oh)exitWith{
+						pr _animation = call {
+							if(_currentWeapon isequalto primaryWeapon _oh) exitWith {
 								"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
 							};
-							if(_currentWeapon isequalto secondaryWeapon _oh)exitWith{
+							if(_currentWeapon isequalto secondaryWeapon _oh) exitWith {
 								"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
 							};
-							if(_currentWeapon isequalto handgunWeapon _oh)exitWith{
+							if(_currentWeapon isequalto handgunWeapon _oh) exitWith {
 								"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
 							};
-							if(_currentWeapon isequalto binocular _oh)exitWith{
+							if(_currentWeapon isequalto binocular _oh) exitWith {
 								"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
 							};
 							"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
@@ -170,13 +171,13 @@ CLASS("ActionUnitArrest", "Action")
 						//[_oh,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
 						
 						_oh playMove _animation;
+						hint "arrested.";
 						waitUntil {animationState _oh == _animation};
 						waitUntil {animationState _oh != _animation};
 						
 						//_target removeWeapon currentWeapon _target;
 						
 						//sleep 1;
-						
 						
 					};		
 					
@@ -207,10 +208,20 @@ CLASS("ActionUnitArrest", "Action")
 		SETV(_thisObject, "state", _state);
 		_state;
 	} ENDMETHOD;
+
+	// Handle unit being killed/removed from group during action
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+
+		T_SETV("state", ACTION_STATE_FAILED);
+		
+	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("ActionUnitArrest: Terminating.");
 		
 		terminate GETV(_thisObject, "spawnHandle");
 		
@@ -219,7 +230,6 @@ CLASS("ActionUnitArrest", "Action")
 		_oh lookAt objNull;
 		_oh lockWP false;
 		_oh setSpeedMode "LIMITED";
-		hint "";
 		
 	} ENDMETHOD;
 	

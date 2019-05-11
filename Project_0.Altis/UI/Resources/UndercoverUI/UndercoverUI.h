@@ -34,9 +34,9 @@ class UndercoverUI
 			text = "";
 			colorBackground[] = {0.3569,0.8941,0.1216,0};
 			colorText[] = {1,1,1,1};
-			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.84);
-			shadow = 1;
+			font = "PuristaSemibold";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.82);
+			shadow = 0;
 			
 		};
 		class U_Suspicion_StatusBar
