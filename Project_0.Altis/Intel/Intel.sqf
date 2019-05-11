@@ -189,3 +189,82 @@ CLASS("IntelLocation", "Intel")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+
+
+/*
+Class: Intel.IntelCommanderAction
+Base class for all intel about commander actions.
+*/
+
+CLASS("IntelCommanderAction", "Intel")
+	/* variable: side
+	Side of the faction that has planned to do this*/
+	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
+
+	/* variable: posSrc
+	Source position*/
+	VARIABLE_ATTR("posSrc", [ATTR_SERIALIZABLE]);
+
+	/* variable: locationSrc
+	Source location*/
+	VARIABLE_ATTR("locationSrc", [ATTR_SERIALIZABLE]);
+
+	/* variable: route
+	The route that the vehicles or troops will follow. Format is yet unknown.*/
+	VARIABLE_ATTR("route", [ATTR_SERIALIZABLE]);
+
+	/* variable: transportMethod
+	Transport method (ground/air/water). Format is yet unknown.*/
+	VARIABLE_ATTR("transportMethod", [ATTR_SERIALIZABLE]);
+
+	/* variable: timeDeparture
+	Departure time*/
+	VARIABLE_ATTR("timeDeparture", [ATTR_SERIALIZABLE]);
+
+	/* variable: strength
+	Strength of the units allocated for this job. Format is yet unknown.*/
+	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
+
+	/* variable: posCurrent
+	Current position of the garrison that is executing this action. Commander should update it periodycally. */
+	VARIABLE_ATTR("posCurrent", [ATTR_SERIALIZABLE]);
+ENDCLASS;
+
+/*
+Class: Intel.IntelCommanderActionReinforce
+Intel about reinforcement commander action
+*/
+CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
+	/* variable: garrison
+	The destination garrison that will be reinforced. Probably players have no use to this.*/
+	VARIABLE_ATTR("garrison", [ATTR_SERIALIZABLE]);
+ENDCLASS;
+
+/*
+Class: Intel.IntelCommanderActionBuild
+Intel about action to build something.
+*/
+CLASS("IntelCommanderActionBuild", "IntelCommanderAction")
+	/* variable: type
+	The type of object that will be built. Format is unknown now!*/
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+ENDCLASS;
+
+/*
+Class: Intel.IntelCommanderActionAttack
+Intel about action to attack something.
+*/
+CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
+	/* variable: type
+	The type of attack: QRF, basic attack, something else. IDK the formet of this now!*/
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+ENDCLASS;
+
+/*
+Class: Intel.IntelCommanderActionRecon
+The commander is planning something so he sends some recon squads!
+*/
+CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
+
+ENDCLASS;

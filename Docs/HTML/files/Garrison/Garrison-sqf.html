@@ -26,13 +26,28 @@
  <div class="CTitle">delete</div>
 </div>
 
-<a name="Garrison.activate"></a><a name="Topic200"></a><div class="CTopic TFunction LSQF">
+<a name="Garrison.activate"></a><a name="Topic456"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">activate</div>
- <div class="CBody"><p>Start AI, register with commander and global garrison list</p></div>
+ <div class="CBody"><p>Start AI Registers with commander and global garrison list Sets &quot;active&quot; variable to true</p></div>
 </div>
 
-<a name="Garrison.(static)getAll"></a><a name="Topic540"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">(static)getAll</div>
+<a name="Garrison.destroy"></a><a name="Topic629"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">destroy</div>
+ <div class="CBody"><p>This starts the delete process for this garrison. It sets the garrison to destroyed state (isDestroyed returns true, isAlive returns false), removes all units and groups, deletes the timer and AI components.</p></div>
+</div>
+
+<a name="Garrison.isAlive"></a><a name="Topic630"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isAlive</div>
+ <div class="CBody"><p>Is this Garrison ready to be used?</p></div>
+</div>
+
+<a name="Garrison.isDestroyed"></a><a name="Topic631"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isDestroyed</div>
+ <div class="CBody"><p>Is this Garrison ready to be used?</p></div>
+</div>
+
+<a name="Garrison.(static)getAll"></a><a name="Topic632"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static) getAll</div>
  <div class="CBody"><p>Returns all garrisons</p><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>optional, Side of garrisons to returns. If side is not provided, returns all garrisons.</p></td></tr></table><p>Returns: Array with <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> objects</p></div>
 </div>
 
@@ -111,9 +126,14 @@
  <div class="CBody"><p>Finds groups in this garrison that have the same type as _type</p><p>Parameters: _type</p><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>Number, one of &lt;GROUP_TYPE&gt;, or Array with such numbers</p></td></tr></table><p>Returns: Array with <a href="../../index.html#File:Group/Group.hpp:Group" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,232);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Group</a> objects.</p></div>
 </div>
 
-<a name="Garrison.countAllUnits"></a><a name="Topic198"></a><div class="CTopic TFunction LSQF">
+<a name="Garrison.countAllUnits"></a><a name="Topic633"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">countAllUnits</div>
- <div class="CBody"><p>Returns all units of this garrison.</p><p>Returns: Array of <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects.</p></div>
+ <div class="CBody"><p>Returns: total number of units in this garrison.</p></div>
+</div>
+
+<a name="Garrison.getTransportCapacity"></a><a name="Topic634"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getTransportCapacity</div>
+ <div class="CBody"><p>Count number of passenger seats available in all vehicles of the categories specified.&nbsp; Parameters: _vehicleCategories</p><table class="CDefinitionList"><tr><td class="CDLEntry">_vehicleCategories</td><td class="CDLDefinition"><p>Array of vehicle categories, defaults to T_VEH_ground_infantry_cargo Returns: number of seats available.</p></td></tr></table></div>
 </div>
 
 <a name="Garrison.addUnit"></a><a name="Topic223"></a><div class="CTopic TFunction LSQF">
