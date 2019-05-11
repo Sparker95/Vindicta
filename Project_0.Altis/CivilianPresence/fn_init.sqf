@@ -2,7 +2,7 @@
 //initilises every thing to emulate the bis_civilianPresence modules
 
 //Created by: Jeroen Notenbomer
-#define DEBUG
+//#define DEBUG
 
 #define INT_RESOLUTION 50	//in meters, average distance between spawn/way points
 

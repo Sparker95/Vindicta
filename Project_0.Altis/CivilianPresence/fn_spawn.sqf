@@ -2,7 +2,6 @@
 
 params [["_module",objnull,[objnull]]];
 
-diag_log("JEROENHERE: SPAWN");
 
 if(isnull _module)exitWith{};
 
