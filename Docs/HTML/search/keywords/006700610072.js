@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("gar",["Class"],[["Garrison",,[[,,,,0,"File:Garrison/despawn.sqf:Garrison","SQFClass:Garrison"]]]]);
+NDSearch.OnPrefixDataLoaded("gar",["Class","Variable"],[["Garrison",,[[,,,,0,"File:Garrison/despawn.sqf:Garrison","SQFClass:Garrison"],["Intel.IntelCommanderActionReinforce","garrison",,,1,"File:Intel/Intel.sqf:Intel.IntelCommanderActionReinforce.garrison","SQFClass:Intel.IntelCommanderActionReinforce:garrison"]]]]);

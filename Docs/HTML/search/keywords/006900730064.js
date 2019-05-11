@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("isd",["Function"],[["isDrone",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.isDrone","SQFClass:Unit:isDrone"]]]]);
+NDSearch.OnPrefixDataLoaded("isd",["Function"],[["isDestroyed",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.isDestroyed","SQFClass:Garrison:isDestroyed"]]],["isDrone",,[["Unit",,,,0,"File:Unit/Unit.sqf:Unit.isDrone","SQFClass:Unit:isDrone"]]]]);

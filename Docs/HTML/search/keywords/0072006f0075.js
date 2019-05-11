@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("rou",["Variable"],[["route",,[["Intel.IntelCommanderAction",,,,0,"File:Intel/Intel.sqf:Intel.IntelCommanderAction.route","SQFClass:Intel.IntelCommanderAction:route"]]]]);
