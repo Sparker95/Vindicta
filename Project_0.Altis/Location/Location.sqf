@@ -45,9 +45,12 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("allowedAreas"); // Array with allowed areas
 	VARIABLE("pos"); // Position of this location
 	VARIABLE("spawnPosTypes"); // Array with spawn positions types
-	VARIABLE("spawnState"); // Is this location spawned or not
+	VARIABLE("spawned"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
 	VARIABLE("capacityInf"); // Infantry capacity
+	VARIABLE("capacityCiv"); // Infantry capacity
+	VARIABLE("cpModule"); // civilian module, might be replaced by custom script
+
 	STATIC_VARIABLE("all");
 
 
@@ -72,6 +75,16 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityInf", _capacityInf);
 	} ENDMETHOD;
 
+	METHOD("setCapacityCiv") {
+		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
+		T_SETV("capacityCiv", _capacityCiv);
+		if(T_GETV("type") isEqualTo "city")then{
+			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
+			T_SETV("cpModule",_cpModule);
+		};
+
+	} ENDMETHOD;
+
 	METHOD("setSide") {
 		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
 		T_SETV("side", _side);
@@ -86,7 +99,7 @@ CLASS("Location", "MessageReceiverEx")
 	_pos - position of this location
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, ["_pos", [], [[]]] ];
+		params [P_THISOBJECT, ["_pos", [0,0,0], [[]]] ];
 
 		// Check existance of neccessary global objects
 		if (isNil "gTimerServiceMain") exitWith {"[MessageLoop] Error: global timer service doesn't exist!";};
@@ -101,8 +114,12 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("borderPatrolWaypoints", []);
 		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
 		T_SETV("spawnPosTypes", []);
-		T_SETV("spawnState", 0);
+		T_SETV("spawned", false);
 		T_SETV("capacityInf", 0);
+		T_SETV("capacityCiv", 0);
+		T_SETV("cpModule",objnull);
+
+
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
@@ -157,22 +174,23 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		SET_VAR(_thisObject, "debugName", nil);
-		SET_VAR(_thisObject, "garrisonCiv", nil);
-		SET_VAR(_thisObject, "garrisonMilAA", nil);
-		SET_VAR(_thisObject, "garrisonMilMain", nil);
-		SET_VAR(_thisObject, "boundingRadius", nil);
-		SET_VAR(_thisObject, "border", nil);
-		SET_VAR(_thisObject, "borderPatrolWaypoints", nil);
-		SET_VAR(_thisObject, "pos", nil);
-		SET_VAR(_thisObject, "spawnPosTypes", nil);
-		SET_VAR(_thisObject, "capacityInf", nil);
-
+		T_SETV("debugName", nil);
+		T_SETV("garrisonCiv", nil);
+		T_SETV("garrisonMilAA", nil);
+		T_SETV("garrisonMilMain", nil);
+		T_SETV("boundingRadius", nil);
+		T_SETV("border", nil);
+		T_SETV("borderPatrolWaypoints", nil);
+		T_SETV("pos", nil);
+		T_SETV("spawnPosTypes", nil);
+		T_SETV("capacityInf", nil);
+		T_SETV("capacityCiv", nil);
+		T_SETV("cpModule", nil);
 
 		// Remove the timer
 		private _timer = GET_VAR(_thisObject, "timer");
 		DELETE(_timer);
-		SET_VAR(_thisObject, "timer", nil);
+		T_SETV("timer", nil);
 
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_VAR("Location", "all");
@@ -547,6 +565,19 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Checks if player is in any of the allowed areas
 	METHOD_FILE("isInAllowedArea", "Location\isInAllowedArea.sqf");
+
+	// Handle PROCESS message
+	METHOD_FILE("process", "Location\process.sqf");
+
+	// Spawns the location
+	METHOD_FILE("spawn", "Location\spawn.sqf");
+
+	// Despawns the location
+	METHOD_FILE("despawn", "Location\despawn.sqf");
+
+
+	STATIC_METHOD_FILE("createAllFromEditor", "Location\createAllFromEditor.sqf");
+
 ENDCLASS;
 
 SET_STATIC_VAR("Location", "all", []);

@@ -9,7 +9,7 @@ Calculating these arrays is a resource-consuming and it must not be performed ve
 
 CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
-	VARIABLE("spawnWest"); //These units can spawn West locations
+	VARIABLE("spawnWest"); // These units can spawn West locations
 	VARIABLE("spawnEast"); // These units can spawn East locations
 	VARIABLE("spawnInd"); // These units can spawn Independant locations
 	VARIABLE("timer");
@@ -87,9 +87,10 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	METHOD("getUnitArray") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]] ];
 		switch (_side) do {
-			case WEST: {GET_VAR(_thisObject, "spawnWest")};
-			case EAST: {GET_VAR(_thisObject, "spawnEast")};
-			case INDEPENDENT: {GET_VAR(_thisObject, "spawnInd")};
+			case WEST: {T_GETV("spawnWest")};
+			case EAST: {T_GETV("spawnEast")};
+			case INDEPENDENT: {T_GETV("spawnInd")};
+			case CIVILIAN: {allPlayers - entities "HeadlessClient_F";};//returns just players
 			default {[]};
 		};
 	} ENDMETHOD;
