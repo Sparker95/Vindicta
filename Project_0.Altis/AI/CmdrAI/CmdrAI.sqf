@@ -19,36 +19,6 @@ CLASS("CmdrAI", "")
 		T_SETV("activeActions", []);
 	} ENDMETHOD;
 
-	// METHOD("isValidAttackTarget") {
-	// 	params [P_THISOBJECT, P_STRING("_garrison")];
-	// 	T_PRVAR(side);
-	// 	!CALLM0(_garrison, "isDead") and CALLM0(_garrison, "getSide") != _side
-	// } ENDMETHOD;
-
-	// METHOD("isValidAttackSource") {
-	// 	params [P_THISOBJECT, P_STRING("_garrison")];
-	// 	T_PRVAR(side);
-	// 	!CALLM0(_garrison, "isDead") and CALLM0(_garrison, "getSide") == _side
-	// } ENDMETHOD;
-
-	// METHOD("isValidTakeOutpostTarget") {
-	// 	params [P_THISOBJECT, P_STRING("_location")];
-	// 	T_PRVAR(side);
-	// 	CALLM0(_location, "getSide") != _side
-	// } ENDMETHOD;
-	
-	// fn_isValidAttackTarget = {
-	// 	!CALLM0(_this, "isDead") and CALLM0(_this, "getSide") != _side
-	// };
-
-	// fn_isValidAttackSource = {
-	// 	!CALLM0(_this, "isDead") and CALLM0(_this, "getSide") == _side
-	// };
-
-	// fn_isValidOutpostTarget = {
-	// 	CALLM0(_this, "getSide") != _side
-	// };
-
 	METHOD("generateTakeOutpostActions") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		T_PRVAR(activeActions);
@@ -87,39 +57,6 @@ CLASS("CmdrAI", "")
 		} forEach _srcGarrisons;
 
 		OOP_INFO_MSG("Considering %1 TakeOutpost actions from %2 garrisons to %3 locations", [count _actions]+[count _srcGarrisons]+[count _tgtLocations]);
-		//T_PRVAR(side);
-
-		// // Garrison must be alive
-		// // TODO: optimize this into a single garrison function maybe?
-		// private _garrisons = CALLM(_world, "getAliveGarrisons", []) select { 
-		// 	// Must be on our side
-		// 	( GETV(_x, "side") == _side ) and 
-		// 	// Must have at least a minimum strength
-		// 	{ !CALLM(_x, "isDepleted", []) } and 
-		// 	// Must not be engaged in another action
-		// 	{ !CALLM(_x, "isBusy", []) }
-		// };
-
-		// private _locations = GETV(_world, "locations") select {
-		// 	private _location = _x;
-		// 	// Only try to take empty or enemy locations
-		// 	GETV(_location, "side") != _side and
-		// 	// Don't make duplicate take actions for the same location
-		// 	_activeActions findIf { 
-		// 		OBJECT_PARENT_CLASS_STR(_x) == "TakeOutpostCmdrAction" and 
-		// 		{ GETV(_x, "targetOutpostId") == GETV(_location, "id") }
-		// 	} == NOT_FOUND
-		// };
-
-		//private _actions = [];
-		// {
-		// 	private _garrisonId = GETV(_x, "id");
-		// 	{
-		// 		private _locationId = GETV(_x, "id");
-		// 		private _params = [_garrisonId, GETV(_x, "id")];
-		// 		_actions pushBack NEW("TakeOutpostCmdrAction", _params);
-		// 	} forEach _locations;
-		// } forEach _garrisons;
 
 		_actions
 	} ENDMETHOD;
@@ -148,14 +85,6 @@ CLASS("CmdrAI", "")
 
 		_actions
 	} ENDMETHOD;
-
-	// fn_isValidReinfGarr = {
-	// 	if(CALLM0(_this, "isDead") or (CALLM0(_this, "getSide") != _side)) exitWith { false };
-	// 	private _action = GETV(_this, "currAction");
-	// 	if(!(_action isEqualType "")) exitWith { true };
-
-	// 	OBJECT_PARENT_CLASS_STR(_action) != "ReinforceAction"
-	// };
 
 	METHOD("generateReinforceActions") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
@@ -200,23 +129,6 @@ CLASS("CmdrAI", "")
 		};
 
 		T_PRVAR(side);
-
-		// // Source garrisons must have a minimum eff
-		// private _srcGarrisons = _nowGarrisons select { 
-		// 	// Must have at least a minimum strength of twice min efficiency
-		// 	private _eff = GETV(_x, "efficiency");
-		// 	EFF_GTE(_eff, EFF_MUL_SCALAR(EFF_MIN_EFF, 2)) and 
-		// 	// !CALLM(_x, "isDepleted", []) and 
-		// 	// Not involved in another action already
-		// 	{ !CALLM(_x, "isBusy", []) }
-		// };
-
-		// private _tgtGarrisons = _garrisons select { 
-		// 	// Must have at least a minimum strength of twice min efficiency
-		// 	private _eff = GETV(_x, "efficiency");
-		// 	private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
-		// 	!EFF_GT(_overDesiredEff, EFF_ZERO)
-		// };
 
 		private _actions = [];
 		{
@@ -267,21 +179,11 @@ CLASS("CmdrAI", "")
 		} forEach _activeActions;
 
 		// Remove complete actions
-		//private _completeActions = _activeActions select { CALLM(_x, "isComplete", []) };
-
 		{ 
 			OOP_DEBUG_MSG("[c %1 w %2] Completed action %3, removing", [_thisObject]+[_world]+[_x]);
 			_activeActions deleteAt (_activeActions find _x);
 			UNREF(_x);
 		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
-
-		//_activeActions = _activeActions - _completeActions;
-		//T_SETV("activeActions", _activeActions);
-
-		// Unref completed actions
-		// {
-		// 	UNREF(_x);
-		// } forEach _completeActions;
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G   D O N E - - - - -", [_thisObject]+[_world]);
 	} ENDMETHOD;
@@ -332,7 +234,7 @@ CLASS("CmdrAI", "")
 		private _newActionsCount = 0;
 
 		// Plan new actions
-		while { count _newActions > 0 and _newActionsCount < 5 } do {
+		while { count _newActions > 0 and _newActionsCount < 3 } do {
 			OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject]+[_world]+[count _newActions]);
 
 			CALLM(_simWorldNow, "resetScoringCache", []);
@@ -370,6 +272,7 @@ CLASS("CmdrAI", "")
 			_newActions deleteAt (_newActions find _bestAction);
 
 			PROFILE_SCOPE_START(ApplyNewActionToSim);
+
 			// Apply the new action effects to simworld, so next loop scores update appropriately
 			// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
 			// models in the sim so that other reinforce actions will take it into account in their scoring.
@@ -378,6 +281,8 @@ CLASS("CmdrAI", "")
 			CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
 
 			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
+
+			_newActionsCount = _newActionsCount + 1;
 		};
 		PROFILE_SCOPE_END(PlanActions, 0.1);
 
