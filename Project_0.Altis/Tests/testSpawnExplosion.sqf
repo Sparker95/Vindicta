@@ -4,8 +4,7 @@
 // Create some vehicle groups
 private _i = 0;
 private _groups = [];
-while{(_i < 3)} do {
-	private _newGroup = CALLM(_gar, "createAddVehGroup", [_side ARG T_VEH ARG T_VEH_APC ARG -1]);
+while{(_i < 16)} do {
 
 	private _newGroup = NEW("Group", [WEST ARG GROUP_TYPE_VEH_NON_STATIC]);
 	private _template = tNATO;
@@ -15,3 +14,8 @@ while{(_i < 3)} do {
 	_groups pushBack _newGroup;
 	_i = _i + 1;
 };
+
+// Spawn the groups
+{
+	CALLM2(_x, "spawnVehiclesOnRoad", [], getpos player);
+} forEach _groups;
