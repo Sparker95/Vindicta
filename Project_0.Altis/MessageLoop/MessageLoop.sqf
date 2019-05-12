@@ -12,9 +12,11 @@ Author: Sparker
 15.06.2018
 */
 
+/*
 #ifndef RELEASE_BUILD
 //#define DEBUG_MESSAGE_LOOP
 #endif
+*/
 
 #define pr private
 

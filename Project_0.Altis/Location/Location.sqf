@@ -421,7 +421,7 @@ CLASS("Location", "MessageReceiverEx")
 	Finds an empty position for a vehicle class name on road close to specified position.
 
 	Parameters: _startPos 
-	_startPos - start position where to start searching for a position.
+	_startPos - start position ATL where to start searching for a position.
 
 	Returns: Array, [_pos, _dir]
 	*/
@@ -444,10 +444,18 @@ CLASS("Location", "MessageReceiverEx")
 				while {_i < count _roads && !_found} do {
 					(_roads select _i) params ["_dist", "_road"];
 					private _rct = roadsConnectedTo _road;
-					if (count _rct > 0) then { // We better don't use terminal road pieces
+					if (count _rct >= 2) then { // We better don't use terminal road pieces
 						// Check position if it's safe
 						private _dir = _road getDir (_rct select 0);
-						if (CALLSM3("Location", "isPosSafe", getPos _road, _dir, _className)) then {
+						// Get Z component of ATL height from two nearest road pieces
+						private _z0 = (getPosASL (_rct select 0)) select 2;
+						private _z1 = (getPosASL (_rct select 1)) select 2;
+						private _posRoad = getPosASL _road;
+						_posRoad set [2, 0.5*(_z0 + _z1)];
+						_posRoad = ASLToATL _posRoad;
+
+						//diag_log format ["--- road: %1, pos atl: %2", _road, getPosATL _road];
+						if (CALLSM3("Location", "isPosSafe", _posRoad, _dir, _className)) then {
 							_return = [getPos _road, _dir];
 							_found = true;
 						};

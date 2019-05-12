@@ -592,8 +592,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Parameters: _vehPosAndDir, _startPos
 
-	_vehPosAndDir - array of [_pos, _dir] where vehicles will be spawned.
-	_startPos - optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.
+	_vehPosAndDir - array of [_posATL, _dir] where vehicles will be spawned.
+	_startPos - positoon ATL, optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.
 
 	Returns: nil
 	*/
@@ -631,7 +631,18 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			} else {
 				{
 					(_posAndDir select _forEachIndex) params ["_pos", "_dir"];
-					CALLM2(_x, "spawn", _pos, _dir);
+					// Check if this position is safe
+					pr _className = CALLM0(_x, "getClassName");
+					//diag_log format ["--- Finding a pos for a vehicle: %1", _className];
+					if (!CALLSM3("Location", "isPosSafe", _pos, _dir, _className)) then {
+						//diag_log format ["   Provided position is not safe. Finding a safe pos on road"];
+						pr _return = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+						_return params ["_posReturn", "_dirReturn"];
+						CALLM2(_x, "spawn", _posReturn, _dirReturn);
+					} else {
+						//diag_log format ["   Provided position is safe!"];
+						CALLM2(_x, "spawn", _pos, _dir);
+					};
 				} forEach _vehUnits;
 			};
 
