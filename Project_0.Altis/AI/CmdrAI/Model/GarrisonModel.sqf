@@ -768,6 +768,43 @@ CLASS("GarrisonModel", "ModelBase")
 		// CALLM(_AI, "postMethodAsync", ["addExternalGoal" ARG _args]);
 	} ENDMETHOD;
 
+	// CLEAR AREA
+	METHOD("clearAreaActual") {
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_moveRadius"), P_NUMBER("_clearRadius"), P_NUMBER("_timeOutSeconds")];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		private _AI = CALLM(_actual, "getAI", []);
+		private _parameters = [[TAG_G_POS, _pos], [TAG_MOVE_RADIUS, _moveRadius], [TAG_CLEAR_RADIUS, _clearRadius], [TAG_DURATION, _timeOutSeconds]]; 
+		CALLM(_AI, "postMethodAsync", ["addExternalGoal" ARG ["GoalGarrisonClearArea" ARG 0 ARG _parameters ARG _thisObject]]);
+
+		OOP_INFO_MSG("%1 clearing area at %2, radius %3, timeout %4 seconds", [LABEL(_thisObject) ARG _pos ARG _clearRadius ARG _timeOutSeconds]);
+	} ENDMETHOD;
+
+	METHOD("clearActualComplete") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		private _AI = CALLM(_actual, "getAI", []);
+		private _goalState = CALLM(_AI, "getExternalGoalActionState", ["GoalGarrisonClearArea" ARG _thisObject]);
+		if(_goalState == ACTION_STATE_COMPLETED) then {
+			OOP_INFO_MSG("%1 completed clearing area", [LABEL(_thisObject)]);
+		};
+		_goalState == ACTION_STATE_COMPLETED
+	} ENDMETHOD;
+
+	METHOD("cancelClearAreaActual") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+		private _AI = CALLM(_actual, "getAI", []);
+		CALLM(_AI, "postMethodAsync", ["deleteExternalGoal" ARG ["GoalGarrisonClearArea" ARG _thisObject]]);
+
+		OOP_INFO_MSG("Cancelled clear area for %1", [LABEL(_thisObject)]);
+	} ENDMETHOD;
+
 	// METHOD("joinLocationActualComplete") {
 	// 	params [P_THISOBJECT];
 

@@ -248,7 +248,7 @@ CLASS(UNIT_CLASS_NAME, "");
 					private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
 					
 					// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
-					pr _special = "NONE";
+					pr _special = "CAN_COLLIDE";
 					/*
 					if ([_catID, _subcatID] in T_static) then {
 						_special = "CAN_COLLIDE";
