@@ -13,8 +13,9 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtLocId")];
 
 		T_SETV("tgtLocId", _tgtLocId);
+
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION]+[_tgtLocId]);
+		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION ARG _tgtLocId]);
 
 #ifdef DEBUG_CMDRAI
 		T_SETV("debugColor", "ColorBlue");
@@ -116,6 +117,18 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// TODO:OPT cache these scores!
 		private _scorePriority = 1;
 
+		// Work out time to start based on how much force we mustering and distance we are travelling.
+		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8
+		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + random 18;
+
+		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
+		// _delay = 0 max (120 min _delay);
+		private _startDate = DATE_NOW;
+
+		_startDate set [4, _startDate#4 + _delay];
+
+		T_SET_AST_VAR("startDateVar", _startDate);
+
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
@@ -163,12 +176,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 ENDCLASS;
 
 #ifdef _SQF_VM
-
-#define CMDR_ACTION_STATE_SPLIT				(CMDR_ACTION_STATE_CUSTOM+1)
-#define CMDR_ACTION_STATE_READY_TO_MOVE		(CMDR_ACTION_STATE_CUSTOM+2)
-#define CMDR_ACTION_STATE_MOVED				(CMDR_ACTION_STATE_CUSTOM+3)
-#define CMDR_ACTION_STATE_TARGET_DEAD		(CMDR_ACTION_STATE_CUSTOM+4)
-#define CMDR_ACTION_STATE_ARRIVED 			(CMDR_ACTION_STATE_CUSTOM+5)
 
 #define SRC_POS [0, 0, 0]
 #define TARGET_POS [1, 2, 3]

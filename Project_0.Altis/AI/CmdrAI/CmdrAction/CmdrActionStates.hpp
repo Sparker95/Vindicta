@@ -8,6 +8,13 @@
 #define CMDR_ACTION_PRIOR_HIGH 		1
 #define CMDR_ACTION_PRIOR_LOW 		10
 
+#define CMDR_ACTION_STATE_SPLIT				(CMDR_ACTION_STATE_CUSTOM+1)
+#define CMDR_ACTION_STATE_READY_TO_MOVE		(CMDR_ACTION_STATE_CUSTOM+2)
+#define CMDR_ACTION_STATE_MOVED				(CMDR_ACTION_STATE_CUSTOM+3)
+#define CMDR_ACTION_STATE_TARGET_DEAD		(CMDR_ACTION_STATE_CUSTOM+4)
+#define CMDR_ACTION_STATE_ARRIVED 			(CMDR_ACTION_STATE_CUSTOM+5)
+#define CMDR_ACTION_STATE_ASSIGNED			(CMDR_ACTION_STATE_CUSTOM+6)
+
 // ActionStateTransition variables, these are wrappers of variables so the value can be shared between multiple
 // classes. They also allow the CmdrAction state to be pushed/popped.
 #define MAKE_AST_VAR(value) [value]

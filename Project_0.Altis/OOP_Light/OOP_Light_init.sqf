@@ -620,7 +620,7 @@ OOP_clone_default = {
 // It just iterates through all variables and copies their values
 // This method assumes the same classes of the two objects
 OOP_assign_default = {
-	params ["_destObject", "_srcObject", ["_copyNil", true]];
+	params ["_destObject", "_srcObject", ["_copyNil", true], '_attrRequired'];
 
 	private _destClassNameStr = OBJECT_PARENT_CLASS_STR(_destObject);
 	private _srcClassNameStr = OBJECT_PARENT_CLASS_STR(_srcObject);
@@ -634,6 +634,13 @@ OOP_assign_default = {
 
 	// Get member list and copy everything
 	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
+	if(!isNil "_attrRequired") then {
+		_memList = _memList select {
+			_x params ["_varName", "_attributes"];
+			_attrRequired in _attributes
+		};
+	};
+
 	{
 		_x params ["_varName"]; //, "_attributes"];
 		private _value = FORCE_GET_MEM(_srcObject, _varName);

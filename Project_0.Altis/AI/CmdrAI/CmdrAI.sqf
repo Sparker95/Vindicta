@@ -26,12 +26,25 @@ CLASS("CmdrAI", "")
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
-			// Must be on our side, not involved in another action and at a location 
-			// TODO: make it at a base only?
-			if((GETV(_x, "side") != _side) or { CALLM(_x, "isBusy", []) } or { IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) }) then {
+			private _potentialSrcGarr = _x;
+			// Must be our garrison (only ours actually exist here so this is redundant!)
+			// Must be not already busy
+			// Must be at a location
+			// Must not be source of another inprogress take location mission
+			if ((GETV(_potentialSrcGarr, "side") != _side) or 
+				{ CALLM(_potentialSrcGarr, "isBusy", []) } or 
+				{ IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } or 
+				{ 
+					T_PRVAR(activeActions);
+					_activeActions findIf {
+						GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
+						{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
+					} != NOT_FOUND
+				}
+				) then {
 				false
 			} else {
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
 				// Must have at least a minimum available eff
 				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
 			}
@@ -46,13 +59,10 @@ CLASS("CmdrAI", "")
 		private _actions = [];
 		{
 			private _srcId = GETV(_x, "id");
-			//private _srcLocId = GETV(_x, "locationId");
 			{
 				private _tgtId = GETV(_x, "id");
-				//if(_tgtId != _srcLocId) then {
 				private _params = [_srcId, _tgtId];
 				_actions pushBack (NEW("TakeLocationCmdrAction", _params));
-				//};
 			} forEach _tgtLocations;
 		} forEach _srcGarrisons;
 
@@ -244,7 +254,7 @@ CLASS("CmdrAI", "")
 		private _newActionsCount = 0;
 
 		// Plan new actions
-		while { count _newActions > 0 and _newActionsCount < 3 } do {
+		while { count _newActions > 0 and _newActionsCount < 1 } do {
 			OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject]+[_world]+[count _newActions]);
 
 			CALLM(_simWorldNow, "resetScoringCache", []);

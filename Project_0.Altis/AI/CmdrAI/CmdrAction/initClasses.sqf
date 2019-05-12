@@ -4,6 +4,7 @@ call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\ASTs\AST_SelectFall
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\ASTs\AST_AssignActionToGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\ASTs\AST_SplitGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\ASTs\AST_MoveGarrison.sqf";
+call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\ASTs\AST_WaitGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\ASTs\AST_MergeOrJoinTarget.sqf";
 
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\CmdrAction.sqf";

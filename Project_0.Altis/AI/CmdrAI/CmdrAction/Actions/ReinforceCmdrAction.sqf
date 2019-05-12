@@ -1,11 +1,5 @@
 #include "..\..\common.hpp"
 
-#define CMDR_ACTION_STATE_SPLIT				(CMDR_ACTION_STATE_CUSTOM+1)
-#define CMDR_ACTION_STATE_READY_TO_MOVE		(CMDR_ACTION_STATE_CUSTOM+2)
-#define CMDR_ACTION_STATE_MOVED				(CMDR_ACTION_STATE_CUSTOM+3)
-#define CMDR_ACTION_STATE_TARGET_DEAD		(CMDR_ACTION_STATE_CUSTOM+4)
-#define CMDR_ACTION_STATE_ARRIVED 			(CMDR_ACTION_STATE_CUSTOM+5)
-
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtGarrId");
 
@@ -50,6 +44,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "tgtGarrison", GETV(_tgtGarr, "actual"));
 			// SETV(_intel, "location", GETV(_tgtGarr, "actual"));
 			SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
+			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar"));
 		};
 
 		T_CALLM("updateIntelFromDetachment", [_intel]);
@@ -107,6 +102,18 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// TODO:OPT cache these scores!
 		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
 
+		// Work out time to start based on how much force we mustering and distance we are travelling.
+		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
+		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1))  * 0.1 + (0.5 + random 2);
+
+		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
+		// _delay = 0 max (120 min _delay);
+		private _startDate = DATE_NOW;
+
+		_startDate set [4, _startDate#4 + _delay];
+
+		T_SET_AST_VAR("startDateVar", _startDate);
+
 		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtGarrId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
 		//OOP_INFO_0(_str);
 		// if(_scorePriority > 0 and _scoreResource > 0) then {
@@ -117,7 +124,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] 
 			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
-		// };
+
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
 	} ENDMETHOD;

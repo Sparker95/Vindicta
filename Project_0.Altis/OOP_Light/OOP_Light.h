@@ -48,7 +48,7 @@
 
 // Enables macros for Arma Script Profiler counters, enables global counter variables per every class
 // Define it at the top of the file per every class where you need to count objects
-//#define PROFILER_COUNTERS_ENABLE
+#define PROFILER_COUNTERS_ENABLE
 
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
@@ -452,7 +452,9 @@
 #endif
 
 // Enable function wrappers if logging macros are used
-
+#ifdef OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#endif
 #ifdef OOP_INFO
 #define _OOP_FUNCTION_WRAPPERS
 #endif
@@ -471,6 +473,17 @@
 #define _OOP_FUNCTION_WRAPPERS
 #endif
 
+// Enable function wrappers if access assertions are enabled
+#ifdef OOP_TRACE_FUNCTIONS
+#define OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#define OOP_TRACE_ENTER_FUNCTION OOP_DEBUG_MSG("> enter function %1", [_this])
+#define OOP_TRACE_EXIT_FUNCTION OOP_DEBUG_MSG("< exit function", [])
+#else
+#define OOP_TRACE_ENTER_FUNCTION 
+#define OOP_TRACE_EXIT_FUNCTION 
+#endif
+
 // If some enabled functionality requires function wrappers we set them here. If you want to conditionally add more stuff to the wrapped functions
 // (e.g. additional asserts, parameter manipulation etc.) then define them as macros and then include them in the wrapped blocks in the same manner
 // that OOP_PROFILE does.
@@ -483,9 +496,11 @@
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
 	#define ENDMETHOD }) select 0;\
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		} ]
@@ -499,8 +514,10 @@
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn }) select 0; \
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		}]
@@ -513,6 +530,7 @@
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
@@ -524,8 +542,10 @@
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn}) select 0; \
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		}]
@@ -724,6 +744,11 @@ objNameStr \
 // Same as assign but copies only existing variables of an object (those that are not nil)
 #define UPDATE(destObjNameStr, srcObjNameStr) [destObjNameStr, srcObjNameStr, false] call OOP_assign_default;
 
+// ----------------------------------------
+// |    U P D A T E   V I A   A T T R     |
+// ----------------------------------------
+// Same as update but filters by specified attribute (e.g. ATTR_SERIALIZABLE)
+#define UPDATE_VIA_ATTR(destObjNameStr, srcObjNameStr, attr) [destObjNameStr, srcObjNameStr, false, attr] call OOP_assign_default;
 
 // ----------------------------------------
 // |          S E R I A L I Z E           |
