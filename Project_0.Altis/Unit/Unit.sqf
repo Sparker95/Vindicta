@@ -244,7 +244,18 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 				};
 				case T_VEH: {
-					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
+
+					private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+					
+					// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
+					pr _special = "NONE";
+					/*
+					if ([_catID, _subcatID] in T_static) then {
+						_special = "CAN_COLLIDE";
+					};
+					*/
+
+					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
