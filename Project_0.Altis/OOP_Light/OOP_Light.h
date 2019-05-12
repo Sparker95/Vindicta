@@ -42,10 +42,23 @@
 #define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
+// Enables support for Arma Script Profiler globally
+// Set it in this file
+#define ASP_ENABLE
+
+// Enables macros for Arma Script Profiler counters, enables global counter variables per every class
+// Define it at the top of the file per every class where you need to count objects
+//#define PROFILER_COUNTERS_ENABLE
+
+// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
+#define ADE
+
 #ifdef _SQF_VM
 
 #define TEXT_
 #undef ASP_ENABLE
+#undef PROFILER_COUNTERS_ENABLE
+#undef ADE
 #undef OFSTREAM_ENABLE
 #undef OFSTREAM_FILE
 #define VM_LOG(t) diag_log t
@@ -58,6 +71,7 @@
 #define OOP_ERROR
 
 #define TIME_NOW 0
+#define DATE_NOW [0,0,0,0,0]
 #define CLIENT_OWNER objNull
 #define IS_SERVER true
 #define HAS_INTERFACE true
@@ -72,6 +86,7 @@
 #define VM_LOG_FMT(t, args)
 
 #define TIME_NOW time
+#define DATE_NOW date
 #define CLIENT_OWNER clientOwner
 #define IS_SERVER isServer
 #define HAS_INTERFACE hasInterface
@@ -79,17 +94,6 @@
 #define PUBLIC_VARIABLE publicVariable
 
 #endif
-
-// Enables support for Arma Script Profiler globally
-// Set it in this file
-//#define ASP_ENABLE
-
-// Enables macros for Arma Script Profiler counters, enables global counter variables per every class
-// Define it at the top of the file per every class where you need to count objects
-//#define PROFILER_COUNTERS_ENABLE
-
-// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
-#define ADE
 
 // ----------------------------------------------------------------------
 // |               C O N F I G   E N T R Y   P O I N T                  |
@@ -107,21 +111,28 @@
 #define COUNTER_NAME_STR(nameStr) ("g_profCnt_" + nameStr)
 
 #ifdef PROFILER_COUNTERS_ENABLE
-
-#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0]; nameStr profilerSetCounter 0;
-
-#define PROFILER_COUNTER_INC(nameStr) isNil { \
-private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
-missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
-nameStr profilerSetCounter _oop_cnt; };
-
-#define PROFILER_COUNTER_DEC(nameStr) isNil { \
-private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
-missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
-nameStr profilerSetCounter _oop_cnt; };
-
+#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0];
 #else
 #define PROFILER_COUNTER_INIT(nameStr)
+#endif
+
+#ifdef ASP_ENABLE
+#define PROFILER_COUNTER_INC(nameStr) isNil { \
+	private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+	if(!isNil "_oop_cnt") then { \
+		missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
+		nameStr profilerSetCounter _oop_cnt; \
+	}; \
+};
+
+#define PROFILER_COUNTER_DEC(nameStr) isNil { \
+	private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+	if(!isNil "_oop_cnt") then { \
+		missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
+		nameStr profilerSetCounter _oop_cnt; \
+	}; \
+};
+#else
 #define PROFILER_COUNTER_INC(nameStr)
 #define PROFILER_COUNTER_DEC(nameStr)
 #endif
@@ -573,6 +584,11 @@ nameStr profilerSetCounter _oop_cnt; };
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
+#ifdef PROFILER_COUNTERS_ENABLE
+#define CREATE_PROFILE_TAG VARIABLE("__profile_tag")
+#else
+#define CREATE_PROFILE_TAG
+#endif
 
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \

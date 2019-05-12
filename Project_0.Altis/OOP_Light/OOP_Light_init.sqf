@@ -528,6 +528,9 @@ OOP_new = {
 		_oop_i = _oop_i + 1;
 	};
 	CALL_METHOD(_objNameStr, "new", _extraParams);
+
+	PROFILER_COUNTER_INC(_classNameStr);
+
 	_objNameStr
 };
 
@@ -558,6 +561,9 @@ OOP_new_public = {
 		_oop_i = _oop_i + 1;
 	};
 	CALL_METHOD(_objNameStr, "new", _extraParams);
+
+	PROFILER_COUNTER_INC(_classNameStr);
+
 	_objNameStr
 };
 
@@ -584,6 +590,8 @@ OOP_clone = {
 	
 	CALL_METHOD(_newObjNameStr, "copy", [_objNameStr]);
 
+	PROFILER_COUNTER_INC(_classNameStr);
+
 	_newObjNameStr
 };
 
@@ -604,6 +612,8 @@ OOP_clone_default = {
 			};
 		};
 	} forEach _memList;
+
+	PROFILER_COUNTER_INC(_classNameStr);
 };
 
 // Default assignment, this is what you get if you don't overwrite "assign" method of your class
@@ -751,6 +761,8 @@ OOP_delete = {
 			FORCE_SET_MEM(_objNameStr, _memName, nil);
 		} forEach _oop_memList;
 	};
+
+	PROFILER_COUNTER_DEC(_oop_classNameStr);
 };
 
 // Base class for intrusive ref counting.
