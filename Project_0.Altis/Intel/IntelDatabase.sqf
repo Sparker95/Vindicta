@@ -90,7 +90,7 @@ CLASS("IntelDatabase", "")
 			if (_itemDst in _items) then { // Make sure we have this intel item
 				// Backup the source so that it doesn't get overwritten in update
 				pr _prevSource = GETV(_itemDst, "source");
-				UPDATE(_itemDst, _itemSrc); // Copy all variables that are not nil in itemSrc
+				UPDATE_VIA_ATTR(_itemDst, _itemSrc, ATTR_SERIALIZABLE); // Copy all variables that are not nil in itemSrc
 				// Restore the source
 				if (!isNil "_prevSource") then {
 					SETV(_itemDst, "source", _prevSource);
@@ -196,8 +196,10 @@ CLASS("IntelDatabase", "")
 	METHOD("removeIntelForClone") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
+
 		pr _dbEntry = GETV(_item, "dbEntry");
 		ASSERT_OBJECT(_dbEntry);
+		OOP_INFO_MSG("REMOVE INTEL: %1 (%2)", [_item ARG _dbEntry]);
 		pr _items = T_GETV("items");
 		_items deleteAt (_items find _dbEntry);
 

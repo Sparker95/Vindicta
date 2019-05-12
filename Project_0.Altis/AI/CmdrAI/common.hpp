@@ -16,6 +16,8 @@
 #define FAIL_UNDER_EFF					3	// Fail if the split garrison didn't meet efficiency requirements
 #define CHEAT_TRANSPORT					4	// Spawn trucks if they are not available and transport is requested
 
+#define PROFILER_COUNTERS_ENABLE
+
 #define OFSTREAM_FILE "CmdrAI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Templates\Efficiency.hpp"
@@ -27,6 +29,7 @@
 #define DEBUG_CMDRAI
 #endif
 
+// Shortcuts
 #define LABEL(model) GETV(model, "label")
 
 #define EFF_ZERO T_EFF_null

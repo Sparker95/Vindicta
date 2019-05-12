@@ -66,6 +66,11 @@ CLASS("CmdrAction", "RefCounted")
 				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x]+[_thisObject]);
 			};
 		} foreach +_garrisons;
+
+		T_PRVAR(intel);
+		if(!IS_NULL_OBJECT(_intel)) then {
+			DELETE(_intel);
+		};
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("createTransitions") {

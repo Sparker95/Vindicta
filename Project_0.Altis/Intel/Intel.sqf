@@ -71,7 +71,13 @@ CLASS("Intel", "")
 		// If db is valid then we can directly remove our matching intel entry from it.
 		private _db = T_GETV("db");
 		if(!isNil "_db") then {
+			T_PRVAR(dbEntry);
+			ASSERT_MSG(_dbEntry != _thisObject, "Circular reference in Intel!");
+
+			OOP_INFO_MSG("cleaning up intel object from db", []);
 			CALLM(_db, "removeIntelForClone", [_thisObject]);
+			DELETE(T_GETV("dbEntry"));
+			OOP_INFO_MSG("cleaned up intel object from db", []);
 		};
 	} ENDMETHOD;
 	

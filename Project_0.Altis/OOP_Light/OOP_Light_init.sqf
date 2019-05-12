@@ -528,6 +528,9 @@ OOP_new = {
 		_oop_i = _oop_i + 1;
 	};
 	CALL_METHOD(_objNameStr, "new", _extraParams);
+
+	PROFILER_COUNTER_INC(_classNameStr);
+
 	_objNameStr
 };
 
@@ -558,6 +561,9 @@ OOP_new_public = {
 		_oop_i = _oop_i + 1;
 	};
 	CALL_METHOD(_objNameStr, "new", _extraParams);
+
+	PROFILER_COUNTER_INC(_classNameStr);
+
 	_objNameStr
 };
 
@@ -584,6 +590,8 @@ OOP_clone = {
 	
 	CALL_METHOD(_newObjNameStr, "copy", [_objNameStr]);
 
+	PROFILER_COUNTER_INC(_classNameStr);
+
 	_newObjNameStr
 };
 
@@ -604,13 +612,15 @@ OOP_clone_default = {
 			};
 		};
 	} forEach _memList;
+
+	PROFILER_COUNTER_INC(_classNameStr);
 };
 
 // Default assignment, this is what you get if you don't overwrite "assign" method of your class
 // It just iterates through all variables and copies their values
 // This method assumes the same classes of the two objects
 OOP_assign_default = {
-	params ["_destObject", "_srcObject", ["_copyNil", true]];
+	params ["_destObject", "_srcObject", ["_copyNil", true], '_attrRequired'];
 
 	private _destClassNameStr = OBJECT_PARENT_CLASS_STR(_destObject);
 	private _srcClassNameStr = OBJECT_PARENT_CLASS_STR(_srcObject);
@@ -624,6 +634,13 @@ OOP_assign_default = {
 
 	// Get member list and copy everything
 	private _memList = GET_SPECIAL_MEM(_destClassNameStr, MEM_LIST_STR);
+	if(!isNil "_attrRequired") then {
+		_memList = _memList select {
+			_x params ["_varName", "_attributes"];
+			_attrRequired in _attributes
+		};
+	};
+
 	{
 		_x params ["_varName"]; //, "_attributes"];
 		private _value = FORCE_GET_MEM(_srcObject, _varName);
@@ -751,6 +768,8 @@ OOP_delete = {
 			FORCE_SET_MEM(_objNameStr, _memName, nil);
 		} forEach _oop_memList;
 	};
+
+	PROFILER_COUNTER_DEC(_oop_classNameStr);
 };
 
 // Base class for intrusive ref counting.

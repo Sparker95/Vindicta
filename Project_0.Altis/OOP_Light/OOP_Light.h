@@ -42,10 +42,23 @@
 #define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
+// Enables support for Arma Script Profiler globally
+// Set it in this file
+#define ASP_ENABLE
+
+// Enables macros for Arma Script Profiler counters, enables global counter variables per every class
+// Define it at the top of the file per every class where you need to count objects
+#define PROFILER_COUNTERS_ENABLE
+
+// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
+#define ADE
+
 #ifdef _SQF_VM
 
 #define TEXT_
 #undef ASP_ENABLE
+#undef PROFILER_COUNTERS_ENABLE
+#undef ADE
 #undef OFSTREAM_ENABLE
 #undef OFSTREAM_FILE
 #define VM_LOG(t) diag_log t
@@ -58,6 +71,7 @@
 #define OOP_ERROR
 
 #define TIME_NOW 0
+#define DATE_NOW [0,0,0,0,0]
 #define CLIENT_OWNER objNull
 #define IS_SERVER true
 #define HAS_INTERFACE true
@@ -72,6 +86,7 @@
 #define VM_LOG_FMT(t, args)
 
 #define TIME_NOW time
+#define DATE_NOW date
 #define CLIENT_OWNER clientOwner
 #define IS_SERVER isServer
 #define HAS_INTERFACE hasInterface
@@ -79,17 +94,6 @@
 #define PUBLIC_VARIABLE publicVariable
 
 #endif
-
-// Enables support for Arma Script Profiler globally
-// Set it in this file
-//#define ASP_ENABLE
-
-// Enables macros for Arma Script Profiler counters, enables global counter variables per every class
-// Define it at the top of the file per every class where you need to count objects
-//#define PROFILER_COUNTERS_ENABLE
-
-// Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
-#define ADE
 
 // ----------------------------------------------------------------------
 // |               C O N F I G   E N T R Y   P O I N T                  |
@@ -107,21 +111,28 @@
 #define COUNTER_NAME_STR(nameStr) ("g_profCnt_" + nameStr)
 
 #ifdef PROFILER_COUNTERS_ENABLE
-
-#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0]; nameStr profilerSetCounter 0;
-
-#define PROFILER_COUNTER_INC(nameStr) isNil { \
-private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
-missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
-nameStr profilerSetCounter _oop_cnt; };
-
-#define PROFILER_COUNTER_DEC(nameStr) isNil { \
-private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
-missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
-nameStr profilerSetCounter _oop_cnt; };
-
+#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0];
 #else
 #define PROFILER_COUNTER_INIT(nameStr)
+#endif
+
+#ifdef ASP_ENABLE
+#define PROFILER_COUNTER_INC(nameStr) isNil { \
+	private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+	if(!isNil "_oop_cnt") then { \
+		missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
+		nameStr profilerSetCounter _oop_cnt; \
+	}; \
+};
+
+#define PROFILER_COUNTER_DEC(nameStr) isNil { \
+	private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+	if(!isNil "_oop_cnt") then { \
+		missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
+		nameStr profilerSetCounter _oop_cnt; \
+	}; \
+};
+#else
 #define PROFILER_COUNTER_INC(nameStr)
 #define PROFILER_COUNTER_DEC(nameStr)
 #endif
@@ -441,7 +452,9 @@ nameStr profilerSetCounter _oop_cnt; };
 #endif
 
 // Enable function wrappers if logging macros are used
-
+#ifdef OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#endif
 #ifdef OOP_INFO
 #define _OOP_FUNCTION_WRAPPERS
 #endif
@@ -460,6 +473,17 @@ nameStr profilerSetCounter _oop_cnt; };
 #define _OOP_FUNCTION_WRAPPERS
 #endif
 
+// Enable function wrappers if access assertions are enabled
+#ifdef OOP_TRACE_FUNCTIONS
+#define OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#define OOP_TRACE_ENTER_FUNCTION OOP_DEBUG_MSG("> enter function %1", [_this])
+#define OOP_TRACE_EXIT_FUNCTION OOP_DEBUG_MSG("< exit function", [])
+#else
+#define OOP_TRACE_ENTER_FUNCTION 
+#define OOP_TRACE_EXIT_FUNCTION 
+#endif
+
 // If some enabled functionality requires function wrappers we set them here. If you want to conditionally add more stuff to the wrapped functions
 // (e.g. additional asserts, parameter manipulation etc.) then define them as macros and then include them in the wrapped blocks in the same manner
 // that OOP_PROFILE does.
@@ -472,9 +496,11 @@ nameStr profilerSetCounter _oop_cnt; };
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
 	#define ENDMETHOD }) select 0;\
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		} ]
@@ -488,8 +514,10 @@ nameStr profilerSetCounter _oop_cnt; };
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn }) select 0; \
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		}]
@@ -502,6 +530,7 @@ nameStr profilerSetCounter _oop_cnt; };
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
@@ -513,8 +542,10 @@ nameStr profilerSetCounter _oop_cnt; };
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn}) select 0; \
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		}]
@@ -573,6 +604,11 @@ nameStr profilerSetCounter _oop_cnt; };
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
+#ifdef PROFILER_COUNTERS_ENABLE
+#define CREATE_PROFILE_TAG VARIABLE("__profile_tag")
+#else
+#define CREATE_PROFILE_TAG
+#endif
 
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
@@ -708,6 +744,11 @@ objNameStr \
 // Same as assign but copies only existing variables of an object (those that are not nil)
 #define UPDATE(destObjNameStr, srcObjNameStr) [destObjNameStr, srcObjNameStr, false] call OOP_assign_default;
 
+// ----------------------------------------
+// |    U P D A T E   V I A   A T T R     |
+// ----------------------------------------
+// Same as update but filters by specified attribute (e.g. ATTR_SERIALIZABLE)
+#define UPDATE_VIA_ATTR(destObjNameStr, srcObjNameStr, attr) [destObjNameStr, srcObjNameStr, false, attr] call OOP_assign_default;
 
 // ----------------------------------------
 // |          S E R I A L I Z E           |
