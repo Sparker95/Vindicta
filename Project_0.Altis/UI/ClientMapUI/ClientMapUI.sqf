@@ -163,7 +163,7 @@ CLASS(CLASS_NAME, "")
 				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
 			};
 			
-			_timeText = str GETV(_intel, "timeUpdated");
+			_timeText = str GETV(_intel, "dateUpdated");
 			_sideText = str GETV(_intel, "side");
 
 			pr _ua = GETV(_intel, "unitData");
