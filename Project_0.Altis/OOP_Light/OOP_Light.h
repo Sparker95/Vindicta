@@ -44,11 +44,11 @@
 
 // Enables support for Arma Script Profiler globally
 // Set it in this file
-#define ASP_ENABLE
+//#define ASP_ENABLE
 
 // Enables macros for Arma Script Profiler counters, enables global counter variables per every class
 // Define it at the top of the file per every class where you need to count objects
-#define PROFILER_COUNTERS_ENABLE
+//#define PROFILER_COUNTERS_ENABLE
 
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
