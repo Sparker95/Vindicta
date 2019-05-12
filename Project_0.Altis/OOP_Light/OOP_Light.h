@@ -72,7 +72,7 @@
 
 #define TIME_NOW 0
 #define DATE_NOW [0,0,0,0,0]
-#define CLIENT_OWNER objNull
+#define CLIENT_OWNER 0
 #define IS_SERVER true
 #define HAS_INTERFACE true
 #define IS_HEADLESSCLIENT false
@@ -169,7 +169,7 @@
 // ----------------------------------------------------------------------
 
 //Name of a specific instance of object
-#define OBJECT_NAME_STR(classNameStr, objIDInt) (OOP_PREFIX + (classNameStr) + OBJECT_SEPARATOR + (format ["%1", objIDInt]))
+#define OBJECT_NAME_STR(classNameStr, objIDInt)  (format ["%1%2%3%4_%5", OOP_PREFIX, classNameStr, OBJECT_SEPARATOR, CLIENT_OWNER, objIDInt])
 
 //String name of a static member
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
