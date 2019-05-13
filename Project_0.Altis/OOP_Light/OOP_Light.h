@@ -328,10 +328,10 @@
 #define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, __STRINGIFY(varName))
 
 // Returns object class name
-#define GET_OBJECT_CLASS(_objNameStr) OBJECT_PARENT_CLASS_STR(_objNameStr)
+#define GET_OBJECT_CLASS(objNameStr) OBJECT_PARENT_CLASS_STR(objNameStr)
 
 // Returns true if reference passed is pointing at a valid object 
-#define IS_OOP_OBJECT(objNameStr) (! (isNil {GET_OBJECT_CLASS(_objNameStr)}))
+#define IS_OOP_OBJECT(objNameStr) (! (isNil {GET_OBJECT_CLASS(objNameStr)}))
 
 // Returns variable names of this class
 #define GET_CLASS_MEMBERS(classNameStr) GET_SPECIAL_MEM(classNameStr, MEM_LIST_STR)

@@ -60,6 +60,8 @@ CLASS("Intel", "")
 	*/
 	METHOD("new") {
 		params ["_thisObject"];
+
+		//OOP_INFO_0("NEW");
 	} ENDMETHOD;
 
 	/*
@@ -68,6 +70,9 @@ CLASS("Intel", "")
 	*/
 	METHOD("delete") {
 		params [P_THISOBJECT];
+
+		//OOP_INFO_0("DELETE");
+
 		// If db is valid then we can directly remove our matching intel entry from it.
 		private _db = T_GETV("db");
 		if(!isNil "_db") then {
@@ -214,13 +219,27 @@ CLASS("IntelLocation", "Intel")
 	} ENDMETHOD;
 
 	METHOD("clientUpdate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
+
+		OOP_INFO_2("Updating %1 from %2", _thisObject, _intelSrc);
 
 		private _mrk = T_GETV("mapMarker");
 		CALL_STATIC_METHOD("IntelLocation", "setLocationMarkerProperties", [_mrk ARG _thisObject]);
 
 		// Hint
-		hint "Location data was updated";
+		// Check what variables were updated
+		private _string = "Location data was updated.";
+		if (! (T_GETV("type") isEqualTo GETV(_intelSrc, "type"))) then {
+			_string = _string + " Updated type.";
+		};
+		if (! (T_GETV("side") isEqualTo GETV(_intelSrc, "side"))) then {
+			_string = _string + " Updated side.";
+		};
+		if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
+			_string = _string + " Updated unit data.";
+		};
+
+		hint _string;
 	} ENDMETHOD;
 
 	STATIC_METHOD("setLocationMarkerProperties") {

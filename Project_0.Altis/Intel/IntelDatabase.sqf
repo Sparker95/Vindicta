@@ -32,12 +32,14 @@ CLASS("IntelDatabase", "")
 	METHOD("new") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 
-		T_SETV("items", []);
 		T_SETV("side", _side);
 		#ifndef _SQF_VM
-		pr _namespace = [false] call CBA_fnc_createNamespace;
-		T_SETV("linkedItems", _namespace);
+		pr _namespaceLinked = [false] call CBA_fnc_createNamespace;
+		T_SETV("linkedItems", _namespaceLinked);
+		pr _namespaceItems = [false] call CBA_fnc_createNamespace;
+		T_SETV("items", _namespaceItems);
 		#endif
+
 	} ENDMETHOD;
 
 	/*
@@ -56,15 +58,17 @@ CLASS("IntelDatabase", "")
 
 			OOP_INFO_1("ADD INTEL: %1", _item);
 
-			// Add to the array of items
-			T_GETV("items") pushBack _item;
+			// Add to the hashmap of  existing items
+			pr _items = T_GETV("items");
+			_items setVariable [_item, 1];
 
 			// Add link from the source to this item
 			pr _source = GETV(_item, "source");
 			// If the intel item is linked to the source intel item, add the source to hashmap
 			if (!isNil "_source") then {
-				pr _hashmap = T_GETV("linkedItems");
-				_hashMap setVariable [_source, _item];
+				OOP_INFO_2("  source intel of %1: %2", _item, _source);
+				pr _linkedItems = T_GETV("linkedItems");
+				_linkedItems setVariable [_source, _item];
 			};
 		};
 	} ENDMETHOD;
@@ -87,7 +91,7 @@ CLASS("IntelDatabase", "")
 			OOP_INFO_2("UPDATE INTEL: %1 from %2", _itemDst, _itemSrc);
 
 			pr _items = T_GETV("items");
-			if (_itemDst in _items) then { // Make sure we have this intel item
+			if (! isNil {_items getVariable _itemDst}) then { // Make sure we have this intel item
 				// Backup the source so that it doesn't get overwritten in update
 				pr _prevSource = GETV(_itemDst, "source");
 				UPDATE_VIA_ATTR(_itemDst, _itemSrc, ATTR_SERIALIZABLE); // Copy all variables that are not nil in itemSrc
@@ -117,9 +121,10 @@ CLASS("IntelDatabase", "")
 			OOP_INFO_1("UPDATE FROM SOURCE: %1", _srcItem);
 
 			// Check if we have an item with given source
-			pr _hashmap = T_GETV("linkedItems");
-			pr _item = _hashmap getVariable _srcItem;
+			pr _linkedItems = T_GETV("linkedItems");
+			pr _item = _linkedItems getVariable _srcItem;
 			if (isNil "_item") then {
+				OOP_WARNING_1("Intel with given source was not found in database: %1", _srcItem);
 				_return = false;
 			} else {
 				CALLM2(_thisObject, "updateIntel", _item, _srcItem);
@@ -149,7 +154,8 @@ CLASS("IntelDatabase", "")
 
 		CRITICAL_SECTION {
 			// Add to the array of items
-			T_GETV("items") pushBack _item;
+			pr _items = T_GETV("items");
+			_items setVariable [_item, 1];
 
 #ifdef OOP_ASSERT
 			// Add link from the source to this item
@@ -175,12 +181,15 @@ CLASS("IntelDatabase", "")
 	Returns: nil
 	*/
 	METHOD("updateIntelFromClone") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-		pr _dbEntry = GETV(_item, "dbEntry");
-		ASSERT_OBJECT(_dbEntry);
+			pr _dbEntry = GETV(_item, "dbEntry");
+			ASSERT_OBJECT(_dbEntry);
 
-		T_CALLM("updateIntel", [_dbEntry ARG _item]);
+			T_CALLM("updateIntel", [_dbEntry ARG _item]);
+		};
+		nil
 	} ENDMETHOD;
 
 	/*
@@ -194,15 +203,15 @@ CLASS("IntelDatabase", "")
 	Returns: nil
 	*/
 	METHOD("removeIntelForClone") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-
-		pr _dbEntry = GETV(_item, "dbEntry");
-		ASSERT_OBJECT(_dbEntry);
-		OOP_INFO_MSG("REMOVE INTEL: %1 (%2)", [_item ARG _dbEntry]);
-		pr _items = T_GETV("items");
-		_items deleteAt (_items find _dbEntry);
-
+			pr _dbEntry = GETV(_item, "dbEntry");
+			ASSERT_OBJECT(_dbEntry);
+			OOP_INFO_MSG("REMOVE INTEL: %1 (%2)", [_item ARG _dbEntry]);
+			pr _items = T_GETV("items");
+			_items deleteAt (_items find _dbEntry);
+		};
 		nil
 	} ENDMETHOD;
 
@@ -225,7 +234,7 @@ CLASS("IntelDatabase", "")
 			pr _className = GET_OBJECT_CLASS(_queryItem);
 			pr _memList = GET_CLASS_MEMBERS(_className); // First variable in member list is always class name!
 
-			pr _items = T_GETV("items");
+			pr _items = allVariables T_GETV("items");
 			_array = _items select {
 				pr _dbItem = _x;
 				pr _index = _memList findIf {
@@ -260,7 +269,7 @@ CLASS("IntelDatabase", "")
 			pr _className = GET_OBJECT_CLASS(_queryItem);
 			pr _memList = GET_CLASS_MEMBERS(_className); // First variable in member list is always class name!
 
-			pr _items = T_GETV("items");
+			pr _items = allVariables T_GETV("items");
 			_index = _items findIf {
 				pr _dbItem = _x;
 				_memList findIf {
@@ -288,7 +297,39 @@ CLASS("IntelDatabase", "")
 	METHOD("isIntelAdded") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-		_item in T_GETV("items")
+		!isNil {T_GETV("items") getVariable _item}
+	} ENDMETHOD;
+
+	/*
+	Method: isIntelAddedFromSource
+	Returns true if given <Intel> object is a source of an existing <Intel> object in this database
+
+	Parameters: _item
+
+	_item - the <Intel> object
+
+	Returns: Bool
+	*/
+	METHOD("isIntelAddedFromSource") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		!isNil {T_GETV("linkedItems") getVariable _item}
+	} ENDMETHOD;
+
+	/*
+	Method: getIntelFromSource
+	Returns an existing <Intel> object in this database which is sourced by the given <Intel> object 
+
+	Parameters: _item
+
+	_item - the <Intel> object
+
+	Returns: <Intel> object or "" if such there is no object sourced by the passed object
+	*/
+	METHOD("getIntelFromSource") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		T_GETV("linkedItems") getVariable [_item, ""]
 	} ENDMETHOD;
 
 	/*
@@ -299,7 +340,7 @@ CLASS("IntelDatabase", "")
 	*/
 	METHOD("getAllIntel") {
 		params [P_THISOBJECT];
-		+T_GETV("items")
+		allVariables T_GETV("items")
 	} ENDMETHOD;
 
 	/*
@@ -313,11 +354,25 @@ CLASS("IntelDatabase", "")
 	Returns: nil
 	*/
 	METHOD("removeIntel") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-		pr _items = T_GETV("items");
-		_items deleteAt (_items find _item);
+			OOP_INFO_1("REMOVE INTEL: %1", _item);
 
+			pr _items = T_GETV("items");
+
+			// Remove the item from items hashmap
+			_items setVariable [_item, nil];
+
+			// Check if the item was linked to a source item
+			// If it was, then remove the source item from hashmap too
+			pr _itemSource = GETV(_item, "source");
+			if (!isNil "_itemSource") then {
+				OOP_INFO_2("  source item of item %1: %2", _item, _itemSource);
+				T_GETV("linkedItems") setVariable [_itemSource, nil];
+			};
+
+		};
 		nil
 	} ENDMETHOD;
 
