@@ -73,41 +73,43 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			pr _intelClassName = SERIALIZED_CLASS_NAME(_serialIntel);
 			pr _intelObjName = SERIALIZED_OBJECT_NAME(_serialIntel);
 
+			// Create a new intel object with existing ref if needed
+			// If we self host it's possible that we already have an Intel object with this ref in mission namespace
+			private _delete = false; // No need to delete the object if we have it already in SP because it's in commander's DB!
+			if (!IS_OOP_OBJECT(_intelObjName)) then {
+				NEW_EXISTING(_intelClassName, _intelObjName);
+
+				// Unpack serialized intel object into a ref equal to the external intel object
+				// If we play singleplayer we might already have it, so no need to deserialize it
+				DESERIALIZE(_intelObjName, _serialIntel);
+			};
+
 			// Check if we have such an intel object
 			if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intelObjName)) then {
-				// We already have it, let's update it in the database then!
-
-				// Create a temporary intel object to deserialize new data into it
-				pr _tempIntel = NEW(_intelClassName, []);
-
-				// Unpack serialized intel object into a temporary one
-				DESERIALIZE(_tempIntel, _serialIntel);
+				// We already have it, let's update it in the database
 
 				// Update existing intel item from the temp object
-				CALLM2(gIntelDatabaseClient, "updateIntel", _intelObjName, _tempIntel);
+				CALLM1(gIntelDatabaseClient, "updateIntelFromSource", _intelObjName);
 
-				// Delete the temporary object
-				DELETE(_tempIntel);
 			} else {
 				// Create an intel object and add it to database
-
-				// Create a new intel object with existing ref if needed
-				// If we self host it's possible that we already have an Intel object with this ref in mission namespace
-				if (!IS_OOP_OBJECT(_intelObjName)) then {
-					NEW_EXISTING(_intelClassName, _intelObjName);
-				};
 
 				OOP_INFO_1("Received serial intel object: %1", _serialIntel);
 
 				//diag_log format ["_thisObject: %1", _thisObject];
 				//ade_dumpCallstack;
 
-				// Unpack serialized intel object
-				DESERIALIZE(_intelObjName, _serialIntel);
-
+				// Copy this intel object to add the copy to database
+				// Set the ref to the external intel object as source for the local copy
+				pr _intelCopy = CLONE(_intelObjName);
+				SETV(_intelCopy, "source", _intelObjName);
+				
 				// Add the intel item to database
-				CALLM1(gIntelDatabaseClient, "addIntel", _intelObjName);
+				CALLM1(gIntelDatabaseClient, "addIntel", _intelCopy);
 			};
+
+			// Delete the external intel item
+			if (_delete) then {	DELETE(_intelObjName); };
 		};
 	} ENDMETHOD;
 
