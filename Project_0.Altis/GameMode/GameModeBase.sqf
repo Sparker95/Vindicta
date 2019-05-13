@@ -213,6 +213,8 @@ CLASS("GameModeBase", "")
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
 			private _locSide = _locSector getVariable ["Side", ""];
+			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
+			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
 			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 			private _template = "";
@@ -232,12 +234,14 @@ CLASS("GameModeBase", "")
 
 			// Create a new location
 			private _loc = NEW_PUBLIC("Location", [_locSectorPos]);
-			CALL_METHOD(_loc, "initFromEditor", [_locSector]);
-			CALL_METHOD(_loc, "setDebugName", [_locName]);
-			CALL_METHOD(_loc, "setSide", [_side]);
-			CALL_METHOD(_loc, "setType", [_locType]);
-			CALL_METHOD(_loc, "setCapacityInf", [_locCapacityInf]);
-			CALL_METHOD(_loc, "setCapacityCiv", [_locCapacityCiv]);
+			CALLM1(_loc, "initFromEditor", _locSector);
+			CALLM1(_loc, "setDebugName", _locName);
+			CALLM1(_loc, "setSide", _side);
+			CALLM1(_loc, "setType", _locType);
+			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
+			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
+			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
+			
 		} forEach (entities "Project_0_LocationSector");
 
 	} ENDMETHOD;
