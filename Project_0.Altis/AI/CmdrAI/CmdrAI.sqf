@@ -216,8 +216,8 @@ CLASS("CmdrAI", "")
 		params [P_THISCLASS, P_OOP_OBJECT("_action")];
 		private _class = GET_OBJECT_CLASS(_action);
 		switch(GET_OBJECT_CLASS(_action)) do {
-			case "QRFCmdrAction": { 100 };
-			case "ReinforceCmdrAction": { 10 };
+			case "QRFCmdrAction": { 3 };
+			case "ReinforceCmdrAction": { 2 };
 			default { 1 };
 		}
 	} ENDMETHOD;
@@ -282,17 +282,22 @@ CLASS("CmdrAI", "")
 			PROFILE_SCOPE_END(UpdateScores, 0.1);
 
 			// Sort the actions by their scores
-			private _scoresAndActions = _newActions apply { [CALLM(_x, "getFinalScore", []) * CALLSM("CmdrAI", "getActionGlobalPriority", [_x]), _x] };
+			private _scoresAndActions = _newActions apply { 
+				private _finalScore = CALLM(_x, "getFinalScore", []);
+				private _priority = if(_finalScore > 0) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
+				[_priority, _finalScore, _x] 
+			};
 			_scoresAndActions sort DESCENDING;
 
 			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
 
 			// Get the best scoring action
-			(_scoresAndActions select 0) params ["_bestActionScore", "_bestAction"];
+			(_scoresAndActions select 0) params ["_priority", "_bestActionScore", "_bestAction"];
 
 			// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
 
 			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
+			// TODO: Should we maybe be normalizing scores between 0 and 1?
 			if(_bestActionScore <= 0.001) exitWith {
 				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of 0.001, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
 			};
