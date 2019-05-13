@@ -73,6 +73,8 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			pr _intelClassName = SERIALIZED_CLASS_NAME(_serialIntel);
 			pr _intelObjName = SERIALIZED_OBJECT_NAME(_serialIntel);
 
+			OOP_INFO_1("Received serial Intel object: %1", _serialIntel);
+
 			// Create a new intel object with existing ref if needed
 			// If we self host it's possible that we already have an Intel object with this ref in mission namespace
 			private _delete = false; // No need to delete the object if we have it already in SP because it's in commander's DB!
@@ -82,19 +84,22 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 				// Unpack serialized intel object into a ref equal to the external intel object
 				// If we play singleplayer we might already have it, so no need to deserialize it
 				DESERIALIZE(_intelObjName, _serialIntel);
+				
+				// Set _delete flag
+				_delete = true;
 			};
 
 			// Check if we have such an intel object
-			if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intelObjName)) then {
+			if (!CALLM1(gIntelDatabaseClient, "isIntelAddedFromSource", _intelObjName)) then {
 				// We already have it, let's update it in the database
+
+				OOP_INFO_1("  Intel with source %1 was found in client's database", _intelObjName);
 
 				// Update existing intel item from the temp object
 				CALLM1(gIntelDatabaseClient, "updateIntelFromSource", _intelObjName);
 
 			} else {
 				// Create an intel object and add it to database
-
-				OOP_INFO_1("Received serial intel object: %1", _serialIntel);
 
 				//diag_log format ["_thisObject: %1", _thisObject];
 				//ade_dumpCallstack;
@@ -103,6 +108,8 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 				// Set the ref to the external intel object as source for the local copy
 				pr _intelCopy = CLONE(_intelObjName);
 				SETV(_intelCopy, "source", _intelObjName);
+
+				OOP_INFO_1("  Intel with source %1 was NOT found in client's database. Created an Intel clone: %1", _intelCopy);
 				
 				// Add the intel item to database
 				CALLM1(gIntelDatabaseClient, "addIntel", _intelCopy);
@@ -110,6 +117,33 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 			// Delete the external intel item
 			if (_delete) then {	DELETE(_intelObjName); };
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: (static)removeIntelClient
+	Gets called remotely to remove intel item from a client.
+
+	Parameters: _intel
+
+	_intel - a reference to an <Intel> object
+
+	Returns: nil
+	*/
+	STATIC_METHOD("removeIntelClient") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
+
+		pr _intelLocal = CALLM1(gIntelDatabaseClient, "getIntelFromSource", _intel);
+		if (_intelLocal != "") then {			
+			// Do we even have such an object??
+			if (IS_OOP_OBJECT(_intelLocal)) then {
+				CALLM1(gIntelDatabaseClient, "removeIntel", _intelLocal);
+				DELETE(_intelLocal);
+			} else {
+				OOP_ERROR_2("Intel %1 is a source of non-existant intel object %2 which is still in the database", _intel, _intelLocal);
+			};
+		} else {
+			OOP_INFO_1("Intel with source %1 was not fount", _intel);
 		};
 	} ENDMETHOD;
 

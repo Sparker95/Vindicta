@@ -45,16 +45,17 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 		};
 	} ENDMETHOD;
 
-/*
 	METHOD("removeIntel") {
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-			CALLM1(_itemDst, "clientRemove", _itemSrc);
+			// Broadcast that intel was removed to existing clients
+			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "removeIntelClient", [_item], T_GETV("side"), false); // Broadcast without JIP
 
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]); // It will copy values
+			// Remove it from JIP queue
+			remoteExec ["", _item]; 
 		};
 	} ENDMETHOD;
-*/
+
 
 ENDCLASS;

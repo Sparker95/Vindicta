@@ -124,6 +124,7 @@ CLASS("IntelDatabase", "")
 			pr _linkedItems = T_GETV("linkedItems");
 			pr _item = _linkedItems getVariable _srcItem;
 			if (isNil "_item") then {
+				OOP_WARNING_1("Intel with given source was not found in database: %1", _srcItem);
 				_return = false;
 			} else {
 				CALLM2(_thisObject, "updateIntel", _item, _srcItem);
@@ -313,6 +314,22 @@ CLASS("IntelDatabase", "")
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
 		!isNil {T_GETV("linkedItems") getVariable _item}
+	} ENDMETHOD;
+
+	/*
+	Method: getIntelFromSource
+	Returns an existing <Intel> object in this database which is sourced by the given <Intel> object 
+
+	Parameters: _item
+
+	_item - the <Intel> object
+
+	Returns: <Intel> object or "" if such there is no object sourced by the passed object
+	*/
+	METHOD("getIntelFromSource") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		T_GETV("linkedItems") getVariable [_item, ""]
 	} ENDMETHOD;
 
 	/*
