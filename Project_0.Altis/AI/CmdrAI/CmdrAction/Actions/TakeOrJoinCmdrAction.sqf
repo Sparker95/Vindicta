@@ -117,8 +117,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _newTargetAST_Args = [
 				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
-				_srcGarrIdVar, 						// Id of the garrison we are moving (for context)
-				_splitGarrIdVar, 					// Originating garrison (default we return to)
+				_srcGarrIdVar, 						// Originating garrison (default we return to)
+				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
 				_targetVar]; 						// New target
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 

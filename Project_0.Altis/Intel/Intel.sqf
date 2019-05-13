@@ -341,6 +341,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("tgtClusterId", [ATTR_SERIALIZABLE]);
 ENDCLASS;
 
 /*

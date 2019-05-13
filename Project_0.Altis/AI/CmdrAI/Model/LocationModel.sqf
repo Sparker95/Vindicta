@@ -15,6 +15,8 @@ CLASS("LocationModel", "ModelBase")
 	// Is this location determined by the cmdr as a staging outpost?
 	// (i.e. Planned attacks will be mounted from here)
 	VARIABLE("staging");
+	// Radius of the location
+	VARIABLE("radius");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -23,6 +25,7 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("garrisonIds", []);
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
+		T_SETV("radius", 0);
 		if(!IS_NULL_OBJECT(_actual)) then {
 			T_CALLM("sync", []);
 		};
@@ -49,6 +52,7 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_copy, "garrisonIds", +T_GETV("garrisonIds"));
 		SETV(_copy, "spawn", T_GETV("spawn"));
 		SETV(_copy, "staging", T_GETV("staging"));
+		SETV(_copy, "radius", T_GETV("radius"));
 		_copy
 	} ENDMETHOD;
 	
@@ -81,6 +85,8 @@ CLASS("LocationModel", "ModelBase")
 			} foreach _garrisonActuals;
 			T_SETV("garrisonIds", _garrisonIds);
 
+			private _radius = GETV(_actual, "boundingRadius");
+			T_SETV("radius", _radius);
 			// if(!(_garrisonActual isEqualTo "")) then {
 			// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
 			// 	T_SETV("garrisonId", GETV(_garrison, "id"));

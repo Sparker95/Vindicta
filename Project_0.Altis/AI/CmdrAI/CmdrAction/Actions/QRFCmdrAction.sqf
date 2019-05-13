@@ -1,19 +1,19 @@
 #include "..\..\common.hpp"
 
-CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
-	VARIABLE("tgtLocId");
+CLASS("QRFCmdrAction", "AttackCmdrAction")
+	VARIABLE("tgtClusterId");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtLocId")];
+		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtClusterId")];
 
-		T_SETV("tgtLocId", _tgtLocId);
+		T_SETV("tgtClusterId", _tgtClusterId);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION ARG _tgtLocId]);
+		T_SET_AST_VAR("targetVar", [TARGET_TYPE_CLUSTER ARG _tgtClusterId]);
 
 #ifdef DEBUG_CMDRAI
-		T_SETV("debugColor", "ColorBlue");
-		T_SETV("debugSymbol", "mil_flag")
+		T_SETV("debugColor", "ColorRed");
+		T_SETV("debugSymbol", "mil_destroy")
 #endif
 	} ENDMETHOD;
 
@@ -30,11 +30,11 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			_intel = NEW("IntelCommanderActionAttack", []);
 
 			T_PRVAR(srcGarrId);
-			T_PRVAR(tgtLocId);
+			T_PRVAR(tgtClusterId);
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 			ASSERT_OBJECT(_srcGarr);
-			private _tgtLoc = CALLM(_world, "getLocation", [_tgtLocId]);
-			ASSERT_OBJECT(_tgtLoc);
+			private _tgtCluster = CALLM(_world, "getCluster", [_tgtClusterId]);
+			ASSERT_OBJECT(_tgtCluster);
 
 			CALLM(_intel, "create", []);
 
@@ -42,9 +42,9 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
 			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
 			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
-			SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
-			SETV(_intel, "location", GETV(_tgtLoc, "actual"));
-			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
+			SETV(_intel, "tgtClusterId", GETV(_tgtCluster, "actual") select 1);
+			//SETV(_intel, "location", GETV(_tgtCluster, "actual"));
+			SETV(_intel, "posTgt", GETV(_tgtCluster, "pos"));
 		};
 
 		T_CALLM("updateIntelFromDetachment", [_intel]);
@@ -65,22 +65,15 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtLocId);
+		T_PRVAR(tgtClusterId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
-		ASSERT_OBJECT(_tgtLoc);
+		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
+		ASSERT_OBJECT(_tgtCluster);
 
 		private _side = GETV(_srcGarr, "side");
-		private _toGarr = CALLM(_tgtLoc, "getGarrison", [_side]);
-		if(!IS_NULL_OBJECT(_toGarr)) exitWith {
-			// We never take a location we already have a garrison at, this should be reinforcement instead 
-			// (however we can get here if multiple potential actions are generated targetting the same location
-			// in the same planning cycle, and one gets accepted)
-			T_SETV("scorePriority", 0);
-			T_SETV("scoreResource", 0);
-		};
+
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
@@ -93,15 +86,17 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
-		private _tgtLocPos = GETV(_tgtLoc, "pos");
+		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
-		private _dist = _srcGarrPos distance _tgtLocPos;
-		private _transportationScore = if(_dist < 2000) then {
+		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
+		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]) * 2;
+		private _dist = _srcGarrPos distance _tgtClusterPos;
+		// If we are less than 1000m then we don't need wheels
+		private _transportationScore = if(_dist < 1000) then {
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]+[CHEAT_TRANSPORT]);
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[CHEAT_TRANSPORT]);
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
@@ -111,20 +106,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// TODO:OPT cache these scores!
 		private _scorePriority = 1;
 
-		// Work out time to start based on how much force we mustering and distance we are travelling.
-		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + random 18;
-
-		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
-		// _delay = 0 max (120 min _delay);
-		private _startDate = DATE_NOW;
-
-		_startDate set [4, _startDate#4 + _delay];
-
-		T_SET_AST_VAR("startDateVar", _startDate);
-
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
+		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtCluster) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		T_SETV("scorePriority", _scorePriority);
@@ -140,25 +123,27 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtLocId);
+		T_PRVAR(tgtClusterId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
-		ASSERT_OBJECT(_tgtLoc);
+		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
+		ASSERT_OBJECT(_tgtCluster);
 
 		// How much resources src can spare.
 		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
 
-		// How much resources tgt needs
-		private _tgtRequiredEff = CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
-		// EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtLoc]), -1), 0);
+		// How much resources we need to defeat target and be safe in hot zone
+		private _clusterEff = GETV(_tgtCluster, "efficiency");
+		private _zoneEff = CALLM(_worldNow, "getDesiredEff", [GETV(_tgtCluster, "pos")]);
+		// Max of our two eff predictions * 1.5 (for margin of safety, somewhat), with a min required value so we don't send something ridiculously small
+		private _tgtRequiredEff = EFF_MAX(EFF_MUL_SCALAR(EFF_MAX(_clusterEff, _zoneEff), 1.5), EFF_MIN_EFF);
 
 		// Min of those values
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtRequiredEff)), 0);
 
-		//OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 getDetachmentEff: _tgtRequiredEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtLoc ARG _tgtRequiredEff ARG _srcOverEff ARG _effAvailable]);
+		//OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 getDetachmentEff: _tgtRequiredEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtCluster ARG _tgtRequiredEff ARG _srcOverEff ARG _effAvailable]);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.

@@ -6,9 +6,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
 		T_SETV("tgtGarrId", _tgtGarrId);
-		
+
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON]+[_tgtGarrId]);
+		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
 
 #ifdef DEBUG_CMDRAI
 		T_SETV("debugColor", "ColorWhite");
@@ -93,7 +93,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]+[CHEAT_TRANSPORT]);
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT]);
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 

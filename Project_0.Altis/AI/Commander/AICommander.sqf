@@ -155,24 +155,18 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "update clusters");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-		
-		// Check if there are any clusters without assigned actions
-		pr _actions = T_GETV("targetClusterActions");
+
+		// TODO: we should just respond to new cluster creation explicitly somewhere instead?
+		// Register for new clusters		
+		T_PRVAR(worldModel);
 		{
-			pr _ID = _x select TARGET_CLUSTER_ID_ID;
-			pr _index = _actions findIf {CALLM0(_x, "getTargetClusterID") == _ID};
-			
-			// If we didn't find any actions assigned to this target cluster
-			if (_index == -1) then {
-				OOP_INFO_1("Target cluster with ID %1 has no actions assigned!", _ID);
-				CALLM1(_thisObject, "onTargetClusterCreated", _x);
+			private _ID = _x select TARGET_CLUSTER_ID_ID;
+			private _cluster = [_thisObject ARG _ID];
+			if(IS_NULL_OBJECT(CALLM(_worldModel, "findClusterByActual", [_cluster]))) then {
+				OOP_INFO_1("Target cluster with ID %1 is new", _ID);
+				NEW("ClusterModel", [_worldModel ARG _cluster]);
 			};
 		} forEach T_GETV("targetClusters");
-
-		// Process cluster actions
-		{
-			CALLM0(_x, "process");
-		} forEach T_GETV("targetClusterActions");
 
 		// Delete old notifications
 		pr _nots = T_GETV("notifications");
@@ -418,32 +412,32 @@ CLASS("AICommander", "AI")
 		_nextID
 	} ENDMETHOD;
 		
-	/*
-	Method: onTargetClusterCreated
-	Gets called on creation of a totally new target cluster
+	// /*
+	// Method: onTargetClusterCreated
+	// Gets called on creation of a totally new target cluster
 	
-	Parameters: _tc
+	// Parameters: _tc
 	
-	_tc - the new target cluster
+	// _tc - the new target cluster
 	
-	Returns: nil
-	*/
-	METHOD("onTargetClusterCreated") {
-		params ["_thisObject", "_tc"];
-		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
+	// Returns: nil
+	// */
+	// METHOD("onTargetClusterCreated") {
+	// 	params ["_thisObject", "_tc"];
+	// 	pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		
-		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
+	// 	OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
 		
-		// Create a new action to respond to this target cluster
-		pr _args = [_thisObject, _ID];
-		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
-		T_GETV("targetClusterActions") pushBack _newAction;
+	// 	// Create a new action to respond to this target cluster
+	// 	pr _args = [_thisObject, _ID];
+	// 	pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
+	// 	T_GETV("targetClusterActions") pushBack _newAction;
 		
-		OOP_INFO_MSG("---- Created new action to respond to target cluster %1", [_tc]);
+	// 	OOP_INFO_MSG("---- Created new action to respond to target cluster %1", [_tc]);
 
-		T_PRVAR(worldModel);
-		NEW("ClusterModel", [_worldModel]+[_args]);
-	} ENDMETHOD;
+	// 	T_PRVAR(worldModel);
+	// 	NEW("ClusterModel", [_worldModel]+[_args]);
+	// } ENDMETHOD;
 
 	/*
 	Method: onTargetClusterSplitted

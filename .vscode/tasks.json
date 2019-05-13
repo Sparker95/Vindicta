@@ -460,6 +460,29 @@
                 "group": "PBO"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Watch Arma RPT Files",
+            "type": "process",
+            "command": "powershell",
+            "args": [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "LogExpertWatcher.ps1"       
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "logging"
+            },
+            "problemMatcher": []
         }
     ]
 }
