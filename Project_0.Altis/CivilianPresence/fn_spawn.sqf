@@ -2,7 +2,7 @@
 
 params [["_module",objnull,[objnull]]];
 
-
+//check if module is valide
 if(isnull _module)exitWith{};
 
 _module setVariable ["#active",true];
@@ -56,9 +56,10 @@ _module spawn{
 //release module so it can be used again
 _module setVariable ["#running",false];
 
-
-//DEBUG
-//	private _paramsDraw3D = missionNamespace getVariable ["bis_fnc_moduleCivilianPresence_paramsDraw3D",[]];
-//	private _handle = addMissionEventHandler ["Draw3D",{["debug"] call bis_fnc_cp_debug;}];
-//	_paramsDraw3D set [_handle,_module];
-//	bis_fnc_moduleCivilianPresence_paramsDraw3D = _paramsDraw3D;
+//run in console to see the waypoints and plans of AI
+/*
+	private _paramsDraw3D = missionNamespace getVariable ["bis_fnc_moduleCivilianPresence_paramsDraw3D",[]];
+	private _handle = addMissionEventHandler ["Draw3D",{["debug"] call bis_fnc_cp_debug;}];
+	_paramsDraw3D set [_handle,_module];
+	bis_fnc_moduleCivilianPresence_paramsDraw3D = _paramsDraw3D;
+*/
