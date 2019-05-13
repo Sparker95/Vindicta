@@ -79,6 +79,12 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			// If we self host it's possible that we already have an Intel object with this ref in mission namespace
 			private _delete = false; // No need to delete the object if we have it already in SP because it's in commander's DB!
 			if (!IS_OOP_OBJECT(_intelObjName)) then {
+				OOP_INFO_1("  Intel object %1 doesn't exist, it will be deserialized and deleted", _intelObjName);
+
+				if (_intelObjName == "o_IntelLocation_N_0_147") then {
+					_intelObjName call OOP_dumpAllVariables;
+				};
+
 				NEW_EXISTING(_intelClassName, _intelObjName);
 
 				// Unpack serialized intel object into a ref equal to the external intel object
@@ -90,7 +96,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			};
 
 			// Check if we have such an intel object
-			if (!CALLM1(gIntelDatabaseClient, "isIntelAddedFromSource", _intelObjName)) then {
+			if (CALLM1(gIntelDatabaseClient, "isIntelAddedFromSource", _intelObjName)) then {
 				// We already have it, let's update it in the database
 
 				OOP_INFO_1("  Intel with source %1 was found in client's database", _intelObjName);
@@ -109,14 +115,17 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 				pr _intelCopy = CLONE(_intelObjName);
 				SETV(_intelCopy, "source", _intelObjName);
 
-				OOP_INFO_1("  Intel with source %1 was NOT found in client's database. Created an Intel clone: %1", _intelCopy);
+				OOP_INFO_2("  Intel with source %1 was NOT found in client's database. Created an Intel clone: %2", _intelObjName, _intelCopy);
 				
 				// Add the intel item to database
 				CALLM1(gIntelDatabaseClient, "addIntel", _intelCopy);
 			};
 
 			// Delete the external intel item
-			if (_delete) then {	DELETE(_intelObjName); };
+			if (_delete) then {
+				OOP_INFO_1("  Deleting temporary Intel object: %1", _intelObjName);
+				DELETE(_intelObjName);
+			};
 		};
 	} ENDMETHOD;
 

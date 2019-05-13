@@ -60,6 +60,8 @@ CLASS("Intel", "")
 	*/
 	METHOD("new") {
 		params ["_thisObject"];
+
+		//OOP_INFO_0("NEW");
 	} ENDMETHOD;
 
 	/*
@@ -68,6 +70,9 @@ CLASS("Intel", "")
 	*/
 	METHOD("delete") {
 		params [P_THISOBJECT];
+
+		//OOP_INFO_0("DELETE");
+
 		// If db is valid then we can directly remove our matching intel entry from it.
 		private _db = T_GETV("db");
 		if(!isNil "_db") then {
