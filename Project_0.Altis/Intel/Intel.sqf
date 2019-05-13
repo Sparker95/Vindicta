@@ -219,13 +219,27 @@ CLASS("IntelLocation", "Intel")
 	} ENDMETHOD;
 
 	METHOD("clientUpdate") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
+
+		OOP_INFO_2("Updating %1 from %2", _thisObject, _intelSrc);
 
 		private _mrk = T_GETV("mapMarker");
 		CALL_STATIC_METHOD("IntelLocation", "setLocationMarkerProperties", [_mrk ARG _thisObject]);
 
 		// Hint
-		hint "Location data was updated";
+		// Check what variables were updated
+		private _string = "Location data was updated.";
+		if (! (T_GETV("type") isEqualTo GETV(_intelSrc, "type"))) then {
+			_string = _string + " Updated type.";
+		};
+		if (! (T_GETV("side") isEqualTo GETV(_intelSrc, "side"))) then {
+			_string = _string + " Updated side.";
+		};
+		if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
+			_string = _string + " Updated unit data.";
+		};
+
+		hint _string;
 	} ENDMETHOD;
 
 	STATIC_METHOD("setLocationMarkerProperties") {
