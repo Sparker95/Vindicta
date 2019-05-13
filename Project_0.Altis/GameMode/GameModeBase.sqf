@@ -159,6 +159,9 @@ CLASS("GameModeBase", "")
 		gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
 
 		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient];
+		{
+			CALLM2(_x, "postMethodAsync", "spawn", []);
+		} forEach gSpecialGarrisons;
 
 		// Message loops for commander AI
 		gMessageLoopCommanderInd = NEW("MessageLoop", []);
