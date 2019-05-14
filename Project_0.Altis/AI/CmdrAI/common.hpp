@@ -15,6 +15,10 @@
 #define FAIL_WITHOUT_FULL_TRANSPORT		2	// Fail if we couldn't assign transport to the new garrison (ASSIGN_TRANSPORT required)
 #define FAIL_UNDER_EFF					3	// Fail if the split garrison didn't meet efficiency requirements
 #define CHEAT_TRANSPORT					4	// Spawn trucks if they are not available and transport is requested
+#define OCCUPYING_FORCE_HINT			5	// Hint to select units approproiate for an occupying force (e.g. plenty of inf)
+#define COMBAT_FORCE_HINT				6	// Hint to select units approproiate for direct combat (e.g. heavy firepower)
+#define RECON_FORCE_HINT				7	// Hint to select units approproiate for a recon force (e.g. recon units, fast transport)
+#define SPEC_OPS_FORCE_HINT				8	// Hint to select units approproiate for a spec ops (e.g. spec ops units, covert transport)
 
 #define PROFILER_COUNTERS_ENABLE
 

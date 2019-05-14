@@ -517,9 +517,9 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("countAvailableUnits") {
 		params [ P_THISOBJECT, P_SIDE("_side") ];
 
-		private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
+		// TODO: Yeah we need mutex here!
+		private _garrisons = T_CALLM("getGarrisons", [_side]);
 		if (count _garrisons == 0) exitWith { 0 };
-
 		private _sum = 0;
 		{
 			_sum = _sum + CALLM0(_x, "countAllUnits");
