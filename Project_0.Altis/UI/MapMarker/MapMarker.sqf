@@ -20,6 +20,7 @@ CLASS(CLASS_NAME, "")
 	STATIC_VARIABLE("all");
 	STATIC_VARIABLE("markerUnderCursor");
 	STATIC_VARIABLE("timePrevButtonDown");
+	
 
 	// 2D position
 	VARIABLE("pos");

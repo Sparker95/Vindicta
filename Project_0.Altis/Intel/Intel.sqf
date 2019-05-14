@@ -197,6 +197,14 @@ CLASS("IntelLocation", "Intel")
 	*/
 	VARIABLE_ATTR("unitData", [ATTR_SERIALIZABLE]);
 
+	
+	/* variable: accuracyRadius
+	Number, radius in meters that specifies how accurate is the intel.
+	The actual location should be somewhere within this radius.
+	0 means absolutely accurate coordinates.
+	*/
+	VARIABLE_ATTR("accuracyRadius", [ATTR_SERIALIZABLE]);
+
 	/* variable: allMapMarker
 	<MapMarker> associated with this intel*/
 	VARIABLE("mapMarker"); // NOT SERIALIZABLE! Each machine has its own mapMarker
@@ -208,7 +216,7 @@ CLASS("IntelLocation", "Intel")
 		T_SETV("mapMarker", _mrk);
 
 		// Set/update marker properties
-		CALL_STATIC_METHOD("IntelLocation", "setLocationMarkerProperties", [_mrk ARG _thisObject]);
+		CALLM0(_thisObject, "setLocationMarkerProperties");
 
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
@@ -223,8 +231,7 @@ CLASS("IntelLocation", "Intel")
 
 		OOP_INFO_2("Updating %1 from %2", _thisObject, _intelSrc);
 
-		private _mrk = T_GETV("mapMarker");
-		CALL_STATIC_METHOD("IntelLocation", "setLocationMarkerProperties", [_mrk ARG _thisObject]);
+		CALLM0(_thisObject, "setLocationMarkerProperties");
 
 		// Hint
 		// Check what variables were updated
@@ -242,11 +249,13 @@ CLASS("IntelLocation", "Intel")
 		hint _string;
 	} ENDMETHOD;
 
-	STATIC_METHOD("setLocationMarkerProperties") {
-		params ["_thisClass", ["_mapMarker", "", [""]], ["_intel", "", [""]]];
-		pr _type = GETV(_intel, "type");
-		pr _pos = GETV(_intel, "pos");
-		pr _side = GETV(_intel, "side");
+	METHOD("setLocationMarkerProperties") {
+		params [P_THISOBJECT];
+
+		pr _mapMarker = T_GETV("mapMarker");
+		pr _type = T_GETV("type");
+		pr _pos = T_GETV("pos");
+		pr _side = T_GETV("side");
 		pr _text = if (_type != LOCATION_TYPE_UNKNOWN) then {
 			pr _t = CALL_STATIC_METHOD("ClientMapUI", "getNearestLocationName", [_pos]);
 			if (_t == "") then { // Check if we have got an empty string
@@ -265,9 +274,13 @@ CLASS("IntelLocation", "Intel")
 			default {COLOR_UNKNOWN};
 		};
 
+		pr _radius = T_GETV("accuracyRadius");
+		if (isNil "_radius") then {_radius = 1000; };
+
 		CALLM1(_mapMarker, "setPos", _pos);
 		CALLM1(_mapMarker, "setText", _text);
 		CALLM1(_mapMarker, "setColor", _color);
+		CALLM1(_mapMarker, "setAccuracyRadius", _radius);
 	} ENDMETHOD;
 
 ENDCLASS;
