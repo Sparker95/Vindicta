@@ -98,10 +98,11 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
 		private _dist = _srcGarrPos distance _tgtLocPos;
 		private _transportationScore = if(_dist < 2000) then {
+			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]+[CHEAT_TRANSPORT]);
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT ARG OCCUPYING_FORCE_HINT]);
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 

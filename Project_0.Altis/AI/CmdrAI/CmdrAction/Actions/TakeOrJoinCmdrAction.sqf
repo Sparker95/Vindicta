@@ -32,7 +32,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		T_SETV("targetVar", _targetVar);
 
 		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]]);
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]]);
 		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 

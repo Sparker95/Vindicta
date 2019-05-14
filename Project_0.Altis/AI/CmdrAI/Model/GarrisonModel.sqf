@@ -421,10 +421,19 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
+		OOP_INFO_MSG("%1", [_this]);
+
 		private _side = CALLM(_actual, "getSide", []);
 		private _units = CALLM0(_actual, "getUnits") select { 
 			// Not interested in statics
-			!CALLM0(_x, "isStatic") and 
+			!CALLM0(_x, "isStatic") and
+			// Don't want crew
+			{
+				private _group = CALLM0(_x, "getGroup");
+				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
+				// Try not to take troops from vehicle groups
+				!(CALLM0(_x, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC])
+			} and
 			// Only want infantry or combat vehicles (not transports, we will assign them after)
 			{ 
 				CALLM0(_x, "isInfantry") or
@@ -436,11 +445,11 @@ CLASS("GarrisonModel", "ModelBase")
 					}
 				}
 			}
-		};
-		_units = _units apply {
+		} apply {
 			private _eff = CALLM0(_x, "getEfficiency");
 			[0, _eff, _x]
 		};
+
 		_allocatedUnits = [];
 		_allocatedGroupsAndUnits = [];
 		_allocatedCrew = [];
@@ -453,83 +462,89 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Allocate units per each efficiency category
 		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
+			
 			// Exit now if we have allocated enough units
 			if(EFF_GTE(_effAllocated, EFF_MASK_ATT(_splitEff))) exitWith {};
 
-			// For every unit, set element 0 to efficiency value with index _i modified by
-			// biasing hints.
-			{
-				private _bias = switch true do {
-					case (OCCUPYING_FORCE_HINT in _flags): { 
-						// Prefer 50% inf force at least
-						if(CALLM0(_x, "isInfantry") and _infStrength <= _requiredStrength * 0.5) then {
-							10
-						} else {
-							1
-						};
-					};
-					case (COMBAT_FORCE_HINT in _flags): { 
-						// Prefer spec ops units and covert vehicles
-						// TODO: get unit type and bias positive if it is the right class
-						1
-					};
-					case (RECON_FORCE_HINT in _flags): { 
-						// Prefer recon units and fast vehicles
-						// TODO: get unit type and bias positive if it is the right class
-						1
-					};
-					case (SPEC_OPS_FORCE_HINT in _flags): { 
-						// Prefer spec ops units and covert vehicles
-						// TODO: get unit type and bias positive if it is the right class
-						1
-					};
-					default { 1 };
-				};
-				_x set [0, (_x#1#_i) * _bias];
-			} forEach _units;
-
-			// Sort units in this efficiency category
-			_units sort DESCENDING;
-
+			
 			// Add units until there are enough of them
 			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _splitEff#_i) && (_pickUnitID < count _units)} do {
-				private _unit = _units#_pickUnitID#2;
-				private _group = CALLM0(_unit, "getGroup");
-				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
-				// Try not to take troops from vehicle groups
-				private _ignore = (CALLM0(_unit, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC]);
+			while {(_effAllocated#_i < _splitEff#_i)} do {
 
-				if (!_ignore) then {
-					private _unitEff = _units#_pickUnitID#1;
-					// If it was a vehicle, and it had crew in its group, add the crew as well
-					if (CALLM0(_unit, "isVehicle")) then {
-						private _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
-						// If there are more than one unit in a vehicle's group, then add the whole group
-						if (count _groupUnits > 1) then {
-							_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
-							// Add allocated crew to array
-							{
-								if (CALLM0(_x, "isInfantry")) then {
-									_allocatedCrew pushBack _x;
-								};
-							} forEach (CALLM0(_group, "getUnits"));
-						} else {
-							_allocatedUnits pushBackUnique _unit;
+				OOP_INFO_MSG("_requiredStrength=%1, _infStrength=%2, _vehStrength=%3", [_requiredStrength ARG _infStrength ARG _vehStrength]);
+				// For every unit, set element 0 to efficiency value with index _i modified by
+				// biasing hints.
+				{
+					_x params ["_effElem", "_unitEff", "_unit"];
+					private _bias = switch true do {
+						case (OCCUPYING_FORCE_HINT in _flags): { 
+							// Prefer 50% inf force at least
+							if(CALLM0(_unit, "isInfantry") and _infStrength <= _requiredStrength * 0.5) then {
+								10
+							} else {
+								1
+							};
 						};
-						_allocatedVehicles pushBack _unit;
-						OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-						_infStrength = _infStrength + EFF_SUB_SUM(EFF_ATT_SUB(_unitEff));
-					} else {
-						OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-						_allocatedUnits pushBack _unit;
-						_vehStrength = _infStrength + EFF_SUB_SUM(EFF_ATT_SUB(_unitEff));
+						case (COMBAT_FORCE_HINT in _flags): { 
+							// Prefer spec ops units and covert vehicles
+							// TODO: get unit type and bias positive if it is the right class
+							1
+						};
+						case (RECON_FORCE_HINT in _flags): { 
+							// Prefer recon units and fast vehicles
+							// TODO: get unit type and bias positive if it is the right class
+							1
+						};
+						case (SPEC_OPS_FORCE_HINT in _flags): { 
+							// Prefer spec ops units and covert vehicles
+							// TODO: get unit type and bias positive if it is the right class
+							1
+						};
+						default { 1 };
 					};
-					// Add to the allocated efficiency vector
-					_effAllocated = EFF_ADD(_effAllocated, _unitEff);
-					//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
+					_x set [0, (_unitEff#_i) * _bias];
+				} forEach _units;
+
+				
+				// Sort units in this efficiency category
+				_units sort DESCENDING;
+
+				OOP_INFO_MSG("%1", [_units]);
+
+				_units#0 params ["_effElem", "_unitEff", "_unit"];
+
+				// No more units can fulfill the efficiency requirements for this element
+				if(_effElem <= 0) exitWith {};
+
+				// If it was a vehicle, and it had crew in its group, add the crew as well
+				if (CALLM0(_unit, "isVehicle")) then {
+					private _group = CALLM0(_unit, "getGroup");
+					private _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
+					// If there are more than one unit in a vehicle's group, then add the whole group
+					if (count _groupUnits > 1) then {
+						_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
+						// Add allocated crew to array
+						{
+							if (CALLM0(_x, "isInfantry")) then {
+								_allocatedCrew pushBack _x;
+								_units deleteAt (_units find _x);
+							};
+						} forEach (CALLM0(_group, "getUnits"));
+					} else {
+						_allocatedUnits pushBackUnique _unit;
+					};
+					_allocatedVehicles pushBack _unit;
+					OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
+					_vehStrength = _vehStrength + EFF_SUB_SUM(EFF_ATT_SUB(_unitEff));
+				} else {
+					OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
+					_allocatedUnits pushBack _unit;
+					_infStrength = _infStrength + EFF_SUB_SUM(EFF_ATT_SUB(_unitEff));
 				};
-				_pickUnitID = _pickUnitID + 1;
+				// Remove the unit from the available list
+				_units deleteAt 0;
+				// Add to the allocated efficiency vector
+				_effAllocated = EFF_ADD(_effAllocated, _unitEff);
 			};
 		};
 		
