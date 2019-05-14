@@ -53,7 +53,7 @@ CLASS(CLASS_NAME, "MapMarker")
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
 
 		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
-		CALLM0("updateAccuracyRadiusMarker");
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
 	} ENDMETHOD;
 
 	METHOD("setAccuracyRadius") {
