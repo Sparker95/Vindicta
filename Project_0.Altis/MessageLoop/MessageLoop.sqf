@@ -31,7 +31,7 @@ CLASS("MessageLoop", "");
 	//Mutex for accessing the message queue
 	VARIABLE("mutex");
 	//Debug name to help read debug printouts
-	VARIABLE("debugName");
+	VARIABLE("name");
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -70,18 +70,18 @@ CLASS("MessageLoop", "");
 
 
 	/*
-	Method: setDebugName
+	Method: setName
 	Sets debug name of this MessageLoop.
 
-	Parameters: _debugName
+	Parameters: _name
 
-	_debugName - String
+	_name - String
 
 	Returns: nil
 	*/
-	METHOD("setDebugName") {
-		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+	METHOD("setName") {
+		params [["_thisObject", "", [""]], ["_name", "", [""]]];
+		SET_VAR(_thisObject, "name", _name);
 	} ENDMETHOD;
 
 	/*

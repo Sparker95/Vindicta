@@ -25,7 +25,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("units", 		[ATTR_PRIVATE]);
 	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("debugName", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("name", 	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("location", 	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
 	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
@@ -36,9 +36,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// ----------------------------------------------------------------------
 	// |                 S E T   D E B U G   N A M E                        |
 	// ----------------------------------------------------------------------
-	METHOD("setDebugName") {
-		params [P_THISOBJECT, ["_debugName", "", [""]]];
-		T_SETV("debugName", _debugName);
+	METHOD("setName") {
+		params [P_THISOBJECT, ["_name", "", [""]]];
+		T_SETV("name", _name);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -64,7 +64,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("groups", []);
 		T_SETV("spawned", false);
 		T_SETV("side", _side);
-		T_SETV("debugName", "");
+		T_SETV("name", "");
 		//T_SETV("action", "");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
@@ -773,7 +773,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 			/*
 			diag_log format ["[Garrison::addUnit] Error: can't add a unit which is already in a garrison, garrison: %1, unit: %2: %3",
-				GET_VAR(_thisObject, "debugName"), _unit, CALL_METHOD(_unit, "getData", [])];
+				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
 				*/
 		};
 
@@ -781,7 +781,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _unitGroup = CALL_METHOD(_unit, "getGroup", []);
 		if (_unitGroup != "") then {
 			diag_log format ["[Garrison::addUnit] Warning: adding a unit assigned to a group, garrison : %1, unit: %2: %3",
-				GET_VAR(_thisObject, "debugName"), _unit, CALL_METHOD(_unit, "getData", [])];
+				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
 		};
 
 		private _units = GET_VAR(_thisObject, "units");

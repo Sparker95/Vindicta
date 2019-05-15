@@ -6,7 +6,7 @@
 
 // We create a thread for player's undercover monitor here
 gMsgLoopGroupMonitor = NEW("MessageLoop", []);
-CALL_METHOD(gMsgLoopGroupMonitor, "setDebugName", ["Group monitor thread"]);
+CALL_METHOD(gMsgLoopGroupMonitor, "setName", ["Group monitor thread"]);
 
 #define pr private
 
