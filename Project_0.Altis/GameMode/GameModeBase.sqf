@@ -210,6 +210,7 @@ CLASS("GameModeBase", "")
 	METHOD("initLocations") {
 		params [P_THISOBJECT];
 
+		private _allRoadBlocks = [];
 		{
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
@@ -244,7 +245,31 @@ CLASS("GameModeBase", "")
 			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
 			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
-			
+
+			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_locSectorPos]) select {
+				private _newRoadBlock = _x;
+				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 400 } == NOT_FOUND
+			};
+			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
+			{	
+				_x params ["_roadblockPos", "_roadblockDir"];
+#ifndef RELEASE_BUILD
+				private _mrk = createMarker [format ["roadblock_%1_%2", _loc, _forEachIndex], _roadblockPos];
+				_mrk setMarkerType "mil_triangle";
+				_mrk setMarkerDir _roadblockDir;
+				_mrk setMarkerColor "ColorWhite";
+				_mrk setMarkerAlpha 1;
+				_mrk setMarkerText _mrk;
+#endif
+				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
+				CALLM1(_roadblockLoc, "setDebugName", _mrk);
+				CALLM1(_roadblockLoc, "setSide", _side);
+				CALLM1(_roadblockLoc, "setType", "roadblock");
+				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
+				CALLM1(_roadblockLoc, "setCapacityInf", 20);
+				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
+
+			} forEach _roadBlocks;
 		} forEach (entities "Project_0_LocationSector");
 
 	} ENDMETHOD;

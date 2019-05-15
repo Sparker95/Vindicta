@@ -224,6 +224,19 @@ CLASS("AICommander", "AI")
 		#endif
 	} ENDMETHOD;
 	
+	// Update stategic analysis of map to place roadblocks etc.
+	METHOD("updateMapAnalysis") {
+		params [P_THISOBJECT];
+		
+		// Where do we want roadblocks?
+		// Near garrisoned outposts I guess?
+		{
+			private _pos = CALLM(_x, "getPos", []);
+			private _allRoads = _posicion nearRoads (_size * 2) max (200);
+		} forEach (T_GETV("garrisons") select { !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) });
+
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// ----------------------------------------------------------------------

@@ -1,19 +1,7 @@
 #include "..\..\common.hpp"
 
-// W       W   IIIII   PPPPP
-// W       W     I     P    P
-// W   W   W     I     PPPPP
-//  W W W W      I     P
-//   W   W     IIIII   P
-//
-// Put on hold for now, cmdr will try and attack known locations anyway, and first attack will generate 
-// intel for the second.
-
-CLASS("ReconCmdrAction", "CmdrAction")
+CLASS("BuildCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
-	// Actual position we are interested in
-	VARIABLE("position");
-	// Where we will move to (this is an OP, not the same as position)
 	VARIABLE("targetVar");
 	VARIABLE("splitFlagsVar");
 	VARIABLE("detachmentEffVar");
@@ -26,10 +14,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 #endif
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_POSITION("_position")];
+		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
 		T_SETV("srcGarrId", _srcGarrId);
-		T_SETV("position", _position);
 
 		// Start date for this action, default to immediate
 		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
@@ -40,12 +27,12 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
 		T_SETV("detachmentEffVar", _detachmentEffVar);
 
-		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
+		// Target probably doesn't change
 		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
 
 		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG RECON_FORCE_HINT]]);
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]]);
 		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
@@ -56,6 +43,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 
 #ifdef DEBUG_CMDRAI
 		deleteMarker (_thisObject + "_line");
+		//deleteMarker (_thisObject + "_line2");
 		deleteMarker (_thisObject + "_label");
 #endif
 	} ENDMETHOD;
@@ -64,16 +52,14 @@ CLASS("ReconCmdrAction", "CmdrAction")
 		params [P_THISOBJECT];
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(position);
-		T_PRVAR(targetVar);
-		T_PRVAR(splitFlagsVar);
 		T_PRVAR(detachmentEffVar);
+		T_PRVAR(splitFlagsVar);
+		T_PRVAR(targetVar);
 		T_PRVAR(startDateVar);
-
+		
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
 		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
-		private _positionVar = MAKE_AST_VAR(_position);
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
@@ -114,8 +100,8 @@ CLASS("ReconCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
 				CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
 				_splitGarrIdVar, 					// Id of garrison to move
-				_targetVar, 						// Target to move to (initially the selected OP position)
-				MAKE_AST_VAR(50)]; 					// Radius to move within (we want to be close)
+				_targetVar, 						// Target to move to (initially the target garrison)
+				MAKE_AST_VAR(200)]; 				// Radius to move within
 		private _moveAST = NEW("AST_MoveGarrison", _moveAST_Args);
 
 		private _mergeAST_Args = [
@@ -125,7 +111,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// If the detachment is dead then we can just end the action
 				CMDR_ACTION_STATE_TARGET_DEAD, 		// If the target is dead then reselect a new target
 				_splitGarrIdVar, 					// Id of the garrison we are merging
-				_targetVar]; 						// Target to merge to (garrison or location is valid). We will be updating target after the recon is done.
+				_targetVar]; 						// Target to merge to (garrison or location is valid)
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
 		private _newTargetAST_Args = [
