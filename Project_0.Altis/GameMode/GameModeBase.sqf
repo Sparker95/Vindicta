@@ -222,10 +222,6 @@ CLASS("GameModeBase", "")
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 			private _template = "";
 			private _side = "";
-
-			OOP_DEBUG_1("_locName %1", _locName);
-			OOP_DEBUG_1("_locCapacityInf %1", _locCapacityInf);
-			OOP_DEBUG_1("_locCapacityCiv %1", _locCapacityCiv);
 			
 			private _side = switch (_locSide) do{
 				case "civilian": { CIVILIAN };//might not need this
@@ -244,6 +240,23 @@ CLASS("GameModeBase", "")
 			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
 			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
+
+			// Create police stations
+			if (_locType == "city") then {
+				// TODO: Add some visual/designs to this
+				private _policeStationBuilding = nearestBuilding GETV(_loc, "pos");
+				private _policeStationLocation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
+
+				CALLM1(_policeStationLocation, "setDebugName", format ["%1 police station", _locName] );
+				CALLM1(_policeStationLocation, "setType", "policeStation");
+
+				// TODO: Get city size or building count and scale police capacity from that ?
+				CALLM1(_policeStationLocation, "setCapacityInf", _locCapacityInf*2);
+
+				// create police garrison that will always patrol city ?
+
+				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+			};
 			
 		} forEach (entities "Project_0_LocationSector");
 
