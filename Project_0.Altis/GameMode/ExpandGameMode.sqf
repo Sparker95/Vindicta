@@ -1,10 +1,10 @@
 #include "common.hpp"
 
-CLASS("BasesGameMode", "GameModeBase")
+CLASS("ExpandGameMode", "GameModeBase")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("name", "bases");
+		T_SETV("name", "expand");
 
 	} ENDMETHOD;
 
