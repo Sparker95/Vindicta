@@ -25,21 +25,14 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("units", 		[ATTR_PRIVATE]);
 	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("name", 	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("name", 		[ATTR_PRIVATE]);
 	VARIABLE_ATTR("location", 	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
 	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
 	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
 	VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
 	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
-
-	// ----------------------------------------------------------------------
-	// |                 S E T   D E B U G   N A M E                        |
-	// ----------------------------------------------------------------------
-	METHOD("setName") {
-		params [P_THISOBJECT, ["_name", "", [""]]];
-		T_SETV("name", _name);
-	} ENDMETHOD;
+	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -287,7 +280,26 @@ CLASS("Garrison", "MessageReceiverEx");
 	// |                           S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	//                       S E T   L O C A T I O N
+	/*
+	Method: setFaction
+	Parameters: _faction
+	_faction - string
+	*/
+	METHOD("setFaction") {
+		params [P_THISOBJECT, P_STRING("_faction")];
+		T_SETV("faction", _faction);
+	} ENDMETHOD;
+
+	/*
+	Method: setName
+	Parameters: _name
+	_name - string
+	*/
+	METHOD("setName") {
+		params [P_THISOBJECT, P_STRING("_name")];
+		T_SETV("name", _name);
+	} ENDMETHOD;
+
 	/*
 	Method: setLocation
 	Sets the location of this garrison
@@ -391,6 +403,29 @@ CLASS("Garrison", "MessageReceiverEx");
 
 
 	// Getting values
+
+	/*
+	Method: getFaction
+	Returns: faction - string
+	*/
+	METHOD("getFaction") {
+		params [P_THISOBJECT];
+
+		__MUTEX_LOCK;
+
+		private _return = "";
+
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			_return
+		};
+
+		_return = GET_VAR(_thisObject, "faction");
+		__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
 
 	//                         G E T   S I D E
 	/*

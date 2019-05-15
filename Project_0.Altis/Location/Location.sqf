@@ -48,7 +48,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("spawned"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
 	VARIABLE("capacityInf"); // Infantry capacity
-	VARIABLE("capacityCiv"); // Infantry capacity
+	VARIABLE("capacityCiv"); // Civilian capacity
 	VARIABLE("cpModule"); // civilian module, might be replaced by custom script
 
 	STATIC_VARIABLE("all");

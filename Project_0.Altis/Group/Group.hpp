@@ -40,4 +40,5 @@ GROUP_TYPE_PATROL - Patrols that are walking around
 			case WEST: { tNATO }; \
 			case EAST: { tCSAT }; \
 			case INDEPENDENT: { tAAF }; \
+			case "police": { tPOLICE }; \
 		})

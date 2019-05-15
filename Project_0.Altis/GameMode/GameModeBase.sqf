@@ -252,10 +252,6 @@ CLASS("GameModeBase", "")
 
 				// TODO: Get city size or building count and scale police capacity from that ?
 				CALLM1(_policeStationLocation, "setCapacityInf", 5);
-
-				// create police garrison that will always patrol city ?
-
-
 				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 			};
 			
@@ -270,10 +266,32 @@ CLASS("GameModeBase", "")
 	#define ADD_APCS_IFVS
 	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
-		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry")];
+		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry")];
 		
 		private _gar = NEW("Garrison", [_side]);
-		OOP_INFO_MSG("Creating garrison %1 for side %2, %3 inf, %4 veh, %5 hmg/gmg, %6 sentries", [_gar ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+		CALLM1(_gar, "setFaction", _faction);
+
+		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+		
+		if (_faction == "police") exitWith {
+			private _policeGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
+			private _i = 0;
+			while {_i < _cInf} do {
+				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+				private _newUnit = NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _policeGroup]);
+				_i = _i+1;
+			};
+
+			// Add a car in front of police station
+			private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG _policeGroup]);
+			// private _car = NEW("Unit", [tPOLICE ARG 0 ARG T_VEH_personal ARG -1 ARG _policeGroup]);
+
+			OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _policeGroup]);
+			CALL_METHOD(_gar, "addGroup", [_policeGroup]);
+
+			_gar
+		};
+
 
 		// Add default units to the garrison
 
@@ -309,7 +327,6 @@ CLASS("GameModeBase", "")
 				_i = _i + 1;
 			};
 		} forEach _infSpec;
-
 		
 		private _template = GET_TEMPLATE(_side);
 
