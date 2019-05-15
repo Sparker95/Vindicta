@@ -1,76 +1,78 @@
-//Exported via Arma Dialog Creator (https://github.com/kayler-renslow/arma-dialog-creator)
 #ifndef HG_CustomControlClassesh
 #define HG_CustomControlClassesh 1
 //Create a header guard to prevent duplicate include.
 
-class Map_UI_text_base
+// #-0
+class MUI_BASE
 {
 	type = 0;
-	style = 16+512;
-	colorBackground[] = {0,0,0,0};
-	colorText[] = {1,1,1,1};
-	sizeEx = safeZoneH*0.035;
 	x = 0;
 	y = 0;
 	w = 0;
 	h = 0;
+	style = 16+512;
 	text = "1";
-	font = "PuristaMedium";
-	lineSpacing = 1;
-};
-class Map_UI_panel : Map_UI_text_base
-{
-	type = 0;
-	style = 0+16+512;
-	colorBackground[] = {0,0,0,0.5};
+	colorBackground[] = {0,0,0,0};
 	colorText[] = {1,1,1,1};
 	font = "PuristaMedium";
+	sizeEx = 0;
+	tooltip = "No tooltip.";
+	tooltipColorBox[] = {0,0,0,0.7};
+	tooltipColorShade[] = {0,0,0,0};
+	tooltipColorText[] = {1,1,1,1};
+	
 };
-class Map_UI_button : Map_UI_text_base
+//#-0
+class MUI_BG_GRAYSOLID : MUI_BASE 
+{
+	type = 0;
+	colorBackground[] = {0.12,0.12,0.12,1};
+	colorText[] = {1,1,1,1};
+	font = "PuristaMedium";
+	sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.76);
+	
+};
+//#-0
+class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
+{
+	type = 0;
+	colorBackground[] = {0,0,0,0.75};
+	
+};
+//#-0
+class MUI_HEADLINE : MUI_BASE 
+{
+	type = 0;
+	h = safeZoneH * 0.023;
+	style = 0;
+	colorBackground[] = {0.702,0.102,0.102,1};
+	colorText[] = {1,1,1,1};
+	
+};
+//#-1
+class MUI_BUTTON_TXT : MUI_BASE 
 {
 	type = 1;
-	style = 2;
-	text = "";
-	borderSize = 0.01;
-	colorBackground[] = {0,0,0,0.5};
-	colorBackgroundActive[] = {0,0.6,0,0.5};
-	colorBackgroundDisabled[] = {0,0,0,0.5};
+	h = safeZoneH * 0.02;
+	borderSize = 0;
+	colorBackgroundActive[] = {1,1,1,1};
+	colorBackgroundDisabled[] = {0,0,0,1};
 	colorBorder[] = {0,0,0,0};
-	colorDisabled[] = {0,0,0,0.5};
-	colorFocused[] = {0,0,0,0.5};
+	colorDisabled[] = {0.5,0.5,0.5,1};
+	colorFocused[] = {1,1,1,1};
 	colorShadow[] = {0,0,0,0};
-	offsetPressedX = safeZoneW*0.005;
-	offsetPressedY = safeZoneH*0.005;
+	offsetPressedX = 0;
+	offsetPressedY = 0;
 	offsetX = 0;
 	offsetY = 0;
-	soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.1,1.0};
-	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.1,1.0};
-	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.1,1.0};
-	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.1,1.0};
+	shadow = 0;
+	
 };
-class Map_UI_text_scroll : RscControlsGroup
+//#-1
+class MUI_BUTTON_TAB : MUI_BUTTON_TXT 
 {
-	type = 15;
-	style = 16+512;
-	colorBackground[] = {0,0,0,0};
-	colorText[] = {1,1,1,1};
-	sizeEx = safeZoneH*0.035;
-	x = 0;
-	y = 0;
-	w = 0;
+	type = 1;
 	h = 0;
-	text = "1";
-	font = "PuristaMedium";
-	lineSpacing = 1;
-};
-class Map_UI_text_centered : Map_UI_text_base
-{
-	style = 2;
-};
-class Map_UI_custom_button : Map_UI_text_centered
-{
-    sizeEx = safeZoneH * 0.025;
-    text = "CustomButton";
-    colorBackground[] = {0.1,0.1,0.1,0.5};
+	
 };
 #endif

@@ -1,6 +1,6 @@
-#include "ClientMapUI_Macros.hpp"
+#include "ClientMapUI_Macros.h"
 
-#include "CustomControlClasses.hpp"
+#include "CustomControlClasses.h"
 class ClientMapUI
 {
 	idd = 12;
@@ -12,31 +12,14 @@ class ClientMapUI
 	};
 	class Controls
 	{
-		class MUI_PANELB_DECOLINE : MUI_Text_Base 
-		{
-			type = 0;
-			idc = IDC_DECO1;
-			x = safeZoneX + safeZoneW * 0.225;
-			y = safeZoneY + safeZoneH * 0.9815;
-			w = safeZoneW * 0.55;
-			h = safeZoneH * 0.01;
-			style = 0;
-			text = "";
-			colorBackground[] = {1,1,1,1};
-			colorText[] = {1,1,1,0};
-			font = "PuristaMedium";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
-			shadow = 2;
-			
-		};
-		class MUI_PANELB_BUTTONS : MUI_BG_BlackGlass 
+		class MUI_PANELB_BUTTONS : MUI_BG_BLACKTRANSPARENT 
 		{
 			type = 0;
 			idc = IDC_BUTTONPANEL;
 			x = safeZoneX + safeZoneW * 0.225;
-			y = safeZoneY + safeZoneH * 0.94;
+			y = safeZoneY + safeZoneH * 0.93981482;
 			w = safeZoneW * 0.55;
-			h = safeZoneH * 0.03;
+			h = safeZoneH * 0.02962963;
 			style = 0;
 			text = "";
 			colorBackground[] = {0,0,0,0.5};
@@ -45,13 +28,15 @@ class ClientMapUI
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class MUI_PANELB_BUTTON_1 : MUI_Button_Base 
+		class MUI_PANELB_BUTTON_1 : MUI_BUTTON_TXT 
 		{
 			type = 1;
 			idc = IDC_BUTTON2;
 			x = safeZoneX + safeZoneW * 0.445;
 			y = safeZoneY + safeZoneH * 0.943;
 			w = safeZoneW * 0.11;
+			h = safeZoneH * 0.02;
+			style = 2;
 			text = "FAST TRAVEL";
 			borderSize = 0;
 			colorBackground[] = {0,0,0,1};
@@ -67,6 +52,7 @@ class ClientMapUI
 			offsetPressedY = 0.01;
 			offsetX = 0.01;
 			offsetY = 0.01;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
 			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
 			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
 			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
@@ -74,13 +60,15 @@ class ClientMapUI
 			shadow = 0;
 			
 		};
-		class MUI_PANELB_BUTTON_2 : MUI_Button_Base 
+		class MUI_PANELB_BUTTON_2 : MUI_BUTTON_TXT 
 		{
 			type = 1;
 			idc = IDC_BUTTON3;
 			x = safeZoneX + safeZoneW * 0.56;
 			y = safeZoneY + safeZoneH * 0.943;
 			w = safeZoneW * 0.11;
+			h = safeZoneH * 0.02;
+			style = 2;
 			text = "SETTINGS";
 			borderSize = 0;
 			colorBackground[] = {0,0,0,1};
@@ -91,10 +79,12 @@ class ClientMapUI
 			colorFocused[] = {0.2,0.2,0.2,1};
 			colorShadow[] = {0,0,0,0};
 			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
 			offsetPressedX = 0.01;
 			offsetPressedY = 0.01;
 			offsetX = 0.01;
 			offsetY = 0.01;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
 			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
 			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
 			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
@@ -102,13 +92,15 @@ class ClientMapUI
 			shadow = 0;
 			
 		};
-		class MUI_PANELB_BUTTON_3 : MUI_Button_Base 
+		class MUI_PANELB_BUTTON_3 : MUI_BUTTON_TXT 
 		{
 			type = 1;
 			idc = IDC_BUTTON1;
 			x = safeZoneX + safeZoneW * 0.33;
 			y = safeZoneY + safeZoneH * 0.943;
 			w = safeZoneW * 0.11;
+			h = safeZoneH * 0.02;
+			style = 2;
 			text = "CREATE CAMP";
 			borderSize = 0;
 			colorBackground[] = {0,0,0,1};
@@ -119,10 +111,12 @@ class ClientMapUI
 			colorFocused[] = {1,1,1,1};
 			colorShadow[] = {0,0,0,0};
 			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
 			offsetPressedX = 0.01;
 			offsetPressedY = 0.01;
 			offsetX = 0.01;
 			offsetY = 0.01;
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.9);
 			soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1.0};
 			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
 			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
@@ -134,7 +128,7 @@ class ClientMapUI
 			tooltipColorText[] = {1,1,1,1};
 			
 		};
-		class MUI_PANELA_HEADLINE : MUI_Header_SideRGB 
+		class MUI_PANELA_HEADLINE : MUI_HEADLINE 
 		{
 			type = 0;
 			idc = IDC_HEADLINE;
@@ -146,7 +140,7 @@ class ClientMapUI
 			shadow = 1;
 			
 		};
-		class MUI_PANELA_LISTBOX : MUI_Text_Base 
+		class MUI_PANELA_LISTBOX : MUI_BASE 
 		{
 			type = 5;
 			idc = -1;
@@ -176,20 +170,26 @@ class ClientMapUI
 			};
 			
 		};
-		class MUI_PANELA_TAB1 : MUI_Button_Tab 
+		class MUI_PANELA_TAB1 : MUI_BUTTON_TAB 
 		{
 			type = 1;
 			idc = IDC_TAB1;
 			x = safeZoneX + safeZoneW * 0.86;
 			y = safeZoneY + safeZoneH * 0.078;
+			w = safeZoneW * 0.044;
+			h = safeZoneH * 0.068;
+			style = 2;
 			text = "LEFT";
 			borderSize = 0;
+			colorBackground[] = {0,0,0,1};
 			colorBackgroundActive[] = {1,1,1,1};
 			colorBackgroundDisabled[] = {0,0,0,1};
 			colorBorder[] = {0,0,0,0};
 			colorDisabled[] = {0.2,0.2,0.2,1};
 			colorFocused[] = {1,1,1,1};
 			colorShadow[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
 			offsetPressedX = 0.01;
 			offsetPressedY = 0.01;
 			offsetX = 0.01;
@@ -206,20 +206,26 @@ class ClientMapUI
 			tooltipColorText[] = {1,1,1,1};
 			
 		};
-		class MUI_PANELA_TAB2 : MUI_Button_Tab 
+		class MUI_PANELA_TAB2 : MUI_BUTTON_TAB 
 		{
 			type = 1;
 			idc = IDC_TAB3;
 			x = safeZoneX + safeZoneW * 0.948;
 			y = safeZoneY + safeZoneH * 0.078;
+			w = safeZoneW * 0.044;
+			h = safeZoneH * 0.068;
+			style = 2;
 			text = "RIGHT";
 			borderSize = 0;
+			colorBackground[] = {0,0,0,1};
 			colorBackgroundActive[] = {1,1,1,1};
 			colorBackgroundDisabled[] = {0,0,0,1};
 			colorBorder[] = {0,0,0,0};
 			colorDisabled[] = {0.2,0.2,0.2,1};
 			colorFocused[] = {1,1,1,1};
 			colorShadow[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
 			offsetPressedX = 0.01;
 			offsetPressedY = 0.01;
 			offsetX = 0.01;
@@ -236,21 +242,26 @@ class ClientMapUI
 			tooltipColorText[] = {1,1,1,1};
 			
 		};
-		class MUI_PANELA_TAB3 : MUI_Button_Tab 
+		class MUI_PANELA_TAB3 : MUI_BUTTON_TAB 
 		{
 			type = 1;
 			idc = IDC_TAB2;
 			x = safeZoneX + safeZoneW * 0.9;
 			y = safeZoneY + safeZoneH * 0.078;
 			w = safeZoneW * 0.05;
+			h = safeZoneH * 0.068;
+			style = 2;
 			text = "CENTER";
 			borderSize = 0;
+			colorBackground[] = {0,0,0,1};
 			colorBackgroundActive[] = {1,1,1,1};
 			colorBackgroundDisabled[] = {0,0,0,1};
 			colorBorder[] = {0,0,0,0};
 			colorDisabled[] = {0.2,0.2,0.2,1};
 			colorFocused[] = {1,1,1,1};
 			colorShadow[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
 			offsetPressedX = 0.01;
 			offsetPressedY = 0.01;
 			offsetX = 0.01;
@@ -267,7 +278,7 @@ class ClientMapUI
 			tooltipColorText[] = {1,1,1,1};
 			
 		};
-		class MUI_PANELA_TABNAME : MUI_Text_Base 
+		class MUI_PANELA_TABNAME : MUI_BASE 
 		{
 			type = 0;
 			idc = IDC_TABCAT;
@@ -283,7 +294,7 @@ class ClientMapUI
 			shadow = 0;
 			
 		};
-		class MUI_PANELB_HINTS : MUI_BG_GraySolid 
+		class MUI_PANELB_HINTS : MUI_BG_GRAYSOLID 
 		{
 			type = 0;
 			idc = IDC_HINTPANEL;
@@ -293,7 +304,6 @@ class ClientMapUI
 			h = safeZoneH * 0.025;
 			style = 2;
 			text = "ALERT: Alert this garrison to an impending attack. All units in this garrison will switch into combat state.";
-			shadow = 2;
 			
 		};
 		

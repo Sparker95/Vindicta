@@ -1,6 +1,6 @@
 #include "ClientMapUI_Macros.h"
 
-#include "..\MissionUIControlClasses.h"
+#include "CustomControlClasses.h"
 class ClientMapUI
 {
 	idd = 12;
@@ -12,6 +12,23 @@ class ClientMapUI
 	};
 	class Controls
 	{
+		class MUI_PANELB_DECOLINE : MUI_BASE 
+		{
+			type = 0;
+			idc = IDC_DECO1;
+			x = safeZoneX + safeZoneW * 0.225;
+			y = safeZoneY + safeZoneH * 0.9815;
+			w = safeZoneW * 0.55;
+			h = safeZoneH * 0.01;
+			style = 0;
+			text = "";
+			colorBackground[] = {1,1,1,1};
+			colorText[] = {1,1,1,0};
+			font = "PuristaMedium";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			shadow = 2;
+			
+		};
 		class MUI_PANELB_BUTTONS : MUI_BG_BLACKTRANSPARENT 
 		{
 			type = 0;
@@ -304,10 +321,10 @@ class ClientMapUI
 			h = safeZoneH * 0.025;
 			style = 2;
 			text = "ALERT: Alert this garrison to an impending attack. All units in this garrison will switch into combat state.";
+			shadow = 2;
 			
 		};
 		
 	};
 	
 };
-
