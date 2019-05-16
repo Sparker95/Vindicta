@@ -150,6 +150,17 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Associate the unit with the garrison of this group
 		// todo
 
+		// Select leader if needed
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		if (_leader == "") then {
+			if (CALLM0(_unit, "isInfantry")) then {
+				// We have no leader yet and this seems to be the first infantry unit in the group
+				// So he will be our leader from now!
+				_leader = _unit;
+				_data set [GROUP_DATA_ID_LEADER, _leader];
+			};
+		};
+
 		// Handle spawn states
 		if (CALLM0(_thisObject,"isSpawned")) then {
 
@@ -366,6 +377,51 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		CALLSM1("Unit", "getUnitFromObjectHandle", _hLeader)
 	} ENDMETHOD;
 
+	// 						S E T   L E A D E R
+	/*
+	Method: setLeader
+	Sets the leader of this group to a specified Unit. The Unit must belong to this group.
+	*/
+	METHOD("setLeader") {
+		params ["_thisObject", ["_unit", "", [""]]];
+		pr _data = T_GETV("data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		pr _isSpawned = _data select GROUP_DATA_ID_SPAWNED;
+
+		if (_unit in _units) then {
+			if (_isSpawned) then {
+				pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+				pr _hO = CALLM0(_unit, "getObjectHandle");
+				if (isNull _hO) then {
+					OOP_ERROR_1("Unit %1 is null object!", _unit);
+					// Select a random leader
+				} else {
+					_hG selectLeader _hO;
+					_data set [GROUP_DATA_ID_LEADER, _unit];
+				};
+			} else {
+				_data set [GROUP_DATA_ID_LEADER, _unit];
+			};
+		} else {
+			OOP_ERROR_2("Unit %1 does not belong to group %2", _unit, _thisObject);
+		};
+	} ENDMETHOD;
+
+	// Selects the next leader when the current one is removed or whatever
+	METHOD("_selectNextLeader") {
+		params ["_thisObject"];
+
+		pr _data = T_GETV("data");
+		pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		if (count _infUnits == 0) then {
+			_data set [GROUP_DATA_ID_LEADER, ""];
+		} else {
+
+		};
+		
+	} ENDMETHOD;
 
 	// |                     S E T / G E T   G A R R I S O N                |
 	//
