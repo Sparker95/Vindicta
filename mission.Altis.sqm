@@ -8,7 +8,7 @@ class EditorData
 	toggles=5;
 	class ItemIDProvider
 	{
-		nextID=728;
+		nextID=735;
 	};
 	class MarkerIDProvider
 	{
@@ -16,7 +16,7 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={18737.979,42.549076,18149.389};
+		pos[]={18658.059,119.99627,18193.381};
 		dir[]={0.79864943,-0.51366401,-0.31359094};
 		up[]={0.47813565,0.85798466,-0.1877405};
 		aside[]={-0.36549127,1.9394793e-007,-0.93083161};
@@ -232,7 +232,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=332;
+		items=335;
 		class Item0
 		{
 			dataType="Object";
@@ -11253,143 +11253,10 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={18148,25.188734,15228};
-				angles[]={6.2432079,0.022514746,0.050623242};
+				position[]={16819,24,12684};
+				angles[]={0,5.8720555,0};
 			};
-			areaSize[]={291.86371,0,203.32007};
-			areaIsRectangle=1;
-			flags=1;
-			id=727;
-			type="Project_0_LocationSector";
-			class CustomAttributes
-			{
-				class Attribute0
-				{
-					property="Project_0_LocationSector_side";
-					expression="_this setVariable ['Side',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="east";
-						};
-					};
-				};
-				class Attribute1
-				{
-					property="Project_0_LocationSector_type";
-					expression="_this setVariable ['Type',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="city";
-						};
-					};
-				};
-				class Attribute2
-				{
-					property="Project_0_LocationSector_CapacityInfantry";
-					expression="_this setVariable ['CapacityInfantry',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute3
-				{
-					property="Project_0_LocationSector_CivPresUnitCount";
-					expression="_this setVariable ['CivPresUnitCount',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"SCALAR"
-								};
-							};
-							value=5;
-						};
-					};
-				};
-				class Attribute4
-				{
-					property="Project_0_LocationSector";
-					expression="_this setVariable ['Units',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="1";
-						};
-					};
-				};
-				class Attribute5
-				{
-					property="Project_0_LocationSector_name";
-					expression="_this setVariable ['Name',_value,true];";
-					class Value
-					{
-						class data
-						{
-							class type
-							{
-								type[]=
-								{
-									"STRING"
-								};
-							};
-							value="Charkia City";
-						};
-					};
-				};
-				nAttributes=6;
-			};
-		};
-		class Item333
-		{
-			dataType="Logic";
-			class PositionInfo
-			{
-				position[]={18834.061,31.348795,16636.834};
-				angles[]={6.2431998,0.022514746,0.050614551};
-			};
-			areaSize[]={291.86401,0,203.32001};
-			areaIsRectangle=1;
+			areaSize[]={572.20599,0,509.974};
 			flags=1;
 			id=728;
 			type="Project_0_LocationSector";
@@ -11448,7 +11315,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=5;
+							value=15;
 						};
 					};
 				};
@@ -11467,7 +11334,7 @@ class Mission
 									"SCALAR"
 								};
 							};
-							value=5;
+							value=15;
 						};
 					};
 				};
@@ -11505,23 +11372,22 @@ class Mission
 									"STRING"
 								};
 							};
-							value="Rodopoli City";
+							value="Pyrgos";
 						};
 					};
 				};
 				nAttributes=6;
 			};
 		};
-		class Item334
+		class Item333
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={16817,23.985336,12649};
-				angles[]={0,0.022514746,0.0026529003};
+				position[]={19486,17.281279,15355};
+				angles[]={0.0047647487,5.3973088,6.2272301};
 			};
-			areaSize[]={560.95599,0,418.27802};
-			areaIsRectangle=1;
+			areaSize[]={147.965,0,173.74001};
 			flags=1;
 			id=729;
 			type="Project_0_LocationSector";
@@ -11637,23 +11503,22 @@ class Mission
 									"STRING"
 								};
 							};
-							value="Pyrgos City";
+							value="Nifi";
 						};
 					};
 				};
 				nAttributes=6;
 			};
 		};
-		class Item335
+		class Item334
 		{
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={19485,17.525274,15364};
-				angles[]={6.2618575,5.6574845,6.2405472};
+				position[]={18113,23.91667,15225};
+				angles[]={6.2312269,4.3749294,6.2565165};
 			};
-			areaSize[]={160.789,0,163.153};
-			areaIsRectangle=1;
+			areaSize[]={203.78999,0,370.177};
 			flags=1;
 			id=730;
 			type="Project_0_LocationSector";
@@ -11769,7 +11634,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="Nifi City";
+							value="Charkia";
 						};
 					};
 				};

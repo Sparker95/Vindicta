@@ -284,7 +284,6 @@ CLASS("GameModeBase", "")
 
 			// Add a car in front of police station
 			private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG _policeGroup]);
-			// private _car = NEW("Unit", [tPOLICE ARG 0 ARG T_VEH_personal ARG -1 ARG _policeGroup]);
 
 			OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _policeGroup]);
 			CALL_METHOD(_gar, "addGroup", [_policeGroup]);
