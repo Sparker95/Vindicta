@@ -114,43 +114,53 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
-		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 
 		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
 		private _tgtLocType = GETV(_tgtLoc, "type");
-		private _tgtLocTypeBias = switch(_tgtLocType) do {
-			// We want these.
-			case "outpost": { 1 };
-			// We want these.
-			// TODO: work out how to weight taking bases vs other stuff? 
-			// Probably high priority when we are losing? This is a gameplay question.
-			case "base": { 1 };
+
+		private _tgtLocTypeDistanceBias = 1;
+		private _tgtLocTypePriorityBias = 1;
+		switch(_tgtLocType) do {
+			case "outpost": {
+				// We want these a normal amount, so leave defaults alone.
+			};
+			case "base": { 
+				// We want these a normal amount but are willing to go further to capture them.
+				// TODO: work out how to weight taking bases vs other stuff? 
+				// Probably high priority when we are losing? This is a gameplay question.
+				_tgtLocTypeDistanceBias = 2; 
+			};
 			case "roadblock": {
+				// We won't travel as far to get these.
+				_tgtLocTypeDistanceBias = 0.5;
 				// The more surrounding locations we control the more we want to get these first.
 				private _nearLocsFactors =
 					CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
 						// select out location only not distance
 						select { 
 							_x params ["_dist", "_loc"];
-							count CALLM(_loc, "getGarrisons", [_side]) > 0 
+							!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
 						}
-						apply { 
+						apply {
+							_x params ["_dist", "_loc"];
+							// Surrounding bases count more.
 							if(GETV(_loc, "type") == "base") then {
-								_x#0 / 2000
+								_dist / 1000
 							} else {
-								_x#0 / 4000
+								_dist / 2000
 							};
 						};
 				private _sum = 0;
 				{_sum = _sum + _x} foreach _nearLocsFactors;
 				OOP_INFO_MSG("roadblock %1 %2", [_sum ARG _nearLocsFactors]);
-				_sum
+				_tgtLocTypePriorityBias = _sum;
 			};
 			default { 0.5 }; // TODO: dunno what it is, better add more here?
 		};
 
-		private _scorePriority = 1 * _tgtLocTypeBias;
+		private _scoreResource = _detachEffStrength * _distCoeff * _tgtLocTypeDistanceBias * _transportationScore;
+		private _scorePriority = 1 * _tgtLocTypePriorityBias;
 
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8

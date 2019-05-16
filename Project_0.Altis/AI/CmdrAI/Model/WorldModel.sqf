@@ -405,7 +405,7 @@ CLASS("WorldModel", "")
 			private _location = _x;
 			private _type = GETV(_location, "type");
 			if((count _includeTypes == 0 or {_type in _includeTypes}) and 
-				(count _excludeTypes == 0 or {!(_type in _excludeTypes)})) then {
+				{(count _excludeTypes == 0) or {!(_type in _excludeTypes)}}) then {
 				private _pos = GETV(_location, "pos");
 				private _dist = _pos distance _center;
 				if(_maxDist == 0 or _dist <= _maxDist) then {
