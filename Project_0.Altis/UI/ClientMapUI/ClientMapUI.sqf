@@ -143,6 +143,27 @@ CLASS(CLASS_NAME, "")
 	} ENDMETHOD;
 
 	// Formats location data and shows it on the location data panel
+	STATIC_METHOD("onMouseClickElsewhere") {
+		CALLSM0(CLASS_NAME, "clearListNBox");
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className != "IntelLocation") then {
+				_ctrlListnbox lnbAddRow [ format ["%1 \n _className: %1 \n _className: %1 \n", _className] ];
+			};
+
+		} forEach _allIntels; 
+	} ENDMETHOD;
+
+	STATIC_METHOD("clearListNBox") {
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+		lnbClear _ctrlListnbox;
+	} ENDMETHOD;
+
 	STATIC_METHOD("updateLocationDataPanel") {
 		params ["_thisClass", ["_intel", "", [""]]];
 
@@ -151,7 +172,7 @@ CLASS(CLASS_NAME, "")
 		pr _sideText = "";
 		pr _soldierCount = 0;
 		pr _vehList = [];
-
+		
 		// Did we find a location in the database?
 		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
 
@@ -186,9 +207,10 @@ CLASS(CLASS_NAME, "")
 		};
 
 		// Apply new text for GUI elements
+		CALLSM0(CLASS_NAME, "clearListNBox");
+		
 		private _mapDisplay = findDisplay 12;
 		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
-		lnbClear _ctrlListnbox;
 		_ctrlListnbox lnbAddRow [ format ["Type: %1", _typeText] ];
 		_ctrlListnbox lnbAddRow [ format ["Side: %1", _sideText] ];
 		_ctrlListnbox lnbAddRow [ format ["Soldier Count: %1", str _soldierCount] ];

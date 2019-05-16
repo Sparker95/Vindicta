@@ -70,7 +70,6 @@ class CMUI_LOCP_LISTBOXBG : MUI_LISTBOX
     sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
     colorBackground[] = {0,0,0,0.6};
 };
-
 class CMUI_LOCP_LISTBOX : RscListNBox 
 {
     type = 5;

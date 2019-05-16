@@ -334,7 +334,6 @@ CLASS("IntelCommanderAction", "Intel")
 	/* variable: strength
 	Strength of the units allocated for this job. Format is yet unknown.*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
-
 ENDCLASS;
 
 /*

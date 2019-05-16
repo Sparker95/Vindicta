@@ -254,11 +254,8 @@ CLASS(CLASS_NAME, "MapMarker")
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
 
 		if (_button == 0) then {
-			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
-			// clear loc intel UI
-			private _mapDisplay = findDisplay 12;
-			private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
-			lnbClear _ctrlListnbox;
+			CALLSM0(CLASS_NAME, "deselectAllMarkers");
+			CALLSM0("ClientMapUI", "onMouseClickElsewhere");
 		};
 		
 	} ENDMETHOD;
