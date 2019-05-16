@@ -938,7 +938,6 @@ CLASS("AICommander", "AI")
 		};
 	} ENDMETHOD;
 		
-			
 	/*
 	Method: registerIntelCommanderAction
 	Registers a piece of intel on an action that this Commander owns.
