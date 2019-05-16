@@ -81,6 +81,13 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_SETV("scorePriority", 0);
 			T_SETV("scoreResource", 0);
 		};
+
+		// switch  do {
+		// 	case "roadblock": { "mil_triangle" };
+		// 	case "base": { "mil_circle" };
+		// 	case "outpost": { "mil_box" };
+		// 	default { "mil_dot" };
+		// }
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
@@ -94,6 +101,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtLocPos = GETV(_tgtLoc, "pos");
+		
 
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
 		private _dist = _srcGarrPos distance _tgtLocPos;
@@ -110,7 +118,37 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
-		private _scorePriority = 1;
+		private _tgtLocType = GETV(_tgtLoc, "type");
+		private _tgtLocTypeBias = switch(_tgtLocType) do {
+			// We want these.
+			case "outpost": { 1 };
+			// We want these.
+			// TODO: work out how to weight taking bases vs other stuff? 
+			// Probably high priority when we are losing? This is a gameplay question.
+			case "base": { 1 };
+			case "roadblock": {
+				// The more surrounding locations we control the more we want to get these first.
+				private _nearLocsFactors =
+					CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
+						// select out location only not distance
+						select { 
+							_x params ["_dist", "_loc"];
+							count CALLM(_loc, "getGarrisons", [_side]) > 0 
+						}
+						apply { 
+							if(GETV(_loc, "type") == "base") then {
+								_x#0 / 2000
+							} else {
+								_x#0 / 4000
+							};
+						};
+				private _sum = 0;
+				{_sum = _sum + _x} foreach _nearLocsFactors;
+			};
+			default { 0.5 }; // TODO: dunno what it is, better add more here?
+		};
+
+		private _scorePriority = 1 * _tgtLocTypeBias;
 
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8

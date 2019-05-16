@@ -6,6 +6,8 @@
 CLASS("LocationModel", "ModelBase")
 	// Location position
 	VARIABLE("pos");
+	// Location type
+	VARIABLE("type");
 	// Side considered to be owning this location
 	VARIABLE("side");
 	// Model Id of the garrison currently occupying this location
@@ -21,6 +23,7 @@ CLASS("LocationModel", "ModelBase")
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
+		T_SETV("type", "");
 		T_SETV("side", objNull);
 		T_SETV("garrisonIds", []);
 		T_SETV("spawn", false);
@@ -48,6 +51,7 @@ CLASS("LocationModel", "ModelBase")
 		// SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "pos", +T_GETV("pos"));
+		SETV(_copy, "type", T_GETV("type"));
 		SETV(_copy, "side", T_GETV("side"));
 		SETV(_copy, "garrisonIds", +T_GETV("garrisonIds"));
 		SETV(_copy, "spawn", T_GETV("spawn"));
@@ -67,7 +71,7 @@ CLASS("LocationModel", "ModelBase")
 			//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
 			T_SETV("pos", CALLM(_actual, "getPos", []));
-
+			T_SETV("type", GETV(_actual, "type"));
 			private _side = GETV(_actual, "side");
 			T_SETV("side", _side);
 

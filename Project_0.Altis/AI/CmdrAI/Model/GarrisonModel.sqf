@@ -815,6 +815,12 @@ CLASS("GarrisonModel", "ModelBase")
 		// CALLM2(_locationActual, "postMethodAsync", "registerGarrison", [_actual]);
 		CALLM2(_actual, "postMethodAsync", "setLocation", [_locationActual]);
 		OOP_INFO_MSG("Joined %1 to %2", [LABEL(_thisObject) ARG LABEL(_location)]);
+
+		private _locType = GETV(_location, "type");
+		if(_locType == "roadblock") then {
+			// TODO: BUILD ROADBLOCK? This would be temporary, not sure what proper way to do it is...
+		};
+
 		// private _AI = CALLM(_actual, "getAI", []);
 		// private _parameters = [[TAG_LOCATION, _locationActual]];
 		// private _args = ["GoalGarrisonJoinLocation", 0, _parameters, _thisObject];

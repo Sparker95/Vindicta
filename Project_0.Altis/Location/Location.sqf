@@ -53,43 +53,6 @@ CLASS("Location", "MessageReceiverEx")
 
 	STATIC_VARIABLE("all");
 
-
-	// |                 S E T   D E B U G   N A M E
-	/*
-	Method: setDebugName
-	Sets debug name of this MessageLoop.
-
-	Parameters: _debugName
-
-	_debugName - String
-
-	Returns: nil
-	*/
-	METHOD("setDebugName") {
-		params [P_THISOBJECT, ["_debugName", "", [""]]];
-		T_SETV("debugName", _debugName);
-	} ENDMETHOD;
-
-	METHOD("setCapacityInf") {
-		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
-		T_SETV("capacityInf", _capacityInf);
-	} ENDMETHOD;
-
-	METHOD("setCapacityCiv") {
-		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
-		T_SETV("capacityCiv", _capacityCiv);
-		if(T_GETV("type") isEqualTo "city")then{
-			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
-			T_SETV("cpModule",_cpModule);
-		};
-
-	} ENDMETHOD;
-
-	METHOD("setSide") {
-		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
-		T_SETV("side", _side);
-	} ENDMETHOD;
-
 	// |                              N E W
 	/*
 	Method: new
@@ -144,18 +107,67 @@ CLASS("Location", "MessageReceiverEx")
 		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 
+	// |                 S E T   D E B U G   N A M E
+	/*
+	Method: setDebugName
+	Sets debug name of this MessageLoop.
+
+	Parameters: _debugName
+
+	_debugName - String
+
+	Returns: nil
+	*/
+	METHOD("setDebugName") {
+		params [P_THISOBJECT, ["_debugName", "", [""]]];
+		T_SETV("debugName", _debugName);
+	} ENDMETHOD;
+
+	METHOD("setCapacityInf") {
+		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
+		T_SETV("capacityInf", _capacityInf);
+	} ENDMETHOD;
+
+	METHOD("setCapacityCiv") {
+		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
+		T_SETV("capacityCiv", _capacityCiv);
+		if(T_GETV("type") isEqualTo "city")then{
+			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
+			T_SETV("cpModule",_cpModule);
+		};
+
+	} ENDMETHOD;
+
+	METHOD("setSide") {
+		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
+		T_SETV("side", _side);
+	} ENDMETHOD;
+
 	#ifdef DEBUG_LOCATION_MARKERS
 	METHOD("updateMarker") {
 		params [P_THISOBJECT];
 		deleteMarker _thisObject;
 		deleteMarker (_thisObject + "_label");
 		T_PRVAR(pos);
+
 		if(count _pos > 0) then {
+
 			private _mrk = createmarker [_thisObject, _pos];
-			_mrk setMarkerType "mil_box";
+			_mrk setMarkerType (switch T_GETV("type") do {
+				case "roadblock": { "mil_triangle" };
+				case "base": { "mil_circle" };
+				case "outpost": { "mil_box" };
+				default { "mil_dot" };
+			});
 			_mrk setMarkerColor "ColorYellow";
 			_mrk setMarkerAlpha 1;
 			_mrk setMarkerText "";
+
+			T_PRVAR(border);
+			if(_border isEqualType []) then {
+				_mrk setMarkerDir _border#2;
+			};
+
 			_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
 			_mrk setMarkerType "Empty";
 			_mrk setMarkerColor "ColorYellow";

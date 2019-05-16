@@ -253,14 +253,6 @@ CLASS("GameModeBase", "")
 			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
 			{	
 				_x params ["_roadblockPos", "_roadblockDir"];
-#ifndef RELEASE_BUILD
-				private _mrk = createMarker [format ["roadblock_%1_%2", _loc, _forEachIndex], _roadblockPos];
-				_mrk setMarkerType "mil_triangle";
-				_mrk setMarkerDir _roadblockDir;
-				_mrk setMarkerColor "ColorWhite";
-				_mrk setMarkerAlpha 1;
-				_mrk setMarkerText _mrk;
-#endif
 				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
 				CALLM1(_roadblockLoc, "setDebugName", _mrk);
 				CALLM1(_roadblockLoc, "setSide", _side);

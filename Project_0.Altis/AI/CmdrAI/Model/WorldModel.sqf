@@ -394,18 +394,23 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getNearestLocations") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		T_PRVAR(locations);
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
+		// TODO: is select, sort, while faster here?
 		private _nearestLocations = [];
 		{
 			private _location = _x;
-			private _pos = GETV(_location, "pos");
-			private _dist = _pos distance _center;
-			if(_maxDist == 0 or _dist <= _maxDist) then {
-				_nearestLocations pushBack [_dist, _location];
+			private _type = GETV(_location, "type");
+			if((count _includeTypes == 0 or {_type in _includeTypes}) and 
+				(count _excludeTypes == 0 or {!(_type in _excludeTypes)})) then {
+				private _pos = GETV(_location, "pos");
+				private _dist = _pos distance _center;
+				if(_maxDist == 0 or _dist <= _maxDist) then {
+					_nearestLocations pushBack [_dist, _location];
+				};
 			};
 		} forEach _locations;
 		_nearestLocations sort ASCENDING;
