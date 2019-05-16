@@ -7,6 +7,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
+#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 
 /*
 Class: MapMarkerLocation
@@ -84,8 +85,6 @@ CLASS(CLASS_NAME, "MapMarker")
 		};
 	} ENDMETHOD;
 
-
-
 	METHOD("onDraw") {
 		params ["_thisObject", "_control"];
 
@@ -138,8 +137,6 @@ CLASS(CLASS_NAME, "MapMarker")
 		};
 
 	} ENDMETHOD;
-
-
 
 	/*
 	Method: onMouseEnter
@@ -220,7 +217,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	*/
 	METHOD("onMouseButtonUp") {
 		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
-		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
+		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
 	/*
@@ -235,10 +232,9 @@ CLASS(CLASS_NAME, "MapMarker")
 	*/
 	METHOD("onMouseButtonClick") {
 		params ["_thisObject", "_shift", "_ctrl", "_alt"];
-		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
+		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
 	} ENDMETHOD;
-
 
 	STATIC_METHOD("deselectAllMarkers") {
 		params ["_thisClass"];
@@ -256,13 +252,15 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	STATIC_METHOD("onMouseClickElsewhere") {
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
-		diag_log "Clicked elsewhere!";
+
 		if (_button == 0) then {
 			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
-
-			// Update location data panel
-			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
+			// clear loc intel UI
+			private _mapDisplay = findDisplay 12;
+			private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+			lnbClear _ctrlListnbox;
 		};
+		
 	} ENDMETHOD;
 
 ENDCLASS;

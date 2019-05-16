@@ -677,6 +677,69 @@ class RscListBox
 	period = 1.2;
 	maxHistoryDelay = 1;
 };
+class RscListNBox
+{
+ access = 0; // allow alterations / additions to, but not erasure of, tokennames in this class.
+             // this equally affects child classes. they cannot be removed, nor can their tokenNames be erased, only altered
+             // to completely remove or alter a child class (in this case scrollbar), this parent class must be inherited
+             // then again, perhaps irrelevant, perhaps it's simply being a root class that causes all this
+	/*
+	** standard stuff
+	*/
+ type = CT_LISTNBOX;// 102; 
+ style =ST_MULTI;
+ w = 0.4;   h = 0.4; 
+ font = "TahomaB"; 
+ sizeEx = 0.04; 
+ colorText[] = {0.8784, 0.8471, 0.651, 1}; 
+ colorBackground[] = {0, 0, 0, 0.6}; 
+	/*
+	** type specific
+	*/
+ autoScrollSpeed = -1; 
+ autoScrollDelay = 5; 
+ autoScrollRewind = 0; 
+ arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)"; 
+ arrowFull = "#(argb,8,8,3)color(1,1,1,1)"; 
+ columns[] = {0.3, 0.6, 0.7}; 
+ color[] = {1, 1, 1, 1}; 
+ colorScrollbar[] = {0.95, 0.95, 0.95, 1}; 
+ colorSelect[] = {0.95, 0.95, 0.95, 1}; 
+ colorSelect2[] = {0.95, 0.95, 0.95, 1}; 
+ colorSelectBackground[] = {0, 0, 0, 1}; 
+ colorSelectBackground2[] = {0.8784, 0.8471, 0.651, 1}; 
+ drawSideArrows = 0; 
+ idcLeft = -1; 
+ idcRight = -1; 
+ maxHistoryDelay = 1; 
+ rowHeight = 0; 
+ soundSelect[] = {"", 0.1, 1}; 
+ period = 1; 
+ shadow = 2; 
+ class ScrollBar
+ {
+  arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
+  arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
+  border = "#(argb,8,8,3)color(1,1,1,1)";
+  color[] = {1,1,1,0.6};
+  colorActive[] = {1,1,1,1};
+  colorDisabled[] = {1,1,1,0.3};
+  thumb = "#(argb,8,8,3)color(1,1,1,1)";
+ };
+};
+class dialog
+{
+  class controls
+  {
+    class MyLbox:RscListNBox
+    {
+        x=y=wherever;
+        canDrag=true;
+        rows=10;
+        lineSpacing = 1.3;
+    };
+  };
+};
 class RscButton
 {
 	deletable = 0;

@@ -275,7 +275,7 @@ CLASS("IntelLocation", "Intel")
 		};
 
 		pr _radius = T_GETV("accuracyRadius");
-		if (isNil "_radius") then {_radius = 1000; };
+		if (isNil "_radius") then {_radius = 0; };
 
 		CALLM1(_mapMarker, "setPos", _pos);
 		CALLM1(_mapMarker, "setText", _text);

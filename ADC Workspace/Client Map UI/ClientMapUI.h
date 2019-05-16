@@ -75,7 +75,7 @@ class ClientMapUI
 		class CMUI_LOCP_LISTBOX : MUI_LISTBOX 
 		{
 			type = 5;
-			idc = IDC_LOCP_LISTBOX;
+			idc = IDC_LOCP_LISTBOXBG;
 			x = safeZoneX + safeZoneW * 0.86;
 			y = safeZoneY + safeZoneH * 0.183;
 			w = safeZoneW * 0.132;

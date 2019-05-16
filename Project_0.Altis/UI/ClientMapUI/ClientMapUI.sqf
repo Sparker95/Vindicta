@@ -6,6 +6,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
+#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
 
 
@@ -145,16 +146,14 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("updateLocationDataPanel") {
 		params ["_thisClass", ["_intel", "", [""]]];
 
-		pr _typeText = "...";
-		pr _timeText = "...";
-		pr _compositionText = "...";
-		pr _sideText = "...";
-		private _listNamePlayersText = "";
+		pr _typeText = "";
+		pr _timeText = "";
+		pr _sideText = "";
+		pr _soldierCount = 0;
+		pr _vehList = [];
 
 		// Did we find a location in the database?
 		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
-
-			diag_log format ["Location data was found in the database"];
 
 			_typeText = switch (GETV(_intel, "type")) do {
 				case LOCATION_TYPE_OUTPOST: {"Outpost"};
@@ -170,9 +169,8 @@ CLASS(CLASS_NAME, "")
 			if (count _ua > 0) then {
 				_compositionText = "";
 				// Amount of infrantry
-				pr _ninf = 0;
-				{_ninf = _ninf + _x;} forEach (_ua select T_INF);
-				_compositionText = _compositionText + (format ["Soldiers: %1\n", _ninf]);
+				{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
+
 				// Count vehicles
 				pr _uaveh = _ua select T_VEH;
 				{
@@ -180,24 +178,23 @@ CLASS(CLASS_NAME, "")
 					if (_x > 0) then {
 						pr _subcatID = _forEachIndex;
 						pr _vehName = T_NAMES select T_VEH select _subcatID;
-						pr _str = format ["%1: %2\n", _vehName, _x];
-						_compositionText = _compositionText + _str;
+						pr _str = format ["%1: %2", _vehName, _x];
+						_vehList pushBack _str;
 					};
 				} forEach _uaveh;
-			} else {
-				_compositionText = "<Unknown>";
 			};
-			diag_log format ["Composition text: %1", _compositionText];
-		} else {
-			diag_log format ["Location data was NOT found in the database"];
 		};
 
 		// Apply new text for GUI elements
-		((finddisplay 12) displayCtrl IDC_LD_TYPE) ctrlSetText ("Type: " + _typeText);
-		((finddisplay 12) displayCtrl IDC_LD_SIDE) ctrlSetText ("Side: " + _sideText);
-		((finddisplay 12) displayCtrl IDC_LD_TIME) ctrlSetText ("Time: " + _timeText);
-		((finddisplay 12) displayCtrl IDC_LD_COMPOSITION) ctrlSetText ("Composition:\n" + _compositionText);
-		{((finddisplay 12) displayCtrl _x) ctrlCommit 0;} forEach [IDC_LD_TYPE, IDC_LD_SIDE, IDC_LD_TIME, IDC_LD_COMPOSITION, IDC_PL_LISTPLAYERS];
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+		lnbClear _ctrlListnbox;
+		_ctrlListnbox lnbAddRow [ format ["Type: %1", _typeText] ];
+		_ctrlListnbox lnbAddRow [ format ["Side: %1", _sideText] ];
+		_ctrlListnbox lnbAddRow [ format ["Soldier Count: %1", str _soldierCount] ];
+		{
+			_ctrlListnbox lnbAddRow [_x];
+		} forEach _vehList;
 	} ENDMETHOD;
 
 	STATIC_METHOD("showLocationDataPanel") {
