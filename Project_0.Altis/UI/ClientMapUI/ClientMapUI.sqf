@@ -230,4 +230,3 @@ ENDCLASS;
 		SET_STATIC_VAR(CLASS_NAME, _x, []);
 	};
 } forEach ["locationDataWest", "locationDataEast", "locationDataInd"];
-
