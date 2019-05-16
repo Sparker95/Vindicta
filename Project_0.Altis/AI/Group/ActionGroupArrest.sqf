@@ -44,7 +44,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _groupUnits = CALLM0(_group, "getUnits");
 				
 		// we only want one unit from the group to arrest the target
-		pr _unit = _groupUnits select random (count _groupUnits);
+		pr _unit = selectRandom _groupUnits;
 		OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
 		OOP_INFO_1("ActionGroupArrest: unit arresting player: %1", _unit);
 
