@@ -227,7 +227,7 @@ CLASS("GameModeBase", "")
 			OOP_DEBUG_1("_locName %1", _locName);
 			OOP_DEBUG_1("_locCapacityInf %1", _locCapacityInf);
 			OOP_DEBUG_1("_locCapacityCiv %1", _locCapacityCiv);
-			
+
 			private _side = switch (_locSide) do{
 				case "civilian": { CIVILIAN };//might not need this
 				case "west": { WEST };
@@ -256,10 +256,11 @@ CLASS("GameModeBase", "")
 				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
 				CALLM1(_roadblockLoc, "setDebugName", _mrk);
 				CALLM1(_roadblockLoc, "setSide", _side);
-				CALLM1(_roadblockLoc, "setType", "roadblock");
 				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
 				CALLM1(_roadblockLoc, "setCapacityInf", 20);
 				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
+				// Do setType last cos it will update the debug marker for us
+				CALLM1(_roadblockLoc, "setType", "roadblock");
 
 			} forEach _roadBlocks;
 		} forEach (entities "Project_0_LocationSector");

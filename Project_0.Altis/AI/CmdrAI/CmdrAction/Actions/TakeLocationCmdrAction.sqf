@@ -144,6 +144,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 						};
 				private _sum = 0;
 				{_sum = _sum + _x} foreach _nearLocsFactors;
+				OOP_INFO_MSG("roadblock %1 %2", [_sum ARG _nearLocsFactors]);
+				_sum
 			};
 			default { 0.5 }; // TODO: dunno what it is, better add more here?
 		};
