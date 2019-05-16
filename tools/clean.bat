@@ -14,10 +14,3 @@ cd /d "%~dp0buildtool"
 
 rem Build missions
 call npx gulp clean
-
-cd ..
-
-echo.
-
-pause
-exit /b
