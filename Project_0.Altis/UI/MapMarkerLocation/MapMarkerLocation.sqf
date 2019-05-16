@@ -21,19 +21,69 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
+	VARIABLE("intel"); // Intel object associated with this
+	VARIABLE("radius"); // The accuracy radius
+
 	STATIC_VARIABLE("selectedLocationMarkers");
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params ["_thisObject", ["_intel", "", [""]]];
 		CALLM2(_thisObject, "setEventSize", 20, 20);
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
+		T_SETV("intel", _intel);
+		T_SETV("radius", 0);
+
+		/*
+		pr _radius = GETV(_intel, "accuracyRadius");
+		if (isNil "_radius") then { _radius = 0; };
+		_radius = 300;
+		T_SETV("radius", _radius);
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+		*/
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params ["_thisObject"];
 
 	} ENDMETHOD;
+
+	// Overwrite the base class method
+	METHOD("setPos") {
+		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
+
+		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+	} ENDMETHOD;
+
+	METHOD("setAccuracyRadius") {
+		params ["_thisObject", "_radius"];
+
+		T_SETV("radius", _radius);
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+	} ENDMETHOD;
+
+	METHOD("updateAccuracyRadiusMarker") {
+		params ["_thisObject"];
+
+		pr _radius = T_GETV("radius");
+		if (_radius == 0) then {
+			deleteMarkerLocal _thisObject;
+		} else {
+			// Check if marker doesn't exist yet
+			if (markerColor _thisObject == "") then {
+				createMarkerLocal [_thisObject, T_GETV("pos")+[0]];
+				_thisObject setMarkerSizeLocal [_radius, _radius];
+				_thisObject setMarkerShapeLocal "ELLIPSE";
+				_thisObject setMarkerBrushLocal "SolidBorder";
+				_thisObject setMarkerColorLocal "colorCivilian";
+			};
+			_thisObject setMarkerPosLocal (T_GETV("pos")+[0]);
+			pr _alpha = [0.3, 0.8] select T_GETV("selected");
+			_thisObject setMarkerAlphaLocal _alpha;
+		};
+	} ENDMETHOD;
+
 
 
 	METHOD("onDraw") {
@@ -90,6 +140,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 
+
 	/*
 	Method: onMouseEnter
 	Gets called when the mouse pointer enters the marker area.
@@ -140,14 +191,18 @@ CLASS(CLASS_NAME, "MapMarker")
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
 
+			// Update the accuracy radius marker's alpha
+			if (T_GETV("radius") != 0) then {
+				CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+			};
 
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
-				pr _pos = T_GETV("pos");
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_pos]);
+				pr _intel = T_GETV("intel");
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_intel]);
 			} else {
 				// Deselect everything
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
 			};
 		};
 	} ENDMETHOD;
@@ -191,6 +246,9 @@ CLASS(CLASS_NAME, "MapMarker")
 		pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers");
 		{
 			SETV(_x, "selected", false);
+			if (GETV(_x, "radius") != 0) then {
+				CALLM0(_x, "updateAccuracyRadiusMarker");
+			};
 		} forEach _selectedMarkers;
 
 		SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
@@ -203,7 +261,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
 
 			// Update location data panel
-			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
 		};
 	} ENDMETHOD;
 

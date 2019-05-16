@@ -18,8 +18,8 @@ private _msgType = _msg select MESSAGE_ID_TYPE;
 switch (_msgType) do {
 	case LOCATION_MESSAGE_PROCESS: {
 		//diag_log format ["[Location] Info: process %1", GET_VAR(_thisObject, "debugName")];
-		private _locPos = GET_VAR(_thisObject, "pos");
-		private _spawnState = GET_VAR(_thisObject, "spawnState");
-		
+
+		CALLM0(_thisObject, "process");
+
 	}; // case LOCATION_MESSAGE_PROCESS
 }; // switch msg type

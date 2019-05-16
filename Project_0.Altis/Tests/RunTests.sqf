@@ -1,10 +1,3 @@
-#include "..\OOP_Light\OOP_Light.h"
-
-if (isNil "OOP_Light_initialized") then {
-	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
-};
-
 asserts_Failed = 0;
 asserts_Passed = 0;
 test_Okay = true;
@@ -25,10 +18,30 @@ test_Assert = {
 		asserts_Passed = asserts_Passed + 1;
 	};
 	nil
-	//  else {
-	// 	//diag_log format ["  --- TEST  PASSED  ---  [%1] %2", test_Scope, _test];
-	// 	nil
-	// };
+};
+test_Assert_Throws = {
+	params ["_test", "_code", "_expected"];
+	private _passed = false;
+	{
+		call _code;
+		diag_log format ["%1: expected exception '%2' but no exception occurred", _test, _expected];
+	}
+	except__
+	{
+		if(_exception isEqualTo _expected) then {
+			_passed = true;
+		} else {
+			diag_log format ["%1: exception got '%2', expected '%3'", _test, _exception, _expected];
+		}
+	};
+	if(_passed) then {
+		asserts_Passed = asserts_Passed + 1;
+	} else {
+		diag_log format ["  --- TEST !FAILED! ---  [%1] %2", test_Scope, _test];
+		asserts_Failed = asserts_Failed + 1;
+		test_Okay = false;
+	};
+	nil
 };
 
 allTests = [];
@@ -50,7 +63,18 @@ test_DumpCallstack = {
 };
 
 diag_log "----------------------------------------------------------------------";
-diag_log "|               I N I T I A L I Z I N G   C L A S S E S              |";
+diag_log "|              I N I T I A L I Z I N G   O O P L I G H T              |";
+diag_log "----------------------------------------------------------------------";
+
+#include "..\OOP_Light\OOP_Light.h"
+
+if (isNil "OOP_Light_initialized") then {
+	OOP_Light_initialized = true;
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+};
+
+diag_log "----------------------------------------------------------------------";
+diag_log "|               I N I T I A L I Z I N G   M O D U L E S              |";
 diag_log "----------------------------------------------------------------------";
 {
 	call compile preprocessFileLineNumbers "initModules.sqf";
@@ -63,10 +87,10 @@ except__
 };
 
 diag_log "----------------------------------------------------------------------";
-diag_log "|               I N I T I A L I Z I N G   G L O B A L S              |";
+diag_log "|                  I N I T I A L I Z I N G   M A I N                 |";
 diag_log "----------------------------------------------------------------------";
 {
-	call compile preprocessFileLineNumbers "initGlobals.sqf";
+	call compile preprocessFileLineNumbers "init.sqf";
 }
 except__
 {

@@ -15,8 +15,6 @@ private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 private _mutex = GET_VAR(_thisObject, "mutex");
 //private _objects = GET_VAR(_thisObject, "objects");
 
-//#define DEBUG
-
 #ifndef _SQF_VM // Don't want to run this in VM testing mode
 scriptName _thisObject;
 

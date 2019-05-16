@@ -78,7 +78,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		// Despawn if spawned
-		CALLM0(_thisObject, "despawn");
+		if (CALLM0(_thisObject, "isSpawned")) then {
+			CALLM0(_thisObject, "despawn");
+		};
 
 		// Report an error if we are deleting a group with units in it
 		if(count _units > 0) then {
@@ -577,7 +579,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -589,8 +592,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Parameters: _vehPosAndDir, _startPos
 
-	_vehPosAndDir - array of [_pos, _dir] where vehicles will be spawned.
-	_startPos - optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.
+	_vehPosAndDir - array of [_posATL, _dir] where vehicles will be spawned.
+	_startPos - positoon ATL, optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.
 
 	Returns: nil
 	*/
@@ -628,7 +631,18 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			} else {
 				{
 					(_posAndDir select _forEachIndex) params ["_pos", "_dir"];
-					CALLM2(_x, "spawn", _pos, _dir);
+					// Check if this position is safe
+					pr _className = CALLM0(_x, "getClassName");
+					//diag_log format ["--- Finding a pos for a vehicle: %1", _className];
+					if (!CALLSM3("Location", "isPosSafe", _pos, _dir, _className)) then {
+						//diag_log format ["   Provided position is not safe. Finding a safe pos on road"];
+						pr _return = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+						_return params ["_posReturn", "_dirReturn"];
+						CALLM2(_x, "spawn", _posReturn, _dirReturn);
+					} else {
+						//diag_log format ["   Provided position is safe!"];
+						CALLM2(_x, "spawn", _pos, _dir);
+					};
 				} forEach _vehUnits;
 			};
 
@@ -651,7 +665,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -713,7 +728,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -751,7 +767,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Delete the group handle
 			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
 			if (count units _groupHandle > 0) then {
-				diag_log format ["[Group] Warning: group is not empty at despawning: %1. Units remaining:", _data];
+				OOP_WARNING_1("Group is not empty at despawning: %1. Units remaining:", _data);
 				{
 					diag_log format ["  %1,  alive: %2", _x, alive _x];
 				} forEach (units _groupHandle);
@@ -764,7 +780,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to false
 			_data set [GROUP_DATA_ID_SPAWNED, false];
 		} else {
-			OOP_WARNING_0("Already despawned");
+			OOP_ERROR_0("Already despawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
@@ -1072,9 +1089,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	/*
 	Method: getRequiredCrew
-	Returns amount of needed drivers and turret operators for all vehicles in this group.
+	Returns amount of needed drivers and turret operators for all vehicles in this group. Also returns amount of available cargo seats.
 
-	Returns: [_nDrivers, _nTurrets]
+	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 
 	METHOD("getRequiredCrew") {
@@ -1084,19 +1101,21 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
+		pr _nCargo = 0;
 
 		{
 			if (CALLM0(_x, "isVehicle")) then {
 				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
 				_nDrivers = _nDrivers + _n_driver;
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+				_nCargo = _nCargo + (count _psgTurrets) + _n_cargo;
 			};
 		} forEach _units;
 
-		OOP_INFO_2("getRequiredCrew: drivers: %1, turrets: %2", _nDrivers, _nTurrets);
+		OOP_INFO_3("getRequiredCrew: drivers: %1, turrets: %2, cargo: %3", _nDrivers, _nTurrets, _nCargo);
 
-		[_nDrivers, _nTurrets]
+		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 
 ENDCLASS;

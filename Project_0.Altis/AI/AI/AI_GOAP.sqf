@@ -28,8 +28,10 @@ Author: Sparker 07.11.2018
 
 #define pr private
 
+#ifndef RELEASE_BUILD
 // Will output to .rpt which goals each AI is choosing from
 //#define DEBUG_POSSIBLE_GOALS
+#endif
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -256,6 +258,14 @@ CLASS("AI_GOAP", "AI")
 				};
 				
 				case ACTION_STATE_FAILED : {
+					// Probably we should replan our goal at the next iteration
+					SETV(_thisObject, "currentGoal", "");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
+				};
+
+				case ACTION_STATE_REPLAN : {
 					// Probably we should replan our goal at the next iteration
 					SETV(_thisObject, "currentGoal", "");
 					T_SETV("currentGoal", "");
@@ -668,8 +678,10 @@ CLASS("AI_GOAP", "AI")
 	Performs backwards search of actions to connect current world state and goal world state, starting search from goal world state.
 	*/
 	
+	#ifndef RELEASE_BUILD
 	// Will print useful data about generated plan and how it was achieved
 	#define ASTAR_DEBUG
+	#endif
 	
 	#ifdef OFSTREAM_ENABLE
 	#define ASTAR_LOG(text) (ofstream_new "A-star.rpt") ofstream_write text

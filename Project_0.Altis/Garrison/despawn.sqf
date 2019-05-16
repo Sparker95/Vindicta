@@ -12,16 +12,20 @@ Returns: nil
 
 #define pr private
 
-params [["_thisObject", "", [""]]];
-
-private _spawned = GET_VAR(_thisObject, "spawned");
+params [P_THISOBJECT];
 
 OOP_INFO_0("DESPAWN");
 
 ASSERT_THREAD(_thisObject);
 
+if(T_CALLM("isDestroyed", [])) exitWith {
+	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
+};
+
+private _spawned = GET_VAR(_thisObject, "spawned");
 if (!_spawned) exitWith {
-	OOP_WARNING_0("Already despawned");
+	OOP_ERROR_0("Already despawned");
+	DUMP_CALLSTACK;
 };
 
 // Reset spawned flag

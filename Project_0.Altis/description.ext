@@ -74,15 +74,14 @@ class Params {
 class CfgFunctions {
 	#include "Dialogue\functions.hpp"
 	#include "JeroenArsenal\functions.hpp"
-
+    #include "CivilianPresence\functions.hpp"
 	class missionTag
 	{
 		class randomThings
 		{
-			// Call initModules.sqf in preinit because we need to compile functions/classes before JIP functions are called
-			class initModules {
+            class preInit {
 				preInit = 1;
-				file = "initModules.sqf";
+				file = "preInit.sqf";
 			};
 		};
 	};

@@ -18,18 +18,26 @@
 CLASS("CmdrAction", "RefCounted")
 
 	// The priority of this action in relation to other actions of the same or different type.
-	VARIABLE("scorePriority");
+	VARIABLE_ATTR("scorePriority", [ATTR_PRIVATE]);
 	// The resourcing available for this action.
-	VARIABLE("scoreResource");
+	VARIABLE_ATTR("scoreResource", [ATTR_PRIVATE]);
 	// How strongly this action correlates with the current strategy.
-	VARIABLE("scoreStrategy");
+	VARIABLE_ATTR("scoreStrategy", [ATTR_PRIVATE]);
 	// How close to being complete this action is (>1)
-	VARIABLE("scoreCompleteness");
+	VARIABLE_ATTR("scoreCompleteness", [ATTR_PRIVATE]);
+
+	// State transition functions
+	VARIABLE_ATTR("transitions", [ATTR_PRIVATE]);
+
+	VARIABLE_ATTR("variables", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("variablesStack", [ATTR_PRIVATE]);
+
+	VARIABLE_ATTR("garrisons", [ATTR_PRIVATE]);
 
 	// Current state of the action
-	VARIABLE("state");
-	// State transition functions
-	VARIABLE("transitions");
+	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
+
+	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -40,10 +48,63 @@ CLASS("CmdrAction", "RefCounted")
 		//T_SETV("complete", false);
 		T_SETV("state", CMDR_ACTION_STATE_START);
 		T_SETV("transitions", []);
+		T_SETV("variables", []);
+		T_SETV("variablesStack", []);
+		T_SETV("garrisons", []);
+		T_SETV("intel", NULL_OBJECT);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		T_PRVAR(garrisons);
+
+		// Clean up this action from the garrisons it is assigned to
+		{
+			if(CALLM(_x, "getAction", []) == _thisObject) then {
+				CALLM(_x, "clearAction", []);
+			} else {
+				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x]+[_thisObject]);
+			};
+		} foreach +_garrisons;
+
+		T_PRVAR(intel);
+		if(!IS_NULL_OBJECT(_intel)) then {
+			DELETE(_intel);
+		};
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("createTransitions") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+	
+	METHOD("registerGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		T_PRVAR(garrisons);
+		_garrisons pushBack _garrison;
+	} ENDMETHOD;
+
+	METHOD("unregisterGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		T_PRVAR(garrisons);
+		private _idx = _garrisons find _garrison;
+		if(_idx == NOT_FOUND) exitWith {
+			OOP_WARNING_MSG("Garrison %1 is not registered with action %2, so can't be unregistered", [_garrison]+[_thisObject]);
+		};
+		_garrisons deleteAt _idx;
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+	} ENDMETHOD;
+
+	METHOD("createVariable") {
+		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
+		T_PRVAR(variables);
+		private _var = MAKE_AST_VAR(_initialValue);
+		_variables pushBack _var;
+		_var
 	} ENDMETHOD;
 
 	METHOD("getFinalScore") {
@@ -58,22 +119,25 @@ CLASS("CmdrAction", "RefCounted")
 		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness
 	} ENDMETHOD;
 
+	
+	/* private */ METHOD("getTransitions") {
+		params [P_THISOBJECT];
+		T_PRVAR(transitions);
+		if(count _transitions == 0) then {
+			_transitions = T_CALLM("createTransitions", []);
+			T_SETV("transitions", _transitions);
+		};
+		_transitions
+	} ENDMETHOD;
+
 	METHOD("applyToSim") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		T_PRVAR(state);
-		T_PRVAR(transitions);
+		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 
-		T_CALLM("pushState", []);
-		// Actually this isn't right, multiple actions can happen instantly. Actions themselves should decide if they 
-		// can apply based on the sim world type they are passed.
-		// // For sim now world only apply the current action transition.
-		// if(GETV(_world, "type") == WORLD_TYPE_SIM_NOW) then {
-		// 	// Don't do anything if we are already at the end.
-		// 	if(_state != CMDR_ACTION_STATE_END) then {
-		// 		CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
-		// 	};
-		// } else {
+		T_CALLM("pushVariables", []);
+
 		private _worldType = GETV(_world, "type");
 		ASSERT_MSG(_worldType != WORLD_TYPE_REAL, "Cannot applyToSim on real world!");
 		while {_state != CMDR_ACTION_STATE_END} do {
@@ -83,19 +147,36 @@ CLASS("CmdrAction", "RefCounted")
 			if(_newState == _state) exitWith {};
 			_state = _newState;
 		};
-		//};
-		T_CALLM("popState", []);
-		// We don't update any member variables here, this is just a sim.
+
+		T_CALLM("popVariables", []);
+		// We don't update to the new state, this is just a simulation, but return it for information purposes
+		_state
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("pushState") {
+	/* private */ METHOD("pushVariables") {
 		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
 		
+		// Copy the variable contents and push onto stack. This will NOT deepcopy arrays. They should never be modified, only replaced.
+		//_variablesStack pushBack (_variables apply { MAKE_AST_VAR(GET_AST_VAR(_x)) });
+		//_variablesStack pushBack +_variables;
+		_variablesStack pushBack (_variables apply { +_x });
 	} ENDMETHOD;
-	
-	/* virtual */ METHOD("popState") {
+
+	/* private */ METHOD("popVariables") {
 		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
 		
+		ASSERT_MSG(count _variablesStack > 0, "Variables stack is empty");
+
+		// pop the copy of the variables
+		private _copy = _variablesStack deleteAt (count _variablesStack - 1);
+		// copy the values back into the variable array
+		{
+			SET_AST_VAR(_variables select _forEachIndex, GET_AST_VAR(_x));
+		} forEach _copy;
 	} ENDMETHOD;
 
 	METHOD("update") {
@@ -104,7 +185,7 @@ CLASS("CmdrAction", "RefCounted")
 		ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
 
 		T_PRVAR(state);
-		T_PRVAR(transitions);
+		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
 		
 		private _oldState = CMDR_ACTION_STATE_NONE;
@@ -116,6 +197,10 @@ CLASS("CmdrAction", "RefCounted")
 		};
 		T_SETV("state", _state);
 		
+		if(CALLM(_world, "isReal", [])) then {
+			T_CALLM("updateIntel", [_world]);
+		};
+
 		#ifdef DEBUG_CMDRAI
 		T_CALLM("debugDraw", [_world]);
 		#endif
@@ -126,12 +211,16 @@ CLASS("CmdrAction", "RefCounted")
 		T_GETV("state") == CMDR_ACTION_STATE_END
 	} ENDMETHOD;
 
-	METHOD("getLabel") {
+	/* protected virtual */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_STRING("_world")];
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		""
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("debugDraw") {
+	/* protected virtual */ METHOD("debugDraw") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 	
@@ -154,15 +243,35 @@ ENDCLASS;
 // Unit test
 #ifdef _SQF_VM
 
+// Test AST Variables
+
+["AST_VAR", {
+	private _var = MAKE_AST_VAR(-1);
+	private _var2 = _var;
+
+	["AST_VAR is an array length 1", count _var == 1] call test_Assert;
+	["AST_VAR content correct", _var#0 == -1] call test_Assert;
+	["GET_AST_VAR", GET_AST_VAR(_var) == -1] call test_Assert;
+	SET_AST_VAR(_var, 1);
+	["SET_AST_VAR", GET_AST_VAR(_var) == 1] call test_Assert;
+	["AST_VAR share value works", GET_AST_VAR(_var2) == 1] call test_Assert;
+}] call test_AddTest;
+
+#define CMDR_ACTION_STATE_KILLED CMDR_ACTION_STATE_CUSTOM+1
+#define CMDR_ACTION_STATE_FAILED CMDR_ACTION_STATE_CUSTOM+2
+
 // Dummy test classes
-CLASS("AST_KillGarrison", "ActionStateTransition")
+CLASS("AST_KillGarrisonSetVar", "ActionStateTransition")
 	VARIABLE("garrisonId");
+	VARIABLE("var");
+	VARIABLE("newVal");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_garrisonId")];
+		params [P_THISOBJECT, P_NUMBER("_garrisonId"), P_AST_VAR("_var"), P_DYNAMIC("_newVal")];
 		T_SETV("garrisonId", _garrisonId);
+		T_SETV("var", _var);
+		T_SETV("newVal", _newVal);
 		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-		T_SETV("toState", CMDR_ACTION_STATE_END);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("isAvailable") { 
@@ -174,15 +283,45 @@ CLASS("AST_KillGarrison", "ActionStateTransition")
 
 	/* virtual */ METHOD("apply") { 
 		params [P_THISOBJECT, P_STRING("_world")];
+
+		// Kill the garrison - this should be preserved after applySim
 		T_PRVAR(garrisonId);
 		private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
 		CALLM(_garrison, "killed", []);
-		true
+
+		// Apply the change to the AST var - this should be reverted after applySim
+		T_PRVAR(newVal);
+		T_SET_AST_VAR("var", _newVal);
+
+		CMDR_ACTION_STATE_KILLED
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("AST_TestVariable", "ActionStateTransition")
+	VARIABLE("var");
+	VARIABLE("compareVal");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_AST_VAR("_var"), P_DYNAMIC("_compareVal")];
+		T_SETV("fromStates", [CMDR_ACTION_STATE_KILLED]);
+		T_SETV("var", _var);
+		T_SETV("compareVal", _compareVal);
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("apply") { 
+		params [P_THISOBJECT, P_STRING("_world")];
+		T_PRVAR(compareVal);
+		if(T_GET_AST_VAR("var") isEqualTo _compareVal) then {
+			CMDR_ACTION_STATE_END
+		} else {
+			CMDR_ACTION_STATE_FAILED
+		}
 	} ENDMETHOD;
 ENDCLASS;
 
 ["CmdrAction.new", {
 	private _obj = NEW("CmdrAction", []);
+	
 	private _class = OBJECT_PARENT_CLASS_STR(_obj);
 	["Object exists", !(isNil "_class")] call test_Assert;
 	["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
@@ -194,6 +333,40 @@ ENDCLASS;
 	isNil { OBJECT_PARENT_CLASS_STR(_obj) }
 }] call test_AddTest;
 
+["CmdrAction.registerGarrison, unregisterGarrison", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _thisObject = NEW("CmdrAction", []);
+	private _garrison = NEW("GarrisonModel", [_world]);
+
+	CALLM(_garrison, "setAction", [_thisObject]);
+	["Garrison registered correctly", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
+	
+	DELETE(_garrison);
+	["Garrison unregistered correctly", (GETV(_thisObject, "garrisons") find _garrison) == NOT_FOUND] call test_Assert;
+
+	_garrison = NEW("GarrisonModel", [_world]);
+	CALLM(_garrison, "setAction", [_thisObject]);
+	["Garrison registered correctly 2", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
+	DELETE(_thisObject);
+	["Action cleared from garrison on delete", CALLM(_garrison, "getAction", []) == NULL_OBJECT] call test_Assert;
+}] call test_AddTest;
+
+["CmdrAction.createVariable, pushVariables, popVariables", {
+	private _thisObject = NEW("CmdrAction", []);
+	private _var = CALLM(_thisObject, "createVariable", [0]);
+	private _var2 = CALLM(_thisObject, "createVariable", [["test"]]);
+	["Var is of correct form", _var isEqualTo [0]] call test_Assert;
+	["Var2 is of correct form", _var2 isEqualTo [["test"]]] call test_Assert;
+	CALLM(_thisObject, "pushVariables", []);
+	SET_AST_VAR(_var, 1);
+	GET_AST_VAR(_var2) set [0, "check"];
+	["Var is changed before popVariables", _var isEqualTo [1]] call test_Assert;
+	["Var2 is changed before popVariables", _var2 isEqualTo [["check"]]] call test_Assert;
+	CALLM(_thisObject, "popVariables", []);
+	["Var is restored after popVariables", _var isEqualTo [0]] call test_Assert;
+	["Var2 is restored after popVariables", _var2 isEqualTo [["test"]]] call test_Assert;
+}] call test_AddTest;
+
 ["CmdrAction.getFinalScore", {
 	private _obj = NEW("CmdrAction", []);
 	CALLM(_obj, "getFinalScore", []) == 1
@@ -202,13 +375,28 @@ ENDCLASS;
 ["CmdrAction.applyToSim", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
-	private _ast = NEW("AST_KillGarrison", [GETV(_garrison, "id")]);
-	private _asts = [_ast];
-	private _obj = NEW("CmdrAction", []);
-	SETV(_obj, "transitions", _asts);
-	["Transitions correct", GETV(_obj, "transitions") isEqualTo _asts] call test_Assert;
-	CALLM(_obj, "applyToSim", [_world]);
+	private _thisObject = NEW("CmdrAction", []);
+	private _testVar = CALLM(_thisObject, "createVariable", ["original"]);
+	private _asts = [
+		NEW("AST_KillGarrisonSetVar", 
+			[GETV(_garrison, "id")]+
+			[_testVar]+
+			["modified"]
+		),
+		NEW("AST_TestVariable", 
+			[_testVar]+
+			["modified"]
+		)
+	];
+
+	SETV(_thisObject, "transitions", _asts);
+
+	["Transitions correct", GETV(_thisObject, "transitions") isEqualTo _asts] call test_Assert;
+
+	private _finalState = CALLM(_thisObject, "applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
+	["applyToSim modified variables internally correctly", _finalState == CMDR_ACTION_STATE_END] call test_Assert;
+	["applyToSim reverted action variables correctly", GET_AST_VAR(_testVar) isEqualTo "original"] call test_Assert;
 }] call test_AddTest;
 
 #endif

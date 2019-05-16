@@ -38,7 +38,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _AI = T_GETV("AI");
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, _merge] call ws_setPropertyValue;
-		
+
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
 		

@@ -2,9 +2,6 @@
 #define OOP_DEBUG
 #define OOP_WARNING
 #define OOP_ERROR
-#define OOP_ASSERT
-
-#define DEBUG_CMDRAI
 
 #define MODEL_HANDLE_INVALID 		-1
 
@@ -17,6 +14,9 @@
 #define ASSIGN_TRANSPORT				1	// Attempt to assign transport for the new garrison
 #define FAIL_WITHOUT_FULL_TRANSPORT		2	// Fail if we couldn't assign transport to the new garrison (ASSIGN_TRANSPORT required)
 #define FAIL_UNDER_EFF					3	// Fail if the split garrison didn't meet efficiency requirements
+#define CHEAT_TRANSPORT					4	// Spawn trucks if they are not available and transport is requested
+
+#define PROFILER_COUNTERS_ENABLE
 
 #define OFSTREAM_FILE "CmdrAI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -24,6 +24,13 @@
 #include "..\..\Mutex\Mutex.hpp"
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
+
+#ifndef RELEASE_BUILD
+#define DEBUG_CMDRAI
+#endif
+
+// Shortcuts
+#define LABEL(model) GETV(model, "label")
 
 #define EFF_ZERO T_EFF_null
 
@@ -45,4 +52,21 @@
 #else
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)
 #define ASSERT_CLUSTER_ACTUAL_NOT_NULL(actual)
+#endif
+
+#ifdef OOP_INFO
+#define OOP_INFO_MSG_REAL_ONLY(world, fmt, args) \
+	if(CALLM(world, "isReal", [])) then { \
+		OOP_INFO_MSG(fmt, args); \
+	};
+#else
+#define OOP_INFO_MSG_REAL_ONLY(world, fmt, args)
+#endif
+#ifdef OOP_DEBUG
+#define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args) \
+	if(CALLM(world, "isReal", [])) then { \
+		OOP_DEBUG_MSG(fmt, args); \
+	};
+#else
+#define OOP_DEBUG_MSG_REAL_ONLY(world, fmt, args)
 #endif

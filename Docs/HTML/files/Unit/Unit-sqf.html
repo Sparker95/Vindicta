@@ -132,14 +132,19 @@
  <div class="CBody"><p>NYI Creates a unit and instantly attaches it to provided object handle.</p><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a></p></div>
 </div>
 
-<a name="Unit.(static)getRequiredCrew"></a><a name="Topic562"></a><div class="CTopic TFunction LSQF">
+<a name="Unit.(static)getRequiredCrew"></a><a name="Topic207"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)getRequiredCrew</div>
- <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this garrison.</p><p>Parameters: _units</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>array of <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: [_nDrivers, _nTurrets]</p></div>
+ <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this garrison.</p><p>Parameters: _units</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>array of <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: [_nDrivers, _nTurrets, _nCargo]</p></div>
 </div>
 
 <a name="Unit.(static)getCargoInfantryCapacity"></a><a name="Topic563"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)getCargoInfantryCapacity</div>
  <div class="CBody"><p>Returns how many units can be loaded as cargo by all the vehicles from _units</p><p>Parameters: _units</p><table class="CDefinitionList"><tr><td class="CDLEntry">_units</td><td class="CDLDefinition"><p>array of <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: Number</p></div>
+</div>
+
+<a name="Unit.(static)getTemplateForSide"></a><a name="Topic635"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static) getTemplateForSide</div>
+ <div class="CBody"><p>Get the appropriate unit template for the side specified</p><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>side (WEST/EAST/INDEPENDENT/etc.)</p></td></tr></table><p>Returns: Template</p></div>
 </div>
 
 <a name="Unit.getVehaviour"></a><a name="Topic493"></a><div class="CTopic TFunction LSQF">

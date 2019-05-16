@@ -8,7 +8,9 @@ Author: Sparker 26.11.2018
 
 #define RETURN 
 
-//#define DEBUG
+#ifndef RELEASE_BUILD
+//#define DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
+#endif
 
 CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	
@@ -22,7 +24,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
-		#ifdef DEBUG
+		#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 		OOP_INFO_0("ACTIVATE");
 		#endif
 
@@ -39,7 +41,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 			// Good job
 			// Outstanding
 			
-			#ifdef DEBUG
+			#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 			OOP_INFO_0("Completed at activation");
 			#endif
 			
@@ -51,7 +53,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 			
 			pr _AI = GETV(_thisObject, "AI");
 			
-			#ifdef DEBUG
+			#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 			OOP_INFO_1("Unassigning %1 from vehicle", _AI);
 			#endif
 			
@@ -68,7 +70,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		#ifdef DEBUG
+		#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 		OOP_INFO_0("PROCESS");
 		#endif
 		
@@ -79,7 +81,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 			// Did we dismount already?
 			if ((vehicle _hO) isEqualTo _hO) then {
 			
-				#ifdef DEBUG
+				#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 				OOP_INFO_0("Unit has dismounted");
 				#endif
 			
@@ -90,7 +92,7 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 				RETURN ACTION_STATE_COMPLETED;
 			} else {
 			
-				#ifdef DEBUG
+				#ifdef DEBUG_ACTION_UNIT_DISMOUNT_CURRENT_VEHICLE
 				OOP_INFO_0("Unit has not dismounted");
 				#endif
 			

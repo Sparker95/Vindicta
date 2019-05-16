@@ -7,7 +7,11 @@ AI class for the commander.
 Author: Sparker 12.11.2018
 */
 
-#define PLAN_INTERVAL 5
+#ifndef RELEASE_BUILD
+#define DEBUG_COMMANDER
+#endif
+
+#define PLAN_INTERVAL 30
 #define pr private
 
 CLASS("AICommander", "AI")
@@ -20,6 +24,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("locationDataThis"); // Points to one of the above arrays depending on its side
 	VARIABLE("notificationID");
 	VARIABLE("notifications"); // Array with [task name, task creation time]
+	VARIABLE("intelDB"); // Intel database
 
 	// Friendly garrisons we can access
 	VARIABLE("garrisons");
@@ -27,7 +32,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("targets"); // Array of targets known by this Commander
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
-	
+
 	VARIABLE("targetClusterActions"); // Array with ActionCommanderRespondToTargetCluster
 
 	VARIABLE("lastPlanningTime");
@@ -37,6 +42,11 @@ CLASS("AICommander", "AI")
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
+	#endif
+
+	#ifdef DEBUG_COMMANDER
+	VARIABLE("state");
+	VARIABLE("stateStart");
 	#endif
 
 	METHOD("new") {
@@ -64,12 +74,42 @@ CLASS("AICommander", "AI")
 		T_SETV("targets", []);
 		T_SETV("targetClusters", []);
 		T_SETV("nextClusterID", 0);
-		
+
+		// Create intel database
+		pr _intelDB = NEW("IntelDatabaseServer", [_side]);
+		T_SETV("intelDB", _intelDB);
+
 		#ifdef DEBUG_CLUSTERS
 		T_SETV("nextMarkerID", 0);
 		T_SETV("clusterMarkers", []);
 		#endif
-		
+
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "none");
+		T_SETV("stateStart", 0);
+		[_thisObject, _side] spawn {
+			params ["_thisObject", "_side"];
+			private _pos = switch (_side) do {
+				case WEST: { [0, -1000, 0 ] };
+				case EAST: { [0, -1500, 0 ] };
+				case INDEPENDENT: { [0, -500, 0 ] };
+			};
+			private _mrk = createmarker [_thisObject + "_label", _pos];
+			_mrk setMarkerType "mil_objective";
+			_mrk setMarkerColor (switch (_side) do {
+				case WEST: {"ColorWEST"};
+				case EAST: {"ColorEAST"};
+				case INDEPENDENT: {"ColorGUER"};
+				default {"ColorCIV"};
+			});
+			_mrk setMarkerAlpha 1;
+			while{true} do {
+				sleep 5;
+				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), TIME_NOW - T_GETV("stateStart")]);
+			};
+		};
+		#endif
+
 		// Array with ActionCommanderRespondToTargetCluster
 		T_SETV("targetClusterActions", []);
 		
@@ -87,10 +127,13 @@ CLASS("AICommander", "AI")
 		private _worldModel = NEW("WorldModel", []);
 		T_SETV("worldModel", _worldModel);
 
-		// Register locations
-		private _locations = CALLSM("Location", "getAll", []);
-		OOP_INFO_1("Registering %1 locations with Model", count _locations);
-		{ NEW("LocationModel", [_worldModel]+[_x]) } forEach _locations;
+		// // Register locations
+		// private _locations = CALLSM("Location", "getAll", []);
+		// OOP_INFO_1("Registering %1 locations with Model", count _locations);
+		// { 
+		// 	T_CALLM()
+		// 	NEW("LocationModel", [_worldModel]+[_x]) 
+		// } forEach _locations;
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -98,8 +141,20 @@ CLASS("AICommander", "AI")
 		
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
 		
+		// U P D A T E   S E N S O R S
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "update sensors");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
+
 		// Update sensors
 		CALLM0(_thisObject, "updateSensors");
+		
+		// U P D A T E   C L U S T E R S
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "update clusters");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
 		
 		// Check if there are any clusters without assigned actions
 		pr _actions = T_GETV("targetClusterActions");
@@ -134,6 +189,11 @@ CLASS("AICommander", "AI")
 			};
 		};
 
+		// C M D R A I   P L A N N I N G
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "model sync");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
 
 		T_PRVAR(cmdrAI);
 		T_PRVAR(worldModel);
@@ -143,14 +203,36 @@ CLASS("AICommander", "AI")
 		
 		T_PRVAR(lastPlanningTime);
 		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+			#ifdef DEBUG_COMMANDER
+			T_SETV("state", "model planning");
+			T_SETV("stateStart", TIME_NOW);
+			#endif
+
 			// Sync after update
 			CALLM(_worldModel, "sync", []);
 
 			CALLM(_worldModel, "updateThreatMaps", []);
-			T_SETV("lastPlanningTime", TIME_NOW);
 			CALLM(_cmdrAI, "plan", [_worldModel]);
 
+			// Make it after planning so we get a gap
+			T_SETV("lastPlanningTime", TIME_NOW);
 		};
+
+		// C L E A N U P
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "cleanup");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
+
+		private _deadGarrisons = T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) };
+		{
+			CALLM2(_x, "postMethodAsync", "destroy", []);
+		} forEach _deadGarrisons;
+
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "inactive");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -185,14 +267,19 @@ CLASS("AICommander", "AI")
 			case INDEPENDENT: {
 				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
 			};
+			default {
+				NULL_OBJECT
+			};
 		};
 	} ENDMETHOD;
 	
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true]];
 		
+		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
+
 		pr _thisSide = T_GETV("side");
 		
 		pr _ld = switch (_side) do {
@@ -201,103 +288,52 @@ CLASS("AICommander", "AI")
 			case INDEPENDENT: {T_GETV("locationDataInd")};
 			default { _side = _thisSide; T_GETV("locationDataThis")};
 		};
-		
-		pr _args = [_loc, _updateType];
-		pr _ldNew = CALL_STATIC_METHOD("AICommander", "createCLDFromLocation", _args);
-	
-		if (_ldNew isEqualTo []) then {
-			OOP_ERROR_1("Can't update location data: %1", _loc);
-		} else {
-			// Check if this location already exists
-			pr _locPos = _ldNew select CLD_ID_POS;
-			pr _locSide = _ldNew select CLD_ID_SIDE;
-			pr _entry = _ld findIf {(_x select CLD_ID_POS) isEqualTo _locPos};
-			if (_entry == NOT_FOUND) then {
-				// Add new entry
-				_ld pushBack _ldNew;
 				
-				systemChat "Discovered new location";
-				
-				if (_side == _thisSide && _side != _locSide) then {
-					CALLM2(_thisObject, "showLocationNotification", _locPos, "DISCOVERED");
-				};
+		// Check if we have intel about such location already
+		pr _intelQuery = NEW("IntelLocation", [_side]);
+		SETV(_intelQuery, "location", _loc);
+		pr _intelDB = T_GETV("intelDB");
+		pr _intelResult = CALLM1(_intelDB, "findFirstIntel", _intelQuery);
 
-				// Register with the World Model
-				T_PRVAR(worldModel);
-				CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
-			} else {
-				pr _ldPrev = _ld select _entry;
-				_ldPrev params ["_type", "_side", "_unitAmount", "_pos", "_time"];
-				_ldNew params ["_typeNew", "_sideNew", "_unitAmountNew", "_posNew", "_timeNew"];
-				
-				// Update only specific fields
-				
-				// Update type
-				if (_typeNew != LOCATION_TYPE_UNKNOWN) then {
-					_ldPrev set [CLD_ID_TYPE, _typeNew];
-				};
-				
-				// Update side
-				if (_sideNew != CLD_SIDE_UNKNOWN) then {
-					_ldPrev set [CLD_ID_SIDE, _sideNew];
-				};
-				
-				// Update units
-				if (count _unitAmountNew > 0) then {
-					_ldPrev set [CLD_ID_UNIT_AMOUNT, _unitAmountNew];
-				};
-				
-				// Update time
-				_ldPrev set [CLD_ID_TIME, TIME_NOW];
-				
-				//systemChat "Location data was updated";
-				
-				// Show notification if we haven't updated this data for quite some time
-				if (_side == _thisSide && _side != _locSide) then {
-					if ((TIME_NOW - _time) > 600) then {
-						CALLM2(_thisObject, "showLocationNotification", _locPos, "UPDATED");
-					};
-				};
-			};
-		};
+		OOP_INFO_1("Intel query result: %1;", _intelResult);
 		
-		// Broadcast new data to clients, add it to JIP queue
-		pr _JIPID = (_thisObject+"_JIP_"+(str _side)); // We use this object as JIP id because it's a string :D
-		pr _args = [_ld, _side];
-		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "updateLocationData", _args, _thisSide, _JIPID);
-	} ENDMETHOD;
-	
-	
-	
-	
-	// Shows notification and keeps track of it to delete some time later
-	METHOD("showLocationNotification") {
-		params ["_thisObject", ["_locPos", [], [[]]], ["_state", "", [""]]];
-		
-		//ade_dumpCallstack;
-		
-		pr _id = T_GETV("notificationID");
-		pr _nots = T_GETV("notifications");
-		switch (_state) do {
-			case "DISCOVERED": {
-				pr _descr = format ["Friendly units have discovered an enemy location at %1", mapGridPosition _locPos];
-				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Discovered location", ""], _locPos + [0], "CREATED", 0, false, "scout", true] call BIS_fnc_taskCreate;
-				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, TIME_NOW];
-			};
+		if (_intelResult != "") then {
+			// There is an intel item with this location
+
+			OOP_INFO_1("Intel was found in existing database: %1", _loc);
+
+			// Create intel item from location, update the old item
+			pr _args = [_loc, _updateType];
+			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+
+			CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+
+			// Delete the intel object that we have created temporary
+			DELETE(_intel);
+		} else {
+			// There is no intel item with this location
 			
-			case "UPDATED": {
-				pr _descr = format ["Updated data on enemy garrisons at %1", mapGridPosition _locPos];
-				_tsk = [T_GETV("side"), _thisObject+"task"+(str _id), [_descr, "Updated data on location", ""], _locPos + [0], "CREATED", 0, false, "intel", true] call BIS_fnc_taskCreate;
-				[_tsk, "SUCCEEDED", true] call BIS_fnc_taskSetState;
-				_nots pushBack [_tsk, TIME_NOW];
-			};
+			OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
+
+			// Create intel from location, add it
+			pr _args = [_loc, _updateType];
+			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+			
+			OOP_INFO_1("Created intel item from location: %1", _intel);
+			//[_intel] call OOP_dumpAllVariables;
+
+			CALLM1(_intelDB, "addIntel", _intel);
+			// Don't delete the intel object now! It's in the database from now.
+
+			// Register with the World Model
+			T_PRVAR(worldModel);
+			CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
 		};
-		T_SETV("notificationID", _id + 1);
+		
 	} ENDMETHOD;
 	
 	// Creates a LocationData array from Location
-	STATIC_METHOD("createCLDFromLocation") {
+	STATIC_METHOD("createIntelFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
@@ -307,32 +343,32 @@ CLASS("AICommander", "AI")
 			_gar = "";
 		};
 		
-		pr _value = CLD_NEW();
+		pr _value = NEW("IntelLocation", []);
 		
 		// Set position
 		pr _locPos = +(CALLM0(_loc, "getPos"));
 		_locPos resize 2;
-		_value set [CLD_ID_POS, _locPos];
+		SETV(_value, "pos", _locPos);
 		
 		// Set time
-		_value set [CLD_ID_TIME, TIME_NOW];
+		//SETV(_value, "", set [CLD_ID_TIME, TIME_NOW];
 		
 		// Set type
 		if (_updateLevel >= CLD_UPDATE_LEVEL_TYPE) then {
-			_value set [CLD_ID_TYPE, CALLM0(_loc, "getType")]; // todo add types for locations at some point?
+			SETV(_value, "type", CALLM0(_loc, "getType")); // todo add types for locations at some point?
 		} else {
-			_value set [CLD_ID_TYPE, LOCATION_TYPE_UNKNOWN]; // todo add types for locations at some point?
+			SETV(_value, "type", LOCATION_TYPE_UNKNOWN);
 		};
 		
 		// Set side
 		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
 			if (_gar != "") then {
-				_value set [CLD_ID_SIDE, CALLM0(_gar, "getSide")];
+				SETV(_value, "side", CALLM0(_gar, "getSide"));
 			} else {
-				_value set [CLD_ID_SIDE, CLD_SIDE_UNKNOWN];
+				SETV(_value, "side", CLD_SIDE_UNKNOWN);
 			};
 		} else {
-			_value set [CLD_ID_SIDE, CLD_SIDE_UNKNOWN];
+			SETV(_value, "side", CLD_SIDE_UNKNOWN);
 		};
 		
 		// Set unit count
@@ -349,11 +385,13 @@ CLASS("AICommander", "AI")
 					};
 				} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
 			};
-			_value set [CLD_ID_UNIT_AMOUNT, _CLD_full];
+			SETV(_value, "unitData", _CLD_full);
+		} else {
+			SETV(_value, "unitData", CLD_UNIT_AMOUNT_UNKNOWN);
 		};
 		
 		// Set ref to location object
-		_value set [CLD_ID_LOCATION, _loc];
+		SETV(_value, "location", _loc);
 		
 		_value
 	} ENDMETHOD;
@@ -379,95 +417,7 @@ CLASS("AICommander", "AI")
 		T_SETV("nextClusterID", _nextID + 1);
 		_nextID
 	} ENDMETHOD;
-	
-	// Generates a new unique cluster ID
-	/*
-	METHOD("createNewTargetCluster") {
-		params ["_thisObject", "_cluster", "_efficiency"];
-		pr _targetClusters = T_GETV("targetClusters");
-		pr _nextID = T_GETV("nextClusterID");
-		T_SETV("nextClusterID", _nextID + 1);
-		_targetClusters pushBack TARGET_CLUSTER_NEW(_nextID, _cluster, _efficiency);
 		
-		// Create debug markers
-		#ifdef DEBUG_CLUSTERS
-		
-		pr _clusterMarkers = T_GETV("clusterMarkers");
-		pr _side = T_GETV("side");
-		
-		
-		pr _colorEnemy = switch (_side) do {
-			case WEST: {"ColorWEST"};
-			case EAST: {"ColorEAST"};
-			case INDEPENDENT: {"ColorGUER"};
-			default {"ColorCIV"};
-		};
-				
-		// Create marker for the cluster
-		pr _c = _cluster;
-		pr _nextMarkerID = T_GETV("nextMarkerID");
-		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-		pr _cCenter = _cluster call cluster_fnc_getCenter;
-		pr _mrk = createMarker [_name, _cCenter];
-		pr _width = 10 + 0.5*((_c select 2) - (_c select 0)); //0.5*(x2-x1)
-		pr _height = 10 + 0.5*((_c select 3) - (_c select 1)); //0.5*(y2-y1)
-		_mrk setMarkerShape "RECTANGLE";
-		_mrk setMarkerBrush "SolidFull";
-		_mrk setMarkerSize [_width, _height];
-		_mrk setMarkerColor _colorEnemy;
-		_mrk setMarkerAlpha 0.3;
-		_clusterMarkers pushBack _mrk;
-		
-		// Add markers for spotted units
-		{
-			pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-			pr _mrk = createmarker [_name, _x select TARGET_ID_POS];
-			_mrk setMarkerType "mil_box";
-			_mrk setMarkerColor _colorEnemy;
-			_mrk setMarkerAlpha 0.5;
-			_mrk setMarkerText "";
-			_clusterMarkers pushBack _mrk;
-			//_mrk setMarkerText (format ["%1", round ((_e select 2) select _i)]); //Enemy age
-			
-		} forEach (_cluster select CLUSTER_ID_OBJECTS);
-		
-		// Add marker with efficiency text
-		pr _name = format ["%1_mrk_%2", _thisObject, _nextMarkerID]; _nextMarkerID = _nextMarkerID + 1;
-		pr _mrk = createmarker [_name, _cCenter];
-		_mrk setMarkerType "mil_dot";
-		_mrk setMarkerColor "ColorPink";
-		_mrk setMarkerAlpha 1.0;
-		_mrk setMarkerText (str _efficiency);
-		_clusterMarkers pushBack _mrk;
-		
-		T_SETV("nextMarkerID", _nextMarkerID);
-		
-		
-		#endif
-	} ENDMETHOD;
-	*/
-	
-	/*
-	// Deletes all target clusters
-	METHOD("deleteAllTargetClusters") {
-		params ["_thisObject"];
-		pr _targetClusters = T_GETV("targetClusters");
-		while {count _targetClusters > 0} do {
-			_targetClusters deleteAt 0;
-		};
-		
-		#ifdef DEBUG_CLUSTERS
-		
-		pr _clusterMarkers = T_GETV("clusterMarkers");
-		{
-			deleteMarker _x;
-		} forEach _clusterMarkers;
-		T_SETV("clusterMarkers", []);
-		
-		#endif
-	} ENDMETHOD;
-	*/
-	
 	/*
 	Method: onTargetClusterCreated
 	Gets called on creation of a totally new target cluster
@@ -489,10 +439,10 @@ CLASS("AICommander", "AI")
 		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
 		T_GETV("targetClusterActions") pushBack _newAction;
 		
-		OOP_INFO_1("---- Created new action to respond to target cluster %1", _tc);
+		OOP_INFO_MSG("---- Created new action to respond to target cluster %1", [_tc]);
 
 		T_PRVAR(worldModel);
-		NEW("ClusterModel", [_worldModel]+[[_thisObject]+[_ID]]);
+		NEW("ClusterModel", [_worldModel]+[_args]);
 	} ENDMETHOD;
 
 	/*
@@ -893,6 +843,12 @@ CLASS("AICommander", "AI")
 		
 	} ENDMETHOD;
 	
+	METHOD("getThreat") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "getThreat", [_pos])
+	} ENDMETHOD;
+	
 	/*
 	Method: registerGarrison
 	Registers a garrison to be processed by this AICommander
@@ -903,9 +859,9 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	STATIC_METHOD("registerGarrison") {
-		params [P_THISCLASS, P_STRING("_gar")];
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = GETV(_gar, "side");
+		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
 		private _newModel = NULL_OBJECT;
@@ -922,6 +878,28 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 
 	/*
+	Method: registerLocation
+	Registers a location to be known by this AICommander
+	
+	Parameters:
+	_loc - <Location>
+	
+	Returns: nil
+	*/
+	METHOD("registerLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		ASSERT_OBJECT_CLASS(_loc, "Location");
+
+		private _newModel = NULL_OBJECT;
+		OOP_DEBUG_MSG("Registering location %1", [_loc]);
+		//T_GETV("locations") pushBack _loc; // I need you for my army!
+		// CALLM2(_loc, "postMethodAsync", "ref", []);
+		T_PRVAR(worldModel);
+		// Just creating the location model is registering it with CmdrAI
+		NEW("LocationModel", [_worldModel]+[_loc]);
+	} ENDMETHOD;
+
+	/*
 	Method: unregisterGarrison
 	Unregisters a garrison from this AICommander
 	
@@ -931,9 +909,9 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	STATIC_METHOD("unregisterGarrison") {
-		params [P_THISCLASS, P_STRING("_gar")];
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
-		private _side = GETV(_gar, "side");
+		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
@@ -960,4 +938,21 @@ CLASS("AICommander", "AI")
 		};
 	} ENDMETHOD;
 		
+	/*
+	Method: registerIntelCommanderAction
+	Registers a piece of intel on an action that this Commander owns.
+	Parameters:
+	_intel - <IntelCommanderAction>
+	
+	Returns: nil
+	*/
+	STATIC_METHOD("registerIntelCommanderAction") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
+		private _side = GETV(_intel, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		T_PRVAR(intelDB);
+		CALLM(_intelDB, "addIntelClone", [_intel])
+	} ENDMETHOD;
 ENDCLASS;

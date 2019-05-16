@@ -5,10 +5,13 @@ Garrison moves on available vehicles
 
 #define pr private
 
+#ifndef RELEASE_BUILD
+#define DEBUG_ROUTE
+#endif
+
 #define THIS_ACTION_NAME "ActionGarrisonMoveMounted"
 
 CLASS(THIS_ACTION_NAME, "ActionGarrison")
-
 
 	VARIABLE("pos"); // The destination position
 	VARIABLE("radius"); // Completion radius
@@ -133,7 +136,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					CALLM1(_AI, "setPos", _pos);
 
 					// Succede the action if the garrison is close enough to its destination
-					if (_pos distance T_GETV("pos") < T_GETV("radius")) then {
+					if (_pos distance T_GETV("pos") < T_GETV("radius") or {GETV(_vr, "complete")}) then {
 						_state = ACTION_STATE_COMPLETED;
 					};
 				} else { 
@@ -271,17 +274,28 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("createVirtualRoute") {
 		params ["_thisObject"];
 
-		pr _gar = T_GETV("gar");
+		private _gar = T_GETV("gar");
 
 		// Delete old virtual route if we had it
-		pr _vr = T_GETV("virtualRoute");
+		private _vr = T_GETV("virtualRoute");
 		if (_vr != "") then {
 			DELETE(_vr);
 		};
 
 		// Create a new virtual route
-		pr _gar = T_GETV("gar");
-		pr _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, "", "", false];
+		private _gar = T_GETV("gar");
+
+		private _side = CALLM(_gar, "getSide", []);
+		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		private _threatCostFn = {
+			params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
+			_callbackArgs params ["_cmdr"];
+			private _threat = CALLM(_cmdr, "getThreat", [getPos _next]);
+			_base_cost + EFF_SUM(_threat) * 20
+		};
+
+		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], true, true];
 		_vr = NEW("VirtualRoute", _args);
 		T_SETV("virtualRoute", _vr);
 
@@ -295,7 +309,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Spawn vehicle groups on the road according to convoy positions
 		pr _vr = T_GETV("virtualRoute");
-		if (_vr == "") exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
+		if (_vr == "" || !GETV(_vr, "calculated")) exitWith {false}; // Perform standard spawning if there is no virtual route for some reason (why???)
 
 		// Count all vehicles in garrison
 		pr _nVeh = count CALLM0(_gar, "getVehicleUnits");
@@ -338,6 +352,32 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// todo what happens with ungrouped units?? Why are there even ungrouped units at this point???
 
 		true
+	} ENDMETHOD;
+
+		// Handle units/groups added/removed
+
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+	} ENDMETHOD;
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
 	} ENDMETHOD;
 
 ENDCLASS;

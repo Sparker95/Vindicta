@@ -6,8 +6,12 @@ Class: AI.AIGarrison
 
 #define pr private
 
-#ifndef _SQF_VM
+#ifndef RELEASE_BUILD
 #define DEBUG_GOAL_MARKERS
+#endif
+
+#ifdef _SQF_VM
+#undef DEBUG_GOAL_MARKERS
 #endif
 
 #define MRK_GOAL	"_goal"
@@ -292,7 +296,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
-			CALLM1(_action, "handleUnitsRemoved", _units);
+			CALLM1(_action, "handleUnitsAdded", _units);
 		};
 	} ENDMETHOD;
 	

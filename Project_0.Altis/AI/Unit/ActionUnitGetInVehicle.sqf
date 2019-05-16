@@ -1,3 +1,4 @@
+#define OOP_INFO
 #include "common.hpp"
 
 /*
@@ -10,24 +11,7 @@ Author: Sparker
 
 #define pr private
 
-#define DEBUG
 #define CLASS_NAME "ActionUnitGetInVehicle"
-
-#ifdef DEBUG
-#define INFO_0(str) OOP_INFO_0(str)
-#define INFO_1(str, a) OOP_INFO_1(str, a)
-#define INFO_2(str, a, b) OOP_INFO_2(str, a, b)
-#define INFO_3(str, a, b, c) OOP_INFO_3(str, a, b, c)
-#define INFO_4(str, a, b, c, d) OOP_INFO_4(str, a, b, c, d)
-#define INFO_5(str, a, b, c, d, e) OOP_INFO_5(str, a, b, c, d, e)
-#else
-#define INFO_0(str)
-#define INFO_1(str, a)
-#define INFO_2(str, a, b)
-#define INFO_3(str, a, b, c)
-#define INFO_4(str, a, b, c, d)
-#define INFO_5(str, a, b, c, d, e)
-#endif
 
 CLASS("ActionUnitGetInVehicle", "ActionUnit")
 
@@ -94,7 +78,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		pr _AI = GETV(_thisObject, "AI");
 		pr _unitVeh = GETV(_thisObject, "unitVeh");
 		
-		INFO_2("Asigning vehicle: %1, role: %2", _unitVeh, _vehRole);
+		OOP_INFO_2("Assigning vehicle: %1, role: %2", _unitVeh, _vehRole);
 		
 		switch (_vehRole) do {	
 		/*
@@ -360,7 +344,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 		
 		// Insta-fail if vehicle is destroyed
 		if (!alive _hVeh) exitWith {
-			INFO_0("Failed to ACTIVATE: vehicle is destroyed");
+			OOP_INFO_0("Failed to ACTIVATE: vehicle is destroyed");
 			SETV(_thisObject, "state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
@@ -375,7 +359,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			// Assign vehicle
 			pr _success = CALLM0(_thisObject, "assignVehicle");
 			if (_success) then {
-				INFO_0("ACTIVATEd successfully");
+				OOP_INFO_0("ACTIVATEd successfully");
 
 				// If we were just spawned, just teleport into the vehicle
 				pr _AI = T_GETV("AI");
@@ -388,14 +372,14 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				pr _hO = T_GETV("hO");
 				pr _hVeh = T_GETV("hVeh");
 				pr _ETA = time + ((_hO distance _hVeh)/1.4 + 40);
-				INFO_1("Set ETA: %1", _ETA);
+				OOP_INFO_1("Set ETA: %1", _ETA);
 				T_SETV("ETA", _ETA);
 				
 				SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 				// Return ACTIVE state
 				ACTION_STATE_ACTIVE
 			} else {
-				INFO_0("Failed to ACTIVATE");
+				OOP_INFO_0("Failed to ACTIVATE");
 				
 				// Failed to assign vehicle
 				SETV(_thisObject, "state", ACTION_STATE_FAILED);
@@ -418,15 +402,15 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			pr _vehRole = GETV(_thisObject, "vehRole");
 			pr _unitVeh = T_GETV("unitVeh");
 			
-			INFO_2("PROCESS: State is ACTIVE. Assigned vehicle: %1, role: %2", _unitVeh, _vehRole);
+			OOP_INFO_2("PROCESS: State is ACTIVE. Assigned vehicle: %1, role: %2", _unitVeh, _vehRole);
 			
 			// Check if the seat is occupied by someone else
 			if (CALLM0(_thisObject, "seatIsOccupied")) then {
-				INFO_0("Seat is occupied");
-				if (_vehRole == "CARGO") then {// If it's cargo seat, try to chose a new one
+				OOP_INFO_0("Seat is occupied");
+				if (_vehRole == "CARGO") then {// If it's cargo seat, try to choose a new one
 					pr _success = CALLM0(_thisObject, "assignVehicle");
 					if (_success) then {
-						INFO_0("Assigned new seat");
+						OOP_INFO_0("Assigned new seat");
 						// Execute vehicle assignment
 						CALLM0(_AI, "executeVehicleAssignment");
 						// If the unit is already in the new vehicle, move him instantly
@@ -442,14 +426,14 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						ACTION_STATE_ACTIVE
 					} else {
 						// Failed to assign vehicle
-						INFO_0("Failed to assign a new seat");
+						OOP_INFO_0("Failed to assign a new seat");
 						SETV(_thisObject, "state", ACTION_STATE_FAILED);
 						ACTION_STATE_FAILED
 					};
 				} else {
 					// Can't choose another driver or turret or gunner seat
 					// Action is failed
-					INFO_0("Failed to assign a new seat");
+					OOP_INFO_0("Failed to assign a new seat");
 					SETV(_thisObject, "state", ACTION_STATE_FAILED);
 					ACTION_STATE_FAILED
 				};
@@ -457,18 +441,20 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 			
 				// Assigned seat is not occupied
 				
-				INFO_0("Assigned seat is FREE");
+				OOP_INFO_0("Assigned seat is FREE");
 				
 				// Check if the unit is already in the required vehicle
 				if (vehicle _hO isEqualTo _hVeh) then {
-					INFO_0("Inside assigned vehicle");
+					OOP_INFO_0("Inside assigned vehicle");
 				
 					// Execute vehicle assignment
 					CALLM0(_AI, "executeVehicleAssignment");
+					// Order get in
+					[_hO] orderGetIn true;
 				
 					// Check if the unit is in the required seat
 					if (CALLM0(_thisObject, "isAtAssignedSeat")) then {
-						INFO_0("Arrived at assigned seat");
+						OOP_INFO_0("Arrived at assigned seat");
 						
 						// Tell the driver to stop or he'll start driving around like an insane
 						if (_vehRole == "DRIVER") then {
@@ -479,7 +465,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						SETV(_thisobject, "state", ACTION_STATE_COMPLETED);
 						ACTION_STATE_COMPLETED
 					} else {
-						INFO_0("Sitting at wrong seat. Changine seats.");
+						OOP_INFO_0("Sitting at wrong seat. Changine seats.");
 						// We're in the right vehicle but at the wrong seat
 						// Just swap seats instantly
 						CALLM0(_AI, "moveInAssignedVehicle");
@@ -493,7 +479,7 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 				} else {
 					// If the unit is on foot now
 					if (vehicle _hO isEqualTo _hO) then {						
-						INFO_0("Not in vehicle yet. Going on ...");
+						OOP_INFO_0("Not in vehicle yet. Going on ...");
 					
 						// Execute vehicle assignment
 						CALLM0(_AI, "executeVehicleAssignment");
@@ -502,23 +488,25 @@ CLASS("ActionUnitGetInVehicle", "ActionUnit")
 						
 						// Check ETA
 						pr _ETA = T_GETV("ETA");
-						INFO_2("Time: %1, ETA: %2", time, _ETA);
+						OOP_INFO_2("Time: %1, ETA: %2", time, _ETA);
 						if(time > _ETA) then {
 							// FFS why did you get stuck again??
 							// When are BIS going to repair their fucking AIs stucking in the middle of fucking nowhere?
 							// Let's just teleport you, buddy :/
-							INFO_0("Exceeded ETA. Teleporting unit.");
+							OOP_INFO_0("Exceeded ETA. Teleporting unit.");
 							CALLM0(_AI, "moveInAssignedVehicle");
 						};
 					} else {
-						INFO_0("In WRONG vehicle. Getting out.");
+						OOP_INFO_0("In WRONG vehicle. Getting out.");
 						doGetOut _hO;
 					};
 					
+					T_SETV("state", ACTION_STATE_ACTIVE);
 					ACTION_STATE_ACTIVE
 				};
 			}; // else
 		} else { // state == active
+			T_SETV("state", _state);
 			_state
 		};
 	} ENDMETHOD;

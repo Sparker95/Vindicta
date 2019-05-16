@@ -6,7 +6,19 @@ CLASS("WorldModel", "")
 	VARIABLE("garrisons");
 	VARIABLE("locations");
 	VARIABLE("clusters");
+
+	VARIABLE("gridMutex");
+
+	// Threat is historic enemy forces in the area
+	VARIABLE("rawThreatGrid");
+	// This is the rawThreatGrid with post processing applied
 	VARIABLE("threatGrid");
+	// Danger is historic friendly casualties. 
+	VARIABLE("rawDamageGrid");
+	// This is the rawDamageGrid with post processing applied
+	VARIABLE("damageGrid");
+
+	VARIABLE("lastGridUpdate");
 
 	VARIABLE("reinforceRequiredScoreCache");
 
@@ -16,8 +28,25 @@ CLASS("WorldModel", "")
 		T_SETV("garrisons", []);
 		T_SETV("locations", []);
 		T_SETV("clusters", []);
-		private _threatGrid = NEW("Grid", []);
-		T_SETV("threatGrid", _threatGrid);
+
+		if(_type == WORLD_TYPE_REAL) then {
+			private _gridArgs = [500, +T_EFF_null];
+			private _rawThreatGrid = NEW("Grid", _gridArgs);
+			private _threatGrid = NEW("Grid", _gridArgs);
+			private _rawDamageGrid = NEW("Grid", _gridArgs);
+			private _damageGrid = NEW("Grid", _gridArgs);
+			T_SETV("rawThreatGrid", _rawThreatGrid);
+			T_SETV("threatGrid", _threatGrid);
+			T_SETV("rawDamageGrid", _rawDamageGrid);
+			T_SETV("damageGrid", _damageGrid);
+			T_SETV("lastGridUpdate", TIME_NOW);
+			T_SETV("gridMutex", MUTEX_NEW());
+		} else {
+			T_SETV("rawThreatGrid", objNull);
+			T_SETV("threatGrid", objNull);
+			T_SETV("rawDamageGrid", objNull);
+			T_SETV("damageGrid", objNull);
+		};
 
 		T_SETV("reinforceRequiredScoreCache", []);
 	} ENDMETHOD;
@@ -30,6 +59,17 @@ CLASS("WorldModel", "")
 		{ UNREF(_x); } forEach _locations;
 		T_PRVAR(clusters);
 		{ UNREF(_x); } forEach _clusters;
+		if(T_CALLM("isReal", [])) then {
+			DELETE(T_GETV("rawThreatGrid"));
+			DELETE(T_GETV("threatGrid"));
+			DELETE(T_GETV("rawDamageGrid"));
+			DELETE(T_GETV("damageGrid"));
+		};
+	} ENDMETHOD;
+
+	METHOD("isReal") {
+		params [P_THISOBJECT];
+		T_GETV("type") == WORLD_TYPE_REAL
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -39,21 +79,13 @@ CLASS("WorldModel", "")
 	METHOD("sync") {
 		params [P_THISOBJECT];
 
-		// sync existing garrisons
-		//T_PRVAR(garrisons);
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
-		// Is this too long a critical section?
-		CRITICAL_SECTION {
-			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
+		// sync existing locations
+		{ CALLM(_x, "sync", []); } forEach T_GETV("locations");
 
-			// sync existing locations
-			T_PRVAR(locations);
-			{ CALLM(_x, "sync", []); } forEach _locations;
-
-			// sync existing clusters
-			//T_PRVAR(clusters);
-			{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
-		};
+		// sync existing clusters
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
 
 	} ENDMETHOD;
 
@@ -65,19 +97,25 @@ CLASS("WorldModel", "")
 
 		// Copy garrisons
 		T_PRVAR(garrisons);
+		//OOP_DEBUG_MSG("simCopy %1 garrisons", [count _garrisons]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _garrisons;
 
 		// Copy locations
 		T_PRVAR(locations);
+		//OOP_DEBUG_MSG("simCopy %1 locations", [count _locations]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _locations;
 
 		// Copy clusters
 		T_PRVAR(clusters);
+		//OOP_DEBUG_MSG("simCopy %1 clusters", [count _clusters]);
 		{ CALLM(_x, "simCopy", [_worldCopy]); } forEach _clusters;
 
-		// Can copy the grid ref as we don't write to it
+		//OOP_DEBUG_MSG("simCopy threatGrid", []);
+		// Can copy the grid ref as we don't write to it, and we don't need the raw ones in the sim
 		T_PRVAR(threatGrid);
 		SETV(_worldCopy, "threatGrid", _threatGrid);
+		T_PRVAR(damageGrid);
+		SETV(_worldCopy, "damageGrid", _damageGrid);
 
 		_worldCopy
 	} ENDMETHOD;
@@ -97,21 +135,51 @@ CLASS("WorldModel", "")
 		// 	};
 		// };
 
-		T_PRVAR(threatGrid);
+		T_PRVAR(rawThreatGrid);
+		T_PRVAR(rawDamageGrid);
 
-		// Clear grid
-		CALLM(_threatGrid, "setValueAll", [0]);
+		#define THREAT_FADE_RATE 0.8
+		#define DAMAGE_FADE_RATE 0.99
+		#define FADE_RATE_PERIOD 60
+		#define POW(a, b) (exp ((b) * log (a)))
 
+		// Fade grids over time
+		T_PRVAR(lastGridUpdate);
+		private _dt = TIME_NOW - _lastGridUpdate;
+		T_SETV("lastGridUpdate", TIME_NOW);
+
+		private _threatFade = POW(THREAT_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		CALLM(_rawThreatGrid, "fade", [_threatFade]);
+		private _damageFade = POW(DAMAGE_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		CALLM(_rawDamageGrid, "fade", [_damageFade]);
+
+		#define THREAT_GRID_CLUSTER_OVERSIZE 500
 		{
-			private _pos = GETV(_x, "pos") apply { _x - 1000 };
-			private _size = GETV(_x, "size") apply { _x + 2000 };
-			private _strength = EFF_SUM(GETV(_x, "efficiency"));
-			CALLM(_threatGrid, "maxRect", [_pos]+[_size]+[_strength])
+			private _pos = GETV(_x, "pos") apply { _x - THREAT_GRID_CLUSTER_OVERSIZE };
+			private _size = GETV(_x, "size") apply { _x + 2 * THREAT_GRID_CLUSTER_OVERSIZE };
+			private _threat = GETV(_x, "efficiency");
+			private _damage = GETV(_x, "damage");
+			CALLM(_rawThreatGrid, "maxRect", [_pos]+[_size]+[_threat]);
+			// CALLM(_rawDamageGrid, "maxRect", [_pos]+[_size]+[_damage]);
 		} forEach T_CALLM("getAliveClusters", []);
 
+		T_PRVAR(threatGrid);
+		T_PRVAR(damageGrid);
+
+		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+
+			CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
+			CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
+
+			//CALLM(_threatGrid, "smooth5x5", []);
+			//CALLM(_damageGrid, "smooth5x5", []);
+		};
+
 #ifdef DEBUG_CMDRAI
-		CALLM(_threatGrid, "unplot", []);
-		CALLM(_threatGrid, "plot", [30]);
+		//CALLM(_threatGrid, "unplot", []);
+		CALLM(_threatGrid, "plot", [20]+[false]+["SolidFull"]+[["ColorGreen"]+["ColorYellow"]+["ColorBlue"]]+[[0.02]+[0.5]]);
+		//CALLM(_damageGrid, "unplot", []);
+		CALLM(_damageGrid, "plot", [20]+[false]+["DiagGrid"]+[["ColorGreen"]+["ColorPink"]+["ColorBlue"]]+[[0.1]+[1]]);
 #endif
 		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
@@ -125,6 +193,32 @@ CLASS("WorldModel", "")
 
 		// [_threatGridOpfCopy, _threatGridOpf] call ws_fnc_filterSmooth;
 		// [_threatGridOpf, 100] call ws_fnc_plotGrid;
+	} ENDMETHOD;
+
+	METHOD("getThreat") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+
+		private _threat = 0;
+
+		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+			//T_PRVAR(threatGrid);
+			T_PRVAR(damageGrid);
+
+			_threat = CALLM(_damageGrid, "getValue", [_pos]);
+
+			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
+			// CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
+
+			// CALLM(_threatGrid, "smooth5x5", []);
+			// CALLM(_damageGrid, "smooth5x5", []);
+		};
+		_threat
+	} ENDMETHOD;
+
+	METHOD("addDamage") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
+		T_PRVAR(rawDamageGrid);
+		CALLM(_rawDamageGrid, "addValue", [_pos]+[_effDamage]);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -263,6 +357,14 @@ CLASS("WorldModel", "")
 		_locations select _id
 	} ENDMETHOD;
 
+	METHOD("getLocations") {
+		params [P_THISOBJECT, P_NUMBER("_id")];
+
+		T_PRVAR(locations);
+		// Copy it, necessary?
+		+_locations
+	} ENDMETHOD;
+
 	METHOD("findLocationByActual") {
 		params [P_THISOBJECT, P_STRING("_actual")];
 		ASSERT_OBJECT_CLASS(_actual, "Location");
@@ -302,7 +404,7 @@ CLASS("WorldModel", "")
 			private _location = _x;
 			private _pos = GETV(_location, "pos");
 			private _dist = _pos distance _center;
-			if(_dist <= _maxDist) then {
+			if(_maxDist == 0 or _dist <= _maxDist) then {
 				_nearestLocations pushBack [_dist, _location];
 			};
 		} forEach _locations;
@@ -320,11 +422,15 @@ CLASS("WorldModel", "")
 
 		ASSERT_MSG(GETV(_cluster, "id") == MODEL_HANDLE_INVALID, "ClusterModel is already attached to a WorldModel");
 		
+
 		T_PRVAR(clusters);
 
 		REF(_cluster);
 		private _idx = _clusters pushBack _cluster;
 		SETV(_cluster, "id", _idx);
+
+		OOP_DEBUG_MSG("Cluster %1 (%2) added to world model", [LABEL(_cluster)]+[_cluster]);
+
 		_idx
 	} ENDMETHOD;
 
@@ -395,10 +501,13 @@ CLASS("WorldModel", "")
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_origActual);
 		ASSERT_CLUSTER_ACTUAL_NOT_NULL(_newActual);
 
+
 		// This call will do our asserting for us
 		private _cluster = T_CALLM("findClusterByActual", [_origActual]);
 		ASSERT_OBJECT(_cluster);
 		SETV(_cluster, "actual", +_newActual);
+
+		OOP_DEBUG_MSG("Cluster %1 retargetted to %2", [LABEL(_cluster)]+[_newActual]);
 	} ENDMETHOD;
 
 	METHOD("deleteClusterByActual") {
@@ -408,7 +517,8 @@ CLASS("WorldModel", "")
 		// This call will do our asserting for us
 		private _cluster = T_CALLM("findClusterByActual", [_actual]);
 		ASSERT_OBJECT(_cluster);
-		CALLM(_cluster, "killed", +_newActual);
+		CALLM(_cluster, "killed", []);
+		OOP_DEBUG_MSG("Cluster %1 deleted from world model", [LABEL(_cluster)]);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -433,10 +543,25 @@ CLASS("WorldModel", "")
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
+		T_PRVAR(threatGrid);
+		if(_threatGrid isEqualTo objNull) exitWith {
+			EFF_MIN_EFF
+		};
+		T_PRVAR(damageGrid);
+
+		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
+		private _damageEff = CALLM(_damageGrid, "getValue", [_pos]);
+		private _dmgSum = EFF_SUM(_damageEff);
+		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
+		_dmgSum = (0.015 * _dmgSum);
+		private _forceMul = 1.5 max (1 + _dmgSum * _dmgSum * _dmgSum * _dmgSum);
+		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _damageEff);
+		private _effMax = EFF_MAX(_threatEff, EFF_MIN_EFF);
+		_effMax
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.
 		// TODO: Cache it
-		EFF_MUL_SCALAR(EFF_MIN_EFF, 2)
+		// EFF_MUL_SCALAR(EFF_MIN_EFF, 2)
 
 		//T_PRVAR(threatGrid);
 		
@@ -665,7 +790,7 @@ ENDCLASS;
 	private _location2 = NEW("LocationModel", [_world]);
 	SETV(_location2, "pos", [1000, 0, 0]);
 	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestLocations", [_center]+[0]) == 0] call test_Assert;
+	["Dist test none", count CALLM(_world, "getNearestLocations", [_center]+[1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestLocations", [_center]+[501]) == 1] call test_Assert;
 	["Dist test all", count CALLM(_world, "getNearestLocations", [_center]+[1001]) == 2] call test_Assert;
 }] call test_AddTest;

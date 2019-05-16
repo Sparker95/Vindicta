@@ -235,10 +235,10 @@
         {
             "label": "Parse ALL with SQF-VM",
             "type": "process",
-            "command": "${workspaceRoot}/tools/sqf-vm-compile-all.bat",
+            "command": "${workspaceRoot}/tools/sqf-vm/sqf-vm-compile-all.bat",
             "args": [],
             "options": {
-                "cwd": "${workspaceRoot}/tools"
+                "cwd": "${workspaceRoot}/tools/sqf-vm"
             },
             "group": "build",
             "presentation": {
@@ -392,6 +392,40 @@
                     ]
                 }
             ]
+        },
+        {
+            "label": "Build PBOs",
+            "type": "process",
+            "command": "setup_and_build.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean PBOs",
+            "type": "process",
+            "command": "clean.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
         }
     ]
 }

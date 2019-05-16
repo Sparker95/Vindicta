@@ -33,6 +33,12 @@ CLASS("ModelBase", "RefCounted")
 		};
 	} ENDMETHOD;
 
+	METHOD("isActual") {
+		params [P_THISOBJECT];
+		!IS_NULL_OBJECT(T_GETV("actual"))
+	} ENDMETHOD;
+	
+
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		FAILURE("simCopy method must be implemented when deriving from ModelBase");

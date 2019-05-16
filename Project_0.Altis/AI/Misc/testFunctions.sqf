@@ -137,9 +137,9 @@ AI_misc_fnc_addGarrisonGoal = {
 	if (isNil "_garAI") exitWith {diag_log "Error: garrison AI is not found!";};
 
 	// Delete previously given external goals
-	CALLM2(_garAI, "deleteExternalGoal", "", _goalSource);
+	//CALLM2(_garAI, "deleteExternalGoal", "", _goalSource);
 
-	CALLM4(_garAI, "addExternalGoal", _goalClassName, 0, _parameters, _goalSource);
+	CALLM(_garAI, "postMethodAsync", ["addExternalGoal" ARG [_goalClassName ARG 0 ARG _parameters ARG _goalSource]]);
 
 	_gar
 };

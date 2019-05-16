@@ -19,8 +19,9 @@ Author: Sparker 21.12.2018
 // Will print to the RPT targets received from groups
 //#define PRINT_RECEIVED_TARGETS
 
-
+#ifndef RELEASE_BUILD
 #define DEBUG_CLUSTERS
+#endif
 
 //#define DEBUG_TARGETS
 
@@ -259,7 +260,8 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _ID = CALLM0(_AI, "getNewTargetClusterID");
 					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
 					//ade_dumpcallstack;
-					CALLM1(_AI, "onTargetClusterCreated", _newTC);
+					// We don't register it here, the commander does it
+					//CALLM1(_AI, "onTargetClusterCreated", _newTC);
 				} else {
 					// It inherits from one old cluster, need to find what it inherits from
 					pr _i = 0;

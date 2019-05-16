@@ -26,7 +26,7 @@ Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 
 
 CLASS(UNIT_CLASS_NAME, "");
-	VARIABLE("data");
+	VARIABLE_ATTR("data", [ATTR_PRIVATE]);
 	STATIC_VARIABLE("all");
 
 	//                              N E W
@@ -63,7 +63,10 @@ CLASS(UNIT_CLASS_NAME, "");
 			_valid = true;
 		};
 
-		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);  diag_log format ["[Unit::new] Error: created invalid unit: %1", _this] };
+		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);
+			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
+			DUMP_CALLSTACK
+		};
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
@@ -241,7 +244,18 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 				};
 				case T_VEH: {
-					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
+
+					private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+					
+					// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
+					pr _special = "CAN_COLLIDE";
+					/*
+					if ([_catID, _subcatID] in T_static) then {
+						_special = "CAN_COLLIDE";
+					};
+					*/
+
+					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
@@ -261,7 +275,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 
 		CRITICAL_SECTION_END
@@ -366,7 +381,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
-			OOP_WARNING_0("Already despawned");
+			OOP_ERROR_0("Already despawned");
+			DUMP_CALLSTACK;
 		};
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
@@ -628,7 +644,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	_units - array of <Unit> objects
 
-	Returns: [_nDrivers, _nTurrets]
+	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 	
 	STATIC_METHOD("getRequiredCrew") {
@@ -636,15 +652,17 @@ CLASS(UNIT_CLASS_NAME, "");
 		
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
+		pr _nCargo = 0;
 		{
 			if (CALLM0(_x, "isVehicle")) then {
 				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
 				_nDrivers = _nDrivers + _n_driver;
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+				_nCargo = _nCargo + (count _psgTurrets) + _n_cargo;
 			};
 		} forEach _units;
-		[_nDrivers, _nTurrets]
+		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 	
 	/*
@@ -663,7 +681,21 @@ CLASS(UNIT_CLASS_NAME, "");
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
 	} ENDMETHOD;
 
-
+	/*
+	Function: (static) getTemplateForSide
+	Get the appropriate unit template for the side specified
+	
+	Parameters: _side
+	
+	_side - side (WEST/EAST/INDEPENDENT/etc.)
+	
+	Returns: Template
+	*/
+	STATIC_METHOD("getTemplateForSide") {
+		params [P_THISCLASS, P_SIDE("_side")];
+		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
+	} ENDMETHOD;
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

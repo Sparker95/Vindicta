@@ -33,3 +33,11 @@ GROUP_TYPE_PATROL - Patrols that are walking around
 
 // Array with all group types
 #define GROUP_TYPE_ALL [0, 1, 2, 3, 4]
+
+
+#define GET_TEMPLATE(side) ( \
+		switch(side) do { \
+			case WEST: { tNATO }; \
+			case EAST: { tCSAT }; \
+			case INDEPENDENT: { tAAF }; \
+		})

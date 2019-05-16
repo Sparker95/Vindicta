@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:AI/Commander/sendHelpToPos.sqf",{456:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">send help to a position if possible</div></div>"});

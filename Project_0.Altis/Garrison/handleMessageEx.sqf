@@ -15,6 +15,7 @@ params [ ["_thisObject", "", [""]] , ["_msg", [], [[]]] ];
 pr _msgType = _msg select MESSAGE_ID_TYPE;
 
 if (_msgType == GARRISON_MESSAGE_PROCESS) then {
+	// process will do our asserts and locks
 	CALLM0(_thisObject, "process");
 };
 

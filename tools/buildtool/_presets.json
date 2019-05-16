@@ -1,0 +1,18 @@
+[
+    {
+        "sourceFolder": "Project_0.Altis",
+        "missionName": "Project_0-dev",
+        "map": "Altis",
+        "configFiles": [
+            "configs/dev/oop_config.hpp"
+        ]
+    },
+    {
+        "sourceFolder": "Project_0.Altis",
+        "missionName": "Project_0-release",
+        "map": "Altis",
+        "configFiles": [
+            "configs/release/oop_config.hpp"
+        ]
+    }
+]
