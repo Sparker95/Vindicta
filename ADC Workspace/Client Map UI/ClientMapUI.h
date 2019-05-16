@@ -1,6 +1,6 @@
 #include "ClientMapUI_Macros.h"
 
-#include "..\MissionUIControlClasses.h"
+#include "CustomControlClasses.h"
 class ClientMapUI
 {
 	idd = -1;
@@ -21,8 +21,8 @@ class ClientMapUI
 			w = safeZoneW * 0.132;
 			text = "Camp Foxtrot";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.85);
+			
 		};
-
 		class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB 
 		{
 			type = 1;
@@ -32,9 +32,9 @@ class ClientMapUI
 			w = safeZoneW * 0.05;
 			h = safeZoneH * 0.075;
 			text = "TAB 2";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);	
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_LOCP_TAB1 : MUI_BUTTON_TAB 
 		{
 			type = 1;
@@ -44,9 +44,9 @@ class ClientMapUI
 			w = safeZoneW * 0.044;
 			h = safeZoneH * 0.075;
 			text = "TAB 1";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);	
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB 
 		{
 			type = 1;
@@ -57,8 +57,8 @@ class ClientMapUI
 			h = safeZoneH * 0.075;
 			text = "TAB 3";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_LOCP_TAB_TXT : MUI_BASE 
 		{
 			type = 0;
@@ -69,9 +69,9 @@ class ClientMapUI
 			h = safeZoneH * 0.03;
 			text = "TAB HEADLINE";
 			colorBackground[] = {0,0,0,1};
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);	
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_LOCP_LISTBOX : MUI_LISTBOX 
 		{
 			type = 5;
@@ -89,9 +89,10 @@ class ClientMapUI
 				arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
 				arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
 				border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-			};	
+				
+			};
+			
 		};
-
 		class CMUI_BPANEL_BG : MUI_BG_BLACKTRANSPARENT 
 		{
 			type = 0;
@@ -101,9 +102,9 @@ class ClientMapUI
 			w = safeZoneW * 0.55;
 			h = safeZoneH * 0.032;
 			text = "";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);	
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_BPANEL_HINTS : MUI_STRUCT_TXT 
 		{
 			type = 13;
@@ -120,20 +121,19 @@ class ClientMapUI
 			{
 				
 			};
+			
 		};
-
 		class CMUI_BPANEL_BUTTON_1 : MUI_BUTTON_TXT 
 		{
 			type = 1;
 			idc = IDC_BPANEL_BUTTON_1;
-			x = safeZoneX + safeZoneW * 0.33;
-			y = safeZoneY + safeZoneH * 0.9445;
-			w = safeZoneW * 0.11;
+			x = safeZoneX + safeZoneW * 0.33020834;
+			y = safeZoneY + safeZoneH * 0.94444445;
+			w = safeZoneW * 0.10989584;
 			text = "BUTTON 1";
 			borderSize = 0;
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_BPANEL_BUTTON_2 : MUI_BUTTON_TXT 
 		{
 			type = 1;
@@ -143,9 +143,8 @@ class ClientMapUI
 			w = safeZoneW * 0.11;
 			text = "BUTTON 2";
 			borderSize = 0;
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			
 		};
-
 		class CMUI_BPANEL_BUTTON_3 : MUI_BUTTON_TXT 
 		{
 			type = 1;
@@ -155,7 +154,7 @@ class ClientMapUI
 			w = safeZoneW * 0.11;
 			text = "BUTTON 3";
 			borderSize = 0;
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);	
+			
 		};
 		
 	};
