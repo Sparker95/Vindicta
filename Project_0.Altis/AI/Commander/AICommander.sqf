@@ -264,7 +264,7 @@ CLASS("AICommander", "AI")
 		// Broadcast new data to clients, add it to JIP queue
 		pr _JIPID = (_thisObject+"_JIP_"+(str _side)); // We use this object as JIP id because it's a string :D
 		pr _args = [_ld, _side];
-		//REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "updateLocationData", _args, _thisSide, _JIPID);
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "updateLocationData", _args, _thisSide, _JIPID);
 	} ENDMETHOD;
 	
 	
