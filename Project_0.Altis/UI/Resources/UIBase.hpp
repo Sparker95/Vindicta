@@ -687,7 +687,7 @@ class RscListNBox
 	** standard stuff
 	*/
  type = CT_LISTNBOX;// 102; 
- style =ST_MULTI;
+ style = ST_MULTI;
  w = 0.4;   h = 0.4; 
  font = "TahomaB"; 
  sizeEx = 0.04; 
