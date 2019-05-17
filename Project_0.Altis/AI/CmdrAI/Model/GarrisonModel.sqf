@@ -36,6 +36,8 @@ CLASS("GarrisonModel", "ModelBase")
 	VARIABLE_ATTR("pos", []);
 	// What side this garrison belongs to.
 	VARIABLE_ATTR("side", []);
+	// What faction within the side this garrison belongs to.
+	VARIABLE_ATTR("faction", []);
 	// Id of the location the garrison is currently occupying.
 	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
 
@@ -50,6 +52,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", sideUnknown);
+		T_SETV("faction", "");
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
 		if(!IS_NULL_OBJECT(_actual)) then {
 			T_CALLM("sync", []);
@@ -90,6 +93,7 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_copy, "inCombat", T_GETV("inCombat"));
 		SETV(_copy, "pos", +T_GETV("pos"));
 		SETV(_copy, "side", T_GETV("side"));
+		SETV(_copy, "faction", T_GETV("faction"));
 		SETV(_copy, "locationId", T_GETV("locationId"));
 		_copy
 	} ENDMETHOD;
@@ -107,6 +111,9 @@ CLASS("GarrisonModel", "ModelBase")
 		} else {
 			private _actualSide = CALLM(_actual, "getSide", []);
 			T_SETV("side", _actualSide);
+
+			private _actualFaction = CALLM(_actual, "getFaction", []);
+			T_SETV("faction", _actualFaction);
 			
 			T_SETV("efficiency", _newEff);
 

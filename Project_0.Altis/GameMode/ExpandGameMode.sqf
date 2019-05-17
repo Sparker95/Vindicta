@@ -36,7 +36,8 @@ CLASS("ExpandGameMode", "GameModeBase")
 					CALLM0(_gar, "activate");
 				};
 
-				if(GETV(_loc, "type") == "city") then {
+				// Probably we can move this to Base, we always have police right?
+				if(GETV(_loc, "type") == "policeStation") then {
 					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG 5]);
 					CALLM1(_gar, "setLocation", _loc);
 					CALLM1(_loc, "registerGarrison", _gar);
@@ -101,6 +102,8 @@ CLASS("ExpandGameMode", "GameModeBase")
 						};
 					};
 				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == "base" });
+				// TODO: Do this for policeStations as well, we need getTemplate for side + faction
+				// || GETV(_x, "type") == "policeStation" 
 			};
 		};
 

@@ -250,14 +250,13 @@ CLASS("GameModeBase", "")
 			{	
 				_x params ["_roadblockPos", "_roadblockDir"];
 				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
-				CALLM1(_roadblockLoc, "setDebugName", _mrk);
+				CALLM1(_roadblockLoc, "setName", _mrk);
 				CALLM1(_roadblockLoc, "setSide", _side);
 				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
 				CALLM1(_roadblockLoc, "setCapacityInf", 20);
 				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
 				// Do setType last cos it will update the debug marker for us
 				CALLM1(_roadblockLoc, "setType", "roadblock");
-
 			} forEach _roadBlocks;
 
 			// Create police stations

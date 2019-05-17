@@ -32,7 +32,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("type");
 	VARIABLE("side");
 	VARIABLE("name");
-	
+
 	VARIABLE("garrisons");
 	/*
 	VARIABLE("garrisonCiv");

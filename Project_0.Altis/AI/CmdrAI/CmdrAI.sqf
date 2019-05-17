@@ -25,7 +25,7 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			private _potentialSrcGarr = _x;
 			// Must be our garrison (only ours actually exist here so this is redundant!)
 			// Must be not already busy
@@ -51,7 +51,7 @@ CLASS("CmdrAI", "")
 		};
 
 		// Take tgt locations from future, so we take into account all in progress actions.
-		private _tgtLocations = CALLM(_worldFuture, "getLocations", []) select { 
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", [["base" ARG "outpost" ARG "roadblock"]]) select { 
 			// Must not have any of our garrisons already present (or this would be reinforcement action)
 			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
 		};
@@ -117,7 +117,7 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			// Must be on our side and not involved in another action
 			if((GETV(_x, "side") != _side) or { CALLM(_x, "isBusy", []) }) then {
 				false

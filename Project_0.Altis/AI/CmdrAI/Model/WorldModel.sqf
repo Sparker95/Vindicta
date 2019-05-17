@@ -309,13 +309,26 @@ CLASS("WorldModel", "")
 
 	// TODO: Optimize this
 	METHOD("getAliveGarrisons") {
-		params [P_THISOBJECT];
-		T_PRVAR(garrisons);
-		_garrisons select { !CALLM(_x, "isDead", []) }
+		params [P_THISOBJECT, P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
+
+		private _garrisons = T_GETV("garrisons")
+			select { 
+				!CALLM(_x, "isDead", []) 
+			};
+
+		if((count _includeFactions == 0) and (count _excludeFactions == 0)) then {
+			+_garrisons
+		} else {
+			_garrisons select {
+				private _faction = GETV(_x, "faction");
+				(count _includeFactions == 0 or {_faction in _includeFactions}) and 
+				{(count _excludeFactions == 0) or {!(_faction in _excludeFactions)}} 
+			}
+		};
 	} ENDMETHOD;
-	
+
 	METHOD("getNearestGarrisons") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		private _nearestGarrisons = [];
@@ -327,7 +340,7 @@ CLASS("WorldModel", "")
 			if(_maxDist == 0 or _dist <= _maxDist) then {
 				_nearestGarrisons pushBack [_dist, _garrison];
 			};
-		} forEach T_CALLM("getAliveGarrisons", []);
+		} forEach T_CALLM("getAliveGarrisons", [_includeFactions ARG _excludeFactions]);
 		_nearestGarrisons sort ASCENDING;
 		_nearestGarrisons
 	} ENDMETHOD;
@@ -358,11 +371,18 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getLocations") {
-		params [P_THISOBJECT, P_NUMBER("_id")];
+		params [P_THISOBJECT, P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		T_PRVAR(locations);
-		// Copy it, necessary?
-		+_locations
+		if((count _includeTypes == 0) and (count _excludeTypes == 0)) then {
+			+_locations
+		} else {
+			_locations select {
+				private _type = GETV(_x, "type");
+				(count _includeTypes == 0 or {_type in _includeTypes}) and 
+				{(count _excludeTypes == 0) or {!(_type in _excludeTypes)}} 
+			}
+		};
 	} ENDMETHOD;
 
 	METHOD("findLocationByActual") {
@@ -396,23 +416,16 @@ CLASS("WorldModel", "")
 	METHOD("getNearestLocations") {
 		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
-		T_PRVAR(locations);
-
+		//T_PRVAR(locations);
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		// TODO: is select, sort, while faster here?
-		private _nearestLocations = [];
-		{
-			private _location = _x;
-			private _type = GETV(_location, "type");
-			if((count _includeTypes == 0 or {_type in _includeTypes}) and 
-				{(count _excludeTypes == 0) or {!(_type in _excludeTypes)}}) then {
-				private _pos = GETV(_location, "pos");
-				private _dist = _pos distance _center;
-				if(_maxDist == 0 or _dist <= _maxDist) then {
-					_nearestLocations pushBack [_dist, _location];
-				};
+		private _nearestLocations = 
+			T_CALLM("getLocations", [_includeTypes ARG _excludeTypes])
+			apply {
+				[GETV(_x, "pos") distance _center, _x]
+			} select {
+				(_maxDist == 0) or (_x#0 <= _maxDist)
 			};
-		} forEach _locations;
 		_nearestLocations sort ASCENDING;
 		_nearestLocations
 	} ENDMETHOD;
