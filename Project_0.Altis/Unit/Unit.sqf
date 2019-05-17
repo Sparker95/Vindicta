@@ -45,6 +45,8 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
 
+		OOP_INFO_0("NEW UNIT");
+
 		// Check argument validity
 		private _valid = false;
 		if (isNull _ho) then {
@@ -120,6 +122,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("delete") {
 		params[["_thisObject", "", [""]]];
+
+		OOP_INFO_0("DELETE UNIT");
+
 		private _data = GET_MEM(_thisObject, "data");
 
 		//Despawn this unit if it was spawned
@@ -228,6 +233,10 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created infantry unit is Null. Unit data: %1", _data);
+						_objectHandle = _groupHandle createUnit ["I_Protagonist_VR_F", _pos, [], 10, "FORM"];
+					};
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 					_objectHandle allowFleeing 0;
 					
@@ -256,6 +265,11 @@ CLASS(UNIT_CLASS_NAME, "");
 					*/
 
 					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
+
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
+						_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
+					};
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 

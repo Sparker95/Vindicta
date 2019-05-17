@@ -745,6 +745,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 			// todo Handle drones??
 
+			// Select leader
+			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");
 
@@ -807,6 +810,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 
 			// todo Handle drones??
+			
+			// Select leader
+			CALLM0(_thisObject, "_selectLeaderOnSpawn");
 
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");
