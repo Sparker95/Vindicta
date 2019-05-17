@@ -29,7 +29,7 @@ CLASS("StatusQuoGameMode", "GameModeBase")
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);
 				
-				private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", [_side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+				private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 				CALLM1(_gar, "setLocation", _loc);
 				CALLM1(_loc, "registerGarrison", _gar);
 				CALLM0(_gar, "activate");

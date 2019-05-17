@@ -16,10 +16,3 @@ rem Clean first, never want to do iterative build, it makes no sense
 call npx gulp clean
 rem Build missions
 call npx gulp
-
-cd ..
-
-echo.
-
-pause
-exit /b
