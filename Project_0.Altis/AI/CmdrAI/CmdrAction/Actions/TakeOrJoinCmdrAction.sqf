@@ -160,8 +160,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 	METHOD("updateIntelFromDetachment") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
-
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
 		// Update progress of the detachment

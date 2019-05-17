@@ -18,8 +18,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("updateIntel") {
-		params [P_THISOBJECT, P_STRING("_world")];
-
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
 		T_PRVAR(intel);
@@ -47,7 +47,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
 		};
 
-		T_CALLM("updateIntelFromDetachment", [_intel]);
+		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
@@ -240,10 +240,10 @@ ENDCLASS;
 	private _targetLocation = NEW("LocationModel", [_world]);
 	SETV(_targetLocation, "pos", TARGET_POS);
 
-	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id"), GETV(_targetLocation, "id")]);
+	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetLocation, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world, _future]);
+	CALLM(_thisObject, "updateScore", [_world ARG _future]);
 
 	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
 	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);

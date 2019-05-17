@@ -47,7 +47,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar"));
 		};
 
-		T_CALLM("updateIntelFromDetachment", [_intel]);
+		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
@@ -120,10 +120,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 		
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] 
-			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
@@ -182,10 +179,10 @@ ENDCLASS;
 	SETV(_targetGarrison, "efficiency", _targetEff);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 
-	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id"), GETV(_targetGarrison, "id")]);
+	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world, _future]);
+	CALLM(_thisObject, "updateScore", [_world ARG _future]);
 
 	CALLM(_thisObject, "applyToSim", [_world]);
 	true

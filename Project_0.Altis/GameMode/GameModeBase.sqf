@@ -250,7 +250,7 @@ CLASS("GameModeBase", "")
 			{	
 				_x params ["_roadblockPos", "_roadblockDir"];
 				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
-				CALLM1(_roadblockLoc, "setName", _mrk);
+				CALLM1(_roadblockLoc, "setName", _roadblockLoc);
 				CALLM1(_roadblockLoc, "setSide", _side);
 				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
 				CALLM1(_roadblockLoc, "setCapacityInf", 20);

@@ -56,7 +56,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 
 		// Start date for this action, default to immediate
 		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
-		T_SETV("startDateVar", _detachmentEffVar);
+		T_SETV("startDateVar", _startDateVar);
 
 		// This is set in updateScore.
 		private _transportAmountVar = MAKE_AST_VAR(0);
@@ -192,7 +192,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 	METHOD("updateIntelFromDetachment") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
@@ -207,7 +207,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 	/* protected override */ METHOD("updateIntel") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
@@ -237,7 +237,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar"));
 		};
 
-		T_CALLM("updateIntelFromDetachment", [_intel]);
+		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
@@ -310,9 +310,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] 
-			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);

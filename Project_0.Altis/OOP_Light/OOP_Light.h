@@ -53,6 +53,7 @@
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
 
+// 
 #ifdef _SQF_VM
 
 #define TEXT_

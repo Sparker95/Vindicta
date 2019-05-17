@@ -46,7 +46,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos")];
+		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction")];
 
 		OOP_INFO_0("NEW GARRISON");
 
@@ -63,6 +63,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("effMobile", +T_EFF_null);
 		T_SETV("location", "");
 		T_SETV("active", false);
+		T_SETV("faction", _faction);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it

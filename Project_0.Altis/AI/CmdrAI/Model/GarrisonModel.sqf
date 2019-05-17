@@ -289,6 +289,7 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_detachment, "efficiency", _effAllocated);
 		SETV(_detachment, "pos", +T_GETV("pos"));
 		SETV(_detachment, "side", T_GETV("side"));
+		SETV(_detachment, "faction", T_GETV("faction"));
 		private _newEfficiency = EFF_DIFF(_efficiency, _effAllocated);
 		T_SETV("efficiency", _newEfficiency);
 
@@ -431,6 +432,7 @@ CLASS("GarrisonModel", "ModelBase")
 		OOP_INFO_MSG("%1", [_this]);
 
 		private _side = CALLM(_actual, "getSide", []);
+		private _faction = CALLM(_actual, "getFaction", []);
 		private _units = CALLM0(_actual, "getUnits") select { 
 			// Not interested in statics
 			!CALLM0(_x, "isStatic") and
@@ -676,7 +678,7 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
-		private _newGarrActual = NEW("Garrison", [_side]);
+		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction]);
 		private _pos = CALLM(_actual, "getPos", []);
 		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 

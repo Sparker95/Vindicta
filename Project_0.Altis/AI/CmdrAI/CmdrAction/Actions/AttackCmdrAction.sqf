@@ -110,6 +110,15 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				_targetVar]; 						// Target to attack (cluster or garrison supported)
 		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
 
+		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
+		private _newRtbTargetAST_Args = [
+				[CMDR_ACTION_STATE_RTB_FAILED], 	// If RTB failed then we select a new RTB target
+				CMDR_ACTION_STATE_RTB, 				// State change when successful
+				_srcGarrIdVar, 						// Originating garrison (default we return to)
+				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
+				_targetVar]; 						// New target
+		private _newRtbTargetAST = NEW("AST_SelectFallbackTarget", _newRtbTargetAST_Args);
+
 		private _rtbAST_Args = [
 				_thisObject, 						// This action (for debugging context)
 				[CMDR_ACTION_STATE_RTB], 			// Required state
@@ -120,15 +129,6 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				_targetVar, 						// Target to move to (initially the target cluster)
 				MAKE_AST_VAR(200)]; 				// Radius to move within
 		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
-
-		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
-		private _newRtbTargetAST_Args = [
-				[CMDR_ACTION_STATE_RTB_FAILED], 	// If RTB failed then we select a new RTB target
-				CMDR_ACTION_STATE_RTB, 				// State change when successful
-				_srcGarrIdVar, 						// Originating garrison (default we return to)
-				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
-				_targetVar]; 						// New target
-		private _newRtbTargetAST = NEW("AST_SelectFallbackTarget", _newRtbTargetAST_Args);
 
 		private _mergeBackAST_Args = [
 				_thisObject,
@@ -178,8 +178,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 	METHOD("updateIntelFromDetachment") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
-
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
 		// Update progress of the detachment
