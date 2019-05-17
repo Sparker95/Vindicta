@@ -10,12 +10,16 @@
 #include "common.hpp"
 
 /*
-Unit arrests/captures player
+Unit pursues, then searches target. Target is then either let go or arrested, which completes the action.
 
 States of FSM: 
 0: Pursuit of target
-1: Target has been caught
-2: Target is resisting
+1: Captor caught up with target, cue search or arrest
+2: Action failed
+3: Action completed
+
+Action FAILS if target escapes or goes overt, or if unit pursuing is in danger.
+Action COMPLETES if target is caught and either searched or arrested.
 
 Author: Jeroen Notenbomer, Marvis
 */
@@ -93,6 +97,8 @@ CLASS("ActionUnitArrest", "Action")
 				// attach script once at start
 				if !(T_GETV("stateChanged")) then {
 
+					T_SETV("stateChanged", true);
+
 					pr _handle = [_target,_captor] spawn {
 						params["_target","_captor"];
 						waitUntil {
@@ -109,7 +115,6 @@ CLASS("ActionUnitArrest", "Action")
 						};
 					};
 					T_SETV("spawnHandle", _handle);
-					T_SETV("stateChanged", true);
 
 				} else {
 
@@ -117,32 +122,45 @@ CLASS("ActionUnitArrest", "Action")
 
 				};
 
+				// condition for leaving current state
+				if (scriptDone GETV(_thisObject, "spawnHandle")) then {
+					SETV(_thisObject, "stateChanged", true);
+					SETV(_thisObject, "stateMachine", 3);
+				};
+
 			}; // stateMachine 0
 
-			// stateMachine 1, Target has been caught
+			// stateMachine 1, Captor caught up with target
 			case 1: {
 				OOP_INFO_0("ActionUnitArrest: StateMachine: 1");	
 
 
 			}; // stateMachine 1
 
-			// stateMachine 2, Target is resisting
+			// stateMachine 2, action failed
 			case 2: {	
-				OOP_INFO_0("ActionUnitArrest: StateMachine: ");
-
+				OOP_INFO_0("ActionUnitArrest: StateMachine: 2, FAILED.");
+				_state = ACTION_STATE_FAILED;
 			}; // stateMachine 2
+
+			// stateMachine 3, action completed
+			case 3: {	
+				OOP_INFO_0("ActionUnitArrest: StateMachine: 3, COMPLETED.");
+				_state = ACTION_STATE_COMPLETED;
+			}; // stateMachine 3
 		}; // switch end
 
 		
 		// Return the current state
 		T_SETV("state", _state);
-		_state;
+		_state
 	} ENDMETHOD;
 
 	// Handle unit being killed/removed from group during action
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 
+		OOP_INFO_0("ActionUnitArrest: handleUnitsRemoved called, action FAILED.");
 		T_SETV("state", ACTION_STATE_FAILED);
 		
 	} ENDMETHOD;
@@ -162,16 +180,4 @@ CLASS("ActionUnitArrest", "Action")
 		_captor setSpeedMode "LIMITED";
 		
 	} ENDMETHOD;
-	
-	 
-	// Calculates cost of this action
-	/*
-	STATIC_METHOD( ["_thisClass", "", [""]], "getCost") {
-		params [["_AI", "", [""]], ["_wsStart", [], [[]]], ["_wsEnd", [], [[]]]];
-		
-		// Return cost
-		0
-	} ENDMETHOD;
-	*/
-
 ENDCLASS;
