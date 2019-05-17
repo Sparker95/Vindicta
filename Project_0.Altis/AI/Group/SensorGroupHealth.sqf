@@ -60,6 +60,17 @@ CLASS("SensorGroupHealth", "SensorGroup")
 				[_hO] joinSilent _hO;
 			};
 		} forEach _infantryUnits;
+
+		// Check if the group leader is the proper unit
+		// ... just to be sure
+		pr _actualLeader = leader _hG;
+		pr _actualLeaderUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _actualLeader);
+		pr _properLeaderUnit = CALLM0(_group, "getLeader");
+		pr _properLeader = if (_properLeaderUnit != "") then { CALLM0(_properLeaderUnit, "getObjectHandle") } else {objNull};
+		if (_actualLeaderUnit != _properLeaderUnit) then {
+			if (alive _actualLeader && _properLeader != "") then { OOP_ERROR_5("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5", _group, _actualLeader, _actualLeaderUnit, _properLeader, _properLeaderUnit); };
+			if (_properLeader != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
+		};
 		
 	} ENDMETHOD;
 	
