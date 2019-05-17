@@ -3,7 +3,7 @@
 
 //Created by: Jeroen Notenbomer
 
-#define DEBUG
+//#define DEBUG
 
 #define INT_RESOLUTION 45	//in meters, average distance between spawn/way points
 
