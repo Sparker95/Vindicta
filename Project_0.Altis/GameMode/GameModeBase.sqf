@@ -260,12 +260,15 @@ CLASS("GameModeBase", "")
 			} forEach _roadBlocks;
 
 			// Create police stations
+			// Create police stations in cities
 			if (_locType == "city") then {
 				// TODO: Add some visual/designs to this
-				private _policeStationBuilding = nearestBuilding GETV(_loc, "pos");
+				private _posPolice = +GETV(_loc, "pos");
+				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
+				private _policeStationBuilding = nearestBuilding _posPolice;
 				private _policeStationLocation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
-
-				CALLM1(_policeStationLocation, "setName", format ["%1 police station", _locName] );
+				CALLM1(_policeStationLocation, "setSide", _side);
+				CALLM1(_policeStationLocation, "setName", format ["%1 police station" ARG _locName] );
 				CALLM1(_policeStationLocation, "setType", "policeStation");
 
 				// TODO: Get city size or building count and scale police capacity from that ?

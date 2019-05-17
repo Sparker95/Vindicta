@@ -333,9 +333,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				pr _units = CALLM0(_x, "getUnits");
 				pr _index = _units findIf {CALLM0(_x, "isInfantry")};
 				if (_index != -1) then {
-					pr _leaderHandle = CALLM0(_units select _index, "getObjectHandle");
-					pr _hG = CALLM0(_x, "getGroupHandle");
-					_hG selectLeader _leaderHandle;
+					CALLM1(_x, "setLeader", _units select _index);
 				};
 				_currentIndex = _currentIndex + _nVehThisGroup;
 			} else {
