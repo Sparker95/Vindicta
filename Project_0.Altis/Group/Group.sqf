@@ -438,6 +438,18 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		
 	} ENDMETHOD;
 
+	// All the units in the group have just been spawned so we must select the right leader
+	METHOD("_selectLeaderOnSpawn") {
+		params ["_thisObject"];
+
+		pr _data = T_GETV("data");
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		if (_leader == "") exitWith {};
+		pr _hO = CALLM0(_leader, "getObjectHandle");
+		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		_hG selectLeader _hO;
+	} ENDMETHOD;
+
 	// |                     S E T / G E T   G A R R I S O N                |
 	//
 	/*
@@ -643,6 +655,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
+
+			// Select leader
+			CALLM0(_thisObject, "_selectLeaderOnSpawn");
 
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");
