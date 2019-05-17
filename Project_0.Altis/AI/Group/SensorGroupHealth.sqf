@@ -66,9 +66,10 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		pr _actualLeader = leader _hG;
 		pr _actualLeaderUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _actualLeader);
 		pr _properLeaderUnit = CALLM0(_group, "getLeader");
+		pr _properLeader = if (_properLeaderUnit != "") then { CALLM0(_properLeaderUnit, "getObjectHandle") } else {objNull};
 		if (_actualLeaderUnit != _properLeaderUnit) then {
-			OOP_ERROR_5("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5", _group, _actualLeader, _actualLeaderUnit, CALLM0(_properLeaderUnit, "getObjectHandle"), _properLeaderUnit);
-			CALLM1(_group, "setLeader", _properLeaderUnit);
+			if (alive _actualLeader && _properLeader != "") then { OOP_ERROR_5("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5", _group, _actualLeader, _actualLeaderUnit, _properLeader, _properLeaderUnit); };
+			if (_properLeader != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
 		};
 		
 	} ENDMETHOD;
