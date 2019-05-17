@@ -1,17 +1,24 @@
 #include "..\..\common.hpp"
 
+// W       W   IIIII   PPPPP
+// W       W     I     P    P
+// W   W   W     I     PPPPP
+//  W W W W      I     P
+//   W   W     IIIII   P
+//
+// Put on hold for now, cmdr will try and attack known locations anyway, and first attack will generate 
+// intel for the second.
 
-// TODO: refactor out commonality for actions that consist of a detachment and a target.
-// Or at least share functionality via a library or something.
-CLASS("AttackCmdrAction", "CmdrAction")
+CLASS("ReconCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
+	// Actual position we are interested in
+	VARIABLE("position");
+	// Where we will move to (this is an OP, not the same as position)
 	VARIABLE("targetVar");
 	VARIABLE("splitFlagsVar");
 	VARIABLE("detachmentEffVar");
 	VARIABLE("detachedGarrIdVar");
 	VARIABLE("startDateVar");
-
-	VARIABLE("rtbTargetVar");
 
 #ifdef DEBUG_CMDRAI
 	VARIABLE("debugColor");
@@ -19,13 +26,14 @@ CLASS("AttackCmdrAction", "CmdrAction")
 #endif
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
+		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_POSITION("_position")];
 
 		T_SETV("srcGarrId", _srcGarrId);
+		T_SETV("position", _position);
 
 		// Start date for this action, default to immediate
-		private _detachmentEffVar = MAKE_AST_VAR(DATE_NOW);
-		T_SETV("startDateVar", _detachmentEffVar);
+		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
@@ -37,7 +45,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		T_SETV("targetVar", _targetVar);
 
 		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]]);
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG RECON_FORCE_HINT]]);
 		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
@@ -56,14 +64,16 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		params [P_THISOBJECT];
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(detachmentEffVar);
-		T_PRVAR(splitFlagsVar);
+		T_PRVAR(position);
 		T_PRVAR(targetVar);
+		T_PRVAR(splitFlagsVar);
+		T_PRVAR(detachmentEffVar);
 		T_PRVAR(startDateVar);
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
 		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+		private _positionVar = MAKE_AST_VAR(_position);
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
@@ -77,70 +87,56 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_srcGarrIdVar, 						// Garrison to split (constant)
 				_detachmentEffVar, 					// Efficiency we want the detachment to have (constant)
-				_splitFlagsVar, 					// Flags for split operation
+				_splitFlagsVar, // Flags for split operation
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
 				[CMDR_ACTION_STATE_SPLIT], 			// Do this after splitting
-				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful (can't fail)
+				CMDR_ACTION_STATE_ASSIGNED, 		// State change when successful (can't fail)
 				_splitGarrIdVar]; 					// Id of garrison to assign the action to
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
-		private _moveToTargetAST_Args = [
+		private _waitAST_Args = [
+				_thisObject,						// This action (for debugging context)
+				[CMDR_ACTION_STATE_ASSIGNED], 		// Start wait after we assigned the action to the detachment
+				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change if successful
+				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
+				_startDateVar,						// Date to wait until
+				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
+		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
+
+		private _moveAST_Args = [
 				_thisObject, 						// This action (for debugging context)
 				[CMDR_ACTION_STATE_READY_TO_MOVE], 		
 				CMDR_ACTION_STATE_MOVED, 			// State change when successful
 				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
-				CMDR_ACTION_STATE_RTB_FAILED, 		// State change when target is dead, we RTB
+				CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
 				_splitGarrIdVar, 					// Id of garrison to move
-				_targetVar, 						// Target to move to (initially the target cluster)
-				MAKE_AST_VAR(200)]; 				// Radius to move within
-		private _moveToTargetAST = NEW("AST_MoveGarrison", _moveToTargetAST_Args);
+				_targetVar, 						// Target to move to (initially the selected OP position)
+				MAKE_AST_VAR(50)]; 					// Radius to move within (we want to be close)
+		private _moveAST = NEW("AST_MoveGarrison", _moveAST_Args);
 
-		private _attackAST_Args = [
+		private _mergeAST_Args = [
 				_thisObject,
-				[CMDR_ACTION_STATE_MOVED], 			// Required that we finished move first.
-				CMDR_ACTION_STATE_RTB_FAILED, 		// State when we succeed, it leads to selecting new target (usually home)
-				CMDR_ACTION_STATE_READY_TO_MOVE, 	// If the target is out of range we move again
-				CMDR_ACTION_STATE_END, 				// If we are dead then go to end
-				CMDR_ACTION_STATE_RTB_FAILED, 		// If we timeout then RTB
-				_splitGarrIdVar, 					// Id of the garrison doing the attacking
-				_targetVar]; 						// Target to attack (cluster or garrison supported)
-		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
+				[CMDR_ACTION_STATE_MOVED], 			// Merge once we reach the destination (whatever it is)
+				CMDR_ACTION_STATE_END, 				// Once merged we are done
+				CMDR_ACTION_STATE_END, 				// If the detachment is dead then we can just end the action
+				CMDR_ACTION_STATE_TARGET_DEAD, 		// If the target is dead then reselect a new target
+				_splitGarrIdVar, 					// Id of the garrison we are merging
+				_targetVar]; 						// Target to merge to (garrison or location is valid). We will be updating target after the recon is done.
+		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
-		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
-		private _newRtbTargetAST_Args = [
-				[CMDR_ACTION_STATE_RTB_FAILED], 	// If RTB failed then we select a new RTB target
-				CMDR_ACTION_STATE_RTB, 				// State change when successful
+		private _newTargetAST_Args = [
+				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
+				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
 				_srcGarrIdVar, 						// Originating garrison (default we return to)
 				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
 				_targetVar]; 						// New target
-		private _newRtbTargetAST = NEW("AST_SelectFallbackTarget", _newRtbTargetAST_Args);
+		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
-		private _rtbAST_Args = [
-				_thisObject, 						// This action (for debugging context)
-				[CMDR_ACTION_STATE_RTB], 			// Required state
-				CMDR_ACTION_STATE_RTB_SUCCESS, 		// State change when successful
-				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
-				CMDR_ACTION_STATE_RTB_FAILED, 		// State change when target is dead. We will select another RTB target
-				_splitGarrIdVar, 					// Id of garrison to move
-				_targetVar, 						// Target to move to (initially the target cluster)
-				MAKE_AST_VAR(200)]; 				// Radius to move within
-		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
-
-		private _mergeBackAST_Args = [
-				_thisObject,
-				[CMDR_ACTION_STATE_RTB_SUCCESS], 	// Merge once we reach the destination (whatever it is)
-				CMDR_ACTION_STATE_END, 				// Once merged we are done
-				CMDR_ACTION_STATE_END, 				// If the detachment is dead then we can just end the action
-				CMDR_ACTION_STATE_RTB_FAILED, 		// If the target is dead then reselect a new target
-				_splitGarrIdVar, 					// Id of the garrison we are merging
-				_targetVar]; 						// Target to merge to (garrison or location is valid)
-		private _mergeBackAST = NEW("AST_MergeOrJoinTarget", _mergeBackAST_Args);
-
-		[_splitAST, _assignAST, _moveToTargetAST, _attackAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
+		[_splitAST, _assignAST, _waitAST, _moveAST, _mergeAST, _newTargetAST]
 	} ENDMETHOD;
 	
 	/* protected override */ METHOD("getLabel") {
@@ -178,8 +174,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 	METHOD("updateIntelFromDetachment") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
-		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
 		// Update progress of the detachment

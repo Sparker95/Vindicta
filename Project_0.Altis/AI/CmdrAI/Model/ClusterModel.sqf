@@ -89,11 +89,9 @@ CLASS("ClusterModel", "ModelBase")
 		};
 	} ENDMETHOD;
 
-	// Garrison is empty (not necessarily killed, could be merged to another garrison etc.)
+	// Cluster is empty (not necessarily killed, could be merged to another cluster etc.)
 	METHOD("killed") {
 		params [P_THISOBJECT];
-
-		T_PRVAR(world);
 		T_SETV("efficiency", []);
 	} ENDMETHOD;
 	

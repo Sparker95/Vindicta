@@ -210,6 +210,7 @@ CLASS("GameModeBase", "")
 	METHOD("initLocations") {
 		params [P_THISOBJECT];
 
+		private _allRoadBlocks = [];
 		{
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
@@ -241,6 +242,24 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
 
+			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_locSectorPos]) select {
+				private _newRoadBlock = _x;
+				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 400 } == NOT_FOUND
+			};
+			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
+			{	
+				_x params ["_roadblockPos", "_roadblockDir"];
+				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
+				CALLM1(_roadblockLoc, "setName", _roadblockLoc);
+				CALLM1(_roadblockLoc, "setSide", _side);
+				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
+				CALLM1(_roadblockLoc, "setCapacityInf", 20);
+				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
+				// Do setType last cos it will update the debug marker for us
+				CALLM1(_roadblockLoc, "setType", "roadblock");
+			} forEach _roadBlocks;
+
+			// Create police stations
 			// Create police stations in cities
 			if (_locType == "city") then {
 				// TODO: Add some visual/designs to this

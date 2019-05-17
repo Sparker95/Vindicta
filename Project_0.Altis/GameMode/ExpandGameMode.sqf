@@ -1,10 +1,10 @@
 #include "common.hpp"
 
-CLASS("BasesGameMode", "GameModeBase")
+CLASS("ExpandGameMode", "GameModeBase")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("name", "bases");
+		T_SETV("name", "expand");
 
 	} ENDMETHOD;
 
@@ -36,6 +36,7 @@ CLASS("BasesGameMode", "GameModeBase")
 					CALLM0(_gar, "activate");
 				};
 
+				// Probably we can move this to Base, we always have police right?
 				if(GETV(_loc, "type") == "policeStation") then {
 					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG 5]);
 					CALLM1(_gar, "setLocation", _loc);
@@ -57,25 +58,52 @@ CLASS("BasesGameMode", "GameModeBase")
 		// Move this to an existing thread?
 		[] spawn {
 			while{true} do {
+				#ifdef RELEASE_BUILD
+				sleep 3600;
+				#else
 				sleep 120;
+				#endif
 				{
 					private _loc = _x;
 					private _side = GETV(_loc, "side");
 					private _template = GET_TEMPLATE(_side);
 					private _targetCInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
-					private _unitCount = CALLM(_loc, "countAvailableUnits", [_side]);
-					if(_unitCount >= 6 and _unitCount < _targetCInf) then {
-						private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
-						private _garrison = _garrisons#0;
-						private _remaining = _targetCInf - _unitCount;
-						systemChat format["Spawning %1 units at %2", _remaining, _loc];
-						while {_remaining > 0} do {
-							CALLM2(_garrison, "postMethodSync", "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_PATROL])
-								params ["_newGroup", "_unitCount"];
-							_remaining = _remaining - _unitCount;
+
+					private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
+					if (count _garrisons == 0) exitWith {};
+					private _garrison = _garrisons#0;
+					if(not CALLM(_garrison, "isSpawned", [])) then {
+						private _infCount = count CALLM(_garrison, "getInfantryUnits", []);
+						if(_infCount < _targetCInf) then {
+							private _remaining = _targetCInf - _infCount;
+							systemChat format["Spawning %1 units at %2", _remaining, _loc];
+							while {_remaining > 0} do {
+								CALLM2(_garrison, "postMethodSync", "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_PATROL])
+									params ["_newGroup", "_unitCount"];
+								_remaining = _remaining - _unitCount;
+							};
+						};
+
+						private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+						private _vehCount = count CALLM(_garrison, "getVehicleUnits", []);
+						
+						if(_vehCount < _cVehGround) then {
+							systemChat format["Spawning %1 trucks at %2", _cVehGround - _vehCount, _loc];
+						};
+
+						while {_vehCount < _cVehGround} do {
+							private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
+							if (CALL_METHOD(_newUnit, "isValid", [])) then {
+								CALLM2(_garrison, "postMethodSync", "addUnit", [_newUnit]);
+								_vehCount = _vehCount + 1;
+							} else {
+								DELETE(_newUnit);
+							};
 						};
 					};
 				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == "base" });
+				// TODO: Do this for policeStations as well, we need getTemplate for side + faction
+				// || GETV(_x, "type") == "policeStation" 
 			};
 		};
 

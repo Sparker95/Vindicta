@@ -19,8 +19,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		T_SETV("srcGarrId", _srcGarrId);
 
 		// Start date for this action, default to immediate
-		private _detachmentEffVar = MAKE_AST_VAR(DATE_NOW);
-		T_SETV("startDateVar", _detachmentEffVar);
+		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
@@ -32,7 +32,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		T_SETV("targetVar", _targetVar);
 
 		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]]);
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]]);
 		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
@@ -117,8 +117,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _newTargetAST_Args = [
 				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
-				_srcGarrIdVar, 						// Id of the garrison we are moving (for context)
-				_splitGarrIdVar, 					// Originating garrison (default we return to)
+				_srcGarrIdVar, 						// Originating garrison (default we return to)
+				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
 				_targetVar]; 						// New target
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);
 
@@ -160,8 +160,8 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	} ENDMETHOD;
 
 	METHOD("updateIntelFromDetachment") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
-
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
 		// Update progress of the detachment

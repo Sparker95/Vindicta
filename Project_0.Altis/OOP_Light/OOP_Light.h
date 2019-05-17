@@ -39,7 +39,7 @@
 // As well as other assertions
 // It's a global flag, must be defined here
 
-#define OOP_ASSERT
+// #define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 // Enables support for Arma Script Profiler globally
@@ -53,6 +53,7 @@
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
 
+// 
 #ifdef _SQF_VM
 
 #define TEXT_

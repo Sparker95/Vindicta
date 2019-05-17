@@ -33,8 +33,6 @@ CLASS("AICommander", "AI")
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 
-	VARIABLE("targetClusterActions"); // Array with ActionCommanderRespondToTargetCluster
-
 	VARIABLE("lastPlanningTime");
 	VARIABLE("cmdrAI");
 	VARIABLE("worldModel");
@@ -109,9 +107,6 @@ CLASS("AICommander", "AI")
 			};
 		};
 		#endif
-
-		// Array with ActionCommanderRespondToTargetCluster
-		T_SETV("targetClusterActions", []);
 		
 		// Create sensors
 		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
@@ -132,7 +127,7 @@ CLASS("AICommander", "AI")
 		// OOP_INFO_1("Registering %1 locations with Model", count _locations);
 		// { 
 		// 	T_CALLM()
-		// 	NEW("LocationModel", [_worldModel]+[_x]) 
+		// 	NEW("LocationModel", [_worldModel ARG _x]) 
 		// } forEach _locations;
 	} ENDMETHOD;
 	
@@ -155,24 +150,18 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "update clusters");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-		
-		// Check if there are any clusters without assigned actions
-		pr _actions = T_GETV("targetClusterActions");
+
+		// TODO: we should just respond to new cluster creation explicitly instead?
+		// Register for new clusters		
+		T_PRVAR(worldModel);
 		{
-			pr _ID = _x select TARGET_CLUSTER_ID_ID;
-			pr _index = _actions findIf {CALLM0(_x, "getTargetClusterID") == _ID};
-			
-			// If we didn't find any actions assigned to this target cluster
-			if (_index == -1) then {
-				OOP_INFO_1("Target cluster with ID %1 has no actions assigned!", _ID);
-				CALLM1(_thisObject, "onTargetClusterCreated", _x);
+			private _ID = _x select TARGET_CLUSTER_ID_ID;
+			private _cluster = [_thisObject ARG _ID];
+			if(IS_NULL_OBJECT(CALLM(_worldModel, "findClusterByActual", [_cluster]))) then {
+				OOP_INFO_1("Target cluster with ID %1 is new", _ID);
+				NEW("ClusterModel", [_worldModel ARG _cluster]);
 			};
 		} forEach T_GETV("targetClusters");
-
-		// Process cluster actions
-		{
-			CALLM0(_x, "process");
-		} forEach T_GETV("targetClusterActions");
 
 		// Delete old notifications
 		pr _nots = T_GETV("notifications");
@@ -235,6 +224,19 @@ CLASS("AICommander", "AI")
 		#endif
 	} ENDMETHOD;
 	
+	// Update stategic analysis of map to place roadblocks etc.
+	METHOD("updateMapAnalysis") {
+		params [P_THISOBJECT];
+		
+		// Where do we want roadblocks?
+		// Near garrisoned outposts I guess?
+		{
+			private _pos = CALLM(_x, "getPos", []);
+			private _allRoads = _posicion nearRoads (_size * 2) max (200);
+		} forEach (T_GETV("garrisons") select { !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) });
+
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// ----------------------------------------------------------------------
@@ -418,32 +420,22 @@ CLASS("AICommander", "AI")
 		_nextID
 	} ENDMETHOD;
 		
-	/*
-	Method: onTargetClusterCreated
-	Gets called on creation of a totally new target cluster
+	// // /*
+	// // Method: onTargetClusterCreated
+	// // Gets called on creation of a totally new target cluster
 	
-	Parameters: _tc
+	// // Parameters: _tc
 	
-	_tc - the new target cluster
+	// // _ID - the new target cluster ID (must already exist in the cluster array)
 	
-	Returns: nil
-	*/
-	METHOD("onTargetClusterCreated") {
-		params ["_thisObject", "_tc"];
-		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
-		
-		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
-		
-		// Create a new action to respond to this target cluster
-		pr _args = [_thisObject, _ID];
-		pr _newAction = NEW("ActionCommanderRespondToTargetCluster", _args);
-		T_GETV("targetClusterActions") pushBack _newAction;
-		
-		OOP_INFO_MSG("---- Created new action to respond to target cluster %1", [_tc]);
-
-		T_PRVAR(worldModel);
-		NEW("ClusterModel", [_worldModel]+[_args]);
-	} ENDMETHOD;
+	// // Returns: nil
+	// // */
+	// METHOD("onTargetClusterCreated") {
+	// 	params ["_thisObject", "_ID"];
+	// 	OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
+	// 	T_PRVAR(worldModel);
+	// 	NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
+	// } ENDMETHOD;
 
 	/*
 	Method: onTargetClusterSplitted
@@ -468,17 +460,9 @@ CLASS("AICommander", "AI")
 		// Relocate all actions assigned to the old cluster to the new cluster with maximum affinity
 		pr _newClusterID = _tcsNew select 0 select 1 select TARGET_CLUSTER_ID_ID;
 
-		// Notify the actions assigned to this cluster
-		OOP_INFO_1("Redirecting actions to new cluster, ID: %1", _newClusterID);
-		{
-			if (CALLM0(_x, "getTargetClusterID") == _IDOld) then {
-				CALLM1(_x, "setTargetClusterID", _newClusterID);
-			};
-		} forEach T_GETV("targetClusterActions");
-
 		T_PRVAR(worldModel);
 		// Retarget in the model
-		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject]+[_IDOld]]+[[_thisObject]+[_newClusterID]]);
+		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _newClusterID]]);
 	} ENDMETHOD;	
 
 	/*
@@ -501,17 +485,10 @@ CLASS("AICommander", "AI")
 		T_PRVAR(worldModel);
 
 		// Assign all actions from old IDs to new IDs
-		pr _actions = T_GETV("targetClusterActions");
 		{
 			pr _IDOld = _x;
 			// Retarget in the model
-			CALLM(_worldModel, "retargetClusterByActual", [[_thisObject]+[_IDOld]]+[[_thisObject]+[_IDnew]]);
-			{
-				pr _action = _x;
-				if (CALLM0(_action, "getTargetClusterID") == _IDOld) then {
-					CALLM1(_action, "setTargetClusterID", _IDnew);
-				};
-			} forEach T_GETV("targetClusterActions");
+			CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _IDnew]]);
 		} forEach _IDsOld;
 
 	} ENDMETHOD;
@@ -531,24 +508,8 @@ CLASS("AICommander", "AI")
 		
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
-		OOP_INFO_0("Stopping garrisons assigned to this target cluster");
-		pr _targetClusterActions = T_GETV("targetClusterActions");
-		pr _i = 0;
-		while { _i < (count _targetClusterActions)} do{
-			pr _action = _targetClusterActions select _i;
-			if (CALLM0(_action, "getTargetClusterID") == _ID) then {
-				// Terminate and delete the old action
-				OOP_INFO_1("Terminating and deleting action: %1", _action);
-				CALLM0(_action, "terminate");
-				DELETE(_action);
-				_targetClusterActions deleteAt _i;
-			} else {
-				_i = _i + 1;
-			};
-		};
 		
 	} ENDMETHOD;
-	
 	
 	/*
 	Method: getTargetCluster
@@ -575,274 +536,14 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	
 	/*
-	Method: allocateUnitsGroundQRF
-	Tries to find a location to send units from
+	Method: getThreat
+	Get estimated threat at a particular position
 	
-	Parameters: _pos, _requiredEff
+	Parameters:
+	_pos - <position>
 	
-	_pos - position where to send QRF to
-	_requiredEff - efficiency vector
-	
-	Returns: [_location, _garrison, _units, _groupsAndGroups]
+	Returns: Array - threat efficiency at _pos
 	*/
-	METHOD("allocateUnitsGroundQRF") {
-		params ["_thisObject", ["_pos", [], [[]]], ["_requiredEff", [], [[]]]];
-		
-		pr _side = T_GETV("side");
-		OOP_INFO_3("Allocating units for side: %1, pos: %2, required eff: %3", _side, _pos, _requiredEff);
-		private _allLocations = CALLSM0("Location", "getAll");
-		
-		// Find locations controled by this side
-		private _friendlyLocations = CALLM0(_thisObject, "getFriendlyLocations");
-		
-		// Select garrisons that are attached to locations
-		pr _friendlyDistGar = (T_GETV("garrisons") select { // Select only garrisons attached to locations for now
-			CALLM0(_x, "getLocation") != ""
-		}) apply {[CALLM0(_x, "getPos") distance2D _pos, _x]};
-		_friendlyDistGar sort true; // Ascending
-		
-		OOP_INFO_1("Friendly garrisons: %1", _friendlyDistGar);
-		
-		// ignore the nearest place
-		//_friendlyDistLoc deleteAt 0;
-		
-		// Find location that can deal with the threat
-		pr _allocatedUnits = []; // Array with units we have allocated
-		pr _allocatedGroupsAndUnits = []; // Array with groups we have allocated
-		pr _garrison = "";
-		pr _location = "";
-		
-		pr _allocatedVehicles = [];
-		pr _allocatedCrew = [];
-		pr _effAllocated = +T_EFF_null; // Efficiency of units allocated so far
-		pr _allocated = false;
-		scopeName "s0";
-		{ // forEach _friendlyDistGar;
-			scopeName "scopeLocLoop";
-			_x params ["_dist", "_gar"];
-			
-			OOP_INFO_3("Analyzing garrison: %1, pos: %2, distance: %3", _gar, CALLM0(_gar, "getPos"), _dist);
-			
-			pr _garEff = CALLM0(_gar, "getEfficiencyMobile");
-			
-			// Return values
-			_garrison = _gar;
-			_location = CALLM0(_gar, "getLocation");
-			
-			
-			// If units at this garrison can destroy the threat
-			if (([_garEff, _requiredEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) then {
-				OOP_INFO_0("  This location can destroy the threat");
-				scopeName "s1";
-				
-				pr _units = CALLM0(_gar, "getUnits") select {! CALLM0(_x, "isStatic")};
-				_units = _units apply {pr _eff = CALLM0(_x, "getEfficiency"); [0, _eff, _x]};
-				_allocatedUnits = [];
-				_allocatedGroupsAndUnits = [];
-				_allocatedCrew = [];
-				_allocatedVehicles = [];
-				_effAllocated = +T_EFF_null;
-				
-				// Allocate units per each efficiency category
-				pr _j = 0;
-				for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
-					// Exit now if we have allocated enough units to deal with the threat
-					if (([_effAllocated, _requiredEff] call t_fnc_canDestroy) == T_EFF_CAN_DESTROY_ALL) then {
-						breakTo "s1";
-					};
-					
-					// For every unit, set element 0 to efficiency value with index _i
-					{_x set [0, _x select 1 select _i];} forEach _units;
-					// Sort units in this efficiency category
-					_units sort false; // Descending
-					
-					// Add units until there are enough of them
-					pr _requiredEffCat = _requiredEff select _j; // Required efficiency in this category
-					pr _pickUnitID = 0;
-					while {(_effAllocated select _i < _requiredEffCat) && (_pickUnitID < count _units)} do {
-						pr _unit = _units select _pickUnitID select 2;
-						pr _group = CALLM0(_unit, "getGroup");
-						pr _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
-						// Try not to take troops from vehicle groups
-						pr _ignore = (CALLM0(_unit, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC]);
-						
-						if (!_ignore) then {							
-							// If it was a vehicle, and it had crew in its group, add the crew as well
-							if (CALLM0(_unit, "isVehicle")) then {
-								pr _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
-								// If there are more than one unit in a vehicle's group, then add the whole group
-								if (count _groupUnits > 1) then {
-									_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
-									// Add allocated crew to array
-									{
-										if (CALLM0(_x, "isInfantry")) then {
-											_allocatedCrew pushBack _x;
-										};
-									} forEach (CALLM0(_group, "getUnits"));
-								} else {
-									_allocatedUnits pushBackUnique _unit;
-								};
-								_allocatedVehicles pushBack _unit;
-								OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-							} else {
-								OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-								_allocatedUnits pushBack _unit;
-							};
-							pr _unitEff = _units select _pickUnitID select 1;
-							// Add to the allocated efficiency vector
-							_effAllocated = EFF_ADD(_effAllocated, _unitEff);
-							//OOP_INFO_1("     New efficiency value: %1", _effAllocated);
-						};
-						_pickUnitID = _pickUnitID + 1;
-					};
-					
-					_j = _j + 1;
-				};
-				
-				OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
-				
-				// Check if we have allocated enough units
-				if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
-				
-					OOP_INFO_0("   Allocated units can destroy the threat");
-					
-					pr _nCrewRequired = CALLSM1("Unit", "getRequiredCrew", _allocatedVehicles);
-					_nCrewRequired params ["_nDrivers", "_nTurrets"];
-					pr _nInfAllocated = {CALLM0(_x, "isInfantry")} count _allocatedUnits;
-					
-					// Do we need to find crew for vehicles?
-					if ((_nDrivers + _nTurrets) > (_nInfAllocated + count _allocatedCrew)) then {
-						pr _nMoreCrewRequired = _nDrivers + _nTurrets - _nInfAllocated - (count _allocatedCrew);
-						OOP_INFO_1("Allocating additional crew: %1 units", _nMoreCrewRequired);
-						pr _freeInfUnits = CALLM0(_gar, "getInfantryUnits") select {
-							if (_x in _allocatedUnits) then { false } else {
-								pr _group = CALLM0(_x, "getGroup");
-								if (_group == "") then { false } else {
-									if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL, GROUP_TYPE_BUILDING_SENTRY]) then {
-										true
-									} else {false};
-								};
-							};
-						};
-						
-						// Are there enough units left?
-						if (count _freeInfUnits < _nMoreCrewRequired) then {
-							// Not enough infantry here to equip all the vehicles we have allocated
-							// Go check other locations
-							OOP_INFO_0("   Failed to allocate additional crew");
-							breakTo "scopeLocLoop";
-						} else {
-							pr _crewToAdd = _freeInfUnits select [0, _nMoreCrewRequired];
-							
-							OOP_INFO_1("   Successfully allocated additional crew: %1", _crewToAdd);
-							// Add the allocated units to the array
-							_allocatedUnits append _crewToAdd;
-						};
-					};
-					
-					// Do we need to find transport vehicles?
-					if (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
-						pr _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
-						pr _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
-						//ade_dumpcallstack;
-						OOP_INFO_2("   Finding additional transport vehicles for %1 troops. Currently available cargo seats: %2", _nCargoSeatsRequired, _nCargoSeatsAvailable);
-						
-						// If we need more vehicles for transport
-						if (_nCargoSeatsAvailable < _nCargoSeatsRequired) then {
-						
-							OOP_INFO_0("   Currently NOT enough cargo seats");
-							
-							pr _nMoreCargoSeatsRequired = _nCargoSeatsRequired - _nCargoSeatsAvailable;
-							// Get all remaining vehicles in this garrison, sort them by their cargo infantry capacity
-							pr _availableVehicles = CALLM0(_gar, "getUnits") select {
-								CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-								if (_x in _allocatedVehicles || _catID != T_VEH) then { // Don't consider vehicles we have already taken and non-vehicles
-									false
-								} else {
-									if (_subcatID in T_VEH_ground_infantry_cargo) then {
-										true
-									} else {
-										false
-									};
-								};						
-							}; // select
-							pr _availableVehiclesCapacity = _availableVehicles apply {[CALLSM1("Unit", "getCargoInfantryCapacity", [_x]), _x]};
-							_availableVehiclesCapacity sort false; // Descending
-							
-							OOP_INFO_1("   Available additional vehicles with cargo capacity: %1", _availableVehiclesCapacity);
-							
-							// Add more vehicles while we can
-							pr _i = 0;
-							while {(_nMoreCargoSeatsRequired > 0) && (_i < count _availableVehiclesCapacity)} do {
-								OOP_INFO_2("   Added vehicle: %1, with cargo capacity: %2", _availableVehiclesCapacity select _i select 1, _availableVehiclesCapacity select _i select 0);
-								_allocatedUnits pushBack (_availableVehiclesCapacity select _i select 1);
-								_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - (_availableVehiclesCapacity select _i select 0);
-								_i = _i + 1;
-							};
-							
-							// IF we have finally found enough vehicles
-							if (_nMoreCargoSeatsRequired <= 0) then {
-								
-								OOP_INFO_0("   Successfully allocated additional vehicles!");
-								
-								// Success
-								_allocated = true;					
-								breakTo "s0";
-							} else {
-								// Not enough vehicles for everyone!
-								// Check other locations then
-								OOP_INFO_0("   Failed to allocate additional vehicles!");
-								breakTo "scopeLocLoop";
-							}; // if (_nMoreCargoSeatsRequired <= 0)
-						} else { // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
-							// We don't need more vehicles, it's fine
-							OOP_INFO_0("   Currently enough cargo seats");
-							_allocated = true;					
-							breakTo "s0";			
-						}; // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
-						
-					} else {
-						// No need to find transport vehicles
-						// We are done here!
-						OOP_INFO_0("   No need to find more transport vehicles");
-						_allocated = true;					
-						breakTo "s0";					
-					}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
-
-				} else { // if ([_effAllocated, _requiredEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
-					// Not enough units to deal with the threat
-					OOP_INFO_0("   Allocated units can NOT destroy the threat");
-					breakTo "scopeLocLoop";
-				};
-			} else {
-				OOP_INFO_0("  This location can NOT destroy the threat");
-			};
-		} forEach _friendlyDistGar;
-		
-		if (_allocated) then {
-			// Success!
-			OOP_INFO_0("Successfully allocated required units:");
-			{
-				OOP_INFO_2("   %1, %2", _x, CALLM0(_x, "getClassName"));
-			} forEach _allocatedUnits;
-			OOP_INFO_0("Allocated groups:");
-			{
-				OOP_INFO_1("  Group %1", _x);
-				{
-					OOP_INFO_2("     %1, %2", _x, CALLM0(_x, "getClassName"));
-				} forEach CALLM0(_x select 0, "getUnits");
-			} forEach _allocatedGroupsAndUnits;
-			
-			// Return
-			[_location, _garrison, _allocatedUnits, _allocatedGroupsAndUnits]
-		} else {
-			OOP_INFO_0("Couldn't allocate units!");
-			// Return
-			[]
-		};
-		
-	} ENDMETHOD;
-	
 	METHOD("getThreat") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		T_PRVAR(worldModel);
@@ -872,7 +573,7 @@ CLASS("AICommander", "AI")
 			T_GETV("garrisons") pushBack _gar; // I need you for my army!
 			CALLM2(_gar, "postMethodAsync", "ref", []);
 			T_PRVAR(worldModel);
-			_newModel = NEW("GarrisonModel", [_worldModel]+[_gar]);
+			_newModel = NEW("GarrisonModel", [_worldModel ARG _gar]);
 		};
 		_newModel
 	} ENDMETHOD;
@@ -896,7 +597,7 @@ CLASS("AICommander", "AI")
 		// CALLM2(_loc, "postMethodAsync", "ref", []);
 		T_PRVAR(worldModel);
 		// Just creating the location model is registering it with CmdrAI
-		NEW("LocationModel", [_worldModel]+[_loc]);
+		NEW("LocationModel", [_worldModel ARG _loc]);
 	} ENDMETHOD;
 
 	/*
@@ -916,7 +617,7 @@ CLASS("AICommander", "AI")
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
 		} else {
-			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar]+[_side]);
+			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar ARG _side]);
 		};
 	} ENDMETHOD;
 
