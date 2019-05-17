@@ -36,7 +36,7 @@ CLASS("BasesGameMode", "GameModeBase")
 					CALLM0(_gar, "activate");
 				};
 
-				if(GETV(_loc, "type") == "city") then {
+				if(GETV(_loc, "type") == "policeStation") then {
 					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG 5]);
 					CALLM1(_gar, "setLocation", _loc);
 					CALLM1(_loc, "registerGarrison", _gar);
