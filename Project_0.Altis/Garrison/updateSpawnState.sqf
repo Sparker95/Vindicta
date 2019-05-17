@@ -47,7 +47,7 @@ switch (T_GETV("spawned")) do {
 			pr _dstToThreshold = _dstMin - _dstSpawn;
 			pr _interval = (_dstToThreshold / _speedMax) max 1;
 			pr _interval = 2; // todo override this some day later
-			//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "debugName"), _dstMin];
+			//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "name"), _dstMin];
 			CALLM1(_timer, "setInterval", _interval);
 		};
 	};

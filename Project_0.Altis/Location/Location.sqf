@@ -31,7 +31,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("type");
 	VARIABLE("side");
-	VARIABLE("debugName");
+	VARIABLE("name");
 	
 	VARIABLE("garrisons");
 	/*
@@ -48,7 +48,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("spawned"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
 	VARIABLE("capacityInf"); // Infantry capacity
-	VARIABLE("capacityCiv"); // Infantry capacity
+	VARIABLE("capacityCiv"); // Civilian capacity
 	VARIABLE("cpModule"); // civilian module, might be replaced by custom script
 
 	STATIC_VARIABLE("all");
@@ -56,18 +56,18 @@ CLASS("Location", "MessageReceiverEx")
 
 	// |                 S E T   D E B U G   N A M E
 	/*
-	Method: setDebugName
+	Method: setName
 	Sets debug name of this MessageLoop.
 
-	Parameters: _debugName
+	Parameters: _name
 
-	_debugName - String
+	_name - String
 
 	Returns: nil
 	*/
-	METHOD("setDebugName") {
-		params [P_THISOBJECT, ["_debugName", "", [""]]];
-		T_SETV("debugName", _debugName);
+	METHOD("setName") {
+		params [P_THISOBJECT, ["_name", "", [""]]];
+		T_SETV("name", _name);
 	} ENDMETHOD;
 
 	METHOD("setCapacityInf") {
@@ -107,7 +107,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("side", CIVILIAN);
-		T_SETV("debugName", "noname");
+		T_SETV("name", "noname");
 		T_SETV("garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
@@ -160,9 +160,9 @@ CLASS("Location", "MessageReceiverEx")
 			_mrk setMarkerType "Empty";
 			_mrk setMarkerColor "ColorYellow";
 			_mrk setMarkerAlpha 1;
-			T_PRVAR(debugName);
+			T_PRVAR(name);
 			T_PRVAR(type);
-			_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _debugName, _type];
+			_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _name, _type];
 		};
 	} ENDMETHOD;
 	#endif
@@ -174,7 +174,7 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		T_SETV("debugName", nil);
+		T_SETV("name", nil);
 		T_SETV("garrisonCiv", nil);
 		T_SETV("garrisonMilAA", nil);
 		T_SETV("garrisonMilMain", nil);
