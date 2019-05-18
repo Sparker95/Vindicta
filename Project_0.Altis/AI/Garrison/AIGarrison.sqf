@@ -201,7 +201,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
-			CALLM1(_action, "handleGroupsAdded", [_groups]);
+			CALLM1(_action, "handleGroupsAdded", _groups);
 		};
 		
 		nil
