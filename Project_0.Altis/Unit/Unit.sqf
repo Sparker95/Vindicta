@@ -251,6 +251,9 @@ CLASS(UNIT_CLASS_NAME, "");
 					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {
 						CALLM1(_AI, "setSentryPos", _pos);
 					};
+
+					// Give intel to this unit
+					CALLSM2("UnitIntel", "initObject", _objectHandle, 2);
 				};
 				case T_VEH: {
 

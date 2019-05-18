@@ -108,7 +108,10 @@ player addEventHandler ["AnimChanged", {
 NEW("undercoverMonitor", [player]);
 
 // Create camp scroll menu
-player addAction ["Create Camp", "Camp\createCamp.sqf"];
+player addAction ["Create Camp", "Camp\createCamp.sqf", 0, 0];
+
+
+
 
 // Create scroll menu to talk to civilians
 pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
@@ -184,3 +187,6 @@ player addAction ["Talk to civilian", // title
                  false, //unconscious
                  "", //selection
                  ""]; //memoryPoint
+
+// Init the UnitIntel on player
+CALLSM1("UnitIntel", "initPlayer", player);

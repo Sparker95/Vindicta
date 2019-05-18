@@ -410,6 +410,48 @@ CLASS("AICommander", "AI")
 		_value
 	} ENDMETHOD;
 	
+	// Gets a random intel item from an enemy commander.
+	// It's quite a temporary action for now.
+	// Later we needto redo it.
+	METHOD("getRandomIntelFromEnemy") {
+		params ["_thisObject"];
+
+		pr _commandersEnemy = [gAICommanderWest, gAICommanderEast, gAICommanderInd] - [_thisObject];
+
+		OOP_INFO_1("Stealing intel from commanders: %1", _commandersEnemy);
+
+		pr _thisDB = T_GETV("intelDB");
+		{
+			OOP_INFO_1("Stealing intel from enemy commander: %1", _x);
+
+			pr _enemyDB = GETV(_x, "intelDB");
+			// Select intel items of the classes we are interested in
+			pr _classes = ["IntelCommanderActionReinforce", "IntelCommanderActionBuild", "IntelCommanderActionAttack", "IntelCommanderActionRecon"];
+			pr _potentialIntel = CALLM0(_enemyDB, "getAllIntel") select {
+				if (!CALLM1(_thisDB, "isIntelAdded", _x)) then { // We only care to steal it if we don't have it yet!
+					GET_OBJECT_CLASS(_x) in _classes; // Make sure the intel item is one of the interesting classes
+				} else {
+					false
+				};
+			};
+			
+			OOP_INFO_1("   Amount of potential intel items: %1", count _potentialIntel);
+
+			if (count _potentialIntel > 0) then {
+				// Chose a random item
+				pr _item = selectRandom _potentialIntel;
+
+				OOP_INFO_1("   Stealing intel item: %1", _item);
+
+				// Clone it and it to our database
+				pr _itemClone = CLONE(_item);
+				SETV(_itemClone, "source", _item); // Link it with the source
+				CALLM1(_thisDB, "addIntel", _itemClone);
+			};
+		} forEach _commandersEnemy;
+
+	} ENDMETHOD;
+
 	// Returns known locations which are assumed to be controlled by this AICommander
 	METHOD("getFriendlyLocations") {
 		params ["_thisObject"];
