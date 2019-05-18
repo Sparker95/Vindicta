@@ -23,7 +23,12 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin < _dstSpawn) then {
 			OOP_INFO_0("Spawning...");
 
-			CALLM0(_thisObject, "spawn");				
+			CALLM0(_thisObject, "spawn");
+
+			// Enable simulation for the build objects
+			{
+				_x enableSimulationGlobal true;
+			} forEach T_GETV("buildObjects");
 
 			// Set timer interval
 			CALLM1(_timer, "setInterval", 5);
@@ -44,6 +49,11 @@ switch (T_GETV("spawned")) do {
 			
 			CALLM0(_thisObject, "despawn");
 			
+			// Disable simulation for the build objects
+			{
+				_x enableSimulationGlobal false;
+			} forEach T_GETV("buildObjects");
+
 			T_SETV("spawned", false);
 		};
 	}; // case 1

@@ -1,0 +1,108 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#include "..\OOP_Light\OOP_Light.h"
+#include "Location.hpp"
+#include "..\Group\Group.hpp"
+
+// Class: Location
+/*
+Method: build
+Builds this location depending on its type
+*/
+
+//The main road of Altis
+#define ROAD_WIDTH_BIG		14.1
+//Medium road used in cities and between them
+#define ROAD_WIDTH_MEDIUM	10.1 
+//Dirt road
+#define ROAD_WIDTH_SMALL	7.2
+
+#define pr private
+
+params ["_thisObject"];
+
+if (T_GETV("isBuilt")) exitWith {
+	OOP_ERROR_0("Trying to build a location that is already built!");
+};
+
+if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
+	pr _pos = T_GETV("pos");
+
+	// Find the nearest road
+	pr _roads = (_pos nearRoads 300) apply {[_x distance2D _pos, _x]};
+	_roads sort true; // Ascending
+	pr _road = _roads select 0 select 1;
+	pr _roadPos = getPos _road;
+	pr _roadWidth = [_road, 0.2, 20] call misc_fnc_getRoadWidth;
+
+	// Estimate roadblock type
+	pr _roadblockType = "";
+	//Check how many houses the road has nearby
+	_no = nearestTerrainObjects [_roadPos, ["BUILDING", "HOUSE"], _roadWidth + 50, false, true];
+	//diag_log format ["Checking road: %1  objects count: %2", _roadIndex, _count];
+	pr _index = _no findIf {
+		_bb = boundingBoxReal _x;
+		_size = 1.5*vectorMagnitude [_bb select 0 select 0, _bb select 0 select 1, 0];
+		((_x distance _road) < (_size + _roadWidth)) // True if too close to road
+	};
+	if(_index == -1) then //No houses around, check for fences and walls
+	{
+		pr _no = nearestTerrainObjects [_roadPos, ["FENCE", "WALL", "ROCK", "ROCKS", "HIDE"], _roadWidth + 50, false, true];
+		_no findIf {
+			_bb = boundingBoxReal _x;
+			_size = 1.5*vectorMagnitude [_bb select 0 select 0, _bb select 0 select 1, 0];
+			((_x distance _road) < (_size + _roadWidth)) // True if too close to road
+		};
+		if(_index == -1) then //No objects around, its a good country roadblock
+		{
+			// No walls around, it's a country roadblock
+			_roadblockType = "country";
+		} else {
+			// Some walls around, it's a city roadblock
+			_roadblockType = "city";
+		};
+	} else {
+		_roadblockType = "city";
+	};
+
+	// Estimate if it's highway or not
+	pr _isHighway = (_roadWidth > 0.5*(ROAD_WIDTH_MEDIUM + ROAD_WIDTH_BIG));
+	pr _isCity = _roadblockType == "city";
+
+	// Select the right file with the composition
+	pr _files = [
+		[
+			["cmp_roadblock_enemy_medium_country_0.sqf"],
+			["cmp_roadblock_enemy_medium_city_0.sqf"]
+		],
+		[
+			["cmp_roadblock_enemy_big_country_0.sqf", "cmp_roadblock_enemy_big_country_1.sqf"],
+			["cmp_roadblock_enemy_big_city_0.sqf", "cmp_roadblock_enemy_big_city_0.sqf"]
+		]
+	];
+	
+	pr _file = selectRandom (_files select _isHighway select _isCity);
+	pr _objects = call compile preprocessFileLineNumbers ("Location\Compositions\" + _file);
+
+	// Delete surrounding trees
+	pr _no = nearestTerrainObjects [_roadPos, ["TREE", "SMALL TREE", "BUSH"], 30, false, true];
+	{hideObjectGlobal _x;} forEach _no;
+
+	// Build it!	
+	pr _roadDir = [_road] call misc_fnc_getRoadDirection;
+	pr _objects = [_roadPos, _roadDir, _objects] call BIS_fnc_ObjectsMapper;
+	T_SETV("buildObjects", _objects);
+
+	// Disable simulation for the objects we are not spawned
+	if (!T_GETV("spawned")) then {
+		{
+			_x enableSimulationGlobal false;
+		} forEach _objects;
+	};
+
+	// The End!
+	T_SETV("isBuilt", true);
+};
+
+OOP_ERROR_1("Build method is not implemented for location type: %1", T_GETV("type"));
