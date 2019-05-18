@@ -1,3 +1,5 @@
+#include "\A3\ui_f\hpp\defineCommonGrids.inc"
+
 #ifndef HG_MissionUIControlClassesh
 #define HG_MissionUIControlClassesh 1
 //Create a header guard to prevent duplicate include.
@@ -50,7 +52,7 @@ class MUI_BG_GRAYSOLID : MUI_BASE
 {
 	type = 0;
 	colorBackground[] = {0.12,0.12,0.12,1};
-	sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.745);
+	sizeEx = "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.75";
 };
 //#-0
 class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
@@ -85,7 +87,7 @@ class MUI_BUTTON_TXT : MUI_BASE
 	offsetPressedY = 0;
 	offsetX = 0;
 	offsetY = 0;
-	sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.98);
+	sizeEx = "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.98";
 	soundClick[] = {"",0.0,0.0};
 	soundEnter[] = {"",0.0,0.0};
 	soundEscape[] = {"",0.0,0.0};
@@ -106,23 +108,46 @@ class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 	h = 0;
 	sizeEx = 0;
 };
+
+// RscListNBox
 class MUI_LISTBOX : MUI_BASE 
 {
-	type = 5;
+	type = 102;
+	style = ST_MULTI;
+	columns[] = {0.0, 0.0, 0.0}; 
+
+	maxHistoryDelay = 1;
+	lineSpacing = 0.0 * GUI_GRID_H;
+	rowHeight = 0.9 * GUI_GRID_H;
+	headerHeight = 0.9 * GUI_GRID_H;
+
 	colorBackground[] = {0,0,0,0.6};
 	colorDisabled[] = {0,0,0,0.6};
 	colorSelect[] = {1,1,1,1};
-	maxHistoryDelay = 1;
-	rowHeight = 1;
 	soundSelect[] = {"",0.0,0.0};
 	colorSelect2[] = {1,1,1,1};
 	colorSelectBackground[] = {0,0,0,0.6};
 	colorSelectBackground2[] = {0,0,0,0.6};
+
 	period = 0;
+
+	autoScrollSpeed = -1; 
+	autoScrollDelay = 5; 
+	autoScrollRewind = 0;
+	drawSideArrows = 0;
+
+	idcLeft = -1; 
+	idcRight = -1; 
 
 	class ListScrollBar
 	{
-		
+	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
+	arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
+	border = "#(argb,8,8,3)color(1,1,1,1)";
+	color[] = {1,1,1,0.6};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {1,1,1,0.3};
+	thumb = "#(argb,8,8,3)color(1,1,1,1)";		
 	};
 };
 class MUI_STRUCT_TXT : MUI_BASE 
