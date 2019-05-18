@@ -335,6 +335,16 @@ CLASS("IntelCommanderAction", "Intel")
 	Strength of the units allocated for this job. Format is yet unknown.*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
 
+
+	METHOD("clientAdd") {
+		params [P_THISOBJECT];
+
+		systemChat format ["Added intel: %1", _thisObject];
+
+		// Hint
+		hint format ["Added intel: %1", _thisObject];
+	} ENDMETHOD;
+
 ENDCLASS;
 
 /*

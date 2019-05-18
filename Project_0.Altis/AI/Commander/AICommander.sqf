@@ -277,8 +277,9 @@ CLASS("AICommander", "AI")
 	
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
+	// _updateIfFound - if true, will update an existing item. if false, will not update it
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 
@@ -302,23 +303,25 @@ CLASS("AICommander", "AI")
 		if (_intelResult != "") then {
 			// There is an intel item with this location
 
-			OOP_INFO_1("Intel was found in existing database: %1", _loc);
+			if (_updateIfFound) then {
+				OOP_INFO_1("Intel was found in existing database: %1", _loc);
 
-			// Create intel item from location, update the old item
-			pr _args = [_loc, _updateType];
-			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+				// Create intel item from location, update the old item
+				pr _args = [_loc, _updateType, _accuracyRadius];
+				pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 
-			CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+				CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 
-			// Delete the intel object that we have created temporary
-			DELETE(_intel);
+				// Delete the intel object that we have created temporary
+				DELETE(_intel);
+			};
 		} else {
 			// There is no intel item with this location
 			
 			OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
 
 			// Create intel from location, add it
-			pr _args = [_loc, _updateType];
+			pr _args = [_loc, _updateType, _accuracyRadius];
 			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 			
 			OOP_INFO_1("Created intel item from location: %1", _intel);
@@ -336,7 +339,7 @@ CLASS("AICommander", "AI")
 	
 	// Creates a LocationData array from Location
 	STATIC_METHOD("createIntelFromLocation") {
-		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]]];
+		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 		
@@ -347,10 +350,19 @@ CLASS("AICommander", "AI")
 		
 		pr _value = NEW("IntelLocation", []);
 		
-		// Set position
+		// Set position and accuracy radius
 		pr _locPos = +(CALLM0(_loc, "getPos"));
 		_locPos resize 2;
+		if (_accuracyRadius > 0) then {
+			_locPos params ["_x", "_y"];
+			private _r = _accuracyRadius/(sqrt(2));
+			_locPos set [0, _x - _r + random(2*_r)];
+			_locPos set [1, _y - _r + random(2*_r)];
+		};
+		SETV(_value, "accuracyRadius", _accuracyRadius);
 		SETV(_value, "pos", _locPos);
+
+
 		
 		// Set time
 		//SETV(_value, "", set [CLD_ID_TIME, TIME_NOW];
@@ -398,6 +410,58 @@ CLASS("AICommander", "AI")
 		_value
 	} ENDMETHOD;
 	
+	// Gets a random intel item from an enemy commander.
+	// It's quite a temporary action for now.
+	// Later we needto redo it.
+	METHOD("getRandomIntelFromEnemy") {
+		params ["_thisObject", ["_clientOwner", 0]];
+
+		pr _commandersEnemy = [gAICommanderWest, gAICommanderEast, gAICommanderInd] - [_thisObject];
+
+		OOP_INFO_1("Stealing intel from commanders: %1", _commandersEnemy);
+
+		pr _intelAdded = false;
+		pr _thisDB = T_GETV("intelDB");
+		{
+			OOP_INFO_1("Stealing intel from enemy commander: %1", _x);
+
+			pr _enemyDB = GETV(_x, "intelDB");
+			// Select intel items of the classes we are interested in
+			pr _classes = ["IntelCommanderActionReinforce", "IntelCommanderActionBuild", "IntelCommanderActionAttack", "IntelCommanderActionRecon"];
+			pr _potentialIntel = CALLM0(_enemyDB, "getAllIntel") select {
+				if (!CALLM1(_thisDB, "isIntelAddedFromSource", _x)) then { // We only care to steal it if we don't have it yet!
+					GET_OBJECT_CLASS(_x) in _classes; // Make sure the intel item is one of the interesting classes
+				} else {
+					false
+				};
+			};
+			
+			OOP_INFO_1("   Amount of potential intel items: %1", count _potentialIntel);
+
+			if (count _potentialIntel > 0) then {
+				// Chose a random item
+				pr _item = selectRandom _potentialIntel;
+
+				OOP_INFO_1("   Stealing intel item: %1", _item);
+
+				// Clone it and it to our database
+				pr _itemClone = CLONE(_item);
+				SETV(_itemClone, "source", _item); // Link it with the source
+				CALLM1(_thisDB, "addIntel", _itemClone);
+
+				_intelAdded = true;
+			};
+		} forEach _commandersEnemy;
+
+		// Show some text on client's computer
+		if (_intelAdded) then {
+			"You have found some new intel!" remoteExecCall ["systemChat", _clientOwner];
+		} else {
+			"We already know this intel!" remoteExecCall ["systemChat", _clientOwner];
+		};
+
+	} ENDMETHOD;
+
 	// Returns known locations which are assumed to be controlled by this AICommander
 	METHOD("getFriendlyLocations") {
 		params ["_thisObject"];

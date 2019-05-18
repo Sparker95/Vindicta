@@ -1,3 +1,5 @@
+#include "CivilianPresence.hpp"
+
 //Slowly starts to spawn in civilians in the area
 
 params [["_module",objnull,[objnull]]];
@@ -31,6 +33,7 @@ _module spawn{
 			//spawn in units when module is active and total number is not reached.
 			if (count _units < _maxUnits) then{
 				private _unit = ["createUnit",[_module]] call bis_fnc_moduleCivilianPresence;
+				_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, 1, true]; // Set a variable on the created unit
 				if (!isNull _unit) then {_units pushBack _unit};
 			};
 		}else{

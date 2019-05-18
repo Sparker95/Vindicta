@@ -1,6 +1,10 @@
 #include "OOP_Light\OOP_Light.h"
 #include "AI\Stimulus\Stimulus.hpp"
 #include "AI\stimulusTypes.hpp"
+#include "CivilianPresence\CivilianPresence.hpp"
+#include "Location\Location.hpp"
+#include "AI\Commander\AICommander.hpp"
+#include "AI\Commander\LocationData.hpp"
 
 /*
 This is an event script.
@@ -104,4 +108,87 @@ player addEventHandler ["AnimChanged", {
 NEW("undercoverMonitor", [player]);
 
 // Create camp scroll menu
-player addAction ["Create Camp", "Camp\createCamp.sqf"];
+player addAction ["Create Camp", "Camp\createCamp.sqf", 0, 0];
+
+
+
+
+// Create scroll menu to talk to civilians
+pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
+    private _co = cursorObject;
+    (!isNil {_co getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && ((_target distance _co) < 3) 
+};
+
+_civDialogue = {
+    private _co = cursorObject;
+    player globalChat "Tell me if you know something!";
+
+    sleep 0.8;
+
+    if (!alive _co) exitWith {
+        _co globalChat "How can I talk if you have killed me you asshole!";
+    };
+
+    _co globalChat "Let me think...";
+    sleep (0.5+random 1);
+    
+    // Check nearby locations
+    private _locs = CALLSM0("Location", "getALl");
+    private _locsNear = _locs select {
+        CALLM0(_x, "getPos") distance player < 3000
+    };
+
+    if (count _locsNear == 0) then {
+        _co globalChat "I don't know anything!";
+    } else {
+        _co globalChat "I think I know something...";
+        diag_log format ["---- Civilian told about locations:"];
+        {
+            //[CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+            // Civilians know about police stations in cities
+            // And have limited knowledge about military facilities around
+            pr _type = CALLM0(_x, "getType");
+            private _updateLevel = -666;
+            private _accuracyRadius = 0;
+            private _dist = CALLM0(_x, "getPos") distance player;
+            private _distCoeff = 0.1; // How much accuracy radius increases with  distance
+            diag_log format ["   %1 %2", _x, _type];
+
+            switch (_type) do {
+                case LOCATION_TYPE_CITY: {_updateLevel = CLD_UPDATE_LEVEL_SIDE; };
+                case LOCATION_TYPE_POLICE_STATION: {_updateLevel = CLD_UPDATE_LEVEL_SIDE; };
+                case LOCATION_TYPE_ROADBLOCK: {
+                    if (GETV(_x, "isBuilt")) then {_updateLevel = CLD_UPDATE_LEVEL_SIDE;
+                    _accuracyRadius = 50+_dist*_distCoeff; };
+                };
+                case LOCATION_TYPE_CAMP: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
+                case LOCATION_TYPE_BASE: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
+                case LOCATION_TYPE_OUTPOST: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
+            };
+
+            if (_updateLevel != -666) then {
+                diag_log format ["    adding to database"];
+                private _commander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+			    CALLM2(_commander, "postMethodAsync", "updateLocationData", [_x ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
+            };
+        } forEach _locsNear;
+    };
+};
+
+player addAction ["Talk to civilian", // title
+                 _civDialogue, // Script
+                 0, // Arguments
+                 9000, // Priority
+                 true, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "call pr0_fnc_talkCond", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint
+
+
+
+// Init the UnitIntel on player
+CALLSM1("UnitIntel", "initPlayer", player);

@@ -251,6 +251,11 @@ CLASS(UNIT_CLASS_NAME, "");
 					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {
 						CALLM1(_AI, "setSentryPos", _pos);
 					};
+
+					// Give intel to this unit
+					if ((random 10) < 4) then {
+						CALLSM2("UnitIntel", "initObject", _objectHandle, 1+round(random 1));
+					};
 				};
 				case T_VEH: {
 
@@ -274,6 +279,10 @@ CLASS(UNIT_CLASS_NAME, "");
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
+
+					
+					// Give intel to this unit
+					CALLSM2("UnitIntel", "initObject", _objectHandle, 1);
 				};
 				case T_DRONE: {
 				};
