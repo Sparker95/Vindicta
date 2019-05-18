@@ -1,10 +1,15 @@
 /*
+Function: misc_fnc_getRoadWidth
 Measures the width of a road object with given precision
-paramerets: [_road, _precision, _maxWidth]
-	_road - road object
-	_precision - the precision with which to find the width
-	_maxWidth - the maximum width. If the road is wider, the return value will max at _maxWidth
+
+Parameters: _road, _precision, _maxWidth
+
+_road - road object
+_precision - the precision with which to find the width
+_maxWidth - the maximum width. If the road is wider, the return value will max at _maxWidth
+
 return value: number, road width or 0 if wrong road object was given
+
 Author: Sparker
 Date: 16.08.2017
 */
@@ -13,22 +18,7 @@ params [["_road", objNull, [objNull]], "_precision", "_maxWidth"];
 
 if(isNull _road) exitWith {0}; //Wrong data was given
 
-private _connectedRoads = roadsConnectedTo _road;
-
-private _numConnectedRoads = count _connectedRoads;
-if (_numConnectedRoads == 0) exitWith {0}; //Connected road not found, can't calculate direction
-
-private _direction = 0;
-if(_numConnectedRoads == 1) then //If it's the end of the road
-{
-	_direction = _road getDir (_connectedRoads select 0);
-	//diag_log "Detected one connected road";
-}
-else //Else approximate the direction by the direction between two nearest segments
-{
-	_direction = (_connectedRoads select 0) getDir (_connectedRoads select 1);
-	//diag_log "Detected two connected roads";
-};
+private _direction = [_road] call misc_fnc_getRoadDirection;
 
 //Spawn an arrow facing the road
 private _roadPos = getPos _road;
