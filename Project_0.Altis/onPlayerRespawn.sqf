@@ -188,5 +188,7 @@ player addAction ["Talk to civilian", // title
                  "", //selection
                  ""]; //memoryPoint
 
+
+
 // Init the UnitIntel on player
 CALLSM1("UnitIntel", "initPlayer", player);

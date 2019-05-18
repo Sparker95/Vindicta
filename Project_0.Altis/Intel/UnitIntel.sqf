@@ -86,11 +86,11 @@ CLASS("UnitIntel", "")
 			systemChat "You have found no intel there!";
 			OOP_ERROR_1("No intel found on object %1", _hO);
 		} else {
-			systemChat "You have found some intel!";
+			//systemChat "You have found some intel!";
 
 			// Do processing
 			pr _playerCommander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
-			CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", []);
+			CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", [clientOwner]);
 
 
 			// Decrease the counter or delete it completely
