@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include "..\Location\Location.hpp"
 
 CLASS("ExpandGameMode", "GameModeBase")
 
@@ -24,7 +25,8 @@ CLASS("ExpandGameMode", "GameModeBase")
 
 			if(!IS_NULL_OBJECT(_cmdr)) then {
 				CALLM(_cmdr, "registerLocation", [_loc]);
-				if(GETV(_loc, "type") == "base") then {
+				private _type = GETV(_loc, "type");
+				if(_type == LOCATION_TYPE_BASE) then {
 					private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 					private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 					private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
@@ -37,7 +39,7 @@ CLASS("ExpandGameMode", "GameModeBase")
 				};
 
 				// Probably we can move this to Base, we always have police right?
-				if(GETV(_loc, "type") == "policeStation") then {
+				if(_type == LOCATION_TYPE_POLICE_STATION) then {
 					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG 5]);
 					CALLM1(_gar, "setLocation", _loc);
 					CALLM1(_loc, "registerGarrison", _gar);
@@ -47,8 +49,16 @@ CLASS("ExpandGameMode", "GameModeBase")
 				// Send intel to commanders
 				{
 					private _sideCommander = GETV(_x, "side");
-					private _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+					if (_sideCommander != WEST) then { // Enemies are smart
+						private _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+					} else {
+						// If it's player side, let it only know about cities
+						if (_type == LOCATION_TYPE_CITY) then {
+							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+						};
+					};
+					
 				} forEach gCommanders;
 			};
 

@@ -277,8 +277,9 @@ CLASS("AICommander", "AI")
 	
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
+	// _updateIfFound - if true, will update an existing item. if false, will not update it
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 
@@ -302,23 +303,25 @@ CLASS("AICommander", "AI")
 		if (_intelResult != "") then {
 			// There is an intel item with this location
 
-			OOP_INFO_1("Intel was found in existing database: %1", _loc);
+			if (_updateIfFound) then {
+				OOP_INFO_1("Intel was found in existing database: %1", _loc);
 
-			// Create intel item from location, update the old item
-			pr _args = [_loc, _updateType];
-			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+				// Create intel item from location, update the old item
+				pr _args = [_loc, _updateType, _accuracyRadius];
+				pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 
-			CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+				CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 
-			// Delete the intel object that we have created temporary
-			DELETE(_intel);
+				// Delete the intel object that we have created temporary
+				DELETE(_intel);
+			};
 		} else {
 			// There is no intel item with this location
 			
 			OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
 
 			// Create intel from location, add it
-			pr _args = [_loc, _updateType];
+			pr _args = [_loc, _updateType, _accuracyRadius];
 			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 			
 			OOP_INFO_1("Created intel item from location: %1", _intel);
@@ -336,7 +339,7 @@ CLASS("AICommander", "AI")
 	
 	// Creates a LocationData array from Location
 	STATIC_METHOD("createIntelFromLocation") {
-		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]]];
+		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 		
@@ -347,10 +350,19 @@ CLASS("AICommander", "AI")
 		
 		pr _value = NEW("IntelLocation", []);
 		
-		// Set position
+		// Set position and accuracy radius
 		pr _locPos = +(CALLM0(_loc, "getPos"));
 		_locPos resize 2;
+		if (_accuracyRadius > 0) then {
+			_locPos params ["_x", "_y"];
+			private _r = _accuracyRadius/(sqrt(2));
+			_locPos set [0, _x - _r + random(2*_r)];
+			_locPos set [1, _y - _r + random(2*_r)];
+		};
+		SETV(_value, "accuracyRadius", _accuracyRadius);
 		SETV(_value, "pos", _locPos);
+
+
 		
 		// Set time
 		//SETV(_value, "", set [CLD_ID_TIME, TIME_NOW];
