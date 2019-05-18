@@ -25,3 +25,5 @@
 #define LOCATION_TYPE_CAMP "camp"
 #define LOCATION_TYPE_BASE "base"
 #define LOCATION_TYPE_OUTPOST "outpost"
+#define LOCATION_TYPE_POLICE_STATION "policeStation"
+#define LOCATION_TYPE_ROADBLOCK "roadblock"

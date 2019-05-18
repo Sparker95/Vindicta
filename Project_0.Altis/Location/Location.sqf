@@ -51,6 +51,9 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("capacityCiv"); // Civilian capacity
 	VARIABLE("cpModule"); // civilian module, might be replaced by custom script
 
+	VARIABLE("isBuilt"); // true if this location has been build (used for roadblocks)
+	VARIABLE("buildObjects"); // Array with objects we have built
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -81,7 +84,8 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
-
+		T_SETV("isBuilt", false);
+		T_SETV("buildObjects", []);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -667,6 +671,9 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Despawns the location
 	METHOD_FILE("despawn", "Location\despawn.sqf");
+
+	// Builds the location
+	METHOD_FILE("build", "Location\build.sqf");
 
 ENDCLASS;
 
