@@ -351,7 +351,7 @@ CLASS("Location", "MessageReceiverEx")
 		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
 		
 		if (_side == CIVILIAN) then {
-			T_GETV("garrisons")
+			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
 		};

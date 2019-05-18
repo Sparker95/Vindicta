@@ -261,7 +261,8 @@
 			"fn_eff_sub_ceil",
 			"fn_eff_simulate_attack",
 			"test_AddTest",
-			"test_Assert"
+			"test_Assert",
+			"gMessageLoopMain"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

@@ -238,22 +238,27 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: (static) getAll
+	Method: (static) getAllActive
 	Returns all garrisons
 	
-	Parameters: _side
+	Parameters: _sidesInclude, _sidesExclude
 	
-	_side - optional, Side of garrisons to returns. If side is not provided, returns all garrisons.
+	_sidesInclude - optional, Sides of garrisons to include. If _sidesInclude is not provided, include all garrisons.
+	_sidesExclude - optional, Sides of garrisons to exclude. If _sidesExclude is not provided, no garrisons are excluded.
 
 	Returns: Array with <Garrison> objects
 	*/
-	STATIC_METHOD("getAll") {
-		params ["_thisClass", ["_side", sideEmpty]];
+	STATIC_METHOD("getAllActive") {
+		params [P_THISCLASS, P_ARRAY("_sidesInclude"), P_ARRAY("_sidesExclude")];
 		
-		if (_side == sideEmpty) then {
-			GETSV("Garrison", "all")
+		if (count _sidesInclude == 0 and count _sidesExclude == 0) then {
+			GETSV("Garrison", "all") select { GETV(_x, "active") };
 		} else {
-			GETSV("Garrison", "all") select {CALLM0(_x, "getSide") == _side}
+			GETSV("Garrison", "all") select { 
+				GETV(_x, "active") and 
+				{count _sidesInclude == 0 or {CALLM0(_x, "getSide") in _sidesInclude}}
+				and {count _sidesExclude == 0 or {!(CALLM0(_x, "getSide") in _sidesExclude)}}
+			}
 		};
 	} ENDMETHOD;
 

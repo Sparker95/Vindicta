@@ -107,7 +107,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// If we are dead then go to end
 				CMDR_ACTION_STATE_RTB_FAILED, 		// If we timeout then RTB
 				_splitGarrIdVar, 					// Id of the garrison doing the attacking
-				_targetVar]; 						// Target to attack (cluster or garrison supported)
+				_targetVar, 						// Target to attack (cluster or garrison supported)
+				MAKE_AST_VAR(200)];					// Max attack distance
 		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
 
 		// TODO: write AST to select a new combat target that is already engaged so we can act as backup

@@ -39,7 +39,6 @@ CLASS("LocationModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
-
 		private _copy = NEW("LocationModel", [_targetWorldModel]);
 
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
@@ -77,7 +76,7 @@ CLASS("LocationModel", "ModelBase")
 
 			T_PRVAR(world);
 
-			private _garrisonActuals = CALLM(_actual, "getGarrisons", [_side]);
+			private _garrisonActuals = CALLM(_actual, "getGarrisons", []);
 			private _garrisonIds = [];
 			{
 				private _garrison = CALLM(_world, "findGarrisonByActual", [_x]);

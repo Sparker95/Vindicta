@@ -138,12 +138,15 @@ CLASS("WorldModel", "")
 		T_PRVAR(rawThreatGrid);
 		T_PRVAR(rawDamageGrid);
 
-		#define THREAT_FADE_RATE 0.8
+		// Fade grids over time
+		// Threat fades to 50% over 60 minutes or so
+		// Damage fades to 50% over 7 hours or so
+		// https://www.desmos.com/calculator/iyesusko7z
+		#define THREAT_FADE_RATE 0.93
 		#define DAMAGE_FADE_RATE 0.99
-		#define FADE_RATE_PERIOD 60
+		#define FADE_RATE_PERIOD 360
 		#define POW(a, b) (exp ((b) * log (a)))
 
-		// Fade grids over time
 		T_PRVAR(lastGridUpdate);
 		private _dt = TIME_NOW - _lastGridUpdate;
 		T_SETV("lastGridUpdate", TIME_NOW);
@@ -563,7 +566,7 @@ CLASS("WorldModel", "")
 
 		T_PRVAR(threatGrid);
 		if(_threatGrid isEqualTo objNull) exitWith {
-			EFF_MIN_EFF
+			EFF_GARRISON_MIN_EFF
 		};
 		T_PRVAR(damageGrid);
 
@@ -574,7 +577,8 @@ CLASS("WorldModel", "")
 		_dmgSum = (0.015 * _dmgSum);
 		private _forceMul = 1.5 max (1 + _dmgSum * _dmgSum * _dmgSum * _dmgSum);
 		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _damageEff);
-		private _effMax = EFF_MAX(_threatEff, EFF_MIN_EFF);
+		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
+		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _dmgSum = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _dmgSum ARG _forceMul ARG _compositeEff ARG _effMax]);
 		_effMax
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.

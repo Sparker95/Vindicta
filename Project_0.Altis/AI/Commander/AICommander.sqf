@@ -48,7 +48,7 @@ CLASS("AICommander", "AI")
 	#endif
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
+		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
 		
 		OOP_INFO_1("Initializing Commander for side %1", str(_side));
 		
@@ -132,7 +132,7 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
 		
@@ -223,26 +223,13 @@ CLASS("AICommander", "AI")
 		T_SETV("stateStart", TIME_NOW);
 		#endif
 	} ENDMETHOD;
-	
-	// Update stategic analysis of map to place roadblocks etc.
-	METHOD("updateMapAnalysis") {
-		params [P_THISOBJECT];
-		
-		// Where do we want roadblocks?
-		// Near garrisoned outposts I guess?
-		{
-			private _pos = CALLM(_x, "getPos", []);
-			private _allRoads = _posicion nearRoads (_size * 2) max (200);
-		} forEach (T_GETV("garrisons") select { !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) });
-
-	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// ----------------------------------------------------------------------
 	
 	METHOD("getMessageLoop") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		T_GETV("msgLoop");
 	} ENDMETHOD;
@@ -258,7 +245,7 @@ CLASS("AICommander", "AI")
 	Returns: <AICommander>
 	*/
 	STATIC_METHOD("getCommanderAIOfSide") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
+		params [P_THISOBJECT, ["_side", WEST, [WEST]]];
 		switch (_side) do {
 			case WEST: {
 				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
@@ -278,7 +265,7 @@ CLASS("AICommander", "AI")
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true]];
+		params [P_THISOBJECT, ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 

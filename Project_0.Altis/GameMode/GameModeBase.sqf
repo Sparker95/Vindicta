@@ -242,6 +242,7 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
 
+			// TODO: improve this later
 			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_locSectorPos]) select {
 				private _newRoadBlock = _x;
 				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 400 } == NOT_FOUND

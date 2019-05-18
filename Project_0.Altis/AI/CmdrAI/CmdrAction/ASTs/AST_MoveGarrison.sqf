@@ -67,7 +67,7 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 				T_PRVAR(moving);
 				if(!_moving) then {
 					// Start moving
-					OOP_INFO_MSG("[w %1] Move %3 to %4: started", [_world ARG _garr ARG _targetPos]);
+					OOP_INFO_MSG("[w %1] Move %2 to %3: started", [_world ARG _garr ARG _targetPos]);
 					CALLM(_garr, "moveActual", [_targetPos ARG _radius]);
 					T_SETV("moving", true);
 				} else {
