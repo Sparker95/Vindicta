@@ -154,6 +154,7 @@ class MUI_BUTTON_TXT : MUI_BASE
 	onButtonUp = "";
 	onLBDrop = "";
 	onMouseButtonClick = "";
+	onMouseEnter = "";
 	
 };
 //#-1
@@ -161,42 +162,26 @@ class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	h = 0;
 	sizeEx = 0;
+	onMouseEnter = "";
 	
 };
-class CMUI_LOCP_LISTBOXBG : MUI_LISTBOX 
+class MUI_LISTBOX : MUI_BASE 
 {
-    type = 5;
-    idc = IDC_LOCP_LISTBOXBG;
-    x = safeZoneX + safeZoneW * 0.86;
-    y = safeZoneY + safeZoneH * 0.183;
-    w = safeZoneW * 0.132;
-    h = safeZoneH * 0.55;
-    style = 16;
-    sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-    colorBackground[] = {0,0,0,0.6};
-};
-
-class CMUI_LOCP_LISTBOX : RscListNBox 
-{
-    type = 5;
-    idc = IDC_LOCP_LISTNBOX;
-    x = safeZoneX + safeZoneW * 0.86;
-    y = safeZoneY + safeZoneH * 0.183;
-    w = safeZoneW * 0.132;
-    h = safeZoneH * 0.55;
-    style = 16;
-    sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-    colorBackground[] = {0,0,0,0.6};
-    colorSelectBackground[] = {0, 0, 0, 0}; 
-    colorSelectBackground2[] = {0, 0, 0, 1}; 
-    class ListScrollBar
-    {
-        color[] = {1,1,1,1};
-        thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa";
-        arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa";
-        arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa";
-        border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa";
-    };	
+	colorBackground[] = {0,0,0,0.6};
+	colorDisabled[] = {0,0,0,0.6};
+	colorSelect[] = {1,1,1,1};
+	maxHistoryDelay = 1;
+	rowHeight = 1;
+	soundSelect[] = {"",0.0,0.0};
+	colorSelect2[] = {1,1,1,1};
+	colorSelectBackground[] = {0,0,0,0.6};
+	colorSelectBackground2[] = {0,0,0,0.6};
+	period = 0;
+	class ListScrollBar
+	{
+		
+	};
+	
 };
 class MUI_STRUCT_TXT : MUI_BASE 
 {

@@ -5,6 +5,8 @@ class ClientMapUI
 {
 	idd = -1;
 	enableSimulation = true;
+	movingEnable = true;
+	moving = true;
 	
 	class ControlsBackground
 	{
