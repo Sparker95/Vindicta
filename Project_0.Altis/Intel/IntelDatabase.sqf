@@ -58,17 +58,26 @@ CLASS("IntelDatabase", "")
 
 			OOP_INFO_1("ADD INTEL: %1", _item);
 
-			// Add to the hashmap of  existing items
 			pr _items = T_GETV("items");
-			_items setVariable [_item, 1];
 
 			// Add link from the source to this item
 			pr _source = GETV(_item, "source");
 			// If the intel item is linked to the source intel item, add the source to hashmap
 			if (!isNil "_source") then {
+				// If the source is specified, make sure we don't overwrite an existing source in the hashmap
 				OOP_INFO_2("  source intel of %1: %2", _item, _source);
+
 				pr _linkedItems = T_GETV("linkedItems");
-				_linkedItems setVariable [_source, _item];
+				if (isNil {_linkedItems getVariable _source}) then {
+					_linkedItems setVariable [_source, _item];
+					_items setVariable [_item, 1]; // Add to the hashmap of  existing items
+				} else {
+					// This source is already set in the hashmap, make an error!
+					OOP_ERROR_1("There is already an intel item linked to source item: %1", _source);
+				};
+			} else {
+				// If there is no source specified, just add it
+				_items setVariable [_item, 1]; // Add to the hashmap of  existing items
 			};
 		};
 	} ENDMETHOD;
