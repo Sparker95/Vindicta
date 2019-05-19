@@ -8,6 +8,7 @@
 #include "..\Resources\MapUI\MapUI_Macros.h"
 #include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
+#include "..\UIProfileColors.h"
 
 
 /*
@@ -24,17 +25,6 @@ CMUI_ColorEAST = [0.5,0,0,1];
 CMUI_ColorIND = [0,0.5,0,1];
 CMUI_ColorUnknown = [0.4,0,0.5,1];
 
-// hints that are shown when hovering over a button
-gCMUI_Hints = [
-"Hover over a button to learn more.",														// 0
-"Fast travel to any location. Select fast travel then click on a location on the map.",		// 1
-"Create a camp at your current location.",													// 2
-"Open the mission menu. Closes the map.",													// 3
-"View collected intel about the world or a selected camp, outpost or base.",				// 4
-"View units and groups at this location and give orders to this garrison.",					// 5
-"View settings and stuff. Don't really know."												// 6
-];
-
 CLASS(CLASS_NAME, "")
 
 	// Arrays of LOCATION_DATA structures
@@ -48,6 +38,9 @@ CLASS(CLASS_NAME, "")
 		pr _mapDisplay = findDisplay 12;
 
 		systemChat "new method called";
+
+		//listbox events
+		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { params ['_control']; CALLSM(CLASS_NAME, "onLBSelChanged", [_control]) }];
 
 		// bottom panel
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
@@ -76,7 +69,7 @@ CLASS(CLASS_NAME, "")
 		Description: Called when the mouse cursor enters the control.
 
 		Parameters: 
-		0: _control - IDC of the control which called this method
+		0: _control - Reference to the control which called this method
 	*/
 	STATIC_METHOD("onMouseEnter") {
 		params ["_thisClass", "_control"];
@@ -87,14 +80,14 @@ CLASS(CLASS_NAME, "")
 		// choose correct hint to display for this control
 		switch (_idc) do {
 			// bottom panel
-			case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 1); };
-			case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 2); };
-			case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 3); };
+			case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1"); };
+			case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2"); };
+			case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3"); };
 
 			// location panel
-			case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 4); };
-			case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 5); };
-			case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 6); };
+			case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
+			case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
+			case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
 		};
 
 	} ENDMETHOD;
@@ -105,14 +98,32 @@ CLASS(CLASS_NAME, "")
 		Description: Called when the mouse cursor exits the control.
 
 		Parameters: 
-		0: _control - IDC of the control which called this method
+		0: _control - Reference to the control which called this method
 	*/
 	STATIC_METHOD("onMouseExit") {
 		params ["_thisClass", "_control"];
 		pr _mapDisplay = findDisplay 12;
 		_control ctrlSetTextColor [1, 1, 1, 1];
 
-		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 0);
+		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_DEFAULT");
+
+	} ENDMETHOD;
+
+	/*
+		Method: onLBSelChanged
+		Description: Called when the selection inside the listbox has changed.
+
+		Parameters: 
+		0: _control - Reference to the control which called this method
+	*/
+	STATIC_METHOD("onLBSelChanged") {
+		params ["_thisClass", "_control"];
+		pr _mapDisplay = findDisplay 12;
+		// TODO: Display different descriptions for intel
+
+		systemChat "LB selection changed.";
+		
+		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
 
 	} ENDMETHOD;
 

@@ -4,6 +4,7 @@ class CMUI_LOCP_HEADLINE : MUI_HEADLINE
     x = safeZoneX + safeZoneW * 0.87;
     y = safeZoneY + safeZoneH * 0.042;
     w = safeZoneW * 0.126;
+    style = ST_UPPERCASE+ST_CENTER;
     text = "Camp Foxtrot";
 };
 
@@ -145,7 +146,7 @@ class CMUI_LOCP_DETAILTXT : MUI_EDIT
     y = safeZoneY + safeZoneH * 0.725;
     w = safeZoneW * 0.105;
     h = safeZoneH * 0.16;
-    text = "sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss";
+    text = "";
     colorBackground[] = {0,0,0,0};
     colorText[] = {1,1,1,1};           
 };

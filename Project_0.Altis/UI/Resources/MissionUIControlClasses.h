@@ -1,7 +1,7 @@
 #include "\A3\ui_f\hpp\defineCommonGrids.inc"
 #include "..\..\OOP_Light\OOP_Light.h"
 
-#define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.4"
+#define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.45"
 #define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.5"
 #define MUI_TXT_SIZE_M "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.65"
 #define MUI_TXT_SIZE_L "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.7"
@@ -69,11 +69,12 @@ class MUI_BG_BLACKTRANSPARENT : MUI_BASE
 	sizeEx = MUI_TXT_SIZE_S;
 };
 //#-0
-class MUI_HEADLINE : MUI_BASE 
+class MUI_HEADLINE : MUI_BASE
 {
-	sizeEx = MUI_TXT_SIZE_S;
+	type = 0;
+	sizeEx = MUI_TXT_SIZE_M;
 	h = safeZoneH * 0.02;
-	style = ST_UPPERCASE+ST_CENTER+ST_VCENTER;
+	style = ST_UPPERCASE+ST_CENTER;
 	colorBackground[] = {0.702,0.102,0.102,1};
 	colorText[] = {1,1,1,1};
 	shadow = 1;
@@ -128,19 +129,20 @@ class MUI_LISTNBOX : MUI_BASE
 	style = ST_MULTI;
 	columns[] = {0.0, 0.0, 0.0}; 
 	sizeEx = MUI_TXT_SIZE_M;
-	font = "PuristaLight";
+	font = "PuristaMedium";
 
 	maxHistoryDelay = 1;
 	lineSpacing = 0.0 * GUI_GRID_H;
 	rowHeight = 1.1 * GUI_GRID_H;
 	headerHeight = 0.9 * GUI_GRID_H;
 
-	colorDisabled[] = {0,0,0,0.6};
-	colorSelect[] = {1,1,1,1};
+	colorActive[] = {1,1,1,1};
+	colorDisabled[] = {0.5,0.5,0.5,0.75};
+	colorSelect[] = {0,0,0,1};
 	soundSelect[] = {"",0.0,0.0};
-	colorSelect2[] = {1,1,1,1};
-	colorSelectBackground[] = {0,0,0,0.6};
-	colorSelectBackground2[] = {0,0,0,0.6};
+	colorSelect2[] = {0,0,0,1};
+	colorSelectBackground[] = {1,1,1,1};
+	colorSelectBackground2[] = {0.2,1,0.8,1};
 
 	period = 0;
 
@@ -190,25 +192,18 @@ class MUI_EDIT : MUI_BASE
 	type = 2;
 	style = "16 + 512"; // multi line + no border
 	font = "PuristaMedium";
-	sizeEx = 0.04;
+	sizeEx = MUI_TXT_SIZE_XS;
 	autocomplete = "";
 	canModify = false; 
-	maxChars = 120; 
+	maxChars = 1000; 
 	forceDrawCaret = false;
 	colorSelection[] = {0,0,0,0};
 	colorText[] = {1,1,1,1};
 	colorDisabled[] = {0,0,0,0}; 
 	colorBackground[] = {0,0,0,0}; 
-	text = __EVAL("Line 1" + endl + "Line 2" + endl + "Line 3"); // how to output multiline
-};
-
-class MUI_MULTILINE_TXT : MUI_EDIT
-{
-	type = 0;
-	sizeEx = MUI_TXT_SIZE_S;
-	style = 16+512;
-	text = ["line1 %1 line2 %1 line3", endl];
-	lineSpacing = 1;
+	text = "";
+	lineSpacing = 1.1 * GUI_GRID_H;
 };
 
 #endif
+

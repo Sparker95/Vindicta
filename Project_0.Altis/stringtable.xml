@@ -123,3 +123,39 @@
 		</Container>
 	</Package>
 </Project>
+
+<Project name="ClientMapUI">
+	<Package name="ClientMapUI">
+		<Container name="Hints">
+			<Key ID="STR_CMUI_DEFAULT">
+				<Original>Move your cursor over a button to learn more.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON1">
+				<Original>Fast travel to any location. Select fast travel then click on a location on the map.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON2">
+				<Original>Create a camp at your current location.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON3">
+				<Original>Open the mission menu. Closes the map.</Original>
+			</Key>
+			<Key ID="STR_CMUI_TAB1">
+				<Original>View collected intel about the world or a selected camp, outpost or base.</Original>
+			</Key>
+			<Key ID="STR_CMUI_TAB2">
+				<Original>View units and groups at this location and give orders to this garrison.</Original>
+			</Key>
+			<Key ID="STR_CMUI_TAB3">
+				<Original>View settings and stuff. Don't really know.</Original>
+			</Key>
+			<Key ID="STR_CMUI_MORE">
+				<Original>Create a camp at your current location.</Original>
+			</Key>
+		</Container>
+		<Container name="IntelTxt">
+			<Key ID="STR_CMUI_INTEL_DEFAULT">
+				<Original>No description available.</Original>
+			</Key>
+		</Container>
+	</Package>
+</Project>
