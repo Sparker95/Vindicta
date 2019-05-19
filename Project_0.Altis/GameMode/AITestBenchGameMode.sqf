@@ -20,7 +20,7 @@ CLASS("AITestBenchGameMode", "GameModeBase")
 
 	} ENDMETHOD;
 
-	/* protected override */ METHOD("initServerOnly") {
+	/* protected override */ METHOD("populateLocations") {
 		params [P_THISOBJECT];
 
 		// Create initial garrisons at bases.

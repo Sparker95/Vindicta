@@ -50,6 +50,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("NEW GARRISON");
 
+		// Take our own ref that we will release in "destroy" function. This makes sure that delete never pre-empts destroy (assuming ref counting is done properly by other classes)
+		T_CALLM("ref", []);
+
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
@@ -203,6 +206,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 
 		__MUTEX_UNLOCK;
+		// Release our own ref. This might call delete if all other holders already released their refs.
+		T_CALLM("unref", []);
 	} ENDMETHOD;
 
 	/*
