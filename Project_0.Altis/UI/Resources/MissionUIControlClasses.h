@@ -1,4 +1,10 @@
 #include "\A3\ui_f\hpp\defineCommonGrids.inc"
+#include "..\..\OOP_Light\OOP_Light.h"
+
+#define MUI_TXT_SIZE_BUTTON
+#define MUI_TXT_SIZE_HEADLINE
+#define MUI_TXT_SIZE_
+
 
 #ifndef HG_MissionUIControlClassesh
 #define HG_MissionUIControlClassesh 1
@@ -44,7 +50,7 @@ class MUI_BASE
 	onVideoStopped = "";
 	shadow = 0;
 	tileH = 0;
-	tileW = 0;	
+	tileW = 0;
 };
 
 //#-0
@@ -68,6 +74,7 @@ class MUI_HEADLINE : MUI_BASE
 	style = 2+192;
 	colorBackground[] = {0.702,0.102,0.102,1};
 	colorText[] = {1,1,1,1};
+	sizeEx = "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.45";
 };
 //#-1
 class MUI_BUTTON_TXT : MUI_BASE 
@@ -100,13 +107,14 @@ class MUI_BUTTON_TXT : MUI_BASE
 	onButtonUp = "";
 	onLBDrop = "";
 	onMouseButtonClick = "";
+	onMouseEnter = "";    
+    onMouseExit = "";   
 };
 //#-1
-class MUI_BUTTON_TAB : MUI_BUTTON_TXT 
+class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	type = 1;
-	h = 0;
-	sizeEx = 0;
+	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
 };
 
 // RscListNBox
@@ -121,7 +129,6 @@ class MUI_LISTBOX : MUI_BASE
 	rowHeight = 0.9 * GUI_GRID_H;
 	headerHeight = 0.9 * GUI_GRID_H;
 
-	colorBackground[] = {0,0,0,0.6};
 	colorDisabled[] = {0,0,0,0.6};
 	colorSelect[] = {1,1,1,1};
 	soundSelect[] = {"",0.0,0.0};
@@ -153,7 +160,6 @@ class MUI_LISTBOX : MUI_BASE
 class MUI_STRUCT_TXT : MUI_BASE 
 {
 	type = 13;
-	text = "";
 	size = 1;
 	class Attributes
 	{

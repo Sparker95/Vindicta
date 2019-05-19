@@ -24,12 +24,98 @@ CMUI_ColorEAST = [0.5,0,0,1];
 CMUI_ColorIND = [0,0.5,0,1];
 CMUI_ColorUnknown = [0.4,0,0.5,1];
 
+// hints that are shown when hovering over a button
+gCMUI_Hints = [
+"Hover over a button to learn more.",														// 0
+"Fast travel to any location. Select fast travel then click on a location on the map.",		// 1
+"Create a camp at your current location.",													// 2
+"Open the mission menu. Closes the map.",													// 3
+"View collected intel about the world or a selected camp, outpost or base.",				// 4
+"View units and groups at this location and give orders to this garrison.",					// 5
+"View settings and stuff. Don't really know."												// 6
+];
+
 CLASS(CLASS_NAME, "")
 
 	// Arrays of LOCATION_DATA structures
 	STATIC_VARIABLE("locationDataWest"); // What client's side knows about West knowledge about locations
 	STATIC_VARIABLE("locationDataEast");
 	STATIC_VARIABLE("locationDataInd");
+
+	// initialize UI event handlers
+	STATIC_METHOD("new") {
+		params [["_thisObject", "", [""]]];
+		pr _mapDisplay = findDisplay 12;
+
+		systemChat "new method called";
+
+		// bottom panel
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		// location panel
+		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+	} ENDMETHOD;
+
+	/*
+		Method: onMouseEnter
+		Description: Called when the mouse cursor enters the control.
+
+		Parameters: 
+		0: _control - IDC of the control which called this method
+	*/
+	STATIC_METHOD("onMouseEnter") {
+		params ["_thisClass", "_control"];
+		pr _mapDisplay = findDisplay 12;
+		pr _idc = ctrlIDC _control;
+		_control ctrlSetTextColor [0, 0, 0, 1];
+
+		// choose correct hint to display for this control
+		switch (_idc) do {
+			// bottom panel
+			case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 1); };
+			case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 2); };
+			case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 3); };
+
+			// location panel
+			case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 4); };
+			case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 5); };
+			case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 6); };
+		};
+
+	} ENDMETHOD;
+
+
+	/*
+		Method: onMouseExit
+		Description: Called when the mouse cursor exits the control.
+
+		Parameters: 
+		0: _control - IDC of the control which called this method
+	*/
+	STATIC_METHOD("onMouseExit") {
+		params ["_thisClass", "_control"];
+		pr _mapDisplay = findDisplay 12;
+		_control ctrlSetTextColor [1, 1, 1, 1];
+
+		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (gCMUI_Hints select 0);
+
+	} ENDMETHOD;
+
 
 	STATIC_METHOD("updateLocationData") {
 		params [["_thisObject", "", [""]], ["_locationData", [], [[]]], ["_side", CIVILIAN]];
