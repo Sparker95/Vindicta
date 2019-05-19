@@ -150,9 +150,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
-		// Unregister with the owning commander
-		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
-
 		// Detach from location if was attached to it
 		T_PRVAR(location);
 		if (!IS_NULL_OBJECT(_location)) then {
@@ -186,10 +183,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("units", nil);
 		T_SETV("groups", nil);
 
-
 		private _all = GETSV("Garrison", "all");
 		_all deleteAt (_all find _thisObject);
-		
 		
 		// Delete our timer
 		DELETE(T_GETV("timer"));
@@ -203,6 +198,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("effMobile", []);
 		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
 		T_SETV("effTotal", []);
+
+		// Unregister with the owning commander, do it last because it will cause an unref
+		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
+
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
@@ -1012,7 +1011,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Call the handleGroupsAdded directly since it's in the same thread
 		pr _AI = T_GETV("AI");
 		if (_AI != "") then {
-			CALLM1(_AI, "handleGroupsAdded", [[_group]]);
+			CALLM1(_AI, "handleGroupsAdded", [_group]);
 			CALLM0(_AI, "updateComposition");
 		};
 

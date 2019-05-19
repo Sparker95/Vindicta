@@ -6,6 +6,7 @@
 
 #include "common.hpp"
 
+#define ACTION_SCORE_CUTOFF 0.001
 #define REINF_MAX_DIST 4000
 
 // Commander planning AI
@@ -114,7 +115,7 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
 			GETV(_x, "side") == _side and 
 			{ !CALLM(_x, "isBusy", []) } and
@@ -152,11 +153,14 @@ CLASS("CmdrAI", "")
 		private _actions = [];
 		{
 			private _srcId = GETV(_x, "id");
+			private _srcFac = GETV(_x, "faction");
 			//private _srcPos = GETV(_x, "pos");
 			{
 				private _tgtId = GETV(_x, "id");
+				private _tgtFac = GETV(_x, "faction");
 				//private _tgtPos = GETV(_x, "pos");
 				if(_srcId != _tgtId 
+					and {_srcFac == _tgtFac}
 					// and {_srcPos distance _tgtPos < REINF_MAX_DIST}
 					) then {
 					private _params = [_srcId, _tgtId];
@@ -279,7 +283,7 @@ CLASS("CmdrAI", "")
 			// Sort the actions by their scores
 			private _scoresAndActions = _newActions apply { 
 				private _finalScore = CALLM(_x, "getFinalScore", []);
-				private _priority = if(_finalScore > 0) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
+				private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
 				[_priority, _finalScore, _x] 
 			};
 			_scoresAndActions sort DESCENDING;
@@ -293,8 +297,8 @@ CLASS("CmdrAI", "")
 
 			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
 			// TODO: Should we maybe be normalizing scores between 0 and 1?
-			if(_bestActionScore <= 0.001) exitWith {
-				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of 0.001, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
+			if(_bestActionScore <= ACTION_SCORE_CUTOFF) exitWith {
+				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
 			};
 
 			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);

@@ -213,10 +213,11 @@ CLASS("AICommander", "AI")
 		T_SETV("stateStart", TIME_NOW);
 		#endif
 
-		private _deadGarrisons = T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) };
 		{
+			// Unregister from ourselves straight away.
+			T_CALLM("_unregisterGarrison", [_x]);
 			CALLM2(_x, "postMethodAsync", "destroy", []);
-		} forEach _deadGarrisons;
+		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) });
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -558,7 +559,7 @@ CLASS("AICommander", "AI")
 
 			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 			T_GETV("garrisons") pushBack _gar; // I need you for my army!
-			CALLM2(_gar, "postMethodAsync", "ref", []);
+			CALLM(_gar, "ref", []);
 			T_PRVAR(worldModel);
 			_newModel = NEW("GarrisonModel", [_worldModel ARG _gar]);
 		};
@@ -622,7 +623,9 @@ CLASS("AICommander", "AI")
 			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
-			CALLM2(_gar, "postMethodAsync", "unref", []);
+			CALLM(_gar, "unref", []);
+		} else {
+			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
 	} ENDMETHOD;
 		

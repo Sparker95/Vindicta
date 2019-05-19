@@ -85,6 +85,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			_class = typeOf _hO;
 		};
 
+		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
+
 		// Create the data array
 		private _data = UNIT_DATA_DEFAULT;
 		_data set [UNIT_DATA_ID_CAT, _catID];
