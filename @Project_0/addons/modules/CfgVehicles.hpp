@@ -61,6 +61,8 @@ class CfgVehicles {
 					class City {name = "City"; value = "city";};
 					class Base {name = "Base"; value = "base";};
 					class Outpost {name = "Outpost"; value = "outpost";};
+					class Roadblock {name = "Roadblock"; value = "roadblock";};
+					class ObservationPost {name = "Observation Post"; value = "obsPost";};
 					// class Airfield	{name = "Airfield"; value = "airfield";};
 					// class Seaport	{name = "Seaport"; value = "seaport";};
 					// class Camp	{name = "Camp"; value = "camp";};

@@ -28,3 +28,4 @@
 #define LOCATION_TYPE_OUTPOST "outpost"
 #define LOCATION_TYPE_POLICE_STATION "policeStation"
 #define LOCATION_TYPE_ROADBLOCK "roadblock"
+#define LOCATION_TYPE_OBSERVATION_POST "obsPost"
