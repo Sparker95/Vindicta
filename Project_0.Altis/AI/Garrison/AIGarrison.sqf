@@ -33,7 +33,8 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
 	
-	// Flags
+	// Last time the garrison has any goal except for "GoalGarrisonRelax"
+	VARIABLE("lastBusyTime");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -55,7 +56,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorObserved);
-		
+
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
@@ -82,6 +83,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
 		T_SETV("assignedTargetsRadius", 0);
 		T_SETV("awareOfAssignedTargets", false);
+		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1); // Garrison should be able to switch to relax instantly after its creation
 		
 		// Update composition
 		CALLM0(_thisObject, "updateComposition");
@@ -123,7 +125,6 @@ CLASS("AIGarrison", "AI_GOAP")
 	} ENDMETHOD;
 	
 	
-	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("process") {
 		params ["_thisObject", ["_accelerate", false]];
 		
@@ -131,6 +132,14 @@ CLASS("AIGarrison", "AI_GOAP")
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
 		
+		// Update the "busy" timer
+		pr _currentGoal = T_GETV("currentGoal");
+		if (_currentGoal != "" && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
+			T_SETV("lastBusyTime", time);
+		};
+
+		#ifdef DEBUG_GOAL_MARKERS
+
 		// Update the markers
 		pr _gar = T_GETV("agent");
 		pr _mrk = _thisObject + MRK_GOAL;
@@ -171,9 +180,10 @@ CLASS("AIGarrison", "AI_GOAP")
 			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
+
+		#endif
 		
 	} ENDMETHOD;
-	#endif
 	
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
