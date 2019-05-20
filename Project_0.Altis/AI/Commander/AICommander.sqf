@@ -214,9 +214,9 @@ CLASS("AICommander", "AI")
 		#endif
 
 		{
-			// Unregister from ourselves straight away.
+			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
-			CALLM2(_x, "postMethodAsync", "destroy", []);
+			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
 		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) });
 
 		#ifdef DEBUG_COMMANDER

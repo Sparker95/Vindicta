@@ -57,10 +57,16 @@ CLASS("CmdrAI", "")
 		private _actions = [];
 		{
 			private _srcId = GETV(_x, "id");
+			private _srcPos = GETV(_x, "pos");
 			{
 				private _tgtId = GETV(_x, "id");
-				private _params = [_srcId, _tgtId];
-				_actions pushBack (NEW("TakeLocationCmdrAction", _params));
+				private _tgtPos = GETV(_x, "pos");
+				private _tgtType = GETV(_x, "type");
+				private _dist = _srcPos distance _tgtPos;
+				if((_tgtType == "roadblock" and _dist < 3000) or (_tgtType != "roadblock" and _dist < 10000)) then {
+					private _params = [_srcId, _tgtId];
+					_actions pushBack (NEW("TakeLocationCmdrAction", _params));
+				};
 			} forEach _tgtLocations;
 		} forEach _srcGarrisons;
 

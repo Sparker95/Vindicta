@@ -429,8 +429,6 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(actual);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
-		OOP_INFO_MSG("%1", [_this]);
-
 		private _side = CALLM(_actual, "getSide", []);
 		private _faction = CALLM(_actual, "getFaction", []);
 		private _units = CALLM0(_actual, "getUnits") select { 

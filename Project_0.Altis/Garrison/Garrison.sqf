@@ -141,14 +141,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	all units and groups, deletes the timer and AI components.
 	*/
 	METHOD("destroy") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL_DEFAULT_TRUE("_unregisterFromCmdr")];
 		
 		OOP_INFO_0("DESTROY GARRISON");
 
 		__MUTEX_LOCK;
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			OOP_WARNING_MSG("Garrison %1 is already destroyed", []);
+
+			__MUTEX_UNLOCK;
+			OOP_WARNING_MSG("Garrison is already destroyed", []);
 		};
 
 		ASSERT_THREAD(_thisObject);
@@ -156,7 +158,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Detach from location if was attached to it
 		T_PRVAR(location);
 		if (!IS_NULL_OBJECT(_location)) then {
-			CALLM(_location, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
+			CALLM(_location, "postMethodSync", ["unregisterGarrison" ARG [_thisObject]]);
 		};
 
 		// Despawn if spawned
@@ -202,10 +204,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
 		T_SETV("effTotal", []);
 
-		// Unregister with the owning commander, do it last because it will cause an unref
-		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
+		if(_unregisterFromCmdr) then {
+			// Unregister with the owning commander, do it last because it will cause an unref
+			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
+		};
 
 		__MUTEX_UNLOCK;
+
 		// Release our own ref. This might call delete if all other holders already released their refs.
 		T_CALLM("unref", []);
 	} ENDMETHOD;
@@ -1125,7 +1130,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	
 	METHOD("addGarrison") {
-		params[P_THISOBJECT, P_OOP_OBJECT("_garrison"), P_BOOL("_delete")];
+		params[P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
 
 		__MUTEX_LOCK;
@@ -1152,13 +1157,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_thisObject, "addUnit", _x);
 		} forEach _units;
 		
-		// Delete the other garrison if needed
-		if (_delete) then {
-			// TODO: we need to work out how to do this properly.
-			// DELETE(_garrison);
-			// HACK: Just unregister with AICommander for now so the model gets cleaned up
-			CALLM(_garrison, "destroy", []);
-		};
+		// // Delete the other garrison if needed
+		// if (_delete) then {
+		// 	// TODO: we need to work out how to do this properly.
+		// 	// DELETE(_garrison);
+		// 	// HACK: Just unregister with AICommander for now so the model gets cleaned up
+		// 	// CALLM(_garrison, "destroy", []);
+		// };
 
 		__MUTEX_UNLOCK;
 		
