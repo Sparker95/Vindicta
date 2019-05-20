@@ -23,7 +23,7 @@ Builds this location depending on its type
 params ["_thisObject"];
 
 if (T_GETV("isBuilt")) exitWith {
-	OOP_ERROR_0("Trying to build a location that is already built!");
+	//OOP_ERROR_0("Trying to build a location that is already built!");
 };
 
 if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
@@ -105,4 +105,4 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	T_SETV("isBuilt", true);
 };
 
-OOP_ERROR_1("Build method is not implemented for location type: %1", T_GETV("type"));
+// OOP_ERROR_1("Build method is not implemented for location type: %1", T_GETV("type"));

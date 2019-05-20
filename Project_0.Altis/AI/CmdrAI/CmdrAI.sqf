@@ -6,6 +6,7 @@
 
 #include "common.hpp"
 
+#define ACTION_SCORE_CUTOFF 0.001
 #define REINF_MAX_DIST 4000
 
 // Commander planning AI
@@ -27,23 +28,20 @@ CLASS("CmdrAI", "")
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			private _potentialSrcGarr = _x;
-			// Must be our garrison (only ours actually exist here so this is redundant!)
-			// Must be not already busy
+			// Must be not already busy 
+			!CALLM(_potentialSrcGarr, "isBusy", []) and 
 			// Must be at a location
+			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
 			// Must not be source of another inprogress take location mission
-			if ((GETV(_potentialSrcGarr, "side") != _side) or 
-				{ CALLM(_potentialSrcGarr, "isBusy", []) } or 
-				{ IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } or 
-				{ 
-					T_PRVAR(activeActions);
-					_activeActions findIf {
-						GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
-						{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
-					} != NOT_FOUND
-				}
-				) then {
-				false
-			} else {
+			{ 
+				T_PRVAR(activeActions);
+				_activeActions findIf {
+					GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
+					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
+				} == NOT_FOUND
+			} and
+			// Must have minimum efficiency available
+			{
 				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
 				// Must have at least a minimum available eff
 				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
@@ -59,10 +57,16 @@ CLASS("CmdrAI", "")
 		private _actions = [];
 		{
 			private _srcId = GETV(_x, "id");
+			private _srcPos = GETV(_x, "pos");
 			{
 				private _tgtId = GETV(_x, "id");
-				private _params = [_srcId, _tgtId];
-				_actions pushBack (NEW("TakeLocationCmdrAction", _params));
+				private _tgtPos = GETV(_x, "pos");
+				private _tgtType = GETV(_x, "type");
+				private _dist = _srcPos distance _tgtPos;
+				if((_tgtType == "roadblock" and _dist < 3000) or (_tgtType != "roadblock" and _dist < 10000)) then {
+					private _params = [_srcId, _tgtId];
+					_actions pushBack (NEW("TakeLocationCmdrAction", _params));
+				};
 			} forEach _tgtLocations;
 		} forEach _srcGarrisons;
 
@@ -117,11 +121,11 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
-			if((GETV(_x, "side") != _side) or { CALLM(_x, "isBusy", []) }) then {
-				false
-			} else {
+			GETV(_x, "side") == _side and 
+			{ !CALLM(_x, "isBusy", []) } and
+			{
 				// Not involved in another reinforce action
 				//private _action = CALLM(_x, "getAction", []);
 				//if(!IS_NULL_OBJECT(_action) and { OBJECT_PARENT_CLASS_STR(_action) == "ReinforceCmdrAction" }) exitWith {false};
@@ -138,30 +142,31 @@ CLASS("CmdrAI", "")
 		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
 		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
 			// Must be on our side
-			if(GETV(_x, "side") != _side) then {
-				false
-			} else {
+			GETV(_x, "side") == _side and 
+			{
 				// Not involved in another reinforce action
 				private _action = CALLM(_x, "getAction", []);
-				if(!IS_NULL_OBJECT(_action) and { OBJECT_PARENT_CLASS_STR(_action) == "ReinforceCmdrAction" }) then {
-					false
-				} else {
-					// Must be under desired efficiency by at least min reinforcement size
-					// private _eff = GETV(_x, "efficiency");
-					private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
-					!EFF_GT(_overDesiredEff, EFF_MUL_SCALAR(EFF_MIN_EFF, -1))
-				}
+				IS_NULL_OBJECT(_action) or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceCmdrAction" }
+			} and 
+			{
+				// Must be under desired efficiency by at least min reinforcement size
+				// private _eff = GETV(_x, "efficiency");
+				private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
+				!EFF_GT(_overDesiredEff, EFF_MUL_SCALAR(EFF_MIN_EFF, -1))
 			}
 		};
 
 		private _actions = [];
 		{
 			private _srcId = GETV(_x, "id");
+			private _srcFac = GETV(_x, "faction");
 			//private _srcPos = GETV(_x, "pos");
 			{
 				private _tgtId = GETV(_x, "id");
+				private _tgtFac = GETV(_x, "faction");
 				//private _tgtPos = GETV(_x, "pos");
 				if(_srcId != _tgtId 
+					and {_srcFac == _tgtFac}
 					// and {_srcPos distance _tgtPos < REINF_MAX_DIST}
 					) then {
 					private _params = [_srcId, _tgtId];
@@ -284,7 +289,7 @@ CLASS("CmdrAI", "")
 			// Sort the actions by their scores
 			private _scoresAndActions = _newActions apply { 
 				private _finalScore = CALLM(_x, "getFinalScore", []);
-				private _priority = if(_finalScore > 0) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
+				private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
 				[_priority, _finalScore, _x] 
 			};
 			_scoresAndActions sort DESCENDING;
@@ -298,8 +303,8 @@ CLASS("CmdrAI", "")
 
 			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
 			// TODO: Should we maybe be normalizing scores between 0 and 1?
-			if(_bestActionScore <= 0.001) exitWith {
-				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of 0.001, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
+			if(_bestActionScore <= ACTION_SCORE_CUTOFF) exitWith {
+				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
 			};
 
 			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);

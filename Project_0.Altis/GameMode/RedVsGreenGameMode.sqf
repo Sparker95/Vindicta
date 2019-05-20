@@ -1,0 +1,45 @@
+#include "common.hpp"
+
+CLASS("RedVsGreenGameMode", "GameModeBase")
+	VARIABLE("linePt");
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("name", "expand");
+		T_SETV("spawningEnabled", true);
+		
+		private _linePt = [
+			random 30000, random 30000
+		];
+		T_SETV("linePt", _linePt);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("getLocationOwner") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		
+		private _type = GETV(_loc, "type");
+
+		if(_type == LOCATION_TYPE_BASE or _type == LOCATION_TYPE_OUTPOST) then {
+			T_PRVAR(linePt);
+			private _locPos = CALLM(_loc, "getPos", []);
+			if(((_linePt#0 - 15000) * (_locPos#1 - 15000) - (_linePt#1 - 15000) * (_locPos#0 - 15000)) < 0) then {
+				east
+			} else {
+				independent
+			}
+		} else {
+		 	civilian
+		}
+
+		// if(GETV(_loc, "type") == LOCATION_TYPE_BASE) then {
+		// 	GETV(_loc, "side") 
+		// } else {
+		// 	civilian
+		// }
+	} ENDMETHOD;
+ENDCLASS;

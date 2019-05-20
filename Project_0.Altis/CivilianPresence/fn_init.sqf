@@ -3,13 +3,13 @@
 
 //Created by: Jeroen Notenbomer
 
-//#define DEBUG
+#ifndef RELEASE_BUILD
+//#define DEBUG_CIVILIAN_PRESENCE
+#endif
 
 #define INT_RESOLUTION 45	//in meters, average distance between spawn/way points
 
 params ["_pos","_border"];
-
-
 
 _pos set [2,0];
 private _rotation = 0;
@@ -88,7 +88,9 @@ for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESO
 		
 
 		//in case its a circle we need to skip the points that fall outside the circle
+		#ifdef DEBUG_CIVILIAN_PRESENCE	
 		diag_log ["JEROENTEST1", _isCircle, sqrt(abs _x ^2 + abs _y ^ 2), _border#0];
+		#endif
 
 		if(!_isCircle)then{
 			/*doing some rotation matrix calculations
@@ -107,7 +109,7 @@ for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESO
 		if (!_isCircle || _isCircle && {sqrt(abs _x ^ 2 + abs _y ^ 2) <= _border#0 - INT_RESOLUTION/2}) then{
 
 			//paint markers for debugging
-			#ifdef DEBUG				
+			#ifdef DEBUG_CIVILIAN_PRESENCE				
 			private _markerName = createMarker [format["%1",random 99999], _p]; 
 			_markerName setMarkerShape "ICON"; 
 			_markerName setMarkerType "hd_dot"; 
@@ -127,7 +129,7 @@ for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESO
 					_waypoint setVariable ["#positions",_positions];
 					_waypoints pushback _waypoint;
 					_spawnPoints pushback _waypoint;
-					#ifdef DEBUG				
+					#ifdef DEBUG_CIVILIAN_PRESENCE				
 					{
 						private _markerName = createMarker [format["%1",random 99999], _x]; 
 						_markerName setMarkerShape "ICON"; 
@@ -146,7 +148,7 @@ for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESO
 					_waypoint setVariable ["#positions",[getpos _road]];
 					_waypoints pushback _waypoint;
 					
-					#ifdef DEBUG	
+					#ifdef DEBUG_CIVILIAN_PRESENCE	
 					private _markerName = createMarker [format["%1",random 99999], getpos _road]; 
 					_markerName setMarkerShape "ICON"; 
 					_markerName setMarkerType "hd_dot"; 

@@ -160,7 +160,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			//Check the separation of the convoy
 			private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
 			#ifdef DEBUG_FORMATION
-			diag_log format [">>> Current separation: %1", _sCur];
+			OOP_DEBUG_MSG(">>> Current separation: %1", [_sCur]);
 			#endif
 			if(_sCur > 3*SEPARATION) then
 			{
@@ -172,7 +172,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 					T_SETV("speedLimit", _speedLimit);
 					(vehicle (leader _hG)) limitSpeed _speedLimit;
 					#ifdef DEBUG_FORMATION
-					diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
+					OOP_DEBUG_MSG(">>> Slowing down! New speed: %1", [_speedLimit]);
 					#endif
 				};
 			}
@@ -186,7 +186,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 					T_SETV("speedLimit", _speedLimit);
 					(vehicle (leader _hG)) limitSpeed _speedLimit;
 					#ifdef DEBUG_FORMATION
-					diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
+					OOP_DEBUG_MSG(">>> Accelerating! New speed: %1", [_speedLimit]);
 					#endif
 				};
 			};

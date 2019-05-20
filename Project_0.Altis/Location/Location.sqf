@@ -336,8 +336,14 @@ CLASS("Location", "MessageReceiverEx")
 		if (! (_gar in _gars)) then {
 			_gars pushBack _gar;
 			CALLM2(_gar, "postMethodAsync", "ref", []);
+
+			// TODO: work out how this should work properly? This isn't terrible but we will
+			// have resource constraints etc. Probably it should be in Garrison.process to build
+			// at location when they have resources?
+			iF(!T_GETV("isBuilt")) then {
+				T_CALLM("build", []);
+			};
 		};
-		
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
@@ -355,7 +361,7 @@ CLASS("Location", "MessageReceiverEx")
 		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
 		
 		if (_side == CIVILIAN) then {
-			T_GETV("garrisons")
+			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
 		};

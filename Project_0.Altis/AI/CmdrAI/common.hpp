@@ -41,6 +41,7 @@
 // Minimum efficiency of a garrison.
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
 #define EFF_MIN_EFF [6, 0, 0, 0, 6, 0, 0, 0]
+#define EFF_GARRISON_MIN_EFF [12, 0, 0, 0, 12, 0, 0, 0]
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \

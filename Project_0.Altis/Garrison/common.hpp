@@ -19,8 +19,8 @@
 
 // Mutex used in this file
 #ifndef _SQF_VM
-#define __MUTEX_LOCK	private __mutex = T_GETV("mutex"); MUTEX_RECURSIVE_LOCK(__mutex);
-#define __MUTEX_UNLOCK	MUTEX_RECURSIVE_UNLOCK(__mutex);
+#define __MUTEX_LOCK	private __mutex = T_GETV("mutex"); MUTEX_RECURSIVE_LOCK(__mutex)
+#define __MUTEX_UNLOCK	MUTEX_RECURSIVE_UNLOCK(__mutex)
 #else
 #define __MUTEX_LOCK	
 #define __MUTEX_UNLOCK	

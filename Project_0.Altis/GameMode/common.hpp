@@ -11,3 +11,4 @@
 #include "..\AI\Commander\AICommander.hpp"
 #include "..\AI\Commander\LocationData.hpp"
 #include "..\Group\Group.hpp"
+#include "..\Location\Location.hpp"

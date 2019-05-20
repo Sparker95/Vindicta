@@ -71,7 +71,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				private _posArray = _x;
 				
 				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-					diag_log format ["Checking position for HMG/GMG: %1 ...", _posArray];
+					OOP_DEBUG_MSG("Checking position for HMG/GMG: %1 ...", [_posArray]);
 				};
 				
 				private _pos = _posArray select LOCATION_SP_ID_POS;
@@ -81,7 +81,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				private _posFree = CALL_STATIC_METHOD("Location", "isPosSafe", _args);
 				if(_posFree) exitWith {
 					if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-						diag_log "Position is free!";
+						OOP_DEBUG_MSG("Position is free!", []);
 					};
 				
 					_posReturn = _pos;
@@ -92,7 +92,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				};
 				
 				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-					diag_log "Position is occupied!";
+					OOP_DEBUG_MSG("Position is occupied!", []);
 				};
 			} forEach (_stCurrent select LOCATION_SPT_ID_SPAWN_POS);
 		};
@@ -130,7 +130,7 @@ if(_found) then {//If the spawn position has been found
 		private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
 		private _locPos = GET_VAR(_thisObject, "pos");
 		_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
-		diag_log format ["[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID, _subcatID, _groupType]];
+		OOP_WARNING_MSG("[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID ARG _subcatID ARG _groupType]);
 	} else {
 		// Try to find a safe position on a road for this vehicle
 		private _locPos = GET_VAR(_thisObject, "pos");

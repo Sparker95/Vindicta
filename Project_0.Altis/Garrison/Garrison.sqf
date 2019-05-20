@@ -50,6 +50,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_0("NEW GARRISON");
 
+		// Take our own ref that we will release in "destroy" function. This makes sure that delete never pre-empts destroy (assuming ref counting is done properly by other classes)
+		T_CALLM("ref", []);
+
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
 
@@ -138,25 +141,24 @@ CLASS("Garrison", "MessageReceiverEx");
 	all units and groups, deletes the timer and AI components.
 	*/
 	METHOD("destroy") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL_DEFAULT_TRUE("_unregisterFromCmdr")];
 		
 		OOP_INFO_0("DESTROY GARRISON");
 
 		__MUTEX_LOCK;
 
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			OOP_WARNING_MSG("Garrison %1 is already destroyed", []);
+
+			__MUTEX_UNLOCK;
+			OOP_WARNING_MSG("Garrison is already destroyed", []);
 		};
 
 		ASSERT_THREAD(_thisObject);
 
-		// Unregister with the owning commander
-		CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
-
 		// Detach from location if was attached to it
 		T_PRVAR(location);
 		if (!IS_NULL_OBJECT(_location)) then {
-			CALLM(_location, "postMethodSync", ["unregisterGarrison"]+[[_thisObject]]);
+			CALLM(_location, "postMethodSync", ["unregisterGarrison" ARG [_thisObject]]);
 		};
 
 		// Despawn if spawned
@@ -186,10 +188,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("units", nil);
 		T_SETV("groups", nil);
 
-
 		private _all = GETSV("Garrison", "all");
 		_all deleteAt (_all find _thisObject);
-		
 		
 		// Delete our timer
 		DELETE(T_GETV("timer"));
@@ -203,7 +203,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("effMobile", []);
 		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
 		T_SETV("effTotal", []);
+
+		if(_unregisterFromCmdr) then {
+			// Unregister with the owning commander, do it last because it will cause an unref
+			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
+		};
+
 		__MUTEX_UNLOCK;
+
+		// Release our own ref. This might call delete if all other holders already released their refs.
+		T_CALLM("unref", []);
 	} ENDMETHOD;
 
 	/*
@@ -238,22 +247,27 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: (static) getAll
+	Method: (static) getAllActive
 	Returns all garrisons
 	
-	Parameters: _side
+	Parameters: _sidesInclude, _sidesExclude
 	
-	_side - optional, Side of garrisons to returns. If side is not provided, returns all garrisons.
+	_sidesInclude - optional, Sides of garrisons to include. If _sidesInclude is not provided, include all garrisons.
+	_sidesExclude - optional, Sides of garrisons to exclude. If _sidesExclude is not provided, no garrisons are excluded.
 
 	Returns: Array with <Garrison> objects
 	*/
-	STATIC_METHOD("getAll") {
-		params ["_thisClass", ["_side", sideEmpty]];
+	STATIC_METHOD("getAllActive") {
+		params [P_THISCLASS, P_ARRAY("_sidesInclude"), P_ARRAY("_sidesExclude")];
 		
-		if (_side == sideEmpty) then {
-			GETSV("Garrison", "all")
+		if (count _sidesInclude == 0 and count _sidesExclude == 0) then {
+			GETSV("Garrison", "all") select { GETV(_x, "active") };
 		} else {
-			GETSV("Garrison", "all") select {CALLM0(_x, "getSide") == _side}
+			GETSV("Garrison", "all") select { 
+				GETV(_x, "active") and 
+				{count _sidesInclude == 0 or {CALLM0(_x, "getSide") in _sidesInclude}}
+				and {count _sidesExclude == 0 or {!(CALLM0(_x, "getSide") in _sidesExclude)}}
+			}
 		};
 	} ENDMETHOD;
 
@@ -1007,7 +1021,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Call the handleGroupsAdded directly since it's in the same thread
 		pr _AI = T_GETV("AI");
 		if (_AI != "") then {
-			CALLM1(_AI, "handleGroupsAdded", [[_group]]);
+			CALLM1(_AI, "handleGroupsAdded", [_group]);
 			CALLM0(_AI, "updateComposition");
 		};
 
@@ -1116,7 +1130,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	
 	METHOD("addGarrison") {
-		params[P_THISOBJECT, P_OOP_OBJECT("_garrison"), P_BOOL("_delete")];
+		params[P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
 
 		__MUTEX_LOCK;
@@ -1143,13 +1157,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_thisObject, "addUnit", _x);
 		} forEach _units;
 		
-		// Delete the other garrison if needed
-		if (_delete) then {
-			// TODO: we need to work out how to do this properly.
-			// DELETE(_garrison);
-			// HACK: Just unregister with AICommander for now so the model gets cleaned up
-			CALLM(_garrison, "destroy", []);
-		};
+		// // Delete the other garrison if needed
+		// if (_delete) then {
+		// 	// TODO: we need to work out how to do this properly.
+		// 	// DELETE(_garrison);
+		// 	// HACK: Just unregister with AICommander for now so the model gets cleaned up
+		// 	// CALLM(_garrison, "destroy", []);
+		// };
 
 		__MUTEX_UNLOCK;
 		

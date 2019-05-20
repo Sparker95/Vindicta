@@ -48,7 +48,7 @@ CLASS("AICommander", "AI")
 	#endif
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
+		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
 		
 		OOP_INFO_1("Initializing Commander for side %1", str(_side));
 		
@@ -132,7 +132,7 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		OOP_INFO_0(" - - - - - P R O C E S S - - - - -");
 		
@@ -213,28 +213,16 @@ CLASS("AICommander", "AI")
 		T_SETV("stateStart", TIME_NOW);
 		#endif
 
-		private _deadGarrisons = T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) };
 		{
-			CALLM2(_x, "postMethodAsync", "destroy", []);
-		} forEach _deadGarrisons;
+			// Unregister from ourselves straight away
+			T_CALLM("_unregisterGarrison", [_x]);
+			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
+		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) });
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-	} ENDMETHOD;
-	
-	// Update stategic analysis of map to place roadblocks etc.
-	METHOD("updateMapAnalysis") {
-		params [P_THISOBJECT];
-		
-		// Where do we want roadblocks?
-		// Near garrisoned outposts I guess?
-		{
-			private _pos = CALLM(_x, "getPos", []);
-			private _allRoads = _posicion nearRoads (_size * 2) max (200);
-		} forEach (T_GETV("garrisons") select { !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) });
-
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -242,7 +230,7 @@ CLASS("AICommander", "AI")
 	// ----------------------------------------------------------------------
 	
 	METHOD("getMessageLoop") {
-		params [["_thisObject", "", [""]]];
+		params [P_THISOBJECT];
 		
 		T_GETV("msgLoop");
 	} ENDMETHOD;
@@ -258,7 +246,7 @@ CLASS("AICommander", "AI")
 	Returns: <AICommander>
 	*/
 	STATIC_METHOD("getCommanderAIOfSide") {
-		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]]];
+		params [P_THISOBJECT, ["_side", WEST, [WEST]]];
 		switch (_side) do {
 			case WEST: {
 				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
@@ -635,7 +623,7 @@ CLASS("AICommander", "AI")
 
 			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 			T_GETV("garrisons") pushBack _gar; // I need you for my army!
-			CALLM2(_gar, "postMethodAsync", "ref", []);
+			CALLM(_gar, "ref", []);
 			T_PRVAR(worldModel);
 			_newModel = NEW("GarrisonModel", [_worldModel ARG _gar]);
 		};
@@ -699,7 +687,9 @@ CLASS("AICommander", "AI")
 			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
-			CALLM2(_gar, "postMethodAsync", "unref", []);
+			CALLM(_gar, "unref", []);
+		} else {
+			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
 	} ENDMETHOD;
 		
