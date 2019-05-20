@@ -78,6 +78,8 @@
 #define IS_HEADLESSCLIENT false
 #define PUBLIC_VARIABLE isNil
 
+#define PROFILE_NAME "Satan"
+
 #else
 
 #define TEXT_ text
@@ -92,6 +94,8 @@
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
 #define PUBLIC_VARIABLE publicVariable
+
+#define PROFILE_NAME profileName
 
 #endif
 
