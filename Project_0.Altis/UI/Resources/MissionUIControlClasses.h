@@ -1,8 +1,8 @@
 #include "\A3\ui_f\hpp\defineCommonGrids.inc"
 #include "..\..\OOP_Light\OOP_Light.h"
 
-#define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.45"
-#define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.5"
+#define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.48"
+#define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.52"
 #define MUI_TXT_SIZE_M "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.65"
 #define MUI_TXT_SIZE_L "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.7"
 
@@ -20,7 +20,7 @@ class MUI_BASE
 	w = 0;
 	h = 0;
 	sizeEx = MUI_TXT_SIZE_M;
-	style = 2;
+	style = ST_CENTER;
 	text = "1";
 	font = "PuristaMedium";
 	colorBackground[] = {0,0,0,0};
@@ -54,32 +54,35 @@ class MUI_BASE
 	tileW = 0;
 };
 
-//#-0
+
 class MUI_BG_BLACKSOLID : MUI_BASE 
 {
 	type = 0;
 	colorBackground[] = {0,0,0,1};
 	sizeEx = MUI_TXT_SIZE_S;
 };
-//#-0
+
+
 class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
 {
 	type = 0;
 	colorBackground[] = {0,0,0,0.75};
 	sizeEx = MUI_TXT_SIZE_S;
 };
-//#-0
+
+
 class MUI_HEADLINE : MUI_BASE
 {
 	type = 0;
-	sizeEx = MUI_TXT_SIZE_M;
+	sizeEx = MUI_TXT_SIZE_S;
 	h = safeZoneH * 0.02;
-	style = ST_UPPERCASE+ST_CENTER;
+	style = ST_CENTER+ST_UPPERCASE;
 	colorBackground[] = {0.702,0.102,0.102,1};
 	colorText[] = {1,1,1,1};
 	shadow = 1;
 };
-//#-1
+
+
 class MUI_BUTTON_TXT : MUI_BASE 
 {
 	type = 1;
@@ -127,13 +130,13 @@ class MUI_LISTNBOX : MUI_BASE
 {
 	type = 102;
 	style = ST_MULTI;
-	columns[] = {0.0, 0.0, 0.0}; 
+	columns[] = {3.0 * GUI_GRID_H, 0.0}; 
 	sizeEx = MUI_TXT_SIZE_M;
 	font = "PuristaMedium";
 
 	maxHistoryDelay = 1;
 	lineSpacing = 0.0 * GUI_GRID_H;
-	rowHeight = 1.1 * GUI_GRID_H;
+	rowHeight = 1.2 * GUI_GRID_H;
 	headerHeight = 0.9 * GUI_GRID_H;
 
 	colorActive[] = {1,1,1,1};
@@ -142,7 +145,7 @@ class MUI_LISTNBOX : MUI_BASE
 	soundSelect[] = {"",0.0,0.0};
 	colorSelect2[] = {0,0,0,1};
 	colorSelectBackground[] = {1,1,1,1};
-	colorSelectBackground2[] = {0.2,1,0.8,1};
+	colorSelectBackground2[] = {1,1,1,1};
 
 	period = 0;
 

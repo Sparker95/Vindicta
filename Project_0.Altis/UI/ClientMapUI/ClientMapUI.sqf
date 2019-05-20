@@ -20,10 +20,10 @@ Singleton class that performs things related to map user interface
 #define pr private
 
 // Common colors
-CMUI_ColorWEST = [0,0.3,0.6,1];
-CMUI_ColorEAST = [0.5,0,0,1];
-CMUI_ColorIND = [0,0.5,0,1];
-CMUI_ColorUnknown = [0.4,0,0.5,1];
+CMUI_ColorWEST = MUI_COLOR_BLUFOR;
+CMUI_ColorEAST = MUI_COLOR_OPFOR;
+CMUI_ColorIND = MUI_COLOR_IND;
+CMUI_ColorUnknown = MUI_COLOR_EMPTY;
 
 CLASS(CLASS_NAME, "")
 

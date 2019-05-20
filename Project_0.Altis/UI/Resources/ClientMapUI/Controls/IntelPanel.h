@@ -4,7 +4,7 @@ class CMUI_LOCP_HEADLINE : MUI_HEADLINE
     x = safeZoneX + safeZoneW * 0.87;
     y = safeZoneY + safeZoneH * 0.042;
     w = safeZoneW * 0.126;
-    style = ST_UPPERCASE+ST_CENTER;
+    style = ST_CENTER+ST_UPPERCASE;
     text = "Camp Foxtrot";
 };
 
