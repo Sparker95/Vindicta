@@ -112,7 +112,20 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
 		};
 		
-		// Check if we can see any of the assigned targets
+		// Check if we can see any of the assigned targetsAggregate
+		pr _assignedTargetsRadius = GETV(_AI, "assignedTargetsRadius");
+		if (_assignedTargetsRadius != 0) then {
+			pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
+			pr _targetsInRadius = _knownTargets select {
+				pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
+				(_hO distance2D _assignedTargetsPos) < _assignedTargetsRadius
+			};	
+			SETV(_AI, "assignedTargets", _targetsInRadius);
+			SETV(_AI, "awareOfAssignedTargets", count _targetsInRadius > 0);
+		} else {
+			SETV(_AI, "awareOfAssignedTargets", false);
+			SETV(_AI, "assignedTargets", []);
+		};
 		pr _assignedTargets = GETV(_AI, "assignedTargets"); // Array with object handles
 		pr _seeAssignedTarget = count (_assignedTargets arrayIntersect (_knownTargets apply {_x select TARGET_ID_OBJECT_HANDLE})) > 0;
 		SETV(_AI, "awareOfAssignedTarget", _seeAssignedTarget);
