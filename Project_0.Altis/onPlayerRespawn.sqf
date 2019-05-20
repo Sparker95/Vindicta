@@ -133,7 +133,7 @@ _civDialogue = {
     sleep (0.5+random 1);
     
     // Check nearby locations
-    private _locs = CALLSM0("Location", "getALl");
+    private _locs = CALLSM0("Location", "getAll");
     private _locsNear = _locs select {
         CALLM0(_x, "getPos") distance player < 3000
     };
