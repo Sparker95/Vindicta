@@ -280,6 +280,10 @@ CLASS("VirtualRoute", "")
 
 				_nextPos = getPos (_route select _nextIdx);
 				_nextDist = _pos distance _nextPos;
+
+				// Delete this position from the waypoint array (if it is in the waypoint array)
+				pr _waypoints = T_GETV("waypoints");
+				if (_waypoints#0 isEqualTo _nextPos) then {_waypoints deleteAt 0;};
 			} else {
 				T_SETV("complete", true);
 			};
@@ -404,11 +408,10 @@ CLASS("VirtualRoute", "")
 			] call gps_test_fnc_mapDrawLine; 
 		};
 
-		// T_PRVAR(waypoints);
-		// {
-		// 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
-		// } forEach _waypoints;
-		// pr _waypoints = T_GETV("waypoints");
+		 T_PRVAR(waypoints);
+		 {
+		 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
+		 } forEach _waypoints;
 	} ENDMETHOD;
 
 	/*
@@ -437,6 +440,52 @@ CLASS("VirtualRoute", "")
 	METHOD("getPos") {
 		params ["_thisObject"];
 		T_GETV("pos")
+	} ENDMETHOD;
+
+	/*
+	Method: sets the current position to the nearest position along the route.
+	Returns: nothing
+	*/
+	METHOD("setPos") {
+		params ["_thisObject", ["_pos", [], [[]]] ];
+
+		// Find the nearest pos in the route and its index
+		pr _route = T_GETV("route");
+		pr _i = 0;
+		pr _count = count _route;
+		pr _index = 0;
+		pr _dist = _route#0 distance2D _pos;
+		while {_i < _count} do {
+			pr _p = _route#_i;
+			pr _d = _p distance2D _pos;
+			if (_d < _dist) then {_dist = _d; _index = _i;};
+			_i = _i + 1;
+		};
+
+		// Set pos and next index
+		T_SETV("nextIdx", _index);
+		T_SETV("pos", _route select _index);
+
+		// Search the route from start and delete all waypoints until this point
+		_i = 0;
+		pr _waypoints = T_GETV("waypoints");
+		while {_i <= _index} do {
+			pr _pos = _route select _i;
+			pr _wpid = _waypoints findIf {_x isEqualTo _pos};
+			if (_wpid != -1) then {
+				_waypoints deleteAt _wpid;
+			};
+			_i = _i + 1;
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: getAIWaypoints
+	Returns: array of waypoints for AI navigation, taking account the current position
+	*/
+	METHOD("getAIWaypoints") {
+		params ["_thisObject"];
+		T_GETV("waypoints")
 	} ENDMETHOD;
 
 ENDCLASS;
