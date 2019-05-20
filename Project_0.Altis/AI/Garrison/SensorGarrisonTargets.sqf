@@ -126,10 +126,6 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			SETV(_AI, "awareOfAssignedTargets", false);
 			SETV(_AI, "assignedTargets", []);
 		};
-		pr _assignedTargets = GETV(_AI, "assignedTargets"); // Array with object handles
-		pr _seeAssignedTarget = count (_assignedTargets arrayIntersect (_knownTargets apply {_x select TARGET_ID_OBJECT_HANDLE})) > 0;
-		SETV(_AI, "awareOfAssignedTarget", _seeAssignedTarget);
-		OOP_INFO_1("AWARE of assigned targets: %1", _seeAssignedTarget);
 		
 	} ENDMETHOD;
 	

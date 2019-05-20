@@ -27,15 +27,13 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("assignedTargetsPos");
 	// Radius where to search for assigned targets
 	VARIABLE("assignedTargetsRadius");
+	// Bool, set to true if garrison is aware of any targets in the 'assigned targets' area
+	VARIABLE("awareOfAssignedTargets");
 	
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
 	
 	// Flags
-	
-	// This garrison is aware of any of the assigned targets
-	// Written by SensorGarrisonTargets
-	VARIABLE("awareOfAssignedTarget");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -83,7 +81,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("assignedTargets", []);
 		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
 		T_SETV("assignedTargetsRadius", 0);
-		T_SETV("awareOfAssignedTarget", false);
+		T_SETV("awareOfAssignedTargets", false);
 		
 		// Update composition
 		CALLM0(_thisObject, "updateComposition");
