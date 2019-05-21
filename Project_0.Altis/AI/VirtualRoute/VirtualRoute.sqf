@@ -449,33 +449,38 @@ CLASS("VirtualRoute", "")
 	METHOD("setPos") {
 		params ["_thisObject", ["_pos", [], [[]]] ];
 
-		// Find the nearest pos in the route and its index
-		pr _route = T_GETV("route");
-		pr _i = 0;
-		pr _count = count _route;
-		pr _index = 0;
-		pr _dist = _route#0 distance2D _pos;
-		while {_i < _count} do {
-			pr _p = _route#_i;
-			pr _d = _p distance2D _pos;
-			if (_d < _dist) then {_dist = _d; _index = _i;};
-			_i = _i + 1;
-		};
-
-		// Set pos and next index
-		T_SETV("nextIdx", _index);
-		T_SETV("pos", _route select _index);
-
-		// Search the route from start and delete all waypoints until this point
-		_i = 0;
-		pr _waypoints = T_GETV("waypoints");
-		while {_i <= _index} do {
-			pr _pos = _route select _i;
-			pr _wpid = _waypoints findIf {_x isEqualTo _pos};
-			if (_wpid != -1) then {
-				_waypoints deleteAt _wpid;
+		if (T_GETV("calculated")) then {
+			// Find the nearest pos in the route and its index
+			pr _route = T_GETV("route");
+			pr _i = 0;
+			pr _count = count _route;
+			pr _index = 0;
+			pr _dist = _route#0 distance2D _pos;
+			while {_i < _count} do {
+				pr _p = _route#_i;
+				pr _d = _p distance2D _pos;
+				if (_d < _dist) then {_dist = _d; _index = _i;};
+				_i = _i + 1;
 			};
-			_i = _i + 1;
+
+			// Set pos and next index
+			T_SETV("nextIdx", _index);
+			T_SETV("pos", _route select _index);
+
+			// Search the route from start and delete all waypoints until this point
+			_i = 0;
+			pr _waypoints = T_GETV("waypoints");
+			while {_i <= _index} do {
+				pr _pos = _route select _i;
+				pr _wpid = _waypoints findIf {_x isEqualTo _pos};
+				if (_wpid != -1) then {
+					_waypoints deleteAt _wpid;
+				};
+				_i = _i + 1;
+			};
+		} else {
+			// We want to set a position before it has actually been calculated
+			// It's not good but probably we can just ignore this because it means we haven't gone too far away
 		};
 	} ENDMETHOD;
 

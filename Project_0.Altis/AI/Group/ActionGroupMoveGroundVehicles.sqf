@@ -28,6 +28,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 	VARIABLE("speedLimit"); // The current speed limit
 	VARIABLE("maxSpeed"); // The maximum speed in this action, can be received as parameter
 	VARIABLE("time");
+	VARIABLE("route"); // Optional route to use, or just give one waypoint if no route was given
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
@@ -43,7 +44,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			_maxSpeedKmh = SPEED_MAX;
 		};
 		T_SETV("maxSpeed", _maxSpeedKmh);
-		
+
+		// Route can be optionally passed or not
+		pr _route = CALLSM2("Action", "getParameterValue", _parameters, TAG_ROUTE);
+		if (isNil "_route") then {
+			_route = [];
+		};
+		T_SETV("route", _route);
+
 		T_SETV("time", time);
 		
 		T_SETV("speedLimit", SPEED_MIN);
@@ -121,7 +129,8 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 				
 				// Lead vehicle gets a special goal
 				pr _leaderAI = CALLM0(_leader, "getAI");
-				pr _parameters = [[TAG_POS, _pos]];
+				pr _route = T_GETV("route");
+				pr _parameters = [[TAG_POS, _pos], [TAG_ROUTE, _route]];
 				CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
 
 				// Return ACTIVE state

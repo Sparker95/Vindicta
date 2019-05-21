@@ -46,11 +46,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			T_SETV("radius", _radius);
 		};
 
-		T_SETV("virtualRoute", "");
 		// Create a VirtualRoute in advance
-		if(!CALLM0(_AI, "isSpawned")) then {
-			CALLM0(_thisObject, "createVirtualRoute");
-		};
+		// We will use it both when spawned and despawned
+		CALLM0(_thisObject, "createVirtualRoute");
 		
 	} ENDMETHOD;
 
@@ -70,40 +68,61 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		params [["_thisObject", "", [""]]];
 		
 		OOP_INFO_0("ACTIVATE");
+
+		// Check if virtual route is ready
+		pr _vr = T_GETV("virtualRoute");
+		if (!GETV(_vr, "calculated")) then { // Check if the virtual route is calculated
+			if (GETV(_vr, "failed")) then { // Has the virtual route failed?
+				pr _gar = T_GETV("gar");
+				pr _garPos = CALLM0(_gar, "getPos");
+				pr _destPos = T_GETV("pos");
+				OOP_WARNING_2("Virtual route has failed. Current pos: %1, dest pos: %2", _garPos, _destPos);
+				// So what now?!
+				T_SETV("state", ACTION_STATE_FAILED);
+				ACTION_STATE_FAILED
+			} else {
+				ACTION_STATE_INACTIVE
+			};
+		} else {
 		
-		// Give waypoint to the vehicle group
-		pr _gar = T_GETV("gar");
-		pr _AI = T_GETV("AI");
-		pr _pos = T_GETV("pos");
-		pr _radius = T_GETV("radius");
-		
-		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
-		if (count _vehGroups > 1) then {
-			OOP_ERROR_0("More than one vehicle group in the garrison!");
+			// Give waypoint to the vehicle group
+			pr _gar = T_GETV("gar");
+			pr _AI = T_GETV("AI");
+			pr _pos = T_GETV("pos");
+			pr _radius = T_GETV("radius");
+			pr _vr = T_GETV("virtualRoute");
+			pr _garPos = CALLM0(_AI, "getPos");
+			CALLM1(_vr, "setPos", _garPos); // Update the virtual route with the proper garrison position
+			pr _route = CALLM0(_vr, "getAIWaypoints");
+			
+			pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
+			if (count _vehGroups > 1) then {
+				OOP_ERROR_0("More than one vehicle group in the garrison!");
+			};
+			
+			{
+				pr _group = _x;
+				pr _groupAI = CALLM0(_x, "getAI");
+				
+				// Add new goal to move
+				pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius], [TAG_ROUTE, _route]], _AI];
+				CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
+				
+			} forEach _vehGroups;
+			
+			// Reset current location of this garrison
+			CALLM0(_gar, "detachFromLocation");
+			pr _ws = GETV(_AI, "worldState");
+			[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
+			pr _pos = CALLM0(_gar, "getPos");
+			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+			
+			// Set state
+			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+			
+			// Return ACTIVE state
+			ACTION_STATE_ACTIVE
 		};
-		
-		{
-			pr _group = _x;
-			pr _groupAI = CALLM0(_x, "getAI");
-			
-			// Add new goal to move
-			pr _args = ["GoalGroupMoveGroundVehicles", 0, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, _radius]], _AI];
-			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);			
-			
-		} forEach _vehGroups;
-		
-		// Reset current location of this garrison
-		CALLM0(_gar, "detachFromLocation");
-		pr _ws = GETV(_AI, "worldState");
-		[_ws, WSP_GAR_LOCATION, ""] call ws_setPropertyValue;
-		pr _pos = CALLM0(_gar, "getPos");
-		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
-		
-		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-		
-		// Return ACTIVE state
-		ACTION_STATE_ACTIVE
 		
 	} ENDMETHOD;
 
@@ -114,12 +133,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _gar = T_GETV("gar");
 		if (!CALLM0(_gar, "isSpawned")) then {
 			pr _state = T_GETV("state");
-
-			// Create a Virtual Route if it doesnt exist yet
-			pr _vr = T_GETV("virtualRoute");
-			if (_vr == "") then {
-				_vr = CALLM0(_thisObject, "createVirtualRoute");
-			};
 
 			if (_state == ACTION_STATE_INACTIVE) then {
 				CALLM0(_vr, "start");
@@ -154,12 +167,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			T_SETV("state", _state);
 			_state
 		} else {
-			// Delete the Virtual Route object if it exists, we don't need it any more
-			pr _vr = T_GETV("virtualRoute");
-			if (_vr != "") then {
-				DELETE(_vr);
-				T_SETV("virtualRoute", "");
-			};
+
 
 			// Fail if not everyone is in vehicles
 			pr _everyoneIsMounted = CALLM0(_thisObject, "isEveryoneInVehicle");

@@ -846,6 +846,7 @@ objNameStr \
 #define OOP_INFO_3(str, a, b, c) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
 #define OOP_INFO_4(str, a, b, c, d) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_INFO_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
+#define OOP_INFO_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str)
 #else
 #define OOP_INFO_MSG(str, a)
 #define OOP_INFO_0(str)
@@ -854,6 +855,7 @@ objNameStr \
 #define OOP_INFO_3(str, a, b, c)
 #define OOP_INFO_4(str, a, b, c, d)
 #define OOP_INFO_5(str, a, b, c, d, e)
+#define OOP_INFO_6(str, a, b, c, d, e, f)
 #endif
 
 #ifdef OOP_WARNING

@@ -28,6 +28,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 		
+		// Route can be optionally passed or not
+		pr _route = CALLSM2("Action", "getParameterValue", _parameters, TAG_ROUTE);
+		if (isNil "_route") then {
+			_route = [];
+		};
+		T_SETV("route", _route);
+
 		T_SETV("readdwp", false);
 		
 	} ENDMETHOD;
@@ -51,13 +58,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _hG = group _hO;
 		
 		// Order to move
-		CALLM0(_thisObject, "addWaypoint");
+		CALLM0(_thisObject, "addWaypoints");
 		
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
-	METHOD("addWaypoint") {
+	METHOD("addWaypoints") {
 		params ["_thisObject"];
 		
 		pr _hO = GETV(_thisObject, "hO");
@@ -67,13 +74,19 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		// Delete all previous waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
-		// Give a waypoint to move
-		pr _wp = _hG addWaypoint [_pos, 0];
-		_wp setWaypointType "MOVE";
-		_wp setWaypointFormation "COLUMN";
-		_wp setWaypointBehaviour "SAFE";
-		_wp setWaypointCombatMode "GREEN";
-		_hG setCurrentWaypoint _wp;
+		// Give waypoints to move
+		pr _waypoints = [];
+		pr _route = T_GETV("route");
+		{
+			pr _wp = _hG addWaypoint [_pos, 0];
+			_wp setWaypointType "MOVE";
+			_wp setWaypointFormation "COLUMN";
+			_wp setWaypointBehaviour "SAFE";
+			_wp setWaypointCombatMode "GREEN";
+			_waypoints pushBack _wp;
+		} forEach (_route + [_pos]);
+		_hG setCurrentWaypoint (_waypoints select 0);
+
 		
 	} ENDMETHOD;
 	
@@ -87,7 +100,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _dt = time - T_GETV("time"); // Time that has passed since previous call
 		
 		if (T_GETV("readdwp")) then {
-			CALLM0(_thisObject, "addWaypoint");
+			CALLM0(_thisObject, "addWaypoints");
 			T_SETV("readdwp", false);
 		};
 		
