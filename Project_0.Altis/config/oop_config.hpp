@@ -24,3 +24,6 @@
 //#define RELEASE_BUILD
 
 //#define CMDR_AI_TESTING
+
+#define OOP_PROFILE
+#define OOP_PROFILE_MIN_T 0.003

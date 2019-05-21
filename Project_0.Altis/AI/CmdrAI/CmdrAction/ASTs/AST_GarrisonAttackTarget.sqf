@@ -3,14 +3,13 @@
 CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("targetOutOfRangeState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("garrDeadState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("timeOutState", [ATTR_PRIVATE]);
 
 	// Inputs
 	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("maxDistanceVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("moveRadiusVar", [ATTR_PRIVATE]);
 
 	// If garrison is set to clear area
 	VARIABLE_ATTR("startDate", [ATTR_PRIVATE]);
@@ -21,13 +20,12 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			P_OOP_OBJECT("_action"),					// Source action for debugging purposes
 			P_ARRAY("_fromStates"),						// States it is valid from
 			P_AST_STATE("_successState"),				// State upon successfully destroying the target
-			P_AST_STATE("_targetOutOfRangeState"), 		// State if target is out of our range
 			P_AST_STATE("_garrDeadState"), 				// State if the garrison is dead (should really not get this far if it is)
 			P_AST_STATE("_timeOutState"), 				// State if we timed out (couldn't kill and didn't get killed)
 			// inputs
 			P_AST_VAR("_garrIdVar"),	 				// Id of garrison to merge/join from
 			P_AST_VAR("_targetVar"),					// Target to attack (garrison, location or cluster)
-			P_AST_VAR("_maxDistanceVar")				// Target to attack (garrison, location or cluster)
+			P_AST_VAR("_moveRadiusVar")					// Radius around the target within which we consider ourselves "at the target" (so we don't need to move again)
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 
@@ -35,12 +33,11 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		T_SETV("fromStates", _fromStates);
 
 		T_SETV("successState", _successState);
-		T_SETV("targetOutOfRangeState", _targetOutOfRangeState);
 		T_SETV("garrDeadState", _garrDeadState);
 		T_SETV("timeOutState", _timeOutState);
 		T_SETV("garrIdVar", _garrIdVar);
 		T_SETV("targetVar", _targetVar);
-		T_SETV("maxDistanceVar", _maxDistanceVar);
+		T_SETV("moveRadiusVar", _moveRadiusVar);
 
 		T_SETV("clearing", false);
 	} ENDMETHOD;
@@ -77,31 +74,23 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			T_GETV("successState") 
 		};
 
-		// Check we are in range
-		private _garrPos = GETV(_garr, "pos");
-		if((_garrPos distance _targetPos) > T_GET_AST_VAR("maxDistanceVar")) exitWith {
-			if(_clearing) then {
-				CALLM(_garr, "cancelClearAreaActual", []);
-			};
-			T_GETV("targetOutOfRangeState") 
-		};
-
 		private _success = false;
 		switch(GETV(_world, "type")) do {
 			// Attack can't be applied instantly
 			case WORLD_TYPE_SIM_NOW: {};
 			// Attack completes at some point in the future
 			case WORLD_TYPE_SIM_FUTURE: {
+				CALLM(_garr, "moveSim", [_targetPos]);
 				T_CALLM("simKillTarget", [_world ARG _target]);
 				_success = true;
 			};
 			case WORLD_TYPE_REAL: {
 				if(!_clearing) then {
-					private _moveRadius = T_GET_AST_VAR("maxDistanceVar") * 0.5 + 50;
-					private _clearRadius = T_CALLM("getTargetRadius", [_world ARG _target]);
+					private _moveRadius = T_GET_AST_VAR("moveRadiusVar");
+					private _clearRadius = 50 min T_CALLM("getTargetRadius", [_world ARG _target]);
 					// Start clear order
 					OOP_INFO_MSG("[w %1] %2 clearing area at %3: started", [_world ARG _garr ARG _targetPos]);
-					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG 20*60]);
+					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG (sqrt _clearRadius)*30]);
 					T_SETV("clearing", true);
 				} else {
 					// Are we done yet?
@@ -131,15 +120,11 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			};
 			case TARGET_TYPE_LOCATION: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
-				private _loc = CALLM(_world, "getLocation", [_target]);
-				ASSERT_OBJECT(_loc);
-				// TODO: What? Check intel on location?
-				FAILURE("Not implemented");
+				_isDead = false;
 			};
 			case TARGET_TYPE_POSITION: {
-				ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION expects a position [x,y,z]");
-				// TODO: What? Check surrounding area? Time out?
-				FAILURE("Not implemented");
+				ASSERT_MSG((_target isEqualType []), "TARGET_TYPE_POSITION expects a position [x,y,z]");
+				_isDead = false;
 			};
 			case TARGET_TYPE_CLUSTER: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
@@ -166,7 +151,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
 				private _loc = CALLM(_world, "getLocation", [_target]);
 				ASSERT_OBJECT(_loc);
-				_radius = GETV(_loc, "radius") * 1.5
+				_radius = GETV(_loc, "radius")
 			};
 			case TARGET_TYPE_CLUSTER: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
@@ -192,15 +177,9 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			};
 			case TARGET_TYPE_LOCATION: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
-				private _loc = CALLM(_world, "getLocation", [_target]);
-				ASSERT_OBJECT(_loc);
-				// TODO: Kill enemy garrisons?
-				FAILURE("Not implemented");
 			};
 			case TARGET_TYPE_POSITION: {
 				ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION expects a position [x,y,z]");
-				// TODO: What? Check surrounding area? Time out?
-				FAILURE("Not implemented");
 			};
 			case TARGET_TYPE_CLUSTER: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
@@ -225,7 +204,6 @@ ENDCLASS;
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
-		[CMDR_ACTION_STATE_FAILED_OUT_OF_RANGE]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TIMEOUT]+
 		[MAKE_AST_VAR(0)]+

@@ -20,7 +20,8 @@
 	"settings": {
 		"files.associations": {
 			"*.rpt": "log",
-			"*.hpp": "sqf"
+			"*.hpp": "sqf",
+			"*.h": "sqf"
 		},
 		"logFileHighlighter.customPatterns": [
 			{

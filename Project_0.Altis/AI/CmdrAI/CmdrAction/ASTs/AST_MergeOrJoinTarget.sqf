@@ -52,7 +52,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		T_GET_AST_VAR("target") params ["_targetType", "_target"];
 
 		private _targetDead = false;
-		
+
 		switch(_targetType) do {
 			case TARGET_TYPE_GARRISON: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON target type expects a garrison ID");

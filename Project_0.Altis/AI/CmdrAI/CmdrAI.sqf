@@ -98,7 +98,6 @@ CLASS("CmdrAI", "")
 			}
 		};
 
-
 		// Candidates are clusters that are still alive in the future.
 		private _tgtClusters = CALLM(_worldFuture, "getAliveClusters", []);
 
@@ -180,19 +179,6 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
-	METHOD("generateRoadblockActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
-
-		private _garrisons = GETV(_world, "garrisons");
-
-		T_PRVAR(side);
-		private _actions = [];
-
-		// TODO: generate roadblock actions
-
-		_actions
-	} ENDMETHOD;
-
 	METHOD("update") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -258,11 +244,8 @@ CLASS("CmdrAI", "")
 		// (i.e. taking into account expected outcomes of currently active actions)
 		private _newActions = 
 			  T_CALLM("generateTakeOutpostActions", [_simWorldNow ARG _simWorldFuture])
-			// TODO: general attack actions (QRF)
 			+ T_CALLM("generateAttackActions", [_simWorldNow ARG _simWorldFuture])
 			+ T_CALLM("generateReinforceActions", [_simWorldNow ARG _simWorldFuture]) 
-			// TODO: roadblocks/outposts etc. Maybe this is up to garrison AI itself?
-			//+ T_CALLM1("generateRoadblockActions", _simWorldNow)
 			;
 		PROFILE_SCOPE_END(GenerateActions, 0.1);
 
