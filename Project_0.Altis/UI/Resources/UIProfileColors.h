@@ -28,3 +28,15 @@ Comments after each macro refer to default presets in in-game OPTIONS/GAME/COLOR
 //SUBTITLES
 #define SUI_COLOR_BG 		["Subtitles","Background"] call BIS_fnc_displayColorGet				// White (Default): fully transparent
 #define SUI_COLOR_TEXT 		["Subtitles","Text"] call BIS_fnc_displayColorGet					// White (Default): solid white
+
+// Mission UI Control classes base colors
+#define MUIC_TRANSPARENT {0,0,0,0}
+#define MUIC_BLACK {0,0,0,1}
+#define MUIC_BLACKTRANSP {0,0,0,0.5}
+#define MUIC_WHITE {1,1,1,1}
+
+// Mission UI Control classes base colors, for SQF
+#define MUIC_COLOR_TRANSPARENT [0,0,0,0]
+#define MUIC_COLOR_BLACK [0,0,0,1]
+#define MUIC_COLOR_BLACKTRANSP [0,0,0,0.7]
+#define MUIC_COLOR_WHITE [1,1,1,1]

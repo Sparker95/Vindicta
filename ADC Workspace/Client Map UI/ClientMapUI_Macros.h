@@ -9,7 +9,7 @@
 //location panel, rightmost button
 #define IDC_LOCP_TAB3 4005
 //location panel, scrolling list box
-#define IDC_LOCP_LISTBOX 4006
+#define IDC_LOCP_LISTBOXBG 4006
 //bottom panel, black transparent background 
 #define IDC_BPANEL_BG 6001
 //bottom panel, button 1

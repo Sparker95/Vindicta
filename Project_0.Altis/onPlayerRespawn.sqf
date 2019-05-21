@@ -18,7 +18,7 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 #define pr private
 
-     params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
+params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
 
 // Make sure server initialization is done
 diag_log format ["---- onPlayerRespawn: waiting server init, time: %1", diag_tickTime];
@@ -106,12 +106,6 @@ player addEventHandler ["AnimChanged", {
 
 // Create a suspiciousness monitor for player
 NEW("undercoverMonitor", [player]);
-
-// Create camp scroll menu
-player addAction ["Create Camp", "Camp\createCamp.sqf", 0, 0];
-
-
-
 
 // Create scroll menu to talk to civilians
 pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
