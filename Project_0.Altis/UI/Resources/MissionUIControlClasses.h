@@ -1,5 +1,6 @@
 #include "\A3\ui_f\hpp\defineCommonGrids.inc"
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "UIProfileColors.h"
 
 #define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.48"
 #define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.52"
@@ -14,21 +15,26 @@
 // #-0
 class MUI_BASE
 {
-	type = 0;
+	type = CT_STATIC;
+
 	x = 0;
 	y = 0;
 	w = 0;
 	h = 0;
+
 	sizeEx = MUI_TXT_SIZE_M;
 	style = ST_CENTER;
-	text = "1";
+	text = "";
 	font = "PuristaMedium";
-	colorBackground[] = {0,0,0,0};
-	colorText[] = {1,1,1,1};	
+
+	colorBackground[] = MUIC_TRANSPARENT;
+	colorText[] = MUIC_WHITE;
+
 	blinkingPeriod = 0;
 	fixedWidth = false;
 	lineSpacing = 0;
 	moving = false;
+
 	onCanDestroy = "";
 	onChar = "";
 	onDestroy = "";
@@ -57,57 +63,72 @@ class MUI_BASE
 
 class MUI_BG_BLACKSOLID : MUI_BASE 
 {
-	type = 0;
-	colorBackground[] = {0,0,0,1};
+	type = CT_STATIC;
+
 	sizeEx = MUI_TXT_SIZE_S;
+	colorBackground[] = MUIC_BLACK;
 };
 
 
 class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
 {
-	type = 0;
-	colorBackground[] = {0,0,0,0.75};
+	type = CT_STATIC;
+
 	sizeEx = MUI_TXT_SIZE_S;
+	colorBackground[] = MUIC_BLACKTRANSP;
 };
 
 
-class MUI_HEADLINE : MUI_BASE
+class MUI_HEADLINE
 {
-	type = 0;
+	type = CT_STATIC;
+
+	x = 0;
+	y = 0;
+	w = 0;
+	h = safeZoneH * 0.04;
+
 	sizeEx = MUI_TXT_SIZE_S;
-	h = safeZoneH * 0.02;
-	style = ST_CENTER+ST_UPPERCASE;
-	colorBackground[] = {0.702,0.102,0.102,1};
-	colorText[] = {1,1,1,1};
+	style = 192+2;
+	text = "";
+	font = "PuristaMedium";
+	
+	colorBackground[] = {0.702,0.102,0.102,1};	// variable, selected outpost color
+	colorText[] = MUIC_WHITE;
 	shadow = 1;
 };
 
 
 class MUI_BUTTON_TXT : MUI_BASE 
 {
-	type = 1;
-	h = safeZoneH * 0.023;
-	style = 192+2;
-	sizeEx = MUI_TXT_SIZE_M;
-	font = "PuristaLight";
+	type = CT_BUTTON;
 
+	h = safeZoneH * 0.02;
+	sizeEx = MUI_TXT_SIZE_M;
+	style = 192+2;
+	font = "PuristaLight";
 	borderSize = 0;
-	colorBackground[] = {0,0,0,1};
-	colorBackgroundActive[] = {1,1,1,1};
-	colorBackgroundDisabled[] = {0,0,0,1};
-	colorBorder[] = {0,0,0,0};
-	colorDisabled[] = {0.5,0.5,0.5,1};
-	colorFocused[] = {0,0,0,1};
-	colorShadow[] = {0,0,0,0};
+
+	colorBackground[] = MUIC_BLACK;
+	colorBackgroundActive[] = MUIC_WHITE;
+	colorBackgroundDisabled[] = MUIC_BLACK;
+	colorBorder[] = MUIC_TRANSPARENT;
+	colorDisabled[] = MUIC_TRANSPARENT;
+	colorFocused[] = MUIC_BLACK;				// same as colorBackground to disable blinking
+	colorShadow[] = MUIC_TRANSPARENT;
+
 	offsetPressedX = 0;
 	offsetPressedY = 0;
 	offsetX = 0;
 	offsetY = 0;
-	soundClick[] = {"",0.0,0.0};
-	soundEnter[] = {"",0.0,0.0};
-	soundEscape[] = {"",0.0,0.0};
-	soundPush[] = {"",0.0,0.0};
+
+	soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
+	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
+	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
+	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
+
 	shadow = 0;
+
 	action = "";
 	onButtonClick = "";
 	onButtonDblClick = "";
@@ -121,14 +142,17 @@ class MUI_BUTTON_TXT : MUI_BASE
 //#-1
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
-	type = 1;
+	type = CT_BUTTON;
+
 	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
+	text = "";
 };
 
 // RscListNBox
 class MUI_LISTNBOX : MUI_BASE 
 {
-	type = 102;
+	type = CT_LISTNBOX;
+
 	style = ST_MULTI;
 	columns[] = {3.0 * GUI_GRID_H, 0.0}; 
 	sizeEx = MUI_TXT_SIZE_M;
@@ -139,72 +163,83 @@ class MUI_LISTNBOX : MUI_BASE
 	rowHeight = 1.2 * GUI_GRID_H;
 	headerHeight = 0.9 * GUI_GRID_H;
 
-	colorActive[] = {1,1,1,1};
-	colorDisabled[] = {0.5,0.5,0.5,0.75};
-	colorSelect[] = {0,0,0,1};
-	soundSelect[] = {"",0.0,0.0};
-	colorSelect2[] = {0,0,0,1};
-	colorSelectBackground[] = {1,1,1,1};
-	colorSelectBackground2[] = {1,1,1,1};
+	colorActive[] = MUIC_WHITE;
+	colorDisabled[] = MUIC_TRANSPARENT;
+	colorSelect[] = MUIC_BLACK;
+	colorSelect2[] = MUIC_BLACK;
+	colorSelectBackground[] = MUIC_WHITE;
+	colorSelectBackground2[] = MUIC_WHITE;
 
-	period = 0;
+	soundSelect[] = {"\A3\ui_f\data\sound\RscListbox\soundSelect",0.09,1};
 
 	autoScrollSpeed = -1; 
 	autoScrollDelay = 5; 
 	autoScrollRewind = 0;
+	disableOverflow = 0;
 	drawSideArrows = 0;
 
 	idcLeft = -1; 
 	idcRight = -1; 
+
+	fade = 0;
+	show = 1;
+	period = 0;
 
 	class ListScrollBar
 	{
 	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
 	arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
 	border = "#(argb,8,8,3)color(1,1,1,1)";
-	color[] = {1,1,1,0.6};
-	colorActive[] = {1,1,1,1};
-	colorDisabled[] = {1,1,1,0.3};
+	color[] = MUIC_WHITE;
+	colorActive[] = MUIC_WHITE;
+	colorDisabled[] = MUIC_WHITE;
 	thumb = "#(argb,8,8,3)color(1,1,1,1)";		
 	};
 };
 
+/*
 class MUI_STRUCT_TXT : MUI_BASE 
 {
 	type = 13;
+
 	size = 1;
 	class Attributes
 	{
 		
 	};
 };
+*/
 
 class MUI_ST_FRAME : MUI_BASE
 {
-	type = 0;
+	type = CT_STATIC;
 
 	sizeEx = MUI_TXT_SIZE_XS;
-	style = 64;
+	style = ST_FRAME;
 	text = "";
 	font = "PuristaLight";
-
 };
 
 class MUI_EDIT : MUI_BASE
 {
-	type = 2;
-	style = "16 + 512"; // multi line + no border
-	font = "PuristaMedium";
+	type = CT_EDIT;
+
 	sizeEx = MUI_TXT_SIZE_XS;
+	style = ST_MULTI + ST_NO_RECT; // multi line + no border
+
+	text = "";
+	font = "PuristaMedium";
+	
 	autocomplete = "";
 	canModify = false; 
 	maxChars = 1000; 
 	forceDrawCaret = false;
-	colorSelection[] = {0,0,0,0};
-	colorText[] = {1,1,1,1};
-	colorDisabled[] = {0,0,0,0}; 
-	colorBackground[] = {0,0,0,0}; 
-	text = "";
+
+	colorSelection[] = MUIC_TRANSPARENT;
+	colorText[] = MUIC_WHITE;
+	colorDisabled[] = MUIC_TRANSPARENT; 
+	colorBackground[] = MUIC_TRANSPARENT; 
+
 	lineSpacing = 1.1 * GUI_GRID_H;
 };
 

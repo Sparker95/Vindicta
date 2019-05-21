@@ -1,5 +1,11 @@
 #include "..\OOP_Light\OOP_Light.h"
 
+/*
+
+[] call fnc_createCamp;
+
+*/
+
 params ["_target"];
 
 private _allLocations = GETSV("Location", "all");

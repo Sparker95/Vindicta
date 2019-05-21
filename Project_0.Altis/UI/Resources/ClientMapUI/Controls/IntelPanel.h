@@ -1,10 +1,13 @@
-class CMUI_LOCP_HEADLINE : MUI_HEADLINE 
+#include "..\..\UIProfileColors.h"
+#include "..\..\MissionUIControlClasses.h"
+
+class CMUI_LOCP_HEADLINE : MUI_HEADLINE
 {
     idc = IDC_LOCP_HEADLINE;
     x = safeZoneX + safeZoneW * 0.87;
     y = safeZoneY + safeZoneH * 0.042;
     w = safeZoneW * 0.126;
-    style = ST_CENTER+ST_UPPERCASE;
+    h = safeZoneH * 0.02;
     text = "Camp Foxtrot";
 };
 
@@ -15,7 +18,7 @@ class CMUI_LOCP_TAB1 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "a3\ui_f\data\IGUI\RscTitles\RscHvtPhase\JAC_A3_Signal_4_ca.paa";	
+    text = "UI\Images\garrison.paa";  
 };
 
 class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB 
@@ -25,7 +28,7 @@ class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "a3\3DEN\data\Displays\Display3DEN\PanelRight\modeTriggers_ca.paa";   
+    text = "UI\Images\garrison.paa";   
 };
 
 class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB 
@@ -35,7 +38,7 @@ class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "";
+    text = "UI\Images\garrison.paa";
 };
 
 class CMUI_LOCP_TAB_TXT : MUI_BASE 
@@ -44,10 +47,12 @@ class CMUI_LOCP_TAB_TXT : MUI_BASE
     x = safeZoneX + safeZoneW * 0.87;
     y = safeZoneY + safeZoneH * 0.135;
     w = safeZoneW * 0.126;
-    h = safeZoneH * 0.028;
+    h = safeZoneH * 0.03;
     text = "TAB HEADLINE";
-    style = ST_CENTER;
-    colorBackground[] = {0,0,0,1};	
+    font = "PuristaSemiBold";
+    sizeEx = MUI_TXT_SIZE_S
+    style = 12+2;
+    colorBackground[] = MUIC_BLACK;	
 };
 
 class CMUI_LOCP_LISTBOXBG : MUI_BASE 
@@ -57,8 +62,8 @@ class CMUI_LOCP_LISTBOXBG : MUI_BASE
     y = safeZoneY + safeZoneH * 0.164;
     w = safeZoneW * 0.126;
     h = safeZoneH * 0.535;
-    colorBackground[] = {0,0,0,0.6};
-    colorText[] = {0,0,0,0};
+    colorBackground[] = MUIC_BLACKTRANSP;
+    colorText[] = MUIC_TRANSPARENT;
     text = "";
 };
 class CMUI_LOCP_LISTBOX : MUI_LISTNBOX 
@@ -95,7 +100,7 @@ class CMUI_BPANEL_BUTTON_1 : MUI_BUTTON_TXT
 {
     idc = IDC_BPANEL_BUTTON_1;
     x = safeZoneX + safeZoneW * 0.33;
-    y = safeZoneY + safeZoneH * 0.942;
+    y = safeZoneY + safeZoneH * 0.943;
     w = safeZoneW * 0.11;
     text = "FAST TRAVEL";
 };
@@ -104,7 +109,7 @@ class CMUI_BPANEL_BUTTON_2 : MUI_BUTTON_TXT
 {
     idc = IDC_BPANEL_BUTTON_2;
     x = safeZoneX + safeZoneW * 0.445;
-    y = safeZoneY + safeZoneH * 0.942;
+    y = safeZoneY + safeZoneH * 0.943;
     w = safeZoneW * 0.11;
     text = "CREATE CAMP";
 };
@@ -113,7 +118,7 @@ class CMUI_BPANEL_BUTTON_3 : MUI_BUTTON_TXT
 {
     idc = IDC_BPANEL_BUTTON_3;
     x = safeZoneX + safeZoneW * 0.56;
-    y = safeZoneY + safeZoneH * 0.942;
+    y = safeZoneY + safeZoneH * 0.943;
     w = safeZoneW * 0.11;
     text = "MISSION MENU";	
 };
@@ -147,6 +152,6 @@ class CMUI_LOCP_DETAILTXT : MUI_EDIT
     w = safeZoneW * 0.105;
     h = safeZoneH * 0.16;
     text = "";
-    colorBackground[] = {0,0,0,0};
-    colorText[] = {1,1,1,1};           
+    colorBackground[] = MUIC_TRANSPARENT;
+    colorText[] = MUIC_WHITE;           
 };

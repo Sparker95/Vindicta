@@ -8,7 +8,7 @@
 #include "..\Resources\MapUI\MapUI_Macros.h"
 #include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
-#include "..\UIProfileColors.h"
+#include "..\Resources\UIProfileColors.h"
 
 
 /*
@@ -28,7 +28,7 @@ CMUI_ColorUnknown = MUI_COLOR_EMPTY;
 CLASS(CLASS_NAME, "")
 
 	// Arrays of LOCATION_DATA structures
-	STATIC_VARIABLE("locationDataWest"); // What client's side knows about West knowledge about locations
+	STATIC_VARIABLE("locationDataWest"); 	// What client's side knows about West knowledge about locations
 	STATIC_VARIABLE("locationDataEast");
 	STATIC_VARIABLE("locationDataInd");
 
@@ -36,8 +36,6 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		pr _mapDisplay = findDisplay 12;
-
-		systemChat "new method called";
 
 		//listbox events
 		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { params ['_control']; CALLSM(CLASS_NAME, "onLBSelChanged", [_control]) }];
@@ -48,6 +46,7 @@ CLASS(CLASS_NAME, "")
 
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["ButtonDown", { params ['_control']; [player] call fnc_createCamp; }];
 
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
@@ -61,6 +60,13 @@ CLASS(CLASS_NAME, "")
 
 		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		// init headline text and color
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
+
+		// set some properties that didn't work right in control classes
+		(_mapDisplay displayCtrl IDC_LOCP_TABCAT) ctrlSetFont "PuristaSemiBold";
 
 	} ENDMETHOD;
 
@@ -120,10 +126,29 @@ CLASS(CLASS_NAME, "")
 		params ["_thisClass", "_control"];
 		pr _mapDisplay = findDisplay 12;
 		// TODO: Display different descriptions for intel
-
-		systemChat "LB selection changed.";
 		
 		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
+
+	} ENDMETHOD;
+
+	// Formats location data and shows it on the location data panel
+	STATIC_METHOD("onMouseClickElsewhere") {
+		CALLSM0(CLASS_NAME, "clearListNBox");
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className != "IntelLocation") then {
+				_ctrlListnbox lnbAddRow [ format ["%1 \n _className: %1 \n _className: %1 \n", _className] ];
+			};
+
+		} forEach _allIntels;
+
+		// change location panel headline
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
 
 	} ENDMETHOD;
 
@@ -237,22 +262,6 @@ CLASS(CLASS_NAME, "")
 			_ld select _index
 		};
 
-	} ENDMETHOD;
-
-	// Formats location data and shows it on the location data panel
-	STATIC_METHOD("onMouseClickElsewhere") {
-		CALLSM0(CLASS_NAME, "clearListNBox");
-		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
-		private _mapDisplay = findDisplay 12;
-		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
-
-		{
-			private _className = GET_OBJECT_CLASS(_x);
-			if (_className != "IntelLocation") then {
-				_ctrlListnbox lnbAddRow [ format ["%1 \n _className: %1 \n _className: %1 \n", _className] ];
-			};
-
-		} forEach _allIntels; 
 	} ENDMETHOD;
 
 	STATIC_METHOD("clearListNBox") {

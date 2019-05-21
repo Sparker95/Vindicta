@@ -7,6 +7,7 @@ class ClientMapUI
 	enableSimulation = true;
 	movingEnable = true;
 	moving = true;
+	canDrag = true;
 	
 	class ControlsBackground
 	{
