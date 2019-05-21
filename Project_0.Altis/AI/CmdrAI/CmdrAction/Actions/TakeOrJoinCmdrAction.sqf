@@ -87,22 +87,39 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _waitAST_Args = [
 				_thisObject,						// This action (for debugging context)
 				[CMDR_ACTION_STATE_ASSIGNED], 		// Start wait after we assigned the action to the detachment
-				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change if successful
+				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change if successful2
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_startDateVar,						// Date to wait until
 				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
-		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);
+		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);	
 
-		private _moveAST_Args = [
-				_thisObject, 						// This action (for debugging context)
-				[CMDR_ACTION_STATE_READY_TO_MOVE], 		
-				CMDR_ACTION_STATE_MOVED, 			// State change when successful
-				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
-				CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
-				_splitGarrIdVar, 					// Id of garrison to move
-				_targetVar, 						// Target to move to (initially the target garrison)
-				MAKE_AST_VAR(200)]; 				// Radius to move within
-		private _moveAST = NEW("AST_MoveGarrison", _moveAST_Args);
+		GET_AST_VAR(_targetVar) params ["_targetType", "_target"];
+
+		private _moveAST = if(_targetType == TARGET_TYPE_GARRISON) then {
+			// If we are merging to a garrison we will just move there and merge
+			private _moveAST_Args = [
+					_thisObject, 						// This action (for debugging context)
+					[CMDR_ACTION_STATE_READY_TO_MOVE], 		
+					CMDR_ACTION_STATE_MOVED, 			// State change when successful
+					CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
+					CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
+					_splitGarrIdVar, 					// Id of garrison to move
+					_targetVar, 						// Target to move to (initially the target garrison)
+					MAKE_AST_VAR(200)]; 				// Radius to move within
+			NEW("AST_MoveGarrison", _moveAST_Args)
+		} else {
+			// If we are occupying a location we will attack and clear the area then occupy it (attack includes move)
+			private _attackAST_Args = [
+					_thisObject,
+					[CMDR_ACTION_STATE_READY_TO_MOVE], 	// Once we are split and assigned the action we can go
+					CMDR_ACTION_STATE_MOVED,			// State when we succeed, it leads to occupying the location
+					CMDR_ACTION_STATE_END, 				// If we are dead then go to end
+					CMDR_ACTION_STATE_MOVED,			// If we timeout then occupy the location
+					_splitGarrIdVar, 					// Id of the garrison doing the attacking
+					_targetVar, 						// Target to attack (cluster or garrison supported)
+					MAKE_AST_VAR(500)];					// Move radius
+			NEW("AST_GarrisonAttackTarget", _attackAST_Args)
+		};
 
 		private _mergeAST_Args = [
 				_thisObject,
@@ -185,19 +202,21 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 
 		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
-		T_PRVAR(debugColor);
-		T_PRVAR(debugSymbol);
+		if(_targetPos isEqualType []) then {
+			T_PRVAR(debugColor);
+			T_PRVAR(debugSymbol);
 
-		[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
+			[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
-		private _centerPos = _srcGarrPos vectorAdd ((_targetPos vectorDiff _srcGarrPos) apply { _x * 0.5 });
-		private _mrk = _thisObject + "_label";
-		createmarker [_mrk, _centerPos];
-		_mrk setMarkerType _debugSymbol;
-		_mrk setMarkerColor _debugColor;
-		_mrk setMarkerPos _centerPos;
-		_mrk setMarkerAlpha 1;
-		_mrk setMarkerText T_CALLM("getLabel", [_world]);
+			private _centerPos = _srcGarrPos vectorAdd ((_targetPos vectorDiff _srcGarrPos) apply { _x * 0.25 });
+			private _mrk = _thisObject + "_label";
+			createmarker [_mrk, _centerPos];
+			_mrk setMarkerType _debugSymbol;
+			_mrk setMarkerColor _debugColor;
+			_mrk setMarkerPos _centerPos;
+			_mrk setMarkerAlpha 1;
+			_mrk setMarkerText T_CALLM("getLabel", [_world]);
+		};
 
 		// private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 		// if(_detachedGarrId != MODEL_HANDLE_INVALID) then {

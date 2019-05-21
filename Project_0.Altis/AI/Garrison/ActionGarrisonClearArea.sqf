@@ -61,7 +61,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		T_SETV("lastCombatTime", time);
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -72,12 +72,24 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		// Bail if not spawned
 		pr _gar = T_GETV("gar");
-		if (!CALLM0(_gar, "isSpawned")) exitWith {T_GETV("state")};
+
+		// Succeed after timeout if not spawned.
+		if (!CALLM0(_gar, "isSpawned")) exitWith {
+			pr _lastCombatTime = T_GETV("lastCombatTime");
+			if(isNil "_lastCombatTime") exitWith {
+				T_SETV("lastCombatTime", time);
+				ACTION_STATE_ACTIVE
+			};
+			if ((time - _lastCombatTime) > T_GETV("duration") ) then {
+				T_SETV("state", ACTION_STATE_COMPLETED);
+				ACTION_STATE_COMPLETED
+			} else {
+				ACTION_STATE_ACTIVE
+			};
+		};
 
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _AI = T_GETV("AI");
 			
@@ -93,7 +105,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				};
 			};
 		};
-
 
 		// Return the current state
 		T_SETV("state", _state);
