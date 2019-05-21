@@ -20,7 +20,7 @@ CLASS("AITestBenchGameMode", "GameModeBase")
 
 	} ENDMETHOD;
 
-	/* protected override */ METHOD("initServerOnly") {
+	/* protected override */ METHOD("populateLocations") {
 		params [P_THISOBJECT];
 
 		// Create initial garrisons at bases.
@@ -37,7 +37,7 @@ CLASS("AITestBenchGameMode", "GameModeBase")
 					private _cHMGGMG = 0; //CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 					private _cBuildingSentry = 0; //CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);
 					
-					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", [_side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+					private _gar = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 
 					// Add an APC
 					

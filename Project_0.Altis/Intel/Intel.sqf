@@ -334,6 +334,15 @@ CLASS("IntelCommanderAction", "Intel")
 	/* variable: strength
 	Strength of the units allocated for this job. Format is yet unknown.*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
+
+	METHOD("clientAdd") {
+		params [P_THISOBJECT];
+
+		systemChat format ["Added intel: %1", _thisObject];
+
+		// Hint
+		hint format ["Added intel: %1", _thisObject];
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
@@ -372,6 +381,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("tgtClusterId", [ATTR_SERIALIZABLE]);
 ENDCLASS;
 
 /*

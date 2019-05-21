@@ -20,7 +20,7 @@ Author: Sparker, Marvis
 */
 
 gMsgLoopUndercover = NEW("MessageLoop", []);
-CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
+CALL_METHOD(gMsgLoopUndercover, "setName", ["Undercover thread"]);
 
 #define pr private
 

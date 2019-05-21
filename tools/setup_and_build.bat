@@ -14,11 +14,5 @@ cd /d "%~dp0buildtool"
 
 rem Install dependencies and build missions
 call npm install --loglevel=error
+call npx gulp clean
 call npx gulp
-
-cd ..
-
-echo.
-
-pause
-exit /b

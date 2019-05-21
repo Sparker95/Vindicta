@@ -61,8 +61,14 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 		pr _vehLead = vehicle (leader (CALLM0(_group, "getGroupHandle")));
 		
 		// Regroup units by distance
+		pr _leader = CALLM0(_group, "getLeader");
+		if (_leader == "") exitWith {
+			OOP_ERROR_1("Group has no leader: %1", _group);
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
 		if (count _allVehicles > 1) then {
-			pr _distAndUnits = (CALLM0(_group, "getUnits") - [CALLM0(_group, "getLeader")]) apply {
+			pr _distAndUnits = (CALLM0(_group, "getUnits") - [_leader]) apply {
 				pr _hO = CALLM0(_x, "getObjectHandle");
 				[_hO distance _vehLead, _x];
 			};
@@ -100,28 +106,35 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 
 		// Give goals to all drivers except the lead driver
 		pr _leader = CALLM0(_group, "getLeader");
-		if (CALLM0(_leader, "isAlive")) then {
-			pr _groupUnits = CALLM0(_group, "getUnits");
-			{
-				if (CALLM0(_x, "isInfantry") && (_x != _leader)) then {
-					pr _unitAI = CALLM0(_x, "getAI");
-					if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
-						// Add goal
-						CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
+		if (_leader != "") then {
+			if (CALLM0(_leader, "isAlive")) then {
+				pr _groupUnits = CALLM0(_group, "getUnits");
+				{
+					if (CALLM0(_x, "isInfantry") && (_x != _leader)) then {
+						pr _unitAI = CALLM0(_x, "getAI");
+						if (CALLM0(_unitAI, "getAssignedVehicleRole") == "DRIVER") then {
+							// Add goal
+							CALLM4(_unitAI, "addExternalGoal", "GoalUnitFollowLeaderVehicle", 0, [], _AI);
+						};
 					};
-				};
-			} forEach _groupUnits;
-			
-			// Lead vehicle gets a special goal
-			pr _leaderAI = CALLM0(_leader, "getAI");
-			pr _parameters = [[TAG_POS, _pos]];
-			CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
+				} forEach _groupUnits;
+				
+				// Lead vehicle gets a special goal
+				pr _leaderAI = CALLM0(_leader, "getAI");
+				pr _parameters = [[TAG_POS, _pos]];
+				CALLM4(_leaderAI, "addExternalGoal", "GoalUnitMoveLeaderVehicle", 0, _parameters, _AI);
 
-			// Return ACTIVE state
-			T_SETV("state", ACTION_STATE_ACTIVE);
-			ACTION_STATE_ACTIVE
+				// Return ACTIVE state
+				T_SETV("state", ACTION_STATE_ACTIVE);
+				ACTION_STATE_ACTIVE
+			} else {
+				// Fail if leader is not alive
+				T_SETV("state", ACTION_STATE_FAILED);
+				ACTION_STATE_FAILED
+			};
 		} else {
-			// Fail if leader is not alive
+			// leader is "", wtf
+			OOP_ERROR_1("Group has no leader: %1", _group);
 			T_SETV("state", ACTION_STATE_FAILED);
 			ACTION_STATE_FAILED
 		};
@@ -147,7 +160,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 			//Check the separation of the convoy
 			private _sCur = CALLM0(_thisObject, "getMaxSeparation"); //The current maximum separation between vehicles
 			#ifdef DEBUG_FORMATION
-			diag_log format [">>> Current separation: %1", _sCur];
+			OOP_DEBUG_MSG(">>> Current separation: %1", [_sCur]);
 			#endif
 			if(_sCur > 3*SEPARATION) then
 			{
@@ -159,7 +172,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 					T_SETV("speedLimit", _speedLimit);
 					(vehicle (leader _hG)) limitSpeed _speedLimit;
 					#ifdef DEBUG_FORMATION
-					diag_log format [">>> Slowing down! New speed: %1", _speedLimit];
+					OOP_DEBUG_MSG(">>> Slowing down! New speed: %1", [_speedLimit]);
 					#endif
 				};
 			}
@@ -173,7 +186,7 @@ CLASS("ActionGroupMoveGroundVehicles", "ActionGroup")
 					T_SETV("speedLimit", _speedLimit);
 					(vehicle (leader _hG)) limitSpeed _speedLimit;
 					#ifdef DEBUG_FORMATION
-					diag_log format [">>> Accelerating! New speed: %1", _speedLimit];
+					OOP_DEBUG_MSG(">>> Accelerating! New speed: %1", [_speedLimit]);
 					#endif
 				};
 			};

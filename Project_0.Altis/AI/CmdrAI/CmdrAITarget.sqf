@@ -7,7 +7,7 @@ Target_fnc_GetPos = {
 	private _targetPos = false;
 	switch(_targetType) do {
 		case TARGET_TYPE_GARRISON: {
-			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON target type expects a garrison ID");
+			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");
 			private _garr = CALLM(_world, "getGarrison", [_target]);
 			ASSERT_OBJECT(_garr);
 			_targetPos = if(CALLM(_garr, "isDead", [])) then {
@@ -17,14 +17,20 @@ Target_fnc_GetPos = {
 			};
 		};
 		case TARGET_TYPE_LOCATION: {
-			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION target type expects a location ID");
+			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
 			private _loc = CALLM(_world, "getLocation", [_target]);
 			ASSERT_OBJECT(_loc);
 			_targetPos = GETV(_loc, "pos");
 		};
 		case TARGET_TYPE_POSITION: {
-			ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION target type expects a position [x,y,z]");
+			ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION expects a position [x,y,z]");
 			_targetPos = _target;
+		};
+		case TARGET_TYPE_CLUSTER: {
+			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
+			private _cluster = CALLM(_world, "getCluster", [_target]);
+			ASSERT_OBJECT(_cluster);
+			_targetPos = GETV(_cluster, "pos");
 		};
 		default {
 			FAILURE("Target is not valid");
@@ -40,24 +46,30 @@ Target_fnc_GetLabel = {
 	private _targetName = "unknown";
 	switch(_targetType) do {
 		case TARGET_TYPE_GARRISON: {
-			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON target type expects a garrison ID");
+			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");
 			private _garr = CALLM(_world, "getGarrison", [_target]);
 			ASSERT_OBJECT(_garr);
 			_targetName = LABEL(_garr) + str GETV(_garr, "efficiency");
 		};
 		case TARGET_TYPE_LOCATION: {
-			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION target type expects a location ID");
+			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
 			private _loc = CALLM(_world, "getLocation", [_target]);
 			ASSERT_OBJECT(_loc);
 			_targetName = LABEL(_loc);
 		};
 		case TARGET_TYPE_POSITION: {
-			ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION target type expects a position [x,y,z]");
+			ASSERT_MSG(_target isEqualType [], "TARGET_TYPE_POSITION expects a position [x,y,z]");
 			_targetName = str(_target);
+		};
+		case TARGET_TYPE_CLUSTER: {
+			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_CLUSTER expects a cluster ID");
+			private _cluster = CALLM(_world, "getCluster", [_target]);
+			ASSERT_OBJECT(_cluster);
+			_targetName = LABEL(_cluster);
 		};
 		default {
 			FAILURE("Target is not valid");
 		};
 	};
 	_targetName
-}
+};

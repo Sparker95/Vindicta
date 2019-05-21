@@ -426,6 +426,63 @@
                 "group": "PBO"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Copy github SQM over editor sqm (with backup)",
+            "type": "process",
+            "command": "copy_sqm_from_github.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Copy editor SQM over github sqm",
+            "type": "process",
+            "command": "copy_sqm_to_github.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Watch Arma RPT Files",
+            "type": "process",
+            "command": "powershell",
+            "args": [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "LogExpertWatcher.ps1"       
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "logging"
+            },
+            "problemMatcher": []
         }
     ]
 }

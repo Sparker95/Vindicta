@@ -138,12 +138,15 @@ CLASS("WorldModel", "")
 		T_PRVAR(rawThreatGrid);
 		T_PRVAR(rawDamageGrid);
 
-		#define THREAT_FADE_RATE 0.8
+		// Fade grids over time
+		// Threat fades to 50% over 60 minutes or so
+		// Damage fades to 50% over 7 hours or so
+		// https://www.desmos.com/calculator/iyesusko7z
+		#define THREAT_FADE_RATE 0.93
 		#define DAMAGE_FADE_RATE 0.99
-		#define FADE_RATE_PERIOD 60
+		#define FADE_RATE_PERIOD 360
 		#define POW(a, b) (exp ((b) * log (a)))
 
-		// Fade grids over time
 		T_PRVAR(lastGridUpdate);
 		private _dt = TIME_NOW - _lastGridUpdate;
 		T_SETV("lastGridUpdate", TIME_NOW);
@@ -159,8 +162,8 @@ CLASS("WorldModel", "")
 			private _size = GETV(_x, "size") apply { _x + 2 * THREAT_GRID_CLUSTER_OVERSIZE };
 			private _threat = GETV(_x, "efficiency");
 			private _damage = GETV(_x, "damage");
-			CALLM(_rawThreatGrid, "maxRect", [_pos]+[_size]+[_threat]);
-			// CALLM(_rawDamageGrid, "maxRect", [_pos]+[_size]+[_damage]);
+			CALLM(_rawThreatGrid, "maxRect", [_pos ARG _size ARG _threat]);
+			// CALLM(_rawDamageGrid, "maxRect", [_pos ARG _size ARG _damage]);
 		} forEach T_CALLM("getAliveClusters", []);
 
 		T_PRVAR(threatGrid);
@@ -177,9 +180,9 @@ CLASS("WorldModel", "")
 
 #ifdef DEBUG_CMDRAI
 		//CALLM(_threatGrid, "unplot", []);
-		CALLM(_threatGrid, "plot", [20]+[false]+["SolidFull"]+[["ColorGreen"]+["ColorYellow"]+["ColorBlue"]]+[[0.02]+[0.5]]);
+		CALLM(_threatGrid, "plot", [20 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
 		//CALLM(_damageGrid, "unplot", []);
-		CALLM(_damageGrid, "plot", [20]+[false]+["DiagGrid"]+[["ColorGreen"]+["ColorPink"]+["ColorBlue"]]+[[0.1]+[1]]);
+		CALLM(_damageGrid, "plot", [20 ARG false ARG "DiagGrid" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
 #endif
 		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
@@ -198,13 +201,13 @@ CLASS("WorldModel", "")
 	METHOD("getThreat") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
-		private _threat = 0;
+		private _threat = +T_EFF_null;
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			//T_PRVAR(threatGrid);
 			T_PRVAR(damageGrid);
 
-			_threat = CALLM(_damageGrid, "getValue", [_pos]);
+			_threat = +CALLM(_damageGrid, "getValue", [_pos]);
 
 			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
 			// CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
@@ -218,7 +221,7 @@ CLASS("WorldModel", "")
 	METHOD("addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
 		T_PRVAR(rawDamageGrid);
-		CALLM(_rawDamageGrid, "addValue", [_pos]+[_effDamage]);
+		CALLM(_rawDamageGrid, "addValue", [_pos ARG _effDamage]);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -291,7 +294,7 @@ CLASS("WorldModel", "")
 		T_PRVAR(garrisons);
 		private _idx = _garrisons findIf { GETV(_x, "actual") == _actual };
 		if(_idx == NOT_FOUND) then { 
-			private _newGarrison = NEW("GarrisonModel", [_thisObject]+[_actual]);
+			private _newGarrison = NEW("GarrisonModel", [_thisObject ARG _actual]);
 			_newGarrison
 		} else {
 			_garrisons select _idx
@@ -309,13 +312,26 @@ CLASS("WorldModel", "")
 
 	// TODO: Optimize this
 	METHOD("getAliveGarrisons") {
-		params [P_THISOBJECT];
-		T_PRVAR(garrisons);
-		_garrisons select { !CALLM(_x, "isDead", []) }
+		params [P_THISOBJECT, P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
+
+		private _garrisons = T_GETV("garrisons")
+			select { 
+				!CALLM(_x, "isDead", []) 
+			};
+
+		if((count _includeFactions == 0) and (count _excludeFactions == 0)) then {
+			+_garrisons
+		} else {
+			_garrisons select {
+				private _faction = GETV(_x, "faction");
+				(count _includeFactions == 0 or {_faction in _includeFactions}) and 
+				{(count _excludeFactions == 0) or {!(_faction in _excludeFactions)}} 
+			}
+		};
 	} ENDMETHOD;
-	
+
 	METHOD("getNearestGarrisons") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		private _nearestGarrisons = [];
@@ -327,7 +343,7 @@ CLASS("WorldModel", "")
 			if(_maxDist == 0 or _dist <= _maxDist) then {
 				_nearestGarrisons pushBack [_dist, _garrison];
 			};
-		} forEach T_CALLM("getAliveGarrisons", []);
+		} forEach T_CALLM("getAliveGarrisons", [_includeFactions ARG _excludeFactions]);
 		_nearestGarrisons sort ASCENDING;
 		_nearestGarrisons
 	} ENDMETHOD;
@@ -358,11 +374,18 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getLocations") {
-		params [P_THISOBJECT, P_NUMBER("_id")];
+		params [P_THISOBJECT, P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		T_PRVAR(locations);
-		// Copy it, necessary?
-		+_locations
+		if((count _includeTypes == 0) and (count _excludeTypes == 0)) then {
+			+_locations
+		} else {
+			_locations select {
+				private _type = GETV(_x, "type");
+				(count _includeTypes == 0 or {_type in _includeTypes}) and 
+				{(count _excludeTypes == 0) or {!(_type in _excludeTypes)}} 
+			}
+		};
 	} ENDMETHOD;
 
 	METHOD("findLocationByActual") {
@@ -386,7 +409,7 @@ CLASS("WorldModel", "")
 		T_PRVAR(locations);
 		private _idx = _locations findIf { GETV(_x, "actual") == _actual };
 		if(_idx == NOT_FOUND) then { 
-			private _newLocation = NEW("LocationModel", [_thisObject]+[_actual]);
+			private _newLocation = NEW("LocationModel", [_thisObject ARG _actual]);
 			_newLocation
 		} else {
 			_locations select _idx
@@ -394,20 +417,18 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getNearestLocations") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist")];
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
-		T_PRVAR(locations);
-
+		//T_PRVAR(locations);
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
-		private _nearestLocations = [];
-		{
-			private _location = _x;
-			private _pos = GETV(_location, "pos");
-			private _dist = _pos distance _center;
-			if(_maxDist == 0 or _dist <= _maxDist) then {
-				_nearestLocations pushBack [_dist, _location];
+		// TODO: is select, sort, while faster here?
+		private _nearestLocations = 
+			T_CALLM("getLocations", [_includeTypes ARG _excludeTypes])
+			apply {
+				[GETV(_x, "pos") distance _center, _x]
+			} select {
+				(_maxDist == 0) or (_x#0 <= _maxDist)
 			};
-		} forEach _locations;
 		_nearestLocations sort ASCENDING;
 		_nearestLocations
 	} ENDMETHOD;
@@ -429,7 +450,7 @@ CLASS("WorldModel", "")
 		private _idx = _clusters pushBack _cluster;
 		SETV(_cluster, "id", _idx);
 
-		OOP_DEBUG_MSG("Cluster %1 (%2) added to world model", [LABEL(_cluster)]+[_cluster]);
+		OOP_DEBUG_MSG("Cluster %1 (%2) added to world model", [LABEL(_cluster) ARG _cluster]);
 
 		_idx
 	} ENDMETHOD;
@@ -461,7 +482,7 @@ CLASS("WorldModel", "")
 		T_PRVAR(clusters);
 		private _idx = _clusters findIf { GETV(_x, "actual") isEqualTo _actual };
 		if(_idx == NOT_FOUND) then { 
-			private _newCluster = NEW("ClusterModel", [_thisObject]+[_actual]);
+			private _newCluster = NEW("ClusterModel", [_thisObject ARG _actual]);
 			_newLocation
 		} else {
 			_clusters select _idx
@@ -507,7 +528,7 @@ CLASS("WorldModel", "")
 		ASSERT_OBJECT(_cluster);
 		SETV(_cluster, "actual", +_newActual);
 
-		OOP_DEBUG_MSG("Cluster %1 retargetted to %2", [LABEL(_cluster)]+[_newActual]);
+		OOP_DEBUG_MSG("Cluster %1 retargetted to %2", [LABEL(_cluster) ARG _newActual]);
 	} ENDMETHOD;
 
 	METHOD("deleteClusterByActual") {
@@ -545,7 +566,7 @@ CLASS("WorldModel", "")
 
 		T_PRVAR(threatGrid);
 		if(_threatGrid isEqualTo objNull) exitWith {
-			EFF_MIN_EFF
+			EFF_GARRISON_MIN_EFF
 		};
 		T_PRVAR(damageGrid);
 
@@ -556,7 +577,8 @@ CLASS("WorldModel", "")
 		_dmgSum = (0.015 * _dmgSum);
 		private _forceMul = 1.5 max (1 + _dmgSum * _dmgSum * _dmgSum * _dmgSum);
 		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _damageEff);
-		private _effMax = EFF_MAX(_threatEff, EFF_MIN_EFF);
+		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
+		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _dmgSum = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _dmgSum ARG _forceMul ARG _compositeEff ARG _effMax]);
 		_effMax
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.
@@ -574,7 +596,7 @@ CLASS("WorldModel", "")
 		// private _base = EFF_MIN_EFF;
 
 		// // Nearest enemy garrison force * 2
-		// private _enemyForces = T_CALLM("getNearestGarrisons", [_pos]+[2000]) select {
+		// private _enemyForces = T_CALLM("getNearestGarrisons", [_pos ARG 2000]) select {
 		// 	_x params ["_dist", "_garr"];
 		// 	GETV(_garr, "side") != _side
 		// } apply {
@@ -653,7 +675,7 @@ CLASS("WorldModel", "")
 
 		// How much garr is *under* desired efficiency (so over comp * -1) with a non-linear function applied.
 		// i.e. How much more efficiency tgt needs.
-		private _overEff = T_CALLM("getOverDesiredEffScaled", [_garr]+[0.75]);
+		private _overEff = T_CALLM("getOverDesiredEffScaled", [_garr ARG 0.75]);
 		private _score = EFF_SUM(EFF_MAX_SCALAR(EFF_MUL_SCALAR(_overEff, -1), 0));
 	 
 		// apply non linear function to threat (https://www.desmos.com/calculator/wnlyulwf7m)
@@ -776,11 +798,11 @@ ENDCLASS;
 	SETV(_garrison2, "pos", [1000, 0, 0]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center]+[1]) == 0] call test_Assert;
-	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center]+[501]) == 1] call test_Assert;
-	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 2] call test_Assert;
+	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center ARG 1]) == 0] call test_Assert;
+	["Dist test some", count CALLM(_world, "getNearestGarrisons", [_center ARG 501]) == 1] call test_Assert;
+	["Dist test all", count CALLM(_world, "getNearestGarrisons", [_center ARG 1001]) == 2] call test_Assert;
 	CALLM(_garrison2, "killed", []);
-	["Excluding dead", count CALLM(_world, "getNearestGarrisons", [_center]+[1001]) == 1] call test_Assert;
+	["Excluding dead", count CALLM(_world, "getNearestGarrisons", [_center ARG 1001]) == 1] call test_Assert;
 }] call test_AddTest;
 
 ["WorldModel.getNearestLocations", {
@@ -790,9 +812,9 @@ ENDCLASS;
 	private _location2 = NEW("LocationModel", [_world]);
 	SETV(_location2, "pos", [1000, 0, 0]);
 	private _center = [0,0,0];
-	["Dist test none", count CALLM(_world, "getNearestLocations", [_center]+[1]) == 0] call test_Assert;
-	["Dist test some", count CALLM(_world, "getNearestLocations", [_center]+[501]) == 1] call test_Assert;
-	["Dist test all", count CALLM(_world, "getNearestLocations", [_center]+[1001]) == 2] call test_Assert;
+	["Dist test none", count CALLM(_world, "getNearestLocations", [_center ARG 1]) == 0] call test_Assert;
+	["Dist test some", count CALLM(_world, "getNearestLocations", [_center ARG 501]) == 1] call test_Assert;
+	["Dist test all", count CALLM(_world, "getNearestLocations", [_center ARG 1001]) == 2] call test_Assert;
 }] call test_AddTest;
 
 #endif

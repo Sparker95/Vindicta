@@ -21,8 +21,9 @@ if (!IS_SERVER) then {
 #endif
 
 CRITICAL_SECTION {
-	//gGameMode = NEW("AITestBenchGameMode", []); //"BasesGameMode", []);
-	gGameMode = NEW("BasesGameMode", []);
+	//gGameMode = NEW("AITestBenchGameMode", []); //"ExpandGameMode", []);
+	//gGameMode = NEW("ExpandGameMode", []);
+	gGameMode = NEW("RedVsGreenGameMode", []);
 
 	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];
 	CALLM(gGameMode, "init", []);

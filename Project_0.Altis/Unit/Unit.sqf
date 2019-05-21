@@ -45,6 +45,8 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
 
+		OOP_INFO_0("NEW UNIT");
+
 		// Check argument validity
 		private _valid = false;
 		if (isNull _ho) then {
@@ -83,6 +85,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			_class = typeOf _hO;
 		};
 
+		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
+
 		// Create the data array
 		private _data = UNIT_DATA_DEFAULT;
 		_data set [UNIT_DATA_ID_CAT, _catID];
@@ -120,6 +124,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("delete") {
 		params[["_thisObject", "", [""]]];
+
+		OOP_INFO_0("DELETE UNIT");
+
 		private _data = GET_MEM(_thisObject, "data");
 
 		//Despawn this unit if it was spawned
@@ -228,6 +235,10 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created infantry unit is Null. Unit data: %1", _data);
+						_objectHandle = _groupHandle createUnit ["I_Protagonist_VR_F", _pos, [], 10, "FORM"];
+					};
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 					_objectHandle allowFleeing 0;
 					
@@ -241,6 +252,11 @@ CLASS(UNIT_CLASS_NAME, "");
 					pr _groupType = CALLM0(_group, "getType");
 					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {
 						CALLM1(_AI, "setSentryPos", _pos);
+					};
+
+					// Give intel to this unit
+					if ((random 10) < 4) then {
+						CALLSM2("UnitIntel", "initObject", _objectHandle, 1+round(random 1));
 					};
 				};
 				case T_VEH: {
@@ -257,9 +273,18 @@ CLASS(UNIT_CLASS_NAME, "");
 
 					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
 
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
+						_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
+					};
+
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
+
+					
+					// Give intel to this unit
+					CALLSM2("UnitIntel", "initObject", _objectHandle, 1);
 				};
 				case T_DRONE: {
 				};

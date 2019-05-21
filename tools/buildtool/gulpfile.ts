@@ -1,4 +1,5 @@
 import * as gulp from "gulp";
+import * as rename from "gulp-rename";
 import * as gulpReplace from "gulp-replace";
 import * as gulpPbo from "gulp-armapbo";
 import * as gulpZip from "gulp-zip";
@@ -47,6 +48,7 @@ for (let preset of presets) {
         /** Copy mission.sqm to output dir */
         function copyMissionSQM() {
             return gulp.src(mission.getMissionSqmPath())
+                .pipe(rename('mission.sqm'))
                 .pipe(gulp.dest(mission.getOutputDir()));
         },
 

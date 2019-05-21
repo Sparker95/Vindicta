@@ -321,7 +321,8 @@ CLASS("AI_GOAP", "AI")
 			if (_goalState != ACTION_STATE_COMPLETED) then {
 				pr _goalClassName = _x select 0;
 				pr _bias = _x select 1;
-				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
+				pr _parameters = _x select 2;
+				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject ARG _parameters]);
 				//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
 				_relevance = _relevance + _bias;
 				
@@ -395,6 +396,9 @@ CLASS("AI_GOAP", "AI")
 		
 		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
+		// Call the "onGoalAdded" static method
+		CALLSM(_goalClassName, "onGoalAdded", [_thisObject ARG _parameters]);
+
 		// Call process method to accelerate goal arbitration
 		if (_callProcess) then {
 			CALLM0(_thisObject, "process");
@@ -435,6 +439,12 @@ CLASS("AI_GOAP", "AI")
 			pr _cg = _goalsExternal select _i;
 			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
 					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
+				
+				// Call the "onGoalDeleted" static method
+				private _thisGoalClassName = _cg select 0;
+				CALLSM(_cg select 0, "onGoalDeleted", [_thisObject ARG _cg select 2]);
+
+				// Delete this goal
 				pr _deletedGoal = _goalsExternal deleteAt _i;
 				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
 				_goalDeleted = true;

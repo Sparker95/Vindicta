@@ -80,10 +80,14 @@ CLASS("VirtualRoute", "")
 		if(_speedFn isEqualType "") then {
 			pr _default_speedFn = {
 				params ["_road", "_next_road", "_callbackArgs"];
+#ifdef CMDR_AI_TESTING
+				300
+#else
 				if([_road] call misc_fnc_isHighWay) exitWith {
 					60 * 0.277778
 				};
 				40 * 0.277778
+#endif
 			};
 			T_SETV("speedFn", _default_speedFn);
 		} else {
@@ -162,15 +166,14 @@ CLASS("VirtualRoute", "")
 				// Speed for first section
 				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1, _callbackArgs] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
-
-				// Set it last
-				T_SETV("calculated", true);
 				
 #ifndef RELEASE_BUILD
 				if(_debugDraw) then {
 					T_CALLM("debugDraw", []);
 				};
 #endif
+				// Set it last
+				T_SETV("calculated", true);
 			} catch {
 				T_SETV("failed", true);
 			};
@@ -382,8 +385,6 @@ CLASS("VirtualRoute", "")
 		];
 		
 		CALLM0(_thisObject, "clearDebugDraw");
-		
-		if(!T_GETV("calculated")) exitWith {};
 
 		T_PRVAR(route);
 

@@ -6,10 +6,10 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
 		T_SETV("tgtGarrId", _tgtGarrId);
-		
-		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON]+[_tgtGarrId]);
 
+		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
+		T_SET_AST_VAR("targetVar", [TARGET_TYPE_GARRISON ARG _tgtGarrId]);
+		// T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
 #ifdef DEBUG_CMDRAI
 		T_SETV("debugColor", "ColorWhite");
 		T_SETV("debugSymbol", "mil_join")
@@ -47,7 +47,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar"));
 		};
 
-		T_CALLM("updateIntelFromDetachment", [_intel]);
+		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
@@ -93,7 +93,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]+[CHEAT_TRANSPORT]);
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT]);
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
@@ -120,10 +120,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 		
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] 
-			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		T_SETV("scorePriority", _scorePriority);
 		T_SETV("scoreResource", _scoreResource);
@@ -147,14 +144,22 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		// How much resources src can spare.
 		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
+
 		// How much resources tgt needs
 		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
+		// If we are depleted at all then we will send a min size reinforcement at least
+		if(!EFF_LTE(_tgtUnderEff, EFF_ZERO)) then {
+			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
+		};
+
+		// // If tgt is under desired eff at all then send reinforcements
+		// private _tgtEff = GETV(_tgtGarr, "efficiency");
 
 		// Min of those values
 		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
 
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _tgtUnderEff ARG _srcOverEff ARG _effAvailable]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _tgtUnderEff ARG _srcOverEff ARG _effAvailable]);
 
 		// Only send a reasonable amount at a time
 		// TODO: min compositions should be different for detachments and garrisons holding outposts.
@@ -182,10 +187,10 @@ ENDCLASS;
 	SETV(_targetGarrison, "efficiency", _targetEff);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 
-	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id"), GETV(_targetGarrison, "id")]);
+	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world, _future]);
+	CALLM(_thisObject, "updateScore", [_world ARG _future]);
 
 	CALLM(_thisObject, "applyToSim", [_world]);
 	true

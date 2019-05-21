@@ -21,20 +21,20 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison
 	VARIABLE("targets");
-	
-	// Array with assigned targets, array with object handles
+	// Array of targets known by this AI which are within the radius from the assignedTargetsPos, updated by sensorGarrisonTargets
 	VARIABLE("assignedTargets");
 	// Position of the assigned targets (the center of the cluster typically)
 	VARIABLE("assignedTargetsPos");
+	// Radius where to search for assigned targets
+	VARIABLE("assignedTargetsRadius");
+	// Bool, set to true if garrison is aware of any targets in the 'assigned targets' area
+	VARIABLE("awareOfAssignedTargets");
 	
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
 	
-	// Flags
-	
-	// This garrison is aware of any of the assigned targets
-	// Written by SensorGarrisonTargets
-	VARIABLE("awareOfAssignedTarget");
+	// Last time the garrison has any goal except for "GoalGarrisonRelax"
+	VARIABLE("lastBusyTime");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -56,7 +56,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorObserved);
-		
+
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
@@ -77,12 +77,13 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		
-		SETV(_thisObject, "worldState", _ws);
-		SETV(_thisObject, "targets", []);
-		SETV(_thisObject, "assignedTargets", []);
-		pr _t = [0, 0, 0];
-		SETV(_thisObject, "assignedTargetsPos", _t);
-		T_SETV("awareOfAssignedTarget", false);
+		T_SETV("worldState", _ws);
+		T_SETV("targets", []);
+		T_SETV("assignedTargets", []);
+		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
+		T_SETV("assignedTargetsRadius", 0);
+		T_SETV("awareOfAssignedTargets", false);
+		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1); // Garrison should be able to switch to relax instantly after its creation
 		
 		// Update composition
 		CALLM0(_thisObject, "updateComposition");
@@ -124,7 +125,6 @@ CLASS("AIGarrison", "AI_GOAP")
 	} ENDMETHOD;
 	
 	
-	#ifdef DEBUG_GOAL_MARKERS
 	METHOD("process") {
 		params ["_thisObject", ["_accelerate", false]];
 		
@@ -132,6 +132,14 @@ CLASS("AIGarrison", "AI_GOAP")
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
 		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
 		
+		// Update the "busy" timer
+		pr _currentGoal = T_GETV("currentGoal");
+		if (_currentGoal != "" && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
+			T_SETV("lastBusyTime", time);
+		};
+
+		#ifdef DEBUG_GOAL_MARKERS
+
 		// Update the markers
 		pr _gar = T_GETV("agent");
 		pr _mrk = _thisObject + MRK_GOAL;
@@ -172,9 +180,10 @@ CLASS("AIGarrison", "AI_GOAP")
 			_mrk setMarkerSize [0.5*(_pos distance2D _posDest), 10];
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
+
+		#endif
 		
 	} ENDMETHOD;
-	#endif
 	
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
@@ -201,7 +210,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
-			CALLM1(_action, "handleGroupsAdded", [_groups]);
+			CALLM1(_action, "handleGroupsAdded", _groups);
 		};
 		
 		nil
@@ -237,7 +246,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _action = T_GETV("currentAction");
 		if (_action != "") then {
 			// Call it directly since it is in the same thread
-			CALLM1(_action, "handleGroupsRemoved", [_groups]);
+			CALLM1(_action, "handleGroupsRemoved", _groups);
 		};
 		
 		nil
@@ -337,19 +346,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _haveVehicles = count CALLM0(_gar, "getVehicleUnits") > 0;
 		[_worldState, WSP_GAR_HAS_VEHICLES, _haveVehicles] call ws_setPropertyValue;
 		
-	} ENDMETHOD;
-	
-	// Sets the array with assigned targets
-	METHOD("assignTargets") {
-		params ["_thisObject", ["_targets", [], [[]]], ["_targetsPos", [], [[]]]];
-		
-		T_SETV("assignedTargets", _targets);
-		if (count _targetsPos > 0) then {
-			T_SETV("assignedTargetsPos", _targetsPos);
-		} else {
-			pr _posNull = [0, 0, 0];
-			T_SETV("assignedTargetsPos", _posNull);
-		};
 	} ENDMETHOD;
 
 	// Returns spawned state of attached garrison

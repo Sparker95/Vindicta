@@ -6,6 +6,8 @@
 CLASS("LocationModel", "ModelBase")
 	// Location position
 	VARIABLE("pos");
+	// Location type
+	VARIABLE("type");
 	// Side considered to be owning this location
 	VARIABLE("side");
 	// Model Id of the garrison currently occupying this location
@@ -15,14 +17,18 @@ CLASS("LocationModel", "ModelBase")
 	// Is this location determined by the cmdr as a staging outpost?
 	// (i.e. Planned attacks will be mounted from here)
 	VARIABLE("staging");
+	// Radius of the location
+	VARIABLE("radius");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
+		T_SETV("type", "");
 		T_SETV("side", objNull);
 		T_SETV("garrisonIds", []);
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
+		T_SETV("radius", 0);
 		if(!IS_NULL_OBJECT(_actual)) then {
 			T_CALLM("sync", []);
 		};
@@ -33,7 +39,6 @@ CLASS("LocationModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
-
 		private _copy = NEW("LocationModel", [_targetWorldModel]);
 
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
@@ -45,10 +50,12 @@ CLASS("LocationModel", "ModelBase")
 		// SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "pos", +T_GETV("pos"));
+		SETV(_copy, "type", T_GETV("type"));
 		SETV(_copy, "side", T_GETV("side"));
 		SETV(_copy, "garrisonIds", +T_GETV("garrisonIds"));
 		SETV(_copy, "spawn", T_GETV("spawn"));
 		SETV(_copy, "staging", T_GETV("staging"));
+		SETV(_copy, "radius", T_GETV("radius"));
 		_copy
 	} ENDMETHOD;
 	
@@ -63,13 +70,13 @@ CLASS("LocationModel", "ModelBase")
 			//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
 			T_SETV("pos", CALLM(_actual, "getPos", []));
-
+			T_SETV("type", GETV(_actual, "type"));
 			private _side = GETV(_actual, "side");
 			T_SETV("side", _side);
 
 			T_PRVAR(world);
 
-			private _garrisonActuals = CALLM(_actual, "getGarrisons", [_side]);
+			private _garrisonActuals = CALLM(_actual, "getGarrisons", []);
 			private _garrisonIds = [];
 			{
 				private _garrison = CALLM(_world, "findGarrisonByActual", [_x]);
@@ -81,6 +88,8 @@ CLASS("LocationModel", "ModelBase")
 			} foreach _garrisonActuals;
 			T_SETV("garrisonIds", _garrisonIds);
 
+			private _radius = GETV(_actual, "boundingRadius");
+			T_SETV("radius", _radius);
 			// if(!(_garrisonActual isEqualTo "")) then {
 			// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
 			// 	T_SETV("garrisonId", GETV(_garrison, "id"));

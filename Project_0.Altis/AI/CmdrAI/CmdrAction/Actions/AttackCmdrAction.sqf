@@ -1,291 +1,230 @@
-// #define OOP_DEBUG
-// #define OOP_INFO
-// #define OOP_WARNING
-// #define OOP_ERROR
+#include "..\..\common.hpp"
 
-// #include "..\OOP_Light\OOP_Light.h"
 
-// #include "Constants.h"
+// TODO: refactor out commonality for actions that consist of a detachment and a target.
+// Or at least share functionality via a library or something.
+CLASS("AttackCmdrAction", "CmdrAction")
+	VARIABLE("srcGarrId");
+	VARIABLE("targetVar");
+	VARIABLE("splitFlagsVar");
+	VARIABLE("detachmentEffVar");
+	VARIABLE("detachedGarrIdVar");
+	VARIABLE("startDateVar");
 
-// // TODO: refactor to a proper state machine of some kind?
-// // 
-// CLASS("AttackAction", "Action")
-// 	VARIABLE("ourGarrId");
-// 	VARIABLE("theirGarrId");
-// 	VARIABLE("splitGarrId");
-// 	VARIABLE("targetOutpostId");
-// 	VARIABLE("stage");
+	VARIABLE("rtbTargetVar");
 
-// 	METHOD("new") {
-// 		params [P_THISOBJECT, P_NUMBER("_ourGarrId"), P_NUMBER("_theirGarrId")];
-// 		OOP_INFO_2("New AttackAction created %1->%2", _ourGarrId, _theirGarrId);
-// 		T_SETV("ourGarrId", _ourGarrId);
-// 		T_SETV("theirGarrId", _theirGarrId);
-// 		T_SETV("splitGarrId", -1);
-// 		T_SETV("stage", "new");
-// 	} ENDMETHOD;
+#ifdef DEBUG_CMDRAI
+	VARIABLE("debugColor");
+	VARIABLE("debugSymbol");
+#endif
 
-// 	METHOD("updateScore") {
-// 		params [P_THISOBJECT, P_STRING("_simWorld"), P_STRING("_realWorld")];
-// 		T_PRVAR(ourGarrId);
-// 		T_PRVAR(theirGarrId);
+	METHOD("new") {
+		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
-// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
+		T_SETV("srcGarrId", _srcGarrId);
 
-// 		// Threat is just their strength scaled somewhat
-// 		// TODO: is scaling here necessary? should we apply a non-linear function?
-// 		private _scorePriority = CALLM0(_theirGarr, "getStrength") * 0.1;
+		// Start date for this action, default to immediate
+		private _detachmentEffVar = MAKE_AST_VAR(DATE_NOW);
+		T_SETV("startDateVar", _detachmentEffVar);
 
-// 		// Resource is how much our garrison is *over* (required composition + required force), scaled by distance (further is lower)
-// 		private _ourGarrOverComp = CALLM1(_state, "getOverDesiredEff", _ourGarr);
-// 		// Enemy garrison composition
-// 		private _theirComp = CALLM0(_theirGarr, "getComp");
-// 		// How much over (required composition + required force) our garrison is
-// 		private _ourGarrOverForceComp = [
-// 			_ourGarrOverComp#0 - _theirComp#0,
-// 			_ourGarrOverComp#1 - _theirComp#1
-// 		];
+		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
+		// has been started, but this constructor is called before that point.
+		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
+		T_SETV("detachmentEffVar", _detachmentEffVar);
 
-// 		// TODO: refactor out compositions and strength calculations to a utility class
-// 		// Base resource score is based on over forcein fa
-// 		private _scoreResource =
-// 			// units
-// 			(0 max _ourGarrOverForceComp#0) * UNIT_STRENGTH +
-// 			// vehicles
-// 			(0 max _ourGarrOverForceComp#1) * VEHICLE_STRENGTH;
+		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
+		private _targetVar = T_CALLM("createVariable", [[]]);
+		T_SETV("targetVar", _targetVar);
 
-// 		private _ourGarrPos = CALLM0(_ourGarr, "getPos");
-// 		private _theirGarrPos = CALLM0(_theirGarr, "getPos");
+		// Flags to use when splitting off the detachment garrison		
+		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]]);
+		T_SETV("splitFlagsVar", _splitFlagsVar);
+	} ENDMETHOD;
 
-// 		private _distCoeff = CALLSM2("ReinforceAction", "calcDistanceFalloff", _ourGarrPos, _theirGarrPos);
+	METHOD("delete") {
+		params [P_THISOBJECT];
 
-// 		// Scale base score by distance coefficient
-// 		_scoreResource = _scoreResource * _distCoeff;
+		{ DELETE(_x) } forEach T_GETV("transitions");
 
-// 		T_SETV("scorePriority", _scorePriority);
-// 		T_SETV("scoreResource", _scoreResource);
-// 	} ENDMETHOD;
+#ifdef DEBUG_CMDRAI
+		deleteMarker (_thisObject + "_line");
+		deleteMarker (_thisObject + "_label");
+#endif
+	} ENDMETHOD;
 
-// 	// Get composition of reinforcements we should send from src to tgt. 
-// 	// This is the min of what src has spare and what tgt wants.
-// 	METHOD("getAttackComp") {
-// 		params [P_THISOBJECT, P_STRING("_state")];
-// 		T_PRVAR(ourGarrId);
-// 		T_PRVAR(theirGarrId);
+	/* protected override */ METHOD("createTransitions") {
+		params [P_THISOBJECT];
 
-// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
+		T_PRVAR(srcGarrId);
+		T_PRVAR(detachmentEffVar);
+		T_PRVAR(splitFlagsVar);
+		T_PRVAR(targetVar);
+		T_PRVAR(startDateVar);
 
-// 		// Enemy garrison composition
-// 		private _ourComp = CALLM0(_ourGarr, "getComp");
-// 		// Enemy garrison composition
-// 		private _theirComp = CALLM0(_theirGarr, "getComp");
+		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
+		// (it is a constant for this action so it doesn't need to be saved and restored)
+		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
 
-// 		// TODO: many things should be done to improve this (and associated scoring).
-// 		// Just some:
-// 		//   -- Make sure we take an appropriate combination of units/vehicles
-// 		//   -- If attacking an entrenched position scale appropriately (at least 3 times defenders)
-// 		//   -- If area or route is dangerous increase force
+		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
+		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
+		private _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
+		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
-// 		// Attack comp is min(ourComp, theirComp * 1.5)
-// 		[
-// 			_ourComp#0 min floor (_theirComp#0 * 1.5),
-// 			_ourComp#1 min floor (_theirComp#1 * 1.5)
-// 		]
-// 	} ENDMETHOD;
+		private _splitAST_Args = [
+				_thisObject,						// This action (for debugging context)
+				[CMDR_ACTION_STATE_START], 			// First action we do
+				CMDR_ACTION_STATE_SPLIT, 			// State change if successful
+				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
+				_srcGarrIdVar, 						// Garrison to split (constant)
+				_detachmentEffVar, 					// Efficiency we want the detachment to have (constant)
+				_splitFlagsVar, 					// Flags for split operation
+				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
+		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
-// 	METHOD("applyToSim") {
-// 		params [P_THISOBJECT, P_STRING("_state")];
-// 		T_PRVAR(ourGarrId);
-// 		T_PRVAR(theirGarrId);
-// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
+		private _assignAST_Args = [
+				_thisObject, 						// This action, gets assigned to the garrison
+				[CMDR_ACTION_STATE_SPLIT], 			// Do this after splitting
+				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful (can't fail)
+				_splitGarrIdVar]; 					// Id of garrison to assign the action to
+		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
-// 		T_PRVAR(stage);
+		private _moveToTargetAST_Args = [
+				_thisObject, 						// This action (for debugging context)
+				[CMDR_ACTION_STATE_READY_TO_MOVE], 		
+				CMDR_ACTION_STATE_MOVED, 			// State change when successful
+				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
+				CMDR_ACTION_STATE_RTB_FAILED, 		// State change when target is dead, we RTB
+				_splitGarrIdVar, 					// Id of garrison to move
+				_targetVar, 						// Target to move to (initially the target cluster)
+				MAKE_AST_VAR(200)]; 				// Radius to move within
+		private _moveToTargetAST = NEW("AST_MoveGarrison", _moveToTargetAST_Args);
+
+		private _attackAST_Args = [
+				_thisObject,
+				[CMDR_ACTION_STATE_MOVED], 			// Required that we finished move first.
+				CMDR_ACTION_STATE_RTB_FAILED, 		// State when we succeed, it leads to selecting new target (usually home)
+				CMDR_ACTION_STATE_READY_TO_MOVE, 	// If the target is out of range we move again
+				CMDR_ACTION_STATE_END, 				// If we are dead then go to end
+				CMDR_ACTION_STATE_RTB_FAILED, 		// If we timeout then RTB
+				_splitGarrIdVar, 					// Id of the garrison doing the attacking
+				_targetVar, 						// Target to attack (cluster or garrison supported)
+				MAKE_AST_VAR(200)];					// Max attack distance
+		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
+
+		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
+		private _newRtbTargetAST_Args = [
+				[CMDR_ACTION_STATE_RTB_FAILED], 	// If RTB failed then we select a new RTB target
+				CMDR_ACTION_STATE_RTB, 				// State change when successful
+				_srcGarrIdVar, 						// Originating garrison (default we return to)
+				_splitGarrIdVar, 					// Id of the garrison we are moving (for context)
+				_targetVar]; 						// New target
+		private _newRtbTargetAST = NEW("AST_SelectFallbackTarget", _newRtbTargetAST_Args);
+
+		private _rtbAST_Args = [
+				_thisObject, 						// This action (for debugging context)
+				[CMDR_ACTION_STATE_RTB], 			// Required state
+				CMDR_ACTION_STATE_RTB_SUCCESS, 		// State change when successful
+				CMDR_ACTION_STATE_END,				// State change when garrison is dead (just terminate the action)
+				CMDR_ACTION_STATE_RTB_FAILED, 		// State change when target is dead. We will select another RTB target
+				_splitGarrIdVar, 					// Id of garrison to move
+				_targetVar, 						// Target to move to (initially the target cluster)
+				MAKE_AST_VAR(200)]; 				// Radius to move within
+		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
+
+		private _mergeBackAST_Args = [
+				_thisObject,
+				[CMDR_ACTION_STATE_RTB_SUCCESS], 	// Merge once we reach the destination (whatever it is)
+				CMDR_ACTION_STATE_END, 				// Once merged we are done
+				CMDR_ACTION_STATE_END, 				// If the detachment is dead then we can just end the action
+				CMDR_ACTION_STATE_RTB_FAILED, 		// If the target is dead then reselect a new target
+				_splitGarrIdVar, 					// Id of the garrison we are merging
+				_targetVar]; 						// Target to merge to (garrison or location is valid)
+		private _mergeBackAST = NEW("AST_MergeOrJoinTarget", _mergeBackAST_Args);
+
+		[_splitAST, _assignAST, _moveToTargetAST, _attackAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
+	} ENDMETHOD;
+	
+	/* protected override */ METHOD("getLabel") {
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		T_PRVAR(srcGarrId);
+		T_PRVAR(state);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		private _srcEff = GETV(_srcGarr, "efficiency");
+
+		private _startDate = T_GET_AST_VAR("startDateVar");
+		private _timeToStart = if(_startDate isEqualTo []) then {
+			" (unknown)"
+		} else {
+			private _numDiff = (dateToNumber _startDate - dateToNumber DATE_NOW);
+			if(_numDiff > 0) then {
+				private _dateDiff = numberToDate [0, _numDiff];
+				private _mins = _dateDiff#4 + _dateDiff#3*60;
+
+				format [" (start in %1 mins)", _mins]
+			} else {
+				" (started)"
+			}
+		};
+
+		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		if(_detachedGarrId == MODEL_HANDLE_INVALID) then {
+			format ["%1 %2%3 -> %4%5", _thisObject, LABEL(_srcGarr), _srcEff, _targetName, _timeToStart]
+		} else {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			private _detachedEff = GETV(_detachedGarr, "efficiency");
+			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
+		};
+	} ENDMETHOD;
+
+	METHOD("updateIntelFromDetachment") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
-// 		// If we didn't start the action yet then we need to subtract from srcGarr
-// 		switch(_stage) do {
-// 			case "new": {
-// 				private _splitComp = T_CALLM1("getAttackComp", _state);
-// 				private _negSentComp = _splitComp apply { _x * -1 };
-// 				// TODO: better simulation!
-// 				CALLM1(_theirGarr, "modComp", _negSentComp);
-// 				// while { !CALLM0(_splitGarr, "isDead") and !CALLM0(_theirGarr, "isDead") } do {
-// 				// 	CALLM1(_splitGarr, "fightUpdate", _theirGarr);
-// 				// };
-// 			};
-// 			case "moving": {
-// 				T_PRVAR(splitGarrId);
-// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
-// 				private _splitComp = CALLM0(_splitGarr, "getComp");
-// 				private _negSentComp = _splitComp apply { _x * -1 };
-// 				// TODO: better simulation!
-// 				CALLM1(_theirGarr, "modComp", _negSentComp);
-// 			};
-// 			case "take": {
-// 				T_PRVAR(splitGarrId);
-// 				T_PRVAR(targetOutpostId);
-// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
-// 				private _outpost = CALLM1(_state, "getOutpostById", _targetOutpostId);
-// 				CALLM2(_state, "attachGarrison", _splitGarr, _outpost);
-// 			};
-// 		};
+		// Update progress of the detachment
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			SETV(_intel, "garrison", GETV(_detachedGarr, "actual"));
+			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+		};
+	} ENDMETHOD;
+	
+	/* protected override */ METHOD("debugDraw") {
+		params [P_THISOBJECT, P_STRING("_world")];
 
-// 	} ENDMETHOD;
+		T_PRVAR(srcGarrId);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
+		private _srcGarrPos = GETV(_srcGarr, "pos");
 
+		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 
-// 	METHOD("update") {
-// 		params [P_THISOBJECT, P_STRING("_state")];
-// 		T_PRVAR(ourGarrId);
-// 		T_PRVAR(theirGarrId);
-// 		T_PRVAR(splitGarrId);
+		T_PRVAR(debugColor);
+		T_PRVAR(debugSymbol);
 
-// 		private _ourGarr = CALLM1(_state, "getGarrison", _ourGarrId);
-// 		private _theirGarr = CALLM1(_state, "getGarrison", _theirGarrId);
+		[_srcGarrPos, _targetPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
 
-// 		// TODO: more interesting behaviour.
-// 		// State machine/steps:
-// 		//   Send to last known location.
-// 		//   Once there investigate.
-// 		//   Respond to updated position of target, or abort and come home if we can't find them.
+		private _centerPos = _srcGarrPos vectorAdd ((_targetPos vectorDiff _srcGarrPos) apply { _x * 0.5 });
+		private _mrk = _thisObject + "_label";
+		createmarker [_mrk, _centerPos];
+		_mrk setMarkerType _debugSymbol;
+		_mrk setMarkerColor _debugColor;
+		_mrk setMarkerPos _centerPos;
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText T_CALLM("getLabel", [_world]);
 
-// 		// If the enemy are dead then this action is complete.
-// 		// TODO: use actual intel to determine if/when target is dead.
+		// private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		// if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+		// 	private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		// 	ASSERT_OBJECT(_detachedGarr);
+		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
+		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
+		// };
+	} ENDMETHOD;
 
-// 		T_PRVAR(stage);
-
-// 		switch(_stage) do {
-// 			case "new": {
-// 				OOP_INFO_2("AttackAction %1->%2 starting", _ourGarrId, _theirGarrId);
-
-// 				if(CALLM0(_ourGarr, "isDead")) exitWith {
-// 					T_SETV("complete", true);
-// 					OOP_INFO_2("AttackAction %1->%2 completed: %1 died", _ourGarrId, _theirGarrId);
-// 				};
-
-// 				// We didn't split the source garrison yet, so do it now.
-// 				private _splitComp = T_CALLM1("getAttackComp", _state);
-// 				//private _splitComp = T_CALLM1("getReinfComp", _state);
-// 				private _splitGarr = CALLM1(_ourGarr, "splitGarrison", _splitComp);
-// 				_splitGarrId = CALLM1(_state, "addGarrison", _splitGarr);
-// 				T_SETV("splitGarrId", _splitGarrId);
-
-// 				// Assign action to the split garrison.
-// 				SETV_REF(_splitGarr, "currAction", _thisObject);
-
-// 				// Next stage
-// 				T_SETV("stage", "moving");
-
-// 				OOP_INFO_4("AttackAction %1->%2 sending %3 %4", _ourGarrId, _theirGarrId, _splitGarrId, _splitComp);
-// 			};
-
-// 			case "moving": {
-// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
-// 				private _splitPos = CALLM0(_splitGarr, "getPos");
-// 				if(CALLM0(_splitGarr, "isDead")) exitWith {
-// 					T_SETV("complete", true);
-// 					OOP_INFO_3("AttackAction %1->%3->%2 completed: %3 died", _ourGarrId, _theirGarrId, _splitGarrId);
-// 				};
-
-// 				if(CALLM0(_theirGarr, "isDead")) then {
-// 					// If enemy is dead we will move to the nearest non enemy outpost (probably the one we just vacated by killing the enemy).
-// 					private _ourSide = CALLM0(_splitGarr, "getSide");
-// 					private _outposts = CALLM2(_state, "getNearestOutposts", _splitPos, 10000) 
-// 						select {
-// 							_x params ["_dist", "_outpost"];
-// 							(_dist < 250) or (CALLM0(_outpost, "getSide") == _ourSide)
-// 						};
-
-// 					if(count _outposts > 0) then {
-// 						private _outpost = _outposts#0#1;
-// 						private _outpostId = GETV(_outpost, "id");
-// 						T_SETV("targetOutpostId", _outpostId);
-// 						// Next stage
-// 						T_SETV("stage", "take");
-// 						OOP_INFO_3("AttackAction %1->%3->%2 is taking outpost: %2 died", _ourGarrId, _theirGarrId, _splitGarrId);
-// 						private _outpostPos = CALLM0(_outpost, "getPos");
-// 						// Give move order to the target outpost.
-// 						private _args = [ format["%1 moving to outpost %2", _splitGarrId, _outpostId], _splitGarrId, _outpostPos];
-// 						private _moveOrder = NEW("MoveOrder", _args);
-// 						CALLM1(_splitGarr, "giveOrder", _moveOrder);
-// 					} else {
-// 						// No outpost? I guess this is our life now.
-// 						OOP_INFO_3("AttackAction %1->%3->%2 is done: no outpost to take", _ourGarrId, _theirGarrId, _splitGarrId);
-// 						T_SETV("complete", true);
-// 					};
-// 				} else {
-// 					if(CALLM0(_splitGarr, "isOrderComplete")) then {
-// 						OOP_INFO_3("AttackAction %1->%3->%2 move order completed", _ourGarrId, _theirGarrId, _splitGarrId);
-						
-// 						private _targetPos = CALLM0(_theirGarr, "getPos");
-// 						private _dist = _splitPos distance _targetPos;
-// 						OOP_INFO_4("AttackAction %1->%3->%2 dist: %4", _ourGarrId, _theirGarrId, _splitGarrId, _dist);
-// 						// If we reached the target then merge the garrisons
-// 						if(_dist < 100) then {
-// 							OOP_INFO_3("AttackAction %1->%3->%2 merging %3 to target", _ourGarrId, _theirGarrId, _splitGarrId);
-// 							CALLM1(_theirGarr, "mergeGarrison", _splitGarr);
-// 							T_SETV("complete", true);
-// 						} else {
-// 							OOP_INFO_3("AttackAction %1->%3->%2 moving %3 to target", _ourGarrId, _theirGarrId, _splitGarrId);
-
-// 							// Give another move order as we didn't reach target yet.
-// 							private _args = [ format["%1 attacking %2", _splitGarrId, _theirGarrId], _splitGarrId, _targetPos];
-// 							private _moveOrder = NEW("MoveOrder", _args);
-// 							CALLM1(_splitGarr, "giveOrder", _moveOrder);
-// 						};
-// 					};
-// 				};
-// 			};
-
-// 			case "take": {
-// 				T_PRVAR(targetOutpostId);
-
-// 				private _splitGarr = CALLM1(_state, "getGarrison", _splitGarrId);
-// 				if(CALLM0(_splitGarr, "isDead")) exitWith {
-// 					T_SETV("complete", true);
-// 					OOP_INFO_3("AttackAction %1->%3->%2 completed: %3 died", _ourGarrId, _theirGarrId, _splitGarrId);
-// 				};
-// 				if(CALLM0(_splitGarr, "isOrderComplete")) then {
-// 					//private _ourSide = CALLM0(_splitGarr, "getSide");
-// 					private _outpost = CALLM1(_state, "getOutpostById", _targetOutpostId);
-// 					CALLM2(_state, "attachGarrison", _splitGarr, _outpost);
-
-// 					// CALLM1(_outpost, "setSide", _ourSide);
-// 					// private _outpostPos = CALLM0(_outpost, "getPos");
-// 					// // Get nearby garrisons who are not doing anything, we will join the closest one
-// 					// private _nearGarrisons = CALLM3(_state, "getNearestGarrisons", _ourSide, _outpostPos, 50) 
-// 					// 	select { CALLM0(_x, "isOrderComplete") };
-// 					// if (count _nearGarrisons > 0) then {
-// 					// 	private _nearestGarrison = _nearGarrisons#1;
-// 					// 	OOP_INFO_4("AttackAction %1->%3->%2: merged to %4", _ourGarrId, _theirGarrId, _splitGarrId, _nearestGarrison);
-// 					// 	CALLM1(_nearestGarrison, "mergeGarrison", _splitGarr);
-// 					// };
-
-// 					T_SETV("complete", true);
-// 					OOP_INFO_3("AttackAction %1->%3->%2 completed: %3 arrived at outpost", _ourGarrId, _theirGarrId, _splitGarrId);
-// 				};
-
-// 				// private _splitPos = CALLM0(_splitGarr, "getPos");
-// 				// private _outpost = CALLM1(_state, "getOutpostById", _outpostId);
-// 				// private _outpostPos = CALLM0(_outpost, "getPos");
-
-
-// 			};
-// 		};
-
-// 		// // For now just add move orders to target until we catch them, they die or we die.
-// 		// if(CALLM0(_ourGarr, "isOrderComplete")) then {
-// 		// 	OOP_INFO_2("AttackAction %1->%2 updating move order of %1", _ourGarrId, _theirGarrId);
-
-// 		// 	// Give our garrison move order to target garrison position
-// 		// 	SETV(_ourGarr, "currAction", _thisObject);
-
-// 		// 	private _targetPos = CALLM0(_theirGarr, "getPos");
-// 		// 	private _args = [format ["%1 attacking %2", _ourGarrId, _targetPos], _ourGarrId, _targetPos];
-// 		// 	private _moveOrder = NEW("MoveOrder", _args);
-// 		// 	CALLM1(_ourGarr, "giveOrder", _moveOrder);
-// 		// };
-
-// 	} ENDMETHOD;
-// ENDCLASS;
+ENDCLASS;

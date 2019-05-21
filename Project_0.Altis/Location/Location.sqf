@@ -31,8 +31,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("type");
 	VARIABLE("side");
-	VARIABLE("debugName");
-	
+	VARIABLE("name");
+
 	VARIABLE("garrisons");
 	/*
 	VARIABLE("garrisonCiv");
@@ -48,47 +48,13 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("spawned"); // Is this location spawned or not
 	VARIABLE("timer"); // Timer object which generates messages for this location
 	VARIABLE("capacityInf"); // Infantry capacity
-	VARIABLE("capacityCiv"); // Infantry capacity
+	VARIABLE("capacityCiv"); // Civilian capacity
 	VARIABLE("cpModule"); // civilian module, might be replaced by custom script
 
+	VARIABLE("isBuilt"); // true if this location has been build (used for roadblocks)
+	VARIABLE("buildObjects"); // Array with objects we have built
+
 	STATIC_VARIABLE("all");
-
-
-	// |                 S E T   D E B U G   N A M E
-	/*
-	Method: setDebugName
-	Sets debug name of this MessageLoop.
-
-	Parameters: _debugName
-
-	_debugName - String
-
-	Returns: nil
-	*/
-	METHOD("setDebugName") {
-		params [P_THISOBJECT, ["_debugName", "", [""]]];
-		T_SETV("debugName", _debugName);
-	} ENDMETHOD;
-
-	METHOD("setCapacityInf") {
-		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
-		T_SETV("capacityInf", _capacityInf);
-	} ENDMETHOD;
-
-	METHOD("setCapacityCiv") {
-		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
-		T_SETV("capacityCiv", _capacityCiv);
-		if(T_GETV("type") isEqualTo "city")then{
-			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
-			T_SETV("cpModule",_cpModule);
-		};
-
-	} ENDMETHOD;
-
-	METHOD("setSide") {
-		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
-		T_SETV("side", _side);
-	} ENDMETHOD;
 
 	// |                              N E W
 	/*
@@ -107,7 +73,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("side", CIVILIAN);
-		T_SETV("debugName", "noname");
+		T_SETV("name", "noname");
 		T_SETV("garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
@@ -118,7 +84,8 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
-
+		T_SETV("isBuilt", false);
+		T_SETV("buildObjects", []);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -144,25 +111,74 @@ CLASS("Location", "MessageReceiverEx")
 		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 
+	// |                 S E T   D E B U G   N A M E
+	/*
+	Method: setName
+	Sets debug name of this MessageLoop.
+
+	Parameters: _name
+
+	_name - String
+
+	Returns: nil
+	*/
+	METHOD("setName") {
+		params [P_THISOBJECT, ["_name", "", [""]]];
+		T_SETV("name", _name);
+	} ENDMETHOD;
+
+	METHOD("setCapacityInf") {
+		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
+		T_SETV("capacityInf", _capacityInf);
+	} ENDMETHOD;
+
+	METHOD("setCapacityCiv") {
+		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
+		T_SETV("capacityCiv", _capacityCiv);
+		if(T_GETV("type") isEqualTo "city")then{
+			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
+			T_SETV("cpModule",_cpModule);
+		};
+
+	} ENDMETHOD;
+
+	METHOD("setSide") {
+		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
+		T_SETV("side", _side);
+	} ENDMETHOD;
+
 	#ifdef DEBUG_LOCATION_MARKERS
 	METHOD("updateMarker") {
 		params [P_THISOBJECT];
 		deleteMarker _thisObject;
 		deleteMarker (_thisObject + "_label");
 		T_PRVAR(pos);
+
 		if(count _pos > 0) then {
+
 			private _mrk = createmarker [_thisObject, _pos];
-			_mrk setMarkerType "mil_box";
+			_mrk setMarkerType (switch T_GETV("type") do {
+				case "roadblock": { "mil_triangle" };
+				case "base": { "mil_circle" };
+				case "outpost": { "mil_box" };
+				default { "mil_dot" };
+			});
 			_mrk setMarkerColor "ColorYellow";
 			_mrk setMarkerAlpha 1;
 			_mrk setMarkerText "";
+
+			T_PRVAR(border);
+			if(_border isEqualType []) then {
+				_mrk setMarkerDir _border#2;
+			};
+
 			_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
 			_mrk setMarkerType "Empty";
 			_mrk setMarkerColor "ColorYellow";
 			_mrk setMarkerAlpha 1;
-			T_PRVAR(debugName);
+			T_PRVAR(name);
 			T_PRVAR(type);
-			_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _debugName, _type];
+			_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _name, _type];
 		};
 	} ENDMETHOD;
 	#endif
@@ -174,7 +190,7 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		T_SETV("debugName", nil);
+		T_SETV("name", nil);
 		T_SETV("garrisonCiv", nil);
 		T_SETV("garrisonMilAA", nil);
 		T_SETV("garrisonMilMain", nil);
@@ -320,8 +336,14 @@ CLASS("Location", "MessageReceiverEx")
 		if (! (_gar in _gars)) then {
 			_gars pushBack _gar;
 			CALLM2(_gar, "postMethodAsync", "ref", []);
+
+			// TODO: work out how this should work properly? This isn't terrible but we will
+			// have resource constraints etc. Probably it should be in Garrison.process to build
+			// at location when they have resources?
+			iF(!T_GETV("isBuilt")) then {
+				T_CALLM("build", []);
+			};
 		};
-		
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
@@ -339,7 +361,7 @@ CLASS("Location", "MessageReceiverEx")
 		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
 		
 		if (_side == CIVILIAN) then {
-			T_GETV("garrisons")
+			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
 		};
@@ -399,6 +421,78 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getCapacityInf") {
 		params [ P_THISOBJECT ];
 		GET_VAR(_thisObject, "capacityInf")
+	} ENDMETHOD;
+
+	STATIC_METHOD("findRoadblocks") {
+		params [P_THISCLASS, P_POSITION("_pos")];
+
+		//private _pos = T_CALLM("getPos", []);
+
+		private _roadblocksPosDir = [];
+		// Get near roads and sort them far to near.
+		private _roads_remaining = (_pos nearRoads 1000) apply { [position _x distance _pos, _x] };
+		_roads_remaining sort DESCENDING;
+		private _itr = 0;
+		while {count _roads_remaining > 0 and _itr < 4} do {
+			(_roads_remaining#0) params ["_dist", "_road"];
+			private _roadscon = (roadsConnectedto _road) apply { [position _x distance _pos, _x] };
+			_roadscon sort DESCENDING;
+			if (count _roadscon > 0) then {
+				private _roadcon = _roadscon#0#1; 
+				private _dir = _roadcon getDir _road;
+
+				//private _offs = [7, -7];
+				//{
+					//_grupo = createGroup _lado;
+					//_grupos pushBack _grupo;
+				
+					private _roadblock_pos = getPos _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
+// #ifdef DEBUG_LOCATION_MARKERS
+// 					private _mrk = createMarker [format ["roadblock_%1_%2", _thisObject, _itr], _roadblock_pos];
+// 					_mrk setMarkerType "mil_triangle";
+// 					_mrk setMarkerDir _dir;
+// 					_mrk setMarkerColor "ColorWhite";
+// 					_mrk setMarkerPos _roadblock_pos;
+// 					_mrk setMarkerAlpha 1;
+// 					_mrk setMarkerText _mrk;
+// #endif
+					_roadblocksPosDir pushBack [_roadblock_pos, _dir];
+					//_bunker = (selectRandom ["Land_BagBunker_Small_F", "Land_BagFence_Round_F"]) createVehicle _pos;
+					// _bunker createVehicle _pos;
+					//_vehiculos pushBack _bunker;
+					//_bunker setDir _dirveh;
+					//_pos = getPosATL _bunker;
+					//_tipoVeh =
+					//	if (_lado == malos) then {
+					//		selectRandom [staticATmalos, NATOMG]
+					//	} else {
+					//		selectRandom [staticATmuyMalos, CSATMG]
+					//	};
+					//_veh = _tipoVeh createVehicle _pos;
+					//_vehiculos pushBack _veh;
+					//_veh setPos _pos;
+					//_veh setDir _dirVeh + 180;
+					//_tipoUnit =
+					//	if (_lado == malos) then {
+					//		staticCrewmalos
+					//	} else {
+					//		staticCrewMuyMalos
+					//	};
+					//_unit = _grupo createUnit[_tipoUnit, _pos, [], 0, "NONE"];
+					//[_unit, _marcador] call A3A_fnc_NATOinit;
+					//[_veh] call A3A_fnc_AIVEHinit;
+					//_unit moveInGunner _veh;
+					//_soldados pushBack _unit;
+
+				//} forEach _offs;
+			};
+			_roads_remaining = _roads_remaining select {
+				((getPos _road) vectorDiff _pos) vectorCos ((getPos (_x select 1)) vectorDiff _pos) < 0.3 and 
+				getPos _road distance getPos (_x select 1) > 400
+			};
+			_itr = _itr + 1;
+		};
+		_roadblocksPosDir
 	} ENDMETHOD;
 
 	// /*
@@ -508,6 +602,7 @@ CLASS("Location", "MessageReceiverEx")
 		_posAndDir
 	} ENDMETHOD;
 
+
 	/*
 	Method: countAvailableUnits
 	Returns an number of current units of this location
@@ -517,9 +612,9 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("countAvailableUnits") {
 		params [ P_THISOBJECT, P_SIDE("_side") ];
 
-		private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
+		// TODO: Yeah we need mutex here!
+		private _garrisons = T_CALLM("getGarrisons", [_side]);
 		if (count _garrisons == 0) exitWith { 0 };
-
 		private _sum = 0;
 		{
 			_sum = _sum + CALLM0(_x, "countAllUnits");
@@ -582,6 +677,9 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Despawns the location
 	METHOD_FILE("despawn", "Location\despawn.sqf");
+
+	// Builds the location
+	METHOD_FILE("build", "Location\build.sqf");
 
 ENDCLASS;
 

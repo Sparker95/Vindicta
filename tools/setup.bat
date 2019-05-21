@@ -14,10 +14,3 @@ cd /d "%~dp0buildtool"
 
 rem Install dependencies and build missions
 call npm install --loglevel=error
-
-cd ..
-
-echo.
-
-pause
-exit /b
