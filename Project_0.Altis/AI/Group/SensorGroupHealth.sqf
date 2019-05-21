@@ -62,7 +62,7 @@ CLASS("SensorGroupHealth", "SensorGroup")
 			pr _infGroup = group _hO;
 			if (! (_infGroup isEqualTo _hG)) then {
 				OOP_ERROR_4("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3, unit is alive: %4", _x, _infGroup, _hG, alive _hO);
-				
+
 				// Force the unit to join the proper group
 				[_hO] joinSilent _hG;
 				[_hO] joinSilent _hG;
