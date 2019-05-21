@@ -428,6 +428,9 @@
 
 #ifdef OOP_PROFILE
 	#define _OOP_FUNCTION_WRAPPERS
+	#define PROFILE_TAG STATIC_VARIABLE("profile__tag")
+	#define PROFILE_SCOPE_AS_VARIABLE(className, varToUse) SET_STATIC_VAR(className, "profile__tag", varToUse)
+	#define PROFILE_SCOPE_AS_OBJECT(className) SET_STATIC_VAR(className, "profile__tag", "")
 
 	#define PROFILE_SCOPE_START(scopeName) \
 		private _profileTStart##scopeName = time;
@@ -435,16 +438,28 @@
 	#define PROFILE_SCOPE_END(scopeName, minT) \
 		private _totalProfileT##scopeName = time - _profileTStart##scopeName; \
 		if(_totalProfileT##scopeName > minT) then { \
-			OOP_PROFILE_2("%1 %2", #scopeName, _totalProfileT##scopeName); \
+			private _str = format ["{ ""profile"": { ""scope"": ""%1"", ""time"": %2 }}", #scopeName, _totalProfileT##scopeName]; \
+			OOP_PROFILE_0(_str); \
 		};
 
 	#define OOP_FUNC_HEADER_PROFILE private _profileTStart = time
 	#define OOP_FUNC_FOOTER_PROFILE \
 		private _totalProfileT = time - _profileTStart; \
 		if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
-			OOP_PROFILE_3("%1.%2 %3", _objOrClass, _methodNameStr, _totalProfileT); \
+			private _class = if(isNil "_thisClass") then { if(isNil "_thisObject") then { "(unknown)" } else { OBJECT_PARENT_CLASS_STR(_thisObject) } } else { _thisClass }; \
+			private _profileTag = if(_class != "(unknown)") then { GET_STATIC_VAR(_class, "profile__tag") } else { "" }; \
+			private _scopeKey = if(isNil "_profileTag" or isNil "_thisObject") then { \
+				_class \
+			} else { \
+				if(_profileTag == "" or isNil "_thisObject") then { _objOrClass } else { GETV(_thisObject, _profileTag) } \
+			}; \
+			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4"" }}", _class, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey]; \
+			OOP_PROFILE_0(_str); \
 		}
 #else
+	#define PROFILE_TAG
+	#define PROFILE_SCOPE_AS_VARIABLE(className, varName)
+	#define PROFILE_SCOPE_AS_OBJECT(className)
 	#define PROFILE_SCOPE_START(scopeName)
 	#define PROFILE_SCOPE_END(scopeName, minT)
 	#define OOP_FUNC_HEADER_PROFILE
@@ -526,7 +541,7 @@
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
-			private _thisClass = nil; \
+			private _thisObject = nil; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
@@ -538,7 +553,7 @@
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
-			private _thisClass = nil; \
+			private _thisObject = nil; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
@@ -646,7 +661,8 @@ METHOD("delete") {} ENDMETHOD; \
 METHOD("copy") OOP_clone_default ENDMETHOD; \
 METHOD("assign") OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
-VARIABLE(OOP_PUBLIC_STR);
+VARIABLE(OOP_PUBLIC_STR); \
+PROFILE_TAG;
 
 // ----------------------------------------
 // |           E N D C L A S S            |
