@@ -18,7 +18,7 @@ class CMUI_LOCP_TAB1 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "UI\Images\garrison.paa";  
+    // text = "UI\Images\garrison.paa";  
 };
 
 class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB 
@@ -28,7 +28,7 @@ class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "UI\Images\garrison.paa";   
+    // text = "UI\Images\garrison.paa";   
 };
 
 class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB 
@@ -38,7 +38,7 @@ class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "UI\Images\garrison.paa";
+    // text = "UI\Images\garrison.paa";
 };
 
 class CMUI_LOCP_TAB_TXT : MUI_BASE 
