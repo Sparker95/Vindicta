@@ -106,7 +106,7 @@ CLASS("MessageLoop", "");
 		PROFILE_ADD_EXTRA_FIELD("message_source", _msg select MESSAGE_ID_SOURCE);
 		PROFILE_ADD_EXTRA_FIELD("message_dest", _msg select MESSAGE_ID_DESTINATION);
 		PROFILE_ADD_EXTRA_FIELD("message_type", _msg select MESSAGE_ID_TYPE);
-
+    
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
 	} ENDMETHOD;

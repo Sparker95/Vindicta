@@ -40,18 +40,49 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		};
 		
 		// Delete all waypoints
-		while {(count (waypoints _hG)) > 0} do
-		{
+		while {(count (waypoints _hG)) > 0} do {
 			deleteWaypoint [_hG, ((waypoints _hG) select 0) select 1];
 		};
-		
-		// Add a move waypoint
-		pr _wp = _hG addWaypoint [_pos, 20, 0];
-		_wp setWaypointType "MOVE";
-		_wp setWaypointFormation "DIAMOND";
-		_wp setWaypointBehaviour "SAFE";
-		_hG setCurrentWaypoint _wp;
-		
+
+		if (random 10 < 5) then {
+			// Give waipoints to the group
+			pr _i = 0;
+			pr _waypoints = []; // Array with waypoint IDs
+			pr _radius = 200 + random 150;
+			pr _angleStart = random 360;
+			while {_i < 5} do {
+				pr _wp = _hG addWaypoint [_pos getPos [_radius, _angleStart + _i*2*360/5], 0];
+				_wp setWaypointType "MOVE";
+				_wp setWaypointBehaviour "SAFE"; //"AWARE"; //"SAFE";
+				//_wp setWaypointForceBehaviour true; //"AWARE"; //"SAFE";
+				_wp setWaypointSpeed "LIMITED"; //"FULL"; //"LIMITED";
+				_wp setWaypointFormation "WEDGE";
+				_waypoints pushback _wp;
+
+				_i = _i + 1;
+			};
+			
+			// Add cycle waypoint
+			pr _wp = _hG addWaypoint [_pos getPos [_radius, _angleStart + _i*2*360/5], 0]; //Cycle the waypoints
+			_wp setWaypointType "CYCLE";
+			_wp setWaypointBehaviour "SAFE";
+			_wp setWaypointSpeed "LIMITED";
+			_wp setWaypointFormation "WEDGE";
+
+			// Set current waypoint
+			_hG setCurrentWaypoint (_waypoints select 0);
+		} else {
+
+			// Add a move waypoint
+			pr _wp = _hG addWaypoint [_pos, 20, 0];
+			_wp setWaypointType "MOVE";
+			_wp setWaypointFormation "DIAMOND";
+			_wp setWaypointBehaviour "SAFE";
+			_hG setCurrentWaypoint _wp;
+		};
+
+
+
 		// Give a goal to units
 		pr _units = CALLM0(_group, "getInfantryUnits");
 		{
