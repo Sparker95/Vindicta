@@ -19,14 +19,7 @@ Singleton class that performs things related to map user interface
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
-// Common colors
-CMUI_ColorWEST = MUI_COLOR_BLUFOR;
-CMUI_ColorEAST = MUI_COLOR_OPFOR;
-CMUI_ColorIND = MUI_COLOR_IND;
-CMUI_ColorUnknown = MUI_COLOR_EMPTY;
-
 CLASS(CLASS_NAME, "")
-
 	// Arrays of LOCATION_DATA structures
 	STATIC_VARIABLE("locationDataWest"); 	// What client's side knows about West knowledge about locations
 	STATIC_VARIABLE("locationDataEast");
@@ -225,10 +218,10 @@ CLASS(CLASS_NAME, "")
 		};
 
 		pr _color = switch(_side) do {
-			case WEST: {CMUI_ColorWEST};
-			case EAST: {CMUI_ColorEAST};
-			case INDEPENDENT: {CMUI_ColorInd};
-			default {CMUI_ColorUnknown};
+			case WEST: {MUI_COLOR_BLUFOR};
+			case EAST: {MUI_COLOR_OPFOR};
+			case INDEPENDENT: {MUI_COLOR_IND};
+			default {MUI_COLOR_IND};
 		};
 
 		CALLM1(_mapMarker, "setPos", _pos);
