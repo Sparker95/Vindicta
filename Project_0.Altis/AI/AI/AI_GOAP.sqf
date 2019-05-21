@@ -174,10 +174,11 @@ CLASS("AI_GOAP", "AI")
 					
 					// Run the A* planner to generate a plan
 					pr _args = [GETV(_thisObject, "worldState"), _wsGoal, _possActions, _goalParameters, _thisObject];
-					pr _actionPlan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);
+
+					CALL_STATIC_METHOD("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];
 					
-					// Did the planner return anything?
-					if (count _actionPlan > 0) then {
+					// Did the planner succeed?
+					if (_foundPlan) then {
 						// Unpack the plan
 						_newAction = CALLM(_thisObject, "createActionsFromPlan", [_actionPlan]);
 						// Set a new action from the plan
@@ -655,6 +656,7 @@ CLASS("AI_GOAP", "AI")
 		
 			// If there are multiple actions in the plan, create an ActionCompositeSerial and add subactions to it 
 			pr _actionSerial = NEW("ActionCompositeSerial", [_thisObject]);
+
 			{ // foreach _plan
 				_x params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
 				
@@ -664,10 +666,10 @@ CLASS("AI_GOAP", "AI")
 				
 				// Add it to the subactions list
 				CALLM1(_actionSerial, "addSubactionToBack", _action);
-				
-				// Return the serial action
-				_actionSerial
 			} forEach _plan;
+
+			// Return the serial action
+			_actionSerial
 		};
 	} ENDMETHOD;
 	
@@ -715,15 +717,26 @@ CLASS("AI_GOAP", "AI")
 		OOP_INFO_4("[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions);
 		#endif
 		
+		pr _initialNumUnsatisfiedProps = [_goalWS, _currentWS] call ws_getNumUnsatisfiedProps;
+
+		// We are already there!
+		if(_initialNumUnsatisfiedProps == 0) exitWith { 
+			#ifdef ASTAR_DEBUG
+			OOP_INFO_0("[AI:AStar] Info: No search required we are already at our goal!");
+			#endif
+			[true, []]
+		};
+
 		// Set of nodes already evaluated
 		pr _closeSet = [];
 		
 		// Set of discovered nodes to evaluate
 		pr _goalNode = ASTAR_NODE_NEW(_goalWS);
-		_goalNode set [ASTAR_NODE_ID_F, [_goalWS, _currentWS] call ws_getNumUnsatisfiedProps]; // Calculate heuristic for the goal node
+		_goalNode set [ASTAR_NODE_ID_F, _initialNumUnsatisfiedProps]; // Calculate heuristic for the goal node
 		pr _openSet = [_goalNode];
 		
 		// Main loop of the algorithm
+		pr _foundPath = false;
 		pr _path = []; // Return value of the algorithm
 		pr _count = 0; // A safety counter, in case it freezes.
 		while {count _openSet > 0 && _count < 50} do {
@@ -774,7 +787,7 @@ CLASS("AI_GOAP", "AI")
 				#ifdef ASTAR_DEBUG
 					OOP_INFO_0("[AI:AStar] Info: Reached current state!");
 				#endif
-				
+				_foundPath = true;
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
@@ -977,6 +990,7 @@ CLASS("AI_GOAP", "AI")
 			_count = _count + 1;
 		};
 		
+
 		// Sort the plan by precedence
 		_path sort true; // Ascending
 		
@@ -985,7 +999,7 @@ CLASS("AI_GOAP", "AI")
 		#endif
 		
 		// Return the reconstructed sorted path 
-		_path
+		[_foundPath, _path]
 	} ENDMETHOD;
 	
 	// Converts an A* node to string for debug purposes
