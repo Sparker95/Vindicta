@@ -78,6 +78,8 @@
 #define IS_HEADLESSCLIENT false
 #define PUBLIC_VARIABLE isNil
 
+#define PROFILE_NAME "Satan"
+
 #else
 
 #define TEXT_ text
@@ -92,6 +94,8 @@
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
 #define PUBLIC_VARIABLE publicVariable
+
+#define PROFILE_NAME profileName
 
 #endif
 
@@ -842,6 +846,7 @@ objNameStr \
 #define OOP_INFO_3(str, a, b, c) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
 #define OOP_INFO_4(str, a, b, c, d) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_INFO_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
+#define OOP_INFO_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str)
 #else
 #define OOP_INFO_MSG(str, a)
 #define OOP_INFO_0(str)
@@ -850,6 +855,7 @@ objNameStr \
 #define OOP_INFO_3(str, a, b, c)
 #define OOP_INFO_4(str, a, b, c, d)
 #define OOP_INFO_5(str, a, b, c, d, e)
+#define OOP_INFO_6(str, a, b, c, d, e, f)
 #endif
 
 #ifdef OOP_WARNING
@@ -878,6 +884,7 @@ objNameStr \
 #define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #else
 #define OOP_ERROR_MSG(str, a)
 #define OOP_ERROR_0(str)
@@ -886,6 +893,7 @@ objNameStr \
 #define OOP_ERROR_3(str, a, b, c)
 #define OOP_ERROR_4(str, a, b, c, d)
 #define OOP_ERROR_5(str, a, b, c, d, e)
+#define OOP_ERROR_6(str, a, b, c, d, e, f)
 #endif
 
 #ifdef OOP_DEBUG
@@ -896,6 +904,7 @@ objNameStr \
 #define OOP_DEBUG_3(str, a, b, c) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_4(str, a, b, c, d) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
 #define OOP_DEBUG_MSG(str, a)
 #define OOP_DEBUG_0(str)
@@ -904,6 +913,7 @@ objNameStr \
 #define OOP_DEBUG_3(str, a, b, c)
 #define OOP_DEBUG_4(str, a, b, c, d)
 #define OOP_DEBUG_5(str, a, b, c, d, e)
+#define OOP_DEBUG_6(str, a, b, c, d, e, f)
 #endif
 
 // ----------------------------------------------------------------------

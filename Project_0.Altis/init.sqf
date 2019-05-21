@@ -21,9 +21,10 @@ if (!IS_SERVER) then {
 #endif
 
 CRITICAL_SECTION {
-	//gGameMode = NEW("AITestBenchGameMode", []); //"ExpandGameMode", []);
-	//gGameMode = NEW("ExpandGameMode", []);
-	gGameMode = NEW("RedVsGreenGameMode", []);
+	switch (PROFILE_NAME) do {
+		case "Sparker": {gGameMode = NEW("GameModeRandom", []); };
+		default {gGameMode = NEW("RedVsGreenGameMode", []); };
+	};
 
 	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];
 	CALLM(gGameMode, "init", []);

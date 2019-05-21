@@ -40,11 +40,12 @@ CLASS("MessageLoop", "");
 	Constructor
 	*/
 	METHOD("new") {
-		params [ ["_thisObject", "", [""]] ];
-		SET_VAR(_thisObject, "msgQueue", []);
+		params [ P_THISOBJECT ];
+		T_SETV("msgQueue", []);
+		T_SETV("name", _thisObject);
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		SET_VAR(_thisObject, "scriptHandle", _scriptHandle);
-		SET_VAR(_thisObject, "mutex", MUTEX_NEW());
+		T_SETV("scriptHandle", _scriptHandle);
+		T_SETV("mutex", MUTEX_NEW());
 	} ENDMETHOD;
 
 	/*
@@ -56,16 +57,16 @@ CLASS("MessageLoop", "");
 	Warning: must be called in scheduled environment!
 	*/
 	METHOD("delete") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT ];
 		private _mutex = GET_VAR(_thisObject, "mutex");
 		MUTEX_LOCK(_mutex); //Make sure we don't terminate the thread after it locks the mutex!
 		//Clear the variables
 		private _scriptHandle = GET_VAR(_thisObject, "scriptHandle");
 		terminate _scriptHandle;
-		SET_VAR(_thisObject, "msgQueue", nil);
-		SET_VAR(_thisObject, "scriptHandle", nil);
+		T_SETV("msgQueue", nil);
+		T_SETV("scriptHandle", nil);
 		MUTEX_UNLOCK(_mutex);
-		SET_VAR(_thisObject, "mutex", nil);
+		T_SETV("mutex", nil);
 	} ENDMETHOD;
 
 
@@ -80,8 +81,8 @@ CLASS("MessageLoop", "");
 	Returns: nil
 	*/
 	METHOD("setName") {
-		params [["_thisObject", "", [""]], ["_name", "", [""]]];
-		SET_VAR(_thisObject, "name", _name);
+		params [P_THISOBJECT, ["_name", "", [""]]];
+		T_SETV("name", _name);
 	} ENDMETHOD;
 
 	/*
@@ -100,7 +101,7 @@ CLASS("MessageLoop", "");
 		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
-		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]]];
+		params [ P_THISOBJECT, ["_msg", [], [[]]]];
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
 	} ENDMETHOD;
@@ -136,7 +137,7 @@ CLASS("MessageLoop", "");
 	Returns: nil
 	*/
 	METHOD("deleteReceiverMessages") {
-		params [ ["_thisObject", "", [""]], ["_msgReceiver", "", [""]] ];
+		params [ P_THISOBJECT, ["_msgReceiver", "", [""]] ];
 		private _msgQueue = GETV(_thisObject, "msgQueue");
 
 		//diag_log format ["Deleting message receiver: %1", _msgReceiver];
