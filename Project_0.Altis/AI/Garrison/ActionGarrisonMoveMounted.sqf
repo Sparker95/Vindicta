@@ -91,6 +91,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			pr _pos = T_GETV("pos");
 			pr _radius = T_GETV("radius");
 			pr _vr = T_GETV("virtualRoute");
+			CALLM0(_vr, "stop"); // Stop the virtual route (we don't use its process method any more)
 			pr _garPos = CALLM0(_AI, "getPos");
 			CALLM1(_vr, "setPos", _garPos); // Update the virtual route with the proper garrison position
 			pr _route = CALLM0(_vr, "getAIWaypoints");
@@ -134,33 +135,37 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		if (!CALLM0(_gar, "isSpawned")) then {
 			pr _state = T_GETV("state");
 
+			pr _vr = T_GETV("virtualRoute");
 			if (_state == ACTION_STATE_INACTIVE) then {
-				CALLM0(_vr, "start");
-				_state = ACTION_STATE_ACTIVE;
-			};
-
-			// Process the virtual convoy
-			if (_state == ACTION_STATE_ACTIVE) then {
-				// Run process of the virtual route and update position of the garrison
-				CALLM0(_vr, "process");
+				
 				if(GETV(_vr, "calculated")) then {
-					pr _pos = CALLM0(_vr, "getPos");
 					pr _AI = T_GETV("AI");
-					CALLM1(_AI, "setPos", _pos);
-
-					// Succede the action if the garrison is close enough to its destination
-					if (_pos distance T_GETV("pos") < T_GETV("radius") or {GETV(_vr, "complete")}) then {
-						_state = ACTION_STATE_COMPLETED;
-					};
+					pr _garPos = CALLM0(_AI, "getPos");
+					CALLM1(_vr, "setPos", _garPos);
+					CALLM0(_vr, "start");
+					_state = ACTION_STATE_ACTIVE;
 				} else { 
 					if(GETV(_vr, "failed")) then {
 						T_PRVAR(gar);
 						pr _garPos = CALLM0(_gar, "getPos");
 						T_PRVAR(pos);
 						OOP_WARNING_MSG("Virtual Route from %1 to %2 failed, distance remaining : %3", [_garPos]+[_pos]+[_pos distance _garPos]);
-						// TODO: maybe we want to do something else here?
-						_state = ACTION_STATE_COMPLETED;
+						_state = ACTION_STATE_FAILED;
 					};
+				};
+			};
+
+			// Process the virtual convoy
+			if (_state == ACTION_STATE_ACTIVE) then {
+				// Run process of the virtual route and update position of the garrison
+				CALLM0(_vr, "process");
+				pr _pos = CALLM0(_vr, "getPos");
+				pr _AI = T_GETV("AI");
+				CALLM1(_AI, "setPos", _pos);
+
+				// Succede the action if the garrison is close enough to its destination
+				if (_pos distance T_GETV("pos") < T_GETV("radius") or {GETV(_vr, "complete")}) then {
+					_state = ACTION_STATE_COMPLETED;
 				};
 			};
 
@@ -271,9 +276,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("onGarrisonDespawned") {
 		params ["_thisObject"];
 
-		// Create a new VirtualRoute since old one might be invalid
-		CALLM0(_thisObject, "createVirtualRoute");
-
 		// Reset action state so that it reactivates
 		T_SETV("state", ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
@@ -283,12 +285,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		params ["_thisObject"];
 
 		private _gar = T_GETV("gar");
-
-		// Delete old virtual route if we had it
-		private _vr = T_GETV("virtualRoute");
-		if (_vr != "") then {
-			DELETE(_vr);
-		};
 
 		// Create a new virtual route
 		private _gar = T_GETV("gar");

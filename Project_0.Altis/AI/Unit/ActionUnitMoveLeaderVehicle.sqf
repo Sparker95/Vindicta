@@ -19,7 +19,8 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	VARIABLE("triedRoads"); // Array with road pieces unit tried to achieve when it got stuck
 	VARIABLE("stuckCounter"); // How many times this has been stuck
 	VARIABLE("readdwp");
-	
+	VARIABLE("route");
+
 	// ------------ N E W ------------
 	
 	METHOD("new") {
@@ -78,11 +79,12 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _waypoints = [];
 		pr _route = T_GETV("route");
 		{
-			pr _wp = _hG addWaypoint [_pos, 0];
+			pr _wp = _hG addWaypoint [_x, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointFormation "COLUMN";
 			_wp setWaypointBehaviour "SAFE";
 			_wp setWaypointCombatMode "GREEN";
+			_wp setWaypointCompletionRadius 20;
 			_waypoints pushBack _wp;
 		} forEach (_route + [_pos]);
 		_hG setCurrentWaypoint (_waypoints select 0);

@@ -24,7 +24,11 @@ CLASS("GameModeRandom", "GameModeBase")
 				CIVILIAN
 			};
 		} else {
-			CIVILIAN
+			if (_type == LOCATION_TYPE_POLICE_STATION) then {
+				INDEPENDENT
+			} else {
+				CIVILIAN
+			};
 		}
 	} ENDMETHOD;
 ENDCLASS;

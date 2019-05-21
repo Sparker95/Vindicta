@@ -464,6 +464,9 @@ CLASS("VirtualRoute", "")
 			};
 
 			// Set pos and next index
+			if (_index != (_count - 1)) then { // Select the next position, so that we don't need to drive one node backwards
+				_index = _index + 1;
+			};
 			T_SETV("nextIdx", _index);
 			T_SETV("pos", _route select _index);
 
