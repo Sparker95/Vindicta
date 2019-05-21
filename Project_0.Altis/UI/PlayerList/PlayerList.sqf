@@ -5,7 +5,7 @@
 
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\MapUI\MapUI_Macros.h"
-#include "..\UIProfileColors.h"
+#include "..\Resources\UIProfileColors.h"
 
 /*
 abstract Class: PlayerListUI

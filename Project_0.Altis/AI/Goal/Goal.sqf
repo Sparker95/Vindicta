@@ -43,7 +43,7 @@ CLASS("Goal", "")
 	// By default returns instrinsic goal relevance
 
 	/* virtual */ STATIC_METHOD("calculateRelevance") {
-		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
+		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];
 		pr _intrinsicRelevance = GET_STATIC_VAR(_thisClass, "relevance");
 		 // Return relevance
 		_intrinsicRelevance
@@ -117,6 +117,16 @@ CLASS("Goal", "")
 		} else {
 			_effects
 		};
+	} ENDMETHOD;
+
+	// Gets called when an external goal of this class is added to AI
+	STATIC_METHOD("onGoalAdded") {
+		params ["_thisClass", ["_AI", "", [""]], ["_parameters", [], [[]]]];
+	} ENDMETHOD;
+
+	// Gets called when an external goal of this class is removed from an AI
+	STATIC_METHOD("onGoalDeleted") {
+		params ["_thisClass", ["_AI", "", [""]], ["_parameters", [], [[]]]];
 	} ENDMETHOD;
 
 ENDCLASS;

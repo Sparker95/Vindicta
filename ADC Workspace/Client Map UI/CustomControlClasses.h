@@ -154,6 +154,7 @@ class MUI_BUTTON_TXT : MUI_BASE
 	onButtonUp = "";
 	onLBDrop = "";
 	onMouseButtonClick = "";
+	onMouseEnter = "";
 	
 };
 //#-1
@@ -161,6 +162,7 @@ class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	h = 0;
 	sizeEx = 0;
+	onMouseEnter = "";
 	
 };
 class MUI_LISTBOX : MUI_BASE 

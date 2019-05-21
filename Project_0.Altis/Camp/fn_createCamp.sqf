@@ -1,5 +1,11 @@
 #include "..\OOP_Light\OOP_Light.h"
 
+/*
+
+[] call fnc_createCamp;
+
+*/
+
 params ["_target"];
 
 private _allLocations = GETSV("Location", "all");
@@ -15,11 +21,7 @@ private _pos = getPosWorld _target;
 } forEach _allLocations;
 
 if (_isPosAllowed) then {
-	if (isServer) then {
-		NEW_PUBLIC("Camp", [_pos]);
-	} else {
-		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [_pos], 2, false);
-	}
+	REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [_pos], 2, false);
 } else {
 	hint "Too close from another Location (need 100m from any location)";
 };
