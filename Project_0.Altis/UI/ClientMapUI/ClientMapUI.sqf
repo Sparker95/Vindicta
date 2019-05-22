@@ -121,7 +121,14 @@ CLASS(CLASS_NAME, "")
 		params ["_thisClass", "_control"];
 		private _mapDisplay = findDisplay 12;
 		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
-		private _data = _control lnbData [lnbCurSelRow _control, 0];
+		private _currentRow = lnbCurSelRow _control;
+
+		// Bail if current row is -1 - it means nothing is selected
+		if (_currentRow == -1) exitWith {
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Nothing is selected";
+		};
+
+		private _data = _control lnbData [_currentRow, 0];
 		private _className = GET_OBJECT_CLASS(_data);
 		private _actionName = "Unknown";
 		private _text = "";
