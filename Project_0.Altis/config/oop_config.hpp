@@ -25,5 +25,9 @@
 
 //#define CMDR_AI_TESTING
 
-#define OOP_PROFILE
+// Profiling
+//#define OOP_PROFILE
 #define OOP_PROFILE_MIN_T 0.003
+
+// Various runtime OOP assertions (class existence, member variable existence, etc)
+#define OOP_ASSERT

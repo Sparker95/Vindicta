@@ -1,3 +1,5 @@
+#define OOP_PROFILE
+#define OOP_PROFILE_MIN_T 0.01
 #include "common.hpp"
 
 /*
@@ -182,6 +184,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 
 		#endif
+
+		// Add a "spawned" field to profiling output 
+		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
 		
 	} ENDMETHOD;
 	

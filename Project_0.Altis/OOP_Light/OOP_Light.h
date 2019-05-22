@@ -39,7 +39,7 @@
 // As well as other assertions
 // It's a global flag, must be defined here
 
-#define OOP_ASSERT
+// #define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 // Enables support for Arma Script Profiler globally
@@ -61,7 +61,7 @@
 #include "..\config\oop_config.hpp"
 
 #ifdef _SQF_VM
-
+// ___ SQF-VM ___
 #define TEXT_
 #undef ASP_ENABLE
 #undef PROFILER_COUNTERS_ENABLE
@@ -87,8 +87,9 @@
 #define PUBLIC_VARIABLE isNil
 
 #define PROFILE_NAME "Satan"
-
+// ^^^ SQF-VM ^^^
 #else
+// ___ ARMA ___
 
 #define TEXT_ text
 
@@ -106,6 +107,7 @@
 #define PROFILE_NAME profileName
 
 #endif
+// ^^^ ARMA ^^^
 
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
@@ -452,7 +454,7 @@
 	#define OOP_FUNC_HEADER_PROFILE \
 		private _profileTStart = diag_tickTime; \
 		private _class = if(isNil "_thisClass") then { if(isNil "_thisObject") then { "(unknown)" } else { OBJECT_PARENT_CLASS_STR(_thisObject) } } else { _thisClass }; \
-		private _profileTag = if(_class != "(unknown)") then { GET_STATIC_VAR(_class, "profile__tag") } else { "" }; \
+		private _profileTag = if(_class != "(unknown)") then { FORCE_GET_STATIC_MEM(_class, "profile__tag") } else { "" }; \
 		private _scopeKey = if(isNil "_profileTag" or isNil "_thisObject") then { \
 			_class \
 		} else { \
@@ -480,7 +482,7 @@
 			OOP_PROFILE_0(_str); \
 		}
 	
-	#define PROFILE_ADD_EXTRA_FIELD(fieldName, fieldVal) _extraProfileFields pushBack [fieldName, fieldVal];
+	#define PROFILE_ADD_EXTRA_FIELD(fieldName, fieldVal) _extraProfileFields pushBack [fieldName, fieldVal]
 #else
 	#define PROFILE_TAG
 	#define PROFILE_SCOPE_AS_VARIABLE(className, varName)
@@ -493,6 +495,7 @@
 #endif
 
 // Enable function wrappers if logging macros are used
+/*
 #ifdef OOP_DEBUG
 #define _OOP_FUNCTION_WRAPPERS
 #endif
@@ -508,6 +511,7 @@
 #ifdef OOP_DEBUG
 #define _OOP_FUNCTION_WRAPPERS
 #endif
+*/
 
 // Enable function wrappers if access assertions are enabled
 #ifdef OOP_ASSERT_ACCESS
