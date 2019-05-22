@@ -35,8 +35,12 @@
 
 // Shortcuts
 #define LABEL(model) GETV(model, "label")
-
 #define EFF_ZERO T_EFF_null
+#define MAKE_SCORE_VEC(scorePriority, scoreResource, scoreStrategy, scoreCompleteness) [scorePriority, scoreResource, scoreStrategy, scoreCompleteness]
+#define GET_SCORE_PRIORITY(scoreVec) (scoreVec select 0)
+#define GET_SCORE_RESOURCE(scoreVec) (scoreVec select 1)
+#define GET_SCORE_STRATEGY(scoreVec) (scoreVec select 2)
+#define GET_SCORE_COMPLETENESS(scoreVec) (scoreVec select 3)
 
 // Minimum efficiency of a garrison.
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.

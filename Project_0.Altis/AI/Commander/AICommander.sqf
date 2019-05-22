@@ -34,6 +34,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 
 	VARIABLE("lastPlanningTime");
+	VARIABLE("cmdrStrategy");
 	VARIABLE("cmdrAI");
 	VARIABLE("worldModel");
 
@@ -116,6 +117,7 @@ CLASS("AICommander", "AI")
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
+		T_SETV("cmdrStrategy", gCmdrStrategyDefault);
 		T_SETV("lastPlanningTime", TIME_NOW);
 		private _cmdrAI = NEW("CmdrAI", [_side]);
 		T_SETV("cmdrAI", _cmdrAI);
@@ -234,7 +236,7 @@ CLASS("AICommander", "AI")
 		
 		T_GETV("msgLoop");
 	} ENDMETHOD;
-	
+
 	/*
 	Method: (static)getCommanderAIOfSide
 	Returns AICommander object that commands given side
@@ -246,7 +248,7 @@ CLASS("AICommander", "AI")
 	Returns: <AICommander>
 	*/
 	STATIC_METHOD("getCommanderAIOfSide") {
-		params [P_THISOBJECT, ["_side", WEST, [WEST]]];
+		params [P_THISCLASS, P_SIDE("_side")];
 		switch (_side) do {
 			case WEST: {
 				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
@@ -262,7 +264,27 @@ CLASS("AICommander", "AI")
 			};
 		};
 	} ENDMETHOD;
+
+	/*
+	Method: (static)getCmdrStrategy
+	Returns Strategy the cmdr of the specified side is using.
 	
+	Parameters: _side
+	
+	_side - side
+	
+	Returns: <CmdrStrategy>
+	*/
+	STATIC_METHOD("getCmdrStrategy") {
+		params [P_THISCLASS, P_SIDE("_side")];
+		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_cmdr)) then {
+			GETV(_cmdr, "cmdrStrategy")
+		} else {
+			gCmdrStrategyDefault
+		}
+	} ENDMETHOD;
+
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it

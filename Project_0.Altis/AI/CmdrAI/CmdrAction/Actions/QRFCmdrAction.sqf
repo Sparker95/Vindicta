@@ -18,7 +18,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("updateIntel") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
@@ -60,7 +60,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	} ENDMETHOD;
 
 	/* override */ METHOD("updateScore") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
@@ -109,16 +109,18 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtCluster) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-
-		T_SETV("scorePriority", _scorePriority);
-		T_SETV("scoreResource", _scoreResource);
+		
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
+		private _score = CALLM(_strategy, "getQRFScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtCluster ARG _detachEff]);
+		T_CALLM("setScore", [_score]);
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
 	/* private */ METHOD("getDetachmentEff") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 

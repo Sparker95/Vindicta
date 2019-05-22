@@ -337,7 +337,6 @@ CLASS("GameModeBase", "")
 		} forEach gCommanders;
 	} ENDMETHOD;
 
-
 	// Create locations
 	METHOD("initLocations") {
 		params [P_THISOBJECT];
