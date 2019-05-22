@@ -13,10 +13,9 @@ Author: Sparker 05.05.2019
 #define pr private
 
 /*
-Class: Intel
-Intel base class. It stores variables that describe intel. It is a base class for more intel types.
+	Class: Intel
+	Intel base class. It stores variables that describe intel. It is a base class for more intel types.
 */
-
 CLASS("Intel", "")
 
 	/* variable: dateCreated 
@@ -161,16 +160,15 @@ CLASS("Intel", "")
 
 ENDCLASS;
 
-/*
-Class: Intel.IntelLocation
-Represents Intel about some location. What faction controls it, how many units there are, and other such things.
-*/
-
 #define COLOR_WEST		[0,0.3,0.6,1]
 #define COLOR_EAST		[0.5,0,0,1]
 #define COLOR_IND		[0,0.5,0,1]
 #define COLOR_UNKNOWN	[0.4,0,0.5,1]
 
+/*
+	Class: Intel.IntelLocation
+	Represents Intel about some location. What faction controls it, how many units there are, and other such things.
+*/
 CLASS("IntelLocation", "Intel")
 
 	/* variable: side
@@ -283,56 +281,70 @@ CLASS("IntelLocation", "Intel")
 		CALLM1(_mapMarker, "setAccuracyRadius", _radius);
 	} ENDMETHOD;
 
+	// 0.1 WIP: dont rely on this
+	METHOD("getShortName") {
+		"IntelLocation"
+	} ENDMETHOD;
 ENDCLASS;
 
 
-
 /*
-Class: Intel.IntelCommanderAction
-Base class for all intel about commander actions.
+	Class: Intel.IntelCommanderAction
+	Base class for all intel about commander actions.
 */
-
 CLASS("IntelCommanderAction", "Intel")
-	/* variable: side
-	Side of the faction that has planned to do this*/
+	/* 
+		variable: side
+		Side of the faction that has planned to do this
+	*/
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
 
-	// /* variable: src
-	// Where the action starts from */
-	// VARIABLE_ATTR("src", [ATTR_SERIALIZABLE]);
-	/* variable: posSrc
-	Source position*/
+	/* 
+		variable: posSrc
+		Source position
+	*/
 	VARIABLE_ATTR("posSrc", [ATTR_SERIALIZABLE]);
 
-	// /* variable: tgt
-	// Where the action is going to */
-	// VARIABLE_ATTR("tgt", [ATTR_SERIALIZABLE]);
-	/* variable: posTgt
-	Target position*/
+	/* 
+		variable: posTgt
+		Target position
+	*/
 	VARIABLE_ATTR("posTgt", [ATTR_SERIALIZABLE]);
 
-	/* variable: garrison
-	Garrison undertaking the action, if any */
+	/* 
+		variable: garrison
+		Garrison undertaking the action, if any 
+	*/
 	VARIABLE_ATTR("garrison", [ATTR_SERIALIZABLE]);
 
-	/* variable: posCurrent
-	Current position of the garrison that is executing this action. Commander should update it periodycally. */
+	/* 
+		variable: posCurrent
+		Current position of the garrison that is executing this action. Commander should update it periodycally. 
+	*/
 	VARIABLE_ATTR("posCurrent", [ATTR_SERIALIZABLE]);
 
-	/* variable: route
-	The route that the vehicles or troops will follow. Format is yet unknown.*/
+	/* 
+		variable: route
+		The route that the vehicles or troops will follow. Format is yet unknown.
+	*/
 	VARIABLE_ATTR("route", [ATTR_SERIALIZABLE]);
 
-	/* variable: transportMethod
-	Transport method (ground/air/water). Format is yet unknown.*/
+	/* 
+		variable: transportMethod
+		Transport method (ground/air/water). Format is yet unknown.
+	*/
 	VARIABLE_ATTR("transportMethod", [ATTR_SERIALIZABLE]);
 
-	/* variable: dateDeparture
-	Departure date*/
+	/* 
+		variable: dateDeparture
+		Departure date
+	*/
 	VARIABLE_ATTR("dateDeparture", [ATTR_SERIALIZABLE]);
 
-	/* variable: strength
-	Strength of the units allocated for this job. Format is yet unknown.*/
+	/* 
+		variable: strength
+		Strength of the units allocated for this job. Format is yet unknown.
+	*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
 
 	METHOD("clientAdd") {
@@ -343,51 +355,85 @@ CLASS("IntelCommanderAction", "Intel")
 		// Hint
 		hint format ["Added intel: %1", _thisObject];
 	} ENDMETHOD;
+
+	// 0.1 WIP: dont rely on this
+	METHOD("getShortName") {
+		"IntelAction"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
-Class: Intel.IntelCommanderActionReinforce
-Intel about reinforcement commander action
+	Class: Intel.IntelCommanderActionReinforce
+	Intel about reinforcement commander action.
 */
 CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
-	/* variable: srcGarrison
-	The source garrison that sent the reinforcements. Probably players have no use to this.*/
+	/* 
+		variable: srcGarrison
+		The source garrison that sent the reinforcements. Probably players have no use to this.
+	*/
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
-	/* variable: tgtGarrison
-	The destination garrison that will be reinforced. Probably players have no use to this.*/
+	/* 
+		variable: tgtGarrison
+		The destination garrison that will be reinforced. Probably players have no use to this.
+	*/
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+
+	// 0.1 WIP: dont rely on this
+	METHOD("getShortName") {
+		"IntelActionReinforce"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
-Class: Intel.IntelCommanderActionBuild
-Intel about action to build something.
+	Class: Intel.IntelCommanderActionBuild
+	Intel about action to build something.
 */
 CLASS("IntelCommanderActionBuild", "IntelCommanderAction")
-	/* variable: type
-	The type of object that will be built. Format is unknown now!*/
+	/* 
+		variable: type
+		The type of object that will be built. Format is unknown now!
+	*/
 	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+
+	// 0.1 WIP: dont rely on this
+	METHOD("getShortName") {
+		"IntelActionBuild"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
-Class: Intel.IntelCommanderActionAttack
-Intel about action to attack something.
+	Class: Intel.IntelCommanderActionAttack
+	Intel about action to attack something.
 */
 CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
-	/* variable: srcGarrison
-	The source garrison that sent the attack. Probably players have no use to this.*/
+	/* 
+		variable: srcGarrison
+		The source garrison that sent the attack. Probably players have no use to this.
+	*/
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
-	/* variable: type
-	The type of attack: QRF, basic attack, something else. IDK the formet of this now!*/
+
+	/* 
+		variable: type
+		The type of attack: QRF, basic attack, something else. IDK the format of this now!
+	*/
 	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtClusterId", [ATTR_SERIALIZABLE]);
+
+	// 0.1 WIP: dont rely on this
+	METHOD("getShortName") {
+		"IntelActionAttack"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
-Class: Intel.IntelCommanderActionRecon
-The commander is planning something so he sends some recon squads!
+	Class: Intel.IntelCommanderActionRecon
+	The commander is planning something so he sends some recon squads!
 */
 CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
-
+	// 0.1 WIP: dont rely on this
+	METHOD("getShortName") {
+		"IntelActionRecon"
+	} ENDMETHOD;
 ENDCLASS;

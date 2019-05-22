@@ -2,7 +2,7 @@
 #define OOP_WARNING
 #define OOP_ERROR
 #define OOP_DEBUG
-//#define NAMESPACE uiNamespace
+
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
@@ -10,15 +10,13 @@
 #include "..\..\Location\Location.hpp"
 #include "..\Resources\UIProfileColors.h"
 
-
-/*
-Class: ClientMapUI
-Singleton class that performs things related to map user interface
-*/
-
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
+/*
+	Class: ClientMapUI
+	Singleton class that performs things related to map user interface
+*/
 CLASS(CLASS_NAME, "")
 	// Arrays of LOCATION_DATA structures
 	STATIC_VARIABLE("locationDataWest"); 	// What client's side knows about West knowledge about locations
@@ -96,7 +94,6 @@ CLASS(CLASS_NAME, "")
 
 	} ENDMETHOD;
 
-
 	/*
 		Method: onMouseExit
 		Description: Called when the mouse cursor exits the control.
@@ -122,11 +119,48 @@ CLASS(CLASS_NAME, "")
 	*/
 	STATIC_METHOD("onLBSelChanged") {
 		params ["_thisClass", "_control"];
-		pr _mapDisplay = findDisplay 12;
-		// TODO: Display different descriptions for intel
-		
+		private _mapDisplay = findDisplay 12;
 		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
+		private _data = _control lnbData [lnbCurSelRow _control, 0];
+		private _className = GET_OBJECT_CLASS(_data);
+		private _actionName = "Unknown";
+		private _text = "";
 
+		if (_className == "IntelCommanderActionReinforce") then { _actionName = "reinforce"; };
+		if (_className == "IntelCommanderActionBuild") then { _actionName = "build"; };
+		if (_className == "IntelCommanderActionRecon") then { _actionName = "recon"; };
+		if (_className == "IntelCommanderActionAttack") then { _actionName = "attack"; };
+
+		private _from = GETV(_data, "posSrc");
+		private _fromName = "Unknown";
+		private _to = GETV(_data, "posTgt");
+		private _toName = "Unknown";
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className == "IntelLocation") then {
+				private _pos = GETV(_x, "pos");
+				private _loc = GETV(_x, "location");
+
+				if (_from distance2D _pos < 10) then { _fromName = GETV(_loc, "name"); };
+				if (_to distance2D _pos < 10) then { _toName = GETV(_loc, "name"); };
+			};
+		} forEach _allIntels;
+
+		if (_fromName == "Unknown") then { _fromName = mapGridPosition _from; };
+		if (_toName == "Unknown") then { _toName = mapGridPosition _from; };
+
+		_text = format [
+			"%1 is going to %2 %3",
+			_fromName,
+			_actionName,
+			_toName
+		];
+
+		if (_actionName != "Unknown") then {
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText _text;
+		};
 	} ENDMETHOD;
 
 	// Formats location data and shows it on the location data panel
@@ -139,17 +173,16 @@ CLASS(CLASS_NAME, "")
 		{
 			private _className = GET_OBJECT_CLASS(_x);
 			if (_className != "IntelLocation") then {
-				_ctrlListnbox lnbAddRow [ format ["%1 \n _className: %1 \n _className: %1 \n", _className] ];
+				private _shortName = CALLM0(_x, "getShortName");
+				private _index = _ctrlListnbox lnbAddRow [_shortName];
+				_ctrlListnbox lnbSetData [[_index, 0], _x];
 			};
-
 		} forEach _allIntels;
 
 		// change location panel headline
 		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
 		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
-
 	} ENDMETHOD;
-
 
 	STATIC_METHOD("updateLocationData") {
 		params [["_thisObject", "", [""]], ["_locationData", [], [[]]], ["_side", CIVILIAN]];
@@ -229,43 +262,11 @@ CLASS(CLASS_NAME, "")
 		CALLM1(_mapMarker, "setColor", _color);
 	} ENDMETHOD;
 
-	STATIC_METHOD("getLocationData") {
-		params ["_thisClass", ["_pos", [], [[]]], ["_side", CIVILIAN]];
-
-		_pos resize 2;
-
-		if (_side == CIVILIAN) then {
-			_side = side group player;
-		};
-		diag_log format ["Searching for location data at pos: %1, side :2", _pos, _side];
-		pr _varName = switch (_side) do {
-			case WEST: {"locationDataWest"};
-			case EAST: {"locationDataEast"};
-			case INDEPENDENT: {"locationDataInd"};
-		};
-		pr _ld = GET_STATIC_VAR(CLASS_NAME, _varName);
-
-		// Find this location in client's database
-		pr _index = _ld findif {
-			pr _locPos = _x select CLD_ID_POS;
-
-			_pos isEqualTo _locPos;
-		};
-
-		if (_index == -1) then {
-			diag_log format ["Location data was not found!"];
-			[]
-		} else {
-			diag_log format ["Location data was found: %1", _ld select _index];
-			_ld select _index
-		};
-
-	} ENDMETHOD;
-
 	STATIC_METHOD("clearListNBox") {
 		private _mapDisplay = findDisplay 12;
 		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
 		lnbClear _ctrlListnbox;
+		_ctrlListnbox lnbSetCurSelRow -1;
 	} ENDMETHOD;
 
 	STATIC_METHOD("updateLocationDataPanel") {
@@ -312,8 +313,8 @@ CLASS(CLASS_NAME, "")
 
 		// Apply new text for GUI elements
 		CALLSM0(CLASS_NAME, "clearListNBox");
-		
 		private _mapDisplay = findDisplay 12;
+		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "";
 		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
 		_ctrlListnbox lnbAddRow [ format ["Type: %1", _typeText] ];
 		_ctrlListnbox lnbAddRow [ format ["Side: %1", _sideText] ];
@@ -321,12 +322,6 @@ CLASS(CLASS_NAME, "")
 		{
 			_ctrlListnbox lnbAddRow [_x];
 		} forEach _vehList;
-	} ENDMETHOD;
-
-	STATIC_METHOD("showLocationDataPanel") {
-		params ["_thisClass", ["_show", true]];
-
-		pr _idcs = [];
 	} ENDMETHOD;
 
 	// Returns marker text of closest marker
