@@ -164,7 +164,7 @@ CLASS(CLASS_NAME, "")
 		} forEach _allIntels;
 
 		if (_fromName == "Unknown") then { _fromName = mapGridPosition _from; };
-		if (_toName == "Unknown") then { _toName = mapGridPosition _from; };
+		if (_toName == "Unknown") then { _toName = mapGridPosition _to; };
 
 		_text = format [
 			"%1 is going to %2 %3",
