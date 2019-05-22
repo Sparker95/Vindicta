@@ -23,6 +23,8 @@ CLASS(CLASS_NAME, "")
 	STATIC_VARIABLE("locationDataEast");
 	STATIC_VARIABLE("locationDataInd");
 
+	STATIC_VARIABLE("currentMapMarker");
+
 	// initialize UI event handlers
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
@@ -128,6 +130,12 @@ CLASS(CLASS_NAME, "")
 			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Nothing is selected";
 		};
 
+		// Bail if we have selected a map marker (for now until we figure out what to do with the list box when we have selected a location)
+		pr _currentMapMarker = GET_STATIC_VAR("ClientMapUI", "currentMapMarker");
+		if (_currentMapMarker != "") exitWith {
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "What do we show here? What does it all mean?? Where am I???";
+		};
+
 		private _data = _control lnbData [_currentRow, 0];
 		private _className = GET_OBJECT_CLASS(_data);
 		private _actionName = "Unknown";
@@ -172,6 +180,10 @@ CLASS(CLASS_NAME, "")
 
 	// Formats location data and shows it on the location data panel
 	STATIC_METHOD("onMouseClickElsewhere") {
+
+		// Reset the current marker variable
+		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
+
 		CALLSM0(CLASS_NAME, "clearListNBox");
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		private _mapDisplay = findDisplay 12;
@@ -276,8 +288,10 @@ CLASS(CLASS_NAME, "")
 		_ctrlListnbox lnbSetCurSelRow -1;
 	} ENDMETHOD;
 
-	STATIC_METHOD("updateLocationDataPanel") {
-		params ["_thisClass", ["_intel", "", [""]]];
+	STATIC_METHOD("onMapMarkerMouseButtonDown") {
+		params ["_thisClass", ["_mapMarker", "", []], ["_intel", "", [""]]];
+
+		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", _mapMarker);
 
 		pr _typeText = "";
 		pr _timeText = "";
@@ -355,3 +369,5 @@ ENDCLASS;
 		SET_STATIC_VAR(CLASS_NAME, _x, []);
 	};
 } forEach ["locationDataWest", "locationDataEast", "locationDataInd"];
+
+SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
