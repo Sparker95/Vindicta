@@ -2,6 +2,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Message\Message.hpp"
+#include "MessageLoop.hpp"
 
 /*
 Class: MessageLoop
@@ -32,6 +33,10 @@ CLASS("MessageLoop", "");
 	VARIABLE("mutex");
 	//Debug name to help read debug printouts
 	VARIABLE("name");
+	// Process categories
+	VARIABLE("processCategories");
+	// Desired process time fractions calculated from priorities of categories
+	VARIABLE("processTimeFractions");
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -46,6 +51,8 @@ CLASS("MessageLoop", "");
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
 		T_SETV("scriptHandle", _scriptHandle);
 		T_SETV("mutex", MUTEX_NEW());
+		T_SETV("processCategories", []);
+		T_SETV("processTimeFractions", []);
 	} ENDMETHOD;
 
 	/*
@@ -157,6 +164,64 @@ CLASS("MessageLoop", "");
 			} else {
 				_i = _i + 1;
 			};
+		};
+	} ENDMETHOD;
+
+	// Functions for process categories
+
+	METHOD("addProcessCategory") {
+		CRITICAL_SECTION {
+			params ["_thisObject", ["_tag", "", [""]], ["_priority", 1, [1]]];
+
+			pr _cat = PROCESS_CATEGORY_NEW(_tag, _priority);
+			pr _cats = T_GETV("processCategories"); // meow ^.^
+			_cats pushBack _cat;
+
+			// Update process time fractions
+			pr _fractions = T_GETV("processTimeFractions");
+			_fractions resize (count _cats);
+			pr _sum = 0; // Sum of all priorities
+			for "_i" from 0 to ((count _cats) - 1) do {
+				pr _priority = _cats#_i#PROCESS_CATEGORY_ID_PRIORITY;
+				_fractions set [_i, _priority];
+				_sum = _sum + _priority;
+			};
+			_fractions apply {_x / _sum};
+		};
+	} ENDMETHOD;
+
+	METHOD("addProcessCategoryObject") {
+		CRITICAL_SECTION {
+			params ["_thisObject", ["_tag", "", [""]], ["_object", "", [""]]];
+
+			// Find category with given tag
+			pr _cats = T_GETV("processCategories");
+			pr _index = _cats findIf {(_x select PROCESS_CATEGORY_ID_TAG) == _tag};
+			if (_index != -1) then {
+				pr _cat = _cats select _index;
+				pr _objs = _cat select PROCESS_CATEGORY_ID_OBJECTS;
+				_objs pushBack PROCESS_CATEGORY_OBJECT_NEW(_object);
+			} else {
+				OOP_ERROR_1("Process category with tag %1 was not found!", _tag);
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("deleteProcessCategoryObject") {
+		CRITICAL_SECTION {
+			params ["_thisObject", ["_object", "", [""]]];
+
+			pr _cats = T_GETV("processCategories");
+			{
+				pr _objs = _x select PROCESS_CATEGORY_ID_OBJECTS;
+				pr _index = _objs findIf {_x select 0 == _object};
+				//if (_index != -1) then {
+					_objs deleteAt _index;
+					//true // No need to search any more
+				//} else {
+				//	false // Need to search other categories, this object is not here
+				//};
+			} forEach _cats;
 		};
 	} ENDMETHOD;
 
