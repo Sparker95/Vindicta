@@ -1,12 +1,7 @@
-#include "common.hpp"
+#include "../../common.hpp"
 
 
-// TODO: Perhaps this should just override entire scoring system? 
-// Or rather scoring should be separated from Action definition entirely.
-// Strategy should always provide entire score.
-// It should also profile validity of actions for generating the action lists as well.
-// This will be more optimal.
-CLASS("CmdrStrategy", "RefCounted")
+CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -34,7 +29,8 @@ CLASS("CmdrStrategy", "RefCounted")
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtGarr"),
 			P_ARRAY("_detachEff")];
-		_defaultScore
+		// Do nothing!
+		APPLY_SCORE_STRATEGY(_defaultScore, 0)
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getTakeLocationScore") {
@@ -46,11 +42,10 @@ CLASS("CmdrStrategy", "RefCounted")
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
-		_defaultScore
+		// Do nothing!
+		APPLY_SCORE_STRATEGY(_defaultScore, 0)
 	} ENDMETHOD;
 ENDCLASS;
-
-gCmdrStrategyDefault = NEW("CmdrStrategy", []);
 
 // Unit test
 #ifdef _SQF_VM

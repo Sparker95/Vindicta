@@ -41,6 +41,7 @@
 #define GET_SCORE_RESOURCE(scoreVec) (scoreVec select 1)
 #define GET_SCORE_STRATEGY(scoreVec) (scoreVec select 2)
 #define GET_SCORE_COMPLETENESS(scoreVec) (scoreVec select 3)
+#define APPLY_SCORE_STRATEGY(scoreVec, strategyScore) [scoreVec select 0, scoreVec select 1, strategyScore, scoreVec select 3]
 
 // Minimum efficiency of a garrison.
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.

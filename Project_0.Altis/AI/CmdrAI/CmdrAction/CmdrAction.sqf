@@ -111,7 +111,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(scoreResource);
 		T_PRVAR(scoreStrategy);
 		T_PRVAR(scoreCompleteness);
-		// TODO: what is the correct way to combine these scores?
+		// TODO: what is the correct to combine these scores?
 		// Should we try to get them all from 0 to 1?
 		// Maybe we want R*(iP + jS + kC)?
 		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness

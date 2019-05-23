@@ -249,20 +249,19 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD("getCommanderAIOfSide") {
 		params [P_THISCLASS, P_SIDE("_side")];
+		private _cmdr = NULL_OBJECT;
 		switch (_side) do {
 			case WEST: {
-				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
+				if(!isNil "gAICommanderWest") then { _cmdr = gAICommanderWest };
 			};
 			case EAST: {
-				if(isNil "gAICommanderEast") then { NULL_OBJECT } else { gAICommanderEast }
+				if(!isNil "gAICommanderEast") then { _cmdr = gAICommanderEast };
 			};
 			case INDEPENDENT: {
-				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
-			};
-			default {
-				NULL_OBJECT
+				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
 			};
 		};
+		_cmdr
 	} ENDMETHOD;
 
 	/*
