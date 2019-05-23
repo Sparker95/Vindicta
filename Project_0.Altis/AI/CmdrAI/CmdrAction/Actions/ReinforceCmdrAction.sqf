@@ -73,6 +73,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
+		private _side = GETV(_srcGarr, "side");
+
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
@@ -122,8 +124,10 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		
 		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
-		T_SETV("scorePriority", _scorePriority);
-		T_SETV("scoreResource", _scoreResource);
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
+		private _score = CALLM(_strategy, "getReinforceScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _detachEff]);
+		T_CALLM("setScore", [_score]);
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 

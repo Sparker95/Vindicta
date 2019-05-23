@@ -101,7 +101,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtLocPos = GETV(_tgtLoc, "pos");
-		
 
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
 		private _dist = _srcGarrPos distance _tgtLocPos;
@@ -113,7 +112,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT ARG OCCUPYING_FORCE_HINT]);
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
-
 
 		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
@@ -200,9 +198,10 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-
-		T_SETV("scorePriority", _scorePriority);
-		T_SETV("scoreResource", _scoreResource);
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
+		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _detachEff]);
+		T_CALLM("setScore", [_score]);
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
