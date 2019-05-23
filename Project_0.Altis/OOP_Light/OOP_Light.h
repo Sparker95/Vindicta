@@ -434,6 +434,16 @@
 
 #define STATIC_MEMBER(memNameStr) STATIC_VARIABLE(memNameStr)
 
+// -----------------------------------------------------
+// |                 P R O F I L I N G                 |
+// -----------------------------------------------------
+
+#ifdef OOP_ASSERT
+	#define OOP_ASSERT_BOOL true
+#else
+	#define OOP_ASSERT_BOOL false
+#endif
+
 #ifdef OOP_PROFILE
 	#define _OOP_FUNCTION_WRAPPERS
 	#define PROFILE_TAG STATIC_VARIABLE("profile__tag")
@@ -478,7 +488,7 @@
 				} forEach _extraProfileFields; \
 				_extraFieldsObj = ", ""extra"": { " + _extraFieldsObj + " }"; \
 			}; \
-			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4""%6 }}", _class, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj]; \
+			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4"", ""oop_assert"": %7%6 }}", _class, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj, OOP_ASSERT_BOOL]; \
 			OOP_PROFILE_0(_str); \
 		}
 	
@@ -528,6 +538,10 @@
 #define OOP_TRACE_ENTER_FUNCTION 
 #define OOP_TRACE_EXIT_FUNCTION 
 #endif
+
+// -----------------------------------------------------
+// |                   M E T H O D S                   |
+// -----------------------------------------------------
 
 // If some enabled functionality requires function wrappers we set them here. If you want to conditionally add more stuff to the wrapped functions
 // (e.g. additional asserts, parameter manipulation etc.) then define them as macros and then include them in the wrapped blocks in the same manner

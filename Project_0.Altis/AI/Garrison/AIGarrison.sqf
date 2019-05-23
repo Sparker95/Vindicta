@@ -356,7 +356,8 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Returns spawned state of attached garrison
 	METHOD("isSpawned") {
 		params ["_thisObject"];
-		CALLM0(T_GETV("agent"), "isSpawned")
+		//CALLM0(T_GETV("agent"), "isSpawned")
+		GETV(T_GETV("agent"), "spawned")
 	} ENDMETHOD;
 
 	// Sets the position, because it is stored in the world state

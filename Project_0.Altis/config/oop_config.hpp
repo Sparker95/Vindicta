@@ -27,7 +27,8 @@
 
 // Profiling
 //#define OOP_PROFILE
-#define OOP_PROFILE_MIN_T 0.003
+// Don't set it above 0.002 or so! Or even above 0.004! diag_tickTime precision is only 0.001 and degrades as the game runs
+#define OOP_PROFILE_MIN_T 0.002
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
-#define OOP_ASSERT
+//#define OOP_ASSERT
