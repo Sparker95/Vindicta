@@ -285,7 +285,6 @@ CLASS(CLASS_NAME, "")
 		private _mapDisplay = findDisplay 12;
 		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
 		lnbClear _ctrlListnbox;
-		_ctrlListnbox lnbSetCurSelRow -1;
 	} ENDMETHOD;
 
 	STATIC_METHOD("onMapMarkerMouseButtonDown") {
@@ -337,6 +336,7 @@ CLASS(CLASS_NAME, "")
 		private _mapDisplay = findDisplay 12;
 		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "";
 		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+		_ctrlListnbox lnbSetCurSelRow -1;
 		_ctrlListnbox lnbAddRow [ format ["Type: %1", _typeText] ];
 		_ctrlListnbox lnbAddRow [ format ["Side: %1", _sideText] ];
 		_ctrlListnbox lnbAddRow [ format ["Soldier Count: %1", str _soldierCount] ];
