@@ -594,7 +594,7 @@ CLASS("AICommander", "AI")
 	Parameters:
 	_pos - <position>
 	
-	Returns: Array - threat efficiency at _pos
+	Returns: Number - threat at _pos
 	*/
 	METHOD("getThreat") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];

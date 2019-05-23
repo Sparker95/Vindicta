@@ -404,7 +404,7 @@ CLASS("VirtualRoute", "")
 				["end", _end],
 				["color", _routeColor],
 				["size", 8],
-				["id", "gps_route" + _thisObject + str _start + str _end]
+				["id", "gps_route_" + _thisObject + str _start + str _end]
 			] call gps_test_fnc_mapDrawLine; 
 		};
 
@@ -420,8 +420,8 @@ CLASS("VirtualRoute", "")
 	*/
 	METHOD("clearDebugDraw") {
 		params ["_thisObject"];
-		["gps_route" + _thisObject] call gps_test_fn_clear_markers;
-		//["gps_waypoint" + _thisObject] call gps_test_fn_clear_markers;
+		["gps_route_" + _thisObject] call gps_test_fn_clear_markers;
+		["gps_waypoint_" + _thisObject] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
 
 	/*
@@ -429,8 +429,8 @@ CLASS("VirtualRoute", "")
 	Clear debug markers for all routes.
 	*/
 	STATIC_METHOD("clearAllDebugDraw") {
-		["gps_route"] call gps_test_fn_clear_markers;
-		["gps_waypoint"] call gps_test_fn_clear_markers;
+		["gps_route_"] call gps_test_fn_clear_markers;
+		["gps_waypoint_"] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
 
 	/*

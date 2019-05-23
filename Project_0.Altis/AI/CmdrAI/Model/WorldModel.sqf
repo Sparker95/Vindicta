@@ -13,10 +13,10 @@ CLASS("WorldModel", "")
 	VARIABLE("rawThreatGrid");
 	// This is the rawThreatGrid with post processing applied
 	VARIABLE("threatGrid");
-	// Danger is historic friendly casualties. 
-	VARIABLE("rawDamageGrid");
-	// This is the rawDamageGrid with post processing applied
-	VARIABLE("damageGrid");
+	// Activity to general rating of enemy activity in an area, including damage dealt to us, intel reports about them etc.
+	VARIABLE("rawActivityGrid");
+	// This is the rawActivityGrid with post processing applied
+	VARIABLE("activityGrid");
 
 	VARIABLE("lastGridUpdate");
 
@@ -30,22 +30,23 @@ CLASS("WorldModel", "")
 		T_SETV("clusters", []);
 
 		if(_type == WORLD_TYPE_REAL) then {
-			private _gridArgs = [500, +T_EFF_null];
-			private _rawThreatGrid = NEW("Grid", _gridArgs);
-			private _threatGrid = NEW("Grid", _gridArgs);
-			private _rawDamageGrid = NEW("Grid", _gridArgs);
-			private _damageGrid = NEW("Grid", _gridArgs);
+			private _threatGridArgs = [500, +T_EFF_null];
+			private _rawThreatGrid = NEW("Grid", _threatGridArgs);
+			private _threatGrid = NEW("Grid", _threatGridArgs);
+			private _activityGridArgs = [250, 0];
+			private _rawActivityGrid = NEW("Grid", _activityGridArgs);
+			private _activityGrid = NEW("Grid", _activityGridArgs);
 			T_SETV("rawThreatGrid", _rawThreatGrid);
 			T_SETV("threatGrid", _threatGrid);
-			T_SETV("rawDamageGrid", _rawDamageGrid);
-			T_SETV("damageGrid", _damageGrid);
+			T_SETV("rawActivityGrid", _rawActivityGrid);
+			T_SETV("activityGrid", _activityGrid);
 			T_SETV("lastGridUpdate", TIME_NOW);
 			T_SETV("gridMutex", MUTEX_NEW());
 		} else {
 			T_SETV("rawThreatGrid", objNull);
 			T_SETV("threatGrid", objNull);
-			T_SETV("rawDamageGrid", objNull);
-			T_SETV("damageGrid", objNull);
+			T_SETV("rawActivityGrid", objNull);
+			T_SETV("activityGrid", objNull);
 		};
 
 		T_SETV("reinforceRequiredScoreCache", []);
@@ -62,8 +63,8 @@ CLASS("WorldModel", "")
 		if(T_CALLM("isReal", [])) then {
 			DELETE(T_GETV("rawThreatGrid"));
 			DELETE(T_GETV("threatGrid"));
-			DELETE(T_GETV("rawDamageGrid"));
-			DELETE(T_GETV("damageGrid"));
+			DELETE(T_GETV("rawActivityGrid"));
+			DELETE(T_GETV("activityGrid"));
 		};
 	} ENDMETHOD;
 
@@ -114,8 +115,11 @@ CLASS("WorldModel", "")
 		// Can copy the grid ref as we don't write to it, and we don't need the raw ones in the sim
 		T_PRVAR(threatGrid);
 		SETV(_worldCopy, "threatGrid", _threatGrid);
-		T_PRVAR(damageGrid);
-		SETV(_worldCopy, "damageGrid", _damageGrid);
+		T_PRVAR(activityGrid);
+		SETV(_worldCopy, "activityGrid", _activityGrid);
+
+		T_PRVAR(gridMutex);
+		SETV(_worldCopy, "gridMutex", _gridMutex);
 
 		_worldCopy
 	} ENDMETHOD;
@@ -136,14 +140,14 @@ CLASS("WorldModel", "")
 		// };
 
 		T_PRVAR(rawThreatGrid);
-		T_PRVAR(rawDamageGrid);
+		T_PRVAR(rawActivityGrid);
 
 		// Fade grids over time
 		// Threat fades to 50% over 60 minutes or so
 		// Damage fades to 50% over 7 hours or so
 		// https://www.desmos.com/calculator/iyesusko7z
 		#define THREAT_FADE_RATE 0.93
-		#define DAMAGE_FADE_RATE 0.99
+		#define ACTIVITY_FADE_RATE 0.99
 		#define FADE_RATE_PERIOD 360
 		#define POW(a, b) (exp ((b) * log (a)))
 
@@ -153,8 +157,8 @@ CLASS("WorldModel", "")
 
 		private _threatFade = POW(THREAT_FADE_RATE, _dt / FADE_RATE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
-		private _damageFade = POW(DAMAGE_FADE_RATE, _dt / FADE_RATE_PERIOD);
-		CALLM(_rawDamageGrid, "fade", [_damageFade]);
+		private _activityFade = POW(ACTIVITY_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		CALLM(_rawActivityGrid, "fade", [_activityFade]);
 
 		#define THREAT_GRID_CLUSTER_OVERSIZE 500
 		{
@@ -163,26 +167,21 @@ CLASS("WorldModel", "")
 			private _threat = GETV(_x, "efficiency");
 			private _damage = GETV(_x, "damage");
 			CALLM(_rawThreatGrid, "maxRect", [_pos ARG _size ARG _threat]);
-			// CALLM(_rawDamageGrid, "maxRect", [_pos ARG _size ARG _damage]);
 		} forEach T_CALLM("getAliveClusters", []);
 
 		T_PRVAR(threatGrid);
-		T_PRVAR(damageGrid);
+		T_PRVAR(activityGrid);
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
-
 			CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
-
-			//CALLM(_threatGrid, "smooth5x5", []);
-			//CALLM(_damageGrid, "smooth5x5", []);
+			CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
 		};
 
 #ifdef DEBUG_CMDRAI
 		//CALLM(_threatGrid, "unplot", []);
 		CALLM(_threatGrid, "plot", [20 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
-		//CALLM(_damageGrid, "unplot", []);
-		CALLM(_damageGrid, "plot", [20 ARG false ARG "DiagGrid" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
+		//CALLM(_activityGrid, "unplot", []);
+		CALLM(_activityGrid, "plot", [20 ARG false ARG "DiagGrid" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
 #endif
 		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
@@ -201,27 +200,50 @@ CLASS("WorldModel", "")
 	METHOD("getThreat") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
-		private _threat = +T_EFF_null;
+		private _threat = 0;
 
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
-			//T_PRVAR(threatGrid);
-			T_PRVAR(damageGrid);
+			T_PRVAR(threatGrid);
+			T_PRVAR(activityGrid);
 
-			_threat = +CALLM(_damageGrid, "getValue", [_pos]);
+			_threat = EFF_SUM(CALLM(_threatGrid, "getValue", [_pos])) + CALLM(_activityGrid, "getValue", [_pos]);
 
 			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			// CALLM(_damageGrid, "copyFrom", [_rawDamageGrid]);
+			// CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
 
 			// CALLM(_threatGrid, "smooth5x5", []);
-			// CALLM(_damageGrid, "smooth5x5", []);
+			// CALLM(_activityGrid, "smooth5x5", []);
 		};
 		_threat
 	} ENDMETHOD;
 
 	METHOD("addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
-		T_PRVAR(rawDamageGrid);
-		CALLM(_rawDamageGrid, "addValue", [_pos ARG _effDamage]);
+		T_PRVAR(rawActivityGrid);
+		CALLM(_rawActivityGrid, "addValue", [_pos ARG EFF_SUM(_effDamage)]);
+	} ENDMETHOD;
+
+	METHOD("addActivity") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
+		T_PRVAR(rawActivityGrid);
+		CALLM(_rawActivityGrid, "addValue", [_pos ARG _activity]);
+	} ENDMETHOD;
+
+	METHOD("getActivity") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+
+		private _activity = 0;
+		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+			T_PRVAR(activityGrid);
+			_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]);
+
+			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
+			// CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
+
+			// CALLM(_threatGrid, "smooth5x5", []);
+			// CALLM(_activityGrid, "smooth5x5", []);
+		};
+		_activity
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -568,18 +590,18 @@ CLASS("WorldModel", "")
 		if(_threatGrid isEqualTo objNull) exitWith {
 			EFF_GARRISON_MIN_EFF
 		};
-		T_PRVAR(damageGrid);
+		T_PRVAR(activityGrid);
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
-		private _damageEff = CALLM(_damageGrid, "getValue", [_pos]);
-		private _dmgSum = EFF_SUM(_damageEff);
+		private _activity = CALLM(_activityGrid, "getValue", [_pos]);
 		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		_dmgSum = (0.015 * _dmgSum);
-		private _forceMul = 1.5 max (1 + _dmgSum * _dmgSum * _dmgSum * _dmgSum);
-		private _compositeEff = EFF_MAX(EFF_MUL_SCALAR(_threatEff, _forceMul), _damageEff);
+		_activity = (0.015 * _activity);
+		private _forceMul = 1.5 max (1 + _activity * _activity * _activity * _activity);
+		private _compositeEff = EFF_MUL_SCALAR(_threatEff, _forceMul);
 		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
-		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _dmgSum = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _dmgSum ARG _forceMul ARG _compositeEff ARG _effMax]);
+		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _activity = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _activity ARG _forceMul ARG _compositeEff ARG _effMax]);
 		_effMax
+
 		// TODO: This needs to be looking at Clusters not Garrisons!
 		// TODO: Implement, grids etc.
 		// TODO: Cache it

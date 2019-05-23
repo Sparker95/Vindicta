@@ -24,7 +24,7 @@ gps_test_fn_clear_markers = {
     {
         if (toLower _x find _prefix >= 0) then
         {
-            deleteMarkerLocal _x;
+            deleteMarker _x;
         };
     } forEach _allMarkers;
 };

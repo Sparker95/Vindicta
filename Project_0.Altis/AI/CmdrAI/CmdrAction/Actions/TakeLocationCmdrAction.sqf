@@ -123,7 +123,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _tgtLocTypePriorityBias = 1;
 		switch(_tgtLocType) do {
 			case "outpost": {
-				// We want these a normal amount, so leave defaults alone.
+				// We want these a bit, but more if there is activity in the area
+				_tgtLocTypePriorityBias = 0.5 + log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 200]) + 1);
 			};
 			case "base": { 
 				// We want these a normal amount but are willing to go further to capture them.
@@ -133,27 +134,46 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			};
 			case "roadblock": {
 				// We won't travel as far to get these.
-				_tgtLocTypeDistanceBias = 0.5;
-				// The more surrounding locations we control the more we want to get these first.
-				private _nearLocsFactors =
-					CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
-						// select out location only not distance
-						select { 
-							_x params ["_dist", "_loc"];
-							!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
-						}
-						apply {
-							_x params ["_dist", "_loc"];
-							// Surrounding bases count more.
-							if(GETV(_loc, "type") == "base") then {
-								_dist / 1000
-							} else {
-								_dist / 2000
-							};
-						};
-				private _sum = 0;
-				{_sum = _sum + _x} foreach _nearLocsFactors;
-				_tgtLocTypePriorityBias = _sum;
+				//_tgtLocTypeDistanceBias = 0.5;
+				// We want these based on activity
+				//_tgtLocTypePriorityBias = 2 * log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
+				// // The more surrounding locations we control the more we want to get these first.
+				// private _nearLocsFactors =
+				// 	CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
+				// 		// select out location only not distance
+				// 		select { 
+				// 			_x params ["_dist", "_loc"];
+				// 			!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
+				// 		}
+				// 		apply {
+				// 			_x params ["_dist", "_loc"];
+				// 			// Surrounding bases count more.
+				// 			if(GETV(_loc, "type") == "base") then {
+				// 				_dist / 1000
+				// 			} else {
+				// 				_dist / 2000
+				// 			};
+				// 		};
+				// private _sum = 0;
+				// {_sum = _sum + _x} foreach _nearLocsFactors;
+				// _tgtLocTypePriorityBias = _sum;
+
+				// We want these if there is local activity.
+				_tgtLocTypePriorityBias = 2 * log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 200]) + 1);
+				if(_tgtLocTypePriorityBias > 0) then {
+					private _locs = CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) select {
+						_x params ["_dist", "_loc"];
+						!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
+					};
+					// We build these quick if we have an outpost or base nearby, prioritized by distance
+					if(count _locs > 0) then {
+						private _distF = 0.0004 * (_locs#0#0);
+						private _distCoeff = 1 / (1 + (_distF * _distF));
+						_tgtLocTypeDistanceBias = 2 * _distCoeff;
+					} else {
+						_tgtLocTypeDistanceBias = 0;
+					};
+				};
 			};
 			default { 0.5 }; // TODO: dunno what it is, better add more here?
 		};
