@@ -22,7 +22,7 @@ gps_test_fn_clear_markers = {
     params [["_prefix", "gps_"]];
     _allMarkers = allMapMarkers;
     {
-        if (toLower _x find _prefix >= 0) then
+        if (toLower _x find (toLower _prefix) >= 0) then
         {
             deleteMarker _x;
         };
