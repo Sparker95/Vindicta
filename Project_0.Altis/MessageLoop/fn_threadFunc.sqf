@@ -143,7 +143,14 @@ while {true} do {
 	if (_count > 0) then {
 		
 		// Calculate time spent by each process category
-		pr _fractionsCurrent = _processCategories apply {(_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE) / ((count (_x select PROCESS_CATEGORY_ID_OBJECTS))+1)}; // Also divide it by the amount of objects
+		pr _fractionsCurrent = _processCategories apply {
+			private _countObjects = count (_x select PROCESS_CATEGORY_ID_OBJECTS);
+			if (_countObjects == 0) then {
+				0
+			} else {
+				(_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE) * (_countObjects)
+			};			
+		}; // Also divide it by the amount of objects
 		//OOP_INFO_1("    fracs current: %1", _fractionsCurrent);
 		//OOP_INFO_1("    cats: %1", _processCategories);
 		pr _sum = 0;
@@ -198,41 +205,40 @@ while {true} do {
 					pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
 					_callTimeTotal = _callTimeTotal + _execTime;
 					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, _callTimeTotal];
+
+					// If we have processed object 0, update our measurement of update interval
+					if (_objectID == 0) then {
+						// Calculate average call time per object
+						/*
+						// Actually no, it is being calculated wrong, because we must divide it by the amount of objects processed so far
+						// Not by total amount of objects
+						// Don't need it much anyway, it is done by profiler wrappers
+						pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
+						pr _timePerObj = _callTimeTotal / _countObjects;
+						_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_AVERAGE, _timePerObj];
+						_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, 0];
+						*/
+
+						// Calculate update interval
+						pr _updateInterval = PROCESS_CATEGORY_TIME - _cat#PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME;
+						_cat set [PROCESS_CATEGORY_ID_UPDATE_INTERVAL, _updateInterval];
+						_cat set [PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME, PROCESS_CATEGORY_TIME];
+
+						/*
+						pr _tag = _cat select PROCESS_CATEGORY_ID_TAG;
+						pr _timePerObj = _timeAllObjects / _countObjects;
+
+						pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""timePerObject"": %4, ""timeAllObjects"": %5 } }", 
+							T_GETV("name"), _tag, _countObjects, _timePerObj, _timeAllObjects];
+						OOP_DEBUG_MSG(_str, []);
+						*/
+					};
+
 					#endif
 				};
 
 				// Update next ID
 				_cat set [PROCESS_CATEGORY_ID_NEXT_OBJECT_ID, _objectID];
-
-				// Calculate some debug measurements if needed
-				#ifdef THREAD_FUNC_DEBUG
-				if (_objectID == 0) then {
-					// Calculate average call time per object
-					/*
-					// Actually no, it is being calculated wrong, because we must divide it by the amount of objects processed so far
-					// Not by total amount of objects
-					// Don't need it much anyway, it is done by profiler wrappers
-					pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
-					pr _timePerObj = _callTimeTotal / _countObjects;
-					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_AVERAGE, _timePerObj];
-					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, 0];
-					*/
-
-					// Calculate update interval
-					pr _updateInterval = PROCESS_CATEGORY_TIME - _cat#PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME;
-					_cat set [PROCESS_CATEGORY_ID_UPDATE_INTERVAL, _updateInterval];
-					_cat set [PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME, PROCESS_CATEGORY_TIME];
-
-					/*
-					pr _tag = _cat select PROCESS_CATEGORY_ID_TAG;
-					pr _timePerObj = _timeAllObjects / _countObjects;
-
-					pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""timePerObject"": %4, ""timeAllObjects"": %5 } }", 
-						T_GETV("name"), _tag, _countObjects, _timePerObj, _timeAllObjects];
-					OOP_DEBUG_MSG(_str, []);
-					*/
-				};
-				#endif
 			};
 
 			// Filter execution time of this category
