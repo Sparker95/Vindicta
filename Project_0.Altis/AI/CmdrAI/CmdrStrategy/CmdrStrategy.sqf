@@ -1,13 +1,27 @@
 #include "../common.hpp"
 
-
 CLASS("CmdrStrategy", "")
+
+	VARIABLE("takeLocOutpostPriority");
+	VARIABLE("takeLocOutpostPriorityActivityCoeff");
+	VARIABLE("takeLocBasePriority");
+	VARIABLE("takeLocBasePriorityActivityCoeff");
+	VARIABLE("takeLocRoadBlockPriority");
+	VARIABLE("takeLocRoadBlockPriorityActivityCoeff");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
+
+		T_SETV("takeLocOutpostPriority", 0.5);
+		T_SETV("takeLocOutpostPriorityActivityCoeff", 1);
+		T_SETV("takeLocBasePriority", 2);
+		T_SETV("takeLocBasePriorityActivityCoeff", 0);
+		T_SETV("takeLocRoadBlockPriority", 0);
+		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
 	} ENDMETHOD;
 
-	// Return array of modified scores
+	// Default QRF behaviour is to send QRFs always,
+	// from any location that can spare the entire required efficiency.
 	/* virtual */ METHOD("getQRFScore") {
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
@@ -20,6 +34,8 @@ CLASS("CmdrStrategy", "")
 		_defaultScore
 	} ENDMETHOD;
 
+	// Default Reinforce behaviour is to send reinforcements whenever they are needed, 
+	// from any location that can spare the entire required efficiency.
 	/* virtual */ METHOD("getReinforceScore") {
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
@@ -32,6 +48,12 @@ CLASS("CmdrStrategy", "")
 		_defaultScore
 	} ENDMETHOD;
 
+	// Default TakeLocation behaviour is to always take bases and outposts,
+	// but only take roadblocks if there is both nearby activity and a nearby friendly location.
+	// It prefer locations in this order generally:
+	// base > outpost > roadblock
+	// However roadblocks become more important the stronger activity is in the
+	// area, such that they can be the most important with high activity.
 	/* virtual */ METHOD("getTakeLocationScore") {
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 

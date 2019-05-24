@@ -49,7 +49,7 @@ switch (T_GETV("spawned")) do {
 		if (_dstMin < _dstSpawnMin) then {
 			OOP_INFO_0("Spawning...");
 
-			CALLM0(_thisObject, "spawn");				
+			CALLM0(_thisObject, "spawn");
 
 			// Set timer interval
 			CALLM1(_timer, "setInterval", 5);

@@ -314,28 +314,34 @@ CLASS("Garrison", "MessageReceiverEx");
 	// ----------------------------------------------------------------------
 	METHOD("process") {
 		params [P_THISOBJECT];
+
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
 			T_CALLM("updateSpawnState", []); 
-			// If we are empty except for vehicles then merge to the nearest other garrison
+			// If we are empty except for vehicles then we must abandon them
 			if(T_CALLM("isOnlyEmptyVehicles", [])) then {
-				OOP_INFO_MSG("This garrison only has vehicles left, finding nearest other garrison to merge to", []);
-				private _thisPos = T_CALLM("getPos", []);
-				// T_PRVAR(side);
-				// Get nearest other garrison
-				pr _nearGarrisons = CALL_STATIC_METHOD("Garrison", "getAllNotEmpty", [[] ARG []]) select {
-					!CALLM(_x, "isOnlyEmptyVehicles", [])
-				} apply {
-					[CALLM(_x, "getPos", []) distance _thisPos, _x]
-				};
-				if(count _nearGarrisons > 0) then {
-					_nearGarrisons sort ASCENDING;
-					private _otherGarr = _nearGarrisons#0#1;
-					OOP_INFO_MSG("Found %1 to merge our empty vehicles to", [_otherGarr]);
-					CALLM(_otherGarr, "addGarrison", [_thisObject]);
-				};
+				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
+				// Move the units to the abandoned vehicle garrison
+				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
 			};
 		};
+
+		// Make sure we spawn
+		// T_CALLM("spawn", []);
+		// private _thisPos = T_CALLM("getPos", []);
+		// // T_PRVAR(side);
+		// // Get nearest other garrison
+		// pr _nearGarrisons = CALL_STATIC_METHOD("Garrison", "getAllNotEmpty", [[] ARG []]) select {
+		// 	!CALLM(_x, "isOnlyEmptyVehicles", [])
+		// } apply {
+		// 	[CALLM(_x, "getPos", []) distance _thisPos, _x]
+		// };
+		// if(count _nearGarrisons > 0) then {
+		// 	_nearGarrisons sort ASCENDING;
+		// 	private _otherGarr = _nearGarrisons#0#1;
+		// 	OOP_INFO_MSG("Found %1 to merge our empty vehicles to", [_otherGarr]);
+		// 	CALLM(_otherGarr, "addGarrison", [_thisObject]);
+		// };
 
 		// // Find any garrisons without intantry left and merge any empty vehicles to the nearest
 		// // other garrison.

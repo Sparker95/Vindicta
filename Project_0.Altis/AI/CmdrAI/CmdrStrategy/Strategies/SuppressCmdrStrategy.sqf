@@ -4,15 +4,15 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		// Do not take outposts
+		// Take outposts in areas with activity
 		T_SETV("takeLocOutpostPriority", 0);
-		T_SETV("takeLocOutpostPriorityActivityCoeff", 0);
+		T_SETV("takeLocOutpostPriorityActivityCoeff", 1);
 		// Do not take bases
 		T_SETV("takeLocBasePriority", 0);
 		T_SETV("takeLocBasePriorityActivityCoeff", 0);
-		// Do not take roadblocks
+		// Take roadblocks in areas with activity
 		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);
+		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getQRFScore") {
@@ -37,8 +37,8 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtGarr"),
 			P_ARRAY("_detachEff")];
-		// Do no reinforcing! 
-		APPLY_SCORE_STRATEGY(_defaultScore, 0)
+		// Default reinforcing
+		_defaultScore
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getTakeLocationScore") {
@@ -50,8 +50,16 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtLoc"),
 			P_ARRAY("_detachEff")];
-		// Take no locations!
-		APPLY_SCORE_STRATEGY(_defaultScore, 0)
+		// Default take location, modified by the priorities we changed in constructor
+		_defaultScore
+
+		// // Occupying road blocks is allowed, but other locations
+		// // are not.
+		// if(GETV(_tgtLoc, "type") == "roadBlock") then {
+		// 	APPLY_SCORE_STRATEGY(_defaultScore, 1)
+		// } else {
+		// 	APPLY_SCORE_STRATEGY(_defaultScore, 0)
+		// }
 	} ENDMETHOD;
 ENDCLASS;
 

@@ -117,18 +117,25 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// TODO:OPT cache these scores!
 		private _tgtLocType = GETV(_tgtLoc, "type");
 
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+
 		private _tgtLocTypeDistanceBias = 1;
 		private _tgtLocTypePriorityBias = 1;
+
+		private _activity = log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
+
 		switch(_tgtLocType) do {
 			case "outpost": {
 				// We want these a bit, but more if there is activity in the area
-				_tgtLocTypePriorityBias = 0.5 + log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 200]) + 1);
+				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocOutpostPriority") +
+					GETV(_strategy, "takeLocOutpostPriorityActivityCoeff") * _activity;
 			};
 			case "base": { 
 				// We want these a normal amount but are willing to go further to capture them.
 				// TODO: work out how to weight taking bases vs other stuff? 
 				// Probably high priority when we are losing? This is a gameplay question.
-				_tgtLocTypeDistanceBias = 2; 
+				_tgtLocTypeDistanceBias = GETV(_strategy, "takeLocBasePriority") +
+					GETV(_strategy, "takeLocBasePriorityActivityCoeff") * _activity;
 			};
 			case "roadblock": {
 				// We won't travel as far to get these.
@@ -157,7 +164,9 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 				// _tgtLocTypePriorityBias = _sum;
 
 				// We want these if there is local activity.
-				_tgtLocTypePriorityBias = 2 * log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 200]) + 1);
+				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocRoadBlockPriority") +
+					GETV(_strategy, "takeLocRoadBlockPriorityActivityCoeff") * _activity;
+
 				if(_tgtLocTypePriorityBias > 0) then {
 					private _locs = CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) select {
 						_x params ["_dist", "_loc"];
@@ -198,7 +207,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _detachEff]);
 		T_CALLM("setScore", [_score]);

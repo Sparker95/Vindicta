@@ -289,8 +289,9 @@ CLASS("GameModeBase", "")
 		gGarrisonPlayersInd = NEW("Garrison", [INDEPENDENT]);
 		gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
 		gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
+		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
 
-		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient];
+		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
