@@ -48,7 +48,19 @@ if(true) exitWith {};
 
 scriptName _thisObject;
 
+private _name = T_GETV("name");
+
 while {true} do {
+
+	// Log queue length, post a delay test message
+	#ifdef THREAD_FUNC_DEBUG
+	if(_nextTickTime != 0 and _nextTickTime < time) then {
+		_nextTickTime = 0;
+		private _str = format ["{ ""name"": ""%1"", ""queue_len"": %2 }", _name, count _msgQueue];
+		OOP_DEBUG_MSG(_str, []);
+		_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, time];
+	};
+	#endif
 
 	//Do we have anything in the queue?
 	if ( (count _msgQueue) > 0 ) then {
@@ -61,23 +73,19 @@ while {true} do {
 				// Delete the message
 				_msgQueue deleteAt 0;
 
-				#ifdef THREAD_FUNC_DEBUG
-				if(_nextTickTime != 0 and _nextTickTime < time) then {
-					_nextTickTime = 0;
-					_msgQueue pushBack ["__debugtick", "", CLIENT_OWNER, MESSAGE_ID_NOT_REQUESTED, 0, time];
-				};
-				#endif
 			};
+
+			// Check if it's the test message to measure queue delay
 			#ifdef THREAD_FUNC_DEBUG
 			if(_msg#0 == "__debugtick") then {
 				private _t = time - _msg#5;
-				T_PRVAR(name);
-				private _str = format ["{ ""name"": ""%1"", ""queue_len"": %2 , ""delay"": %3 }", _name, count _msgQueue, _t];
+				private _str = format ["{ ""name"": ""%1"", ""delay"": %2 }", _name, _t];
 				OOP_DEBUG_MSG(_str, []);
 				// OOP_DEBUG_MSG("[message queue len %1]", [count _msgQueue]);
 				_nextTickTime = time + 5;
 			} else {
 			#endif
+
 			pr _msgID = _msg select MESSAGE_ID_SOURCE_ID;
 			// OOP_DEBUG_1("[MessageLoop] Info: message in queue: %1", _msg);
 			//Get destination object
@@ -131,7 +139,7 @@ while {true} do {
 
 			// Do we need to process this category?
 			// We need to process it if its current time fraction is less than the required fraction
-			if (_fractionsCurrent#_i < _fractionsRequired#_i && _countObjects > 0) then {
+			if (_fractionsCurrent#_i <= _fractionsRequired#_i && _countObjects > 0) then {
 				// Find first object in the array with objects that should be processed
 				pr _objectID = _cat#PROCESS_CATEGORY_ID_NEXT_OBJECT_ID;
 				pr _nObjectsChecked = 0;

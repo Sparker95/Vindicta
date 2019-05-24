@@ -37,7 +37,7 @@ switch (T_GETV("spawned")) do {
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawn;
-			pr _interval = (_dstToThreshold / _speedMax) max 1;
+			pr _interval = (_dstToThreshold / _speedMax) max 3;
 			pr _interval = 2; // todo override this some day later
 			
 			CALLM1(_timer, "setInterval", _interval);

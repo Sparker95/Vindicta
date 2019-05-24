@@ -81,17 +81,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Create a timer to call process method
-		/*
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
 		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
-		*/
 
+		/*
 		T_SETV("timer", "");
 		CALLM(MESSAGE_LOOP, "addProcessCategoryObject", ["Garrison" ARG _thisObject]);
+		*/
 
 		GETSV("Garrison", "all") pushBack _thisObject;
 
@@ -206,7 +206,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Delete ourselves from the process category
-		CALLM1(MESSAGE_LOOP, "deleteProcessCategoryObject", _thisObject);
+		//CALLM1(MESSAGE_LOOP, "deleteProcessCategoryObject", _thisObject);
 
 		// Delete the AI object
 		// We delete it instantly because Garrison AI is in the same thread

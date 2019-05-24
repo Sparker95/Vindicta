@@ -106,8 +106,8 @@ if (_action != "") then {
 
 // Change process category
 pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
-CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
-CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonSpawned", _thisObject);
+CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
+CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonSpawned", _AI);
 
 // Call AI "process" method to accelerate decision taking
 CALLM1(_AI, "process", true); // Pass the _accelerate=true flag to update sensors sooner

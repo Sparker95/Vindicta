@@ -79,5 +79,5 @@ if (_action != "") then {
 
 // Change process category
 pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
-CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
-CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _thisObject);
+CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
+CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _AI);

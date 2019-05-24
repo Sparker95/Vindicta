@@ -29,9 +29,8 @@ CLASS("GameModeBase", "")
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
 			gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 3 ARG 3	]); // Tag, priority, min interval
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 5 ARG 10]);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["Garrison"				ARG 1 ARG 3	]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3	]); // Tag, priority, min interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10]);
 
 
 			// Global debug printer for tests
@@ -40,6 +39,7 @@ CLASS("GameModeBase", "")
 
 			// Message loop for group AI
 			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
+			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow"		ARG 1 ARG 2	]); // Tag, priority, min interval
 
 			// Message loop for Stimulus Manager
 			gMessageLoopStimulusManager = NEW("MessageLoop", ["Stimulus Manager thread"]);
@@ -293,7 +293,7 @@ CLASS("GameModeBase", "")
 		} forEach gSpecialGarrisons;
 
 		// Message loops for commander AI
-		gMessageLoopCommanderInd = NEW("MessageLoop", []);
+		gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
 
 		// Commander AIs
 		gCommanders = [];
@@ -307,8 +307,8 @@ CLASS("GameModeBase", "")
 
 		if(gFlagAllCommanders) then { // but some are more equal
 
-			gMessageLoopCommanderWest = NEW("MessageLoop", []);
-			gMessageLoopCommanderEast = NEW("MessageLoop", []);
+			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
+			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
 
 			// West
 			gCommanderWest = NEW("Commander", []);
