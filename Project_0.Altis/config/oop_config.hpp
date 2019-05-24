@@ -7,8 +7,8 @@
 //#undef OOP_ERROR
 
 // Undefine all asserts
-// #undef OOP_ASSERT
-// #undef OOP_ASSERT_ACCESS
+#undef OOP_ASSERT
+#undef OOP_ASSERT_ACCESS
 
 // Undefine Arma Debug Engine
 //#undef ADE
@@ -32,3 +32,4 @@
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
 #define OOP_ASSERT
+

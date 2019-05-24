@@ -15,3 +15,4 @@ call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\Actions\ReinforceCm
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\Actions\TakeLocationCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\Actions\AttackCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\CmdrAI\CmdrAction\Actions\QRFCmdrAction.sqf";
+

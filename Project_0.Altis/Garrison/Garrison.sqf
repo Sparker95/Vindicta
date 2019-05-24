@@ -285,6 +285,33 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
+	Method: (static) getAllNotEmpty
+	Returns all active non empty garrisons
+	
+	Parameters: _sidesInclude, _sidesExclude
+	
+	_sidesInclude - optional, Sides of garrisons to include. If _sidesInclude is not provided, include all garrisons.
+	_sidesExclude - optional, Sides of garrisons to exclude. If _sidesExclude is not provided, no garrisons are excluded.
+
+	Returns: Array with <Garrison> objects
+	*/
+	STATIC_METHOD("getAllNotEmpty") {
+		params [P_THISCLASS, P_ARRAY("_sidesInclude"), P_ARRAY("_sidesExclude")];
+		
+		if (count _sidesInclude == 0 and count _sidesExclude == 0) then {
+			GETSV("Garrison", "all") select { 
+				GETV(_x, "active") and {!CALLM(_x, "isEmpty", [])} 
+			}
+		} else {
+			GETSV("Garrison", "all") select { 
+				GETV(_x, "active") and {!CALLM(_x, "isEmpty", [])} and 
+				{count _sidesInclude == 0 or {CALLM0(_x, "getSide") in _sidesInclude}} and 
+				{count _sidesExclude == 0 or {!(CALLM0(_x, "getSide") in _sidesExclude)}}
+			}
+		};
+	} ENDMETHOD;
+
+	/*
 	Method: getMessageLoop
 	See <MessageReceiver.getMessageLoop>
 
@@ -300,8 +327,53 @@ CLASS("Garrison", "MessageReceiverEx");
 	// ----------------------------------------------------------------------
 	METHOD("process") {
 		params [P_THISOBJECT];
+
 		// Check spawn state if active
-		if (T_GETV("active")) then { T_CALLM("updateSpawnState", []); };
+		if (T_GETV("active")) then { 
+			T_CALLM("updateSpawnState", []); 
+			// If we are empty except for vehicles then we must abandon them
+			if(T_CALLM("isOnlyEmptyVehicles", [])) then {
+				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
+				// Move the units to the abandoned vehicle garrison
+				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
+			};
+		};
+
+		// Make sure we spawn
+		// T_CALLM("spawn", []);
+		// private _thisPos = T_CALLM("getPos", []);
+		// // T_PRVAR(side);
+		// // Get nearest other garrison
+		// pr _nearGarrisons = CALL_STATIC_METHOD("Garrison", "getAllNotEmpty", [[] ARG []]) select {
+		// 	!CALLM(_x, "isOnlyEmptyVehicles", [])
+		// } apply {
+		// 	[CALLM(_x, "getPos", []) distance _thisPos, _x]
+		// };
+		// if(count _nearGarrisons > 0) then {
+		// 	_nearGarrisons sort ASCENDING;
+		// 	private _otherGarr = _nearGarrisons#0#1;
+		// 	OOP_INFO_MSG("Found %1 to merge our empty vehicles to", [_otherGarr]);
+		// 	CALLM(_otherGarr, "addGarrison", [_thisObject]);
+		// };
+
+		// // Find any garrisons without intantry left and merge any empty vehicles to the nearest
+		// // other garrison.
+		// {
+		// 	// Remove from model first
+		// 	T_PRVAR(worldModel);
+		// 	private _garrModel = CALLM(_worldModel, "findGarrisonByActual", [_x]);
+		// 	private _pos = GETV(_garrModel, "pos");
+		// 	private _nearGarrs = CALLM(_worldModel, "getNearestGarrisons", [_pos ARG 1000]);
+		// 	if(count _nearGarrs > 0) then {
+		// 		(_nearGarrs#0) params ["_dist", "_nearGarr"];
+		// 		OOP_INFO_MSG("%1 only has vehicles left, merging to %2", [_nearGarr]);
+		// 		CALLM(_garrModel, "mergeActual", [_nearGarr]);
+		// 	};
+		// 	// Unregister from ourselves straight away
+		// 	// T_CALLM("_unregisterGarrison", [_x]);
+		// 	// CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
+		// // } forEach (T_GETV("garrisons") select { CALLM(_x, "isOnlyEmptyVehicles", []) });
+		// };
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -671,6 +743,28 @@ CLASS("Garrison", "MessageReceiverEx");
 			true
 		};
 		private _return = (count T_GETV("units")) == 0;
+		__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+	//				I S   O N L Y   E M P T Y   V E H I C L E S
+	/*
+	Method: isOnlyEmptyVehicles
+	Returns true if garrison contains only empty vehicles
+
+	Returns: Bool
+	*/
+	METHOD("isOnlyEmptyVehicles") {
+		params [P_THISOBJECT];
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			false
+		};
+		private _unitList = T_GETV("units");
+		private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
 		__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
@@ -1134,10 +1228,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	Method: addGarrison
 	Moves all units and groups from another garrison to this one.
 	
-	Parameters: _garrison, _delete
+	Parameters: _garrison
 	
 	_garrison - <Garrison> object
-	_delete - Bool, optional, deletes the _garrison, default: false. Deletion doesn't happen immediately.
 	
 	Returns: nil
 	*/

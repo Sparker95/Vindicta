@@ -34,6 +34,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 
 	VARIABLE("lastPlanningTime");
+	VARIABLE("cmdrStrategy");
 	VARIABLE("cmdrAI");
 	VARIABLE("worldModel");
 
@@ -116,6 +117,7 @@ CLASS("AICommander", "AI")
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
+		T_SETV("cmdrStrategy", gCmdrStrategyDefault);
 		T_SETV("lastPlanningTime", TIME_NOW);
 		private _cmdrAI = NEW("CmdrAI", [_side]);
 		T_SETV("cmdrAI", _cmdrAI);
@@ -234,7 +236,7 @@ CLASS("AICommander", "AI")
 		
 		T_GETV("msgLoop");
 	} ENDMETHOD;
-	
+
 	/*
 	Method: (static)getCommanderAIOfSide
 	Returns AICommander object that commands given side
@@ -246,23 +248,42 @@ CLASS("AICommander", "AI")
 	Returns: <AICommander>
 	*/
 	STATIC_METHOD("getCommanderAIOfSide") {
-		params [P_THISOBJECT, ["_side", WEST, [WEST]]];
+		params [P_THISCLASS, P_SIDE("_side")];
+		private _cmdr = NULL_OBJECT;
 		switch (_side) do {
 			case WEST: {
-				if(isNil "gAICommanderWest") then { NULL_OBJECT } else { gAICommanderWest }
+				if(!isNil "gAICommanderWest") then { _cmdr = gAICommanderWest };
 			};
 			case EAST: {
-				if(isNil "gAICommanderEast") then { NULL_OBJECT } else { gAICommanderEast }
+				if(!isNil "gAICommanderEast") then { _cmdr = gAICommanderEast };
 			};
 			case INDEPENDENT: {
-				if(isNil "gAICommanderInd") then { NULL_OBJECT } else { gAICommanderInd }
-			};
-			default {
-				NULL_OBJECT
+				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
 			};
 		};
+		_cmdr
 	} ENDMETHOD;
+
+	/*
+	Method: (static)getCmdrStrategy
+	Returns Strategy the cmdr of the specified side is using.
 	
+	Parameters: _side
+	
+	_side - side
+	
+	Returns: <CmdrStrategy>
+	*/
+	STATIC_METHOD("getCmdrStrategy") {
+		params [P_THISCLASS, P_SIDE("_side")];
+		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_cmdr)) then {
+			GETV(_cmdr, "cmdrStrategy")
+		} else {
+			gCmdrStrategyDefault
+		}
+	} ENDMETHOD;
+
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it
@@ -594,7 +615,7 @@ CLASS("AICommander", "AI")
 	Parameters:
 	_pos - <position>
 	
-	Returns: Array - threat efficiency at _pos
+	Returns: Number - threat at _pos
 	*/
 	METHOD("getThreat") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos")];

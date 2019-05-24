@@ -5,6 +5,7 @@ CLASS("StatusQuoGameMode", "GameModeBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("name", "status-quo");
+		T_SETV("spawningEnabled", true);
 
 	} ENDMETHOD;
 

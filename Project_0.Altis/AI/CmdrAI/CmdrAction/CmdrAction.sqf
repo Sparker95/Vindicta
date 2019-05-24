@@ -5,16 +5,6 @@
 
 #include "..\common.hpp"
 
-// DOING:
-// How to deal with this case: action requires resources, but they aren't available yet.
-// 		Required resources should come from original world state? That would allow duplicate use...
-// 		Actually the problem is temporality. Resouces in the future doesn't = resource now.
-//		e.g. Deciding if you can reinforce FROM somewhere requires the resource now
-//			 Deciding if you should reinforce TO somewhere should take into account future resources
-//			 Applying reinforce action should take from src resources now, and apply to tgt in the future.
-//		So sim should have now and future?
-// 
-// Reinforce is taking too much resource.
 CLASS("CmdrAction", "RefCounted")
 
 	// The priority of this action in relation to other actions of the same or different type.
@@ -73,6 +63,14 @@ CLASS("CmdrAction", "RefCounted")
 		};
 	} ENDMETHOD;
 
+	/* protected */ METHOD("setScore") {
+		params [P_THISOBJECT, P_ARRAY("_scoreVec")];
+		T_SETV("scorePriority", GET_SCORE_PRIORITY(_scoreVec));
+		T_SETV("scoreResource", GET_SCORE_RESOURCE(_scoreVec));
+		T_SETV("scoreStrategy", GET_SCORE_STRATEGY(_scoreVec));
+		T_SETV("scoreCompleteness", GET_SCORE_COMPLETENESS(_scoreVec));
+	} ENDMETHOD;
+
 	/* protected virtual */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
@@ -113,7 +111,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(scoreResource);
 		T_PRVAR(scoreStrategy);
 		T_PRVAR(scoreCompleteness);
-		// TODO: what is the correct way to combine these scores?
+		// TODO: what is the correct to combine these scores?
 		// Should we try to get them all from 0 to 1?
 		// Maybe we want R*(iP + jS + kC)?
 		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness

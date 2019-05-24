@@ -87,7 +87,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			case WORLD_TYPE_REAL: {
 				if(!_clearing) then {
 					private _moveRadius = T_GET_AST_VAR("moveRadiusVar");
-					private _clearRadius = 50 min T_CALLM("getTargetRadius", [_world ARG _target]);
+					private _clearRadius = 50 max T_CALLM("getTargetRadius", [_world ARG _target]);
 					// Start clear order
 					OOP_INFO_MSG("[w %1] %2 clearing area at %3: started", [_world ARG _garr ARG _targetPos]);
 					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG (sqrt _clearRadius)*30]);

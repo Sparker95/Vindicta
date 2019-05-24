@@ -1,7 +1,7 @@
-#define OOP_DEBUG
-#define OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
+// #define OOP_DEBUG
+// #define OOP_INFO
+// #define OOP_WARNING
+// #define OOP_ERROR
 // #define OOP_PROFILE
 
 #include "common.hpp"
@@ -18,61 +18,6 @@ CLASS("CmdrAI", "")
 		params [P_THISOBJECT, P_SIDE("_side")];
 		T_SETV("side", _side);
 		T_SETV("activeActions", []);
-	} ENDMETHOD;
-
-	METHOD("generateTakeOutpostActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
-		T_PRVAR(activeActions);
-		T_PRVAR(side);
-
-		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
-			private _potentialSrcGarr = _x;
-			// Must be not already busy 
-			!CALLM(_potentialSrcGarr, "isBusy", []) and 
-			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
-			// Must not be source of another inprogress take location mission
-			{ 
-				T_PRVAR(activeActions);
-				_activeActions findIf {
-					GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
-					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
-				} == NOT_FOUND
-			} and
-			// Must have minimum efficiency available
-			{
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
-				// Must have at least a minimum available eff
-				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
-			}
-		};
-
-		// Take tgt locations from future, so we take into account all in progress actions.
-		private _tgtLocations = CALLM(_worldFuture, "getLocations", [["base" ARG "outpost" ARG "roadblock"]]) select { 
-			// Must not have any of our garrisons already present (or this would be reinforcement action)
-			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
-		};
-
-		private _actions = [];
-		{
-			private _srcId = GETV(_x, "id");
-			private _srcPos = GETV(_x, "pos");
-			{
-				private _tgtId = GETV(_x, "id");
-				private _tgtPos = GETV(_x, "pos");
-				private _tgtType = GETV(_x, "type");
-				private _dist = _srcPos distance _tgtPos;
-				if((_tgtType == "roadblock" and _dist < 3000) or (_tgtType != "roadblock" and _dist < 10000)) then {
-					private _params = [_srcId, _tgtId];
-					_actions pushBack (NEW("TakeLocationCmdrAction", _params));
-				};
-			} forEach _tgtLocations;
-		} forEach _srcGarrisons;
-
-		OOP_INFO_MSG("Considering %1 TakeOutpost actions from %2 garrisons to %3 locations", [count _actions ARG count _srcGarrisons ARG count _tgtLocations]);
-
-		_actions
 	} ENDMETHOD;
 
 	METHOD("generateAttackActions") {
@@ -179,6 +124,61 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
+	METHOD("generateTakeOutpostActions") {
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		T_PRVAR(activeActions);
+		T_PRVAR(side);
+
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
+			private _potentialSrcGarr = _x;
+			// Must be not already busy 
+			!CALLM(_potentialSrcGarr, "isBusy", []) and 
+			// Must be at a location
+			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			// Must not be source of another inprogress take location mission
+			{ 
+				T_PRVAR(activeActions);
+				_activeActions findIf {
+					GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
+					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
+				} == NOT_FOUND
+			} and
+			// Must have minimum efficiency available
+			{
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
+				// Must have at least a minimum available eff
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			}
+		};
+
+		// Take tgt locations from future, so we take into account all in progress actions.
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", [["base" ARG "outpost" ARG "roadblock"]]) select { 
+			// Must not have any of our garrisons already present (or this would be reinforcement action)
+			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
+		};
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcPos = GETV(_x, "pos");
+			{
+				private _tgtId = GETV(_x, "id");
+				private _tgtPos = GETV(_x, "pos");
+				private _tgtType = GETV(_x, "type");
+				private _dist = _srcPos distance _tgtPos;
+				if((_tgtType == "roadblock" and _dist < 3000) or (_tgtType != "roadblock" and _dist < 10000)) then {
+					private _params = [_srcId, _tgtId];
+					_actions pushBack (NEW("TakeLocationCmdrAction", _params));
+				};
+			} forEach _tgtLocations;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 TakeOutpost actions from %2 garrisons to %3 locations", [count _actions ARG count _srcGarrisons ARG count _tgtLocations]);
+
+		_actions
+	} ENDMETHOD;
+
 	METHOD("update") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -213,6 +213,81 @@ CLASS("CmdrAI", "")
 		}
 	} ENDMETHOD;
 	
+	METHOD("selectAction") {
+		params [P_THISOBJECT, P_STRING("_actionFunc"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
+
+
+		CALLM(_simWorldNow, "resetScoringCache", []);
+		CALLM(_simWorldFuture, "resetScoringCache", []);
+
+		private _newActions = T_CALLM(_actionFunc, [_simWorldNow ARG _simWorldFuture]);
+
+		if(count _newActions == 0) exitWith { false };
+
+		OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 new actions", [_thisObject ARG _world ARG count _newActions]);
+
+		PROFILE_SCOPE_START(UpdateScores);
+
+		// Update scores of potential actions against the simworld state
+		{
+			CALLM(_x, "updateScore", [_simWorldNow ARG _simWorldFuture]);
+		} forEach _newActions;
+
+
+		PROFILE_SCOPE_END(UpdateScores, 0.1);
+
+		// Sort the actions by their scores
+		private _scoresAndActions = _newActions apply { 
+			private _finalScore = CALLM(_x, "getFinalScore", []);
+			//private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
+			[_finalScore, _x] 
+		};
+		_scoresAndActions sort DESCENDING;
+
+		// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
+
+		// Get the best scoring action
+		(_scoresAndActions select 0) params ["_bestActionScore", "_bestAction"];
+
+		// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
+		
+		// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
+		// TODO: Should we maybe be normalizing scores between 0 and 1?
+		private _foundAction = _bestActionScore > ACTION_SCORE_CUTOFF;
+		if(_foundAction) then {
+			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
+
+			// Add the best action to our active actions list
+			REF(_bestAction);
+
+			T_PRVAR(activeActions);
+			_activeActions pushBack _bestAction;
+			// Remove it from the possible actions list
+			_newActions deleteAt (_newActions find _bestAction);
+
+			PROFILE_SCOPE_START(ApplyNewActionToSim);
+
+			// Apply the new action effects to simworld, so next loop scores update appropriately
+			// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
+			// models in the sim so that other reinforce actions will take it into account in their scoring.
+			// Probably other reinforce actions with the same source or target would have lower scores now).
+			CALLM(_bestAction, "applyToSim", [_simWorldNow]);
+			CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
+
+			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
+		} else {
+			// OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
+			// false
+		};
+
+		// Delete any remaining discarded actions
+		{
+			DELETE(_x);
+		} forEach _newActions;
+		
+		_foundAction
+	} ENDMETHOD;
+
 	METHOD("plan") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -239,86 +314,97 @@ CLASS("CmdrAI", "")
 
 		OOP_DEBUG_MSG("[c %1 w %2] Generating new actions", [_thisObject ARG _world]);
 
-		PROFILE_SCOPE_START(GenerateActions);
+		//PROFILE_SCOPE_START(GenerateActions);
 		// Generate possible new actions based on the simworld
 		// (i.e. taking into account expected outcomes of currently active actions)
-		private _newActions = 
-			  T_CALLM("generateTakeOutpostActions", [_simWorldNow ARG _simWorldFuture])
-			+ T_CALLM("generateAttackActions", [_simWorldNow ARG _simWorldFuture])
-			+ T_CALLM("generateReinforceActions", [_simWorldNow ARG _simWorldFuture]) 
-			;
-		PROFILE_SCOPE_END(GenerateActions, 0.1);
 
-		OOP_DEBUG_MSG("[c %1 w %2] Generated %3 new actions, updating plan", [_thisObject ARG _world ARG count _newActions]);
+		private _generators = [
+			"generateAttackActions",
+			"generateReinforceActions",
+			"generateTakeOutpostActions"
+		];
 
-		PROFILE_SCOPE_START(PlanActions);
-
-		private _newActionsCount = 0;
-
-		// Plan new actions
-		while { count _newActions > 0 and _newActionsCount < 1 } do {
-			OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject ARG _world ARG count _newActions]);
-
-			CALLM(_simWorldNow, "resetScoringCache", []);
-			CALLM(_simWorldFuture, "resetScoringCache", []);
-
-			PROFILE_SCOPE_START(UpdateScores);
-			// Update scores of potential actions against the simworld state
-			{
-				CALLM(_x, "updateScore", [_simWorldNow ARG _simWorldFuture]);
-			} forEach _newActions;
-			PROFILE_SCOPE_END(UpdateScores, 0.1);
-
-			// Sort the actions by their scores
-			private _scoresAndActions = _newActions apply { 
-				private _finalScore = CALLM(_x, "getFinalScore", []);
-				private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
-				[_priority, _finalScore, _x] 
-			};
-			_scoresAndActions sort DESCENDING;
-
-			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
-
-			// Get the best scoring action
-			(_scoresAndActions select 0) params ["_priority", "_bestActionScore", "_bestAction"];
-
-			// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
-
-			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
-			// TODO: Should we maybe be normalizing scores between 0 and 1?
-			if(_bestActionScore <= ACTION_SCORE_CUTOFF) exitWith {
-				OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
-			};
-
-			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
-
-			// Add the best action to our active actions list
-			REF(_bestAction);
-			_activeActions pushBack _bestAction;
-			// Remove it from the possible actions list
-			_newActions deleteAt (_newActions find _bestAction);
-
-			PROFILE_SCOPE_START(ApplyNewActionToSim);
-
-			// Apply the new action effects to simworld, so next loop scores update appropriately
-			// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
-			// models in the sim so that other reinforce actions will take it into account in their scoring.
-			// Probably other reinforce actions with the same source or target would have lower scores now).
-			CALLM(_bestAction, "applyToSim", [_simWorldNow]);
-			CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
-
-			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
-
-			_newActionsCount = _newActionsCount + 1;
-		};
-		PROFILE_SCOPE_END(PlanActions, 0.1);
-
-		OOP_DEBUG_MSG("[c %1 w %2] Done updating plan, added %3 new actions, cleaning up %4 unused new actions", [_thisObject ARG _world ARG _newActionsCount ARG count _newActions]);
-
-		// Delete any remaining discarded actions
 		{
-			DELETE(_x);
-		} forEach _newActions;
+			if(T_CALLM("selectAction", [_x ARG _world ARG _simWorldNow ARG _simWorldFuture])) exitWith {};
+		} forEach _generators;
+
+		// private _newActions = 
+		// 	  T_CALLM("generateTakeOutpostActions", [_simWorldNow ARG _simWorldFuture])
+		// 	+ T_CALLM("generateAttackActions", [_simWorldNow ARG _simWorldFuture])
+		// 	+ T_CALLM("generateReinforceActions", [_simWorldNow ARG _simWorldFuture]) 
+		// 	;
+		//PROFILE_SCOPE_END(GenerateActions, 0.1);
+
+		// OOP_DEBUG_MSG("[c %1 w %2] Generated %3 new actions, updating plan", [_thisObject ARG _world ARG count _newActions]);
+
+		// PROFILE_SCOPE_START(PlanActions);
+
+		// private _newActionsCount = 0;
+
+		// // Plan new actions
+		// while { count _newActions > 0 and _newActionsCount < 1 } do {
+		// 	OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject ARG _world ARG count _newActions]);
+
+		// 	CALLM(_simWorldNow, "resetScoringCache", []);
+		// 	CALLM(_simWorldFuture, "resetScoringCache", []);
+
+		// 	PROFILE_SCOPE_START(UpdateScores);
+		// 	// Update scores of potential actions against the simworld state
+		// 	{
+		// 		CALLM(_x, "updateScore", [_simWorldNow ARG _simWorldFuture]);
+		// 	} forEach _newActions;
+		// 	PROFILE_SCOPE_END(UpdateScores, 0.1);
+
+		// 	// Sort the actions by their scores
+		// 	private _scoresAndActions = _newActions apply { 
+		// 		private _finalScore = CALLM(_x, "getFinalScore", []);
+		// 		private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
+		// 		[_priority, _finalScore, _x] 
+		// 	};
+		// 	_scoresAndActions sort DESCENDING;
+
+		// 	// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
+
+		// 	// Get the best scoring action
+		// 	(_scoresAndActions select 0) params ["_priority", "_bestActionScore", "_bestAction"];
+
+		// 	// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
+
+		// 	// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
+		// 	// TODO: Should we maybe be normalizing scores between 0 and 1?
+		// 	if(_bestActionScore <= ACTION_SCORE_CUTOFF) exitWith {
+		// 		OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
+		// 	};
+
+		// 	OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
+
+		// 	// Add the best action to our active actions list
+		// 	REF(_bestAction);
+		// 	_activeActions pushBack _bestAction;
+		// 	// Remove it from the possible actions list
+		// 	_newActions deleteAt (_newActions find _bestAction);
+
+		// 	PROFILE_SCOPE_START(ApplyNewActionToSim);
+
+		// 	// Apply the new action effects to simworld, so next loop scores update appropriately
+		// 	// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
+		// 	// models in the sim so that other reinforce actions will take it into account in their scoring.
+		// 	// Probably other reinforce actions with the same source or target would have lower scores now).
+		// 	CALLM(_bestAction, "applyToSim", [_simWorldNow]);
+		// 	CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
+
+		// 	PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
+
+		// 	_newActionsCount = _newActionsCount + 1;
+		// };
+		// PROFILE_SCOPE_END(PlanActions, 0.1);
+
+		//OOP_DEBUG_MSG("[c %1 w %2] Done updating plan, added %3 new actions, cleaning up %4 unused new actions", [_thisObject ARG _world ARG _newActionsCount ARG count _newActions]);
+
+		// // Delete any remaining discarded actions
+		// {
+		// 	DELETE(_x);
+		// } forEach _newActions;
 
 		DELETE(_simWorldNow);
 		DELETE(_simWorldFuture);
