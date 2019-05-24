@@ -34,10 +34,10 @@ private _execTimeFilteredArray = [];
 #endif
 
 // Will log every message
-#define PROFILE_MESSAGE_JSON
+//#define PROFILE_MESSAGE_JSON
 
 #ifdef RELEASE_BUILD
-#undef OUTPUT_MESSAGE_JSON
+#undef PROFILE_MESSAGE_JSON
 #endif
 
 params [ P_THISOBJECT ];
