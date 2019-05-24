@@ -296,7 +296,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
 			_callbackArgs params ["_cmdr"];
 			private _threat = CALLM(_cmdr, "getThreat", [getPos _next]);
-			_base_cost + EFF_SUM(_threat) * 20
+			_base_cost + _threat * 20
 		};
 
 		private _args = [CALLM0(_gar, "getPos"), T_GETV("pos"), -1, _threatCostFn, "", [_cmdr], true, true];

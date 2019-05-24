@@ -169,7 +169,7 @@ CLASS("Grid", "");
 	} ENDMETHOD;
 
 	METHOD("applyRect") {
-		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_CODE("_fn")];
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_CODE("_fnApplyRect")];
 
 		_pos params ["_x", "_y"];
 		_size params ["_w", "_h"];
@@ -189,63 +189,54 @@ CLASS("Grid", "");
 		for "_i" from _xID to _x2ID do {
 			private _row = _gridArray#_i;
 			for "_j" from _yID to _y2ID do {
-				private _val = _row#_j;
-				private _newVal = [[_i, _j], _val] call _fn;
-				_row set [_j, _newVal];
+				[_i, _j, _row] call _fnApplyRect;
 			};
 		};
 	} ENDMETHOD;
 
 	METHOD("applyCircle") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius"), P_CODE("_fn")];
-
-		_pos params ["_x", "_y"];
-		_size params ["_w", "_h"];
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius"), P_CODE("_fnApplyCircle")];
 
 		T_PRVAR(gridArray);
 		T_PRVAR(cellSize);
 
 		// Wrap the default fn with some special behaviour for circles: calculate distance to center and
 		// only call into _fn if we are inside the circle. Pass dist so it can be used for falloff or whatever.
-		private _circleFn = {
-			params ["_ij", "_origVal"];
-			private _pos = _ij apply {(_x + 0.5) * _cellSize};
+		private _circleWrapperFn = {
+			params ["_i", "_j", "_row"];
+			private _pos = [(_i + 0.5) * _cellSize, (_j + 0.5) * _cellSize, 0];
 			private _dist = _pos distance _center;
 			// Might want to do some kind of coverage here?
 			if(_dist <= _radius + _cellSize * 0.5) then {
-				[_ij, _dist, _origVal] call _fn
-			} else {
-				_origVal
-			}
+				[_i, _j, _dist, _row] call _fnApplyCircle;
+			};
 		};
 
 		private _pos = [_center#0 - _radius, _center#1 - _radius];
 		private _size = [_radius * 2, _radius * 2];
-		T_CALLM("applyRect", [_pos]+[_size]+[_circleFn]);
+		T_CALLM("applyRect", [_pos ARG _size ARG _circleWrapperFn]);
 	} ENDMETHOD;
 
 	// Set value to max of the current and new values
 	METHOD("maxRect") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), ["_value", 0, [0, []]]];
-
 		private _fnMax =
 			if(_value isEqualType 0) then {
 				{
-					params ["_ij", "_origVal"];
-					_origVal max _value
+					params ["_i", "_j", "_row"];
+					_row set [_j, _row#_j max _value];
 				}
 			} else {
 				{
-					params ["_ij", "_origVal"];
-					_origVal = +_origVal;
+					params ["_i", "_j", "_row"];
+					private _origVal = _row#_j;
 					{
 						_origVal set [_forEachIndex, (_origVal select _forEachIndex) max _x];
 					} forEach _value;
-					_origVal
 				}
 			};
 		
-		T_CALLM("applyRect", [_pos]+[_size]+[_fnMax]);
+		T_CALLM("applyRect", [_pos ARG _size ARG _fnMax]);
 	} ENDMETHOD;
 
 	// Set value to max of the current and new values in a circle
@@ -254,20 +245,19 @@ CLASS("Grid", "");
 		private _fnMax =
 			if(_value isEqualType 0) then {
 				{
-					params ["_ij", "_dist", "_origVal"];
-					_origVal max _value
+					params ["_i", "_j", "_dist", "_row"];
+					_row set [_j, _row#_j max _value];
 				}
 			} else {
 				{
-					params ["_ij", "_dist", "_origVal"];
-					_origVal = +_origVal;
+					params ["_i", "_j", "_dist", "_row"];
+					private _origVal = _row#_j;
 					{
 						_origVal set [_forEachIndex, (_origVal select _forEachIndex) max _x];
 					} forEach _value;
-					_origVal
 				}
 			};
-		T_CALLM("applyCircle", [_center]+[_radius]+[_fnMax]);
+		T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
 	} ENDMETHOD;
 	// - - - - - Getting values - - - - -
 
@@ -281,7 +271,6 @@ CLASS("Grid", "");
 	
 	Returns: Number, value of the element.
 	*/
-
 	METHOD("getValue") {
 		params ["_thisObject", ["_pos", [], [[]]]];
 
@@ -296,6 +285,43 @@ CLASS("Grid", "");
 		pr _v = (_array select _xID) select _yID;
 
 		_v
+	} ENDMETHOD;
+
+	/*
+	Method: getMaxValueCircle
+	Gets max value found within the circle
+	
+	Parameters: _center, _radius
+	
+	_center - array, position: [x, y] or [x, y, z], but only x and y matter.
+	_radius - number, radius of the circle
+	
+	Returns: Number or Array, max value found within the circle
+	*/
+	METHOD("getMaxValueCircle") {
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
+
+		T_PRVAR(defaultValue);
+		if(_defaultValue isEqualType 0) then {
+			private _maxVal = -1000000;
+			private _fnMax = { 
+				params ["_i", "_j", "_dist", "_row"];
+				_maxVal = _row#_j max _maxVal;
+			};
+			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
+			_maxVal
+		} else {
+			private _maxVal = _defaultValue apply { -1000000 };
+			private _fnMax = {
+				params ["_i", "_j", "_dist", "_row"];
+				private _origVal = _row#_j;
+				{
+					_maxVal set [_forEachIndex, (_origVal select _forEachIndex) max _x];
+				} forEach _maxVal;
+			};
+			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
+			_maxVal
+		};
 	} ENDMETHOD;
 
 	// - - - - - Image processing - - - -
@@ -468,7 +494,7 @@ CLASS("Grid", "");
 		private _getValFn =
 			if(_defaultValue isEqualType 0) then {
 				{
-					_this * _factor
+					_this
 				}
 			} else {
 				{
@@ -699,3 +725,47 @@ CLASS("Grid", "");
 	} ENDMETHOD;
 	
 ENDCLASS;
+
+
+#ifdef _SQF_VM
+
+["Grid.new", {
+	private _grid = NEW("Grid", [500, 33]);
+	private _class = OBJECT_PARENT_CLASS_STR(_grid);
+	["Object exists", !(isNil "_class")] call test_Assert;
+	["cellSize correct", GETV(_grid, "cellSize") == 500] call test_Assert;
+	["gridSize correct", GETV(_grid, "gridSize") == ceil(WORLD_SIZE / 500)] call test_Assert;
+	["defaultValue correct", GETV(_grid, "defaultValue") == 33] call test_Assert;
+}] call test_AddTest;
+
+["Grid.setValueAll", {
+	private _grid = NEW("Grid", [500, 33]);
+	CALLM(_grid, "setValueAll", [1]);
+	private _grid = CALLM(_grid, "getGridArray", []);
+	["Value correct", _grid#0#0 == 1] call test_Assert;
+}] call test_AddTest;
+
+["Grid.setValue", {
+	private _grid = NEW("Grid", [500, 33]);
+	CALLM(_grid, "setValue", [[0 ARG 0] ARG 1]);
+	private _grid = CALLM(_grid, "getGridArray", []);
+	["Value correct", _grid#0#0 == 1] call test_Assert;
+}] call test_AddTest;
+
+["Grid.getMaxValueCircle", {
+	private _grid = NEW("Grid", [500, 33]);
+	//CALLM(_grid, "setValue", [[0 ARG 0] ARG 1]);
+	//private _grid = CALLM(_grid, "getGridArray", []);
+	private _m = CALLM(_grid, "getMaxValueCircle", [[0 ARG 0 ARG 0] ARG 500]);
+	["Value correct", _m == 33] call test_Assert;
+}] call test_AddTest;
+
+["Grid.getMaxValueCircle(array)", {
+	private _grid = NEW("Grid", [500, [0,1,2,3]]);
+	//CALLM(_grid, "setValue", [[0 ARG 0] ARG 1]);
+	//private _grid = CALLM(_grid, "getGridArray", []);
+	private _m = CALLM(_grid, "getMaxValueCircle", [[0 ARG 0 ARG 0] ARG 500]);
+	["Value correct", _m isEqualTo [0,1,2,3]] call test_Assert;
+}] call test_AddTest;
+
+#endif

@@ -7,8 +7,8 @@
 //#undef OOP_ERROR
 
 // Undefine all asserts
-// #undef OOP_ASSERT
-// #undef OOP_ASSERT_ACCESS
+#undef OOP_ASSERT
+#undef OOP_ASSERT_ACCESS
 
 // Undefine Arma Debug Engine
 //#undef ADE
@@ -25,5 +25,7 @@
 
 //#define CMDR_AI_TESTING
 
-#define OOP_PROFILE
-#define OOP_PROFILE_MIN_T 0.003
+
+#undef OOP_PROFILE
+// #define OOP_PROFILE
+// #define OOP_PROFILE_MIN_T 0.003

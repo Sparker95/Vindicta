@@ -434,9 +434,6 @@
 
 #ifdef OOP_PROFILE
 	#define _OOP_FUNCTION_WRAPPERS
-	#define PROFILE_TAG STATIC_VARIABLE("profile__tag")
-	#define PROFILE_SCOPE_AS_VARIABLE(className, varToUse) SET_STATIC_VAR(className, "profile__tag", varToUse)
-	#define PROFILE_SCOPE_AS_OBJECT(className) SET_STATIC_VAR(className, "profile__tag", "")
 
 	#define PROFILE_SCOPE_START(scopeName) \
 		private _profileTStart##scopeName = diag_tickTime; \
@@ -447,17 +444,18 @@
 		if(_totalProfileT##scopeName > minT) then { \
 			private _str = format ["{ ""profile"": { ""scope"": ""%1"", ""time"": %2 }}", #scopeName, _totalProfileT##scopeName]; \
 			OOP_PROFILE_0(_str); \
-		}; \
+		};
 
 	#define OOP_FUNC_HEADER_PROFILE \
 		private _profileTStart = diag_tickTime; \
-		private _class = if(isNil "_thisClass") then { if(isNil "_thisObject") then { "(unknown)" } else { OBJECT_PARENT_CLASS_STR(_thisObject) } } else { _thisClass }; \
-		private _profileTag = if(_class != "(unknown)") then { GET_STATIC_VAR(_class, "profile__tag") } else { "" }; \
-		private _scopeKey = if(isNil "_profileTag" or isNil "_thisObject") then { \
-			_class \
-		} else { \
-			if(_profileTag == "" or isNil "_thisObject") then { _objOrClass } else { GETV(_thisObject, _profileTag) } \
-		}; \
+		private _class1 = OBJECT_PARENT_CLASS_STR(_thisObject); \
+		private _scopeKey = _class1; \
+		private _extraProfileFields = [];
+
+	#define OOP_FUNC_HEADER_PROFILE_STATIC \
+		private _profileTStart = diag_tickTime; \
+		private _class1 = _thisClass; \
+		private _scopeKey = _class1; \
 		private _extraProfileFields = [];
 
 	#define OOP_FUNC_FOOTER_PROFILE \
@@ -476,19 +474,17 @@
 				} forEach _extraProfileFields; \
 				_extraFieldsObj = ", ""extra"": { " + _extraFieldsObj + " }"; \
 			}; \
-			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4""%6 }}", _class, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj]; \
+			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4""%6 }}", _class1, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj]; \
 			OOP_PROFILE_0(_str); \
 		}
 	
 	#define PROFILE_ADD_EXTRA_FIELD(fieldName, fieldVal) _extraProfileFields pushBack [fieldName, fieldVal];
 #else
-	#define PROFILE_TAG
-	#define PROFILE_SCOPE_AS_VARIABLE(className, varName)
-	#define PROFILE_SCOPE_AS_OBJECT(className)
 	#define PROFILE_SCOPE_START(scopeName)
 	#define PROFILE_SCOPE_END(scopeName, minT)
 	#define PROFILE_ADD_EXTRA_FIELD(fieldName, fieldVal)
 	#define OOP_FUNC_HEADER_PROFILE
+	#define OOP_FUNC_HEADER_PROFILE_STATIC
 	#define OOP_FUNC_FOOTER_PROFILE
 #endif
 
@@ -534,6 +530,7 @@
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
+			private _thisObject = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
@@ -552,6 +549,7 @@
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
+			private _thisObject = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
@@ -568,9 +566,10 @@
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
+			private _thisClass = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
-			OOP_FUNC_HEADER_PROFILE; \
+			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
@@ -580,9 +579,10 @@
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
+			private _thisClass = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
-			OOP_FUNC_HEADER_PROFILE; \
+			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn}) select 0; \

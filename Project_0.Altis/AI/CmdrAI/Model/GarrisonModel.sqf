@@ -795,7 +795,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		OOP_INFO_MSG("Merging %1 to %2", [LABEL(_thisObject) ARG LABEL(_otherGarr)]);
 		private _otherActual = GETV(_otherGarr, "actual");
-		CALLM2(_otherActual, "postMethodAsync", "addGarrison", [_actual ARG true]);
+		CALLM2(_otherActual, "postMethodAsync", "addGarrison", [_actual]);
 		T_CALLM("killed", []);
 		OOP_INFO_MSG("Merged %1 to %2", [LABEL(_thisObject) ARG LABEL(_otherGarr)]);
 		//CALLM(_otherActual, "addGarrison", [_actual ARG true]);
