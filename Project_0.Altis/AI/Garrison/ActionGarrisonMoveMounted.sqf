@@ -351,7 +351,20 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 		} forEach _groups;
 
-		// todo what happens with ungrouped units?? Why are there even ungrouped units at this point???
+		// Spawn single units
+		pr _units = CALLM0(_gar, "getUnits");
+		pr _garPos = CALLM0(_gar, "getPos");
+		{
+			private _unit = _x;
+			if (CALL_METHOD(_x, "getGroup", []) == "") then {
+				pr _className = CALLM0(_unit, "getClassName");
+
+				pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _garPos);
+
+				// After a good place has been found, spawn it
+				CALL_METHOD(_unit, "spawn", _posAndDir);
+			};
+		} forEach _units;
 
 		true
 	} ENDMETHOD;
