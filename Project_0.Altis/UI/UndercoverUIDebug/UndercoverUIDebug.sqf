@@ -23,6 +23,7 @@ pr _var = _unit getVariable "suspicion";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T1) ctrlSetText format ["suspicion: %1", _var];
 
+
 _var = _unit getVariable "suspGear";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T2) ctrlSetText format ["suspGear: %1", _var];
@@ -31,29 +32,41 @@ _var = _unit getVariable "suspGearVeh";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T3) ctrlSetText format ["suspGearVeh: %1", _var];
 
+/*
 _var = _unit getVariable "bodyExposure";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T4) ctrlSetText format ["bodyExposure: %1", _var];
+*/
 
+/*
 _var = _unit getVariable "distance";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T5) ctrlSetText format ["Distance near. E.: %1", _var];
+*/
 
+/*
 _var = _unit getVariable "incrementSusp";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T6) ctrlSetText format ["Increment Susp: %1", _var];
+*/
 
+/*
 _var = _unit getVariable "timeSeen";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetText format ["Time seen: %1", _var];
+*/
 
+/*
 _var = _unit getUnitTrait "camouflageCoef";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T12) ctrlSetText format ["CamoCoef: %1", _var];
+*/
 
+/*
 _var = _unit getVariable "compromised";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T13) ctrlSetText format ["Compromised: %1", _var];
+*/
 
 _var = _unit getVariable "bWanted";
 if (isNil "_var") then { 
@@ -121,5 +134,3 @@ if (captive _unit) then {
 	((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_CAPT) ctrlSetTextColor [1, 1, 1, 1];
 	((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_CAPT) ctrlSetText "NOT CAPTIVE";
 };
-
-

@@ -11,7 +11,8 @@
 #define UNDERCOVER_GET_SUSPICION(unit) unit getVariable [UNDERCOVER_SUSPICION, 0]
 
 // suspicion values for various actions
-#define SUSPICIOUS 0.6								// suspiciousness gained while being "suspicious" 
+#define SUSPICIOUS 0.6								// suspiciousness at which unit becomes suspicious
+#define OVERT 1.0									// suspiciousness at which unit is overt
 #define SUSP_CROUCH 0.1								// suspiciousness gained crouching
 #define SUSP_PRONE 0.2								// suspiciousness gained prone
 #define SUSP_SPEEDMAX 0.35							// suspiciousness gained for movement speed

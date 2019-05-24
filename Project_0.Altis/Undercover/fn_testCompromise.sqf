@@ -9,6 +9,15 @@
 #include "..\modCompatBools.sqf"
 #include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
+/* 
+	Tests the "compromise" feature of the undercoverMonitor by sending a message to the monitor.
+
+	Parameter: _unit - the unit that is to be compromised
+
+	Example: [player] call fnc_testCompromise
+*/
+
+
 params ["_unit"];
 
 if (count crew vehicle _unit > 0) then {

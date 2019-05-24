@@ -7,21 +7,9 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
-#include "common.hpp"
 
 /*
-Unit pursues, then searches target. Target is then either let go or arrested, which completes the action.
-
-States of FSM: 
-0: Pursuit of target
-1: Captor caught up with target, cue search or arrest
-2: Action failed
-3: Action completed
-
-Action FAILS if target escapes or goes overt, or if unit pursuing is in danger.
-Action COMPLETES if target is caught and either searched or arrested.
-
-Author: Jeroen Notenbomer, Marvis
+Template of an Action class
 */
 
 #define pr private
@@ -30,44 +18,39 @@ CLASS("ActionUnitArrest", "Action")
 	
 	VARIABLE("target");
 	VARIABLE("objectHandle");
-	VARIABLE("startTime");
+	VARIABLE("stateTimer");
 	VARIABLE("stateMachine");
-	VARIABLE("spawnHandle");
 	VARIABLE("stateChanged");
-
+	VARIABLE("spawnHandle");
+	VARIABLE("screamTime");
 	// ------------ N E W ------------
+	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
-
-		OOP_INFO_0("ActionUnitArrest: Action new method called.");
-		OOP_INFO_1("ActionUnitArrest: Target: %1", _target);
-
-		T_SETV("target", _target);
+		SETV(_thisObject, "target", _target);
 		pr _a = GETV(_AI, "agent"); // cache the object handle
 		pr _captor = CALLM(_a, "getObjectHandle", []);
-		T_SETV("objectHandle", _captor);		
-		T_SETV("spawnHandle", scriptNull);
-		T_SETV("stateChanged", false);
-
-		T_SETV("stateMachine", 0);
+		SETV(_thisObject, "objectHandle", _captor);
+		
+		
+		//FSM
+		SETV(_thisObject, "stateChanged", true);
+		SETV(_thisObject, "stateMachine", 0);
+		
+		SETV(_thisObject,"spawnHandle",scriptNull);
+		SETV(_thisObject,"screamTime",0);
 
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];	
-
-		OOP_INFO_0("ActionUnitArrest: Activated.");	
+		params [["_to", "", [""]]];		
 		
-		pr _captor = T_GETV("objectHandle");		
+		pr _captor = GETV(_thisObject, "objectHandle");		
 		_captor lockWP false;
 		_captor setSpeedMode "NORMAL";
-
-		// time pursuit starts
-		T_SETV("startTime", time);
-
 		// Set state
-		T_SETV("state", ACTION_STATE_ACTIVE);
+		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -76,108 +59,162 @@ CLASS("ActionUnitArrest", "Action")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-
-		OOP_INFO_0("ActionUnitArrest: Processing.");
-		OOP_INFO_1("ActionUnitArrest: StateMachine: %1", T_GETV("stateMachine"));
 		
 		CALLM(_thisObject, "activateIfInactive", []);
+		
+		pr _captor = GETV(_thisObject, "objectHandle");
+		pr _target = GETV(_thisObject, "target");
+		
+		diag_log format ["stateMachine %1",GETV(_thisObject, "stateMachine")];
 		pr _state = ACTION_STATE_ACTIVE;
-	
-		pr _startTime = T_GETV("startTime");
-		pr _captor = T_GETV("objectHandle");
-		pr _target = T_GETV("target");
+		scopename "switch";
+		switch (GETV(_thisObject, "stateMachine")) do {
 
-		switch (T_GETV("stateMachine")) do {
-
-			// stateMachine 0, Pursuit of target
-			case 0: {	
-
-				_captor dotarget _target;
-
-				// attach script once at start
-				if !(T_GETV("stateChanged")) then {
-
-					T_SETV("stateChanged", true);
-
+			// catch up to target
+			case 0: {
+				
+				if (GETV(_thisObject, "stateChanged")) then {
+					diag_log "START STATE 0";
+					SETV(_thisObject, "stateChanged",false);
+					
+					SETV(_thisObject,"stateTimer",time);		
+					
+					_captor dotarget _target;
+					
 					pr _handle = [_target,_captor] spawn {
 						params["_target","_captor"];
-						waitUntil {
+						waitUntil{
 							_pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
 							_captor doMove _pos;
 							_captor doWatch _target;
 							_pos_arrest = getpos _target;
 							sleep 0.5;
-							_isMoving = !(_pos_disarm distance getpos _target <0.1);
+							_isMoving = !(_pos_arrest distance getpos _target <0.1);
 							_target setVariable ["isMoving", _isMoving];
 							
 							_return = !_isMoving && {_pos distance getpos _captor < 1.5};
 							_return
 						};
 					};
-					T_SETV("spawnHandle", _handle);
+					SETV(_thisObject, "spawnHandle", _handle);
 
-				} else {
+				}else{
 
+					if (time - GETV(_thisObject,"stateTimer") > 15)then{//been following for 10 secs
+						_state = ACTION_STATE_FAILED;
+					
+						CALLM(_thisObject, "terminate", []);
+						diag_log "ACTION_STATE_FAILED";
+						[_captor,"Yes keep running!",_target] call Dialog_fnc_hud_createSentence;
+						breakTo "switch";
 
-
+					}else{
+	
+						if(time > GETV(_thisObject,"screamTime") && (_target getVariable ["isMoving", false]))then{
+							
+							SETV(_thisObject,"screamTime",time +2);
+							if(selectRandom [true,false])then{
+								[_captor,"Stop!",_target] call Dialog_fnc_hud_createSentence;
+								_captor say "stop";
+							}else{
+								[_captor,"Halt!",_target] call Dialog_fnc_hud_createSentence;
+								_captor say "halt";
+							};
+							
+							_captor setSpeedMode "FULL";
+						};
+					};
 				};
-
-				// condition for leaving current state
+				
+				if (scriptDone GETV(_thisObject, "spawnHandle")) then {
+					diag_log "stateMachine 0 Done" ;
+					SETV(_thisObject, "stateChanged", true);
+					SETV(_thisObject, "stateMachine", 1);
+					
+					diag_log format ["stateMachine changed %1",GETV(_thisObject, "stateMachine")];
+				};
+			};
+			
+			//follow close
+			case 1: {
+				if (GETV(_thisObject, "stateChanged")) then {
+					diag_log "stateMachine 1" ;
+					SETV(_thisObject, "stateChanged",false);
+					SETV(_thisObject, "stateTimer",time);	
+					
+					pr _handle = [_captor,_target] spawn {
+						params["_captor","_target"];
+						pr _currentWeapon = currentWeapon _captor;
+						pr _animation = call{
+							if(_currentWeapon isequalto primaryWeapon _captor)exitWith{
+								"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
+							};
+							if(_currentWeapon isequalto secondaryWeapon _captor)exitWith{
+								"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
+							};
+							if(_currentWeapon isequalto handgunWeapon _captor)exitWith{
+								"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
+							};
+							if(_currentWeapon isequalto binocular _captor)exitWith{
+								"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
+							};
+							"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
+						};
+						
+						[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+						
+						_captor playMove _animation;
+						waitUntil {animationState _captor == _animation};
+						waitUntil {animationState _captor != _animation};
+						
+						//_target removeWeapon currentWeapon _target;
+						
+						//sleep 1;
+						
+						
+					};		
+					
+					SETV(_thisObject, "spawnHandle", _handle);
+				};
+				
 				if (scriptDone GETV(_thisObject, "spawnHandle")) then {
 					SETV(_thisObject, "stateChanged", true);
 					SETV(_thisObject, "stateMachine", 3);
+					
+					_state = ACTION_STATE_COMPLETED;
+					breakTo "switch";
 				};
-
-			}; // stateMachine 0
-
-			// stateMachine 1, Captor caught up with target
-			case 1: {
-				OOP_INFO_0("ActionUnitArrest: StateMachine: 1");	
-
-
-			}; // stateMachine 1
-
-			// stateMachine 2, action failed
-			case 2: {	
-				OOP_INFO_0("ActionUnitArrest: StateMachine: 2, FAILED.");
+			};
+			
+			//failed
+			case 2: {
 				_state = ACTION_STATE_FAILED;
-			}; // stateMachine 2
-
-			// stateMachine 3, action completed
-			case 3: {	
-				OOP_INFO_0("ActionUnitArrest: StateMachine: 3, COMPLETED.");
+			};
+			
+			case 3: {
 				_state = ACTION_STATE_COMPLETED;
-			}; // stateMachine 3
-		}; // switch end
-
+			};
+			
+		};
 		
 		// Return the current state
-		T_SETV("state", _state);
-		_state
-	} ENDMETHOD;
-
-	// Handle unit being killed/removed from group during action
-	METHOD("handleUnitsRemoved") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-
-		OOP_INFO_0("ActionUnitArrest: handleUnitsRemoved called, action FAILED.");
-		T_SETV("state", ACTION_STATE_FAILED);
-		
+		SETV(_thisObject, "state", _state);
+		_state;
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
-
-		OOP_INFO_0("ActionUnitArrest: Terminating.");
 		
-		terminate T_GETV("spawnHandle");
+		terminate GETV(_thisObject, "spawnHandle");
 		
-		pr _captor = T_GETV("objectHandle");
+		pr _captor = GETV(_thisObject, "objectHandle");
 		_captor doWatch objNull;
 		_captor lookAt objNull;
 		_captor lockWP false;
 		_captor setSpeedMode "LIMITED";
+		hint "";
 		
 	} ENDMETHOD;
+
 ENDCLASS;
