@@ -257,7 +257,7 @@ ENDCLASS;
 
 ["TakeLocationCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
-	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);//NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _srcEff = [100,100,100,100,100,100,100,100];
 	SETV(_garrison, "efficiency", _srcEff);
