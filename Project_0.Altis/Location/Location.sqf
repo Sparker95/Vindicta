@@ -69,7 +69,7 @@ CLASS("Location", "MessageReceiverEx")
 
 		// Check existance of neccessary global objects
 		if (isNil "gTimerServiceMain") exitWith {"[MessageLoop] Error: global timer service doesn't exist!";};
-		if (isNil "gMessageLoopLocation") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
+		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("side", CIVILIAN);
@@ -267,7 +267,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	// |                  G E T   M E S S A G E   L O O P
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		gMessageLoopLocation
+		gMessageLoopMain
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

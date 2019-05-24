@@ -28,27 +28,24 @@ CLASS("GameModeBase", "")
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
-			gMessageLoopMain = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopMain, "setName", ["Main thread"]);
+			gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 3 ARG 3	]); // Tag, priority, min interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 5 ARG 10]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["Garrison"				ARG 1 ARG 3	]);
+
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
 
 			// Message loop for group AI
-			gMessageLoopGroupAI = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopGroupAI, "setName", ["Group AI thread"]);
+			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
 
 			// Message loop for Stimulus Manager
-			gMessageLoopStimulusManager = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopStimulusManager, "setName", ["Stimulus Manager thread"]);
+			gMessageLoopStimulusManager = NEW("MessageLoop", ["Stimulus Manager thread"]);
 
 			// Global Stimulus Manager
 			gStimulusManager = NEW("StimulusManager", []);
-
-			// Message loop for locations
-			gMessageLoopLocation = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopLocation, "setName", ["Location thread"]);
 
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);

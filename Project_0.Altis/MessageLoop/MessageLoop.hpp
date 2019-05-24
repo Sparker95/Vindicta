@@ -1,6 +1,6 @@
 // Coefficient for exponential moving average
 // out = alpha*in + (1-alpha)*out
-#define MOVING_AVERAGE_ALPHA 0.05
+#define MOVING_AVERAGE_ALPHA 0.025
 
 // The timer we use to measure time
 #define PROCESS_CATEGORY_TIME diag_tickTime

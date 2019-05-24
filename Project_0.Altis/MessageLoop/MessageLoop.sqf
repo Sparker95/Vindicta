@@ -42,12 +42,21 @@ CLASS("MessageLoop", "");
 	//Spawn a script which will be checking messages
 	/*
 	Method: new
+
+	parameters: _name
+
+	_name - String, optional, name of the message loop used for debug
+
 	Constructor
 	*/
 	METHOD("new") {
-		params [ P_THISOBJECT ];
+		params [ P_THISOBJECT, ["_name", "", [""]] ];
 		T_SETV("msgQueue", []);
-		T_SETV("name", _thisObject);
+		if (_name == "") then {
+			T_SETV("name", _thisObject);
+		} else {
+			T_SETV("name", _name);
+		};
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
 		T_SETV("scriptHandle", _scriptHandle);
 		T_SETV("mutex", MUTEX_NEW());

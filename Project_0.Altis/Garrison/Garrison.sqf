@@ -14,6 +14,8 @@ Author: Sparker 12.07.2018
 
 #define WARN_GARRISON_DESTROYED OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject])
 
+#define MESSAGE_LOOP gMessageLoopMain
+
 CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
@@ -54,7 +56,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_CALLM("ref", []);
 
 		// Check existance of neccessary global objects
-		ASSERT_GLOBAL_OBJECT(gMessageLoopMain);
+		ASSERT_GLOBAL_OBJECT(MESSAGE_LOOP);
 
 		T_SETV("units", []);
 		T_SETV("groups", []);
@@ -79,12 +81,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Create a timer to call process method
+		/*
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
 		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
+		*/
+
+		T_SETV("timer", "");
+		CALLM(MESSAGE_LOOP, "addProcessCategoryObject", ["Garrison" ARG _thisObject]);
 
 		GETSV("Garrison", "all") pushBack _thisObject;
 
@@ -121,7 +128,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 
 		// Start AI object
-		CALLM(T_GETV("AI"), "start", []); // Let's start the party! \o/
+		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
 
 		// Set 'active' flag
 		T_SETV("active", true);
@@ -192,8 +199,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		_all deleteAt (_all find _thisObject);
 		
 		// Delete our timer
-		DELETE(T_GETV("timer"));
-		T_SETV("timer", nil);
+		pr _timer = T_GETV("timer");
+		if (_timer != "") then {
+			DELETE(T_GETV("timer"));
+			T_SETV("timer", nil);
+		};
+
+		// Delete ourselves from the process category
+		CALLM1(MESSAGE_LOOP, "deleteProcessCategoryObject", _thisObject);
 
 		// Delete the AI object
 		// We delete it instantly because Garrison AI is in the same thread
@@ -279,7 +292,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	// Returns the message loop this object is attached to
 	METHOD("getMessageLoop") {
-		gMessageLoopMain
+		MESSAGE_LOOP
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
