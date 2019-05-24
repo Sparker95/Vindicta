@@ -88,4 +88,20 @@ CLASS("DebugPrinter", "MessageReceiver");
 		true
 	} ENDMETHOD;
 
+	// Dummy process method
+	METHOD("process") {
+		params ["_thisObject"];
+		private _size = 5000; // 500; 500 is 1.5ms
+		private _a = []; _a resize _size;
+		private _b = []; _b resize _size;
+		private _a = _a apply {666};
+		private _b = _b apply {666};
+		private _i = 0;
+		while {_i < _size} do {
+			_b set [_i, (_b select _i) + _i*(_a select _i) + cos (random 1)];
+			_i = _i + 1;
+		};
+		diag_log format [" %1  Process: %2", _thisObject, T_GETV("name")];
+	} ENDMETHOD;
+
 ENDCLASS;

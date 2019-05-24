@@ -25,6 +25,14 @@ private _nextTickTime = time + 5;
 private _nextProcessLogTime = time + 5;
 #endif
 
+// Will print some raw and filtered values of the measured process functions execution time
+//#define PROCESS_CATEGORIES_DEBUG
+
+#ifdef PROCESS_CATEGORIES_DEBUG
+private _execTimeArray = [];
+private _execTimeFilteredArray = [];
+#endif
+
 params [ P_THISOBJECT ];
 
 private _msgQueue = GET_VAR(_thisObject, "msgQueue");
@@ -101,68 +109,144 @@ while {true} do {
 	if (_count > 0) then {
 		
 		// Calculate time spent by each process category
-		pr _fractionsCurrent = [];
-		_processCategories apply {_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE};
+		pr _fractionsCurrent = _processCategories apply {_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE};
+		//OOP_INFO_1("    fracs current: %1", _fractionsCurrent);
+		//OOP_INFO_1("    cats: %1", _processCategories);
 		pr _sum = 0;
 		{ _sum = _sum + _x; } forEach _fractionsCurrent;
-		_fractionsCurrent apply {_x / _sum};
+		if (_sum == 0) then {
+			pr _t = 1/_count;
+			_fractionsCurrent = _fractionsCurrent apply {_t};
+		} else {
+			_fractionsCurrent = _fractionsCurrent apply {_x / _sum};
+		};
 
-		// Time spent executing this category this time
-		pr _execTime = 0;
 
 		// Iterate through all categories
 		for "_i" from 0 to (_count - 1) do {
-			pr _cat = _processCategories select _i;
-			pr _objs = _cat select PROCESS_CATEGORY_ID_OBJECTS;
-			pr _countObjs = count _objs;
+			pr _cat = _processCategories#_i;
+			pr _objects = _cat#PROCESS_CATEGORY_ID_OBJECTS;
+			pr _countObjects = count _objects;		
+			pr _execTime = 0; // Time spent executing this category this time
 
 			// Do we need to process this category?
 			// We need to process it if its current time fraction is less than the required fraction
-			if (_fractionsCurrent#_i < _fractionsRequired && _countObjs > 0) then {
+			if (_fractionsCurrent#_i < _fractionsRequired#_i && _countObjects > 0) then {
 				// Find first object in the array with objects that should be processed
-				pr _nextID = _cat select PROCESS_CATEGORY_NEXT_OBJECT_ID;
-				pr _startID = _nextID;
-				if (_nextID >= _countObjs) then {_nextID = 0; _startID = 0;};
+				pr _objectID = _cat#PROCESS_CATEGORY_ID_NEXT_OBJECT_ID;
+				pr _nObjectsChecked = 0;
 				pr _found = false;
-				
+
 				// Find the first next object that we should process 
-				while {true} do {
-					if (_objs#_nextID#1 < time) exitWith {_found = true;};
-					_nextID = (_nextID+1) mod _countObjs;
-					if (_nextID == _startID) exitWith {}; // We have checked everything
+				while {_nObjectsChecked < _countObjects} do {
+					_objectID = (_objectID+1) mod _countObjects; // Increase the ID of the next object to check
+					if (_objects#_objectID#1 < PROCESS_CATEGORY_TIME) exitWith { _found = true; }; // There is an object which hasn't been processed for quite long time
+					_nObjectsChecked = _nObjectsChecked + 1;
 				};
 				
 				// If we have found an object to process, process it
 				if (_found) then {
+					
 					// Call object.process
-					pr _object = _objs#_nextID;
-					pr _timeStart = time;
+					pr _objectArray = _objects#_objectID;
+					pr _object = _objectArray#0;
+					pr _timeStart = PROCESS_CATEGORY_TIME;
 					CALLM0(_object, "process");
-					pr _timeEnd = time;
+					pr _timeEnd = PROCESS_CATEGORY_TIME;
 					// Update summary time of this category
 					_execTime = _timeEnd - _timeStart;
 					// Update the next execution time of this object
-					_timeEnd = _timeEnd + _cat select PROCESS_CATEGORY_ID_MINIMUM_INTERVAL;
-					_object set [1, _timeEnd];
+					_timeEnd = _timeEnd + _cat#PROCESS_CATEGORY_ID_MINIMUM_INTERVAL;
+					_objectArray set [1, _timeEnd];
+
+					// Update the measurement of execution time of objects in this category
+					#ifdef THREAD_FUNC_DEBUG
+					pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
+					_callTimeTotal = _callTimeTotal + _execTime;
+					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, _callTimeTotal];
+					#endif
 				};
+
+				// Update next ID
+				_cat set [PROCESS_CATEGORY_ID_NEXT_OBJECT_ID, _objectID];
+
+				// Calculate some debug measurements if needed
+				#ifdef THREAD_FUNC_DEBUG
+				if (_objectID == 0) then {
+					// Calculate average call time per object
+					/*
+					// Actually no, it is being calculated wrong, because we must divide it by the amount of objects processed so far
+					// Not by total amount of objects
+					// Don't need it much anyway, it is done by profiler wrappers
+					pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
+					pr _timePerObj = _callTimeTotal / _countObjects;
+					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_AVERAGE, _timePerObj];
+					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, 0];
+					*/
+
+					// Calculate update interval
+					pr _updateInterval = PROCESS_CATEGORY_TIME - _cat#PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME;
+					_cat set [PROCESS_CATEGORY_ID_UPDATE_INTERVAL, _updateInterval];
+					_cat set [PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME, PROCESS_CATEGORY_TIME];
+
+					/*
+					pr _tag = _cat select PROCESS_CATEGORY_ID_TAG;
+					pr _timePerObj = _timeAllObjects / _countObjects;
+
+					pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""timePerObject"": %4, ""timeAllObjects"": %5 } }", 
+						T_GETV("name"), _tag, _countObjects, _timePerObj, _timeAllObjects];
+					OOP_DEBUG_MSG(_str, []);
+					*/
+				};
+				#endif
 			};
 
 			// Filter execution time of this category
-			pr _execTimeOld = _cat select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE;
-			pr _execTimeNew = MOVING_AVERAGE_ALPHA*_execTimeOld + (1-MOVING_AVERAGE_ALPHA)*_execTime;
+			pr _execTimeOld = _cat#PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE;
+			// out = alpha*in + (1-alpha)*out
+			pr _execTimeNew = MOVING_AVERAGE_ALPHA*_execTime + (1-MOVING_AVERAGE_ALPHA)*_execTimeOld;
 			_cat set [PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE, _execTimeNew];
+
+			#ifdef PROCESS_CATEGORIES_DEBUG
+			if (_i == 0) then {
+				_execTimeFilteredArray pushBack (_execTimeNew*1000);
+				_execTimeArray pushBack (_execTime*1000);
+
+				if (count _execTimeFilteredArray >= 60) then {
+					OOP_DEBUG_1("   raw  exec time: %1", _execTimeArray apply {round _x});
+					OOP_DEBUG_1("   fltr exec time: %1", _execTimeFilteredArray apply {round _x});
+					_execTimeFilteredArray = [];
+					_execTimeArray = [];
+				};
+			};
+			#endif
+
 		};
 
 		#ifdef THREAD_FUNC_DEBUG
 		if (time > _nextProcessLogTime) then {
 
-			OOP_PROFILE_3("Message loop: %1, current fractions: %2, required fractions: %3", T_GETV("name"), _fractionsCurrent, _fractionsRequired);
+			//pr _cur = _fractionsCurrent apply {round (_x*100)};
+			//pr _req = _fractionsRequired apply {round (_x*100)};
+			pr _name = T_GETV("name");
+			// OOP_DEBUG_3("Message loop: %1, current fractions: %2, required fractions: %3", T_GETV("name"), _cur, _req);
 			{
-				pr _execTime = _x#PROCESS_CATEGORY_ID_EXECUTION_TIME;
+				pr _i = _foreachindex;
+
+				//pr _execTime = _x#PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE;
 				pr _tag = _x#PROCESS_CATEGORY_ID_TAG;
-				pr _numObjs = count (_x#PROCESS_CATEGORY_ID_OBJECTS);
-				OOP_PROFILE_3("   tag: %1, time: %2, nObjects: %3", _tag, _execTime, _numObjs);
+				pr _numObjects = count (_x#PROCESS_CATEGORY_ID_OBJECTS);
+				pr _fractionCurrent = round (100*_fractionsCurrent#_i);
+				pr _fractionRequired = round (100*_fractionsRequired#_i);
+				pr _updateInterval = _x#PROCESS_CATEGORY_ID_UPDATE_INTERVAL;
+				pr _timePerObject = _x#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_AVERAGE;
+
+				pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""fractionCurrent"": %4, ""fractionRequired"": %5, ""updateInterval"": %6} }", //,  ""callTimeAvg"": %7} }", 
+					_name, _tag, _numObjects, _fractionCurrent, _fractionRequired, _updateInterval, _timePerObject]; //, _timePerObject];
+				OOP_DEBUG_MSG(_str, []);
 			} forEach _processCategories;
+
+
 			_nextProcessLogTime = time + 5;
 		};
 		#endif

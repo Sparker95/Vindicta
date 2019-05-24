@@ -20,7 +20,11 @@ if (!IS_SERVER) then {
 };
 #endif
 
+if(true) exitWith {};
+
 CRITICAL_SECTION {
+
+
 	switch (PROFILE_NAME) do {
 		case "Sparker": {gGameMode = NEW("GameModeRandom", []); };
 		default {gGameMode = NEW("RedVsGreenGameMode", []); };

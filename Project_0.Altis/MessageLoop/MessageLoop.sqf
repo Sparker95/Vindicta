@@ -171,9 +171,9 @@ CLASS("MessageLoop", "");
 
 	METHOD("addProcessCategory") {
 		CRITICAL_SECTION {
-			params ["_thisObject", ["_tag", "", [""]], ["_priority", 1, [1]]];
+			params ["_thisObject", ["_tag", "", [""]], ["_priority", 1, [1]], ["_minInterval", 1, [0]]];
 
-			pr _cat = PROCESS_CATEGORY_NEW(_tag, _priority);
+			pr _cat = PROCESS_CATEGORY_NEW(_tag, _priority, _minInterval);
 			pr _cats = T_GETV("processCategories"); // meow ^.^
 			_cats pushBack _cat;
 
@@ -186,7 +186,9 @@ CLASS("MessageLoop", "");
 				_fractions set [_i, _priority];
 				_sum = _sum + _priority;
 			};
-			_fractions apply {_x / _sum};
+			for "_i" from 0 to ((count _cats) - 1) do {
+				_fractions set [_i, (_fractions#_i)/_sum];
+			};
 		};
 	} ENDMETHOD;
 
