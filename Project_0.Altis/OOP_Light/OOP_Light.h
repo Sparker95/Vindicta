@@ -496,7 +496,6 @@
 				_extraFieldsObj = ", ""extra"": { " + _extraFieldsObj + " }"; \
 			}; \
 			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4"", ""oop_assert"": %7%6 }}", _class, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj, OOP_ASSERT_BOOL]; \
-
 			OOP_PROFILE_0(_str); \
 		}
 	

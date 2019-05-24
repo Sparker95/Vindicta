@@ -126,7 +126,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		if (CALLM0(_gar, "isSpawned")) then {
 			5
 		} else {
-			60
+			120
 		};
 	} ENDMETHOD;	
 	

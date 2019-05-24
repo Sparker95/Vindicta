@@ -33,6 +33,13 @@ private _execTimeArray = [];
 private _execTimeFilteredArray = [];
 #endif
 
+// Will log every message
+#define PROFILE_MESSAGE_JSON
+
+#ifdef RELEASE_BUILD
+#undef OUTPUT_MESSAGE_JSON
+#endif
+
 params [ P_THISOBJECT ];
 
 private _msgQueue = GET_VAR(_thisObject, "msgQueue");
@@ -63,8 +70,10 @@ while {true} do {
 	#endif
 
 	//Do we have anything in the queue?
+
 	if ( (count _msgQueue) > 0 ) then {
-		while {(count _msgQueue) > 0} do {
+		private _countMessages = 0;
+		while {(count _msgQueue) > 0 && _countMessages < 16} do {
 			//Get a message from the front of the queue
 			pr _msg = 0;
 			CRITICAL_SECTION {
@@ -72,7 +81,6 @@ while {true} do {
 				_msg = _msgQueue select 0;
 				// Delete the message
 				_msgQueue deleteAt 0;
-
 			};
 
 			// Check if it's the test message to measure queue delay
@@ -86,13 +94,29 @@ while {true} do {
 			} else {
 			#endif
 
+
+
 			pr _msgID = _msg select MESSAGE_ID_SOURCE_ID;
-			// OOP_DEBUG_1("[MessageLoop] Info: message in queue: %1", _msg);
 			//Get destination object
 			private _dest = _msg select MESSAGE_ID_DESTINATION;
 			//Call handleMessage
 			// todo make sure we call a method on an existing object
+
+			#ifdef PROFILE_MESSAGE_JSON
+			pr _objectClass = GET_OBJECT_CLASS(_dest);
+			private _profileTimeStart = diag_tickTime;
+			#endif
+
 			pr _result = CALL_METHOD(_dest, "handleMessage", [_msg]);
+
+			#ifdef PROFILE_MESSAGE_JSON
+			private _profileTime = diag_tickTime - _profileTimeStart;
+			pr _dest = _msg#MESSAGE_ID_DESTINATION;
+			pr _type = _msg#MESSAGE_ID_TYPE;
+			private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4} }", _name, _type, _objectClass, _profileTime];
+			OOP_DEBUG_MSG(_str, []);
+			#endif
+
 			if (isNil "_result") then {_result = 0;};
 			// Were we asked to mark the message as processed?
 			if (_msgID != MESSAGE_ID_NOT_REQUESTED) then {
@@ -109,6 +133,8 @@ while {true} do {
 			#ifdef THREAD_FUNC_DEBUG
 			};
 			#endif
+
+			_countMessages = _countMessages + 1;
 		};
 	};
 
@@ -117,7 +143,7 @@ while {true} do {
 	if (_count > 0) then {
 		
 		// Calculate time spent by each process category
-		pr _fractionsCurrent = _processCategories apply {_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE};
+		pr _fractionsCurrent = _processCategories apply {(_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE) / ((count (_x select PROCESS_CATEGORY_ID_OBJECTS))+1)}; // Also divide it by the amount of objects
 		//OOP_INFO_1("    fracs current: %1", _fractionsCurrent);
 		//OOP_INFO_1("    cats: %1", _processCategories);
 		pr _sum = 0;
