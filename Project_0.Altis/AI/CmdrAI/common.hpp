@@ -48,6 +48,16 @@
 #define EFF_MIN_EFF [6, 0, 0, 0, 6, 0, 0, 0]
 #define EFF_GARRISON_MIN_EFF [12, 0, 0, 0, 12, 0, 0, 0]
 
+// Cmdr planning constants
+#define CMDR_PLANNING_PRIORITY_HIGH 0
+#define CMDR_PLANNING_PRIORITY_NORMAL 1
+#define CMDR_PLANNING_PRIORITY_LOW 2
+
+// PRIME NUMBERS only
+#define CMDR_PLANNING_RATIO_HIGH 3
+#define CMDR_PLANNING_RATIO_NORMAL 31
+#define CMDR_PLANNING_RATIO_LOW 67
+
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \
 	ASSERT_MSG(actual isEqualType [], __STRINGIFY(actual) + " is invalid type. It should be an array."); \
