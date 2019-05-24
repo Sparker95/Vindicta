@@ -77,7 +77,9 @@ if (_action != "") then {
 // Update process interval of AI
 //CALLM1(_AI, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 
-// Change process category
-pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
-CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
-CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _AI);
+// Change process category if active
+if (T_GETV("active")) then {
+	pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+	CALLM1(_msgLoop, "deleteProcessCategoryObject", _AI);
+	CALLM2(_msgLoop, "addProcessCategoryObject", "AIGarrisonDespawned", _AI);
+};
