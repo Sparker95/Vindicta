@@ -7,7 +7,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
-#include "MessageLoop.hpp"
+#include "ProcessCategories.hpp"
 
 /*
 The thread function of the MessageLoop.
@@ -26,7 +26,7 @@ private _nextProcessLogTime = time + 5;
 #endif
 
 // Will print some raw and filtered values of the measured process functions execution time
-//#define PROCESS_CATEGORIES_DEBUG
+#define PROCESS_CATEGORIES_DEBUG
 
 #ifdef PROCESS_CATEGORIES_DEBUG
 private _execTimeArray = [];
@@ -45,7 +45,7 @@ params [ P_THISOBJECT ];
 private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 private _mutex = GET_VAR(_thisObject, "mutex");
 private _processCategories = GET_VAR(_thisObject, "processCategories");
-private _fractionsRequired = GET_VAR(_thisObject, "processTimeFractions");
+private _fractionsRequired = GET_VAR(_thisObject, "updateFrequencyFractions");
 //private _objects = GET_VAR(_thisObject, "objects");
 
 
@@ -73,7 +73,8 @@ while {true} do {
 
 	if ( (count _msgQueue) > 0 ) then {
 		private _countMessages = 0;
-		while {(count _msgQueue) > 0 && _countMessages < 16} do {
+		private _countMessagesMax = T_GETV("nMessagesInSeries");
+		while {(count _msgQueue) > 0 && _countMessages < _countMessagesMax} do {
 			//Get a message from the front of the queue
 			pr _msg = 0;
 			CRITICAL_SECTION {
@@ -144,15 +145,15 @@ while {true} do {
 		
 		// Calculate time spent by each process category
 		pr _fractionsCurrent = _processCategories apply {
-			private _countObjects = count (_x select PROCESS_CATEGORY_ID_OBJECTS);
+			private _countObjects = count (_x select __PC_ID_OBJECTS);
 			if (_countObjects == 0) then {
 				0
 			} else {
-				(_x select PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE) * (_countObjects)
+				1/(_x#__PC_ID_UPDATE_INTERVAL_AVERAGE * _countObjects) // We want to maintain proportions of update frequencies, so that objects with higher priority are processed more often 
 			};			
-		}; // Also divide it by the amount of objects
-		//OOP_INFO_1("    fracs current: %1", _fractionsCurrent);
-		//OOP_INFO_1("    cats: %1", _processCategories);
+		}; 
+
+		// Normalize
 		pr _sum = 0;
 		{ _sum = _sum + _x; } forEach _fractionsCurrent;
 		if (_sum == 0) then {
@@ -162,26 +163,35 @@ while {true} do {
 			_fractionsCurrent = _fractionsCurrent apply {_x / _sum};
 		};
 
+		//diag_log format ["current: %1, required: %2", _fractionsCurrent apply {round (_x*100)}, _fractionsRequired apply {round (_x*100)}];
 
 		// Iterate through all categories
 		for "_i" from 0 to (_count - 1) do {
 			pr _cat = _processCategories#_i;
-			pr _objects = _cat#PROCESS_CATEGORY_ID_OBJECTS;
+			pr _objects = _cat#__PC_ID_OBJECTS;
 			pr _countObjects = count _objects;		
 			pr _execTime = 0; // Time spent executing this category this time
 
 			// Do we need to process this category?
 			// We need to process it if its current time fraction is less than the required fraction
-			if (_fractionsCurrent#_i <= _fractionsRequired#_i && _countObjects > 0) then {
+			pr _intervalMin = _cat#__PC_ID_UPDATE_INTERVAL_MIN;
+			pr _intervalMax = _cat#__PD_ID_UPDATE_INTERVAL_MAX;
+			pr _intervalAveragePerObject = _countObjects * _cat#__PC_ID_UPDATE_INTERVAL_AVERAGE;
+			pr _categoryAboveMaxInterval = _intervalAveragePerObject > _intervalMax;
+			if ( ( (_fractionsCurrent#_i <= _fractionsRequired#_i)											// Process next object from this category if current update frequency fraction is below required level
+																	|| _categoryAboveMaxInterval )	// ... OR if current update interval is beyond the required maximum set interval
+				&& (_countObjects > 0)																		// ... but don't process anything if there are no objects in this category
+				&& (_intervalAveragePerObject > _intervalMin) ) then {												// ... but don't process anything if update interval is smaller than the minimum set level
+
 				// Find first object in the array with objects that should be processed
-				pr _objectID = _cat#PROCESS_CATEGORY_ID_NEXT_OBJECT_ID;
+				pr _objectID = _cat#__PC_ID_NEXT_OBJECT_ID;
 				pr _nObjectsChecked = 0;
 				pr _found = false;
 
 				// Find the first next object that we should process 
 				while {_nObjectsChecked < _countObjects} do {
 					_objectID = (_objectID+1) mod _countObjects; // Increase the ID of the next object to check
-					if (_objects#_objectID#1 < PROCESS_CATEGORY_TIME) exitWith { _found = true; }; // There is an object which hasn't been processed for quite long time
+					if ( PROCESS_CATEGORY_TIME - (_objects#_objectID#1) > _intervalMin ) exitWith { _found = true; }; // There is an object which hasn't been processed for quite long time
 					_nObjectsChecked = _nObjectsChecked + 1;
 				};
 				
@@ -191,62 +201,52 @@ while {true} do {
 					// Call object.process
 					pr _objectArray = _objects#_objectID;
 					pr _object = _objectArray#0;
+					pr _objectLastProcessTimestamp = _objectArray#1;
 					pr _timeStart = PROCESS_CATEGORY_TIME;
 					CALLM0(_object, "process");
 					pr _timeEnd = PROCESS_CATEGORY_TIME;
 					// Update summary time of this category
-					_execTime = _timeEnd - _timeStart;
-					// Update the next execution time of this object
-					_timeEnd = _timeEnd + _cat#PROCESS_CATEGORY_ID_MINIMUM_INTERVAL;
-					_objectArray set [1, _timeEnd];
+					//_execTime = _timeEnd - _timeStart;
+
+					// Set timestamp on this object
+					_objectArray set [1, _timeStart];
 
 					// Update the measurement of execution time of objects in this category
+					//pr _callTimeTotal = _cat#__PC_ID_OBJECT_CALL_TIME_TOTAL;
+					//_callTimeTotal = _callTimeTotal + _execTime;
+					//_cat set [__PC_ID_OBJECT_CALL_TIME_TOTAL, _callTimeTotal];
+
+					// Calculate update interval
+					pr _lastObjectTimestamp = _cat#__PC_ID_LAST_OBJECT_PROCESS_TIMESTAMP;
+					pr _objectUpdateInterval = _timeEnd - _lastObjectTimestamp;
+					if (_objectUpdateInterval < 0.001) then {_objectUpdateInterval = 0.0005; }; // Due to timer inaccuracy, time difference can be 0 sometimes
+					_cat set [__PC_ID_UPDATE_INTERVAL_LAST, _objectUpdateInterval];
+					_cat set [__PC_ID_LAST_OBJECT_PROCESS_TIMESTAMP, _timeStart];
+
 					#ifdef THREAD_FUNC_DEBUG
-					pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
-					_callTimeTotal = _callTimeTotal + _execTime;
-					_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, _callTimeTotal];
-
-					// If we have processed object 0, update our measurement of update interval
-					if (_objectID == 0) then {
-						// Calculate average call time per object
-						/*
-						// Actually no, it is being calculated wrong, because we must divide it by the amount of objects processed so far
-						// Not by total amount of objects
-						// Don't need it much anyway, it is done by profiler wrappers
-						pr _callTimeTotal = _cat#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL;
-						pr _timePerObj = _callTimeTotal / _countObjects;
-						_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_AVERAGE, _timePerObj];
-						_cat set [PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_TOTAL, 0];
-						*/
-
-						// Calculate update interval
-						pr _updateInterval = PROCESS_CATEGORY_TIME - _cat#PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME;
-						_cat set [PROCESS_CATEGORY_ID_UPDATE_INTERVAL, _updateInterval];
-						_cat set [PROCESS_CATEGORY_ID_FIRST_OBJECT_PROCESS_TIME, PROCESS_CATEGORY_TIME];
-
-						/*
-						pr _tag = _cat select PROCESS_CATEGORY_ID_TAG;
-						pr _timePerObj = _timeAllObjects / _countObjects;
-
-						pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""timePerObject"": %4, ""timeAllObjects"": %5 } }", 
-							T_GETV("name"), _tag, _countObjects, _timePerObj, _timeAllObjects];
-						OOP_DEBUG_MSG(_str, []);
-						*/
-					};
-
+					pr _timeDiff = _timeStart - _objectLastProcessTimestamp;
+					_cat set [__PC_ID_ALL_PROCESS_INTERVAL, _timeDiff];
+					_cat set [__PC_ID_ALL_PROCESS_LAST_TIMESTAMP, _timeStart];
 					#endif
 				};
 
 				// Update next ID
-				_cat set [PROCESS_CATEGORY_ID_NEXT_OBJECT_ID, _objectID];
+				_cat set [__PC_ID_NEXT_OBJECT_ID, _objectID];
 			};
 
-			// Filter execution time of this category
-			pr _execTimeOld = _cat#PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE;
+			// Filter update frequency of this category
+			pr _updateIntervalLast = _cat#__PC_ID_UPDATE_INTERVAL_LAST; // The last recorded update interval
+			pr _timeSinceLastUpdate = PROCESS_CATEGORY_TIME - _cat#__PC_ID_LAST_OBJECT_PROCESS_TIMESTAMP; // Time that has passed since we have updated any object from this category
+			if (_timeSinceLastUpdate > _updateIntervalLast) then { _updateIntervalLast = _timeSinceLastUpdate; }; // If we haven't updated for more time than typical update interval, we must increase the average time to start updating again 
 			// out = alpha*in + (1-alpha)*out
-			pr _execTimeNew = MOVING_AVERAGE_ALPHA*_execTime + (1-MOVING_AVERAGE_ALPHA)*_execTimeOld;
-			_cat set [PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE, _execTimeNew];
+			pr _updateIntervalAverage = _cat#__PC_ID_UPDATE_INTERVAL_AVERAGE; // The filtered update interval
+			_updateIntervalAverage = MOVING_AVERAGE_ALPHA*_updateIntervalLast + (1-MOVING_AVERAGE_ALPHA)*_updateIntervalAverage;
+			_cat set [__PC_ID_UPDATE_INTERVAL_AVERAGE, _updateIntervalAverage];
 
+			// If this category interval is bigger than max interval, don't give time to other categories then
+			//if (_categoryAboveMaxInterval) exitWith {};
+
+			/*
 			#ifdef PROCESS_CATEGORIES_DEBUG
 			if (_i == 0) then {
 				_execTimeFilteredArray pushBack (_execTimeNew*1000);
@@ -260,7 +260,7 @@ while {true} do {
 				};
 			};
 			#endif
-
+			*/
 		};
 
 		#ifdef THREAD_FUNC_DEBUG
@@ -273,20 +273,17 @@ while {true} do {
 			{
 				pr _i = _foreachindex;
 
-				//pr _execTime = _x#PROCESS_CATEGORY_ID_EXECUTION_TIME_AVERAGE;
-				pr _tag = _x#PROCESS_CATEGORY_ID_TAG;
-				pr _numObjects = count (_x#PROCESS_CATEGORY_ID_OBJECTS);
+				//pr _execTime = _x#__PC_ID_EXECUTION_TIME_AVERAGE;
+				pr _tag = _x#__PC_ID_TAG;
+				pr _numObjects = count (_x#__PC_ID_OBJECTS);
 				pr _fractionCurrent = round (100*_fractionsCurrent#_i);
 				pr _fractionRequired = round (100*_fractionsRequired#_i);
-				pr _updateInterval = _x#PROCESS_CATEGORY_ID_UPDATE_INTERVAL;
-				pr _timePerObject = _x#PROCESS_CATEGORY_ID_OBJECT_CALL_TIME_AVERAGE;
+				pr _updateInterval = _x#__PC_ID_ALL_PROCESS_INTERVAL;
 
 				pr _str = format ["{ ""name"": ""%1"", ""processCategory"" : { ""name"" : ""%2"", ""nObjects"": %3, ""fractionCurrent"": %4, ""fractionRequired"": %5, ""updateInterval"": %6} }", //,  ""callTimeAvg"": %7} }", 
-					_name, _tag, _numObjects, _fractionCurrent, _fractionRequired, _updateInterval, _timePerObject]; //, _timePerObject];
+					_name, _tag, _numObjects, _fractionCurrent, _fractionRequired, _updateInterval];
 				OOP_DEBUG_MSG(_str, []);
 			} forEach _processCategories;
-
-
 			_nextProcessLogTime = time + 5;
 		};
 		#endif

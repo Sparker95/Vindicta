@@ -28,9 +28,9 @@ CLASS("GameModeBase", "")
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
-			gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3	]); // Tag, priority, min interval
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10]);
+			gMessageLoopMain = NEW("MessageLoop", ["Main thread" ARG 16]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10 ARG 30]);
 
 
 			// Global debug printer for tests
