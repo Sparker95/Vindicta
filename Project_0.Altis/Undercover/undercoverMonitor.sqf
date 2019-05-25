@@ -57,7 +57,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("camoCoeff"); 													// modified vanilla camouflage coefficient, see: community.bistudio.com/wiki/setUnitTrait
 	VARIABLE("bGhillie");													// true if unit is wearing ghillie suit
 	VARIABLE("EHLoadout");
-	VARIABLE("timer"); 														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
+	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
 
 	// ------------ N E W ------------
 
