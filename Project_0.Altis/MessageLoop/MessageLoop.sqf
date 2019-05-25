@@ -12,7 +12,11 @@ Author: Sparker
 15.06.2018
 */
 
-//#define DEBUG
+/*
+#ifndef RELEASE_BUILD
+//#define DEBUG_MESSAGE_LOOP
+#endif
+*/
 
 #define pr private
 
@@ -27,7 +31,7 @@ CLASS("MessageLoop", "");
 	//Mutex for accessing the message queue
 	VARIABLE("mutex");
 	//Debug name to help read debug printouts
-	VARIABLE("debugName");
+	VARIABLE("name");
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -36,11 +40,12 @@ CLASS("MessageLoop", "");
 	Constructor
 	*/
 	METHOD("new") {
-		params [ ["_thisObject", "", [""]] ];
-		SET_VAR(_thisObject, "msgQueue", []);
+		params [ P_THISOBJECT ];
+		T_SETV("msgQueue", []);
+		T_SETV("name", _thisObject);
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		SET_VAR(_thisObject, "scriptHandle", _scriptHandle);
-		SET_VAR(_thisObject, "mutex", MUTEX_NEW());
+		T_SETV("scriptHandle", _scriptHandle);
+		T_SETV("mutex", MUTEX_NEW());
 	} ENDMETHOD;
 
 	/*
@@ -52,32 +57,32 @@ CLASS("MessageLoop", "");
 	Warning: must be called in scheduled environment!
 	*/
 	METHOD("delete") {
-		params [ ["_thisObject", "", [""]] ];
+		params [ P_THISOBJECT ];
 		private _mutex = GET_VAR(_thisObject, "mutex");
 		MUTEX_LOCK(_mutex); //Make sure we don't terminate the thread after it locks the mutex!
 		//Clear the variables
 		private _scriptHandle = GET_VAR(_thisObject, "scriptHandle");
 		terminate _scriptHandle;
-		SET_VAR(_thisObject, "msgQueue", nil);
-		SET_VAR(_thisObject, "scriptHandle", nil);
+		T_SETV("msgQueue", nil);
+		T_SETV("scriptHandle", nil);
 		MUTEX_UNLOCK(_mutex);
-		SET_VAR(_thisObject, "mutex", nil);
+		T_SETV("mutex", nil);
 	} ENDMETHOD;
 
 
 	/*
-	Method: setDebugName
+	Method: setName
 	Sets debug name of this MessageLoop.
 
-	Parameters: _debugName
+	Parameters: _name
 
-	_debugName - String
+	_name - String
 
 	Returns: nil
 	*/
-	METHOD("setDebugName") {
-		params [["_thisObject", "", [""]], ["_debugName", "", [""]]];
-		SET_VAR(_thisObject, "debugName", _debugName);
+	METHOD("setName") {
+		params [P_THISOBJECT, ["_name", "", [""]]];
+		T_SETV("name", _name);
 	} ENDMETHOD;
 
 	/*
@@ -93,10 +98,15 @@ CLASS("MessageLoop", "");
 	Returns: nil
 	*/
 	METHOD("postMessage") {
-		#ifdef DEBUG
+		#ifdef DEBUG_MESSAGE_LOOP
 		diag_log format ["[MessageLoop::postMessage] params: %1", _this];
 		#endif
-		params [ ["_thisObject", "", [""]], ["_msg", [], [[]]]];
+		params [ P_THISOBJECT, ["_msg", [], [[]]]];
+
+		PROFILE_ADD_EXTRA_FIELD("message_source", _msg select MESSAGE_ID_SOURCE);
+		PROFILE_ADD_EXTRA_FIELD("message_dest", _msg select MESSAGE_ID_DESTINATION);
+		PROFILE_ADD_EXTRA_FIELD("message_type", _msg select MESSAGE_ID_TYPE);
+    
 		private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 		_msgQueue pushBack _msg;
 	} ENDMETHOD;
@@ -132,7 +142,7 @@ CLASS("MessageLoop", "");
 	Returns: nil
 	*/
 	METHOD("deleteReceiverMessages") {
-		params [ ["_thisObject", "", [""]], ["_msgReceiver", "", [""]] ];
+		params [ P_THISOBJECT, ["_msgReceiver", "", [""]] ];
 		private _msgQueue = GETV(_thisObject, "msgQueue");
 
 		//diag_log format ["Deleting message receiver: %1", _msgReceiver];

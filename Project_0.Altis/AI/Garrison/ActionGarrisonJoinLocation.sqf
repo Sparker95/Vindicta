@@ -37,7 +37,7 @@ CLASS("ActionGarrisonJoinLocation", "ActionGarrison")
 			pr _locGars = CALLM(_loc, "getGarrisons", [_side]);
 			if (count _locGars > 0) then {
 				// All's good, need to merge two garrisons now
-				pr _args = [_gar, true]; // true will delete this garrison
+				pr _args = [_gar]; // true will delete this garrison
 				CALLM2(_locGars select 0, "postMethodAsync", "addGarrison", _args); // The other garrison can be on another computer
 			} else {
 				// There is no friendly garrison here, just attach here then

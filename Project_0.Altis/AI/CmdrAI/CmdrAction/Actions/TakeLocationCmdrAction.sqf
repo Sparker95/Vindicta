@@ -1,11 +1,5 @@
 #include "..\..\common.hpp"
 
-// #define CMDR_ACTION_STATE_SPLIT				(CMDR_ACTION_STATE_CUSTOM+1)
-// #define CMDR_ACTION_STATE_READY_TO_MOVE		(CMDR_ACTION_STATE_CUSTOM+2)
-// #define CMDR_ACTION_STATE_MOVED				(CMDR_ACTION_STATE_CUSTOM+3)
-// #define CMDR_ACTION_STATE_TARGET_DEAD		(CMDR_ACTION_STATE_CUSTOM+4)
-// #define CMDR_ACTION_STATE_ARRIVED 			(CMDR_ACTION_STATE_CUSTOM+5)
-
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtLocId");
 
@@ -13,13 +7,56 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtLocId")];
 
 		T_SETV("tgtLocId", _tgtLocId);
+
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
-		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION]+[_tgtLocId]);
+		T_SET_AST_VAR("targetVar", [TARGET_TYPE_LOCATION ARG _tgtLocId]);
 
 #ifdef DEBUG_CMDRAI
 		T_SETV("debugColor", "ColorBlue");
 		T_SETV("debugSymbol", "mil_flag")
 #endif
+	} ENDMETHOD;
+
+	/* protected override */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+
+		T_PRVAR(intel);
+		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		if(_intelNotCreated) then
+		{
+			// Create new intel object and fill in the constant values
+			_intel = NEW("IntelCommanderActionAttack", []);
+
+			T_PRVAR(srcGarrId);
+			T_PRVAR(tgtLocId);
+			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+			ASSERT_OBJECT(_srcGarr);
+			private _tgtLoc = CALLM(_world, "getLocation", [_tgtLocId]);
+			ASSERT_OBJECT(_tgtLoc);
+
+			CALLM(_intel, "create", []);
+
+			SETV(_intel, "type", "Take Location");
+			SETV(_intel, "side", GETV(_srcGarr, "side"));
+			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
+			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
+			SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
+			SETV(_intel, "location", GETV(_tgtLoc, "actual"));
+			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
+		};
+
+		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
+
+		// If we just created this intel then register it now 
+		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
+		if(_intelNotCreated) then {
+			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intel", _intelClone);
+		} else {
+			CALLM(_intel, "updateInDb", []);
+		};
 	} ENDMETHOD;
 
 	/* override */ METHOD("updateScore") {
@@ -44,6 +81,13 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_SETV("scorePriority", 0);
 			T_SETV("scoreResource", 0);
 		};
+
+		// switch  do {
+		// 	case "roadblock": { "mil_triangle" };
+		// 	case "base": { "mil_circle" };
+		// 	case "outpost": { "mil_box" };
+		// 	default { "mil_dot" };
+		// }
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
 		// i.e. How much units/vehicles src can spare.
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
@@ -61,50 +105,117 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
 		private _dist = _srcGarrPos distance _tgtLocPos;
 		private _transportationScore = if(_dist < 2000) then {
+			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[FAIL_UNDER_EFF]+[CHEAT_TRANSPORT]);
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT ARG OCCUPYING_FORCE_HINT]);
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
-		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
-
 		// TODO: implement priority score for TakeLocationCmdrAction
 		// TODO:OPT cache these scores!
-		private _scorePriority = 1; 
+		private _tgtLocType = GETV(_tgtLoc, "type");
 
-		OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-			[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
-			ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
-		// if(_scoreResource == 0) then {
-		// 	0
-		// } else {
-		// 	// ******************************************************************************************
-		// 	// ******************************************************************************************
-		// 	// DOING: UPDATE THIS FROM THE ORIGINAL ACTION
-		// 	// ******************************************************************************************
-		// 	// ******************************************************************************************
-		// 	// CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtLoc])
-		// };
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 
-		//private _str = format ["%1->%2 _scorePriority = %3, _srcOverEff = %4, _srcOverEffScore = %5, _distCoeff = %6, _scoreResource = %7", _srcGarrId, _tgtLocId, _scorePriority, _srcOverEff, _srcOverEffScore, _distCoeff, _scoreResource];
-		//OOP_INFO_0(_str);
-		// if(_scorePriority > 0 and _scoreResource > 0) then {
-		//private _srcEff = GETV(_srcGarr, "efficiency");
-		//private _tgtEff = GETV(_tgtLoc, "efficiency");
+		private _tgtLocTypeDistanceBias = 1;
+		private _tgtLocTypePriorityBias = 1;
 
-		//OOP_DEBUG_MSG("[w %1 a %2] %3%10 reinforce %4%11 Score [p %5, r %6] _detachEff = %7, _detachEffStrength = %8, _distCoeff = %9", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _scorePriority ARG _scoreResource ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _srcEff ARG _tgtEff]);
+		private _activity = log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
 
-		// };
-		T_SETV("scorePriority", _scorePriority);
-		T_SETV("scoreResource", _scoreResource);
+		switch(_tgtLocType) do {
+			case "outpost": {
+				// We want these a bit, but more if there is activity in the area
+				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocOutpostPriority") +
+					GETV(_strategy, "takeLocOutpostPriorityActivityCoeff") * _activity;
+			};
+			case "base": { 
+				// We want these a normal amount but are willing to go further to capture them.
+				// TODO: work out how to weight taking bases vs other stuff? 
+				// Probably high priority when we are losing? This is a gameplay question.
+				_tgtLocTypeDistanceBias = GETV(_strategy, "takeLocBasePriority") +
+					GETV(_strategy, "takeLocBasePriorityActivityCoeff") * _activity;
+			};
+			case "roadblock": {
+				// We won't travel as far to get these.
+				//_tgtLocTypeDistanceBias = 0.5;
+				// We want these based on activity
+				//_tgtLocTypePriorityBias = 2 * log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
+				// // The more surrounding locations we control the more we want to get these first.
+				// private _nearLocsFactors =
+				// 	CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
+				// 		// select out location only not distance
+				// 		select { 
+				// 			_x params ["_dist", "_loc"];
+				// 			!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
+				// 		}
+				// 		apply {
+				// 			_x params ["_dist", "_loc"];
+				// 			// Surrounding bases count more.
+				// 			if(GETV(_loc, "type") == "base") then {
+				// 				_dist / 1000
+				// 			} else {
+				// 				_dist / 2000
+				// 			};
+				// 		};
+				// private _sum = 0;
+				// {_sum = _sum + _x} foreach _nearLocsFactors;
+				// _tgtLocTypePriorityBias = _sum;
+
+				// We want these if there is local activity.
+				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocRoadBlockPriority") +
+					GETV(_strategy, "takeLocRoadBlockPriorityActivityCoeff") * _activity;
+
+				if(_tgtLocTypePriorityBias > 0) then {
+					private _locs = CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) select {
+						_x params ["_dist", "_loc"];
+						!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
+					};
+					// We build these quick if we have an outpost or base nearby, prioritized by distance
+					if(count _locs > 0) then {
+						private _distF = 0.0004 * (_locs#0#0);
+						private _distCoeff = 1 / (1 + (_distF * _distF));
+						_tgtLocTypeDistanceBias = 2 * _distCoeff;
+					} else {
+						_tgtLocTypeDistanceBias = 0;
+					};
+				};
+			};
+			default { 0.5 }; // TODO: dunno what it is, better add more here?
+		};
+
+		private _scoreResource = _detachEffStrength * _distCoeff * _tgtLocTypeDistanceBias * _transportationScore;
+		private _scorePriority = 1 * _tgtLocTypePriorityBias;
+
+		// Work out time to start based on how much force we mustering and distance we are travelling.
+		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8
+#ifndef RELEASE_BUILD
+		private _delay = random 2;
+#else
+		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + random 18;
+#endif
+
+		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
+		// _delay = 0 max (120 min _delay);
+		private _startDate = DATE_NOW;
+
+		_startDate set [4, _startDate#4 + _delay];
+
+		T_SET_AST_VAR("startDateVar", _startDate);
+
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
+		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
+		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _detachEff]);
+		T_CALLM("setScore", [_score]);
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 
 	// This is the min of what src has spare and what tgt wants.
 	// TODO: factor out logic for working out detachments for various situations
-	METHOD("getDetachmentEff") {
+	/* private */ METHOD("getDetachmentEff") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
@@ -141,17 +252,12 @@ ENDCLASS;
 
 #ifdef _SQF_VM
 
-#define CMDR_ACTION_STATE_SPLIT				(CMDR_ACTION_STATE_CUSTOM+1)
-#define CMDR_ACTION_STATE_READY_TO_MOVE		(CMDR_ACTION_STATE_CUSTOM+2)
-#define CMDR_ACTION_STATE_MOVED				(CMDR_ACTION_STATE_CUSTOM+3)
-#define CMDR_ACTION_STATE_TARGET_DEAD		(CMDR_ACTION_STATE_CUSTOM+4)
-#define CMDR_ACTION_STATE_ARRIVED 			(CMDR_ACTION_STATE_CUSTOM+5)
-
 #define SRC_POS [0, 0, 0]
 #define TARGET_POS [1, 2, 3]
 
 ["TakeLocationCmdrAction", {
-	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world]);
 	private _srcEff = [100,100,100,100,100,100,100,100];
 	SETV(_garrison, "efficiency", _srcEff);
@@ -161,10 +267,10 @@ ENDCLASS;
 	private _targetLocation = NEW("LocationModel", [_world]);
 	SETV(_targetLocation, "pos", TARGET_POS);
 
-	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id"), GETV(_targetLocation, "id")]);
+	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetLocation, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
-	CALLM(_thisObject, "updateScore", [_world, _future]);
+	CALLM(_thisObject, "updateScore", [_world ARG _future]);
 
 	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
 	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);

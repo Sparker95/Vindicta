@@ -1,5 +1,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Action\Action.hpp"
+
+#ifndef RELEASE_BUILD
 /*
 This script will be displaying the actions of unit you are looking at.
 */
@@ -147,3 +149,4 @@ for "_ctrlID" from ACTION_DEBUG_NEXT_CTRL_ID_START to (ACTION_DEBUG_NEXT_CTRL_ID
 	};
 	*/
 };
+#endif

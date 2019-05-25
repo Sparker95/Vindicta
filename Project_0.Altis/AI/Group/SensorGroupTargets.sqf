@@ -19,7 +19,9 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 // ----- Debugging definitions -----
 
 // Various debug outputs
-#define DEBUG
+#ifndef RELEASE_BUILD
+#define DEBUG_SENSOR_GROUP_TARGETS
+#endif
 
 // Prints spotted enemies every update iteration, if the combat timer has reached treshold
 #define PRINT_SPOTTED_TARGETS
@@ -50,7 +52,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		// Unpack the group handle
 		pr _hG = GETV(_thisObject, "hG");
 		
-		#ifdef DEBUG
+		#ifdef DEBUG_SENSOR_GROUP_TARGETS
 		OOP_INFO_1("[SensorGroupTargets::Update] Info: %1", _thisObject);
 		#endif
 		
@@ -183,7 +185,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 						//	diag_log format [" ---- Previous stimulus has not been processed! MsgID: %1", _msgID];
 						};
 					};
-				#ifdef DEBUG
+				#ifdef DEBUG_SENSOR_GROUP_TARGETS
 				} else { // if (_comTime > TARGET_TIME_RELAY) then {
 					OOP_INFO_1("[SensorGroupTargets::Update] Info: Group %1 is in combat state but combat timer has not reached the threshold!", _hg);
 				#endif
@@ -195,7 +197,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				// Reset combat counter
 				SETV(_thisObject, "comTime", 0);
 			};
-		#ifdef DEBUG
+		#ifdef DEBUG_SENSOR_GROUP_TARGETS
 		} else {
 			OOP_INFO_3("--- Group: %1 is not alive! Group's units: %2, isNull: %3", _hG, units _hG, isNull _hG);
 			pr _AI = GETV(_thisObject, "AI");

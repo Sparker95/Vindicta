@@ -80,10 +80,14 @@ CLASS("VirtualRoute", "")
 		if(_speedFn isEqualType "") then {
 			pr _default_speedFn = {
 				params ["_road", "_next_road", "_callbackArgs"];
+#ifdef CMDR_AI_TESTING
+				300
+#else
 				if([_road] call misc_fnc_isHighWay) exitWith {
 					60 * 0.277778
 				};
 				40 * 0.277778
+#endif
 			};
 			T_SETV("speedFn", _default_speedFn);
 		} else {
@@ -128,6 +132,7 @@ CLASS("VirtualRoute", "")
 
 			try {
 				// This gets the node to node path.
+				// TODO: add cancellation token so we can cancel route calulation on delete (token = array wrapping a bool)
 				private _path = [_startRoute,_endRoute,_costFn,"",_callbackArgs] call gps_core_fnc_generateNodePath;
 				if(count _path <= 1) then {
 					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
@@ -150,7 +155,7 @@ CLASS("VirtualRoute", "")
 					};
 				};
 				_waypoints pushBack getPos (_fullPath select (count _fullPath - 1));
-				
+
 				T_SETV("waypoints", _waypoints);
 
 				T_SETV("nextIdx", 1);
@@ -161,13 +166,14 @@ CLASS("VirtualRoute", "")
 				// Speed for first section
 				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1, _callbackArgs] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
-
-				// Set it last
-				T_SETV("calculated", true);
-
+				
+#ifndef RELEASE_BUILD
 				if(_debugDraw) then {
 					T_CALLM("debugDraw", []);
 				};
+#endif
+				// Set it last
+				T_SETV("calculated", true);
 			} catch {
 				T_SETV("failed", true);
 			};
@@ -183,12 +189,26 @@ CLASS("VirtualRoute", "")
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
+
+		T_CALLM("waitUntilCalculated", []);
+
 		T_PRVAR(debugDraw);
 		if(_debugDraw) then {
 			T_CALLM("clearDebugDraw", []);
 		};
 	} ENDMETHOD;
-	
+
+	METHOD("waitUntilCalculated") {
+		params [P_THISOBJECT];
+		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
+		// able to wait for it I guess?
+		if(!T_GETV("calculated") and !T_GETV("failed")) then {
+			waitUntil {
+				T_GETV("calculated") or T_GETV("failed")
+			};
+		};
+	} ENDMETHOD;
+
 	/*
 	Method: start
 	Start moving during process calls.
@@ -260,6 +280,10 @@ CLASS("VirtualRoute", "")
 
 				_nextPos = getPos (_route select _nextIdx);
 				_nextDist = _pos distance _nextPos;
+
+				// Delete this position from the waypoint array (if it is in the waypoint array)
+				pr _waypoints = T_GETV("waypoints");
+				if (_waypoints#0 isEqualTo _nextPos) then {_waypoints deleteAt 0;};
 			} else {
 				T_SETV("complete", true);
 			};
@@ -297,7 +321,7 @@ CLASS("VirtualRoute", "")
 		T_PRVAR(pos);
 		T_PRVAR(nextIdx);
 		T_PRVAR(route);
-
+		
 		// TODO: we could return some useful defaults here instead?
 		ASSERT_MSG(!T_GETV("failed"), "Route calculation failed, cannot get convoy positions");
 		ASSERT_MSG(T_GETV("calculated"), "Can't call getConvoyPositions until route has finished calculating");
@@ -365,8 +389,6 @@ CLASS("VirtualRoute", "")
 		];
 		
 		CALLM0(_thisObject, "clearDebugDraw");
-		
-		if(!T_GETV("calculated")) exitWith {};
 
 		T_PRVAR(route);
 
@@ -382,15 +404,14 @@ CLASS("VirtualRoute", "")
 				["end", _end],
 				["color", _routeColor],
 				["size", 8],
-				["id", "gps_route" + _thisObject + str _start + str _end]
+				["id", "gps_route_" + _thisObject + str _start + str _end]
 			] call gps_test_fnc_mapDrawLine; 
 		};
 
-		// T_PRVAR(waypoints);
-		// {
-		// 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
-		// } forEach _waypoints;
-		// pr _waypoints = T_GETV("waypoints");
+		 T_PRVAR(waypoints);
+		 {
+		 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
+		 } forEach _waypoints;
 	} ENDMETHOD;
 
 	/*
@@ -399,8 +420,8 @@ CLASS("VirtualRoute", "")
 	*/
 	METHOD("clearDebugDraw") {
 		params ["_thisObject"];
-		["gps_route" + _thisObject] call gps_test_fn_clear_markers;
-		//["gps_waypoint" + _thisObject] call gps_test_fn_clear_markers;
+		["gps_route_" + _thisObject] call gps_test_fn_clear_markers;
+		["gps_waypoint_" + _thisObject] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
 
 	/*
@@ -408,8 +429,8 @@ CLASS("VirtualRoute", "")
 	Clear debug markers for all routes.
 	*/
 	STATIC_METHOD("clearAllDebugDraw") {
-		["gps_route"] call gps_test_fn_clear_markers;
-		["gps_waypoint"] call gps_test_fn_clear_markers;
+		["gps_route_"] call gps_test_fn_clear_markers;
+		["gps_waypoint_"] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
 
 	/*
@@ -419,6 +440,60 @@ CLASS("VirtualRoute", "")
 	METHOD("getPos") {
 		params ["_thisObject"];
 		T_GETV("pos")
+	} ENDMETHOD;
+
+	/*
+	Method: sets the current position to the nearest position along the route.
+	Returns: nothing
+	*/
+	METHOD("setPos") {
+		params ["_thisObject", ["_pos", [], [[]]] ];
+
+		if (T_GETV("calculated")) then {
+			// Find the nearest pos in the route and its index
+			pr _route = T_GETV("route");
+			pr _i = 0;
+			pr _count = count _route;
+			pr _index = 0;
+			pr _dist = _route#0 distance2D _pos;
+			while {_i < _count} do {
+				pr _p = _route#_i;
+				pr _d = _p distance2D _pos;
+				if (_d < _dist) then {_dist = _d; _index = _i;};
+				_i = _i + 1;
+			};
+
+			// Set pos and next index
+			if (_index != (_count - 1)) then { // Select the next position, so that we don't need to drive one node backwards
+				_index = _index + 1;
+			};
+			T_SETV("nextIdx", _index);
+			T_SETV("pos", _route select _index);
+
+			// Search the route from start and delete all waypoints until this point
+			_i = 0;
+			pr _waypoints = T_GETV("waypoints");
+			while {_i <= _index} do {
+				pr _pos = _route select _i;
+				pr _wpid = _waypoints findIf {_x isEqualTo _pos};
+				if (_wpid != -1) then {
+					_waypoints deleteAt _wpid;
+				};
+				_i = _i + 1;
+			};
+		} else {
+			// We want to set a position before it has actually been calculated
+			// It's not good but probably we can just ignore this because it means we haven't gone too far away
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: getAIWaypoints
+	Returns: array of waypoints for AI navigation, taking account the current position
+	*/
+	METHOD("getAIWaypoints") {
+		params ["_thisObject"];
+		T_GETV("waypoints")
 	} ENDMETHOD;
 
 ENDCLASS;

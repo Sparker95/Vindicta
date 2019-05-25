@@ -74,15 +74,14 @@ class Params {
 class CfgFunctions {
 	#include "Dialogue\functions.hpp"
 	#include "JeroenArsenal\functions.hpp"
-
+    #include "CivilianPresence\functions.hpp"
 	class missionTag
 	{
 		class randomThings
 		{
-			// Call initModules.sqf in preinit because we need to compile functions/classes before JIP functions are called
-			class initModules {
+            class preInit {
 				preInit = 1;
-				file = "initModules.sqf";
+				file = "preInit.sqf";
 			};
 		};
 	};
@@ -90,13 +89,11 @@ class CfgFunctions {
 
 //==== Dialogs and UIs ====
 #include "UI\Resources\UIBase.hpp"
-#include "UI\Resources\MapUI\MapUI.h"
+#include "UI\Resources\ClientMapUI\ClientMapUI.h"
+
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
 //#include "\A3\ui_f\hpp\defineCommonColors.inc"
-
-
-
 
 
 //==== Remote execution ====

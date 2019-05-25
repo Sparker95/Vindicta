@@ -3,8 +3,6 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#define DEBUG_CMDRAI
-
 #define MODEL_HANDLE_INVALID 		-1
 
 // Flags for WorldModel.new type parameter.
@@ -17,6 +15,12 @@
 #define FAIL_WITHOUT_FULL_TRANSPORT		2	// Fail if we couldn't assign transport to the new garrison (ASSIGN_TRANSPORT required)
 #define FAIL_UNDER_EFF					3	// Fail if the split garrison didn't meet efficiency requirements
 #define CHEAT_TRANSPORT					4	// Spawn trucks if they are not available and transport is requested
+#define OCCUPYING_FORCE_HINT			5	// Hint to select units approproiate for an occupying force (e.g. plenty of inf)
+#define COMBAT_FORCE_HINT				6	// Hint to select units approproiate for direct combat (e.g. heavy firepower)
+#define RECON_FORCE_HINT				7	// Hint to select units approproiate for a recon force (e.g. recon units, fast transport)
+#define SPEC_OPS_FORCE_HINT				8	// Hint to select units approproiate for a spec ops (e.g. spec ops units, covert transport)
+
+#define PROFILER_COUNTERS_ENABLE
 
 #define OFSTREAM_FILE "CmdrAI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
@@ -25,13 +29,34 @@
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
 
-#define LABEL(model) GETV(model, "label")
+#ifndef RELEASE_BUILD
+#define DEBUG_CMDRAI
+#endif
 
+// Shortcuts
+#define LABEL(model) GETV(model, "label")
 #define EFF_ZERO T_EFF_null
+#define MAKE_SCORE_VEC(scorePriority, scoreResource, scoreStrategy, scoreCompleteness) [scorePriority, scoreResource, scoreStrategy, scoreCompleteness]
+#define GET_SCORE_PRIORITY(scoreVec) (scoreVec select 0)
+#define GET_SCORE_RESOURCE(scoreVec) (scoreVec select 1)
+#define GET_SCORE_STRATEGY(scoreVec) (scoreVec select 2)
+#define GET_SCORE_COMPLETENESS(scoreVec) (scoreVec select 3)
+#define APPLY_SCORE_STRATEGY(scoreVec, strategyScore) [scoreVec select 0, scoreVec select 1, strategyScore, scoreVec select 3]
 
 // Minimum efficiency of a garrison.
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
 #define EFF_MIN_EFF [6, 0, 0, 0, 6, 0, 0, 0]
+#define EFF_GARRISON_MIN_EFF [12, 0, 0, 0, 12, 0, 0, 0]
+
+// Cmdr planning constants
+#define CMDR_PLANNING_PRIORITY_HIGH 0
+#define CMDR_PLANNING_PRIORITY_NORMAL 1
+#define CMDR_PLANNING_PRIORITY_LOW 2
+
+// PRIME NUMBERS only
+#define CMDR_PLANNING_RATIO_HIGH 3
+#define CMDR_PLANNING_RATIO_NORMAL 31
+#define CMDR_PLANNING_RATIO_LOW 67
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \

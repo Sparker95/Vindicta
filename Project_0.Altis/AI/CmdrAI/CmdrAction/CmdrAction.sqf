@@ -5,16 +5,6 @@
 
 #include "..\common.hpp"
 
-// DOING:
-// How to deal with this case: action requires resources, but they aren't available yet.
-// 		Required resources should come from original world state? That would allow duplicate use...
-// 		Actually the problem is temporality. Resouces in the future doesn't = resource now.
-//		e.g. Deciding if you can reinforce FROM somewhere requires the resource now
-//			 Deciding if you should reinforce TO somewhere should take into account future resources
-//			 Applying reinforce action should take from src resources now, and apply to tgt in the future.
-//		So sim should have now and future?
-// 
-// Reinforce is taking too much resource.
 CLASS("CmdrAction", "RefCounted")
 
 	// The priority of this action in relation to other actions of the same or different type.
@@ -37,6 +27,8 @@ CLASS("CmdrAction", "RefCounted")
 	// Current state of the action
 	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
+	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("scorePriority", 1);
@@ -49,6 +41,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("variables", []);
 		T_SETV("variablesStack", []);
 		T_SETV("garrisons", []);
+		T_SETV("intel", NULL_OBJECT);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -63,6 +56,19 @@ CLASS("CmdrAction", "RefCounted")
 				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x]+[_thisObject]);
 			};
 		} foreach +_garrisons;
+
+		T_PRVAR(intel);
+		if(!IS_NULL_OBJECT(_intel)) then {
+			DELETE(_intel);
+		};
+	} ENDMETHOD;
+
+	/* protected */ METHOD("setScore") {
+		params [P_THISOBJECT, P_ARRAY("_scoreVec")];
+		T_SETV("scorePriority", GET_SCORE_PRIORITY(_scoreVec));
+		T_SETV("scoreResource", GET_SCORE_RESOURCE(_scoreVec));
+		T_SETV("scoreStrategy", GET_SCORE_STRATEGY(_scoreVec));
+		T_SETV("scoreCompleteness", GET_SCORE_COMPLETENESS(_scoreVec));
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("createTransitions") {
@@ -105,7 +111,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(scoreResource);
 		T_PRVAR(scoreStrategy);
 		T_PRVAR(scoreCompleteness);
-		// TODO: what is the correct way to combine these scores?
+		// TODO: what is the correct to combine these scores?
 		// Should we try to get them all from 0 to 1?
 		// Maybe we want R*(iP + jS + kC)?
 		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness
@@ -189,6 +195,10 @@ CLASS("CmdrAction", "RefCounted")
 		};
 		T_SETV("state", _state);
 		
+		if(CALLM(_world, "isReal", [])) then {
+			T_CALLM("updateIntel", [_world]);
+		};
+
 		#ifdef DEBUG_CMDRAI
 		T_CALLM("debugDraw", [_world]);
 		#endif
@@ -197,6 +207,10 @@ CLASS("CmdrAction", "RefCounted")
 	METHOD("isComplete") {
 		params [P_THISOBJECT];
 		T_GETV("state") == CMDR_ACTION_STATE_END
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_STRING("_world")];
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("getLabel") {

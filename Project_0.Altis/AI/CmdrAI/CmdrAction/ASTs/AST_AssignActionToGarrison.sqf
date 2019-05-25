@@ -1,6 +1,6 @@
 #include "..\..\common.hpp"
 
-CLASS("AST_AssignActionToGarrison", "ActionStateTransition")
+CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 

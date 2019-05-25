@@ -6,7 +6,9 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
+#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
+#include "..\Resources\UIProfileColors.h"
 
 
 /*
@@ -17,18 +19,137 @@ Singleton class that performs things related to map user interface
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
-// Common colors
-CMUI_ColorWEST = [0,0.3,0.6,1];
-CMUI_ColorEAST = [0.5,0,0,1];
-CMUI_ColorIND = [0,0.5,0,1];
-CMUI_ColorUnknown = [0.4,0,0.5,1];
-
 CLASS(CLASS_NAME, "")
-
 	// Arrays of LOCATION_DATA structures
-	STATIC_VARIABLE("locationDataWest"); // What client's side knows about West knowledge about locations
+	STATIC_VARIABLE("locationDataWest"); 	// What client's side knows about West knowledge about locations
 	STATIC_VARIABLE("locationDataEast");
 	STATIC_VARIABLE("locationDataInd");
+
+	// initialize UI event handlers
+	STATIC_METHOD("new") {
+		params [["_thisObject", "", [""]]];
+		pr _mapDisplay = findDisplay 12;
+
+		//listbox events
+		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { params ['_control']; CALLSM(CLASS_NAME, "onLBSelChanged", [_control]) }];
+
+		// bottom panel
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["ButtonDown", { params ['_control']; CALLSM(CLASS_NAME, "onButtonDownCreateCamp", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		// location panel
+		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+
+		// init headline text and color
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
+
+		// set some properties that didn't work right in control classes
+		(_mapDisplay displayCtrl IDC_LOCP_TABCAT) ctrlSetFont "PuristaSemiBold";
+
+	} ENDMETHOD;
+
+	STATIC_METHOD("onButtonDownCreateCamp") {
+		params ["_thisClass", "_control"];
+		[player] call fnc_createCamp;
+	} ENDMETHOD;
+
+	/*
+		Method: onMouseEnter
+		Description: Called when the mouse cursor enters the control.
+
+		Parameters: 
+		0: _control - Reference to the control which called this method
+	*/
+	STATIC_METHOD("onMouseEnter") {
+		params ["_thisClass", "_control"];
+		pr _mapDisplay = findDisplay 12;
+		pr _idc = ctrlIDC _control;
+		_control ctrlSetTextColor [0, 0, 0, 1];
+
+		// choose correct hint to display for this control
+		switch (_idc) do {
+			// bottom panel
+			case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1"); };
+			case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2"); };
+			case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3"); };
+
+			// location panel
+			case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
+			case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
+			case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
+		};
+
+	} ENDMETHOD;
+
+
+	/*
+		Method: onMouseExit
+		Description: Called when the mouse cursor exits the control.
+
+		Parameters: 
+		0: _control - Reference to the control which called this method
+	*/
+	STATIC_METHOD("onMouseExit") {
+		params ["_thisClass", "_control"];
+		pr _mapDisplay = findDisplay 12;
+		_control ctrlSetTextColor [1, 1, 1, 1];
+
+		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_DEFAULT");
+
+	} ENDMETHOD;
+
+	/*
+		Method: onLBSelChanged
+		Description: Called when the selection inside the listbox has changed.
+
+		Parameters: 
+		0: _control - Reference to the control which called this method
+	*/
+	STATIC_METHOD("onLBSelChanged") {
+		params ["_thisClass", "_control"];
+		pr _mapDisplay = findDisplay 12;
+		// TODO: Display different descriptions for intel
+		
+		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
+
+	} ENDMETHOD;
+
+	// Formats location data and shows it on the location data panel
+	STATIC_METHOD("onMouseClickElsewhere") {
+		CALLSM0(CLASS_NAME, "clearListNBox");
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className != "IntelLocation") then {
+				_ctrlListnbox lnbAddRow [ format ["%1 \n _className: %1 \n _className: %1 \n", _className] ];
+			};
+
+		} forEach _allIntels;
+
+		// change location panel headline
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
+		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
+
+	} ENDMETHOD;
+
 
 	STATIC_METHOD("updateLocationData") {
 		params [["_thisObject", "", [""]], ["_locationData", [], [[]]], ["_side", CIVILIAN]];
@@ -97,10 +218,10 @@ CLASS(CLASS_NAME, "")
 		};
 
 		pr _color = switch(_side) do {
-			case WEST: {CMUI_ColorWEST};
-			case EAST: {CMUI_ColorEAST};
-			case INDEPENDENT: {CMUI_ColorInd};
-			default {CMUI_ColorUnknown};
+			case WEST: {MUI_COLOR_BLUFOR};
+			case EAST: {MUI_COLOR_OPFOR};
+			case INDEPENDENT: {MUI_COLOR_IND};
+			default {MUI_COLOR_IND};
 		};
 
 		CALLM1(_mapMarker, "setPos", _pos);
@@ -141,46 +262,40 @@ CLASS(CLASS_NAME, "")
 
 	} ENDMETHOD;
 
-	// Formats location data and shows it on the location data panel
+	STATIC_METHOD("clearListNBox") {
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+		lnbClear _ctrlListnbox;
+	} ENDMETHOD;
+
 	STATIC_METHOD("updateLocationDataPanel") {
-		params ["_thisClass", ["_pos", [], [[]]]];
+		params ["_thisClass", ["_intel", "", [""]]];
 
-		diag_log format ["Updating location data panel: %1", _pos];
-
-		// Was a proper position provided or should we show nothing?
-		pr _ld = if (count _pos != 0) then {
-			CALL_STATIC_METHOD(CLASS_NAME, "getLocationData", [_pos]);
-		} else {
-			[]
-		};
-		pr _typeText = "...";
-		pr _timeText = "...";
-		pr _compositionText = "...";
-		pr _sideText = "...";
-		private _listNamePlayersText = "";
-
+		pr _typeText = "";
+		pr _timeText = "";
+		pr _sideText = "";
+		pr _soldierCount = 0;
+		pr _vehList = [];
+		
 		// Did we find a location in the database?
-		if ((count _ld) != 0) then {
+		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
 
-			diag_log format ["Location data was found in the database"];
-
-			_typeText = switch (_ld select CLD_ID_TYPE) do {
+			_typeText = switch (GETV(_intel, "type")) do {
 				case LOCATION_TYPE_OUTPOST: {"Outpost"};
 				case LOCATION_TYPE_CAMP: {"Camp"};
 				case LOCATION_TYPE_BASE: {"Base"};
 				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
 			};
 			
-			_timeText = str round random 100;
-			_sideText = str (_ld select CLD_ID_SIDE);
+			_timeText = str GETV(_intel, "dateUpdated");
+			_sideText = str GETV(_intel, "side");
 
-			pr _ua = _ld select CLD_ID_UNIT_AMOUNT;
+			pr _ua = GETV(_intel, "unitData");
 			if (count _ua > 0) then {
 				_compositionText = "";
 				// Amount of infrantry
-				pr _ninf = 0;
-				{_ninf = _ninf + _x;} forEach (_ua select T_INF);
-				_compositionText = _compositionText + (format ["Soldiers: %1\n", _ninf]);
+				{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
+
 				// Count vehicles
 				pr _uaveh = _ua select T_VEH;
 				{
@@ -188,24 +303,24 @@ CLASS(CLASS_NAME, "")
 					if (_x > 0) then {
 						pr _subcatID = _forEachIndex;
 						pr _vehName = T_NAMES select T_VEH select _subcatID;
-						pr _str = format ["%1: %2\n", _vehName, _x];
-						_compositionText = _compositionText + _str;
+						pr _str = format ["%1: %2", _vehName, _x];
+						_vehList pushBack _str;
 					};
 				} forEach _uaveh;
-			} else {
-				_compositionText = "<Unknown>";
 			};
-			diag_log format ["Composition text: %1", _compositionText];
-		} else {
-			diag_log format ["Location data was NOT found in the database"];
 		};
 
 		// Apply new text for GUI elements
-		((finddisplay 12) displayCtrl IDC_LD_TYPE) ctrlSetText ("Type: " + _typeText);
-		((finddisplay 12) displayCtrl IDC_LD_SIDE) ctrlSetText ("Side: " + _sideText);
-		((finddisplay 12) displayCtrl IDC_LD_TIME) ctrlSetText ("Time: " + _timeText);
-		((finddisplay 12) displayCtrl IDC_LD_COMPOSITION) ctrlSetText ("Composition:\n" + _compositionText);
-		{((finddisplay 12) displayCtrl _x) ctrlCommit 0;} forEach [IDC_LD_TYPE, IDC_LD_SIDE, IDC_LD_TIME, IDC_LD_COMPOSITION, IDC_PL_LISTPLAYERS];
+		CALLSM0(CLASS_NAME, "clearListNBox");
+		
+		private _mapDisplay = findDisplay 12;
+		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
+		_ctrlListnbox lnbAddRow [ format ["Type: %1", _typeText] ];
+		_ctrlListnbox lnbAddRow [ format ["Side: %1", _sideText] ];
+		_ctrlListnbox lnbAddRow [ format ["Soldier Count: %1", str _soldierCount] ];
+		{
+			_ctrlListnbox lnbAddRow [_x];
+		} forEach _vehList;
 	} ENDMETHOD;
 
 	STATIC_METHOD("showLocationDataPanel") {
@@ -238,4 +353,3 @@ ENDCLASS;
 		SET_STATIC_VAR(CLASS_NAME, _x, []);
 	};
 } forEach ["locationDataWest", "locationDataEast", "locationDataInd"];
-

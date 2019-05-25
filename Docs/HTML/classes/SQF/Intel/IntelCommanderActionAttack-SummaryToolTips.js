@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionAttack",{652:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Intel about action to attack something.</div></div>",654:"<div class=\"NDToolTip TVariable LSQF\"><div class=\"TTSummary\">The type of attack: QRF, basic attack, something else. IDK the formet of this now!</div></div>"});

@@ -137,8 +137,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 
 
 // Move dismounted
-["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_ALL_CREW_MOUNTED,		false],
-											[WSP_GAR_ALL_INFANTRY_MOUNTED,	false]]] call AI_misc_fnc_setActionPreconditions;
+["ActionGarrisonMoveDismounted", _s,	[		]] call AI_misc_fnc_setActionPreconditions;
 ["ActionGarrisonMoveDismounted", _s,	[	[WSP_GAR_POSITION,	TAG_POS,	true]]]			call AI_misc_fnc_setActionEffects; // Position is defined in parameter 0 of the action
 
 // Load cargo

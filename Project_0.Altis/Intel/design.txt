@@ -1,0 +1,30 @@
+Intel types:
+
+Intel base class
+- Time when it was added initially
+- Time of the last update
+- Intel source - where we got it from
+
+Location garrison data
+- Position
+- Location
+- Amount of units of each type
+- Faction that controls the location
+
+Commander actions
+- Source position
+- Source Location
+- Route
+- Transport method - ground, air
+- Departure time
+- Strength ot units involved
+
+Reinforce
+- Destination Garrison
+
+Attack
+
+Build
+- Construction type - roadblock / outpost / smth else?
+
+Take back lost vehicles

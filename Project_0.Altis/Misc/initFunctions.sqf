@@ -9,3 +9,7 @@ misc_fnc_getVehicleWidth = compile preprocessFileLineNumbers "Misc\fn_getVehicle
 misc_fnc_isVehicleFlipped = compile preprocessFileLineNumbers "Misc\fn_isVehicleFlipped.sqf";
 misc_fnc_actionDropAllWeapons = compile preprocessFileLineNumbers "Misc\fn_actionDropAllWeapons.sqf";
 misc_fnc_mapDrawLine = compile preprocessFileLineNumbers "Misc\fn_mapDrawLine.sqf";
+misc_fnc_dateToNumber = compile preprocessFileLineNumbers "Misc\fn_dateToNumber.sqf";
+
+misc_fnc_getRoadDirection = compile preprocessFileLineNumbers "Misc\fn_getRoadDirection.sqf";
+misc_fnc_getRoadWidth = compile preprocessFileLineNumbers "Misc\fn_getRoadWidth.sqf";

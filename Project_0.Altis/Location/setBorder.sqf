@@ -128,6 +128,6 @@ switch (_type) do {
 	};
 	
 	default {
-		diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, GET_VAR(_thisObject, "debugName")];
+		diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, GET_VAR(_thisObject, "name")];
 	};
 };

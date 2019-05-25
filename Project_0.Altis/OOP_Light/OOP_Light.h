@@ -42,52 +42,6 @@
 #define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
-#ifdef _SQF_VM
-#define TEXT_
-#undef ASP_ENABLE
-#undef OFSTREAM_ENABLE
-#undef OFSTREAM_FILE
-#define VM_LOG(t) diag_log t
-#define VM_LOG_FMT(t, args) diag_log format ([t] + args)
-#define OOP_ASSERT
-#define OOP_ASSERT_ACCESS
-#undef OOP_DEBUG
-#undef OOP_INFO
-#define OOP_WARNING
-#define OOP_ERROR
-
-#define TIME_NOW 0
-#define CLIENT_OWNER objNull
-
-#else
-#define TEXT_ text
-
-#define VM_LOG(t)
-#define VM_LOG_FMT(t, args)
-
-#define TIME_NOW time
-#define CLIENT_OWNER clientOwner
-
-#endif
-
-// Defining OOP_SCRIPTNAME it will add 	_fnc_scriptName = "..."; to each method created with OOP_Light
-// You can either define it here or usage of OOP_INFO_, ..., macros will cause its automatic definition
-// ! ! ! It's currently totally disabled because recompiling breaks file names in callstacks ! ! !
-// OOP SCRIPTNAME
-
-//#define OOP_SCRIPTNAME
-/*
-#ifdef OOP_INFO
-#define OOP_SCRIPTNAME
-#endif
-#ifdef OOP_WARNING
-#define OOP_SCRIPTNAME
-#endif
-#ifdef OOP_ERROR
-#define OOP_SCRIPTNAME
-#endif
-*/
-
 // Enables support for Arma Script Profiler globally
 // Set it in this file
 //#define ASP_ENABLE
@@ -99,6 +53,60 @@
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
 
+
+// ----------------------------------------------------------------------
+// |               C O N F I G   E N T R Y   P O I N T                  |
+// ----------------------------------------------------------------------
+
+#include "..\config\oop_config.hpp"
+
+#ifdef _SQF_VM
+
+#define TEXT_
+#undef ASP_ENABLE
+#undef PROFILER_COUNTERS_ENABLE
+#undef ADE
+#undef OFSTREAM_ENABLE
+#undef OFSTREAM_FILE
+#define VM_LOG(t) diag_log t
+#define VM_LOG_FMT(t, args) diag_log format ([t] + args)
+#define OOP_ASSERT
+#define OOP_ASSERT_ACCESS
+#undef OOP_DEBUG
+#undef OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#undef OOP_PROFILE
+
+#define TIME_NOW 0
+#define DATE_NOW [0,0,0,0,0]
+#define CLIENT_OWNER 0
+#define IS_SERVER true
+#define HAS_INTERFACE true
+#define IS_HEADLESSCLIENT false
+#define PUBLIC_VARIABLE isNil
+
+#define PROFILE_NAME "Satan"
+
+#else
+
+#define TEXT_ text
+
+#define VM_LOG(t)
+#define VM_LOG_FMT(t, args)
+
+#define TIME_NOW time
+#define DATE_NOW date
+#define CLIENT_OWNER clientOwner
+#define IS_SERVER isServer
+#define HAS_INTERFACE hasInterface
+#define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
+#define PUBLIC_VARIABLE publicVariable
+
+#define PROFILE_NAME profileName
+
+#endif
+
 // ----------------------------------------------------------------------
 // |                P R O F I L E R   C O U N T E R S                   |
 // ----------------------------------------------------------------------
@@ -109,21 +117,28 @@
 #define COUNTER_NAME_STR(nameStr) ("g_profCnt_" + nameStr)
 
 #ifdef PROFILER_COUNTERS_ENABLE
-
-#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0]; nameStr profilerSetCounter 0;
-
-#define PROFILER_COUNTER_INC(nameStr) isNil { \
-private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
-missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
-nameStr profilerSetCounter _oop_cnt; };
-
-#define PROFILER_COUNTER_DEC(nameStr) isNil { \
-private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
-missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
-nameStr profilerSetCounter _oop_cnt; };
-
+#define PROFILER_COUNTER_INIT(nameStr) missionNamespace setVariable[COUNTER_NAME_STR(nameStr), 0];
 #else
 #define PROFILER_COUNTER_INIT(nameStr)
+#endif
+
+#ifdef ASP_ENABLE
+#define PROFILER_COUNTER_INC(nameStr) isNil { \
+	private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+	if(!isNil "_oop_cnt") then { \
+		missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt+1]; \
+		nameStr profilerSetCounter _oop_cnt; \
+	}; \
+};
+
+#define PROFILER_COUNTER_DEC(nameStr) isNil { \
+	private _oop_cnt = missionNamespace getVariable COUNTER_NAME_STR(nameStr); \
+	if(!isNil "_oop_cnt") then { \
+		missionNamespace setVariable [COUNTER_NAME_STR(nameStr), _oop_cnt-1]; \
+		nameStr profilerSetCounter _oop_cnt; \
+	}; \
+};
+#else
 #define PROFILER_COUNTER_INC(nameStr)
 #define PROFILER_COUNTER_DEC(nameStr)
 #endif
@@ -160,7 +175,7 @@ nameStr profilerSetCounter _oop_cnt; };
 // ----------------------------------------------------------------------
 
 //Name of a specific instance of object
-#define OBJECT_NAME_STR(classNameStr, objIDInt) (OOP_PREFIX + (classNameStr) + OBJECT_SEPARATOR + (format ["%1", objIDInt]))
+#define OBJECT_NAME_STR(classNameStr, objIDInt)  (format ["%1%2%3%4_%5", OOP_PREFIX, classNameStr, OBJECT_SEPARATOR, CLIENT_OWNER, objIDInt])
 
 //String name of a static member
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
@@ -318,16 +333,14 @@ nameStr profilerSetCounter _oop_cnt; };
 #define __STRINGIFY(s) #s
 #define T_PRVAR(varName) private _##varName = GET_VAR(_thisObject, __STRINGIFY(varName))
 
-// todo add macros to check object validity
-/*
-#define IS_VALID(objNameStr)
-private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
-	//Check if it's an object
-	if(isNil "_classNameStr") exitWith {
-		[_file, _line, _objNameStr] call OOP_error_notObject;
-		false;
-	};
-*/
+// Returns object class name
+#define GET_OBJECT_CLASS(objNameStr) OBJECT_PARENT_CLASS_STR(objNameStr)
+
+// Returns true if reference passed is pointing at a valid object 
+#define IS_OOP_OBJECT(objNameStr) (! (isNil {GET_OBJECT_CLASS(objNameStr)}))
+
+// Returns variable names of this class
+#define GET_CLASS_MEMBERS(classNameStr) GET_SPECIAL_MEM(classNameStr, MEM_LIST_STR)
 
 // -----------------------------------------------------
 // |             M E T H O D   C A L L S               |
@@ -423,29 +436,89 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	#define _OOP_FUNCTION_WRAPPERS
 
 	#define PROFILE_SCOPE_START(scopeName) \
-		private _profileTStart##scopeName = time;
+		private _profileTStart##scopeName = diag_tickTime; \
+		private _extraProfileFields = [];
 
 	#define PROFILE_SCOPE_END(scopeName, minT) \
-		private _totalProfileT##scopeName = time - _profileTStart##scopeName; \
+		private _totalProfileT##scopeName = diag_tickTime - _profileTStart##scopeName; \
 		if(_totalProfileT##scopeName > minT) then { \
-			OOP_PROFILE_2("%1 %2", #scopeName, _totalProfileT##scopeName); \
+			private _str = format ["{ ""profile"": { ""scope"": ""%1"", ""time"": %2 }}", #scopeName, _totalProfileT##scopeName]; \
+			OOP_PROFILE_0(_str); \
 		};
 
-	#define OOP_FUNC_HEADER_PROFILE private _profileTStart = time
+	#define OOP_FUNC_HEADER_PROFILE \
+		private _profileTStart = diag_tickTime; \
+		private _class1 = OBJECT_PARENT_CLASS_STR(_thisObject); \
+		private _scopeKey = _class1; \
+		private _extraProfileFields = [];
+
+	#define OOP_FUNC_HEADER_PROFILE_STATIC \
+		private _profileTStart = diag_tickTime; \
+		private _class1 = _thisClass; \
+		private _scopeKey = _class1; \
+		private _extraProfileFields = [];
+
 	#define OOP_FUNC_FOOTER_PROFILE \
-		private _totalProfileT = time - _profileTStart; \
+		private _totalProfileT = diag_tickTime - _profileTStart; \
 		if(_totalProfileT > OOP_PROFILE_MIN_T) then { \
-			OOP_PROFILE_3("%1.%2 %3", _objOrClass, _methodNameStr, _totalProfileT); \
+			private _extraFieldsObj = ""; \
+			if(count _extraProfileFields > 0) then { \
+				{ \
+					_x params ["_fieldName", "_fieldVal"]; \
+					if(_extraFieldsObj != "") then { _extraFieldsObj = _extraFieldsObj + "," }; \
+					if(_fieldVal isEqualType "") then {	 \
+						_extraFieldsObj = _extraFieldsObj + (format [ """%1"": ""%2""", _fieldName, _fieldVal ]); \
+					} else { \
+						_extraFieldsObj = _extraFieldsObj + (format [ """%1"": %2", _fieldName, _fieldVal ]); \
+					}; \
+				} forEach _extraProfileFields; \
+				_extraFieldsObj = ", ""extra"": { " + _extraFieldsObj + " }"; \
+			}; \
+			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4""%6 }}", _class1, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj]; \
+			OOP_PROFILE_0(_str); \
 		}
+	
+	#define PROFILE_ADD_EXTRA_FIELD(fieldName, fieldVal) _extraProfileFields pushBack [fieldName, fieldVal];
 #else
 	#define PROFILE_SCOPE_START(scopeName)
 	#define PROFILE_SCOPE_END(scopeName, minT)
+	#define PROFILE_ADD_EXTRA_FIELD(fieldName, fieldVal)
 	#define OOP_FUNC_HEADER_PROFILE
+	#define OOP_FUNC_HEADER_PROFILE_STATIC
 	#define OOP_FUNC_FOOTER_PROFILE
 #endif
 
+// Enable function wrappers if logging macros are used
+#ifdef OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#endif
+#ifdef OOP_INFO
+#define _OOP_FUNCTION_WRAPPERS
+#endif
+#ifdef OOP_WARNING
+#define _OOP_FUNCTION_WRAPPERS
+#endif
+#ifdef OOP_ERROR
+#define _OOP_FUNCTION_WRAPPERS
+#endif
+#ifdef OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#endif
+
+// Enable function wrappers if access assertions are enabled
 #ifdef OOP_ASSERT_ACCESS
 #define _OOP_FUNCTION_WRAPPERS
+#endif
+
+// Enable function wrappers if access assertions are enabled
+#ifdef OOP_TRACE_FUNCTIONS
+#define OOP_DEBUG
+#define _OOP_FUNCTION_WRAPPERS
+#define OOP_TRACE_ENTER_FUNCTION OOP_DEBUG_MSG("> enter function %1", [_this])
+#define OOP_TRACE_EXIT_FUNCTION OOP_DEBUG_MSG("< exit function", [])
+#else
+#define OOP_TRACE_ENTER_FUNCTION 
+#define OOP_TRACE_EXIT_FUNCTION 
 #endif
 
 // If some enabled functionality requires function wrappers we set them here. If you want to conditionally add more stuff to the wrapped functions
@@ -457,12 +530,15 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
+			private _thisObject = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
 	#define ENDMETHOD }) select 0;\
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		} ]
@@ -473,11 +549,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
+			private _thisObject = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn }) select 0; \
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		}]
@@ -487,9 +566,11 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
+			private _thisClass = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
-			OOP_FUNC_HEADER_PROFILE; \
+			OOP_FUNC_HEADER_PROFILE_STATIC; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _result = ([0] apply { _this call
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
@@ -498,11 +579,14 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
+			private _thisClass = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
-			OOP_FUNC_HEADER_PROFILE; \
+			OOP_FUNC_HEADER_PROFILE_STATIC; \
+			OOP_TRACE_ENTER_FUNCTION; \
 			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn}) select 0; \
+			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
 			if !(isNil "_result") then { _result } else { nil } \
 		}]
@@ -561,6 +645,11 @@ private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
+#ifdef PROFILER_COUNTERS_ENABLE
+#define CREATE_PROFILE_TAG VARIABLE("__profile_tag")
+#else
+#define CREATE_PROFILE_TAG
+#endif
 
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
@@ -595,9 +684,11 @@ SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
 PROFILER_COUNTER_INIT(_oop_classNameStr); \
 METHOD("new") {} ENDMETHOD; \
 METHOD("delete") {} ENDMETHOD; \
-METHOD("copy") {} ENDMETHOD; \
+METHOD("copy") OOP_clone_default ENDMETHOD; \
+METHOD("assign") OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
-VARIABLE(OOP_PUBLIC_STR);
+VARIABLE(OOP_PUBLIC_STR); \
+PROFILE_TAG;
 
 // ----------------------------------------
 // |           E N D C L A S S            |
@@ -609,19 +700,7 @@ VARIABLE(OOP_PUBLIC_STR);
  * No it doesn't do anything any more
  */
 
-#ifdef OOP_SCRIPTNAME
-#define ENDCLASS { \
-private _fnc = missionNamespace getVariable CLASS_METHOD_NAME_STR(_oop_classNameStr, _x); \
-private _fnc_array = toArray str _fnc; \
-_fnc_array deleteAt 0; \
-_fnc_array deleteAt ((count _fnc_array) - 1); \
-private _fnc_str = (format ["private _fnc_scriptName = '%1';", _x]) + toString [10] + format ["#line 1 '%1'", CLASS_METHOD_NAME_STR(_oop_classNameStr, _x)] + toString [10] + (toString _fnc_array); \
-missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, _x), compile _fnc_str]; \
-} forEach _oop_newMethodList; \
-}
-#else
 #define ENDCLASS }
-#endif
 
 // ----------------------------------------------------------------------
 // |        C O N S T R U C T O R  O F   E X I S T I N G   O B J E C T  |
@@ -689,6 +768,45 @@ objNameStr \
 
 #define DELETE(objNameStr) ([objNameStr] call OOP_delete)
 
+// ----------------------------------------
+// |              C L O N E               |
+// ----------------------------------------
+
+#define CLONE(objNameStr) ([objNameStr] call OOP_clone)
+
+// ----------------------------------------
+// |             A S S I G N              |
+// ----------------------------------------
+
+#define ASSIGN(destObjNameStr, srcObjNameStr) CALL_METHOD(destObjNameStr, "assign", [srcObjNameStr])
+
+// ----------------------------------------
+// |             U P D A T E              |
+// ----------------------------------------
+// Same as assign but copies only existing variables of an object (those that are not nil)
+#define UPDATE(destObjNameStr, srcObjNameStr) [destObjNameStr, srcObjNameStr, false] call OOP_assign_default;
+
+// ----------------------------------------
+// |    U P D A T E   V I A   A T T R     |
+// ----------------------------------------
+// Same as update but filters by specified attribute (e.g. ATTR_SERIALIZABLE)
+#define UPDATE_VIA_ATTR(destObjNameStr, srcObjNameStr, attr) [destObjNameStr, srcObjNameStr, false, attr] call OOP_assign_default;
+
+// ----------------------------------------
+// |          S E R I A L I Z E           |
+// ----------------------------------------
+// Packs variables into an array and returns the array
+#define SERIALIZE(objNameStr) ([objNameStr] call OOP_serialize)
+#define SERIALIZED_CLASS_NAME(array) (array select 0)
+#define SERIALIZED_OBJECT_NAME(array) (array select 1)
+
+// ----------------------------------------
+// |        D E S E R I A L I Z E         |
+// ----------------------------------------
+// Returns ref to the object passed in the array
+// Object must exist before you can DESERIALIZE an array into it!
+#define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
+
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |
 // ---------------------------------------------
@@ -707,10 +825,13 @@ objNameStr \
 // ----------------------------------------------------------------------
 
 #define LOG_SCOPE(logScopeName) private _oop_logScope = logScopeName
-#define LOG_0 if(!(isNil "_thisObject")) then {_thisObject} else { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }}}
-//#define LOG_1 _fnc_scriptName
-#define LOG_1 "fnc"
+#define LOG_0 if((isNil "_thisObject")) then { if(!(isNil "_thisClass")) then {_thisClass} else { if(!(isNil "_oop_logScope")) then { _oop_logScope } else { "NoClass" }} } else { _thisObject }
 
+#ifdef _OOP_FUNCTION_WRAPPERS
+#define LOG_1 if (isNil "_methodNameStr") then {"fnc"} else {_methodNameStr}
+#else
+#define LOG_1 "fnc"
+#endif
 
 #ifdef ADE
 #define DUMP_CALLSTACK ade_dumpCallstack
@@ -763,6 +884,7 @@ objNameStr \
 #define OOP_INFO_3(str, a, b, c) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
 #define OOP_INFO_4(str, a, b, c, d) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_INFO_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
+#define OOP_INFO_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] INFO: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str)
 #else
 #define OOP_INFO_MSG(str, a)
 #define OOP_INFO_0(str)
@@ -771,6 +893,7 @@ objNameStr \
 #define OOP_INFO_3(str, a, b, c)
 #define OOP_INFO_4(str, a, b, c, d)
 #define OOP_INFO_5(str, a, b, c, d, e)
+#define OOP_INFO_6(str, a, b, c, d, e, f)
 #endif
 
 #ifdef OOP_WARNING
@@ -799,6 +922,7 @@ objNameStr \
 #define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
 #else
 #define OOP_ERROR_MSG(str, a)
 #define OOP_ERROR_0(str)
@@ -807,6 +931,7 @@ objNameStr \
 #define OOP_ERROR_3(str, a, b, c)
 #define OOP_ERROR_4(str, a, b, c, d)
 #define OOP_ERROR_5(str, a, b, c, d, e)
+#define OOP_ERROR_6(str, a, b, c, d, e, f)
 #endif
 
 #ifdef OOP_DEBUG
@@ -817,6 +942,7 @@ objNameStr \
 #define OOP_DEBUG_3(str, a, b, c) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_4(str, a, b, c, d) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str)
 #define OOP_DEBUG_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
+#define OOP_DEBUG_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] DEBUG: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str)
 #else
 #define OOP_DEBUG_MSG(str, a)
 #define OOP_DEBUG_0(str)
@@ -825,6 +951,7 @@ objNameStr \
 #define OOP_DEBUG_3(str, a, b, c)
 #define OOP_DEBUG_4(str, a, b, c, d)
 #define OOP_DEBUG_5(str, a, b, c, d, e)
+#define OOP_DEBUG_6(str, a, b, c, d, e, f)
 #endif
 
 // ----------------------------------------------------------------------

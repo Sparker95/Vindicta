@@ -14,3 +14,9 @@ Project_0.Altis/mission.sqm
 .vscode/ipch/*
 Project_0.Altis/.vscode/ipch/*
 temp/*
+node_modules
+_build
+mission.sqm.backup.at*
+
+Project_0.Altis/out/linecount.txt
+Project_0.Altis/out/linecount.json

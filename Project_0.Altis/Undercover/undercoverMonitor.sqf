@@ -18,6 +18,10 @@
 #define sINCAPACITATED 4
 //#define DEBUG
 
+#ifndef RELEASE_BUILD
+//#define DEBUG_UNDERCOVER_MONITOR
+#endif
+
 gMsgLoopUndercover = NEW("MessageLoop", []);
 CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
 
@@ -127,7 +131,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 
 		// show debug UI
-		#ifdef DEBUG
+		#ifdef DEBUG_UNDERCOVER_MONITOR
 		g_rscLayerUndercoverDebug = ["rscLayerUndercoverDebug"] call BIS_fnc_rscLayer;
 		g_rscLayerUndercoverDebug cutRsc ["UndercoverUIDebug", "PLAIN", -1, false];
 		#endif

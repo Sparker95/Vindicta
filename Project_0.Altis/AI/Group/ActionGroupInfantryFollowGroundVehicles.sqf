@@ -58,9 +58,11 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 
-		CALLM0(_thisObject, "failIfEmpty");
+		CALLM0(_thisObject, "failIfNoInfantry");
 
 		private _state = CALLM0(_thisObject, "activateIfInactive");
+
+		scopeName "pro";
 
 		if (_state == ACTION_STATE_ACTIVE) then {
 			// Give a new waypoint periodycally
@@ -73,6 +75,11 @@ CLASS("ActionGroupInfantryFollowGroundVehicles", "ActionGroup")
 					pr _vehGroup = _vehGroups select 0;
 					pr _vehUnits = CALLM0(_vehGroup, "getVehicleUnits");
 					pr _vehGroupLeader = CALLM0(_vehGroup, "getLeader");
+					if (_vehGroupLeader == "") then { // Bail if there is no leader
+						OOP_ERROR_1("No leader in group: %1", _vehGroup);
+						_state = ACTION_STATE_FAILED;
+						breakTo "pro";
+					};
 					pr _hLeader = CALLM0(_vehGroupLeader, "getObjectHandle");
 					pr _hVehicles = _vehUnits apply {
 						pr _hO = CALLM0(_x, "getObjectHandle");
