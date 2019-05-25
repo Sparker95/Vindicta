@@ -165,7 +165,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Detach from location if was attached to it
 		T_PRVAR(location);
 		if (!IS_NULL_OBJECT(_location)) then {
-			CALLM(_location, "postMethodSync", ["unregisterGarrison" ARG [_thisObject]]);
+			CALLM1(_location,"unregisterGarrison", _thisObject);
 		};
 
 		// Despawn if spawned
