@@ -59,11 +59,16 @@ CLASS("ActionUnitArrest", "Action")
 	// logic to run each update-step
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
-		
+
 		CALLM(_thisObject, "activateIfInactive", []);
 		
 		pr _captor = GETV(_thisObject, "objectHandle");
 		pr _target = GETV(_thisObject, "target");
+		if !(alive _captor) exitWith { 
+			_state = ACTION_STATE_FAILED;
+			T_SETV("state", ACTION_STATE_FAILED); 
+			_state;
+		};
 		
 		diag_log format ["stateMachine %1",GETV(_thisObject, "stateMachine")];
 		pr _state = ACTION_STATE_ACTIVE;

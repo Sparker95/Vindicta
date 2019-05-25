@@ -46,11 +46,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		// we only want one unit from the group to arrest the target
 		pr _unit = selectRandom _groupUnits;
 		OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
-		OOP_INFO_1("ActionGroupArrest: unit arresting player: %1", _unit);
 
-		pr _unitAI = CALLM0(_unit, "getAI");
-		pr _parameters = [["target", _target]];
-		CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
+		if !(isNil "_unit") then {
+			pr _unitAI = CALLM0(_unit, "getAI");
+			pr _parameters = [["target", _target]];
+			CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
+			OOP_INFO_1("ActionGroupArrest: unit arresting player: %1", _unit);
+		};
 		
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
