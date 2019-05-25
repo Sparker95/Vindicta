@@ -95,6 +95,7 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		pr _hO = GETV(_thisObject, "hO");
 		unassignVehicle _hO;
 		[_hO] orderGetIn false;
+		_hO action ["getOut", vehicle _hO];
 	} ENDMETHOD;
 	
 	/*

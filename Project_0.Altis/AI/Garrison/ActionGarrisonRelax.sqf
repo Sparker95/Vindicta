@@ -147,4 +147,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 	} ENDMETHOD;
 
+
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		T_SETV("state", ACTION_STATE_REPLAN);
+
+		nil
+	} ENDMETHOD;
+
 ENDCLASS;

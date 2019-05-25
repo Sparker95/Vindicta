@@ -13,11 +13,12 @@ Author: Sparker 26.11.2018
 #endif
 
 CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
-	
+
 	// ------------ N E W ------------
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -97,7 +98,8 @@ CLASS("ActionUnitDismountCurrentVehicle", "ActionUnit")
 				#endif
 			
 				// If not, order to dismount
-				_hO action ["getOut", vehicle _hO];
+				pr _AI = T_GETV("AI");
+				CALLM0(_AI, "unassignVehicle");
 				
 				// Return
 				RETURN ACTION_STATE_ACTIVE;
