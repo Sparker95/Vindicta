@@ -81,6 +81,12 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				
 				if (_o in _allPlayers) then {
 					// It's a Man and a player
+
+					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o)) then {
+						pr _AI = T_GETV("AI");
+						SETV(_AI, "suspTarget", _o);
+					};
+
 					pr _args = [_o, _hG];
 					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _o, false); //classNameStr, methodNameStr, extraParams, targets, JIP
 				} else {
