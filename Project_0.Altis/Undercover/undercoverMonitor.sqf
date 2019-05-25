@@ -191,7 +191,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			// 	M A I N  U N D E R C O V E R  P R O C E S S
 			case SMON_MESSAGE_PROCESS: {
 				pr _state = T_GETV("state");
-				OOP_INFO_1("undercoverMonitor START state: %1", _state);
+				//OOP_INFO_1("undercoverMonitor START state: %1", _state);
 
 				pr _unit = T_GETV("unit");
 				pr _suspicion = 0;
@@ -417,7 +417,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 				}; // end FSM
 
-				OOP_INFO_1("hintKeys: %1", _hintKeys);
+				//OOP_INFO_1("hintKeys: %1", _hintKeys);
 
 				// compromise other players in vehicle
 				if (_bInVeh && _suspicion >= 1) then {
