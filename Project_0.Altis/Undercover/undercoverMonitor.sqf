@@ -23,7 +23,7 @@
 #endif
 
 gMsgLoopUndercover = NEW("MessageLoop", []);
-CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
+CALL_METHOD(gMsgLoopUndercover, "setName", ["Undercover thread"]);
 
 /*
 undercoverMonitor: Changes this object's unit's captive status dynamically based on equipment, behavior, location, and so on.
