@@ -152,10 +152,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		//pr _unit = T_GETV("unit");
 		//_unit setVariable ["undercoverMonitor", nil];
 
-		pr _EH_loadout = T_GETV("EHLoadout");
-		 ["loadout", _EH_loadout] call CBA_fnc_removeEventHandler;
 		T_SETV("EHLoadout", nil);
-
 		T_SETV("unit", nil);
 		T_SETV("state", nil);
 		T_SETV("stateChanged", nil);
@@ -509,6 +506,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			// delete dead unit's undercoverMonitor
 			case SMON_MESSAGE_DELETE: {
+				pr _EH_loadout = T_GETV("EHLoadout");
+		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
 				DELETE(_thisObject);
 			}; // end SMON_MESSAGE_DELETE
 		};
