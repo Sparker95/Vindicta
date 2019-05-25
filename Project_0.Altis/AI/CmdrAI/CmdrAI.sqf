@@ -58,8 +58,10 @@ CLASS("CmdrAI", "")
 		} forEach _srcGarrisons;
 
 		//OOP_INFO_MSG("Considering %1 QRF actions from %2 garrisons to %3 clusters", [count _actions ARG count _srcGarrisons ARG count _tgtClusters]);
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""QRF"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_clusters"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtClusters]
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""QRF"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_clusters"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtClusters];
 		OOP_INFO_MSG(_str, []);
+		#endif
 
 		_actions
 	} ENDMETHOD;
@@ -125,8 +127,10 @@ CLASS("CmdrAI", "")
 
 		OOP_INFO_MSG("Considering %1 Reinforce actions from %2 garrisons to %3 garrisons", [count _actions ARG count _srcGarrisons ARG count _tgtGarrisons]);
 
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons]
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
 		OOP_INFO_MSG(_str, []);
+		#endif
 
 		_actions
 	} ENDMETHOD;
@@ -182,8 +186,11 @@ CLASS("CmdrAI", "")
 		} forEach _srcGarrisons;
 
 		OOP_INFO_MSG("Considering %1 TakeOutpost actions from %2 garrisons to %3 locations", [count _actions ARG count _srcGarrisons ARG count _tgtLocations]);
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""TakeOutpost"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_locations"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtLocations]
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""TakeOutpost"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_locations"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtLocations];
 		OOP_INFO_MSG(_str, []);
+		#endif
 
 		_actions
 	} ENDMETHOD;
@@ -192,9 +199,9 @@ CLASS("CmdrAI", "")
 		params [P_THISOBJECT, P_STRING("_world")];
 
 		// Sync before update
-		CALLM(_worldModel, "sync", []);
+		CALLM(_world, "sync", []);
 
-		//T_PRVAR(world);
+		T_PRVAR(side);
 		T_PRVAR(activeActions);
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G - - - - -   on %3 active actions", [_thisObject ARG _world ARG count _activeActions]);
@@ -211,10 +218,13 @@ CLASS("CmdrAI", "")
 			_activeActions deleteAt (_activeActions find _x);
 			UNREF(_x);
 		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
-	
+
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G   D O N E - - - - -", [_thisObject ARG _world]);
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions]
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
 		OOP_INFO_MSG(_str, []);
+		#endif
 	} ENDMETHOD;
 
 	STATIC_METHOD("getActionGlobalPriority") {
@@ -308,11 +318,10 @@ CLASS("CmdrAI", "")
 		T_PRVAR(planningCycle);
 		T_SETV("planningCycle", _planningCycle + 1);
 
-		private _cycleRem = round (_planningCycle mod CMDR_PLANNING_RATIO_LOW);
-		private _priority = switch(_cycleRem) do {
-			case CMDR_PLANNING_RATIO_HIGH: { CMDR_PLANNING_PRIORITY_HIGH };
-			case CMDR_PLANNING_RATIO_NORMAL: { CMDR_PLANNING_PRIORITY_NORMAL };
-			case CMDR_PLANNING_RATIO_LOW: { CMDR_PLANNING_PRIORITY_LOW };
+		private _priority = switch true do {
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
 			default { -1 };
 		};
 
@@ -324,7 +333,7 @@ CLASS("CmdrAI", "")
 			CALLM(_world, "sync", []);
 
 			CALLM(_world, "updateThreatMaps", []);
-			CALLM(_cmdrAI, "_plan", [_world ARG _priority]);
+			T_CALLM("_plan", [_world ARG _priority]);
 
 			// Make it after planning so we get a gap
 			//T_SETV("lastPlanningTime", TIME_NOW);
@@ -334,7 +343,7 @@ CLASS("CmdrAI", "")
 	METHOD("_plan") {
 		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
 
-		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G - - - - -", [_thisObject ARG _world]);
+		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G (priority %3) - - - - -", [_thisObject ARG _world ARG _priority]);
 
 		T_PRVAR(activeActions);
 
