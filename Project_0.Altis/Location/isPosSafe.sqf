@@ -61,7 +61,7 @@ private _pos_3 = _posASL vectorAdd [-_bx*_c + _by*_s, _bx*_s + _by*_c, 1];
 
 
 // Debug drawing
-#ifdef debug
+#ifdef DEBUG
 diag_log format ["--- Positions ATL: %1", [[ASLTOATL _pos_0], [ASLTOATL _pos_1], [ASLTOATL _pos_2], [ASLTOATL _pos_3]]];
 {
 	createVehicle ["Sign_Arrow_F", ASLTOATL _x, [], 0, "CAN_COLLIDE"];
@@ -118,8 +118,6 @@ if(!_good) exitWith
 	#endif
 	false
 };
-
-if (true) exitWith {true};
 
 //Check for objects in sphere
 private _posCheck = _pos; //_pos vectorAdd [0, 0, _bz];
