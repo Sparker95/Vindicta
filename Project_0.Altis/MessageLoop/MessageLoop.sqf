@@ -2,7 +2,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\Message\Message.hpp"
-
+#include "ProcessCategories.hpp"
 /*
 Class: MessageLoop
 MessageLoop is a thread (a spawned script) which can have
@@ -32,20 +32,38 @@ CLASS("MessageLoop", "");
 	VARIABLE("mutex");
 	//Debug name to help read debug printouts
 	VARIABLE("name");
+	// Process categories
+	VARIABLE("processCategories");
+	// Desired process time fractions calculated from priorities of categories
+	VARIABLE("updateFrequencyFractions");
+	// Amount of messages this message loop will process before switching to process categories
+	VARIABLE("nMessagesInSeries");
 
 	//Constructor
 	//Spawn a script which will be checking messages
 	/*
 	Method: new
+
+	parameters: _name
+
+	_name - String, optional, name of the message loop used for debug
+
 	Constructor
 	*/
 	METHOD("new") {
-		params [ P_THISOBJECT ];
+		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", 9000, [0]] ];
 		T_SETV("msgQueue", []);
-		T_SETV("name", _thisObject);
+		if (_name == "") then {
+			T_SETV("name", _thisObject);
+		} else {
+			T_SETV("name", _name);
+		};
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
 		T_SETV("scriptHandle", _scriptHandle);
 		T_SETV("mutex", MUTEX_NEW());
+		T_SETV("processCategories", []);
+		T_SETV("updateFrequencyFractions", []);
+		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 	} ENDMETHOD;
 
 	/*
@@ -157,6 +175,85 @@ CLASS("MessageLoop", "");
 			} else {
 				_i = _i + 1;
 			};
+		};
+	} ENDMETHOD;
+
+	// Functions for process categories
+
+	METHOD("addProcessCategory") {
+		CRITICAL_SECTION {
+			params ["_thisObject", ["_tag", "", [""]], ["_priority", 1, [1]], ["_minInterval", 1, [0]], ["_maxInterval", 5, [0]]];
+
+			pr _cat = __PC_NEW(_tag, _priority, _minInterval, _maxInterval);
+			pr _cats = T_GETV("processCategories"); // meow ^.^
+			_cats pushBack _cat;
+
+			CALLM0(_thisObject, "updateRequiredFractions");
+		};
+	} ENDMETHOD;
+
+	METHOD("updateRequiredFractions") {
+		params ["_thisObject"];
+		pr _cats = T_GETV("processCategories");
+		pr _fractions = T_GETV("updateFrequencyFractions");
+		_fractions resize (count _cats);
+		pr _sum = 0; // Sum of all priorities
+		for "_i" from 0 to ((count _cats) - 1) do {
+			pr _priority = _cats#_i#__PC_ID_PRIORITY;
+			pr _countObjects = count (_cats#_i#__PC_ID_OBJECTS);
+			if (_countObjects == 0) then {
+				_priority = 0;
+			};
+			_fractions set [_i, _priority];
+			_sum = _sum + _priority;
+		};
+		if (_sum == 0) then {
+			for "_i" from 0 to ((count _cats) - 1) do {
+				_fractions set [_i, 0];
+			};
+		} else {
+			for "_i" from 0 to ((count _cats) - 1) do {
+				_fractions set [_i, (_fractions#_i)/_sum];
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("addProcessCategoryObject") {
+		CRITICAL_SECTION {
+			params ["_thisObject", ["_tag", "", [""]], ["_object", "", [""]]];
+
+			// Find category with given tag
+			pr _cats = T_GETV("processCategories");
+			pr _index = _cats findIf {(_x select __PC_ID_TAG) == _tag};
+			if (_index != -1) then {
+				pr _cat = _cats select _index;
+				pr _objs = _cat select __PC_ID_OBJECTS;
+				_objs pushBack __PC_OBJECT_NEW(_object);
+			} else {
+				OOP_ERROR_1("Process category with tag %1 was not found!", _tag);
+			};
+
+			CALLM0(_thisObject, "updateRequiredFractions");
+		};
+	} ENDMETHOD;
+
+	METHOD("deleteProcessCategoryObject") {
+		CRITICAL_SECTION {
+			params ["_thisObject", ["_object", "", [""]]];
+
+			pr _cats = T_GETV("processCategories");
+			{
+				pr _objs = _x select __PC_ID_OBJECTS;
+				pr _index = _objs findIf {_x select 0 == _object};
+				//if (_index != -1) then {
+					_objs deleteAt _index;
+					//true // No need to search any more
+				//} else {
+				//	false // Need to search other categories, this object is not here
+				//};
+			} forEach _cats;
+
+			CALLM0(_thisObject, "updateRequiredFractions");
 		};
 	} ENDMETHOD;
 

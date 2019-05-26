@@ -610,7 +610,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			pr _AI = NEW("AIGroup", [_thisObject]);
 			pr _data = GETV(_thisObject, "data");
 			_data set [GROUP_DATA_ID_AI, _AI];
-			CALLM(_AI, "start", []); // Kick start it
+			CALLM1(_AI, "start", "AIGroupLow"); // Kick start it
 		//};
 
 	} ENDMETHOD;

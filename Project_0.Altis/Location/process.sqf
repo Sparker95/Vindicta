@@ -11,7 +11,7 @@ ASSERT_THREAD(_thisObject);
 pr _units = CALL_METHOD(gLUAP, "getUnitArray", [CIVILIAN]);
 pr _thisPos = T_CALLM0("getPos");
 pr _dst = _units apply {_x distance _thisPos};
-pr _speedMax = 200;
+pr _speedMax = 100;
 pr _dstMin = if (count _dst > 0) then {selectMin _dst;} else {_speedMax*10};
 pr _dstSpawn = 1500; // Temporary, spawn distance
 pr _timer = T_GETV("timer");
@@ -37,7 +37,7 @@ switch (T_GETV("spawned")) do {
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawn;
-			pr _interval = (_dstToThreshold / _speedMax) max 1;
+			pr _interval = (_dstToThreshold / _speedMax) max 3;
 			pr _interval = 2; // todo override this some day later
 			
 			CALLM1(_timer, "setInterval", _interval);

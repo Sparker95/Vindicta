@@ -28,27 +28,24 @@ CLASS("GameModeBase", "")
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
-			gMessageLoopMain = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopMain, "setName", ["Main thread"]);
+			gMessageLoopMain = NEW("MessageLoop", ["Main thread" ARG 16]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10 ARG 30]);
+
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
 
 			// Message loop for group AI
-			gMessageLoopGroupAI = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopGroupAI, "setName", ["Group AI thread"]);
+			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
+			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow"		ARG 1 ARG 2	]); // Tag, priority, min interval
 
 			// Message loop for Stimulus Manager
-			gMessageLoopStimulusManager = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopStimulusManager, "setName", ["Stimulus Manager thread"]);
+			gMessageLoopStimulusManager = NEW("MessageLoop", ["Stimulus Manager thread"]);
 
 			// Global Stimulus Manager
 			gStimulusManager = NEW("StimulusManager", []);
-
-			// Message loop for locations
-			gMessageLoopLocation = NEW("MessageLoop", []);
-			CALL_METHOD(gMessageLoopLocation, "setName", ["Location thread"]);
 
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);
@@ -297,7 +294,7 @@ CLASS("GameModeBase", "")
 		} forEach gSpecialGarrisons;
 
 		// Message loops for commander AI
-		gMessageLoopCommanderInd = NEW("MessageLoop", []);
+		gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
 
 		// Commander AIs
 		gCommanders = [];
@@ -311,8 +308,8 @@ CLASS("GameModeBase", "")
 
 		if(gFlagAllCommanders) then { // but some are more equal
 
-			gMessageLoopCommanderWest = NEW("MessageLoop", []);
-			gMessageLoopCommanderEast = NEW("MessageLoop", []);
+			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
+			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
 
 			// West
 			gCommanderWest = NEW("Commander", []);
