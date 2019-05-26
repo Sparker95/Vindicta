@@ -69,7 +69,7 @@ CLASS("Location", "MessageReceiverEx")
 
 		// Check existance of neccessary global objects
 		if (isNil "gTimerServiceMain") exitWith {"[MessageLoop] Error: global timer service doesn't exist!";};
-		if (isNil "gMessageLoopLocation") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
+		if (isNil "gMessageLoopMain") exitWith {"[MessageLoop] Error: global location message loop doesn't exist!";};
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("side", CIVILIAN);
@@ -93,15 +93,8 @@ CLASS("Location", "MessageReceiverEx")
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);
 
-		// Create timer object
-		private _msg = MESSAGE_NEW();
-		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
-		_msg set [MESSAGE_ID_SOURCE, ""];
-		_msg set [MESSAGE_ID_DATA, 0];
-		_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
-		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
-		private _timer = NEW("Timer", _args);
-		SET_VAR(_thisObject, "timer", _timer);
+		T_SETV("timer", "");
+
 
 		//Push the new object into the array with all locations
 		private _allArray = GET_STATIC_VAR("Location", "all");
@@ -271,7 +264,7 @@ CLASS("Location", "MessageReceiverEx")
 
 	// |                  G E T   M E S S A G E   L O O P
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		gMessageLoopLocation
+		gMessageLoopMain
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -384,6 +377,29 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("setType") {
 		params [P_THISOBJECT, ["_type", "", [""]]];
 		SET_VAR_PUBLIC(_thisObject, "type", _type);
+
+
+		// Create a timer object if the type of the location is a city or a roadblock
+		if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
+			
+			// Delete previous timer if we had it
+			pr _timer = T_GETV("timer");
+			if (_timer != "") then {
+				DELETE(_timer);
+			};
+
+			// Create timer object
+			private _msg = MESSAGE_NEW();
+			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+			_msg set [MESSAGE_ID_SOURCE, ""];
+			_msg set [MESSAGE_ID_DATA, 0];
+			_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
+			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
+			private _timer = NEW("Timer", _args);
+			SET_VAR(_thisObject, "timer", _timer);
+		};
+
+
 		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 

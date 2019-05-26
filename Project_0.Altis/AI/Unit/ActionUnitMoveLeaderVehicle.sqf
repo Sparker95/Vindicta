@@ -50,7 +50,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			SETV(_AI, "new", false);
 		};
 
-		T_SETV("stuckTimer", TIMER_STUCK_THRESHOLD-4);
+		T_SETV("stuckTimer", TIMER_STUCK_THRESHOLD-10);
 		T_SETV("time", time);
 		T_SETV("triedRoads", []);
 		T_SETV("stuckCounter", 0);
@@ -99,6 +99,7 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hO = GETV(_thisObject, "hO");
+		pr _AI = T_GETV("AI");
 		pr _dt = time - T_GETV("time"); // Time that has passed since previous call
 		
 		if (T_GETV("readdwp")) then {
@@ -146,12 +147,18 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 						_hVeh setDir ((getDir _hVeh) + 180);
 						_hVeh setPosWorld ((getPosWorld _hVeh) vectorAdd [0, 0, 1]);
 					} else {
-						// Let's try to teleport you somewhere >_<
-						OOP_WARNING_0("Teleporting the leader vehicle!");
-						pr _hVeh = vehicle _hO;
-						pr _defaultPos = getPos _hVeh;
-						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
-						_hVeh setPos _newPos;
+						if (_stuckCounter < 7) then {
+							// Let's try to teleport you somewhere >_<
+							OOP_WARNING_0("Teleporting the leader vehicle!");
+							pr _hVeh = vehicle _hO;
+							pr _defaultPos = getPos _hVeh;
+							pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
+							_hVeh setPos _newPos;
+						} else {
+							// If finally it doesn't want to move, make driver dismount, so that actions are regenerated and he is made to mount the vehicle again
+							CALLM0(_AI, "unassignVehicle"); // Fuck this shit
+						};
+
 					};
 
 					
@@ -175,6 +182,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	// logic to run when the goal is about to be terminated
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		// Delete waypoints
+		pr _hO = GETV(_thisObject, "hO");
+		pr _hG = group _hO;
+		
+		// Delete all previous waypoints
+		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
 		// Stop the car from driving around
 		pr _hO = GETV(_thisObject, "hO");

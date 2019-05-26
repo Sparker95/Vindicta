@@ -78,7 +78,9 @@ CLASS("SensorGarrisonHealth", "SensorGarrison")
 	// ----------------------------------------------------------------------
 	
 	/* virtual */ METHOD("getUpdateInterval") {
-		10
+		params ["_thisObject"];
+		pr _gar = T_GETV("gar");
+		[60, 14] select CALLM0(_gar, "isSpawned");
 	} ENDMETHOD;	
 	
 ENDCLASS;

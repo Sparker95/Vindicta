@@ -21,7 +21,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 
-		if (isNil "gMessageLoopLocation") exitWith {"[LocationUnitArrayProvider] Error: global location message loop doesn't exist!";};
+		if (isNil "gMessageLoopMain") exitWith {"[LocationUnitArrayProvider] Error: global location message loop doesn't exist!";};
 
 		SET_VAR(_thisObject, "spawnWest", []);
 		SET_VAR(_thisObject, "spawnEast", []);
@@ -49,7 +49,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
 	// |                  G E T   M E S S A G E   L O O P
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		gMessageLoopLocation
+		gMessageLoopMain
 	} ENDMETHOD;
 
 

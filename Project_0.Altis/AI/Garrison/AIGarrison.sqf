@@ -1,3 +1,5 @@
+#define OOP_PROFILE
+#define OOP_PROFILE_MIN_T 0.01
 #include "common.hpp"
 
 /*
@@ -182,6 +184,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		};
 
 		#endif
+
+		// Add a "spawned" field to profiling output 
+		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
 		
 	} ENDMETHOD;
 	
@@ -351,7 +356,8 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Returns spawned state of attached garrison
 	METHOD("isSpawned") {
 		params ["_thisObject"];
-		CALLM0(T_GETV("agent"), "isSpawned")
+		//CALLM0(T_GETV("agent"), "isSpawned")
+		GETV(T_GETV("agent"), "spawned")
 	} ENDMETHOD;
 
 	// Sets the position, because it is stored in the world state

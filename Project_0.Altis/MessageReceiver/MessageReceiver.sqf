@@ -17,6 +17,9 @@ Author: Sparker
 
 #define pr private
 
+#define WAIT_UNTIL_TIMEOUT_ENABLE
+#define WAIT_UNTIL_TIMEOUT 120
+
 // Number used to generate unique IDs when ownership requests are sent
 g_ownerRqNextID = 0;
 // Array for generating message IDs
@@ -272,10 +275,22 @@ CLASS("MessageReceiver", "")
 		};
 
 		// Wait until a local messageLoop or remote messageLoop marks the message as processed
+		#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
+		private _timeStartedWaiting = time;
+		#endif
+
 		pr _return = 0;
 		waitUntil {
 			//diag_log "Waiting...";
 			OOP_INFO_1("waiting for msgID to be done: %1", _msgID);
+
+			#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
+			if (time - _timeStartedWaiting > WAIT_UNTIL_TIMEOUT) then {
+				diag_log "---------- waitUntilMessageDone has exceeded threshold!";
+				DUMP_CALLSTACK;
+			};
+			#endif
+
 			(g_rqArray select _msgID select 0) == 1
 		};
 		_return = g_rqArray select _msgID select 1;

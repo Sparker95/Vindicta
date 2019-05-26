@@ -52,14 +52,14 @@ switch (T_GETV("spawned")) do {
 			CALLM0(_thisObject, "spawn");
 
 			// Set timer interval
-			CALLM1(_timer, "setInterval", 5);
+			CALLM1(_timer, "setInterval", 10); // Despawn conditions can be evaluated with even lower frequency
 			
 			T_SETV("spawned", true);
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawnMin;
-			pr _interval = (_dstToThreshold / _speedMax) max 1;
-			pr _interval = 2; // todo override this some day later
+			pr _interval = (_dstToThreshold / _speedMax) max 3;
+			//pr _interval = 2; // todo override this some day later
 			//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "name"), _dstMin];
 			CALLM1(_timer, "setInterval", _interval);
 		};

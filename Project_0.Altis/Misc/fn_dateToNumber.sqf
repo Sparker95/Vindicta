@@ -4,5 +4,5 @@ Converts a date that is returned by date command (https://community.bistudio.com
 Also supports changes of current year.
 */
 
-// Must enhance floating point precision by basing our calculations closer to some averate value 
+// Must enhance floating point precision by basing our calculations closer to some average value 
 _this#0-2034 + (dateToNumber _this)
