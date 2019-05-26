@@ -293,16 +293,12 @@ SET_STATIC_VAR(CLASS_NAME, "all", []);
 SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
 SET_STATIC_VAR(CLASS_NAME, "timePrevButtonDown", 0);
 
-lastOnDrawCall = 0;
 MapMarker_EH_Draw = {
 	params ["_control"];
-
-	if (time - lastOnDrawCall > 5) then {
-		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
-		{
-			CALLM1(_x, "onDraw", _control);
-		} forEach _all;
-	};
+	pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
+	{
+		CALLM1(_x, "onDraw", _control);
+	} forEach _all;
 };
 
 #ifndef _SQF_VM
