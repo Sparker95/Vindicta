@@ -196,10 +196,10 @@ CLASS(CLASS_NAME, "MapMarker")
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
 				pr _intel = T_GETV("intel");
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_intel]);
+				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", [_thisObject ARG _intel]);
 			} else {
 				// Deselect everything
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [""]);
+				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", ["" ARG ""]);
 			};
 		};
 	} ENDMETHOD;
