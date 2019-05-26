@@ -107,7 +107,7 @@
 
 <Project name="Undercover">
 	<Package name="UndercoverUI">
-		<Container name="Overt">
+		<Container name="States">
 			<Key ID="STR_UM_OVERT">
 				<Original>OVERT</Original>
 				<German>FEINDLICH</German>
@@ -120,7 +120,49 @@
 				<Original>UNDERCOVER</Original>
 				<German>ZIVIL</German>
 			</Key>
+			<Key ID="STR_UM_COMPROMISED">
+				<Original>COMPROMISED</Original>
+				<German>AUFGEFLOGEN</German>
+			</Key>
 		</Container>
+		<Container name="Hints">
+			<Key ID="STR_UM_HINT_WEAPON">
+				<Original>WEAPON</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_DOWNED">
+				<Original>INCAPACITATED</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SURRENDER">
+				<Original>SURRENDERED</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_HOSTILITY">
+				<Original>WEAPON DISCHARGED!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SUSPGEAR">
+				<Original>SUSPICIOUS OUTFIT</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_MILVEH">
+				<Original>MILITARY VEHICLE</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SUSPGEARVEH">
+				<Original>SUSPICIOUS OUTFIT VISIBLE</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_CLOSINGIN">
+				<Original>THEY ARE GOING TO SPOT YOU!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_SUSPBEHAVIOR">
+				<Original>SUSPICIOUS BEHAVIOUR</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_OFFROAD">
+				<Original>TOO FAR FROM ROADS</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ALLOWEDAREA">
+				<Original>THIS AREA IS BEING WATCHED! STAY ON THE ROAD!</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_MILAREA">
+				<Original>MILITARY AREA</Original>
+			</Key>																						
+		</Container>	
 	</Package>
 </Project>
 

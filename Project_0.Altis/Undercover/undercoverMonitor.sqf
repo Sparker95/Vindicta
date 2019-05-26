@@ -61,6 +61,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("camoCoeff"); 													// modified vanilla camouflage coefficient, see: community.bistudio.com/wiki/setUnitTrait
 	VARIABLE("bGhillie");													// true if unit is wearing ghillie suit
 	VARIABLE("EHLoadout");
+	VARIABLE("EHFiredMan");
 	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
 
 	// ------------ N E W ------------
@@ -92,7 +93,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		pr _camoCoeff = _unit getUnitTrait "camouflageCoef";
 		T_SETV("camoCoeff", _camoCoeff);
 		T_SETV("bGhillie", false);
-		T_SETV("EHLoadout", false);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, false, true];				// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -112,11 +112,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("EHLoadout", _EH_loadout);
 
     	// event handler to check if unit fired weapon
-    	_unit addEventHandler ["FiredMan", {
+    	pr _EH_firedMan = _unit addEventHandler ["FiredMan", {
 			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
 			pr _uM = _unit getVariable "undercoverMonitor";
 			SETV(_uM, "timeHostility", (time +TIME_HOSTILITY));
 		}];
+		T_SETV("EHFiredMan", _EH_firedMan);
 
 		// event handler for deleting this undercover monitor
 		_unit addEventHandler ["Killed", {
@@ -157,6 +158,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		//_unit setVariable ["undercoverMonitor", nil];
 
 		T_SETV("EHLoadout", nil);
+		T_SETV("EHFiredMan", nil);
 		T_SETV("unit", nil);
 		T_SETV("state", nil);
 		T_SETV("stateChanged", nil);
@@ -237,6 +239,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						T_SETV("stateChanged", false);
 						}; // do once when state changed
 
+						if !(currentWeapon _unit in g_UM_civWeapons) then { _suspicion = _suspicion + 1; _hintKeys pushback HK_WEAPON; };
+
 						pr _timeHostility = T_GETV("timeHostility");
 						if (time < _timeHostility) exitWith { _suspicion = 1; _hintKeys pushback HK_HOSTILITY; };
 	
@@ -249,6 +253,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
 							} else { 
 								_suspicion = _suspicion + 1;
+								_hintKeys pushBack HK_MILAREA;
 							};
 				 		};
 
@@ -385,6 +390,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					case sCOMPROMISED: {
 						T_SETV("stateChanged", false);
 						pr _timeCompromised = T_GETV("timeCompromised");
+						_hintKeys pushBack HK_COMPROMISED;
 
 						if !(_bInVeh OR !(time > _timeCompromised)) exitWith {
 							T_CALLM("setState", [sUNDERCOVER]);	
@@ -510,8 +516,15 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 			// delete dead unit's undercoverMonitor
 			case SMON_MESSAGE_DELETE: {
+				// remove CBA loadout event handler
 				pr _EH_loadout = T_GETV("EHLoadout");
 		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
+
+				// remove vanilla fired event handler
+				pr _unit = T_GETV("unit");
+				pr _EH_firedMan = T_GETV("EHFiredMan");
+				_unit removeEventHandler ["FiredMan", _EH_firedMan];
+
 				DELETE(_thisObject);
 			}; // end SMON_MESSAGE_DELETE
 		};

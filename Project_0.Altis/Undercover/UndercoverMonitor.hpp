@@ -15,7 +15,7 @@
 #define OVERT 1.0									// suspiciousness at which unit is overt
 #define SUSP_CROUCH 0.1								// suspiciousness gained crouching
 #define SUSP_PRONE 0.2								// suspiciousness gained prone
-#define SUSP_SPEEDMAX 0.35							// suspiciousness gained for movement speed
+#define SUSP_SPEEDMAX 0.2							// suspiciousness gained for movement speed
 #define SUSP_NOROADS 80								// distance that is too far from road to not be suspicious
 #define SUSP_OFFROAD 0.3							// suspiciousness gained for being too far from roads
 #define SUSP_INCREMENT 0.08							// value for gradual increase of suspiciousness when performing suspicous behavior while seen
@@ -23,10 +23,10 @@
 // suspicion values for each equipment type
 #define SUSP_UNIFORM 0.5							// suspiciousness gained for mil uniform
 #define SUSP_VEST 0.5								// suspiciousness gained for mil vest
-#define SUSP_NVGS 0.5								// suspiciousness gained for NVGs
-#define SUSP_HEADGEAR 0.5							// suspiciousness gained for mil headgear
-#define SUSP_FACEWEAR 0.1							// suspiciousness gained for mil facewear
-#define SUSP_BACKPACK 0.2							// suspiciousness gained for mil backpack
+#define SUSP_NVGS 0.3								// suspiciousness gained for NVGs
+#define SUSP_HEADGEAR 0.3							// suspiciousness gained for mil headgear
+#define SUSP_FACEWEAR 0.05							// suspiciousness gained for mil facewear
+#define SUSP_BACKPACK 0.1							// suspiciousness gained for mil backpack
 
 #define SUSP_VEH_CREW 0.1	
 #define SUSP_VEH_DIST 300							// distance at which suspiciousness starts increasing based on SUSP_VEH_DIST_MULT 
@@ -43,13 +43,15 @@
 #define CAMO_GHILLIE 0.25							// camouflage modifier for wearing a ghillie
 
 #define HINT_DISPTIME 8								// amount of time each hint is displayed
-// Hint keys for which hint should be displayed. Higher value = higher relevance
+// Hint keys for which hint should be displayed. Higher value = higher relevance. Keys with higher relevance display first
+#define HK_COMPROMISED 120
 #define HK_INCAPACITATED 105
 #define HK_SURRENDER 100
 #define HK_HOSTILITY 95
 #define HK_CLOSINGIN 90
 #define HK_WEAPON 80
 #define HK_MILVEH 75
+#define HK_MILAREA 74
 #define HK_OFFROAD 73
 #define HK_SUSPGEARVEH 70
 #define HK_SUSPBEHAVIOR 60
