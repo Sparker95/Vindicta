@@ -46,7 +46,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		T_SETV("routeTargetsVar", _routeTargetsVar);
 
 		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG PATROL_FORCE_HINT]]);
+		private _splitFlagsVar = T_CALLM("createVariable", [[PATROL_FORCE_HINT]]);
 		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
@@ -263,6 +263,9 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
+		if(CALLM(_srcGarr, "isDead", [])) exitWith {
+			T_CALLM("setScore", ZERO_SCORE);
+		};
 
 		private _side = GETV(_srcGarr, "side");
 
@@ -292,7 +295,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			_detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture ARG EFF_MOUNTED_PATROL_EFF]);
 			_transportationScore = CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
-
 
 		// Save the calculation for use if we decide to perform the action 
 		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
@@ -349,9 +351,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
-		// How much resources src can spare.
-		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
-
+		// How much resources src can spare, we allow garrison to take up to half of force for
+		private _srcOverMinEff = EFF_MAX_SCALAR(EFF_DIFF(GETV(_srcGarr, "efficiency"), EFF_MIN_EFF), 0);
+		private _halfEff = EFF_MUL_SCALAR(GETV(_srcGarr, "efficiency"), 0.5);
+		private _srcOverEff = EFF_MIN(_srcOverMinEff, _halfEff);
+		//private _srcOverEff = EFF_MAX_SCALAR(, 0);
 		// Min of those values
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _desiredEff)), 0);
 

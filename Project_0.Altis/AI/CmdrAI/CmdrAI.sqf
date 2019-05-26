@@ -201,7 +201,7 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military" ARG "police"]]) select { 
 			private _potentialSrcGarr = _x;
 
 			// Must be not already busy 
@@ -218,9 +218,10 @@ CLASS("CmdrAI", "")
 			} and
 			// Must have minimum patrol available
 			{
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
+				private _overEff = GETV(_potentialSrcGarr, "efficiency") - EFF_MIN_EFF;
+				// CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
 				// Must have at least a minimum available eff
-				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+				EFF_GTE(_overEff, EFF_MIN_EFF)
 			}
 		};
 
@@ -266,22 +267,22 @@ CLASS("CmdrAI", "")
 		T_PRVAR(side);
 		T_PRVAR(activeActions);
 
-		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G - - - - -   on %3 active actions", [_thisObject ARG _world ARG count _activeActions]);
+		OOP_DEBUG_MSG("- - - - - U P D A T I N G - - - - -   on %1 active actions", [count _activeActions]);
 
 		// Update actions in real world
 		{ 
-			OOP_DEBUG_MSG("[c %1 w %2] Updating action %3", [_thisObject ARG _world ARG _x]);
+			OOP_DEBUG_MSG("Updating action %1", [_x]);
 			CALLM(_x, "update", [_world]);
 		} forEach _activeActions;
 
 		// Remove complete actions
 		{ 
-			OOP_DEBUG_MSG("[c %1 w %2] Completed action %3, removing", [_thisObject ARG _world ARG _x]);
+			OOP_DEBUG_MSG("Completed action %1, removing", [_x]);
 			_activeActions deleteAt (_activeActions find _x);
 			UNREF(_x);
 		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
 
-		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G   D O N E - - - - -", [_thisObject ARG _world]);
+		OOP_DEBUG_MSG("- - - - - U P D A T I N G   D O N E - - - - -", []);
 
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
@@ -299,55 +300,58 @@ CLASS("CmdrAI", "")
 		}
 	} ENDMETHOD;
 	
-	METHOD("selectAction") {
-		params [P_THISOBJECT, P_STRING("_actionFunc"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
-
+	METHOD("selectActions") {
+		params [P_THISOBJECT, P_ARRAY("_actionFuncs"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
 
 		CALLM(_simWorldNow, "resetScoringCache", []);
 		CALLM(_simWorldFuture, "resetScoringCache", []);
 
-		private _newActions = T_CALLM(_actionFunc, [_simWorldNow ARG _simWorldFuture]);
+		private _newActions = [];
 
-		if(count _newActions == 0) exitWith { false };
-
-		OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 new actions", [_thisObject ARG _world ARG count _newActions]);
-
-		PROFILE_SCOPE_START(UpdateScores);
-
-		// Update scores of potential actions against the simworld state
 		{
-			CALLM(_x, "updateScore", [_simWorldNow ARG _simWorldFuture]);
-		} forEach _newActions;
+			_newActions = _newActions + T_CALLM(_x, [_simWorldNow ARG _simWorldFuture]);
+		} forEach _actionFuncs;
 
+		while {count _newActions > 0} do {
 
-		PROFILE_SCOPE_END(UpdateScores, 0.1);
+			OOP_DEBUG_MSG("Updating scoring for %1 new actions", [count _newActions]);
+			PROFILE_SCOPE_START(UpdateScores)
 
-		// Sort the actions by their scores
-		private _scoresAndActions = _newActions apply { 
-			private _finalScore = CALLM(_x, "getFinalScore", []);
-			//private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
-			[_finalScore, _x] 
-		};
-		_scoresAndActions sort DESCENDING;
+			// Update scores of potential actions against the simworld state
+			{
+				CALLM(_x, "updateScore", [_simWorldNow ARG _simWorldFuture]);
+			} forEach _newActions;
 
-		// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
+			PROFILE_SCOPE_END(UpdateScores, 0.1);
 
-		// Get the best scoring action
-		(_scoresAndActions select 0) params ["_bestActionScore", "_bestAction"];
+			// Sort the actions by their scores
+			private _scoresAndActions = _newActions apply { 
+				private _finalScore = CALLM(_x, "getFinalScore", []);
+				//private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
+				[_finalScore, _x] 
+			};
 
-		// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
-		
-		// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
-		// TODO: Should we maybe be normalizing scores between 0 and 1?
-		private _foundAction = _bestActionScore > ACTION_SCORE_CUTOFF;
-		if(_foundAction) then {
-			OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
+			_scoresAndActions sort DESCENDING;
+
+			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
+
+			// Get the best scoring action
+			(_scoresAndActions select 0) params ["_bestActionScore", "_bestAction"];
+
+			// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
+			
+			// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
+			// TODO: Should we maybe be normalizing scores between 0 and 1?
+			if(_bestActionScore <= ACTION_SCORE_CUTOFF) exitWith {};
+
+			OOP_DEBUG_MSG("Selected new action %1 (score %2), applying it to the simworlds", [_bestAction ARG _bestActionScore]);
 
 			// Add the best action to our active actions list
 			REF(_bestAction);
 
 			T_PRVAR(activeActions);
 			_activeActions pushBack _bestAction;
+
 			// Remove it from the possible actions list
 			_newActions deleteAt (_newActions find _bestAction);
 
@@ -361,17 +365,12 @@ CLASS("CmdrAI", "")
 			CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
 
 			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
-		} else {
-			// OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
-			// false
 		};
 
 		// Delete any remaining discarded actions
 		{
 			DELETE(_x);
 		} forEach _newActions;
-		
-		_foundAction
 	} ENDMETHOD;
 
 	METHOD("plan") {
@@ -405,49 +404,46 @@ CLASS("CmdrAI", "")
 	METHOD("_plan") {
 		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
 
-		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G (priority %3) - - - - -", [_thisObject ARG _world ARG _priority]);
+		OOP_DEBUG_MSG("- - - - - P L A N N I N G (priority %1) - - - - -", [_priority]);
 
 		T_PRVAR(activeActions);
 
-		OOP_DEBUG_MSG("[c %1 w %2] Creating new simworlds from %2", [_thisObject ARG _world]);
+		OOP_DEBUG_MSG("Creating new simworlds from %1", [_world]);
 
 		// Copy world to simworld, now and future
 		private _simWorldNow = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_NOW]);
 		private _simWorldFuture = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 
-		OOP_DEBUG_MSG("[c %1 w %2] Applying %3 active actions to simworlds", [_thisObject ARG _world ARG count _activeActions]);
-
-		PROFILE_SCOPE_START(ApplyActive);
+		OOP_DEBUG_MSG("Applying %1 active actions to simworlds", [count _activeActions]);
 
 		// Apply effects of active actions to the simworld
+		PROFILE_SCOPE_START(ApplyActive);
 		{
 			CALLM(_x, "applyToSim", [_simWorldNow]);
 			CALLM(_x, "applyToSim", [_simWorldFuture]);
 		} forEach _activeActions;
 		PROFILE_SCOPE_END(ApplyActive, 0.1);
 
-		OOP_DEBUG_MSG("[c %1 w %2] Generating new actions", [_thisObject ARG _world]);
+		OOP_DEBUG_MSG("Generating new actions", []);
 
 		private _generators = switch(_priority) do {
 			case CMDR_PLANNING_PRIORITY_HIGH: { 
 				["generateAttackActions"] 
 			};
 			case CMDR_PLANNING_PRIORITY_NORMAL: { 
-				["generateReinforceActions"] 
+				["generateReinforceActions", "generatePatrolActions"] 
 			};
 			case CMDR_PLANNING_PRIORITY_LOW: { 
-				["generateTakeOutpostActions", "generatePatrolActions"] 
+				["generateTakeOutpostActions"] 
 			};
 		};
 
-		{
-			if(T_CALLM("selectAction", [_x ARG _world ARG _simWorldNow ARG _simWorldFuture])) exitWith {};
-		} forEach _generators;
+		T_CALLM("selectActions", [_generators ARG _world ARG _simWorldNow ARG _simWorldFuture]);
 
 		DELETE(_simWorldNow);
 		DELETE(_simWorldFuture);
 
-		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G   D O N E - - - - -", [_thisObject ARG _world]);
+		OOP_DEBUG_MSG("- - - - - P L A N N I N G   D O N E - - - - -", []);
 	} ENDMETHOD;
 	
 ENDCLASS;

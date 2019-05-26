@@ -69,17 +69,19 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
+		if(CALLM(_srcGarr, "isDead", [])) exitWith {
+			T_CALLM("setScore", ZERO_SCORE);
+		};
+
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
 		ASSERT_OBJECT(_tgtLoc);
-
 		private _side = GETV(_srcGarr, "side");
 		private _toGarr = CALLM(_tgtLoc, "getGarrison", [_side]);
 		if(!IS_NULL_OBJECT(_toGarr)) exitWith {
 			// We never take a location we already have a garrison at, this should be reinforcement instead 
 			// (however we can get here if multiple potential actions are generated targetting the same location
 			// in the same planning cycle, and one gets accepted)
-			T_SETV("scorePriority", 0);
-			T_SETV("scoreResource", 0);
+			T_CALLM("setScore", ZERO_SCORE);
 		};
 
 		// switch  do {

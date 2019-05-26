@@ -38,6 +38,7 @@
 #define LABEL(model) GETV(model, "label")
 #define EFF_ZERO T_EFF_null
 #define MAKE_SCORE_VEC(scorePriority, scoreResource, scoreStrategy, scoreCompleteness) [scorePriority, scoreResource, scoreStrategy, scoreCompleteness]
+#define ZERO_SCORE [0,0,0,0]
 #define GET_SCORE_PRIORITY(scoreVec) (scoreVec select 0)
 #define GET_SCORE_RESOURCE(scoreVec) (scoreVec select 1)
 #define GET_SCORE_STRATEGY(scoreVec) (scoreVec select 2)

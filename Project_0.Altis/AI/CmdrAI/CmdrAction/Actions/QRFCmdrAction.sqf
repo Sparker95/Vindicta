@@ -72,6 +72,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
 		ASSERT_OBJECT(_tgtCluster);
 
+		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
+			T_CALLM("setScore", ZERO_SCORE);
+		};
+
 		private _side = GETV(_srcGarr, "side");
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)

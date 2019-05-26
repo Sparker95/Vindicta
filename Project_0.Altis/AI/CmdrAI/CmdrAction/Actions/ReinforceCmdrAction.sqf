@@ -73,6 +73,10 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
+		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtGarr, "isDead", [])) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		private _side = GETV(_srcGarr, "side");
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
