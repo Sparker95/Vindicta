@@ -338,9 +338,52 @@ CLASS("GameModeBase", "")
 		} forEach gCommanders;
 	} ENDMETHOD;
 
+	fnc_getLocName = {
+		params["_name"];
+		private _names = "getText( _x >> 'name') == _name" configClasses ( configFile >> "CfgWorlds" >> worldName >> "Names" );
+		if(count _names == 0) then { "" } else { configName (_names#0) };
+	};
+
+	METHOD("createMissingCityLocations") {
+		params [P_THISOBJECT];
+
+		private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == "city" } apply { getPos _x };
+		private _moduleGroup = createGroup sideLogic;
+		{
+			private _pos = getPos _x;
+			// See if one already exists
+			if(_existingCityLocations findIf { _x distance _pos < 500 } == NOT_FOUND) then {
+				// private _name = [text _x] call fnc_getLocName;
+				private _sizeX = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusA"));
+				private _sizeY = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusB"));
+				OOP_INFO_MSG("Creating missing City Location for %1 at %2, size %3m x %4m", [_name ARG _pos ARG _sizeX ARG _sizeY]);
+				
+				// TODO: calculate civ presence by area
+				"Project_0_LocationSector" createUnit [ _pos, _moduleGroup,
+					(format ["this setVariable ['Name', '%1'];", text _x]) +
+					        "this setVariable ['Type', 'city'];" +
+					        "this setVariable ['Side', 'civilian'];" +
+					(format ["this setVariable ['objectArea', [%1, %2, 0, true]];", _sizeX, _sizeY]) +
+					        "this setVariable ['CapacityInfantry', 0];" +
+					        "this setVariable ['CivPresUnitCount', 10];"
+				];
+				private _mrk = createmarker [text _x, _pos];
+				_mrk setMarkerSize [_sizeX, _sizeY];
+				_mrk setMarkerShape "ELLIPSE";
+				_mrk setMarkerBrush "SOLID";
+				_mrk setMarkerColor "ColorWhite";
+				_mrk setMarkerText (text _x);
+				_mrk setMarkerAlpha 0.4;
+			};
+		} forEach (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameCityCapital", "NameCity", "NameVillage", "CityCenter"], 25000]);
+	} ENDMETHOD;
+	
 	// Create locations
 	METHOD("initLocations") {
 		params [P_THISOBJECT];
+
+		// First generate location modules for any cities/towns etc that don't have them manually placed
+		T_CALLM("createMissingCityLocations", []);
 
 		private _allRoadBlocks = [];
 		{
@@ -408,7 +451,7 @@ CLASS("GameModeBase", "")
 				CALLM1(_policeStationLocation, "setCapacityInf", 5);
 				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 			};
-			
+
 		} forEach (entities "Project_0_LocationSector");
 
 	} ENDMETHOD;

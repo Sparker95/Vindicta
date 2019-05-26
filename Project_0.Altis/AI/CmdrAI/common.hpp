@@ -19,6 +19,7 @@
 #define COMBAT_FORCE_HINT				6	// Hint to select units approproiate for direct combat (e.g. heavy firepower)
 #define RECON_FORCE_HINT				7	// Hint to select units approproiate for a recon force (e.g. recon units, fast transport)
 #define SPEC_OPS_FORCE_HINT				8	// Hint to select units approproiate for a spec ops (e.g. spec ops units, covert transport)
+#define PATROL_FORCE_HINT				9	// Hint to select units approproiate for a patrol force (e.g. normal units, fast/lightly armed transport)
 
 #define PROFILER_COUNTERS_ENABLE
 
@@ -48,12 +49,18 @@
 #define EFF_MIN_EFF [6, 0, 0, 0, 6, 0, 0, 0]
 #define EFF_GARRISON_MIN_EFF [12, 0, 0, 0, 12, 0, 0, 0]
 
+#define EFF_FOOT_PATROL_EFF [12, 0, 0, 0, 12, 0, 0, 0]
+#define EFF_MOUNTED_PATROL_EFF [12, 0, 0, 0, 12, 5, 0, 0]
+
 // Cmdr planning constants
 #define CMDR_PLANNING_PRIORITY_HIGH 0
 #define CMDR_PLANNING_PRIORITY_NORMAL 1
 #define CMDR_PLANNING_PRIORITY_LOW 2
 
 // PRIME NUMBERS only
+// #define CMDR_PLANNING_RATIO_HIGH 2
+// #define CMDR_PLANNING_RATIO_NORMAL 5
+// #define CMDR_PLANNING_RATIO_LOW 17
 #define CMDR_PLANNING_RATIO_HIGH 3
 #define CMDR_PLANNING_RATIO_NORMAL 31
 #define CMDR_PLANNING_RATIO_LOW 67

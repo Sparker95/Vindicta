@@ -150,6 +150,8 @@ CLASS("Location", "MessageReceiverEx")
 	#ifdef DEBUG_LOCATION_MARKERS
 	METHOD("updateMarker") {
 		params [P_THISOBJECT];
+
+		T_PRVAR(type);
 		deleteMarker _thisObject;
 		deleteMarker (_thisObject + "_label");
 		T_PRVAR(pos);
@@ -171,14 +173,16 @@ CLASS("Location", "MessageReceiverEx")
 			if(_border isEqualType []) then {
 				_mrk setMarkerDir _border#2;
 			};
-
-			_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
-			_mrk setMarkerType "Empty";
-			_mrk setMarkerColor "ColorYellow";
-			_mrk setMarkerAlpha 1;
-			T_PRVAR(name);
-			T_PRVAR(type);
-			_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _name, _type];
+			
+			if(_type != "roadblock") then {
+				_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
+				_mrk setMarkerType "Empty";
+				_mrk setMarkerColor "ColorYellow";
+				_mrk setMarkerAlpha 1;
+				T_PRVAR(name);
+				T_PRVAR(type);
+				_mrk setMarkerText format ["%1 (%2)(%3)", _thisObject, _name, _type];
+			};
 		};
 	} ENDMETHOD;
 	#endif

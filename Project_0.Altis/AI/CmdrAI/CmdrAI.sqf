@@ -195,6 +195,68 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
+	METHOD("generatePatrolActions") {
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		T_PRVAR(activeActions);
+		T_PRVAR(side);
+
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
+			private _potentialSrcGarr = _x;
+
+			// Must be not already busy 
+			!CALLM(_potentialSrcGarr, "isBusy", []) and 
+			// Must be at a location
+			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			// Must not be source of another inprogress patrol mission
+			{ 
+				T_PRVAR(activeActions);
+				_activeActions findIf {
+					GET_OBJECT_CLASS(_x) == "PatrolCmdrAction" and
+					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
+				} == NOT_FOUND
+			} and
+			// Must have minimum patrol available
+			{
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
+				// Must have at least a minimum available eff
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			}
+		};
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcPos = GETV(_x, "pos");
+
+			// Take tgt locations from future, so we take into account all in progress actions.
+			private _tgtLocations = CALLM(_worldNow, "getNearestLocations", [_srcPos ARG 2000 ARG ["city"]]) apply { 
+				_x params ["_dist", "_loc"];
+				[_srcPos getDir GETV(_loc, "pos"), GETV(_loc, "id")]
+			};
+			diag_log _tgtLocations;
+			if(count _tgtLocations > 0) then {
+				_tgtLocations sort ASCENDING;
+				private _routeTargets = _tgtLocations apply {
+					_x params ["_dir", "_locId"];
+					[TARGET_TYPE_LOCATION, _locId]
+				};
+				private _params = [_srcId, _routeTargets];
+				diag_log _params;
+				_actions pushBack (NEW("PatrolCmdrAction", _params));
+			};
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 Patrol actions from %2 garrisons", [count _actions ARG count _srcGarrisons]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Patrol"", ""potential_action_count"": %2, ""src_garrisons"": %3}}", _side, count _actions, count _srcGarrisons];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
+		_actions
+	} ENDMETHOD;
+
 	METHOD("update") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -367,9 +429,18 @@ CLASS("CmdrAI", "")
 		OOP_DEBUG_MSG("[c %1 w %2] Generating new actions", [_thisObject ARG _world]);
 
 		private _generators = switch(_priority) do {
-			case CMDR_PLANNING_PRIORITY_HIGH: { ["generateAttackActions"] };
-			case CMDR_PLANNING_PRIORITY_NORMAL: { ["generateReinforceActions"] };
-			case CMDR_PLANNING_PRIORITY_LOW: { ["generateTakeOutpostActions"] };
+			case CMDR_PLANNING_PRIORITY_HIGH: { 
+				[
+					//"generateAttackActions", 
+					"generatePatrolActions"
+				] 
+			};
+			case CMDR_PLANNING_PRIORITY_NORMAL: { 
+				["generateReinforceActions"] 
+			};
+			case CMDR_PLANNING_PRIORITY_LOW: { 
+				["generateTakeOutpostActions"] 
+			};
 		};
 
 		{

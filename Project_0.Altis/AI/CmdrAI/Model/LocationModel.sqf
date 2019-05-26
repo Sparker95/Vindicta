@@ -32,6 +32,13 @@ CLASS("LocationModel", "ModelBase")
 		if(!IS_NULL_OBJECT(_actual)) then {
 			T_CALLM("sync", []);
 		};
+
+		#ifdef OOP_DEBUG
+		if(GETV(_world, "type") == WORLD_TYPE_REAL) then {
+			OOP_DEBUG_MSG("LocationModel for %1 created in %2", [_actual ARG _world]);
+		};
+		#endif
+
 		// Add self to world
 		CALLM(_world, "addLocation", [_thisObject]);
 	} ENDMETHOD;

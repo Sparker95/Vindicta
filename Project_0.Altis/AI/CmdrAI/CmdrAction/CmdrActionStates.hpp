@@ -22,6 +22,9 @@
 #define CMDR_ACTION_STATE_FAILED_GARRISON_DEAD 				(CMDR_ACTION_STATE_CUSTOM+11)
 #define CMDR_ACTION_STATE_FAILED_TIMEOUT 					(CMDR_ACTION_STATE_CUSTOM+12)
 
+#define CMDR_ACTION_STATE_NEXT_WAYPOINT 					(CMDR_ACTION_STATE_CUSTOM+13)
+#define CMDR_ACTION_STATE_FINISHED_WAYPOINTS				(CMDR_ACTION_STATE_CUSTOM+14)
+
 // ActionStateTransition variables, these are wrappers of variables so the value can be shared between multiple
 // classes. They also allow the CmdrAction state to be pushed/popped.
 #define MAKE_AST_VAR(value) [value]

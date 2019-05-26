@@ -507,6 +507,11 @@ CLASS("GarrisonModel", "ModelBase")
 							// TODO: get unit type and bias positive if it is the right class
 							1
 						};
+						case (PATROL_FORCE_HINT in _flags): { 
+							// Prefer spec ops units and covert vehicles
+							// TODO: get unit type and bias positive if it is the right class
+							1
+						};
 						default { 1 };
 					};
 					_x set [0, (_unitEff#_i) * _bias];

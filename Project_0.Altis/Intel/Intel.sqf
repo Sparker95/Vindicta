@@ -385,6 +385,19 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 ENDCLASS;
 
 /*
+Class: Intel.IntelCommanderActionPatrol
+Intel about action to attack something.
+*/
+CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
+	/* variable: srcGarrison
+	The source garrison that sent the attack. Probably players have no use to this.*/
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+	/* variable: locations
+	Locations that the patrol will visit.*/
+	VARIABLE_ATTR("locations", [ATTR_SERIALIZABLE]);
+ENDCLASS;
+
+/*
 Class: Intel.IntelCommanderActionRecon
 The commander is planning something so he sends some recon squads!
 */
