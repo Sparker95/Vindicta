@@ -73,7 +73,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT(_tgtCluster);
 
 		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
-			T_CALLM("setScore", ZERO_SCORE);
+			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _side = GETV(_srcGarr, "side");

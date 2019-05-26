@@ -41,3 +41,5 @@
 #define TARGET_TYPE_LOCATION 1
 #define TARGET_TYPE_POSITION 2
 #define TARGET_TYPE_CLUSTER  3
+#define NULL_TARGET []
+#define IS_NULL_TARGET(target) (target isEqualTo [])

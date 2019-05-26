@@ -167,7 +167,7 @@ CLASS("Location", "MessageReceiverEx")
 				_mrk setMarkerDir _border#2;
 			};
 			
-			if(_type != "roadblock") then {
+			if(not (_type in ["roadblock", "city", "policeStation"])) then {
 				_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
 				_mrk setMarkerType "Empty";
 				_mrk setMarkerColor "ColorYellow";

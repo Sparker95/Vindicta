@@ -301,7 +301,7 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 	
 	METHOD("selectActions") {
-		params [P_THISOBJECT, P_ARRAY("_actionFuncs"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
+		params [P_THISOBJECT, P_ARRAY("_actionFuncs"), P_NUMBER("_maxNewActions"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
 
 		CALLM(_simWorldNow, "resetScoringCache", []);
 		CALLM(_simWorldFuture, "resetScoringCache", []);
@@ -312,7 +312,8 @@ CLASS("CmdrAI", "")
 			_newActions = _newActions + T_CALLM(_x, [_simWorldNow ARG _simWorldFuture]);
 		} forEach _actionFuncs;
 
-		while {count _newActions > 0} do {
+		private _newActionCount = 0;
+		while {(count _newActions > 0) and _newActionCount < _maxNewActions} do {
 
 			OOP_DEBUG_MSG("Updating scoring for %1 new actions", [count _newActions]);
 			PROFILE_SCOPE_START(UpdateScores)
@@ -365,6 +366,8 @@ CLASS("CmdrAI", "")
 			CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
 
 			PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
+
+			_newActionCount = _newActionCount + 1;
 		};
 
 		// Delete any remaining discarded actions
@@ -400,7 +403,7 @@ CLASS("CmdrAI", "")
 			//T_SETV("lastPlanningTime", TIME_NOW);
 		};
 	} ENDMETHOD;
-	
+
 	METHOD("_plan") {
 		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
 
@@ -426,19 +429,20 @@ CLASS("CmdrAI", "")
 
 		OOP_DEBUG_MSG("Generating new actions", []);
 
+		private _maxNewActions = 2;
 		private _generators = switch(_priority) do {
-			case CMDR_PLANNING_PRIORITY_HIGH: { 
-				["generateAttackActions"] 
+			case CMDR_PLANNING_PRIORITY_HIGH: {
+				["generateAttackActions"]
 			};
-			case CMDR_PLANNING_PRIORITY_NORMAL: { 
-				["generateReinforceActions", "generatePatrolActions"] 
+			case CMDR_PLANNING_PRIORITY_NORMAL: {
+				["generateReinforceActions", "generatePatrolActions"]
 			};
-			case CMDR_PLANNING_PRIORITY_LOW: { 
-				["generateTakeOutpostActions"] 
+			case CMDR_PLANNING_PRIORITY_LOW: {
+				["generateTakeOutpostActions"]
 			};
 		};
 
-		T_CALLM("selectActions", [_generators ARG _world ARG _simWorldNow ARG _simWorldFuture]);
+		T_CALLM("selectActions", [_generators ARG _maxNewActions ARG _world ARG _simWorldNow ARG _simWorldFuture]);
 
 		DELETE(_simWorldNow);
 		DELETE(_simWorldFuture);

@@ -27,15 +27,20 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
-		params [P_THISOBJECT /*, P_STRING("_world") */ ];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world") ];
 
-		private _array = T_GET_AST_VAR("arrayVar");
+		// if(GETV(_world, "type") != WORLD_TYPE_REAL) exitWith { CMDR_ACTION_STATE_NONE };
+
+		private _array = +T_GET_AST_VAR("arrayVar");
 		ASSERT_MSG(_array isEqualType [], "AST_ArrayPopFront only works with arrays");
 
 		if(count _array == 0) exitWith { T_GETV("emptyBeforeState") };
 
 		private _result = _array deleteAt 0;
 		T_SET_AST_VAR("resultVar", _result);
+		T_SET_AST_VAR("arrayVar", _array);
+
+		OOP_INFO_MSG("%1 %2 %3", [_world ARG _array ARG _result]);
 
 		if(count _array == 0) exitWith { T_GETV("emptyAfterState") };
 
@@ -57,17 +62,20 @@ ENDCLASS;
 	private _arrayVar = MAKE_AST_VAR(_array);
 	private _resultVar = MAKE_AST_VAR(-1);
 	private _ast = NEW("AST_ArrayPopFront", [[0] ARG 1 ARG 2 ARG 3 ARG _arrayVar ARG _resultVar]);
-
-	private _notEmptyState = CALLM(_ast, "apply", []);
+	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _notEmptyState = CALLM(_ast, "apply", [_world]);
 	["Not empty state", _notEmptyState == 1] call test_Assert;
+	private _array = GET_AST_VAR(_arrayVar);
 	["Not empty state array", _array isEqualTo [1]] call test_Assert;
 	["Not empty state result", GET_AST_VAR(_resultVar) isEqualTo 0] call test_Assert;
-	private _emptyAfterState = CALLM(_ast, "apply", []);
+	private _emptyAfterState = CALLM(_ast, "apply", [_world]);
 	["Empty after state", _emptyAfterState == 3] call test_Assert;
+	private _array = GET_AST_VAR(_arrayVar);
 	["Empty after state array", _array isEqualTo []] call test_Assert;
 	["Empty after state result", GET_AST_VAR(_resultVar) isEqualTo 1] call test_Assert;
-	private _emptyBeforeState = CALLM(_ast, "apply", []);
+	private _emptyBeforeState = CALLM(_ast, "apply", [_world]);
 	["Empty before state", _emptyBeforeState == 2] call test_Assert;
+	private _array = GET_AST_VAR(_arrayVar);
 	["Empty before state array", _array isEqualTo []] call test_Assert;
 	["Empty before state result", GET_AST_VAR(_resultVar) isEqualTo 1] call test_Assert;
 }] call test_AddTest;

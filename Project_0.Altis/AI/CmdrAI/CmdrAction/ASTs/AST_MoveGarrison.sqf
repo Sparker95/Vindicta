@@ -40,17 +40,29 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
+		T_PRVAR(moving);
+
 		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
 		ASSERT_OBJECT(_garr);
 
 		if(CALLM(_garr, "isDead", [])) exitWith {
+			if(_moving and GETV(_world, "type") == WORLD_TYPE_REAL) then {
+				CALLM(_garr, "cancelMoveActual", []);
+				T_SETV("moving", false);
+			};
 			T_GETV("failGarrisonDead")
 		};
 
 		//T_GET_AST_VAR("target") params ["_targetType", "_target"];
 
 		private _targetPos = [_world, T_GET_AST_VAR("target")] call Target_fnc_GetPos;
-		if(!(_targetPos isEqualType [])) exitWith { T_GETV("failTargetDead") };
+		if(!(_targetPos isEqualType [])) exitWith {
+			if(_moving and GETV(_world, "type") == WORLD_TYPE_REAL) then {
+				CALLM(_garr, "cancelMoveActual", []);
+				T_SETV("moving", false);
+			};
+			T_GETV("failTargetDead");
+		};
 
 		private _arrived = false;
 
@@ -64,7 +76,6 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			};
 			case WORLD_TYPE_REAL: {
 				private _radius = T_GET_AST_VAR("radius");
-				T_PRVAR(moving);
 				if(!_moving) then {
 					// Start moving
 					OOP_INFO_MSG("[w %1] Move %2 to %3: started", [_world ARG _garr ARG _targetPos]);
@@ -81,8 +92,8 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 						} else {
 							// Move again cos we didn't get there yet!
 							OOP_INFO_MSG("[w %1] Move %2 to %3: complete, didn't reach target within %4m, moving again", [_world ARG LABEL(_garr) ARG _targetPos ARG _radius]);
-							T_SETV("moving", false);
 						};
+						T_SETV("moving", false);
 					};
 				};
 			};

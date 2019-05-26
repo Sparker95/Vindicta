@@ -38,7 +38,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		T_SETV("detachmentEffVar", _detachmentEffVar);
 
 		// Target is the next waypoint or the RTB target
-		private _targetVar = T_CALLM("createVariable", [[]]);
+		private _targetVar = T_CALLM("createVariable", [_routeTargets]);
 		T_SETV("targetVar", _targetVar);
 
 		// Waypoints on the route
@@ -114,7 +114,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
 
 		private _nextWaypointAST_Args = [
-				[CMDR_ACTION_STATE_NEXT_WAYPOINT], 		
+				[CMDR_ACTION_STATE_NEXT_WAYPOINT],
 				CMDR_ACTION_STATE_READY_TO_MOVE,	// State change when waypoints remain
 				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when no waypoints remain
 				CMDR_ACTION_STATE_READY_TO_MOVE,	// State change when on last waypoint
@@ -252,7 +252,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// };
 	} ENDMETHOD;
 
-
 	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
@@ -264,7 +263,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		if(CALLM(_srcGarr, "isDead", [])) exitWith {
-			T_CALLM("setScore", ZERO_SCORE);
+			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _side = GETV(_srcGarr, "side");
