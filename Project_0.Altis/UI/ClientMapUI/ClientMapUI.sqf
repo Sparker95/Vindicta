@@ -13,6 +13,10 @@
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
+#define MARKER_INTEL_SOURCE			"mrk_intel_source"
+#define MARKER_INTEL_DESTINATION 	"mrk_intel_dest"
+#define MARKER_INTEL_ARROW			"mrk_intel_arrow"
+
 /*
 	Class: ClientMapUI
 	Singleton class that performs things related to map user interface
@@ -176,9 +180,15 @@ CLASS(CLASS_NAME, "")
 		if (_actionName != "Unknown") then {
 			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText _text;
 		};
+
+		// Show markers on the map to highlight source and destination
+		CALLSM3("ClientMapUI", "setIntelMarkersParameters", true, _from, _to);
 	} ENDMETHOD;
 
-	// Formats location data and shows it on the location data panel
+	/*
+		Method: onMouseClickElsewhere
+		Description: Gets called when user clicks on the map not on a marker.
+	*/
 	STATIC_METHOD("onMouseClickElsewhere") {
 
 		// Reset the current marker variable
@@ -191,9 +201,41 @@ CLASS(CLASS_NAME, "")
 
 		{
 			private _className = GET_OBJECT_CLASS(_x);
-			if (_className != "IntelLocation") then {
-				private _shortName = CALLM0(_x, "getShortName");
-				private _index = _ctrlListnbox lnbAddRow [_shortName];
+			if (_className != "IntelLocation") then { // Add all non-location intel classes
+				private _intel = _x;
+				private _shortName = CALLM0(_intel, "getShortName");
+
+				// Calculate time difference between current date and departure date
+				private _dateDeparture = GETV(_intel, "dateDeparture");
+				private _dateNow = date;
+				private _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+				private _activeStr = "";
+				if (_numberDiff < 0) then {
+					_activeStr = "active ";
+					_numberDiff = -_numberDiff;
+				};
+				private _dateDiff = numberToDate [_dateNow#0, _numberDiff];
+				_dateDiff params ["_y", "_m", "_d", "_h", "_m"];
+				
+				// Make a string representation of time difference
+				private _timeDiffStr = if (_h > 0) then {
+					format ["%1H, %2M", _h, _m]
+				} else {
+					format ["%1M", _m]
+				};
+
+				// Make a string representation of side
+				private _side = GETV(_intel, "side");
+				_sideStr  = switch (_side) do {
+					case WEST: {"WEST"};
+					case EAST: {"EAST"};
+					case independent: {"IND"};
+					default {"ALIEN"};
+				};
+
+				private _rowStr = format ["%1 %2 %3%4", _sideStr, _shortName, _activeStr, _timeDiffStr];
+
+				private _index = _ctrlListnbox lnbAddRow [_rowStr];
 				_ctrlListnbox lnbSetData [[_index, 0], _x];
 			};
 		} forEach _allIntels;
@@ -203,90 +245,27 @@ CLASS(CLASS_NAME, "")
 		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
 	} ENDMETHOD;
 
-	STATIC_METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_locationData", [], [[]]], ["_side", CIVILIAN]];
 
-		OOP_INFO_0("UPDATE LOCATION DATA");
-		OOP_INFO_1("location data: %1", _locationData);
-		OOP_INFO_2("side: %1   didJip: %2", _side, didJIP);
+	/*
+	Method: clearListNBox
+	Description
 
-
-		pr _varName = switch (_side) do {
-			case WEST: {"locationDataWest"};
-			case EAST: {"locationDataEast"};
-			case INDEPENDENT: {"locationDataInd"};
-			default {"ERROR_UNKNOWN_SIDE"};
-		};
-		pr _ldOld = GET_STATIC_VAR(CLASS_NAME, _varName);
-
-		//Move references for MapMarkers from old location data to new location data
-		{ // foreach _ldOld
-			pr _oldPos = _x select CLD_ID_POS;
-			pr _index = _locationData findIf {
-				pr _newPos = _x select CLD_ID_POS;
-				_oldPos isEqualTo _newPos
-			};
-			// If location exists both in new and old array
-			if (_index != -1) then {
-				pr _mrk = _x select CLD_ID_MARKER;
-				(_locationData select _index) set [CLD_ID_MARKER, _mrk];
-			} else {
-				// If location doesn't exist in new array, delete its marker
-				DELETE(_mrk);
-			};
-		} forEach _ldOld;
-
-		// Now create new markers for locations that are added right now
-		{
-			pr _mrk = _x select CLD_ID_MARKER;
-			if (_mrk == "") then {
-				_mrk = NEW("MapMarkerLocation", []);
-				_x set [CLD_ID_MARKER, _mrk];
-			};
-
-			// Set/update marker properties
-			pr _args = [_mrk, _x];
-			CALL_STATIC_METHOD(CLASS_NAME, "setLocationMarkerProperties", _args);
-		} forEach _locationData;
-
-		SET_STATIC_VAR(CLASS_NAME, _varName, _locationData);
-	} ENDMETHOD;
-
-	// Sets text, color, position, and other properties of a marker attached to certain location
-	STATIC_METHOD("setLocationMarkerProperties") {
-		params ["_thisClass", ["_mapMarker", "", [""]], ["_cld", [], [[]]]];
-		pr _type = _cld select CLD_ID_TYPE;
-		pr _pos = _cld select CLD_ID_POS;
-		pr _side = _CLD select CLD_ID_SIDE;
-		pr _text = if (_type != LOCATION_TYPE_UNKNOWN) then {
-			pr _t = CALL_STATIC_METHOD("ClientMapUI", "getNearestLocationName", [_pos]);
-			if (_t == "") then { // Check if we have got an empty string
-				format ["%1 %2", _side, _type]
-			} else {
-				_t
-			};
-		} else {
-			"??"
-		};
-
-		pr _color = switch(_side) do {
-			case WEST: {MUI_COLOR_BLUFOR};
-			case EAST: {MUI_COLOR_OPFOR};
-			case INDEPENDENT: {MUI_COLOR_IND};
-			default {MUI_COLOR_IND};
-		};
-
-		CALLM1(_mapMarker, "setPos", _pos);
-		CALLM1(_mapMarker, "setText", _text);
-		CALLM1(_mapMarker, "setColor", _color);
-	} ENDMETHOD;
-
+	Returns: nil
+	*/
 	STATIC_METHOD("clearListNBox") {
 		private _mapDisplay = findDisplay 12;
 		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
 		lnbClear _ctrlListnbox;
 	} ENDMETHOD;
 
+	/*
+	Method: onMapMarkerMouseButtonDown
+	Gets called when user clicks on a map marker
+
+	Parameters: _mapMarker, _intel
+
+	Returns: nil
+	*/
 	STATIC_METHOD("onMapMarkerMouseButtonDown") {
 		params ["_thisClass", ["_mapMarker", "", []], ["_intel", "", [""]]];
 
@@ -343,6 +322,9 @@ CLASS(CLASS_NAME, "")
 		{
 			_ctrlListnbox lnbAddRow [_x];
 		} forEach _vehList;
+
+		// Disable markers showing source and destination on the map
+		CALLSM1("ClientMapUI", "setIntelMarkersParameters", false);
 	} ENDMETHOD;
 
 	// Returns marker text of closest marker
@@ -359,15 +341,41 @@ CLASS(CLASS_NAME, "")
 		_return
 	} ENDMETHOD;
 
+	STATIC_METHOD("setIntelMarkersParameters") {
+		params ["_thisClass", ["_showMarkers", false, [false]], ["_posSource", [], [[]]], ["_posDestination", [], [[]]]];
+		if (_showMarkers) then {
+			if (count _posSource > 0) then { MARKER_INTEL_SOURCE setMarkerPosLocal _posSource; } else {
+				MARKER_INTEL_SOURCE setMarkerPosLocal [-666666, 0, 0];
+			};
+			if (count _posDestination > 0) then { MARKER_INTEL_DESTINATION setMarkerPosLocal _posDestination; } else {
+				MARKER_INTEL_DESTINATION setMarkerPosLocal [-666666, 0, 0];
+			};
+
+			// If both positions are defined, draw a line
+			if ((count _posSource > 0) && (count _posDestination > 0)) then {
+				[_posSource, _posDestination, "ColorRed", 66, MARKER_INTEL_ARROW] call misc_fnc_mapDrawLineLocal;
+			} else {
+				deleteMarkerLocal MARKER_INTEL_ARROW;
+			};
+		} else {
+			MARKER_INTEL_SOURCE setMarkerPosLocal [-666666, 0, 0];
+			MARKER_INTEL_DESTINATION setMarkerPosLocal [-666666, 0, 0];
+			deleteMarkerLocal MARKER_INTEL_ARROW;
+		};
+	} ENDMETHOD;
+
 ENDCLASS;
 
-// Initialize static variable values
-{
-	// Make sure we don't override a JIP value
-	pr _val = GET_STATIC_VAR(CLASS_NAME, _x);
-	if (isNil "_val") then {
-		SET_STATIC_VAR(CLASS_NAME, _x, []);
-	};
-} forEach ["locationDataWest", "locationDataEast", "locationDataInd"];
-
 SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
+
+// Create local map markers to highlight source and destination of intel
+#ifndef _SQF_VM
+{
+	_x params ["_name", "_type", "_text"];
+	private _mrk = createMarkerLocal [_name, [-666666, -666666, 0]];
+	_mrk setMarkerTypeLocal _type;
+	_mrk setMarkerColorLocal "ColorRed";
+	_mrk setMarkerAlphaLocal 1;
+	_mrk setMarkerTextLocal _text;
+} forEach [[MARKER_INTEL_SOURCE, "mil_start", "Source"], [MARKER_INTEL_DESTINATION, "mil_end", "Destination"]];
+#endif

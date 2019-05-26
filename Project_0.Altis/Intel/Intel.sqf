@@ -358,7 +358,7 @@ CLASS("IntelCommanderAction", "Intel")
 
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
-		"IntelAction"
+		"Action"
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -380,7 +380,7 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
-		"IntelActionReinforce"
+		"Reinforce"
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -397,7 +397,7 @@ CLASS("IntelCommanderActionBuild", "IntelCommanderAction")
 
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
-		"IntelActionBuild"
+		"Build"
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -423,7 +423,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
-		"IntelActionAttack"
+		"Attack"
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -434,6 +434,6 @@ ENDCLASS;
 CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
-		"IntelActionRecon"
+		"Recon"
 	} ENDMETHOD;
 ENDCLASS;
