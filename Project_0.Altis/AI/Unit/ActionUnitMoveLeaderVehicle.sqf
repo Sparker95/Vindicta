@@ -182,6 +182,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	// logic to run when the goal is about to be terminated
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		// Delete waypoints
+		pr _hO = GETV(_thisObject, "hO");
+		pr _hG = group _hO;
+		
+		// Delete all previous waypoints
+		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
 		// Stop the car from driving around
 		pr _hO = GETV(_thisObject, "hO");
