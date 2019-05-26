@@ -13,17 +13,19 @@
 CLASS("CmdrAI", "")
 	VARIABLE("side");
 	VARIABLE("activeActions");
+	VARIABLE("planningCycle");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 		T_SETV("side", _side);
 		T_SETV("activeActions", []);
+		T_SETV("planningCycle", 0);
 	} ENDMETHOD;
 
 	METHOD("generateAttackActions") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		T_PRVAR(side);
-		
+
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
 			// TODO: We should be able to redirect for QRFs. Perhaps it 
@@ -55,7 +57,11 @@ CLASS("CmdrAI", "")
 			} forEach _tgtClusters;
 		} forEach _srcGarrisons;
 
-		OOP_INFO_MSG("Considering %1 QRF actions from %2 garrisons to %3 clusters", [count _actions ARG count _srcGarrisons ARG count _tgtClusters]);
+		//OOP_INFO_MSG("Considering %1 QRF actions from %2 garrisons to %3 clusters", [count _actions ARG count _srcGarrisons ARG count _tgtClusters]);
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""QRF"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_clusters"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtClusters];
+		OOP_INFO_MSG(_str, []);
+		#endif
 
 		_actions
 	} ENDMETHOD;
@@ -121,6 +127,11 @@ CLASS("CmdrAI", "")
 
 		OOP_INFO_MSG("Considering %1 Reinforce actions from %2 garrisons to %3 garrisons", [count _actions ARG count _srcGarrisons ARG count _tgtGarrisons]);
 
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
 		_actions
 	} ENDMETHOD;
 
@@ -176,13 +187,21 @@ CLASS("CmdrAI", "")
 
 		OOP_INFO_MSG("Considering %1 TakeOutpost actions from %2 garrisons to %3 locations", [count _actions ARG count _srcGarrisons ARG count _tgtLocations]);
 
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""TakeOutpost"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_locations"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtLocations];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
 		_actions
 	} ENDMETHOD;
 
 	METHOD("update") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
-		//T_PRVAR(world);
+		// Sync before update
+		CALLM(_world, "sync", []);
+
+		T_PRVAR(side);
 		T_PRVAR(activeActions);
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G - - - - -   on %3 active actions", [_thisObject ARG _world ARG count _activeActions]);
@@ -201,6 +220,11 @@ CLASS("CmdrAI", "")
 		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - U P D A T I N G   D O N E - - - - -", [_thisObject ARG _world]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
+		OOP_INFO_MSG(_str, []);
+		#endif
 	} ENDMETHOD;
 
 	STATIC_METHOD("getActionGlobalPriority") {
@@ -289,11 +313,38 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 
 	METHOD("plan") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		
+		T_PRVAR(planningCycle);
+		T_SETV("planningCycle", _planningCycle + 1);
 
-		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G - - - - -", [_thisObject ARG _world]);
+		private _priority = switch true do {
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
+			default { -1 };
+		};
 
-		//T_PRVAR(world);
+		//T_PRVAR(lastPlanningTime);
+		//if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
+
+		if(_priority != -1) then {
+			// Sync before planning
+			CALLM(_world, "sync", []);
+
+			CALLM(_world, "updateThreatMaps", []);
+			T_CALLM("_plan", [_world ARG _priority]);
+
+			// Make it after planning so we get a gap
+			//T_SETV("lastPlanningTime", TIME_NOW);
+		};
+	} ENDMETHOD;
+	
+	METHOD("_plan") {
+		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
+
+		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G (priority %3) - - - - -", [_thisObject ARG _world ARG _priority]);
+
 		T_PRVAR(activeActions);
 
 		OOP_DEBUG_MSG("[c %1 w %2] Creating new simworlds from %2", [_thisObject ARG _world]);
@@ -305,6 +356,7 @@ CLASS("CmdrAI", "")
 		OOP_DEBUG_MSG("[c %1 w %2] Applying %3 active actions to simworlds", [_thisObject ARG _world ARG count _activeActions]);
 
 		PROFILE_SCOPE_START(ApplyActive);
+
 		// Apply effects of active actions to the simworld
 		{
 			CALLM(_x, "applyToSim", [_simWorldNow]);
@@ -314,107 +366,20 @@ CLASS("CmdrAI", "")
 
 		OOP_DEBUG_MSG("[c %1 w %2] Generating new actions", [_thisObject ARG _world]);
 
-		//PROFILE_SCOPE_START(GenerateActions);
-		// Generate possible new actions based on the simworld
-		// (i.e. taking into account expected outcomes of currently active actions)
-
-		private _generators = [
-			"generateAttackActions",
-			"generateReinforceActions",
-			"generateTakeOutpostActions"
-		];
+		private _generators = switch(_priority) do {
+			case CMDR_PLANNING_PRIORITY_HIGH: { ["generateAttackActions"] };
+			case CMDR_PLANNING_PRIORITY_NORMAL: { ["generateReinforceActions"] };
+			case CMDR_PLANNING_PRIORITY_LOW: { ["generateTakeOutpostActions"] };
+		};
 
 		{
 			if(T_CALLM("selectAction", [_x ARG _world ARG _simWorldNow ARG _simWorldFuture])) exitWith {};
 		} forEach _generators;
-
-		// private _newActions = 
-		// 	  T_CALLM("generateTakeOutpostActions", [_simWorldNow ARG _simWorldFuture])
-		// 	+ T_CALLM("generateAttackActions", [_simWorldNow ARG _simWorldFuture])
-		// 	+ T_CALLM("generateReinforceActions", [_simWorldNow ARG _simWorldFuture]) 
-		// 	;
-		//PROFILE_SCOPE_END(GenerateActions, 0.1);
-
-		// OOP_DEBUG_MSG("[c %1 w %2] Generated %3 new actions, updating plan", [_thisObject ARG _world ARG count _newActions]);
-
-		// PROFILE_SCOPE_START(PlanActions);
-
-		// private _newActionsCount = 0;
-
-		// // Plan new actions
-		// while { count _newActions > 0 and _newActionsCount < 1 } do {
-		// 	OOP_DEBUG_MSG("[c %1 w %2]     Updating scoring for %3 remaining new actions", [_thisObject ARG _world ARG count _newActions]);
-
-		// 	CALLM(_simWorldNow, "resetScoringCache", []);
-		// 	CALLM(_simWorldFuture, "resetScoringCache", []);
-
-		// 	PROFILE_SCOPE_START(UpdateScores);
-		// 	// Update scores of potential actions against the simworld state
-		// 	{
-		// 		CALLM(_x, "updateScore", [_simWorldNow ARG _simWorldFuture]);
-		// 	} forEach _newActions;
-		// 	PROFILE_SCOPE_END(UpdateScores, 0.1);
-
-		// 	// Sort the actions by their scores
-		// 	private _scoresAndActions = _newActions apply { 
-		// 		private _finalScore = CALLM(_x, "getFinalScore", []);
-		// 		private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
-		// 		[_priority, _finalScore, _x] 
-		// 	};
-		// 	_scoresAndActions sort DESCENDING;
-
-		// 	// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
-
-		// 	// Get the best scoring action
-		// 	(_scoresAndActions select 0) params ["_priority", "_bestActionScore", "_bestAction"];
-
-		// 	// private _bestActionScore = // CALLM(_bestAction, "getFinalScore", []);
-
-		// 	// Some sort of cut off needed here, probably needs tweaking, or should be strategy based?
-		// 	// TODO: Should we maybe be normalizing scores between 0 and 1?
-		// 	if(_bestActionScore <= ACTION_SCORE_CUTOFF) exitWith {
-		// 		OOP_DEBUG_MSG("[c %1 w %2]     Best new action %3 (score %4), score below threshold of %5, terminating planning", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore ARG ACTION_SCORE_CUTOFF]);
-		// 	};
-
-		// 	OOP_DEBUG_MSG("[c %1 w %2]     Selected new action %3 (score %4), applying it to the simworlds", [_thisObject ARG _world ARG _bestAction ARG _bestActionScore]);
-
-		// 	// Add the best action to our active actions list
-		// 	REF(_bestAction);
-		// 	_activeActions pushBack _bestAction;
-		// 	// Remove it from the possible actions list
-		// 	_newActions deleteAt (_newActions find _bestAction);
-
-		// 	PROFILE_SCOPE_START(ApplyNewActionToSim);
-
-		// 	// Apply the new action effects to simworld, so next loop scores update appropriately
-		// 	// (e.g. if we just accepted a new reinforce action, we should update the source and target garrison
-		// 	// models in the sim so that other reinforce actions will take it into account in their scoring.
-		// 	// Probably other reinforce actions with the same source or target would have lower scores now).
-		// 	CALLM(_bestAction, "applyToSim", [_simWorldNow]);
-		// 	CALLM(_bestAction, "applyToSim", [_simWorldFuture]);
-
-		// 	PROFILE_SCOPE_END(ApplyNewActionToSim, 0.1);
-
-		// 	_newActionsCount = _newActionsCount + 1;
-		// };
-		// PROFILE_SCOPE_END(PlanActions, 0.1);
-
-		//OOP_DEBUG_MSG("[c %1 w %2] Done updating plan, added %3 new actions, cleaning up %4 unused new actions", [_thisObject ARG _world ARG _newActionsCount ARG count _newActions]);
-
-		// // Delete any remaining discarded actions
-		// {
-		// 	DELETE(_x);
-		// } forEach _newActions;
 
 		DELETE(_simWorldNow);
 		DELETE(_simWorldFuture);
 
 		OOP_DEBUG_MSG("[c %1 w %2] - - - - - P L A N N I N G   D O N E - - - - -", [_thisObject ARG _world]);
 	} ENDMETHOD;
-	
-	// METHOD("clustersSplit") {
-	// 	params [P_THISOBJECT, P_ARRAY("origCluster"), P_ARRAY("newClusters")];
-		
-	// } ENDMETHOD;
 	
 ENDCLASS;

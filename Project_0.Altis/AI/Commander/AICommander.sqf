@@ -11,7 +11,7 @@ Author: Sparker 12.11.2018
 #define DEBUG_COMMANDER
 #endif
 
-#define PLAN_INTERVAL 30
+
 #define pr private
 
 CLASS("AICommander", "AI")
@@ -33,7 +33,8 @@ CLASS("AICommander", "AI")
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
 
-	VARIABLE("lastPlanningTime");
+	//VARIABLE("lastPlanningTime");
+	
 	VARIABLE("cmdrStrategy");
 	VARIABLE("cmdrAI");
 	VARIABLE("worldModel");
@@ -118,7 +119,8 @@ CLASS("AICommander", "AI")
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
 		T_SETV("cmdrStrategy", gCmdrStrategyDefault);
-		T_SETV("lastPlanningTime", TIME_NOW);
+		//T_SETV("lastPlanningTime", TIME_NOW);
+		
 		private _cmdrAI = NEW("CmdrAI", [_side]);
 		T_SETV("cmdrAI", _cmdrAI);
 		private _worldModel = NEW("WorldModel", []);
@@ -181,40 +183,26 @@ CLASS("AICommander", "AI")
 		};
 
 		// C M D R A I   P L A N N I N G
-		#ifdef DEBUG_COMMANDER
-		T_SETV("state", "model sync");
-		T_SETV("stateStart", TIME_NOW);
-		#endif
-
 		T_PRVAR(cmdrAI);
 		T_PRVAR(worldModel);
-		// Sync before update
-		CALLM(_worldModel, "sync", []);
+
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "action update");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
 		CALLM(_cmdrAI, "update", [_worldModel]);
-		
-		T_PRVAR(lastPlanningTime);
-		if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
-			#ifdef DEBUG_COMMANDER
-			T_SETV("state", "model planning");
-			T_SETV("stateStart", TIME_NOW);
-			#endif
 
-			// Sync after update
-			CALLM(_worldModel, "sync", []);
-
-			CALLM(_worldModel, "updateThreatMaps", []);
-			CALLM(_cmdrAI, "plan", [_worldModel]);
-
-			// Make it after planning so we get a gap
-			T_SETV("lastPlanningTime", TIME_NOW);
-		};
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "model planning");
+		T_SETV("stateStart", TIME_NOW);
+		#endif
+		CALLM(_cmdrAI, "plan", [_worldModel]);
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "cleanup");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-
 		{
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);

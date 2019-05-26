@@ -105,7 +105,7 @@ player addEventHandler ["AnimChanged", {
 */
 
 // Create a suspiciousness monitor for player
-NEW("undercoverMonitor", [player]);
+NEW("UndercoverMonitor", [player]);
 
 // Create scroll menu to talk to civilians
 pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
