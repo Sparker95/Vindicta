@@ -430,16 +430,13 @@ CLASS("CmdrAI", "")
 
 		private _generators = switch(_priority) do {
 			case CMDR_PLANNING_PRIORITY_HIGH: { 
-				[
-					//"generateAttackActions", 
-					"generatePatrolActions"
-				] 
+				["generateAttackActions"] 
 			};
 			case CMDR_PLANNING_PRIORITY_NORMAL: { 
 				["generateReinforceActions"] 
 			};
 			case CMDR_PLANNING_PRIORITY_LOW: { 
-				["generateTakeOutpostActions"] 
+				["generateTakeOutpostActions", "generatePatrolActions"] 
 			};
 		};
 
