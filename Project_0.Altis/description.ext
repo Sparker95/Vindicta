@@ -15,6 +15,7 @@ enableDebugConsole = 2;
 respawn = 3;
 respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
 respawnDelay = 2; // Default: ?
+DisabledAI = 1;
 respawnTemplates[] = {"MenuPosition"};
 
 /*
