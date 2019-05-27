@@ -46,7 +46,7 @@ CLASS("GarbageCollector", "")
 			params ["_entity"];
 			pr _unit = CALLSM1("Unit", "getUnitFromObjectHandle", _entity);
 			if (_unit != "") then {
-				OOP_INFO_1 format ["Deleted %1", _unit];
+				OOP_INFO_1("Deleted %1", _unit);
 				DELETE(_unit);
 			};
 		}];
