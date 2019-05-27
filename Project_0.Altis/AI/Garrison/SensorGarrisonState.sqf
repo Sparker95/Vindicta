@@ -98,12 +98,14 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		// Check if there are enough humans to operate all the vehicles
 		pr _vehUnits = CALLM0(_gar, "getVehicleUnits");
 		CALLSM("Unit", "getRequiredCrew", [_vehUnits]) params ["_nDriversAll", "_nTurretsAll", "_nCargoAll"];
-
+		// Drivers
 		pr _query = [[T_INF, -1]];
 		pr _nInfGarrison = CALLM1(_gar, "countUnits", _query);
-		pr _enoughHumansForAllVehicles = true;
-		if (_nInfGarrison < _nDriversAll) then { _enoughHumansForAllVehicles = false; };		
-		[_worldState, WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES, _enoughHumansForAllVehicles] call ws_setPropertyValue;
+		pr _enoughHumansForAllVehicles = _nInfGarrison > _nDriversAll;	
+		[_worldState, WSP_GAR_ENOUGH_HUMANS_TO_DRIVE_ALL_VEHICLES, _enoughHumansForAllVehicles] call ws_setPropertyValue;
+		// Turrets
+		pr _enoughHumansToTurretAllVehicles = _nInfGarrison > (_nDriversAll + _nTurretsAll);
+		[_worldState, WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES, _enoughHumansToTurretAllVehicles] call ws_setPropertyValue;
 
 		// Check if there are anough seats for all humans
 		pr _nSeatsAll = _nCargoAll + _nTurretsAll + _nDriversALl;
@@ -124,7 +126,7 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _gar = T_GETV("gar");
 		// If garrison is not spawned, run the check less often
 		if (CALLM0(_gar, "isSpawned")) then {
-			5
+			10
 		} else {
 			120
 		};

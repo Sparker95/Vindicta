@@ -19,8 +19,13 @@ CLASS("GoalGarrisonRebalanceVehicleGroups", "Goal")
 		
 		pr _ws = GETV(_AI, "worldState");
 		
-		if ([_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, false] call ws_propertyExistsAndEquals || 
-			[_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, false] call ws_propertyExistsAndEquals) then {
+		pr _allHaveDrivers = [_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_DRIVERS, false] call ws_propertyExistsAndEquals;
+		pr _enoughHumansToDrive = [_ws, WSP_GAR_ENOUGH_HUMANS_TO_DRIVE_ALL_VEHICLES, false] call ws_propertyExistsAndEquals;
+		pr _allHaveTurretOperators = [_ws, WSP_GAR_ALL_VEHICLE_GROUPS_HAVE_TURRET_OPERATORS, false] call ws_propertyExistsAndEquals;
+		pr _enoughHumansToTurret = [_ws, WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES, false] call ws_propertyExistsAndEquals;
+
+		if ( ( (!_allHaveDrivers) && _enoughHumansToDrive ) ||
+			( (!_allHaveTurretOperators) && _enoughHumansToTurret )) then {
 			GET_STATIC_VAR(_thisClass, "relevance");
 		} else {
 			0

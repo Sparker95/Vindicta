@@ -34,45 +34,48 @@
 #define WSP_GAR_MEDIC_AVAILABLE							10
 
 
-// Enough humans to operate vehicles
-#define WSP_GAR_ENOUGH_HUMANS_FOR_ALL_VEHICLES			11
+// Enough humans to drive all vehicles
+#define WSP_GAR_ENOUGH_HUMANS_TO_DRIVE_ALL_VEHICLES		11
+
+// Enough humans to assign as drivers for all vehicles
+#define WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES	12
 
 // Enough vehicles for all humans
-#define WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS			12
+#define WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS			13
 
 // Position or the current location this garrison is attached to
-#define WSP_GAR_POSITION								13
+#define WSP_GAR_POSITION								14
 
 // Cargo position
-#define WSP_GAR_CARGO_POSITION							14
+#define WSP_GAR_CARGO_POSITION							15
 
 // Vehicles position
-#define WSP_GAR_VEHICLES_POSITION						15
+#define WSP_GAR_VEHICLES_POSITION						16
 
 
 // Vehicle groups are merged
-#define WSP_GAR_VEHICLE_GROUPS_MERGED					16
+#define WSP_GAR_VEHICLE_GROUPS_MERGED					17
 
 // Vehicle groups rebalanced
 // Always false to add an action to the action list all the time
-#define WSP_GAR_VEHICLE_GROUPS_BALANCED					17
+#define WSP_GAR_VEHICLE_GROUPS_BALANCED					18
 
 // Clearing area
-#define WSP_GAR_CLEARING_AREA							18
+#define WSP_GAR_CLEARING_AREA							19
 
 // Cargo
-#define WSP_GAR_CARGO									19
-#define WSP_GAR_HAS_CARGO								20
+#define WSP_GAR_CARGO									20
+#define WSP_GAR_HAS_CARGO								21
 
 // Location the garrison is attached to
-#define WSP_GAR_LOCATION								21
+#define WSP_GAR_LOCATION								22
 
 // Vehicles available
-#define WSP_GAR_HAS_VEHICLES							22
+#define WSP_GAR_HAS_VEHICLES							23
 
 
 // Total amount of properties
-#define WSP_GAR_COUNT									23
+#define WSP_GAR_COUNT									24
 
 
 
