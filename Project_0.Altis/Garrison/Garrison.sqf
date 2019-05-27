@@ -951,10 +951,17 @@ CLASS("Garrison", "MessageReceiverEx");
 				pr _loc = T_GETV("location");
 				if (_loc == "") then {
 					pr _pos = CALLM0(_thisObject, "getPos");
+					pr _className = CALLM0(_unit, "getClassName");
 					pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _pos);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				} else {
 					pr _unitData = CALL_METHOD(_unit, "getMainData", []);
+					pr _group = CALLM0(_unit, "getGroup");
+					pr _groupType = if (_group != "") then {
+						CALLM0(_group, "getType")
+					} else {
+						GROUP_TYPE_IDLE
+					};
 					pr _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
 					pr _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
