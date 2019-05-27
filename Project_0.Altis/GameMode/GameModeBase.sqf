@@ -50,6 +50,9 @@ CLASS("GameModeBase", "")
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);
 
+			// Garbage Collector
+			gGarbageCollector = NEW("GarbageCollector", []);
+
 			T_CALLM("initServerOrHC", []);
 		};
 		if(IS_SERVER) then {
@@ -67,6 +70,8 @@ CLASS("GameModeBase", "")
 			if(T_GETV("spawningEnabled")) then {
 				T_CALLM("startSpawning", []);
 			};
+
+			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -580,5 +585,27 @@ CLASS("GameModeBase", "")
 	/* private */ METHOD("fn") {
 		params [P_THISOBJECT];
 
+	} ENDMETHOD;
+
+	// Initialize dynamic simulation
+	METHOD("initDynamicSimulation") {
+		#ifndef _SQF_VM
+		params [P_THISOBJECT];
+
+		// Enables or disables the whole Arma_3_Dynamic_Simulation system
+		enableDynamicSimulationSystem true;
+
+		// Infantry units.
+		"Group" setDynamicSimulationDistance 40000; // We don't dynamicly disable units with this thing
+		// Vehicles with crew.
+		"Vehicle" setDynamicSimulationDistance 40000; // We don't want to dynamicly disable vehicles with crew
+		//  All vehicles without crew.
+		"EmptyVehicle" setDynamicSimulationDistance 1500;
+		// Static objects. Anything from a small tin can to a building.
+		"Prop" setDynamicSimulationDistance 50;
+
+		// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
+		"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
+		#endif
 	} ENDMETHOD;
 ENDCLASS;

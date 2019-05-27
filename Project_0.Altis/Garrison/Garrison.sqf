@@ -1779,6 +1779,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Remove the unit from this garrison
 		CALLM1(_thisObject, "removeUnit", _unit);
 
+		// Add the unit to the garbage collector
+		CALLM1(gGarbageCollector, "addUnit", _unit);
+
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 

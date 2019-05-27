@@ -697,6 +697,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			if (isNull _groupHandle) then {
 				private _side = _data select GROUP_DATA_ID_SIDE;
 				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_groupHandle enableDynamicSimulation true;
 				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
 			};
 			
@@ -784,6 +785,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			if (isNull _groupHandle) then {
 				private _side = _data select GROUP_DATA_ID_SIDE;
 				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_groupHandle enableDynamicSimulation true;
 				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
 			};
 			
@@ -929,6 +931,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Restore the old group if it's null now after everyone has left it
 		if (isNull _hG) then {
 			_hG = createGroup [_side, false]; //side, delete when empty
+			_groupHandle enableDynamicSimulation true;
 			_hG allowFleeing 0;
 			_data set [GROUP_DATA_ID_GROUP_HANDLE, _hG];
 		};
