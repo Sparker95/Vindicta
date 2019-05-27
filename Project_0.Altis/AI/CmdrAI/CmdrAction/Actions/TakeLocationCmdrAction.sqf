@@ -140,31 +140,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 					GETV(_strategy, "takeLocBasePriorityActivityCoeff") * _activity;
 			};
 			case "roadblock": {
-				// We won't travel as far to get these.
-				//_tgtLocTypeDistanceBias = 0.5;
-				// We want these based on activity
-				//_tgtLocTypePriorityBias = 2 * log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
-				// // The more surrounding locations we control the more we want to get these first.
-				// private _nearLocsFactors =
-				// 	CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
-				// 		// select out location only not distance
-				// 		select { 
-				// 			_x params ["_dist", "_loc"];
-				// 			!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
-				// 		}
-				// 		apply {
-				// 			_x params ["_dist", "_loc"];
-				// 			// Surrounding bases count more.
-				// 			if(GETV(_loc, "type") == "base") then {
-				// 				_dist / 1000
-				// 			} else {
-				// 				_dist / 2000
-				// 			};
-				// 		};
-				// private _sum = 0;
-				// {_sum = _sum + _x} foreach _nearLocsFactors;
-				// _tgtLocTypePriorityBias = _sum;
-
 				// We want these if there is local activity.
 				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocRoadBlockPriority") +
 					GETV(_strategy, "takeLocRoadBlockPriorityActivityCoeff") * _activity;

@@ -429,15 +429,29 @@ ENDCLASS;
 
 /*
 Class: Intel.IntelCommanderActionPatrol
-Intel about action to attack something.
+Intel about action to patrol a route.
 */
 CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* variable: srcGarrison
-	The source garrison that sent the attack. Probably players have no use to this.*/
+	The source garrison that sent the patrol. Probably players have no use to this.*/
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+	/* variable: waypoints
+	Waypoints (as positions) that the patrol will visit. */
+	VARIABLE_ATTR("waypoints", [ATTR_SERIALIZABLE]);
 	/* variable: locations
-	Locations that the patrol will visit.*/
+	Locations that the patrol will visit. */
 	VARIABLE_ATTR("locations", [ATTR_SERIALIZABLE]);
+ENDCLASS;
+
+/*
+Class: Intel.IntelCommanderActionRetreat
+Intel about action to retreat from a location.
+*/
+CLASS("IntelCommanderActionRetreat", "IntelCommanderAction")
+	// Garrison being retreated to.
+	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
+	// Location being retreated to.
+	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
 ENDCLASS;
 
 /*

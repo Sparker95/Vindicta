@@ -135,6 +135,67 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
+	METHOD("generateRetreatActions") {
+		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+		T_PRVAR(side);
+
+		// Take src garrisons from future, we want to consider future resource availability.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+			// Must be on our side and not involved in another action
+			GETV(_x, "side") == _side and 
+			{ !CALLM(_x, "isBusy", []) } and
+			{
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			}
+		};
+
+		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
+		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
+			// Must be on our side
+			GETV(_x, "side") == _side and 
+			{
+				// Not involved in another reinforce action
+				private _action = CALLM(_x, "getAction", []);
+				IS_NULL_OBJECT(_action) or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceCmdrAction" }
+			} and 
+			{
+				// Must be under desired efficiency by at least min reinforcement size
+				// private _eff = GETV(_x, "efficiency");
+				private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
+				!EFF_GT(_overDesiredEff, EFF_MUL_SCALAR(EFF_MIN_EFF, -1))
+			}
+		};
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcFac = GETV(_x, "faction");
+			//private _srcPos = GETV(_x, "pos");
+			{
+				private _tgtId = GETV(_x, "id");
+				private _tgtFac = GETV(_x, "faction");
+				//private _tgtPos = GETV(_x, "pos");
+				if(_srcId != _tgtId 
+					and {_srcFac == _tgtFac}
+					// and {_srcPos distance _tgtPos < REINF_MAX_DIST}
+					) then {
+					private _params = [_srcId, _tgtId];
+					_actions pushBack (NEW("ReinforceCmdrAction", _params));
+				};
+			} forEach _tgtGarrisons;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 Reinforce actions from %2 garrisons to %3 garrisons", [count _actions ARG count _srcGarrisons ARG count _tgtGarrisons]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
+		_actions
+	} ENDMETHOD;
+
 	METHOD("generateTakeOutpostActions") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		T_PRVAR(activeActions);

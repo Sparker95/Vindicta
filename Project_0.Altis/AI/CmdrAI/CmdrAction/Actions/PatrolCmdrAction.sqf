@@ -200,19 +200,52 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 
-	METHOD("updateIntelFromDetachment") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
+/* protected override */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionPatrol");
-		
-		// Update progress of the detachment
-		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
-		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
-			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
-			SETV(_intel, "garrison", GETV(_detachedGarr, "actual"));
-			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
-			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
-			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+
+		//T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
+		T_PRVAR(srcGarrId);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
+
+		T_PRVAR(intel);
+	
+		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		if(_intelNotCreated) then
+		{
+			// Create new intel object and fill in the constant values
+			_intel = NEW("IntelCommanderActionPatrol", []);
+			T_PRVAR(routeTargets);
+			private _routeTargetPositions = _routeTargets apply { [_world, _x] call Target_fnc_GetPos };
+			private _locations = _routeTargets select { 
+				_x#0 == TARGET_TYPE_LOCATION
+			} apply { 
+				private _locId = _x#1;
+				private _loc = CALLM(_world, "getLocation", [_locId]);
+				GETV(_loc, "actual")
+			};
+			SETV(_intel, "waypoints", _routeTargetPositions);
+			SETV(_intel, "locations", _locations);
+			CALLM(_intel, "create", []);
+		};
+
+		// Update progress of the garrison
+		T_PRVAR(srcGarrId);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		SETV(_intel, "garrison", GETV(_srcGarr, "actual"));
+		SETV(_intel, "pos", GETV(_srcGarr, "pos"));
+		SETV(_intel, "posCurrent", GETV(_srcGarr, "pos"));
+		SETV(_intel, "strength", GETV(_srcGarr, "efficiency"));
+
+		// If we just created this intel then register it now 
+		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
+		if(_intelNotCreated) then {
+			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intel", _intelClone);
+		} else {
+			CALLM(_intel, "updateInDb", []);
 		};
 	} ENDMETHOD;
 	
