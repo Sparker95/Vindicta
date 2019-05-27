@@ -72,6 +72,10 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
 		ASSERT_OBJECT(_tgtCluster);
 
+		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		private _side = GETV(_srcGarr, "side");
 
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
@@ -114,6 +118,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getQRFScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtCluster ARG _detachEff]);
 		T_CALLM("setScore", [_score]);
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""QRF"", ""src_garrison"": ""%2"", ""tgt_cluster"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
+			_side, LABEL(_srcGarr), LABEL(_tgtCluster), _score#0, _score#1, _score#2, _score#3];
+		OOP_INFO_MSG(_str, []);
+		#endif
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 

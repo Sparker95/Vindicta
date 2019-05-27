@@ -53,7 +53,7 @@ CLASS("CmdrAction", "RefCounted")
 			if(CALLM(_x, "getAction", []) == _thisObject) then {
 				CALLM(_x, "clearAction", []);
 			} else {
-				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x]+[_thisObject]);
+				OOP_WARNING_MSG("Garrison %1 was registered with action %2 but no longer has the action assigned", [_x ARG _thisObject]);
 			};
 		} foreach +_garrisons;
 
@@ -88,7 +88,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_PRVAR(garrisons);
 		private _idx = _garrisons find _garrison;
 		if(_idx == NOT_FOUND) exitWith {
-			OOP_WARNING_MSG("Garrison %1 is not registered with action %2, so can't be unregistered", [_garrison]+[_thisObject]);
+			OOP_WARNING_MSG("Garrison %1 is not registered with action %2, so can't be unregistered", [_garrison ARG _thisObject]);
 		};
 		_garrisons deleteAt _idx;
 	} ENDMETHOD;
@@ -139,9 +139,9 @@ CLASS("CmdrAction", "RefCounted")
 		private _worldType = GETV(_world, "type");
 		ASSERT_MSG(_worldType != WORLD_TYPE_REAL, "Cannot applyToSim on real world!");
 		while {_state != CMDR_ACTION_STATE_END} do {
-			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_state]+[_transitions]);
+			private _newState = CALLSM("ActionStateTransition", "selectAndApply", [_world ARG _state ARG _transitions]);
 			// State transitions are allowed to fail for NOW world sim (so they can limit changes to those that would happen instantly)
-			ASSERT_MSG(_worldType == WORLD_TYPE_SIM_NOW or _newState != _state, format (["Couldn't apply action %1 to sim future, stuck in state %2"]+[_thisObject]+[_state]));
+			ASSERT_MSG(_worldType == WORLD_TYPE_SIM_NOW or _newState != _state, format (["Couldn't apply action %1 to sim future, stuck in state %2" ARG _thisObject ARG _state]));
 			if(_newState == _state) exitWith {};
 			_state = _newState;
 		};
@@ -179,22 +179,22 @@ CLASS("CmdrAction", "RefCounted")
 
 	METHOD("update") {
 		params [P_THISOBJECT, P_STRING("_world")];
-		
+
 		ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
 
 		T_PRVAR(state);
 		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
-		
+
 		private _oldState = CMDR_ACTION_STATE_NONE;
 		// Apply states until we are blocked.
 		while {_state != _oldState} do 
 		{
 			_oldState = _state;
-			_state = CALLSM("ActionStateTransition", "selectAndApply", [_world]+[_oldState]+[_transitions]);
+			_state = CALLSM("ActionStateTransition", "selectAndApply", [_world ARG _oldState ARG _transitions]);
 		};
 		T_SETV("state", _state);
-		
+
 		if(CALLM(_world, "isReal", [])) then {
 			T_CALLM("updateIntel", [_world]);
 		};
@@ -221,7 +221,7 @@ CLASS("CmdrAction", "RefCounted")
 	/* protected virtual */ METHOD("debugDraw") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
-	
+
 	// Toolkit for scoring actions -----------------------------------------
 
 	// Get a value that falls off from 1 to 0 with distance, scaled by k.

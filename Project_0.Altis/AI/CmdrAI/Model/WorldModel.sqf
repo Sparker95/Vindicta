@@ -590,10 +590,9 @@ CLASS("WorldModel", "")
 		if(_threatGrid isEqualTo objNull) exitWith {
 			EFF_GARRISON_MIN_EFF
 		};
-		T_PRVAR(activityGrid);
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
-		private _activity = CALLM(_activityGrid, "getValue", [_pos]);
+		private _activity = T_CALLM("getActivity", [_pos ARG 1500]);
 		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
 		_activity = (0.015 * _activity);
 		private _forceMul = 1.5 max (1 + _activity * _activity * _activity * _activity);

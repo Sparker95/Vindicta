@@ -34,6 +34,21 @@ CLASS("CmdrStrategy", "")
 		_defaultScore
 	} ENDMETHOD;
 
+	// Default Patrol behaviour is to send patrols always,
+	// from any location that can spare any efficiency, to
+	// all surrounding city locations
+	/* virtual */ METHOD("getPatrolScore") {
+		params [P_THISOBJECT,
+			P_OOP_OBJECT("_action"), 
+			P_ARRAY("_defaultScore"),
+			P_OOP_OBJECT("_worldNow"),
+			P_OOP_OBJECT("_worldFuture"),
+			P_OOP_OBJECT("_srcGarr"),
+			P_ARRAY("_routeTargets"),
+			P_ARRAY("_detachEff")];
+		_defaultScore
+	} ENDMETHOD;
+
 	// Default Reinforce behaviour is to send reinforcements whenever they are needed, 
 	// from any location that can spare the entire required efficiency.
 	/* virtual */ METHOD("getReinforceScore") {
