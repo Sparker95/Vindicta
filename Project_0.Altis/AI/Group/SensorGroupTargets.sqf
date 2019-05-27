@@ -178,7 +178,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 							SETV(_thisObject, "prevMsgID", _msgID);
 							
 							// If there is no location, poke the AIGarrison to do processing ASAP
-							if (_loc == "") then {
+							if (_loc == "" || _comTime < 20) then { // Send "process" to AIGarrison only when we have just switched into combat mode
 								CALLM2(_garAI, "postMethodAsync", "process", []);
 							};
 						//} else {
