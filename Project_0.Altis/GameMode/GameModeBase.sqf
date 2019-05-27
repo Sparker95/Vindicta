@@ -71,6 +71,8 @@ CLASS("GameModeBase", "")
 				T_CALLM("startSpawning", []);
 			};
 
+			// Don't remove spawn! For some reason without spawning it doesn't apply the values.
+			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
