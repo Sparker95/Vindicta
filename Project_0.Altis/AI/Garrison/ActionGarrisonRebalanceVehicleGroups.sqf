@@ -37,6 +37,16 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_NON_STATIC) + CALLM1(_gar, "findGroupsByType", GROUP_TYPE_VEH_STATIC);
 		
+		// We can also take units from vehicle turrets if we really need it
+		{
+			pr _group = _x;
+			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
+			pr _infUnits = CALLM0(_x, "getInfantryUnits");
+			while {(count _infUnits) > _nDrivers} do { // Just add all the units except for drivers
+				_freeUnits pushBack (_infUnits deleteAt ((count _infUnits) - 1));
+			};
+		} forEach _vehGroups;
+
 		OOP_INFO_2("Vehicle groups: %1, free units: %2", _vehGroups, _freeUnits);
 		
 		// Try to add drivers to all groups
@@ -87,7 +97,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} forEach _vehGroups;
 		
 		// Try to add turret operators to all groups
-		/*
 		{ // foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
@@ -102,7 +111,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 				};
 			};
 		} forEach _vehGroups;
-		*/
 
 		// Delete empty groups
 		CALLM0(_gar, "deleteEmptyGroups");
