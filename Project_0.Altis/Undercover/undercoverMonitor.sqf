@@ -207,6 +207,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _hintKeys = [];									// UI keys for displaying hints
 				pr _nearestEnemy = T_GETV("nearestEnemy");
 				pr _camoCoeffMod = 0;								// percentage by which camouflage coefficient is modified each interval
+				
+				// if true, suspicion will be at least as high as SUSPICIOUS define. 
+				// Doesn't add an absolute value to suspicion.
+				pr _minSusp = false;								
 
 				// reset "seen by enemy" variable
 				pr _timeSeen = T_GETV("timeSeen");
@@ -257,7 +261,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							if ( CALLM(_loc, "isInAllowedArea", [_pos]) ) then { 
 								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
 							} else { 
-								_suspicion = _suspicion + 1;
+								_minSusp = true;
 								_hintKeys pushBack HK_MILAREA;
 							};
 				 		};
@@ -482,6 +486,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				};
 
 				// set captive status of unit
+				if (_minSusp && (_suspicion < SUSPICIOUS)) then { _suspicion = SUSPICIOUS; };
 				pr _args = [_suspicion, _state];
 				T_CALLM("calcCaptive", _args);
 

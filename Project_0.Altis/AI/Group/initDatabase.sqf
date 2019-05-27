@@ -14,7 +14,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupRelax",								1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupNothing",							2] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupPatrol",								30] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupArrest",								33] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupArrest",								72] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupRegroup",							35] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInVehiclesAsCrew",				40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInGarrisonVehiclesAsCargo",		40] call AI_misc_fnc_setGoalIntrinsicRelevance;

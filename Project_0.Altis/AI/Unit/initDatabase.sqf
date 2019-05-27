@@ -12,8 +12,8 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // The actual relevance returned by goal can be different from the one which is set below
 
 ["GoalUnitGetInVehicle",			10] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalUnitArrest",					15] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitInfantryMove",			20] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalUnitArrest",					36] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitInfantryRegroup", 		25] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitFollowLeaderVehicle", 	30] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalUnitMoveLeaderVehicle", 		31] call AI_misc_fnc_setGoalIntrinsicRelevance;
