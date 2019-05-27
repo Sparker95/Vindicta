@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include "..\..\Undercover\UndercoverMonitor.hpp"
 
 /*
 Author: Marvis 09.05.2019
@@ -17,8 +18,10 @@ CLASS("GoalGroupArrest", "Goal")
 			pr _suspTarget = GETV(_AI, "suspTarget");
 
 			if !(isNil "_suspTarget") then { 
-				//OOP_INFO_1("GoalGroupArrest target: %1", _suspTarget);
-					_relevance = 30; 
+				if !(UNDERCOVER_IS_TARGET(_suspTarget)) then {
+					_relevance = 30;
+					_suspTarget setVariable [UNDERCOVER_TARGET, true, true];	
+				}; 
 			} else {
 				OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
 				_relevance = 0;

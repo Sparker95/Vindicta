@@ -161,6 +161,9 @@
 			</Key>
 			<Key ID="STR_UM_HINT_MILAREA">
 				<Original>MILITARY AREA</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ARRESTED">
+				<Original>CAPTIVE</Original>
 			</Key>																						
 		</Container>	
 	</Package>
