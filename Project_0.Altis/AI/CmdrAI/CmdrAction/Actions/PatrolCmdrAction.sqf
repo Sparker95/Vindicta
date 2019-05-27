@@ -228,6 +228,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			};
 			SETV(_intel, "waypoints", _routeTargetPositions);
 			SETV(_intel, "locations", _locations);
+			SETV(_intel, "side", GETV(_srcGarr, "side"));
 			CALLM(_intel, "create", []);
 		};
 
