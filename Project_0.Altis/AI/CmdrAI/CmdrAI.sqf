@@ -143,6 +143,8 @@ CLASS("CmdrAI", "")
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
 			GETV(_x, "side") == _side and 
+			// Must be at a location
+			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
 			{ !CALLM(_x, "isBusy", []) } and
 			{
 				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);

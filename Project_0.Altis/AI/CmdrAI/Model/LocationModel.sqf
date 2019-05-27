@@ -20,6 +20,8 @@ CLASS("LocationModel", "ModelBase")
 	// Radius of the location
 	VARIABLE("radius");
 
+	VARIABLE("desirability");
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
