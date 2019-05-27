@@ -7,7 +7,7 @@
 //#undef OOP_ERROR
 
 // Undefine all asserts
-#undef OOP_ASSERT
+// #undef OOP_ASSERT
 #undef OOP_ASSERT_ACCESS
 
 // Undefine Arma Debug Engine

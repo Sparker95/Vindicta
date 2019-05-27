@@ -27,20 +27,22 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-
-		private _srcGarrId = T_GET_AST_VAR("srcGarrId");
-		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		ASSERT_OBJECT(_srcGarr);
 		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
 		ASSERT_OBJECT(_garr);
 
+		private _srcGarrId = T_GET_AST_VAR("srcGarrId");
+		private _srcGarr = if(_srcGarrId != MODEL_HANDLE_INVALID) then { 
+			CALLM(_world, "getGarrison", [_srcGarrId]) 
+		} else {
+			NULL_OBJECT
+		};
+
 		// Prefer to go back to src garrison
 		private _newTarget = [];
-		if(!CALLM(_srcGarr, "isDead", [])) then {
+		if(!IS_NULL_OBJECT(_srcGarr) and {!CALLM(_srcGarr, "isDead", [])}) then {
 			_newTarget = [TARGET_TYPE_GARRISON, _srcGarrId];
 			OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr)]+[LABEL(_srcGarr)]);
 		} else {
-
 			private _pos = GETV(_garr, "pos");
 
 			// select the nearest friendly garrison

@@ -462,7 +462,7 @@ CLASS("GarrisonModel", "ModelBase")
 		_allocatedCrew = [];
 		_allocatedVehicles = [];
 		_effAllocated = +T_EFF_null;
-		
+
 		private _requiredStrength = EFF_SUB_SUM(EFF_ATT_SUB(_splitEff));
 		private _infStrength = 0;
 		private _vehStrength = 0;
@@ -471,12 +471,12 @@ CLASS("GarrisonModel", "ModelBase")
 		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
 			
 			// Exit now if we have allocated enough units
-			if(EFF_GTE(_effAllocated, EFF_MASK_ATT(_splitEff))) exitWith {};
+			if(count _units == 0 or EFF_GTE(_effAllocated, EFF_MASK_ATT(_splitEff))) exitWith {};
 
 			
 			// Add units until there are enough of them
 			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _splitEff#_i)} do {
+			while {(_effAllocated#_i < _splitEff#_i) and count _units > 0} do {
 
 				OOP_INFO_MSG("_requiredStrength=%1, _infStrength=%2, _vehStrength=%3", [_requiredStrength ARG _infStrength ARG _vehStrength]);
 				// For every unit, set element 0 to efficiency value with index _i modified by
@@ -503,6 +503,11 @@ CLASS("GarrisonModel", "ModelBase")
 							1
 						};
 						case (SPEC_OPS_FORCE_HINT in _flags): { 
+							// Prefer spec ops units and covert vehicles
+							// TODO: get unit type and bias positive if it is the right class
+							1
+						};
+						case (PATROL_FORCE_HINT in _flags): { 
 							// Prefer spec ops units and covert vehicles
 							// TODO: get unit type and bias positive if it is the right class
 							1
@@ -591,7 +596,6 @@ CLASS("GarrisonModel", "ModelBase")
 				// Not enough infantry here to equip all the vehicles we have allocated
 				// Go check other locations
 				OOP_INFO_0("   Failed to allocate additional crew");
-				breakTo "scopeLocLoop";
 			} else {
 				private _crewToAdd = _freeInfUnits select [0, _nMoreCrewRequired];
 				

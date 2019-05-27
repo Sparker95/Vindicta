@@ -92,13 +92,13 @@ CLASS("ClusterModel", "ModelBase")
 	// Cluster is empty (not necessarily killed, could be merged to another cluster etc.)
 	METHOD("killed") {
 		params [P_THISOBJECT];
-		T_SETV("efficiency", []);
+		T_SETV("efficiency", +EFF_ZERO);
 	} ENDMETHOD;
 	
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		_efficiency isEqualTo [] 
+		_efficiency isEqualTo EFF_ZERO 
 		// or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;
 ENDCLASS;

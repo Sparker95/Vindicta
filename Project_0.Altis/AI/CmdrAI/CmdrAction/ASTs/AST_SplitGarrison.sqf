@@ -52,7 +52,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		// Get the previously calculated efficiency
 		private _detachmentEff = T_GET_AST_VAR("detachmentEff");
 
-		ASSERT_MSG(EFF_GTE(_detachmentEff, EFF_MIN_EFF), "Detachment efficiency is below min allowed");
+		ASSERT_MSG(EFF_GTE(_detachmentEff, EFF_ZERO), "Detachment efficiency is zero!");
 
 		// Apply split to all sim worlds as it always happens immediately at the start of action
 		// TODO: better evalulation of efficiency requirements (and application to sim especially)
