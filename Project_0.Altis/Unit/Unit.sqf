@@ -686,7 +686,6 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data set [UNIT_DATA_ID_GROUP, ""];
 	} ENDMETHOD;
 
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S T A T I C   M E T H O D S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
