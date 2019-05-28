@@ -670,12 +670,6 @@
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#ifdef PROFILER_COUNTERS_ENABLE
-#define CREATE_PROFILE_TAG VARIABLE("__profile_tag")
-#else
-#define CREATE_PROFILE_TAG
-#endif
-
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
 diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
@@ -712,8 +706,8 @@ METHOD("delete") {} ENDMETHOD; \
 METHOD("copy") OOP_clone_default ENDMETHOD; \
 METHOD("assign") OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
-VARIABLE(OOP_PUBLIC_STR); \
-PROFILE_TAG;
+VARIABLE(OOP_PUBLIC_STR);
+
 
 // ----------------------------------------
 // |           E N D C L A S S            |

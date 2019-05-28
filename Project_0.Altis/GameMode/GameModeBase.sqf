@@ -218,7 +218,9 @@ CLASS("GameModeBase", "")
 				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG 5])
+				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround])
 			};
 			default { NULL_OBJECT };
 		};
@@ -226,7 +228,7 @@ CLASS("GameModeBase", "")
 
 	METHOD("startSpawning") {
 		params [P_THISOBJECT];
-		
+
 		// TODO: fix this to correctly spawn at selected bases contingent on the critera we decide.
 		// Move this to an existing thread?
 		[] spawn {
@@ -274,10 +276,10 @@ CLASS("GameModeBase", "")
 							};
 						};
 					};
-				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == LOCATION_TYPE_BASE });
+				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_ROADBLOCK] });
 
 				// TODO: Do this for policeStations as well, we need getTemplate for side + faction
-				// || GETV(_x, "type") == "policeStation" 
+				// || GETV(_x, "type") == LOCATION_TYPE_POLICE_STATION 
 			};
 		};
 	} ENDMETHOD;
@@ -314,7 +316,6 @@ CLASS("GameModeBase", "")
 		gCommanders pushBack gAICommanderInd;
 
 		if(gFlagAllCommanders) then { // but some are more equal
-
 			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
 			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
 
@@ -351,7 +352,7 @@ CLASS("GameModeBase", "")
 	METHOD("createMissingCityLocations") {
 		params [P_THISOBJECT];
 
-		private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == "city" } apply { getPos _x };
+		private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
 		private _moduleGroup = createGroup sideLogic;
 		{
 			private _pos = getPos _x;
@@ -400,6 +401,22 @@ CLASS("GameModeBase", "")
 			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
 			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
+
+			if(_locType == LOCATION_TYPE_CITY) then { 
+				// https://www.desmos.com/calculator/nahw1lso9f
+				_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
+				OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
+				//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
+				//diag_log format["%1 houses at %2", count _houses, _locName];
+
+				// https://www.desmos.com/calculator/nahw1lso9f
+				_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
+				OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
+			} else {
+				_locCapacityCiv = 0;
+			};
+
+
 			private _template = "";
 			private _side = "";
 			
@@ -436,12 +453,13 @@ CLASS("GameModeBase", "")
 				CALLM1(_roadblockLoc, "setCapacityInf", 20);
 				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
 				// Do setType last cos it will update the debug marker for us
-				CALLM1(_roadblockLoc, "setType", "roadblock");
+				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
 			} forEach _roadBlocks;
 
 			// Create police stations
 			// Create police stations in cities
-			if (_locType == "city") then {
+			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 23) then {
+
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -449,10 +467,10 @@ CLASS("GameModeBase", "")
 				private _policeStationLocation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
 				CALLM1(_policeStationLocation, "setSide", _side);
 				CALLM1(_policeStationLocation, "setName", format ["%1 police station" ARG _locName] );
-				CALLM1(_policeStationLocation, "setType", "policeStation");
+				CALLM1(_policeStationLocation, "setType", LOCATION_TYPE_POLICE_STATION);
 
 				// TODO: Get city size or building count and scale police capacity from that ?
-				CALLM1(_policeStationLocation, "setCapacityInf", 5);
+				CALLM1(_policeStationLocation, "setCapacityInf", _locCapacityInf);
 				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 			};
 
@@ -476,16 +494,18 @@ CLASS("GameModeBase", "")
 		
 		if (_faction == "police") exitWith {
 			private _policeGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
-			private _i = 0;
-			while {_i < _cInf} do {
+
+			for "_i" from 1 to _cInf do {
 				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
 				private _newUnit = NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _policeGroup]);
-				_i = _i+1;
 			};
 
-			// Add a car in front of police station
-			private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
-			CALLM(_gar, "addUnit", [_newUnit]);
+			for "_i" from 1 to (1 max _cVehGround) do {
+				// Add a car in front of police station
+				private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
+				CALLM(_gar, "addUnit", [_newUnit]);
+				OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
+			};
 
 			OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _policeGroup]);
 			CALL_METHOD(_gar, "addGroup", [_policeGroup]);

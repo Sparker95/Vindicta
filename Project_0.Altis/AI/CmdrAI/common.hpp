@@ -29,6 +29,7 @@
 #include "..\..\Mutex\Mutex.hpp"
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
+#include "..\..\Location\Location.hpp"
 
 #ifndef RELEASE_BUILD
 #define DEBUG_CMDRAI
