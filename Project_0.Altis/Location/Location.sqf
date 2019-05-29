@@ -53,6 +53,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("isBuilt"); // true if this location has been build (used for roadblocks)
 	VARIABLE("buildObjects"); // Array with objects we have built
+	
+	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
 
 	STATIC_VARIABLE("all");
 
