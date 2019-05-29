@@ -178,6 +178,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("suspGearVeh", nil);
 		T_SETV("bodyExposure", nil);
 		T_SETV("timeCompromised", nil);
+		T_SETV("bCaptive", nil);
 		T_SETV("camoCoeff", nil);
 		T_SETV("bGhillie", nil);
 
@@ -422,7 +423,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					*/
 					case sARRESTED: {
-						if (T_GETV("stateChanged")) then {
+						if (T_GETV("stateChanged") && !(T_GETV("bCaptive"))) then {
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							deleteMarkerLocal "markerWanted";
@@ -556,6 +557,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				T_SETV("timeCompromised", (time + 10));
 			}; // end SMON_MESSAGE_COMPROMISED
 
+			// messaged when player is being arrested
+			case SMON_MESSAGE_ARRESTED: {
+				T_CALLM("setState", [sARRESTED]);
+			}; // end SMON_MESSAGE_ARRESTED
+
 			// delete dead unit's undercoverMonitor
 			case SMON_MESSAGE_DELETE: {
 				// remove CBA loadout event handler
@@ -576,8 +582,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 
 	/* 
-	SensorGroupTargets remoteExecutes this on this computer when an enemy group is currently spotting the player.
-	This function resolves undercoverMonitor of player and posts a message to it.
+		SensorGroupTargets remoteExecutes this on this computer when an enemy group is currently spotting the player.
+		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
 	STATIC_METHOD("onUnitSpotted") {
 		params ["_thisClass", ["_unit", objNull, [objNull]], ["_group", grpNull, [grpNull]]];
@@ -590,13 +596,55 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		};
 	} ENDMETHOD;
 
+	/* 
+		ActionUnitArrest remoteExecutes this on this computer when an enemy group is arresting the player.
+		This function resolves undercoverMonitor of player and posts a message to it.
+	*/
+	STATIC_METHOD("onUnitArrested") {
+		params ["_thisClass", ["_unit", objNull, [objNull]]];
+		pr _um = _unit getVariable ["undercoverMonitor", ""];
+		if (_um != "") then { // Sanity check
+			pr _msg = MESSAGE_NEW();
+			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_ARRESTED);
+			MESSAGE_SET_DATA(_msg, _group);
+			CALLM1(_um, "postMessage", _msg);
+		};
+	} ENDMETHOD;
+
+	/* 
+		EH_handleDamageInfantry remoteExecutes this method on this computer when this player damages enemy infantry.
+		This function resolves undercoverMonitor of this player.
+	*/
+	STATIC_METHOD("onUnitDamageInfantry") {
+		params ["_thisClass", ["_unit", objNull, [objNull]]];
+		pr _um = _unit getVariable ["undercoverMonitor", ""];
+		if (_um != "") then { // Sanity check
+			// TODO ...
+		};
+	} ENDMETHOD;
+
+	/* 
+		Other player's computers remoteExecute this on this computer to make this player overt.
+		This function resolves undercoverMonitor of player and posts a message to it.
+	*/
+	STATIC_METHOD("onUnitCompromised") {
+		params ["_thisClass", ["_unit", objNull, [objNull]]];
+		pr _um = _unit getVariable ["undercoverMonitor", ""];
+		if (_um != "") then { // Sanity check
+			pr _msg = MESSAGE_NEW();
+			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
+			MESSAGE_SET_DATA(_msg, _group);
+			CALLM1(_um, "postMessage", _msg);
+		};
+	} ENDMETHOD;
+
 
 	/*
-	Method: calcCaptive
-	Sets captive status of unit based on state variable and suspicion variable.
+		Method: calcCaptive
+		Sets captive status of unit based on state variable and suspicion variable.
 
-	Parameters: 0: _state 			- (Integer) current state of UM
-				1: _suspicion 		- (Integer) suspicion value of unit
+		Parameters: 0: _state 			- (Integer) current state of UM
+					1: _suspicion 		- (Integer) suspicion value of unit
 
 	*/
 	METHOD("calcCaptive") {
@@ -610,11 +658,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 
 	/*
-	Method: setState
-	Changes the undercoverMonitor state and sets stateChanged variable to true.
+		Method: setState
+		Changes the undercoverMonitor state and sets stateChanged variable to true.
 
-	Parameters: 0: _state 			- (Integer) new state for UM
-
+		Parameters: 0: _state 			- (Integer) new state for UM
 	*/
 	METHOD("setState") {
 		params [["_thisObject", "", [""]], ["_state", 0]];
@@ -628,10 +675,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 
 	/*
-	Method: calcGearSuspicion
+		Method: calcGearSuspicion
 
-	Calculates the suspiciousness of the units equipment on foot and in vehicles, and stores it in two variables for this object.
-
+		Calculates the suspiciousness of the units equipment on foot and in vehicles, and stores it in two variables for this object.
 	*/
 	METHOD("calcGearSuspicion") {
 		params [["_thisObject", "", [""]]];
@@ -658,13 +704,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 
 	/*
-	Method: getBodyExposure
+		Method: getBodyExposure
 
-	Returns the body exposure value of the unit, or: how visible the this undercoverMonitor's unit currently is.
-	Also sets a global "exposed" boolean variable on the unit. If the variable is false, then the unit is invisible to enemy.
+		Returns the body exposure value of the unit, or: how visible the this undercoverMonitor's unit currently is.
+		Also sets a global "exposed" boolean variable on the unit. If the variable is false, then the unit is invisible to enemy.
 
-	Returns: Number between 0.0 and 1.0.
-
+		Returns: Number between 0.0 and 1.0.
 	*/
 	METHOD("getBodyExposure") {
 		params [["_thisObject", "", [""]]];

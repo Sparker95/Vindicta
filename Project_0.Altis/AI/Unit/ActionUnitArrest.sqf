@@ -158,32 +158,30 @@ CLASS("ActionUnitArrest", "Action")
 						params["_captor","_target"];
 						pr _currentWeapon = currentWeapon _captor;
 						pr _animation = call {
-							if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
+							if (_currentWeapon isequalto primaryWeapon _captor) exitWith {
 								"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
 							};
-							if(_currentWeapon isequalto secondaryWeapon _captor) exitWith {
+							if (_currentWeapon isequalto secondaryWeapon _captor) exitWith {
 								"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
 							};
-							if(_currentWeapon isequalto handgunWeapon _captor) exitWith {
+							if (_currentWeapon isequalto handgunWeapon _captor) exitWith {
 								"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
 							};
-							if(_currentWeapon isequalto binocular _captor) exitWith {
+							if (_currentWeapon isequalto binocular _captor) exitWith {
 								"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
 							};
 							"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
 						};
 						
-						[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+						//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+
+						// arrest player by sending a message to unit's undercoverMonitor
+						REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
+						systemChat "Player arrested.";
 						
 						_captor playMove _animation;
 						waitUntil {animationState _captor == _animation};
-						waitUntil {animationState _captor != _animation};
-						
-						//_target removeWeapon currentWeapon _target;
-						
-						//sleep 1;
-						
-						
+						waitUntil {animationState _captor != _animation};					
 					};		
 					
 					T_SETV("spawnHandle", _handle);
