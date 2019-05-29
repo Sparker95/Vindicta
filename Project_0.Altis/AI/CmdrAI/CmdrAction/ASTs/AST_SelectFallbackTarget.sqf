@@ -60,7 +60,8 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 
 			// If we found one then target it
 			if(count _nearGarrs > 0) then {
-				private _nearGarr = _nearGarrs#0;
+				private _nearDistGarr = _nearGarrs#0;
+				_nearDistGarr params ["_dist", "_nearGarr"];
 				_newTarget = [TARGET_TYPE_GARRISON, GETV(_nearGarr, "id")];
 				OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearGarr)]);
 			} else {
@@ -70,7 +71,8 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 					_nearLocs = CALLM(_world, "getNearestLocations", [_pos]);
 				};
 				if(count _nearLocs > 0) then {
-					private _nearLoc = _nearLocs#0;
+					private _nearLocGarr = _nearGarrs#0;
+					_nearLocGarr params ["_dist", "_nearLoc"];
 					_newTarget = [TARGET_TYPE_LOCATION, GETV(_nearLoc, "id")];
 					OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearLoc)]);
 				} else {
