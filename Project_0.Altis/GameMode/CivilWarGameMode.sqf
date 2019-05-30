@@ -66,7 +66,12 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Add spawns near police stations on the map
 		private _spawnPoints = [];
 		{
-			private _ppos = CALLM0(_x, "getPos");
+			private _policeStation = _x;
+			// Create the game mode data object and assign it to the police station for use later by us
+			private _data = NEW("CivilWarPoliceStationData", []);
+			SETV(_policeStation, "gameModeData", _data);
+
+			private _ppos = CALLM0(_policeStation, "getPos");
 			private _nearbyHouses = (_ppos nearObjects ["House", 200]) apply { [_ppos distance getPos _x, _x] };
 			_nearbyHouses sort DESCENDING;
 			private _spawnPos = _ppos vectorAdd [100, 100, 0];
@@ -108,12 +113,6 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Player is spawning in cities give them a pistol or something.
 			case 1: {
 				_newUnit call fnc_selectPlayerSpawnLoadout;
-				// _newUnit addItem "hgun_Pistol_heavy_01_F";
-				// _newUnit addMagazine "11Rnd_45ACP_Mag";
-				// _newUnit addMagazine "11Rnd_45ACP_Mag";
-				// _newUnit addItem "ItemMap";
-				// _newUnit addItem "ItemCompass";
-				// _newUnit addItem "ItemWatch";
 			};
 		};
 	} ENDMETHOD;
@@ -140,6 +139,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				// For now we will just have instability directly related to activity (activity fades over time just
 				// as we want instability to)
 				// Instability is activity / radius
+				// TODO: add other interesting factors here to the instability rate.
 				private _instability = _activity * 500 / _cityRadius;
 				SETV(_cityData, "instability", _instability);
 				_state = switch true do {
@@ -149,6 +149,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				};
 			};
 			SETV(_cityData, "state", _state);
+
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 			private _mrk = GETV(_loc, "name") + "_gamemode_data";
 			createMarker [_mrk, CALLM0(_loc, "getPos") vectorAdd [0, 100, 0]];
@@ -185,25 +186,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 			{
 				private _policeStation = _x;
-				private _garrisons = CALLM0(_policeStation, "getGarrisons");
-				// TODO: add forces if depleted {!EFF_LTE(CALLM0(_garrisons#0, "getEfficiencyMobile")}
-				if (count _garrisons == 0) then {
-					OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
-					private _side = if(_state != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
-					private _cInf = CALLM(_policeStation, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
-					private _cVehGround = CALLM(_policeStation, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
-
-					private _locPos = CALLM0(_policeStation, "getPos");
-					private _playerBlacklistAreas = playableUnits apply { [getPos _x, 1000] };
-					private _spawnInPos = [_locPos, 1000, 4000, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
-					if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
-					private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
-					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
-					CALLM2(_newGarrison, "postMethodAsync", "activate", []);
-					private _AI = CALLM(_newGarrison, "getAI", []);
-					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
-					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
-				};
+				private _data = GETV(_policeStation, "gameModeData");
+				CALLM(_data, "update", [_policeStation ARG _state]);
 			} forEach _policeStations;
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
 	} ENDMETHOD;
@@ -219,6 +203,53 @@ CLASS("CivilWarCityData", "")
 		T_SETV("instability", 0);
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("CivilWarPoliceStationData", "")
+	VARIABLE_ATTR("reinfGarrison", [ATTR_REFCOUNTED]);
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV_REF("reinfGarrison", NULL_OBJECT);
+	} ENDMETHOD;
+
+	METHOD("update") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
+
+		T_PRVAR(reinfGarrison);
+		if(!IS_NULL_OBJECT(_reinfGarrison)) then {
+			// If reinf garrison arrived or died
+			if(CALLM0(_reinfGarrison, "isEmpty") or { CALLM0(_reinfGarrison, "getLocation") == _policeStation }) then {
+				T_SETV_REF("reinfGarrison", NULL_OBJECT);
+			};
+		} else {
+			private _garrisons = CALLM0(_policeStation, "getGarrisons");
+			// TODO: add forces if depleted {!EFF_LTE(CALLM0(_garrisons#0, "getEfficiencyMobile")}
+			if (count _garrisons == 0) then {
+				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
+				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
+				private _cInf = CALLM(_policeStation, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cVehGround = CALLM(_policeStation, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+
+				private _locPos = CALLM0(_policeStation, "getPos");
+				private _playerBlacklistAreas = playableUnits apply { [getPos _x, 1000] };
+				private _spawnInPos = [_locPos, 1000, 4000, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
+				if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
+				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
+				T_SETV_REF("reinfGarrison", _newGarrison);
+
+				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
+				CALLM2(_newGarrison, "postMethodAsync", "activate", []);
+				private _AI = CALLM(_newGarrison, "getAI", []);
+				private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
+				CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
+			};
+		};
+	} ENDMETHOD;
+	
 	METHOD("delete") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
