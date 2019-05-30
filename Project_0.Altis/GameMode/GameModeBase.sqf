@@ -433,14 +433,15 @@ CLASS("GameModeBase", "")
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
 				private _policeStationBuilding = nearestBuilding _posPolice;
-				private _policeStationLocation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
-				CALLM1(_policeStationLocation, "setSide", _side);
-				CALLM1(_policeStationLocation, "setName", format ["%1 police station" ARG _locName] );
-				CALLM1(_policeStationLocation, "setType", LOCATION_TYPE_POLICE_STATION);
+				private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
+				CALLM1(_policeStation, "setSide", _side);
+				CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
+				CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 
 				// TODO: Get city size or building count and scale police capacity from that ?
-				CALLM1(_policeStationLocation, "setCapacityInf", _locCapacityInf);
-				SETV(_loc, "policeStation", _policeStationLocation);
+				CALLM1(_policeStation, "setCapacityInf", _locCapacityInf);
+				CALLM(_loc, "addChild", [_policeStation]);
+				SETV(_policeStation, "useParentPatrolWaypoints", true);
 				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 			};
 
@@ -463,22 +464,35 @@ CLASS("GameModeBase", "")
 		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 		
 		if (_faction == "police") exitWith {
-			private _policeGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
-
-			for "_i" from 1 to _cInf do {
-				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
-				private _newUnit = NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _policeGroup]);
+			// 75% out on patrol
+			private _patrolGroups = 1 max (_cInf * 0.75 * 0.5);
+			for "_i" from 1 to _patrolGroups do {
+				private _patrolGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
+				for "_i" from 0 to 1 do {
+					private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+					NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
+				};
+				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
+				CALL_METHOD(_gar, "addGroup", [_patrolGroup]);		
 			};
 
+			// Remainder back at station
+			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+			private _remainder = 1 max (_cInf * 0.25);
+			for "_i" from 1 to _remainder do {
+				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+				NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
+			};
+			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
+			CALL_METHOD(_gar, "addGroup", [_sentryGroup]);
+
+			// Patrol vehicles
 			for "_i" from 1 to (2 max _cVehGround) do {
 				// Add a car in front of police station
 				private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
 				CALLM(_gar, "addUnit", [_newUnit]);
 				OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
 			};
-
-			OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _policeGroup]);
-			CALL_METHOD(_gar, "addGroup", [_policeGroup]);
 
 			_gar
 		};

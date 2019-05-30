@@ -181,25 +181,30 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			};
 
 			// Do spawning at police stations
-			private _policeStation = GETV(_loc, "policeStation");
+			private _policeStations = GETV(_loc, "children") select { GETV(_x, "type") == LOCATION_TYPE_POLICE_STATION };
 
-			if(!IS_NULL_OBJECT(_policeStation)) then {
+			{
+				private _policeStation = _x;
 				private _garrisons = CALLM0(_policeStation, "getGarrisons");
 				// TODO: add forces if depleted {!EFF_LTE(CALLM0(_garrisons#0, "getEfficiencyMobile")}
 				if (count _garrisons == 0) then {
+					OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 					private _side = if(_state != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
 					private _cInf = CALLM(_policeStation, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 					private _cVehGround = CALLM(_policeStation, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
-					private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
+
 					private _locPos = CALLM0(_policeStation, "getPos");
 					private _playerBlacklistAreas = playableUnits apply { [getPos _x, 1000] };
 					private _spawnInPos = [_locPos, 1000, 4000, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
-					CALLM2(_AI, "postMethodAsync", "setPos", [_spawnInPos]);
+					if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
+					private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
+					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
+					CALLM2(_newGarrison, "postMethodAsync", "activate", []);
 					private _AI = CALLM(_newGarrison, "getAI", []);
 					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
 					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
 				};
-			};
+			} forEach _policeStations;
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
 	} ENDMETHOD;
 ENDCLASS;

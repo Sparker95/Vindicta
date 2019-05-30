@@ -23,11 +23,9 @@ if (!IS_SERVER) then {
 // if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
 
 CRITICAL_SECTION {
-
-
 	switch (PROFILE_NAME) do {
 		//case "Sparker": { gGameMode = NEW("GameModeRandom", []); };
-		// case "billw": 	{ gGameMode = NEW("RedVsGreenGameMode", []); };
+		//case "billw": 	{ gGameMode = NEW("RedVsGreenGameMode", []); };
 		default 		{ gGameMode = NEW("CivilWarGameMode", []); };
 	};
 

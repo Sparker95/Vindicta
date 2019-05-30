@@ -33,15 +33,15 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("side");
 	VARIABLE("name");
 
+	VARIABLE("children"); // Children of this location if it has any (e.g. police stations are children of cities)
+	VARIABLE("parent"); // Parent of the Location if it has one (e.g. parent of police station is its containing city location)
+
 	VARIABLE("garrisons");
-	/*
-	VARIABLE("garrisonCiv");
-	VARIABLE("garrisonMilAA");
-	VARIABLE("garrisonMilMain");
-	*/	
+
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
 	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
+	VARIABLE("useParentPatrolWaypoints"); // If true then use the parents patrol waypoints instead
 	VARIABLE("allowedAreas"); // Array with allowed areas
 	VARIABLE("pos"); // Position of this location
 	VARIABLE("spawnPosTypes"); // Array with spawn positions types
@@ -55,8 +55,6 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("buildObjects"); // Array with objects we have built
 	
 	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
-
-	VARIABLE("policeStation"); // If this is a city location then this points to the assoicated police station (or NULL_OBJECT)
 
 	STATIC_VARIABLE("all");
 
@@ -82,6 +80,7 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
 		T_SETV("borderPatrolWaypoints", []);
+		T_SETV("useParentPatrolWaypoints", false);
 		SET_VAR_PUBLIC(_thisObject, "pos", _pos);
 		T_SETV("spawnPosTypes", []);
 		T_SETV("spawned", false);
@@ -90,14 +89,15 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("cpModule",objnull);
 		T_SETV("isBuilt", false);
 		T_SETV("buildObjects", []);
-		T_SETV("policeStation", NULL_OBJECT);
+		T_SETV("children", []);
+		T_SETV("parent", NULL_OBJECT);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);
-
+		
 		T_SETV("timer", "");
 
 
@@ -144,6 +144,21 @@ CLASS("Location", "MessageReceiverEx")
 		params [P_THISOBJECT, ["_side", EAST, [EAST]]];
 		T_SETV("side", _side);
 	} ENDMETHOD;
+
+	/*
+	Method: addChild
+	Adds a child location to this location (also sets the childs parent).
+	Child must not belong to another location already.
+	*/
+	METHOD("addChild") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_childLocation")];
+		ASSERT_OBJECT_CLASS(_childLocation, "Location");
+		ASSERT_MSG(IS_NULL_OBJECT(GETV(_childLocation, "parent")), "Location is already assigned to another parent");
+		T_GETV("children") pushBack _childLocation;
+		SETV(_childLocation, "parent", _thisObject);
+		nil
+	} ENDMETHOD;
+
 
 	#ifdef DEBUG_LOCATION_MARKERS
 	METHOD("updateMarker") {
@@ -264,7 +279,12 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("getPatrolWaypoints") {
 		params [ P_THISOBJECT ];
-		GETV(_thisObject, "borderPatrolWaypoints")
+		if(T_GETV("useParentPatrolWaypoints")) then {
+			private _parent = T_GETV("parent");
+			CALLM0(_parent, "getPatrolWaypoints");
+		} else {
+			T_GETV("borderPatrolWaypoints");
+		}
 	} ENDMETHOD;
 
 	// |                  G E T   M E S S A G E   L O O P
@@ -275,62 +295,6 @@ CLASS("Location", "MessageReceiverEx")
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S E T T I N G   M E M B E R   V A L U E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	
-	
-	
-	
-	
-	// Old useless crap, delete it!11
-	
-	/*
-	Method: setGarrisonMilitaryMain
-	Sets the main military garrison located at this location
-
-	Parameters: _garrison
-
-	_garrison - <Garrison> object
-
-	Returns: nil
-	*/
-	/*
-	METHOD("setGarrisonMilitaryMain") {
-		params [P_THISOBJECT, ["_garrison", "", [""]] ];
-
-		OOP_INFO_1("setGarrisonMilitaryMain: %1", _garrison);
-
-		SET_VAR(_thisObject, "garrisonMilMain", _garrison);
-		if (_garrison != "") then {
-			CALLM2(_garrison, "postMethodAsync", "setLocation", [_thisObject]);
-		};
-	} ENDMETHOD;
-	*/
-
-	/*
-	Method: getGarrisonMilitaryMain
-	Gets the main military garrison located at this location
-
-	Returns: <Garrison> or "" if there is no garrison there
-	*/
-	/*
-	METHOD("getGarrisonMilitaryMain") {
-		params [P_THISOBJECT, ["_garrison", "", [""]] ];
-		GET_VAR(_thisObject, "garrisonMilMain")
-	} ENDMETHOD;
-	*/
-	/*
-	Method: getGarrisonMilAA
-	Gets the main military garrison located at this location
-
-	Returns: <Garrison> or "" if there is no garrison there
-	*/
-	/*
-	METHOD("getGarrisonMilAA") {
-		params [P_THISOBJECT, ["_garrison", "", [""]] ];
-		GET_VAR(_thisObject, "garrisonMilAA")
-	} ENDMETHOD;
-	*/
-	
-	
 	METHOD("registerGarrison") {
 		params ["_thisObject", ["_gar", "", [""]]];
 		
@@ -383,7 +347,6 @@ CLASS("Location", "MessageReceiverEx")
 		params [P_THISOBJECT, ["_type", "", [""]]];
 		SET_VAR_PUBLIC(_thisObject, "type", _type);
 
-
 		// Create a timer object if the type of the location is a city or a roadblock
 		if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
 			
@@ -404,6 +367,7 @@ CLASS("Location", "MessageReceiverEx")
 			SET_VAR(_thisObject, "timer", _timer);
 		};
 
+		T_CALLM("updateWaypoints", []);
 
 		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
@@ -448,6 +412,7 @@ CLASS("Location", "MessageReceiverEx")
 		GET_VAR(_thisObject, "capacityInf")
 	} ENDMETHOD;
 
+	
 	STATIC_METHOD("findRoadblocks") {
 		params [P_THISCLASS, P_POSITION("_pos")];
 
@@ -647,13 +612,51 @@ CLASS("Location", "MessageReceiverEx")
 		_sum
 	} ENDMETHOD;
 
+	/*
+	Method: setBorder
+	Sets border parameters for this location
+
+	Arguments:
+	_type - "circle" or "rectange"
+	_data	- for "circle":
+		_radius
+			- for "rectangle":
+		[_a, _b, _dir] - rectangle dimensions and direction
+
+	*/
+	METHOD("setBorder") {
+		params [P_THISOBJECT, P_STRING("_type"), ["_data", [50], [0, []]] ];
+
+		switch (_type) do {
+			case "circle" : {
+				_data params [ ["_radius", 0, [0] ] ];
+				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
+				SET_VAR_PUBLIC(_thisObject, "border", _radius);
+			};
+			
+			case "rectangle" : {
+				_data params ["_a", "_b", "_dir"];
+				private _radius = sqrt(_a*_a + _b*_b);
+				SET_VAR_PUBLIC(_thisObject, "border", _data);
+				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
+			};
+			
+			default {
+				diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, GET_VAR(_thisObject, "name")];
+			};
+		};
+
+		T_CALLM("updateWaypoints", []);
+	} ENDMETHOD;
+	
+
 	// File-based methods
 
 	// Handles messages
 	METHOD_FILE("handleMessageEx", "Location\handleMessageEx.sqf");
 
 	// Sets border parameters
-	METHOD_FILE("setBorder", "Location\setBorder.sqf");
+	METHOD_FILE("updateWaypoints", "Location\updateWaypoints.sqf");
 
 	// Checks if given position is inside the border
 	METHOD_FILE("isInBorder", "Location\isInBorder.sqf");
