@@ -719,4 +719,30 @@ CLASS("AICommander", "AI")
 		T_PRVAR(intelDB);
 		CALLM(_intelDB, "addIntelClone", [_intel])
 	} ENDMETHOD;
+
+	// Temporary function that adds infantry to some location
+	METHOD("addGroupToLocation") {
+		params [P_THISCLASS, P_OOP_OBJECT("_loc"), P_NUMBER("_nTroops")];
+
+		pr _side = T_GETV("side");
+
+		// Check if there is already a garrison at this location
+		pr _gars = CALLM0(_loc, "getGarrisons", _side);
+		pr _gar = if ((count _gars) > 0) then {
+			_gars#0
+		} else {
+			pr _locPos = CALLM0(_loc, "getPos");
+			// Create a new garrison and register it
+			_gar = NEW("Garrison", [_side ARG _locPos]);
+			CALLM2(_gar, "postMethodAsync", "setLocation", [_locPos]);
+			CALLM2(_gar, "postMethodAsync", "activate", []);
+		};
+
+		// Create some infantry group
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+		CALLM2(_group, "createUnitsFromTemplate", tGUERRILLA, T_GROUP_inf_assault_squad);
+		CALLM1(_gar, "addGroup", _group);
+
+		// That's all!
+	} ENDMETHOD;
 ENDCLASS;
