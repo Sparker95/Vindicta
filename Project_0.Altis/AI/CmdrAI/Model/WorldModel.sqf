@@ -138,17 +138,16 @@ CLASS("WorldModel", "")
 		// Damage fades to 50% over 7 hours or so
 		// https://www.desmos.com/calculator/iyesusko7z
 		#define THREAT_FADE_RATE 0.93
-		#define ACTIVITY_FADE_RATE 0.99
+		#define ACTIVITY_FADE_RATE 0.98
 		#define FADE_RATE_PERIOD 360
-		#define POW(a, b) (exp ((b) * log (a)))
 
 		T_PRVAR(lastGridUpdate);
 		private _dt = TIME_NOW - _lastGridUpdate;
 		T_SETV("lastGridUpdate", TIME_NOW);
 
-		private _threatFade = POW(THREAT_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		private _threatFade = THREAT_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
-		private _activityFade = POW(ACTIVITY_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		private _activityFade = ACTIVITY_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
 		CALLM(_rawActivityGrid, "fade", [_activityFade]);
 
 		#define THREAT_GRID_CLUSTER_OVERSIZE 500

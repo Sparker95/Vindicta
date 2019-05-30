@@ -56,6 +56,8 @@ CLASS("Location", "MessageReceiverEx")
 	
 	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
 
+	VARIABLE("policeStation"); // If this is a city location then this points to the assoicated police station (or NULL_OBJECT)
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -88,6 +90,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("cpModule",objnull);
 		T_SETV("isBuilt", false);
 		T_SETV("buildObjects", []);
+		T_SETV("policeStation", NULL_OBJECT);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);

@@ -27,8 +27,8 @@ CRITICAL_SECTION {
 
 	switch (PROFILE_NAME) do {
 		//case "Sparker": { gGameMode = NEW("GameModeRandom", []); };
-		// case "billw": 	{ gGameMode = NEW("StatusQuoGameMode", []); };
-		default 		{ gGameMode = NEW("RedVsGreenGameMode", []); };
+		// case "billw": 	{ gGameMode = NEW("RedVsGreenGameMode", []); };
+		default 		{ gGameMode = NEW("CivilWarGameMode", []); };
 	};
 
 	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];

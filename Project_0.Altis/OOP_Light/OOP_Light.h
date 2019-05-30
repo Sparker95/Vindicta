@@ -85,6 +85,7 @@
 #define HAS_INTERFACE true
 #define IS_HEADLESSCLIENT false
 #define PUBLIC_VARIABLE isNil
+#define IS_MULTIPLAYER false
 
 #define PROFILE_NAME "Satan"
 // ^^^ SQF-VM ^^^
@@ -102,6 +103,7 @@
 #define IS_SERVER isServer
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
+#define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
 
 #define PROFILE_NAME profileName
