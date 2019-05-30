@@ -78,7 +78,23 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		// Give waypoints to move
 		pr _waypoints = [];
 		pr _route = T_GETV("route");
+
+		// Find the closest waypoint
+		// We don't want to re-add all waypoints, but we want to start from the closest one
+		pr _wpPositions = _route + [_pos];
+		pr _smallestDistance = _hO distance2D (_wpPositions#0);
+		pr _closestPosIndex = 0;
 		{
+			pr _d = _x distance2D _hO;
+			if (_d <= _smallestDistance) then {
+				_smallestDistance = _d;
+				_closestPosIndex = _foreachindex;
+			};
+		} forEach _wpPositions;
+
+		// Add waypoints starting from closest one
+		for "_i" from _closestPosIndex to ((count _wpPositions) - 1) do {
+			pr _x = _wpPositions#_i;
 			pr _wp = _hG addWaypoint [_x, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointFormation "COLUMN";
@@ -86,7 +102,8 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 			_wp setWaypointCombatMode "GREEN";
 			_wp setWaypointCompletionRadius 20;
 			_waypoints pushBack _wp;
-		} forEach (_route + [_pos]);
+		};
+
 		_hG setCurrentWaypoint (_waypoints select 0);
 
 		
