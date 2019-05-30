@@ -288,6 +288,7 @@ CLASS("MessageReceiver", "")
 			if (time - _timeStartedWaiting > WAIT_UNTIL_TIMEOUT) then {
 				diag_log "---------- waitUntilMessageDone has exceeded threshold!";
 				DUMP_CALLSTACK;
+				sleep 30;
 			};
 			#endif
 
