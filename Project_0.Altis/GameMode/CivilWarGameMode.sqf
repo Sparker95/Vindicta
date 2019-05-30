@@ -76,16 +76,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				if(count _positions > 0) exitWith {
 					_spawnPos = selectRandom _positions;
 				}
-			} forEach _nearbyHouses; //= _nearbyHouses findIf { count _x#1 buildingPos -1 > 0 }
-
-			// 	_nearbyHouses#0 params ["_dist", "_building"];
-			// 	private _positions = _building buildingPos -1;
-			// 	if(count _positions == 0) then {
-			// 		getPos _building
-			// 	} else {
-			// 		selectRandom _positions
-			// 	};
-			// };
+			} forEach _nearbyHouses;
 
 			// Create Respawn Marker at one of the houses
 			private _marker = createMarker ["respawn_west_" + GETV(_x, "name"), _spawnPos]; // magic
@@ -116,12 +107,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		switch T_GETV("phase") do {
 			// Player is spawning in cities give them a pistol or something.
 			case 1: {
-				_newUnit addItem "hgun_Pistol_heavy_01_F";
-				_newUnit addMagazine "11Rnd_45ACP_Mag";
-				_newUnit addMagazine "11Rnd_45ACP_Mag";
-				_newUnit addItem "ItemMap";
-				_newUnit addItem "ItemCompass";
-				_newUnit addItem "ItemWatch";
+				_newUnit call fnc_selectPlayerSpawnLoadout;
+				// _newUnit addItem "hgun_Pistol_heavy_01_F";
+				// _newUnit addMagazine "11Rnd_45ACP_Mag";
+				// _newUnit addMagazine "11Rnd_45ACP_Mag";
+				// _newUnit addItem "ItemMap";
+				// _newUnit addItem "ItemCompass";
+				// _newUnit addItem "ItemWatch";
 			};
 		};
 	} ENDMETHOD;
@@ -144,12 +136,15 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				private _cityRadius = 500 max GETV(_loc, "boundingRadius");
 				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
 				private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
+
 				// For now we will just have instability directly related to activity (activity fades over time just
 				// as we want instability to)
-				SETV(_cityData, "instability", _activity);
+				// Instability is activity / radius
+				private _instability = _activity * 500 / _cityRadius;
+				SETV(_cityData, "instability", _instability);
 				_state = switch true do {
-					case (_activity > 200): { CITY_STATE_IN_REVOLT };
-					case (_activity > 100): { CITY_STATE_AGITATED };
+					case (_instability > 200): { CITY_STATE_IN_REVOLT };
+					case (_instability > 100): { CITY_STATE_AGITATED };
 					default { CITY_STATE_STABLE };
 				};
 			};

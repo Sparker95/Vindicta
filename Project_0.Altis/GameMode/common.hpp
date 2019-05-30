@@ -10,6 +10,7 @@
 #include "..\CriticalSection\CriticalSection.hpp"
 #include "..\AI\Commander\AICommander.hpp"
 #include "..\AI\Commander\LocationData.hpp"
+#include "..\AI\parameterTags.hpp"
 #include "..\Group\Group.hpp"
 #include "..\Location\Location.hpp"
 
