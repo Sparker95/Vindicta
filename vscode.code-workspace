@@ -265,7 +265,8 @@
 			"fn_eff_simulate_attack",
 			"test_AddTest",
 			"test_Assert",
-			"gMessageLoopMain"
+			"gMessageLoopMain",
+			"CivPresence_fnc_spawn"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

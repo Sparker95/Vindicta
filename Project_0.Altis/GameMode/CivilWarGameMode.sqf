@@ -87,22 +87,22 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _marker = createMarker ["respawn_west_" + GETV(_x, "name"), _spawnPos]; // magic
 			_marker setMarkerAlpha 0.0;
 
-			_spawnPoints pushBack _spawnPos;
+			_spawnPoints pushBack _marker;
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION });
 
 #ifndef _SQF_VM
 		ASSERT_MSG(count _spawnPoints > 0, "Couldn't create any spawn points, no police stations found? Check your map setup!");
+
 		// Single player
 		if(!IS_MULTIPLAYER) then
 		{
-			FAILURE("CivilWar game mode doesn't support single player yet!!");
+			//FAILURE("CivilWar game mode doesn't support single player yet!!");
 			// TODO: handle "respawn" in single player
-			// player setPosATL (selectRandom _spawnPoints);
-			// {
-			// 	deleteVehicle _x;
-			// } forEach (units group player) - [player];
-			// player addItem "Map";
-			// player addItem "Compass";
+			{
+				deleteVehicle _x;
+			} forEach (units group player) - [player];
+			player setPosATL (getMarkerPos (selectRandom _spawnPoints));
+			T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
 		};
 #endif
 	} ENDMETHOD;
@@ -190,6 +190,17 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				CALLM(_data, "update", [_policeStation ARG _state]);
 			} forEach _policeStations;
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+	} ENDMETHOD;
+
+	
+	// Override this to perform actions when a location spawns
+	/* protected override */METHOD("locationSpawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
+
+	// Override this to perform actions when a location despawns
+	/* protected override */METHOD("locationDespawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	} ENDMETHOD;
 ENDCLASS;
 

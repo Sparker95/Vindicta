@@ -251,6 +251,15 @@ CLASS("GameModeBase", "")
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 
+	// Override this to perform actions when a location spawns
+	/* protected virtual */METHOD("locationSpawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
+
+	// Override this to perform actions when a location despawns
+	/* protected virtual */METHOD("locationDespawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
