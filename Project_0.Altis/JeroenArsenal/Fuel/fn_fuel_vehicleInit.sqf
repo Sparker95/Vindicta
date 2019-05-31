@@ -7,6 +7,8 @@ private _jn_fuel_cargoCapacity = getNumber(configfile >> "CfgVehicles" >> typeOf
 
 if(_jn_fuel_capacity > 0)then{
 	[_vehicle,_jn_fuel_capacity] call JN_fnc_fuel_setCapacity;
+	//set fuel starting condition
+	_vehicle setFuel random [0.3, 0.6, 0.9];
 };
 
 if(_jn_fuel_cargoCapacity > 0)then{
