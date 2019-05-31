@@ -1,8 +1,10 @@
 #include "defineCommon.inc"
 
-private _loc = [];
+//init fuel stations
+
 private _size = (worldName call BIS_fnc_mapSize)/2;
-private _objs = nearestTerrainObjects [[_size,_size,0], ["FUELSTATION"], _size*1.42];
+private _terrainObjs = nearestTerrainObjects [[_size,_size,0], ["FUELSTATION"], _size*1.42];
+private _loc = [];
 {
 	private _pos = getPos _x;
 
@@ -12,13 +14,9 @@ private _objs = nearestTerrainObjects [[_size,_size,0], ["FUELSTATION"], _size*1
 	_pos deleteAt 2;
 	_loc pushBack _pos;
 	
-}forEach _objs;
+}forEach _terrainObjs;
 
-pr _objs = [];
 {
-	_objs pushBack nearestObject _x; 
+	private _station = nearestObject _x;
+	_station call jn_fnc_fuel_vehicleInit;
 }forEach _loc;
-
-{
-	[_x, 1000,1000] call jn_fnc_fuel_addActionRefuel;
-}forEach _objs;
