@@ -1,3 +1,4 @@
+/*
 #define COMPONENT modules
 #include "\x\cba\addons\main\script_mod.hpp"
 
@@ -10,3 +11,4 @@
 #endif
 
 #include "\x\cba\addons\main\script_macros.hpp"
+*/
