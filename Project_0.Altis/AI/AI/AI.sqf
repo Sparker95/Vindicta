@@ -11,7 +11,6 @@
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
-#include "..\goalRelevance.hpp"
 #include "AI.hpp"
 
 /*
@@ -170,7 +169,7 @@ CLASS("AI", "MessageReceiverEx")
 	// ----------------------------------------------------------------------
 
 	METHOD("updateSensors") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_forceUpdate", false]];
 		pr _sensors = GETV(_thisObject, "sensors");
 		//OOP_INFO_1("Updating sensors: %1", _sensors);
 		{
@@ -180,11 +179,12 @@ CLASS("AI", "MessageReceiverEx")
 			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
 			//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
 			// If timeNextUpdate is 0, we never update this sensor
-			if (_timeNextUpdate != 0 && time > _timeNextUpdate) then {
+			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
 				//OOP_INFO_0("  Calling UPDATE!");
+				//OOP_INFO_1("Updating sensor: %1", _sensor);
 				CALLM(_sensor, "update", []);
 				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
-				SETV(_sensor, "timeNextUpdate", time + _interval);
+				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
 			};
 		} forEach _sensors;
 	} ENDMETHOD;
@@ -289,19 +289,28 @@ CLASS("AI", "MessageReceiverEx")
 	Starts the AI brain. From now process method will be called periodically.
 	*/
 	METHOD("start") {
-		params [["_thisObject", "", [""]]];
-		if (GETV(_thisObject, "timer") == "") then {
-			// Starts the timer
-			private _msg = MESSAGE_NEW();
-			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
-			_msg set [MESSAGE_ID_SOURCE, ""];
-			_msg set [MESSAGE_ID_DATA, 0];
-			_msg set [MESSAGE_ID_TYPE, AI_MESSAGE_PROCESS];
-			pr _processInterval = GETV(_thisObject, "processInterval");
-			private _args = [_thisObject, _processInterval, _msg, AI_TIMER_SERVICE]; // message receiver, interval, message, timer service
-			private _timer = NEW("Timer", _args);
-			SETV(_thisObject, "timer", _timer);
+		params [["_thisObject", "", [""]], ["_processCategoryTag", ""]];
+		if (_processCategoryTag != "") then {
+			pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+			CALLM2(_msgLoop, "addProcessCategoryObject", _processCategoryTag, _thisObject);
+		} else {
+			if (GETV(_thisObject, "timer") == "") then {
+				// Starts the timer
+				private _msg = MESSAGE_NEW();
+				_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+				_msg set [MESSAGE_ID_SOURCE, ""];
+				_msg set [MESSAGE_ID_DATA, 0];
+				_msg set [MESSAGE_ID_TYPE, AI_MESSAGE_PROCESS];
+				pr _processInterval = GETV(_thisObject, "processInterval");
+				private _args = [_thisObject, _processInterval, _msg, AI_TIMER_SERVICE]; // message receiver, interval, message, timer service
+				private _timer = NEW("Timer", _args);
+				SETV(_thisObject, "timer", _timer);
+
+				// Post a message to process immediately to accelerate start up
+				CALLM1(_thisObject, "postMessage", +_msg);
+			};
 		};
+
 		nil
 	} ENDMETHOD;
 
@@ -315,6 +324,11 @@ CLASS("AI", "MessageReceiverEx")
 	*/
 	METHOD("stop") {
 		params [["_thisObject", "", [""]]];
+		
+		// Delete this object from process category 
+		pr _msgLoop = CALLM0(_thisObject, "getMessageLoop");
+		CALLM1(_msgLoop, "deleteProcessCategoryObject", _thisObject);
+
 		pr _timer = GETV(_thisObject, "timer");
 		if (_timer != "") then {
 			SETV(_thisObject, "timer", "");
@@ -348,6 +362,6 @@ CLASS("AI", "MessageReceiverEx")
 		if (_timer != "") then {
 			CALLM(_timer, "setInterval", [_interval]);
 		};
-	} ENDMETHOD;	
+	} ENDMETHOD;
 	
 ENDCLASS;

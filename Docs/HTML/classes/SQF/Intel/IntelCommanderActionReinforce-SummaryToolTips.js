@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionReinforce",{646:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Intel about reinforcement commander action</div></div>",648:"<div class=\"NDToolTip TVariable LSQF\"><div class=\"TTSummary\">The destination garrison that will be reinforced. Probably players have no use to this.</div></div>"});

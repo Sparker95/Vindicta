@@ -17,6 +17,9 @@ Author: Sparker
 
 #define pr private
 
+#define WAIT_UNTIL_TIMEOUT_ENABLE
+#define WAIT_UNTIL_TIMEOUT 120
+
 // Number used to generate unique IDs when ownership requests are sent
 g_ownerRqNextID = 0;
 // Array for generating message IDs
@@ -37,8 +40,6 @@ MsgRcvr_fnc_setMsgDone = {
 	};
 };
 
-#define DEBUG
-
 CLASS("MessageReceiver", "")
 
 	VARIABLE("owner");
@@ -52,7 +53,7 @@ CLASS("MessageReceiver", "")
 		
 		PROFILER_COUNTER_INC("MessageReceiver");
 		
-		SETV(_thisObject, "owner", clientOwner);
+		SETV(_thisObject, "owner", CLIENT_OWNER);
 		if (IS_PUBLIC(_thisObject)) then {
 			PUBLIC_VAR(_thisObject, "owner");
 		};
@@ -69,9 +70,9 @@ CLASS("MessageReceiver", "")
 		
 		PROFILER_COUNTER_DEC("MessageReceiver");
 		
-		CRITICAL_SECTION_START
+		CRITICAL_SECTION {
 			private _msgLoop = CALLM(_thisObject, "getMessageLoop", []);
-			diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
+			//diag_log format ["[MessageReceiver:delete] Info: deleting object %1, its message loop: %2", _thisObject, CALLM0(_thisObject, "getMessageLoop")];
 			// Delete all remaining messages directed to this object to make sure they will not be handled after the object is deleted
 			CALLM(_msgLoop, "deleteReceiverMessages", [_thisObject]);
 
@@ -79,7 +80,7 @@ CLASS("MessageReceiver", "")
 				T_SETV("owner", nil);
 				PUBLIC_VAR(_thisObject, "owner");
 			};
-		CRITICAL_SECTION_END
+		};
 	} ENDMETHOD;
 
 	/*
@@ -141,7 +142,7 @@ CLASS("MessageReceiver", "")
 		// Check owner of this object
 		pr _owner = GETV(_thisObject, "owner");
 		// Is the message directed to an object on the same machine?
-		if (_owner == clientOwner) then {
+		if (_owner == CLIENT_OWNER) then {
 			pr _messageLoop = CALL_METHOD(_thisObject, "getMessageLoop", []);
 			if (_messageLoop == "") exitWith { diag_log format ["[MessageReceiver:postMessage] Error: %1 is not assigned to a message loop", _thisObject];};
 			_msg set [MESSAGE_ID_DESTINATION, _thisObject]; //In case message sender forgot to set the destination
@@ -274,10 +275,23 @@ CLASS("MessageReceiver", "")
 		};
 
 		// Wait until a local messageLoop or remote messageLoop marks the message as processed
+		#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
+		private _timeStartedWaiting = time;
+		#endif
+
 		pr _return = 0;
 		waitUntil {
 			//diag_log "Waiting...";
 			OOP_INFO_1("waiting for msgID to be done: %1", _msgID);
+
+			#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
+			if (time - _timeStartedWaiting > WAIT_UNTIL_TIMEOUT) then {
+				diag_log "---------- waitUntilMessageDone has exceeded threshold!";
+				DUMP_CALLSTACK;
+				sleep 30;
+			};
+			#endif
+
 			(g_rqArray select _msgID select 0) == 1
 		};
 		_return = g_rqArray select _msgID select 1;
@@ -321,9 +335,9 @@ CLASS("MessageReceiver", "")
 
 		// Bail if this machine doesn't own this object
 		pr _owner = GETV(_thisObject, "owner");
-		if (_owner != clientOwner) exitWith {
+		if (_owner != CLIENT_OWNER) exitWith {
 			diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: object is owned not by this machine. This machine owner ID:%4.",
-				_thisObject, _owner, _newOwner, clientOwner];
+				_thisObject, _owner, _newOwner, CLIENT_OWNER];
 
 			// Return failure
 			false
@@ -331,13 +345,13 @@ CLASS("MessageReceiver", "")
 
 		// Bail if non-existant newOwner was supplied
 		pr _ownerNotFound = (((allPlayers + (entities "HeadlessClient_F")) findif {owner _x == _newOwner}) == -1);
-		if ( _ownerNotFound || ((_newOwner == 2) && !isMultiplayer) || (clientOwner == 0 && _newOwner == 2) || (_newOwner == 0) ) exitWith {
+		if ( _ownerNotFound || ((_newOwner == 2) && !isMultiplayer) || (CLIENT_OWNER == 0 && _newOwner == 2) || (_newOwner == 0) ) exitWith {
 			if (_ownerNotFound) then {
 				diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: new owner not found.",
-					_thisObject, _owner, _newOwner, clientOwner];
+					_thisObject, _owner, _newOwner, CLIENT_OWNER];
 			} else {
 				diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: new owner is invalid.",
-					_thisObject, _owner, _newOwner, clientOwner];
+					_thisObject, _owner, _newOwner, CLIENT_OWNER];
 			};
 
 			// Return failure
@@ -367,10 +381,10 @@ CLASS("MessageReceiver", "")
 		if (time > _timeTimeout) exitWith {
 
 			// Try to invalidate the object's owner at the other machine
-			[[_thisObject, clientOwner], {SETV(_this select 0, "owner", _this select 1);}] remoteExecCall ["call", _newOwner, false];
+			[[_thisObject, CLIENT_OWNER], {SETV(_this select 0, "owner", _this select 1);}] remoteExecCall ["call", _newOwner, false];
 
 			diag_log format ["[MessageReceiver:setOwner] Error: can't change ownership of object %1 from %2 to %3. Reason: timeout.",
-				_thisObject, _owner, _newOwner, clientOwner];
+				_thisObject, _owner, _newOwner, CLIENT_OWNER];
 
 			// Return failure
 			false
@@ -384,10 +398,10 @@ CLASS("MessageReceiver", "")
 
 			// Invalidate the object at the other machine
 			// So that the other machine doesn't thing that it owns the object
-			[[_thisObject, clientOwner], {SETV(_this select 0, "owner", _this select 1);}] remoteExecCall ["call", _newOwner, false];
+			[[_thisObject, CLIENT_OWNER], {SETV(_this select 0, "owner", _this select 1);}] remoteExecCall ["call", _newOwner, false];
 
 			// Take the object back
-			SETV(_thisObject, "owner", clientOwner);
+			SETV(_thisObject, "owner", CLIENT_OWNER);
 
 			// Return failure
 			false
@@ -418,7 +432,7 @@ CLASS("MessageReceiver", "")
 
 		// Create a new object with provided name
 		pr _newObj = NEW_EXISTING(_objParent, _objNameStr);
-		SETV(_newObj, "owner", clientOwner);
+		SETV(_newObj, "owner", CLIENT_OWNER);
 
 		// Deserialize data into the new object
 		pr _deserSuccess = CALLM(_newObj, "deserialize", [_serialData]);

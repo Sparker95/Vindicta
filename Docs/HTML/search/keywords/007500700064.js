@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("upd",["Function"],[["updateIntel",,[["IntelDatabase",,,,0,"File:Intel/IntelDatabase.sqf:IntelDatabase.updateIntel","SQFClass:IntelDatabase:updateIntel"]]],["updateIntelFromSource",,[["IntelDatabase",,,,0,"File:Intel/IntelDatabase.sqf:IntelDatabase.updateIntelFromSource","SQFClass:IntelDatabase:updateIntelFromSource"]]]]);

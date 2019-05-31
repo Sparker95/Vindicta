@@ -90,7 +90,7 @@ CLASS("Camp", "Location")
 		private _cInf = CALL_METHOD(_thisObject, "getUnitCapacity", _args);
 
 		private _garMilMain = NEW("Garrison", [_side]);
-		CALL_METHOD(_thisObject, "setGarrisonMilitaryMain", [_garMilMain]);
+		CALLM2(_garMilMain, "postMethodAsync", "setLocation", [_thisObject]);
 
 		// Add infantry
 		private _addInfGroup = {
@@ -104,7 +104,7 @@ CLASS("Camp", "Location")
 			// Create units from template
 			private _args = [_template, _subcatID];
 			private _nAdded = CALL_METHOD(_newGroup, "createUnitsFromTemplate", _args);
-			CALL_METHOD(_gar, "addGroup", [_newGroup]);
+			CALLM2(_gar, "postMethodSync", "addGroup", [_newGroup]);
 
 			// Return remaining capacity
 			_capacity = _capacity - _nAdded;
@@ -125,7 +125,8 @@ CLASS("Camp", "Location")
 			_i = _i + 1;
 		};
 
-		CALLM2(gAICommanderWest, "updateLocationData", _thisObject, CLD_UPDATE_LEVEL_UNITS);
+		pr _args = [_thisObject, CLD_UPDATE_LEVEL_UNITS];
+		CALLM2(gAICommanderWest, "postMethodAsync", "updateLocationData", _args);
 		OOP_INFO_1("new camp created: %1", _thisObject);
 	} ENDMETHOD;
 

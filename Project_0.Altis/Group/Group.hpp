@@ -10,9 +10,10 @@
 #define GROUP_DATA_ID_GARRISON		5
 #define GROUP_DATA_ID_AI			6
 #define GROUP_DATA_ID_SPAWNED		7
+#define GROUP_DATA_ID_LEADER		8
 
 //				     		  0,        1,       2,  3, 4,  5,  6,     7
-#define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0, "", "", false]
+#define GROUP_DATA_DEFAULT	[[], CIVILIAN, grpNull, [], 0, "", "", false, ""]
 
 /*
 Enum: GROUP_TYPE
@@ -33,3 +34,12 @@ GROUP_TYPE_PATROL - Patrols that are walking around
 
 // Array with all group types
 #define GROUP_TYPE_ALL [0, 1, 2, 3, 4]
+
+
+#define GET_TEMPLATE(side) ( \
+		switch(side) do { \
+			case WEST: { tNATO }; \
+			case EAST: { tCSAT }; \
+			case INDEPENDENT: { tAAF }; \
+			case "police": { tPOLICE }; \
+		})

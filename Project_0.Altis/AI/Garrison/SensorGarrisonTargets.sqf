@@ -11,7 +11,7 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 5
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 30
+#define TARGET_MAX_AGE 60
 
 // ---- Debugging defines ----
 
@@ -30,10 +30,15 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Updates the state of this sensor
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("update") {
+	/* virtual */ 
+	METHOD("update") {
 		params [["_thisObject", "", [""]]];
 		
-		// Loop throgh known targets and remove those who are older than some threshold or not alive any more
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		// Loop through known targets and remove those who are older than some threshold or not alive any more
 		pr _AI = GETV(_thisObject, "AI");
 		pr _knownTargets = GETV(_AI, "targets");
 		pr _targetsToForget = [];
@@ -107,6 +112,21 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
 		};
 		
+		// Check if we can see any of the assigned targetsAggregate
+		pr _assignedTargetsRadius = GETV(_AI, "assignedTargetsRadius");
+		if (_assignedTargetsRadius != 0) then {
+			pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
+			pr _targetsInRadius = _knownTargets select {
+				pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
+				(_hO distance2D _assignedTargetsPos) < _assignedTargetsRadius
+			};	
+			SETV(_AI, "assignedTargets", _targetsInRadius);
+			SETV(_AI, "awareOfAssignedTargets", count _targetsInRadius > 0);
+		} else {
+			SETV(_AI, "awareOfAssignedTargets", false);
+			SETV(_AI, "assignedTargets", []);
+		};
+		
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
@@ -123,7 +143,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Returns the array with stimulus types this sensor can be stimulated by
 	// ----------------------------------------------------------------------
 	
-	/* virtual */ METHOD("getStimulusTypes") {
+	/* virtual */ 
+	METHOD("getStimulusTypes") {
 		[STIMULUS_TYPE_TARGETS]
 	} ENDMETHOD;
 	
@@ -132,7 +153,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 	// | Performs sensor-specific actions if doComplexCheck has returned true
 	// ----------------------------------------------------------------------
 	
-	/*virtual*/ METHOD("handleStimulus") {
+	/*virtual*/ 
+	METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
 		pr _type = STIMULUS_GET_TYPE(_stimulus);

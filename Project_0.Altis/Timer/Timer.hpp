@@ -9,4 +9,4 @@
 #define TIMER_DATA_ID_MESSAGE_LOOP		6
 
 //							0,      1,  2,  3,  4,  5,  6
-#define TIMER_DATA_DEFAULT [1, time+1, [], "", "", -1, ""]
+#define TIMER_DATA_DEFAULT [1, TIME_NOW+1, [], "", "", -1, ""]

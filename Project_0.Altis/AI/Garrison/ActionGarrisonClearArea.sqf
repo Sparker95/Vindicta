@@ -23,8 +23,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
+		if (isNil "_radius") then {_radius = 100;};
 		pr _duration = CALLSM2("Action", "getParameterValue", _parameters, TAG_DURATION);
+		if (isNil "_duration") then {_duration = 60*30;};
 		T_SETV("pos", _pos);
 		T_SETV("radius", _radius);
 		T_SETV("duration", _duration);
@@ -33,7 +35,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [["_thisObject", "", [""]]];
 		
 		OOP_INFO_0("ACTIVATE");
 		
@@ -51,7 +53,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _groups = CALLM0(_gar, "getGroups");
 		{ // foreach _groups
 			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = ["GoalGroupClearArea", 0, [[TAG_POS, _pos], [TAG_RADIUS, 100 /*_radius*/]], _AI];
+			pr _args = ["GoalGroupClearArea", 0, [[TAG_POS, _pos], [TAG_CLEAR_RADIUS, _radius]], _AI];
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _groups;
 		
@@ -59,7 +61,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		T_SETV("lastCombatTime", time);
 		
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 		
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -70,8 +72,24 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		pr _gar = T_GETV("gar");
+
+		// Succeed after timeout if not spawned.
+		if (!CALLM0(_gar, "isSpawned")) exitWith {
+			pr _lastCombatTime = T_GETV("lastCombatTime");
+			if(isNil "_lastCombatTime") exitWith {
+				T_SETV("lastCombatTime", time);
+				ACTION_STATE_ACTIVE
+			};
+			if ((time - _lastCombatTime) > T_GETV("duration") ) then {
+				T_SETV("state", ACTION_STATE_COMPLETED);
+				ACTION_STATE_COMPLETED
+			} else {
+				ACTION_STATE_ACTIVE
+			};
+		};
+
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
-		
 		if (_state == ACTION_STATE_ACTIVE) then {
 			pr _AI = T_GETV("AI");
 			
@@ -88,7 +106,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			};
 		};
 
-
 		// Return the current state
 		T_SETV("state", _state);
 		_state
@@ -98,6 +115,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
 		pr _AI = T_GETV("AI");
 		pr _gar = T_GETV("gar");
 		
@@ -115,7 +136,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
-	
+	/*
+	// Don't have these preconditions any more, they are supplied by goal instead
 	STATIC_METHOD("getPreconditions") {
 		params [ ["_thisClass", "", [""]], ["_goalParameters", [], [[]]], ["_actionParameters", [], [[]]]];
 		
@@ -125,5 +147,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		_ws			
 	} ENDMETHOD;
-
+	*/
+	
 ENDCLASS;

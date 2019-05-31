@@ -3,6 +3,8 @@
 /*
 Class: ActionGroup.ActionGroupVehicleClearArea
 ...
+
+I think it's not used any more????
 */
 
 #define pr private
@@ -18,7 +20,7 @@ CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_RADIUS);
+		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
 		T_SETV("pos", _pos);
 		T_SETV("radius", _radius);
 
@@ -26,7 +28,7 @@ CLASS("ActionGroupVehicleClearArea", "ActionGroup")
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_to", "", [""]]];		
+		params [["_thisObject", "", [""]]];		
 		
 		pr _pos = T_GETV("pos");
 		pr _radius = T_GETV("radius");		

@@ -5,7 +5,7 @@
 
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\MapUI\MapUI_Macros.h"
-#include "..\UIProfileColors.h"
+#include "..\Resources\UIProfileColors.h"
 
 /*
 abstract Class: PlayerListUI
@@ -28,25 +28,29 @@ CLASS(CLASS_NAME, "")
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_ADD_MEMBER) ctrlAddEventHandler ["MouseButtonUp", { CALLSM1(CLASS_NAME, "AddMemberMouseExit", _this) }];
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseExit", { CALLSM1(CLASS_NAME, "AddMemberMouseExit", _this) }];
 		(_mapDisplay displayCtrl IDC_PL_BUTTON_SHOW_PLAYERLIST) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "AddMemberMouseEnter", _this) }];
+
+		(_mapDisplay displayCtrl IDC_HR_VALUE) ctrlAddEventHandler ["MouseEnter", { CALLSM1(CLASS_NAME, "HRValueMouseEnter", _this) }];
+	} ENDMETHOD;
+
+	STATIC_METHOD("HRValueMouseEnter") {
+		private _mapDisplay = findDisplay 12;
+		private _ctrl = _mapDisplay displayCtrl IDC_HR_VALUE;
+		(_mapDisplay displayCtrl IDC_HR_VALUE) ctrlSetText (format ["%1", gSideStatWestHR]);
 	} ENDMETHOD;
 
 	// Start PlayerList EH
-	// TODO: use eventHandler onConnect to populate a allPlayers array and send it to clients
 	STATIC_METHOD("updatePlayers") {
-		_allHCs = entities "HeadlessClient_F";
-		_allHPs = allPlayers - _allHCs;
 		private _ctrlList = (findDisplay 12) displayCtrl IDC_PL_LISTPLAYERS;
 		lbClear _ctrlList;
-
+		
+		OOP_DEBUG_1("gPlayersList %1",  gPlayersList);
 		{
-			private _name = str _x;
-			private _playerUID = str (getPlayerUID _x);
+			private _name = _x select 2;
+			private _playerUID = _x select 1;
 			private _index =  _ctrlList lbAdd _name;
 			_ctrlList lbSetData [_index, _playerUID];
-			_ctrlList lbSetText [_index, name _x];
-			OOP_DEBUG_1("Text: %1", _ctrlList lbText _index);
-			OOP_DEBUG_1("lbData: %1", _ctrlList lbData _index);
-		} forEach allPlayers;
+			_ctrlList lbSetText [_index, _name];
+		} forEach gPlayersList;
 	} ENDMETHOD;
 
 	STATIC_METHOD("PlayerListMouseButtonDown") {
@@ -73,14 +77,12 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("PlayerListMouseEnter") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control"];
-		// get current and adapt ?
 		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.7];
 	} ENDMETHOD;
 
 	STATIC_METHOD("PlayerListMouseExit") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control"];
-		// get current and adapt ?
 		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.5];
 	} ENDMETHOD;
 	// End PlayerList Eh
@@ -89,7 +91,6 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("AddMemberMouseEnter") {
 		params ["_thisClass", "_paramsEH"];
 		_paramsEH params ["_control", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
-
 		_control ctrlSetBackgroundColor [0.1,0.1,0.1,0.7];
 	} ENDMETHOD;
 
@@ -108,7 +109,7 @@ CLASS(CLASS_NAME, "")
 
 		private _ctrlPL = _mapDisplay displayCtrl IDC_PL_LISTPLAYERS;
 		private _selectedPlayer = lbCurSel _ctrlPL;
-		OOP_DEBUG_1("MouseButtonUp _selectedPlayer lbValue %1", _ctrlPL lbValue _selectedPlayer);
+		OOP_DEBUG_1("MouseButtonUp _selectedPlayer lbText %1", _ctrlPL lbText _selectedPlayer);
 		OOP_DEBUG_1("MouseButtonUp _selectedPlayer lbData %1", _ctrlPL lbData _selectedPlayer);
 	} ENDMETHOD;
 	// End AddMember button EH

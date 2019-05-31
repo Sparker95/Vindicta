@@ -11,6 +11,7 @@ Parallel action evaluates all subactions at once.
 
 It returns:
 COMPLETED if all subactions are in COMPLETED state
+REPLAN if any subaction requested a replan
 FAILED if any subaction has failed
 INACTIVE right after this action creation
 ACTIVE otherwise
@@ -63,6 +64,10 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 		private _countCompleted = {_x == ACTION_STATE_COMPLETED} count _subactionsStates;
 		if (_countCompleted == count _subactions) exitWith { ACTION_STATE_COMPLETED };
 		
+		// Has any action requested a replan?
+		private _countReplan = {_x == ACTION_STATE_REPLAN} count _subactionsStates;
+		if (_countReplan > 0) exitWith { ACTION_STATE_REPLAN };
+
 		// Has any subaction failed?
 		private _countFailed = {_x == ACTION_STATE_FAILED} count _subactionsStates;
 		if (_countFailed > 0) exitWith { ACTION_STATE_FAILED };
@@ -91,6 +96,73 @@ CLASS("ActionCompositeParallel", "ActionComposite")
 		
 	} ENDMETHOD;
 
+	/*
+	Method: handleUnitsAdded
+	Calls the same method for all subactions.
+	*/
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");
+		{
+			CALLM1(_subactions select 0, "handleUnitsAdded", _units);
+		} forEach _subactions;
+	} ENDMETHOD;
+	
+	/*
+	Method: handleUnitsRemoved
+	Calls the same method for all subactions.
+	*/
+	
+	METHOD("handleUnitsRemoved") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");
+		{
+			CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
+		} forEach _subactions;
+	} ENDMETHOD;	
 
+	/*
+	Method: handleGroupsAdded
+	Calls the same method of all subaction.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsAdded") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		pr _subactions = T_GETV("subactions");
+		{
+			CALLM1(_x, "handleGroupsAdded", _groups);
+		} forEach _subactions;
+		
+		nil
+	} ENDMETHOD;
+
+
+	/*
+	Method: handleGroupsRemoved
+	Calls the same method of all subaction.
+	
+	Parameters: _groups
+	
+	_groups - Array of <Group>
+	
+	Returns: nil
+	*/
+	METHOD("handleGroupsRemoved") {
+		params [["_thisObject", "", [""]], ["_groups", [], [[]]]];
+		
+		pr _subactions = T_GETV("subactions");
+		{
+			CALLM1(_x, "handleGroupsRemoved", _groups);
+		} forEach _subactions;
+		
+		nil
+	} ENDMETHOD;
 
 ENDCLASS;

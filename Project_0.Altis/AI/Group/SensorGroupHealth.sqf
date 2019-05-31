@@ -40,6 +40,14 @@ CLASS("SensorGroupHealth", "SensorGroup")
 		pr _allRepaired = (_vehicles findIf {! (canMove _x)}) == -1;
 		[_ws, WSP_GROUP_ALL_VEHICLES_REPAIRED, _allRepaired] call ws_setPropertyValue;
 		
+		// Check if there are any null objects
+		pr _units = CALLM0(_group, "getUnits");
+		{
+			if (isNull CALLM0(_x, "getObjectHandle")) then {
+				OOP_ERROR_1("UNIT OBJECT IS NULL: %1", _x);
+			};
+		} forEach _units;
+
 		// Check if all infantry units are in vehicles
 		pr _infantryUnits = CALLM0(_group, "getInfantryUnits");
 		pr _infantry = _infantryUnits apply {CALLM0(_x, "getObjectHandle")};
@@ -53,13 +61,26 @@ CLASS("SensorGroupHealth", "SensorGroup")
 			pr _hO = CALLM0(_x, "getObjectHandle");
 			pr _infGroup = group _hO;
 			if (! (_infGroup isEqualTo _hG)) then {
-				OOP_ERROR_3("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3", _x, _infGroup, _hG);
-				
+				OOP_ERROR_4("UNIT IS IN WRONG GROUP: unit: %1, unit's current group handle: %2, required group handle: %3, unit is alive: %4", _x, _infGroup, _hG, alive _hO);
+
 				// Force the unit to join the proper group
-				[_hO] joinSilent _hO;
-				[_hO] joinSilent _hO;
+				[_hO] joinSilent _hG;
+				[_hO] joinSilent _hG;
 			};
 		} forEach _infantryUnits;
+
+		// Check if the group leader is the proper unit
+		// ... just to be sure
+		pr _hActualLeader = leader _hG;
+		pr _actualLeaderUnit = CALLSM1("Unit", "getUnitFromObjectHandle", _hActualLeader);
+		pr _properLeaderUnit = CALLM0(_group, "getLeader");
+		pr _hProperLeader = if (_properLeaderUnit != "") then { CALLM0(_properLeaderUnit, "getObjectHandle") } else {objNull};
+		if (_actualLeaderUnit != _properLeaderUnit) then {
+			if (alive _hActualLeader && _properLeaderUnit != "") then {
+				OOP_ERROR_6("WRONG GROUP LEADER in group %1: Actual leader: %2, %3,    proper group leader: %4, %5, %6", _group, _hActualLeader, _actualLeaderUnit, _hProperLeader, _properLeaderUnit, alive _hProperLeader);
+			};
+			if (_properLeaderUnit != "") then { CALLM1(_group, "setLeader", _properLeaderUnit); };
+		};
 		
 	} ENDMETHOD;
 	

@@ -19,10 +19,12 @@ Sensor for a group to gather spotted enemies and relay them to the garrison.
 // ----- Debugging definitions -----
 
 // Various debug outputs
-//#define DEBUG
+#ifndef RELEASE_BUILD
+#define DEBUG_SENSOR_GROUP_TARGETS
+#endif
 
 // Prints spotted enemies every update iteration, if the combat timer has reached treshold
-//#define PRINT_SPOTTED_TARGETS
+#define PRINT_SPOTTED_TARGETS
 
 // Prints targets received through the stimulus
 //#define PRINT_RECEIVED_TARGETS
@@ -50,7 +52,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		// Unpack the group handle
 		pr _hG = GETV(_thisObject, "hG");
 		
-		#ifdef DEBUG
+		#ifdef DEBUG_SENSOR_GROUP_TARGETS
 		OOP_INFO_1("[SensorGroupTargets::Update] Info: %1", _thisObject);
 		#endif
 		
@@ -79,6 +81,12 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				
 				if (_o in _allPlayers) then {
 					// It's a Man and a player
+
+					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o)) then {
+						pr _AI = T_GETV("AI");
+						SETV(_AI, "suspTarget", _o);
+					};
+
 					pr _args = [_o, _hG];
 					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitSpotted", _args, _o, false); //classNameStr, methodNameStr, extraParams, targets, JIP
 				} else {
@@ -170,14 +178,14 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 							SETV(_thisObject, "prevMsgID", _msgID);
 							
 							// If there is no location, poke the AIGarrison to do processing ASAP
-							if (_loc == "") then {
+							if (_loc == "" || _comTime < 20) then { // Send "process" to AIGarrison only when we have just switched into combat mode
 								CALLM2(_garAI, "postMethodAsync", "process", []);
 							};
 						//} else {
 						//	diag_log format [" ---- Previous stimulus has not been processed! MsgID: %1", _msgID];
 						};
 					};
-				#ifdef DEBUG
+				#ifdef DEBUG_SENSOR_GROUP_TARGETS
 				} else { // if (_comTime > TARGET_TIME_RELAY) then {
 					OOP_INFO_1("[SensorGroupTargets::Update] Info: Group %1 is in combat state but combat timer has not reached the threshold!", _hg);
 				#endif
@@ -189,7 +197,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				// Reset combat counter
 				SETV(_thisObject, "comTime", 0);
 			};
-		#ifdef DEBUG
+		#ifdef DEBUG_SENSOR_GROUP_TARGETS
 		} else {
 			OOP_INFO_3("--- Group: %1 is not alive! Group's units: %2, isNull: %3", _hG, units _hG, isNull _hG);
 			pr _AI = GETV(_thisObject, "AI");

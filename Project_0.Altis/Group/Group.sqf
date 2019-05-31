@@ -78,7 +78,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		// Despawn if spawned
-		CALLM0(_thisObject, "despawn");
+		if (CALLM0(_thisObject, "isSpawned")) then {
+			CALLM0(_thisObject, "despawn");
+		};
 
 		// Report an error if we are deleting a group with units in it
 		if(count _units > 0) then {
@@ -171,6 +173,16 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				CALLM2(_AI, "postMethodSync", "handleUnitsAdded", [[_unit]]);
 			};
 		};
+
+		// Select leader if needed
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		if (_leader == "") then {
+			if (CALLM0(_unit, "isInfantry")) then {
+				// We have no leader yet and this seems to be the first infantry unit in the group
+				// So he will be our leader from now!
+				CALLM1(_thisObject, "setLeader", _unit);
+			};
+		};
 	} ENDMETHOD;
 
 	/*
@@ -238,6 +250,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// Remove the unit from this group
 		_units deleteAt (_units find _unit);
 		CALLM1(_unit, "setGroup", "");
+
+		// Select a new leader if the removed unit is the current leader
+		if ((_data select GROUP_DATA_ID_LEADER) == _unit) then {
+			CALLM0(_thisObject, "_selectNextLeader");
+		};
 	} ENDMETHOD;
 
 
@@ -280,7 +297,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	// |                         G E T   V E H I C L E   U N I T S
 	/*
-	Method: getVehiucleUnits
+	Method: getVehicleUnits
 	Returns all vehicle units.
 
 	Returns: Array of units.
@@ -294,7 +311,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	// |                         G E T   D R O N E   U N I T S
 	/*
-	Method: getVehicleUnits
+	Method: getDroneUnits
 	Returns all drone units.
 
 	Returns: Array of units.
@@ -347,22 +364,91 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		_data select GROUP_DATA_ID_GROUP_HANDLE
 	} ENDMETHOD;
 
-	// |                  G E T   L E A D E R
+	// |                  S E T / G E T   L E A D E R
 	/*
 	Method: getLeader
 	Returns the leader of the group.
+	!!! Warning: might return a dead unit!
 
 	Returns: <Unit> object
 	*/
 	METHOD("getLeader") {
 		params ["_thisObject"];
 		pr _data = GET_VAR(_thisObject, "data");
-		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
-
-		pr _hLeader = leader _hG;
-		CALLSM1("Unit", "getUnitFromObjectHandle", _hLeader)
+		_data select GROUP_DATA_ID_LEADER
 	} ENDMETHOD;
 
+	/*
+	Method: setLeader
+	Sets the leader of this group to a specified Unit. The Unit must belong to this group.
+	*/
+	METHOD("setLeader") {
+		params ["_thisObject", ["_unit", "", [""]]];
+		pr _data = T_GETV("data");
+		pr _units = _data select GROUP_DATA_ID_UNITS;
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		pr _isSpawned = _data select GROUP_DATA_ID_SPAWNED;
+
+		if (_unit in _units) then {
+			if (_isSpawned) then {
+				pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+				pr _hO = CALLM0(_unit, "getObjectHandle");
+				if (isNull _hO) then {
+					OOP_ERROR_1("Unit %1 is null object!", _unit);
+					CALLM0(_thisObject, "_selectNextLeader"); // Select a random leader
+				} else {
+					_hG selectLeader _hO;
+					_data set [GROUP_DATA_ID_LEADER, _unit];
+				};
+			} else {
+				_data set [GROUP_DATA_ID_LEADER, _unit];
+			};
+		} else {
+			OOP_ERROR_2("Unit %1 does not belong to group %2", _unit, _thisObject);
+		};
+	} ENDMETHOD;
+
+	// Selects the next leader when the current one is removed or whatever
+	// If there is no more infantry, it sets leader to "" (no leader)
+	METHOD("_selectNextLeader") {
+		params ["_thisObject"];
+
+		pr _data = T_GETV("data");
+		pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		if (count _infUnits == 0) then {
+			// There is no leader in this group any more
+			_data set [GROUP_DATA_ID_LEADER, ""];
+		} else {
+			pr _leader = _infUnits select 0;
+
+			if (_data select GROUP_DATA_ID_SPAWNED) then {
+				pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+				pr _hO = CALLM0(_leader, "getObjectHandle");
+				if (isNull _hO) then {
+					OOP_ERROR_1("Unit %1 is null object!", _leader);
+				} else {
+					_hG selectLeader _hO;
+					_data set [GROUP_DATA_ID_LEADER, _leader];
+				};
+			} else {
+				_data set [GROUP_DATA_ID_LEADER, _leader];
+			};
+		};
+		
+	} ENDMETHOD;
+
+	// All the units in the group have just been spawned so we must select the right leader
+	METHOD("_selectLeaderOnSpawn") {
+		params ["_thisObject"];
+
+		pr _data = T_GETV("data");
+		pr _leader = _data select GROUP_DATA_ID_LEADER;
+		if (_leader == "") exitWith {};
+		pr _hO = CALLM0(_leader, "getObjectHandle");
+		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+		_hG selectLeader _hO;
+	} ENDMETHOD;
 
 	// |                     S E T / G E T   G A R R I S O N                |
 	//
@@ -524,7 +610,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			pr _AI = NEW("AIGroup", [_thisObject]);
 			pr _data = GETV(_thisObject, "data");
 			_data set [GROUP_DATA_ID_AI, _AI];
-			CALLM(_AI, "start", []); // Kick start it
+			CALLM1(_AI, "start", "AIGroupLow"); // Kick start it
 		//};
 
 	} ENDMETHOD;
@@ -532,10 +618,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 
 
-	// |         S P A W N
+	// |         S P A W N   A T   L O C A T I O N
 	/*
-	Method: spawn
-	Spawns all the units in this group.
+	Method: spawnAtLocation
+	Spawns all the units in this group at specified location.
 
 	Parameters: _loc
 
@@ -543,10 +629,10 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	Returns: nil
 	*/
-	METHOD("spawn") {
+	METHOD("spawnAtLocation") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]]];
 
-		OOP_INFO_0("SPAWN");
+		OOP_INFO_1("SPAWN AT LOCATION: %1", _loc);
 
 		pr _data = GETV(_thisObject, "data");
 		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
@@ -570,16 +656,176 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				CALL_METHOD(_unit, "spawn", _posAndDir);
 			} forEach _groupUnits;
 
+			// Select leader
+			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+
 			// Create an AI for this group
 			CALLM0(_thisObject, "createAI");
 
 			// Set the spawned flag to true
 			_data set [GROUP_DATA_ID_SPAWNED, true];
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
+	//	S P A W N   V E H I C L E S   A T   P O S 
+	/*
+	Method: spawnVehiclesOnRoad
+	Spawns vehicles in this group specified positions, one after another. Infantry units are spawned nearby.
+	This function is intended for vehicle groups to spawn them on a road.
+
+	Parameters: _vehPosAndDir, _startPos
+
+	_vehPosAndDir - array of [_posATL, _dir] where vehicles will be spawned.
+	_startPos - positoon ATL, optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.
+
+	Returns: nil
+	*/
+	METHOD("spawnVehiclesOnRoad") {
+		params ["_thisObject", ["_posAndDir", [], [[]]], ["_startPos", [], [[]]]];
+
+		OOP_INFO_2("SPAWN VEHICLES ON ROAD: _posAndDir: %1, _startPos: %2", _posAndDir, _startPos);
+
+		pr _data = GETV(_thisObject, "data");
+		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			if (isNull _groupHandle) then {
+				private _side = _data select GROUP_DATA_ID_SIDE;
+				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_groupHandle enableDynamicSimulation true;
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
+			
+			_groupHandle setBehaviour "SAFE";
+			
+			// Handle vehicles first
+			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
+			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
+			if ((count _vehUnits > count _posAndDir) || (count _startPos > 0)) then {
+				if (count _vehUnits > count _posAndDir) then {
+					OOP_WARNING_0("Not enough positions for all vehicles!");
+				};
+				{
+					pr _className = CALLM0(_x, "getClassName");
+					pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _startPos, _className);
+					CALLM(_x, "spawn", _posAndDir);
+				} forEach _vehUnits;
+			} else {
+				{
+					(_posAndDir select _forEachIndex) params ["_pos", "_dir"];
+					// Check if this position is safe
+					pr _className = CALLM0(_x, "getClassName");
+					//diag_log format ["--- Finding a pos for a vehicle: %1", _className];
+					if (!CALLSM3("Location", "isPosSafe", _pos, _dir, _className)) then {
+						//diag_log format ["   Provided position is not safe. Finding a safe pos on road"];
+						pr _return = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+						_return params ["_posReturn", "_dirReturn"];
+						CALLM2(_x, "spawn", _posReturn, _dirReturn);
+					} else {
+						//diag_log format ["   Provided position is safe!"];
+						CALLM2(_x, "spawn", _pos, _dir);
+					};
+				} forEach _vehUnits;
+			};
+
+			// Handle infantry
+			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+			// Get position around which infantry will be spawning
+			pr _infSpawnPos = if (count _startPos > 0) then {_startPos} else {_posAndDir select 0 select 0};
+			{
+				// todo improve this
+				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
+				CALLM2(_x, "spawn", _pos, 0);
+			} forEach _infUnits;
+
+
+			// todo Handle drones??
+
+			// Select leader
+			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+
+			// Create an AI for this group
+			CALLM0(_thisObject, "createAI");
+
+			// Set the spawned flag to true
+			_data set [GROUP_DATA_ID_SPAWNED, true];
+		} else {
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
+		};
+	} ENDMETHOD;
+
+	//	S P A W N   A T   P O S 
+	/*
+	Method: spawnAtPos
+	Vehicles are spawned at road nearest to the provided position, infantry units are spawned at provided position.
+
+	Parameters: _pos
+
+	_pos - position
+
+	Returns: nil
+	*/
+	METHOD("spawnAtPos") {
+		params ["_thisObject", ["_pos", [], [[]]]];
+
+		OOP_INFO_1("SPAWN AT POS: %1", _pos);
+
+		pr _data = GETV(_thisObject, "data");
+		if (!(_data select GROUP_DATA_ID_SPAWNED)) then {
+			pr _groupUnits = _data select GROUP_DATA_ID_UNITS;
+			pr _groupType = _data select GROUP_DATA_ID_TYPE;
+			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
+			
+			if (isNull _groupHandle) then {
+				private _side = _data select GROUP_DATA_ID_SIDE;
+				_groupHandle = createGroup [_side, false]; //side, delete when empty
+				_groupHandle enableDynamicSimulation true;
+				_data set [GROUP_DATA_ID_GROUP_HANDLE, _groupHandle];
+			};
+			
+			_groupHandle setBehaviour "SAFE";
+			
+			// Handle vehicles first
+			pr _vehUnits = CALLM0(_thisObject, "getVehicleUnits");
+			// Find positions manually if not enough spawn positions were provided or _startPos parameter was passed
+			{
+				pr _className = CALLM0(_x, "getClassName");
+				pr _posAndDir = CALLSM2("Location", "findSafePosOnRoad", _pos, _className);
+				CALLM(_x, "spawn", _posAndDir);
+			} forEach _vehUnits;
+
+			// Handle infantry
+			pr _infUnits = CALLM0(_thisObject, "getInfantryUnits");
+			// Get position around which infantry will be spawning
+			pr _infSpawnPos = _pos;
+			{
+				// todo improve this
+				pr _pos = _infSpawnPos vectorAdd [-15 + random 15, -15 + random 15, 0]; // Just put them anywhere
+				CALLM2(_x, "spawn", _pos, 0);
+			} forEach _infUnits;
+
+
+			// todo Handle drones??
+			
+			// Select leader
+			CALLM0(_thisObject, "_selectLeaderOnSpawn");
+
+			// Create an AI for this group
+			CALLM0(_thisObject, "createAI");
+
+			// Set the spawned flag to true
+			_data set [GROUP_DATA_ID_SPAWNED, true];
+		} else {
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
+		};
+	} ENDMETHOD;
 
 
 	// |         D E S P A W N
@@ -615,7 +861,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Delete the group handle
 			pr _groupHandle = _data select GROUP_DATA_ID_GROUP_HANDLE;
 			if (count units _groupHandle > 0) then {
-				diag_log format ["[Group] Warning: group is not empty at despawning: %1. Units remaining:", _data];
+				OOP_WARNING_1("Group is not empty at despawning: %1. Units remaining:", _data);
 				{
 					diag_log format ["  %1,  alive: %2", _x, alive _x];
 				} forEach (units _groupHandle);
@@ -628,11 +874,86 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			// Set the spawned flag to false
 			_data set [GROUP_DATA_ID_SPAWNED, false];
 		} else {
-			OOP_WARNING_0("Already despawned");
+			OOP_ERROR_0("Already despawned");
+			DUMP_CALLSTACK;
 		};
 	} ENDMETHOD;
 
+	// |         S O R T
+	/*
+	Method: sort
+	Makes passed units rejoin this group in specified order. Useful for reorganizing formation for convoys.
+	!!!WARNING!!! If you pass an array with all units in the group, then group handle will be changed!
 
+	Parameters: _unitsSorted
+
+	_unitsSorted - Array with <Unit> objects
+
+	Returns: nil
+	*/
+
+	METHOD("sort") {
+		params ["_thisObject", ["_unitsSorted", [], [[]]]];
+
+		pr _data = T_GETV("data");
+		if (! (_data select GROUP_DATA_ID_SPAWNED)) exitWith {
+			OOP_ERROR_0("sortByVehicleOrder: group is not spawned!");
+		};
+
+		pr _hG = _data select GROUP_DATA_ID_GROUP_HANDLE;
+
+		// Bail if the group has only one unit
+		if (count (units _hG) < 2) exitWith {};
+
+		OOP_INFO_1("Group handle: %1", _hG);
+		_hG deleteGroupWhenEmpty false;
+
+		// Create a temporary group
+		pr _side = _data select GROUP_DATA_ID_SIDE;
+		pr _tempGroupHandle = createGroup _side;
+
+		// Make all passed units join the new temporary group
+		{
+			pr _hO = CALLM0(_x, "getObjectHandle");
+			[_hO] joinSilent _tempGroupHandle;
+			[_hO] joinSilent _hG;
+		} forEach _unitsSorted;
+
+		/*
+		pr _objectHandles = _unitsSorted apply {
+			CALLM0(_x, "getObjectHandle")
+		};
+		_objectHandles joinSilent _tempGroupHandle;
+		*/
+
+		//OOP_INFO_1("Group handle: %1", _hG);
+
+		// Restore the old group if it's null now after everyone has left it
+		if (isNull _hG) then {
+			_hG = createGroup [_side, false]; //side, delete when empty
+			_groupHandle enableDynamicSimulation true;
+			_hG allowFleeing 0;
+			_data set [GROUP_DATA_ID_GROUP_HANDLE, _hG];
+		};
+
+		//OOP_INFO_1("Group handle: %1", _hG);
+
+		// Make all passed units rejoin the group
+		/*
+		pr _hPrev = objNull;
+		{
+			[_x] joinSilent _hG;
+			//if (!isNull _hPrev) then {
+			//	_x doFollow _hPrev;
+			//};
+			_hPrev = _x;
+		} forEach _objectHandles;
+		*/
+
+		//OOP_INFO_1("Group handle: %1", _hG);
+
+		deleteGroup _tempGroupHandle;
+	} ENDMETHOD;
 
 
 
@@ -863,9 +1184,9 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	/*
 	Method: getRequiredCrew
-	Returns amount of needed drivers and turret operators for all vehicles in this group.
+	Returns amount of needed drivers and turret operators for all vehicles in this group. Also returns amount of available cargo seats.
 
-	Returns: [_nDrivers, _nTurrets]
+	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 
 	METHOD("getRequiredCrew") {
@@ -875,19 +1196,21 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
+		pr _nCargo = 0;
 
 		{
 			if (CALLM0(_x, "isVehicle")) then {
 				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
 				_nDrivers = _nDrivers + _n_driver;
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+				_nCargo = _nCargo + (count _psgTurrets) + _n_cargo;
 			};
 		} forEach _units;
 
-		OOP_INFO_2("getRequiredCrew: drivers: %1, turrets: %2", _nDrivers, _nTurrets);
+		OOP_INFO_3("getRequiredCrew: drivers: %1, turrets: %2, cargo: %3", _nDrivers, _nTurrets, _nCargo);
 
-		[_nDrivers, _nTurrets]
+		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 
 ENDCLASS;

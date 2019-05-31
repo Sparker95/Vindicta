@@ -12,15 +12,16 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 6
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 600
+#define TARGET_MAX_AGE 1200
 
 // ---- Debugging defines ----
 
 // Will print to the RPT targets received from groups
 //#define PRINT_RECEIVED_TARGETS
 
-
+#ifndef RELEASE_BUILD
 #define DEBUG_CLUSTERS
+#endif
 
 //#define DEBUG_TARGETS
 
@@ -101,7 +102,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			{
 				_hO = _x select TARGET_ID_OBJECT_HANDLE;
 				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
-				_eff = VECTOR_ADD_9(_eff, _objEff);
+				_eff = EFF_ADD(_eff, _objEff);
 			} forEach _clusterTargets;
 			_clustersEfficiency pushBack _eff;
 		} forEach _newClusters;
@@ -150,7 +151,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			{
 				_hO = _x select TARGET_COMMANDER_ID_OBJECT_HANDLE;
 				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
-				_eff = VECTOR_ADD_9(_eff, _objEff);
+				_eff = EFF_ADD(_eff, _objEff);
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
 			} forEach _clusterTargets;
@@ -179,7 +180,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _c = _affinityNewOld / _sumAffinityRow;
 					pr _damageToAdd = (_oldTargetCluster select TARGET_CLUSTER_ID_CAUSED_DAMAGE) apply {_c * _x};
 					pr _newTCDamage = _newTC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;
-					_newTCDamage = VECTOR_ADD_9(_newTCDamage, _damageToAdd);
+					_newTCDamage = EFF_ADD(_newTCDamage, _damageToAdd);
 					_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, _newTCDamage];
 					
 					// Increase counter of affinity above zero
@@ -190,7 +191,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			// If this cluster inherits from >1 clusters, it needs a new unique ID
 			if (_nAffAboveZero > 1) then {
 				_newTC set [TARGET_CLUSTER_ID_ID, -2]; // Needs a new ID
-				OOP_INFO_1("New target cluster inherits from multiple target clusters");
+				OOP_INFO_0("New target cluster inherits from multiple target clusters");
 			};
 			
 			// Add new target cluster to the array of target clusters			
@@ -259,7 +260,8 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _ID = CALLM0(_AI, "getNewTargetClusterID");
 					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
 					//ade_dumpcallstack;
-					CALLM1(_AI, "onTargetClusterCreated", _newTC);
+					// We don't register it here, the commander does it
+					//CALLM1(_AI, "onTargetClusterCreated", _newTC);
 				} else {
 					// It inherits from one old cluster, need to find what it inherits from
 					pr _i = 0;

@@ -122,7 +122,7 @@ CLASS("ActionGroupGetInVehiclesAsCrew", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		CALLM0(_thisObject, "failIfNoInfantry");
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		

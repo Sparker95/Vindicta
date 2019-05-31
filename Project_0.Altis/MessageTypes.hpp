@@ -1,4 +1,5 @@
 // All message types in the mission
+// Some are not used though :\
 // Author: Sparker 05.08.2018
 
 // Global messages - can be sent to different kinds of objects
@@ -7,6 +8,9 @@
 // Location messages
 // Messages
 #define LOCATION_MESSAGE_PROCESS 110
+
+// Garrison messages
+#define GARRISON_MESSAGE_PROCESS 115
 
 // Goal messages
 // This message is sent to the goal by a timer to make it call its process method
@@ -29,6 +33,7 @@
 #define SMON_MESSAGE_PROCESS		600
 #define SMON_MESSAGE_BEING_SPOTTED	601
 #define SMON_MESSAGE_COMPROMISED	602
+#define SMON_MESSAGE_DELETE			603
 
 // Group monitor
 #define GROUP_MONITOR_MESSAGE_PROCESS 700

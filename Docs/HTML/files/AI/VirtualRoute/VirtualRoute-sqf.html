@@ -12,9 +12,9 @@
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="new"></a><a name="Topic517"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic462"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
- <div class="CBody"><p>Initialize the route, and start evaluating it.</p><p>Parameters: _from, _destination, _costFn, _speedFn</p><table class="CDefinitionList"><tr><td class="CDLEntry">_from</td><td class="CDLDefinition"><p>Position to start from (nearest road to here will be the actual starting position).</p></td></tr><tr><td class="CDLEntry">_destination</td><td class="CDLDefinition"><p>Position to go to (nearest road to here will be the actual starting position).</p></td></tr><tr><td class="CDLEntry">_recalculateInterval</td><td class="CDLDefinition"><p>NOT IMPLEMENTED, Optional,.recalcuate the route at this interval when updating. Recommended &gt; 60s.</p></td></tr><tr><td class="CDLEntry">_costFn</td><td class="CDLDefinition"><p>Optional, function to override cost evaluation for route nodes.</p></td></tr><tr><td class="CDLEntry">_speedFn</td><td class="CDLDefinition"><p>Optional, function to override convoy speed, called during update.</p></td></tr></table></div>
+ <div class="CBody"><p>Initialize the route, and start evaluating it.</p><p>Parameters: _from, _destination, _costFn, _speedFn</p><table class="CDefinitionList"><tr><td class="CDLEntry">_from</td><td class="CDLDefinition"><p>Position to start from (nearest road to here will be the actual starting position).</p></td></tr><tr><td class="CDLEntry">_destination</td><td class="CDLDefinition"><p>Position to go to (nearest road to here will be the actual destination position).</p></td></tr><tr><td class="CDLEntry">_recalculateInterval</td><td class="CDLDefinition"><p>NOT IMPLEMENTED, Optional,.recalcuate the route at this interval when updating. Recommended &gt; 60s.</p></td></tr><tr><td class="CDLEntry">_costFn</td><td class="CDLDefinition"><p>Optional, function to override cost evaluation for route nodes.</p></td></tr><tr><td class="CDLEntry">_speedFn</td><td class="CDLDefinition"><p>Optional, function to override convoy speed, called during update.</p></td></tr><tr><td class="CDLEntry">_async</td><td class="CDLDefinition"><p>Optional, bool, default true. If true, calculates the route in another thread. If false, calculates the route right now.</p></td></tr></table></div>
 </div>
 
 <a name="start"></a><a name="Topic518"></a><div class="CTopic TFunction LSQF">
@@ -32,9 +32,9 @@
  <div class="CBody"><p>Update position, moving along route. Only moves if started.</p></div>
 </div>
 
-<a name="getConvoyPositions"></a><a name="Topic521"></a><div class="CTopic TFunction LSQF">
+<a name="getConvoyPositions"></a><a name="Topic468"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getConvoyPositions</div>
- <div class="CBody"><p>Return a set of positions and directions for convoy vehicles</p><p>Parameters: _number, _spacing</p><table class="CDefinitionList"><tr><td class="CDLEntry">_number</td><td class="CDLDefinition"><p>Number of positions to return.</p></td></tr><tr><td class="CDLEntry">_spacing</td><td class="CDLDefinition"><p>Optional, default 20, Spacing between positions.</p></td></tr></table><p>Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...]</p></div>
+ <div class="CBody"><p>Return a set of positions and directions for convoy vehicles.</p><p>Parameters: _number, _spacing</p><table class="CDefinitionList"><tr><td class="CDLEntry">_number</td><td class="CDLDefinition"><p>Number of positions to return.</p></td></tr><tr><td class="CDLEntry">_spacing</td><td class="CDLDefinition"><p>Optional, default 20, Spacing between positions.</p></td></tr></table><p>Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...].&nbsp; First array element corresponds to the lead vehicle.</p></div>
 </div>
 
 <a name="debugDraw"></a><a name="Topic522"></a><div class="CTopic TFunction LSQF">
@@ -47,9 +47,14 @@
  <div class="CBody"><p>Clear debug markers for this route.</p></div>
 </div>
 
-<a name="clearDebugDraw(2)"></a><a name="Topic524"></a><div class="CTopic TFunction LSQF last">
- <div class="CTitle">clearDebugDraw</div>
+<a name="clearAllDebugDraw"></a><a name="Topic527"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">clearAllDebugDraw</div>
  <div class="CBody"><p>Clear debug markers for all routes.</p></div>
+</div>
+
+<a name="getPos"></a><a name="Topic528"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">getPos</div>
+ <div class="CBody"><p>Returns: current position</p></div>
 </div>
 
 </body></html>

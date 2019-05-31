@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sne",["Class"],[["Snek",,[[,,,,0,"File:UI/Snek/Snek.sqf:Snek","SQFClass:Snek"]]]]);

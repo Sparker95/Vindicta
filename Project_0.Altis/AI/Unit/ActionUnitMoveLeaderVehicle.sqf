@@ -19,7 +19,8 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	VARIABLE("triedRoads"); // Array with road pieces unit tried to achieve when it got stuck
 	VARIABLE("stuckCounter"); // How many times this has been stuck
 	VARIABLE("readdwp");
-	
+	VARIABLE("route");
+
 	// ------------ N E W ------------
 	
 	METHOD("new") {
@@ -28,6 +29,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		T_SETV("pos", _pos);
 		
+		// Route can be optionally passed or not
+		pr _route = CALLSM2("Action", "getParameterValue", _parameters, TAG_ROUTE);
+		if (isNil "_route") then {
+			_route = [];
+		};
+		T_SETV("route", _route);
+
 		T_SETV("readdwp", false);
 		
 	} ENDMETHOD;
@@ -36,7 +44,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
-		T_SETV("stuckTimer", 0);
+		// Handle AI just spawned state
+		pr _AI = T_GETV("AI");
+		if (GETV(_AI, "new")) then {
+			SETV(_AI, "new", false);
+		};
+
+		T_SETV("stuckTimer", TIMER_STUCK_THRESHOLD-10);
 		T_SETV("time", time);
 		T_SETV("triedRoads", []);
 		T_SETV("stuckCounter", 0);
@@ -45,13 +59,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _hG = group _hO;
 		
 		// Order to move
-		CALLM0(_thisObject, "addWaypoint");
+		CALLM0(_thisObject, "addWaypoints");
 		
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
-	METHOD("addWaypoint") {
+	METHOD("addWaypoints") {
 		params ["_thisObject"];
 		
 		pr _hO = GETV(_thisObject, "hO");
@@ -61,13 +75,37 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		// Delete all previous waypoints
 		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
-		// Give a waypoint to move
-		pr _wp = _hG addWaypoint [_pos, 0];
-		_wp setWaypointType "MOVE";
-		_wp setWaypointFormation "COLUMN";
-		_wp setWaypointBehaviour "SAFE";
-		_wp setWaypointCombatMode "GREEN";
-		_hG setCurrentWaypoint _wp;
+		// Give waypoints to move
+		pr _waypoints = [];
+		pr _route = T_GETV("route");
+
+		// Find the closest waypoint
+		// We don't want to re-add all waypoints, but we want to start from the closest one
+		pr _wpPositions = _route + [_pos];
+		pr _smallestDistance = _hO distance2D (_wpPositions#0);
+		pr _closestPosIndex = 0;
+		{
+			pr _d = _x distance2D _hO;
+			if (_d <= _smallestDistance) then {
+				_smallestDistance = _d;
+				_closestPosIndex = _foreachindex;
+			};
+		} forEach _wpPositions;
+
+		// Add waypoints starting from closest one
+		for "_i" from _closestPosIndex to ((count _wpPositions) - 1) do {
+			pr _x = _wpPositions#_i;
+			pr _wp = _hG addWaypoint [_x, 0];
+			_wp setWaypointType "MOVE";
+			_wp setWaypointFormation "COLUMN";
+			_wp setWaypointBehaviour "SAFE";
+			_wp setWaypointCombatMode "GREEN";
+			_wp setWaypointCompletionRadius 20;
+			_waypoints pushBack _wp;
+		};
+
+		_hG setCurrentWaypoint (_waypoints select 0);
+
 		
 	} ENDMETHOD;
 	
@@ -78,10 +116,11 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		
 		pr _hO = GETV(_thisObject, "hO");
+		pr _AI = T_GETV("AI");
 		pr _dt = time - T_GETV("time"); // Time that has passed since previous call
 		
 		if (T_GETV("readdwp")) then {
-			CALLM0(_thisObject, "addWaypoint");
+			CALLM0(_thisObject, "addWaypoints");
 			T_SETV("readdwp", false);
 		};
 		
@@ -125,12 +164,18 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 						_hVeh setDir ((getDir _hVeh) + 180);
 						_hVeh setPosWorld ((getPosWorld _hVeh) vectorAdd [0, 0, 1]);
 					} else {
-						// Let's try to teleport you somewhere >_<
-						OOP_WARNING_0("Teleporting the leader vehicle!");
-						pr _hVeh = vehicle _hO;
-						pr _defaultPos = getPos _hVeh;
-						pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
-						_hVeh setPos _newPos;
+						if (_stuckCounter < 7) then {
+							// Let's try to teleport you somewhere >_<
+							OOP_WARNING_0("Teleporting the leader vehicle!");
+							pr _hVeh = vehicle _hO;
+							pr _defaultPos = getPos _hVeh;
+							pr _newPos = [_hVeh, 0, 100, 7, 0, 100, 0, [], [_defaultPos, _defaultPos]] call BIS_fnc_findSafePos;
+							_hVeh setPos _newPos;
+						} else {
+							// If finally it doesn't want to move, make driver dismount, so that actions are regenerated and he is made to mount the vehicle again
+							CALLM0(_AI, "unassignVehicle"); // Fuck this shit
+						};
+
 					};
 
 					
@@ -154,6 +199,13 @@ CLASS("ActionUnitMoveLeaderVehicle", "ActionUnit")
 	// logic to run when the goal is about to be terminated
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+
+		// Delete waypoints
+		pr _hO = GETV(_thisObject, "hO");
+		pr _hG = group _hO;
+		
+		// Delete all previous waypoints
+		while {(count (waypoints _hG)) > 0} do { deleteWaypoint ((waypoints _hG) select 0); };
 		
 		// Stop the car from driving around
 		pr _hO = GETV(_thisObject, "hO");

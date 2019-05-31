@@ -1,7 +1,10 @@
-# Project_0.Stratis
+# Project_0.Altis
 
 ## What is it?
 It is a mission for ARMA III. The goal of this project is to make a guerrilla warfare simulator for ARMA III, hugely influenced by a similar mission by Barbolani: Antistasi (http://www.a3antistasi.enjin.com/).
+
+## How do I run it??
+It's not released yet, but you can still try. Instructions are here: https://github.com/Sparker95/Project_0/wiki/Setup-mission
 
 ## Goals of this project
 * Most of the features of the original Antistasi.

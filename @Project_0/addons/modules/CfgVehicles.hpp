@@ -1,7 +1,6 @@
 class CfgVehicles {
 	class Logic;
 	class Module_F: Logic{};
-	class ModuleCivilianPresence_F: Module_F{};
 
 	class Project_0_LocationSector: Module_F
 	{
@@ -62,27 +61,30 @@ class CfgVehicles {
 					class City {name = "City"; value = "city";};
 					class Base {name = "Base"; value = "base";};
 					class Outpost {name = "Outpost"; value = "outpost";};
+					class Roadblock {name = "Roadblock"; value = "roadblock";};
+					class ObservationPost {name = "Observation Post"; value = "obsPost";};
 					// class Airfield	{name = "Airfield"; value = "airfield";};
 					// class Seaport	{name = "Seaport"; value = "seaport";};
 					// class Camp	{name = "Camp"; value = "camp";};
 				};
 			};
-			class CapacityInfantry
+			class CapacityInfantry: Edit
 			{
 				displayName = "Capacity Infantry";
 				tooltip = "Capacity Infantry of the location";
 				property = "Project_0_LocationSector_CapacityInfantry";
-				control = "CivilianPresence_UnitCount";
+				control = "Edit";
+				typeName = "NUMBER";
 				value = 5;
 				defaultValue = 5;
 			};
-			class CivilianPresence_UnitCount
+			class CivPresUnitCount: Edit
 			{
 				displayName = "$STR_a3_to_basicCivilianPresence25";
 				tooltip = "$STR_a3_to_basicCivilianPresence26";
-				property = "Project_0_LocationSector_CivUnitCount";
-				control = "CivilianPresence_UnitCount";
-				expression = "_this setVariable [""#unitCount"",_value]";
+				property = "Project_0_LocationSector_CivPresUnitCount";
+				control = "Edit";
+				typeName = "NUMBER";
 				value = 5;
 				defaultValue = 5;
 			};

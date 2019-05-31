@@ -3,34 +3,35 @@
 #define OOP_WARNING
 
 #include "..\..\OOP_Light\OOP_Light.h"
-
 #include "VirtualRoute.hpp"
 
 #define pr private
 
 CLASS("VirtualRoute", "")
 
-	VARIABLE("from");
-	VARIABLE("destination");
+	VARIABLE_ATTR("recalculateInterval", [ATTR_PRIVATE]);
 
-	VARIABLE("recalculateInterval");
+	VARIABLE_ATTR("costFn", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("speedFn", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("callbackArgs", [ATTR_PRIVATE]);
 
-	VARIABLE("costFn");
-	VARIABLE("speedFn");
+	VARIABLE_ATTR("route", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("pos", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("nextIdx", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("currSpeed_ms", [ATTR_PRIVATE]);
 
-	VARIABLE("calculated");
-	VARIABLE("failed");
+	VARIABLE_ATTR("stopped", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("last_t", [ATTR_PRIVATE]);
 
-	VARIABLE("route");
-	VARIABLE("waypoints");
-	VARIABLE("pos");
-	VARIABLE("nextIdx");
-	VARIABLE("currSpeed_ms");
+	VARIABLE_ATTR("from", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("destination", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("calculated", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("failed", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("waypoints", [ATTR_GET_ONLY]);
+	VARIABLE_ATTR("complete", [ATTR_GET_ONLY]);
 
-	VARIABLE("stopped");
-	VARIABLE("last_t");
+	VARIABLE_ATTR("debugDraw", [ATTR_PRIVATE]);
 
-	VARIABLE("complete");
 	
 	/*
 	Method: new
@@ -39,10 +40,11 @@ CLASS("VirtualRoute", "")
 	Parameters: _from, _destination, _costFn, _speedFn
 
 	_from - Position to start from (nearest road to here will be the actual starting position).
-	_destination - Position to go to (nearest road to here will be the actual starting position).
+	_destination - Position to go to (nearest road to here will be the actual destination position).
 	_recalculateInterval - NOT IMPLEMENTED, Optional,.recalcuate the route at this interval when updating. Recommended > 60s.
 	_costFn - Optional, function to override cost evaluation for route nodes.
 	_speedFn - Optional, function to override convoy speed, called during update.
+	_async - Optional, bool, default true. If true, calculates the route in another thread. If false, calculates the route right now.
 	*/
 	METHOD("new") {
 		params [
@@ -51,16 +53,23 @@ CLASS("VirtualRoute", "")
 			"_destination",
 			["_recalculateInterval", -1],
 			["_costFn", ""],
-			["_speedFn", ""]
+			["_speedFn", ""],
+			["_callbackArgs", []],
+			["_async", true],
+			["_debugDraw", false]
 		];
 		
 		T_SETV("from", _from);
 		T_SETV("destination", _destination);
 		T_SETV("recalculateInterval", _recalculateInterval);
 
+		T_SETV("callbackArgs", _callbackArgs);
+
+		T_SETV("debugDraw", _debugDraw);
+
 		if(_costFn isEqualType "") then {
 			pr _default_costFn = {
-				params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute"];
+				params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];
 				_base_cost
 			};
 			T_SETV("costFn", _default_costFn);
@@ -70,11 +79,15 @@ CLASS("VirtualRoute", "")
 
 		if(_speedFn isEqualType "") then {
 			pr _default_speedFn = {
-				params ["_road", "_next_road"];
+				params ["_road", "_next_road", "_callbackArgs"];
+#ifdef CMDR_AI_TESTING
+				300
+#else
 				if([_road] call misc_fnc_isHighWay) exitWith {
 					60 * 0.277778
 				};
 				40 * 0.277778
+#endif
 			};
 			T_SETV("speedFn", _default_speedFn);
 		} else {
@@ -94,18 +107,23 @@ CLASS("VirtualRoute", "")
 
 		T_SETV("complete", false);
 
-		[_thisObject] spawn {
+		T_SETV("currSpeed_ms", 0);
+
+		// Function that calculates the route
+		pr _calcRoute = {
 			params ["_thisObject"];
 
 			T_PRVAR(from);
 			T_PRVAR(destination);
 			T_PRVAR(costFn);
+			T_PRVAR(callbackArgs);
+			T_PRVAR(debugDraw);
 
-			private _startRoute = [_from, 1000, gps_blacklistRoads] call bis_fnc_nearestRoad;
-			private _endRoute = [_destination, 1000, gps_blacklistRoads] call bis_fnc_nearestRoad;
+			private _startRoute = [_from, 2000, gps_blacklistRoads] call bis_fnc_nearestRoad;
+			private _endRoute = [_destination, 2000, gps_blacklistRoads] call bis_fnc_nearestRoad;
 
 			if (isNull _endRoute or isNull _startRoute) exitWith {
-				T_SETV("failed", false);
+				T_SETV("failed", true);
 			};
 
 			// TODO: either add a way to remove fake nodes again OR just use the nearest node instead of adding fake ones
@@ -114,7 +132,12 @@ CLASS("VirtualRoute", "")
 
 			try {
 				// This gets the node to node path.
-				private _path = [_startRoute,_endRoute,_costFn] call gps_core_fnc_generateNodePath;
+				// TODO: add cancellation token so we can cancel route calulation on delete (token = array wrapping a bool)
+				private _path = [_startRoute,_endRoute,_costFn,"",_callbackArgs] call gps_core_fnc_generateNodePath;
+				if(count _path <= 1) then {
+					// TODO: this could do something more intelligent. Probably ties in with travel to and from actual roads.
+					throw "failed";
+				};
 				// This fills in all the actual roads between the nodes.
 				private _fullPath = [_path] call gps_core_fnc_generatePathHelpers;
 
@@ -132,7 +155,7 @@ CLASS("VirtualRoute", "")
 					};
 				};
 				_waypoints pushBack getPos (_fullPath select (count _fullPath - 1));
-				
+
 				T_SETV("waypoints", _waypoints);
 
 				T_SETV("nextIdx", 1);
@@ -141,13 +164,47 @@ CLASS("VirtualRoute", "")
 				T_PRVAR(speedFn);
 
 				// Speed for first section
-				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1] call _speedFn;
+				pr _currSpeed_ms = [_fullPath select 0, _fullPath select 1, _callbackArgs] call _speedFn;
 				T_SETV("currSpeed_ms", _currSpeed_ms);
-
+				
+#ifndef RELEASE_BUILD
+				if(_debugDraw) then {
+					T_CALLM("debugDraw", []);
+				};
+#endif
 				// Set it last
 				T_SETV("calculated", true);
 			} catch {
 				T_SETV("failed", true);
+			};
+		};
+
+		// Calculate the route right now or asynchronously?
+		if (_async) then {
+			[_thisObject] spawn _calcRoute;
+		} else {
+			[_thisObject] call _calcRoute;
+		};
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		T_CALLM("waitUntilCalculated", []);
+
+		T_PRVAR(debugDraw);
+		if(_debugDraw) then {
+			T_CALLM("clearDebugDraw", []);
+		};
+	} ENDMETHOD;
+
+	METHOD("waitUntilCalculated") {
+		params [P_THISOBJECT];
+		// Make sure calculation is terminated. If it isn't then we must have run it async, so we should be 
+		// able to wait for it I guess?
+		if(!T_GETV("calculated") and !T_GETV("failed")) then {
+			waitUntil {
+				T_GETV("calculated") or T_GETV("failed")
 			};
 		};
 	} ENDMETHOD;
@@ -181,8 +238,11 @@ CLASS("VirtualRoute", "")
 	METHOD("process") {
 		params ["_thisObject"];
 		
+		T_PRVAR(failed);
 		T_PRVAR(stopped);
-		if( _stopped ) exitWith {};
+		T_PRVAR(complete);
+		T_PRVAR(calculated);
+		if(_failed or _stopped or _complete or !_calculated) exitWith {};
 
 		T_PRVAR(last_t);
 		// Time since last update
@@ -220,6 +280,10 @@ CLASS("VirtualRoute", "")
 
 				_nextPos = getPos (_route select _nextIdx);
 				_nextDist = _pos distance _nextPos;
+
+				// Delete this position from the waypoint array (if it is in the waypoint array)
+				pr _waypoints = T_GETV("waypoints");
+				if (_waypoints#0 isEqualTo _nextPos) then {_waypoints deleteAt 0;};
 			} else {
 				T_SETV("complete", true);
 			};
@@ -236,14 +300,15 @@ CLASS("VirtualRoute", "")
 
 	/*
 	Method: getConvoyPositions
-	Return a set of positions and directions for convoy vehicles
+	Return a set of positions and directions for convoy vehicles.
 
 	Parameters: _number, _spacing
 
 	_number - Number of positions to return.
 	_spacing - Optional, default 20, Spacing between positions.
 
-	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...]
+	Returns: Array of position, dir pairs [[pos, dir], [pos, dir], ...].
+	First array element corresponds to the lead vehicle.
 	*/
 	METHOD("getConvoyPositions") {
 		params [
@@ -257,6 +322,10 @@ CLASS("VirtualRoute", "")
 		T_PRVAR(nextIdx);
 		T_PRVAR(route);
 		
+		// TODO: we could return some useful defaults here instead?
+		ASSERT_MSG(!T_GETV("failed"), "Route calculation failed, cannot get convoy positions");
+		ASSERT_MSG(T_GETV("calculated"), "Can't call getConvoyPositions until route has finished calculating");
+		
 		pr _startPos = getPos (_route select 0);
 
 		private _convoyPositions = [];
@@ -267,7 +336,7 @@ CLASS("VirtualRoute", "")
 			pr _currPos = _startPos;
 			pr _index = 0;
 			pr _nextPos = getPos (_route select (_index + 1));
-			for "_i" from 0 to _number do {
+			for "_i" from 0 to (_number-1) do {
 				_convoyPositions pushBack [_currPos, _currPos getDir _nextPos];
 				pr _distNext = _currPos distance _nextPos;
 				pr _distRemaining = _spacing;
@@ -280,11 +349,12 @@ CLASS("VirtualRoute", "")
 				};
 				_currPos = _currPos vectorAdd (vectorNormalized (_nextPos vectorDiff _currPos) vectorMultiply _distRemaining);
 			};
+			reverse _convoyPositions;
 		} else {
 			pr _currPos = _pos;
 			pr _index = _nextIdx - 1;
 			pr _prevPos = getPos (_route select _index);
-			for "_i" from 0 to _number do {
+			for "_i" from 0 to (_number-1) do {
 				_convoyPositions pushBack [_currPos, _prevPos getDir _currPos];
 				pr _distPrev = _currPos distance _prevPos;
 				pr _distRemaining = _spacing;
@@ -297,7 +367,6 @@ CLASS("VirtualRoute", "")
 				};
 				_currPos = _currPos vectorAdd (vectorNormalized (_prevPos vectorDiff _currPos) vectorMultiply _distRemaining);
 			};
-			reverse _convoyPositions;
 		};
 
 		_convoyPositions
@@ -315,8 +384,8 @@ CLASS("VirtualRoute", "")
 	METHOD("debugDraw") {
 		params [
 			"_thisObject",
-			["_routeColor", "ColorBlue"],
-			["_waypointColor", "ColorWhite"]
+			["_routeColor", "ColorBlack"],
+			["_waypointColor", "ColorBlack"]
 		];
 		
 		CALLM0(_thisObject, "clearDebugDraw");
@@ -334,16 +403,15 @@ CLASS("VirtualRoute", "")
 				["start", _start],
 				["end", _end],
 				["color", _routeColor],
-				["size", 10],
-				["id", "gps_route" + _thisObject + str _start + str _end]
+				["size", 8],
+				["id", "gps_route_" + _thisObject + str _start + str _end]
 			] call gps_test_fnc_mapDrawLine; 
 		};
 
-		T_PRVAR(waypoints);
-		{
-			[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
-		} forEach _waypoints;
-		// pr _waypoints = T_GETV("waypoints");
+		 T_PRVAR(waypoints);
+		 {
+		 	[_x, "gps_waypoint_" + _thisObject + str _x, _waypointColor, "mil_dot"] call gps_test_fn_mkr;
+		 } forEach _waypoints;
 	} ENDMETHOD;
 
 	/*
@@ -352,17 +420,80 @@ CLASS("VirtualRoute", "")
 	*/
 	METHOD("clearDebugDraw") {
 		params ["_thisObject"];
-		["gps_route" + _thisObject] call gps_test_fn_clear_markers;
-		["gps_waypoint" + _thisObject] call gps_test_fn_clear_markers;
+		["gps_route_" + _thisObject] call gps_test_fn_clear_markers;
+		["gps_waypoint_" + _thisObject] call gps_test_fn_clear_markers;
 	} ENDMETHOD;
 
 	/*
-	Method: clearDebugDraw
+	Method: clearAllDebugDraw
 	Clear debug markers for all routes.
 	*/
 	STATIC_METHOD("clearAllDebugDraw") {
-		["gps_route"] call gps_test_fn_clear_markers;
-		["gps_waypoint"] call gps_test_fn_clear_markers;
+		["gps_route_"] call gps_test_fn_clear_markers;
+		["gps_waypoint_"] call gps_test_fn_clear_markers;
+	} ENDMETHOD;
+
+	/*
+	Method: getPos
+	Returns: current position
+	*/
+	METHOD("getPos") {
+		params ["_thisObject"];
+		T_GETV("pos")
+	} ENDMETHOD;
+
+	/*
+	Method: sets the current position to the nearest position along the route.
+	Returns: nothing
+	*/
+	METHOD("setPos") {
+		params ["_thisObject", ["_pos", [], [[]]] ];
+
+		if (T_GETV("calculated")) then {
+			// Find the nearest pos in the route and its index
+			pr _route = T_GETV("route");
+			pr _i = 0;
+			pr _count = count _route;
+			pr _index = 0;
+			pr _dist = _route#0 distance2D _pos;
+			while {_i < _count} do {
+				pr _p = _route#_i;
+				pr _d = _p distance2D _pos;
+				if (_d < _dist) then {_dist = _d; _index = _i;};
+				_i = _i + 1;
+			};
+
+			// Set pos and next index
+			if (_index != (_count - 1)) then { // Select the next position, so that we don't need to drive one node backwards
+				_index = _index + 1;
+			};
+			T_SETV("nextIdx", _index);
+			T_SETV("pos", _route select _index);
+
+			// Search the route from start and delete all waypoints until this point
+			_i = 0;
+			pr _waypoints = T_GETV("waypoints");
+			while {_i <= _index} do {
+				pr _pos = _route select _i;
+				pr _wpid = _waypoints findIf {_x isEqualTo _pos};
+				if (_wpid != -1) then {
+					_waypoints deleteAt _wpid;
+				};
+				_i = _i + 1;
+			};
+		} else {
+			// We want to set a position before it has actually been calculated
+			// It's not good but probably we can just ignore this because it means we haven't gone too far away
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: getAIWaypoints
+	Returns: array of waypoints for AI navigation, taking account the current position
+	*/
+	METHOD("getAIWaypoints") {
+		params ["_thisObject"];
+		T_GETV("waypoints")
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -1,3 +1,8 @@
+#define OOP_INFO
+#define OOP_WARNING
+#define OOP_ERROR
+#define OFSTREAM_FILE "Undercover.rpt"
+
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
@@ -5,94 +10,131 @@
 #include "..\modCompatBools.sqf"
 #include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
-/*
-Undercover Monitor: Determines if the enemy should identify a player as
-a hostile or a civilian by changing the player unit's captive status.
-
-Current issues:
-+Weapon in vehicle doesn't add to suspicion
-
-Date: December 2018
-Author: Sparker, Marvis
-*/
-
-gMsgLoopUndercover = NEW("MessageLoop", []);
-CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
-
 #define pr private
+#define sUNDERCOVER 0
+#define sWANTED 1
+#define sCOMPROMISED 2
+#define sARRESTED 3
+#define sINCAPACITATED 4
 //#define DEBUG
 
-	// ----------------------------------------------------------------------
-	// |                       S Q F  F U N C T I O N S 					|
-	// ----------------------------------------------------------------------
+#ifndef RELEASE_BUILD
+//#define DEBUG_UNDERCOVER_MONITOR
+#endif
 
-	fnc_suspGear = {
-		params ["_unit"];
+gMsgLoopUndercover = NEW("MessageLoop", []);
+CALL_METHOD(gMsgLoopUndercover, "setName", ["Undercover thread"]);
 
-		pr _suspGear = 0;
-		pr _suspGearVeh = 0;
+/*
+undercoverMonitor: Changes this object's unit's captive status dynamically based on equipment, behavior, location, and so on.
 
-		if !((uniform _unit in civUniforms) or (uniform _unit == "")) then { _suspGear = _suspGear + SUSP_UNIFORM; _suspGearVeh = _suspGearVeh + SUSP_UNIFORM; };
-		if !((headgear _unit in civHeadgear) or (headgear _unit == "")) then { _suspGear = _suspGear + SUSP_HEADGEAR; _suspGearVeh = _suspGearVeh + SUSP_HEADGEAR; };
-		if !((goggles _unit in civFacewear) or (goggles _unit == "")) then { _suspGear = _suspGear + SUSP_FACEWEAR; _suspGearVeh = _suspGearVeh + SUSP_FACEWEAR; };
-		if !((vest _unit in civVests) or (vest _unit == "")) then { _suspGear = _suspGear + SUSP_VEST; _suspGearVeh = _suspGearVeh + SUSP_VEST; };
-		if (hmd _unit != "") then { _suspGear = _suspGear + SUSP_NVGS; };
-		if !((backpack _unit in civBackpacks) or (backpack _unit == "")) then { _suspGear = _suspGear + SUSP_BACKPACK; };
+Date: December 2018
+Authors: Sparker, Marvis
+*/
 
-		if !( primaryWeapon _unit in civWeapons) then { _suspGear = 1; };
-		if !( secondaryWeapon _unit in civWeapons) then { _suspGear = 1; };
+// array of animations that force you undercover (ace surrender, ...)
+g_UM_undercoverAnims = [
+	"ace_amovpercmstpssurwnondnon",
+	"AmovPercMstpSnonWnonDnon_Ease"
+];
 
-		_unit setVariable ["suspGear", _suspGear];
-		_unit setVariable ["suspGearVeh", _suspGearVeh]; // equipment we think is visible in a car (e.g. no backpack visible)
-	};
+// ------------ U N D E R C O V E R  M O N I T O R  C L A S S ------------
 
-	// ----------------------------------------------------------------------
-	// |                       M A I N  C L A S S                           |
-	// ----------------------------------------------------------------------
+CLASS("UndercoverMonitor", "MessageReceiver");
 
-CLASS("undercoverMonitor", "MessageReceiver");
+	VARIABLE("unit"); 														// unit this undercoverMonitor is attached to
+	VARIABLE("state");														// state of this unit's undercoverMonitor
+	VARIABLE("stateChanged");												// "do once" variable for state changes
+	VARIABLE("suspicion");													// unit's final suspiciousness for each interval
+	VARIABLE("incrementSusp");												// a temporary variable for suspicion increases over time
+	VARIABLE("timeSeen");														
+	VARIABLE("timeHostility");												// greater than current mission time if player recently fired a weapon
+	VARIABLE("eyePosOld");													
+	VARIABLE("eyePosOldVeh");
+	VARIABLE("nearestEnemyDist");
+	VARIABLE("nearestEnemy");	
+	VARIABLE("bSeen");
+	VARIABLE("suspGear");
+	VARIABLE("suspGearVeh");
+	VARIABLE("bodyExposure");
+	VARIABLE("timeCompromised");
+	VARIABLE("camoCoeff"); 													// modified vanilla camouflage coefficient, see: community.bistudio.com/wiki/setUnitTrait
+	VARIABLE("bGhillie");													// true if unit is wearing ghillie suit
+	VARIABLE("EHLoadout");
+	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
 
-	VARIABLE("unit"); // Unit for which this script is running (player)
-	VARIABLE("timer"); // Timer which will send SMON_MESSAGE_PROCESS message every second or so
-
-	// ----------------------------------------------------------------------
-	// |                              N E W                                 |
-	// ----------------------------------------------------------------------
+	// ------------ N E W ------------
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_unit", objNull, [objNull]]];
 
-		// Unit (player) variables
-		SETV(_thisObject, "unit", _unit);
+		T_SETV("unit", _unit);
 		_unit setVariable ["undercoverMonitor", _thisObject];
+
+		// FSM
+		T_SETV("state", sUNDERCOVER);
+		T_SETV("stateChanged", true);
+
+		// UM variables
+		T_SETV("suspicion", 0);
+		T_SETV("incrementSusp", 0);
+		T_SETV("timeSeen", 0);
+		T_SETV("timeHostility", 0);
+		T_SETV("eyePosOld", [0 ARG 0 ARG 0]);
+		T_SETV("eyePosOldVeh", [0 ARG 0 ARG 0]);
+		T_SETV("nearestEnemyDist", -1);
+		T_SETV("nearestEnemy", objNull);
+		T_SETV("bSeen", false);
+		T_SETV("suspGear", 0);
+		T_SETV("suspGearVeh", 0);
+		T_SETV("bodyExposure", 1);
+		T_SETV("timeCompromised", -1);
+		pr _camoCoeff = _unit getUnitTrait "camouflageCoef";
+		T_SETV("camoCoeff", _camoCoeff);
+		T_SETV("bGhillie", false);
+		T_SETV("EHLoadout", false);
+
+		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, false, true];				// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
 		_unit setVariable [UNDERCOVER_WANTED, false, true];					// GLOBAL: if true player unit is hostile and "setCaptive false"
 		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)
-		_unit setVariable [UNDERCOVER_SUSPICION, 0, true];					// GLOBAL: suspicion variable for this unit, set each interval
-		_unit setVariable ["suspicion", 0];									// final suspiciousness of player
-		_unit setVariable ["timeSeen", 0];
-		_unit setVariable ["timeHostility", 0];
-		_unit setVariable ["bSeen", false];									// true if unit is currently seen by an enemy
-		_unit setVariable ["nearestEnemyDist", -1];							// distance to nearest unit in group that has spotted player
-		_unit setVariable ["nearestEnemy", objNull];						// enemy closest to player, taken from group that has spotted player last
-		_unit setVariable ["bodyExposure", 1.0];							// value for how exposed player is inside current vehicle seat
-		_unit setVariable ["eyePosOld", [0, 0, 0]];
-		_unit setVariable ["eyePosOldVeh", [0, 0, 0]];
+		_unit setVariable [UNDERCOVER_SUSPICION, 0, true];					// GLOBAL: suspicion variable for this unit, set each interval													
 
-		[_unit] call fnc_suspGear; // evaluate suspicion of unit's equipment
+		CALLM0(_thisObject, "calcGearSuspicion");							// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
 		// CBA event handler for checking player unit's equipment suspiciousness
-		["loadout", {
+		pr _EH_loadout = ["loadout", {
 			params ["_unit", "_newLoadout"];
-			[_unit] call fnc_suspGear;
+			pr _uM = _unit getVariable "undercoverMonitor";
+			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
     	}] call CBA_fnc_addPlayerEventHandler;
+		T_SETV("EHLoadout", _EH_loadout);
 
-    	// used for checking when player has last fired a weapon
+    	// event handler to check if unit fired weapon
     	_unit addEventHandler ["FiredMan", {
 			params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_gunner"];
-			_unit setVariable ["timeHostility", time + TIME_HOSTILITY];
+			pr _uM = _unit getVariable "undercoverMonitor";
+			SETV(_uM, "timeHostility", (time +TIME_HOSTILITY));
 		}];
+
+		// event handler for deleting this undercover monitor
+		_unit addEventHandler ["Killed", {
+			params ["_unit", "_killer", "_instigator", "_useEffects"];
+
+			pr _um = _unit getVariable ["undercoverMonitor", ""];
+			if (_um != "") then { // Sanity check
+				pr _msg = MESSAGE_NEW();
+				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_DELETE);
+				CALLM1(_um, "postMessage", _msg);
+			};
+		}];
+
+		// show debug UI
+		#ifdef DEBUG_UNDERCOVER_MONITOR
+		g_rscLayerUndercoverDebug = ["rscLayerUndercoverDebug"] call BIS_fnc_rscLayer;
+		g_rscLayerUndercoverDebug cutRsc ["UndercoverUIDebug", "PLAIN", -1, false];
+		#endif
 
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
@@ -100,247 +142,347 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		pr _updateInterval = 1.0;
 		pr _args = [_thisObject, _updateInterval, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
-		SETV(_thisObject, "timer", _timer);
-
-		#ifdef DEBUG
-			_unit setVariable ["bInVeh", false];					// true while player unit is in vehicle
-			_unit setVariable ["bInMarker", false];					// true while player unit is in wanted marker
-			call compile preprocessFileLineNumbers "UI\UI_OOP\UIUndercoverDebug_Update.sqf";
-		#endif
+		T_SETV("timer", _timer);
 
 	} ENDMETHOD;
 
-	// ----------------------------------------------------------------------
-	// |                            D E L E T E                             |
-	// ----------------------------------------------------------------------
+
+	// ------------ D E L E T E ------------
 
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-
 		// Delete the timer
-		pr _timer = GETV(_thisObject, "timer");
-		DELETE(_timer);
+		pr _timer = T_GETV("timer");
+		//pr _unit = T_GETV("unit");
+		//_unit setVariable ["undercoverMonitor", nil];
 
+		T_SETV("EHLoadout", nil);
+		T_SETV("unit", nil);
+		T_SETV("state", nil);
+		T_SETV("stateChanged", nil);
+		T_SETV("suspicion", nil);
+		T_SETV("incrementSusp", nil);
+		T_SETV("timeSeen", nil);
+		T_SETV("timeHostility", nil);
+		T_SETV("eyePosOld", nil);
+		T_SETV("eyePosOldVeh", nil);
+		T_SETV("nearestEnemyDist", nil);
+		T_SETV("nearestEnemy", nil);
+		T_SETV("bSeen", nil);
+		T_SETV("suspGear", nil);
+		T_SETV("suspGearVeh", nil);
+		T_SETV("bodyExposure", nil);
+		T_SETV("timeCompromised", nil);
+		T_SETV("camoCoeff", nil);
+		T_SETV("bGhillie", nil);
+
+		DELETE(_timer);
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
 		gMsgLoopUndercover
 	} ENDMETHOD;
 
-	// ----------------------------------------------------------------------
-	// |                     H A N D L E  M E S S A G E                     |
-	// ----------------------------------------------------------------------
+
+	// ------------ H A N D L E  M E S S A G E ------------
 
 	METHOD("handleMessage") {
-		params [ ["_thisObject", "", [""]] , ["_msg", [], [[] ]] ];
-
-		// Unpack the message
+		params [["_thisObject", "", [""]] , ["_msg", [], [[] ]]];
 		pr _msgType = _msg select MESSAGE_ID_TYPE;
 
 		switch (_msgType) do {
 
-			// executed every interval: real-time evaluation of player unit's suspicion/suspiciousness
+			// 	M A I N  U N D E R C O V E R  P R O C E S S
 			case SMON_MESSAGE_PROCESS: {
+				pr _state = T_GETV("state");
+				//OOP_INFO_1("undercoverMonitor START state: %1", _state);
 
-				pr _unit = GETV(_thisObject, "unit");
-				pr _bSeen = _unit getVariable "bSeen";
-				pr _bInVeh = false;
-				pr _removeWanted = false; 															// if true, WANTED state is removed at end of current interval
+				pr _unit = T_GETV("unit");
 				pr _suspicion = 0;
-				pr _timeHostility = _unit getVariable "timeHostility";
-				pr _timeSeen = _unit getVariable "timeSeen";
-				pr _nearestEnemy = _unit getVariable "nearestEnemy"; 								// enemy closest to player, from group sent to SMON_MESSAGE_BEING_SPOTTED
-				if (!(isNull objectParent _unit)) then { _bInVeh = true; }; 						// is player unit in vehicle?
-				_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];
+				pr _hintKeys = [];									// UI keys for displaying hints
+				pr _nearestEnemy = T_GETV("nearestEnemy");
+				pr _camoCoeffMod = 0;								// percentage by which camouflage coefficient is modified each interval
 
-				if (time > _timeSeen) then { _unit setVariable ["bSeen", false]; };
+				// reset "seen by enemy" variable
+				pr _timeSeen = T_GETV("timeSeen");
+				if (time > _timeSeen) then { 
+					T_SETV("bSeen", false);
+					_timeSeen = -1;
+					T_SETV("timeSeen", _timeSeen);
+				};
 
-				pr _distance = -1;
-				if !(isNull _nearestEnemy) then {
-					_distance = (position _nearestEnemy) distance (position _unit);
+				// check if unit is in vehicle
+				pr _bInVeh = false;
+				if (!(isNull objectParent _unit)) then { _bInVeh = true; }; 
 
-					#ifdef DEBUG
-					_unit setVariable ["nearestEnemyDist", _distance];
-					#endif
-				}; // get distance to nearestEnemy
+				if ( _unit getVariable ["ACE_isUnconscious", false] ) then { T_CALLM("setState", [sINCAPACITATED]); _hintKeys pushback HK_INCAPACITATED; };		// ACE unconscious
 
-
-				0 call { // start exitWith scope
-
-					if (animationState _unit == "ace_amovpercmstpssurwnondnon") exitWith { _suspicion = 0; }; // Hotfix for ACE surrendering
-					if ( _unit getVariable ["ACE_isUnconscious", false] ) exitWith { _suspicion = 0; };
+				if ((vehicle _unit nearRoads SUSP_NOROADS) isEqualTo [] ) then { 
+					_suspicion = _suspicion + SUSP_OFFROAD;
+					_hintKeys pushback HK_OFFROAD;
+				}; // offroad suspicion penalty
+									
+				//FSM
+				switch (_state) do {
 
 					/*
 					--------------------------------------------------------------------------------------------------------------------------------------------
-					|	W A N T E D   S T A T E 																											   |
+					|	 U N D E R C O V E R  S T A T E  																									   |
+					|	 Player can be captive or non-captive at the end of the undercover state process. 			   										   |
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					*/
+					case sUNDERCOVER: {
+						if (T_GETV("stateChanged")) then {
+						_unit setVariable [UNDERCOVER_WANTED, false, true];	
+						T_SETV("stateChanged", false);
+						}; // do once when state changed
 
-					if (UNDERCOVER_IS_UNIT_WANTED(_unit)) exitWith { // start WANTED routine
+						pr _timeHostility = T_GETV("timeHostility");
+						if (time < _timeHostility) exitWith { _suspicion = 1; _hintKeys pushback HK_HOSTILITY; };
+	
+						// check if unit is in allowed area
+						pr _pos = getPos _unit;
+						pr _bInAllowedArea = false;
+				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]);
+				 		if (_loc != "") then { 	
+							if ( CALLM(_loc, "isInAllowedArea", [_pos]) ) then { 
+								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
+							} else { 
+								_suspicion = _suspicion + 1;
+							};
+				 		};
+
+						switch (_bInVeh) do {
+
+							// ------------------------------------------- 
+							//  O N   F O O T 
+							// -------------------------------------------
+							case false: {
+								_unit setVariable [UNDERCOVER_EXPOSED, true, true];	
+
+								if (animationState _unit in g_UM_undercoverAnims) exitWith { _suspicion = 0; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
+
+								pr _suspGear = T_GETV("suspGear");
+								if (_suspGear > 0) then { _hintKeys pushback HK_SUSPGEAR; };
+
+								// suspiciousness for movement speed
+								pr _suspSpeed = (vectorMagnitude velocity _unit) * 0.06;
+								if ( _suspSpeed > SUSP_SPEEDMAX ) then { _suspSpeed = SUSP_SPEEDMAX; };
+
+								// suspiciousness for stance
+								pr _suspStance = 0;
+								switch (stance _unit) do {
+									case "CROUCH": { _suspStance = SUSP_CROUCH; _camoCoeffMod = _camoCoeffMod + CAMO_CROUCH; };
+					    			case "PRONE": { _suspStance = SUSP_PRONE; _camoCoeffMod = _camoCoeffMod + CAMO_PRONE; };
+					    		};
+
+								_suspicion = _suspicion + _suspGear + _suspSpeed + _suspStance;
+							};
+
+							// ------------------------------------------- 
+							//  I N  V E H I C L E
+							// -------------------------------------------
+							case true: {
+								pr _suspGearVeh = T_GETV("suspGearVeh");
+								pr _bodyExposure = T_CALLM0("getBodyExposure");		// get how visible unit is
+
+								if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle _unit) >> "faction") == "CIV_F") exitWith {
+								_suspicion = 1;
+								_hintKeys pushback HK_MILVEH;
+								}; // if in military vehicle
+
+								// get distance to nearestEnemy
+								pr _distance = -1;
+								if !(isNull _nearestEnemy) then { 
+									_distance = (position _nearestEnemy) distance (position _unit); 
+								};
+
+								// additional penalty for more vehicle passengers
+								if (count crew vehicle _unit > 1) then {
+									_suspicion = _suspicion + (SUSP_VEH_CREW * (count crew vehicle _unit));
+								};
+
+								#ifdef DEBUG 
+									_unit setVariable ["distance", _distance];
+									_unit setVariable ["bodyExposure", _bodyExposure];
+								#endif
+
+								if (!(currentWeapon _unit in g_UM_civWeapons) && _bodyExposure > 0.5) exitWith { _suspicion = 1; _hintKeys pushback HK_WEAPON; };
+
+								/*  Suspiciousness in a civilian vehicle, based on distance to the nearest enemy who sees player unit */
+								if (_distance != -1 && _suspGearVeh >= SUSPICIOUS) then {
+									// unit's gear is suspicious, and enemy is so close they can see it
+									if ( _distance < SUSP_VEH_DIST_MIN && _distance > -1 && _bodyExposure > 0.4 ) exitWith { _suspicion = 1; };
+
+									// scale in suspiciousness as unit gets closer to nearest enemy
+									if ( _distance >= SUSP_VEH_DIST_MIN && _distance < SUSP_VEH_DIST && _suspGearVeh >= SUSPICIOUS ) exitWith {
+										_suspicion = 0.7 * (_suspicion + ((SUSP_VEH_DIST - _distance) * SUSP_VEH_DIST_MULT));
+										if (_suspicion < 1) then { _hintKeys pushback HK_CLOSINGIN; };
+									};
+								};
+							};
+
+						};
+
+					}; // state "UNDERCOVER" end
+
+					/*
+					--------------------------------------------------------------------------------------------------------------------------------------------
+					|	 W A N T E D  S T A T E 																											   |
+					|	 Player is always non-captive in this state until exit conditions are met. Simplifies calculations and simulates a sense of            | 
+					|	 "object permanence" for the AI, so player can't go back to captive by simply dropping their gun while unseen.				   		   |
+					--------------------------------------------------------------------------------------------------------------------------------------------
+					*/
+					case sWANTED: {
+						if (T_GETV("stateChanged")) then {
+						_unit setVariable [UNDERCOVER_WANTED, true, true];	
+						T_SETV("stateChanged", false);
+						}; // do once when state changed
 
 						// create marker, kind of like GTA's red circle you have to escape to lose the police
-						if (_bSeen) then {
-							pr _mrkLastHost = createMarkerLocal ["mrkLastHostility", position _unit];
-							"mrkLastHostility" setMarkerAlphaLocal 0.0;
+						// only update marker if unit is seen, otherwise no escape possible
+						if (T_GETV("bSeen")) then {
+							pr _mrkLastHost = createMarkerLocal ["markerWanted", position _unit];
+							"markerWanted" setMarkerAlphaLocal 0.0;
 
 							#ifdef DEBUG
-								"mrkLastHostility" setMarkerBrushLocal "SOLID";
-								"mrkLastHostility" setMarkerAlphaLocal 0.5;
-								"mrkLastHostility" setMarkerColorLocal "ColorBlue";
-								"mrkLastHostility" setMarkerSizeLocal [WANTED_CIRCLE_RADIUS/2, WANTED_CIRCLE_RADIUS/2];
-								"mrkLastHostility" setMarkerShapeLocal "ELLIPSE";
+								"markerWanted" setMarkerBrushLocal "SOLID";
+								"markerWanted" setMarkerAlphaLocal 0.5;
+								"markerWanted" setMarkerColorLocal "ColorBlue";
+								"markerWanted" setMarkerSizeLocal [WANTED_CIRCLE_RADIUS/2, WANTED_CIRCLE_RADIUS/2];
+								"markerWanted" setMarkerShapeLocal "ELLIPSE";
 							#endif
-
-							if (_bInVeh && count crew vehicle _unit > 1) then {
-
-								{
-									if (isPlayer _x && alive _x) then { _x setVariable [UNDERCOVER_WANTED, true, true]; };
-								} forEach crew vehicle _unit;
-
-							}; // sets other units in vehicle wanted
-
-						}; // only update marker if unit is seen, otherwise no escape possible
+						}; 
 
 						_suspicion = 1;
 
-					 	#ifdef DEBUG
-						_unit setVariable ["bInMarker", true]; // debug UI variable
-						#endif
+						// Conditions for exiting WANTED state
+						if ( ((position _unit) distance2D (getMarkerPos "markerWanted")) > (WANTED_CIRCLE_RADIUS/2)) exitWith { 
+							T_CALLM("setState", [sUNDERCOVER]);
+							deleteMarkerLocal "markerWanted";
+							OOP_INFO_0("No longer WANTED, reason: Left wanted marker radius."); 
+						}; // left "wanted marker"
 
-						// conditions for going back to UNDERCOVER state
-						if ( ((position _unit) distance2D (getMarkerPos "mrkLastHostility")) > WANTED_CIRCLE_RADIUS) exitWith { _removeWanted = true; };
-						if ((_timeSeen - time) < TIME_UNSEEN_WANTED_EXIT) exitWith { _removeWanted = true; };
-						if ({alive _x} count units group _nearestEnemy == 0 ) exitWith { _removeWanted = true; }; // no unit from group that last spotted player unit is alive
+						if ((_timeSeen - time) < TIME_UNSEEN_WANTED_EXIT) exitWith { 
+							T_CALLM("setState", [sUNDERCOVER]);
+							deleteMarkerLocal "markerWanted";
+							OOP_INFO_0("No longer WANTED, reason: Unseen for long enough."); 
+						}; // unseen for TIME_UNSEEN_WANTED_EXIT minutes
 
-					}; // end WANTED routine
+						if ({alive _x} count units group _nearestEnemy == 0 ) exitWith { 
+							T_CALLM("setState", [sUNDERCOVER]);
+							deleteMarkerLocal "markerWanted";
+							OOP_INFO_0("No longer WANTED, reason: Killed or lost last group that spotted unit."); 
+						}; // no unit from group that last spotted unit is alive
+
+					}; // state WANTED end
 
 					/*
 					--------------------------------------------------------------------------------------------------------------------------------------------
-					|	 U N D E R C O V E R  C H E C K 																									   |
+					|	 C O M P R O M I S E D  S T A T E 																									   |
 					--------------------------------------------------------------------------------------------------------------------------------------------
 					*/
+					case sCOMPROMISED: {
+						T_SETV("stateChanged", false);
+						pr _timeCompromised = T_GETV("timeCompromised");
 
-					/* IN-VEHICLE AND ON FOOT */
+						if !(_bInVeh OR !(time > _timeCompromised)) exitWith {
+							T_CALLM("setState", [sUNDERCOVER]);	
+							OOP_INFO_0("Leaving COMPROMISED state.");
+						};
 
-				 	if (time < _timeHostility) exitWith { _suspicion = 1; };
-				 	if (CALL_STATIC_METHOD("Location", "getLocationAtPos", [_unit]) != "") exitWith { _suspicion = 1; };		 // check for being at enemy location
-					if ( (vehicle _unit nearRoads SUSP_NOROADS) isEqualTo [] ) then { _suspicion = _suspicion + SUSP_OFFROAD; }; // offroad suspicion penalty
+						_suspicion = 1;
 
-					/* END IN-VEHICLE AND ON FOOT */
+					}; // state "COMPROMISED" end
 
-					switch (_bInVeh) do {
+					/*
+					--------------------------------------------------------------------------------------------------------------------------------------------
+					|	 A R R E S T E D  S T A T E 																									   |
+					--------------------------------------------------------------------------------------------------------------------------------------------
+					*/
+					case sARRESTED: {
+						T_SETV("stateChanged", false);
 
-						// player unit is NOT in vehicle
-						case false: {
+					}; // state "ARRESTED" end
 
-							_unit setVariable [UNDERCOVER_EXPOSED, true, true];
-							if !(currentWeapon _unit in civWeapons) then { _suspicion = 1; };
-							pr _suspGear = _unit getVariable "suspGear"; // full equipment suspiciousness as determined by CBA "loadout" event handler
+					/*
+					--------------------------------------------------------------------------------------------------------------------------------------------
+					|	 I N C A P A C I T A T E D  S T A T E 																								   |
+					--------------------------------------------------------------------------------------------------------------------------------------------
+					*/
+					case sINCAPACITATED: {
+						T_SETV("stateChanged", false);
 
-							pr _suspStance = 0;
-							switch (stance _unit) do {
-								case "CROUCH": { _suspStance = SUSP_CROUCH; };
-					    		case "PRONE": { _suspStance = SUSP_PRONE; };
-					    	};
+						if (activeACE) then { 
+							if !(_unit getVariable ["ACE_isUnconscious", false]) then { T_CALLM("setState", [sUNDERCOVER]); };
+						};
 
-							pr _suspSpeed = (vectorMagnitude velocity _unit) * 0.06;
-							if ( _suspSpeed > SUSP_SPEEDMAX ) then { _suspSpeed = SUSP_SPEEDMAX; };
+					}; // state "INCAPACITATED" end
 
-							_suspicion = _suspicion + _suspGear + _suspSpeed + _suspStance;
+				}; // end FSM
 
-						}; // end case: player unit is NOT in vehicle
+				//OOP_INFO_1("hintKeys: %1", _hintKeys);
 
-						// player unit IS in vehicle
-						case true: {
-
-							pr _suspGearVeh = _unit getVariable "suspGearVeh"; 	// in vehicle equipment suspiciousness as determined by CBA "loadout" event handler
-
-							if !(gettext (configfile >> "CfgVehicles" >> (typeOf vehicle _unit) >> "faction") == "CIV_F") then {
-								_suspicion = 1;
-							}; // if in military vehicle
-
-							// Always re-evaluate body exposure while in a vehicle
-							pr _bodyExposure = _unit getVariable "bodyExposure";
-							pr _eyePosNewVeh = (vehicle _unit) worldToModelVisual (_unit modelToWorldVisual (_unit selectionPosition "head"));
-							pr _eyePosOldVeh = _unit getVariable "eyePosOldVeh";
-							pr _eyePosOld = _unit getVariable "eyePosOld";
-
-							// bodyExposure and eyePos
-							if ((_eyePosOldVeh vectorDistance _eyePosNewVeh) > 0.15) then {
-								_bodyExposure = [20, 120, 0, 360, _unit] call fnc_getVisibleSurface;
-								_unit setVariable ["bodyExposure", _bodyExposure];
-
-								// Limit body exposure to more usable values, set bExposed variable
-								if (_bodyExposure < 0.12) then {
-									_bodyExposure = 0.0;
-									_unit setVariable [UNDERCOVER_EXPOSED, false, true];
-
-								} else {
-									if (_bodyExposure > 0.85) then {
-										_bodyExposure = 1;
-										_unit setVariable [UNDERCOVER_EXPOSED, true, true];
-										if !(currentWeapon _unit in civWeapons) then { _suspicion = 1; };
-									};
-								};
-
-							}; _unit setVariable ["eyePosOldVeh", _eyePosNewVeh]; // bodyExposure and eyePos
-
-							/*  Suspiciousness in a civilian vehicle, based on distance to the nearest enemy who sees player unit */
-							// make sure there is an actual enemy and a distance
-							if (_distance != -1 && _suspGearVeh >= SUSPICIOUS) then {
-
-								// player unit's gear is suspicious, and player is so close they can see it
-								if ( _distance < SUSP_VEH_DIST_MIN && _distance > -1 && _bodyExposure > 0.4 ) exitWith { _suspicion = 1; };
-
-								// scale in suspiciousness as player unit gets closer to nearest enemy
-								if ( _distance >= SUSP_VEH_DIST_MIN && _distance < SUSP_VEH_DIST && _suspGearVeh >= SUSPICIOUS ) exitWith {
-									_suspicion = _suspicion + ( (SUSP_VEH_DIST - _distance) * (1 + _bodyExposure) ) * SUSP_VEH_DIST_MULT;
+				// compromise other players in vehicle
+				if (_bInVeh && _suspicion >= 1) then {
+					if (count crew vehicle _unit > 1) then {
+						{
+							if (isPlayer _x && alive _x && _x != _unit) then { 
+								pr _um = _x getVariable ["undercoverMonitor", ""];
+								if (_um != "") then { // Sanity check
+									pr _msg = MESSAGE_NEW();
+									MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
+									CALLM1(_um, "postMessage", _msg);
+									OOP_INFO_0("SMON_MESSAGE_COMPROMISED sent to all occupants.");
 								};
 							};
-						}; // end case: player unit IS in vehicle
-
-
-					}; // end switch "is player unit in vehicle?"
-
-				}; // end exitWith scope
-
-				if (_removeWanted) then {
-					deleteMarkerLocal "mrkLastHostility";
-					_unit setVariable [UNDERCOVER_WANTED, false, true];
-					_unit setVariable ["removeWanted", false];
-
-					#ifdef DEBUG
-						_unit setVariable ["bInMarker", false]; // debug UI variable
-					#endif
+						} forEach crew vehicle _unit;		
+					};
 				};
 
-				if ( _suspicion >= SUSPICIOUS && _suspicion < 1 ) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; };
-				if ( _suspicion >= 1 ) then { _unit setCaptive false; } else { _unit setCaptive true; };
-				_unit setVariable ["suspicion", _suspicion];
+				// set captive status of unit
+				pr _args = [_suspicion, _state];
+				T_CALLM("calcCaptive", _args);
 
-				_unit setVariable [UNDERCOVER_SUSPICION, _suspicion, true];
-				CALL_STATIC_METHOD("UndercoverUI", "drawUI", [_unit]); // draw UI
+				// set new camouflage coeffcient 
+				pr _camoCoeff =  T_GETV("camoCoeff"); // initial unit-based value
+				if (T_GETV("bGhillie")) then { _camoCoeffMod = _camoCoeffMod + CAMO_GHILLIE; };
+				_camoCoeff = _camoCoeff * (1 - _camoCoeffMod);
+				_unit setUnitTrait ["camouflageCoef", _camoCoeff];
 
-				#ifdef DEBUG // set variables for debug GUI
-					_unit setVariable ["bInVeh", _bInVeh];
-					_unit setVariable ["suspicion", _suspicion];
-					_unit setVariable ["timeSeenDebug", (_timeSeen - time)];
-					_unit setVariable ["timeHostilityDebug", (_timeHostility - time)];
+				// update normal UI
+				#ifndef DEBUG
+				_args = [_unit, _suspicion, _hintKeys];
+				CALL_STATIC_METHOD("UndercoverUI", "drawUI", _args); // draw UI
 				#endif
+
+				// update debug UI
+				#ifdef DEBUG
+				_unit setVariable ["suspicion", _suspicion];
+				_unit setVariable ["bInVeh", _bInVeh];
+				_unit setVariable ["nearestEnemy", _nearestEnemy];
+				[_unit] call fnc_UIUndercoverDebug;
+				g_rscLayerUndercover cutRsc ["Default", "PLAIN", -1, false];
+				#endif
+
 			}; // end SMON_MESSAGE_PROCESS
 
-			// messaged by onUnitSpotted static method when unit is being spotted by enemy side
-			// Finds enemy unit closest to player unit and store it in variable for SMON_MESSAGE_PROCESS
+			// Messaged by onUnitSpotted method (see SensorGroupTargets), when this object's unit is seen by an enemy.
+			// Also finds enemy unit closest to punit and store it in variable for SMON_MESSAGE_PROCESS
 			case SMON_MESSAGE_BEING_SPOTTED: {
 
+				OOP_INFO_0("Received message: SMON_MESSAGE_BEING_SPOTTED!");
+
 				pr _msgData = _msg select MESSAGE_ID_DATA;
-				pr _unit = GETV(_thisObject, "unit");
-				pr _suspicion = _unit getVariable "suspicion";
-				_unit setVariable ["bSeen", true];
-				_unit setVariable ["timeSeen", time + TIME_SEEN];
 
+				pr _unit = T_GETV("unit");
+				pr _suspicion = T_GETV("suspicion");
+
+				T_SETV("bSeen", true);
+				T_SETV("timeSeen", (time + TIME_SEEN));
+
+				// find closest enemy watching player
 				pr _grpDistances = [];
-
 				{
 					pr _tempDist = (position _x) distance (position _unit);
 					_grpDistances pushBack _tempDist;
@@ -350,27 +492,38 @@ CLASS("undercoverMonitor", "MessageReceiver");
 				pr _minDistIndex = _grpDistances find _minDist;
 
 				pr _nearestEnemy = (units _msgData) select _minDistIndex;
-				_unit setVariable ["nearestEnemy", _nearestEnemy];
+				T_SETV("nearestEnemy", _nearestEnemy);
 
-				if (_suspicion >= 1) then {
-					 _unit setVariable [UNDERCOVER_WANTED, true, true];
-				}; // end SMON_MESSAGE_BEING_SPOTTED
-			};
+				if (_suspicion >= 1 or !(captive _unit)) then {
+					T_CALLM("setState", [sWANTED]);
+				}; 
+			}; // end SMON_MESSAGE_BEING_SPOTTED
 
-			// messages here will compromise this unit as if spotted while suspicion > 1
+			// messages sent here will temporarily make this object's unit overt 
 			case SMON_MESSAGE_COMPROMISED: {
+				OOP_INFO_0("Received message: SMON_MESSAGE_COMPROMISED");
 
-				pr _unit = GETV(_thisObject, "unit");
-				_unit setVariable [UNDERCOVER_WANTED, true, true];
-
+				pr _unit = T_GETV("unit");
+				T_CALLM("setState", [sCOMPROMISED]);
+				T_SETV("timeCompromised", (time + 5));
 			}; // end SMON_MESSAGE_COMPROMISED
+
+			// delete dead unit's undercoverMonitor
+			case SMON_MESSAGE_DELETE: {
+				pr _EH_loadout = T_GETV("EHLoadout");
+		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
+				DELETE(_thisObject);
+			}; // end SMON_MESSAGE_DELETE
 		};
 
 		false
 	} ENDMETHOD;
 
-	// SensorGroupTargets remoteExecutes this on player's computer when a group is currently spotting player
-	// This function resolves UndercoverMonitor of player and posts a message to it
+
+	/* 
+	SensorGroupTargets remoteExecutes this on this computer when an enemy group is currently spotting the player.
+	This function resolves undercoverMonitor of player and posts a message to it.
+	*/
 	STATIC_METHOD("onUnitSpotted") {
 		params ["_thisClass", ["_unit", objNull, [objNull]], ["_group", grpNull, [grpNull]]];
 		pr _um = _unit getVariable ["undercoverMonitor", ""];
@@ -382,18 +535,107 @@ CLASS("undercoverMonitor", "MessageReceiver");
 		};
 	} ENDMETHOD;
 
-	METHOD("getSuspicion") {
-		params [["_thisObject", "", [""]]];
-		pr _unit = GETV(_thisObject, "unit");
-		_return = _unit getVariable "suspicion";
-		_return;
+
+	/*
+	Method: calcCaptive
+	Sets captive status of unit based on state variable and suspicion variable.
+
+	Parameters: 0: _state 			- (Integer) current state of UM
+				1: _suspicion 		- (Integer) suspicion value of unit
+
+	*/
+	METHOD("calcCaptive") {
+		params [["_thisObject", "", [""]], ["_suspicion", 0], ["_state", sUNDERCOVER]];
+		pr _unit = T_GETV("unit");
+
+		if (_suspicion < 1 && _suspicion >= SUSPICIOUS) then { _unit setVariable [UNDERCOVER_SUSPICIOUS, true, true]; } else { _unit setVariable [UNDERCOVER_SUSPICIOUS, false, true]; };
+		if (_suspicion >= 1) then { _unit setCaptive false; } else { _unit setCaptive true; };
+		
 	} ENDMETHOD;
 
-	METHOD("getIsSuspicious") {
+
+	/*
+	Method: setState
+	Changes the undercoverMonitor state and sets stateChanged variable to true.
+
+	Parameters: 0: _state 			- (Integer) new state for UM
+
+	*/
+	METHOD("setState") {
+		params [["_thisObject", "", [""]], ["_state", 0]];
+
+		T_SETV("state", _state);
+		T_SETV("stateChanged", true);
+
+		OOP_INFO_1("setState Method: state set to: %1", T_GETV("state"));
+		
+	} ENDMETHOD;
+
+
+	/*
+	Method: calcGearSuspicion
+
+	Calculates the suspiciousness of the units equipment on foot and in vehicles, and stores it in two variables for this object.
+
+	*/
+	METHOD("calcGearSuspicion") {
 		params [["_thisObject", "", [""]]];
-		pr _unit = GETV(_thisObject, "unit");
-		_return = UNDERCOVER_IS_UNIT_SUSPICIOUS(_unit);
-		_return;
+		pr _unit = T_GETV("unit");
+
+		pr _suspGear = 0;
+		pr _suspGearVeh = 0;
+
+		if ((uniform _unit in g_UM_ghillies)) then { T_SETV("bGhillie", true); } else { T_SETV("bGhillie", false); };
+		if !((uniform _unit in g_UM_civUniforms) or (uniform _unit == "")) then { _suspGear = _suspGear + SUSP_UNIFORM; _suspGearVeh = _suspGearVeh + SUSP_UNIFORM; };
+		if !((headgear _unit in g_UM_civHeadgear) or (headgear _unit == "")) then { _suspGear = _suspGear + SUSP_HEADGEAR; _suspGearVeh = _suspGearVeh + SUSP_HEADGEAR; };
+		if !((goggles _unit in g_UM_civFacewear) or (goggles _unit == "")) then { _suspGear = _suspGear + SUSP_FACEWEAR; _suspGearVeh = _suspGearVeh + SUSP_FACEWEAR; };
+		if !((vest _unit in g_UM_civVests) or (vest _unit == "")) then { _suspGear = _suspGear + SUSP_VEST; _suspGearVeh = _suspGearVeh + SUSP_VEST; };
+		if (hmd _unit != "") then { _suspGear = _suspGear + SUSP_NVGS; };
+		if !((backpack _unit in g_UM_civBackpacks) or (backpack _unit == "")) then { _suspGear = _suspGear + SUSP_BACKPACK; };
+
+		if !( primaryWeapon _unit in g_UM_civWeapons) then { _suspGear = _suspGear + 1; };
+		if !( secondaryWeapon _unit in g_UM_civWeapons) then { _suspGear = _suspGear + 1; };
+
+		T_SETV("suspGear", _suspGear);
+		T_SETV("suspGearVeh", _suspGearVeh);
+		
+	} ENDMETHOD;
+
+
+	/*
+	Method: getBodyExposure
+
+	Returns the body exposure value of the unit, or: how visible the this undercoverMonitor's unit currently is.
+	Also sets a global "exposed" boolean variable on the unit. If the variable is false, then the unit is invisible to enemy.
+
+	Returns: Number between 0.0 and 1.0.
+
+	*/
+	METHOD("getBodyExposure") {
+		params [["_thisObject", "", [""]]];
+		pr _unit = T_GETV("unit");
+
+		pr _bodyExposure = T_GETV("bodyExposure");
+		pr _eyePosOldVeh = T_GETV("eyePosOldVeh");
+		pr _eyePosOld = T_GETV("eyePosOld");
+		pr _eyePosNewVeh = (vehicle _unit) worldToModelVisual (_unit modelToWorldVisual (_unit selectionPosition "head"));
+
+		// bodyExposure and eyePos
+		if ((_eyePosOldVeh vectorDistance _eyePosNewVeh) > 0.15) then {
+			_bodyExposure = [20, 120, 0, 360, _unit] call fnc_getVisibleSurface;
+
+			// Limit body exposure to more usable values, set bExposed variable
+			if (_bodyExposure < 0.12) then {
+				_unit setVariable [UNDERCOVER_EXPOSED, false, true];
+			} else {
+				if (_bodyExposure > 0.85) then {
+					_unit setVariable [UNDERCOVER_EXPOSED, true, true];
+				};
+			}; T_SETV("eyePosOldVeh", _eyePosNewVeh);
+		};
+		T_SETV("bodyExposure", _bodyExposure);
+		_bodyExposure
+		
 	} ENDMETHOD;
 
 ENDCLASS;

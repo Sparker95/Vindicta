@@ -55,13 +55,13 @@
  <div class="CBody"><p>Returns all infantry units.</p><p>Returns: Array of units.</p></div>
 </div>
 
-<a name="Group.getVehiucleUnits"></a><a name="Topic250"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getVehiucleUnits</div>
+<a name="Group.getVehicleUnits"></a><a name="Topic70"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getVehicleUnits</div>
  <div class="CBody"><p>Returns all vehicle units.</p><p>Returns: Array of units.</p></div>
 </div>
 
-<a name="Group.getVehicleUnits"></a><a name="Topic251"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getVehicleUnits</div>
+<a name="Group.getDroneUnits"></a><a name="Topic210"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getDroneUnits</div>
  <div class="CBody"><p>Returns all drone units.</p><p>Returns: Array of units.</p></div>
 </div>
 
@@ -80,9 +80,9 @@
  <div class="CBody"><p>Returns the group handle of this group.</p><p>Returns: group handle.</p></div>
 </div>
 
-<a name="Group.getLeader"></a><a name="Topic255"></a><div class="CTopic TFunction LSQF">
+<a name="Group.getLeader"></a><a name="Topic549"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getLeader</div>
- <div class="CBody"><p>Returns the leader of the group.</p><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object</p></div>
+ <div class="CBody"><p>Returns the leader of the group.&nbsp; !!! Warning: might return a dead unit!</p><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object</p></div>
 </div>
 
 <a name="Group.setGarrison"></a><a name="Topic256"></a><div class="CTopic TFunction LSQF">
@@ -105,6 +105,11 @@
  <div class="CBody"><p>Returns the spawned state of this group</p><p>Returns: Bool</p></div>
 </div>
 
+<a name="Group.isEmpty"></a><a name="Topic570"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isEmpty</div>
+ <div class="CBody"><p>Returns true if group has no units in it</p><p>Returns: Bool</p></div>
+</div>
+
 <a name="Group.handleUnitRemoved"></a><a name="Topic260"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">handleUnitRemoved</div>
  <div class="CBody"><p>Called when the unit has been removed (killed or moved to a different place).</p><p>Must be called inside the group's thread, not inside event handler.</p><p>Returns: nil</p></div>
@@ -125,14 +130,29 @@
  <div class="CBody"><p>Creates an &lt;AIGroup&gt; for this group.</p><p>Access: internal.</p><p>Returns: nil</p></div>
 </div>
 
-<a name="Group.spawn"></a><a name="Topic264"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">spawn</div>
- <div class="CBody"><p>Spawns all the units in this group.</p><p>Parameters: _loc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_loc</td><td class="CDLDefinition"><p><a href="../../index.html#File:Location/Location.sqf:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> where the group will spawn.</p></td></tr></table><p>Returns: nil</p></div>
+<a name="Group.spawnAtLocation"></a><a name="Topic571"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">spawnAtLocation</div>
+ <div class="CBody"><p>Spawns all the units in this group at specified location.</p><p>Parameters: _loc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_loc</td><td class="CDLDefinition"><p><a href="../../index.html#File:Location/Location.sqf:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> where the group will spawn.</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="Group.spawnVehiclesOnRoad"></a><a name="Topic572"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">spawnVehiclesOnRoad</div>
+ <div class="CBody"><p>Spawns vehicles in this group specified positions, one after another. Infantry units are spawned nearby.&nbsp; This function is intended for vehicle groups to spawn them on a road.</p><p>Parameters: _vehPosAndDir, _startPos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_vehPosAndDir</td><td class="CDLDefinition"><p>array of [_pos, _dir] where vehicles will be spawned.</p></td></tr><tr><td class="CDLEntry">_startPos</td><td class="CDLDefinition"><p>optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="Group.spawnAtPos"></a><a name="Topic573"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">spawnAtPos</div>
+ <div class="CBody"><p>Vehicles are spawned at road nearest to the provided position, infantry units are spawned at provided position.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 <a name="Group.despawn"></a><a name="Topic265"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">despawn</div>
  <div class="CBody"><p>Despawns all units in this group. Also deletes the group handle.</p><p>Returns: nil</p></div>
+</div>
+
+<a name="Group.sort"></a><a name="Topic574"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">sort</div>
+ <div class="CBody"><p>Makes passed units rejoin this group in specified order. Useful for reorganizing formation for convoys.&nbsp; !!!WARNING!!! If you pass an array with all units in the group, then group handle will be changed!</p><p>Parameters: _unitsSorted</p><table class="CDefinitionList"><tr><td class="CDLEntry">_unitsSorted</td><td class="CDLDefinition"><p>Array with <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> objects</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 <a name="Group.getSubagents"></a><a name="Topic266"></a><div class="CTopic TFunction LSQF">
@@ -170,9 +190,9 @@
  <div class="CBody"><p>Creates units from template and adds them to this group.</p><p>Parameters: _template, _subcatID</p><table class="CDefinitionList"><tr><td class="CDLEntry">_template</td><td class="CDLDefinition"><p>&lt;Template&gt;</p></td></tr><tr><td class="CDLEntry">_subcatID</td><td class="CDLDefinition"><p>subcategory of this group template</p></td></tr></table><p>Returns: Number, amount of created units.</p></div>
 </div>
 
-<a name="Group.getRequiredCrew"></a><a name="Topic273"></a><div class="CTopic TFunction LSQF last">
+<a name="Group.getRequiredCrew"></a><a name="Topic99"></a><div class="CTopic TFunction LSQF last">
  <div class="CTitle">getRequiredCrew</div>
- <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this group.</p><p>Returns: [_nDrivers, _nTurrets]</p></div>
+ <div class="CBody"><p>Returns amount of needed drivers and turret operators for all vehicles in this group. Also returns amount of available cargo seats.</p><p>Returns: [_nDrivers, _nTurrets, _nCargo]</p></div>
 </div>
 
 </body></html>

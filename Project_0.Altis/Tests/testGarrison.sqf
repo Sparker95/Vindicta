@@ -3,7 +3,7 @@
 [] spawn {
 	private _group = NEW("Group", [WEST]);
 	private _garrison = NEW("Garrison", [WEST]);
-	CALL_METHOD(_garrison, "setDebugName", ["noname"]);
+	CALL_METHOD(_garrison, "setName", ["noname"]);
 	private _n = 10;
 	for "_i" from 0 to _n do {
 		private _args = [tNato, 0, 1, _group];

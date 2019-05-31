@@ -5,7 +5,6 @@
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
-#include "..\goalRelevance.hpp"
 #include "AI.hpp"
 #include "..\Garrison\garrisonWorldStateProperties.hpp"
 

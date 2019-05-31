@@ -1,10 +1,13 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+
 //#define NAMESPACE uiNamespace
+
 #include "..\..\OOP_Light\OOP_Light.h"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
+#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 
 /*
 Class: MapMarkerLocation
@@ -15,17 +18,30 @@ That's how we draw locations
 
 #define CLASS_NAME "MapMarkerLocation"
 
-CLASS(CLASS_NAME, "MapMarker");
+CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
+	VARIABLE("intel"); // Intel object associated with this
+	VARIABLE("radius"); // The accuracy radius
+
 	STATIC_VARIABLE("selectedLocationMarkers");
 
 	METHOD("new") {
-		params ["_thisObject"];
+		params ["_thisObject", ["_intel", "", [""]]];
 		CALLM2(_thisObject, "setEventSize", 20, 20);
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
+		T_SETV("intel", _intel);
+		T_SETV("radius", 0);
+
+		/*
+		pr _radius = GETV(_intel, "accuracyRadius");
+		if (isNil "_radius") then { _radius = 0; };
+		_radius = 300;
+		T_SETV("radius", _radius);
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+		*/
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -33,6 +49,41 @@ CLASS(CLASS_NAME, "MapMarker");
 
 	} ENDMETHOD;
 
+	// Overwrite the base class method
+	METHOD("setPos") {
+		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
+
+		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+	} ENDMETHOD;
+
+	METHOD("setAccuracyRadius") {
+		params ["_thisObject", "_radius"];
+
+		T_SETV("radius", _radius);
+		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+	} ENDMETHOD;
+
+	METHOD("updateAccuracyRadiusMarker") {
+		params ["_thisObject"];
+
+		pr _radius = T_GETV("radius");
+		if (_radius == 0) then {
+			deleteMarkerLocal _thisObject;
+		} else {
+			// Check if marker doesn't exist yet
+			if (markerColor _thisObject == "") then {
+				createMarkerLocal [_thisObject, T_GETV("pos")+[0]];
+				_thisObject setMarkerSizeLocal [_radius, _radius];
+				_thisObject setMarkerShapeLocal "ELLIPSE";
+				_thisObject setMarkerBrushLocal "SolidBorder";
+				_thisObject setMarkerColorLocal "colorCivilian";
+			};
+			_thisObject setMarkerPosLocal (T_GETV("pos")+[0]);
+			pr _alpha = [0.3, 0.8] select T_GETV("selected");
+			_thisObject setMarkerAlphaLocal _alpha;
+		};
+	} ENDMETHOD;
 
 	METHOD("onDraw") {
 		params ["_thisObject", "_control"];
@@ -87,7 +138,6 @@ CLASS(CLASS_NAME, "MapMarker");
 
 	} ENDMETHOD;
 
-
 	/*
 	Method: onMouseEnter
 	Gets called when the mouse pointer enters the marker area.
@@ -138,14 +188,18 @@ CLASS(CLASS_NAME, "MapMarker");
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
 
+			// Update the accuracy radius marker's alpha
+			if (T_GETV("radius") != 0) then {
+				CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+			};
 
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
-				pr _pos = T_GETV("pos");
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [_pos]);
+				pr _intel = T_GETV("intel");
+				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", [_thisObject ARG _intel]);
 			} else {
 				// Deselect everything
-				CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+				CALL_STATIC_METHOD("ClientMapUI", "onMapMarkerMouseButtonDown", ["" ARG ""]);
 			};
 		};
 	} ENDMETHOD;
@@ -163,7 +217,7 @@ CLASS(CLASS_NAME, "MapMarker");
 	*/
 	METHOD("onMouseButtonUp") {
 		params ["_thisObject", "_button", "_shift", "_ctrl", "_alt"];
-		OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
+		// OOP_INFO_4("UP Button: %1, Shift: %2, Ctrl: %3, Alt: %4", _button, _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
 	/*
@@ -178,10 +232,9 @@ CLASS(CLASS_NAME, "MapMarker");
 	*/
 	METHOD("onMouseButtonClick") {
 		params ["_thisObject", "_shift", "_ctrl", "_alt"];
-		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
+		// OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 
 	} ENDMETHOD;
-
 
 	STATIC_METHOD("deselectAllMarkers") {
 		params ["_thisClass"];
@@ -189,6 +242,9 @@ CLASS(CLASS_NAME, "MapMarker");
 		pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers");
 		{
 			SETV(_x, "selected", false);
+			if (GETV(_x, "radius") != 0) then {
+				CALLM0(_x, "updateAccuracyRadiusMarker");
+			};
 		} forEach _selectedMarkers;
 
 		SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
@@ -196,18 +252,19 @@ CLASS(CLASS_NAME, "MapMarker");
 
 	STATIC_METHOD("onMouseClickElsewhere") {
 		params ["_thisClass", "_button", "_shift", "_ctrl", "_alt"];
-		diag_log "Clicked elsewhere!";
-		if (_button == 0) then {
-			CALL_STATIC_METHOD(CLASS_NAME, "deselectAllMarkers", []);
 
-			// Update location data panel
-			CALL_STATIC_METHOD("ClientMapUI", "updateLocationDataPanel", [[]]);
+		if (_button == 0) then {
+			CALLSM0(CLASS_NAME, "deselectAllMarkers");
+			CALLSM0("ClientMapUI", "onMouseClickElsewhere");
 		};
+		
 	} ENDMETHOD;
 
 ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
+
+#ifndef _SQF_VM
 
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
@@ -222,6 +279,7 @@ SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
 */
 
 // Make some test markers
+/*
 pr _testMarker = NEW("MapMarkerLocation", []);
 pr _pos = [333, 333];
 CALLM1(_testMarker, "setPos", _pos);
@@ -239,3 +297,7 @@ pr _pos = [666, 666];
 CALLM1(_testMarker, "setPos", _pos);
 pr _color = [0, 0.8, 0.8, 1];
 CALLM1(_testMarker, "setColor", _color);
+*/
+
+
+#endif

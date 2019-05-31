@@ -26,7 +26,7 @@ Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
 
 
 CLASS(UNIT_CLASS_NAME, "");
-	VARIABLE("data");
+	VARIABLE_ATTR("data", [ATTR_PRIVATE]);
 	STATIC_VARIABLE("all");
 
 	//                              N E W
@@ -44,6 +44,8 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
+
+		OOP_INFO_0("NEW UNIT");
 
 		// Check argument validity
 		private _valid = false;
@@ -63,7 +65,10 @@ CLASS(UNIT_CLASS_NAME, "");
 			_valid = true;
 		};
 
-		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);  diag_log format ["[Unit::new] Error: created invalid unit: %1", _this] };
+		if (!_valid) exitWith { SET_MEM(_thisObject, "data", []);
+			diag_log format ["[Unit::new] Error: created invalid unit: %1", _this];
+			DUMP_CALLSTACK
+		};
 		// Check group
 		if(_group == "" && _catID == T_INF && isNull _hO) exitWith { diag_log "[Unit] Error: men must be added with a group!";};
 
@@ -79,6 +84,8 @@ CLASS(UNIT_CLASS_NAME, "");
 		} else {
 			_class = typeOf _hO;
 		};
+
+		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
 
 		// Create the data array
 		private _data = UNIT_DATA_DEFAULT;
@@ -101,10 +108,11 @@ CLASS(UNIT_CLASS_NAME, "");
 			CALL_METHOD(_group, "addUnit", [_thisObject]);
 		};
 
-		// Initialize variables and event handlers
+		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
 			CALLM0(_thisObject, "initObjectVariables");
 			CALLM0(_thisObject, "initObjectEventHandlers");
+			CALLM0(_thisObject, "initObjectDynamicSimulation");
 		};
 	} ENDMETHOD;
 
@@ -117,6 +125,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("delete") {
 		params[["_thisObject", "", [""]]];
+
+		OOP_INFO_0("DELETE UNIT");
+
 		private _data = GET_MEM(_thisObject, "data");
 
 		//Despawn this unit if it was spawned
@@ -124,7 +135,15 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
-		CALL_METHOD(_group, "removeUnit", [_thisObject]);
+		if(_group != "") then {
+			CALL_METHOD(_group, "removeUnit", [_thisObject]);
+		};
+
+		// Remove this unit from its garrison
+		private _gar = _data select UNIT_DATA_ID_GARRISON;
+		if (_gar != "") then {
+			CALL_METHOD(_gar, "removeUnit", [_thisObject]);
+		};
 
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_MEM(UNIT_CLASS_NAME, "all");
@@ -196,7 +215,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("spawn") {
 		params [["_thisObject", "", [""]], "_pos", "_dir"];
 
-		OOP_INFO_0("SPAWN");
+		OOP_INFO_2("SPAWN pos: %1, dir: %2", _pos, _dir);
 
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
@@ -218,8 +237,15 @@ CLASS(UNIT_CLASS_NAME, "");
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
+					if (isNull _groupHandle) then {
+						OOP_ERROR_0("Spawn: group handle is null!");
+					};
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created infantry unit is Null. Unit data: %1", _data);
+						_objectHandle = _groupHandle createUnit ["I_Protagonist_VR_F", _pos, [], 10, "FORM"];
+					};
 					[_objectHandle] joinSilent _groupHandle; //To force the unit join this side
 					_objectHandle allowFleeing 0;
 					
@@ -234,13 +260,38 @@ CLASS(UNIT_CLASS_NAME, "");
 					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {
 						CALLM1(_AI, "setSentryPos", _pos);
 					};
+
+					// Give intel to this unit
+					if ((random 10) < 4) then {
+						CALLSM2("UnitIntel", "initObject", _objectHandle, 1+round(random 1));
+					};
 				};
 				case T_VEH: {
-					_objectHandle = createVehicle [_className, _pos, [], 0, "can_collide"];
+
+					private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+					
+					// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
+					pr _special = "CAN_COLLIDE";
+					/*
+					if ([_catID, _subcatID] in T_static) then {
+						_special = "CAN_COLLIDE";
+					};
+					*/
+
+					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
+
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
+						_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
+					};
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
+
+					
+					// Give intel to this unit
+					CALLSM2("UnitIntel", "initObject", _objectHandle, 1);
 				};
 				case T_DRONE: {
 				};
@@ -253,10 +304,14 @@ CLASS(UNIT_CLASS_NAME, "");
 			// Initialize event handlers
 			CALLM0(_thisObject, "initObjectEventHandlers");
 
+			// Initialize dynamic simulation
+			CALLM0(_thisObject, "initObjectDynamicSimulation");
+
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		} else {
-			OOP_WARNING_0("Already spawned");
+			OOP_ERROR_0("Already spawned");
+			DUMP_CALLSTACK;
 		};
 
 		CRITICAL_SECTION_END
@@ -290,6 +345,27 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	} ENDMETHOD;
 
+	/*
+	Method: initObjectVariables
+	Deletes variables of unit's object handle.
+
+	Returns: nil
+	*/
+	METHOD("deinitObjectVariables") {
+		params [["_thisObject", "", [""]]];
+
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		// Reset variables of the object
+		if (!isNull _hO) then {
+			// Variable with a reference to Unit object
+			_hO setVariable [UNIT_VAR_NAME_STR, nil];
+			
+			// Variable with the efficiency vector of this unit
+			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: initObjectEventHandlers
@@ -298,6 +374,8 @@ CLASS(UNIT_CLASS_NAME, "");
 	Returns: nil
 	*/
 	METHOD("initObjectEventHandlers") {
+		params [["_thisObject", "", [""]]];
+
 		pr _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		pr _catID = _data select UNIT_DATA_ID_CAT;
@@ -316,6 +394,30 @@ CLASS(UNIT_CLASS_NAME, "");
 		};
 	} ENDMETHOD;
 
+	METHOD("initObjectDynamicSimulation") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		pr _cat = _data select UNIT_DATA_ID_CAT;
+		switch (_cat) do {
+			case T_INF: {	
+				_hO triggerDynamicSimulation true;
+				_hO enableDynamicSimulation false;
+			};
+
+			case T_VEH: {
+				_hO triggerDynamicSimulation false;
+				_hO enableDynamicSimulation true;
+			};
+
+			case T_DRONE: {
+				_hO triggerDynamicSimulation true;
+				_hO enableDynamicSimulation false;
+			};
+		};
+	} ENDMETHOD;
 
 	//                            D E S P A W N
 	/*
@@ -361,7 +463,8 @@ CLASS(UNIT_CLASS_NAME, "");
 			//if (_group != "") then { CALL_METHOD(_group, "handleUnitDespawned", [_thisObject]) };
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		} else {
-			OOP_WARNING_0("Already despawned");
+			OOP_ERROR_0("Already despawned");
+			DUMP_CALLSTACK;
 		};
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
@@ -583,7 +686,6 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data set [UNIT_DATA_ID_GROUP, ""];
 	} ENDMETHOD;
 
-
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S T A T I C   M E T H O D S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -623,7 +725,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	_units - array of <Unit> objects
 
-	Returns: [_nDrivers, _nTurrets]
+	Returns: [_nDrivers, _nTurrets, _nCargo]
 	*/
 	
 	STATIC_METHOD("getRequiredCrew") {
@@ -631,15 +733,17 @@ CLASS(UNIT_CLASS_NAME, "");
 		
 		pr _nDrivers = 0;
 		pr _nTurrets = 0;
+		pr _nCargo = 0;
 		{
 			if (CALLM0(_x, "isVehicle")) then {
 				pr _className = CALLM0(_x, "getClassName");
-				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets"];//, "_psgTurrets", "_n_cargo"];
+				([_className] call misc_fnc_getFullCrew) params ["_n_driver", "_copilotTurrets", "_stdTurrets", "_psgTurrets", "_n_cargo"];
 				_nDrivers = _nDrivers + _n_driver;
 				_nTurrets = _nTurrets + (count _copilotTurrets) + (count _stdTurrets);
+				_nCargo = _nCargo + (count _psgTurrets) + _n_cargo;
 			};
 		} forEach _units;
-		[_nDrivers, _nTurrets]
+		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 	
 	/*
@@ -658,7 +762,21 @@ CLASS(UNIT_CLASS_NAME, "");
 		_unitsClassNames call misc_fnc_getCargoInfantryCapacity;
 	} ENDMETHOD;
 
-
+	/*
+	Function: (static) getTemplateForSide
+	Get the appropriate unit template for the side specified
+	
+	Parameters: _side
+	
+	_side - side (WEST/EAST/INDEPENDENT/etc.)
+	
+	Returns: Template
+	*/
+	STATIC_METHOD("getTemplateForSide") {
+		params [P_THISCLASS, P_SIDE("_side")];
+		if(_side == INDEPENDENT) then { tAAF } else { if(_side == WEST) then { tGUERILLA } else { tGUERILLA } };
+	} ENDMETHOD;
+	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	//                                       G E T   P R O P E R T I E S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -832,3 +950,17 @@ CLASS(UNIT_CLASS_NAME, "");
 ENDCLASS;
 
 SET_STATIC_MEM("Unit", "all", []);
+
+#ifdef _SQF_VM
+
+Test_group_args = [WEST, 0]; // Side, group type
+Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
+
+["Unit.new", {
+	private _group = NEW("Group", Test_group_args);
+	private _obj = NEW("Unit", Test_unit_args + [_group]);
+	private _class = OBJECT_PARENT_CLASS_STR(_obj);
+	!(isNil "_class")
+}] call test_AddTest;
+
+#endif

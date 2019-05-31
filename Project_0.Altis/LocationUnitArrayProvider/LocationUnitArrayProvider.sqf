@@ -1,4 +1,5 @@
 #include "..\OOP_Light\OOP_Light.h"
+#include "..\Message\Message.hpp"
 
 /*
 Class: LocationUnitArrayProvider
@@ -8,9 +9,10 @@ Calculating these arrays is a resource-consuming and it must not be performed ve
 
 CLASS("LocationUnitArrayProvider", "MessageReceiver");
 
-	VARIABLE("spawnWest"); //These units can spawn West locations
+	VARIABLE("spawnWest"); // These units can spawn West locations
 	VARIABLE("spawnEast"); // These units can spawn East locations
 	VARIABLE("spawnInd"); // These units can spawn Independant locations
+	VARIABLE("timer");
 
 	// |                              N E W
 	/*
@@ -19,11 +21,18 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 
-		if (isNil "gMessageLoopLocation") exitWith {"[LocationUnitArrayProvider] Error: global location message loop doesn't exist!";};
+		if (isNil "gMessageLoopMain") exitWith {"[LocationUnitArrayProvider] Error: global location message loop doesn't exist!";};
 
 		SET_VAR(_thisObject, "spawnWest", []);
 		SET_VAR(_thisObject, "spawnEast", []);
 		SET_VAR(_thisObject, "spawnInd", []);
+		
+		// Create a timer for gLUAP
+		private _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		private _args = [_thisObject, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+		private _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
 	} ENDMETHOD;
 
 
@@ -33,13 +42,14 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	*/
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
-
+		
+		DELETE(T_GETV("timer"));
 	} ENDMETHOD;
 
 
 	// |                  G E T   M E S S A G E   L O O P
 	METHOD("getMessageLoop") { //Derived classes must implement this method
-		gMessageLoopLocation
+		gMessageLoopMain
 	} ENDMETHOD;
 
 
@@ -77,9 +87,11 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 	METHOD("getUnitArray") {
 		params [["_thisObject", "", [""]], ["_side", WEST, [WEST]] ];
 		switch (_side) do {
-			case WEST: {GET_VAR(_thisObject, "spawnWest")};
-			case EAST: {GET_VAR(_thisObject, "spawnEast")};
-			case INDEPENDENT: {GET_VAR(_thisObject, "spawnInd")}
+			case WEST: {T_GETV("spawnWest")};
+			case EAST: {T_GETV("spawnEast")};
+			case INDEPENDENT: {T_GETV("spawnInd")};
+			case CIVILIAN: {allPlayers - entities "HeadlessClient_F";};//returns just players
+			default {[]};
 		};
 	} ENDMETHOD;
 

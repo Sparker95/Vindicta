@@ -34,7 +34,7 @@ CLASS("GoalGroupClearArea", "Goal")
 		
 		// Create action to move
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
-		pr _args = [_AI, [[TAG_POS, _pos], [TAG_RADIUS, 150]] ];
+		pr _args = [_AI, [[TAG_POS, _pos], [TAG_MOVE_RADIUS, 75]] ];
 		pr _actionMove = NEW("ActionGroupMoveGroundVehicles", _args);
 		
 		// Add actions

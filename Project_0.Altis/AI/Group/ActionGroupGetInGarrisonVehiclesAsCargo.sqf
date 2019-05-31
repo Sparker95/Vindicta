@@ -15,7 +15,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		
-		SETV("freeVehicles", []); 
+		T_SETV("freeVehicles", []); 
 	} ENDMETHOD;
 	
 	// logic to run when the goal is activated
@@ -64,7 +64,7 @@ CLASS("ActionGroupGetInGarrisonVehiclesAsCargo", "ActionGroup")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
-		CALLM0(_thisObject, "failIfEmpty");
+		CALLM0(_thisObject, "failIfNoInfantry");
 		
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 		

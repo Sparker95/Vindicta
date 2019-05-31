@@ -26,33 +26,17 @@ class UndercoverUI
 		{
 			type = 0;
 			idc = IDC_U_SUSPICION_TEXT;
-			x = safeZoneX + safeZoneW * 0.46875;
-			y = safeZoneY + safeZoneH * 0.01944445;
-			w = safeZoneW * 0.0625;
-			h = safeZoneH * 0.01296297;
+			x = safeZoneX + safeZoneW * 0.39270834;
+			y = safeZoneY + safeZoneH * 0.01574075;
+			w = safeZoneW * 0.21458334;
+			h = safeZoneH * 0.02037038;
 			style = 2;
 			text = "";
 			colorBackground[] = {0.3569,0.8941,0.1216,0};
 			colorText[] = {1,1,1,1};
-			font = "PuristaBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.7);
-			shadow = 1;
-			
-		};
-		class U_Tooltip
-		{
-			type = 0;
-			idc = IDC_U_TOOLTIP;
-			x = safeZoneX + safeZoneW * 0.41875;
-			y = safeZoneY + safeZoneH * 0.03518519;
-			w = safeZoneW * 0.1625;
-			h = safeZoneH * 0.01851852;
-			style = 2;
-			text = "";
-			colorBackground[] = {0,0,0,0.5};
-			colorText[] = {1,1,1,1};
-			font = "PuristaMedium";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * .6);
+			font = "PuristaSemibold";
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.82);
+			shadow = 0;
 			
 		};
 		class U_Suspicion_StatusBar
@@ -65,7 +49,7 @@ class UndercoverUI
 			h = safeZoneH * 0.00462963;
 			style = 0;
 			colorBar[] = {1,1,1,1};
-			colorFrame[] = {0.2,0.2,0.2,1};
+			colorFrame[] = {0.2,0.2,0.2,0.2};
 			texture = "#(argb,8,8,3)color(1,1,1,1)";
 			access = 0;
 			

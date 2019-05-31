@@ -21,7 +21,7 @@ class BuildUI
 			x = safeZoneX + safeZoneW * 0.29375;
 			y = safeZoneY + safeZoneH * 0.78148149;
 			w = safeZoneW * 0.4125;
-			h = safeZoneH * 0.05277778;
+			h = safeZoneH * 0.05370371;
 			text = "UI\Images\gradient_2way.paa";
 			colorText[] = {0.82, 0.561, 0.129, 1.0};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
@@ -50,6 +50,38 @@ class BuildUI
 			colorText[] = {0.1, 0.1, 0.1, 1};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 		};
+		class Tooltip1
+		{
+			type = 13;
+			idc = IDC_TOOLTIP1;
+			x = safeZoneX + safeZoneW * 0.30989584;
+			y = safeZoneY + safeZoneH * 0.78611112;
+			w = safeZoneW * 0.38020834;
+			h = safeZoneH * 0.0175926;
+			style = 2;
+			text = "TAB: OPEN BUILD MENU";
+			colorBackground[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "RobotoCondensed";
+			size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			shadow = 1;
+		};
+		class Tooltip2
+		{
+			type = 13;
+			idc = IDC_TOOLTIP2;
+			x = safeZoneX + safeZoneW * 0.30989584;
+			y = safeZoneY + safeZoneH * 0.80925926;
+			w = safeZoneW * 0.38020834;
+			h = safeZoneH * 0.0175926;
+			style = 2;
+			text = "TAB: OPEN BUILD MENU";
+			colorBackground[] = {0,0,0,0};
+			colorText[] = {1,1,1,1};
+			font = "RobotoCondensed";
+			size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			shadow = 1;
+		};
 		class CategoryText_Center
 		{
 			type = 0;
@@ -64,7 +96,6 @@ class BuildUI
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedBold";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
 		};
 		class CategoryText_L2
 		{

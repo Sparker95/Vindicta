@@ -71,7 +71,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				private _posArray = _x;
 				
 				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-					diag_log format ["Checking position for HMG/GMG: %1 ...", _posArray];
+					OOP_DEBUG_MSG("Checking position for HMG/GMG: %1 ...", [_posArray]);
 				};
 				
 				private _pos = _posArray select LOCATION_SP_ID_POS;
@@ -81,7 +81,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				private _posFree = CALL_STATIC_METHOD("Location", "isPosSafe", _args);
 				if(_posFree) exitWith {
 					if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-						diag_log "Position is free!";
+						OOP_DEBUG_MSG("Position is free!", []);
 					};
 				
 					_posReturn = _pos;
@@ -92,7 +92,7 @@ if(_catID == T_INF) then //For infantry we use the counter to check for free pos
 				};
 				
 				if ([_catID, _subcatID] in [[T_VEH, T_VEH_stat_GMG_high], [T_VEH, T_VEH_stat_HMG_high]]) then {
-					diag_log "Position is occupied!";
+					OOP_DEBUG_MSG("Position is occupied!", []);
 				};
 			} forEach (_stCurrent select LOCATION_SPT_ID_SPAWN_POS);
 		};
@@ -130,40 +130,11 @@ if(_found) then {//If the spawn position has been found
 		private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
 		private _locPos = GET_VAR(_thisObject, "pos");
 		_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
-		diag_log format ["[Location::getSpawnPos] Warning: spawn position not for unit: %1. Returning default position.", [_catID, _subcatID, _groupType]];
+		OOP_WARNING_MSG("[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID ARG _subcatID ARG _groupType]);
 	} else {
 		// Try to find a safe position on a road for this vehicle
-		private _found = false;
-		private _searchRadius = 100;
-		while {!_found} do {
-			private _locPos = T_GETV("pos");
-			private _roads = _locPos nearRoads _searchRadius;
-			if (count _roads < 3) then {
-				// Search for more roads at the next iteration
-				_searchRadius = _searchRadius * 2;
-			} else {
-				_roads = _roads apply {[_x distance2D _locPos, _x]};
-				_roads sort true; // Ascending
-				private _i = 0;
-				while {_i < count _roads && !_found} do {
-					(_roads select _i) params ["_dist", "_road"];
-					private _rct = roadsConnectedTo _road;
-					if (count _rct > 0) then { // We better don't use terminal road pieces
-						// Check position if it's safe
-						private _dir = _road getDir (_rct select 0);
-						if (CALLSM3("Location", "isPosSafe", getPos _road, _dir, _className)) then {
-							_return = [getPos _road, _dir];
-							_found = true;
-						};
-					};
-					_i = _i + 1;
-				};
-				if (!_found) then {
-					// Failed to find a position here, increase the radius
-					_searchRadius = _searchRadius * 3;
-				};
-			};			
-		};
+		private _locPos = GET_VAR(_thisObject, "pos");
+		_return = CALLSM2("Location", "findSafePosOnRoad", _locPos, _className);
 	};
 };
 

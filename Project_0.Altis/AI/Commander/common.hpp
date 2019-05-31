@@ -1,3 +1,4 @@
+#define OOP_DEBUG
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
@@ -8,7 +9,7 @@
 #include "..\..\MessageTypes.hpp"
 #include "..\..\GlobalAssert.hpp"
 #include "..\..\Cluster\Cluster.hpp"
-#include "..\..\Templates\Templates.hpp"
+#include "..\..\Templates\Efficiency.hpp"
 #include "..\Action\Action.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "..\WorldFact\WorldFact.hpp"
@@ -21,3 +22,4 @@
 #include "..\Group\groupWorldStateProperties.hpp"
 #include "LocationData.hpp"
 #include "AICommander.hpp"
+#include "..\..\MessageReceiver\MessageReceiver.hpp"

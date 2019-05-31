@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:AI/CmdrAI/CmdrAction/ActionStateTransition.sqf","ActionStateTransition.sqf");NDSummary.OnSummaryLoaded("File:AI/CmdrAI/CmdrAction/ActionStateTransition.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[255,0,1,"Functions","Functions"],[264,0,0,"isAvailable","isAvailable"],[384,0,0,"apply","apply"]]);

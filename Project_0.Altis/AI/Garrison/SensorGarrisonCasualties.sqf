@@ -19,12 +19,15 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 
 	METHOD("update") {
 		params [["_thisObject", "", [""]]];
+
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
 		
 		pr _destroyedUnits = T_GETV("destroyedUnits");
 		// Don't send anything if noone was destroyed
 		if (count _destroyedUnits == 0) exitWith {};
 		
-		pr _gar = T_GETV("gar");
 		pr _side = CALLM0(_gar, "getSide");
 		pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		
@@ -52,8 +55,9 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 		if (!isNull _hOKiller) then {
 			pr _mainData = CALLM0(_unit, "getMainData");
 			_mainData params ["_catID", "_subcatID"];
+			pr _pos = CALLM0(_unit, "getPos");
 			pr _destroyedUnits = T_GETV("destroyedUnits");
-			_destroyedUnits pushBack [_catID, _subcatID, _hOKiller];
+			_destroyedUnits pushBack [_catID, _subcatID, _hOKiller, _pos];
 		};
 	} ENDMETHOD;
 	

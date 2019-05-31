@@ -21,6 +21,9 @@
 // Maximum distance for QRF that doesn't need vehicles to transport troops
 #define QRF_NO_TRANSPORT_DISTANCE_MAX	666
 
+// Distance from cluster center to where the troops must dismount while performing ClearArea goal
+#define CLEAR_AREA_DISMOUNT_DISTANCE	400
+
 
 // Structure of a target record for commander
 // It's the same as targets structure but has an array with garrisons that are observing this target

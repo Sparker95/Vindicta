@@ -6,169 +6,483 @@
         {
             "label": "Compile with SQF-VM",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
+                "--no-execute-print",
                 "--parse-only",
-                "--load", "./../../Project_0.Altis",
-                "-i", "${file}",
-                "--command-dummy-unary ofstream_new",
-                "--command-dummy-binary 4|ofstream_write"
-                //"./../../${relativeFile}" 
+                "--load",
+                ".",
+                "-i",
+                "${file}",
+                "--disable-macro-warnings"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
-                // Reveal the output only if unrecognized errors occur.
-                "reveal": "silent"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
-            "problemMatcher":
-            {
-                "owner": "sqf",
-                "fileLocation": ["absolute"],//, "${workspaceFolder}"],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
-            "label": "Run with SQF-VM (usually won't work due to unimplemented functions)",
+            "label": "Run with SQF-VM (sometimes won't work due to unimplemented functions)",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load", "./../../Project_0.Altis",
-                "-i", "${file}",
-                "--command-dummy-unary ofstream_new",
-                "--command-dummy-binary 4|ofstream_write"
+                "--no-execute-print",
+                "--disable-macro-warnings",
+                "--load",
+                ".",
+                "-i",
+                "${file}"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
-            "problemMatcher":
-            {
-                "owner": "sqf",
-                "fileLocation": ["absolute"],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
             "label": "Preprocess with SQF-VM",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load", "./../../Project_0.Altis",
-                "-E", "${file}"
+                "--no-execute-print",
+                "--load",
+                ".",
+                "-E",
+                "${file}",
+                "--disable-macro-warnings"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
             },
             "group": "build",
             "presentation": {
-                "reveal": "always"
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
             },
-            "problemMatcher":
-            {
-                "owner": "sqf",
-                "fileLocation": ["absolute"],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
         },
         {
             "label": "Pretty print with SQF-VM (not working)",
             "type": "process",
-            "command": "sqfvm.exe",
+            "command": "../tools/SQF-VM/sqfvm.exe",
             "args": [
                 "-a",
-                "--load", "./../../Project_0.Altis",
-                "--pretty-print", "${file}" 
-                //"--pretty-print", "./../../${relativeFile}" 
+                "--load",
+                ".",
+                "--no-execute-print",
+                "--disable-macro-warnings",
+                "--pretty-print",
+                "${file}"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/tools/SQF-VM"
+                "cwd": "${workspaceRoot}/Project_0.Altis"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Parse ALL with SQF-VM",
+            "type": "process",
+            "command": "${workspaceRoot}/tools/sqf-vm/sqf-vm-compile-all.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools/sqf-vm"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Test: All",
+            "type": "process",
+            "command": "../tools/SQF-VM/sqfvm.exe",
+            "args": [
+                "-a",
+                "--no-execute-print",
+                "--disable-macro-warnings",
+                "--load",
+                ".",
+                "-i",
+                "${workspaceRoot}\\Project_0.Altis\\Tests\\RunTests.sqf"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/Project_0.Altis"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "sqf",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|([a-zA-Z]\\:.*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                },
+                {
+                    "owner": "sqf",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}/Project_0.Altis"
+                    ],
+                    "pattern": [
+                        {
+                            "regexp": "\\[(RNT|WRN|ERR)\\]\\[L?(.+)\\|C(.+)\\|(.[^\\:].*?)\\](.*)",
+                            "line": 2,
+                            "column": 3,
+                            "severity": 1,
+                            "file": 4,
+                            "message": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Generate All initClasses",
+            "type": "process",
+            "command": "generateAllInitClasses.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/batch"
             },
             "group": "build",
             "presentation": {
                 "reveal": "always"
             },
-            "problemMatcher":
-            {
-                "owner": "sqf",
-                "fileLocation": ["absolute"],
-                "pattern": [
-                    {
-                        "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.+)\\|C(.+)\\|(.*?)\\]  (.*)$",
-                        "line": 2,
-                        "column": 3,
-                        "severity": 1,
-                        "file": 4,
-                        "message": 5
-                    }
-                ]
-            }
+            "problemMatcher": []
+        },
+        {
+            "label": "Watch Arma RPT",
+            "type": "shell",
+            "options": {
+                "shell": {
+                    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+                }
+            },
+            "command": "Get-Content",
+            "args": [
+                "${file}",
+                "-Wait",
+                "-Tail",
+                "10"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "SQF-VM"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "oop",
+                    "fileLocation": "absolute",
+                    "pattern": [
+                        {
+                            "regexp": "\"\\[OOP\\] (.+)\\: file: ([a-zA-Z]\\:.*?), line\\: (.+), (.*)\"",
+                            "severity": 1,
+                            "file": 2,
+                            "line": 3,
+                            "message": 4
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "Build PBOs",
+            "type": "process",
+            "command": "setup_and_build.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean PBOs",
+            "type": "process",
+            "command": "clean.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Copy github SQM over editor sqm (with backup)",
+            "type": "process",
+            "command": "copy_sqm_from_github.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Copy editor SQM over github sqm",
+            "type": "process",
+            "command": "copy_sqm_to_github.bat",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "PBO"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Watch Arma RPT Files",
+            "type": "process",
+            "command": "powershell",
+            "args": [   
+                "-ExecutionPolicy",
+                "Unrestricted",
+                "-NoProfile",
+                "-File",
+                "LogExpertWatcher.ps1"       
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/tools"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "focus": true,
+                "group": "logging"
+            },
+            "problemMatcher": []
         }
-        // {
-        //     "label": "Run in SQF-VM",
-        //     "type": "process",
-        //     "command": ".\\tools\\sqf-vm-compile.bat",
-        //     "args": [
-        //         "${relativeFile}"
-        //     ],
-        //     "group": "build",
-        //     "presentation": {
-        //         // Reveal the output only if unrecognized errors occur.
-        //         "reveal": "silent"
-        //     },
-        //     "problemMatcher":
-        //     {
-        //         "owner": "sqf",
-        //         "fileLocation": ["absolute"],
-        //         "pattern": [
-        //             {
-        //                 "regexp": "^\\[(RNT|WRN|ERR)\\]\\[L(.*)\\|C(.*)\\]  (.*)$",
-        //                 "line": 2,
-        //                 "column": 3,
-        //                 "severity": 1,
-        //                 "message": 4
-        //             },
-        //             {
-        //                 "regexp": "In file\\:  (.*)$",
-        //                 "file": 1,
-        //             }
-        //         ]
-        //     }
-        // }
     ]
 }

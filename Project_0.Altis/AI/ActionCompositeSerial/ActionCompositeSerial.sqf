@@ -1,3 +1,7 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
+#define OFSTREAM_FILE "AI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Action\Action.hpp"
 
@@ -52,36 +56,27 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		params [["_thisObject", "", [""]]];
 		private _subactions = GETV(_thisObject, "subactions");
 		
-		// remove all completed actions from the front of the subaction list
-		while {count _subactions > 0} do {
-			private _subactionFront = _subactions select 0;
-			private _state = GETV(_subactionFront, "state");
-			if (_state != ACTION_STATE_COMPLETED /*&& _state != ACTION_STATE_FAILED*/) exitWith {};
-			// The front action is in either COMPLETED or FAILED state, so we must delete it
-			CALLM(_subactionFront, "terminate", []);
-			DELETE(_subactionFront);
-			_subactions deleteAt 0;
-		};
+		private _state = ACTION_STATE_COMPLETED;
 		
-		// if any subactions remain, process the one at the front of the list
-		private _statusOfSubactions = ACTION_STATE_COMPLETED; // If there will be no subactions to process, return COMPLETED
-		if (count _subactions > 0) then {
+		while {count _subactions > 0 && _state == ACTION_STATE_COMPLETED} do {
+			scopeName "s0";
+
 			private _subactionFront = _subactions select 0;
-			
-			// grab the status of the front-most subaction
-			_statusOfSubactions = CALLM(_subactionFront, "process", []);
-			
-			// we have to test for the special case where the front-most subaction
-		    // reports 'completed' *and* the subaction list contains additional actions.When
-		    // this is the case, to ensure the parent keeps processing its subaction list
-		    // we must return the 'active' status.
-		    if (_statusOfSubactions == ACTION_STATE_COMPLETED && count _subactions > 1) then {
-		    	_statusOfSubactions = ACTION_STATE_ACTIVE;
-		    };
+			_state = CALLM0(_subactionFront, "process");
+
+			OOP_INFO_2("Processed subaction: %1, state: %2", _subactionFront, _state);
+
+			// Terminate and delete a completed action
+			if (_state == ACTION_STATE_COMPLETED) then  {
+				// Action is completed, terminate and delete it
+				CALLM(_subactionFront, "terminate", []);
+				DELETE(_subactionFront);
+				_subactions deleteAt 0;
+			};
 		};
-		
+
 		// return
-		_statusOfSubactions
+		_state
 	} ENDMETHOD;
 	
 	/*
@@ -173,6 +168,16 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		CALLM1(_subactions select 0, "handleGroupsRemoved", _groups);
 	} ENDMETHOD;
 	
+	/*
+	Method: handleUnitsAdded
+	Calls the same method of the front most action.
+	*/
+	
+	METHOD("handleUnitsAdded") {
+		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
+		private _subactions = GETV(_thisObject, "subactions");		
+		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
+	} ENDMETHOD;
 	
 	/*
 	Method: handleUnitsRemoved
@@ -183,17 +188,6 @@ CLASS("ActionCompositeSerial", "ActionComposite")
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
 		private _subactions = GETV(_thisObject, "subactions");		
 		CALLM1(_subactions select 0, "handleUnitsRemoved", _units);
-	} ENDMETHOD;
-	
-	/*
-	Method: handleUnitsAdded
-	Calls the same method of the front most action.
-	*/
-	
-	METHOD("handleUnitsAdded") {
-		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		private _subactions = GETV(_thisObject, "subactions");		
-		CALLM1(_subactions select 0, "handleUnitsAdded", _units);
 	} ENDMETHOD;
 	
 

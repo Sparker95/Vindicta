@@ -11,7 +11,6 @@
 #include "..\..\GlobalAssert.hpp"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
-#include "..\goalRelevance.hpp"
 #include "AI.hpp"
 
 /*
@@ -29,8 +28,10 @@ Author: Sparker 07.11.2018
 
 #define pr private
 
+#ifndef RELEASE_BUILD
 // Will output to .rpt which goals each AI is choosing from
-#define DEBUG_POSSIBLE_GOALS
+//#define DEBUG_POSSIBLE_GOALS
+#endif
 
 #define AI_TIMER_SERVICE gTimerServiceMain
 #define STIMULUS_MANAGER gStimulusManager
@@ -88,9 +89,9 @@ CLASS("AI_GOAP", "AI")
 	// ----------------------------------------------------------------------
 	
 	METHOD("process") {
-		params [["_thisObject", "", [""]]];
+		params [["_thisObject", "", [""]], ["_accelerate", false]];
 		
-		OOP_INFO_0("PROCESS");
+		//OOP_INFO_0("PROCESS");
 		
 		pr _agent = GETV(_thisObject, "agent");
 		
@@ -114,7 +115,9 @@ CLASS("AI_GOAP", "AI")
 		*/
 		
 		// Update all sensors
-		CALLM0(_thisObject, "updateSensors");
+		CALLM1(_thisObject, "updateSensors", _accelerate);
+
+		OOP_INFO_1("PROCESS: world state: %1", [GETV(_thisObject, "worldState")] call ws_toString);
 		
 		// Update all world facts (delete old facts)
 		CALLM0(_thisObject, "updateWorldFacts");
@@ -171,10 +174,11 @@ CLASS("AI_GOAP", "AI")
 					
 					// Run the A* planner to generate a plan
 					pr _args = [GETV(_thisObject, "worldState"), _wsGoal, _possActions, _goalParameters, _thisObject];
-					pr _actionPlan = CALL_STATIC_METHOD("AI_GOAP", "planActions", _args);
+
+					CALL_STATIC_METHOD("AI_GOAP", "planActions", _args) params ["_foundPlan", "_actionPlan"];
 					
-					// Did the planner return anything?
-					if (count _actionPlan > 0) then {
+					// Did the planner succeed?
+					if (_foundPlan) then {
 						// Unpack the plan
 						_newAction = CALLM(_thisObject, "createActionsFromPlan", [_actionPlan]);
 						// Set a new action from the plan
@@ -182,7 +186,8 @@ CLASS("AI_GOAP", "AI")
 					} else {
 						// Terminate the current action (if it exists)
 						CALLM0(_thisObject, "deleteCurrentAction");
-						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", GETV(_thisObject, "worldState"), _wsGoal);
+						pr _wsCurr = GETV(_thisObject, "worldState");
+						OOP_ERROR_2("PROCESS: Failed to generate an action plan. Current WS: %1,  Goal WS: %2", _wsCurr, _wsGoal);
 					};
 				} else {
 					// Set a new action from the predefined action
@@ -260,6 +265,14 @@ CLASS("AI_GOAP", "AI")
 					T_SETV("currentGoalSource", "");
 					T_SETV("currentGoalParameters", []);
 				};
+
+				case ACTION_STATE_REPLAN : {
+					// Probably we should replan our goal at the next iteration
+					SETV(_thisObject, "currentGoal", "");
+					T_SETV("currentGoal", "");
+					T_SETV("currentGoalSource", "");
+					T_SETV("currentGoalParameters", []);
+				};
 			};
 		};
 		
@@ -309,7 +322,8 @@ CLASS("AI_GOAP", "AI")
 			if (_goalState != ACTION_STATE_COMPLETED) then {
 				pr _goalClassName = _x select 0;
 				pr _bias = _x select 1;
-				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject]);
+				pr _parameters = _x select 2;
+				pr _relevance = CALL_STATIC_METHOD(_goalClassName, "calculateRelevance", [_thisObject ARG _parameters]);
 				//diag_log format ["   Calculated relevance for goal %1: %2", _goalClassName, _relevance];
 				_relevance = _relevance + _bias;
 				
@@ -349,12 +363,13 @@ CLASS("AI_GOAP", "AI")
 	_parameters - the array with parameters to be passed to the goal if it's activated, can be anything goal-specific
 	_sourceAI - <AI> object that gave this goal or "", can be used to identify who gave this goal, for example, when deleting it through <deleteExternalGoal>
 	_deleteSimilarGoals - Bool, optional default true. If true, will automatically delete all goals with the same _goalClassName.
-	
+	_callProcess - Bool, optional default true. If true, also calls process method inside this function call to accelerate goal arbitration.
+
 	Returns: nil
 	*/
 	
 	METHOD("addExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true] ];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_bias", 0, [0]], ["_parameters", [], [[]]], ["_sourceAI", "", [""]], ["_deleteSimilarGoals", true], ["_callProcess", true]];
 		
 		OOP_INFO_3("ADDED EXTERNAL GOAL: %1, parameters: %2, source: %3", _goalClassName, _parameters, _sourceAI);
 		
@@ -382,6 +397,14 @@ CLASS("AI_GOAP", "AI")
 		
 		_goalsExternal pushBackUnique [_goalClassName, _bias, _parameters, _sourceAI, ACTION_STATE_INACTIVE];
 		
+		// Call the "onGoalAdded" static method
+		CALLSM(_goalClassName, "onGoalAdded", [_thisObject ARG _parameters]);
+
+		// Call process method to accelerate goal arbitration
+		if (_callProcess) then {
+			CALLM0(_thisObject, "process");
+		};
+
 		nil
 	} ENDMETHOD;
 	
@@ -417,6 +440,12 @@ CLASS("AI_GOAP", "AI")
 			pr _cg = _goalsExternal select _i;
 			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
 					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
+				
+				// Call the "onGoalDeleted" static method
+				private _thisGoalClassName = _cg select 0;
+				CALLSM(_cg select 0, "onGoalDeleted", [_thisObject ARG _cg select 2]);
+
+				// Delete this goal
 				pr _deletedGoal = _goalsExternal deleteAt _i;
 				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
 				_goalDeleted = true;
@@ -525,8 +554,9 @@ CLASS("AI_GOAP", "AI")
 		{
 			pr _AI = CALLM0(_x, "getAI");
 			pr _actionState = CALLM2(_AI, "getExternalGoalActionState", _goalClassName, _goalSource);
-			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, (_actionState == ACTION_STATE_COMPLETED) ); // || (_actionState == -1));
-			(_actionState == ACTION_STATE_COMPLETED)  // || (_actionState == -1)
+			pr _completed = (_actionState == ACTION_STATE_COMPLETED);
+			OOP_INFO_3("    AI: %1, State: %2, Completed: %3", _AI, _actionState, _completed ); // || (_actionState == -1));
+			_completed  // || (_actionState == -1)
 		} count _agents == (count _agents)
 	} ENDMETHOD;
 
@@ -574,6 +604,17 @@ CLASS("AI_GOAP", "AI")
 		
 		SETV(_thisObject, "currentAction", _newAction);
 	} ENDMETHOD;
+
+	// ----------------------------------------------------------------------
+	// |                G E T   C U R R E N T   A C T I O N
+	// |
+	// ----------------------------------------------------------------------
+	
+
+	METHOD("getCurrentAction") {
+		params [["_thisObject", "", [""]]];
+		T_GETV("currentAction")
+	} ENDMETHOD;
 	
 
 	// ----------------------------------------------------------------------
@@ -615,6 +656,7 @@ CLASS("AI_GOAP", "AI")
 		
 			// If there are multiple actions in the plan, create an ActionCompositeSerial and add subactions to it 
 			pr _actionSerial = NEW("ActionCompositeSerial", [_thisObject]);
+
 			{ // foreach _plan
 				_x params ["_actionPrecedence", "_actionClassName", "_actionParameters"];
 				
@@ -624,10 +666,10 @@ CLASS("AI_GOAP", "AI")
 				
 				// Add it to the subactions list
 				CALLM1(_actionSerial, "addSubactionToBack", _action);
-				
-				// Return the serial action
-				_actionSerial
 			} forEach _plan;
+
+			// Return the serial action
+			_actionSerial
 		};
 	} ENDMETHOD;
 	
@@ -648,8 +690,10 @@ CLASS("AI_GOAP", "AI")
 	Performs backwards search of actions to connect current world state and goal world state, starting search from goal world state.
 	*/
 	
+	#ifndef RELEASE_BUILD
 	// Will print useful data about generated plan and how it was achieved
 	#define ASTAR_DEBUG
+	#endif
 	
 	#ifdef OFSTREAM_ENABLE
 	#define ASTAR_LOG(text) (ofstream_new "A-star.rpt") ofstream_write text
@@ -661,7 +705,7 @@ CLASS("AI_GOAP", "AI")
 		pr _paramsGood = params [ ["_thisClass", "", [""]], ["_currentWS", [], [[]]], ["_goalWS", [], [[]]], ["_possibleActions", [], [[]]], ["_goalParameters", [], [[]]], ["_AI", "ASTAR_ERROR_NO_AI", [""]] ];
 		
 		if (!_paramsGood) then {
-			ade_dumpCallstack;
+			DUMP_CALLSTACK;
 		};
 		
 		// Copy the array of possible actions becasue we are going to modify it
@@ -673,15 +717,26 @@ CLASS("AI_GOAP", "AI")
 		OOP_INFO_4("[AI:AStar] Info: currentWS: %1,  goalWS: %2,  goal parameters: %3  possibleActions: %4", [_currentWS] call ws_toString, [_goalWS] call ws_toString, _goalParameters, _possibleActions);
 		#endif
 		
+		pr _initialNumUnsatisfiedProps = [_goalWS, _currentWS] call ws_getNumUnsatisfiedProps;
+
+		// We are already there!
+		if(_initialNumUnsatisfiedProps == 0) exitWith { 
+			#ifdef ASTAR_DEBUG
+			OOP_INFO_0("[AI:AStar] Info: No search required we are already at our goal!");
+			#endif
+			[true, []]
+		};
+
 		// Set of nodes already evaluated
 		pr _closeSet = [];
 		
 		// Set of discovered nodes to evaluate
 		pr _goalNode = ASTAR_NODE_NEW(_goalWS);
-		_goalNode set [ASTAR_NODE_ID_F, [_goalWS, _currentWS] call ws_getNumUnsatisfiedProps]; // Calculate heuristic for the goal node
+		_goalNode set [ASTAR_NODE_ID_F, _initialNumUnsatisfiedProps]; // Calculate heuristic for the goal node
 		pr _openSet = [_goalNode];
 		
 		// Main loop of the algorithm
+		pr _foundPath = false;
 		pr _path = []; // Return value of the algorithm
 		pr _count = 0; // A safety counter, in case it freezes.
 		while {count _openSet > 0 && _count < 50} do {
@@ -732,7 +787,7 @@ CLASS("AI_GOAP", "AI")
 				#ifdef ASTAR_DEBUG
 					OOP_INFO_0("[AI:AStar] Info: Reached current state!");
 				#endif
-				
+				_foundPath = true;
 				// Recunstruct path
 				pr _n = _node;
 				while {true} do {
@@ -935,6 +990,7 @@ CLASS("AI_GOAP", "AI")
 			_count = _count + 1;
 		};
 		
+
 		// Sort the plan by precedence
 		_path sort true; // Ascending
 		
@@ -943,7 +999,7 @@ CLASS("AI_GOAP", "AI")
 		#endif
 		
 		// Return the reconstructed sorted path 
-		_path
+		[_foundPath, _path]
 	} ENDMETHOD;
 	
 	// Converts an A* node to string for debug purposes

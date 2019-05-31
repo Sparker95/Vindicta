@@ -25,3 +25,5 @@ Thx Dedmen for this idea!
 
 // Macro: CRITICAL_SECTION_END
 #define CRITICAL_SECTION_END };
+
+#define CRITICAL_SECTION private _null = isNil 

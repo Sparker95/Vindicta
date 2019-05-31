@@ -294,21 +294,20 @@ SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
 SET_STATIC_VAR(CLASS_NAME, "timePrevButtonDown", 0);
 
 MapMarker_EH_Draw = {
-	//OOP_INFO_0("Map OnDraw");
 	params ["_control"];
-
 	pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 	{
 		CALLM1(_x, "onDraw", _control);
 	} forEach _all;
 };
 
+#ifndef _SQF_VM
 0 spawn {
 	waitUntil {! isNull (findDisplay 12)};
 
 	// Add a Draw event handler to draw markers
 	// It will call onDraw of every MapMarker object
-	((findDisplay 12) displayCtrl 51) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
+	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
 
 	// ==== Add event handlers ====
 
@@ -382,3 +381,4 @@ MapMarker_EH_Draw = {
 		};
 	}];
 };
+#endif
