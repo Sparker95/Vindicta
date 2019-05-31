@@ -24,6 +24,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	VARIABLE("phase");
 	VARIABLE("lastUpdateTime");
+	VARIABLE("spawnPoints");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -86,25 +87,47 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Create Respawn Marker at one of the houses
 			private _marker = createMarker ["respawn_west_" + GETV(_x, "name"), _spawnPos]; // magic
 			_marker setMarkerAlpha 0.0;
-
-			_spawnPoints pushBack _spawnPos;
+			private _city = GETV(_policeStation, "parent");
+			_spawnPoints pushBack [GETV(_city, "name"), _marker];
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION });
+		T_SETV("spawnPoints", _spawnPoints);
 
 #ifndef _SQF_VM
 		ASSERT_MSG(count _spawnPoints > 0, "Couldn't create any spawn points, no police stations found? Check your map setup!");
+
 		// Single player
 		if(!IS_MULTIPLAYER) then
 		{
-			FAILURE("CivilWar game mode doesn't support single player yet!!");
-			// TODO: handle "respawn" in single player
-			// player setPosATL (selectRandom _spawnPoints);
-			// {
-			// 	deleteVehicle _x;
-			// } forEach (units group player) - [player];
-			// player addItem "Map";
-			// player addItem "Compass";
+			{
+				deleteVehicle _x;
+			} forEach (units group player) - [player];
+
+			player addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
+			player setPosATL (getMarkerPos ((selectRandom _spawnPoints)#1));
+			T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
 		};
 #endif
+	} ENDMETHOD;
+
+	/* private */ METHOD("singlePlayerRespawn") {
+		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+		T_PRVAR(spawnPoints);
+
+		private _respawnLoc = selectRandom _spawnPoints;
+		private _newUnit = group _oldUnit createUnit [typeOf _oldUnit, getMarkerPos (_respawnLoc#1), [], 0, "NONE"];
+		selectPlayer _newUnit;
+		T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
+		[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
+		[_oldUnit] joinSilent grpNull;
+		_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
+		(_respawnLoc#0) spawn {
+			// This works mostly...
+			cutText ["You died! Oh no!", "BLACK FADED", 999];
+			sleep 5;
+			cutText [format["But... you are born again in %1!", _this], "BLACK IN", 10];
+			BIS_DeathBlur ppEffectAdjust [0.0];
+			BIS_DeathBlur ppEffectCommit 0.0;
+		};
 	} ENDMETHOD;
 
 	/* protected override */METHOD("playerSpawn") {
@@ -190,6 +213,17 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				CALLM(_data, "update", [_policeStation ARG _state]);
 			} forEach _policeStations;
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+	} ENDMETHOD;
+
+	
+	// Override this to perform actions when a location spawns
+	/* protected override */METHOD("locationSpawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
+
+	// Override this to perform actions when a location despawns
+	/* protected override */METHOD("locationDespawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	} ENDMETHOD;
 ENDCLASS;
 
