@@ -186,3 +186,5 @@ player addAction ["Talk to civilian", // title
 
 // Init the UnitIntel on player
 CALLSM1("UnitIntel", "initPlayer", player);
+
+CALLM(gGameMode, "playerSpawn", _this);

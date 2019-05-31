@@ -828,7 +828,7 @@ CLASS("GarrisonModel", "ModelBase")
 		OOP_INFO_MSG("Joined %1 to %2", [LABEL(_thisObject) ARG LABEL(_location)]);
 
 		private _locType = GETV(_location, "type");
-		if(_locType == "roadblock") then {
+		if(_locType == LOCATION_TYPE_ROADBLOCK) then {
 			// TODO: BUILD ROADBLOCK? This would be temporary, not sure what proper way to do it is...
 		};
 

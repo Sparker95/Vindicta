@@ -55,7 +55,7 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 
 		// // Occupying road blocks is allowed, but other locations
 		// // are not.
-		// if(GETV(_tgtLoc, "type") == "roadBlock") then {
+		// if(GETV(_tgtLoc, "type") == LOCATION_TYPE_ROADBLOCK) then {
 		// 	APPLY_SCORE_STRATEGY(_defaultScore, 1)
 		// } else {
 		// 	APPLY_SCORE_STRATEGY(_defaultScore, 0)

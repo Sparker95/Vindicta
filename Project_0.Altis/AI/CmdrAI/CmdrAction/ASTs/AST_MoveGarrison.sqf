@@ -47,7 +47,6 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 
 		if(CALLM(_garr, "isDead", [])) exitWith {
 			if(_moving and GETV(_world, "type") == WORLD_TYPE_REAL) then {
-				CALLM(_garr, "cancelMoveActual", []);
 				T_SETV("moving", false);
 			};
 			T_GETV("failGarrisonDead")
