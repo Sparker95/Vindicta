@@ -26,6 +26,7 @@ CRITICAL_SECTION {
 	switch (PROFILE_NAME) do {
 		//case "Sparker": { gGameMode = NEW("GameModeRandom", []); };
 		//case "billw": 	{ gGameMode = NEW("RedVsGreenGameMode", []); };
+		case "Jeroen": 	{ gGameMode = NEW("EmptyGameMode", []); };
 		default 		{ gGameMode = NEW("CivilWarGameMode", []); };
 	};
 
