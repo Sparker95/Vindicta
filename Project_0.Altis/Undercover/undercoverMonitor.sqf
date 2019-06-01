@@ -16,10 +16,9 @@
 #define sCOMPROMISED 2
 #define sARRESTED 3
 #define sINCAPACITATED 4
-//#define DEBUG
 
 #ifndef RELEASE_BUILD
-//#define DEBUG_UNDERCOVER_MONITOR
+#define DEBUG_UNDERCOVER_MONITOR
 #endif
 
 gMsgLoopUndercover = NEW("MessageLoop", []);
@@ -317,7 +316,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 									_suspicion = _suspicion + (SUSP_VEH_CREW * (count crew vehicle _unit));
 								};
 
-								#ifdef DEBUG 
+								#ifdef DEBUG_UNDERCOVER_MONITOR 
 									_unit setVariable ["distance", _distance];
 									_unit setVariable ["bodyExposure", _bodyExposure];
 								#endif
@@ -360,7 +359,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							pr _mrkLastHost = createMarkerLocal ["markerWanted", position _unit];
 							"markerWanted" setMarkerAlphaLocal 0.0;
 
-							#ifdef DEBUG
+							#ifdef DEBUG_UNDERCOVER_MONITOR
 								"markerWanted" setMarkerBrushLocal "SOLID";
 								"markerWanted" setMarkerAlphaLocal 0.5;
 								"markerWanted" setMarkerColorLocal "ColorBlue";
@@ -409,7 +408,13 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 						if !(_bInVeh OR !(time > _timeCompromised)) exitWith {
 							pr _prevState = T_GETV("state");
-							T_CALLM("setState", [_prevState]);	
+							
+							if (_prevState == sCOMPROMISED) then { 
+								T_CALLM("setState", [sUNDERCOVER]); 
+							} else {
+								T_CALLM("setState", [_prevState]);	
+							}; // don't want to be trapped in compromised state
+
 							OOP_INFO_0("Leaving COMPROMISED state.");
 						};
 
@@ -498,7 +503,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				#endif
 
 				// update debug UI
-				#ifdef DEBUG
+				#ifdef DEBUG_UNDERCOVER_MONITOR
 				_unit setVariable ["suspicion", _suspicion];
 				_unit setVariable ["bInVeh", _bInVeh];
 				_unit setVariable ["nearestEnemy", _nearestEnemy];

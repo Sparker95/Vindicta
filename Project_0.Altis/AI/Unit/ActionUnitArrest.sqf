@@ -71,7 +71,6 @@ CLASS("ActionUnitArrest", "Action")
 		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) exitWith {
 			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			_state = ACTION_STATE_FAILED;
-			T_SETV("state", ACTION_STATE_FAILED); 
 		};
 		
 		pr _state = ACTION_STATE_ACTIVE;
@@ -167,16 +166,16 @@ CLASS("ActionUnitArrest", "Action")
 							// play animation if close enough, finishing the script
 							if (_pos_search distance getpos _target < 0.1) then {
 								pr _animation = call {
-									if( _currentWeapon isequalto primaryWeapon _captor ) exitWith {
+									if( currentWeapon isequalto primaryWeapon _captor ) exitWith {
 										"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
 									};
-									if( _currentWeapon isequalto secondaryWeapon _captor ) exitWith {
+									if( currentWeapon isequalto secondaryWeapon _captor ) exitWith {
 										"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
 									};
-									if( _currentWeapon isequalto handgunWeapon _captor ) exitWith {
+									if( currentWeapon isequalto handgunWeapon _captor ) exitWith {
 										"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
 									};
-									if( _currentWeapon isequalto binocular _captor ) exitWith {
+									if( currentWeapon isequalto binocular _captor ) exitWith {
 										"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
 									};
 									"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
@@ -189,7 +188,7 @@ CLASS("ActionUnitArrest", "Action")
 								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
 							};
 
-							_target setVariable ["isMoving", _isMoving];
+							//_target setVariable ["isMoving", _isMoving];
 							
 							_return = _animationDone;
 							_return
