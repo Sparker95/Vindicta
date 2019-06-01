@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include "..\..\Undercover\UndercoverMonitor.hpp"
 
 /*
 Author: Marvis 09.05.2019
@@ -15,10 +16,15 @@ CLASS("GoalGroupArrest", "Goal")
 
 			pr _relevance = 0;
 			pr _suspTarget = GETV(_AI, "suspTarget");
+			pr _group = GETV(_AI, "agent");
+			pr _hG = CALLM0(_group, "getGroupHandle");
 
 			if !(isNil "_suspTarget") then { 
-				//OOP_INFO_1("GoalGroupArrest target: %1", _suspTarget);
-					_relevance = 30; 
+				if (behaviour _hG == "COMBAT") exitWith { _relevance = 0; };
+				if !(UNDERCOVER_IS_TARGET(_suspTarget)) then {
+					_relevance = 120;
+					//_suspTarget setVariable [UNDERCOVER_TARGET, true, true];	
+				}; 
 			} else {
 				OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
 				_relevance = 0;

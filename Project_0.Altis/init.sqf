@@ -26,6 +26,7 @@ if(IS_SERVER) then {
 		//case "Sparker": { "GameModeRandom" };
 		//case "billw": 	{ "RedVsGreenGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
+		case "Marvis": 	{ "EmptyGameMode" };
 		default 		{ "CivilWarGameMode" };
 	};
 	PUBLIC_VARIABLE "gGameModeName";
