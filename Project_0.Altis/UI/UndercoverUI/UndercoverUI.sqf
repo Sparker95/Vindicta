@@ -15,6 +15,7 @@ Author: Marvis
 #define CLASS_NAME "UndercoverUI"
 #define pr private
 
+#ifndef _SQF_VM // Not needed for tests, and SQF-VM doesn't support localize anyway
 // string for each hint key
 g_UM_Hints = [
 	HK_INCAPACITATED, localize "STR_UM_HINT_DOWNED",
@@ -32,6 +33,7 @@ g_UM_Hints = [
 	HK_MILAREA, localize "STR_UM_HINT_MILAREA",
 	HK_COMPROMISED, localize "STR_UM_COMPROMISED"
 ];
+#endif
 
 CLASS(CLASS_NAME, "")
 	
