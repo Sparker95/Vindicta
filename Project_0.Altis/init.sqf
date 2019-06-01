@@ -27,6 +27,7 @@ CRITICAL_SECTION {
 		//case "Sparker": { gGameMode = NEW("GameModeRandom", []); };
 		//case "billw": 	{ gGameMode = NEW("RedVsGreenGameMode", []); };
 		case "Jeroen not": 	{ gGameMode = NEW("EmptyGameMode", []); };
+		case "Marvis": 	{ gGameMode = NEW("EmptyGameMode", []); };
 		default 		{ gGameMode = NEW("CivilWarGameMode", []); };
 	};
 
