@@ -64,6 +64,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		
 			// Check spotted targets
 			pr _nt = (leader _hG) targetsQuery [objNull, sideUnknown, "", [], 0/*TARGET_AGE_TO_REVEAL*/];
+			diag_log "_nt: " + str _nt;
 			// Filter objects that are of different side and are currently being seen
 			pr _currentlyObservedObjects = _nt select {
 				//private _o = _x select 1;
@@ -73,16 +74,17 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				//private _age = _x select 5;
 				((side group (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
 			};
+			diag_log "_currentlyObservedObjects: " + str _nt;
 			
 			// Loop through potential targets and find players(also in vehicles) to send data to their UndercoverMonitor
 			pr _exposedVehicleCrew = [];
 			{
 				pr _o = _x select 1;
 				
-				if (_o in _allPlayers) then {
-					// It's a Man and a player
-
+				if (_o isKindOf "Man") then {
+					// It's a Man
 					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o)) then {
+						diag_log format["%1 is totally suspicious!", _o];
 						pr _AI = T_GETV("AI");
 						SETV(_AI, "suspTarget", _o);
 					};
