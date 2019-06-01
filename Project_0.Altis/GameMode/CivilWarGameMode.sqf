@@ -135,7 +135,27 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		switch T_GETV("phase") do {
 			// Player is spawning in cities give them a pistol or something.
 			case 1: {
-				_newUnit call fnc_selectPlayerSpawnLoadout;
+				player call fnc_selectPlayerSpawnLoadout;
+				// Holster pistol
+				player action ["SWITCHWEAPON", player, player, -1];
+				_newUnit spawn {
+					while {!isNull (group _this)} do {
+						waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
+						if(!isNull (group _this)) then {
+							private _action = player addAction [
+								"Holster your weapon", 
+								{
+									params ["_target", "_caller", "_actionId", "_arguments"];
+									player action ["SWITCHWEAPON", player, player, -1];
+								}
+							];
+							waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
+							if(!isNull (group _this)) then {
+								player removeAction _action;
+							};
+						};
+					};
+				};
 			};
 		};
 	} ENDMETHOD;
@@ -213,6 +233,20 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 			deleteGroup _tmpGroup;
 			_civie setVariable [UNDERCOVER_SUSPICIOUS, true];
 			_civGroups pushBack _grp;
+
+			// Add some random waypoints
+			for "_j" from 0 to 5 do {
+				private _wp = _grp addWaypoint [_pos, _radius];
+				_wp setWaypointCompletionRadius 20;
+				_wp setWaypointType "MOVE";
+				_wp setWaypointBehaviour "SAFE";
+				_wp setWaypointSpeed "LIMITED";
+				if(_j == 0) then { _grp setCurrentWaypoint _wp; }
+			};
+			// Create a cycle waypoint
+			private _wpCycle = _grp addWaypoint [waypointPosition [_grp, 0], 0];
+			_wpCycle setWaypointType "CYCLE";
+
 			_civie setCaptive true;
 			_civie spawn {
 				waitUntil { isNull (group _this) or {_this getVariable ["timeArrested", -1] != -1} };
