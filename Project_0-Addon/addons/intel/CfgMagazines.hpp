@@ -1,4 +1,4 @@
-#includes QPATHTOEF (main,classFactory.hpp);
+//#includes QPATHTOEF (main,classFactory.hpp);
 
 class CfgMagazines
 {
@@ -21,7 +21,7 @@ class CfgMagazines
 		descriptionShort = "Some military documents. Pick it up and double-click to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_FilePhotos_F.jpg";
 		model = "\A3\Structures_F\Items\Documents\FilePhotos_F.p3d";
-	}
+	};
 
 	class vin_tablet_0: CA_Magazine
 	{
@@ -44,5 +44,5 @@ class CfgMagazines
 	};
 	
 	
-	COPY_CLASS_200(vin_document_0, vin_document_0)
+	//COPY_CLASS_200(vin_document_0, vin_document_0)
 };
