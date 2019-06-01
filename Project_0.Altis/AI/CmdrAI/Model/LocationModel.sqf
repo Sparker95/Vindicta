@@ -20,8 +20,6 @@ CLASS("LocationModel", "ModelBase")
 	// Radius of the location
 	VARIABLE("radius");
 
-	VARIABLE("desirability");
-
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
@@ -31,6 +29,7 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
 		T_SETV("radius", 0);
+
 		if(!IS_NULL_OBJECT(_actual)) then {
 			T_CALLM("sync", []);
 		};
@@ -72,7 +71,7 @@ CLASS("LocationModel", "ModelBase")
 		params [P_THISOBJECT];
 
 		T_PRVAR(actual);
-		// If we have an assigned Reak Object then sync from it
+		// If we have an assigned Real Object then sync from it
 		if(!IS_NULL_OBJECT(_actual)) then {
 			ASSERT_OBJECT_CLASS(_actual, "Location");
 

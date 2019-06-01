@@ -21,15 +21,21 @@ if (!IS_SERVER) then {
 #endif
 
 // if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
+if(IS_SERVER) then {
+	gGameModeName = switch (PROFILE_NAME) do {
+		//case "Sparker": { "GameModeRandom" };
+		//case "billw": 	{ "EmptyGameMode" };
+		case "Jeroen not": 	{ "EmptyGameMode" };
+		case "Marvis": 	{ "EmptyGameMode" };
+		default 		{ "CivilWarGameMode" };
+	};
+	PUBLIC_VARIABLE "gGameModeName";
+} else {
+	waitUntil { !isNil "gGameModeName" };
+};
 
 CRITICAL_SECTION {
-
-
-	switch (PROFILE_NAME) do {
-		//case "Sparker": { gGameMode = NEW("GameModeRandom", []); };
-		// case "billw": 	{ gGameMode = NEW("StatusQuoGameMode", []); };
-		default 		{ gGameMode = NEW("RedVsGreenGameMode", []); };
-	};
+	gGameMode = NEW(gGameModeName, []);
 
 	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];
 	CALLM(gGameMode, "init", []);

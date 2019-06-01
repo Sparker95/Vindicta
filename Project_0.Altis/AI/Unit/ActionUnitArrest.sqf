@@ -1,3 +1,8 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
+#define OOP_DEBUG
+#define OFSTREAM_FILE "ArrestAction.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
@@ -27,15 +32,14 @@ CLASS("ActionUnitArrest", "Action")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
-		SETV(_thisObject, "target", _target);
+		T_SETV("target", _target);
 		pr _a = GETV(_AI, "agent"); // cache the object handle
 		pr _captor = CALLM(_a, "getObjectHandle", []);
-		SETV(_thisObject, "objectHandle", _captor);
-		
+		T_SETV("objectHandle", _captor);
 		
 		//FSM
-		SETV(_thisObject, "stateChanged", true);
-		SETV(_thisObject, "stateMachine", 0);
+		T_SETV("stateChanged", true);
+		T_SETV("stateMachine", 0);
 		
 		SETV(_thisObject,"spawnHandle",scriptNull);
 		SETV(_thisObject,"screamTime",0);
@@ -46,11 +50,11 @@ CLASS("ActionUnitArrest", "Action")
 	METHOD("activate") {
 		params [["_to", "", [""]]];		
 		
-		pr _captor = GETV(_thisObject, "objectHandle");		
+		pr _captor = T_GETV("objectHandle");		
 		_captor lockWP false;
 		_captor setSpeedMode "NORMAL";
 		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+		T_SETV("state", ACTION_STATE_ACTIVE);
 
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
@@ -62,27 +66,29 @@ CLASS("ActionUnitArrest", "Action")
 
 		CALLM(_thisObject, "activateIfInactive", []);
 		
-		pr _captor = GETV(_thisObject, "objectHandle");
-		pr _target = GETV(_thisObject, "target");
-		if !(alive _captor) exitWith { 
+		pr _captor = T_GETV("objectHandle");
+		pr _target = T_GETV("target");
+		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) exitWith {
+			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			_state = ACTION_STATE_FAILED;
 			T_SETV("state", ACTION_STATE_FAILED); 
-			_state;
 		};
 		
-		diag_log format ["stateMachine %1",GETV(_thisObject, "stateMachine")];
 		pr _state = ACTION_STATE_ACTIVE;
 		scopename "switch";
-		switch (GETV(_thisObject, "stateMachine")) do {
+		switch (T_GETV("stateMachine")) do {
 
-			// catch up to target
+			/*
+			--------------------------------------------------------------------------------------------------------------------------------------------
+			|	 C A T C H  U P  																									   				   |
+			--------------------------------------------------------------------------------------------------------------------------------------------
+			*/
 			case 0: {
+				OOP_INFO_0("ActionUnitArrest: Chasing target.");
 				
-				if (GETV(_thisObject, "stateChanged")) then {
-					diag_log "START STATE 0";
-					SETV(_thisObject, "stateChanged",false);
-					
-					SETV(_thisObject,"stateTimer",time);		
+				if (T_GETV("stateChanged")) then {
+					T_SETV("stateChanged",false);
+					T_SETV("stateTimer", time);		
 					
 					_captor dotarget _target;
 					
@@ -101,28 +107,26 @@ CLASS("ActionUnitArrest", "Action")
 							_return
 						};
 					};
-					SETV(_thisObject, "spawnHandle", _handle);
+					T_SETV("spawnHandle", _handle);
 
-				}else{
+				} else {
 
-					if (time - GETV(_thisObject,"stateTimer") > 15)then{//been following for 10 secs
+					if (time - GETV(_thisObject,"stateTimer") > 15) then {//been following for 10 secs
+						OOP_INFO_0("ActionUnitArrest: FAILED, reason: Timeout.");
 						_state = ACTION_STATE_FAILED;
-					
-						CALLM(_thisObject, "terminate", []);
-						diag_log "ACTION_STATE_FAILED";
-						[_captor,"Yes keep running!",_target] call Dialog_fnc_hud_createSentence;
+						//[_captor,"Yes keep running!",_target] call Dialog_fnc_hud_createSentence;
 						breakTo "switch";
 
-					}else{
+					} else {
 	
-						if(time > GETV(_thisObject,"screamTime") && (_target getVariable ["isMoving", false]))then{
+						if (time > T_GETV("screamTime") && (_target getVariable ["isMoving", false])) then {
 							
 							SETV(_thisObject,"screamTime",time +2);
-							if(selectRandom [true,false])then{
-								[_captor,"Stop!",_target] call Dialog_fnc_hud_createSentence;
+							if (selectRandom [true,false]) then {
+								//[_captor,"Stop!",_target] call Dialog_fnc_hud_createSentence;
 								_captor say "stop";
-							}else{
-								[_captor,"Halt!",_target] call Dialog_fnc_hud_createSentence;
+							} else {
+								//[_captor,"Halt!",_target] call Dialog_fnc_hud_createSentence;
 								_captor say "halt";
 							};
 							
@@ -131,94 +135,134 @@ CLASS("ActionUnitArrest", "Action")
 					};
 				};
 				
-				if (scriptDone GETV(_thisObject, "spawnHandle")) then {
+				if (scriptDone T_GETV("spawnHandle")) then {
 					diag_log "stateMachine 0 Done" ;
-					SETV(_thisObject, "stateChanged", true);
-					SETV(_thisObject, "stateMachine", 1);
-					
-					diag_log format ["stateMachine changed %1",GETV(_thisObject, "stateMachine")];
+					T_SETV("stateChanged", true);
+					T_SETV("stateMachine", 1);
 				};
-			};
+			}; // end CATCH UP
 			
-			//follow close
+			/*
+			--------------------------------------------------------------------------------------------------------------------------------------------
+			|	 S E A R C H  A N D  A R R E S T																								   	   |
+			--------------------------------------------------------------------------------------------------------------------------------------------
+			*/
 			case 1: {
-				if (GETV(_thisObject, "stateChanged")) then {
-					diag_log "stateMachine 1" ;
-					SETV(_thisObject, "stateChanged",false);
-					SETV(_thisObject, "stateTimer",time);	
+				OOP_INFO_0("ActionUnitArrest: Searching/Arresting target.");
+
+				if (T_GETV("stateChanged")) then {
+					T_SETV("stateChanged", false);
+					T_SETV("stateTimer", time);	
 					
-					pr _handle = [_captor,_target] spawn {
+					pr _handle = [_captor, _target] spawn {
 						params["_captor","_target"];
-						pr _currentWeapon = currentWeapon _captor;
-						pr _animation = call{
-							if(_currentWeapon isequalto primaryWeapon _captor)exitWith{
-								"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
+						waitUntil {
+							_animationDone = false;
+							_pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
+							_captor doMove _pos;
+							_captor doWatch _target;
+							_pos_search = getpos _target;
+							sleep 0.5;
+
+							// play animation if close enough, finishing the script
+							if (_pos_search distance getpos _target < 0.1) then {
+								private _currentWeapon = currentWeapon _captor;
+								pr _animation = call {
+									if( _currentWeapon isequalto primaryWeapon _captor ) exitWith {
+										"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
+									};
+									if( _currentWeapon isequalto secondaryWeapon _captor ) exitWith {
+										"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
+									};
+									if( _currentWeapon isequalto handgunWeapon _captor ) exitWith {
+										"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
+									};
+									if( _currentWeapon isequalto binocular _captor ) exitWith {
+										"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
+									};
+									"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
+								};
+								_captor playMove _animation;
+								_animationDone = true;
+
+								waitUntil {animationState _captor == _animation};
+								waitUntil {animationState _captor != _animation};
+								
+								_target playMoveNow "Acts_ExecutionVictim_Loop";
+								if(!isPlayer _target) then {
+									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
+									_target disableAI "MOVE"; // Disable AI Movement
+									_target disableAI "AUTOTARGET"; // Disable AI Autotarget
+									_target disableAI "ANIM"; // Disable AI Behavioural Scripts
+									_target allowFleeing 0; // Disable AI Fleeing
+									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
+								};
+								_target setVariable ["timeArrested", time+10];
+
+								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
 							};
-							if(_currentWeapon isequalto secondaryWeapon _captor)exitWith{
-								"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
-							};
-							if(_currentWeapon isequalto handgunWeapon _captor)exitWith{
-								"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
-							};
-							if(_currentWeapon isequalto binocular _captor)exitWith{
-								"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
-							};
-							"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
+
+							_target setVariable ["isMoving", false];
+							
+							_return = _animationDone;
+							_return
 						};
+					};
 						
-						[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
-						
-						_captor playMove _animation;
-						waitUntil {animationState _captor == _animation};
-						waitUntil {animationState _captor != _animation};
-						
-						//_target removeWeapon currentWeapon _target;
-						
-						//sleep 1;
-						
-						
-					};		
+					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+
+					// arrest player by sending a message to unit's undercoverMonitor				
 					
-					SETV(_thisObject, "spawnHandle", _handle);
+					T_SETV("spawnHandle", _handle);
+				} else {
+					if ((T_GETV("stateTimer") + 30) < time) exitWith {
+						T_SETV("stateMachine", 2); // action failed
+					};
 				};
 				
-				if (scriptDone GETV(_thisObject, "spawnHandle")) then {
-					SETV(_thisObject, "stateChanged", true);
-					SETV(_thisObject, "stateMachine", 3);
+				if (scriptDone T_GETV("spawnHandle")) then {
+					T_SETV("stateChanged", true);
+					T_SETV("stateMachine", 3);
 					
 					_state = ACTION_STATE_COMPLETED;
 					breakTo "switch";
 				};
-			};
-			
-			//failed
+			}; // end SEARCH AND ARREST
+
+			// FAILED
 			case 2: {
+				OOP_INFO_0("ActionUnitArrest: FAILED.");
 				_state = ACTION_STATE_FAILED;
 			};
 			
+			// COMPLETED SUCCESSFULLY
 			case 3: {
+				OOP_INFO_0("ActionUnitArrest: COMPLETED.");
 				_state = ACTION_STATE_COMPLETED;
 			};
 			
 		};
 		
 		// Return the current state
-		SETV(_thisObject, "state", _state);
+		T_SETV("state", _state);
 		_state;
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
 	METHOD("terminate") {
 		params [["_thisObject", "", [""]]];
+		OOP_INFO_0("ActionUnitArrest: Terminating.");
+
+		pr _state = T_GETV("state");
+		OOP_INFO_1("ActionUnitArrest: Terminate state: %1", _state);
+
+		terminate T_GETV("spawnHandle");
 		
-		terminate GETV(_thisObject, "spawnHandle");
-		
-		pr _captor = GETV(_thisObject, "objectHandle");
+		pr _captor = T_GETV("objectHandle");
 		_captor doWatch objNull;
 		_captor lookAt objNull;
 		_captor lockWP false;
 		_captor setSpeedMode "LIMITED";
-		hint "";
 		
 	} ENDMETHOD;
 

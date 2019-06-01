@@ -3,7 +3,7 @@
 //Testing
 {deleteVehicle _x;}forEach vehicles;
 
-//find all gates, Land_City_Gate_F are the ones with sheetmetal in the bottum part
+//find all gates, Land_City_Gate_F are the ones with sheetmetal in the bottom part
 private _gates = player nearObjects ["Land_Stone_Gate_F",2000];//2ms
 _gates append (player nearObjects ["Land_City_Gate_F",2000]);//2ms
 {
