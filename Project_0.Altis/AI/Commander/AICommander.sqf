@@ -612,6 +612,21 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	
 	/*
+	Method: getActivity
+	Get enemy (to this cmdr) activity in an area
+	
+	Parameters:
+	_pos - <position>
+	_radius - <number>
+	
+	Returns: Number - max activity in radius
+	*/
+	METHOD("getActivity") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "getActivity", [_pos ARG _radius])
+	} ENDMETHOD;
+	/*
 	Method: registerGarrison
 	Registers a garrison to be processed by this AICommander
 	

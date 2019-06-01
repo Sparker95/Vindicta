@@ -41,32 +41,40 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 		private _newTarget = [];
 		if(!IS_NULL_OBJECT(_srcGarr) and {!CALLM(_srcGarr, "isDead", [])}) then {
 			_newTarget = [TARGET_TYPE_GARRISON, _srcGarrId];
-			OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr)]+[LABEL(_srcGarr)]);
+			OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_srcGarr)]);
 		} else {
 			private _pos = GETV(_garr, "pos");
 
 			// select the nearest friendly garrison
-			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]+[4000]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
+			private _nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos ARG 4000]) select {
+				_x params ["_dist", "_garr"];
+				!CALLM(_garr, "isBusy", []) and (GETV(_garr, "locationId") != MODEL_HANDLE_INVALID) 
+			};
 			if(count _nearGarrs == 0) then {
 				// Check further
-				_nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]) select { !CALLM(_x, "isBusy", []) and (GETV(_x, "locationId") != MODEL_HANDLE_INVALID) };
+				_nearGarrs = CALLM(_world, "getNearestGarrisons", [_pos]) select { 
+					_x params ["_dist", "_garr"];
+					!CALLM(_garr, "isBusy", []) and (GETV(_garr, "locationId") != MODEL_HANDLE_INVALID) 
+				};
 			};
 
 			// If we found one then target it
 			if(count _nearGarrs > 0) then {
-				private _nearGarr = _nearGarrs#0;
+				private _nearDistGarr = _nearGarrs#0;
+				_nearDistGarr params ["_dist", "_nearGarr"];
 				_newTarget = [TARGET_TYPE_GARRISON, GETV(_nearGarr, "id")];
-				OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr)]+[LABEL(_nearGarr)]);
+				OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearGarr)]);
 			} else {
 				// Otherwise find a nearby empty location and go there
-				private _nearLocs = CALLM(_world, "getNearestLocations", [_pos]+[4000]) select { CALLM(_x, "isEmpty", []) };
+				private _nearLocs = CALLM(_world, "getNearestLocations", [_pos ARG 4000]) select { CALLM(_x, "isEmpty", []) };
 				if(count _nearLocs == 0) then {
 					_nearLocs = CALLM(_world, "getNearestLocations", [_pos]);
 				};
 				if(count _nearLocs > 0) then {
-					private _nearLoc = _nearLocs#0;
+					private _nearLocGarr = _nearGarrs#0;
+					_nearLocGarr params ["_dist", "_nearLoc"];
 					_newTarget = [TARGET_TYPE_LOCATION, GETV(_nearLoc, "id")];
-					OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr)]+[LABEL(_nearLoc)]);
+					OOP_INFO_MSG_REAL_ONLY(_world, "Selected new fallback target for %1: %2", [LABEL(_garr) ARG LABEL(_nearLoc)]);
 				} else {
 					OOP_ERROR_MSG("Couldn't find any location on map, this should be impossible!", []);
 				};

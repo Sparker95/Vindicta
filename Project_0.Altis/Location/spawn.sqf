@@ -18,7 +18,7 @@ OOP_INFO_0("SPAWN");
 ASSERT_THREAD(_thisObject);
 
 
-private _spawned = GET_VAR(_thisObject, "spawned");
+T_PRVAR(spawned);
 
 if (_spawned) exitWith {
 	OOP_ERROR_0("Already spawned");
@@ -26,9 +26,15 @@ if (_spawned) exitWith {
 };
 
 // Set spawned flag
-SET_VAR(_thisObject, "spawned", true);
+T_SETV("spawned", true);
 
 
 //spawn civilians
-private _cpModule = GET_VAR(_thisObject, "cpModule");
-[_cpModule] call CivPresence_fnc_spawn; 
+T_GETV("cpModule") call CivPresence_fnc_spawn;
+
+//force immediate spawn update of the garrison
+{
+	CALLM2(_x, "postMethodAsync", "updateSpawnState", []);
+} forEach T_GETV("garrisons");
+
+CALLM(gGameMode, "locationSpawned", [_thisObject]);
