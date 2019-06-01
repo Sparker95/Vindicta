@@ -427,10 +427,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							deleteMarkerLocal "markerWanted";
-							_unit playMoveNow "Acts_ExecutionVictim_Loop";
 							T_SETV("bCaptive", true);
 							[_unit] call fnc_UM_addActionUntieLocal;
-							_unit setVariable ["timeArrested", time+10];
 						}; // do once when state changed
 
 						// exit arrested state
@@ -600,11 +598,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		if (_um != "") then { // Sanity check
 			pr _msg = MESSAGE_NEW();
 			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_ARRESTED);
-			MESSAGE_SET_DATA(_msg, _group);
 			CALLM1(_um, "postMessage", _msg);
 		};
 	} ENDMETHOD;
-
 
 	/* 
 		Other player's computers remoteExecute this on this computer to make this player overt.
@@ -616,7 +612,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		if (_um != "") then { // Sanity check
 			pr _msg = MESSAGE_NEW();
 			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
-			MESSAGE_SET_DATA(_msg, _group);
 			CALLM1(_um, "postMessage", _msg);
 		};
 	} ENDMETHOD;
