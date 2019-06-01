@@ -12,5 +12,5 @@ if(_jn_fuel_capacity > 0)then{
 };
 
 if(_jn_fuel_cargoCapacity > 0)then{
-	[_vehicle,_jn_fuel_cargoCapacity,random[0,0.6*_jn_fuel_cargoCapacity,_jn_fuel_cargoCapacity]] call jn_fnc_fuel_addActionRefuel;
+	[_vehicle,_jn_fuel_cargoCapacity,round random[0,0.6*_jn_fuel_cargoCapacity,_jn_fuel_cargoCapacity]] call jn_fnc_fuel_addActionRefuel;
 };

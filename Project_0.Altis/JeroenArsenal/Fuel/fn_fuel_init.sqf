@@ -20,3 +20,8 @@ private _loc = [];
 	private _station = nearestObject _x;
 	_station call jn_fnc_fuel_vehicleInit;
 }forEach _loc;
+
+//init mission file placed vehicles
+{
+	_x call jn_fnc_fuel_vehicleInit;
+}forEach vehicles;
