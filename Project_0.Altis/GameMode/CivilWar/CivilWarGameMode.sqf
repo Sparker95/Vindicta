@@ -106,26 +106,26 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 
 /* private */ METHOD("singlePlayerRespawn") {
-	params [P_THISOBJECT, P_OBJECT("_oldUnit")];
-	T_PRVAR(spawnPoints);
+		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+		T_PRVAR(spawnPoints);
 
-	private _respawnLoc = selectRandom _spawnPoints;
-	private _tmpGroup = createGroup (side _oldUnit);
-	private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
-	[_newUnit] joinSilent (group _oldUnit);
-	deleteGroup _tmpGroup;
-	selectPlayer _newUnit;
-	player assignCurator zeus1;
-	T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
-	[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
-	[_oldUnit] joinSilent grpNull;
-	_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
-	(_respawnLoc#0) spawn {
-		cutText [format["<t color='#ffffff' size='3'>You died!<br/>But you were born again in %1!</t>", _this], "BLACK IN", 10, true, true];
-		BIS_DeathBlur ppEffectAdjust [0.0];
-		BIS_DeathBlur ppEffectCommit 0.0;
-	};
-} ENDMETHOD;
+		private _respawnLoc = selectRandom _spawnPoints;
+		private _tmpGroup = createGroup (side _oldUnit);
+		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
+		[_newUnit] joinSilent (group _oldUnit);
+		deleteGroup _tmpGroup;
+		selectPlayer _newUnit;
+		player assignCurator zeus1;
+		T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
+		[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
+		[_oldUnit] joinSilent grpNull;
+		_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
+		(_respawnLoc#0) spawn {
+			cutText [format["<t color='#ffffff' size='3'>You died!<br/>But you were born again in %1!</t>", _this], "BLACK IN", 10, true, true];
+			BIS_DeathBlur ppEffectAdjust [0.0];
+			BIS_DeathBlur ppEffectCommit 0.0;
+		};
+	} ENDMETHOD;
 
 	/* protected override */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
