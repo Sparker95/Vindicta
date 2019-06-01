@@ -25,11 +25,5 @@ Project_0.Altis/out/linecount.json
 Project_0.Altis/mission.sqm
 
 #ADDON
-Project_0-Addon/release/*
-Project_0-Addon/**.cache
-Project_0-Addon/**.pbo
-Project_0-Addon/texHeaders.bin
-Project_0-Addon/**.swp
-Project_0-Addon/**.swo
-Project_0-Addon/**.biprivatekey
-Project_0-Addon/Thumbs.db
+
+Project_0-Addon/release
