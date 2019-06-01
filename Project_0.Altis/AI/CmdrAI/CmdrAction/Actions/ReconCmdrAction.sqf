@@ -1,14 +1,5 @@
 #include "..\..\common.hpp"
 
-// W       W   IIIII   PPPPP
-// W       W     I     P    P
-// W   W   W     I     PPPPP
-//  W W W W      I     P
-//   W   W     IIIII   P
-//
-// Put on hold for now, cmdr will try and attack known locations anyway, and first attack will generate 
-// intel for the second.
-
 CLASS("ReconCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	// Actual position we are interested in

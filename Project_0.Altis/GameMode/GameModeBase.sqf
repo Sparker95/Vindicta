@@ -4,11 +4,19 @@ CLASS("GameModeBase", "")
 
 	VARIABLE("name");
 	VARIABLE("spawningEnabled");
+	VARIABLE("spawningInterval");
+	VARIABLE("lastSpawn");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
+		#ifdef RELEASE_BUILD
+		T_SETV("spawningInterval", 3600);
+		#else
+		T_SETV("spawningInterval", 120);
+		#endif
+		T_SETV("lastSpawn", TIME_NOW);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -32,7 +40,6 @@ CLASS("GameModeBase", "")
 			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
 			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10 ARG 30]);
 
-
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
@@ -50,6 +57,9 @@ CLASS("GameModeBase", "")
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);
 
+			// Garbage Collector
+			gGarbageCollector = NEW("GarbageCollector", []);
+
 			T_CALLM("initServerOrHC", []);
 		};
 		if(IS_SERVER) then {
@@ -64,9 +74,13 @@ CLASS("GameModeBase", "")
 
 			T_CALLM("initServerOnly", []);
 
-			if(T_GETV("spawningEnabled")) then {
-				T_CALLM("startSpawning", []);
-			};
+			// Add processing for the game mode on the server once we initialized everything else
+			CALLM(gMessageLoopMain, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
+			CALLM2(gMessageLoopMain, "addProcessCategoryObject", "GameModeProcess", _thisObject);
+
+			// Don't remove spawn! For some reason without spawning it doesn't apply the values.
+			// Probably it's because we currently have this executed inside isNil {} block
+			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -103,6 +117,14 @@ CLASS("GameModeBase", "")
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);
+	} ENDMETHOD;
+
+	/* private */METHOD("process") {
+		params [P_THISOBJECT];
+		if(T_GETV("spawningEnabled")) then {
+			T_CALLM("doSpawning", []);
+		};
+		T_CALLM("update", []);
 	} ENDMETHOD;
 
 	// Add garrisons to locations based where specified.
@@ -149,7 +171,7 @@ CLASS("GameModeBase", "")
 			} forEach gCommanders;
 		} forEach GET_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
-	
+
 	// -------------------------------------------------------------------------
 	// |                  V I R T U A L   F U N C T I O N S                    |
 	// -------------------------------------------------------------------------
@@ -211,69 +233,34 @@ CLASS("GameModeBase", "")
 				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG 5])
+				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround])
 			};
 			default { NULL_OBJECT };
 		};
 	} ENDMETHOD;
 
-	METHOD("startSpawning") {
-		params [P_THISOBJECT];
-		
-		// TODO: fix this to correctly spawn at selected bases contingent on the critera we decide.
-		// Move this to an existing thread?
-		[] spawn {
-			while{true} do {
-				#ifdef RELEASE_BUILD
-				sleep 3600;
-				#else
-				sleep 120;
-				#endif
-				{
-					private _loc = _x;
-					private _side = GETV(_loc, "side");
-					private _template = GET_TEMPLATE(_side);
-					private _targetCInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
-
-					private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
-					if (count _garrisons == 0) exitWith {};
-					private _garrison = _garrisons#0;
-					if(not CALLM(_garrison, "isSpawned", [])) then {
-						private _infCount = count CALLM(_garrison, "getInfantryUnits", []);
-						if(_infCount < _targetCInf) then {
-							private _remaining = _targetCInf - _infCount;
-							systemChat format["Spawning %1 units at %2", _remaining, _loc];
-							while {_remaining > 0} do {
-								CALLM2(_garrison, "postMethodSync", "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_PATROL])
-									params ["_newGroup", "_unitCount"];
-								_remaining = _remaining - _unitCount;
-							};
-						};
-
-						private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
-						private _vehCount = count CALLM(_garrison, "getVehicleUnits", []);
-						
-						if(_vehCount < _cVehGround) then {
-							systemChat format["Spawning %1 trucks at %2", _cVehGround - _vehCount, _loc];
-						};
-
-						while {_vehCount < _cVehGround} do {
-							private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
-							if (CALL_METHOD(_newUnit, "isValid", [])) then {
-								CALLM2(_garrison, "postMethodSync", "addUnit", [_newUnit]);
-								_vehCount = _vehCount + 1;
-							} else {
-								DELETE(_newUnit);
-							};
-						};
-					};
-				} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") == LOCATION_TYPE_BASE });
-
-				// TODO: Do this for policeStations as well, we need getTemplate for side + faction
-				// || GETV(_x, "type") == "policeStation" 
-			};
-		};
+	// Override this to do stuff when player spawns
+	/* protected virtual */METHOD("playerSpawn") {
+		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
 	} ENDMETHOD;
+
+	// Override this to perform periodic game mode updates
+	/* protected virtual */METHOD("update") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+
+	// Override this to perform actions when a location spawns
+	/* protected virtual */METHOD("locationSpawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
+
+	// Override this to perform actions when a location despawns
+	/* protected virtual */METHOD("locationDespawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
+
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
 	// -------------------------------------------------------------------------
@@ -307,7 +294,6 @@ CLASS("GameModeBase", "")
 		gCommanders pushBack gAICommanderInd;
 
 		if(gFlagAllCommanders) then { // but some are more equal
-
 			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
 			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
 
@@ -335,9 +321,52 @@ CLASS("GameModeBase", "")
 		} forEach gCommanders;
 	} ENDMETHOD;
 
+	fnc_getLocName = {
+		params["_name"];
+		private _names = "getText( _x >> 'name') == _name" configClasses ( configFile >> "CfgWorlds" >> worldName >> "Names" );
+		if(count _names == 0) then { "" } else { configName (_names#0) };
+	};
+
+	METHOD("createMissingCityLocations") {
+		params [P_THISOBJECT];
+
+		private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
+		private _moduleGroup = createGroup sideLogic;
+		{
+			private _pos = getPos _x;
+			// See if one already exists
+			if(_existingCityLocations findIf { _x distance _pos < 500 } == NOT_FOUND) then {
+				// private _name = [text _x] call fnc_getLocName;
+				private _sizeX = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusA"));
+				private _sizeY = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusB"));
+				OOP_INFO_MSG("Creating missing City Location for %1 at %2, size %3m x %4m", [_name ARG _pos ARG _sizeX ARG _sizeY]);
+				
+				// TODO: calculate civ presence by area
+				"Project_0_LocationSector" createUnit [ _pos, _moduleGroup,
+					(format ["this setVariable ['Name', '%1'];", text _x]) +
+					        "this setVariable ['Type', 'city'];" +
+					        "this setVariable ['Side', 'civilian'];" +
+					(format ["this setVariable ['objectArea', [%1, %2, 0, true]];", _sizeX, _sizeY]) +
+					        "this setVariable ['CapacityInfantry', 0];" +
+					        "this setVariable ['CivPresUnitCount', 10];"
+				];
+				private _mrk = createmarker [text _x, _pos];
+				_mrk setMarkerSize [_sizeX, _sizeY];
+				_mrk setMarkerShape "ELLIPSE";
+				_mrk setMarkerBrush "SOLID";
+				_mrk setMarkerColor "ColorWhite";
+				_mrk setMarkerText (text _x);
+				_mrk setMarkerAlpha 0.4;
+			};
+		} forEach (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameCityCapital", "NameCity", "NameVillage", "CityCenter"], 25000]);
+	} ENDMETHOD;
+	
 	// Create locations
 	METHOD("initLocations") {
 		params [P_THISOBJECT];
+
+		// First generate location modules for any cities/towns etc that don't have them manually placed
+		T_CALLM("createMissingCityLocations", []);
 
 		private _allRoadBlocks = [];
 		{
@@ -350,6 +379,22 @@ CLASS("GameModeBase", "")
 			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
 			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
+
+			if(_locType == LOCATION_TYPE_CITY) then { 
+				// https://www.desmos.com/calculator/nahw1lso9f
+				_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
+				OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
+				//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
+				//diag_log format["%1 houses at %2", count _houses, _locName];
+
+				// https://www.desmos.com/calculator/nahw1lso9f
+				_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
+				OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
+			} else {
+				_locCapacityCiv = 0;
+			};
+
+
 			private _template = "";
 			private _side = "";
 			
@@ -386,26 +431,29 @@ CLASS("GameModeBase", "")
 				CALLM1(_roadblockLoc, "setCapacityInf", 20);
 				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
 				// Do setType last cos it will update the debug marker for us
-				CALLM1(_roadblockLoc, "setType", "roadblock");
+				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
 			} forEach _roadBlocks;
 
 			// Create police stations
 			// Create police stations in cities
-			if (_locType == "city") then {
+			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 23) then {
+
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
 				private _policeStationBuilding = nearestBuilding _posPolice;
-				private _policeStationLocation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
-				CALLM1(_policeStationLocation, "setSide", _side);
-				CALLM1(_policeStationLocation, "setName", format ["%1 police station" ARG _locName] );
-				CALLM1(_policeStationLocation, "setType", "policeStation");
+				private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
+				CALLM1(_policeStation, "setSide", _side);
+				CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
+				CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 
 				// TODO: Get city size or building count and scale police capacity from that ?
-				CALLM1(_policeStationLocation, "setCapacityInf", 5);
+				CALLM1(_policeStation, "setCapacityInf", _locCapacityInf);
+				CALLM(_loc, "addChild", [_policeStation]);
+				SETV(_policeStation, "useParentPatrolWaypoints", true);
 				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 			};
-			
+
 		} forEach (entities "Project_0_LocationSector");
 
 	} ENDMETHOD;
@@ -425,20 +473,35 @@ CLASS("GameModeBase", "")
 		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
 		
 		if (_faction == "police") exitWith {
-			private _policeGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
-			private _i = 0;
-			while {_i < _cInf} do {
-				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
-				private _newUnit = NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _policeGroup]);
-				_i = _i+1;
+			// 75% out on patrol
+			private _patrolGroups = 1 max (_cInf * 0.75 * 0.5);
+			for "_i" from 1 to _patrolGroups do {
+				private _patrolGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
+				for "_i" from 0 to 1 do {
+					private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+					NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
+				};
+				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
+				CALL_METHOD(_gar, "addGroup", [_patrolGroup]);		
 			};
 
-			// Add a car in front of police station
-			private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
-			CALLM(_gar, "addUnit", [_newUnit]);
+			// Remainder back at station
+			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+			private _remainder = 1 max (_cInf * 0.25);
+			for "_i" from 1 to _remainder do {
+				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+				NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
+			};
+			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
+			CALL_METHOD(_gar, "addGroup", [_sentryGroup]);
 
-			OOP_INFO_MSG("%1: Created police group %2", [_gar ARG _policeGroup]);
-			CALL_METHOD(_gar, "addGroup", [_policeGroup]);
+			// Patrol vehicles
+			for "_i" from 1 to (2 max _cVehGround) do {
+				// Add a car in front of police station
+				private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
+				CALLM(_gar, "addUnit", [_newUnit]);
+				OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
+			};
 
 			_gar
 		};
@@ -580,5 +643,74 @@ CLASS("GameModeBase", "")
 	/* private */ METHOD("fn") {
 		params [P_THISOBJECT];
 
+	} ENDMETHOD;
+
+	// Initialize dynamic simulation
+	METHOD("initDynamicSimulation") {
+		#ifndef _SQF_VM
+		params [P_THISOBJECT];
+
+		// Enables or disables the whole Arma_3_Dynamic_Simulation system
+		enableDynamicSimulationSystem true;
+
+		// Infantry units.
+		"Group" setDynamicSimulationDistance 40000; // We don't dynamicly disable units with this thing
+		// Vehicles with crew.
+		"Vehicle" setDynamicSimulationDistance 40000; // We don't want to dynamicly disable vehicles with crew
+		//  All vehicles without crew.
+		"EmptyVehicle" setDynamicSimulationDistance 1500;
+		// Static objects. Anything from a small tin can to a building.
+		"Prop" setDynamicSimulationDistance 50;
+
+		// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
+		"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
+		#endif
+	} ENDMETHOD;
+
+	METHOD("doSpawning") {
+		params [P_THISOBJECT];
+
+		if(T_GETV("lastSpawn") + T_GETV("spawningInterval") > TIME_NOW) exitWith {};
+		T_SETV("lastSpawn", TIME_NOW);
+
+		{
+			private _loc = _x;
+			private _side = GETV(_loc, "side");
+			private _template = GET_TEMPLATE(_side);
+			private _targetCInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+
+			private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
+			if (count _garrisons == 0) exitWith {};
+			private _garrison = _garrisons#0;
+			if(not CALLM(_garrison, "isSpawned", [])) then {
+				private _infCount = count CALLM(_garrison, "getInfantryUnits", []);
+				if(_infCount < _targetCInf) then {
+					private _remaining = _targetCInf - _infCount;
+					systemChat format["Spawning %1 units at %2", _remaining, _loc];
+					while {_remaining > 0} do {
+						CALLM2(_garrison, "postMethodSync", "createAddInfGroup", [_side ARG T_GROUP_inf_sentry ARG GROUP_TYPE_PATROL])
+							params ["_newGroup", "_unitCount"];
+						_remaining = _remaining - _unitCount;
+					};
+				};
+
+				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+				private _vehCount = count CALLM(_garrison, "getVehicleUnits", []);
+				
+				if(_vehCount < _cVehGround) then {
+					systemChat format["Spawning %1 trucks at %2", _cVehGround - _vehCount, _loc];
+				};
+
+				while {_vehCount < _cVehGround} do {
+					private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
+					if (CALL_METHOD(_newUnit, "isValid", [])) then {
+						CALLM2(_garrison, "postMethodSync", "addUnit", [_newUnit]);
+						_vehCount = _vehCount + 1;
+					} else {
+						DELETE(_newUnit);
+					};
+				};
+			};
+		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
 	} ENDMETHOD;
 ENDCLASS;

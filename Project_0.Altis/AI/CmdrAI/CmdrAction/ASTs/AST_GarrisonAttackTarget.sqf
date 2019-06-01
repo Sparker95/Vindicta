@@ -57,13 +57,17 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		// If the detachment or target died then we just finish the whole action immediately
 		if(CALLM(_garr, "isDead", [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't attack target", [_world ARG _action ARG LABEL(_garr)]);
+			if(_clearing and GETV(_world, "type") == WORLD_TYPE_REAL) then {
+				T_SETV("clearing", false);
+			};
 			T_GETV("garrDeadState")
 		};
 
 		private _target = T_GET_AST_VAR("targetVar");
 		if(T_CALLM("isTargetDead", [_world ARG _target])) exitWith {
-			if(_clearing) then {
+			if(_clearing and GETV(_world, "type") == WORLD_TYPE_REAL) then {
 				CALLM(_garr, "cancelClearAreaActual", []);
+				T_SETV("clearing", false);
 			};
 			T_GETV("successState")
 		};
@@ -90,11 +94,13 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 					private _clearRadius = 50 max T_CALLM("getTargetRadius", [_world ARG _target]);
 					// Start clear order
 					OOP_INFO_MSG("[w %1] %2 clearing area at %3: started", [_world ARG _garr ARG _targetPos]);
-					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG (sqrt _clearRadius)*30]);
+					private _timeToClear = 10 * sqrt (_clearRadius + 60);
+					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG _timeToClear]);
 					T_SETV("clearing", true);
 				} else {
 					// Are we done yet?
 					_success = CALLM(_garr, "clearActualComplete", []);
+					T_SETV("clearing", not _success);
 				};
 			};
 		};

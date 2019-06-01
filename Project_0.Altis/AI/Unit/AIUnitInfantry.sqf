@@ -115,7 +115,14 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		OOP_INFO_2("Assigning %1 as a DRIVER of %2", _thisObject, _veh);
 
 		// Unassign this inf unit from its current vehicle
-		CALLM0(_thisObject, "unassignVehicle");
+		pr _assignedVeh = T_GETV("assignedVehicle");			if (isNil "_assignedVeh") then {_assignedVeh = ""; };
+		pr _assignedVehRole = T_GETV("assignedVehicleRole");	if (isNil "_assignedVehRole") then {_assignedVehRole = VEHICLE_ROLE_NONE; };
+		//pr _assignedCargoIndex = T_GETV("assignedCargoIndex");	if (isNil "_assignedCargoIndex") then {_assignedCargoIndex = -1; };
+		//pr _assignedTurretPath = T_GETV("assignedTurretPath");	if (isNil "_assignedTurretPath") then {_assignedTurretPath = -1; };
+
+		if (! ((_assignedVeh == _veh) && (_assignedVehRole == VEHICLE_ROLE_DRIVER)) ) then {
+			CALLM0(_thisObject, "unassignVehicle");
+		};
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
 		// Check if someone else is assigned already
@@ -177,7 +184,14 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		ASSERT_OBJECT_CLASS(_veh, "Unit");
 		
 		// Unassign this inf unit from its current vehicle
-		CALLM0(_thisObject, "unassignVehicle");
+		pr _assignedVeh = T_GETV("assignedVehicle");			if (isNil "_assignedVeh") then {_assignedVeh = ""; };
+		pr _assignedVehRole = T_GETV("assignedVehicleRole");	if (isNil "_assignedVehRole") then {_assignedVehRole = VEHICLE_ROLE_NONE; };
+		//pr _assignedCargoIndex = T_GETV("assignedCargoIndex");	if (isNil "_assignedCargoIndex") then {_assignedCargoIndex = -1; };
+		pr _assignedTurretPath = T_GETV("assignedTurretPath");	if (isNil "_assignedTurretPath") then {_assignedTurretPath = -1; };
+
+		if (! ((_assignedVeh == _veh) && (_assignedVehRole == VEHICLE_ROLE_TURRET) && (_assignedTurretPath isEqualTo _turretPath)) ) then {
+			CALLM0(_thisObject, "unassignVehicle");
+		};
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
 		pr _unit = T_GETV("agent");
@@ -214,7 +228,14 @@ CLASS("AIUnitInfantry", "AI_GOAP")
 		OOP_INFO_3("Assigning %1 as CARGO INDEX %2 of %3", _thisObject, _cargoIndex, _veh);
 
 		// Unassign this inf unit from its current vehicle
-		CALLM0(_thisObject, "unassignVehicle");
+		pr _assignedVeh = T_GETV("assignedVehicle");			if (isNil "_assignedVeh") then {_assignedVeh = ""; };
+		pr _assignedVehRole = T_GETV("assignedVehicleRole");	if (isNil "_assignedVehRole") then {_assignedVehRole = VEHICLE_ROLE_NONE; };
+		pr _assignedCargoIndex = T_GETV("assignedCargoIndex");	if (isNil "_assignedCargoIndex") then {_assignedCargoIndex = -1; };
+		//pr _assignedTurretPath = T_GETV("assignedTurretPath");	if (isNil "_assignedTurretPath") then {_assignedTurretPath = -1; };
+
+		if (! ((_assignedVeh == _veh) && (_assignedVehRole == VEHICLE_ROLE_TURRET) && (_assignedCargoIndex == _cargoIndex)) ) then {
+			CALLM0(_thisObject, "unassignVehicle");
+		};
 		
 		pr _vehAI = CALLM0(_veh, "getAI");
 		pr _unit = T_GETV("agent");

@@ -69,23 +69,25 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
+		if(CALLM(_srcGarr, "isDead", [])) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
 		ASSERT_OBJECT(_tgtLoc);
-
 		private _side = GETV(_srcGarr, "side");
 		private _toGarr = CALLM(_tgtLoc, "getGarrison", [_side]);
 		if(!IS_NULL_OBJECT(_toGarr)) exitWith {
 			// We never take a location we already have a garrison at, this should be reinforcement instead 
 			// (however we can get here if multiple potential actions are generated targetting the same location
 			// in the same planning cycle, and one gets accepted)
-			T_SETV("scorePriority", 0);
-			T_SETV("scoreResource", 0);
+			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		// switch  do {
-		// 	case "roadblock": { "mil_triangle" };
-		// 	case "base": { "mil_circle" };
-		// 	case "outpost": { "mil_box" };
+		// 	case LOCATION_TYPE_ROADBLOCK: { "mil_triangle" };
+		// 	case LOCATION_TYPE_BASE: { "mil_circle" };
+		// 	case LOCATION_TYPE_OUTPOST: { "mil_box" };
 		// 	default { "mil_dot" };
 		// }
 		// Resource is how much src is *over* composition, scaled by distance (further is lower)
@@ -113,80 +115,10 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
-		// TODO: implement priority score for TakeLocationCmdrAction
-		// TODO:OPT cache these scores!
-		private _tgtLocType = GETV(_tgtLoc, "type");
-
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 
-		private _tgtLocTypeDistanceBias = 1;
-		private _tgtLocTypePriorityBias = 1;
-
-		private _activity = log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
-
-		switch(_tgtLocType) do {
-			case "outpost": {
-				// We want these a bit, but more if there is activity in the area
-				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocOutpostPriority") +
-					GETV(_strategy, "takeLocOutpostPriorityActivityCoeff") * _activity;
-			};
-			case "base": { 
-				// We want these a normal amount but are willing to go further to capture them.
-				// TODO: work out how to weight taking bases vs other stuff? 
-				// Probably high priority when we are losing? This is a gameplay question.
-				_tgtLocTypeDistanceBias = GETV(_strategy, "takeLocBasePriority") +
-					GETV(_strategy, "takeLocBasePriorityActivityCoeff") * _activity;
-			};
-			case "roadblock": {
-				// We won't travel as far to get these.
-				//_tgtLocTypeDistanceBias = 0.5;
-				// We want these based on activity
-				//_tgtLocTypePriorityBias = 2 * log (0.09 * CALLM(_worldNow, "getActivity", [_tgtLocPos ARG 2000]) + 1);
-				// // The more surrounding locations we control the more we want to get these first.
-				// private _nearLocsFactors =
-				// 	CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) 
-				// 		// select out location only not distance
-				// 		select { 
-				// 			_x params ["_dist", "_loc"];
-				// 			!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
-				// 		}
-				// 		apply {
-				// 			_x params ["_dist", "_loc"];
-				// 			// Surrounding bases count more.
-				// 			if(GETV(_loc, "type") == "base") then {
-				// 				_dist / 1000
-				// 			} else {
-				// 				_dist / 2000
-				// 			};
-				// 		};
-				// private _sum = 0;
-				// {_sum = _sum + _x} foreach _nearLocsFactors;
-				// _tgtLocTypePriorityBias = _sum;
-
-				// We want these if there is local activity.
-				_tgtLocTypePriorityBias = GETV(_strategy, "takeLocRoadBlockPriority") +
-					GETV(_strategy, "takeLocRoadBlockPriorityActivityCoeff") * _activity;
-
-				if(_tgtLocTypePriorityBias > 0) then {
-					private _locs = CALLM(_worldNow, "getNearestLocations", [_tgtLocPos ARG 2000 ARG ["base" ARG "outpost"]]) select {
-						_x params ["_dist", "_loc"];
-						!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
-					};
-					// We build these quick if we have an outpost or base nearby, prioritized by distance
-					if(count _locs > 0) then {
-						private _distF = 0.0004 * (_locs#0#0);
-						private _distCoeff = 1 / (1 + (_distF * _distF));
-						_tgtLocTypeDistanceBias = 2 * _distCoeff;
-					} else {
-						_tgtLocTypeDistanceBias = 0;
-					};
-				};
-			};
-			default { 0.5 }; // TODO: dunno what it is, better add more here?
-		};
-
-		private _scoreResource = _detachEffStrength * _distCoeff * _tgtLocTypeDistanceBias * _transportationScore;
-		private _scorePriority = 1 * _tgtLocTypePriorityBias;
+		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
+		private _scorePriority = CALLM(_strategy, "getLocationDesirability", [_worldNow ARG _tgtLoc ARG _side]);
 
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8
@@ -210,6 +142,12 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _detachEff]);
 		T_CALLM("setScore", [_score]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""TakeOutpost"", ""src_garrison"": ""%2"", ""tgt_location"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
+			_side, LABEL(_srcGarr), LABEL(_tgtLoc), _score#0, _score#1, _score#2, _score#3];
+		OOP_INFO_MSG(_str, []);
+		#endif
 	} ENDMETHOD;
 
 	// Get composition of reinforcements we should send from src to tgt. 

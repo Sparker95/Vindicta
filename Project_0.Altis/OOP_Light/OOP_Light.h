@@ -85,6 +85,7 @@
 #define HAS_INTERFACE true
 #define IS_HEADLESSCLIENT false
 #define PUBLIC_VARIABLE isNil
+#define IS_MULTIPLAYER false
 
 #define PROFILE_NAME "Satan"
 // ^^^ SQF-VM ^^^
@@ -102,6 +103,7 @@
 #define IS_SERVER isServer
 #define HAS_INTERFACE hasInterface
 #define IS_HEADLESSCLIENT (!hasInterface && !isDedicated)
+#define IS_MULTIPLAYER isMultiplayer
 #define PUBLIC_VARIABLE publicVariable
 
 #define PROFILE_NAME profileName
@@ -510,7 +512,6 @@
 #endif
 
 // Enable function wrappers if logging macros are used
-/*
 #ifdef OOP_DEBUG
 #define _OOP_FUNCTION_WRAPPERS
 #endif
@@ -526,7 +527,6 @@
 #ifdef OOP_DEBUG
 #define _OOP_FUNCTION_WRAPPERS
 #endif
-*/
 
 // Enable function wrappers if access assertions are enabled
 #ifdef OOP_ASSERT_ACCESS
@@ -672,12 +672,6 @@
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#ifdef PROFILER_COUNTERS_ENABLE
-#define CREATE_PROFILE_TAG VARIABLE("__profile_tag")
-#else
-#define CREATE_PROFILE_TAG
-#endif
-
 #define CLASS(classNameStr, baseClassNameStr) \
 call { \
 diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
@@ -714,8 +708,8 @@ METHOD("delete") {} ENDMETHOD; \
 METHOD("copy") OOP_clone_default ENDMETHOD; \
 METHOD("assign") OOP_assign_default ENDMETHOD; \
 VARIABLE(OOP_PARENT_STR); \
-VARIABLE(OOP_PUBLIC_STR); \
-PROFILE_TAG;
+VARIABLE(OOP_PUBLIC_STR);
+
 
 // ----------------------------------------
 // |           E N D C L A S S            |

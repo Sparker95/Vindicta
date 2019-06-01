@@ -108,10 +108,11 @@ CLASS(UNIT_CLASS_NAME, "");
 			CALL_METHOD(_group, "addUnit", [_thisObject]);
 		};
 
-		// Initialize variables and event handlers
+		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
 			CALLM0(_thisObject, "initObjectVariables");
 			CALLM0(_thisObject, "initObjectEventHandlers");
+			CALLM0(_thisObject, "initObjectDynamicSimulation");
 		};
 	} ENDMETHOD;
 
@@ -136,6 +137,12 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _group = _data select UNIT_DATA_ID_GROUP;
 		if(_group != "") then {
 			CALL_METHOD(_group, "removeUnit", [_thisObject]);
+		};
+
+		// Remove this unit from its garrison
+		private _gar = _data select UNIT_DATA_ID_GARRISON;
+		if (_gar != "") then {
+			CALL_METHOD(_gar, "removeUnit", [_thisObject]);
 		};
 
 		//Remove this unit from array with all units
@@ -297,6 +304,9 @@ CLASS(UNIT_CLASS_NAME, "");
 			// Initialize event handlers
 			CALLM0(_thisObject, "initObjectEventHandlers");
 
+			// Initialize dynamic simulation
+			CALLM0(_thisObject, "initObjectDynamicSimulation");
+
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
 		} else {
@@ -335,6 +345,27 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	} ENDMETHOD;
 
+	/*
+	Method: initObjectVariables
+	Deletes variables of unit's object handle.
+
+	Returns: nil
+	*/
+	METHOD("deinitObjectVariables") {
+		params [["_thisObject", "", [""]]];
+
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		// Reset variables of the object
+		if (!isNull _hO) then {
+			// Variable with a reference to Unit object
+			_hO setVariable [UNIT_VAR_NAME_STR, nil];
+			
+			// Variable with the efficiency vector of this unit
+			_hO setVariable [UNIT_EFFICIENCY_VAR_NAME_STR, nil];
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: initObjectEventHandlers
@@ -343,6 +374,8 @@ CLASS(UNIT_CLASS_NAME, "");
 	Returns: nil
 	*/
 	METHOD("initObjectEventHandlers") {
+		params [["_thisObject", "", [""]]];
+
 		pr _data = T_GETV("data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		pr _catID = _data select UNIT_DATA_ID_CAT;
@@ -361,6 +394,30 @@ CLASS(UNIT_CLASS_NAME, "");
 		};
 	} ENDMETHOD;
 
+	METHOD("initObjectDynamicSimulation") {
+		params [["_thisObject", "", [""]]];
+		
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		pr _cat = _data select UNIT_DATA_ID_CAT;
+		switch (_cat) do {
+			case T_INF: {	
+				_hO triggerDynamicSimulation true;
+				_hO enableDynamicSimulation false;
+			};
+
+			case T_VEH: {
+				_hO triggerDynamicSimulation false;
+				_hO enableDynamicSimulation true;
+			};
+
+			case T_DRONE: {
+				_hO triggerDynamicSimulation true;
+				_hO enableDynamicSimulation false;
+			};
+		};
+	} ENDMETHOD;
 
 	//                            D E S P A W N
 	/*
@@ -628,7 +685,6 @@ CLASS(UNIT_CLASS_NAME, "");
 		// Ungroup this unit
 		_data set [UNIT_DATA_ID_GROUP, ""];
 	} ENDMETHOD;
-
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S T A T I C   M E T H O D S

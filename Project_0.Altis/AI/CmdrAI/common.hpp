@@ -19,6 +19,7 @@
 #define COMBAT_FORCE_HINT				6	// Hint to select units approproiate for direct combat (e.g. heavy firepower)
 #define RECON_FORCE_HINT				7	// Hint to select units approproiate for a recon force (e.g. recon units, fast transport)
 #define SPEC_OPS_FORCE_HINT				8	// Hint to select units approproiate for a spec ops (e.g. spec ops units, covert transport)
+#define PATROL_FORCE_HINT				9	// Hint to select units approproiate for a patrol force (e.g. normal units, fast/lightly armed transport)
 
 #define PROFILER_COUNTERS_ENABLE
 
@@ -28,6 +29,7 @@
 #include "..\..\Mutex\Mutex.hpp"
 #include "CmdrAction\CmdrActionStates.hpp"
 #include "..\Commander\AICommander.hpp"
+#include "..\..\Location\Location.hpp"
 
 #ifndef RELEASE_BUILD
 #define DEBUG_CMDRAI
@@ -37,6 +39,7 @@
 #define LABEL(model) GETV(model, "label")
 #define EFF_ZERO T_EFF_null
 #define MAKE_SCORE_VEC(scorePriority, scoreResource, scoreStrategy, scoreCompleteness) [scorePriority, scoreResource, scoreStrategy, scoreCompleteness]
+#define ZERO_SCORE [0,0,0,0]
 #define GET_SCORE_PRIORITY(scoreVec) (scoreVec select 0)
 #define GET_SCORE_RESOURCE(scoreVec) (scoreVec select 1)
 #define GET_SCORE_STRATEGY(scoreVec) (scoreVec select 2)
@@ -48,6 +51,9 @@
 #define EFF_MIN_EFF [6, 0, 0, 0, 6, 0, 0, 0]
 #define EFF_GARRISON_MIN_EFF [12, 0, 0, 0, 12, 0, 0, 0]
 
+#define EFF_FOOT_PATROL_EFF [12, 0, 0, 0, 12, 0, 0, 0]
+#define EFF_MOUNTED_PATROL_EFF [12, 0, 0, 0, 12, 5, 0, 0]
+
 // Cmdr planning constants
 #define CMDR_PLANNING_PRIORITY_HIGH 0
 #define CMDR_PLANNING_PRIORITY_NORMAL 1
@@ -55,8 +61,11 @@
 
 // PRIME NUMBERS only
 #define CMDR_PLANNING_RATIO_HIGH 3
-#define CMDR_PLANNING_RATIO_NORMAL 31
-#define CMDR_PLANNING_RATIO_LOW 67
+#define CMDR_PLANNING_RATIO_NORMAL 11
+#define CMDR_PLANNING_RATIO_LOW 31
+// #define CMDR_PLANNING_RATIO_HIGH 3
+// #define CMDR_PLANNING_RATIO_NORMAL 31
+// #define CMDR_PLANNING_RATIO_LOW 67
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \

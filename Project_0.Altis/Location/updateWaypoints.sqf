@@ -1,4 +1,5 @@
 #include "..\OOP_Light\OOP_Light.h"
+#include "Location.hpp"
 
 // Class: Location
 /*
@@ -14,25 +15,22 @@ _data	- for "circle":
 
 */
 
-params [["_thisObject", "", [""]], ["_type", "", [""]], ["_data", [50], [0, []]] ];
+params [P_THISOBJECT];
 
-switch (_type) do {
-	case "circle" : {
-		_data params [ ["_radius", 0, [0] ] ];
-		SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
-		SET_VAR_PUBLIC(_thisObject, "border", _radius);
-		
+T_PRVAR(border);
+private _waypoints = 
+	if(_border isEqualType 0) then {
 		// Update the patrol waypoints
 		private _wp = [];
 		private _i = 0;
 		private _d  = 0;
 		private _locPos = GET_VAR(_thisObject, "pos");
 		private _pos = 0;
-#ifndef _SQF_VM // getPos not implemented, probably surfaceIsWater isn't either.
+	#ifndef _SQF_VM // getPos not implemented, probably surfaceIsWater isn't either.
 		while {_i < 8} do
 		{
-			_d = _radius;
-			_pos = _locPos getPos [_radius, 45*_i]; //Points around the location
+			_d = _border;
+			_pos = _locPos getPos [_border, 45*_i]; //Points around the location
 			while {(surfaceIsWater _pos) && (_d > 0)} do {
 				_d = _d - 10;
 				_pos = _locPos getPos [_d, 45*_i];
@@ -45,21 +43,17 @@ switch (_type) do {
 			//Test
 			//createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];
 		};
-#endif
-		SET_VAR(_thisObject, "borderPatrolWaypoints", _wp);
-	};
-	
-	case "rectangle" : {
-		_data params ["_a", "_b", "_dir"];
+	#endif
+		_wp
+	} else {
+		_border params ["_a", "_b", "_dir"];
 		private _radius = sqrt(_a*_a + _b*_b);
-		SET_VAR_PUBLIC(_thisObject, "border", _data);
-		SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
 		
 		// Add patrol waypoints
 		/*
 		For a rectangular border the waypoints are located like this:
 		
-		  a   a
+			a   a
 		7---0---1
 		|	|* /|  * is the _alpha angle
 		|	| /	| b
@@ -121,13 +115,17 @@ switch (_type) do {
 			_i = _i + 1;
 		
 			//Test
-			//createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];
-
+			//createVehicle ["Sign_Arrow_Large_Pink_F", _pos, [], 0, "can_collide"];	
 		};
-		SET_VAR(_thisObject, "borderPatrolWaypoints", _wp);
+		_wp
 	};
-	
-	default {
-		diag_log format ["[Location::setBorder] Error: wrong border type: %1, location: %2", _type, GET_VAR(_thisObject, "name")];
-	};
+
+// Adjust waypoints onto nearest roads if we are in a city
+if(T_GETV("type") == LOCATION_TYPE_CITY) then {
+	_waypoints = (_waypoints apply {
+		private _nearestRoad = [_x, 500] call BIS_fnc_nearestRoad;
+		if !(isNull _nearestRoad) then { getPos _nearestRoad } else { _x };
+	}) call BIS_fnc_arrayShuffle;
 };
+
+SET_VAR(_thisObject, "borderPatrolWaypoints", _waypoints);

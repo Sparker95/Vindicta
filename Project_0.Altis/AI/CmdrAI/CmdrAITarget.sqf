@@ -40,10 +40,12 @@ Target_fnc_GetPos = {
 };
 
 Target_fnc_GetLabel = {
-	params ["_world", "_targetObj"];
+	params ["_world", "_targetObj", ["_default", "invalid", [""]]];
+
+	if(IS_NULL_TARGET(_targetObj)) exitWith { _default };
 
 	_targetObj params ["_targetType", "_target"];
-	private _targetName = "unknown";
+	private _targetName = _default;
 	switch(_targetType) do {
 		case TARGET_TYPE_GARRISON: {
 			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");

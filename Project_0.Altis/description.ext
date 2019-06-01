@@ -15,6 +15,7 @@ enableDebugConsole = 2;
 respawn = 3;
 respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
 respawnDelay = 2; // Default: ?
+respawnOnStart = 1;
 DisabledAI = 1;
 respawnTemplates[] = {"MenuPosition"};
 
@@ -136,3 +137,34 @@ class RscTitles {
 class Extended_PreInit_EventHandlers {
     missionSettings = call compile preprocessFileLineNumbers "Init\initCBAMissionSettings.sqf";
 };
+
+
+// Garbage collector
+// https://community.bistudio.com/wiki/Description.ext#Corpse_.26_wreck_management
+
+// Sets the mode for corpse removal manager.
+corpseManagerMode = 1; // Leave it at 1
+
+// Corpse limit before which ( <= ) corpseRemovalMaxTime applies and after which ( > ) corpseRemovalMinTime applies.
+corpseLimit = 30;
+
+// Remove all bodies that have been dead longer than corpseRemovalMinTime when corpseLimit is reached.
+corpseRemovalMinTime = 60; // seconds. Default: 10
+
+// Maximum time a corpse can remain on the ground if total number of corpses is equal or under corpseLimit.
+corpseRemovalMaxTime = 600; // seconds. Default: 3600
+
+// Sets the mode for wreck removal manager.
+wreckManagerMode = 1; // Leave it at 1
+
+// Vehicle wreck limit before which ( <= ) wreckRemovalMaxTime applies and after which ( > ) wreckRemovalMinTime applies .
+wreckLimit = 15;
+
+// Remove all wrecks that have existed longer than wreckRemovalMinTime when wreckLimit is breached.
+wreckRemovalMinTime = 1800; // seconds. Default: 10
+
+// Maximum time a wreck can remain on the ground if total number of wrecks is equal or under wreckLimit.
+wreckRemovalMaxTime = 7200; // seconds. Default: 36000 (10 hours)
+
+// The minimum distance between corpse or wreck and nearest player before the corpse or wreck is allowed to be removed by the garbage collector.
+minPlayerDistance = 1500; // meters. Default: 0

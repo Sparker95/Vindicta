@@ -105,4 +105,7 @@ call compile preprocessFileLineNumbers "SideStat\SideStat.sqf";
 // Initialize Intel and IntelDatabase classes
 call compile preprocessFileLineNumbers "Intel\initClasses.sqf";
 
+// Initialize the garbage collector
+call compile preprocessFileLineNumbers "GarbageCollector\GarbageCollector.sqf";
+
 diag_log "[initModules] Done!";
