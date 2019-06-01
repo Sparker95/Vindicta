@@ -474,13 +474,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					if (count crew vehicle _unit > 1) then {
 						{
 							if (isPlayer _x && alive _x && _x != _unit) then { 
-								pr _um = _x getVariable ["undercoverMonitor", ""];
-								if (_um != "") then { // Sanity check
-									pr _msg = MESSAGE_NEW();
-									MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
-									CALLM1(_um, "postMessage", _msg);
-									OOP_INFO_0("SMON_MESSAGE_COMPROMISED sent to all occupants.");
-								};
+								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitCompromised", [_x], _x, false); //classNameStr, methodNameStr, extraParams, targets, JIP
 							};
 						} forEach crew vehicle _unit;		
 					};
@@ -611,17 +605,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		};
 	} ENDMETHOD;
 
-	/* 
-		EH_handleDamageInfantry remoteExecutes this method on this computer when this player damages enemy infantry.
-		This function resolves undercoverMonitor of this player.
-	*/
-	STATIC_METHOD("onUnitDamageInfantry") {
-		params ["_thisClass", ["_unit", objNull, [objNull]]];
-		pr _um = _unit getVariable ["undercoverMonitor", ""];
-		if (_um != "") then { // Sanity check
-			// TODO ...
-		};
-	} ENDMETHOD;
 
 	/* 
 		Other player's computers remoteExecute this on this computer to make this player overt.

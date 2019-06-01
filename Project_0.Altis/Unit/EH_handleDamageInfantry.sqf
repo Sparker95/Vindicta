@@ -25,10 +25,8 @@ diag_log _str;
 */
 
 if (side _unit != side _source && isPlayer _source && alive _source) then { 
-	pr _um = player getVariable "undercoverMonitor";
-	pr _msg = MESSAGE_NEW();
-	MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
-	CALLM1(_um, "postMessage", _msg); // handle message in undercoverMonitor
+	REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitCompromised", [_source], _source, false); //classNameStr, methodNameStr, extraParams, targets, JIP
+	systemChat "Unit damaged.";
 };
 
 // Disable damage for driving over friendlies

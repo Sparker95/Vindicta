@@ -68,8 +68,8 @@ CLASS("ActionUnitArrest", "Action")
 		
 		pr _captor = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
-		if !(alive _captor) exitWith {
-			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead."); 
+		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) exitWith {
+			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			_state = ACTION_STATE_FAILED;
 			T_SETV("state", ACTION_STATE_FAILED); 
 		};
@@ -140,7 +140,7 @@ CLASS("ActionUnitArrest", "Action")
 					T_SETV("stateChanged", true);
 					T_SETV("stateMachine", 1);
 				};
-			};
+			}; // end CATCH UP
 			
 			/*
 			--------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,35 +156,55 @@ CLASS("ActionUnitArrest", "Action")
 					
 					pr _handle = [_captor, _target] spawn {
 						params["_captor","_target"];
-						pr _currentWeapon = currentWeapon _captor;
-						pr _animation = call {
-							if (_currentWeapon isequalto primaryWeapon _captor) exitWith {
-								"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
-							};
-							if (_currentWeapon isequalto secondaryWeapon _captor) exitWith {
-								"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
-							};
-							if (_currentWeapon isequalto handgunWeapon _captor) exitWith {
-								"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
-							};
-							if (_currentWeapon isequalto binocular _captor) exitWith {
-								"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
-							};
-							"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
-						};
-						
-						//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+						waitUntil {
+							_animationDone = false;
+							_pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
+							_captor doMove _pos;
+							_captor doWatch _target;
+							_pos_search = getpos _target;
+							sleep 0.5;
 
-						// arrest player by sending a message to unit's undercoverMonitor
-						REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
-						systemChat "Player arrested.";
+							// play animation if close enough, finishing the script
+							if (_pos_search distance getpos _target < 0.1) then {
+								pr _animation = call {
+									if( _currentWeapon isequalto primaryWeapon _captor ) exitWith {
+										"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
+									};
+									if( _currentWeapon isequalto secondaryWeapon _captor ) exitWith {
+										"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
+									};
+									if( _currentWeapon isequalto handgunWeapon _captor ) exitWith {
+										"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
+									};
+									if( _currentWeapon isequalto binocular _captor ) exitWith {
+										"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
+									};
+									"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
+								};
+								_captor playMove _animation;
+								_animationDone = true;
+
+								waitUntil {animationState _captor == _animation};
+								waitUntil {animationState _captor != _animation};
+								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
+							};
+
+							_target setVariable ["isMoving", _isMoving];
+							
+							_return = _animationDone;
+							_return
+						};
+					};
 						
-						_captor playMove _animation;
-						waitUntil {animationState _captor == _animation};
-						waitUntil {animationState _captor != _animation};					
-					};		
+					//[_captor,"So who do whe have here?",_target] call Dialog_fnc_hud_createSentence;
+
+					// arrest player by sending a message to unit's undercoverMonitor				
 					
 					T_SETV("spawnHandle", _handle);
+				} else {
+					if ((T_GETV("stateTimer") + 30) < time) exitWith {
+						T_SETV("stateMachine", 2); // action failed
+					};
 				};
 				
 				if (scriptDone T_GETV("spawnHandle")) then {
@@ -194,7 +214,7 @@ CLASS("ActionUnitArrest", "Action")
 					_state = ACTION_STATE_COMPLETED;
 					breakTo "switch";
 				};
-			};
+			}; // end SEARCH AND ARREST
 
 			// FAILED
 			case 2: {
