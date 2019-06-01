@@ -1,0 +1,230 @@
+/*%FSM<COMPILE "scriptedFSM.cfg, Danger">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"wait",4,218,-1280.000000,-400.000000,-1180.000000,-340.000000,0.000000,"wait"};
+item1[] = {"Init",0,250,-1280.000000,-643.521912,-1180.000000,-603.521912,0.000000,"Init"};
+item2[] = {"process_new_dang",2,250,-1140.000000,-580.000000,-1040.000000,-520.000000,0.000000,"process" \n "new danger"};
+item3[] = {"true",8,218,-1280.000000,-580.000000,-1180.000000,-520.000000,0.000000,"true"};
+item4[] = {"caluclate_fleeing",2,250,-1280.000000,-500.000000,-1180.000000,-440.000000,0.000000,"caluclate fleeing" \n "point"};
+item5[] = {"check_queue_for",2,250,-1280.000000,-320.000000,-1180.000000,-260.000000,0.000000,"check queue" \n "for new events"};
+item6[] = {"new_events",4,218,-1140.000000,-320.000000,-1040.000000,-260.000000,10.000000,"new events"};
+item7[] = {"no_new_danger_en",1,250,-1400.000000,-220.000000,-1300.000000,-180.000000,0.000000,"no new danger" \n "end"};
+item8[] = {"no_threat",8,218,-1280.000000,-240.000000,-1180.000000,-180.000000,0.000000,"no threat"};
+item9[] = {"ai_deleted",4,218,-1400.000000,-320.000000,-1300.000000,-260.000000,20.000000,"ai deleted"};
+item10[] = {"bad_cause",4,218,-1417.296021,-639.966553,-1327.295898,-589.966553,666.000000,"bad" \n "cause"};
+item11[] = {"bad_cause",1,250,-1548.322021,-636.871765,-1458.322021,-586.871765,0.000000,"bad cause"};
+link0[] = {0,5};
+link1[] = {1,3};
+link2[] = {1,10};
+link3[] = {2,3};
+link4[] = {3,4};
+link5[] = {4,0};
+link6[] = {5,6};
+link7[] = {5,8};
+link8[] = {5,9};
+link9[] = {6,2};
+link10[] = {8,7};
+link11[] = {9,7};
+link12[] = {10,11};
+globals[] = {0.000000,0,0,0,0,640,480,1,230,6316128,1,-1726.530518,-737.578857,-63.505371,-686.178467,1404,884,1};
+window[] = {2,-1,-1,-1,-1,922,104,1268,104,3,1422};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "Danger";
+        class States
+        {
+                /*%FSM<STATE "Init">*/
+                class Init
+                {
+                        name = "Init";
+                        itemno = 1;
+                        init = /*%FSM<STATEINIT""">*/"//debug initial danger that triggered this FSM" \n
+                         "//[""printDanger"",""x"",_this] call bis_fnc_cp_debug;" \n
+                         "" \n
+                         "//create the initial queue, will be updated from engine" \n
+                         "" \n
+                         "private _queue = [[_dangerCause,_dangerPos,nil,_dangerCausedBy]];" \n
+                         "" \n
+                         "//agregated threat value" \n
+                         "private _threat = 0;" \n
+                         "" \n
+                         "//create unit id" \n
+                         "_this setVariable [""#id"",str _this];" \n
+                         "" \n
+                         ""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "bad_cause">*/
+                                class bad_cause
+                                {
+                                        itemno = 10;
+                                        priority = 666.000000;
+                                        to="bad_cause";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_dangerCause == 3;"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "true">*/
+                                class true
+                                {
+                                        itemno = 3;
+                                        priority = 0.000000;
+                                        to="caluclate_fleeing";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "process_new_dang">*/
+                class process_new_dang
+                {
+                        name = "process_new_dang";
+                        itemno = 2;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "true">*/
+                                class true
+                                {
+                                        itemno = 3;
+                                        priority = 0.000000;
+                                        to="caluclate_fleeing";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "caluclate_fleeing">*/
+                class caluclate_fleeing
+                {
+                        name = "caluclate_fleeing";
+                        itemno = 4;
+                        init = /*%FSM<STATEINIT""">*/"//[""printDanger"",""x"",_this] call bis_fnc_cp_debug;" \n
+                         "//[""printDangerQueue"","" "",_this] call bis_fnc_cp_debug;" \n
+                         "" \n
+                         "/*" \n
+                         "do all the sh1t" \n
+                         "- grab data" \n
+                         "- wipe out _queue" \n
+                         "- decay stored threat data based on time" \n
+                         "- store processing time (so time decay can be used next time)" \n
+                         "- add stored & decayed threat data to the grabbed _queue" \n
+                         "- agregate grabbed _queue records " \n
+                         "- calculate danger position & level" \n
+                         "- calculate fleeing point" \n
+                         "*/" \n
+                         "" \n
+                         "_threatsNew = _queue apply {_x select 3};" \n
+                         "_queue = [];" \n
+                         "" \n
+                         "_threat = [_this,_threatsNew] call bis_fnc_cp_main;" \n
+                         "" \n
+                         "//lod the danger processing according to player distance" \n
+                         "_t = time + (_this call bis_fnc_cp_getQueueDelay);"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "wait">*/
+                                class wait
+                                {
+                                        itemno = 0;
+                                        priority = 0.000000;
+                                        to="check_queue_for";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _t"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "check_queue_for">*/
+                class check_queue_for
+                {
+                        name = "check_queue_for";
+                        itemno = 5;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "ai_deleted">*/
+                                class ai_deleted
+                                {
+                                        itemno = 9;
+                                        priority = 20.000000;
+                                        to="no_new_danger_en";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"isNull _this || {!alive _this}"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "new_events">*/
+                                class new_events
+                                {
+                                        itemno = 6;
+                                        priority = 10.000000;
+                                        to="process_new_dang";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"//[""[i] events: %1 | threat: %2"",count _queue,_threat] call bis_fnc_logFormat;" \n
+                                         "" \n
+                                         "count _queue > 0 || _threat > 0.1"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "no_threat">*/
+                                class no_threat
+                                {
+                                        itemno = 8;
+                                        priority = 0.000000;
+                                        to="no_new_danger_en";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "no_new_danger_en">*/
+                class no_new_danger_en
+                {
+                        name = "no_new_danger_en";
+                        itemno = 7;
+                        init = /*%FSM<STATEINIT""">*/"//[""[x] Ended""] call bis_fnc_logFormat;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "bad_cause">*/
+                class bad_cause
+                {
+                        name = "bad_cause";
+                        itemno = 11;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="Init";
+        finalStates[] =
+        {
+                "no_new_danger_en",
+                "bad_cause",
+        };
+};
+/*%FSM</COMPILE>*/
