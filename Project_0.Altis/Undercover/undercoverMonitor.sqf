@@ -412,7 +412,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							if (_prevState == sCOMPROMISED) then { 
 								T_CALLM("setState", [sUNDERCOVER]); 
 							} else {
-								T_CALLM("setState", [_prevState]);	
+								if (T_GETV("bSeen")) then {
+									T_CALLM("setState", [sWANTED]);	
+								} else { 
+									T_CALLM("setState", [_prevState]);	
+								};
 							}; // don't want to be trapped in compromised state
 
 							OOP_INFO_0("Leaving COMPROMISED state.");
@@ -431,6 +435,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						if (T_GETV("stateChanged") && !(T_GETV("bCaptive"))) then {
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
+							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
 							_unit playMoveNow "Acts_ExecutionVictim_Loop";
 							T_SETV("bCaptive", true);
@@ -605,7 +610,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		if (_um != "") then { // Sanity check
 			pr _msg = MESSAGE_NEW();
 			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_ARRESTED);
-			MESSAGE_SET_DATA(_msg, _group);
 			CALLM1(_um, "postMessage", _msg);
 		};
 	} ENDMETHOD;
@@ -621,7 +625,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		if (_um != "") then { // Sanity check
 			pr _msg = MESSAGE_NEW();
 			MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
-			MESSAGE_SET_DATA(_msg, _group);
 			CALLM1(_um, "postMessage", _msg);
 		};
 	} ENDMETHOD;

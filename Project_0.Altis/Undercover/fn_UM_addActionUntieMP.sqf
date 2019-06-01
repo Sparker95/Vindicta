@@ -10,25 +10,36 @@
 #include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
 /* 
-	Tests the "compromise" feature of the undercoverMonitor by sending a message to the monitor.
-
-	Parameter: _unit - the unit that is to be compromised
-
-	Example: [player] call fnc_testCompromise
+	Add untie action to an arrested unit, but action can only be used by other units, not the unit it is attached to.
 */
 
 
 params ["_unit"];
 
-if (count crew vehicle _unit > 0) then {
-	{
-		if (isPlayer _x && alive _x) then { 
-			private _um = _x getVariable ["undercoverMonitor", ""];
-			if (_um != "") then { // Sanity check
-				private _msg = MESSAGE_NEW();
-				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
-				CALLM1(_um, "postMessage", _msg);
-			};
+params [["_unit", objNull, [objNull]]];
+
+[ 
+	_unit,
+	"cut yourself free",
+	"",
+	"",
+	"_this distance _target < 3",
+	"_caller distance _target < 3",
+	{},
+	{},
+	{ 	
+		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
+
+		pr _uM = _target getVariable ["undercoverMonitor", ""];
+		if (_uM != "") then { // Sanity check
+			pr _bCaptive = SETV(_uM, "bCaptive", false);
 		};
-	} forEach crew vehicle _unit;		
-};
+		systemChat "You have freed yourself."; 
+	},
+	{}, 
+	[],
+	8,
+	0, 
+	true,
+	false
+] call BIS_fnc_holdActionAdd;

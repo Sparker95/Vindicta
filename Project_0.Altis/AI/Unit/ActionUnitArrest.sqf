@@ -165,21 +165,23 @@ CLASS("ActionUnitArrest", "Action")
 
 							// play animation if close enough, finishing the script
 							if (_pos_search distance getpos _target < 0.1) then {
+								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
-									if( currentWeapon isequalto primaryWeapon _captor ) exitWith {
+									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
 										"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
 									};
-									if( currentWeapon isequalto secondaryWeapon _captor ) exitWith {
+									if(_currentWeapon isequalto secondaryWeapon _captor) exitWith {
 										"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
 									};
-									if( currentWeapon isequalto handgunWeapon _captor ) exitWith {
+									if(_currentWeapon isequalto handgunWeapon _captor) exitWith {
 										"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
 									};
-									if( currentWeapon isequalto binocular _captor ) exitWith {
+									if(_currentWeapon isequalto binocular _captor) exitWith {
 										"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
 									};
 									"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
 								};
+
 								_captor playMove _animation;
 								_animationDone = true;
 
