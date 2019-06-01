@@ -427,10 +427,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							T_SETV("stateChanged", false);
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							deleteMarkerLocal "markerWanted";
-							_unit playMoveNow "Acts_ExecutionVictim_Loop";
 							T_SETV("bCaptive", true);
 							[_unit] call fnc_UM_addActionUntieLocal;
-							_unit setVariable ["timeArrested", time+10];
 						}; // do once when state changed
 
 						// exit arrested state

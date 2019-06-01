@@ -166,6 +166,7 @@ CLASS("ActionUnitArrest", "Action")
 
 							// play animation if close enough, finishing the script
 							if (_pos_search distance getpos _target < 0.1) then {
+								private _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
 									if( _currentWeapon isequalto primaryWeapon _captor ) exitWith {
 										"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
@@ -186,10 +187,22 @@ CLASS("ActionUnitArrest", "Action")
 
 								waitUntil {animationState _captor == _animation};
 								waitUntil {animationState _captor != _animation};
+								
+								_target playMoveNow "Acts_ExecutionVictim_Loop";
+								if(!isPlayer _target) then {
+									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
+									_target disableAI "MOVE"; // Disable AI Movement
+									_target disableAI "AUTOTARGET"; // Disable AI Autotarget
+									_target disableAI "ANIM"; // Disable AI Behavioural Scripts
+									_target allowFleeing 0; // Disable AI Fleeing
+									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
+								};
+								_target setVariable ["timeArrested", time+10];
+
 								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
 							};
 
-							_target setVariable ["isMoving", _isMoving];
+							_target setVariable ["isMoving", false];
 							
 							_return = _animationDone;
 							_return

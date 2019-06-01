@@ -99,7 +99,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		if(!IS_MULTIPLAYER) then {
 			{
 				deleteVehicle _x;
-			} forEach (units group player) - [player];
+			} forEach units spawnGroup1 + units spawnGroup2 - [player];
 
 			player addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
 			player setPosATL ((selectRandom _spawnPoints)#1);
@@ -179,16 +179,104 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 ENDCLASS;
 
+CLASS("AmbientMission", "")
+	METHOD("new") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+	} ENDMETHOD;
+
+	METHOD("update") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
+	VARIABLE("civGroups");
+
+	METHOD("new") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+
+		private _pos = CALLM0(_city, "getPos");
+		private _radius = GETV(_city, "boundingRadius");
+
+		// TODO: police harass civilians
+		// Create some civilians that can be harassed.
+		private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
+		private _civGroups = [];
+
+		OOP_INFO_MSG("Spawning some civilians in %1 to be harassed from pool of %2", [_city ARG _civTypes]);
+		for "_i" from 0 to (2 + (random 5)) do {
+			private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
+			private _tmpGroup = createGroup civilian;
+			private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
+			private _grp = createGroup [FRIENDLY_SIDE, true];
+			[_civie] joinSilent _grp;
+			deleteGroup _tmpGroup;
+			_civie setVariable [UNDERCOVER_SUSPICIOUS, true];
+			_civGroups pushBack _grp;
+			_civie setCaptive true;
+			_civie spawn {
+				waitUntil { isNull (group _this) or {_this getVariable ["timeArrested", -1] != -1} };
+				if(isNull (group _this)) exitWith {};
+				// Unit is arrested so add the appropriate action to free them
+				[
+					_this, "Free this civilian", "", "",
+					"_this distance _target < 3",
+					"_caller distance _target < 3",
+					{
+						params ["_target", "_caller", "_actionId", "_arguments"];
+						CALLSM("UndercoverMonitor", "onUnitCompromised", [_caller]);
+					}, {}, {
+						params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
+						_target playMoveNow "Acts_ExecutionVictim_Unbow";
+						_target setVariable [UNDERCOVER_TARGET, false, false];
+						_target enableAI "MOVE";
+						_target enableAI "AUTOTARGET";
+						_target enableAI "ANIM";
+						_target allowFleeing 1;
+						_target setBehaviour "SAFE";
+						systemChat "You have freed a civilian. He was probably innocent?";
+						// TODO: dialog with civilian
+						// Give intel reward to player
+						CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
+						systemChat "The grateful citizen has provided you with some intel!";
+						// Increase area activity
+						CALLSM("AICommander", "addActivity", [ENEMY_SIDE ARG getPos _caller ARG (10+random(20))]);
+						systemChat "The enemy has taken note of the increased activity in this area!";
+					}, {}, [], 8, 0, true, false
+				] call BIS_fnc_holdActionAdd;
+			}
+		};
+		T_SETV("civGroups", _civGroups);
+	} ENDMETHOD;
+
+	METHOD("update") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		T_PRVAR(civGroups);
+		{
+			{ deleteVehicle _x } forEach units _x;
+			deleteGroup _x;
+		} forEach _civGroups;
+
+		T_SETV("civGroups", []);
+	} ENDMETHOD;
+	
+ENDCLASS;
+
 CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
-	VARIABLE("civGroups");
+	VARIABLE("ambientMissions");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
-		T_SETV("civGroups", []);
+		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
@@ -197,25 +285,14 @@ CLASS("CivilWarCityData", "")
 		OOP_INFO_MSG("Spawning %1", [_city]);
 
 		T_PRVAR(state);
+		T_PRVAR(ambientMissions);
 		private _pos = CALLM0(_city, "getPos");
 		private _radius = GETV(_city, "boundingRadius");
 
 		switch _state do {
 			case CITY_STATE_STABLE: {
-				// TODO: police harass civilians
-				// Create some civilians that can be harassed.
-				private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
-				T_PRVAR(civGroups);
-
-				OOP_INFO_MSG("Spawning some civilians in %1 to be harassed from pool of %2", [_city ARG _civTypes]);
-				for "_i" from 0 to random 10 do {
-					private _grp = createGroup [FRIENDLY_SIDE, true];
-					private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
-					private _civie = _grp createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
-					_civie setVariable [UNDERCOVER_SUSPICIOUS, true];
-					_civGroups pushBack _grp;
-				};
-
+				_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city]));
+				
 				// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
 				// {
 				// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
@@ -246,13 +323,11 @@ CLASS("CivilWarCityData", "")
 
 		OOP_INFO_MSG("Despawning %1", [_city]);
 
-		T_PRVAR(civGroups);
+		T_PRVAR(ambientMissions);
 		{
-			{ deleteVehicle _x } forEach units _x;
-			deleteGroup _x;
-		} forEach _civGroups;
-
-		T_SETV("civGroups", []);
+			DELETE(_x);
+		} forEach _ambientMissions;
+		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
 	
 	METHOD("update") {
@@ -320,6 +395,12 @@ CLASS("CivilWarCityData", "")
 			private _data = GETV(_policeStation, "gameModeData");
 			CALLM(_data, "update", [_policeStation ARG _state]);
 		} forEach _policeStations;
+
+		T_PRVAR(ambientMissions);
+		{
+			CALLM(_x, "update", []);
+		} forEach _ambientMissions;
+
 	} ENDMETHOD;
 
 ENDCLASS;
