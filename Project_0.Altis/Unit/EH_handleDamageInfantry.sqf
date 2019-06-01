@@ -26,7 +26,6 @@ diag_log _str;
 
 if (side _unit != side _source && isPlayer _source && alive _source) then { 
 	REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitCompromised", [_source], _source, false); //classNameStr, methodNameStr, extraParams, targets, JIP
-	systemChat "Unit damaged.";
 };
 
 // Disable damage for driving over friendlies
