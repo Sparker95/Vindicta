@@ -13,6 +13,8 @@
 #include "..\AI\parameterTags.hpp"
 #include "..\Group\Group.hpp"
 #include "..\Location\Location.hpp"
+#include "..\CivilianPresence\CivilianPresence.hpp"
+#include "..\Undercover\UndercoverMonitor.hpp"
 
 
 #define CITY_STATE_STABLE 0

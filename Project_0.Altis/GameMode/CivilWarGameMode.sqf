@@ -88,7 +88,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _marker = createMarker ["respawn_west_" + GETV(_x, "name"), _spawnPos]; // magic
 			_marker setMarkerAlpha 0.0;
 			private _city = GETV(_policeStation, "parent");
-			_spawnPoints pushBack [GETV(_city, "name"), _marker];
+			_spawnPoints pushBack [GETV(_city, "name"), _spawnPos];
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION });
 		T_SETV("spawnPoints", _spawnPoints);
 
@@ -96,39 +96,39 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		ASSERT_MSG(count _spawnPoints > 0, "Couldn't create any spawn points, no police stations found? Check your map setup!");
 
 		// Single player
-		if(!IS_MULTIPLAYER) then
-		{
+		if(!IS_MULTIPLAYER) then {
 			{
 				deleteVehicle _x;
 			} forEach (units group player) - [player];
 
 			player addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
-			player setPosATL (getMarkerPos ((selectRandom _spawnPoints)#1));
+			player setPosATL ((selectRandom _spawnPoints)#1);
 			T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
 		};
 #endif
 	} ENDMETHOD;
 
-	/* private */ METHOD("singlePlayerRespawn") {
-		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
-		T_PRVAR(spawnPoints);
+/* private */ METHOD("singlePlayerRespawn") {
+	params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+	T_PRVAR(spawnPoints);
 
-		private _respawnLoc = selectRandom _spawnPoints;
-		private _newUnit = group _oldUnit createUnit [typeOf _oldUnit, getMarkerPos (_respawnLoc#1), [], 0, "NONE"];
-		selectPlayer _newUnit;
-		T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
-		[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
-		[_oldUnit] joinSilent grpNull;
-		_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
-		(_respawnLoc#0) spawn {
-			// This works mostly...
-			cutText ["You died! Oh no!", "BLACK FADED", 999];
-			sleep 5;
-			cutText [format["But... you are born again in %1!", _this], "BLACK IN", 10];
-			BIS_DeathBlur ppEffectAdjust [0.0];
-			BIS_DeathBlur ppEffectCommit 0.0;
-		};
-	} ENDMETHOD;
+	private _respawnLoc = selectRandom _spawnPoints;
+	private _tmpGroup = createGroup (side _oldUnit);
+	private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
+	[_newUnit] joinSilent (group _oldUnit);
+	deleteGroup _tmpGroup;
+	selectPlayer _newUnit;
+	player assignCurator zeus1;
+	T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
+	[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
+	[_oldUnit] joinSilent grpNull;
+	_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
+	(_respawnLoc#0) spawn {
+		cutText [format["<t color='#ffffff' size='3'>You died!<br/>But you were born again in %1!</t>", _this], "BLACK IN", 10, true, true];
+		BIS_DeathBlur ppEffectAdjust [0.0];
+		BIS_DeathBlur ppEffectCommit 0.0;
+	};
+} ENDMETHOD;
 
 	/* protected override */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
@@ -149,69 +149,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		// Update city stability and state
 		{
-			private _loc = _x;
-			private _cityData = GETV(_loc, "gameModeData");
-			private _state = GETV(_cityData, "state");
-			// if City is stable or agitated then instability is a factor
-			if(_state == CITY_STATE_STABLE or _state == CITY_STATE_AGITATED) then {
-				private _cityPos = CALLM0(_loc, "getPos");
-				private _cityRadius = 500 max GETV(_loc, "boundingRadius");
-				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
-				private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
-
-				// For now we will just have instability directly related to activity (activity fades over time just
-				// as we want instability to)
-				// Instability is activity / radius
-				// TODO: add other interesting factors here to the instability rate.
-				private _instability = _activity * 500 / _cityRadius;
-				SETV(_cityData, "instability", _instability);
-				_state = switch true do {
-					case (_instability > 200): { CITY_STATE_IN_REVOLT };
-					case (_instability > 100): { CITY_STATE_AGITATED };
-					default { CITY_STATE_STABLE };
-				};
-			};
-			SETV(_cityData, "state", _state);
-
-#ifdef DEBUG_CIVIL_WAR_GAME_MODE
-			private _mrk = GETV(_loc, "name") + "_gamemode_data";
-			createMarker [_mrk, CALLM0(_loc, "getPos") vectorAdd [0, 100, 0]];
-			_mrk setMarkerType "mil_marker";
-			_mrk setMarkerColor "ColorBlue";
-			_mrk setMarkerText (format ["%1 (%2)", gCityStateNames select _state, GETV(_cityData, "instability")]);
-			_mrk setMarkerAlpha 1;
-#endif
-			switch _state do {
-				case CITY_STATE_STABLE: {
-					// TODO: police harass civilians
-				};
-				case CITY_STATE_AGITATED: {
-					// TODO: if local garrison is spawned then
-					//	a) spawn a civ or two with weapons to attack them
-					//	b) spawn an IED with proximity detonation
-				};
-				case CITY_STATE_IN_REVOLT: {
-					// TODO: if local garrison is spawned then
-					//	a) arm all civs, put them on player side
-					//	b) spawn an timed IED blowing up a building or two (police station maybe?)
-				};
-				case CITY_STATE_SUPPRESSED: {
-					// TODO: keep spawned civilians inside
-					// TODO: modify cmdr strategy to occupy this town
-				};
-				case CITY_STATE_LIBERATED: {
-					// TODO: police is on player side
-				};
-			};
-
-			// Do spawning at police stations
-			private _policeStations = GETV(_loc, "children") select { GETV(_x, "type") == LOCATION_TYPE_POLICE_STATION };
-
-			{
-				private _policeStation = _x;
-				private _data = GETV(_policeStation, "gameModeData");
-				CALLM(_data, "update", [_policeStation ARG _state]);
-			} forEach _policeStations;
+			private _city = _x;
+			private _cityData = GETV(_city, "gameModeData");
+			CALLM(_cityData, "update", [_city]);
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
 	} ENDMETHOD;
 
@@ -219,27 +159,169 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Override this to perform actions when a location spawns
 	/* protected override */METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+
+		private _type = GETV(_location, "type");
+		if(_type == LOCATION_TYPE_CITY) then {
+			private _cityData = GETV(_location, "gameModeData");
+			CALLM(_cityData, "spawned", [_location]);
+		};
 	} ENDMETHOD;
 
 	// Override this to perform actions when a location despawns
 	/* protected override */METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+
+		private _type = GETV(_location, "type");
+		if(_type == LOCATION_TYPE_CITY) then {
+			private _cityData = GETV(_location, "gameModeData");
+			CALLM(_cityData, "despawned", [_location]);
+		};
 	} ENDMETHOD;
 ENDCLASS;
 
 CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
+	VARIABLE("civGroups");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
+		T_SETV("civGroups", []);
 	} ENDMETHOD;
 
-	METHOD("delete") {
-		params [P_THISOBJECT];
+	METHOD("spawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		
+		OOP_INFO_MSG("Spawning %1", [_city]);
+
+		T_PRVAR(state);
+		private _pos = CALLM0(_city, "getPos");
+		private _radius = GETV(_city, "boundingRadius");
+
+		switch _state do {
+			case CITY_STATE_STABLE: {
+				// TODO: police harass civilians
+				// Create some civilians that can be harassed.
+				private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
+				T_PRVAR(civGroups);
+
+				OOP_INFO_MSG("Spawning some civilians in %1 to be harassed from pool of %2", [_city ARG _civTypes]);
+				for "_i" from 0 to random 10 do {
+					private _grp = createGroup [FRIENDLY_SIDE, true];
+					private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
+					private _civie = _grp createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
+					_civie setVariable [UNDERCOVER_SUSPICIOUS, true];
+					_civGroups pushBack _grp;
+				};
+
+				// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
+				// {
+				// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
+				// } forEach _civies;
+			};
+			case CITY_STATE_AGITATED: {
+				// TODO: if local garrison is spawned then
+				//	a) spawn a civ or two with weapons to attack them
+				//	b) spawn an IED with proximity detonation
+			};
+			case CITY_STATE_IN_REVOLT: {
+				// TODO: if local garrison is spawned then
+				//	a) arm all civs, put them on player side
+				//	b) spawn an timed IED blowing up a building or two (police station maybe?)
+			};
+			case CITY_STATE_SUPPRESSED: {
+				// TODO: keep spawned civilians inside
+				// TODO: modify cmdr strategy to occupy this town
+			};
+			case CITY_STATE_LIBERATED: {
+				// TODO: police is on player side
+			};
+		};
 	} ENDMETHOD;
+
+	METHOD("despawned") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+
+		OOP_INFO_MSG("Despawning %1", [_city]);
+
+		T_PRVAR(civGroups);
+		{
+			{ deleteVehicle _x } forEach units _x;
+			deleteGroup _x;
+		} forEach _civGroups;
+
+		T_SETV("civGroups", []);
+	} ENDMETHOD;
+	
+	METHOD("update") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		T_PRVAR(state);
+
+		private _cityPos = CALLM0(_city, "getPos");
+		private _cityRadius = 500 max GETV(_city, "boundingRadius");
+
+		// if City is stable or agitated then instability is a factor
+		if(_state == CITY_STATE_STABLE or _state == CITY_STATE_AGITATED) then {
+			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
+			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
+
+			// For now we will just have instability directly related to activity (activity fades over time just
+			// as we want instability to)
+			// Instability is activity / radius
+			// TODO: add other interesting factors here to the instability rate.
+			private _instability = _activity * 500 / _cityRadius;
+			T_SETV("instability", _instability);
+			_state = switch true do {
+				case (_instability > 200): { CITY_STATE_IN_REVOLT };
+				case (_instability > 100): { CITY_STATE_AGITATED };
+				default { CITY_STATE_STABLE };
+			};
+		};
+		T_SETV("state", _state);
+
+#ifdef DEBUG_CIVIL_WAR_GAME_MODE
+		private _mrk = GETV(_city, "name") + "_gamemode_data";
+		createMarker [_mrk, CALLM0(_city, "getPos") vectorAdd [0, 100, 0]];
+		_mrk setMarkerType "mil_marker";
+		_mrk setMarkerColor "ColorBlue";
+		_mrk setMarkerText (format ["%1 (%2)", gCityStateNames select _state, GETV(_cityData, "instability")]);
+		_mrk setMarkerAlpha 1;
+#endif
+		switch _state do {
+			case CITY_STATE_STABLE: {
+				// if({_x getVariable ""} count _civies)
+			};
+			case CITY_STATE_AGITATED: {
+				// TODO: if local garrison is spawned then
+				//	a) spawn a civ or two with weapons to attack them
+				//	b) spawn an IED with proximity detonation
+			};
+			case CITY_STATE_IN_REVOLT: {
+				// TODO: if local garrison is spawned then
+				//	a) arm all civs, put them on player side
+				//	b) spawn an timed IED blowing up a building or two (police station maybe?)
+			};
+			case CITY_STATE_SUPPRESSED: {
+				// TODO: keep spawned civilians inside
+				// TODO: modify cmdr strategy to occupy this town
+			};
+			case CITY_STATE_LIBERATED: {
+				// TODO: police is on player side
+			};
+		};
+
+		// Do spawning at police stations
+		private _policeStations = GETV(_city, "children") select { GETV(_x, "type") == LOCATION_TYPE_POLICE_STATION };
+
+		{
+			private _policeStation = _x;
+			private _data = GETV(_policeStation, "gameModeData");
+			CALLM(_data, "update", [_policeStation ARG _state]);
+		} forEach _policeStations;
+	} ENDMETHOD;
+
 ENDCLASS;
 
 CLASS("CivilWarPoliceStationData", "")
@@ -282,9 +364,5 @@ CLASS("CivilWarPoliceStationData", "")
 				CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
 			};
 		};
-	} ENDMETHOD;
-	
-	METHOD("delete") {
-		params [P_THISOBJECT];
 	} ENDMETHOD;
 ENDCLASS;
