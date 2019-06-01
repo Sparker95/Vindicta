@@ -5,9 +5,6 @@ Design documentation:
 https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/edit#bookmark=id.ev4wu6mmqtgf
 */
 
-#define ENEMY_SIDE INDEPENDENT
-#define FRIENDLY_SIDE WEST
-
 #ifndef RELEASE_BUILD
 #define DEBUG_CIVIL_WAR_GAME_MODE
 #endif
@@ -138,24 +135,25 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				player call fnc_selectPlayerSpawnLoadout;
 				// Holster pistol
 				player action ["SWITCHWEAPON", player, player, -1];
-				_newUnit spawn {
-					while {!isNull (group _this)} do {
-						waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
-						if(!isNull (group _this)) then {
-							private _action = player addAction [
-								"Holster your weapon", 
-								{
-									params ["_target", "_caller", "_actionId", "_arguments"];
-									player action ["SWITCHWEAPON", player, player, -1];
-								}
-							];
-							waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
-							if(!isNull (group _this)) then {
-								player removeAction _action;
-							};
-						};
-					};
-				};
+
+				// _newUnit spawn {
+				// 	while {!isNull (group _this)} do {
+				// 		waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
+				// 		if(!isNull (group _this)) then {
+				// 			private _action = player addAction [
+				// 				"Holster your weapon", 
+				// 				{
+				// 					params ["_target", "_caller", "_actionId", "_arguments"];
+				// 					player action ["SWITCHWEAPON", player, player, -1];
+				// 				}
+				// 			];
+				// 			waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
+				// 			if(!isNull (group _this)) then {
+				// 				player removeAction _action;
+				// 			};
+				// 		};
+				// 	};
+				// };
 			};
 		};
 	} ENDMETHOD;
@@ -197,108 +195,6 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			CALLM(_cityData, "despawned", [_location]);
 		};
 	} ENDMETHOD;
-ENDCLASS;
-
-CLASS("AmbientMission", "")
-	METHOD("new") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-	} ENDMETHOD;
-
-	METHOD("update") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-	} ENDMETHOD;
-ENDCLASS;
-
-CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
-	VARIABLE("civGroups");
-
-	METHOD("new") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-
-		private _pos = CALLM0(_city, "getPos");
-		private _radius = GETV(_city, "boundingRadius");
-
-		// TODO: police harass civilians
-		// Create some civilians that can be harassed.
-		private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
-		private _civGroups = [];
-
-		OOP_INFO_MSG("Spawning some civilians in %1 to be harassed from pool of %2", [_city ARG _civTypes]);
-		for "_i" from 0 to (2 + (random 5)) do {
-			private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
-			private _tmpGroup = createGroup civilian;
-			private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
-			private _grp = createGroup [FRIENDLY_SIDE, true];
-			[_civie] joinSilent _grp;
-			deleteGroup _tmpGroup;
-			_civie setVariable [UNDERCOVER_SUSPICIOUS, true];
-			_civGroups pushBack _grp;
-
-			// Add some random waypoints
-			for "_j" from 0 to 5 do {
-				private _wp = _grp addWaypoint [_pos, _radius];
-				_wp setWaypointCompletionRadius 20;
-				_wp setWaypointType "MOVE";
-				_wp setWaypointBehaviour "SAFE";
-				_wp setWaypointSpeed "LIMITED";
-				if(_j == 0) then { _grp setCurrentWaypoint _wp; }
-			};
-			// Create a cycle waypoint
-			private _wpCycle = _grp addWaypoint [waypointPosition [_grp, 0], 0];
-			_wpCycle setWaypointType "CYCLE";
-
-			_civie setCaptive true;
-			_civie spawn {
-				waitUntil { isNull (group _this) or {_this getVariable ["timeArrested", -1] != -1} };
-				if(isNull (group _this)) exitWith {};
-				// Unit is arrested so add the appropriate action to free them
-				[
-					_this, "Free this civilian", "", "",
-					"_this distance _target < 3",
-					"_caller distance _target < 3",
-					{
-						params ["_target", "_caller", "_actionId", "_arguments"];
-						CALLSM("UndercoverMonitor", "onUnitCompromised", [_caller]);
-					}, {}, {
-						params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
-						_target playMoveNow "Acts_ExecutionVictim_Unbow";
-						_target setVariable [UNDERCOVER_TARGET, false, false];
-						_target enableAI "MOVE";
-						_target enableAI "AUTOTARGET";
-						_target enableAI "ANIM";
-						_target allowFleeing 1;
-						_target setBehaviour "SAFE";
-						systemChat "You have freed a civilian. He was probably innocent?";
-						// TODO: dialog with civilian
-						// Give intel reward to player
-						CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
-						systemChat "The grateful citizen has provided you with some intel!";
-						// Increase area activity
-						CALLSM("AICommander", "addActivity", [ENEMY_SIDE ARG getPos _caller ARG (10+random(20))]);
-						systemChat "The enemy has taken note of the increased activity in this area!";
-					}, {}, [], 8, 0, true, false
-				] call BIS_fnc_holdActionAdd;
-			}
-		};
-		T_SETV("civGroups", _civGroups);
-	} ENDMETHOD;
-
-	METHOD("update") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-	} ENDMETHOD;
-
-	METHOD("delete") {
-		params [P_THISOBJECT];
-
-		T_PRVAR(civGroups);
-		{
-			{ deleteVehicle _x } forEach units _x;
-			deleteGroup _x;
-		} forEach _civGroups;
-
-		T_SETV("civGroups", []);
-	} ENDMETHOD;
-	
 ENDCLASS;
 
 CLASS("CivilWarCityData", "")

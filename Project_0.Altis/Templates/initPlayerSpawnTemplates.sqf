@@ -22,6 +22,7 @@ T_SpawnPlayerVariants = [
 		comment "Add containers";
 		_this forceAddUniform "U_C_Poloshirt_blue";
 		for "_i" from 1 to 2 do {_this addItemToUniform "11Rnd_45ACP_Mag";};
+		_this addBackpack "B_AssaultPack_cbr";
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
@@ -86,6 +87,7 @@ T_SpawnPlayerVariants = [
 		comment "Add containers";
 		_this forceAddUniform "U_C_HunterBody_grn";
 		for "_i" from 1 to 5 do {_this addItemToUniform "16Rnd_9x21_Mag";};
+		_this addBackpack "B_AssaultPack_cbr";
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
@@ -118,6 +120,7 @@ T_SpawnPlayerVariants = [
 		comment "Add containers";
 		_this forceAddUniform "U_OrestesBody";
 		for "_i" from 1 to 3 do {_this addItemToUniform "16Rnd_9x21_Mag";};
+		_this addBackpack "B_AssaultPack_cbr";
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
@@ -150,6 +153,7 @@ T_SpawnPlayerVariants = [
 		comment "Add containers";
 		_this forceAddUniform "U_Marshal";
 		for "_i" from 1 to 5 do {_this addItemToUniform "6Rnd_45ACP_Cylinder";};
+		_this addBackpack "B_AssaultPack_cbr";
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
