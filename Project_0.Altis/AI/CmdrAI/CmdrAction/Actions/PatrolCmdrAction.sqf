@@ -245,6 +245,12 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		if(_intelNotCreated) then {
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intel", _intelClone);
+
+			// Send the intel to some places that should "know" about it
+			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
+			{
+				T_CALLM("addIntelAt", [_world ARG _x]);
+			} forEach GETV(_intelClone, "waypoints");
 		} else {
 			CALLM(_intel, "updateInDb", []);
 		};
