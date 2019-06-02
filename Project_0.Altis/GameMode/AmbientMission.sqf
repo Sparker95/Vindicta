@@ -1,6 +1,8 @@
 #include "common.hpp"
 
-// A simple mission that is created and destroyed when a location is created and destroyed.
+
+// A base class for simple missions that are only active when a location is spawned. 
+// They should be created in GameMode.locationSpawned and deleted in GameMode.locationDespawned.
 CLASS("AmbientMission", "")
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];

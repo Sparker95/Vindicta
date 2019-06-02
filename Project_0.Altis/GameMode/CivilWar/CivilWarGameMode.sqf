@@ -204,7 +204,7 @@ CLASS("CivilWarCityData", "")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("state", CITY_STATE_STABLE);
+		T_SETV("state", CITY_STATE_AGITATED);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
@@ -229,6 +229,8 @@ CLASS("CivilWarCityData", "")
 				// } forEach _civies;
 			};
 			case CITY_STATE_AGITATED: {
+				_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city]));
+				_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city]));
 				// TODO: if local garrison is spawned then
 				//	a) spawn a civ or two with weapons to attack them
 				//	b) spawn an IED with proximity detonation
