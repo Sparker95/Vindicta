@@ -1,3 +1,5 @@
+#include "..\Dialogue\interact\CURSORTARGET_TYPES.hpp"
+
 params [["_module",objNull,[objNull]],["_pos",[],[[]]]];
 
 //randomize position
@@ -30,7 +32,7 @@ else
 
 //make backlink to the core module
 _unit setVariable ["#core",_module];
-
+_unit setVariable ["p0_cursorTarget",CURSORTARGET_CIVILIAN];
 _unit setBehaviour "CARELESS";
 _unit spawn (_module getVariable ["#onCreated",{}]);
 _unit execFSM "CivilianPresence\FSM\behavior.fsm";

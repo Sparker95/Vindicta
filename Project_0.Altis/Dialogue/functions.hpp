@@ -5,10 +5,19 @@ class Dialog {
 		class hud_init {postinit = 1;};
 		class hud_createSentence {};
 	};
+
 	class Voice {
 		file = "Dialogue\Voice";
 		class voice_init {preinit = 1;};
 		class voice_say {};
+	};
+	
+	class Interact {
+		file = "Dialogue\Interact";
+		class interact_init {preinit = 1};
+		class interact_addAction {};
+		class interact_removeAction {};
+		class interact_civilian {};
 	};
 
 };
