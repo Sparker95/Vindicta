@@ -324,7 +324,7 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getNearestGarrisons") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
+		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		private _nearestGarrisons = [];
@@ -410,7 +410,7 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getNearestLocations") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
+		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		//T_PRVAR(locations);
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..

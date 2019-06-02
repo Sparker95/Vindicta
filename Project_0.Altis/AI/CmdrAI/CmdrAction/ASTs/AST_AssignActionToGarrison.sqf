@@ -26,7 +26,9 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
 		ASSERT_OBJECT(_garr);
-		CALLM(_garr, "setAction", [T_GETV("action")]);
+		T_PRVAR(action);
+		CALLM(_garr, "setAction", [_action]);
+		CALLM(_action, "addIntelToGarrison", [_garr]);
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;
