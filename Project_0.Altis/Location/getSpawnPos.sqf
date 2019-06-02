@@ -38,7 +38,6 @@ private _ignoreGT = (_catID == T_VEH); //Ignore the group type check for this un
 private _posReturn = [];
 private _dirReturn = 0;
 
-
 if(_catID == T_INF) then //For infantry we use the counter to check for free position, because inf can be spawned everywhere without blowing up
 {
 	while {_i < _count && !_found} do {
@@ -123,12 +122,17 @@ else
 
 private _return = 0;
 if(_found) then {//If the spawn position has been found
-		_return = [_posReturn, _dirReturn];
+	_return = [_posReturn, _dirReturn];
 } else {
 	//Provide default spawn position
 	if (_catID == T_INF) then {
-		private _r = (0.5 * (GET_VAR(_thisObject, "boundingRadius"))) min 60;
-		private _locPos = GET_VAR(_thisObject, "pos");
+		private _locToUse = _thisObject;
+		// Walk up parents to the one we should use
+		while {_groupType == GROUP_TYPE_PATROL && {GETV(_locToUse, "useParentPatrolWaypoints")}} do {
+			_locToUse = GETV(_locToUse, "parent");
+		};
+		private _r = (0.5 * (GET_VAR(_locToUse, "boundingRadius"))) min 60;
+		private _locPos = GET_VAR(_locToUse, "pos");
 		_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
 		OOP_WARNING_MSG("[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID ARG _subcatID ARG _groupType]);
 	} else {

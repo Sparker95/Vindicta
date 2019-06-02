@@ -38,6 +38,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected override */ METHOD("getLocationOwner") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		ASSERT_OBJECT_CLASS(_loc, "Location");
+
 		OOP_DEBUG_MSG("%1", [_loc]);
 		private _type = GETV(_loc, "type");
 		// Initial setup has AAF holding all bases and police stations
@@ -115,6 +117,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		[_newUnit] joinSilent (group _oldUnit);
 		deleteGroup _tmpGroup;
 		selectPlayer _newUnit;
+		unassignCurator zeus1;
 		player assignCurator zeus1;
 		T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
 		[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
@@ -177,7 +180,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Override this to perform actions when a location spawns
 	/* protected override */METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
-
+		ASSERT_OBJECT_CLASS(_location, "Location");
+		
 		private _type = GETV(_location, "type");
 		if(_type == LOCATION_TYPE_CITY) then {
 			private _cityData = GETV(_location, "gameModeData");
@@ -188,6 +192,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Override this to perform actions when a location despawns
 	/* protected override */METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+		ASSERT_OBJECT_CLASS(_location, "Location");
 
 		private _type = GETV(_location, "type");
 		if(_type == LOCATION_TYPE_CITY) then {
@@ -204,14 +209,15 @@ CLASS("CivilWarCityData", "")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("state", CITY_STATE_AGITATED);
+		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-		
+		ASSERT_OBJECT_CLASS(_city, "Location");
+
 		OOP_INFO_MSG("Spawning %1", [_city]);
 
 		T_PRVAR(state);
@@ -222,7 +228,6 @@ CLASS("CivilWarCityData", "")
 		switch _state do {
 			case CITY_STATE_STABLE: {
 				_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city]));
-				
 				// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
 				// {
 				// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
@@ -230,12 +235,12 @@ CLASS("CivilWarCityData", "")
 			};
 			case CITY_STATE_AGITATED: {
 				_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city]));
-				_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city]));
 				// TODO: if local garrison is spawned then
 				//	a) spawn a civ or two with weapons to attack them
 				//	b) spawn an IED with proximity detonation
 			};
 			case CITY_STATE_IN_REVOLT: {
+				_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city]));
 				// TODO: if local garrison is spawned then
 				//	a) arm all civs, put them on player side
 				//	b) spawn an timed IED blowing up a building or two (police station maybe?)
@@ -252,6 +257,7 @@ CLASS("CivilWarCityData", "")
 
 	METHOD("despawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		OOP_INFO_MSG("Despawning %1", [_city]);
 
@@ -264,6 +270,7 @@ CLASS("CivilWarCityData", "")
 	
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		ASSERT_OBJECT_CLASS(_city, "Location");
 		T_PRVAR(state);
 
 		private _cityPos = CALLM0(_city, "getPos");
@@ -330,7 +337,7 @@ CLASS("CivilWarCityData", "")
 
 		T_PRVAR(ambientMissions);
 		{
-			CALLM(_x, "update", []);
+			CALLM(_x, "update", [_city]);
 		} forEach _ambientMissions;
 
 	} ENDMETHOD;
@@ -347,6 +354,7 @@ CLASS("CivilWarPoliceStationData", "")
 
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
+		ASSERT_OBJECT_CLASS(_policeStation, "Location");
 
 		T_PRVAR(reinfGarrison);
 		if(!IS_NULL_OBJECT(_reinfGarrison)) then {
