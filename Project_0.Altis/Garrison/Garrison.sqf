@@ -1944,9 +1944,15 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// Adds an intel item to this garrison
 	METHOD("addIntel") {
-		params ["_thisObject", ["_intel", "", [""]]];
+		pr _return = params ["_thisObject", ["_intel", "", [""]]];
+
+		if(!_return) exitWith {
+			DUMP_CALLSTACK;
+		};
 
 		T_GETV("intelItems") pushBackUnique _intel;
+
+		OOP_INFO_1("Added intel: %1", _intel);
 	} ENDMETHOD;
 
 	// Gets all intel items from this garrison

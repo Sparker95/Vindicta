@@ -100,6 +100,10 @@ CLASS("CmdrAction", "RefCounted")
 		if(CALLM(_garrison, "isActual", [])) then {
 			T_PRVAR(intel);
 			private _actual = GETV(_garrison, "actual");
+			// It will make sure itself that it doesn't add duplicates of intel
+			//CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]); 
+			CALLM1(_actual, "addIntel", _intel);
+			
 			// TODO: implement this Sparker. 
 			// 	NOTES: Make Garrison.addIntel add the intel to the occupied location as well.
 			// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
