@@ -2,19 +2,30 @@
 
 pr0_fnc_StartFreeingCivilian = {
 	params ["_target", "_caller", "_actionId", "_arguments"];
-	CALLSM("UndercoverMonitor", "onUnitCompromised", [_caller]);
+
+	// On server
+	[_caller, {
+		CALLSM("UndercoverMonitor", "onUnitCompromised", [_this]);
+	}] remoteExec ["call", 0];
+
 	[player, "Let me free you brother!", _target] call Dialog_fnc_hud_createSentence;
+};
+
+pr0_fnc_FreeCivilianAnim = {
+	_this playMoveNow "Acts_ExecutionVictim_Unbow";
 };
 
 pr0_fnc_CompleteFreeingCivilian = {
 	_this spawn {
 		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
 
-		// Untie them
-		_target playMoveNow "Acts_ExecutionVictim_Unbow";
-
-		// Make sure they don't get arrested again
-		_target setVariable [UNDERCOVER_TARGET, false, false];
+		// On server
+		[_target, {
+			// Untie them
+			_this playMoveNow "Acts_ExecutionVictim_Unbow";
+			// Make sure they don't get arrested again
+			_this  setVariable [UNDERCOVER_TARGET, false, false];
+		}] remoteExec ["call", 0];
 
 		[player, "There you go, tell your friends of what transpired here today!", _target] call Dialog_fnc_hud_createSentence;
 		sleep 5;
@@ -22,7 +33,7 @@ pr0_fnc_CompleteFreeingCivilian = {
 		// Intel reward for player
 		[_target, "Thank you! One of those thugs dropped this, perhaps it is of interest to you.", player] call Dialog_fnc_hud_createSentence;
 		sleep 6;
-		CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
+		// CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
 
 		[player, "(You take the papers handed to you)", _target] call Dialog_fnc_hud_createSentence;
 		sleep 3;
@@ -30,23 +41,30 @@ pr0_fnc_CompleteFreeingCivilian = {
 		sleep 5;
 		[_target, "I will, and you should go carefully aswell, they will be looking for you now!", player] call Dialog_fnc_hud_createSentence;
 		sleep 5;
-		_target enableAI "MOVE";
-		_target enableAI "AUTOTARGET";
-		_target enableAI "ANIM";							
-		_target setBehaviour "SAFE";
 
-		// Run far away!
-		private _wp = group _target addWaypoint [[getPos _target, 1000, 2000] call BIS_fnc_findSafePos, 0];
-		_wp setWaypointType "MOVE";
-		_wp setWaypointBehaviour "AWARE";
-		_wp setWaypointSpeed "NORMAL";
-
-		// Delete the civie once he escapes
-		_wp setWaypointStatements ["true", "deleteVehicle this;"];
-
-		// Increase area activity
-		CALLSM("AICommander", "addActivity", [ENEMY_SIDE ARG getPos _caller ARG (10+random(20))]);
 		systemChat "The enemy has taken note of the increased activity in this area!";
+
+		// On server
+		[[_target, _caller], {
+			params ["_target", "_caller"];
+
+			_target enableAI "MOVE";
+			_target enableAI "AUTOTARGET";
+			_target enableAI "ANIM";							
+			_target setBehaviour "SAFE";
+
+			// Run far away!
+			private _wp = group _target addWaypoint [[getPos _target, 1000, 2000] call BIS_fnc_findSafePos, 0];
+			_wp setWaypointType "MOVE";
+			_wp setWaypointBehaviour "AWARE";
+			_wp setWaypointSpeed "NORMAL";
+
+			// Delete the civie once he escapes
+			_wp setWaypointStatements ["true", "deleteVehicle this;"];
+
+			// Increase area activity
+			CALLSM("AICommander", "addActivity", [ENEMY_SIDE ARG getPos _caller ARG (10+random(20))]);
+		}] remoteExec ["call", 0];
 	};
 };
 
@@ -137,13 +155,6 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 
 					// Unit is arrested, so add the appropriate action to free them
 					_this call pr0_fnc_AddCivilianFreeAction;
-
-					// [
-					// 	_this, "Free this civilian", "", "",
-					// 	"_this distance _target < 3",
-					// 	"_caller distance _target < 3",
-					// 	pr0_fnc_StartFreeingCivilian, {}, pr0_fnc_CompleteFreeingCivilian, {}, [], 8, 0, true, false
-					// ] call BIS_fnc_holdActionAdd;
 				}
 			};
 		};
