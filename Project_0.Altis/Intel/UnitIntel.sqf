@@ -4,6 +4,9 @@
 #define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Location\Location.hpp"
+#include "InventoryItems.hpp"
+#include "PersonalInventory.hpp"
+#include "..\GlobalAssert.hpp"
 
 /*
 A class with static functions that initialized variables on objects that can have intel.
@@ -17,30 +20,94 @@ Author: Sparker 18.05.2019
 CLASS("UnitIntel", "")
 
 	/*
-	Method: (static)initObject
+	Method: (static)initUnit
 	Call it on server.
-	It initializes intel on some object (arma object, not OOP object!)
+	It initializes intel on some unit
 
-	Parameters: _hO, _number
+	Parameters: _garrison, _unit
 
-	_hO - object handle
-	_number - amount of intel items
+	_unit - Unit object
 
 	Returns: nil
 	*/
-	STATIC_METHOD("initObject") {
-		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_number")];
+	STATIC_METHOD("initUnit") {
+		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 
-		//_hO setVariable [HAS_INTEL_VAR_NAME, _number, true];
+		ASSERT_GLOBAL_OBJECT(gPersonalInventory);
 
-		// Add inventory items
-		if (_hO isKindOf "Man") then {
-			while {_number > 0} do {
-				_hO addItemToUniform "vin_Land_Document_01_F";
-				_number = _number - 1;
+		if (CALLM0(_unit, "isInfantry")) then {
+			pr _group = CALLM0(_unit, "getGroup");
+			pr _groupLeader = CALLM0(_group, "getLeader");
+			// Only leaders have tablets with intel now
+			if (true) then { //_unit == _groupLeader) then {
+				// Get an inventory item class name
+				pr _baseClass = selectRandom INTEL_INVENTORY_TABLET_CLASSES;
+				pr _IDs = CALLM2(gPersonalInventory, "getInventoryClassIDs", _baseClass, 1);
+
+				// Bail if we have failed to find a free inventory item class name
+				if (count _IDs == 0) exitWith {};
+
+				pr _gar = CALLM0(_unit, "getGarrison");
+				pr _intelArray = CALLM0(_gar, "getIntel");
+				CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _intelArray);
+
+				// Add to uniform
+				pr _hO = CALLM0(_unit, "getObjectHandle");
+				_hO addItemToUniform PERSONAL_INVENTORY_FULL_CLASS(_baseClass, _IDs#0);
+
+				// Add event handler to free the used inventory items when the unit is destroyed
+				_hO addEventHandler ["Deleted", { 
+					params ["_entity"];
+					pr _allItems = (uniformItems _entity) + (vestItems _entity) + (backpackItems _entity);
+					// Find all inventory items which are of a certain class name
+					pr _personalInventoryItems = _allItems select {
+						pr _fullClassName = _x;
+						pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {(_fullClassName find _x) == 0 };
+						_index != -1
+					};
+
+					{
+						pr _classAndID = CALLSM1("PersonalInventory", "getBaseClassAndID", _x);
+						_classAndID params ["_baseClass", "_ID"];
+						// Reset the data to return the inventory item back to the pool of free classes
+						CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, nil);
+					} forEach _personalInventoryItems;
+				}];
 			};
 		} else {
-			_ho addMagazineCargoGlobal ["vin_Land_Document_01_F", _number];
+			// Get an inventory item class name
+			pr _baseClass = selectRandom INTEL_INVENTORY_TABLET_CLASSES;
+			pr _IDs = CALLM2(gPersonalInventory, "getInventoryClassIDs", _baseClass, 1);
+
+			// Bail if we have failed to find a free inventory item class name
+			if (count _IDs == 0) exitWith {};
+
+			pr _gar = CALLM0(_unit, "getGarrison");
+			pr _intelArray = CALLM0(_gar, "getIntel");
+			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _intelArray);
+
+			// Add to the cargo
+			pr _hO = CALLM0(_unit, "getObjectHandle");
+			_ho addMagazineCargoGlobal [PERSONAL_INVENTORY_FULL_CLASS(_baseClass, _IDs#0), 1];
+
+			// Add event handler to free the used inventory items when the unit is destroyed
+			_hO addEventHandler ["Deleted", { 
+				params ["_entity"];
+				pr _allItems = (getMagazineCargo _entity)#0;
+				// Find all inventory items which are of a certain class name
+				pr _personalInventoryItems = _allItems select {
+					pr _fullClassName = _x;
+					pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {(_fullClassName find _x) == 0 };
+					_index != -1
+				};
+
+				{
+					pr _classAndID = CALLSM1("PersonalInventory", "getBaseClassAndID", _x);
+					_classAndID params ["_baseClass", "_ID"];
+					// Reset the data to return the inventory item back to the pool of free classes
+					CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, nil);
+				} forEach _personalInventoryItems;
+			}];
 		};
 
 	} ENDMETHOD;
@@ -58,23 +125,6 @@ CLASS("UnitIntel", "")
 	STATIC_METHOD("initPlayer") {
 		params [P_THISCLASS];
 
-		/*
-		// Code to take intel through actions
-		player addAction ["Take intel", // title
-                 {CALLSM1("UnitIntel", "takeIntel", cursorObject)}, // Script
-                 0, // Arguments
-                 9000, // Priority
-                 true, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "call UnitIntel_fnc_actionCondition", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-		*/
-
-
 		//player removeAllEventHandlers "InventoryOpened";
 		player addEventHandler ["InventoryOpened", 
 		{
@@ -88,14 +138,19 @@ CLASS("UnitIntel", "")
 						_data = _control lbData _selectedIndex;
 						diag_log format ["Dbl click: index: %1, data: %2", _selectedIndex, _data];
 						
-						if (_data == "vin_Land_Document_01_F") then { // If it's the document item, delete it and 'inspect' it
+						// Check if the class name of this item belongs to one of the predefined class names
+						pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {
+							(_data find _x) == 0
+						};
+
+						if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
 							// Call code to inspect the intel item
-							CALLSM0("UnitIntel", "inspectIntel");
+							CALLSM1("UnitIntel", "inspectIntel", _data);
 
 							// Delete this document item from inventory
 							[{ // call CBA_fnc_waitAndExecute
 								params ["_IDC", "_data"];
-								diag_log format ["Inside waitAndExecute: %1", _this];
+								//diag_log format ["Inside waitAndExecute: %1", _this];
 								switch (_IDC) do {
 									case 619: {diag_log "Backpack"; player removeItemFromBackpack _data;};
 									case 633: {diag_log "Uniform"; player removeItemFromUniform _data;};
@@ -119,55 +174,17 @@ CLASS("UnitIntel", "")
 		
 	} ENDMETHOD;
 
-	
-	// A condition function for Intel's action
-	// We create it directly because we don't want to have it wrapped by OOP
-	UnitIntel_fnc_actionCondition = {
-		private _co = cursorObject;
-    	(!isNil {_co getVariable HAS_INTEL_VAR_NAME}) && ((_target distance _co) < 3) 
-	};
-
-	/*
-	Method: (static)takeIntel
-	It is called on player's computer when he takes an intel item
-
-	Parameters: _hO
-
-	_hO - object where player took intel from
-
-	Returns: nil
-	*/
-	STATIC_METHOD("takeIntel") {
-		params ["_thisObject", P_OBJECT("_hO")];
-
-		pr _number = _hO getVariable HAS_INTEL_VAR_NAME;
-		if (isNil "_number") then {
-			systemChat "You have found no intel there!";
-			OOP_ERROR_1("No intel found on object %1", _hO);
-		} else {
-			//systemChat "You have found some intel!";
-
-			// Do processing
-			pr _playerCommander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
-			CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", [clientOwner]);
-
-
-			// Decrease the counter or delete it completely
-			_number = _number - 1;
-			if (_number <= 0) then {
-				_hO setVariable [HAS_INTEL_VAR_NAME, nil, true];
-			} else {
-				_hO setVariable [HAS_INTEL_VAR_NAME, _number, true];
-			};
-		};
-
-	} ENDMETHOD;
-
 	STATIC_METHOD("inspectIntel") {
-		params ["_thisObject"];
-		// Tell to commander!
+		params ["_thisObject", ["_fullClassName", "", [""]] ];
+
+		// Get base class name and ID of this intel item
+		pr _classAndID = CALLSM1("PersonalInventory", "getBaseClassAndID", _fullClassName);
+		_classAndID params ["_baseClass", "_ID"];
+
+		// Tell to commander! He must know about it :D !
 		pr _playerCommander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
-		CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", [clientOwner]);
+		//CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", [clientOwner]);
+		CALLM2(_playerCommander, "postMethodAsync", "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner]);
 	} ENDMETHOD;
 
 ENDCLASS;

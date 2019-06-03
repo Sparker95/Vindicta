@@ -1,7 +1,9 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+#define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
+#include "InventoryItems.hpp"
 
 /*
 Class: PersonalInventory
@@ -30,11 +32,9 @@ CLASS("PersonalInventory", "")
 
 		T_SETV("data", []);
 
-		// 512 inventory items should be enough for everyone, right??
-		CALLM2(_thisObject, "_addInventoryClass", "vin_document_0", 512);
-		CALLM2(_thisObject, "_addInventoryClass", "vin_document_1", 512);
-		CALLM2(_thisObject, "_addInventoryClass", "vin_tablet_0", 512);
-		CALLM2(_thisObject, "_addInventoryClass", "vin_tablet_1", 512);
+		{
+			CALLM2(_thisObject, "_addInventoryClass", _x, INTEL_INVENTORY_CLASSES_COPY_AMOUNT);
+		} forEach INTEL_INVENTORY_ALL_CLASSES;
 	} ENDMETHOD;
 
 	METHOD("_addInventoryClass") {
@@ -65,8 +65,10 @@ CLASS("PersonalInventory", "")
 				// Check if this cell is occupied or not
 				if (_data#_index#__ID_BITFIELD#_ID) then {
 					_return = _data#_index#__ID_DATA#_ID;
-				};
+				} else {
 				// Otherwise _return remains nil by default
+					_return = nil;
+				};
 			} else {
 				OOP_ERROR_1("Base class name %1 not found", _className);
 			};
@@ -99,6 +101,8 @@ CLASS("PersonalInventory", "")
 			};
 		};
 	} ENDMETHOD;
+
+
 
 	/*
 	METHOD("resetInventoryData") {
@@ -205,7 +209,7 @@ CLASS("PersonalInventory", "")
 		private _count = count _array;
 		private _i = _count - 1; // Last character
 		while {_array#_i != 95} do {_i = _i - 1}; // 95 = '_' character
-		[_fullClass select [0, _i], _fullClass select [_i+1, _count - _i - 1]]
+		[_fullClass select [0, _i], parseNumber (_fullClass select [_i+1, _count - _i - 1])]
 	} ENDMETHOD;
 
 ENDCLASS;

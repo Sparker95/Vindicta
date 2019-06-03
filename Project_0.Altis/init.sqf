@@ -20,7 +20,7 @@ if (!IS_SERVER) then {
 };
 #endif
 
-if (true) exitWith {};
+//if (true) exitWith {};
 
 // if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
 if(IS_SERVER) then {

@@ -262,9 +262,9 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 
 					// Give intel to this unit
-					if ((random 10) < 4) then {
-						CALLSM2("UnitIntel", "initObject", _objectHandle, 1+round(random 1));
-					};
+					//if ((random 10) < 4) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					//};
 				};
 				case T_VEH: {
 
@@ -291,7 +291,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 					
 					// Give intel to this unit
-					CALLSM2("UnitIntel", "initObject", _objectHandle, 1);
+					CALLSM1("UnitIntel", "initUnit", _thisObject);
 				};
 				case T_DRONE: {
 				};

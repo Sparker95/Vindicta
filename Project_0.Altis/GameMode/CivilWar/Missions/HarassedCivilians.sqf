@@ -63,7 +63,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 
 							[_target, "Thank you! One of those thugs dropped this, perhaps it is of interest to you.", player] call Dialog_fnc_hud_createSentence;
 							sleep 6;
-							CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
+							// CALLSM("UnitIntel", "initObject", [_caller ARG 1]); // No we can't call this here, it's not how it works any more
 							[player, "(You take the papers handed to you)", _target] call Dialog_fnc_hud_createSentence;
 							sleep 3;
 							[player, "Thank you, you should get out of here now, more will be coming.", _target] call Dialog_fnc_hud_createSentence;
