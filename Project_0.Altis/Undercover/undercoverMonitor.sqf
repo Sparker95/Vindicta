@@ -44,6 +44,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	VARIABLE("unit"); 														// unit this undercoverMonitor is attached to
 	VARIABLE("state");														// state of this unit's undercoverMonitor
+	VARIABLE("prevState");													// previous state of this unit's undercoverMonitor
 	VARIABLE("stateChanged");												// "do once" variable for state changes
 	VARIABLE("suspicion");													// unit's final suspiciousness for each interval
 	VARIABLE("incrementSusp");												// a temporary variable for suspicion increases over time
