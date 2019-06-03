@@ -1,4 +1,4 @@
-//#includes QPATHTOEF (main,classFactory.hpp);
+#include "\z\project_0\addons\main\classFactory.hpp"
 
 class CfgMagazines
 {
@@ -44,5 +44,8 @@ class CfgMagazines
 	};
 	
 	
-	//COPY_CLASS_200(vin_document_0, vin_document_0)
+	COPY_CLASS_512(vin_document_0, vin_document_0)
+	COPY_CLASS_512(vin_document_1, vin_document_1)
+	COPY_CLASS_512(vin_tablet_0, vin_tablet_0)
+	COPY_CLASS_512(vin_tablet_1, vin_tablet_1)
 };

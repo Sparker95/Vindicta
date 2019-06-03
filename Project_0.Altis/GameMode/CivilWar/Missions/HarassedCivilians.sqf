@@ -100,7 +100,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 								// Intel reward for player
 								[_target, "Thank you! One of those thugs dropped this, perhaps it is of interest to you.", player] call Dialog_fnc_hud_createSentence;
 								sleep 6;
-								CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
+								//CALLSM("UnitIntel", "initObject", [_caller ARG 1]);
 
 								[player, "(You take the papers handed to you)", _target] call Dialog_fnc_hud_createSentence;
 								sleep 3;
