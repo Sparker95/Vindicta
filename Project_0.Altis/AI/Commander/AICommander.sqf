@@ -463,11 +463,12 @@ CLASS("AICommander", "AI")
 		params ["_thisObject", ["_baseClass", "", [""]], ["_ID", 0, [0]], ["_clientOwner", 0, [0]]];
 
 		// Get data from the inventory item
-		pr _data = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
+		pr _ret = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
+		_ret params ["_data", "_dataIsNotNil"];
 
 		// Make sure _data is valid
 		pr _foundSomething = false;
-		if (!isNil "_data") then {
+		if (_dataIsNotNil) then {
 			if (count _data > 0) then {
 				_foundSomething = true;
 			};
@@ -481,10 +482,15 @@ CLASS("AICommander", "AI")
 
 				// Make sure the intel object is valid
 				if (IS_OOP_OBJECT(_item)) then {
-					// Clone it and it to our database
-					pr _itemClone = CLONE(_item);
-					SETV(_itemClone, "source", _item); // Link it with the source
-					CALLM1(_thisDB, "addIntel", _itemClone);
+					if (CALLM1(_thisDB, "isIntelAddedFromSource", _item)) then {
+						// Update it from source
+						CALLM1(_thisDB, "updateIntelFromSource", _item);
+					} else {
+						// Clone it and it to our database
+						pr _itemClone = CLONE(_item);
+						SETV(_itemClone, "source", _item); // Link it with the source
+						CALLM1(_thisDB, "addIntel", _itemClone);
+					};
 				} else {
 					OOP_INFO_1("Intel object is invalid: %1", _item);
 				};

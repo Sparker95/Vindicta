@@ -52,8 +52,10 @@ CLASS("PersonalInventory", "")
 
 	} ENDMETHOD;
 
+	// Returns [_data, _dataExists]
 	METHOD("getInventoryData") {
-		pr _return = nil;
+		pr _returnData = 0;
+		pr _returnDataExists = false;
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_STRING("_className"), P_NUMBER("_ID")];
 
@@ -64,16 +66,19 @@ CLASS("PersonalInventory", "")
 			if (_index != -1) then {
 				// Check if this cell is occupied or not
 				if (_data#_index#__ID_BITFIELD#_ID) then {
-					_return = _data#_index#__ID_DATA#_ID;
-				} else {
-				// Otherwise _return remains nil by default
-					_return = nil;
+					_returnData = _data#_index#__ID_DATA#_ID;
+					if (isNil "_returnData") then {
+						_returnData = 0;
+					} else {
+						_returnDataExists = true;
+					};
 				};
 			} else {
 				OOP_ERROR_1("Base class name %1 not found", _className);
 			};
 		};
-		_return
+		OOP_INFO_2("getInventoryData: %1 %2   return: %3", _className, _ID, [_returnData ARG _returnDataExists]);
+		[_returnData, _returnDataExists]
 	} ENDMETHOD;
 
 	METHOD("setInventoryData") {
