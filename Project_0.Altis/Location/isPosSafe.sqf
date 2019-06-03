@@ -82,77 +82,21 @@ diag_log format ["--- Positions ATL: %1", [[ASLTOATL _pos_0], [ASLTOATL _pos_1],
 diag_log format ["  Pos 0...3 AGL: %1", [ASLToAGL _pos_0, ASLToAGL _pos_1, ASLToAGL _pos_2, ASLToAGL _pos_3]];
 #endif
 
+private _o = 
+		  lineIntersectsSurfaces [_pos_0, _pos_2, objNull, objNull, false];
+_o append lineIntersectsSurfaces [_pos_1, _pos_3, objNull, objNull, false];
+_o append lineIntersectsSurfaces [_pos_1, _pos_2, objNull, objNull, false];
+_o append lineIntersectsSurfaces [_pos_0, _pos_3, objNull, objNull, false];
 
-
-//Find objects
-//First check with line intersections
-private _o = lineIntersectsObjs [_pos_0, _pos_2, objNull, objNull, false, 16+32]; //CF_FIRST_CONTACT + CF_ALL_OBJECTS
-_o append lineIntersectsObjs [_pos_1, _pos_3, objNull, objNull, false, 16+32]; //CF_FIRST_CONTACT + CF_ALL_OBJECTS
-_o append lineIntersectsObjs [_pos_1, _pos_2, objNull, objNull, false, 16+32]; //CF_FIRST_CONTACT + CF_ALL_OBJECTS
-_o append lineIntersectsObjs [_pos_0, _pos_3, objNull, objNull, false, 16+32]; //CF_FIRST_CONTACT + CF_ALL_OBJECTS
-private _i = 0;
-private _c = count _o;
-private _good = true;
-private _t = ""; //type of object
-//private _checkHumans = (_vehType isKindOf ["man", configFile >> "cfgVehicles"]); //Ignore humans if _vehType is not a human
-
-#ifdef DEBUG
-diag_log format ["  fn_isPosSafe: line intersections: %1", _o];
-#endif
-
-while {_i < _c} do
-{
-	private _obj = _o select _i;
-	//diag_log format ["type: %1", _t];
-	if ( (_obj isKindOf "allVehicles") &&
-	    (!(_obj isKindOf "Man")) ) exitWith {
-    	_good = false;
-    };
-    _i = _i + 1;
-};
-
-if(!_good) exitWith
+if(count _o > 0) exitWith
 {
 	#ifdef DEBUG
-	diag_log "  Line intersects with a vehicle";
+	diag_log "  Line intersects with a surface";
 	#endif
 	false
 };
 
-//Check for objects in sphere
-private _posCheck = _pos; //_pos vectorAdd [0, 0, _bz];
-
-//Test: create arrow
-/*
-private _arrow = "Sign_Arrow_F" createVehicle _pos;
-_arrow setPosATL _posCheck;
-*/
-
-//diag_log format ["%1 %2", _posCheck, _bx];
 private _radius = sqrt (_bx*_bx + _by*_by);
-_o = nearestObjects [_posCheck, ["allVehicles"], (_radius + 1) max 1.7, true];
-//player setPos _pos;
-
-#ifdef DEBUG
-diag_log format ["fn_isPosSafe: near objects %1: %2", _bx, _o];
-#endif
-
-_i = 0;
-_c = count _o;
-private _t = ""; //type of object
-while {_i < _c && _good} do {
-	private _obj = _o select _i;
-	if (!(_obj isKindOf "Man")) then {
-    	_good = false;
-		#ifdef DEBUG
-		diag_log "  Found a vehicle inside sphere!";
-		#endif
-    };
-    _i = _i + 1;
-};
-
-#ifdef DEBUG
-diag_log format ["  Position safe: %1", _good];
-#endif
-
-_good
+// TODO: expand the class set here?
+private _o = nearestObjects [_pos, ["allVehicles"], (_radius + 1) max 1.7, true];
+count _o == 0
