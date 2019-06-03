@@ -285,11 +285,30 @@ CLASS(UNIT_CLASS_NAME, "");
 						_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
 					};
 
+					_objectHandle allowDamage false;
+					private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
+						params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+						OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
+						// if(_force > 100) then {
+						// 	deleteVehicle _object1;
+						// };
+					}];
+
+					[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
+						params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+						sleep 1;
+						_objectHandle allowDamage true;
+						// If it survived spawning
+						if (alive _objectHandle) then {
+							OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
+							_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
+						} else {
+							
+						};
+					};
+
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
-
-					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
-
-					
+					CALLM1(_thisObject, "createAI", "AIUnitVehicle");					
 					// Give intel to this unit
 					CALLSM1("UnitIntel", "initUnit", _thisObject);
 				};

@@ -298,7 +298,6 @@ CLASS("CmdrAI", "")
 				_x params ["_dist", "_loc"];
 				[_srcPos getDir GETV(_loc, "pos"), GETV(_loc, "id")]
 			};
-			diag_log _tgtLocations;
 			if(count _tgtLocations > 0) then {
 				_tgtLocations sort ASCENDING;
 				private _routeTargets = _tgtLocations apply {
@@ -306,7 +305,6 @@ CLASS("CmdrAI", "")
 					[TARGET_TYPE_LOCATION, _locId]
 				};
 				private _params = [_srcId, _routeTargets];
-				diag_log _params;
 				_actions pushBack (NEW("PatrolCmdrAction", _params));
 			};
 		} forEach _srcGarrisons;

@@ -72,6 +72,7 @@ CLASS("ActionUnitArrest", "Action")
 			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			_state = ACTION_STATE_FAILED;
 			T_SETV("state", ACTION_STATE_FAILED); 
+			_state
 		};
 		
 		pr _state = ACTION_STATE_ACTIVE;
