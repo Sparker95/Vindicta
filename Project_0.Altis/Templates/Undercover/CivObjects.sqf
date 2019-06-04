@@ -99,6 +99,8 @@ g_UM_civUniforms = [
     "U_OG_Guerilla3_1",
     "U_OG_Guerilla3_2",
     "U_OI_Scientist",
+    "U_C_HunterBody_grn",
+    "U_OrestesBody",
     "U_Rangemaster"
 ];
 

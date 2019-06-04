@@ -522,25 +522,41 @@ CLASS("Location", "MessageReceiverEx")
 				// Search for more roads at the next iteration
 				_searchRadius = _searchRadius * 2;
 			} else {
-				_roads = _roads apply {[_x distance2D _startPos, _x]};
-				_roads sort true; // Ascending
+				_roads = _roads apply { [_x distance2D _startPos, _x] };
+				_roads sort ASCENDING;
 				private _i = 0;
 				while {_i < count _roads && !_found} do {
 					(_roads select _i) params ["_dist", "_road"];
 					private _rct = roadsConnectedTo _road;
-					if (count _rct >= 2) then { // We better don't use terminal road pieces
+					// TODO: we can preprocess spawn locations better than this probably.
+					// Need a connected road (this is guaranteed probably?)
+					if (count _rct > 0 and 
+						// Avoid spawning on a person or another car
+						{count (nearestObjects [getPos _road, ["LandVehicle", "Man"], 10]) == 0} and 
+						// Avoid spawning too close to a junction
+						{{ count (roadsConnectedTo _x) > 2} count ((getPos _road) nearRoads 10) == 0}) then { // We better don't use terminal road pieces
+
 						// Check position if it's safe
 						private _dir = _road getDir (_rct select 0);
 						// Get Z component of ATL height from two nearest road pieces
-						private _z0 = (getPosASL (_rct select 0)) select 2;
-						private _z1 = (getPosASL (_rct select 1)) select 2;
-						private _posRoad = getPosASL _road;
-						_posRoad set [2, 0.5*(_z0 + _z1)];
-						_posRoad = ASLToATL _posRoad;
+						// private _z0 = (getPosASL (_rct select 0)) select 2;
+						// private _z1 = (getPosASL (_rct select 1)) select 2;
+						// private _posRoad = getPosASL _road;
+						//_posRoad set [2, 0.5*(_z0 + _z1)];
+						//_posRoad = ASLToATL _posRoad;
+						private _posRoad = getPos _road;
+						
+						private _foundSafePos = [];
+						for "_offs" from 2 to 8 step 2 do {
+							// Find offset position away from center of road
+							private _spawnPos = [_posRoad, _offs, _dir + 90] call BIS_Fnc_relPos;
+							if(!CALLSM3("Location", "isPosSafe", _spawnPos, _dir, _className)) exitWith {};
+							_foundSafePos = _spawnPos;
+						};
 
 						//diag_log format ["--- road: %1, pos atl: %2", _road, getPosATL _road];
-						if (CALLSM3("Location", "isPosSafe", _posRoad, _dir, _className)) then {
-							_return = [getPos _road, _dir];
+						if (!(_foundSafePos isEqualTo [])) then {
+							_return = [_foundSafePos, _dir];
 							_found = true;
 						};
 					};

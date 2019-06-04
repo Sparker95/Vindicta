@@ -25,7 +25,11 @@ CLASS("GameModeRandom", "GameModeBase")
 			};
 		} else {
 			if (_type == LOCATION_TYPE_POLICE_STATION) then {
-				INDEPENDENT
+				if ((random 10) < 3) then {
+					INDEPENDENT
+				} else {
+					CIVILIAN
+				};
 			} else {
 				CIVILIAN
 			};

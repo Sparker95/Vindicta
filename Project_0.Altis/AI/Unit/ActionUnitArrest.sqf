@@ -188,6 +188,18 @@ CLASS("ActionUnitArrest", "Action")
 
 								waitUntil {animationState _captor == _animation};
 								waitUntil {animationState _captor != _animation};
+								
+								_target playMoveNow "Acts_ExecutionVictim_Loop";
+								if(!isPlayer _target) then {
+									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
+									_target disableAI "MOVE"; // Disable AI Movement
+									_target disableAI "AUTOTARGET"; // Disable AI Autotarget
+									_target disableAI "ANIM"; // Disable AI Behavioural Scripts
+									_target allowFleeing 0; // Disable AI Fleeing
+									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
+								};
+								_target setVariable ["timeArrested", time+10];
+
 								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
 							};
 

@@ -5,9 +5,6 @@ Design documentation:
 https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/edit#bookmark=id.ev4wu6mmqtgf
 */
 
-#define ENEMY_SIDE INDEPENDENT
-#define FRIENDLY_SIDE WEST
-
 #ifndef RELEASE_BUILD
 #define DEBUG_CIVIL_WAR_GAME_MODE
 #endif
@@ -41,6 +38,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected override */ METHOD("getLocationOwner") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		ASSERT_OBJECT_CLASS(_loc, "Location");
+
 		OOP_DEBUG_MSG("%1", [_loc]);
 		private _type = GETV(_loc, "type");
 		// Initial setup has AAF holding all bases and police stations
@@ -99,7 +98,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		if(!IS_MULTIPLAYER) then {
 			{
 				deleteVehicle _x;
-			} forEach (units group player) - [player];
+			} forEach units spawnGroup1 + units spawnGroup2 - [player];
 
 			player addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
 			player setPosATL ((selectRandom _spawnPoints)#1);
@@ -109,33 +108,55 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 
 /* private */ METHOD("singlePlayerRespawn") {
-	params [P_THISOBJECT, P_OBJECT("_oldUnit")];
-	T_PRVAR(spawnPoints);
+		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+		T_PRVAR(spawnPoints);
 
-	private _respawnLoc = selectRandom _spawnPoints;
-	private _tmpGroup = createGroup (side _oldUnit);
-	private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
-	[_newUnit] joinSilent (group _oldUnit);
-	deleteGroup _tmpGroup;
-	selectPlayer _newUnit;
-	player assignCurator zeus1;
-	T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
-	[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
-	[_oldUnit] joinSilent grpNull;
-	_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
-	(_respawnLoc#0) spawn {
-		cutText [format["<t color='#ffffff' size='3'>You died!<br/>But you were born again in %1!</t>", _this], "BLACK IN", 10, true, true];
-		BIS_DeathBlur ppEffectAdjust [0.0];
-		BIS_DeathBlur ppEffectCommit 0.0;
-	};
-} ENDMETHOD;
+		private _respawnLoc = selectRandom _spawnPoints;
+		private _tmpGroup = createGroup (side _oldUnit);
+		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
+		[_newUnit] joinSilent (group _oldUnit);
+		deleteGroup _tmpGroup;
+		selectPlayer _newUnit;
+		unassignCurator zeus1;
+		player assignCurator zeus1;
+		T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
+		[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
+		[_oldUnit] joinSilent grpNull;
+		_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
+		(_respawnLoc#0) spawn {
+			cutText [format["<t color='#ffffff' size='3'>You died!<br/>But you were born again in %1!</t>", _this], "BLACK IN", 10, true, true];
+			BIS_DeathBlur ppEffectAdjust [0.0];
+			BIS_DeathBlur ppEffectCommit 0.0;
+		};
+	} ENDMETHOD;
 
 	/* protected override */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
 		switch T_GETV("phase") do {
 			// Player is spawning in cities give them a pistol or something.
 			case 1: {
-				_newUnit call fnc_selectPlayerSpawnLoadout;
+				player call fnc_selectPlayerSpawnLoadout;
+				// Holster pistol
+				player action ["SWITCHWEAPON", player, player, -1];
+
+				// _newUnit spawn {
+				// 	while {!isNull (group _this)} do {
+				// 		waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
+				// 		if(!isNull (group _this)) then {
+				// 			private _action = player addAction [
+				// 				"Holster your weapon", 
+				// 				{
+				// 					params ["_target", "_caller", "_actionId", "_arguments"];
+				// 					player action ["SWITCHWEAPON", player, player, -1];
+				// 				}
+				// 			];
+				// 			waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
+				// 			if(!isNull (group _this)) then {
+				// 				player removeAction _action;
+				// 			};
+				// 		};
+				// 	};
+				// };
 			};
 		};
 	} ENDMETHOD;
@@ -159,7 +180,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Override this to perform actions when a location spawns
 	/* protected override */METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
-
+		ASSERT_OBJECT_CLASS(_location, "Location");
+		
 		private _type = GETV(_location, "type");
 		if(_type == LOCATION_TYPE_CITY) then {
 			private _cityData = GETV(_location, "gameModeData");
@@ -170,6 +192,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	// Override this to perform actions when a location despawns
 	/* protected override */METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+		ASSERT_OBJECT_CLASS(_location, "Location");
 
 		private _type = GETV(_location, "type");
 		if(_type == LOCATION_TYPE_CITY) then {
@@ -182,51 +205,42 @@ ENDCLASS;
 CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
-	VARIABLE("civGroups");
+	VARIABLE("ambientMissions");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
-		T_SETV("civGroups", []);
+		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
-		
+		ASSERT_OBJECT_CLASS(_city, "Location");
+
 		OOP_INFO_MSG("Spawning %1", [_city]);
 
 		T_PRVAR(state);
+		T_PRVAR(ambientMissions);
 		private _pos = CALLM0(_city, "getPos");
 		private _radius = GETV(_city, "boundingRadius");
 
 		switch _state do {
 			case CITY_STATE_STABLE: {
-				// TODO: police harass civilians
-				// Create some civilians that can be harassed.
-				private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
-				T_PRVAR(civGroups);
-
-				OOP_INFO_MSG("Spawning some civilians in %1 to be harassed from pool of %2", [_city ARG _civTypes]);
-				for "_i" from 0 to random 10 do {
-					private _grp = createGroup [FRIENDLY_SIDE, true];
-					private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
-					private _civie = _grp createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
-					_civie setVariable [UNDERCOVER_SUSPICIOUS, true];
-					_civGroups pushBack _grp;
-				};
-
+				_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city]));
 				// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
 				// {
 				// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
 				// } forEach _civies;
 			};
 			case CITY_STATE_AGITATED: {
+				_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city]));
 				// TODO: if local garrison is spawned then
 				//	a) spawn a civ or two with weapons to attack them
 				//	b) spawn an IED with proximity detonation
 			};
 			case CITY_STATE_IN_REVOLT: {
+				_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city]));
 				// TODO: if local garrison is spawned then
 				//	a) arm all civs, put them on player side
 				//	b) spawn an timed IED blowing up a building or two (police station maybe?)
@@ -243,20 +257,20 @@ CLASS("CivilWarCityData", "")
 
 	METHOD("despawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		OOP_INFO_MSG("Despawning %1", [_city]);
 
-		T_PRVAR(civGroups);
+		T_PRVAR(ambientMissions);
 		{
-			{ deleteVehicle _x } forEach units _x;
-			deleteGroup _x;
-		} forEach _civGroups;
-
-		T_SETV("civGroups", []);
+			DELETE(_x);
+		} forEach _ambientMissions;
+		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
 	
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		ASSERT_OBJECT_CLASS(_city, "Location");
 		T_PRVAR(state);
 
 		private _cityPos = CALLM0(_city, "getPos");
@@ -320,6 +334,12 @@ CLASS("CivilWarCityData", "")
 			private _data = GETV(_policeStation, "gameModeData");
 			CALLM(_data, "update", [_policeStation ARG _state]);
 		} forEach _policeStations;
+
+		T_PRVAR(ambientMissions);
+		{
+			CALLM(_x, "update", [_city]);
+		} forEach _ambientMissions;
+
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -334,6 +354,7 @@ CLASS("CivilWarPoliceStationData", "")
 
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
+		ASSERT_OBJECT_CLASS(_policeStation, "Location");
 
 		T_PRVAR(reinfGarrison);
 		if(!IS_NULL_OBJECT(_reinfGarrison)) then {

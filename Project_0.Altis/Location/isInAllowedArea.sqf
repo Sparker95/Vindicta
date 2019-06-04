@@ -1,5 +1,5 @@
 #include "..\OOP_Light\OOP_Light.h"
-
+#include "Location.hpp"
 // Class: Location
 /*
 Method: isInAllowedArea
@@ -15,6 +15,8 @@ Returns: nil
 #define pr private
 
 params [ ["_thisObject", "", [""]], ["_pos", objNull, [objNull, []]]];
+
+if(T_GETV("type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) exitWith { true };
 
 pr _areas = T_GETV("allowedAreas");
 

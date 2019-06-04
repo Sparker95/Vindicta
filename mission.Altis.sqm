@@ -8,7 +8,7 @@ class EditorData
 	toggles=101;
 	class ItemIDProvider
 	{
-		nextID=1069;
+		nextID=1080;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=4;
+		nextID=11;
 	};
 	class Camera
 	{
-		pos[]={20868,9,14614};
-		dir[]={-0.20055749,-0.73619503,0.64637166};
-		up[]={-0.2181682,0.67676932,0.70312738};
-		aside[]={0.95508039,-3.1199306e-008,0.29634473};
+		pos[]={20850.932,80.366417,14591.702};
+		dir[]={0.29754773,-0.59924018,0.74322957};
+		up[]={0.22272025,0.80056411,0.55632311};
+		aside[]={0.92837131,1.5308615e-007,-0.37166756};
 	};
 };
 binarizationWanted=0;
@@ -43,7 +43,7 @@ addons[]=
 	"A3_Static_F",
 	"A3_Modules_F_ObjectModifiers",
 	"A3_Ui_F",
-	"cba_modules",
+	"project_0_module_location",
 	"A3_Modules_F_Curator_Curator",
 	"A3_Soft_F_Offroad_01",
 	"A3_Structures_F_Argo_Walls_Military",
@@ -135,10 +135,8 @@ class AddonsMetaData
 		};
 		class Item11
 		{
-			className="cba_modules";
-			name="Community Base Addons - Modules";
-			author="CBA Team";
-			url="https://www.github.com/CBATeam/CBA_A3";
+			className="project_0_module_location";
+			name="project_0 - Module_Location";
 		};
 		class Item12
 		{
@@ -200,7 +198,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=445;
+		items=455;
 		class Item0
 		{
 			dataType="Object";
@@ -6670,7 +6668,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23054,3.1900001,18674.375};
-				angles[]={-0,6.2822256,0};
+				angles[]={0,6.2822256,0};
 			};
 			areaSize[]={146.55194,0,390.89188};
 			areaIsRectangle=1;
@@ -8218,7 +8216,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={20072.75,101.07117,6713.125};
-				angles[]={6.2631865,0.62405992,0.021331646};
 			};
 			areaSize[]={140,0,140};
 			flags=1;
@@ -10157,13 +10154,14 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={20856,2.2699633,14658};
-				angles[]={0.029324362,0,6.2711854};
+				position[]={20856,2.2699635,14658};
+				angles[]={0.029321531,0,6.2711778};
 			};
-			name="zeus";
+			name="zeus1";
 			init="call{if (isServer) then {  " \n "    [] spawn { " \n "        sleep 5;  " \n "        while {true} do {  " \n "            {  " \n "                _x addCuratorEditableObjects [allUnits, true];  " \n "                _x addCuratorEditableObjects [vehicles, true];  " \n "                sleep 10;  " \n "            } forEach allCurators;   " \n "        };  " \n "    };   " \n "};}";
 			id=727;
 			type="ModuleCurator_F";
+			atlOffset=2.3841858e-007;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -10251,7 +10249,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={16824.5,22.012426,12620.25};
-				angles[]={6.1519442,5.8720555,0.014664836};
 			};
 			areaSize[]={380,0,380};
 			flags=1;
@@ -10563,7 +10560,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={20982.125,40.863472,16974.25};
-				angles[]={0.035988688,4.3749294,6.2392201};
 			};
 			areaSize[]={370,0,370};
 			flags=1;
@@ -10694,7 +10690,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={21377.5,19.754648,16347.625};
-				angles[]={6.2458701,4.3749294,6.2645278};
 			};
 			areaSize[]={300,0,300};
 			flags=1;
@@ -10826,7 +10821,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={25672.625,19.984867,21333.375};
-				angles[]={6.2671809,4.3749294,0.0066671576};
 			};
 			areaSize[]={350,0,350};
 			flags=1;
@@ -10956,13 +10950,13 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={27024.625,20.629999,23215};
-				angles[]={0,4.3749294,0};
+				position[]={27059,20.894327,23222};
 			};
-			areaSize[]={270,0,270};
+			areaSize[]={400,0,400};
 			flags=1;
 			id=741;
 			type="Project_0_LocationSector";
+			atlOffset=0.19100189;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -11088,7 +11082,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={18807.5,31.20529,16605.875};
-				angles[]={5.9251137,4.3749294,0.24797638};
 			};
 			areaSize[]={250,0,250};
 			flags=1;
@@ -11220,7 +11213,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={21695.875,15.087968,7568.125};
-				angles[]={0.02799508,4.3749294,6.2551899};
 			};
 			areaSize[]={200,0,200};
 			flags=1;
@@ -11351,7 +11343,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={20566.75,33.552681,8869.375};
-				angles[]={6.2272477,4.3749294,6.2818413};
 			};
 			areaSize[]={200,0,200};
 			flags=1;
@@ -11482,7 +11473,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={20279.5,54.016777,11661.625};
-				angles[]={0.13899803,4.3749294,0.0076619955};
 			};
 			areaSize[]={340,0,340};
 			flags=1;
@@ -11614,7 +11604,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={19390.625,38.31884,13270.125};
-				angles[]={6.2791882,4.3749294,0.0026529003};
 			};
 			areaSize[]={230,0,230};
 			flags=1;
@@ -11877,7 +11866,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14507.75,22.747171,17610.625};
-				angles[]={6.05165,4.3749294,0.38737583};
 			};
 			areaSize[]={230,0,230};
 			flags=1;
@@ -12009,7 +11997,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14037.125,25.895126,18626.25};
-				angles[]={6.2152915,4.3749294,0};
 			};
 			areaSize[]={400,0,400};
 			flags=1;
@@ -12141,7 +12128,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={12847.25,45.366695,19669.125};
-				angles[]={6.1901245,4.3749294,6.2765183};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -12272,7 +12258,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={14618,46.860954,20778.375};
-				angles[]={6.2365522,4.3749294,0.06656827};
 			};
 			areaSize[]={200,0,200};
 			flags=1;
@@ -14507,10 +14492,10 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={3970.75,15.073386,17286};
-				angles[]={6.2285738,4.3749294,0.26309094};
+				position[]={4039,23.738129,17248};
+				angles[]={6.1848373,4.3749294,0.1986773};
 			};
-			areaSize[]={180,0,180};
+			areaSize[]={317.70386,0,150.71564};
 			flags=1;
 			id=768;
 			type="Project_0_LocationSector";
@@ -14639,13 +14624,11 @@ class Mission
 			class PositionInfo
 			{
 				position[]={7151.875,112.80618,16442.125};
-				angles[]={6.0883541,4.3749294,0.026668631};
 			};
 			areaSize[]={230,0,230};
 			flags=1;
 			id=769;
 			type="Project_0_LocationSector";
-			atlOffset=7.6293945e-006;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -14771,7 +14754,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={4608.5,298.69473,21396.25};
-				angles[]={0.18582521,4.3749294,6.0476356};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -14903,7 +14885,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={10326.75,127.72852,19079.375};
-				angles[]={6.2471962,4.3749294,6.2551899};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -15034,7 +15015,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={9444.375,125.87141,20257.75};
-				angles[]={6.2778444,4.3749294,0.090425514};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -15166,7 +15146,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={11821.25,52.379314,18425.125};
-				angles[]={6.2219291,4.3749294,6.2392149};
 			};
 			areaSize[]={140,0,140};
 			flags=1;
@@ -15297,7 +15276,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23219.75,13.834016,19966};
-				angles[]={6.2631841,4.3749294,6.2671809};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -15429,7 +15407,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23965,14.755361,20165.125};
-				angles[]={6.2671809,4.3749294,6.2805324};
 			};
 			areaSize[]={130,0,130};
 			flags=1;
@@ -15561,7 +15538,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={17876,2.1981981,18126.375};
-				angles[]={6.2738476,4.3749294,0.025324726};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -15693,7 +15669,6 @@ class Mission
 			class PositionInfo
 			{
 				position[]={10473,86.25235,17267.75};
-				angles[]={6.244544,4.3749294,0.018657569};
 			};
 			areaSize[]={180,0,180};
 			flags=1;
@@ -17882,7 +17857,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23055.99,5.4147649,18800.006};
-				angles[]={0,4.7123895,-0};
+				angles[]={0,4.7123895,0};
 			};
 			side="Empty";
 			flags=4;
@@ -17922,7 +17897,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23056,5.4147906,18792};
-				angles[]={-0,4.7123895,0};
+				angles[]={0,4.7123895,0};
 			};
 			side="Empty";
 			flags=4;
@@ -17961,7 +17936,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23056,5.4147906,18784};
-				angles[]={-0,4.7123895,0};
+				angles[]={0,4.7123895,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18000,7 +17975,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23056,5.4147906,18776};
-				angles[]={-0,4.7123895,0};
+				angles[]={0,4.7123895,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18039,7 +18014,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23056,5.4147906,18768};
-				angles[]={-0,4.7123895,0};
+				angles[]={0,4.7123895,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18163,7 +18138,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22967.539,3.8900573,18371.801};
-				angles[]={-0,0.026950996,0};
+				angles[]={0,0.026950996,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18181,7 +18156,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22961.734,3.7222393,18371.936};
-				angles[]={-0,3.1702063,0};
+				angles[]={0,3.1702063,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18199,7 +18174,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22955.004,3.6463668,18369.857};
-				angles[]={-0,1.6183352,0};
+				angles[]={0,1.6183352,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18217,7 +18192,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22954.723,3.5586174,18364.158};
-				angles[]={-0,4.7677069,0};
+				angles[]={0,4.7677069,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18235,7 +18210,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22960.297,3.9452484,18357.922};
-				angles[]={-0,0.013963802,0};
+				angles[]={0,0.013963802,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18253,7 +18228,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22966.137,4.0932074,18357.619};
-				angles[]={-0,3.2187631,0};
+				angles[]={0,3.2187631,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18271,7 +18246,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22953.91,3.7716155,18357.113};
-				angles[]={-0,3.8717539,0};
+				angles[]={0,3.8717539,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18289,7 +18264,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={22957.684,3.7696414,18375.59};
-				angles[]={-0,3.1712337,0};
+				angles[]={0,3.1712337,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18409,7 +18384,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23039.012,4.0941358,18983.777};
-				angles[]={-0,3.1702063,0};
+				angles[]={0,3.1702063,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18427,7 +18402,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23032.281,4.0182633,18981.699};
-				angles[]={-0,1.6183352,0};
+				angles[]={0,1.6183352,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18445,7 +18420,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23032,3.9305141,18976};
-				angles[]={-0,4.7677069,0};
+				angles[]={0,4.7677069,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18496,7 +18471,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23031.188,4.1435122,18968.957};
-				angles[]={-0,3.8717539,0};
+				angles[]={0,3.8717539,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18514,7 +18489,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={23034.961,4.1415377,18987.434};
-				angles[]={-0,3.1712337,0};
+				angles[]={0,3.1712337,0};
 			};
 			side="Empty";
 			flags=4;
@@ -18716,6 +18691,7 @@ class Mission
 			};
 			class Attributes
 			{
+				name="spawnGroup1";
 			};
 			id=1052;
 		};
@@ -18908,6 +18884,7 @@ class Mission
 			};
 			class Attributes
 			{
+				name="spawnGroup2";
 			};
 			id=1060;
 		};
@@ -18919,7 +18896,7 @@ class Mission
 				position[]={20863.014,2.2894516,14657.737};
 				angles[]={0.029321531,0,6.2711778};
 			};
-			name="zeus_1";
+			name="zeus2";
 			init="call{if (isServer) then {  " \n "    [] spawn { " \n "        sleep 5;  " \n "        while {true} do {  " \n "            {  " \n "                _x addCuratorEditableObjects [allUnits, true];  " \n "                _x addCuratorEditableObjects [vehicles, true];  " \n "                sleep 10;  " \n "            } forEach allCurators;   " \n "        };  " \n "    };   " \n "};}";
 			id=1068;
 			type="ModuleCurator_F";
@@ -19003,6 +18980,1311 @@ class Mission
 					};
 				};
 				nAttributes=4;
+			};
+		};
+		class Item445
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={19449,20.347269,15424};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1069;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Nifi";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item446
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={14895,8.7746382,11071};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1070;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Faronaki";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item447
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={20809,36.092438,6726};
+			};
+			areaSize[]={300,0,300};
+			flags=1;
+			id=1071;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Selakano";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item448
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={3702,12.750674,10258};
+				angles[]={6.2605233,4.6340089,6.2711902};
+			};
+			areaSize[]={119.92857,0,201.14702};
+			flags=1;
+			id=1072;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Athanos";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item449
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={16721,0.90171379,20487};
+				angles[]={0.1755103,4.3749294,6.1245351};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1073;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Agia Triada";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item450
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={18434,4.3173828,8130};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1075;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Livadi";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item451
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={7207,0.90145814,11058};
+				angles[]={0.05726425,0,0.22923154};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1076;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Edessa";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item452
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={21630,24.520199,21254};
+				angles[]={0.13910274,0,0.12730432};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1077;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Iraklia";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item453
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={17085.123,22.860426,9985.7373};
+			};
+			areaSize[]={100,0,100};
+			flags=1;
+			id=1078;
+			type="Project_0_LocationSector";
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Ekali";
+						};
+					};
+				};
+				nAttributes=6;
+			};
+		};
+		class Item454
+		{
+			dataType="Logic";
+			class PositionInfo
+			{
+				position[]={16673.357,18.270599,16122.081};
+			};
+			areaSize[]={200,0,200};
+			flags=1;
+			id=1079;
+			type="Project_0_LocationSector";
+			atlOffset=3.8146973e-006;
+			class CustomAttributes
+			{
+				class Attribute0
+				{
+					property="Project_0_LocationSector_side";
+					expression="_this setVariable ['Side',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="east";
+						};
+					};
+				};
+				class Attribute1
+				{
+					property="Project_0_LocationSector_type";
+					expression="_this setVariable ['Type',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="city";
+						};
+					};
+				};
+				class Attribute2
+				{
+					property="Project_0_LocationSector_CapacityInfantry";
+					expression="_this setVariable ['CapacityInfantry',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute3
+				{
+					property="Project_0_LocationSector_CivPresUnitCount";
+					expression="_this setVariable ['CivPresUnitCount',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"SCALAR"
+								};
+							};
+							value=5;
+						};
+					};
+				};
+				class Attribute4
+				{
+					property="Project_0_LocationSector";
+					expression="_this setVariable ['Units',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="1";
+						};
+					};
+				};
+				class Attribute5
+				{
+					property="Project_0_LocationSector_name";
+					expression="_this setVariable ['Name',_value,true];";
+					class Value
+					{
+						class data
+						{
+							class type
+							{
+								type[]=
+								{
+									"STRING"
+								};
+							};
+							value="Anthrakia";
+						};
+					};
+				};
+				nAttributes=6;
 			};
 		};
 	};

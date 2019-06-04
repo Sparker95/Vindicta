@@ -43,6 +43,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 	VARIABLE("unit"); 														// unit this undercoverMonitor is attached to
 	VARIABLE("state");														// state of this unit's undercoverMonitor
+	VARIABLE("prevState");													// previous state of this unit's undercoverMonitor
 	VARIABLE("stateChanged");												// "do once" variable for state changes
 	VARIABLE("suspicion");													// unit's final suspiciousness for each interval
 	VARIABLE("incrementSusp");												// a temporary variable for suspicion increases over time
@@ -441,7 +442,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable [UNDERCOVER_WANTED, false, true];
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
-							_unit playMoveNow "Acts_ExecutionVictim_Loop";
 							T_SETV("bCaptive", true);
 							[_unit] call fnc_UM_addActionUntieLocal;
 							[_unit] call fnc_UM_addActionUntieMP;
@@ -634,7 +634,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		};
 		OOP_INFO_0("setUnitFree called");
 	} ENDMETHOD;
-
 
 	/* 
 		Other player's computers remoteExecute this on this computer to make this player overt.
