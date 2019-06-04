@@ -30,12 +30,7 @@ params [["_unit", objNull, [objNull]]];
 	{},
 	{ 	
 		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
-
-		pr _uM = _target getVariable ["undercoverMonitor", ""];
-		if (_uM != "") then { // Sanity check
-			pr _bCaptive = SETV(_uM, "bCaptive", false);
-		};
-		systemChat "You have freed yourself."; 
+		REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);	
 	},
 	{}, 
 	[],

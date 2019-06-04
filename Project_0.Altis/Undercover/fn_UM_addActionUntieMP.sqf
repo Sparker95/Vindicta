@@ -10,25 +10,31 @@
 #include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
 /* 
-	Tests the "compromise" feature of the undercoverMonitor by sending a message to the monitor.
-
-	Parameter: _unit - the unit that is to be compromised
-
-	Example: [player] call fnc_testCompromise
+	Add untie action to an arrested unit. Only visible to other players, but not the player this action is attached to.
 */
 
 
 params ["_unit"];
 
-if (count crew vehicle _unit > 0) then {
-	{
-		if (isPlayer _x && alive _x) then { 
-			private _um = _x getVariable ["undercoverMonitor", ""];
-			if (_um != "") then { // Sanity check
-				private _msg = MESSAGE_NEW();
-				MESSAGE_SET_TYPE(_msg, SMON_MESSAGE_COMPROMISED);
-				CALLM1(_um, "postMessage", _msg);
-			};
-		};
-	} forEach crew vehicle _unit;		
-};
+params [["_unit", objNull, [objNull]]];
+
+[ 
+	_unit,
+	"Cut free",
+	"",
+	"",
+ 	"_this distance _target < 3 && _this != _target", 
+	"_caller distance _target < 3",
+	{},
+	{},
+	{ 	
+		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);	
+	},
+	{}, 
+	[],
+	3,
+	0, 
+	true,
+	false
+] remoteExec ["BIS_fnc_holdActionAdd", 0, _unit];

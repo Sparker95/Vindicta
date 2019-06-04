@@ -68,11 +68,10 @@ CLASS("ActionUnitArrest", "Action")
 		
 		pr _captor = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
-		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) exitWith {
+		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) then {
 			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
-			_state = ACTION_STATE_FAILED;
-			T_SETV("state", ACTION_STATE_FAILED); 
-			_state
+			T_SETV("stateChanged", true);
+			T_SETV("stateMachine", 2);
 		};
 		
 		pr _state = ACTION_STATE_ACTIVE;
@@ -88,7 +87,7 @@ CLASS("ActionUnitArrest", "Action")
 				OOP_INFO_0("ActionUnitArrest: Chasing target.");
 				
 				if (T_GETV("stateChanged")) then {
-					T_SETV("stateChanged",false);
+					T_SETV("stateChanged", false);
 					T_SETV("stateTimer", time);		
 					
 					_captor dotarget _target;
@@ -114,8 +113,8 @@ CLASS("ActionUnitArrest", "Action")
 
 					if (time - GETV(_thisObject,"stateTimer") > 15) then {//been following for 10 secs
 						OOP_INFO_0("ActionUnitArrest: FAILED, reason: Timeout.");
-						_state = ACTION_STATE_FAILED;
 						//[_captor,"Yes keep running!",_target] call Dialog_fnc_hud_createSentence;
+						T_SETV("stateMachine", 2);
 						breakTo "switch";
 
 					} else {
@@ -167,22 +166,23 @@ CLASS("ActionUnitArrest", "Action")
 
 							// play animation if close enough, finishing the script
 							if (_pos_search distance getpos _target < 0.1) then {
-								private _currentWeapon = currentWeapon _captor;
+								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
-									if( _currentWeapon isequalto primaryWeapon _captor ) exitWith {
+									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
 										"amovpercmstpsraswrfldnon_ainvpercmstpsraswrfldnon_putdown" //primary
 									};
-									if( _currentWeapon isequalto secondaryWeapon _captor ) exitWith {
+									if(_currentWeapon isequalto secondaryWeapon _captor) exitWith {
 										"amovpercmstpsraswlnrdnon_ainvpercmstpsraswlnrdnon_putdown" //launcher
 									};
-									if( _currentWeapon isequalto handgunWeapon _captor ) exitWith {
+									if(_currentWeapon isequalto handgunWeapon _captor) exitWith {
 										"amovpercmstpsraswpstdnon_ainvpercmstpsraswpstdnon_putdown" //pistol
 									};
-									if( _currentWeapon isequalto binocular _captor ) exitWith {
+									if(_currentWeapon isequalto binocular _captor) exitWith {
 										"amovpercmstpsoptwbindnon_ainvpercmstpsoptwbindnon_putdown" //bino
 									};
 									"amovpercmstpsnonwnondnon_ainvpercmstpsnonwnondnon_putdown" //non
 								};
+
 								_captor playMove _animation;
 								_animationDone = true;
 
@@ -203,7 +203,7 @@ CLASS("ActionUnitArrest", "Action")
 								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
 							};
 
-							_target setVariable ["isMoving", false];
+							//_target setVariable ["isMoving", _isMoving];
 							
 							_return = _animationDone;
 							_return
@@ -224,8 +224,6 @@ CLASS("ActionUnitArrest", "Action")
 				if (scriptDone T_GETV("spawnHandle")) then {
 					T_SETV("stateChanged", true);
 					T_SETV("stateMachine", 3);
-					
-					_state = ACTION_STATE_COMPLETED;
 					breakTo "switch";
 				};
 			}; // end SEARCH AND ARREST
