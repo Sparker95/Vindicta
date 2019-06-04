@@ -145,7 +145,6 @@ CLASS("GameModeBase", "")
 
 			private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 			if(!IS_NULL_OBJECT(_cmdr)) then {
-				OOP_DEBUG_MSG("founc cmdr %1 for loc %2", [_cmdr ARG _loc]);
 				CALLM(_cmdr, "registerLocation", [_loc]);
 
 				private _gar = T_CALLM("initGarrison", [_loc ARG _side]);
@@ -153,7 +152,7 @@ CLASS("GameModeBase", "")
 					OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
 
 					CALLM1(_gar, "setLocation", _loc);
-					CALLM1(_loc, "registerGarrison", _gar);
+					// CALLM1(_loc, "registerGarrison", _gar);
 					CALLM0(_gar, "activate");
 				};
 			};
@@ -169,8 +168,9 @@ CLASS("GameModeBase", "")
 					private _newUnit = NEW("Unit", [tCIVILIAN ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 					CALLM(_gar, "addUnit", [_newUnit]);
 				};
+				CALLM1(_gar, "setPos", CALLM0(_loc, "getPos"));
 				CALLM1(_gar, "setLocation", _loc);
-				CALLM1(_loc, "registerGarrison", _gar);
+				// CALLM1(_loc, "registerGarrison", _gar);
 				CALLM0(_gar, "activate");
 			};
 

@@ -572,8 +572,8 @@ CLASS("Location", "MessageReceiverEx")
 
 		private _found = false;
 		private _searchRadius = 50;
-		pr _posAndDir = [];
-		while {!_found} do {
+		pr _posAndDir = [_startPos, 0];
+		while {!_found and _searchRadius < 2000} do {
 			for "_i" from 0 to 16 do {
 				pr _pos = _startPos vectorAdd [-_searchRadius + random(2*_searchRadius), -_searchRadius + random(2*_searchRadius), 0];
 				if (CALLSM3("Location", "isPosSafe", _pos, 0, _className) && ! (surfaceIsWater _pos)) exitWith {

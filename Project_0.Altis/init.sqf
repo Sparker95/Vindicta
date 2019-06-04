@@ -28,7 +28,7 @@ if (!IS_SERVER) then {
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
 		case "Sparker": { "GameModeRandom" };
-		case "billw": 	{ "RedVsGreenGameMode" };
+		case "billw": 	{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "StatusQuoGameMode" };
 		default 		{ "CivilWarGameMode" };

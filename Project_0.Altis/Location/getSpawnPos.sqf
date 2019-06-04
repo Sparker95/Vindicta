@@ -139,7 +139,7 @@ if(_found) then {//If the spawn position has been found
 		// Try to find a random safe position on a road for this vehicle
 		private _locPos = GET_VAR(_thisObject, "pos");
 		private _locRadius = GET_VAR(_thisObject, "boundingRadius");
-		private _testPos = _locPos vectorAdd [_locPos, random [0, 0, _locRadius], random 360] call BIS_fnc_relPos;
+		private _testPos = _locPos vectorAdd ([_locPos, random [0, 0, _locRadius], random 360] call BIS_fnc_relPos);
 		// [[[_locPos, _locRadius]],[]] call BIS_fnc_randomPos;
 		_return = CALLSM2("Location", "findSafePosOnRoad", _testPos, _className);
 	};
