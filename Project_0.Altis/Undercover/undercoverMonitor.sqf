@@ -18,7 +18,7 @@
 #define sINCAPACITATED 4
 
 #ifndef RELEASE_BUILD
-#define DEBUG_UNDERCOVER_MONITOR
+//#define DEBUG_UNDERCOVER_MONITOR
 #endif
 
 gMsgLoopUndercover = NEW("MessageLoop", []);
