@@ -20,7 +20,7 @@ CLASS("GoalGroupArrest", "Goal")
 			pr _hG = CALLM0(_group, "getGroupHandle");
 
 			if !(isNil "_suspTarget") then { 
-				if (behaviour leader _hG == "COMBAT") exitWith { _relevance = 0; } 
+				if (behaviour leader _hG == "COMBAT") then { _relevance = 0; } 
 				else {
 					_relevance = 120;
 				};

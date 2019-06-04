@@ -10,7 +10,7 @@
 #include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
 
 /* 
-	Add untie action to an arrested unit, but action can only be used by other units, not the unit it is attached to.
+	Add untie action to an arrested unit. Only visible to other players, but not the player this action is attached to.
 */
 
 
@@ -20,26 +20,21 @@ params [["_unit", objNull, [objNull]]];
 
 [ 
 	_unit,
-	"cut yourself free",
+	"Cut free",
 	"",
 	"",
-	"_this distance _target < 3",
+ 	"_this distance _target < 3 && _this != _target", 
 	"_caller distance _target < 3",
 	{},
 	{},
 	{ 	
 		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
-
-		pr _uM = _target getVariable ["undercoverMonitor", ""];
-		if (_uM != "") then { // Sanity check
-			pr _bCaptive = SETV(_uM, "bCaptive", false);
-		};
-		systemChat "You have freed yourself."; 
+		REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "setUnitFree", [_target], _target, false);	
 	},
 	{}, 
 	[],
-	8,
+	3,
 	0, 
 	true,
 	false
-] call BIS_fnc_holdActionAdd;
+] remoteExec ["BIS_fnc_holdActionAdd", 0, _unit];

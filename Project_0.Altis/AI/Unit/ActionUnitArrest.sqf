@@ -68,9 +68,10 @@ CLASS("ActionUnitArrest", "Action")
 		
 		pr _captor = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
-		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) exitWith {
+		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) then {
 			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
-			_state = ACTION_STATE_FAILED;
+			T_SETV("stateChanged", true);
+			T_SETV("stateMachine", 2);
 		};
 		
 		pr _state = ACTION_STATE_ACTIVE;
@@ -86,7 +87,7 @@ CLASS("ActionUnitArrest", "Action")
 				OOP_INFO_0("ActionUnitArrest: Chasing target.");
 				
 				if (T_GETV("stateChanged")) then {
-					T_SETV("stateChanged",false);
+					T_SETV("stateChanged", false);
 					T_SETV("stateTimer", time);		
 					
 					_captor dotarget _target;
@@ -112,8 +113,8 @@ CLASS("ActionUnitArrest", "Action")
 
 					if (time - GETV(_thisObject,"stateTimer") > 15) then {//been following for 10 secs
 						OOP_INFO_0("ActionUnitArrest: FAILED, reason: Timeout.");
-						_state = ACTION_STATE_FAILED;
 						//[_captor,"Yes keep running!",_target] call Dialog_fnc_hud_createSentence;
+						T_SETV("stateMachine", 2);
 						breakTo "switch";
 
 					} else {
@@ -211,8 +212,6 @@ CLASS("ActionUnitArrest", "Action")
 				if (scriptDone T_GETV("spawnHandle")) then {
 					T_SETV("stateChanged", true);
 					T_SETV("stateMachine", 3);
-					
-					_state = ACTION_STATE_COMPLETED;
 					breakTo "switch";
 				};
 			}; // end SEARCH AND ARREST
