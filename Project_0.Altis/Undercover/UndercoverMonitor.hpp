@@ -36,10 +36,13 @@
 #define SUSP_FACEWEAR 0.05							// Suspiciousness gained for mil facewear
 #define SUSP_BACKPACK 0.1							// Suspiciousness gained for mil backpack
 
-#define SUSP_VEH_CREW 0.1	
+
+
+// DO NOT MODIFY BELOW THIS LINE
 #define SUSP_VEH_DIST 300							// Distance at which suspiciousness starts increasing based on SUSP_VEH_DIST_MULT 
 #define SUSP_VEH_DIST_MIN 15						// Distance at which player is too close to be captive with suspicious gear in a vehicle
-#define SUSP_VEH_DIST_MULT 1.02/SUSP_VEH_DIST		// DO NOT MODIFY: Multiplier for distance-based fade-in of suspiciousness variable
+#define SUSP_VEH_DIST_MULT 1.07						// Multiplier for distance-based fade-in of suspiciousness variable
+#define SUSP_VEH_CREW_MOD 0.015						// Added to SUSP_VEH_DIST_MULT for each exposed unit in a vehicle
 
 #define TIME_SEEN 5									// Time it takes, in seconds, for player unit to go from "seen" to "unseen"
 #define TIME_HOSTILITY 3							// Time in seconds player unit is overt after a hostile action

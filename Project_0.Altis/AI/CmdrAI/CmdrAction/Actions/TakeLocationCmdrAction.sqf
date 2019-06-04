@@ -45,16 +45,18 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
 			SETV(_intel, "location", GETV(_tgtLoc, "actual"));
 			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
-		};
 
-		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
-		// If we just created this intel then register it now 
-		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
-		if(_intelNotCreated) then {
+			// If we just created this intel then register it now 
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intel", _intelClone);
+
+			// Send the intel to some places that should "know" about it
+			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
+			T_CALLM("addIntelAt", [_world ARG GETV(_tgtLoc, "pos")]);
 		} else {
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 			CALLM(_intel, "updateInDb", []);
 		};
 	} ENDMETHOD;

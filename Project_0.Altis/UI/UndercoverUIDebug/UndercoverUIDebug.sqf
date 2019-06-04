@@ -36,35 +36,38 @@ _var = _unit getVariable "bInVeh";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T3) ctrlSetText format ["In veh: %1", _var];
 
-
 _var = _unit getVariable "bodyExposure";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T4) ctrlSetText format ["bodyExposure: %1", _var];
 
-
-
 _var = _unit getVariable "distance";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T5) ctrlSetText format ["Distance near. E.: %1", _var];
-
-
 
 _var = _unit getVariable "nearestEnemy";
 if (isNil "_var") then { _var = "Undefined"; };
 ((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T6) ctrlSetText format ["Nearest enemy: %1", _var];
 
 
-/*
-_var = _unit getVariable "timeSeen";
-if (isNil "_var") then { _var = "Undefined"; };
-((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetText format ["Time seen: %1", _var];
-*/
+_var = GETV(_uM, "bCaptive");
+if (isNil "_var") then { 
+	_var = "Undefined"; 
+} else {
+	if (_var) then {
+		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetBackgroundColor [0, 0.819, 0.341, 1];
+		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetTextColor [1, 1, 1, 1];
+	} else {	
+		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetBackgroundColor [0.819, 0, 0.113, 1];
+		((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetTextColor [1, 1, 1, 1];
+	};
+};
+((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T7) ctrlSetText format ["bCaptive: %1", _var];
 
-/*
-_var = _unit getUnitTrait "camouflageCoef";
+
+_var = _unit getVariable "suspDistVeh";
 if (isNil "_var") then { _var = "Undefined"; };
-((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T12) ctrlSetText format ["CamoCoef: %1", _var];
-*/
+((uinamespace getVariable "undercoverUIDebug_display") displayCtrl IDC_T12) ctrlSetText format ["suspDistVeh: %1", _var];
+
 
 _var = _unit getUnitTrait "camouflageCoef";
 if (isNil "_var") then { _var = "Undefined"; };

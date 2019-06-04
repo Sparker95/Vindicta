@@ -158,6 +158,10 @@ CLASS("Intel", "")
 
 	} ENDMETHOD;
 
+	METHOD("getShortName") {
+		"name"
+	} ENDMETHOD;
+
 ENDCLASS;
 
 #define COLOR_WEST		[0,0.3,0.6,1]
@@ -441,6 +445,10 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* variable: locations
 	Locations that the patrol will visit. */
 	VARIABLE_ATTR("locations", [ATTR_SERIALIZABLE]);
+
+	METHOD("getShortName") {
+		"Patrol"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
@@ -452,6 +460,10 @@ CLASS("IntelCommanderActionRetreat", "IntelCommanderAction")
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 	// Location being retreated to.
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
+
+	METHOD("getShortName") {
+		"Retreat"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*

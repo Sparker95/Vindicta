@@ -60,6 +60,9 @@ CLASS("GameModeBase", "")
 			// Garbage Collector
 			gGarbageCollector = NEW("GarbageCollector", []);
 
+			// Personal Inventory
+			gPersonalInventory = NEW("PersonalInventory", []);
+
 			T_CALLM("initServerOrHC", []);
 		};
 		if(IS_SERVER) then {

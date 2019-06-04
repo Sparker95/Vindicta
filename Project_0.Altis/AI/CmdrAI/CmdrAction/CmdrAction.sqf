@@ -93,6 +93,41 @@ CLASS("CmdrAction", "RefCounted")
 		_garrisons deleteAt _idx;
 	} ENDMETHOD;
 
+	// Add the intel object of this action to a specific garrison
+	METHOD("addIntelToGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+		if(CALLM(_garrison, "isActual", [])) then {
+			T_PRVAR(intel);
+
+			// Bail if null
+			if (!IS_NULL_OBJECT(_intel)) then { // Because it can be objNull
+				private _actual = GETV(_garrison, "actual");
+				// It will make sure itself that it doesn't add duplicates of intel
+				CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]); 
+				//CALLM1(_actual, "addIntel", _intel);
+				
+				// TODO: implement this Sparker. 
+				// 	NOTES: Make Garrison.addIntel add the intel to the occupied location as well.
+				// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
+				// CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]);
+			};
+		};
+	} ENDMETHOD;
+
+	// Add the intel object of this action to garrisons in an area
+	METHOD("addIntelAt") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 2000, [0]]];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		{
+			_x params ["_distance", "_garrison"];
+			private _chance =  1 - (_distance / _radius) ^ 2 + 0.1;
+			if(_chance > random 1) then {
+				T_CALLM("addIntelToGarrison", [_garrison]);
+			};
+		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
+	} ENDMETHOD;	
+
 	/* virtual */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 	} ENDMETHOD;

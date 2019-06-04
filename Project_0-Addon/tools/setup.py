@@ -45,10 +45,6 @@ def main():
         print("Failed to determine Arma 3 Path.")
         return 1
 
-    if not os.path.exists("P:\\z\\ace"):
-        print("No ACE3 Development Environment detected.")
-        return 2
-
     scriptpath = os.path.realpath(__file__)
     projectpath = os.path.dirname(os.path.dirname(scriptpath))
 
