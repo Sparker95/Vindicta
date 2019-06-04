@@ -17,30 +17,6 @@ gCityStateNames = [
 	"LIBERATED"
 ];
 
-
-// no longer used array of civilian vehicles 
-
-g_CivVehs = [
-    "C_Hatchback_01_sport_F",
-    "C_Hatchback_01_F",
-    "C_Truck_02_box_F",
-    "C_Truck_02_fuel_F",
-    "C_Offroad_02_unarmed_F",
-    "C_Van_01_fuel_F",
-    "C_Truck_02_transport_F",
-    "C_Truck_02_covered_F",
-    "C_Offroad_01_F",
-    "C_Offroad_01_repair_F",
-    "C_Quadbike_01_F",
-    "C_SUV_01_F",
-    "C_Van_01_transport_F",
-    "C_Van_02_medevac_F",
-    "C_Van_02_vehicle_F",
-    "C_Van_02_service_F",
-    "C_Van_02_transport_F",
-    "C_Scooter_Transport_01_F"
-];
-
 CLASS("CivilWarGameMode", "GameModeBase")
 
 	VARIABLE("phase");
@@ -230,14 +206,12 @@ CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
 	VARIABLE("ambientMissions");
-	VARIABLE("civVehicles");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
-		T_SETV("civVehicles", []);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
@@ -278,21 +252,6 @@ CLASS("CivilWarCityData", "")
 			case CITY_STATE_LIBERATED: {
 				// TODO: police is on player side
 			};
-		};
-
-		// Spawn some cars
-		T_PRVAR(civVehicles);
-		private _maxCars = 3 + 10 * ln(0.01 * _radius + 1);
-		for "_i" from 0 to _maxCars do {
-			private _vehClass = selectRandom g_CivVehs;
-			private _randomPos = [[[_pos, _radius]],[]] call BIS_fnc_randomPos;
-			private _house = nearestBuilding _randomPos;
-			CALLSM("Location", "findSafePosOnRoad", [(getPos _house) ARG _vehClass]) 
-				params ["_safePos", "_safeDir"];
-			private _car = _vehClass createVehicle [0,0,0]; //6ms
-			_car setdir _safeDir;
-			_car setpos _safePos;
-			_civVehicles pushBack _car;
 		};
 	} ENDMETHOD;
 

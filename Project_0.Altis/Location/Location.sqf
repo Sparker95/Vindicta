@@ -568,7 +568,7 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: [_pos, _dir]
 	*/
 	STATIC_METHOD("findSafeSpawnPos") {
-		params ["_thisObject", ["_className", "", [""]], ["_startPos", [], [[]]]];
+		params ["_thisClass", ["_className", "", [""]], ["_startPos", [], [[]]]];
 
 		private _found = false;
 		private _searchRadius = 50;

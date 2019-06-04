@@ -1771,7 +1771,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
-			+T_EFF_null
 		};
 
 		// Call handleUnitKilled of the group of this unit
@@ -1823,7 +1822,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
-			+T_EFF_null
 		};
 
 		// Get garrison of the unit that entered the vehicle
