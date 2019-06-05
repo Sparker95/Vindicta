@@ -36,6 +36,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
 	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
 
+	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
+
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -69,6 +71,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("location", "");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
+		T_SETV("intelItems", []);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
@@ -1937,6 +1940,26 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
 		T_CALLM("addGroup", [_newGroup]);
 		_newGroup
+	} ENDMETHOD;
+
+	// Adds an intel item to this garrison
+	METHOD("addIntel") {
+		pr _return = params ["_thisObject", ["_intel", "", [""]]];
+
+		if(!_return) exitWith {
+			DUMP_CALLSTACK;
+		};
+
+		T_GETV("intelItems") pushBackUnique _intel;
+
+		OOP_INFO_1("Added intel: %1", _intel);
+	} ENDMETHOD;
+
+	// Gets all intel items from this garrison
+	METHOD("getIntel") {
+		params ["_thisObject"];
+
+		+T_GETV("intelItems")
 	} ENDMETHOD;
 
 ENDCLASS;

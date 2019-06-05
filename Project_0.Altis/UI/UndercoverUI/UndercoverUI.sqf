@@ -15,20 +15,25 @@ Author: Marvis
 #define CLASS_NAME "UndercoverUI"
 #define pr private
 
+#ifndef _SQF_VM // Not needed for tests, and SQF-VM doesn't support localize anyway
 // string for each hint key
 g_UM_Hints = [
-	HK_INCAPACITATED, "INCAPACITATED",
-	HK_SURRENDER, "SURRENDERED",
-	HK_HOSTILITY, "WEAPON DISCHARGED!",
-	HK_WEAPON, "VISIBLE WEAPON!",
-	HK_SUSPGEAR, "SUSPICIOUS OUTFIT!",
-	HK_MILVEH, "THIS IS A MILITARY VEHICLE!",
-	HK_SUSPGEARVEH, "DO NOT GET CLOSE TO ENEMY IN THIS OUTFIT!",
-	HK_CLOSINGIN, "YOU ARE GETTING TOO CLOSE!",
-	HK_SUSPBEHAVIOR, "SUSPICIOUS BEHAVIOUR!",
-	HK_OFFROAD, "TOO FAR FROM ROADS!",
-	HK_ALLOWEDAREA, "STAY ON THE ROAD HERE!"
+	HK_INCAPACITATED, localize "STR_UM_HINT_DOWNED",
+	HK_ARRESTED, localize "STR_UM_HINT_ARRESTED",
+	HK_SURRENDER, localize "STR_UM_HINT_SURRENDER",
+	HK_HOSTILITY, localize "STR_UM_HINT_HOSTILITY",
+	HK_WEAPON, localize "STR_UM_HINT_WEAPON",
+	HK_SUSPGEAR, localize "STR_UM_HINT_SUSPGEAR",
+	HK_MILVEH, localize "STR_UM_HINT_MILVEH",
+	HK_SUSPGEARVEH, localize "STR_UM_HINT_SUSPGEARVEH",
+	HK_CLOSINGIN, localize "STR_UM_HINT_CLOSINGIN",
+	HK_SUSPBEHAVIOR, localize "STR_UM_HINT_SUSPBEHAVIOR",
+	HK_OFFROAD, localize "STR_UM_HINT_OFFROAD",
+	HK_ALLOWEDAREA, localize "STR_UM_HINT_ALLOWEDAREA",
+	HK_MILAREA, localize "STR_UM_HINT_MILAREA",
+	HK_COMPROMISED, localize "STR_UM_COMPROMISED"
 ];
+#endif
 
 CLASS(CLASS_NAME, "")
 	
@@ -41,7 +46,7 @@ CLASS(CLASS_NAME, "")
 			if (_suspicion < 0) then { _suspicion = 0; };
 
 			// select correct hint to display
-			if ((count _hintKeys > 0) && (_suspicion < 1)) then { 
+			if ((count _hintKeys > 0)) then { 
 				pr _hint = _hintKeys call BIS_fnc_greatestNum;
 				pr _hintID = g_UM_Hints find _hint;
 				if (_hintID != -1) then { _textUI = g_UM_Hints select (_hintID + 1); };

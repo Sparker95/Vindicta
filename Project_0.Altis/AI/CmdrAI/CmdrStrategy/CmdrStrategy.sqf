@@ -20,6 +20,48 @@ CLASS("CmdrStrategy", "")
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
 	} ENDMETHOD;
 
+	METHOD("getLocationDesirability") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
+		private _locPos = GETV(_loc, "pos");
+		private _activity = log (0.09 * CALLM(_worldNow, "getActivity", [_locPos ARG 2000]) + 1);
+
+		private _priority = 1;
+		switch(GETV(_loc, "type")) do {
+			case LOCATION_TYPE_OUTPOST: {
+				// We want these a bit, but more if there is activity in the area
+				_priority = T_GETV("takeLocOutpostPriority") + T_GETV("takeLocOutpostPriorityActivityCoeff") * _activity;
+			};
+			case LOCATION_TYPE_BASE: { 
+				// We want these a normal amount but are willing to go further to capture them.
+				// TODO: work out how to weight taking bases vs other stuff? 
+				// Probably high priority when we are losing? This is a gameplay question.
+				_priority = T_GETV("takeLocBasePriority") + T_GETV("takeLocBasePriorityActivityCoeff") * _activity;
+			};
+			case LOCATION_TYPE_ROADBLOCK: {
+				// We want these if there is local activity.
+				_priority = T_GETV("takeLocRoadBlockPriority") +
+					T_GETV("takeLocRoadBlockPriorityActivityCoeff") * _activity;
+
+				if(_priority > 0) then {
+					private _locs = CALLM(_worldNow, "getNearestLocations", [_locPos ARG 2000 ARG [LOCATION_TYPE_BASE ARG LOCATION_TYPE_OUTPOST]]) select {
+						_x params ["_dist", "_loc"];
+						!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
+					};
+					// We build these quick if we have an outpost or base nearby, prioritized by distance
+					if(count _locs > 0) then {
+						private _distF = 0.0004 * (_locs#0#0);
+						private _distCoeff = 1 / (1 + (_distF * _distF));
+						_priority = _priority * 2 * _distCoeff;
+					} else {
+						_priority = 0;
+					};
+				};
+			};
+			default { _priority = 0.5 }; // TODO: dunno what it is, better add more here?
+		};
+		_priority
+	} ENDMETHOD;
+
 	// Default QRF behaviour is to send QRFs always,
 	// from any location that can spare the entire required efficiency.
 	/* virtual */ METHOD("getQRFScore") {

@@ -76,8 +76,8 @@ _this spawn {
 	[player,{}] call JN_fnc_common_addActionCancel;
 	
 	//0L 10sec 10000L 60sec
-	pr _delta = round( (FLOAT_REFUELINTERVAL*_capacity)/(10+(40*_capacity/10000)));
-	diag_log ["*0.5",_delta];
+	pr _delta = round( (FLOAT_REFUELINTERVAL*_capacity)/(10+(40*_capacity/10000))) + 1;
+
 	while{_refuelAmount > 0}do{
 		if (player call JN_fnc_common_getActionCanceled)exitWith{};
 		

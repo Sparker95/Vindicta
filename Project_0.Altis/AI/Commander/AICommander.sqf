@@ -459,6 +459,50 @@ CLASS("AICommander", "AI")
 
 	} ENDMETHOD;
 
+	METHOD("getIntelFromInventoryItem") {
+		params ["_thisObject", ["_baseClass", "", [""]], ["_ID", 0, [0]], ["_clientOwner", 0, [0]]];
+
+		// Get data from the inventory item
+		pr _ret = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
+		_ret params ["_data", "_dataIsNotNil"];
+
+		// Make sure _data is valid
+		pr _foundSomething = false;
+		if (_dataIsNotNil) then {
+			if (count _data > 0) then {
+				_foundSomething = true;
+			};
+		};
+
+		pr _thisDB = T_GETV("intelDB");
+		if (_foundSomething) then {
+			{
+				pr _item = _x;
+				OOP_INFO_1("   Stealing intel item: %1", _item);
+
+				// Make sure the intel object is valid
+				if (IS_OOP_OBJECT(_item)) then {
+					if (CALLM1(_thisDB, "isIntelAddedFromSource", _item)) then {
+						// Update it from source
+						CALLM1(_thisDB, "updateIntelFromSource", _item);
+					} else {
+						// Clone it and it to our database
+						pr _itemClone = CLONE(_item);
+						SETV(_itemClone, "source", _item); // Link it with the source
+						CALLM1(_thisDB, "addIntel", _itemClone);
+					};
+				} else {
+					OOP_INFO_1("Intel object is invalid: %1", _item);
+				};
+			} forEach _data;
+		} else {
+			"You have found nothing here!" remoteExecCall ["systemChat", _clientOwner];
+		};
+
+		// Reset this inventory item data
+		CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, nil);
+	} ENDMETHOD;
+
 	// Returns known locations which are assumed to be controlled by this AICommander
 	METHOD("getFriendlyLocations") {
 		params ["_thisObject"];
@@ -610,7 +654,40 @@ CLASS("AICommander", "AI")
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "getThreat", [_pos])
 	} ENDMETHOD;
+		
+	// Thread safe
+	METHOD("_addActivity") {
+		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
+		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG _side]);
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "addActivity", [_pos ARG _activity])
+	} ENDMETHOD;
+
+	// Thread safe
+	STATIC_METHOD("addActivity") {
+		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
+
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			T_CALLM2("postMethodAsync", "_addActivity", [_side ARG _pos ARG _activity]);
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: getActivity
+	Get enemy (to this cmdr) activity in an area
 	
+	Parameters:
+	_pos - <position>
+	_radius - <number>
+	
+	Returns: Number - max activity in radius
+	*/
+	METHOD("getActivity") { // thread-safe
+		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "getActivity", [_pos ARG _radius])
+	} ENDMETHOD;
 	/*
 	Method: registerGarrison
 	Registers a garrison to be processed by this AICommander

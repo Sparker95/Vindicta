@@ -26,7 +26,6 @@ pr _id = _vehicle addaction [
 	"place holder",
 	{
 		pr _vehicle = _this select 0;
-		diag_log ["test1",_vehicle];
 		//check if object has still fuel
 		pr _fuelCargo = _vehicle getVariable ["jn_fuel_cargo",0];
 		if(_fuelCargo == 0)exitWith{hint "No fuel in object"};

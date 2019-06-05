@@ -58,7 +58,6 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		if(CALLM(_garr, "isDead", [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't attack target", [_world ARG _action ARG LABEL(_garr)]);
 			if(_clearing and GETV(_world, "type") == WORLD_TYPE_REAL) then {
-				CALLM(_garr, "cancelClearAreaActual", []);
 				T_SETV("clearing", false);
 			};
 			T_GETV("garrDeadState")

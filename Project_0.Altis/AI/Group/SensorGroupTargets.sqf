@@ -79,9 +79,8 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 			{
 				pr _o = _x select 1;
 				
-				if (_o in _allPlayers) then {
-					// It's a Man and a player
-
+				if (_o isKindOf "Man") then {
+					// It's a Man
 					if (UNDERCOVER_IS_UNIT_SUSPICIOUS(_o)) then {
 						pr _AI = T_GETV("AI");
 						SETV(_AI, "suspTarget", _o);

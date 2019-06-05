@@ -144,7 +144,7 @@ CLASS("CmdrAI", "")
 			// Must be on our side and not involved in another action
 			GETV(_x, "side") == _side and 
 			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			{ !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) } and 
 			{ !CALLM(_x, "isBusy", []) } and
 			{
 				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
@@ -227,7 +227,7 @@ CLASS("CmdrAI", "")
 		};
 
 		// Take tgt locations from future, so we take into account all in progress actions.
-		private _tgtLocations = CALLM(_worldFuture, "getLocations", [["base" ARG "outpost" ARG "roadblock"]]) select { 
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", [[LOCATION_TYPE_BASE ARG LOCATION_TYPE_OUTPOST ARG LOCATION_TYPE_ROADBLOCK]]) select { 
 			// Must not have any of our garrisons already present (or this would be reinforcement action)
 			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
 		};
@@ -241,7 +241,7 @@ CLASS("CmdrAI", "")
 				private _tgtPos = GETV(_x, "pos");
 				private _tgtType = GETV(_x, "type");
 				private _dist = _srcPos distance _tgtPos;
-				if((_tgtType == "roadblock" and _dist < 3000) or (_tgtType != "roadblock" and _dist < 10000)) then {
+				if((_tgtType == LOCATION_TYPE_ROADBLOCK and _dist < 3000) or (_tgtType != LOCATION_TYPE_ROADBLOCK and _dist < 10000)) then {
 					private _params = [_srcId, _tgtId];
 					_actions pushBack (NEW("TakeLocationCmdrAction", _params));
 				};
@@ -294,11 +294,10 @@ CLASS("CmdrAI", "")
 			private _srcPos = GETV(_x, "pos");
 
 			// Take tgt locations from future, so we take into account all in progress actions.
-			private _tgtLocations = CALLM(_worldNow, "getNearestLocations", [_srcPos ARG 2000 ARG ["city"]]) apply { 
+			private _tgtLocations = CALLM(_worldNow, "getNearestLocations", [_srcPos ARG 2000 ARG [LOCATION_TYPE_CITY]]) apply { 
 				_x params ["_dist", "_loc"];
 				[_srcPos getDir GETV(_loc, "pos"), GETV(_loc, "id")]
 			};
-			diag_log _tgtLocations;
 			if(count _tgtLocations > 0) then {
 				_tgtLocations sort ASCENDING;
 				private _routeTargets = _tgtLocations apply {
@@ -306,7 +305,6 @@ CLASS("CmdrAI", "")
 					[TARGET_TYPE_LOCATION, _locId]
 				};
 				private _params = [_srcId, _routeTargets];
-				diag_log _params;
 				_actions pushBack (NEW("PatrolCmdrAction", _params));
 			};
 		} forEach _srcGarrisons;
@@ -458,8 +456,8 @@ CLASS("CmdrAI", "")
 		if(_priority != -1) then {
 			// Sync before planning
 			CALLM(_world, "sync", []);
-
-			CALLM(_world, "updateThreatMaps", []);
+			// Update grids etc.
+			CALLM(_world, "update", []);
 			T_CALLM("_plan", [_world ARG _priority]);
 
 			// Make it after planning so we get a gap

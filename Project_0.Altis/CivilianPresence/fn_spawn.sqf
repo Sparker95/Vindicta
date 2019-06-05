@@ -32,7 +32,7 @@ _module spawn{
 		if (_active) then{
 			//spawn in units when module is active and total number is not reached.
 			if (count _units < _maxUnits) then{
-				private _unit = ["createUnit",[_module]] call bis_fnc_moduleCivilianPresence;
+				private _unit = _module call CivPresence_fnc_createUnit;
 				_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, 1, true]; // Set a variable on the created unit
 				if (!isNull _unit) then {_units pushBack _unit};
 			};

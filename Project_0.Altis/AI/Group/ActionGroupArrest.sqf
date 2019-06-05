@@ -1,3 +1,8 @@
+#define OOP_INFO
+#define OOP_ERROR
+#define OOP_WARNING
+#define OOP_DEBUG
+#define OFSTREAM_FILE "ArrestAction.rpt"
 #include "common.hpp"
 
 /*
@@ -34,7 +39,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
 
 		// Set behaviour
-		pr _hG = GETV(_thisObject, "hG");
+		pr _hG = T_GETV("hG");
 		_hG setBehaviour "AWARE";
 		_hG setSpeedMode "NORMAL";
 		{_x doFollow (leader _hG)} forEach (units _hG);
@@ -47,7 +52,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _unit = selectRandom _groupUnits;
 		OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
 
-		if !(isNil "_unit") then {
+		if (_unit != "") then {
 			pr _unitAI = CALLM0(_unit, "getAI");
 			pr _parameters = [["target", _target]];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
@@ -64,9 +69,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		params [["_thisObject", "", [""]]];
 
 		OOP_INFO_0("ActionGroupArrest: Processing.");
-		
-		//CALLM0(_thisObject, "failIfEmpty");
-		
+
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
 
 		if (_state == ACTION_STATE_ACTIVE) then {
@@ -88,16 +91,12 @@ CLASS("ActionGroupArrest", "ActionGroup")
 	// Handle unit being killed/removed from group during action
 	METHOD("handleUnitsRemoved") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-
 		T_SETV("state", ACTION_STATE_FAILED);
-		
 	} ENDMETHOD;
 
 	METHOD("handleUnitsAdded") {
 		params [["_thisObject", "", [""]], ["_units", [], [[]]]];
-		
 		T_SETV("state", ACTION_STATE_REPLAN);
-
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied

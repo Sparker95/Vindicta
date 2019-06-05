@@ -60,7 +60,8 @@ class JN {
 	
 	class Fuel {
 		file = "JeroenArsenal\Fuel";
-		class fuel_init {preinit = 1;};
+		class fuel_init {postinit = 1;};
+		class fuel_vehicleInit {};
 		class fuel_consumption_init {postInit = 1;};
 		class fuel_consumption_start {};
 		class fuel_consumption_stop {};

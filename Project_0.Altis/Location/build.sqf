@@ -60,15 +60,15 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 			_roadblockType = "country";
 		} else {
 			// Some walls around, it's a city roadblock
-			_roadblockType = "city";
+			_roadblockType = LOCATION_TYPE_CITY;
 		};
 	} else {
-		_roadblockType = "city";
+		_roadblockType = LOCATION_TYPE_CITY;
 	};
 
 	// Estimate if it's highway or not
 	pr _isHighway = (_roadWidth > 0.5*(ROAD_WIDTH_MEDIUM + ROAD_WIDTH_BIG));
-	pr _isCity = _roadblockType == "city";
+	pr _isCity = _roadblockType == LOCATION_TYPE_CITY;
 
 	// Select the right file with the composition
 	pr _files = [

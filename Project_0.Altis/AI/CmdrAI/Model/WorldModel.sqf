@@ -20,7 +20,9 @@ CLASS("WorldModel", "")
 
 	VARIABLE("lastGridUpdate");
 
-	VARIABLE("reinforceRequiredScoreCache");
+	VARIABLE("cachedGlobalEff");
+	VARIABLE("cachedGlobalEffDesired");
+	// VARIABLE("reinforceRequiredScoreCache");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_type")];
@@ -49,7 +51,7 @@ CLASS("WorldModel", "")
 			T_SETV("activityGrid", objNull);
 		};
 
-		T_SETV("reinforceRequiredScoreCache", []);
+		//T_SETV("reinforceRequiredScoreCache", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -76,19 +78,6 @@ CLASS("WorldModel", "")
 	// ----------------------------------------------------------------------
 	// |                       C O P Y / U P D A T E                        |
 	// ----------------------------------------------------------------------
-
-	METHOD("sync") {
-		params [P_THISOBJECT];
-
-		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
-
-		// sync existing locations
-		{ CALLM(_x, "sync", []); } forEach T_GETV("locations");
-
-		// sync existing clusters
-		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
-
-	} ENDMETHOD;
 
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_NUMBER("_type")];
@@ -124,21 +113,23 @@ CLASS("WorldModel", "")
 		_worldCopy
 	} ENDMETHOD;
 
-	METHOD("updateThreatMaps") {
+	METHOD("sync") {
 		params [P_THISOBJECT];
 
-		// private _new_grid = [] call ws_fnc_newGridArray;
-		// [] call ws_fnc_unplotGrid;
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
-		// for "_i" from 0 to 5 + random(20) do {
-		// 	private _pos = [] call BIS_fnc_randomPos;
+		// sync existing locations
+		{ CALLM(_x, "sync", []); } forEach T_GETV("locations");
 
-		// 	for "_j" from 0 to 5 + random(20) do {
-		// 		private _pos2 = [[[_pos, 1000]]] call BIS_fnc_randomPos;
-		// 		[_new_grid, _pos2 select 0, _pos2 select 1, 10 * (sqrt (1 + random(100)))] call ws_fnc_setValue; 
-		// 	};
-		// };
+		// sync existing clusters
+		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
 
+	} ENDMETHOD;
+
+	METHOD("update") {
+		params [P_THISOBJECT];
+
+		// Update grids
 		T_PRVAR(rawThreatGrid);
 		T_PRVAR(rawActivityGrid);
 
@@ -147,17 +138,16 @@ CLASS("WorldModel", "")
 		// Damage fades to 50% over 7 hours or so
 		// https://www.desmos.com/calculator/iyesusko7z
 		#define THREAT_FADE_RATE 0.93
-		#define ACTIVITY_FADE_RATE 0.99
+		#define ACTIVITY_FADE_RATE 0.98
 		#define FADE_RATE_PERIOD 360
-		#define POW(a, b) (exp ((b) * log (a)))
 
 		T_PRVAR(lastGridUpdate);
 		private _dt = TIME_NOW - _lastGridUpdate;
 		T_SETV("lastGridUpdate", TIME_NOW);
 
-		private _threatFade = POW(THREAT_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		private _threatFade = THREAT_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
-		private _activityFade = POW(ACTIVITY_FADE_RATE, _dt / FADE_RATE_PERIOD);
+		private _activityFade = ACTIVITY_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
 		CALLM(_rawActivityGrid, "fade", [_activityFade]);
 
 		#define THREAT_GRID_CLUSTER_OVERSIZE 500
@@ -165,7 +155,6 @@ CLASS("WorldModel", "")
 			private _pos = GETV(_x, "pos") apply { _x - THREAT_GRID_CLUSTER_OVERSIZE };
 			private _size = GETV(_x, "size") apply { _x + 2 * THREAT_GRID_CLUSTER_OVERSIZE };
 			private _threat = GETV(_x, "efficiency");
-			private _damage = GETV(_x, "damage");
 			CALLM(_rawThreatGrid, "maxRect", [_pos ARG _size ARG _threat]);
 		} forEach T_CALLM("getAliveClusters", []);
 
@@ -178,23 +167,11 @@ CLASS("WorldModel", "")
 		};
 
 #ifdef DEBUG_CMDRAI
-		//CALLM(_threatGrid, "unplot", []);
 		CALLM(_threatGrid, "plot", [20 ARG false ARG "SolidFull" ARG ["ColorGreen" ARG "ColorYellow" ARG "ColorBlue"] ARG [0.02 ARG 0.5]]);
-		//CALLM(_activityGrid, "unplot", []);
 		CALLM(_activityGrid, "plot", [20 ARG false ARG "DiagGrid" ARG ["ColorGreen" ARG "ColorPink" ARG "ColorBlue"] ARG [0.1 ARG 1]]);
 #endif
-		// private _aliveGarrisons = T_CALLM("getAliveGarrisons", []);
 
-		// private _threatGridOpfCopy = [] call ws_fnc_newGridArray;
-		// [_threatGridOpfCopy, _threatGridOpf] call ws_fnc_copyGrid;
-		// {
-		// 	private _pos = CALLM0(_x, "getPos");
-		// 	private _strength = CALLM0(_x, "getStrength");
-		// 	[_threatGridOpfCopy, _pos#0, _pos#1, _strength] call ws_fnc_setValue;
-		// } forEach (_aliveGarrisons select { CALLM0(_x, "getSide") == side_guer });
-
-		// [_threatGridOpfCopy, _threatGridOpf] call ws_fnc_filterSmooth;
-		// [_threatGridOpf, 100] call ws_fnc_plotGrid;
+		// Update location desireability
 	} ENDMETHOD;
 
 	METHOD("getThreat") { // thread-safe
@@ -207,12 +184,6 @@ CLASS("WorldModel", "")
 			T_PRVAR(activityGrid);
 
 			_threat = EFF_SUM(CALLM(_threatGrid, "getValue", [_pos])) + CALLM(_activityGrid, "getValue", [_pos]);
-
-			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			// CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
-
-			// CALLM(_threatGrid, "smooth5x5", []);
-			// CALLM(_activityGrid, "smooth5x5", []);
 		};
 		_threat
 	} ENDMETHOD;
@@ -353,7 +324,7 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getNearestGarrisons") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
+		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeFactions"), P_ARRAY("_excludeFactions")];
 
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
 		private _nearestGarrisons = [];
@@ -439,7 +410,7 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("getNearestLocations") {
-		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
+		params [P_THISOBJECT, P_POSITION("_center"), P_NUMBER("_maxDist"), P_ARRAY("_includeTypes"), P_ARRAY("_excludeTypes")];
 
 		//T_PRVAR(locations);
 		// TODO: optimize obviously, use spatial partitioning, probably just a grid? Maybe quad tree..
@@ -571,9 +542,11 @@ CLASS("WorldModel", "")
 	METHOD("resetScoringCache") {
 		params [P_THISOBJECT];
 		T_PRVAR(garrisons);
-		private _cache = [];
-		_cache resize (count _garrisons);
-		T_SETV("reinforceRequiredScoreCache", _cache);
+		//private _cache = [];
+		//_cache resize (count _garrisons);
+		T_SETV("cachedGlobalEff", nil);
+		T_SETV("cachedGlobalEffDesired", nil);
+		//T_SETV("reinforceRequiredScoreCache", _cache);
 	} ENDMETHOD;
 	
 	// METHOD("clearScoringCacheForGarrison") {
@@ -581,6 +554,42 @@ CLASS("WorldModel", "")
 	// 	T_PRVAR("garrisonsReinf")
 	// 	T_SETV("reinforceRequiredScoreCache", []);
 	// } ENDMETHOD;
+
+	METHOD("getGlobalEff") {
+		params [P_THISOBJECT];
+		T_PRVAR(cachedGlobalEff);
+		if(isNil "_cachedGlobalEff") exitWith {
+			private _cachedGlobalEff = EFF_ZERO;
+			{
+				_cachedGlobalEff = EFF_ADD(_cachedGlobalEff, _x);
+			} forEach (T_CALLM("getAliveGarrisons", [["military"]]) apply { GETV(_x, "efficiency") });
+			T_SETV("cachedGlobalEff", _cachedGlobalEff);
+			_cachedGlobalEff
+		};
+		_cachedGlobalEff
+	} ENDMETHOD;
+	
+	METHOD("getGlobalEffDesired") {
+		params [P_THISOBJECT];
+		T_PRVAR(cachedGlobalEffDesired);
+		if(isNil "_cachedGlobalEffDesired") exitWith {
+			private _cachedGlobalEffDesired = EFF_ZERO;
+			{
+				private _effRequiredAtPos = T_CALLM("getDesiredEff", [_x]);
+				_cachedGlobalEffDesired = EFF_ADD(_cachedGlobalEffDesired, _effRequiredAtPos);
+			} forEach (T_CALLM("getAliveGarrisons", [["military"]]) apply { GETV(_x, "pos") });
+			T_SETV("cachedGlobalEffDesired", _cachedGlobalEffDesired);
+			_cachedGlobalEffDesired
+		};
+		_cachedGlobalEffDesired
+	} ENDMETHOD;
+	
+	METHOD("getGlobalEffDeficit") {
+		params [P_THISOBJECT];
+		private _total = T_CALLM("getGlobalEff", []);
+		private _desired = T_CALLM("getGlobalEffDesired", []);
+		EFF_DIFF(_desired, _total)
+	} ENDMETHOD;
 
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
@@ -813,10 +822,10 @@ ENDCLASS;
 ["WorldModel.getNearestGarrisons", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison1 = NEW("GarrisonModel", [_world]);
-	SETV(_garrison1, "pos", [500, 0, 0]);
+	SETV(_garrison1, "pos", [500 ARG 0 ARG 0]);
 	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
 	private _garrison2 = NEW("GarrisonModel", [_world]);
-	SETV(_garrison2, "pos", [1000, 0, 0]);
+	SETV(_garrison2, "pos", [1000 ARG 0 ARG 0]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	private _center = [0,0,0];
 	["Dist test none", count CALLM(_world, "getNearestGarrisons", [_center ARG 1]) == 0] call test_Assert;
@@ -829,9 +838,9 @@ ENDCLASS;
 ["WorldModel.getNearestLocations", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _location1 = NEW("LocationModel", [_world]);
-	SETV(_location1, "pos", [500, 0, 0]);
+	SETV(_location1, "pos", [500 ARG 0 ARG 0]);
 	private _location2 = NEW("LocationModel", [_world]);
-	SETV(_location2, "pos", [1000, 0, 0]);
+	SETV(_location2, "pos", [1000 ARG 0 ARG 0]);
 	private _center = [0,0,0];
 	["Dist test none", count CALLM(_world, "getNearestLocations", [_center ARG 1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestLocations", [_center ARG 501]) == 1] call test_Assert;
