@@ -40,6 +40,7 @@ CLASS(CLASS_NAME, "")
 		// bottom panel
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["ButtonDown", { params ['_control']; CALLSM(CLASS_NAME, "onButtonDownAddFriendlyGroup", [_control]) }];
 
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
@@ -70,6 +71,29 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("onButtonDownCreateCamp") {
 		params ["_thisClass", "_control"];
 		[player] call fnc_createCamp;
+	} ENDMETHOD;
+
+	STATIC_METHOD("onButtonDownAddFriendlyGroup") {
+		params ["_thisClass", "_control"];
+
+		pr _mapDisplay = findDisplay 12;
+
+		// Get currently selected marker
+		pr _mapMarker = GETSV(CLASS_NAME, "currentMapMarker");
+		if (_mapMarker == "") exitWith {
+			(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText "You must select a location marker first!";
+		};
+
+		// Get location of this map marker
+		pr _loc = GETV(GETV(_mapMarker, "intel"), "location");
+
+		if (_loc == "") exitWith {};
+
+		// Post method to commander thread to add a group
+		private _AI = CALLSM1("AICommander", "getCommanderAIOfSide", WEST);
+		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc ARG 5]);
+
+		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText "A friendly group has been added to the location!";
 	} ENDMETHOD;
 
 	/*

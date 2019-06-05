@@ -102,7 +102,7 @@ class CMUI_BPANEL_BUTTON_1 : MUI_BUTTON_TXT
     x = safeZoneX + safeZoneW * 0.33;
     y = safeZoneY + safeZoneH * 0.943;
     w = safeZoneW * 0.11;
-    text = "FAST TRAVEL";
+    text = "ADD FRIENDLY GROUP"; //"FAST TRAVEL";
 };
 
 class CMUI_BPANEL_BUTTON_2 : MUI_BUTTON_TXT 
