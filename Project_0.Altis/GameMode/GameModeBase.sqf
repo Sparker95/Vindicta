@@ -164,7 +164,7 @@ CLASS("GameModeBase", "")
 			// Create vehicles in civilian area for player to steal
 			if(_type == LOCATION_TYPE_CITY) then {
 				private _gar = NEW("Garrison", [CIVILIAN]);
-				private _maxCars = 3 + 10 * ln(0.01 * _radius + 1);
+				private _maxCars = 3 max (15 min (0.02 * _radius));
 				for "_i" from 0 to _maxCars do {
 					private _newUnit = NEW("Unit", [tCIVILIAN ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 					CALLM(_gar, "addUnit", [_newUnit]);
