@@ -35,7 +35,7 @@ POLICE templates for ARMA III
 _veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, [
-	"C_Hatchback_01_sport_F",
+    "C_Hatchback_01_sport_F",
     "C_Hatchback_01_F",
     "C_Truck_02_box_F",
     "C_Truck_02_fuel_F",
