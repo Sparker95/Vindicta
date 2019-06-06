@@ -509,6 +509,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	Returns: Array, [_pos, _dir]
 	*/
+	#define ROAD_DIR_LIMIT 15
+
 	STATIC_METHOD("findSafePosOnRoad") {
 		params ["_thisClass", ["_startPos", [], [[]]], ["_className", "", [""]] ];
 
@@ -530,34 +532,32 @@ CLASS("Location", "MessageReceiverEx")
 					private _rct = roadsConnectedTo _road;
 					// TODO: we can preprocess spawn locations better than this probably.
 					// Need a connected road (this is guaranteed probably?)
-					if (count _rct > 0 and 
-						// Avoid spawning on a person or another car
-						{count (nearestObjects [getPos _road, ["LandVehicle", "Man"], 10]) == 0} and 
-						// Avoid spawning too close to a junction
-						{{ count (roadsConnectedTo _x) > 2} count ((getPos _road) nearRoads 10) == 0}) then { // We better don't use terminal road pieces
+					// Avoid spawning too close to a junction
+					if(count _rct > 0) then {
+						private _dir = _road getDir _rct#0;
+						if ({
+								private _rctOther = roadsConnectedTo _x;
+								if(count _rctOther == 0) exitWith { false };
+								private _dirOther = _x getDir _rctOther#0;
+								private _relDir = _dir - _dirOther;
+								if(_relDir < 0) then { _relDir = _relDir + 360 };
+								(_relDir > ROAD_DIR_LIMIT and _relDir < 180-ROAD_DIR_LIMIT) or (_relDir > 180+ROAD_DIR_LIMIT and _relDir < 360-ROAD_DIR_LIMIT)
+							} count ((getPos _road) nearRoads 25) == 0) then {
+							// Check position if it's safe
 
-						// Check position if it's safe
-						private _dir = _road getDir (_rct select 0);
-						// Get Z component of ATL height from two nearest road pieces
-						// private _z0 = (getPosASL (_rct select 0)) select 2;
-						// private _z1 = (getPosASL (_rct select 1)) select 2;
-						// private _posRoad = getPosASL _road;
-						//_posRoad set [2, 0.5*(_z0 + _z1)];
-						//_posRoad = ASLToATL _posRoad;
-						private _posRoad = getPos _road;
-						
-						private _foundSafePos = [];
-						for "_offs" from 2 to 8 step 2 do {
-							// Find offset position away from center of road
-							private _spawnPos = [_posRoad, _offs, _dir + 90] call BIS_Fnc_relPos;
-							if(!CALLSM3("Location", "isPosSafe", _spawnPos, _dir, _className)) exitWith {};
-							_foundSafePos = _spawnPos;
-						};
-
-						//diag_log format ["--- road: %1, pos atl: %2", _road, getPosATL _road];
-						if (!(_foundSafePos isEqualTo [])) then {
-							_return = [_foundSafePos, _dir];
-							_found = true;
+							private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
+							// Move to the edge
+							private _pos = [getPos _road, _width - 3, _dir + (selectRandom [90, 270]) ] call BIS_Fnc_relPos;
+							// Move up and down the street a bit
+							_pos = [_pos, _width * 0.5, _dir + (selectRandom [0, 180]) ] call BIS_Fnc_relPos;
+							// Perturb the direction a bit
+							private _dirPert = _dir + random [-20, 0, 20] + (selectRandom [0, 180]);
+							// Perturb the position a bit
+							private _posPert = _pos vectorAdd [random [-1, 0, 1], random [-1, 0, 1], 0];
+							if(CALLSM3("Location", "isPosEvenSafer", _posPert, _dirPert, _className)) then {
+								_return = [_posPert, _dirPert];
+								_found = true;
+							};
 						};
 					};
 					_i = _i + 1;
@@ -585,12 +585,12 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: [_pos, _dir]
 	*/
 	STATIC_METHOD("findSafeSpawnPos") {
-		params ["_thisObject", ["_className", "", [""]], ["_startPos", [], [[]]]];
+		params ["_thisClass", ["_className", "", [""]], ["_startPos", [], [[]]]];
 
 		private _found = false;
 		private _searchRadius = 50;
-		pr _posAndDir = [];
-		while {!_found} do {
+		pr _posAndDir = [_startPos, 0];
+		while {!_found and _searchRadius < 2000} do {
 			for "_i" from 0 to 16 do {
 				pr _pos = _startPos vectorAdd [-_searchRadius + random(2*_searchRadius), -_searchRadius + random(2*_searchRadius), 0];
 				if (CALLSM3("Location", "isPosSafe", _pos, 0, _className) && ! (surfaceIsWater _pos)) exitWith {
@@ -700,6 +700,10 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Checks if given position is safe to spawn a vehicle here
 	STATIC_METHOD_FILE("isPosSafe", "Location\isPosSafe.sqf");
+
+	// Checks if given position is even safer to spawn a vehicle here (conservative, doesn't allow spawning 
+	// in buildings etc.)
+	STATIC_METHOD_FILE("isPosEvenSafer", "Location\isPosEvenSafer.sqf");
 
 	// Returns the nearest location to given position and distance to it
 	STATIC_METHOD_FILE("getNearestLocation", "Location\getNearestLocation.sqf");

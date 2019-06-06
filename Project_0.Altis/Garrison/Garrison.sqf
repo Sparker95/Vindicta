@@ -333,9 +333,10 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
-			T_CALLM("updateSpawnState", []); 
+			T_CALLM("updateSpawnState", []);
+
 			// If we are empty except for vehicles then we must abandon them
-			if(T_CALLM("isOnlyEmptyVehicles", [])) then {
+			if(T_GETV("side") != CIVILIAN and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
@@ -1771,7 +1772,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
-			+T_EFF_null
 		};
 
 		// Call handleUnitKilled of the group of this unit
@@ -1823,7 +1823,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
-			+T_EFF_null
 		};
 
 		// Get garrison of the unit that entered the vehicle

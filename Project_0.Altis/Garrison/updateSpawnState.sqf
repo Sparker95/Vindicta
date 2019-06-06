@@ -31,7 +31,11 @@ pr _thisPos = if (_loc == "") then {
 pr _speedMax = 200;
 
 // Get distances to all garrisons of other sides
-pr _garrisonDist = CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side]]) apply {CALLM(_x, "getPos", []) distance _thisPos};
+pr _garrisonDist = if(_side != CIVILIAN) then {
+		CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM(_x, "getPos", []) distance _thisPos}
+	} else {
+		[]
+	};
 pr _dstMin = if (count _garrisonDist > 0) then {selectMin _garrisonDist} else {_dstSpawnMax};
 // Double check unit distances as well
 if(_dstMin >= _dstSpawnMax) then {

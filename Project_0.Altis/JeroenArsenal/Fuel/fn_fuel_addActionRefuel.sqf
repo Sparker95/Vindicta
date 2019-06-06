@@ -20,7 +20,7 @@
 params["_vehicle","_fuelCargoCapacity",["_fuelCargo",0]];
 
 //check if it already has a action
-if !isnil(_vehicle getVariable "refuelAction_id")exitWith{diag_log ("JN_fuel already init for object: "+str _vehicle)};
+if (!isnil{ _vehicle getVariable "refuelAction_id" }) exitWith{diag_log ("JN_fuel already init for object: "+str _vehicle)};
 
 pr _id = _vehicle addaction [
 	"place holder",

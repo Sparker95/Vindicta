@@ -24,6 +24,7 @@ tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
 tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
 tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 tPOLICE = call compile preprocessFileLineNumbers "Templates\POLICE.sqf";
+tCIVILIAN = call compile preprocessFileLineNumbers "Templates\CIVILIAN.sqf";
 
 
 // Initialize GameModes
