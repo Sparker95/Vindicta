@@ -34,7 +34,7 @@ POLICE templates for ARMA III
 //==== Vehicles ====
 _veh = [];
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, [
+_veh set [T_VEH_default, [
     "C_Hatchback_01_sport_F",
     "C_Hatchback_01_F",
     "C_Truck_02_box_F",
@@ -51,8 +51,29 @@ _veh set [T_VEH_DEFAULT, [
     "C_Van_02_medevac_F",
     "C_Van_02_vehicle_F",
     "C_Van_02_service_F",
-    "C_Van_02_transport_F"]];
-
+    "C_Van_02_transport_F"
+]];
+_vehWeights = [];
+_vehWeights set [T_VEH_SIZE-1, nil];
+_vehWeights set [T_VEH_default, [
+    5, /* "C_Hatchback_01_sport_F" */
+    20, /* "C_Hatchback_01_F" */
+    3, /* "C_Truck_02_box_F" */
+    0.1, /* "C_Truck_02_fuel_F" */
+    10, /* "C_Offroad_02_unarmed_F" */
+    0.1, /* "C_Van_01_fuel_F" */
+    3, /* "C_Truck_02_transport_F" */
+    3, /* "C_Truck_02_covered_F" */
+    5, /* "C_Offroad_01_F" */
+    0.1, /* "C_Offroad_01_repair_F" */
+    1, /* "C_Quadbike_01_F" */
+    3, /* "C_SUV_01_F" */
+    1, /* "C_Van_01_transport_F" */
+    1, /* "C_Van_02_medevac_F" */
+    1, /* "C_Van_02_vehicle_F" */
+    1, /* "C_Van_02_service_F" */
+    1 /* "C_Van_02_transport_F" */
+]];
 // _veh set [T_VEH_car_unarmed, ["B_MRAP_01_F"]];
 // _veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]];
 // _veh set [T_VEH_MRAP_unarmed, ["B_MRAP_01_F"]];
@@ -132,12 +153,12 @@ _veh set [T_VEH_DEFAULT, [
 //==== Set arrays ====
 _array = [];
 
-_array set [T_SIZE-1, nil]; //Make an array having the size equal to the number of categories first
+_array set [T_SIZE*2-1, nil]; //Make an array having the size equal to the number of categories first
 
 _array set [T_INF, []];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
 _array set [T_GROUP, []];
-
+_array set [T_VEH+T_WEIGHTS_OFFSET, _vehWeights];
 
 _array

@@ -128,7 +128,11 @@ private _o = nearestObjects [_pos, [], 15, true] - (_pos nearRoads 15);
 
 _o findIf {
 	//private _className = typeOf _x;
+	#ifndef _SQF_VM
 	private _bbox = 0 boundingBoxReal _x;
+	#else
+	private _bbox = [[0,0,0],[1,1,1],1];
+	#endif
 	// if(_className != "") then {
 	// 	[_className] call misc_fnc_boundingBoxReal
 	// } else {

@@ -186,7 +186,7 @@ CLASS("GameModeBase", "")
 					};
 				};
 			} forEach gCommanders;
-		} forEach GET_STATIC_VAR("Location", "alwl");
+		} forEach GET_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------

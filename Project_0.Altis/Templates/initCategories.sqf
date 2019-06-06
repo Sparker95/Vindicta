@@ -15,6 +15,7 @@ Author: Sparker 08.2017
 */
 
 T_SIZE = 4; //Number of categories in template
+T_WEIGHTS_OFFSET = 4; //Number of categories in template
 
 T_INF = 0;			//The ID of this category
 T_INF_SIZE = 34;	//The size of this category
