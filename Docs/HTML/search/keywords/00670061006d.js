@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("gam",["Class"],[["GameModeBase",,[[,,,,0,"File:GameMode/initLocations.sqf:GameModeBase","SQFClass:GameModeBase"]]]]);

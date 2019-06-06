@@ -85,6 +85,11 @@
  <div class="CBody"><p>Returns the leader of the group.&nbsp; !!! Warning: might return a dead unit!</p><p>Returns: <a href="../../index.html#File:Unit/Unit.sqf:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> object</p></div>
 </div>
 
+<a name="Group.setLeader"></a><a name="Topic52"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">setLeader</div>
+ <div class="CBody"><p>Sets the leader of this group to a specified Unit. The Unit must belong to this group.</p></div>
+</div>
+
 <a name="Group.setGarrison"></a><a name="Topic256"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setGarrison</div>
  <div class="CBody"><p>Sets the <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> of this garrison.&nbsp; Use <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison.addGroup" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,225);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison.addGroup</a> to add a group to a garrison.</p><p>Access: internal use.</p><p>Parameters: _garrison</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a></p></td></tr></table><p>Returns: nil</p></div>
@@ -135,9 +140,9 @@
  <div class="CBody"><p>Spawns all the units in this group at specified location.</p><p>Parameters: _loc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_loc</td><td class="CDLDefinition"><p><a href="../../index.html#File:Location/Location.sqf:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> where the group will spawn.</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="Group.spawnVehiclesOnRoad"></a><a name="Topic572"></a><div class="CTopic TFunction LSQF">
+<a name="Group.spawnVehiclesOnRoad"></a><a name="Topic59"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">spawnVehiclesOnRoad</div>
- <div class="CBody"><p>Spawns vehicles in this group specified positions, one after another. Infantry units are spawned nearby.&nbsp; This function is intended for vehicle groups to spawn them on a road.</p><p>Parameters: _vehPosAndDir, _startPos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_vehPosAndDir</td><td class="CDLDefinition"><p>array of [_pos, _dir] where vehicles will be spawned.</p></td></tr><tr><td class="CDLEntry">_startPos</td><td class="CDLDefinition"><p>optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Spawns vehicles in this group specified positions, one after another. Infantry units are spawned nearby.&nbsp; This function is intended for vehicle groups to spawn them on a road.</p><p>Parameters: _vehPosAndDir, _startPos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_vehPosAndDir</td><td class="CDLDefinition"><p>array of [_posATL, _dir] where vehicles will be spawned.</p></td></tr><tr><td class="CDLEntry">_startPos</td><td class="CDLDefinition"><p>positoon ATL, optional, if used, then _vehPosAndDir will be ignored and the function will find positions on road on its own.</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 <a name="Group.spawnAtPos"></a><a name="Topic573"></a><div class="CTopic TFunction LSQF">

@@ -819,7 +819,7 @@ CLASS("AICommander", "AI")
 		// Create some infantry group
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 		CALLM2(_group, "createUnitsFromTemplate", tGUERILLA, T_GROUP_inf_rifle_squad);
-		CALLM1(_gar, "addGroup", _group);
+		CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
 
 		// That's all!
 	} ENDMETHOD;

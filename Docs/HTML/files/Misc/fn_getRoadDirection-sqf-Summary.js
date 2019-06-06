@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Misc/fn_getRoadDirection.sqf","fn_getRoadDirection.sqf");NDSummary.OnSummaryLoaded("File:Misc/fn_getRoadDirection.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[691,0,1,"Functions","Functions"],[692,0,0,"misc_fnc_getRoadDirection","misc_fnc_getRoadDirection"]]);

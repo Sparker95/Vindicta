@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:Intel/UnitIntel.sqf",{676:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Call it on server.&nbsp; It initializes intel on some unit</div></div>",677:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Call it on player\'s computer when he respawns to to add actions to player to take intel items</div></div>"});

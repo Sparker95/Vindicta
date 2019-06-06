@@ -37,6 +37,21 @@
  <div class="CBody"><p>Updates an intel item in this database from a source intel item, if there is an intel item linked to such source item.</p><p>Parameters: _srcItem</p><table class="CDefinitionList"><tr><td class="CDLEntry">_srcItem</td><td class="CDLDefinition"><p>the <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item to update from</p></td></tr></table><p>Returns: Bool, true if the item was updated, false if the item with given source doesn't exist in this database.</p></div>
 </div>
 
+<a name="IntelDatabase.addIntelClone"></a><a name="Topic698"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">addIntelClone</div>
+ <div class="CBody"><p>Adds item to the database and returns a modifiable clone.&nbsp; Don't modify _item after passing it in, modify the clone instead.&nbsp; Parameters: _item</p><table class="CDefinitionList"><tr><td class="CDLEntry">_item</td><td class="CDLDefinition"><p><a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item</p></td></tr></table><p>Returns: clone of _item that can be used in further updateIntelFromClone operations.</p></div>
+</div>
+
+<a name="IntelDatabase.updateIntelFromClone"></a><a name="Topic699"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">updateIntelFromClone</div>
+ <div class="CBody"><p>Updates item in this database from a modified clone previously returned by addIntelClone</p><p>Parameters: _item</p><table class="CDefinitionList"><tr><td class="CDLEntry">_item</td><td class="CDLDefinition"><p><a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object returned by addIntelClone.</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
+<a name="IntelDatabase.removeIntelForClone"></a><a name="Topic700"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">removeIntelForClone</div>
+ <div class="CBody"><p>Deletes an item from this database. Doesn't delete the item object from memory.</p><p>Parameters: _item</p><table class="CDefinitionList"><tr><td class="CDLEntry">_item</td><td class="CDLDefinition"><p>the <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item to delete</p></td></tr></table><p>Returns: nil</p></div>
+</div>
+
 <a name="IntelDatabase.queryIntel"></a><a name="Topic611"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">queryIntel</div>
  <div class="CBody"><p>Returns an array of <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> objects in this database that match a query.&nbsp; The algorithm checks if all non-nil member variables of _queryItem are equal to the same member variables in</p><p>Parameters: _queryItem</p><table class="CDefinitionList"><tr><td class="CDLEntry">_queryItem</td><td class="CDLDefinition"><p>the <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object</p></td></tr></table><p>Returns: Array of <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> objects</p></div>
@@ -50,6 +65,16 @@
 <a name="IntelDatabase.isIntelAdded"></a><a name="Topic613"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isIntelAdded</div>
  <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object exists in this intel database</p><p>Parameters: _item</p><table class="CDefinitionList"><tr><td class="CDLEntry">_item</td><td class="CDLDefinition"><p>the <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object</p></td></tr></table><p>Returns: Bool</p></div>
+</div>
+
+<a name="IntelDatabase.isIntelAddedFromSource"></a><a name="Topic701"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isIntelAddedFromSource</div>
+ <div class="CBody"><p>Returns true if given <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object is a source of an existing <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object in this database</p><p>Parameters: _item</p><table class="CDefinitionList"><tr><td class="CDLEntry">_item</td><td class="CDLDefinition"><p>the <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object</p></td></tr></table><p>Returns: Bool</p></div>
+</div>
+
+<a name="IntelDatabase.getIntelFromSource"></a><a name="Topic702"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getIntelFromSource</div>
+ <div class="CBody"><p>Returns an existing <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object in this database which is sourced by the given <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object</p><p>Parameters: _item</p><table class="CDefinitionList"><tr><td class="CDLEntry">_item</td><td class="CDLDefinition"><p>the <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object</p></td></tr></table><p>Returns: <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> object or &quot;&quot; if such there is no object sourced by the passed object</p></div>
 </div>
 
 <a name="IntelDatabase.getAllIntel"></a><a name="Topic614"></a><div class="CTopic TFunction LSQF">

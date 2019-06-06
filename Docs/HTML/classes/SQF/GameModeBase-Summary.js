@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:GameModeBase","GameModeBase");NDSummary.OnSummaryLoaded("SQFClass:GameModeBase",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[388,0,0,"GameModeBase"],[389,0,2,"Functions","Functions"],[559,0,1,"initLocations","initLocations"]]);

@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("File:GarbageCollector/GarbageCollector.sqf",{672:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">This class deals with deleting destroyed objects/units.</div></div>",674:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Adds a unit to this garbage collector.</div></div>"});

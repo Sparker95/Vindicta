@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Location/updateWaypoints.sqf","updateWaypoints.sqf");NDSummary.OnSummaryLoaded("File:Location/updateWaypoints.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[679,0,0,"Location","Location"],[680,0,2,"Functions","Location.Functions"],[681,0,1,"setBorder","Location.setBorder"]]);

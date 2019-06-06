@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("File:Intel/UnitIntel.sqf","UnitIntel.sqf");NDSummary.OnSummaryLoaded("File:Intel/UnitIntel.sqf",[["SQF","SQF"]],[["Functions","Function"],["Groups","Group"]],[[675,0,1,"Functions","Functions"],[676,0,0,"(static)initUnit","(static)initUnit"],[677,0,0,"(static)initPlayer","(static)initPlayer"]]);

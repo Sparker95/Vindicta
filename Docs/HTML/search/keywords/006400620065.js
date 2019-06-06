@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("dbe",["Variable"],[["dbEntry",,[["Intel",,,,0,"File:Intel/Intel.sqf:Intel.dbEntry","SQFClass:Intel:dbEntry"]]]]);
