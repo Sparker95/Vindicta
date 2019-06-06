@@ -1,3 +1,4 @@
+#include "..\OOP_Light\OOP_Light.h"
 /*
 Select a random classname from subcategory from a category from a template array
 parameters:
@@ -6,8 +7,6 @@ _className - string, random classname
 _classID - number, the ID of the classname.
 [, -1] if nothing found
 */
-
-#include "..\OOP_Light\OOP_Light.h"
 
 params ["_template", "_catID", "_subcatID"];
 
