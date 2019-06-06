@@ -1,1 +1,0 @@
-NDFramePage.OnPageTitleLoaded("File:Location/setBorder.sqf","setBorder.sqf");NDSummary.OnSummaryLoaded("File:Location/setBorder.sqf",[["SQF","SQF"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[274,0,0,"Location","Location"],[275,0,2,"Functions","Location.Functions"],[276,0,1,"setBorder","Location.setBorder"]]);

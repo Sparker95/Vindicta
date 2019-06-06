@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:PersonalInventory","PersonalInventory");NDSummary.OnSummaryLoaded("SQFClass:PersonalInventory",[["SQF","SQF"]],[["Classes","Class"]],[[678,0,0,"PersonalInventory"]]);

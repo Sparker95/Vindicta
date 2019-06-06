@@ -46,14 +46,29 @@
  <div class="CBody"><p>Is this Garrison ready to be used?</p></div>
 </div>
 
-<a name="Garrison.(static)getAll"></a><a name="Topic632"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">(static) getAll</div>
- <div class="CBody"><p>Returns all garrisons</p><p>Parameters: _side</p><table class="CDefinitionList"><tr><td class="CDLEntry">_side</td><td class="CDLDefinition"><p>optional, Side of garrisons to returns. If side is not provided, returns all garrisons.</p></td></tr></table><p>Returns: Array with <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> objects</p></div>
+<a name="Garrison.(static)getAllActive"></a><a name="Topic279"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static) getAllActive</div>
+ <div class="CBody"><p>Returns all garrisons</p><p>Parameters: _sidesInclude, _sidesExclude</p><table class="CDefinitionList"><tr><td class="CDLEntry">_sidesInclude</td><td class="CDLDefinition"><p>optional, Sides of garrisons to include. If _sidesInclude is not provided, include all garrisons.</p></td></tr><tr><td class="CDLEntry">_sidesExclude</td><td class="CDLDefinition"><p>optional, Sides of garrisons to exclude. If _sidesExclude is not provided, no garrisons are excluded.</p></td></tr></table><p>Returns: Array with <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> objects</p></div>
+</div>
+
+<a name="Garrison.(static)getAllNotEmpty"></a><a name="Topic285"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static) getAllNotEmpty</div>
+ <div class="CBody"><p>Returns all active non empty garrisons</p><p>Parameters: _sidesInclude, _sidesExclude</p><table class="CDefinitionList"><tr><td class="CDLEntry">_sidesInclude</td><td class="CDLDefinition"><p>optional, Sides of garrisons to include. If _sidesInclude is not provided, include all garrisons.</p></td></tr><tr><td class="CDLEntry">_sidesExclude</td><td class="CDLDefinition"><p>optional, Sides of garrisons to exclude. If _sidesExclude is not provided, no garrisons are excluded.</p></td></tr></table><p>Returns: Array with <a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> objects</p></div>
 </div>
 
 <a name="Garrison.getMessageLoop"></a><a name="Topic212"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getMessageLoop</div>
  <div class="CBody"><p>See <a href="../../index.html#File:MessageReceiver/MessageReceiver.sqf:MessageReceiver.getMessageLoop" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,373);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MessageReceiver.getMessageLoop</a></p><p>Returns: <a href="../../index.html#File:MessageLoop/MessageLoop.sqf:MessageLoop" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,342);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MessageLoop</a></p></div>
+</div>
+
+<a name="Garrison.setFaction"></a><a name="Topic286"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">setFaction</div>
+ <div class="CBody"><p>Parameters: _faction _faction - string</p></div>
+</div>
+
+<a name="Garrison.setName"></a><a name="Topic294"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">setName</div>
+ <div class="CBody"><p>Parameters: _name _name - string</p></div>
 </div>
 
 <a name="Garrison.setLocation"></a><a name="Topic213"></a><div class="CTopic TFunction LSQF">
@@ -64,6 +79,11 @@
 <a name="Garrison.setPos"></a><a name="Topic541"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setPos</div>
  <div class="CBody"><p>Sets the position of this garrison. Note that position can be updated later on its own by garrison's actions.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table></div>
+</div>
+
+<a name="Garrison.getFaction"></a><a name="Topic556"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">getFaction</div>
+ <div class="CBody"><table class="CDefinitionList"><tr><td class="CDLEntry">Returns: faction</td><td class="CDLDefinition"><p>string</p></td></tr></table></div>
 </div>
 
 <a name="Garrison.getSide"></a><a name="Topic214"></a><div class="CTopic TFunction LSQF">
@@ -116,6 +136,11 @@
  <div class="CBody"><p>Returns true if garrison is empty (has no units)</p><p>Returns: Bool</p></div>
 </div>
 
+<a name="Garrison.isOnlyEmptyVehicles"></a><a name="Topic601"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isOnlyEmptyVehicles</div>
+ <div class="CBody"><p>Returns true if garrison contains only empty vehicles</p><p>Returns: Bool</p></div>
+</div>
+
 <a name="Garrison.isSpawned"></a><a name="Topic201"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isSpawned</div>
  <div class="CBody"><p>Returns true if garrison is spawned</p><p>Returns: Bool</p></div>
@@ -161,9 +186,9 @@
  <div class="CBody"><p>DeletesEmptyGroups in this garrison</p><p>Returns: nil</p></div>
 </div>
 
-<a name="Garrison.addGarrison"></a><a name="Topic569"></a><div class="CTopic TFunction LSQF">
+<a name="Garrison.addGarrison"></a><a name="Topic602"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">addGarrison</div>
- <div class="CBody"><p>Moves all units and groups from another garrison to this one.</p><p>Parameters: _garrison, _delete</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr><tr><td class="CDLEntry">_delete</td><td class="CDLDefinition"><p>Bool, optional, deletes the _garrison, default: false. Deletion doesn't happen immediately.</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Moves all units and groups from another garrison to this one.</p><p>Parameters: _garrison</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#File:Garrison/Garrison.sqf:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
 <a name="Garrison.addUnitsAndGroups"></a><a name="Topic550"></a><div class="CTopic TFunction LSQF">

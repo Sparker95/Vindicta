@@ -432,13 +432,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Detach from current location if it exists
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
-			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+			CALLM1(_currentLoc, "unregisterGarrison", _thisObject);
 		};
 		
 		// Attach to another location
 		if (_location != "") then {
 			ASSERT_OBJECT_CLASS(_location, "Location");
-			CALLM2(_location, "postMethodAsync", "registerGarrison", [_thisObject]);
+			CALLM1(_location, "registerGarrison", _thisObject);
 		};
 		
 		T_SETV("location", _location);
@@ -461,7 +461,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		pr _currentLoc = T_GETV("location");
 		if (_currentLoc != "") then {
-			CALLM2(_currentLoc, "postMethodAsync", "unregisterGarrison", [_thisObject]);
+			CALLM1(_currentLoc, "unregisterGarrison", _thisObject);
 			T_SETV("location", "");
 		};
 		
