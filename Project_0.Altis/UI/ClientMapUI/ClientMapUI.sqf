@@ -29,6 +29,8 @@ CLASS(CLASS_NAME, "")
 
 	STATIC_VARIABLE("currentMapMarker");
 
+	STATIC_VARIABLE("campAllowed");
+
 	// initialize UI event handlers
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
@@ -70,7 +72,9 @@ CLASS(CLASS_NAME, "")
 
 	STATIC_METHOD("onButtonDownCreateCamp") {
 		params ["_thisClass", "_control"];
-		[player] call fnc_createCamp;
+		if(GET_STATIC_VAR("campAllowed")) then {
+			[player] call fnc_createCamp;
+		};
 	} ENDMETHOD;
 
 	STATIC_METHOD("onButtonDownAddFriendlyGroup") {
@@ -391,6 +395,8 @@ CLASS(CLASS_NAME, "")
 ENDCLASS;
 
 SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
+SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
+PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
 
 // Create local map markers to highlight source and destination of intel
 #ifndef _SQF_VM

@@ -28,7 +28,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("name", "CivilWar");
 		T_SETV("spawningEnabled", false);
 		T_SETV("lastUpdateTime", TIME_NOW);
-		T_SETV("phase", 1);
+		T_SETV("phase", 0);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -107,7 +107,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 #endif
 	} ENDMETHOD;
 
-/* private */ METHOD("singlePlayerRespawn") {
+	/* private */ METHOD("singlePlayerRespawn") {
 		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
 		T_PRVAR(spawnPoints);
 
@@ -163,6 +163,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected override */METHOD("update") {
 		params [P_THISOBJECT];
+		
+		T_CALLM("updatePhase", []);
 
 		T_PRVAR(lastUpdateTime);
 		private _dt = TIME_NOW - _lastUpdateTime;
@@ -174,9 +176,42 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _cityData = GETV(_city, "gameModeData");
 			CALLM(_cityData, "update", [_city]);
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+
 	} ENDMETHOD;
 
-	
+	METHOD("updatePhase") {
+		params [P_THISOBJECT];
+
+		switch(T_GETV("phase")) do {
+			case 0: {
+				// Scenario just initialized so do setup
+				SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
+				PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+				T_SETV("phase", 1);
+			};
+			case 1: {
+				// If player managed to liberate a city/town then go to next phase
+				if(GET_STATIC_VAR("Location", "all") findIf {
+						CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+						{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }
+					}) then {
+					SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
+					PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+					T_SETV("phase", 2);
+				};
+			};
+			case 2: {
+				
+			};
+			case 3: {
+
+			};
+			case 4: {
+
+			};
+		}
+	} ENDMETHOD;
+
 	// Override this to perform actions when a location spawns
 	/* protected override */METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
