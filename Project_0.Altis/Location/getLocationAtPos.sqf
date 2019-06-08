@@ -21,13 +21,13 @@ params [ ["_thisClass", "", [""]], ["_pos", [], [objNull, []]]];
 pr _all = GETSV("Location", "all");
 
 pr _index = _all findIf {
-	pr _locPos = GETV(_x, "pos");
-	pr _br = GETV(_x, "boundingRadius");
-	pr _ret = false;
-	if ((_locPos distance2D _pos) < _br) then {
-		_ret = CALLM1(_x, "isInBorder", _pos);
-	};
-	_ret
+	//pr _locPos = GETV(_x, "pos");
+	//pr _br = GETV(_x, "boundingRadius");
+	//pr _ret = false;
+	//if ((_locPos distance2D _pos) < _br) then {
+	CALLM1(_x, "isInBorder", _pos);
+	//};
+	//_ret
 };
 
 if (_index != -1) then {

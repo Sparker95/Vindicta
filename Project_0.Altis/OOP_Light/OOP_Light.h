@@ -512,6 +512,7 @@
 #endif
 
 // Enable function wrappers if logging macros are used
+/*
 #ifdef OOP_DEBUG
 #define _OOP_FUNCTION_WRAPPERS
 #endif
@@ -527,6 +528,7 @@
 #ifdef OOP_DEBUG
 #define _OOP_FUNCTION_WRAPPERS
 #endif
+*/
 
 // Enable function wrappers if access assertions are enabled
 #ifdef OOP_ASSERT_ACCESS

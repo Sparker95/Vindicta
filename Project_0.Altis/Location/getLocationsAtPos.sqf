@@ -19,14 +19,6 @@ Author: Sparker 08 June 2019
 
 params [ ["_thisClass", "", [""]], ["_pos", [], [objNull, []]]];
 
-pr _all = GETSV("Location", "all");
-
-_all select {
-	pr _locPos = GETV(_x, "pos");
-	pr _br = GETV(_x, "boundingRadius");
-	pr _ret = false;
-	if ((_locPos distance2D _pos) < _br) then {
-		_ret = CALLM1(_x, "isInBorder", _pos);
-	};
-	_ret
+GETSV("Location", "all") select {
+	_pos inArea GETV(_x, "border")
 }

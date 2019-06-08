@@ -134,7 +134,7 @@ CLASS("Location", "MessageReceiverEx")
 		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY)then{
-			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
+			private _cpModule = [+T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
 			T_SETV("cpModule",_cpModule);
 		};
 
@@ -647,13 +647,15 @@ CLASS("Location", "MessageReceiverEx")
 			case "circle" : {
 				_data params [ ["_radius", 0, [0] ] ];
 				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
-				SET_VAR_PUBLIC(_thisObject, "border", _radius);
+				pr _border = [T_GETV("pos"), _radius, _radius, 0, false, -1]; // [center, a, b, angle, isRectangle, c]
+				SET_VAR_PUBLIC(_thisObject, "border", _border);
 			};
 			
 			case "rectangle" : {
 				_data params ["_a", "_b", "_dir"];
 				private _radius = sqrt(_a*_a + _b*_b);
-				SET_VAR_PUBLIC(_thisObject, "border", _data);
+				pr _border = [T_GETV("pos"), _a, _b, _dir, true, -1]; // [center, a, b, angle, isRectangle, c]
+				SET_VAR_PUBLIC(_thisObject, "border", _border);
 				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
 			};
 			
