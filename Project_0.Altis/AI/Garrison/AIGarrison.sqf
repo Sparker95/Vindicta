@@ -130,9 +130,13 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("process") {
 		params ["_thisObject", ["_accelerate", false]];
 		
+		pr _gar = T_GETV("agent");
+
 		// Call base class process (classNameStr, objNameStr, methodNameStr, extraParams)
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
-		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
+		if (CALLM0(_gar, "countInfantryUnits") > 0) then {
+			CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
+		};
 		
 		// Update the "busy" timer
 		pr _currentGoal = T_GETV("currentGoal");
@@ -143,7 +147,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 
 		// Update the markers
-		pr _gar = T_GETV("agent");
 		pr _mrk = _thisObject + MRK_GOAL;
 		
 		// Set text

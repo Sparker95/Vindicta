@@ -6,6 +6,7 @@ Makes a single unit move to a specified static position.
 
 Parameters:
 "position" - position AGL
+"teleport" - bool, default false, if set to true, unit will be teleported to his destination
 */
 
 #define pr private

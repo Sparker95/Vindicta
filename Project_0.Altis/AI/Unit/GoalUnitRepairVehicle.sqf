@@ -37,7 +37,7 @@ CLASS("GoalUnitRepairVehicle", "Goal")
 		};
 		
 		// Add move to unit action
-		pr _args = [_AI, [["unit", _vehicleUnit]]];
+		pr _args = [_AI, [["unit", _vehicleUnit], ["teleport", true]]];
 		pr _actionMove = NEW("ActionUnitInfantryMoveToUnit", _args);
 		CALLM1(_actionSerial, "addSubactionToBack", _actionMove);
 		

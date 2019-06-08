@@ -24,7 +24,7 @@ CLASS("UnitIntel", "")
 	Call it on server.
 	It initializes intel on some unit
 
-	Parameters: _garrison, _unit
+	Parameters: _unit
 
 	_unit - Unit object
 
@@ -109,6 +109,43 @@ CLASS("UnitIntel", "")
 				} forEach _personalInventoryItems;
 			}];
 		};
+
+	} ENDMETHOD;
+
+	/*
+	Method: (static)updateUnit
+	NOT USED RIGHT NOW
+	Call it on server.
+	It keeps intel inventory items of some unit up to date
+
+	Parameters: _unit
+
+	_unit - Unit object
+
+	Returns: nil
+	*/
+	STATIC_METHOD("updateUnit") {
+		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
+
+		// Get all inventory items of the unit which match the pattern
+		pr _hO = CALLM0(_unit, "getObjectHandle");
+		
+		pr _allItems = (uniformItems _hO) + (vestItems _hO) + (backpackItems _hO);
+		// Find all inventory items which are of a certain class name
+		pr _personalInventoryItems = _allItems select {
+			pr _fullClassName = _x;
+			pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {(_fullClassName find _x) == 0 };
+			_index != -1
+		};
+
+		// Iterate through all personal inventory items and update their values
+		pr _gar = CALLM0(_unit, "getGarrison");
+		pr _intelArray = CALLM0(_gar, "getIntel");
+		{
+			pr _classAndID = CALLSM1("PersonalInventory", "getBaseClassAndID", _x);
+			_classAndID params ["_baseClass", "_ID"];
+			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, _intelArray);
+		} forEach _personalInventoryItems;
 
 	} ENDMETHOD;
 
