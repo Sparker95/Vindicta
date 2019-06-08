@@ -206,14 +206,14 @@
  <div class="CBody"><p>Merges or splits vehicle group(s)</p><p>Parameters: _merge</p><table class="CDefinitionList"><tr><td class="CDLEntry">_merge</td><td class="CDLDefinition"><p>Bool, true to merge, false to split</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="addEfficiency"></a><a name="Topic551"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">addEfficiency</div>
- <div class="CBody"><p>Adds values to efficiency vector</p><p>Private use!</p><p>Returns: nil</p></div>
+<a name="increaseCounters"></a><a name="Topic152"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">increaseCounters</div>
+ <div class="CBody"><p>Adds values to efficiency vector and other counters</p><p>Private use!</p><p>Returns: nil</p></div>
 </div>
 
-<a name="subEfficiency"></a><a name="Topic552"></a><div class="CTopic TFunction LSQF">
+<a name="subEfficiency"></a><a name="Topic648"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">subEfficiency</div>
- <div class="CBody"><p>Substracts values to efficiency vector</p><p>Private use!</p><p>Returns: nil</p></div>
+ <div class="CBody"><p>Substracts values from efficiency vector and other counters</p><p>Private use!</p><p>Returns: nil</p></div>
 </div>
 
 <a name="getEfficiencyMobile"></a><a name="Topic553"></a><div class="CTopic TFunction LSQF">
@@ -254,6 +254,21 @@
 <a name="countUnits"></a><a name="Topic206"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">countUnits</div>
  <div class="CBody"><p>Counts amount of units with specified category and subcategory</p><p>Parameters: _query</p><table class="CDefinitionList"><tr><td class="CDLEntry">_query</td><td class="CDLDefinition"><p>array of [_catID, _subcatID].&nbsp; _subcatID can be -1 if you don't care about a subcategory match.</p></td></tr></table><p>Returns: Array of units <a href="../../index.html#SQFClass:Unit" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,469);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Unit</a> class</p></div>
+</div>
+
+<a name="countInfantryUnits"></a><a name="Topic654"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">countInfantryUnits</div>
+ <div class="CBody"><p>Returns the amount of infantry units</p><p>Returns: Number</p></div>
+</div>
+
+<a name="countVehicleUnits"></a><a name="Topic723"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">countVehicleUnits</div>
+ <div class="CBody"><p>Returns the amount of infantry units</p><p>Returns: Number</p></div>
+</div>
+
+<a name="countDroneUnits"></a><a name="Topic724"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">countDroneUnits</div>
+ <div class="CBody"><p>Returns the amount of infantry units</p><p>Returns: Number</p></div>
 </div>
 
 <a name="spawn"></a><a name="Topic204"></a><div class="CTopic TFunction LSQF">

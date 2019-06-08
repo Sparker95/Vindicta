@@ -166,6 +166,11 @@
  <div class="CBody"><p>Checks if given position is in area of given location.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
+<a name="(static)isPosEvenSafer"></a><a name="Topic726"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)isPosEvenSafer</div>
+ <div class="CBody"><p>Returns true if the place is guaranteed safe for spawning specific vehicle.&nbsp; It is very conservative and as such will disallow spawning in buildings or too close to existing objects.</p><p>Parameters: _pos, _dir, _className _pos - position ATL _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
+</div>
+
 <a name="(static)isPosSafe"></a><a name="Topic250"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)isPosSafe</div>
  <div class="CBody"><p>Returns true if the place is good for spawning specific vehicle.&nbsp; The main method of this function - checking vehicles inside the bounding box.&nbsp; Houses and buildings are ignored.</p><p>Parameters: _pos, _dir, _className _pos - position ATL _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
