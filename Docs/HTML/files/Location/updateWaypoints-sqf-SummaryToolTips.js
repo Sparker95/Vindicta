@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Location/updateWaypoints.sqf",{681:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Sets border parameters for this location</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Location/updateWaypoints.sqf",{727:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Updates waypoint positions</div></div>"});
