@@ -1597,6 +1597,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_INF: {"countInf"};
 			case T_VEH: {"countVeh"};
 			case T_DRONE: {"countDrone"};
+			default {"countInf"};
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
@@ -1639,6 +1640,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_INF: {"countInf"};
 			case T_VEH: {"countVeh"};
 			case T_DRONE: {"countDrone"};
+			default {"countInf"};
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
 

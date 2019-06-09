@@ -109,4 +109,7 @@ call compile preprocessFileLineNumbers "Intel\initClasses.sqf";
 // Initialize the garbage collector
 call compile preprocessFileLineNumbers "GarbageCollector\GarbageCollector.sqf";
 
+// Initialize Location Visibility Monitor
+call compile preprocessFileLineNumbers "LocationVisibilityMonitor\LocationVisibilityMonitor.sqf";
+
 diag_log "[initModules] Done!";

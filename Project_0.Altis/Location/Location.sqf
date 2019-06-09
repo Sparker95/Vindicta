@@ -87,7 +87,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
-		T_SETV("isBuilt", false);
+		SET_VAR_PUBLIC(_thisObject, "isBuilt", true); // Location is built at start, except for roadblocks, it's changed in setType function
 		T_SETV("buildObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
@@ -365,6 +365,10 @@ CLASS("Location", "MessageReceiverEx")
 			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
 			private _timer = NEW("Timer", _args);
 			SET_VAR(_thisObject, "timer", _timer);
+		};
+
+		if (_type == LOCATION_TYPE_ROADBLOCK) then {
+			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
 		};
 
 		T_CALLM("updateWaypoints", []);
@@ -733,6 +737,21 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Builds the location
 	METHOD_FILE("build", "Location\build.sqf");
+
+	/*
+	Method: (static)nearLocations
+	Returns an array of locations that are _radius meters from _pos. Distance is checked in 2D mode.
+
+	Parameters: _pos, _radius
+
+	Returns: nil
+	*/
+	STATIC_METHOD("nearLocations") {
+		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		GET_STATIC_VAR("Location", "all") select {
+			(GETV(_x, "pos") distance2D _pos) < _radius
+		}
+	} ENDMETHOD;
 
 ENDCLASS;
 

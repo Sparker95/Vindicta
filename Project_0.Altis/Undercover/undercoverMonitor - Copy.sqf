@@ -19,8 +19,8 @@ Date: December 2018
 Author: Sparker, Marvis
 */
 
-gMsgLoopUndercover = NEW("MessageLoop", []);
-CALL_METHOD(gMsgLoopUndercover, "setDebugName", ["Undercover thread"]);
+gMsgLoopPlayerChecks = NEW("MessageLoop", []);
+CALL_METHOD(gMsgLoopPlayerChecks, "setDebugName", ["Undercover thread"]);
 
 #define pr private
 //#define DEBUG
@@ -200,7 +200,7 @@ CLASS("undercoverMonitor", "MessageReceiver");
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
-		gMsgLoopUndercover
+		gMsgLoopPlayerChecks
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
