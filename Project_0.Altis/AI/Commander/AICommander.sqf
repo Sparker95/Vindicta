@@ -124,14 +124,6 @@ CLASS("AICommander", "AI")
 		T_SETV("cmdrAI", _cmdrAI);
 		private _worldModel = NEW("WorldModel", []);
 		T_SETV("worldModel", _worldModel);
-
-		// // Register locations
-		// private _locations = CALLSM("Location", "getAll", []);
-		// OOP_INFO_1("Registering %1 locations with Model", count _locations);
-		// { 
-		// 	T_CALLM()
-		// 	NEW("LocationModel", [_worldModel ARG _x]) 
-		// } forEach _locations;
 	} ENDMETHOD;
 	
 	METHOD("process") {

@@ -27,8 +27,8 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
-		// Do default QRFs
-		_defaultScore
+		// Do no QRFs
+		APPLY_SCORE_STRATEGY(_defaultScore, 0)
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getReinforceScore") {

@@ -450,18 +450,8 @@ CLASS("CmdrAI", "")
 			default { -1 };
 		};
 
-		//T_PRVAR(lastPlanningTime);
-		//if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
-
 		if(_priority != -1) then {
-			// Sync before planning
-			CALLM(_world, "sync", []);
-			// Update grids etc.
-			CALLM(_world, "update", []);
 			T_CALLM("_plan", [_world ARG _priority]);
-
-			// Make it after planning so we get a gap
-			//T_SETV("lastPlanningTime", TIME_NOW);
 		};
 	} ENDMETHOD;
 
@@ -469,6 +459,11 @@ CLASS("CmdrAI", "")
 		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
 
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (priority %1) - - - - -", [_priority]);
+
+		// Sync before planning
+		CALLM(_world, "sync", []);
+		// Update grids etc.
+		CALLM(_world, "update", []);
 
 		T_PRVAR(activeActions);
 

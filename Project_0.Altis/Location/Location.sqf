@@ -176,6 +176,8 @@ CLASS("Location", "MessageReceiverEx")
 				case LOCATION_TYPE_ROADBLOCK: { "mil_triangle" };
 				case LOCATION_TYPE_BASE: { "mil_circle" };
 				case LOCATION_TYPE_OUTPOST: { "mil_box" };
+				case LOCATION_TYPE_CITY: { "mil_marker" };
+				case LOCATION_TYPE_POLICE_STATION: { "mil_warning" };
 				default { "mil_dot" };
 			});
 			_mrk setMarkerColor "ColorYellow";
@@ -187,7 +189,7 @@ CLASS("Location", "MessageReceiverEx")
 				_mrk setMarkerDir _border#2;
 			};
 			
-			if(not (_type in [LOCATION_TYPE_ROADBLOCK, LOCATION_TYPE_CITY, LOCATION_TYPE_POLICE_STATION])) then {
+			if(not (_type in [LOCATION_TYPE_ROADBLOCK])) then {
 				_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
 				_mrk setMarkerType "Empty";
 				_mrk setMarkerColor "ColorYellow";

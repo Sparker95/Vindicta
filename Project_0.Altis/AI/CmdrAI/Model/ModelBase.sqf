@@ -17,13 +17,17 @@ CLASS("ModelBase", "RefCounted")
 	VARIABLE("label");
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_world"), ["_actual", NULL_OBJECT]];
+		params [P_THISOBJECT, P_STRING("_world"), P_DYNAMIC("_actual")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_SETV("id", MODEL_HANDLE_INVALID);
 		T_SETV("world", _world);
 		T_SETV("actual", _actual);
-		T_SETV("label", str _actual);
+		//if(!isNil "_actual") then {
+			T_SETV("label", str _actual);
+		//} else {
+			//T_SETV("label", "<undefined>");
+		//};
 	} ENDMETHOD;
 
 	METHOD("isActual") {

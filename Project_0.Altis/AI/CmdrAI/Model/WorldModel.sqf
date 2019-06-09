@@ -742,7 +742,7 @@ ENDCLASS;
 
 ["WorldModel.addGarrison", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	// This is called in the GarrisonModel constructor
 	//private _id = CALLM(_world, "addGarrison", [_garrison]);
 	["Added", count GETV(_world, "garrisons") == 1] call test_Assert;
@@ -751,7 +751,7 @@ ENDCLASS;
 
 ["WorldModel.getGarrison", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _id = GETV(_garrison, "id");
 	private _got = CALLM(_world, "getGarrison", [_id]);
 	_got == _garrison
@@ -760,14 +760,14 @@ ENDCLASS;
 ["WorldModel.findGarrisonByActual", {
 	private _actual = NEW("Garrison", [WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
-	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
+	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _got = CALLM(_world, "findGarrisonByActual", [_actual]);
 	_got == _garrison
 }] call test_AddTest;
 
 ["WorldModel.addLocation", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	// This is called in the LocationModel constructor
 	//private _id = CALLM(_world, "addLocation", [_location]);
 	["Added", count GETV(_world, "locations") == 1] call test_Assert;
@@ -776,7 +776,7 @@ ENDCLASS;
 
 ["WorldModel.getLocation", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
 	_got == _location
@@ -784,7 +784,7 @@ ENDCLASS;
 
 ["WorldModel.findLocationByActual", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
 	_got == _location
@@ -793,8 +793,8 @@ ENDCLASS;
 ["WorldModel.simCopy", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 
-	private _location = NEW("LocationModel", [_world]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 
 	private _copy = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	["Created", !(isNil { OBJECT_PARENT_CLASS_STR(_copy) })] call test_Assert;
@@ -812,9 +812,9 @@ ENDCLASS;
 
 ["WorldModel.getAliveGarrisons", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison1 = NEW("GarrisonModel", [_world]);
+	private _garrison1 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
-	private _garrison2 = NEW("GarrisonModel", [_world]);
+	private _garrison2 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	
 	["Initial", count CALLM(_world, "getAliveGarrisons", []) == 2] call test_Assert;
@@ -826,10 +826,10 @@ ENDCLASS;
 
 ["WorldModel.getNearestGarrisons", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison1 = NEW("GarrisonModel", [_world]);
+	private _garrison1 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison1, "pos", [500 ARG 0 ARG 0]);
 	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
-	private _garrison2 = NEW("GarrisonModel", [_world]);
+	private _garrison2 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison2, "pos", [1000 ARG 0 ARG 0]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	private _center = [0,0,0];
@@ -842,9 +842,9 @@ ENDCLASS;
 
 ["WorldModel.getNearestLocations", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location1 = NEW("LocationModel", [_world]);
+	private _location1 = NEW("LocationModel", [_world ARG "<undefined>"]);
 	SETV(_location1, "pos", [500 ARG 0 ARG 0]);
-	private _location2 = NEW("LocationModel", [_world]);
+	private _location2 = NEW("LocationModel", [_world ARG "<undefined>"]);
 	SETV(_location2, "pos", [1000 ARG 0 ARG 0]);
 	private _center = [0,0,0];
 	["Dist test none", count CALLM(_world, "getNearestLocations", [_center ARG 1]) == 0] call test_Assert;

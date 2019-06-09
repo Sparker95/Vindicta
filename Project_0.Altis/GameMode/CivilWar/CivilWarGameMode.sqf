@@ -110,10 +110,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	METHOD("initClientOnly") {
 		params [P_THISOBJECT];
 
-		["Add activity here", {
+		["Game Mode", "Add activity here", {
 			CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG getPos player ARG 50]);
 		}] call pr0_fnc_addDebugMenuItem;
-		["Get local info", {
+		["Game Mode", "Get local info", {
 			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [getPos player ARG 500]);
 			systemChat format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity];
@@ -342,34 +342,35 @@ CLASS("CivilWarCityData", "")
 		private _pos = CALLM0(_city, "getPos");
 		private _radius = GETV(_city, "boundingRadius");
 
-		switch _state do {
-			case CITY_STATE_STABLE: {
-				_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city]));
-				// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
-				// {
-				// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
-				// } forEach _civies;
-			};
-			case CITY_STATE_AGITATED: {
-				_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city]));
-				// TODO: if local garrison is spawned then
-				//	a) spawn a civ or two with weapons to attack them
-				//	b) spawn an IED with proximity detonation
-			};
-			case CITY_STATE_IN_REVOLT: {
-				_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city]));
-				// TODO: if local garrison is spawned then
-				//	a) arm all civs, put them on player side
-				//	b) spawn an timed IED blowing up a building or two (police station maybe?)
-			};
-			case CITY_STATE_SUPPRESSED: {
-				// TODO: keep spawned civilians inside
-				// TODO: modify cmdr strategy to occupy this town
-			};
-			case CITY_STATE_LIBERATED: {
-				// TODO: police is on player side
-			};
-		};
+		_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city ARG [CITY_STATE_STABLE]]));
+		_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED]]));
+		_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_IN_REVOLT]]));
+
+		// switch _state do {
+		// 	case CITY_STATE_STABLE: {
+		// 		// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
+		// 		// {
+		// 		// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
+		// 		// } forEach _civies;
+		// 	};
+		// 	case CITY_STATE_AGITATED: {
+		// 		// TODO: if local garrison is spawned then
+		// 		//	a) spawn a civ or two with weapons to attack them
+		// 		//	b) spawn an IED with proximity detonation
+		// 	};
+		// 	case CITY_STATE_IN_REVOLT: {
+		// 		// TODO: if local garrison is spawned then
+		// 		//	a) arm all civs, put them on player side
+		// 		//	b) spawn an timed IED blowing up a building or two (police station maybe?)
+		// 	};
+		// 	case CITY_STATE_SUPPRESSED: {
+		// 		// TODO: keep spawned civilians inside
+		// 		// TODO: modify cmdr strategy to occupy this town
+		// 	};
+		// 	case CITY_STATE_LIBERATED: {
+		// 		// TODO: police is on player side
+		// 	};
+		// };
 	} ENDMETHOD;
 
 	METHOD("despawned") {

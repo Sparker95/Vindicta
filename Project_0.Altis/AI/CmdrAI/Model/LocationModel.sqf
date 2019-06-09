@@ -211,21 +211,21 @@ ENDCLASS;
 	private _pos = [1000,2000,3000];
 	private _actual = NEW("Location", [_pos]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
-	private _location = NEW("LocationModel", [_world]+[_actual]);
+	private _location = NEW("LocationModel", [_world ARG _actual]);
 	private _class = OBJECT_PARENT_CLASS_STR(_location);
 	!(isNil "_class")
 }] call test_AddTest;
 
 ["LocationModel.new(sim)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	private _class = OBJECT_PARENT_CLASS_STR(_location);
 	!(isNil "_class")
 }] call test_AddTest;
 
 ["LocationModel.delete", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	DELETE(_location);
 	private _class = OBJECT_PARENT_CLASS_STR(_location);
 	isNil "_class"

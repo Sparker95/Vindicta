@@ -49,7 +49,7 @@ CLASS("GarrisonModel", "ModelBase")
 		// These will get set in sync
 		T_SETV("efficiency", +EFF_ZERO);
 		T_SETV("transport", 0);
-		T_SETV("inCombat", fa lse);
+		T_SETV("inCombat", false);
 		T_SETV("pos", []);
 		T_SETV("side", sideUnknown);
 		T_SETV("faction", "");
@@ -256,8 +256,8 @@ CLASS("GarrisonModel", "ModelBase")
 			OOP_WARNING_MSG("ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff ARG _effAllocated]);
 			NULL_OBJECT
 		};
-
-		private _detachment = NEW("GarrisonModel", [_world]);
+		T_PRVAR(actual);
+		private _detachment = NEW("GarrisonModel", [_world ARG _actual]);
 		SETV(_detachment, "efficiency", _effAllocated);
 		SETV(_detachment, "pos", +T_GETV("pos"));
 		SETV(_detachment, "side", T_GETV("side"));
@@ -886,7 +886,7 @@ ENDCLASS;
 
 ["GarrisonModel.new(sim)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	!(isNil "_class")
 }] call test_AddTest;
@@ -903,7 +903,7 @@ ENDCLASS;
 
 ["GarrisonModel.delete", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	DELETE(_garrison);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
@@ -912,7 +912,7 @@ ENDCLASS;
 
 ["GarrisonModel.killed", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	CALLM(_garrison, "killed", []);
 	CALLM(_garrison, "isDead", [])
@@ -920,7 +920,7 @@ ENDCLASS;
 
 ["GarrisonModel.isDead", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	["False before killed", !CALLM(_garrison, "isDead", [])] call test_Assert;
 	CALLM(_garrison, "killed", []);
@@ -929,7 +929,7 @@ ENDCLASS;
 
 ["GarrisonModel.simSplit", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);

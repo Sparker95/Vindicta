@@ -35,11 +35,13 @@
 
 #define OFSTREAM_ENABLE
 
+// #define OOP_PROFILE
+
 // Enables checks for member accesses at runtime
 // As well as other assertions
 // It's a global flag, must be defined here
 
-#define OOP_ASSERT
+// #define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 // Enables support for Arma Script Profiler globally
@@ -522,7 +524,7 @@
 				} forEach _extraProfileFields; \
 				_extraFieldsObj = ", ""extra"": { " + _extraFieldsObj + " }"; \
 			}; \
-			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4"", ""oop_assert"": %7%6 }}", _class, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj, OOP_ASSERT_BOOL]; \
+			private _str = format ["{ ""profile"": { ""class"": ""%1"", ""method"": ""%2"", ""scope"": ""%5.%2"", ""time"": %3, ""object_or_class"": ""%4"", ""oop_assert"": %7%6 }}", _class1, _methodNameStr, _totalProfileT, _objOrClass, _scopeKey, _extraFieldsObj, OOP_ASSERT_BOOL]; \
 			OOP_PROFILE_0(_str); \
 		}
 	
