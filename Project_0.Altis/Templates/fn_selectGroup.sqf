@@ -12,7 +12,17 @@ private _return = 0;
 if (_group isEqualType configNull) then {
 	_return = [_template, _group] call t_fnc_convertConfigGroup;
 } else {
-	_return = _group;
+	_return = [];
+	{
+		if (count _x == 2) then {
+			// If it's two elements, we have _catID and _subcatID
+			_x params ["_catID", "_subcatID"];
+			_return pushBack [_catID, _subcatID, -1];
+		} else {
+			// Otherwise it's [_catID, _subcatID, _className] already
+			_return pushBack +_x;
+		};
+	} forEach _group;
 };
 
 _return

@@ -9,3 +9,8 @@ t_fnc_getEfficiency = compile preprocessFileLineNumbers "Templates\fn_getEfficie
 t_fnc_convertConfigGroup = compile preprocessFileLineNumbers "Templates\fn_convertConfigGroup.sqf";
 t_fnc_getDefaultCrew = compile preprocessFileLineNumbers "Templates\fn_getDefaultCrew.sqf";
 t_fnc_canDestroy = compile preprocessFileLineNumbers "Templates\fn_canDestroy.sqf";
+
+// Loadouts
+t_fnc_addLoadout = compile preprocessFileLineNumbers "Templates\fn_addLoadout.sqf";
+t_fnc_setUnitLoadout = compile preprocessFileLineNumbers "Templates\fn_setUnitLoadout.sqf";
+t_fnc_isLoadout = compile preprocessFileLineNumbers "Templates\fn_isLoadout.sqf";

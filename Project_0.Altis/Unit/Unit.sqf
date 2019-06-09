@@ -87,6 +87,13 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		OOP_INFO_MSG("class = %1, _this = %2", [_class ARG _this]);
 
+		// Check if the class is actually a custom loadout
+		pr _loadout = "";
+		if ([_class] call t_fnc_isLoadout) then {
+			_loadout = _class;
+			_class = _template select _catID select 0 select 0; // Default class name from the template
+		};
+
 		// Create the data array
 		private _data = UNIT_DATA_DEFAULT;
 		_data set [UNIT_DATA_ID_CAT, _catID];
@@ -94,6 +101,7 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data set [UNIT_DATA_ID_CLASS_NAME, _class];
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_data set [UNIT_DATA_ID_GROUP, ""];
+		_data set [UNIT_DATA_ID_LOADOUT, _loadout];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
 		};
@@ -242,6 +250,13 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 					//diag_log format ["---- Received group of side: %1", side _groupHandle];
 					_objectHandle = _groupHandle createUnit [_className, _pos, [], 10, "FORM"];
+					
+					// Set loadout if requited
+					pr _loadout = _data select UNIT_DATA_ID_LOADOUT;
+					if (_loadout != "") then {
+						[_objectHandle, _loadout] call t_fnc_setUnitLoadout;
+					};
+
 					if (isNull _objectHandle) then {
 						OOP_ERROR_1("Created infantry unit is Null. Unit data: %1", _data);
 						_objectHandle = _groupHandle createUnit ["I_Protagonist_VR_F", _pos, [], 10, "FORM"];
