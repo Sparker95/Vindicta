@@ -31,4 +31,4 @@
 #define OOP_PROFILE_MIN_T 0.002
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
-#define OOP_ASSERT
+//#define OOP_ASSERT

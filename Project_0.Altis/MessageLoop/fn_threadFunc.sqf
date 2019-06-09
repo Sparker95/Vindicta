@@ -34,7 +34,7 @@ private _execTimeFilteredArray = [];
 #endif
 
 // Will log every message
-#define PROFILE_MESSAGE_JSON
+//#define PROFILE_MESSAGE_JSON
 
 #ifdef RELEASE_BUILD
 #undef PROFILE_MESSAGE_JSON
