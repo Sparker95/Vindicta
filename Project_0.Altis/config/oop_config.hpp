@@ -32,4 +32,3 @@
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
 #define OOP_ASSERT
-

@@ -27,7 +27,7 @@ if (!IS_SERVER) then {
 // if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		case "Sparker": 	{ "GameModeRandom" };
+		case "Sparker": 	{ "CivilWarGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 		{ "StatusQuoGameMode" };
