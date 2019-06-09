@@ -14,20 +14,23 @@ CLASS("GoalGroupArrest", "Goal")
 
 		OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
 
-			pr _relevance = 0;
-			pr _suspTarget = GETV(_AI, "suspTarget");
-			pr _group = GETV(_AI, "agent");
-			pr _hG = CALLM0(_group, "getGroupHandle");
+		pr _relevance = 0;
+		pr _suspTarget = GETV(_AI, "suspTarget");
+		pr _group = GETV(_AI, "agent");
+		pr _groupType = CALLM(_group, "getType", []);		
+		if(!(_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL])) exitWith { 0 };
 
-			if !(isNil "_suspTarget") then { 
-				if (behaviour leader _hG == "COMBAT") then { _relevance = 0; } 
-				else {
-					_relevance = 120;
-				};
-			} else {
-				OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
-				_relevance = 0;
+		pr _hG = CALLM0(_group, "getGroupHandle");
+
+		if !(isNil "_suspTarget") then { 
+			if (behaviour leader _hG == "COMBAT") then { _relevance = 0; } 
+			else {
+				_relevance = 120;
 			};
+		} else {
+			OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");
+			_relevance = 0;
+		};
 			
 		OOP_INFO_1("GoalGroupArrest: Relevance: %1", _relevance);
 		_relevance	
