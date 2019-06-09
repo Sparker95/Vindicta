@@ -35,7 +35,7 @@ CLASS("AICommander", "AI")
 
 	//VARIABLE("lastPlanningTime");
 	
-	VARIABLE("cmdrStrategy");
+	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
 	VARIABLE("cmdrAI");
 	VARIABLE("worldModel");
 
@@ -118,8 +118,7 @@ CLASS("AICommander", "AI")
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
-		T_SETV("cmdrStrategy", gCmdrStrategyDefault);
-		//T_SETV("lastPlanningTime", TIME_NOW);
+		T_SETV_REF("cmdrStrategy", gCmdrStrategyDefault);
 		
 		private _cmdrAI = NEW("CmdrAI", [_side]);
 		T_SETV("cmdrAI", _cmdrAI);
@@ -264,12 +263,47 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD("getCmdrStrategy") {
 		params [P_THISCLASS, P_SIDE("_side")];
-		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
-		if(!IS_NULL_OBJECT(_cmdr)) then {
-			GETV(_cmdr, "cmdrStrategy")
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			ASSERT_THREAD;
+			GETV(_thisObject, "cmdrStrategy")
 		} else {
 			gCmdrStrategyDefault
 		}
+	} ENDMETHOD;
+
+	/*
+	Method: setCmdrStrategy
+	Set Strategy the cmdr should use.
+
+	Parameters: _strategy
+
+	_strategy - CmdrStrategy
+	*/
+	METHOD("setCmdrStrategy") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_strategy")];
+		ASSERT_OBJECT_CLASS(_strategy, "CmdrStrategy");
+		ASSERT_THREAD;
+		T_SETV_REF("cmdrStrategy", _strategy)
+	} ENDMETHOD;
+
+	/*
+	Method: (static)setCmdrStrategyForSide
+	Set Strategy the cmdr should use.
+
+	Parameters: _side, _strategy
+
+	_side - side
+	_strategy - CmdrStrategy
+	*/
+	STATIC_METHOD("setCmdrStrategyForSide") {
+		params [P_THISCLASS, P_SIDE("_side"), P_OOP_OBJECT("_strategy")];
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			T_CALLM2("postMethodAsync", "setCmdrStrategy", [_strategy]);
+		} else {
+			OOP_WARNING_MSG("Can't set cmdr strategy %1, no AICommander found for side %2", [_strategy ARG _side]);
+		};
 	} ENDMETHOD;
 
 	// Location data

@@ -9,6 +9,9 @@ if(isNil "groupLogic") then {
 	groupLogic = createGroup sideLogic;
 };
 
+// Initialize the debug menu
+call compile preprocessFileLineNumbers "DebugMenu\DebugMenu.sqf";
+
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
 	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
@@ -25,10 +28,6 @@ tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
 tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
 tPOLICE = call compile preprocessFileLineNumbers "Templates\POLICE.sqf";
 tCIVILIAN = call compile preprocessFileLineNumbers "Templates\CIVILIAN.sqf";
-
-
-// Initialize GameModes
-call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
 
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
@@ -108,5 +107,8 @@ call compile preprocessFileLineNumbers "Intel\initClasses.sqf";
 
 // Initialize the garbage collector
 call compile preprocessFileLineNumbers "GarbageCollector\GarbageCollector.sqf";
+
+// Initialize GameModes
+call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
 
 diag_log "[initModules] Done!";

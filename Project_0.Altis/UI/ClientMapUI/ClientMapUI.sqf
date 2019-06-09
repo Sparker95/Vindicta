@@ -72,8 +72,10 @@ CLASS(CLASS_NAME, "")
 
 	STATIC_METHOD("onButtonDownCreateCamp") {
 		params ["_thisClass", "_control"];
-		if(GET_STATIC_VAR("campAllowed")) then {
+		if(GET_STATIC_VAR(CLASS_NAME, "campAllowed")) then {
 			[player] call fnc_createCamp;
+		} else {
+			systemChat "Building of camps is currently disabled!";
 		};
 	} ENDMETHOD;
 
@@ -394,9 +396,9 @@ CLASS(CLASS_NAME, "")
 
 ENDCLASS;
 
-SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
-SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
-PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+SET_STATIC_VAR(CLASS_NAME, "currentMapMarker", "");
+SET_STATIC_VAR(CLASS_NAME, "campAllowed", true);
+PUBLIC_STATIC_VAR(CLASS_NAME, "campAllowed");
 
 // Create local map markers to highlight source and destination of intel
 #ifndef _SQF_VM

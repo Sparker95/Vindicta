@@ -13,6 +13,9 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		// Do not take roadblocks
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);
+		// Do not take cities
+		T_SETV("takeLocCityPriority", 0);
+		T_SETV("takeLocCityPriorityActivityCoeff", 0);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getQRFScore") {

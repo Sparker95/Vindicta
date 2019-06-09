@@ -227,7 +227,7 @@ CLASS("CmdrAI", "")
 		};
 
 		// Take tgt locations from future, so we take into account all in progress actions.
-		private _tgtLocations = CALLM(_worldFuture, "getLocations", [[LOCATION_TYPE_BASE ARG LOCATION_TYPE_OUTPOST ARG LOCATION_TYPE_ROADBLOCK]]) select { 
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", []) select { 
 			// Must not have any of our garrisons already present (or this would be reinforcement action)
 			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
 		};

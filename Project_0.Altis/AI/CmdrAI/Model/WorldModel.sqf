@@ -207,15 +207,20 @@ CLASS("WorldModel", "")
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			T_PRVAR(activityGrid);
 			_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]);
-
-			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			// CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
-
-			// CALLM(_threatGrid, "smooth5x5", []);
-			// CALLM(_activityGrid, "smooth5x5", []);
 		};
 		_activity
 	} ENDMETHOD;
+
+	// METHOD("getActivityTotal") { // thread-safe
+	// 	params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+
+	// 	private _activity = 0;
+	// 	MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+	// 		T_PRVAR(activityGrid);
+	// 		_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]);
+	// 	};
+	// 	_activity
+	// } ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                G A R R I S O N   F U N C T I O N S                 |

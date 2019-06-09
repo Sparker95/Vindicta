@@ -30,15 +30,12 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("staging", false);
 		T_SETV("radius", 0);
 
-		if(!IS_NULL_OBJECT(_actual)) then {
+		if(T_CALLM("isActual", [])) then {
 			T_CALLM("sync", []);
-		};
-
-		#ifdef OOP_DEBUG
-		if(GETV(_world, "type") == WORLD_TYPE_REAL) then {
+			#ifdef OOP_DEBUG
 			OOP_DEBUG_MSG("LocationModel for %1 created in %2", [_actual ARG _world]);
+			#endif
 		};
-		#endif
 
 		// Add self to world
 		CALLM(_world, "addLocation", [_thisObject]);
@@ -47,7 +44,8 @@ CLASS("LocationModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
-		private _copy = NEW("LocationModel", [_targetWorldModel]);
+		T_PRVAR(actual);
+		private _copy = NEW("LocationModel", [_targetWorldModel ARG _actual]);
 
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
 		#ifdef OOP_ASSERT
@@ -70,41 +68,41 @@ CLASS("LocationModel", "ModelBase")
 	METHOD("sync") {
 		params [P_THISOBJECT];
 
+		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
+
 		T_PRVAR(actual);
-		// If we have an assigned Real Object then sync from it
-		if(!IS_NULL_OBJECT(_actual)) then {
-			ASSERT_OBJECT_CLASS(_actual, "Location");
+		
+		ASSERT_OBJECT_CLASS(_actual, "Location");
 
-			//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
+		//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
-			T_SETV("pos", CALLM(_actual, "getPos", []));
-			T_SETV("type", GETV(_actual, "type"));
-			private _side = GETV(_actual, "side");
-			T_SETV("side", _side);
+		T_SETV("pos", CALLM(_actual, "getPos", []));
+		T_SETV("type", GETV(_actual, "type"));
+		private _side = GETV(_actual, "side");
+		T_SETV("side", _side);
 
-			T_PRVAR(world);
+		T_PRVAR(world);
 
-			private _garrisonActuals = CALLM(_actual, "getGarrisons", []);
-			private _garrisonIds = [];
-			{
-				private _garrison = CALLM(_world, "findGarrisonByActual", [_x]);
-				// Garrison might not be registered, might be civilian, enemy and not known etc.
-				if(!IS_NULL_OBJECT(_garrison)) then {
-					ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
-					_garrisonIds pushBack GETV(_garrison, "id");
-				};
-			} foreach _garrisonActuals;
-			T_SETV("garrisonIds", _garrisonIds);
+		private _garrisonActuals = CALLM(_actual, "getGarrisons", []);
+		private _garrisonIds = [];
+		{
+			private _garrison = CALLM(_world, "findGarrisonByActual", [_x]);
+			// Garrison might not be registered, might be civilian, enemy and not known etc.
+			if(!IS_NULL_OBJECT(_garrison)) then {
+				ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+				_garrisonIds pushBack GETV(_garrison, "id");
+			};
+		} foreach _garrisonActuals;
+		T_SETV("garrisonIds", _garrisonIds);
 
-			private _radius = GETV(_actual, "boundingRadius");
-			T_SETV("radius", _radius);
-			// if(!(_garrisonActual isEqualTo "")) then {
-			// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
-			// 	T_SETV("garrisonId", GETV(_garrison, "id"));
-			// } else {
-			// 	T_SETV("garrisonId", MODEL_HANDLE_INVALID);
-			// };
-		};
+		private _radius = GETV(_actual, "boundingRadius");
+		T_SETV("radius", _radius);
+		// if(!(_garrisonActual isEqualTo "")) then {
+		// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
+		// 	T_SETV("garrisonId", GETV(_garrison, "id"));
+		// } else {
+		// 	T_SETV("garrisonId", MODEL_HANDLE_INVALID);
+		// };
 	} ENDMETHOD;
 	
 	METHOD("isEmpty") {

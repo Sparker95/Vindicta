@@ -39,7 +39,7 @@
 // As well as other assertions
 // It's a global flag, must be defined here
 
-// #define OOP_ASSERT
+#define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 // Enables support for Arma Script Profiler globally
@@ -162,6 +162,28 @@
 #ifndef NAMESPACE
 	#define NAMESPACE missionNameSpace
 #endif
+
+
+// -----------------------------------------------------
+// |       M E T H O D   P A R A M E T E R S           |
+// -----------------------------------------------------
+
+#define P_THISOBJECT ["_thisObject", "", [""]]
+#define P_DEFAULT_PARAMS params [["_thisObject", "", [""]]]
+#define P_THISCLASS ["_thisClass", "", [""]]
+#define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
+#define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
+#define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
+#define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
+#define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
+#define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
+#define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
+#define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
+
+#define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
 
 // ----------------------------------------------------------------------
 // |                 I N T E R N A L   S T R I N G S                    |
@@ -372,7 +394,7 @@
 
 // Shortened variants of macros
 #define CALLM(a, b, c) CALL_METHOD(a, b, c)
-#define CALLCM(a, b, c) CALL_CLASS_METHOD(a, b, c)
+#define CALLCM(a, b, c, d) CALL_CLASS_METHOD(a, b, c, d)
 #define CALLSM(a, b, c) CALL_STATIC_METHOD(a, b, c)
 
 // Macros for multiple variables
@@ -389,6 +411,9 @@
 #define T_CALLM2(a, b, c) CALL_METHOD_2(_thisObject, a, b, c)
 #define T_CALLM3(a, b, c, d) CALL_METHOD_3(_thisObject, a, b, c, d)
 #define T_CALLM4(a, b, c, d, e) CALL_METHOD_4(_thisObject, a, b, c, d, e)
+
+// Call an overidden method from the overriding method.
+#define T_CALLCM(classNameStr, methodNameStr, extraParams) ([_thisObject]+extraParams call GET_METHOD(classNameStr, methodNameStr))
 
 #define CALLSM0(a, b) CALL_STATIC_METHOD_0(a, b)
 #define CALLSM1(a, b, c) CALL_STATIC_METHOD_1(a, b, c)
@@ -639,27 +664,6 @@
 		_oop_newMethodList pushBackUnique methodNameStr; \
 		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 #endif
-
-// -----------------------------------------------------
-// |       M E T H O D   P A R A M E T E R S           |
-// -----------------------------------------------------
-
-#define P_THISOBJECT ["_thisObject", "", [""]]
-#define P_DEFAULT_PARAMS params [["_thisObject", "", [""]]]
-#define P_THISCLASS ["_thisClass", "", [""]]
-#define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
-#define P_STRING(paramNameStr) [paramNameStr, "", [""]]
-#define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
-#define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
-#define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
-#define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
-#define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
-#define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
-#define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
-#define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
-#define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
-
-#define P_OOP_OBJECT(paramNameStr) P_STRING(paramNameStr)
 
 // ----------------------------------------
 // |              C L A S S               |

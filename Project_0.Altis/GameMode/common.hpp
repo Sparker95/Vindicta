@@ -15,7 +15,7 @@
 #include "..\Location\Location.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Undercover\UndercoverMonitor.hpp"
-
+#include "..\AI\CmdrAI\CmdrAI.hpp"
 
 #define CITY_STATE_STABLE 0
 #define CITY_STATE_AGITATED 1

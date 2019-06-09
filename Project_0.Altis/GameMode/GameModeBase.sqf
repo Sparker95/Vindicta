@@ -84,6 +84,9 @@ CLASS("GameModeBase", "")
 			// Don't remove spawn! For some reason without spawning it doesn't apply the values.
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
+
+			// Call our first process event immediately
+			T_CALLM("process", []);
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -116,6 +119,9 @@ CLASS("GameModeBase", "")
 				waitUntil {!((finddisplay 12) isEqualTo displayNull)};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 			};
+			#ifndef RELEASE_BUILD
+			[] call pr0_fnc_initDebugMenu;
+			#endif
 
 			T_CALLM("initClientOnly", []);
 		};
