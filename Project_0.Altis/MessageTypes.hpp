@@ -38,3 +38,6 @@
 
 // Group monitor
 #define GROUP_MONITOR_MESSAGE_PROCESS 700
+
+// Location Visibility Monitor
+#define LVMON_MESSAGE_PROCESS 800

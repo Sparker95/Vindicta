@@ -298,7 +298,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtLocId);
+		//T_PRVAR(tgtLocId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -385,7 +385,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtLocId);
+		//T_PRVAR(tgtLocId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);

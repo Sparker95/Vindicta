@@ -1593,10 +1593,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Update counters
-		pr _varName = switch (_catID) do {
-			case T_INF: {"countInf"};
-			case T_VEH: {"countVeh"};
-			case T_DRONE: {"countDrone"};
+		pr _varName = "countInf";
+		switch (_catID) do {
+			case T_INF: {_varName = "countInf"};
+			case T_VEH: {_varName = "countVeh"};
+			case T_DRONE: {_varName = "countDrone"};
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
@@ -1635,10 +1636,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Update counters
-		pr _varName = switch (_catID) do {
-			case T_INF: {"countInf"};
-			case T_VEH: {"countVeh"};
-			case T_DRONE: {"countDrone"};
+		pr _varName = "countInf";
+		switch (_catID) do {
+			case T_INF: {_varName = "countInf"};
+			case T_VEH: {_varName = "countVeh"};
+			case T_DRONE: {_varName = "countDrone"};
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
 

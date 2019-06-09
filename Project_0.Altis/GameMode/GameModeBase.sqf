@@ -117,6 +117,9 @@ CLASS("GameModeBase", "")
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 			};
 
+			// Message loop for client side checks: undercover, location visibility, etc
+			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);

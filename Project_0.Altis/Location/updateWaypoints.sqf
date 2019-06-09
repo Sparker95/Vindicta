@@ -3,8 +3,8 @@
 
 // Class: Location
 /*
-Method: setBorder
-Sets border parameters for this location
+Method: updateWaypoints
+Updates waypoint positions
 
 Arguments:
 _type - "circle" or "rectange"
@@ -18,8 +18,9 @@ _data	- for "circle":
 params [P_THISOBJECT];
 
 T_PRVAR(border);
+_border params ["_pos", "_a", "_b", "_dir", "_isRectangle"];
 private _waypoints = 
-	if(_border isEqualType 0) then {
+	if(!_isRectangle) then {
 		// Update the patrol waypoints
 		private _wp = [];
 		private _i = 0;
@@ -29,8 +30,8 @@ private _waypoints =
 	#ifndef _SQF_VM // getPos not implemented, probably surfaceIsWater isn't either.
 		while {_i < 8} do
 		{
-			_d = _border;
-			_pos = _locPos getPos [_border, 45*_i]; //Points around the location
+			_d = _a;
+			_pos = _locPos getPos [_a, 45*_i]; //Points around the location
 			while {(surfaceIsWater _pos) && (_d > 0)} do {
 				_d = _d - 10;
 				_pos = _locPos getPos [_d, 45*_i];
@@ -46,7 +47,6 @@ private _waypoints =
 	#endif
 		_wp
 	} else {
-		_border params ["_a", "_b", "_dir"];
 		private _radius = sqrt(_a*_a + _b*_b);
 		
 		// Add patrol waypoints

@@ -87,7 +87,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
-		T_SETV("isBuilt", false);
+		SET_VAR_PUBLIC(_thisObject, "isBuilt", true); // Location is built at start, except for roadblocks, it's changed in setType function
 		T_SETV("buildObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
@@ -134,7 +134,7 @@ CLASS("Location", "MessageReceiverEx")
 		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY)then{
-			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
+			private _cpModule = [+T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
 			T_SETV("cpModule",_cpModule);
 		};
 
@@ -365,6 +365,10 @@ CLASS("Location", "MessageReceiverEx")
 			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
 			private _timer = NEW("Timer", _args);
 			SET_VAR(_thisObject, "timer", _timer);
+		};
+
+		if (_type == LOCATION_TYPE_ROADBLOCK) then {
+			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
 		};
 
 		T_CALLM("updateWaypoints", []);
@@ -647,13 +651,15 @@ CLASS("Location", "MessageReceiverEx")
 			case "circle" : {
 				_data params [ ["_radius", 0, [0] ] ];
 				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
-				SET_VAR_PUBLIC(_thisObject, "border", _radius);
+				pr _border = [T_GETV("pos"), _radius, _radius, 0, false, -1]; // [center, a, b, angle, isRectangle, c]
+				SET_VAR_PUBLIC(_thisObject, "border", _border);
 			};
 			
 			case "rectangle" : {
 				_data params ["_a", "_b", "_dir"];
 				private _radius = sqrt(_a*_a + _b*_b);
-				SET_VAR_PUBLIC(_thisObject, "border", _data);
+				pr _border = [T_GETV("pos"), _a, _b, _dir, true, -1]; // [center, a, b, angle, isRectangle, c]
+				SET_VAR_PUBLIC(_thisObject, "border", _border);
 				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
 			};
 			
@@ -711,6 +717,9 @@ CLASS("Location", "MessageReceiverEx")
 	// Returns location that has its border overlapping given position
 	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
 
+	// Returns an array of locations that have their border overlapping given position
+	STATIC_METHOD_FILE("getLocationsAtPos", "Location\getLocationsAtPos.sqf");
+
 	// Adds an allowed area
 	METHOD_FILE("addAllowedArea", "Location\addAllowedArea.sqf");
 
@@ -728,6 +737,21 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Builds the location
 	METHOD_FILE("build", "Location\build.sqf");
+
+	/*
+	Method: (static)nearLocations
+	Returns an array of locations that are _radius meters from _pos. Distance is checked in 2D mode.
+
+	Parameters: _pos, _radius
+
+	Returns: nil
+	*/
+	STATIC_METHOD("nearLocations") {
+		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		GET_STATIC_VAR("Location", "all") select {
+			(GETV(_x, "pos") distance2D _pos) < _radius
+		}
+	} ENDMETHOD;
 
 ENDCLASS;
 
