@@ -323,12 +323,14 @@ CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
 	VARIABLE("ambientMissions");
+	VARIABLE("revoltTimer");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
+		T_SETV("revoltTimer", 0);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
@@ -395,7 +397,7 @@ CLASS("CivilWarCityData", "")
 		private _cityRadius = 500 max GETV(_city, "boundingRadius");
 
 		// if City is stable or agitated then instability is a factor
-		if(_state == CITY_STATE_STABLE or _state == CITY_STATE_AGITATED) then {
+		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
 			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
 
@@ -405,10 +407,44 @@ CLASS("CivilWarCityData", "")
 			// TODO: add other interesting factors here to the instability rate.
 			private _instability = _activity * 500 / _cityRadius;
 			T_SETV("instability", _instability);
-			_state = switch true do {
+			private _newState = switch true do {
 				case (_instability > 200): { CITY_STATE_IN_REVOLT };
 				case (_instability > 100): { CITY_STATE_AGITATED };
 				default { CITY_STATE_STABLE };
+			};
+			if(_state != _newState) then {
+				switch true do {
+					case (_newState == CITY_STATE_IN_REVOLT): {
+						T_SETV("revoltTimer", TIME_NOW);
+					};
+				};
+				T_SETV("state", _newState);
+			};
+		} else {
+			if(_state == CITY_STATE_IN_REVOLT) then {
+				T_PRVAR(revoltTimer);
+
+				switch true do {
+					// If more than an hour and enemy still didn't occupy city location then we liberated the city!
+					case (_revoltTimer+60*60 < TIME_NOW): {
+						private _garrisons = CALLM(_city, "getGarrisonsRecursive", [ENEMY_SIDE]);
+						if(count _garrisons == 0) then {
+							T_SETV("state", CITY_STATE_LIBERATED);
+						} else {
+							T_SETV("state", CITY_STATE_SUPPRESSED);
+						};
+					};
+					case (_revoltTimer+60*15 < TIME_NOW): {
+						// Go from revolt to surpressed if enemy is occupying the town after timer expires
+						private _garrisons = CALL_STATIC_METHOD("Garrison", "getAllActive", [[ENEMY_SIDE]]) 
+							select { CALLM(_x, "getPos", []) distance _cityPos < _cityRadius };
+						
+						// Go to liberated if no enemy is present once timer expires
+						if(count _garrisons == 0) then {
+							T_SETV("state", CITY_STATE_LIBERATED);
+						};
+					};
+				};
 			};
 		};
 		T_SETV("state", _state);

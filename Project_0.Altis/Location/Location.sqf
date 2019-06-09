@@ -335,6 +335,21 @@ CLASS("Location", "MessageReceiverEx")
 		};
 	} ENDMETHOD;
 	
+	
+	METHOD("getGarrisonsRecursive") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		private _myGarrisons = if (_side == CIVILIAN) then {
+			+T_GETV("garrisons")
+		} else {
+			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
+		};
+		T_PRVAR(children);
+		{
+			_myGarrisons = _myGarrisons + CALLM(_x, "getGarrisonsRecursive", [_side]);
+		} forEach _children;
+		_myGarrisons
+	} ENDMETHOD;
+
 	/*
 	Method: setType
 	Set the Type.
