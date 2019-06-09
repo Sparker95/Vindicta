@@ -36,6 +36,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
 	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
 
+	// Counters of subcategories
+	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
+
 	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
 
 	// ----------------------------------------------------------------------
@@ -68,6 +73,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		//T_SETV("action", "");
 		T_SETV("effTotal", +T_EFF_null);
 		T_SETV("effMobile", +T_EFF_null);
+		T_SETV("countInf", 0);
+		T_SETV("countVeh", 0);
+		T_SETV("countDrone", 0);
 		T_SETV("location", "");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
@@ -990,7 +998,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Add to the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
-		CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
+		CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
 
 		__MUTEX_UNLOCK;
 
@@ -1059,7 +1067,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Substract from the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
-		CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
+		CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
 
 		__MUTEX_UNLOCK;
 
@@ -1109,7 +1117,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			
 			// Add to the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-			CALLM2(_thisObject, "addEfficiency", _catID, _subcatID);
+			CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
 		} forEach _groupUnits;
 		private _groups = GET_VAR(_thisObject, "groups");
 		_groups pushBackUnique _group;
@@ -1189,7 +1197,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			
 			// Substract from the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-			CALLM2(_thisObject, "substractEfficiency", _catID, _subcatID);
+			CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
 				
 		} forEach _groupUnits;
 		pr _groups = GET_VAR(_thisObject, "groups");
@@ -1554,14 +1562,14 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 	
 	/*
-	Method: addEfficiency
-	Adds values to efficiency vector
+	Method: increaseCounters
+	Adds values to efficiency vector and other counters
 	
 	Private use!
 	
 	Returns: nil
 	*/
-	METHOD("addEfficiency") {
+	METHOD("increaseCounters") {
 		params [P_THISOBJECT, "_catID", "_subCatID"];
 		
 		__MUTEX_LOCK;
@@ -1584,18 +1592,27 @@ CLASS("Garrison", "MessageReceiverEx");
 			T_SETV("effMobile", _effMobile);
 		};
 
+		// Update counters
+		pr _varName = "countInf";
+		switch (_catID) do {
+			case T_INF: {_varName = "countInf"};
+			case T_VEH: {_varName = "countVeh"};
+			case T_DRONE: {_varName = "countDrone"};
+		};
+		T_SETV(_varName, T_GETV(_varName)+1);
+
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;	
 	
 	/*
 	Method: subEfficiency
-	Substracts values to efficiency vector
+	Substracts values from efficiency vector and other counters
 	
 	Private use!
 	
 	Returns: nil
 	*/
-	METHOD("substractEfficiency") {
+	METHOD("decreaseCounters") {
 		params [P_THISOBJECT, "_catID", "_subCatID"];
 		
 		__MUTEX_LOCK;
@@ -1617,6 +1634,15 @@ CLASS("Garrison", "MessageReceiverEx");
 			_effMobile = EFF_DIFF(_effMobile, _effSub);
 			T_SETV("effMobile", _effMobile);
 		};
+
+		// Update counters
+		pr _varName = "countInf";
+		switch (_catID) do {
+			case T_INF: {_varName = "countInf"};
+			case T_VEH: {_varName = "countVeh"};
+			case T_DRONE: {_varName = "countDrone"};
+		};
+		T_SETV(_varName, T_GETV(_varName)-1);
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -1902,6 +1928,39 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _units = CALLM1(_thisObject, "findUnits", _query);
 		count _units	
 	} ENDMETHOD;
+
+	/*
+	Method: countInfantryUnits
+	Returns the amount of infantry units
+
+	Returns: Number
+	*/
+	METHOD("countInfantryUnits") {
+		params [P_THISOBJECT];
+		T_GETV("countInf")
+	} ENDMETHOD;
+
+	/*
+	Method: countVehicleUnits
+	Returns the amount of infantry units
+
+	Returns: Number
+	*/
+	METHOD("countVehicleUnits") {
+		params [P_THISOBJECT];
+		T_GETV("countVeh")
+	} ENDMETHOD;
+
+	/*
+	Method: countDroneUnits
+	Returns the amount of infantry units
+
+	Returns: Number
+	*/
+	METHOD("countDroneUnits") {
+		params [P_THISOBJECT];
+		T_GETV("countDrone")
+	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
 	// Handles incoming messages. Since it's a MessageReceiverEx, we must overwrite handleMessageEx
@@ -1958,7 +2017,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getIntel") {
 		params ["_thisObject"];
 
-		+T_GETV("intelItems")
+		T_GETV("intelItems")
 	} ENDMETHOD;
 
 ENDCLASS;

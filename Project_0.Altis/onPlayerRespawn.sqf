@@ -130,4 +130,7 @@ player addAction ["Talk to civilian", // title
 // Init the UnitIntel on player
 CALLSM1("UnitIntel", "initPlayer", player);
 
+// Init the Location Visibility Monitor on player
+NEW("LocationVisibilityMonitor", [player]);
+
 CALLM(gGameMode, "playerSpawn", _this);

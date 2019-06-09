@@ -126,6 +126,11 @@
  <div class="CBody"><p>Returns location that has the provided position/object within its border.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position or object</p></td></tr></table><p>Returns: <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> or &quot;&quot; if there is no such location</p><p>Author: Sparker 2.11.2019</p></div>
 </div>
 
+<a name="(static)getLocationsAtPos"></a><a name="Topic729"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)getLocationsAtPos</div>
+ <div class="CBody"><p>Returns an array of locations that have the provided position/object within its border.&nbsp; Same as getLocationAtPos, but returns all locations</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position or object</p></td></tr></table><p>Returns: <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> or &quot;&quot; if there is no such location</p><p>Author: Sparker 08 June 2019</p></div>
+</div>
+
 <a name="(static)getNearestLocation"></a><a name="Topic321"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)getNearestLocation</div>
  <div class="CBody"><p>Returns the nearest location to given position(or object) and 2D distance to it</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position or object</p></td></tr></table><p>Returns: [Location, distance]</p><p>Author: Sparker 2.11.2019</p></div>
@@ -166,14 +171,24 @@
  <div class="CBody"><p>Checks if given position is in area of given location.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
+<a name="(static)isPosEvenSafer"></a><a name="Topic726"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)isPosEvenSafer</div>
+ <div class="CBody"><p>Returns true if the place is guaranteed safe for spawning specific vehicle.&nbsp; It is very conservative and as such will disallow spawning in buildings or too close to existing objects.</p><p>Parameters: _pos, _dir, _className _pos - position ATL _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
+</div>
+
 <a name="(static)isPosSafe"></a><a name="Topic250"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)isPosSafe</div>
  <div class="CBody"><p>Returns true if the place is good for spawning specific vehicle.&nbsp; The main method of this function - checking vehicles inside the bounding box.&nbsp; Houses and buildings are ignored.</p><p>Parameters: _pos, _dir, _className _pos - position ATL _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
 </div>
 
-<a name="spawn"></a><a name="Topic684"></a><div class="CTopic TFunction LSQF last">
+<a name="spawn"></a><a name="Topic684"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">spawn</div>
  <div class="CBody"><p>Spawns Location.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Returns: nil</p></div>
+</div>
+
+<a name="updateWaypoints"></a><a name="Topic727"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">updateWaypoints</div>
+ <div class="CBody"><p>Updates waypoint positions</p><div class="CHeading">Arguments</div><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>&quot;circle&quot; or &quot;rectange&quot;</p></td></tr><tr><td class="CDLEntry">_data</td><td class="CDLDefinition"><p>for &quot;circle&quot;: _radius - for &quot;rectangle&quot;:</p></td></tr><tr><td class="CDLEntry">[_a, _b, _dir]</td><td class="CDLDefinition"><p>rectangle dimensions and direction</p></td></tr></table></div>
 </div>
 
 </body></html>

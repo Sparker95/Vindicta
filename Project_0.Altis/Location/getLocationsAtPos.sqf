@@ -2,8 +2,9 @@
 
 // Class: Location
 /*
-Method: (static)getLocationAtPos
-Returns location that has the provided position/object within its border. 
+Method: (static)getLocationsAtPos
+Returns an array of locations that have the provided position/object within its border. 
+Same as getLocationAtPos, but returns all locations
 
 Parameters: _pos
 
@@ -11,21 +12,13 @@ _pos - position or object
 
 Returns: <Location> or "" if there is no such location
 
-Author: Sparker 2.11.2019
+Author: Sparker 08 June 2019
 */
 
 #define pr private
 
 params [ ["_thisClass", "", [""]], ["_pos", [], [objNull, []]]];
 
-pr _all = GETSV("Location", "all");
-
-pr _index = _all findIf {
+GETSV("Location", "all") select {
 	_pos inArea GETV(_x, "border")
-};
-
-if (_index != -1) then {
-	_all select _index
-} else {
-	""
-};
+}

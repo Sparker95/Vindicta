@@ -123,6 +123,9 @@ CLASS("GameModeBase", "")
 			[] call pr0_fnc_initDebugMenu;
 			#endif
 
+			// Message loop for client side checks: undercover, location visibility, etc
+			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);

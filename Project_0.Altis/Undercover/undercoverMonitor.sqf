@@ -21,14 +21,11 @@
 //#define DEBUG_UNDERCOVER_MONITOR
 #endif
 
-gMsgLoopUndercover = NEW("MessageLoop", []);
-CALL_METHOD(gMsgLoopUndercover, "setName", ["Undercover thread"]);
-
 /*
 undercoverMonitor: Changes this object's unit's captive status dynamically based on equipment, behavior, location, and so on.
 
 Date: December 2018
-Authors: Sparker, Marvis
+Authors: Marvis, Sparker
 */
 
 // array of animations that force you undercover (ace surrender, ...)
@@ -187,7 +184,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
-		gMsgLoopUndercover
+		gMsgLoopPlayerChecks
 	} ENDMETHOD;
 
 
