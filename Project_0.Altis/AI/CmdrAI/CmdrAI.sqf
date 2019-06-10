@@ -274,7 +274,7 @@ CLASS("CmdrAI", "")
 				private _loc = CALLM(_potentialSrcGarr, "getLocation", []);
 				!IS_NULL_OBJECT(_loc) and 
 				{
-					CALLM(_loc, "getType", []) in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_BASE]
+					GETV(_loc, "type") in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_BASE]
 				}
 			} and 
 			// Must not be source of another inprogress patrol mission

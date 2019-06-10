@@ -32,7 +32,7 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		pr _group = GETV(T_GETV("AI"), "agent");
 		pr _gar = CALLM0(_group, "getGarrison");
 		pr _loc = CALLM0(_gar, "getLocation");
-		pr _pos = if (_loc != "") then {
+		pr _pos = if (!IS_NULL_OBJECT(_loc)) then {
 			CALLM0(_loc, "getRandomPos");
 		} else {
 			pr _lp = getPos leader _hG;
@@ -48,7 +48,11 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			// Give waipoints to the group
 			pr _i = 0;
 			pr _waypoints = []; // Array with waypoint IDs
-			pr _radius = 200 + random 150;
+			pr _radius = if(!IS_NULL_OBJECT(_loc)) then {
+				(100 max GETV(_loc, "boundingRadius")) * 1.25
+			} else { 
+				200 + random 150 
+			};
 			pr _angleStart = random 360;
 			while {_i < 5} do {
 				pr _wp = _hG addWaypoint [_pos getPos [_radius, _angleStart + _i*2*360/5], 0];

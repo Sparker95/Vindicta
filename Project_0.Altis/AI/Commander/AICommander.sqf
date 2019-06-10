@@ -707,13 +707,35 @@ CLASS("AICommander", "AI")
 	_pos - <position>
 	_radius - <number>
 	
-	Returns: Number - max activity in radius
+	Returns: Number - max activity in radius2
 	*/
 	METHOD("getActivity") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "getActivity", [_pos ARG _radius])
 	} ENDMETHOD;
+
+	/*
+	Method: _registerGarrison
+	Registers a garrison to be processed by this AICommander
+	
+	Parameters:
+	_gar - <Garrison>
+	
+	Returns: GarrisonModel
+	*/
+	METHOD("_registerGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		ASSERT_THREAD(_thisObject);
+
+		OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
+		T_GETV("garrisons") pushBack _gar; // I need you for my army!
+		CALLM(_gar, "ref", []);
+		T_PRVAR(worldModel);
+		NEW("GarrisonModel", [_worldModel ARG _gar])
+	} ENDMETHOD;
+
 	/*
 	Method: registerGarrison
 	Registers a garrison to be processed by this AICommander
@@ -721,7 +743,7 @@ CLASS("AICommander", "AI")
 	Parameters:
 	_gar - <Garrison>
 	
-	Returns: nil
+	Returns: GarrisonModel
 	*/
 	STATIC_METHOD("registerGarrison") {
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
@@ -729,17 +751,35 @@ CLASS("AICommander", "AI")
 		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
-		private _newModel = NULL_OBJECT;
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			ASSERT_THREAD(_thisObject);
+			T_CALLM(_registerGarrison, [_gar]);
+		} else {
+			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
+			NULL_OBJECT
+		}
+	} ENDMETHOD;
 
-			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
-			T_GETV("garrisons") pushBack _gar; // I need you for my army!
-			CALLM(_gar, "ref", []);
-			T_PRVAR(worldModel);
-			_newModel = NEW("GarrisonModel", [_worldModel ARG _gar]);
+	/*
+	Method: registerGarrisonOutOfThread
+	Registers a garrison to be processed by this AICommander.
+	Call this version if you are outside of the commander thread.
+	
+	Parameters:
+	_gar - <Garrison>
+	
+	Returns: nil
+	*/
+	STATIC_METHOD("registerGarrisonOutOfThread") {
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		private _side = CALLM(_gar, "getSide", []);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			CALLM2(_thisObject, "postMethodAsync", "_registerGarrison", [_gar]);
+		} else {
+			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
 		};
-		_newModel
 	} ENDMETHOD;
 
 	/*

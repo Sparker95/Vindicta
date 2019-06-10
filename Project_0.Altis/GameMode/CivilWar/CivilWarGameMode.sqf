@@ -516,8 +516,8 @@ CLASS("CivilWarPoliceStationData", "")
 				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
 				T_SETV_REF("reinfGarrison", _newGarrison);
 
-				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
-				CALLM2(_newGarrison, "postMethodAsync", "activate", []);
+				CALLM(_newGarrison, "setPos", [_spawnInPos]);
+				CALLM(_newGarrison, "activateOutOfThread", []);
 				private _AI = CALLM(_newGarrison, "getAI", []);
 				private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
 				CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);

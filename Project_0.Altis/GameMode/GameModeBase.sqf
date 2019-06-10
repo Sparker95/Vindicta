@@ -37,8 +37,8 @@ CLASS("GameModeBase", "")
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
 			gMessageLoopMain = NEW("MessageLoop", ["Main thread" ARG 16]);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10 ARG 30]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
@@ -46,7 +46,7 @@ CLASS("GameModeBase", "")
 
 			// Message loop for group AI
 			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
-			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow"		ARG 1 ARG 2	]); // Tag, priority, min interval
+			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
 
 			// Message loop for Stimulus Manager
 			gMessageLoopStimulusManager = NEW("MessageLoop", ["Stimulus Manager thread"]);
@@ -78,7 +78,7 @@ CLASS("GameModeBase", "")
 			T_CALLM("initServerOnly", []);
 
 			// Add processing for the game mode on the server once we initialized everything else
-			CALLM(gMessageLoopMain, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["GameModeProcess" ARG 1 ARG 60 ARG 120]);
 			CALLM2(gMessageLoopMain, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 
 			// Don't remove spawn! For some reason without spawning it doesn't apply the values.
