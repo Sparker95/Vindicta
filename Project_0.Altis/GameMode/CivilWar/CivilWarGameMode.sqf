@@ -323,14 +323,12 @@ CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
 	VARIABLE("ambientMissions");
-	VARIABLE("revoltTimer");
-
+	
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
-		T_SETV("revoltTimer", 0);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
@@ -407,47 +405,30 @@ CLASS("CivilWarCityData", "")
 			// TODO: add other interesting factors here to the instability rate.
 			private _instability = _activity * 500 / _cityRadius;
 			T_SETV("instability", _instability);
-			private _newState = switch true do {
-				case (_instability > 200): { CITY_STATE_IN_REVOLT };
-				case (_instability > 100): { CITY_STATE_AGITATED };
-				default { CITY_STATE_STABLE };
-			};
-			if(_state != _newState) then {
-				switch true do {
-					case (_newState == CITY_STATE_IN_REVOLT): {
-						T_SETV("revoltTimer", TIME_NOW);
-					};
-				};
-				T_SETV("state", _newState);
+			switch true do {
+				case (_instability > 200): { T_SETV("state", CITY_STATE_IN_REVOLT) };
+				case (_instability > 100): { T_SETV("state", CITY_STATE_AGITATED) };
+				default { T_SETV("state", CITY_STATE_STABLE) };
 			};
 		} else {
-			if(_state == CITY_STATE_IN_REVOLT) then {
-				T_PRVAR(revoltTimer);
+			//if(_state == CITY_STATE_IN_REVOLT) then {
+			// If there is a military garrison occupying the city then it is suppressed
 
-				switch true do {
-					// If more than an hour and enemy still didn't occupy city location then we liberated the city!
-					case (_revoltTimer+60*60 < TIME_NOW): {
-						private _garrisons = CALLM(_city, "getGarrisonsRecursive", [ENEMY_SIDE]);
-						if(count _garrisons == 0) then {
-							T_SETV("state", CITY_STATE_LIBERATED);
-						} else {
-							T_SETV("state", CITY_STATE_SUPPRESSED);
-						};
-					};
-					case (_revoltTimer+60*15 < TIME_NOW): {
-						// Go from revolt to surpressed if enemy is occupying the town after timer expires
-						private _garrisons = CALL_STATIC_METHOD("Garrison", "getAllActive", [[ENEMY_SIDE]]) 
-							select { CALLM(_x, "getPos", []) distance _cityPos < _cityRadius };
-						
-						// Go to liberated if no enemy is present once timer expires
-						if(count _garrisons == 0) then {
-							T_SETV("state", CITY_STATE_LIBERATED);
-						};
+			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
+				T_SETV("state", CITY_STATE_SUPPRESSED);
+			} else {
+				// If the location is spawned and there is more friendly than enemy units then it is liberated.
+				if(CALLM(_city, "isSpawned", [])) then {
+					private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
+					private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
+					if(_friendlyCount > _enemyCount * 2) then {
+						T_SETV("state", CITY_STATE_LIBERATED);
 					};
 				};
 			};
+
+			//};
 		};
-		T_SETV("state", _state);
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 		private _mrk = GETV(_city, "name") + "_gamemode_data";
@@ -519,8 +500,10 @@ CLASS("CivilWarPoliceStationData", "")
 			};
 		} else {
 			private _garrisons = CALLM0(_policeStation, "getGarrisons");
-			// TODO: add forces if depleted {!EFF_LTE(CALLM0(_garrisons#0, "getEfficiencyMobile")}
-			if (count _garrisons == 0) then {
+			if (count _garrisons == 0 or { 
+				private _garr = _garrisons#0;
+				CALLM(_garr, "countInfantryUnits", []) <= 4
+			}) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
 				private _cInf = CALLM(_policeStation, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);

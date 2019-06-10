@@ -270,7 +270,18 @@ CLASS("Location", "MessageReceiverEx")
 		GETV(_thisObject, "pos")
 	} ENDMETHOD;
 
+	
+	// |                         I S   S P A W N E D                        |
+	/*
+	Method: isSpawned
+	Is the location spawned?
 
+	Returns: bool
+	*/
+	METHOD("isSpawned") {
+		params [ P_THISOBJECT ];
+		T_GETV("spawned")
+	} ENDMETHOD;
 
 	// |               G E T   P A T R O L   W A Y P O I N T S
 	/*

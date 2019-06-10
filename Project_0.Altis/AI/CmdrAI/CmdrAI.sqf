@@ -270,7 +270,13 @@ CLASS("CmdrAI", "")
 			// Must be not already busy 
 			!CALLM(_potentialSrcGarr, "isBusy", []) and 
 			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			{ 
+				private _loc = CALLM(_potentialSrcGarr, "getLocation", []);
+				!IS_NULL_OBJECT(_loc) and 
+				{
+					CALLM(_loc, "getType", []) in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_BASE]
+				}
+			} and 
 			// Must not be source of another inprogress patrol mission
 			{ 
 				T_PRVAR(activeActions);
