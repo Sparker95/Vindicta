@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("acc",["Variable"],[["accuracyRadius",,[["Intel.IntelLocation",,,,0,"File:Intel/Intel.sqf:Intel.IntelLocation.accuracyRadius","SQFClass:Intel.IntelLocation:accuracyRadius"]]]]);

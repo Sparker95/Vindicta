@@ -136,9 +136,13 @@ if(_found) then {//If the spawn position has been found
 		_return = [ ( _locPos vectorAdd [-_r + (random (2*_r)), -_r + (random (2*_r)), 0] ), 0];
 		OOP_WARNING_MSG("[Location::getSpawnPos] Warning: spawn position not found for unit: %1. Returning default position.", [_catID ARG _subcatID ARG _groupType]);
 	} else {
-		// Try to find a safe position on a road for this vehicle
+		// Try to find a random safe position on a road for this vehicle
 		private _locPos = GET_VAR(_thisObject, "pos");
-		_return = CALLSM2("Location", "findSafePosOnRoad", _locPos, _className);
+		private _locRadius = GET_VAR(_thisObject, "boundingRadius");
+		private _testPos = [_locPos, _locRadius min random [0, 0, _locRadius*5], random 360] call BIS_fnc_relPos;
+		// DUMP_CALLSTACK;
+		// [[[_locPos, _locRadius]],[]] call BIS_fnc_randomPos;
+		_return = CALLSM2("Location", "findSafePosOnRoad", _testPos, _className);
 	};
 };
 

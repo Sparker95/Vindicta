@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("isc",["Function"],[["isCompleted",,[["Action",,,,0,"File:AI/Action/Action.sqf:Action.isCompleted","SQFClass:Action:isCompleted"]]]]);
+NDSearch.OnPrefixDataLoaded("isc",["Function"],[["isCompleted",,[["Action",,,,0,"File:AI/Action/Action.sqf:Action.isCompleted","SQFClass:Action:isCompleted"]]],["isCreated",,[["Intel",,,,0,"File:Intel/Intel.sqf:Intel.isCreated","SQFClass:Intel:isCreated"]]]]);

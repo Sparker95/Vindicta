@@ -28,7 +28,7 @@ CLASS("ActionGroupOccupySentryPositions", "ActionGroup")
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitInfantryMove", _AI);
 			
 			if (count _sentryPos > 0) then {
-				pr _parameters = [["position", _sentryPos]];
+				pr _parameters = [["position", _sentryPos], ["teleport", false]];
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryMove", 0, _parameters, _AI);
 			} else {
 				pr _unitData = CALLM0(_unit, "getData");

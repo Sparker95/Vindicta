@@ -47,6 +47,16 @@
  <div class="CBody"><p>Reference to the source <a href="../../index.html#File:Intel/Intel.sqf:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item this object is linked with.</p></div>
 </div>
 
+<a name="Intel.dbEntry"></a><a name="Topic703"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">dbEntry</div>
+ <div class="CBody"><p>Reference to the dbEntry copy of this intel item. This is filled in by the intelDb when the item is added via addIntelClone, and used in subsequent updateIntelClone operations.</p></div>
+</div>
+
+<a name="Intel.db"></a><a name="Topic704"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">db</div>
+ <div class="CBody"><p>Reference to the intel database that owns this intel. This is set in addIntelClone, and enables the updateInDb function.</p></div>
+</div>
+
 <a name="Intel.Functions"></a><a name="Topic619"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
@@ -54,6 +64,26 @@
 <a name="Intel.new"></a><a name="Topic620"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
  <div class="CBody"><p>Constructor. Takes no arguments.</p></div>
+</div>
+
+<a name="Intel.delete"></a><a name="Topic705"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">delete</div>
+ <div class="CBody"><p>Destructor. Takes no arguments. Will remove item from associated intelDb if it was created using addIntelClone.</p></div>
+</div>
+
+<a name="Intel.isCreated"></a><a name="Topic706"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">isCreated</div>
+ <div class="CBody"><p>Returns: Bool, true if this Intel object has been created already (assigned dateCreated and initialized by owner).</p></div>
+</div>
+
+<a name="Intel.create"></a><a name="Topic707"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">create</div>
+ <div class="CBody"><p>Set dateCreated to now to indicate that this object is valid.</p></div>
+</div>
+
+<a name="Intel.updateInDb"></a><a name="Topic708"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">updateInDb</div>
+ <div class="CBody"><p>Valid only for intel created using addIntelClone. This will updateIntelFromClone directly to the database that owns this intel.</p></div>
 </div>
 
 <a name="Intel.clientAdd"></a><a name="Topic621"></a><div class="CTopic TFunction LSQF">
@@ -95,6 +125,11 @@
  <div class="CBody"><p>Array with subarrays which hold how many units of specific types/subtypes are there.</p><p>Structure of the array: [infantry, vehicles, drones]</p><table class="CDefinitionList"><tr><td class="CDLEntry">infantry</td><td class="CDLDefinition"><p>[amount of subcategory 0, 1, 2, ...]</p></td></tr><tr><td class="CDLEntry">vehicles</td><td class="CDLDefinition"><p>[amount of subcategory 0, 1, 2, ...]</p></td></tr><tr><td class="CDLEntry">drones</td><td class="CDLDefinition"><p>[amount of subcategory 0, 1, 2, ...]</p></td></tr></table><p>If this variable is equal to [], it means unit amounts are not known</p></div>
 </div>
 
+<a name="Intel.IntelLocation.accuracyRadius"></a><a name="Topic709"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">accuracyRadius</div>
+ <div class="CBody"><p>Number, radius in meters that specifies how accurate is the intel.&nbsp; The actual location should be somewhere within this radius.&nbsp; 0 means absolutely accurate coordinates.</p></div>
+</div>
+
 <a name="Intel.IntelLocation.allMapMarker"></a><a name="Topic628"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">allMapMarker</div>
  <div class="CBody"><p><a href="../../index.html#File:UI/MapMarker/MapMarker.sqf:MapMarker" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,434);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >MapMarker</a> associated with this intel</p></div>
@@ -119,9 +154,19 @@
  <div class="CBody"><p>Source position</p></div>
 </div>
 
-<a name="Intel.IntelCommanderAction.locationSrc"></a><a name="Topic640"></a><div class="CTopic TVariable LSQF">
- <div class="CTitle">locationSrc</div>
- <div class="CBody"><p>Source location</p></div>
+<a name="Intel.IntelCommanderAction.posTgt"></a><a name="Topic710"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">posTgt</div>
+ <div class="CBody"><p>Target position</p></div>
+</div>
+
+<a name="Intel.IntelCommanderAction.garrison"></a><a name="Topic711"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">garrison</div>
+ <div class="CBody"><p>Garrison undertaking the action, if any</p></div>
+</div>
+
+<a name="Intel.IntelCommanderAction.posCurrent"></a><a name="Topic645"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">posCurrent</div>
+ <div class="CBody"><p>Current position of the garrison that is executing this action. Commander should update it periodycally.</p></div>
 </div>
 
 <a name="Intel.IntelCommanderAction.route"></a><a name="Topic641"></a><div class="CTopic TVariable LSQF">
@@ -144,22 +189,22 @@
  <div class="CBody"><p>Strength of the units allocated for this job. Format is yet unknown.</p></div>
 </div>
 
-<a name="Intel.IntelCommanderAction.posCurrent"></a><a name="Topic645"></a><div class="CTopic TVariable LSQF">
- <div class="CTitle">posCurrent</div>
- <div class="CBody"><p>Current position of the garrison that is executing this action. Commander should update it periodycally.</p></div>
-</div>
-
-<a name="Intel.IntelCommanderActionReinforce"></a><a name="Topic646"></a><div class="CTopic TClass LSQF">
+<a name="Intel.IntelCommanderActionReinforce"></a><a name="Topic712"></a><div class="CTopic TClass LSQF">
  <div class="CTitle"><span class="Qualifier">Intel.</span>&#8203;IntelCommanderActionReinforce</div>
- <div class="CBody"><p>Intel about reinforcement commander action</p></div>
+ <div class="CBody"><p>Intel about reinforcement commander action.</p></div>
 </div>
 
 <a name="Intel.IntelCommanderActionReinforce.Variables"></a><a name="Topic647"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Variables</div>
 </div>
 
-<a name="Intel.IntelCommanderActionReinforce.garrison"></a><a name="Topic648"></a><div class="CTopic TVariable LSQF">
- <div class="CTitle">garrison</div>
+<a name="Intel.IntelCommanderActionReinforce.srcGarrison"></a><a name="Topic713"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">srcGarrison</div>
+ <div class="CBody"><p>The source garrison that sent the reinforcements. Probably players have no use to this.</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionReinforce.tgtGarrison"></a><a name="Topic714"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">tgtGarrison</div>
  <div class="CBody"><p>The destination garrison that will be reinforced. Probably players have no use to this.</p></div>
 </div>
 
@@ -186,9 +231,43 @@
  <div class="CTitle">Variables</div>
 </div>
 
-<a name="Intel.IntelCommanderActionAttack.type"></a><a name="Topic654"></a><div class="CTopic TVariable LSQF">
+<a name="Intel.IntelCommanderActionAttack.srcGarrison"></a><a name="Topic715"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">srcGarrison</div>
+ <div class="CBody"><p>The source garrison that sent the attack. Probably players have no use to this.</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionAttack.type"></a><a name="Topic716"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">type</div>
- <div class="CBody"><p>The type of attack: QRF, basic attack, something else. IDK the formet of this now!</p></div>
+ <div class="CBody"><p>The type of attack: QRF, basic attack, something else. IDK the format of this now!</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionPatrol"></a><a name="Topic717"></a><div class="CTopic TClass LSQF">
+ <div class="CTitle"><span class="Qualifier">Intel.</span>&#8203;IntelCommanderActionPatrol</div>
+ <div class="CBody"><p>Intel about action to patrol a route.</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionPatrol.Variables"></a><a name="Topic718"></a><div class="CTopic TGroup LSQF">
+ <div class="CTitle">Variables</div>
+</div>
+
+<a name="Intel.IntelCommanderActionPatrol.srcGarrison"></a><a name="Topic719"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">srcGarrison</div>
+ <div class="CBody"><p>The source garrison that sent the patrol. Probably players have no use to this.</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionPatrol.waypoints"></a><a name="Topic720"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">waypoints</div>
+ <div class="CBody"><p>Waypoints (as positions) that the patrol will visit.</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionPatrol.locations"></a><a name="Topic721"></a><div class="CTopic TVariable LSQF">
+ <div class="CTitle">locations</div>
+ <div class="CBody"><p>Locations that the patrol will visit.</p></div>
+</div>
+
+<a name="Intel.IntelCommanderActionRetreat"></a><a name="Topic722"></a><div class="CTopic TClass LSQF">
+ <div class="CTitle"><span class="Qualifier">Intel.</span>&#8203;IntelCommanderActionRetreat</div>
+ <div class="CBody"><p>Intel about action to retreat from a location.</p></div>
 </div>
 
 <a name="Intel.IntelCommanderActionRecon"></a><a name="Topic655"></a><div class="CTopic TClass LSQF last">

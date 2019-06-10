@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:Location/setBorder.sqf",{276:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Sets border parameters for this location</div></div>"});

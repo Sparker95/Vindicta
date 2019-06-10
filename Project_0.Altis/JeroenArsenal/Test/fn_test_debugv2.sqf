@@ -1,7 +1,7 @@
 #include "defineCommon.inc"
 
 fnc_debugv2_overwrite = {
-	waitUntil {!isNull findDisplay 49}; 
+	//waitUntil {!isNull findDisplay 49}; // no please don't waitUntil in unscheduled, by now display 49 already exists
 	_display = findDisplay 49;
 	
 	_ctrl_debug = _display displayCtrl 13184; 
@@ -274,7 +274,10 @@ fnc_debugv2_overwrite = {
 		params ["_display", "_key", "_shift", "_ctrl", "_alt"];
 		
 		if(_key == 1)then{
-			[] spawn fnc_debugv2_overwrite;
+			0 spawn {
+				waitUntil {!isNull (findDisplay 49)};
+				isNil {call fnc_debugv2_overwrite;}; // Wrap it into isNil to make it do the job in one frame
+			};
 		};
 	}];
 

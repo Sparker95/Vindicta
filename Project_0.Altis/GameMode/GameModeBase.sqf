@@ -145,7 +145,6 @@ CLASS("GameModeBase", "")
 
 			private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 			if(!IS_NULL_OBJECT(_cmdr)) then {
-				OOP_DEBUG_MSG("founc cmdr %1 for loc %2", [_cmdr ARG _loc]);
 				CALLM(_cmdr, "registerLocation", [_loc]);
 
 				private _gar = T_CALLM("initGarrison", [_loc ARG _side]);
@@ -158,8 +157,23 @@ CLASS("GameModeBase", "")
 				};
 			};
 
-			// Send intel to commanders
 			private _type = GETV(_loc, "type");
+			private _radius = GETV(_loc, "boundingRadius");
+
+			// Create vehicles in civilian area for player to steal
+			if(_type == LOCATION_TYPE_CITY) then {
+				private _gar = NEW("Garrison", [CIVILIAN]);
+				private _maxCars = 3 max (25 min (0.03 * _radius));
+				for "_i" from 0 to _maxCars do {
+					private _newUnit = NEW("Unit", [tCIVILIAN ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
+				CALLM1(_gar, "setLocation", _loc);
+				CALLM1(_loc, "registerGarrison", _gar);
+				CALLM0(_gar, "activate");
+			};
+
+			// Send intel to commanders
 			{
 				private _sideCommander = GETV(_x, "side");
 				if (_sideCommander != WEST) then { // Enemies are smart

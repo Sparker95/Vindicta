@@ -17,14 +17,19 @@
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="setName"></a><a name="Topic279"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic280"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">new</div>
+ <div class="CBody"><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position of this location</p></td></tr></table></div>
+</div>
+
+<a name="setName"></a><a name="Topic388"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">setName</div>
  <div class="CBody"><p>Sets debug name of this MessageLoop.</p><p>Parameters: _name</p><table class="CDefinitionList"><tr><td class="CDLEntry">_name</td><td class="CDLDefinition"><p>String</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="new"></a><a name="Topic280"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">new</div>
- <div class="CBody"><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position of this location</p></td></tr></table></div>
+<a name="addChild"></a><a name="Topic389"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">addChild</div>
+ <div class="CBody"><p>Adds a child location to this location (also sets the childs parent).&nbsp; Child must not belong to another location already.</p></div>
 </div>
 
 <a name="delete"></a><a name="Topic281"></a><div class="CTopic TFunction LSQF">
@@ -44,21 +49,6 @@
 <a name="getPatrolWaypoints"></a><a name="Topic284"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">getPatrolWaypoints</div>
  <div class="CBody"><p>Returns array with positions for patrol waypoints.</p><p>Returns: Array of positions</p></div>
-</div>
-
-<a name="setGarrisonMilitaryMain"></a><a name="Topic285"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">setGarrisonMilitaryMain</div>
- <div class="CBody"><p>Sets the main military garrison located at this location</p><p>Parameters: _garrison</p><table class="CDefinitionList"><tr><td class="CDLEntry">_garrison</td><td class="CDLDefinition"><p><a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> object</p></td></tr></table><p>Returns: nil</p></div>
-</div>
-
-<a name="getGarrisonMilitaryMain"></a><a name="Topic286"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getGarrisonMilitaryMain</div>
- <div class="CBody"><p>Gets the main military garrison located at this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no garrison there</p></div>
-</div>
-
-<a name="getGarrisonMilAA"></a><a name="Topic556"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">getGarrisonMilAA</div>
- <div class="CBody"><p>Gets the main military garrison located at this location</p><p>Returns: <a href="../../index.html#SQFClass:Garrison" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,208);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Garrison</a> or &quot;&quot; if there is no garrison there</p></div>
 </div>
 
 <a name="setType"></a><a name="Topic287"></a><div class="CTopic TFunction LSQF">
@@ -81,9 +71,9 @@
  <div class="CBody"><p>Returns type of this location</p><p>Returns: Integer</p></div>
 </div>
 
-<a name="(static)findSafePosOnRoad"></a><a name="Topic250"></a><div class="CTopic TFunction LSQF">
+<a name="(static)findSafePosOnRoad"></a><a name="Topic559"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">(static)findSafePosOnRoad</div>
- <div class="CBody"><p>Finds an empty position for a vehicle class name on road close to specified position.</p><p>Parameters: _startPos _startPos - start position where to start searching for a position.</p><p>Returns: Array, [_pos, _dir]</p></div>
+ <div class="CBody"><p>Finds an empty position for a vehicle class name on road close to specified position.</p><p>Parameters: _startPos _startPos - start position ATL where to start searching for a position.</p><p>Returns: Array, [_pos, _dir]</p></div>
 </div>
 
 <a name="(static)findSafePos"></a><a name="Topic198"></a><div class="CTopic TFunction LSQF">
@@ -94,6 +84,11 @@
 <a name="countAvailableUnits"></a><a name="Topic560"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">countAvailableUnits</div>
  <div class="CBody"><p>Returns an number of current units of this location</p><p>Returns: Integer</p></div>
+</div>
+
+<a name="setBorder"></a><a name="Topic572"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">setBorder</div>
+ <div class="CBody"><p>Sets border parameters for this location</p><div class="CHeading">Arguments</div><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>&quot;circle&quot; or &quot;rectange&quot;</p></td></tr><tr><td class="CDLEntry">_data</td><td class="CDLDefinition"><p>for &quot;circle&quot;: _radius - for &quot;rectangle&quot;:</p></td></tr><tr><td class="CDLEntry">[_a, _b, _dir]</td><td class="CDLDefinition"><p>rectangle dimensions and direction</p></td></tr></table></div>
 </div>
 
 <a name="addAllowedArea"></a><a name="Topic333"></a><div class="CTopic TFunction LSQF">
@@ -111,14 +106,19 @@
  <div class="CBody"><p>Adds spawn positions of this building to the location.</p><p>Parameters: _building</p><table class="CDefinitionList"><tr><td class="CDLEntry">_building</td><td class="CDLDefinition"><p>the object handle of the building</p></td></tr></table><p>Author: Sparker 03.08.2018</p></div>
 </div>
 
+<a name="build"></a><a name="Topic690"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">build</div>
+ <div class="CBody"><p>Builds this location depending on its type</p></div>
+</div>
+
 <a name="calculateInfantryCapacity"></a><a name="Topic341"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">calculateInfantryCapacity</div>
  <div class="CBody"><p>Calculates infantry capacity based on buildings in this location.</p><table class="CDefinitionList"><tr><td class="CDLEntry">Returns: Number</td><td class="CDLDefinition"><p>amount of infantry soldeirs that can stay here</p></td></tr></table><p>Author: Sparker 03.08.2018</p></div>
 </div>
 
-<a name="(static)createAllFromEditor"></a><a name="Topic297"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">(static)createAllFromEditor</div>
- <div class="CBody"><p>Checks the game world for predefined game objects and markers and creates locations from them.&nbsp; This use custom Project_0 Module Location.</p></div>
+<a name="spawn"></a><a name="Topic687"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">spawn</div>
+ <div class="CBody"><p>Despawns location</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Returns: nil</p></div>
 </div>
 
 <a name="(static)getLocationAtPos"></a><a name="Topic318"></a><div class="CTopic TFunction LSQF">
@@ -166,14 +166,19 @@
  <div class="CBody"><p>Checks if given position is in area of given location.</p><p>Parameters: _pos</p><table class="CDefinitionList"><tr><td class="CDLEntry">_pos</td><td class="CDLDefinition"><p>position</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="(static)isPosSafe"></a><a name="Topic294"></a><div class="CTopic TFunction LSQF">
- <div class="CTitle">(static)isPosSafe</div>
- <div class="CBody"><p>Returns true if the place is good for spawning specific vehicle.&nbsp; The main method of this function - checking vehicles inside the bounding box.&nbsp; Houses and buildings are ignored.</p><p>Parameters: _pos, _dir, _className _pos - position _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
+<a name="(static)isPosEvenSafer"></a><a name="Topic726"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)isPosEvenSafer</div>
+ <div class="CBody"><p>Returns true if the place is guaranteed safe for spawning specific vehicle.&nbsp; It is very conservative and as such will disallow spawning in buildings or too close to existing objects.</p><p>Parameters: _pos, _dir, _className _pos - position ATL _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
 </div>
 
-<a name="setBorder"></a><a name="Topic276"></a><div class="CTopic TFunction LSQF last">
- <div class="CTitle">setBorder</div>
- <div class="CBody"><p>Sets border parameters for this location</p><div class="CHeading">Arguments</div><table class="CDefinitionList"><tr><td class="CDLEntry">_type</td><td class="CDLDefinition"><p>&quot;circle&quot; or &quot;rectange&quot;</p></td></tr><tr><td class="CDLEntry">_data</td><td class="CDLDefinition"><p>for &quot;circle&quot;: _radius - for &quot;rectangle&quot;:</p></td></tr><tr><td class="CDLEntry">[_a, _b, _dir]</td><td class="CDLDefinition"><p>rectangle dimensions and direction</p></td></tr></table></div>
+<a name="(static)isPosSafe"></a><a name="Topic250"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">(static)isPosSafe</div>
+ <div class="CBody"><p>Returns true if the place is good for spawning specific vehicle.&nbsp; The main method of this function - checking vehicles inside the bounding box.&nbsp; Houses and buildings are ignored.</p><p>Parameters: _pos, _dir, _className _pos - position ATL _dir - direction _className - vehicle class name</p><p>Returns: Bool</p><p>Author: Sparker 29.07.2018</p></div>
+</div>
+
+<a name="spawn"></a><a name="Topic684"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">spawn</div>
+ <div class="CBody"><p>Spawns Location.</p><p>Threading: should be called through postMethod (see &lt;MessageReceiverEx&gt;)</p><p>Returns: nil</p></div>
 </div>
 
 </body></html>

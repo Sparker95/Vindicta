@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("tgt",["Variable"],[["tgtGarrison",,[["Intel.IntelCommanderActionReinforce",,,,0,"File:Intel/Intel.sqf:Intel.IntelCommanderActionReinforce.tgtGarrison","SQFClass:Intel.IntelCommanderActionReinforce:tgtGarrison"]]]]);

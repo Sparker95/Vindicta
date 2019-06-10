@@ -14,12 +14,19 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	VARIABLE("pos");
 	VARIABLE("ETA");	
 	VARIABLE("tolerance"); // completion radius
+	VARIABLE("teleport"); // If true, unit will be teleported if ETA is exceeded
 	
 	// ------------ N E W ------------
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
 		
 		T_SETV("tolerance", 1.0); // Default tolerance value
+
+		pr _teleport = CALLSM2("Action", "getParameterValue", _parameters, "teleport");
+		if (isNil "_teleport") then {
+			_teleport = false;
+		};
+		T_SETV("teleport", _teleport);
 		
 	} ENDMETHOD;
 	
@@ -74,7 +81,8 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			} else {
 				// Check ETA
 				pr _ETA = T_GETV("ETA");
-				if (time > _ETA) then {
+				// Teleport the unit if ETA is exceeded and teleportation is allowed
+				if ((time > _ETA) && T_GETV("teleport")) then {
 					OOP_INFO_2("MOVE FAILED for infantry unit: %1, position: %2", _thisObject, _pos);
 				
 					// Should we teleport him or someone will blame AI for cheating??

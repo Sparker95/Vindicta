@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("iso",["Function"],[["isOnlyEmptyVehicles",,[["Garrison",,,,0,"File:Garrison/Garrison.sqf:Garrison.isOnlyEmptyVehicles","SQFClass:Garrison:isOnlyEmptyVehicles"]]]]);
