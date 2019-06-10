@@ -33,6 +33,10 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
 		pr _mapDisplay = findDisplay 12;
+
+		// open map EH
+		addMissionEventHandler ["Map", { 
+		params ["_mapIsOpened", "_mapIsForced"]; if !(visibleMap) then { CALLSM0(CLASS_NAME, "onMapOpen") }; }];
 		
 		//listbox events
 		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { params ['_control']; CALLSM(CLASS_NAME, "onLBSelChanged", [_control]) }];
@@ -43,7 +47,7 @@ CLASS(CLASS_NAME, "")
 
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["ButtonDown", { params ['_control']; CALLSM(CLASS_NAME, "onButtonDownCreateCamp", [_control]) }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["ButtonDown", { params ['_control']; CALLSM0(CLASS_NAME, "onButtonDownCreateCamp") }];
 
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
@@ -67,9 +71,66 @@ CLASS(CLASS_NAME, "")
 
 	} ENDMETHOD;
 
+	/*
+		Method: toggleButtonEnabled
+		Description: Set a button enabled or disabled. Does not use 
+
+		Parameter:
+		0: _control - the button to be toggled
+		1: _enable - default: true, false to disable
+	*/
+	STATIC_METHOD("toggleButtonEnabled") {
+		params ["_thisClass", "_control", ["_enable", true]];
+		
+	} ENDMETHOD;
+
+
+	/*
+		Method: onButtonDownCreateCamp
+		Description: Creates a camp at the current location if the button is enabled.
+
+		No parameters
+	*/
 	STATIC_METHOD("onButtonDownCreateCamp") {
-		params ["_thisClass", "_control"];
-		[player] call fnc_createCamp;
+		params ["_thisClass"];
+		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
+	} ENDMETHOD;
+
+
+	/*
+		Method: onMapOpen
+		Description: Called by user interface event handler each time the map is opened
+
+		No parameters
+	*/
+	STATIC_METHOD("onMapOpen") {
+		params ["_thisClass"];
+		systemChat "Map opened.";
+		pr _mapDisplay = findDisplay 12;
+
+		// Check if current player position is valid position to create a Camp
+		pr _isPosAllowed = call {
+			pr _allLocations = GETSV("Location", "all");
+			_isPosAllowed = true;
+			pr _pos = getPosWorld player;
+
+			{
+				pr _locPos = CALLM0(_x, "getPos");
+				pr _type = CALLM0(_x, "getType");
+				pr _dist = _pos distance _locPos;
+				if (_dist < 500) exitWith {_isPosAllowed = false;};
+				// if (_dist < 3000 && _type == "camp") exitWith {_isPosAllowed = false;};
+			} forEach _allLocations;
+
+			_isPosAllowed
+		};
+
+		// disable or enable create Camp button
+		if (_isPosAllowed) then { 
+			(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlEnable true;
+		} else { 
+			(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlEnable false;
+		};
 	} ENDMETHOD;
 
 	/*
@@ -85,17 +146,31 @@ CLASS(CLASS_NAME, "")
 		pr _idc = ctrlIDC _control;
 		_control ctrlSetTextColor [0, 0, 0, 1];
 
-		// choose correct hint to display for this control
-		switch (_idc) do {
-			// bottom panel
-			case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1"); };
-			case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2"); };
-			case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3"); };
+		// hints to display if this control is enabled
+		if (ctrlEnabled (_mapDisplay displayCtrl _idc)) then {
+			switch (_idc) do {
+				// bottom panel
+				case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1"); };
+				case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2"); };
+				case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3"); };
 
-			// location panel
-			case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
-			case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
-			case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
+				// location panel
+				case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
+				case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
+				case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
+			};
+		} else { // hints to display if this control is disabled
+			switch (_idc) do {
+				// bottom panel
+				case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1_DISABLED"); };
+				case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2_DISABLED"); };
+				case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3_DISABLED"); };
+
+				// location panel
+				case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
+				case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
+				case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
+			};
 		};
 
 	} ENDMETHOD;

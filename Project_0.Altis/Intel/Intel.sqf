@@ -223,9 +223,6 @@ CLASS("IntelLocation", "Intel")
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
 		OOP_INFO_2("Added location intel to client: %1, %2", _loc, _pos);
-
-		// Hint
-		hint "Location data was added";
 	} ENDMETHOD;
 
 	METHOD("clientUpdate") {

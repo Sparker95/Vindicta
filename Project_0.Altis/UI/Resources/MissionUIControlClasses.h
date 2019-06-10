@@ -86,7 +86,7 @@ class MUI_HEADLINE
 	x = 0;
 	y = 0;
 	w = 0;
-	h = safeZoneH * 0.04;
+	h = safeZoneH * 0.026;
 
 	sizeEx = MUI_TXT_SIZE_S;
 	style = 192+2;
@@ -99,7 +99,7 @@ class MUI_HEADLINE
 };
 
 
-class MUI_BUTTON_TXT : MUI_BASE 
+class MUI_BUTTON_TXT : RscButton
 {
 	type = CT_BUTTON;
 
@@ -107,6 +107,7 @@ class MUI_BUTTON_TXT : MUI_BASE
 	sizeEx = MUI_TXT_SIZE_M;
 	style = 192+2;
 	font = "PuristaLight";
+	text = "";
 	borderSize = 0;
 
 	colorBackground[] = MUIC_BLACK;
@@ -137,14 +138,14 @@ class MUI_BUTTON_TXT : MUI_BASE
 	onLBDrop = "";
 	onMouseButtonClick = "";
 	onMouseEnter = "";    
-    onMouseExit = "";   
+    onMouseExit = "";  
 };
 //#-1
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
-	type = CT_BUTTON;
+	type = 1;
 
-	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
+	style = 48 + 2048; // picture + keep aspect ratio
 	text = "";
 };
 

@@ -5,9 +5,8 @@ class CMUI_LOCP_HEADLINE : MUI_HEADLINE
 {
     idc = IDC_LOCP_HEADLINE;
     x = safeZoneX + safeZoneW * 0.87;
-    y = safeZoneY + safeZoneH * 0.042;
+    y = safeZoneY + safeZoneH * 0.038;
     w = safeZoneW * 0.126;
-    h = safeZoneH * 0.02;
     text = "Camp Foxtrot";
 };
 
@@ -18,17 +17,17 @@ class CMUI_LOCP_TAB1 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    // text = "UI\Images\garrison.paa";  
+    text = "a3\ui_f\data\IGUI\RscTitles\RscHvtPhase\JAC_A3_Signal_4_ca.paa";  
 };
 
-class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB 
+class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB
 {
     idc = IDC_LOCP_TAB2;
     x = safeZoneX + safeZoneW * 0.912;
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    // text = "UI\Images\garrison.paa";   
+    text = "UI\Images\gradient_2way.paa";   
 };
 
 class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB 
@@ -38,7 +37,7 @@ class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    // text = "UI\Images\garrison.paa";
+    text = "a3\ui_f\data\Map\VehicleIcons\iconVehicle_ca.paa";
 };
 
 class CMUI_LOCP_TAB_TXT : MUI_BASE 
