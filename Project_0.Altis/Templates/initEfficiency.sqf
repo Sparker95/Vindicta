@@ -45,9 +45,9 @@ _eff_inf set [T_INF_sniper,					[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_spotter,				[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_exp,					[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_ammo,					[1,		0,		0,		0,		1,		0,		0,		0]];
-_eff_inf set [T_INF_LAT,					[1,		0,		0,		0,		1,		1,		1,		0]];
+_eff_inf set [T_INF_LAT,					[1,		0,		0,		0,		1,		0.875,	0.75,	0]];
 //											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
-_eff_inf set [T_INF_AT,						[1,		0,		0,		0,		1,		2,		2,		0]];
+_eff_inf set [T_INF_AT,						[1,		0,		0,		0,		1,		1.875,	2,		0]];
 _eff_inf set [T_INF_AA,						[1,		0,		0,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_LMG,					[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_HMG,					[1,		0,		0,		0,		1,		0,		0,		0]];
@@ -67,7 +67,7 @@ _eff_inf set [T_INF_recon_rifleman,			[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_recon_medic,			[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_recon_exp,				[1,		0,		0,		0,		1,		0,		0,		0]];
 //											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
-_eff_inf set [T_INF_recon_LAT,				[1,		0,		0,		0,		1,		1,		1,		0]];
+_eff_inf set [T_INF_recon_LAT,				[1,		0,		0,		0,		1,		0.875,	0.75,	0]];
 _eff_inf set [T_INF_recon_marksman,			[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_recon_JTAC,				[1,		0,		0,		0,		1,		0,		0,		0]];
 _eff_inf set [T_INF_diver_TL,				[1,		0,		0,		0,		1,		0,		0,		0]];

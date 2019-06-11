@@ -224,7 +224,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 						CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
 						{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }} != -1 ) 
 				then {
-					systemChat "Moving to phase 2";
+					"MOVING TO PHASE 2\nCreation of camps is now enabled!\nEnemy commander will respond to unrest." remoteExec ["hint"];
 
 					// Enable camp creation
 					SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
@@ -252,13 +252,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 					CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
 					{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
 				then {
-					systemChat "Moving to phase 3";
+					"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
 
 					// // Set enemy commander strategy
 					// private _strategy = NEW("Phase2CmdrStrategy", []);
 					// CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
 
-					T_SETV("phase", 2);
+					T_SETV("phase", 3);
 				} else {
 					// update phase 2 stuff here
 				};
@@ -271,7 +271,22 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			Transition to Phase 4 once player has taken some significant portion of the island, or maybe an AAF base?
 			*/
 			case 3: {
+				// // If player managed to push city to revolt then move to next phase
+				// private _cities = GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY };
+				// if( GET_STATIC_VAR("Location", "all") findIf {
+				// 	CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+				// 	{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
+				// then {
+				// 	"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
 
+				// 	// // Set enemy commander strategy
+				// 	// private _strategy = NEW("Phase2CmdrStrategy", []);
+				// 	// CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
+
+				// 	T_SETV("phase", 3);
+				// } else {
+				// 	// update phase 2 stuff here
+				// };
 			};
 			/*
 			Phase 4 (not sure, medium?)

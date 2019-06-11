@@ -24,7 +24,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 				private _actual = GETV(_loc, "actual");
 				private _cityData = GETV(_actual, "gameModeData");
 				if(GETV(_cityData, "state") in [CITY_STATE_IN_REVOLT, CITY_STATE_SUPPRESSED]) then {
-					1
+					100
 				} else {
 					0
 				}

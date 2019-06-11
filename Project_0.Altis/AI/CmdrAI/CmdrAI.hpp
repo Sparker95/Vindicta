@@ -45,18 +45,12 @@
 #define CMDR_PLANNING_PRIORITY_LOW 2
 
 // PRIME NUMBERS > 1 only
-#ifdef RELEASE_BUILD
-#define CMDR_PLANNING_RATIO_HIGH 3
-#define CMDR_PLANNING_RATIO_NORMAL 11
-#define CMDR_PLANNING_RATIO_LOW 31
-#else
+// Current settings give intervals of about [29.9401s high, 74.6269s normal, 131.579s low, 21.8818s none] when iteration is 10s.
+// Run Tests will output the current intervals in the CLASS create section next to CmdrAI.
 #define CMDR_PLANNING_RATIO_HIGH 3
 #define CMDR_PLANNING_RATIO_NORMAL 5
-#define CMDR_PLANNING_RATIO_LOW 7
-#endif
-// #define CMDR_PLANNING_RATIO_HIGH 3
-// #define CMDR_PLANNING_RATIO_NORMAL 31
-// #define CMDR_PLANNING_RATIO_LOW 67
+#define CMDR_PLANNING_RATIO_LOW 11
+
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \
