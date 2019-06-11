@@ -145,36 +145,39 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected override */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
-		switch T_GETV("phase") do {
-			// Player is spawning in cities give them a pistol or something.
-			case 1: {
-				player call fnc_selectPlayerSpawnLoadout;
-				// Holster pistol
-				player action ["SWITCHWEAPON", player, player, -1];
 
-				// _newUnit spawn {
-				// 	while {!isNull (group _this)} do {
-				// 		waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
-				// 		if(!isNull (group _this)) then {
-				// 			private _action = player addAction [
-				// 				"Holster your weapon", 
-				// 				{
-				// 					params ["_target", "_caller", "_actionId", "_arguments"];
-				// 					player action ["SWITCHWEAPON", player, player, -1];
-				// 				}
-				// 			];
-				// 			waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
-				// 			if(!isNull (group _this)) then {
-				// 				player removeAction _action;
-				// 			};
-				// 		};
-				// 	};
-				// };
-			};
-			default {
+		// Always spawn with a random civi kit and pistol.
+		player call fnc_selectPlayerSpawnLoadout;
+		// Holster pistol
+		player action ["SWITCHWEAPON", player, player, -1];
 
-			};
-		};
+		// switch T_GETV("phase") do {
+		// 	// Player is spawning in cities give them a pistol or something.
+		// 	case 1: {
+
+		// 		// _newUnit spawn {
+		// 		// 	while {!isNull (group _this)} do {
+		// 		// 		waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
+		// 		// 		if(!isNull (group _this)) then {
+		// 		// 			private _action = player addAction [
+		// 		// 				"Holster your weapon", 
+		// 		// 				{
+		// 		// 					params ["_target", "_caller", "_actionId", "_arguments"];
+		// 		// 					player action ["SWITCHWEAPON", player, player, -1];
+		// 		// 				}
+		// 		// 			];
+		// 		// 			waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
+		// 		// 			if(!isNull (group _this)) then {
+		// 		// 				player removeAction _action;
+		// 		// 			};
+		// 		// 		};
+		// 		// 	};
+		// 		// };
+		// 	};
+		// 	default {
+
+		// 	};
+		// };
 	} ENDMETHOD;
 
 	/* protected override */METHOD("update") {
@@ -420,9 +423,10 @@ CLASS("CivilWarCityData", "")
 			// TODO: add other interesting factors here to the instability rate.
 			private _instability = _activity * 500 / _cityRadius;
 			T_SETV("instability", _instability);
+			// TODO: scale the instability limits using settings
 			switch true do {
-				case (_instability > 200): { T_SETV("state", CITY_STATE_IN_REVOLT) };
-				case (_instability > 100): { T_SETV("state", CITY_STATE_AGITATED) };
+				case (_instability > 100): { T_SETV("state", CITY_STATE_IN_REVOLT) };
+				case (_instability > 50): { T_SETV("state", CITY_STATE_AGITATED) };
 				default { T_SETV("state", CITY_STATE_STABLE) };
 			};
 		} else {
