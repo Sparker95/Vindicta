@@ -43,6 +43,7 @@ CLASS("GameModeBase", "")
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
+			
 
 			// Message loop for group AI
 			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
@@ -77,11 +78,13 @@ CLASS("GameModeBase", "")
 
 			T_CALLM("initServerOnly", []);
 
+			// Add message loop for game mode
+			gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
 			// Add processing for the game mode on the server once we initialized everything else
-			CALLM(gMessageLoopMain, "addProcessCategory", ["GameModeProcess" ARG 1 ARG 60 ARG 120]);
-			CALLM2(gMessageLoopMain, "addProcessCategoryObject", "GameModeProcess", _thisObject);
+			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 1 ARG 60 ARG 120]);
+			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 
-			// Don't remove spawn! For some reason without spawning it doesn't apply the values.
+			// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 

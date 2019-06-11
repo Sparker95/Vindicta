@@ -112,7 +112,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		_mrk setMarkerSize [10, 10];
 		_mrk setMarkerColor _color;
 		_mrk setMarkerAlpha 0.5;
-		
 		#endif
 		
 	} ENDMETHOD;
@@ -136,15 +135,26 @@ CLASS("AIGarrison", "AI_GOAP")
 		//OOP_INFO_2("PROCESS: SPAWNED: %1, ACCELERATE: %2", CALLM0(_thisObject, "isSpawned"), _accelerate);
 		if (CALLM0(_gar, "countInfantryUnits") > 0) then {
 			CALL_CLASS_METHOD("AI_GOAP", _thisObject, "process", [_accelerate]);
-		};
-		
-		// Update the "busy" timer
-		pr _currentGoal = T_GETV("currentGoal");
-		if (_currentGoal != "" && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
-			T_SETV("lastBusyTime", time);
+
+			// Update the "busy" timer
+			pr _currentGoal = T_GETV("currentGoal");
+			if (_currentGoal != "" && _currentGoal != "GoalGarrisonRelax") then { // Do we have anything to do?
+				T_SETV("lastBusyTime", time);
+			};
+
+			#ifdef DEBUG_GOAL_MARKERS
+			CALLM0(_thisObject, "_updateDebugMarkers");
+			#endif
 		};
 
-		#ifdef DEBUG_GOAL_MARKERS
+		// Add a "spawned" field to profiling output 
+		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
+		
+	} ENDMETHOD;
+	
+	#ifdef DEBUG_GOAL_MARKERS
+	METHOD("_updateDebugMarkers") {
+		params ["_thisObject"];
 
 		// Update the markers
 		pr _mrk = _thisObject + MRK_GOAL;
@@ -186,13 +196,9 @@ CLASS("AIGarrison", "AI_GOAP")
 			_mrk setMarkerDir ((_pos getDir _posDest) + 90);
 		};
 
-		#endif
-
-		// Add a "spawned" field to profiling output 
-		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
-		
 	} ENDMETHOD;
-	
+	#endif
+
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// | The garrison AI resides in the same thread as the garrison
@@ -330,6 +336,12 @@ CLASS("AIGarrison", "AI_GOAP")
 			pr _pos = CALLM0(_loc, "getPos");
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 		};
+
+		// Update the debug markers
+		#ifdef DEBUG_GOAL_MARKERS
+		CALLM0(_thisObject, "_updateDebugMarkers");
+		#endif
+
 	} ENDMETHOD;
 
 	// Updates world state properties related to composition of the garrison

@@ -31,14 +31,14 @@ switch (T_GETV("spawned")) do {
 			} forEach T_GETV("buildObjects");
 
 			// Set timer interval
-			CALLM1(_timer, "setInterval", 5);
+			CALLM1(_timer, "setInterval", 10);
 			
 			T_SETV("spawned", true);
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawn;
-			pr _interval = (_dstToThreshold / _speedMax) max 3;
-			pr _interval = 2; // todo override this some day later
+			pr _interval = (_dstToThreshold / _speedMax) max 4;
+			// pr _interval = 2; // todo override this some day later
 			
 			CALLM1(_timer, "setInterval", _interval);
 		};
@@ -49,7 +49,7 @@ switch (T_GETV("spawned")) do {
 			
 			CALLM0(_thisObject, "despawn");
 			
-			// Disable simulation for the build objects
+			// Disable simulation for the built objects
 			{
 				_x enableSimulationGlobal false;
 			} forEach T_GETV("buildObjects");

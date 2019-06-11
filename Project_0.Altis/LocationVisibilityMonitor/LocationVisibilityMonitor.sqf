@@ -138,6 +138,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 						//};
 						pr _type = GETV(_x, "type");
 						pr _name = GETV(_x, "name");
+						if (isNil "_name") then {_name = "_name_";};
 						pr _dir = _unit getDir _locPosAGL;
 						OOP_INFO_6("In area: %1 %2 %3, angular size: %4, relative angular size: %5 bearing: %6 deg", _x, _type, _name, _angularSize, _relativeAngularSize, _dir);
 
@@ -149,15 +150,6 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 							if (_queryResult == "") then {
 								if (random 100 < (10 + _relativeAngularSize/0.06*30)) then {
 									// Send data to AI Commander
-									/*
-									pr _stim = STIMULUS_NEW();
-									//STIMULUS_SET_SOURCE(_stim, _loc);
-									STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_LOCATION);
-									STIMULUS_SET_VALUE(_stim, _x);
-									OOP_INFO_1("Sending stimulus: %1", _stim);
-									CALLM2(_AICommander, "postMethodAsync", "handleStimulus", [_stim]);
-									*/
-
 									OOP_INFO_1("Sending data to commander: %1", _x);
 									CALLM2(_AICommander, "postMethodAsync", "updateLocationData", [_x ARG CLD_UPDATE_LEVEL_TYPE]);
 								};
