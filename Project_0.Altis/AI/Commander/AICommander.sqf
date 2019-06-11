@@ -752,7 +752,7 @@ CLASS("AICommander", "AI")
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			T_CALLM(_registerGarrison, [_gar]);
+			T_CALLM("_registerGarrison", [_gar]);
 		} else {
 			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
 			NULL_OBJECT
