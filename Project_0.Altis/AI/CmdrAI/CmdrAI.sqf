@@ -227,7 +227,7 @@ CLASS("CmdrAI", "")
 		};
 
 		// Take tgt locations from future, so we take into account all in progress actions.
-		private _tgtLocations = CALLM(_worldFuture, "getLocations", [[LOCATION_TYPE_BASE ARG LOCATION_TYPE_OUTPOST ARG LOCATION_TYPE_ROADBLOCK]]) select { 
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", []) select { 
 			// Must not have any of our garrisons already present (or this would be reinforcement action)
 			IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))
 		};
@@ -270,7 +270,13 @@ CLASS("CmdrAI", "")
 			// Must be not already busy 
 			!CALLM(_potentialSrcGarr, "isBusy", []) and 
 			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			{ 
+				private _loc = CALLM(_potentialSrcGarr, "getLocation", []);
+				!IS_NULL_OBJECT(_loc) and 
+				{
+					GETV(_loc, "type") in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_BASE]
+				}
+			} and 
 			// Must not be source of another inprogress patrol mission
 			{ 
 				T_PRVAR(activeActions);
@@ -450,18 +456,8 @@ CLASS("CmdrAI", "")
 			default { -1 };
 		};
 
-		//T_PRVAR(lastPlanningTime);
-		//if(TIME_NOW - _lastPlanningTime > PLAN_INTERVAL) then {
-
 		if(_priority != -1) then {
-			// Sync before planning
-			CALLM(_world, "sync", []);
-			// Update grids etc.
-			CALLM(_world, "update", []);
 			T_CALLM("_plan", [_world ARG _priority]);
-
-			// Make it after planning so we get a gap
-			//T_SETV("lastPlanningTime", TIME_NOW);
 		};
 	} ENDMETHOD;
 
@@ -469,6 +465,11 @@ CLASS("CmdrAI", "")
 		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
 
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (priority %1) - - - - -", [_priority]);
+
+		// Sync before planning
+		CALLM(_world, "sync", []);
+		// Update grids etc.
+		CALLM(_world, "update", []);
 
 		T_PRVAR(activeActions);
 
@@ -512,3 +513,24 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 	
 ENDCLASS;
+
+#ifdef _SQF_VM
+
+private _plans = [0,0,0,0];
+for "_planningCycle" from 0 to 1000 do {
+	private _priority = 0;
+	switch true do {
+		case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { _priority = CMDR_PLANNING_PRIORITY_HIGH; };
+		case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { _priority = CMDR_PLANNING_PRIORITY_NORMAL; };
+		case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { _priority = CMDR_PLANNING_PRIORITY_LOW;  };
+		default { _priority = 3; };
+	};
+	
+	_plans set [_priority, (_plans#_priority) + 1];
+};
+
+// diag_log str _plans;
+diag_log format (["Planning ratios: [%1 high, %2 normal, %3 low, %4 none]"] + (_plans apply { _x / 1000 }));
+diag_log format (["Predicted planning intervals [%1s high, %2s normal, %3s low, %4s none]"] + (_plans apply { 10000 / _x }));
+
+#endif

@@ -37,8 +37,8 @@ CLASS("GameModeBase", "")
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
 			gMessageLoopMain = NEW("MessageLoop", ["Main thread" ARG 16]);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 2 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 1 ARG 10 ARG 30]);
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
@@ -47,7 +47,7 @@ CLASS("GameModeBase", "")
 
 			// Message loop for group AI
 			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
-			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow"		ARG 1 ARG 2	]); // Tag, priority, min interval
+			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
 
 			// Message loop for Stimulus Manager
 			gMessageLoopStimulusManager = NEW("MessageLoop", ["Stimulus Manager thread"]);
@@ -87,6 +87,9 @@ CLASS("GameModeBase", "")
 			// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
+
+			// Call our first process event immediately
+			T_CALLM("process", []);
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -119,6 +122,9 @@ CLASS("GameModeBase", "")
 				waitUntil {!((finddisplay 12) isEqualTo displayNull)};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 			};
+			#ifndef RELEASE_BUILD
+			[] call pr0_fnc_initDebugMenu;
+			#endif
 
 			// Message loop for client side checks: undercover, location visibility, etc
 			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
@@ -353,35 +359,35 @@ CLASS("GameModeBase", "")
 	METHOD("createMissingCityLocations") {
 		params [P_THISOBJECT];
 
-		private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
-		private _moduleGroup = createGroup sideLogic;
-		{
-			private _pos = getPos _x;
-			// See if one already exists
-			if(_existingCityLocations findIf { _x distance _pos < 500 } == NOT_FOUND) then {
-				// private _name = [text _x] call fnc_getLocName;
-				private _sizeX = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusA"));
-				private _sizeY = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusB"));
-				OOP_INFO_MSG("Creating missing City Location for %1 at %2, size %3m x %4m", [_name ARG _pos ARG _sizeX ARG _sizeY]);
+		// private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
+		// private _moduleGroup = createGroup sideLogic;
+		// {
+		// 	private _pos = getPos _x;
+		// 	// See if one already exists
+		// 	if(_existingCityLocations findIf { _x distance _pos < 500 } == NOT_FOUND) then {
+		// 		// private _name = [text _x] call fnc_getLocName;
+		// 		private _sizeX = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusA"));
+		// 		private _sizeY = 100 max (getNumber (configFile >> "CfgWorlds" >> worldName >> "Names" >> (text _x) >> "radiusB"));
+		// 		OOP_INFO_MSG("Creating missing City Location for %1 at %2, size %3m x %4m", [_name ARG _pos ARG _sizeX ARG _sizeY]);
 				
-				// TODO: calculate civ presence by area
-				"Project_0_LocationSector" createUnit [ _pos, _moduleGroup,
-					(format ["this setVariable ['Name', '%1'];", text _x]) +
-					        "this setVariable ['Type', 'city'];" +
-					        "this setVariable ['Side', 'civilian'];" +
-					(format ["this setVariable ['objectArea', [%1, %2, 0, true]];", _sizeX, _sizeY]) +
-					        "this setVariable ['CapacityInfantry', 0];" +
-					        "this setVariable ['CivPresUnitCount', 10];"
-				];
-				private _mrk = createmarker [text _x, _pos];
-				_mrk setMarkerSize [_sizeX, _sizeY];
-				_mrk setMarkerShape "ELLIPSE";
-				_mrk setMarkerBrush "SOLID";
-				_mrk setMarkerColor "ColorWhite";
-				_mrk setMarkerText (text _x);
-				_mrk setMarkerAlpha 0.4;
-			};
-		} forEach (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameCityCapital", "NameCity", "NameVillage", "CityCenter"], 25000]);
+		// 		// TODO: calculate civ presence by area
+		// 		"Project_0_LocationSector" createUnit [ _pos, _moduleGroup,
+		// 			(format ["this setVariable ['Name', '%1'];", text _x]) +
+		// 			        "this setVariable ['Type', 'city'];" +
+		// 			        "this setVariable ['Side', 'civilian'];" +
+		// 			(format ["this setVariable ['objectArea', [%1, %2, 0, true]];", _sizeX, _sizeY]) +
+		// 			        "this setVariable ['CapacityInfantry', 0];" +
+		// 			        "this setVariable ['CivPresUnitCount', 10];"
+		// 		];
+		// 		private _mrk = createmarker [text _x, _pos];
+		// 		_mrk setMarkerSize [_sizeX, _sizeY];
+		// 		_mrk setMarkerShape "ELLIPSE";
+		// 		_mrk setMarkerBrush "SOLID";
+		// 		_mrk setMarkerColor "ColorWhite";
+		// 		_mrk setMarkerText (text _x);
+		// 		_mrk setMarkerAlpha 0.4;
+		// 	};
+		// } forEach (nearestLocations [getArray (configFile >> "CfgWorlds" >> worldName >> "centerPosition"), ["NameCityCapital", "NameCity", "NameVillage", "CityCenter"], 25000]);
 	} ENDMETHOD;
 	
 	// Create locations
@@ -392,9 +398,11 @@ CLASS("GameModeBase", "")
 		T_CALLM("createMissingCityLocations", []);
 
 		private _allRoadBlocks = [];
+		private _locationsForRoadblocks = [];
 		{
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
+			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
 			private _locSide = _locSector getVariable ["Side", ""];
@@ -417,7 +425,6 @@ CLASS("GameModeBase", "")
 				_locCapacityCiv = 0;
 			};
 
-
 			private _template = "";
 			private _side = "";
 			
@@ -439,28 +446,8 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
 
-			// TODO: improve this later
-			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_locSectorPos]) select {
-				private _newRoadBlock = _x;
-				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 400 } == NOT_FOUND
-			};
-			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
-			{	
-				_x params ["_roadblockPos", "_roadblockDir"];
-				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
-				CALLM1(_roadblockLoc, "setName", _roadblockLoc);
-				CALLM1(_roadblockLoc, "setSide", _side);
-				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
-				CALLM1(_roadblockLoc, "setCapacityInf", 20);
-				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
-				// Do setType last cos it will update the debug marker for us
-				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
-			} forEach _roadBlocks;
-
-			// Create police stations
 			// Create police stations in cities
 			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 23) then {
-
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -477,8 +464,36 @@ CLASS("GameModeBase", "")
 				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
 			};
 
+			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
+				_allRoadBlocks pushBack [_locSectorPos, _locSectorDir];
+			} else {
+				if(_locType in [LOCATION_TYPE_BASE, LOCATION_TYPE_CITY]) then {
+					_locationsForRoadblocks pushBack [_locSectorPos, _side];
+				};
+			};
 		} forEach (entities "Project_0_LocationSector");
 
+		{
+			_x params ["_pos", "_side"];
+			// TODO: improve this later
+			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_pos]) select {
+				private _newRoadBlock = _x;
+				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 400 } == NOT_FOUND
+			};
+
+			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
+			{	
+				_x params ["_roadblockPos", "_roadblockDir"];
+				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
+				CALLM1(_roadblockLoc, "setName", _roadblockLoc);
+				CALLM1(_roadblockLoc, "setSide", _side);
+				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
+				CALLM1(_roadblockLoc, "setCapacityInf", 20);
+				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
+				// Do setType last cos it will update the debug marker for us
+				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
+			} forEach _roadBlocks;
+		} forEach _locationsForRoadblocks;
 	} ENDMETHOD;
 
 	#define ADD_TRUCKS

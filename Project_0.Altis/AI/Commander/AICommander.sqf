@@ -35,7 +35,7 @@ CLASS("AICommander", "AI")
 
 	//VARIABLE("lastPlanningTime");
 	
-	VARIABLE("cmdrStrategy");
+	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
 	VARIABLE("cmdrAI");
 	VARIABLE("worldModel");
 
@@ -118,21 +118,12 @@ CLASS("AICommander", "AI")
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
 		
-		T_SETV("cmdrStrategy", gCmdrStrategyDefault);
-		//T_SETV("lastPlanningTime", TIME_NOW);
+		T_SETV_REF("cmdrStrategy", gCmdrStrategyDefault);
 		
 		private _cmdrAI = NEW("CmdrAI", [_side]);
 		T_SETV("cmdrAI", _cmdrAI);
 		private _worldModel = NEW("WorldModel", []);
 		T_SETV("worldModel", _worldModel);
-
-		// // Register locations
-		// private _locations = CALLSM("Location", "getAll", []);
-		// OOP_INFO_1("Registering %1 locations with Model", count _locations);
-		// { 
-		// 	T_CALLM()
-		// 	NEW("LocationModel", [_worldModel ARG _x]) 
-		// } forEach _locations;
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -264,12 +255,47 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD("getCmdrStrategy") {
 		params [P_THISCLASS, P_SIDE("_side")];
-		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
-		if(!IS_NULL_OBJECT(_cmdr)) then {
-			GETV(_cmdr, "cmdrStrategy")
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			ASSERT_THREAD;
+			GETV(_thisObject, "cmdrStrategy")
 		} else {
 			gCmdrStrategyDefault
 		}
+	} ENDMETHOD;
+
+	/*
+	Method: setCmdrStrategy
+	Set Strategy the cmdr should use.
+
+	Parameters: _strategy
+
+	_strategy - CmdrStrategy
+	*/
+	METHOD("setCmdrStrategy") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_strategy")];
+		ASSERT_OBJECT_CLASS(_strategy, "CmdrStrategy");
+		ASSERT_THREAD;
+		T_SETV_REF("cmdrStrategy", _strategy)
+	} ENDMETHOD;
+
+	/*
+	Method: (static)setCmdrStrategyForSide
+	Set Strategy the cmdr should use.
+
+	Parameters: _side, _strategy
+
+	_side - side
+	_strategy - CmdrStrategy
+	*/
+	STATIC_METHOD("setCmdrStrategyForSide") {
+		params [P_THISCLASS, P_SIDE("_side"), P_OOP_OBJECT("_strategy")];
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			T_CALLM2("postMethodAsync", "setCmdrStrategy", [_strategy]);
+		} else {
+			OOP_WARNING_MSG("Can't set cmdr strategy %1, no AICommander found for side %2", [_strategy ARG _side]);
+		};
 	} ENDMETHOD;
 
 	// Location data
@@ -681,13 +707,35 @@ CLASS("AICommander", "AI")
 	_pos - <position>
 	_radius - <number>
 	
-	Returns: Number - max activity in radius
+	Returns: Number - max activity in radius2
 	*/
 	METHOD("getActivity") { // thread-safe
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "getActivity", [_pos ARG _radius])
 	} ENDMETHOD;
+
+	/*
+	Method: _registerGarrison
+	Registers a garrison to be processed by this AICommander
+	
+	Parameters:
+	_gar - <Garrison>
+	
+	Returns: GarrisonModel
+	*/
+	METHOD("_registerGarrison") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		ASSERT_THREAD(_thisObject);
+
+		OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
+		T_GETV("garrisons") pushBack _gar; // I need you for my army!
+		CALLM(_gar, "ref", []);
+		T_PRVAR(worldModel);
+		NEW("GarrisonModel", [_worldModel ARG _gar])
+	} ENDMETHOD;
+
 	/*
 	Method: registerGarrison
 	Registers a garrison to be processed by this AICommander
@@ -695,7 +743,7 @@ CLASS("AICommander", "AI")
 	Parameters:
 	_gar - <Garrison>
 	
-	Returns: nil
+	Returns: GarrisonModel
 	*/
 	STATIC_METHOD("registerGarrison") {
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
@@ -703,17 +751,35 @@ CLASS("AICommander", "AI")
 		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
-		private _newModel = NULL_OBJECT;
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			ASSERT_THREAD(_thisObject);
+			T_CALLM("_registerGarrison", [_gar]);
+		} else {
+			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
+			NULL_OBJECT
+		}
+	} ENDMETHOD;
 
-			OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
-			T_GETV("garrisons") pushBack _gar; // I need you for my army!
-			CALLM(_gar, "ref", []);
-			T_PRVAR(worldModel);
-			_newModel = NEW("GarrisonModel", [_worldModel ARG _gar]);
+	/*
+	Method: registerGarrisonOutOfThread
+	Registers a garrison to be processed by this AICommander.
+	Call this version if you are outside of the commander thread.
+	
+	Parameters:
+	_gar - <Garrison>
+	
+	Returns: nil
+	*/
+	STATIC_METHOD("registerGarrisonOutOfThread") {
+		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
+		ASSERT_OBJECT_CLASS(_gar, "Garrison");
+		private _side = CALLM(_gar, "getSide", []);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+
+		if(!IS_NULL_OBJECT(_thisObject)) then {
+			CALLM2(_thisObject, "postMethodAsync", "_registerGarrison", [_gar]);
+		} else {
+			OOP_ERROR_MSG("No AICommander found for side %1 to register %2", [_side ARG _gar]);
 		};
-		_newModel
 	} ENDMETHOD;
 
 	/*

@@ -52,16 +52,20 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		pr _unit = selectRandom _groupUnits;
 		OOP_INFO_1("ActionGroupArrest: groupUnits: %1", _groupUnits);
 
-		if (_unit != "") then {
+		if(isNil "_unit") then {
+			// Return FAILED state
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		} else {
 			pr _unitAI = CALLM0(_unit, "getAI");
 			pr _parameters = [["target", _target]];
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
-			OOP_INFO_1("ActionGroupArrest: unit arresting player: %1", _unit);
+			OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
+			// Return ACTIVE state
+			T_SETV("state", ACTION_STATE_ACTIVE);
+			ACTION_STATE_ACTIVE
 		};
 		
-		// Return ACTIVE state
-		T_SETV("state", ACTION_STATE_ACTIVE);
-		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 	
 	// logic to run each update-step

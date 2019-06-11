@@ -51,7 +51,7 @@ ENDCLASS;
 
 ["AST_AssignActionToGarrison.apply", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_AssignActionToGarrison", 
 		[_action]+

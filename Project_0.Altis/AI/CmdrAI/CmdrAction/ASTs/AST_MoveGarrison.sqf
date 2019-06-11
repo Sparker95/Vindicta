@@ -148,14 +148,14 @@ AST_MoveGarrison_test_fn = {
 
 ["AST_MoveGarrison.apply(sim, garrison=dead)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _endState = [_world, _garrison, [TARGET_TYPE_POSITION, TARGET_POS]] call AST_MoveGarrison_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_GARRISON_DEAD] call test_Assert;
 }] call test_AddTest;
 
 ["AST_MoveGarrison.apply(sim, target=pos)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	private _target = [TARGET_TYPE_POSITION, TARGET_POS];
 	private _endState = [_world, _garrison, _target] call AST_MoveGarrison_test_fn;
@@ -165,9 +165,9 @@ AST_MoveGarrison_test_fn = {
 
 ["AST_MoveGarrison.apply(sim, target=garrison)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
-	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	private _targetGarrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_targetGarrison, "efficiency", EFF_MIN_EFF);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 
@@ -178,9 +178,9 @@ AST_MoveGarrison_test_fn = {
 
 ["AST_MoveGarrison.apply(sim, target=garrison+dead)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
-	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	private _targetGarrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_GARRISON, GETV(_targetGarrison, "id")]] call AST_MoveGarrison_test_fn;
@@ -189,9 +189,9 @@ AST_MoveGarrison_test_fn = {
 
 ["AST_MoveGarrison.apply(sim, target=location)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
-	private _targetLocation = NEW("LocationModel", [_world]);
+	private _targetLocation = NEW("LocationModel", [_world ARG "<undefined>"]);
 	SETV(_targetLocation, "pos", TARGET_POS);
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_LOCATION, GETV(_targetLocation, "id")]] call AST_MoveGarrison_test_fn;

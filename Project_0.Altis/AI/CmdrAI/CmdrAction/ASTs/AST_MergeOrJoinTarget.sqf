@@ -142,16 +142,16 @@ AST_MergeOrJoinTarget_test_fn = {
 
 ["AST_MergeOrJoinTarget.apply(sim, garrison=dead)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _endState = [_world, _garrison, [TARGET_TYPE_POSITION, TARGET_POS]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_GARRISON_DEAD] call test_Assert;
 }] call test_AddTest;
 
 ["AST_MergeOrJoinTarget.apply(sim, target=garrison)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
-	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	private _targetGarrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_targetGarrison, "efficiency", EFF_MIN_EFF);
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_GARRISON, GETV(_targetGarrison, "id")]] call AST_MergeOrJoinTarget_test_fn;
@@ -162,9 +162,9 @@ AST_MergeOrJoinTarget_test_fn = {
 
 ["AST_MergeOrJoinTarget.apply(sim, target=garrison+dead)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
-	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	private _targetGarrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_GARRISON, GETV(_targetGarrison, "id")]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_TARGET_DEAD] call test_Assert;
@@ -172,9 +172,9 @@ AST_MergeOrJoinTarget_test_fn = {
 
 ["AST_MergeOrJoinTarget.apply(sim, target=location+empty)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
-	private _targetLocation = NEW("LocationModel", [_world]);
+	private _targetLocation = NEW("LocationModel", [_world ARG "<undefined>"]);
 
 	private _endState = [_world, _garrison, [TARGET_TYPE_LOCATION, GETV(_targetLocation, "id")]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;

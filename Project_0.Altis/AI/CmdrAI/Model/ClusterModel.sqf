@@ -36,9 +36,12 @@ CLASS("ClusterModel", "ModelBase")
 		T_SETV("damage", +T_EFF_null);
 		
 		// Sync
-		if(!(_actual isEqualTo [])) then {
+		if(T_CALLM("isActual", [])) then {
 			private _synced = T_CALLM("sync", []);
 			ASSERT_MSG(_synced, "ClusterModel couldn't perform initial sync. Cluster should be available in AICommander before creating the model.");
+			#ifdef OOP_DEBUG
+			OOP_DEBUG_MSG("ClusterModel for %1 created in %2", [_actual ARG _world]);
+			#endif
 		};
 		// Add self to world
 		CALLM(_world, "addCluster", [_thisObject]);
@@ -47,7 +50,10 @@ CLASS("ClusterModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 
-		private _copy = NEW("ClusterModel", [_targetWorldModel]);
+		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
+
+		T_PRVAR(actual);
+		private _copy = NEW("ClusterModel", [_targetWorldModel ARG _actual]);
 
 		// TODO: copying ID is weird because ID is actually index into array in the world model, so we can't change it.
 		#ifdef OOP_ASSERT
@@ -68,6 +74,8 @@ CLASS("ClusterModel", "ModelBase")
 
 	METHOD("sync") {
 		params [P_THISOBJECT];
+
+		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
 		T_PRVAR(actual);
 		_actual params ["_ai", "_clusterId"];
