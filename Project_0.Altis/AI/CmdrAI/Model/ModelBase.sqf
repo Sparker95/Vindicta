@@ -7,6 +7,7 @@ CLASS("ModelBase", "RefCounted")
 	// Unique Id of this Model, it is identical between Actual and Sim Models 
 	// that represent the same Real Object.
 	VARIABLE("id");
+
 	// Optional ref to the Real Object this Model represents. 
 	// If set to objNull then this is presumed to be a Sim Model.
 	VARIABLE("actual");
@@ -21,23 +22,19 @@ CLASS("ModelBase", "RefCounted")
 
 		T_SETV("id", MODEL_HANDLE_INVALID);
 		T_SETV("world", _world);
-
-		if (isNil "_actual") then { //  or {IS_NULL_OBJECT(_actual)}
-			ASSERT_MSG(GETV(_world, "type") != WORLD_TYPE_REAL, "State must be sim if you aren't setting actual");
-			T_SETV("actual", NULL_OBJECT);
-			T_SETV("label", "(model)" + str _thisObject);
-		} else {
-			ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "State must NOT be sim if you are setting actual");
-			T_SETV("actual", _actual);
+		T_SETV("actual", _actual);
+		//if(!isNil "_actual") then {
 			T_SETV("label", str _actual);
-		};
+		//} else {
+			//T_SETV("label", "<undefined>");
+		//};
 	} ENDMETHOD;
 
 	METHOD("isActual") {
 		params [P_THISOBJECT];
-		!IS_NULL_OBJECT(T_GETV("actual"))
+		T_PRVAR(world);
+		CALLM(_world, "isReal", []);
 	} ENDMETHOD;
-	
 
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];

@@ -369,7 +369,7 @@ ENDCLASS;
 ["CmdrAction.registerGarrison, unregisterGarrison", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _thisObject = NEW("CmdrAction", []);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 
 	CALLM(_garrison, "setAction", [_thisObject]);
 	["Garrison registered correctly", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
@@ -377,7 +377,7 @@ ENDCLASS;
 	DELETE(_garrison);
 	["Garrison unregistered correctly", (GETV(_thisObject, "garrisons") find _garrison) == NOT_FOUND] call test_Assert;
 
-	_garrison = NEW("GarrisonModel", [_world]);
+	_garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	CALLM(_garrison, "setAction", [_thisObject]);
 	["Garrison registered correctly 2", (GETV(_thisObject, "garrisons") find _garrison) != NOT_FOUND] call test_Assert;
 	DELETE(_thisObject);
@@ -407,7 +407,7 @@ ENDCLASS;
 
 ["CmdrAction.applyToSim", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _thisObject = NEW("CmdrAction", []);
 	private _testVar = CALLM(_thisObject, "createVariable", ["original"]);
 	private _asts = [

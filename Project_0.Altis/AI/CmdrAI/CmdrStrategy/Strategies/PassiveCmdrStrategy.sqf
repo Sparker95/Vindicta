@@ -13,6 +13,9 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		// Do not take roadblocks
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);
+		// Do not take cities
+		T_SETV("takeLocCityPriority", 0);
+		T_SETV("takeLocCityPriorityActivityCoeff", 0);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getQRFScore") {
@@ -24,8 +27,8 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtCluster"),
 			P_ARRAY("_detachEff")];
-		// Do default QRFs
-		_defaultScore
+		// Do no QRFs
+		APPLY_SCORE_STRATEGY(_defaultScore, 0)
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getReinforceScore") {

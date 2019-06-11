@@ -54,8 +54,11 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("side", sideUnknown);
 		T_SETV("faction", "");
 		T_SETV("locationId", MODEL_HANDLE_INVALID);
-		if(!IS_NULL_OBJECT(_actual)) then {
+		if(T_CALLM("isActual", [])) then {
 			T_CALLM("sync", []);
+			#ifdef OOP_DEBUG
+			OOP_DEBUG_MSG("GarrisonModel for %1 created in %2", [_actual ARG _world]);
+			#endif
 		};
 		// Add self to world
 		CALLM(_world, "addGarrison", [_thisObject]);
@@ -70,7 +73,8 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
-		private _copy = NEW("GarrisonModel", [_targetWorldModel]);
+		T_PRVAR(actual);
+		private _copy = NEW("GarrisonModel", [_targetWorldModel ARG _actual]);
 
 		#ifdef OOP_ASSERT
 		private _idsEqual = T_GETV("id") == GETV(_copy, "id");
@@ -100,7 +104,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 	/* private */ METHOD("_sync") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
-
+		
 		if(CALLM(_actual, "isDestroyed", [])) exitWith {
 			T_CALLM("killed", []);
 		};
@@ -143,42 +147,10 @@ CLASS("GarrisonModel", "ModelBase")
 	
 	METHOD("sync") {
 		params [P_THISOBJECT];
-
+		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 		T_PRVAR(actual);
-		// If we have an assigned real garrison then sync from it
-		if(!IS_NULL_OBJECT(_actual)) then {
-			ASSERT_OBJECT_CLASS(_actual, "Garrison");
-
-			CALLM(_actual, "runLocked", [_thisObject ARG "_sync" ARG [_actual]]);
-
-			// private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
-			// if(EFF_LTE(_newEff, EFF_ZERO)) then {
-			// 	T_CALLM("killed", []);
-			// } else {
-			// 	private _actualSide = CALLM(_actual, "getSide", []);
-			// 	T_SETV("side", _actualSide);
-				
-			// 	T_SETV("efficiency", _newEff);
-				
-			// 	private _actualPos = CALLM(_actual, "getPos", []);
-			// 	T_SETV("pos", +_actualPos);
-
-
-			// 	//OOP_DEBUG_MSG("Updating %1 from %2@%3", [_thisObject ARG _actual ARG _actualPos]);
-			// 	private _locationActual = CALLM(_actual, "getLocation", []);
-			// 	if(!IS_NULL_OBJECT(_locationActual)) then {
-			// 		T_PRVAR(world);
-			// 		private _location = CALLM(_world, "findOrAddLocationByActual", [_locationActual]);
-			// 		T_SETV("locationId", GETV(_location, "id"));
-			// 		// Don't call the proper functions because it deals with updating the LocationModel
-			// 		// and we don't need to do that in sync (LocationModel sync does it)
-			// 		//T_CALLM("attachToLocation", [_location]);
-			// 	} else {
-			// 		T_SETV("locationId", MODEL_HANDLE_INVALID);
-			// 		//T_CALLM("detachFromLocation", []);
-			// 	};
-			// };
-		};
+		ASSERT_OBJECT_CLASS(_actual, "Garrison");
+		CALLM(_actual, "runLocked", [_thisObject ARG "_sync" ARG [_actual]]);
 	} ENDMETHOD;
 
 	// Garrison is empty (not necessarily killed, could be merged to another garrison etc.)
@@ -284,8 +256,8 @@ CLASS("GarrisonModel", "ModelBase")
 			OOP_WARNING_MSG("ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff ARG _effAllocated]);
 			NULL_OBJECT
 		};
-
-		private _detachment = NEW("GarrisonModel", [_world]);
+		T_PRVAR(actual);
+		private _detachment = NEW("GarrisonModel", [_world ARG _actual]);
 		SETV(_detachment, "efficiency", _effAllocated);
 		SETV(_detachment, "pos", +T_GETV("pos"));
 		SETV(_detachment, "side", T_GETV("side"));
@@ -914,7 +886,7 @@ ENDCLASS;
 
 ["GarrisonModel.new(sim)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
 	!(isNil "_class")
 }] call test_AddTest;
@@ -931,7 +903,7 @@ ENDCLASS;
 
 ["GarrisonModel.delete", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	DELETE(_garrison);
 	private _class = OBJECT_PARENT_CLASS_STR(_garrison);
@@ -940,7 +912,7 @@ ENDCLASS;
 
 ["GarrisonModel.killed", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	CALLM(_garrison, "killed", []);
 	CALLM(_garrison, "isDead", [])
@@ -948,7 +920,7 @@ ENDCLASS;
 
 ["GarrisonModel.isDead", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison, "efficiency", EFF_MIN_EFF);
 	["False before killed", !CALLM(_garrison, "isDead", [])] call test_Assert;
 	CALLM(_garrison, "killed", []);
@@ -957,7 +929,7 @@ ENDCLASS;
 
 ["GarrisonModel.simSplit", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);

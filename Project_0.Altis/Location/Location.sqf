@@ -176,6 +176,8 @@ CLASS("Location", "MessageReceiverEx")
 				case LOCATION_TYPE_ROADBLOCK: { "mil_triangle" };
 				case LOCATION_TYPE_BASE: { "mil_circle" };
 				case LOCATION_TYPE_OUTPOST: { "mil_box" };
+				case LOCATION_TYPE_CITY: { "mil_marker" };
+				case LOCATION_TYPE_POLICE_STATION: { "mil_warning" };
 				default { "mil_dot" };
 			});
 			_mrk setMarkerColor "ColorYellow";
@@ -187,7 +189,7 @@ CLASS("Location", "MessageReceiverEx")
 				_mrk setMarkerDir _border#2;
 			};
 			
-			if(not (_type in [LOCATION_TYPE_ROADBLOCK, LOCATION_TYPE_CITY, LOCATION_TYPE_POLICE_STATION])) then {
+			if(not (_type in [LOCATION_TYPE_ROADBLOCK])) then {
 				_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
 				_mrk setMarkerType "Empty";
 				_mrk setMarkerColor "ColorYellow";
@@ -268,7 +270,18 @@ CLASS("Location", "MessageReceiverEx")
 		GETV(_thisObject, "pos")
 	} ENDMETHOD;
 
+	
+	// |                         I S   S P A W N E D                        |
+	/*
+	Method: isSpawned
+	Is the location spawned?
 
+	Returns: bool
+	*/
+	METHOD("isSpawned") {
+		params [ P_THISOBJECT ];
+		T_GETV("spawned")
+	} ENDMETHOD;
 
 	// |               G E T   P A T R O L   W A Y P O I N T S
 	/*
@@ -333,6 +346,21 @@ CLASS("Location", "MessageReceiverEx")
 		};
 	} ENDMETHOD;
 	
+	
+	METHOD("getGarrisonsRecursive") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		private _myGarrisons = if (_side == CIVILIAN) then {
+			+T_GETV("garrisons")
+		} else {
+			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
+		};
+		T_PRVAR(children);
+		{
+			_myGarrisons = _myGarrisons + CALLM(_x, "getGarrisonsRecursive", [_side]);
+		} forEach _children;
+		_myGarrisons
+	} ENDMETHOD;
+
 	/*
 	Method: setType
 	Set the Type.

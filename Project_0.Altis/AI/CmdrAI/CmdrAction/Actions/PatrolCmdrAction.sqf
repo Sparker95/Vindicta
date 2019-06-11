@@ -298,7 +298,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
-		//T_PRVAR(tgtLocId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
@@ -340,7 +339,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
 		T_SET_AST_VAR("detachmentEffVar", _detachEff);
 
-		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
+		private _detachEffStrength = EFF_SUB_SUM(EFF_ATT_SUB(_detachEff));
 
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 
@@ -385,7 +384,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
 
 		T_PRVAR(srcGarrId);
-		//T_PRVAR(tgtLocId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);

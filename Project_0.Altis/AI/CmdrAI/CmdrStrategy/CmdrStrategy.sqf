@@ -1,6 +1,6 @@
 #include "../common.hpp"
 
-CLASS("CmdrStrategy", "")
+CLASS("CmdrStrategy", "RefCounted")
 
 	VARIABLE("takeLocOutpostPriority");
 	VARIABLE("takeLocOutpostPriorityActivityCoeff");
@@ -8,6 +8,8 @@ CLASS("CmdrStrategy", "")
 	VARIABLE("takeLocBasePriorityActivityCoeff");
 	VARIABLE("takeLocRoadBlockPriority");
 	VARIABLE("takeLocRoadBlockPriorityActivityCoeff");
+	VARIABLE("takeLocCityPriority");
+	VARIABLE("takeLocCityPriorityActivityCoeff");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -18,6 +20,8 @@ CLASS("CmdrStrategy", "")
 		T_SETV("takeLocBasePriorityActivityCoeff", 0);
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
+		T_SETV("takeLocCityPriority", 0);
+		T_SETV("takeLocCityPriorityActivityCoeff", 0);	
 	} ENDMETHOD;
 
 	METHOD("getLocationDesirability") {
@@ -57,7 +61,11 @@ CLASS("CmdrStrategy", "")
 					};
 				};
 			};
-			default { _priority = 0.5 }; // TODO: dunno what it is, better add more here?
+			case LOCATION_TYPE_CITY: { 
+				_priority = T_GETV("takeLocCityPriority") + T_GETV("takeLocCityPriorityActivityCoeff") * _activity;
+			};
+			// No other locations taken by default
+			default { _priority = 0 };
 		};
 		_priority
 	} ENDMETHOD;
@@ -125,6 +133,8 @@ CLASS("CmdrStrategy", "")
 ENDCLASS;
 
 gCmdrStrategyDefault = NEW("CmdrStrategy", []);
+// Make sure it never gets deleted
+REF(gCmdrStrategyDefault);
 
 // Unit test
 #ifdef _SQF_VM

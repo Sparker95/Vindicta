@@ -806,7 +806,7 @@ CLASS("RefCounted", "")
 			T_PRVAR(refCount);
 			_refCount = _refCount - 1;
 			//OOP_DEBUG_2("%1 unrefed to %2", _thisObject, _refCount);
-			if(_refCount == 0) then {
+			if(_refCount <= 0) then {
 				//OOP_DEBUG_1("%1 being deleted", _thisObject);
 				DELETE(_thisObject);
 			} else {

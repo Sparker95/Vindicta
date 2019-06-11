@@ -32,17 +32,23 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 		T_SETV("maxActive", _maxActive);
 	} ENDMETHOD;
 
-	METHOD("update") {
+	METHOD("updateExisting") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		T_PRVAR(activeCivs);
-
 		// Check for finished actions
+		T_PRVAR(activeCivs);
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
-		
+	} ENDMETHOD;
+	
+	METHOD("spawnNew") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		ASSERT_OBJECT_CLASS(_city, "Location");
+
+		// Add new actions if required
+		T_PRVAR(activeCivs);
 		T_PRVAR(maxActive);
 		private _deficit = _maxActive - (count _activeCivs);
 		if(_deficit > 0) then {
@@ -85,7 +91,6 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			};
 		};
 	} ENDMETHOD;
-	
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
