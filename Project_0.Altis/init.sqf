@@ -22,9 +22,8 @@ if (!IS_SERVER) then {
 };
 #endif
 
-//if (true) exitWith {};
+//if(true) exitWith { 0 spawn { _i = 0; while {_i < 4} do { systemChat "!!! GAME MODE INIT WAS DISABLED !!! Check init.sqf"; sleep 4; _i = _i + 1; }; }; }; // Keep it here in case we want to not start the actual mission but to test some other code
 
-// if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
 		case "Sparker": 	{ "CivilWarGameMode" };
