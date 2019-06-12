@@ -1,5 +1,6 @@
 #include "..\common.hpp"
 
+#define MILITANT_CIVILIANS_TESTING
 // fnc_RecruitCivilian = {
 // 	player addAction ["Talk to civilian", // title
 //                  "cursorObject spawn CivPresence_fnc_talkTo", // Script
@@ -28,14 +29,47 @@ pr0_fnc_CivilianJoinPlayer = {
 			params ["_target", "_actionId"];
 			_target removeAction _actionId;
 		}] remoteExec ["call"];
-		[_target] join _grp;
-		[_target, selectRandom [
-			"I will follow you! Onward!",
-			"Lead the way!",
-			"Together we will be stronger!",
-			"Okay",
-			"What are we waiting for?"
-			], _caller] call Dialog_fnc_hud_createSentence;
+		
+		_target stop true;
+
+		[_target, _caller] spawn {
+			params ["_target", "_caller"];
+
+			[_caller, selectRandom [
+				"Join us brother!",
+				"The revolution needs you!",
+				"I need your help",
+				"Follow me!",
+				"We should work together"
+				], _target] call Dialog_fnc_hud_createSentence;
+
+			sleep 2;
+
+			[_target, selectRandom [
+				"I will follow you! Onward!",
+				"Lead the way!",
+				"Together we will be stronger!",
+				"Okay",
+				"What are we waiting for?"
+				], _caller] call Dialog_fnc_hud_createSentence;
+
+			private _otherUnits = units group _caller - [_caller];
+			[_target] join group _caller;
+
+			_target stop false;
+
+			{
+				[_x, selectRandom [
+					"Welcome brother!",
+					"Another for the cause!",
+					"Hi",
+					"...",
+					"Do you have any spare bullets?",
+					"Hi neighbour!"
+				], _target] call Dialog_fnc_hud_createSentence;
+				sleep 0.5;
+			} foreach _otherUnits;
+		};
 	} else {
 		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
 	};
@@ -54,9 +88,20 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 
 		private _radius = GETV(_city, "boundingRadius");
 
+#ifdef MILITANT_CIVILIANS_TESTING
+		private _maxActive = 15;
+#else
 		private _maxActive = 1 + ((2 * ln(0.01 * _radius + 1)) min 5);
+#endif
 		T_SETV("maxActive", _maxActive);
 	} ENDMETHOD;
+
+#ifdef MILITANT_CIVILIANS_TESTING
+	METHOD("isActive") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		true
+	} ENDMETHOD;
+#endif
 
 	METHOD("updateExisting") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
@@ -105,7 +150,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				// Add action to recruit them to your squad
 				[
 					_civie, 
-					["Join me brother!", pr0_fnc_CivilianJoinPlayer, [], 1.5, false, true, "", "true", 5]
+					["Join me brother!", pr0_fnc_CivilianJoinPlayer, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
 
 				// Add some random waypoints

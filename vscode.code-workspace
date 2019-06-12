@@ -271,7 +271,8 @@
 			"zeus1",
 			"spawnGroup1",
 			"spawnGroup2",
-			"gGameMode"
+			"gGameMode",
+			"Dialog_fnc_hud_createSentence"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"

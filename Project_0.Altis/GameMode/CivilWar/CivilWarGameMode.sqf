@@ -278,9 +278,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				then {
 					"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
 
-					// // Set enemy commander strategy
-					// private _strategy = NEW("Phase2CmdrStrategy", []);
-					// CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
+					// Set enemy commander strategy
+					private _strategy = NEW("Phase3CmdrStrategy", []);
+					CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
 
 					T_SETV("phase", 3);
 				} else {
