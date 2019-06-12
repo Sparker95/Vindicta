@@ -15,6 +15,32 @@
 //                  ""]; //memoryPoint
 // };
 
+// Called on client
+pr0_fnc_CivilianJoinPlayer = {
+	params ["_target", "_caller", "_actionId", "_arguments"];
+
+	private _grp = group _caller;
+
+	// Only allow up to 5 in player group
+	if(count units _grp < 5) then {
+		// Remove the action on all the clients
+		[[_target, _actionId], { 
+			params ["_target", "_actionId"];
+			_target removeAction _actionId;
+		}] remoteExec ["call"];
+		[_target] join _grp;
+		[_target, selectRandom [
+			"I will follow you! Onward!",
+			"Lead the way!",
+			"Together we will be stronger!",
+			"Okay",
+			"What are we waiting for?"
+			], _caller] call Dialog_fnc_hud_createSentence;
+	} else {
+		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
+	};
+};
+
 // This mission spawns a number of civilians with various weapons who will fight with the police.
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	VARIABLE("maxActive");
@@ -75,6 +101,12 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				_civie addHeadgear "H_Bandanna_khk";
 				comment "Add weapons";
 				_civie addWeapon "hgun_P07_F";
+
+				// Add action to recruit them to your squad
+				[
+					_civie, 
+					["Join me brother!", pr0_fnc_CivilianJoinPlayer, [], 1.5, false, true, "", "true", 5]
+				] remoteExec ["addAction", 0, _civie];
 
 				// Add some random waypoints
 				for "_j" from 0 to 5 do {

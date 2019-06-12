@@ -22,6 +22,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE("phase");
 	VARIABLE("lastUpdateTime");
 	VARIABLE("spawnPoints");
+	VARIABLE("activeCities");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -29,6 +30,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("spawningEnabled", false);
 		T_SETV("lastUpdateTime", TIME_NOW);
 		T_SETV("phase", 0);
+		T_SETV("activeCities", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -52,11 +54,20 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected override */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
+
+		// Select the cities we will consider for civil war activities
+		private _activeCities = GET_STATIC_VAR("Location", "all") select { 
+			// If it is a city with a police station
+			CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+			{ { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION } count GETV(_x, "children") > 0 }
+		};
+		T_SETV("activeCities", _activeCities);
+
 		// Create custom game mode data objects for city locations
 		{
 			private _cityData = NEW("CivilWarCityData", []);
 			SETV(_x, "gameModeData", _cityData);
-		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+		} forEach _activeCities;
 
 		// Remove existing spawns
 		{
@@ -111,13 +122,24 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		params [P_THISOBJECT];
 
 		["Game Mode", "Add activity here", {
-			CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG getPos player ARG 50]);
+			// Call to server to add the activity
+			[[getPos player], {
+				params ["_playerPos"];
+				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 50]);
+			}] remoteExec ["call", 0];
 		}] call pr0_fnc_addDebugMenuItem;
+
 		["Game Mode", "Get local info", {
-			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
-			private _activity = CALLM(_enemyCmdr, "getActivity", [getPos player ARG 500]);
-			systemChat format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity];
+			// Call to server to get the info
+			[[getPos player, clientOwner], {
+				params ["_playerPos", "_clientOwner"];
+				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
+				private _activity = CALLM(_enemyCmdr, "getActivity", [_playerPos ARG 500]);
+				// Callback to client with the result
+				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];				
+			}] remoteExec ["call", 0];
 		}] call pr0_fnc_addDebugMenuItem;
+
 	} ENDMETHOD;
 	
 	/* private */ METHOD("singlePlayerRespawn") {
@@ -194,12 +216,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _city = _x;
 			private _cityData = GETV(_city, "gameModeData");
 			CALLM(_cityData, "update", [_city]);
-		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+		} forEach T_GETV("activeCities");
 
 	} ENDMETHOD;
 
 	METHOD("updatePhase") {
 		params [P_THISOBJECT];
+
+		T_PRVAR(activeCities);
 
 		switch(T_GETV("phase")) do {
 			case 0: {
@@ -223,10 +247,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			*/
 			case 1: {
 				// If player managed to push city to revolt then move to next phase
-				if( GET_STATIC_VAR("Location", "all") findIf {
-						CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
-						{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }} != -1 ) 
-				then {
+				if( (_activeCities findIf { GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }) != -1 ) then {
 					"MOVING TO PHASE 2\nCreation of camps is now enabled!\nEnemy commander will respond to unrest." remoteExec ["hint"];
 
 					// Enable camp creation
@@ -251,7 +272,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			*/
 			case 2: {
 				// If player managed to push city to revolt then move to next phase
-				if( GET_STATIC_VAR("Location", "all") findIf {
+				if( _activeCities findIf {
 					CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
 					{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
 				then {
@@ -316,9 +337,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
-		
-		private _type = GETV(_location, "type");
-		if(_type == LOCATION_TYPE_CITY) then {
+		T_PRVAR(activeCities);
+		if(_location in _activeCities) then {
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "spawned", [_location]);
 		};
@@ -328,9 +348,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
-
-		private _type = GETV(_location, "type");
-		if(_type == LOCATION_TYPE_CITY) then {
+		T_PRVAR(activeCities);
+		if(_location in _activeCities) then {
 			private _cityData = GETV(_location, "gameModeData");
 			CALLM(_cityData, "despawned", [_location]);
 		};
@@ -425,29 +444,29 @@ CLASS("CivilWarCityData", "")
 			T_SETV("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
-				case (_instability > 100): { T_SETV("state", CITY_STATE_IN_REVOLT) };
-				case (_instability > 50): { T_SETV("state", CITY_STATE_AGITATED) };
-				default { T_SETV("state", CITY_STATE_STABLE) };
+				case (_instability > 100): { _state = CITY_STATE_IN_REVOLT; };
+				case (_instability > 50): { _state = CITY_STATE_AGITATED; };
+				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {
 			//if(_state == CITY_STATE_IN_REVOLT) then {
 			// If there is a military garrison occupying the city then it is suppressed
 
 			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
-				T_SETV("state", CITY_STATE_SUPPRESSED);
 			} else {
 				// If the location is spawned and there is more friendly than enemy units then it is liberated.
 				if(CALLM(_city, "isSpawned", [])) then {
 					private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
 					private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
 					if(_friendlyCount > _enemyCount * 2) then {
-						T_SETV("state", CITY_STATE_LIBERATED);
+						_state = CITY_STATE_LIBERATED;
 					};
 				};
 			};
 
 			//};
 		};
+		T_SETV("state", _state);
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 		private _mrk = GETV(_city, "name") + "_gamemode_data";

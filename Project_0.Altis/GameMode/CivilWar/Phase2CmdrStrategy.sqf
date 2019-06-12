@@ -23,7 +23,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 			case LOCATION_TYPE_CITY: {
 				private _actual = GETV(_loc, "actual");
 				private _cityData = GETV(_actual, "gameModeData");
-				if(GETV(_cityData, "state") in [CITY_STATE_IN_REVOLT, CITY_STATE_SUPPRESSED]) then {
+				if(!IS_NULL_OBJECT(_cityData) and {GETV(_cityData, "state") in [CITY_STATE_IN_REVOLT, CITY_STATE_SUPPRESSED]}) then {
 					100
 				} else {
 					0
@@ -36,7 +36,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 					_x params ["_dist", "_nearLoc"];
 					private _actual = GETV(_nearLoc, "actual");
 					private _cityData = GETV(_actual, "gameModeData");
-					GETV(_cityData, "state")  in [CITY_STATE_IN_REVOLT, CITY_STATE_SUPPRESSED]
+					!IS_NULL_OBJECT(_cityData) and { GETV(_cityData, "state") in [CITY_STATE_IN_REVOLT, CITY_STATE_SUPPRESSED] }
 				} != NOT_FOUND) then {
 					1
 				} else {
@@ -47,6 +47,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 				T_CALLCM("CmdrStrategy", "getLocationDesirability", [_worldNow ARG _loc ARG _side]);
 			};
 		};
+
 		// if(_side == ENEMY_SIDE and {GETV(_loc, "type") == LOCATION_TYPE_CITY}) then {
 		// 	private _cityData = GETV(_actual, "gameModeData");
 		// 	if(GETV(_cityData, "state") == CITY_STATE_IN_REVOLT) then {
