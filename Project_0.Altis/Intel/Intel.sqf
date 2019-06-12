@@ -258,22 +258,22 @@ CLASS("IntelLocation", "Intel")
 		pr _type = T_GETV("type");
 		pr _pos = T_GETV("pos");
 		pr _side = T_GETV("side");
-		pr _text = if (_type != LOCATION_TYPE_UNKNOWN) then {
+		pr _mrkType = "unknown";
+		pr _text = "??";
+		if (_type != LOCATION_TYPE_UNKNOWN) then {
 			pr _t = CALL_STATIC_METHOD("ClientMapUI", "getNearestLocationName", [_pos]);
 			if (_t == "") then { // Check if we have got an empty string
-				format ["%1 %2", _side, _type]
+				_text = format ["%1 %2", _side, _type]
 			} else {
-				_t
+				_text = _t;
 			};
-		} else {
-			"??"
 		};
 
 		pr _color = switch(_side) do { // See colors defined right above the class
-			case WEST: {COLOR_WEST};
-			case EAST: {COLOR_EAST};
-			case INDEPENDENT: {COLOR_IND};
-			default {COLOR_UNKNOWN};
+			case WEST: {[COLOR_WEST, "ColorWEST"]};
+			case EAST: {[COLOR_EAST, "ColorEAST"]};
+			case INDEPENDENT: {[COLOR_IND, "ColorGUER"]};
+			default {[COLOR_UNKNOWN, "ColorCIV"]}; // Purple color
 		};
 
 		pr _radius = T_GETV("accuracyRadius");
@@ -281,8 +281,9 @@ CLASS("IntelLocation", "Intel")
 
 		CALLM1(_mapMarker, "setPos", _pos);
 		CALLM1(_mapMarker, "setText", _text);
-		CALLM1(_mapMarker, "setColor", _color);
+		CALLM(_mapMarker, "setColorEx", _color);
 		CALLM1(_mapMarker, "setAccuracyRadius", _radius);
+		CALLM1(_mapMarker, "setType", _type);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
