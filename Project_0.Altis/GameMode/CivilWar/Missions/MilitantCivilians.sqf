@@ -1,6 +1,6 @@
 #include "..\common.hpp"
 
-#define MILITANT_CIVILIANS_TESTING
+// #define MILITANT_CIVILIANS_TESTING
 // fnc_RecruitCivilian = {
 // 	player addAction ["Talk to civilian", // title
 //                  "cursorObject spawn CivPresence_fnc_talkTo", // Script
@@ -30,7 +30,10 @@ pr0_fnc_CivilianJoinPlayer = {
 			_target removeAction _actionId;
 		}] remoteExec ["call"];
 		
-		_target stop true;
+		// Do the unit actions on the server
+		[_target, { 
+			_this stop true;
+		}] remoteExec ["call", 2];
 
 		[_target, _caller] spawn {
 			params ["_target", "_caller"];
@@ -53,22 +56,31 @@ pr0_fnc_CivilianJoinPlayer = {
 				"What are we waiting for?"
 				], _caller] call Dialog_fnc_hud_createSentence;
 
-			private _otherUnits = units group _caller - [_caller];
-			[_target] join group _caller;
+			// Join on server
+			[[_target, _caller, clientOwner], {
+				params ["_target", "_caller", "_clientOwner"];
 
-			_target stop false;
+				private _otherUnits = units group _caller - [_caller];
+				[_target] join group _caller;
 
-			{
-				[_x, selectRandom [
-					"Welcome brother!",
-					"Another for the cause!",
-					"Hi",
-					"...",
-					"Do you have any spare bullets?",
-					"Hi neighbour!"
-				], _target] call Dialog_fnc_hud_createSentence;
-				sleep 0.5;
-			} foreach _otherUnits;
+				{
+					sleep random [0, 0.5, 1];
+					[[_x, _target], {
+						params ["_unit", "_target"];
+						[_unit, selectRandom [
+							"Welcome brother!",
+							"Another for the cause!",
+							"Hi",
+							"...",
+							"Do you have any spare bullets?",
+							"Hi neighbour!"
+						], _target] call Dialog_fnc_hud_createSentence;
+					}] remoteExec ["call", _clientOwner];
+				} foreach _otherUnits;
+
+				_target stop false;
+			}] remoteExec ["call", 2];
+
 		};
 	} else {
 		[_target, "You are too many already, we must be inconspicuous!", _caller] call Dialog_fnc_hud_createSentence;
@@ -97,6 +109,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	} ENDMETHOD;
 
 #ifdef MILITANT_CIVILIANS_TESTING
+	// Make it always active mission if we are testing
 	METHOD("isActive") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		true
