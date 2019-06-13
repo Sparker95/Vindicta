@@ -381,7 +381,7 @@ CLASS("CivilWarCityData", "")
 
 		_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city ARG [CITY_STATE_STABLE]]));
 		_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED]]));
-		_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_IN_REVOLT]]));
+		_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED ARG CITY_STATE_IN_REVOLT]]));
 
 		// switch _state do {
 		// 	case CITY_STATE_STABLE: {
@@ -453,6 +453,7 @@ CLASS("CivilWarCityData", "")
 			// If there is a military garrison occupying the city then it is suppressed
 
 			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
+				_state = CITY_STATE_SUPPRESSED;
 			} else {
 				// If the location is spawned and there is more friendly than enemy units then it is liberated.
 				if(CALLM(_city, "isSpawned", [])) then {
@@ -463,8 +464,6 @@ CLASS("CivilWarCityData", "")
 					};
 				};
 			};
-
-			//};
 		};
 		T_SETV("state", _state);
 

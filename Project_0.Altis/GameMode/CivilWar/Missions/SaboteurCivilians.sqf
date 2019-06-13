@@ -1,6 +1,6 @@
 #include "..\common.hpp"
 
-#define SABOTEUR_CIVILIANS_TESTING
+//#define SABOTEUR_CIVILIANS_TESTING
 
 fnc_initSaboteur =
 {
@@ -51,12 +51,26 @@ pr0_fnc_SaboteurPlayer = {
 	}] remoteExec ["call"];
 
 	// Do the unit actions on the server
-	[_target, { 
-		doStop _this;
+	[[_target, _caller], { 
+		params ["_target", "_caller"];
+		doStop _target;
+		_target lookAt _caller;
 	}] remoteExec ["call", 2];
 
+	// Spawn something because we are going to be sleeping a bit
 	[_target, _caller] spawn {
 		params ["_target", "_caller"];
+
+		[_caller, selectRandom [
+			"Can I borrow that?",
+			"I have a plan, can I have that?",
+			"I need that",
+			"If you give me that now I will pay you back tuesday",
+			"I will take it from here",
+			"Don't worry, I will do it"
+			], _target] call Dialog_fnc_hud_createSentence;
+
+		sleep 2;
 
 		[_target, selectRandom [
 			"Okay, don't waste it!",
@@ -92,19 +106,28 @@ pr0_fnc_SaboteurPlayer = {
 			"I need to be somewhere else..."
 			], _caller] call Dialog_fnc_hud_createSentence;
 
-		[_target, { 
-			private _oldGrp = group _this;
+		[[_target, _caller], { 
+			params ["_target", "_caller"];
+
+			if (random 1 > 0.5) then {
+				// Do the unit actions on the server
+				_target lookAt _caller;
+				_target action ["Salute", _target];
+				sleep 2;
+			};
+
+			private _oldGrp = group _target;
 			private _grp = createGroup [FRIENDLY_SIDE, true];
-			[_this] joinSilent _grp;
+			[_target] joinSilent _grp;
 			deleteGroup _oldGrp;
 			// WAYPOINT - run away!
 			// Run far away!
-			private _wp = _grp addWaypoint [[position _this, 1000, 2000] call BIS_fnc_findSafePos, 0];
+			private _wp = _grp addWaypoint [[position _target, 1000, 2000] call BIS_fnc_findSafePos, 0];
 			_wp setWaypointType "MOVE";
 			_wp setWaypointBehaviour "AWARE";
 			_wp setWaypointSpeed "NORMAL";
 			_wp setWaypointStatements ["true", "deleteVehicle this;"];
-		}] remoteExec ["call", 2];
+		}] remoteExec ["spawn", 2];
 	};
 };
 

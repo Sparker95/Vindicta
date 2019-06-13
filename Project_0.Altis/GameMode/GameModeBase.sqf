@@ -182,7 +182,7 @@ CLASS("GameModeBase", "")
 				};
 				CALLM1(_gar, "setLocation", _loc);
 				CALLM1(_loc, "registerGarrison", _gar);
-				CALLM0(_gar, "activate");
+				// CALLM0(_gar, "activate");
 			};
 
 			// Send intel to commanders
