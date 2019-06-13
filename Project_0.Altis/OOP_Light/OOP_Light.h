@@ -227,6 +227,7 @@
 #define NEXT_ID_STR "nextID"
 #define MEM_LIST_STR "memList"
 #define STATIC_MEM_LIST_STR "staticMemList"
+#define SERIAL_MEM_LIST_STR "serialMemList"
 #define METHOD_LIST_STR "methodList"
 #define PARENTS_STR "parents"
 #define OOP_PARENT_STR "oop_parent"
@@ -726,10 +727,17 @@ VARIABLE(OOP_PUBLIC_STR);
 /*
  * Technical info:
  * It just terminates the call block of the CLASS
- * No it doesn't do anything any more
+ * Also it calculates an array with serializable members
  */
 
-#define ENDCLASS }
+#define ENDCLASS  \
+private _serialVariables = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR); \
+_serialVariables = _serialVariables select { \
+	_x params ["_varName", "_attributes"]; \
+	ATTR_SERIALIZABLE in _attributes \
+}; \
+SET_SPECIAL_MEM(_oop_classNameStr, SERIAL_MEM_LIST_STR, _serialVariables); \
+}
 
 // ----------------------------------------------------------------------
 // |        C O N S T R U C T O R  O F   E X I S T I N G   O B J E C T  |
