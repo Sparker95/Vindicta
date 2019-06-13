@@ -21,7 +21,7 @@ CLASS("CmdrStrategy", "RefCounted")
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
 		T_SETV("takeLocCityPriority", 0);
-		T_SETV("takeLocCityPriorityActivityCoeff", 0);	
+		T_SETV("takeLocCityPriorityActivityCoeff", 1);	
 	} ENDMETHOD;
 
 	METHOD("getLocationDesirability") {
