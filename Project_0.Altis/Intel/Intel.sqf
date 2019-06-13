@@ -224,7 +224,25 @@ CLASS("IntelLocation", "Intel")
 		pr _pos = T_GETV("pos");
 		OOP_INFO_2("Added location intel to client: %1, %2", _loc, _pos);
 
-		systemChat "Location data was added";
+		/*
+		#define LOCATION_TYPE_UNKNOWN "unknown"
+		#define LOCATION_TYPE_CITY "city"
+		#define LOCATION_TYPE_CAMP "camp"
+		#define LOCATION_TYPE_BASE "base"
+		#define LOCATION_TYPE_OUTPOST "outpost"
+		#define LOCATION_TYPE_POLICE_STATION "policeStation"
+		#define LOCATION_TYPE_ROADBLOCK "roadblock"
+		#define LOCATION_TYPE_OBSERVATION_POST "obsPost"
+		*/
+
+		pr _type = T_GETV("type");
+		pr _typeStr = switch (_type) do {
+			case LOCATION_TYPE_POLICE_STATION: {"police station"};
+			case LOCATION_TYPE_OBSERVATION_POST: {"observation post"};
+			default {_type};
+		};
+
+		systemChat format ["Added location intel: %1 at %2", _typeStr, mapGridPosition _pos];
 	} ENDMETHOD;
 
 	METHOD("clientUpdate") {
