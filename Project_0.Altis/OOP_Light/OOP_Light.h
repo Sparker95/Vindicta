@@ -836,6 +836,7 @@ objNameStr \
 #define SERIALIZE(objNameStr) ([objNameStr] call OOP_serialize)
 #define SERIALIZED_CLASS_NAME(array) (array select 0)
 #define SERIALIZED_OBJECT_NAME(array) (array select 1)
+#define SERIALIZED_SET_OBJECT_NAME(array, name) array set [1, name]
 
 // ----------------------------------------
 // |        D E S E R I A L I Z E         |

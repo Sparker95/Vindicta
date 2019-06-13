@@ -1,4 +1,3 @@
-/*
 // Default oop config overrides.
 // Nothing here cos we don't want to override any stuff by default!
 // Undefine debug and info logging, leave warning and error logging.
@@ -33,10 +32,10 @@
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
 //#define OOP_ASSERT
-*/
+
 
 // ========= Release config ============
-
+/*
 // Undefine debug and info logging, leave warning and error logging.
 #undef OOP_DEBUG
 #undef OOP_INFO
@@ -59,3 +58,4 @@
 
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
 #define RELEASE_BUILD
+*/

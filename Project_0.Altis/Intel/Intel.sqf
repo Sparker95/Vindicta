@@ -24,7 +24,7 @@ CLASS("Intel", "")
 
 	/* variable: dateUpdated 
 	Date when this intel was updated in format returned by date command*/
-	VARIABLE_ATTR("dateUpdated", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("dateUpdated", []); /*ATTR_SERIALIZABLE*/
 
 	/* variable: pos
 	Position*/
@@ -224,17 +224,6 @@ CLASS("IntelLocation", "Intel")
 		pr _pos = T_GETV("pos");
 		OOP_INFO_2("Added location intel to client: %1, %2", _loc, _pos);
 
-		/*
-		#define LOCATION_TYPE_UNKNOWN "unknown"
-		#define LOCATION_TYPE_CITY "city"
-		#define LOCATION_TYPE_CAMP "camp"
-		#define LOCATION_TYPE_BASE "base"
-		#define LOCATION_TYPE_OUTPOST "outpost"
-		#define LOCATION_TYPE_POLICE_STATION "policeStation"
-		#define LOCATION_TYPE_ROADBLOCK "roadblock"
-		#define LOCATION_TYPE_OBSERVATION_POST "obsPost"
-		*/
-
 		pr _type = T_GETV("type");
 		pr _typeStr = switch (_type) do {
 			case LOCATION_TYPE_POLICE_STATION: {"police station"};
@@ -242,7 +231,7 @@ CLASS("IntelLocation", "Intel")
 			default {_type};
 		};
 
-		systemChat format ["Added location intel: %1 at %2", _typeStr, mapGridPosition _pos];
+		systemChat format ["Added location intel: %1 at %2.", _typeStr, mapGridPosition _pos];
 	} ENDMETHOD;
 
 	METHOD("clientUpdate") {
@@ -252,9 +241,18 @@ CLASS("IntelLocation", "Intel")
 
 		CALLM0(_thisObject, "setLocationMarkerProperties");
 
+		pr _loc = T_GETV("location");
+		pr _pos = T_GETV("pos");
+		pr _type = T_GETV("type");
+		pr _typeStr = switch (_type) do {
+			case LOCATION_TYPE_POLICE_STATION: {"police station"};
+			case LOCATION_TYPE_OBSERVATION_POST: {"observation post"};
+			default {_type};
+		};
+		pr _string = format ["Updated location intel: %1 at %2.", _typeStr, mapGridPosition _pos];
+
 		// Hint
 		// Check what variables were updated
-		private _string = "Location data was updated.";
 		if (! (T_GETV("type") isEqualTo GETV(_intelSrc, "type"))) then {
 			_string = _string + " Updated type.";
 		};
@@ -264,7 +262,7 @@ CLASS("IntelLocation", "Intel")
 		if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
 			_string = _string + " Updated unit data.";
 		};
-
+		
 		systemChat _string;
 	} ENDMETHOD;
 
