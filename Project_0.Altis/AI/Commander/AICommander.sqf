@@ -333,10 +333,19 @@ CLASS("AICommander", "AI")
 				pr _args = [_loc, _updateType, _accuracyRadius];
 				pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 
-				CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+				// Check if the created intel and the existing one are the same
+				pr _serialOld = SERIALIZE(_intelResult);
+				SERIALIZED_SET_OBJECT_NAME(_serialOld, nil);
+				_serialOld = _serialOld apply {if (isNil "_x") then {-123.45678} else {_x}};
+				pr _serialNew = SERIALIZE(_intel);
+				SERIALIZED_SET_OBJECT_NAME(_serialNew, nil);
+				_serialNew = _serialNew apply {if (isNil "_x") then {-123.45678} else {_x}};
+				if (!(_serialOld isEqualTo _serialNew)) then {
+					CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 
-				// Delete the intel object that we have created temporary
-				DELETE(_intel);
+					// Delete the intel object that we have created temporary
+					DELETE(_intel);
+				};
 			};
 		} else {
 			// There is no intel item with this location

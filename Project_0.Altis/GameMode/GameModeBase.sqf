@@ -520,7 +520,7 @@ CLASS("GameModeBase", "")
 					NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
 				};
 				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
-				CALL_METHOD(_gar, "addGroup", [_patrolGroup]);		
+				CALLM2(_gar, "postMethodAsync", "addGroup", [_patrolGroup]);		
 			};
 
 			// Remainder back at station
@@ -531,7 +531,7 @@ CLASS("GameModeBase", "")
 				NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
 			};
 			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
-			CALL_METHOD(_gar, "addGroup", [_sentryGroup]);
+			CALLM2(_gar, "postMethodAsync", "addGroup", [_sentryGroup]);
 
 			// Patrol vehicles
 			for "_i" from 1 to (2 max _cVehGround) do {
@@ -591,7 +591,7 @@ CLASS("GameModeBase", "")
 				_cBuildingSentry = _cBuildingSentry - 1;
 			};
 			OOP_INFO_MSG("%1: Created sentry group %2", [_gar ARG _sentryGroup]);
-			CALL_METHOD(_gar, "addGroup", [_sentryGroup]);
+			CALLM2(_gar, "postMethodAsync", "addGroup", [_sentryGroup]);
 		};
 
 		// Add default vehicles
@@ -656,7 +656,7 @@ CLASS("GameModeBase", "")
 				_cHMGGMG = _cHMGGMG - 1;
 			};
 			OOP_INFO_MSG("%1: Added static group %2", [_gar ARG _staticGroup]);
-			CALL_METHOD(_gar, "addGroup", [_staticGroup]);
+			CALLM2(_gar, "postMethodAsync", "addGroup", [_staticGroup]);
 		};
 		_gar
 	} ENDMETHOD;
