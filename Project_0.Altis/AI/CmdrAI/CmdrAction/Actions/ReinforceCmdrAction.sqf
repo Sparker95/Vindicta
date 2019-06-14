@@ -192,12 +192,12 @@ ENDCLASS;
 
 ["ReinforceCmdrAction", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _srcEff = [100,100,100,100,100,100,100,100];
 	SETV(_garrison, "efficiency", _srcEff);
 	SETV(_garrison, "pos", SRC_POS);
 
-	private _targetGarrison = NEW("GarrisonModel", [_world]);
+	private _targetGarrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _targetEff = [0,0,0,0,0,0,0,0];
 	SETV(_targetGarrison, "efficiency", _targetEff);
 	SETV(_targetGarrison, "pos", TARGET_POS);

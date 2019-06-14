@@ -22,12 +22,11 @@ if (!IS_SERVER) then {
 };
 #endif
 
-//if (true) exitWith {};
+//if(true) exitWith { 0 spawn { _i = 0; while {_i < 4} do { systemChat "!!! GAME MODE INIT WAS DISABLED !!! Check init.sqf"; sleep 4; _i = _i + 1; }; }; }; // Keep it here in case we want to not start the actual mission but to test some other code
 
-// if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		case "Sparker": 	{ "GameModeRandom" };
+		case "Sparker": 	{ "CivilWarGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };
@@ -41,9 +40,9 @@ if(IS_SERVER) then {
 CRITICAL_SECTION {
 	gGameMode = NEW(gGameModeName, []);
 
-	diag_log format["Initializing game mode %1", GETV(gGameMode, "name")];
+	systemChat format["Initializing game mode %1", GETV(gGameMode, "name")];
 	CALLM(gGameMode, "init", []);
-	diag_log format["Initialized game mode %1", GETV(gGameMode, "name")];
+	systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
 
 	serverInitDone = 1;
 	PUBLIC_VARIABLE "serverInitDone";

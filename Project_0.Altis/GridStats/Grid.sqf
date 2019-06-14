@@ -324,8 +324,44 @@ CLASS("Grid", "");
 		};
 	} ENDMETHOD;
 
-	// - - - - - Image processing - - - -
+	/*
+	Method: getValueCircleSum
+	Gets total value found within the circle
+	
+	Parameters: _center, _radius
+	
+	_center - array, position: [x, y] or [x, y, z], but only x and y matter.
+	_radius - number, radius of the circle
+	
+	Returns: Number or Array, total value found within the circle
+	*/
+	METHOD("getValueCircleSum") {
+		params [P_THISOBJECT, P_ARRAY("_center"), P_NUMBER("_radius")];
 
+		T_PRVAR(defaultValue);
+		if(_defaultValue isEqualType 0) then {
+			private _sumVal = 0;
+			private _fnMax = { 
+				params ["_i", "_j", "_dist", "_row"];
+				_sumVal = _row#_j + _sumVal;
+			};
+			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
+			_sumVal
+		} else {
+			private _sumVal = _defaultValue apply { 0 };
+			private _fnMax = {
+				params ["_i", "_j", "_dist", "_row"];
+				private _origVal = _row#_j;
+				{
+					_sumVal set [_forEachIndex, (_origVal select _forEachIndex) + _x];
+				} forEach _sumVal;
+			};
+			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
+			_sumVal
+		};
+	} ENDMETHOD;
+
+	// - - - - - Image processing - - - -
 
 	METHOD("apply") {
 		params [P_THISOBJECT, P_CODE("_fn"), P_ARRAY("_args")];

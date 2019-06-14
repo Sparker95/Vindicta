@@ -9,6 +9,9 @@ if(isNil "groupLogic") then {
 	groupLogic = createGroup sideLogic;
 };
 
+// Initialize the debug menu
+call compile preprocessFileLineNumbers "DebugMenu\DebugMenu.sqf";
+
 if (isNil "OOP_Light_initialized") then {
 	OOP_Light_initialized = true;
 	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
@@ -16,19 +19,15 @@ if (isNil "OOP_Light_initialized") then {
 
 //Initialize templates
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
-call compile preprocessFileLineNumbers "Templates\initVariablesServer.sqf";
+call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 
 //Initialize the NATO template
-tNATO = call compile preprocessFileLineNumbers "Templates\NATO.sqf";
-tCSAT = call compile preprocessFileLineNumbers "Templates\CSAT.sqf";
-tAAF = call compile preprocessFileLineNumbers "Templates\AAF.sqf";
-tGUERILLA = call compile preprocessFileLineNumbers "Templates\GUERILLA.sqf";
-tPOLICE = call compile preprocessFileLineNumbers "Templates\POLICE.sqf";
-tCIVILIAN = call compile preprocessFileLineNumbers "Templates\CIVILIAN.sqf";
-
-
-// Initialize GameModes
-call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
+tNATO = call compile preprocessFileLineNumbers "Templates\Factions\NATO.sqf";
+tCSAT = call compile preprocessFileLineNumbers "Templates\Factions\CSAT.sqf";
+tAAF = call compile preprocessFileLineNumbers "Templates\Factions\AAF.sqf";
+tGUERILLA = call compile preprocessFileLineNumbers "Templates\Factions\GUERILLA.sqf";
+tPOLICE = call compile preprocessFileLineNumbers "Templates\Factions\POLICE.sqf";
+tCIVILIAN = call compile preprocessFileLineNumbers "Templates\Factions\CIVILIAN.sqf";
 
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
@@ -108,5 +107,11 @@ call compile preprocessFileLineNumbers "Intel\initClasses.sqf";
 
 // Initialize the garbage collector
 call compile preprocessFileLineNumbers "GarbageCollector\GarbageCollector.sqf";
+
+// Initialize Location Visibility Monitor
+call compile preprocessFileLineNumbers "LocationVisibilityMonitor\LocationVisibilityMonitor.sqf";
+
+// Initialize GameModes
+call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
 
 diag_log "[initModules] Done!";

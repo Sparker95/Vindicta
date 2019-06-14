@@ -175,13 +175,13 @@ ENDCLASS;
 ["TakeLocationCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _srcEff = [100,100,100,100,100,100,100,100];
 	SETV(_garrison, "efficiency", _srcEff);
 	SETV(_garrison, "pos", SRC_POS);
 	SETV(_garrison, "side", WEST);
 
-	private _targetLocation = NEW("LocationModel", [_world]);
+	private _targetLocation = NEW("LocationModel", [_world ARG "<undefined>"]);
 	SETV(_targetLocation, "pos", TARGET_POS);
 
 	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetLocation, "id")]);

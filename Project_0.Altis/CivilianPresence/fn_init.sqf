@@ -11,17 +11,12 @@
 
 params ["_pos","_border"];
 
-_pos set [2,0];
-private _rotation = 0;
+//_pos set [2,0];
+
+_border params ["_pos0", "_a", "_b", "_rotation", "_isRectangle"]; // Format is same as here https://community.bistudio.com/wiki/inArea 
 
 //check if it is a circle
-private _isCircle = false;
-if(_border isEqualType 0)then{
-	_border = [_border,_border];
-	_isCircle = true;
-}else{
-	_rotation = _border#2;
-};
+private _isCircle = !_isRectangle;
 
 private _unitTypes = missionNameSpace getVariable "CivPresence_unitTypes";
 
@@ -73,13 +68,12 @@ private _useBuilding_start = true;
 private _waypoints = [];//road segments and spawnpoints
 private _spawnPoints = [];//locations in buildings
 
-for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESOLUTION/2 step INT_RESOLUTION do{
+for "_x_border" from -_a + INT_RESOLUTION/2   to _a - INT_RESOLUTION/2 step INT_RESOLUTION do{
 
 	private _useBuilding = _useBuilding_start;
 	if _useBuilding_start then{_useBuilding_start = false;}else{_useBuilding_start=true};
 
-	
-	for "_y_border" from -(_border#1) + INT_RESOLUTION/2 to (_border#1) - INT_RESOLUTION/2 step INT_RESOLUTION do{
+	for "_y_border" from -_b + INT_RESOLUTION/2 to _b - INT_RESOLUTION/2 step INT_RESOLUTION do{
 
 		if(_useBuilding)then{_useBuilding = false;}else{_useBuilding = true;};
 		private _x = _x_border;
@@ -89,7 +83,7 @@ for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESO
 
 		//in case its a circle we need to skip the points that fall outside the circle
 		#ifdef DEBUG_CIVILIAN_PRESENCE	
-		diag_log ["JEROENTEST1", _isCircle, sqrt(abs _x ^2 + abs _y ^ 2), _border#0];
+		diag_log ["JEROENTEST1", _isCircle, sqrt(abs _x ^2 + abs _y ^ 2), _a];
 		#endif
 
 		if(!_isCircle)then{
@@ -106,7 +100,7 @@ for "_x_border" from -(_border#0) + INT_RESOLUTION/2   to (_border#0) - INT_RESO
 		
 
 		//skipping the ones out side the circle
-		if (!_isCircle || _isCircle && {sqrt(abs _x ^ 2 + abs _y ^ 2) <= _border#0 - INT_RESOLUTION/2}) then{
+		if (!_isCircle || _isCircle && {sqrt(abs _x ^ 2 + abs _y ^ 2) <= _a - INT_RESOLUTION/2}) then{
 
 			//paint markers for debugging
 			#ifdef DEBUG_CIVILIAN_PRESENCE				

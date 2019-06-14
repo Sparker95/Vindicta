@@ -207,15 +207,20 @@ CLASS("WorldModel", "")
 		MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
 			T_PRVAR(activityGrid);
 			_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]);
-
-			// CALLM(_threatGrid, "copyFrom", [_rawThreatGrid]);
-			// CALLM(_activityGrid, "copyFrom", [_rawActivityGrid]);
-
-			// CALLM(_threatGrid, "smooth5x5", []);
-			// CALLM(_activityGrid, "smooth5x5", []);
 		};
 		_activity
 	} ENDMETHOD;
+
+	// METHOD("getActivityTotal") { // thread-safe
+	// 	params [P_THISOBJECT, P_ARRAY("_pos"), P_NUMBER("_radius")];
+
+	// 	private _activity = 0;
+	// 	MUTEX_SCOPED_LOCK(T_GETV("gridMutex")) {
+	// 		T_PRVAR(activityGrid);
+	// 		_activity = CALLM(_activityGrid, "getMaxValueCircle", [_pos ARG _radius]);
+	// 	};
+	// 	_activity
+	// } ENDMETHOD;
 
 	// ----------------------------------------------------------------------
 	// |                G A R R I S O N   F U N C T I O N S                 |
@@ -601,10 +606,9 @@ CLASS("WorldModel", "")
 		};
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
-		private _activity = T_CALLM("getActivity", [_pos ARG 1500]);
+		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
 		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		_activity = (0.015 * _activity);
-		private _forceMul = 1.5 max (1 + _activity * _activity * _activity * _activity);
+		private _forceMul = 1 + ln (0.02 * _activity + 1);
 		private _compositeEff = EFF_MUL_SCALAR(_threatEff, _forceMul);
 		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
 		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _activity = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _activity ARG _forceMul ARG _compositeEff ARG _effMax]);
@@ -737,7 +741,7 @@ ENDCLASS;
 
 ["WorldModel.addGarrison", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	// This is called in the GarrisonModel constructor
 	//private _id = CALLM(_world, "addGarrison", [_garrison]);
 	["Added", count GETV(_world, "garrisons") == 1] call test_Assert;
@@ -746,7 +750,7 @@ ENDCLASS;
 
 ["WorldModel.getGarrison", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _id = GETV(_garrison, "id");
 	private _got = CALLM(_world, "getGarrison", [_id]);
 	_got == _garrison
@@ -755,14 +759,14 @@ ENDCLASS;
 ["WorldModel.findGarrisonByActual", {
 	private _actual = NEW("Garrison", [WEST]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
-	private _garrison = NEW("GarrisonModel", [_world] + [_actual]);
+	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	private _got = CALLM(_world, "findGarrisonByActual", [_actual]);
 	_got == _garrison
 }] call test_AddTest;
 
 ["WorldModel.addLocation", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	// This is called in the LocationModel constructor
 	//private _id = CALLM(_world, "addLocation", [_location]);
 	["Added", count GETV(_world, "locations") == 1] call test_Assert;
@@ -771,7 +775,7 @@ ENDCLASS;
 
 ["WorldModel.getLocation", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
 	_got == _location
@@ -779,7 +783,7 @@ ENDCLASS;
 
 ["WorldModel.findLocationByActual", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location = NEW("LocationModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
 	private _id = GETV(_location, "id");
 	private _got = CALLM(_world, "getLocation", [_id]);
 	_got == _location
@@ -788,8 +792,8 @@ ENDCLASS;
 ["WorldModel.simCopy", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 
-	private _location = NEW("LocationModel", [_world]);
-	private _garrison = NEW("GarrisonModel", [_world]);
+	private _location = NEW("LocationModel", [_world ARG "<undefined>"]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 
 	private _copy = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	["Created", !(isNil { OBJECT_PARENT_CLASS_STR(_copy) })] call test_Assert;
@@ -807,9 +811,9 @@ ENDCLASS;
 
 ["WorldModel.getAliveGarrisons", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison1 = NEW("GarrisonModel", [_world]);
+	private _garrison1 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
-	private _garrison2 = NEW("GarrisonModel", [_world]);
+	private _garrison2 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	
 	["Initial", count CALLM(_world, "getAliveGarrisons", []) == 2] call test_Assert;
@@ -821,10 +825,10 @@ ENDCLASS;
 
 ["WorldModel.getNearestGarrisons", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _garrison1 = NEW("GarrisonModel", [_world]);
+	private _garrison1 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison1, "pos", [500 ARG 0 ARG 0]);
 	SETV(_garrison1, "efficiency", EFF_MIN_EFF);
-	private _garrison2 = NEW("GarrisonModel", [_world]);
+	private _garrison2 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	SETV(_garrison2, "pos", [1000 ARG 0 ARG 0]);
 	SETV(_garrison2, "efficiency", EFF_MIN_EFF);
 	private _center = [0,0,0];
@@ -837,9 +841,9 @@ ENDCLASS;
 
 ["WorldModel.getNearestLocations", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
-	private _location1 = NEW("LocationModel", [_world]);
+	private _location1 = NEW("LocationModel", [_world ARG "<undefined>"]);
 	SETV(_location1, "pos", [500 ARG 0 ARG 0]);
-	private _location2 = NEW("LocationModel", [_world]);
+	private _location2 = NEW("LocationModel", [_world ARG "<undefined>"]);
 	SETV(_location2, "pos", [1000 ARG 0 ARG 0]);
 	private _center = [0,0,0];
 	["Dist test none", count CALLM(_world, "getNearestLocations", [_center ARG 1]) == 0] call test_Assert;

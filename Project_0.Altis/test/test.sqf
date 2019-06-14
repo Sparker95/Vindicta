@@ -1,35 +1,34 @@
+// Cmdr planning constants
+#define CMDR_PLANNING_PRIORITY_HIGH 0
+#define CMDR_PLANNING_PRIORITY_NORMAL 1
+#define CMDR_PLANNING_PRIORITY_LOW 2
 
-#define THREAT_FADE_RATE 0.93
-#define ACTIVITY_FADE_RATE 0.98
-#define FADE_RATE_PERIOD 360
-//#define POW(a, b) (a)^(b)
-#define POW(a, b) (exp ((b) * ln (a)))
+// PRIME NUMBERS > 1 only
+//#ifdef RELEASE_BUILD
+// #define CMDR_PLANNING_RATIO_HIGH 3
+// #define CMDR_PLANNING_RATIO_NORMAL 11
+// #define CMDR_PLANNING_RATIO_LOW 31
+// #else
+#define CMDR_PLANNING_RATIO_HIGH 2
+#define CMDR_PLANNING_RATIO_NORMAL 5
+#define CMDR_PLANNING_RATIO_LOW 11
+//#endif
 
-private _initial = 100;
-private _final = 10;
-private _finalPercent = 100 * (1 - _final / _initial);
-private _threat = _initial;
-private _t = 0;
-while {_threat > _final} do
-{
-	private _dt = 30 + random 30;
-	_t = _t + _dt;
+private _plans = [0,0,0,0];
+for "_planningCycle" from 0 to 1000 do {
+	private _priority = 0;
+	switch true do {
+		case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { _priority = CMDR_PLANNING_PRIORITY_HIGH; };
+		case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { _priority = CMDR_PLANNING_PRIORITY_NORMAL; };
+		case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { _priority = CMDR_PLANNING_PRIORITY_LOW; };
+		default { _priority = 3; };
+	};
 	
-	//private _threatFade = THREAT_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
-	private _threatFade = POW(THREAT_FADE_RATE, (_dt / FADE_RATE_PERIOD));
-	_threat = _threat * _threatFade;
+	_plans set [_priority, (_plans#_priority) + 1];
 };
-diag_log format["It took %1 hrs for threat to drop by %2%3", _t / 3600, _finalPercent, "%"];
 
-private _activity = _initial;
-_t = 0;
-while {_activity > _final} do
-{
-	private _dt = 30 + random 30;
-	_t = _t + _dt;
-	
-	//private _activityFade = ACTIVITY_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
-	private _activityFade = POW(ACTIVITY_FADE_RATE, (_dt / FADE_RATE_PERIOD));
-	_activity = _activity * _activityFade;
-};
-diag_log format["It took %1 hrs for activity to drop by %2%3", _t / 3600, _finalPercent, "%"];
+diag_log str _plans;
+
+diag_log str (_plans apply { _x / 1000 });
+
+diag_log str (_plans apply { 10000 / _x });

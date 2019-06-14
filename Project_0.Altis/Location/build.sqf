@@ -102,7 +102,7 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	};
 
 	// The End!
-	T_SETV("isBuilt", true);
+	SET_VAR_PUBLIC(_thisObject, "isBuilt", true);
 };
 
 // OOP_ERROR_1("Build method is not implemented for location type: %1", T_GETV("type"));

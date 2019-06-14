@@ -28,7 +28,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("name", "CivilWar");
 		T_SETV("spawningEnabled", false);
 		T_SETV("lastUpdateTime", TIME_NOW);
-		T_SETV("phase", 1);
+		T_SETV("phase", 0);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -107,7 +107,20 @@ CLASS("CivilWarGameMode", "GameModeBase")
 #endif
 	} ENDMETHOD;
 
-/* private */ METHOD("singlePlayerRespawn") {
+	METHOD("initClientOnly") {
+		params [P_THISOBJECT];
+
+		["Game Mode", "Add activity here", {
+			CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG getPos player ARG 50]);
+		}] call pr0_fnc_addDebugMenuItem;
+		["Game Mode", "Get local info", {
+			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
+			private _activity = CALLM(_enemyCmdr, "getActivity", [getPos player ARG 500]);
+			systemChat format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity];
+		}] call pr0_fnc_addDebugMenuItem;
+	} ENDMETHOD;
+	
+	/* private */ METHOD("singlePlayerRespawn") {
 		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
 		T_PRVAR(spawnPoints);
 
@@ -132,37 +145,45 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	/* protected override */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
-		switch T_GETV("phase") do {
-			// Player is spawning in cities give them a pistol or something.
-			case 1: {
-				player call fnc_selectPlayerSpawnLoadout;
-				// Holster pistol
-				player action ["SWITCHWEAPON", player, player, -1];
 
-				// _newUnit spawn {
-				// 	while {!isNull (group _this)} do {
-				// 		waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
-				// 		if(!isNull (group _this)) then {
-				// 			private _action = player addAction [
-				// 				"Holster your weapon", 
-				// 				{
-				// 					params ["_target", "_caller", "_actionId", "_arguments"];
-				// 					player action ["SWITCHWEAPON", player, player, -1];
-				// 				}
-				// 			];
-				// 			waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
-				// 			if(!isNull (group _this)) then {
-				// 				player removeAction _action;
-				// 			};
-				// 		};
-				// 	};
-				// };
-			};
-		};
+		// Always spawn with a random civi kit and pistol.
+		player call fnc_selectPlayerSpawnLoadout;
+		// Holster pistol
+		player action ["SWITCHWEAPON", player, player, -1];
+
+		// switch T_GETV("phase") do {
+		// 	// Player is spawning in cities give them a pistol or something.
+		// 	case 1: {
+
+		// 		// _newUnit spawn {
+		// 		// 	while {!isNull (group _this)} do {
+		// 		// 		waitUntil {isNull (group _this) or {currentWeapon _this == handgunWeapon _this}};
+		// 		// 		if(!isNull (group _this)) then {
+		// 		// 			private _action = player addAction [
+		// 		// 				"Holster your weapon", 
+		// 		// 				{
+		// 		// 					params ["_target", "_caller", "_actionId", "_arguments"];
+		// 		// 					player action ["SWITCHWEAPON", player, player, -1];
+		// 		// 				}
+		// 		// 			];
+		// 		// 			waitUntil {isNull (group _this) or {currentWeapon _this != handgunWeapon _this}};
+		// 		// 			if(!isNull (group _this)) then {
+		// 		// 				player removeAction _action;
+		// 		// 			};
+		// 		// 		};
+		// 		// 	};
+		// 		// };
+		// 	};
+		// 	default {
+
+		// 	};
+		// };
 	} ENDMETHOD;
 
 	/* protected override */METHOD("update") {
 		params [P_THISOBJECT];
+		
+		T_CALLM("updatePhase", []);
 
 		T_PRVAR(lastUpdateTime);
 		private _dt = TIME_NOW - _lastUpdateTime;
@@ -174,9 +195,123 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _cityData = GETV(_city, "gameModeData");
 			CALLM(_cityData, "update", [_city]);
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+
 	} ENDMETHOD;
 
-	
+	METHOD("updatePhase") {
+		params [P_THISOBJECT];
+
+		switch(T_GETV("phase")) do {
+			case 0: {
+				systemChat "Moving to phase 1";
+				// Scenario just initialized so do setup
+				// Disable camp creation
+				SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
+				PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+				// Set enemy commander strategy
+				private _strategy = NEW("Phase1CmdrStrategy", []);
+				CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
+				T_SETV("phase", 1);
+			};
+			/*
+			Phase 1 (fairly short)
+				Player can spawn at designated city only.
+				AAF Cmdr is passive. No outposts taken, limited QRF, no reinforcements.
+				Police are mildly annoying?
+				Missions relating to disruption and propaganda
+			Transition to Phase 2 once player has pushed a city into Revolt?
+			*/
+			case 1: {
+				// If player managed to push city to revolt then move to next phase
+				if( GET_STATIC_VAR("Location", "all") findIf {
+						CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+						{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }} != -1 ) 
+				then {
+					"MOVING TO PHASE 2\nCreation of camps is now enabled!\nEnemy commander will respond to unrest." remoteExec ["hint"];
+
+					// Enable camp creation
+					SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
+					PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+
+					// Set enemy commander strategy
+					private _strategy = NEW("Phase2CmdrStrategy", []);
+					CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
+
+					T_SETV("phase", 2);
+				} else {
+					// update phase 1 stuff here
+				};
+			};
+			/*
+			Phase 2 (should be fairly short)
+				Player can build a camp and recruit civilians.
+				HR is available to recruit units for squad.
+				AAF Cmdr will start responding to player activity, but otherwise remain passive.
+			Transition to Phase 3 once player has taken a city (liberated).
+			*/
+			case 2: {
+				// If player managed to push city to revolt then move to next phase
+				if( GET_STATIC_VAR("Location", "all") findIf {
+					CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+					{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
+				then {
+					"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
+
+					// // Set enemy commander strategy
+					// private _strategy = NEW("Phase2CmdrStrategy", []);
+					// CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
+
+					T_SETV("phase", 3);
+				} else {
+					// update phase 2 stuff here
+				};
+			};
+			/*
+			Phase 3 (long)
+				Player can create garrisons, occupy locations with them etc.
+				AAF Cmdr will start more proactive behaviours, occupying strategic outposts, building roadblocks etc.
+				NATO interaction available.
+			Transition to Phase 4 once player has taken some significant portion of the island, or maybe an AAF base?
+			*/
+			case 3: {
+				// // If player managed to push city to revolt then move to next phase
+				// private _cities = GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY };
+				// if( GET_STATIC_VAR("Location", "all") findIf {
+				// 	CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+				// 	{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
+				// then {
+				// 	"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
+
+				// 	// // Set enemy commander strategy
+				// 	// private _strategy = NEW("Phase2CmdrStrategy", []);
+				// 	// CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
+
+				// 	T_SETV("phase", 3);
+				// } else {
+				// 	// update phase 2 stuff here
+				// };
+			};
+			/*
+			Phase 4 (not sure, medium?)
+				AAF get support from Russia (or whoever the other faction is).
+				Nature of NATO involvement changes somehow? Perhaps more powerful support? What makes sense here? Given we want to end with all factions in open war probably NATO involvement should increase on your side, but perhaps they also start doing their own missions without your involvement.
+			Transition to Phase 5 once NATO occupy a certain number of outposts?
+			*/
+			case 4: {
+
+			};
+			/*
+			Phase 5 (final phase)
+				NATO become enemy to player.
+				Russian involvement increases to counter NATO incursion.
+			How does it end?
+			*/
+			case 4: {
+
+			};
+		}
+	} ENDMETHOD;
+
 	// Override this to perform actions when a location spawns
 	/* protected override */METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
@@ -206,7 +341,7 @@ CLASS("CivilWarCityData", "")
 	VARIABLE("state");
 	VARIABLE("instability");
 	VARIABLE("ambientMissions");
-
+	
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
@@ -225,34 +360,35 @@ CLASS("CivilWarCityData", "")
 		private _pos = CALLM0(_city, "getPos");
 		private _radius = GETV(_city, "boundingRadius");
 
-		switch _state do {
-			case CITY_STATE_STABLE: {
-				_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city]));
-				// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
-				// {
-				// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
-				// } forEach _civies;
-			};
-			case CITY_STATE_AGITATED: {
-				_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city]));
-				// TODO: if local garrison is spawned then
-				//	a) spawn a civ or two with weapons to attack them
-				//	b) spawn an IED with proximity detonation
-			};
-			case CITY_STATE_IN_REVOLT: {
-				_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city]));
-				// TODO: if local garrison is spawned then
-				//	a) arm all civs, put them on player side
-				//	b) spawn an timed IED blowing up a building or two (police station maybe?)
-			};
-			case CITY_STATE_SUPPRESSED: {
-				// TODO: keep spawned civilians inside
-				// TODO: modify cmdr strategy to occupy this town
-			};
-			case CITY_STATE_LIBERATED: {
-				// TODO: police is on player side
-			};
-		};
+		_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city ARG [CITY_STATE_STABLE]]));
+		_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED]]));
+		_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_IN_REVOLT]]));
+
+		// switch _state do {
+		// 	case CITY_STATE_STABLE: {
+		// 		// private _civies = _cityPos nearEntities["Man", _cityRadius] select { !isNil {_x getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME} };
+		// 		// {
+		// 		// 	_x setVariable [UNDERCOVER_SUSPICION, 0, true];
+		// 		// } forEach _civies;
+		// 	};
+		// 	case CITY_STATE_AGITATED: {
+		// 		// TODO: if local garrison is spawned then
+		// 		//	a) spawn a civ or two with weapons to attack them
+		// 		//	b) spawn an IED with proximity detonation
+		// 	};
+		// 	case CITY_STATE_IN_REVOLT: {
+		// 		// TODO: if local garrison is spawned then
+		// 		//	a) arm all civs, put them on player side
+		// 		//	b) spawn an timed IED blowing up a building or two (police station maybe?)
+		// 	};
+		// 	case CITY_STATE_SUPPRESSED: {
+		// 		// TODO: keep spawned civilians inside
+		// 		// TODO: modify cmdr strategy to occupy this town
+		// 	};
+		// 	case CITY_STATE_LIBERATED: {
+		// 		// TODO: police is on player side
+		// 	};
+		// };
 	} ENDMETHOD;
 
 	METHOD("despawned") {
@@ -277,7 +413,7 @@ CLASS("CivilWarCityData", "")
 		private _cityRadius = 500 max GETV(_city, "boundingRadius");
 
 		// if City is stable or agitated then instability is a factor
-		if(_state == CITY_STATE_STABLE or _state == CITY_STATE_AGITATED) then {
+		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
 			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
 
@@ -287,20 +423,38 @@ CLASS("CivilWarCityData", "")
 			// TODO: add other interesting factors here to the instability rate.
 			private _instability = _activity * 500 / _cityRadius;
 			T_SETV("instability", _instability);
-			_state = switch true do {
-				case (_instability > 200): { CITY_STATE_IN_REVOLT };
-				case (_instability > 100): { CITY_STATE_AGITATED };
-				default { CITY_STATE_STABLE };
+			// TODO: scale the instability limits using settings
+			switch true do {
+				case (_instability > 100): { T_SETV("state", CITY_STATE_IN_REVOLT) };
+				case (_instability > 50): { T_SETV("state", CITY_STATE_AGITATED) };
+				default { T_SETV("state", CITY_STATE_STABLE) };
 			};
+		} else {
+			//if(_state == CITY_STATE_IN_REVOLT) then {
+			// If there is a military garrison occupying the city then it is suppressed
+
+			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
+				T_SETV("state", CITY_STATE_SUPPRESSED);
+			} else {
+				// If the location is spawned and there is more friendly than enemy units then it is liberated.
+				if(CALLM(_city, "isSpawned", [])) then {
+					private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
+					private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
+					if(_friendlyCount > _enemyCount * 2) then {
+						T_SETV("state", CITY_STATE_LIBERATED);
+					};
+				};
+			};
+
+			//};
 		};
-		T_SETV("state", _state);
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 		private _mrk = GETV(_city, "name") + "_gamemode_data";
 		createMarker [_mrk, CALLM0(_city, "getPos") vectorAdd [0, 100, 0]];
 		_mrk setMarkerType "mil_marker";
 		_mrk setMarkerColor "ColorBlue";
-		_mrk setMarkerText (format ["%1 (%2)", gCityStateNames select _state, GETV(_cityData, "instability")]);
+		_mrk setMarkerText (format ["%1 (%2)", gCityStateNames select _state, T_GETV("instability")]);
 		_mrk setMarkerAlpha 1;
 #endif
 		switch _state do {
@@ -349,6 +503,7 @@ CLASS("CivilWarPoliceStationData", "")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
+
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
 	} ENDMETHOD;
 
@@ -364,8 +519,10 @@ CLASS("CivilWarPoliceStationData", "")
 			};
 		} else {
 			private _garrisons = CALLM0(_policeStation, "getGarrisons");
-			// TODO: add forces if depleted {!EFF_LTE(CALLM0(_garrisons#0, "getEfficiencyMobile")}
-			if (count _garrisons == 0) then {
+			if (count _garrisons == 0 or { 
+				private _garr = _garrisons#0;
+				CALLM(_garr, "countInfantryUnits", []) <= 4
+			}) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
 				private _cInf = CALLM(_policeStation, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
@@ -378,8 +535,8 @@ CLASS("CivilWarPoliceStationData", "")
 				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
 				T_SETV_REF("reinfGarrison", _newGarrison);
 
-				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
-				CALLM2(_newGarrison, "postMethodAsync", "activate", []);
+				CALLM(_newGarrison, "setPos", [_spawnInPos]);
+				CALLM(_newGarrison, "activateOutOfThread", []);
 				private _AI = CALLM(_newGarrison, "getAI", []);
 				private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
 				CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);

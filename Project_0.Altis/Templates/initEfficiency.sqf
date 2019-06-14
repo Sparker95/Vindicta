@@ -150,4 +150,17 @@ _eff_drone set [T_DRONE_stat_AA,			[2,		0,		0,		0,		0,		0,		0,		4]];
 //											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 _eff set [T_DRONE, _eff_drone];
 
+// Do post processing to make the numbers float-safe
+// We need to do that to avoid floating point round-off errors when we add or substract the numbers a lot of times
+// So we round these numbers to nearest (1/2)^n, n=5 in this case, should be enough
+
+for "_cat" from 0 to ((count _eff)-1) do
+{
+	private _catArray = _eff select _cat;
+	for "_i" from 0 to ((count _catArray) - 1 ) do {
+		private _vector = _catArray select _i;
+		_catArray set [_i, _vector apply {(round (_x*32))/32}];
+	};
+};
+
 T_efficiency = +_eff;

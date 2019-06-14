@@ -87,7 +87,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
-		T_SETV("isBuilt", false);
+		SET_VAR_PUBLIC(_thisObject, "isBuilt", true); // Location is built at start, except for roadblocks, it's changed in setType function
 		T_SETV("buildObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
@@ -134,7 +134,7 @@ CLASS("Location", "MessageReceiverEx")
 		params [P_THISOBJECT, ["_capacityCiv", 0, [0]]];
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY)then{
-			private _cpModule = [T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
+			private _cpModule = [+T_GETV("pos"),T_GETV("border")] call CivPresence_fnc_init;
 			T_SETV("cpModule",_cpModule);
 		};
 
@@ -176,6 +176,8 @@ CLASS("Location", "MessageReceiverEx")
 				case LOCATION_TYPE_ROADBLOCK: { "mil_triangle" };
 				case LOCATION_TYPE_BASE: { "mil_circle" };
 				case LOCATION_TYPE_OUTPOST: { "mil_box" };
+				case LOCATION_TYPE_CITY: { "mil_marker" };
+				case LOCATION_TYPE_POLICE_STATION: { "mil_warning" };
 				default { "mil_dot" };
 			});
 			_mrk setMarkerColor "ColorYellow";
@@ -187,7 +189,7 @@ CLASS("Location", "MessageReceiverEx")
 				_mrk setMarkerDir _border#2;
 			};
 			
-			if(not (_type in [LOCATION_TYPE_ROADBLOCK, LOCATION_TYPE_CITY, LOCATION_TYPE_POLICE_STATION])) then {
+			if(not (_type in [LOCATION_TYPE_ROADBLOCK])) then {
 				_mrk = createmarker [_thisObject + "_label", _pos vectorAdd [-200, -200, 0]];
 				_mrk setMarkerType "Empty";
 				_mrk setMarkerColor "ColorYellow";
@@ -268,7 +270,18 @@ CLASS("Location", "MessageReceiverEx")
 		GETV(_thisObject, "pos")
 	} ENDMETHOD;
 
+	
+	// |                         I S   S P A W N E D                        |
+	/*
+	Method: isSpawned
+	Is the location spawned?
 
+	Returns: bool
+	*/
+	METHOD("isSpawned") {
+		params [ P_THISOBJECT ];
+		T_GETV("spawned")
+	} ENDMETHOD;
 
 	// |               G E T   P A T R O L   W A Y P O I N T S
 	/*
@@ -333,6 +346,21 @@ CLASS("Location", "MessageReceiverEx")
 		};
 	} ENDMETHOD;
 	
+	
+	METHOD("getGarrisonsRecursive") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		private _myGarrisons = if (_side == CIVILIAN) then {
+			+T_GETV("garrisons")
+		} else {
+			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
+		};
+		T_PRVAR(children);
+		{
+			_myGarrisons = _myGarrisons + CALLM(_x, "getGarrisonsRecursive", [_side]);
+		} forEach _children;
+		_myGarrisons
+	} ENDMETHOD;
+
 	/*
 	Method: setType
 	Set the Type.
@@ -365,6 +393,10 @@ CLASS("Location", "MessageReceiverEx")
 			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
 			private _timer = NEW("Timer", _args);
 			SET_VAR(_thisObject, "timer", _timer);
+		};
+
+		if (_type == LOCATION_TYPE_ROADBLOCK) then {
+			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
 		};
 
 		T_CALLM("updateWaypoints", []);
@@ -647,13 +679,15 @@ CLASS("Location", "MessageReceiverEx")
 			case "circle" : {
 				_data params [ ["_radius", 0, [0] ] ];
 				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
-				SET_VAR_PUBLIC(_thisObject, "border", _radius);
+				pr _border = [T_GETV("pos"), _radius, _radius, 0, false, -1]; // [center, a, b, angle, isRectangle, c]
+				SET_VAR_PUBLIC(_thisObject, "border", _border);
 			};
 			
 			case "rectangle" : {
 				_data params ["_a", "_b", "_dir"];
 				private _radius = sqrt(_a*_a + _b*_b);
-				SET_VAR_PUBLIC(_thisObject, "border", _data);
+				pr _border = [T_GETV("pos"), _a, _b, _dir, true, -1]; // [center, a, b, angle, isRectangle, c]
+				SET_VAR_PUBLIC(_thisObject, "border", _border);
 				SET_VAR_PUBLIC(_thisObject, "boundingRadius", _radius);
 			};
 			
@@ -711,6 +745,9 @@ CLASS("Location", "MessageReceiverEx")
 	// Returns location that has its border overlapping given position
 	STATIC_METHOD_FILE("getLocationAtPos", "Location\getLocationAtPos.sqf");
 
+	// Returns an array of locations that have their border overlapping given position
+	STATIC_METHOD_FILE("getLocationsAtPos", "Location\getLocationsAtPos.sqf");
+
 	// Adds an allowed area
 	METHOD_FILE("addAllowedArea", "Location\addAllowedArea.sqf");
 
@@ -728,6 +765,21 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Builds the location
 	METHOD_FILE("build", "Location\build.sqf");
+
+	/*
+	Method: (static)nearLocations
+	Returns an array of locations that are _radius meters from _pos. Distance is checked in 2D mode.
+
+	Parameters: _pos, _radius
+
+	Returns: nil
+	*/
+	STATIC_METHOD("nearLocations") {
+		params [P_THISCLASS, P_ARRAY("_pos"), P_NUMBER("_radius")];
+		GET_STATIC_VAR("Location", "all") select {
+			(GETV(_x, "pos") distance2D _pos) < _radius
+		}
+	} ENDMETHOD;
 
 ENDCLASS;
 

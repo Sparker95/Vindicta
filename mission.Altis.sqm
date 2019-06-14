@@ -16,7 +16,7 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=11;
+		nextID=12;
 	};
 	class Camera
 	{
@@ -168,10 +168,15 @@ class AddonsMetaData
 		};
 	};
 };
+class DynamicSimulation
+{
+	saturateByObjectDistance=0;
+};
 randomSeed=16658724;
 class ScenarioData
 {
 	author="Marvis";
+	wreckRemovalMaxTime=3600;
 };
 class Mission
 {
@@ -13316,7 +13321,7 @@ class Mission
 			flags=1;
 			id=759;
 			type="Project_0_LocationSector";
-			atlOffset=0.0004940033;
+			atlOffset=0.16500092;
 			class CustomAttributes
 			{
 				class Attribute0
@@ -14629,6 +14634,7 @@ class Mission
 			flags=1;
 			id=769;
 			type="Project_0_LocationSector";
+			atlOffset=7.6293945e-006;
 			class CustomAttributes
 			{
 				class Attribute0

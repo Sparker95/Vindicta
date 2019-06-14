@@ -134,6 +134,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	Start AI
 	Registers with commander and global garrison list
 	Sets "active" variable to true
+
+	Returns: GarrisonModel
 	*/
 	METHOD("activate") {
 		params [P_THISOBJECT];
@@ -148,6 +150,25 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	/*
+	Method: activateOutOfThread
+
+	Same as activate, for calling outside the commander thread.
+
+	Returns: nil
+	*/
+	METHOD("activateOutOfThread") {
+		params [P_THISOBJECT];
+
+		// Start AI object
+		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
+
+		// Set 'active' flag
+		T_SETV("active", true);
+
+		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
+		nil
+	} ENDMETHOD;
 	// ----------------------------------------------------------------------
 	// |                           D E S T R O Y                            |
 	// ----------------------------------------------------------------------
@@ -1593,10 +1614,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Update counters
-		pr _varName = switch (_catID) do {
-			case T_INF: {"countInf"};
-			case T_VEH: {"countVeh"};
-			case T_DRONE: {"countDrone"};
+		pr _varName = "countInf";
+		switch (_catID) do {
+			case T_INF: {_varName = "countInf"};
+			case T_VEH: {_varName = "countVeh"};
+			case T_DRONE: {_varName = "countDrone"};
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
@@ -1635,10 +1657,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Update counters
-		pr _varName = switch (_catID) do {
-			case T_INF: {"countInf"};
-			case T_VEH: {"countVeh"};
-			case T_DRONE: {"countDrone"};
+		pr _varName = "countInf";
+		switch (_catID) do {
+			case T_INF: {_varName = "countInf"};
+			case T_VEH: {_varName = "countVeh"};
+			case T_DRONE: {_varName = "countDrone"};
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
 

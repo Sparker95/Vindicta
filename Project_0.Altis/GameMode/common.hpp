@@ -5,6 +5,9 @@
 #define OOP_ASSERT
 #define OFSTREAM_FILE "GameMode.rpt"
 
+//#define OOP_PROFILE
+//#define OOP_PROFILE_MIN_T 0.001
+
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\CriticalSection\CriticalSection.hpp"
@@ -15,7 +18,7 @@
 #include "..\Location\Location.hpp"
 #include "..\CivilianPresence\CivilianPresence.hpp"
 #include "..\Undercover\UndercoverMonitor.hpp"
-
+#include "..\AI\CmdrAI\CmdrAI.hpp"
 
 #define CITY_STATE_STABLE 0
 #define CITY_STATE_AGITATED 1

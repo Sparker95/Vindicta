@@ -65,7 +65,7 @@ private _bdir = 0; //Building direction
 
 {
 	_object = _x;
-	if(CALL_METHOD(_thisObject, "isInBorder", [_object])) then
+	if(CALLM1(_thisObject, "isInBorder", _object)) then
 	{
 		_type = typeOf _object;
 
