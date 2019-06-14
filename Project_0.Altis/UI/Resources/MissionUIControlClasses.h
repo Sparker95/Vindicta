@@ -140,13 +140,11 @@ class MUI_BUTTON_TXT : RscButton
 	onMouseEnter = "";    
     onMouseExit = "";  
 };
-//#-1
+
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
-	type = 1;
-
-	style = 48 + 2048; // picture + keep aspect ratio
-	text = "";
+	type = CT_BUTTON;
+	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
 };
 
 // RscListNBox

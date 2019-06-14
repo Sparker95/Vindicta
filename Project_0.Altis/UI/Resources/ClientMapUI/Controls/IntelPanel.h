@@ -37,7 +37,7 @@ class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "a3\ui_f\data\Map\VehicleIcons\iconVehicle_ca.paa";
+    text = "UI\Images\MUI_Icon_gr.paa";
 };
 
 class CMUI_LOCP_TAB_TXT : MUI_BASE 
