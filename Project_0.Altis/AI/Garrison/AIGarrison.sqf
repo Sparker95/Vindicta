@@ -156,6 +156,8 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("_updateDebugMarkers") {
 		params ["_thisObject"];
 
+		pr _gar = T_GETV("agent");
+
 		// Update the markers
 		pr _mrk = _thisObject + MRK_GOAL;
 		
