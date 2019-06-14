@@ -5,6 +5,7 @@
 //#define NAMESPACE uiNamespace
 
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "..\..\Location\Location.hpp"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
 #include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
@@ -18,12 +19,16 @@ That's how we draw locations
 
 #define CLASS_NAME "MapMarkerLocation"
 
+#define RADIUS_MARKER_SUFFIX "_rad"
+#define MARKER_SUFFIX "_mrk"
+
 CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
 	VARIABLE("intel"); // Intel object associated with this
 	VARIABLE("radius"); // The accuracy radius
+	VARIABLE("type");
 
 	STATIC_VARIABLE("selectedLocationMarkers");
 
@@ -34,6 +39,14 @@ CLASS(CLASS_NAME, "MapMarker")
 		T_SETV("selected", false);
 		T_SETV("intel", _intel);
 		T_SETV("radius", 0);
+
+		// Create marker
+		pr _mrkName = _thisObject+MARKER_SUFFIX;
+		createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
+		_mrkName setMarkerShapeLocal "ICON";
+		_mrkName setMarkerColorLocal "colorCivilian";
+		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
+		_mrkName setMarkerAlphaLocal 1.0;
 
 		/*
 		pr _radius = GETV(_intel, "accuracyRadius");
@@ -47,14 +60,36 @@ CLASS(CLASS_NAME, "MapMarker")
 	METHOD("delete") {
 		params ["_thisObject"];
 
+		// Delete markers
+		deleteMarkerLocal (_thisObject + MARKER_SUFFIX);
+		deleteMarkerLocal (_thisObject + RADIUS_MARKER_SUFFIX);
+
 	} ENDMETHOD;
 
 	// Overwrite the base class method
 	METHOD("setPos") {
 		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
 
+		// Call base class method
 		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
+
+		// Update the accuracy marker
 		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+
+		// Set marker position
+		_mrkName = _thisObject+MARKER_SUFFIX;
+		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
+
+	} ENDMETHOD;
+
+	// Same as setColor but gets both an array and string
+	METHOD("setColorEx") {
+		params ["_thisObject", ["_colorRGBA", [], [[]]], ["_colorString", "", [""]]];
+		T_SETV("color", _colorRGBA);
+
+		// Set color of the associated marker
+		_mrkName = _thisObject+MARKER_SUFFIX;
+		_mrkName setMarkerColorLocal _colorString;
 	} ENDMETHOD;
 
 	METHOD("setAccuracyRadius") {
@@ -62,6 +97,37 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		T_SETV("radius", _radius);
 		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
+	} ENDMETHOD;
+
+	// One of location types defined in location.hpp
+	METHOD("setType") {
+		params ["_thisObject", ["_type", "", [""]]];
+
+		pr _mrkName = _thisObject+MARKER_SUFFIX;
+
+		pr _type0 = "mil_destroy";
+		pr _size = 1;
+
+		switch (_type) do {
+			case LOCATION_TYPE_CITY: {
+				_type0 = "loc_Tourism";
+				_size = 2;
+			};
+
+			case LOCATION_TYPE_UNKNOWN: {
+				_type0 = "mil_unknown";
+			};
+
+			// The rest are military places
+			default {
+				_type0 = "n_unknown";
+			};
+		};
+
+		_mrkName setMarkerTypeLocal _type0;
+		_mrkName setMarkerSizeLocal [_size, _size];
+
+
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {
@@ -72,26 +138,29 @@ CLASS(CLASS_NAME, "MapMarker")
 			deleteMarkerLocal _thisObject;
 		} else {
 			// Check if marker doesn't exist yet
+			pr _mrkName = _thisObject+RADIUS_MARKER_SUFFIX;
 			if (markerColor _thisObject == "") then {
-				createMarkerLocal [_thisObject, T_GETV("pos")+[0]];
-				_thisObject setMarkerSizeLocal [_radius, _radius];
-				_thisObject setMarkerShapeLocal "ELLIPSE";
-				_thisObject setMarkerBrushLocal "SolidBorder";
-				_thisObject setMarkerColorLocal "colorCivilian";
+				createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
+				_mrkName setMarkerSizeLocal [_radius, _radius];
+				_mrkName setMarkerShapeLocal "ELLIPSE";
+				_mrkName setMarkerBrushLocal "SolidBorder";
+				_mrkName setMarkerColorLocal "colorCivilian";
 			};
-			_thisObject setMarkerPosLocal (T_GETV("pos")+[0]);
+			_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
 			pr _alpha = [0.3, 0.8] select T_GETV("selected");
-			_thisObject setMarkerAlphaLocal _alpha;
+			_mrkName setMarkerAlphaLocal _alpha;
 		};
 	} ENDMETHOD;
 
 	METHOD("onDraw") {
 		params ["_thisObject", "_control"];
 
-		pr _pos = T_GETV("pos");
+		//pr _pos = T_GETV("pos");
 
 		//_control drawEllipse [_pos, 40, 40, 0, [0.8,0,0,1], "#(rgb,1,1,1)color(0,1,0,0.1)"];
 
+		/*
+		// Main icon
 		_control drawIcon
 		[
 			"\A3\ui_f\data\map\markers\military\circle_CA.paa",
@@ -103,9 +172,11 @@ CLASS(CLASS_NAME, "MapMarker")
 			0, // Angle
 			"   " + T_GETV("text") // Text
 		];
+		*/
 
 		if (T_GETV("selected")) then {
 			pr _angle = T_GETV("angle");
+			pr _pos = T_GETV("pos");
 
 			/*
 			_control drawIcon
@@ -124,10 +195,10 @@ CLASS(CLASS_NAME, "MapMarker")
 			_control drawIcon
 			[
 				"\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa",
-				T_GETV("color"), //Color
+				[1.0, 0, 0, 1], //Color
 				_pos, // Pos
-				29, // Width
-				29, // Height
+				41, // Width
+				41, // Height
 				-_angle, // Angle
 				"" // Text
 			];
