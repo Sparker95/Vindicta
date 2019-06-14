@@ -178,11 +178,20 @@
 			<Key ID="STR_CMUI_BUTTON1">
 				<Original>Fast travel to any location. Select fast travel then click on a location on the map.</Original>
 			</Key>
+			<Key ID="STR_CMUI_BUTTON1_DISABLED">
+				<Original></Original>
+			</Key>
 			<Key ID="STR_CMUI_BUTTON2">
 				<Original>Create a camp at your current location.</Original>
 			</Key>
+			<Key ID="STR_CMUI_BUTTON2_DISABLED">
+				<Original>Cannot create a camp within 500m of any existing location.</Original>
+			</Key>
 			<Key ID="STR_CMUI_BUTTON3">
 				<Original>Open the mission menu. Closes the map.</Original>
+			</Key>
+			<Key ID="STR_CMUI_BUTTON3_DISABLED">
+				<Original>Cannot open the mission menu right now.</Original>
 			</Key>
 			<Key ID="STR_CMUI_TAB1">
 				<Original>View collected intel about the world or a selected camp, outpost or base.</Original>

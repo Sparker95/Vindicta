@@ -188,14 +188,32 @@ class ClientMapUI
 			type = 0;
 			idc = -1;
 			x = safeZoneX + safeZoneW * 0.8805;
-			y = safeZoneY + safeZoneH * 0.72;
+			y = safeZoneY + safeZoneH * 0.725;
 			w = safeZoneW * 0.105;
-			h = safeZoneH * 0.165;
+			h = safeZoneH * 0.16;
 			style = 16;
 			text = "Click on a piece of intel to learn more. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
 			colorBackground[] = {1,1,1,1};
 			colorText[] = {0,0,0,1};
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.58);
+			
+		};
+		class CMUI_INFOBAR : MUI_BASE 
+		{
+			type = 13;
+			idc = IDC_INFOBAR;
+			x = safeZoneX + safeZoneW * 0.15;
+			y = safeZoneY + safeZoneH * 0.045;
+			w = safeZoneW * 0.7;
+			h = safeZoneH * 0.02;;
+			style = 0;
+			text = "";
+			size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			colorBackground[] = {1,1,1,0};
+			class Attributes
+			{
+				
+			};
 			
 		};
 		

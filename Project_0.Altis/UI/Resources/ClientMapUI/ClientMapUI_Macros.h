@@ -1,3 +1,6 @@
+// topmost structured text infobar
+#define IDC_INFOBAR 7801
+
 //location panel, selected location name
 #define IDC_LOCP_HEADLINE 4001
 

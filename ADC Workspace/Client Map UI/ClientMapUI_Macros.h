@@ -20,4 +20,5 @@
 #define IDC_BPANEL_BUTTON_3 6004
 //bottom panel, structured text panel for hints
 #define IDC_BPANEL_HINTS 6005
+#define IDC_INFOBAR 7801
 
