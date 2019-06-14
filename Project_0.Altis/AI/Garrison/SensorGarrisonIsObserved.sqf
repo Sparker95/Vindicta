@@ -10,7 +10,7 @@ Author: Sparker 28.01.2019
 #define pr private
 
 // Update interval of this sensor
-#define UPDATE_INTERVAL 4
+#define UPDATE_INTERVAL 7
 
 // ---- Debugging defines ----
 
