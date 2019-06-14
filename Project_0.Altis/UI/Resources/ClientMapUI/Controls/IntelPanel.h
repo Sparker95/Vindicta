@@ -1,6 +1,24 @@
 #include "..\..\UIProfileColors.h"
 #include "..\..\MissionUIControlClasses.h"
 
+class CMUI_INFOBAR : MUI_STRUCT_TXT 
+{
+    type = 13;
+    idc = IDC_INFOBAR;
+    x = safeZoneX + safeZoneW * 0.15;
+    y = safeZoneY + safeZoneH * 0.045;
+    w = safeZoneW * 0.7;
+    h = safeZoneH * 0.02;
+    style = 0;
+    text = "";
+    size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+    colorBackground[] = {1,1,1,0};
+    class Attributes
+    {
+        
+    };
+};
+
 class CMUI_LOCP_HEADLINE : MUI_HEADLINE
 {
     idc = IDC_LOCP_HEADLINE;
@@ -27,7 +45,7 @@ class CMUI_LOCP_TAB2 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "UI\Images\gradient_2way.paa";   
+   text = "a3\ui_f\data\IGUI\RscTitles\RscHvtPhase\JAC_A3_Signal_4_ca.paa";    
 };
 
 class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB 
@@ -37,7 +55,7 @@ class CMUI_LOCP_TAB3 : MUI_BUTTON_TAB
     y = safeZoneY + safeZoneH * 0.065;
     w = safeZoneW * 0.042;
     h = safeZoneH * 0.07;
-    text = "UI\Images\MUI_Icon_gr.paa";
+   text = "a3\ui_f\data\IGUI\RscTitles\RscHvtPhase\JAC_A3_Signal_4_ca.paa";  
 };
 
 class CMUI_LOCP_TAB_TXT : MUI_BASE 

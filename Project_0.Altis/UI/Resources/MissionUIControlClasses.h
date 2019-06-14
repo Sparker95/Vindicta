@@ -195,18 +195,20 @@ class MUI_LISTNBOX : MUI_BASE
 	};
 };
 
-/*
-class MUI_STRUCT_TXT : MUI_BASE 
+
+class MUI_STRUCT_TXT : RscStructuredText
 {
 	type = 13;
-
-	size = 1;
 	class Attributes
 	{
-		
+		font = "PuristaMedium";
+		color = "#ffffff";
+		colorLink = "#D09B43";
+		align = "center";
+		shadow = 1;
 	};
 };
-*/
+
 
 class MUI_ST_FRAME : MUI_BASE
 {

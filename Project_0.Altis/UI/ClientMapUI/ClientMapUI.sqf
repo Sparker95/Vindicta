@@ -108,7 +108,6 @@ CLASS(CLASS_NAME, "")
 	*/
 	STATIC_METHOD("onMapOpen") {
 		params ["_thisClass"];
-		systemChat "Map opened.";
 		pr _mapDisplay = findDisplay 12;
 
 		// Check if current player position is valid position to create a Camp
