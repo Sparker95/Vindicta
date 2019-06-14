@@ -8,7 +8,7 @@ class CMUI_INFOBAR : MUI_STRUCT_TXT
     x = safeZoneX + safeZoneW * 0.15;
     y = safeZoneY + safeZoneH * 0.045;
     w = safeZoneW * 0.7;
-    h = safeZoneH * 0.02;
+    h = safeZoneH * 0.1;
     style = 0;
     text = "";
     size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
