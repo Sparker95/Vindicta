@@ -29,8 +29,8 @@ if(IS_SERVER) then {
 		case "Sparker": 	{ "CivilWarGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
-		case "Marvis": 		{ "StatusQuoGameMode" };
-		default 			{ "CivilWarGameMode" };
+		case "Marvis": 	{ "EmptyGameMode" };
+		default 		{ "CivilWarGameMode" };
 	};
 	PUBLIC_VARIABLE "gGameModeName";
 } else {
