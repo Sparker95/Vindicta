@@ -258,6 +258,8 @@ CLASS("IntelDatabase", "")
 	Returns an array of <Intel> objects in this database that match a query.
 	The algorithm checks if all non-nil member variables of _queryItem are equal to the same member variables in 
 
+	!! WARNING !! It is VERY SLOW! It's probably only ok to use this for rare one-time events. Consider indexed queries with getFromIndex method for everything else.
+
 	Parameters: _queryItem
 
 	_queryItem - the <Intel> object
@@ -292,6 +294,8 @@ CLASS("IntelDatabase", "")
 	/*
 	Method: findFirstIntel
 	Same as queryIntel, but returns the first item to match the query. Can speed up lookup if you already know that there is only one item you need.
+
+	!! WARNING !! It is VERY SLOW! It's probably only ok to use this for rare one-time events. Consider indexed queries with getFromIndex method for everything else.
 
 	Parameters: _queryItem
 

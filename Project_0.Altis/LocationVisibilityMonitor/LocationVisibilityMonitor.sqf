@@ -33,7 +33,6 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 	VARIABLE("unit");			// Unit (object handle) this is attached to
 	VARIABLE("nearLocations");	// Nearby locations which we will be checking periodycally
 	VARIABLE("AICommander");	// AI Commander where we will send reports about locations
-	VARIABLE("intelQuery");		// Temporary intel query object
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OBJECT("_unit")];
@@ -43,8 +42,6 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 		T_SETV("unit", _unit);
 
 		T_SETV("nearLocations", []);
-
-		T_SETV("intelQuery", NEW("IntelLocation", []));
 
 		// Create timer
 		pr _msg = MESSAGE_NEW();
@@ -68,7 +65,6 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 			DELETE(_timer);
 		};
 
-		DELETE(T_GETV("intelQuery"));
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
@@ -82,7 +78,6 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 
 		pr _unit = T_GETV("unit");
 		pr _AICommander = T_GETV("AICommander");
-		pr _intelQuery = T_GETV("intelQuery");
 
 		// Are we dead already?
 		if (!alive _unit) exitWith {
@@ -145,9 +140,10 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 						// Ignore non-built locations and those which are too small visually
 						if (GETV(_x, "isBuilt") && _relativeAngularSize > 0.02) then {
 							// Check if we don't have any local intel about this place yet
-							SETV(_intelQuery, "location", _x);
-							pr _queryResult = CALLM1(gIntelDatabaseClient, "findFirstIntel", _intelQuery);
-							if (_queryResult == "") then {
+							pr _result0 = CALLM2(gIntelDatabaseClient, "getFromIndex", "location", _x);
+							pr _result1 = CALLM2(gIntelDatabaseClient, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
+							pr _intelResult = (_result0 arrayIntersect _result1) select 0;
+							if (isNil "_queryResult") then {
 								if (random 100 < (10 + _relativeAngularSize/0.06*30)) then {
 									// Send data to AI Commander
 									OOP_INFO_1("Sending data to commander: %1", _x);

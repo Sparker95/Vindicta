@@ -171,8 +171,6 @@ CLASS("Intel", "")
 	*/
 	METHOD("addToDatabaseIndex") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
-		CALLM3(_db, "addToIndex", _thisObject, OOP_PARENT_STR,	"Intel"); // Item, varName, varValue
-		CALLM3(_db, "addToIndex", _thisObject, "location",		T_GETV("location")); // Item, varName, varValue
 	} ENDMETHOD;
 
 	/*
@@ -184,20 +182,10 @@ CLASS("Intel", "")
 	*/
 	METHOD("removeFromDatabaseIndex") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
-
-		CALLM2(_db, "removeFromIndex", _thisObject, OOP_PARENT_STR); // Item, varName
-		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
 	} ENDMETHOD;
 
 	METHOD("updateDatabaseIndex") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_db"), P_OOP_OBJECT("_itemSrc")];
-
-		/*
-		// We know that location never changes so we don't update it
-		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
-		CALLM3(_db, "addToIndex", _thisObject, "location",		T_GETV("location")); // Item, varName, varValue
-		*/
-
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -343,6 +331,32 @@ CLASS("IntelLocation", "Intel")
 	METHOD("getShortName") {
 		"IntelLocation"
 	} ENDMETHOD;
+
+
+	METHOD("addToDatabaseIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
+		CALLM3(_db, "addToIndex", _thisObject, OOP_PARENT_STR,	"IntelLocation"); // Item, varName, varValue
+		CALLM3(_db, "addToIndex", _thisObject, "location",		T_GETV("location")); // Item, varName, varValue
+	} ENDMETHOD;
+
+	METHOD("removeFromDatabaseIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
+
+		CALLM2(_db, "removeFromIndex", _thisObject, OOP_PARENT_STR); // Item, varName
+		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
+	} ENDMETHOD;
+
+	METHOD("updateDatabaseIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_db"), P_OOP_OBJECT("_itemSrc")];
+
+		/*
+		// We know that location never changes so we don't update it
+		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
+		CALLM3(_db, "addToIndex", _thisObject, "location",		T_GETV("location")); // Item, varName, varValue
+		*/
+
+	} ENDMETHOD;
+
 ENDCLASS;
 
 
