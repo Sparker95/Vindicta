@@ -108,7 +108,7 @@ CLASS("IntelDatabase", "")
 			pr _items = T_GETV("items");
 			if (! isNil {_items getVariable _itemDst}) then { // Make sure we have this intel item
 				// Update index before copying values
-				CALLM2(_item, "updateDatabaseIndex", _thisObject, _itemSrc);
+				CALLM2(_itemDst, "updateDatabaseIndex", _thisObject, _itemSrc);
 
 				// Backup the source so that it doesn't get overwritten in update
 				pr _prevSource = GETV(_itemDst, "source");

@@ -341,6 +341,12 @@ CLASS("AICommander", "AI")
 				pr _serialNew = SERIALIZE(_intel);
 				SERIALIZED_SET_OBJECT_NAME(_serialNew, nil);
 				_serialNew = _serialNew apply {if (isNil "_x") then {-123.45678} else {_x}};
+
+				/*
+				OOP_INFO_1("   old: %1", _serialOld);
+				OOP_INFO_1("   new: %1", _serialNew);
+				*/
+
 				if (!(_serialOld isEqualTo _serialNew)) then {
 					CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 

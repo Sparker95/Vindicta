@@ -143,7 +143,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 							pr _result0 = CALLM2(gIntelDatabaseClient, "getFromIndex", "location", _x);
 							pr _result1 = CALLM2(gIntelDatabaseClient, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
 							pr _intelResult = (_result0 arrayIntersect _result1) select 0;
-							if (isNil "_queryResult") then {
+							if (isNil "_intelResult") then {
 								if (random 100 < (10 + _relativeAngularSize/0.06*30)) then {
 									// Send data to AI Commander
 									OOP_INFO_1("Sending data to commander: %1", _x);

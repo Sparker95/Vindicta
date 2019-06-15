@@ -567,14 +567,18 @@ CLASS("Location", "MessageReceiverEx")
 					// Avoid spawning too close to a junction
 					if(count _rct > 0) then {
 						private _dir = _road getDir _rct#0;
-						if ({
+						private _count = {
 								private _rctOther = roadsConnectedTo _x;
-								if(count _rctOther == 0) exitWith { false };
-								private _dirOther = _x getDir _rctOther#0;
-								private _relDir = _dir - _dirOther;
-								if(_relDir < 0) then { _relDir = _relDir + 360 };
-								(_relDir > ROAD_DIR_LIMIT and _relDir < 180-ROAD_DIR_LIMIT) or (_relDir > 180+ROAD_DIR_LIMIT and _relDir < 360-ROAD_DIR_LIMIT)
-							} count ((getPos _road) nearRoads 25) == 0) then {
+								if(count _rctOther == 0) then {
+									false
+								} else {
+									private _dirOther = _x getDir _rctOther#0;
+									private _relDir = _dir - _dirOther;
+									if(_relDir < 0) then { _relDir = _relDir + 360 };
+									(_relDir > ROAD_DIR_LIMIT and _relDir < 180-ROAD_DIR_LIMIT) or (_relDir > 180+ROAD_DIR_LIMIT and _relDir < 360-ROAD_DIR_LIMIT)
+								};
+							} count ((getPos _road) nearRoads 25);
+						if ( _count == 0 ) then {
 							// Check position if it's safe
 
 							private _width = [_road, 1, 8] call misc_fnc_getRoadWidth;
