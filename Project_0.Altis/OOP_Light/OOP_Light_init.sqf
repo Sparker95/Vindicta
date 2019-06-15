@@ -466,7 +466,7 @@ OOP_assert_method = {
 
 // Dumps all variables of an object
 OOP_dumpAllVariables = {
-	params [["_thisObject", "", [""]]];
+	params [P_THISOBJECT];
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
@@ -483,6 +483,83 @@ OOP_dumpAllVariables = {
 	} forEach _memList;
 };
 
+#ifdef OFSTREAM_ENABLE
+#define CLEAR() (ofstream_clear "dumped.json")
+#define DUMP(string) ("dumped.json" ofstream_dump (string))
+#define DUMP_STR(string) ("dumped.json" ofstream_dump ("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")
+gCommaNewLine = "," + toString [10];
+#define COMMA gCommaNewLine
+
+// Serializes a variable to json
+OOP_dumpVariableToJson = {
+	params [P_DYNAMIC("_variable"), P_BOOL("_recursive"), P_NUMBER("_depth")];
+	
+	switch (typeName _variable) do {
+		case "STRING": {
+			if(_variable find "o_" == 0) then {
+				[_variable, _recursive, _depth + 1] call OOP_objectToJson;
+			} else {
+				DUMP_STR(_variable);
+			};
+		};
+		case "ARRAY": {
+			DUMP("[");
+			{ 
+				if(_forEachIndex != 0) then { DUMP(COMMA) };
+				[_x, _recursive, _depth] call OOP_dumpVariableToJson;
+			} forEach _variable;
+			DUMP("]");
+		};
+		case "SCALAR";
+		case "BOOL": { DUMP(str _variable) };
+		// Other types we convert to a string (we need to do it twice because we want to wrap it in quotes, not just make it an sqf string)
+		default { DUMP_STR(str _variable) };
+	};
+};
+
+// Serializes all variables of an object to json
+OOP_objectToJson = {
+	params [P_THISOBJECT, P_BOOL("_recursive"), P_NUMBER("_depth")];
+
+	if(_depth > 3) exitWith { DUMP(str "!recursion limit reached!") };
+
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	
+	DUMP("{");
+	private _str = format ['"_id": "%1"', _thisObject];
+	DUMP(_str);
+	{
+		_x params ["_memName", "_memAttr"];
+		
+		DUMP(COMMA);
+
+		private _varValue = GETV(_thisObject, _memName);
+		if (isNil "_varValue") then {
+			private _str = format['"%1": "<nil>"', _memName];
+			DUMP(_str);
+		} else {
+			private _str = format['"%1":', _memName];
+			DUMP(_str);
+			[_varValue, _recursive, _depth] call OOP_dumpVariableToJson;
+			// _json = _json + format ['"%1": %2', _memName, _valJson];
+		};
+	} forEach _memList;
+
+	DUMP("}");
+};
+
+// Dumps a variable to diag_log as json
+OOP_dumpAsJson = {
+	diag_log "DEBUG: Dumping variable as json";
+	CLEAR();
+	[_this] call OOP_dumpVariableToJson;
+	DUMP(endl + endl + endl);
+};
+
+#endif
 
 // ---- Remote execution ----
 // A remote code wants to execute something on this machine
@@ -934,5 +1011,53 @@ ENDCLASS;
 	] call test_Assert_Throws;
 
 }] call test_AddTest;
+
+CLASS("JsonTestVarObj", "")
+	VARIABLE("var1");
+	VARIABLE("var2");
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("var1", 666);
+		T_SETV("var2", "String!");
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("JsonTest1", "")
+	VARIABLE("varBool");
+	VARIABLE("varString");
+	VARIABLE("varNumber");
+	VARIABLE("varArray");
+	VARIABLE("varObject");
+	VARIABLE("varOOPObject");
+	VARIABLE("varUnset");
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("varBool", true);
+		T_SETV("varString", "a string");
+		T_SETV("varNumber", 667);
+		T_SETV("varArray", [0 ARG 1 ARG 2]);
+		private _grp = createGroup civilian;
+		T_SETV("varObject", _grp);
+		private _oopObj = NEW("JsonTestVarObj", []);
+		T_SETV("varOOPObject", _oopObj);
+	} ENDMETHOD;
+ENDCLASS;
+
+// ["OOP to json", {
+// 	["number", { [666] call OOP_variableToJson isEqualTo "666" }] call test_Assert;
+// 	["number array", { [[0, 1, 2]] call OOP_variableToJson isEqualTo "[0,1,2]" }] call test_Assert;
+// 	["number array array", { [[0, 1, [2, 3]]] call OOP_variableToJson isEqualTo "[0,1,[2,3]]" }] call test_Assert;
+// 	["string", { ["a string"] call OOP_variableToJson isEqualTo """a string""" }] call test_Assert;
+// 	["string array", { [["0", "1", "2"]] call OOP_variableToJson isEqualTo "[""0"",""1"",""2""]" }] call test_Assert;
+// 	["bool", { [true] call OOP_variableToJson isEqualTo "true" }] call test_Assert;
+// 	["bool array", { [[true, false]] call OOP_variableToJson isEqualTo "[true,false]" }] call test_Assert;
+// 	private _obj = NEW("JsonTestVarObj", []);
+// 	["simple object", { [_obj] call OOP_variableToJson isEqualTo format['{ "_id": "%1" , "oop_parent": "JsonTestVarObj" , "oop_public": "<nil>" , "var1": 666 , "var2": "String!" }', _obj] }] call test_Assert;
+// 	private _obj2 = NEW("JsonTest1", []);
+// 	private _innerObj = GETV(_obj2, "varOOPObject");
+// 	["non simple object", { [_obj2] call OOP_variableToJson isEqualTo format['{ "_id": "%1" , "oop_parent": "JsonTest1" , "oop_public": "<nil>" , "varBool": true , "varString": "a string" , "varNumber": 667 , "varArray": [0,1,2] , "varObject": "CIV ALPHA 0" , "varOOPObject": { "_id": "%2" , "oop_parent": "JsonTestVarObj" , "oop_public": "<nil>" , "var1": 666 , "var2": "String!" } , "varUnset": "<nil>" }', _obj2, _innerObj] }] call test_Assert;
+// }] call test_AddTest;
 
 #endif

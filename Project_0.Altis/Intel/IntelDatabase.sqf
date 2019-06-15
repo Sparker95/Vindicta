@@ -229,8 +229,6 @@ CLASS("IntelDatabase", "")
 				OOP_INFO_2("  source item of item %1: %2", _item, _itemSource);
 				T_GETV("linkedItems") setVariable [_itemSource, nil];
 			};
-
-
 		};
 		nil
 	} ENDMETHOD;
@@ -333,7 +331,7 @@ CLASS("IntelDatabase", "")
 	METHOD("isIntelAddedFromSource") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-		!isNil {T_GETV("linkedItems") getVariable _item}
+		!isNil { T_GETV("linkedItems") getVariable _item }
 	} ENDMETHOD;
 
 	/*
@@ -391,7 +389,6 @@ CLASS("IntelDatabase", "")
 				OOP_INFO_2("  source item of item %1: %2", _item, _itemSource);
 				T_GETV("linkedItems") setVariable [_itemSource, nil];
 			};
-
 		};
 		nil
 	} ENDMETHOD;

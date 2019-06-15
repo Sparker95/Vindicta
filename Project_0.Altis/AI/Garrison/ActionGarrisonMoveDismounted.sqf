@@ -93,8 +93,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			_pos = _pos vectorAdd (_vectorDir vectorMultiply (_dt*3));
 			CALLM1(_AI, "setPos", _pos);
 
-			// Succede if the garrison is close enough
-			if (_pos distance _posDest < 66.6) then {
+			// Succeed if the garrison is close enough
+			if (_pos distance2D _posDest < 66.6) then {
 				_state = ACTION_STATE_COMPLETED;
 			};
 
