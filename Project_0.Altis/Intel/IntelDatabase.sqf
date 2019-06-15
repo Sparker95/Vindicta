@@ -21,6 +21,7 @@ CLASS("IntelDatabase", "")
 	VARIABLE("items");
 	VARIABLE("linkedItems"); // A hash map of linked items
 	VARIABLE("side");
+	VARIABLE("variables"); // A hash map for variable
 
 	/*
 	Method: new
@@ -38,6 +39,8 @@ CLASS("IntelDatabase", "")
 		T_SETV("linkedItems", _namespaceLinked);
 		pr _namespaceItems = [false] call CBA_fnc_createNamespace;
 		T_SETV("items", _namespaceItems);
+		pr _namespaceVariables = [false] call  CBA_fnc_createNamespace;
+		T_SETV("variables", _namespaceVariables);
 		#endif
 
 	} ENDMETHOD;
@@ -59,6 +62,9 @@ CLASS("IntelDatabase", "")
 			OOP_INFO_1("ADD INTEL: %1", _item);
 
 			pr _items = T_GETV("items");
+
+			// Add to index
+			CALLM1(_item, "addToDatabaseIndex", _thisObject);
 
 			// Add link from the source to this item
 			pr _source = GETV(_item, "source");
@@ -101,6 +107,9 @@ CLASS("IntelDatabase", "")
 
 			pr _items = T_GETV("items");
 			if (! isNil {_items getVariable _itemDst}) then { // Make sure we have this intel item
+				// Update index before copying values
+				CALLM2(_item, "updateDatabaseIndex", _thisObject, _itemSrc);
+
 				// Backup the source so that it doesn't get overwritten in update
 				pr _prevSource = GETV(_itemDst, "source");
 				UPDATE_VIA_ATTR(_itemDst, _itemSrc, ATTR_SERIALIZABLE); // Copy all variables that are not nil in itemSrc
@@ -162,6 +171,9 @@ CLASS("IntelDatabase", "")
 		OOP_INFO_1("ADD INTEL: %1", _item);
 
 		CRITICAL_SECTION {
+			// Add to index
+			CALLM1(_item, "addToDatabaseIndex", _thisObject);
+
 			// Add to the array of items
 			pr _items = T_GETV("items");
 			_items setVariable [_item, 1];
@@ -218,8 +230,14 @@ CLASS("IntelDatabase", "")
 			pr _dbEntry = GETV(_item, "dbEntry");
 			ASSERT_OBJECT(_dbEntry);
 			OOP_INFO_MSG("REMOVE INTEL: %1 (%2)", [_item ARG _dbEntry]);
+
+			// Remove from index
+			CALLM1(_dbEntry, "removeFromDatabaseIndex", _thisObject);
+
 			pr _items = T_GETV("items");
 			_items setVariable [_dbEntry, nil];
+
+
 
 			// Check if the item was linked to a source item
 			// Although why should it be linked with any?? It's not meant to work like that!
@@ -381,6 +399,9 @@ CLASS("IntelDatabase", "")
 
 			pr _items = T_GETV("items");
 
+			// Remove from index
+			CALLM1(_item, "removeFromDatabaseIndex", _thisObject);
+
 			// Remove the item from items hashmap
 			_items setVariable [_item, nil];
 
@@ -394,6 +415,93 @@ CLASS("IntelDatabase", "")
 
 		};
 		nil
+	} ENDMETHOD;
+
+
+	// = = = = = = = = = I N D E X   M E T H O D S = = = = = = = = = =
+
+	METHOD("addToIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_STRING("_varName"), P_STRING("_varValue")];
+
+		pr _variablesHashmap = T_GETV("variables");
+
+		pr _valuesHashmap = _variablesHashmap getVariable _varName;
+
+		// If the hashmap for this variable doesn't exist, then create it
+		if (isNil "_valuesHashmap") then {
+			_valuesHashmap = [false] call  CBA_fnc_createNamespace;
+			_variablesHashmap setVariable [_varName, _valuesHashmap];
+		};
+
+		// Convert value to string if needed
+		pr _varValueStr = if (_varValue isEqualType "") then {
+			_varValue
+		} else {
+			str _varValue
+		};
+		pr _refsArray = _valuesHashmap getVariable _varValueStr; // Array with intel objects which reference this _varValue
+		if (isNil "_refsArray") then {
+			_refsArray = [];
+			_valuesHashmap setVariable [_varValueStr, _refsArray];
+		};
+		_refsArray pushBack _item;
+
+	} ENDMETHOD;
+
+	METHOD("removeFromIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_STRING("_varName"), "_varValue"];
+
+		pr _variablesHashmap = T_GETV("variables");
+
+		pr _valuesHashmap = _variablesHashmap getVariable _varName;
+
+		// If the hashmap for this variable doesn't exist, then create it
+		if (isNil "_valuesHashmap") then {
+			_valuesHashmap = [false] call  CBA_fnc_createNamespace;
+			_variablesHashmap setVariable [_varName, _valuesHashmap];
+		};
+
+		// Convert value to string if needed
+		pr _varValueStr = if (_varValue isEqualType "") then {
+			_varValue
+		} else {
+			str _varValue
+		};
+		pr _refsArray = _valuesHashmap getVariable _varValueStr; // Array with intel objects which reference this _varValue
+		if (isNil "_refsArray") then {
+			_refsArray = [];
+			_valuesHashmap setVariable [_varValueStr, _refsArray];
+		} else {
+			_refsArray deleteAt (_refsArray find _varValue);
+		};
+
+	} ENDMETHOD;
+
+	METHOD("getFromIndex") {
+		params [P_THISOBJECT, P_STRING("_varName"), "_varValue"];
+
+		pr _variablesHashmap = T_GETV("variables");
+
+		pr _valuesHashmap = _variablesHashmap getVariable _varName;
+
+		// If the hashmap for this variable doesn't exist, return an empty array
+		if (isNil "_valuesHashmap") exitWith {
+			[]
+		};
+
+		// Convert value to string if needed
+		pr _varValueStr = if (_varValue isEqualType "") then {
+			_varValue
+		} else {
+			str _varValue
+		};
+		pr _refsArray = _valuesHashmap getVariable _varValueStr; // Array with intel objects which reference this _varValue
+		
+		if (isNil "_refsArray") exitWith {
+			[]
+		};
+		
+		_refsArray
 	} ENDMETHOD;
 
 ENDCLASS;

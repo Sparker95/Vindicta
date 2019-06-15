@@ -162,6 +162,44 @@ CLASS("Intel", "")
 		"name"
 	} ENDMETHOD;
 
+	/*
+	Method: addToDatabaseIndex
+	Gets called after this intel item was added to a database.
+	Here we should add this item to index for specific variable names.
+
+	Returns: nil
+	*/
+	METHOD("addToDatabaseIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
+		CALLM3(_db, "addToIndex", _thisObject, OOP_PARENT_STR,	"Intel"); // Item, varName, varValue
+		CALLM3(_db, "addToIndex", _thisObject, "location",		T_GETV("location")); // Item, varName, varValue
+	} ENDMETHOD;
+
+	/*
+	Method: remofeFromDatabaseIndex
+	Gets called after this intel item was added to a database.
+	Here we should remove this item from the index of specific variable names.
+
+	Returns: nil
+	*/
+	METHOD("removeFromDatabaseIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_db")];
+
+		CALLM2(_db, "removeFromIndex", _thisObject, OOP_PARENT_STR); // Item, varName
+		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
+	} ENDMETHOD;
+
+	METHOD("updateDatabaseIndex") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_db"), P_OOP_OBJECT("_itemSrc")];
+
+		/*
+		// We know that location never changes so we don't update it
+		CALLM2(_db, "removeFromIndex", _thisObject, "location"); // Item, varName
+		CALLM3(_db, "addToIndex", _thisObject, "location",		T_GETV("location")); // Item, varName, varValue
+		*/
+
+	} ENDMETHOD;
+
 ENDCLASS;
 
 #define COLOR_WEST		[0,0.3,0.6,1]
