@@ -316,14 +316,15 @@ CLASS("AICommander", "AI")
 		};
 				
 		// Check if we have intel about such location already
-		pr _intelQuery = NEW("IntelLocation", [_side]);
-		SETV(_intelQuery, "location", _loc);
 		pr _intelDB = T_GETV("intelDB");
-		pr _intelResult = CALLM1(_intelDB, "findFirstIntel", _intelQuery);
+		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
+		pr _result1 = CALLM2(_intelDB, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
+		pr _intelResult = (_result0 arrayIntersect _result1) select 0;
 
-		OOP_INFO_1("Intel query result: %1;", _intelResult);
-		
-		if (_intelResult != "") then {
+		if (! isNil "_intelResult") then {
+
+			OOP_INFO_1("Intel query result: %1;", _intelResult);
+
 			// There is an intel item with this location
 
 			if (_updateIfFound) then {
@@ -340,6 +341,12 @@ CLASS("AICommander", "AI")
 				pr _serialNew = SERIALIZE(_intel);
 				SERIALIZED_SET_OBJECT_NAME(_serialNew, nil);
 				_serialNew = _serialNew apply {if (isNil "_x") then {-123.45678} else {_x}};
+
+				/*
+				OOP_INFO_1("   old: %1", _serialOld);
+				OOP_INFO_1("   new: %1", _serialNew);
+				*/
+
 				if (!(_serialOld isEqualTo _serialNew)) then {
 					CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 
