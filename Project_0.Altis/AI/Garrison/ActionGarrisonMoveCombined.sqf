@@ -90,7 +90,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} forEach _vehGroups;
 
 		// Give goals to infantry groups
-		pr _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL]);
+		pr _infGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_IDLE ARG GROUP_TYPE_PATROL ARG GROUP_TYPE_BUILDING_SENTRY]);
 		{
 			pr _groupAI = CALLM0(_x, "getAI");
 			CALLM(_groupAI, "postMethodAsync", ["addExternalGoal" ARG ["GoalGroupInfantryFollowGroundVehicles" ARG 0 ARG [] ARG _AI]]);

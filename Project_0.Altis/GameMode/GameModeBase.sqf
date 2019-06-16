@@ -420,12 +420,23 @@ CLASS("GameModeBase", "")
 			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 
-			if(_locType == LOCATION_TYPE_CITY) then { 
+			if(_locType == LOCATION_TYPE_CITY) then {
+				private _baseRadius = 300; // Radius at which it 
+
+				_locBorder params ["_a", "_b"];
+				private _area = 4*_a*_b;
+				private _density_km2 = 60;	// Amount of civilians per square km
+				private _max = 35;			// Max amount of civilians
+				_locCapacityCiv = ((_density_km2/1e6) * _area) min 35;
+				_locCapacityCiv = ceil _locCapacityCiv;
+
 				// https://www.desmos.com/calculator/nahw1lso9f
+				/*
 				_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
 				OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
 				//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
 				//diag_log format["%1 houses at %2", count _houses, _locName];
+				*/
 
 				// https://www.desmos.com/calculator/nahw1lso9f
 				_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));

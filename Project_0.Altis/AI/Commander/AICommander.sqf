@@ -504,6 +504,8 @@ CLASS("AICommander", "AI")
 	METHOD("getIntelFromInventoryItem") {
 		params ["_thisObject", ["_baseClass", "", [""]], ["_ID", 0, [0]], ["_clientOwner", 0, [0]]];
 
+		OOP_INFO_1("GET INTEL FROM INTENTORY ITEM: %1", [_baseClass ARG _ID]);
+
 		// Get data from the inventory item
 		pr _ret = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
 		_ret params ["_data", "_dataIsNotNil"];
@@ -516,7 +518,10 @@ CLASS("AICommander", "AI")
 			};
 		};
 
+		OOP_INFO_1("   found something: %1", _foundSomething);
+
 		pr _thisDB = T_GETV("intelDB");
+		pr _addedSomething = false;
 		if (_foundSomething) then {
 			{
 				pr _item = _x;
@@ -527,16 +532,27 @@ CLASS("AICommander", "AI")
 					if (CALLM1(_thisDB, "isIntelAddedFromSource", _item)) then {
 						// Update it from source
 						CALLM1(_thisDB, "updateIntelFromSource", _item);
+						OOP_INFO_0("   updated intel from source");
 					} else {
 						// Clone it and it to our database
 						pr _itemClone = CLONE(_item);
 						SETV(_itemClone, "source", _item); // Link it with the source
 						CALLM1(_thisDB, "addIntel", _itemClone);
+						OOP_INFO_0("   added intel");
+						_foundSomething = true;
 					};
 				} else {
-					OOP_INFO_1("Intel object is invalid: %1", _item);
+					OOP_INFO_1("   Intel object is invalid: %1", _item);
 				};
 			} forEach _data;
+		};
+
+		if (_foundSomething) then {
+			if (_addedSomething) then {
+				"Some intel has been added!" remoteExecCall ["systemChat", _clientOwner];
+			} else {
+				"Some intel has been updated!" remoteExecCall ["systemChat", _clientOwner];
+			};
 		} else {
 			"You have found nothing here!" remoteExecCall ["systemChat", _clientOwner];
 		};
