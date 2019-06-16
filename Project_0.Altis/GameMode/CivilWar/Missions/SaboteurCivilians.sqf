@@ -231,13 +231,12 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		// Add new actions if required
+		// Add new actions if don't have enough active already
 		T_PRVAR(activeCivs);
 		T_PRVAR(maxActive);
 		private _deficit = _maxActive - (count _activeCivs);
 		if(_deficit > 0) then {
-
-			OOP_INFO_MSG("Spawning %1 civilians in %2 to do blow shit up!", [_deficit ARG _city]);
+			OOP_INFO_MSG("Spawning %1 civilians in %2 to blow shit up!", [_deficit ARG _city]);
 			private _pos = CALLM0(_city, "getPos");
 			private _radius = GETV(_city, "boundingRadius");
 
@@ -247,6 +246,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
 
 			for "_i" from 0 to (_deficit-1) do {
+
 				// Find a target
 				private _tgtPos = [];
 				
@@ -261,6 +261,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 					OOP_ERROR_MSG("Couldn't find a target for a saboteurs in %1", [_city]);
 				};
 
+				// Get starting point for the civ
 				private _rndpos = [_pos, 0, _radius] call BIS_fnc_findSafePos;
 				private _tmpGroup = createGroup civilian;
 				private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
@@ -275,7 +276,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 					["Can I borrow that?", pr0_fnc_SaboteurPlayer, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
 
-				// No attacking them for now?
+				// No enemy attacking them for now?
 				_civie setCaptive true;
 
 				// WAYPOINT 1 - plant bomb
