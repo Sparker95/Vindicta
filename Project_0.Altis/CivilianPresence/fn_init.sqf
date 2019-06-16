@@ -9,7 +9,7 @@
 
 #define INT_RESOLUTION 45	//in meters, average distance between spawn/way points
 
-params ["_pos","_border"];
+params ["_pos","_border", ["_unitCount", 20]];
 
 //_pos set [2,0];
 
@@ -48,7 +48,7 @@ private _module = [true] call CBA_fnc_createNamespace;//needs to be a object
 _module setpos _pos;
 _module setVariable ["#unitTypes",_unitTypes];
 _module setVariable ["#usePanicMode",true];
-_module setVariable ["#unitCount",20];
+_module setVariable ["#unitCount",_unitCount];
 _module setVariable ["#useAgents",true];
 
 
