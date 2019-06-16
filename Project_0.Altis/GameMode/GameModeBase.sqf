@@ -27,6 +27,8 @@ CLASS("GameModeBase", "")
 	METHOD("init") {
 		params [P_THISOBJECT];
 
+		PROFILE_SCOPE_START(GameModeInit);
+
 		// Global flags
 		gFlagAllCommanders = true; //false;
 		// Main timer service
@@ -78,18 +80,19 @@ CLASS("GameModeBase", "")
 
 			T_CALLM("initServerOnly", []);
 
+			// Call our first process event immediately
+			T_CALLM("process", []);
+
 			// Add message loop for game mode
 			gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
 			// Add processing for the game mode on the server once we initialized everything else
-			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 1 ARG 60 ARG 120]);
+			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 
 			// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 
-			// Call our first process event immediately
-			T_CALLM("process", []);
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -132,14 +135,20 @@ CLASS("GameModeBase", "")
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);
+		
+		PROFILE_SCOPE_START(GameModeEnd);
 	} ENDMETHOD;
 
 	/* private */METHOD("process") {
 		params [P_THISOBJECT];
 		if(T_GETV("spawningEnabled")) then {
+			PROFILE_SCOPE_START(GameModeSpawning);
 			T_CALLM("doSpawning", []);
+			PROFILE_SCOPE_END(GameModeSpawning, 1);
 		};
+		PROFILE_SCOPE_START(GameModeUpdate);
 		T_CALLM("update", []);
+		PROFILE_SCOPE_END(GameModeUpdate, 1);
 	} ENDMETHOD;
 
 	// Add garrisons to locations based where specified.
@@ -182,7 +191,7 @@ CLASS("GameModeBase", "")
 				};
 				CALLM1(_gar, "setLocation", _loc);
 				CALLM1(_loc, "registerGarrison", _gar);
-				CALLM0(_gar, "activate");
+				// CALLM0(_gar, "activate");
 			};
 
 			// Send intel to commanders
@@ -520,7 +529,11 @@ CLASS("GameModeBase", "")
 					NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
 				};
 				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
-				CALLM2(_gar, "postMethodAsync", "addGroup", [_patrolGroup]);		
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addGroup", [_patrolGroup]);
+				} else {
+					CALLM(_gar, "addGroup", [_patrolGroup]);
+				};
 			};
 
 			// Remainder back at station
@@ -531,13 +544,21 @@ CLASS("GameModeBase", "")
 				NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
 			};
 			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
-			CALLM2(_gar, "postMethodAsync", "addGroup", [_sentryGroup]);
+			if(canSuspend) then {
+				CALLM2(_gar, "postMethodSync", "addGroup", [_sentryGroup]);
+			} else {
+				CALLM(_gar, "addGroup", [_sentryGroup]);
+			};
 
 			// Patrol vehicles
 			for "_i" from 1 to (2 max _cVehGround) do {
 				// Add a car in front of police station
 				private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
-				CALLM(_gar, "addUnit", [_newUnit]);
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+				} else {
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
 				OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
 			};
 
@@ -591,7 +612,11 @@ CLASS("GameModeBase", "")
 				_cBuildingSentry = _cBuildingSentry - 1;
 			};
 			OOP_INFO_MSG("%1: Created sentry group %2", [_gar ARG _sentryGroup]);
-			CALLM2(_gar, "postMethodAsync", "addGroup", [_sentryGroup]);
+			if(canSuspend) then {
+				CALLM2(_gar, "postMethodSync", "addGroup", [_sentryGroup]);
+			} else {
+				CALLM(_gar, "addGroup", [_sentryGroup]);
+			};
 		};
 
 		// Add default vehicles
@@ -601,9 +626,13 @@ CLASS("GameModeBase", "")
 		while {_cVehGround > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
-				CALL_METHOD(_gar, "addUnit", [_newUnit]);
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+				} else {
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
 				OOP_INFO_MSG("%1: Added truck %2", [_gar ARG _newUnit]);
-				_cVehGround = _cVehGround - 1;
+				_cVehGround = _cVehGround - 1;w
 			} else {
 				DELETE(_newUnit);
 			};
@@ -617,7 +646,11 @@ CLASS("GameModeBase", "")
 		while {(_cVehGround > 0) && _i < 1} do  {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_MRAP_unarmed ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
-				CALL_METHOD(_gar, "addUnit", [_newUnit]);
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+				} else {
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
 				OOP_INFO_MSG("%1: Added unarmed mrap %2", [_gar ARG _newUnit]);
 				_cVehGround = _cVehGround - 1;
 			} else {
@@ -656,7 +689,11 @@ CLASS("GameModeBase", "")
 				_cHMGGMG = _cHMGGMG - 1;
 			};
 			OOP_INFO_MSG("%1: Added static group %2", [_gar ARG _staticGroup]);
-			CALLM2(_gar, "postMethodAsync", "addGroup", [_staticGroup]);
+			if(canSuspend) then {
+				CALLM2(_gar, "postMethodSync", "addGroup", [_staticGroup]);
+			} else {
+				CALLM(_gar, "addGroup", [_staticGroup]);
+			};
 		};
 		_gar
 	} ENDMETHOD;

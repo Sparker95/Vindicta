@@ -1,20 +1,6 @@
 #include "..\common.hpp"
 
-// #define MILITANT_CIVILIANS_TESTING
-// fnc_RecruitCivilian = {
-// 	player addAction ["Talk to civilian", // title
-//                  "cursorObject spawn CivPresence_fnc_talkTo", // Script
-//                  0, // Arguments
-//                  9000, // Priority
-//                  true, // ShowWindow
-//                  false, //hideOnUse
-//                  "", //shortcut
-//                  "call pr0_fnc_talkCond", //condition
-//                  2, //radius
-//                  false, //unconscious
-//                  "", //selection
-//                  ""]; //memoryPoint
-// };
+//#define MILITANT_CIVILIANS_TESTING
 
 // Called on client
 pr0_fnc_CivilianJoinPlayer = {
@@ -31,8 +17,10 @@ pr0_fnc_CivilianJoinPlayer = {
 		}] remoteExec ["call"];
 		
 		// Do the unit actions on the server
-		[_target, { 
-			_this stop true;
+		[[_target, _caller], { 
+			params ["_target", "_caller"];
+			doStop _target;
+			_target lookAt _caller;
 		}] remoteExec ["call", 2];
 
 		[_target, _caller] spawn {
@@ -60,6 +48,13 @@ pr0_fnc_CivilianJoinPlayer = {
 			[[_target, _caller, clientOwner], {
 				params ["_target", "_caller", "_clientOwner"];
 
+				if (random 1 > 0.5) then {
+					// Do the unit actions on the server
+					_target lookAt _caller;
+					_target action ["Salute", _target];
+					sleep 2;
+				};
+
 				private _otherUnits = units group _caller - [_caller];
 				[_target] join group _caller;
 
@@ -67,6 +62,7 @@ pr0_fnc_CivilianJoinPlayer = {
 					sleep random [0, 0.5, 1];
 					[[_x, _target], {
 						params ["_unit", "_target"];
+						_unit lookAt _target;
 						[_unit, selectRandom [
 							"Welcome brother!",
 							"Another for the cause!",
@@ -78,8 +74,8 @@ pr0_fnc_CivilianJoinPlayer = {
 					}] remoteExec ["call", _clientOwner];
 				} foreach _otherUnits;
 
-				_target stop false;
-			}] remoteExec ["call", 2];
+				// _target stop false;
+			}] remoteExec ["spawn", 2];
 
 		};
 	} else {

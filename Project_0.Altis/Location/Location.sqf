@@ -91,6 +91,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("buildObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
+		T_SETV("gameModeData", NULL_OBJECT);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);

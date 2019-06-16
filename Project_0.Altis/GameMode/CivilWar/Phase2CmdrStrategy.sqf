@@ -10,7 +10,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 		T_SETV("takeLocBasePriorityActivityCoeff", 0);
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);
-		T_SETV("takeLocCityPriority", 1);
+		T_SETV("takeLocCityPriority", 0);
 		T_SETV("takeLocCityPriorityActivityCoeff", 1);
 	} ENDMETHOD;
 
