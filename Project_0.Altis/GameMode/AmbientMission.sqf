@@ -21,9 +21,10 @@ CLASS("AmbientMission", "")
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 
-		T_CALLM("updateExisting", [_city]);
+		private _active = T_CALLM("isActive", [_city]);
+		T_CALLM("updateExisting", [_city ARG _active]);
 
-		if(T_CALLM("isActive", [_city])) then {
+		if(_active) then {
 			T_CALLM("spawnNew", [_city]);
 		}
 	} ENDMETHOD;

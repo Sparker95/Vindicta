@@ -41,7 +41,7 @@
 // As well as other assertions
 // It's a global flag, must be defined here
 
-// #define OOP_ASSERT
+#define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 // Enables support for Arma Script Profiler globally
@@ -177,6 +177,7 @@
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
+#define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
 #define P_SIDE(paramNameStr) [paramNameStr, WEST, [WEST]]
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
