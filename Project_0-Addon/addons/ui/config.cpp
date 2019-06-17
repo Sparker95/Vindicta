@@ -29,14 +29,15 @@ class CfgMarkers {
 		scope = 0;
 		markerClass = "Project_0";
 		
-		icon = "\ui\markers\notification_top_right.paa";
+		icon = QPATHTOF(markers\notification_top_right.paa);
 		name = "no name";
 	};
 	
 	class p0_notification_top_right : p0_notification_base
 	{
 		name = "Notification top-right";
-		icon = "\ui\markers\notification_top_right.paa";
+		icon = QPATHTOF(markers\notification_top_right.paa);
+		
 		scope = 1;
 	};
 };
