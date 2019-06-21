@@ -81,10 +81,6 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 			if (!IS_OOP_OBJECT(_intelObjName)) then {
 				OOP_INFO_1("  Intel object %1 doesn't exist, it will be deserialized and deleted", _intelObjName);
 
-				if (_intelObjName == "o_IntelLocation_N_0_147") then {
-					_intelObjName call OOP_dumpAllVariables;
-				};
-
 				NEW_EXISTING(_intelClassName, _intelObjName);
 
 				// Unpack serialized intel object into a ref equal to the external intel object

@@ -325,6 +325,9 @@ CLASS("IntelLocation", "Intel")
 		CALLM(_mapMarker, "setColorEx", _color);
 		CALLM1(_mapMarker, "setAccuracyRadius", _radius);
 		CALLM1(_mapMarker, "setType", _type);
+
+		// Enable notification marker (the red circle)
+		CALLM1(_mapMarker, "setNotification", true);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
