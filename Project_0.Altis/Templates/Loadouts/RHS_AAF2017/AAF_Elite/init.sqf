@@ -1,4 +1,4 @@
-#include "..\common.hpp"
+#include "..\..\common.hpp"
 
 ADD_LOADOUT("AAF_elite_AA",			"AAF_Elite\AAF_elite_AA.sqf") 	
 ADD_LOADOUT("AAF_elite_AT",			"AAF_Elite\AAF_elite_AT.sqf") 

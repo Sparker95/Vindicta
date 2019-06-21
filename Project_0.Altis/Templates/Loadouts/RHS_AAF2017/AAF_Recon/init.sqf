@@ -1,4 +1,4 @@
-#include "..\common.hpp"
+#include "..\..\common.hpp"
 
 ADD_LOADOUT("AAF_recon_expl.spec.",		"AAF_Recon\AAF_recon_expl.spec.sqf")
 ADD_LOADOUT("AAF_recon_JATC",			"AAF_Recon\AAF_recon_JTAC.sqf")
