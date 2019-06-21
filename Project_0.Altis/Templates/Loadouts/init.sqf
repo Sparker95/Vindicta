@@ -1,3 +1,7 @@
-#define ADD_LOADOUT(tag, fileName) [tag, fileName] call t_fnc_addLoadout;
+#include "common.hpp"
 
 ADD_LOADOUT("superDude", "superDude.sqf")
+
+call compile preprocessFileLineNumbers "Templates\RHS_AAF2017\AAF\init.sqf"
+call compile preprocessFileLineNumbers "Templates\RHS_AAF2017\AAF_Elite\init.sqf"
+call compile preprocessFileLineNumbers "Templates\RHS_AAF2017\AAF_Recon\init.sqf"
