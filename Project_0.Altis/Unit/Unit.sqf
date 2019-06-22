@@ -442,7 +442,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			};
 
 			case T_VEH: {
-				_hO triggerDynamicSimulation false;
+				_hO triggerDynamicSimulation true;
 				_hO enableDynamicSimulation true;
 			};
 
