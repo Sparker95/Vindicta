@@ -45,6 +45,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
 			SETV(_intel, "location", GETV(_tgtLoc, "actual"));
 			SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
+			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
 
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 

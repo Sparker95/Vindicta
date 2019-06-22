@@ -883,7 +883,7 @@ CLASS("AICommander", "AI")
 	Parameters:
 	_intel - <IntelCommanderAction>
 	
-	Returns: nil
+	Returns: clone of _intel item that can be used in further updateIntelFromClone operations.
 	*/
 	STATIC_METHOD("registerIntelCommanderAction") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
