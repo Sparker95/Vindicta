@@ -474,8 +474,6 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("drawRoute") {
 		params ["_thisClass", ["_posArray", [], [[]]], ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 
-		diag_log format ["   drawRoute %1", _posArray];
-
 		// Delete all previosly created markers
 		{
 			deleteMarkerLocal _x;
