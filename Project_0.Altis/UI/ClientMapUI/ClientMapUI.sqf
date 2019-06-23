@@ -410,6 +410,11 @@ CLASS(CLASS_NAME, "")
 				case LOCATION_TYPE_CAMP: {"Camp"};
 				case LOCATION_TYPE_BASE: {"Base"};
 				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
+				case LOCATION_TYPE_CITY: {"City"};
+				case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
+				case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
+				case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
+				default {format ["ClientMapUI.sqf line %1", __LINE__]}; // If you see this then you know where to implement this!
 			};
 			
 			_timeText = str GETV(_intel, "dateUpdated");
