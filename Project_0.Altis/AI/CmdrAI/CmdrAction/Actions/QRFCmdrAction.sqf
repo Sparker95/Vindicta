@@ -45,6 +45,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			SETV(_intel, "tgtClusterId", GETV(_tgtCluster, "actual") select 1);
 			//SETV(_intel, "location", GETV(_tgtCluster, "actual"));
 			SETV(_intel, "posTgt", GETV(_tgtCluster, "pos"));
+			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
 
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 

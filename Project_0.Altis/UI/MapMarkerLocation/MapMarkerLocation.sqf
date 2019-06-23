@@ -159,11 +159,12 @@ CLASS(CLASS_NAME, "MapMarker")
 		params ["_thisObject"];
 
 		pr _radius = T_GETV("radius");
+		pr _mrkName = _thisObject+RADIUS_MARKER_SUFFIX;
+
 		if (_radius == 0) then {
-			deleteMarkerLocal _thisObject;
+			deleteMarkerLocal _mrkName;
 		} else {
 			// Check if marker doesn't exist yet
-			pr _mrkName = _thisObject+RADIUS_MARKER_SUFFIX;
 			if (markerColor _thisObject == "") then {
 				createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
 				_mrkName setMarkerSizeLocal [_radius, _radius];

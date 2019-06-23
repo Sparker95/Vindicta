@@ -516,4 +516,8 @@ CLASS("CivilWarPoliceStationData", "")
 			};
 		};
 	} ENDMETHOD;
+
+	/* public virtual override*/ METHOD("getPlayerSide") {
+		FRIENDLY_SIDE // from common.hpp
+	} ENDMETHOD;
 ENDCLASS;

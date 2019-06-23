@@ -501,6 +501,30 @@ CLASS("AICommander", "AI")
 
 	} ENDMETHOD;
 
+	// Thread safe
+	// Call it from a non-player-commander thread to reveal intel to the AICommander of player side
+	STATIC_METHOD("revealIntelToPlayerSide") {
+		params ["_thisClass", ["_item", "", [""]]];
+
+		pr _playerSide = CALLM0(gGameMode, "getPlayerSide");
+		pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _playerSide);
+		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item]);
+	} ENDMETHOD;
+
+	// Handles stealing intel item which this commander doesn't own
+	METHOD("stealIntel") {
+		 params ["_thisObject", ["_item", "", [""]]];
+
+		// Bail if object is wrong
+		if (!IS_OOP_OBJECT(_item)) exitWith { };
+
+		pr _thisDB = T_GETV("intelDB");
+		pr _itemClone = CLONE(_item);
+		SETV(_itemClone, "source", _item); // Link it with the source
+		CALLM1(_thisDB, "addIntel", _itemClone);
+	} ENDMETHOD;
+
+	// Gets called after player has analyzed up an inventory item with intel
 	METHOD("getIntelFromInventoryItem") {
 		params ["_thisObject", ["_baseClass", "", [""]], ["_ID", 0, [0]], ["_clientOwner", 0, [0]]];
 
@@ -713,7 +737,7 @@ CLASS("AICommander", "AI")
 		CALLM(_worldModel, "getThreat", [_pos])
 	} ENDMETHOD;
 		
-	// Thread safe
+	// Thread unsafe
 	METHOD("_addActivity") {
 		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
 		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG _side]);
@@ -883,7 +907,7 @@ CLASS("AICommander", "AI")
 	Parameters:
 	_intel - <IntelCommanderAction>
 	
-	Returns: nil
+	Returns: clone of _intel item that can be used in further updateIntelFromClone operations.
 	*/
 	STATIC_METHOD("registerIntelCommanderAction") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
