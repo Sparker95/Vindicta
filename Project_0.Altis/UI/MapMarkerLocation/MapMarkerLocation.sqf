@@ -152,7 +152,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	METHOD("setNotification") {
 		params ["_thisObject", ["_enable", false, [false]]];
 
-		(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlpha ([0, 1] select _enable);
+		(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal ([0, 1] select _enable);
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {
