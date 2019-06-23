@@ -44,7 +44,7 @@ saluteKeys = actionKeys "Salute";
     };
 }];*/
 
-player addEventHandler ["AnimChanged", {
+_newUnit addEventHandler ["AnimChanged", {
     params ["_unit", "_anim"];
 
     //systemChat format ["AnimChanged to : %1", _anim];
@@ -105,7 +105,7 @@ player addEventHandler ["AnimChanged", {
 */
 	
 // Create a suspiciousness monitor for player
-NEW("UndercoverMonitor", [player]);
+NEW("UndercoverMonitor", [_newUnit]);
 
 // Create scroll menu to talk to civilians
 pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
@@ -114,7 +114,7 @@ pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
 };
 
 
-player addAction ["Talk to civilian", // title
+_newUnit addAction ["Talk to civilian", // title
                  "cursorObject spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  9000, // Priority
@@ -128,9 +128,9 @@ player addAction ["Talk to civilian", // title
                  ""]; //memoryPoint
 
 // Init the UnitIntel on player
-CALLSM1("UnitIntel", "initPlayer", player);
+CALLSM0("UnitIntel", "initPlayer");
 
 // Init the Location Visibility Monitor on player
-NEW("LocationVisibilityMonitor", [player]);
+NEW("LocationVisibilityMonitor", [_newUnit]);
 
 CALLM(gGameMode, "playerSpawn", _this);

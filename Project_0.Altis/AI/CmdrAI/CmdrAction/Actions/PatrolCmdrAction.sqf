@@ -234,7 +234,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			SETV(_intel, "waypoints", _routeTargetPositions);
 			SETV(_intel, "locations", _locations);
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
-			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
+
+			// Departure date is 20+ minutes from now but they depart instantly, I don't know why :/ 
+			//SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
+			SETV(_intel, "dateDeparture", DATE_NOW); // Sparker added this, I think it's allright??
+
 			CALLM(_intel, "create", []);
 		};
 

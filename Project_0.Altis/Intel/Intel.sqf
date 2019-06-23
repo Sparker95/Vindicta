@@ -244,7 +244,7 @@ CLASS("IntelLocation", "Intel")
 		T_SETV("mapMarker", _mrk);
 
 		// Set/update marker properties
-		CALLM0(_thisObject, "setLocationMarkerProperties");
+		CALLSM1("IntelLocation", "setLocationMarkerProperties", _thisObject);
 
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
@@ -265,7 +265,7 @@ CLASS("IntelLocation", "Intel")
 
 		OOP_INFO_2("Updating %1 from %2", _thisObject, _intelSrc);
 
-		CALLM0(_thisObject, "setLocationMarkerProperties");
+		CALLSM1("IntelLocation", "setLocationMarkerProperties", _intelSrc);
 
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
@@ -292,13 +292,17 @@ CLASS("IntelLocation", "Intel")
 		systemChat _string;
 	} ENDMETHOD;
 
-	METHOD("setLocationMarkerProperties") {
-		params [P_THISOBJECT];
+	STATIC_METHOD("setLocationMarkerProperties") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 
-		pr _mapMarker = T_GETV("mapMarker");
-		pr _type = T_GETV("type");
-		pr _pos = T_GETV("pos");
-		pr _side = T_GETV("side");
+		diag_log format ["--- setLocationMarkerProperties: %1", _intel];
+		[_intel] call oop_dumpAllVariables;
+
+
+		pr _mapMarker = GETV(_thisObject, "mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it
+		pr _type = GETV(_intel, "type");
+		pr _pos = GETV(_intel, "pos");
+		pr _side = GETV(_intel, "side");
 		pr _mrkType = "unknown";
 		pr _text = "??";
 		if (_type != LOCATION_TYPE_UNKNOWN) then {
@@ -317,7 +321,9 @@ CLASS("IntelLocation", "Intel")
 			default {[COLOR_UNKNOWN, "ColorCIV"]}; // Purple color
 		};
 
-		pr _radius = T_GETV("accuracyRadius");
+		diag_log format ["--- Setting color: %1", _color];
+
+		pr _radius = GETV(_intel, "accuracyRadius");
 		if (isNil "_radius") then {_radius = 0; };
 
 		CALLM1(_mapMarker, "setPos", _pos);

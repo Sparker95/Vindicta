@@ -56,8 +56,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		}
 	} ENDMETHOD;
 
-	// Overrides GameModeBase, we need to clean up the existing spawns, and that needs to be done locally
-	/* protected virtual */ METHOD("preInitAll") {
+	/* protected virtual */ /* METHOD("preInitAll") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+	*/
+
+	// Overrides GameModeBase, we need to clean up the existing spawn markers, and we delete these markers globally
+	/* protected virtual */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
 		// Delete all existing spawns
 		{
