@@ -762,6 +762,11 @@ CLASS("GameModeBase", "")
 		#endif
 	} ENDMETHOD;
 
+	// Returns the side of player faction
+	/* public virtual */ METHOD("getPlayerSide") {
+		WEST
+	} ENDMETHOD;
+
 	METHOD("doSpawning") {
 		params [P_THISOBJECT];
 

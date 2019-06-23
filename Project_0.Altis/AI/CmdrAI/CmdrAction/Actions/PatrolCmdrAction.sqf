@@ -257,6 +257,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			{
 				T_CALLM("addIntelAt", [_world ARG _x]);
 			} forEach GETV(_intelClone, "waypoints");
+
+			// Reveal it to player side
+			if (random 100 < 70) then {
+				CALLSM1("AICommander", "revealIntelToPlayerSide", T_GETV("intel"));
+			};
 		} else {
 			CALLM(_intel, "updateInDb", []);
 		};

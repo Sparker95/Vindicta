@@ -56,6 +56,11 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtLoc, "pos")]);
+
+			// Reveal it to player side
+			if (random 100 < 80) then {
+				CALLSM1("AICommander", "revealIntelToPlayerSide", T_GETV("intel"));
+			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 			CALLM(_intel, "updateInDb", []);
