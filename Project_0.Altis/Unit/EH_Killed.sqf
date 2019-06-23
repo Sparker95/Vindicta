@@ -12,4 +12,4 @@ Executed in unscheduled when a unit is destroyed.
 
 #define pr private
 
-CALLM2(gMessageLoopMainManager, "postMethodAsync", "EH_killed", _this);
+CALLM2(gMessageLoopMainManager, "postMethodAsync", "EH_Killed", _this);

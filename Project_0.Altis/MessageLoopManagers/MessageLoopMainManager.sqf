@@ -36,10 +36,10 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			// Since this code is run in the main thread, we can just call the methods directly
 			
 			// Post a message to the garrison of the unit
-			pr _data = GETV(_thisObject, "data");
+			pr _data = GETV(_unit, "data");
 			pr _garrison = _data select UNIT_DATA_ID_GARRISON;
 			if (_garrison != "") then {	// Sanity check	
-				CALLM1(_garrison, "handleUnitKilled", _thisObject);
+				CALLM1(_garrison, "handleUnitKilled", _unit);
 				
 				// Send stimulus to garrison's casualties sensor
 				pr _garAI = CALLM0(_garrison, "getAI");
@@ -47,13 +47,13 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 					if (!isNull _killer) then { // If there is an existing killer
 						pr _stim = STIMULUS_NEW();
 						STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_UNIT_DESTROYED);
-						pr _value = [_thisObject, _killer];
+						pr _value = [_unit, _killer];
 						STIMULUS_SET_VALUE(_stim, _value);
 						CALLM1(_garAI, "handleStimulus", _stim);
 					};
 				};
 			} else {
-				OOP_ERROR_2("EH_killed: Unit is not attached to a garrison: %1, %2", _thisObject, _data);
+				OOP_ERROR_2("EH_killed: Unit is not attached to a garrison: %1, %2", _unit, _data);
 			};
 		} else {
 			OOP_WARNING_1("EH_killed: Unit of object %1 is unknown", _objectHandle);
@@ -98,6 +98,10 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			OOP_ERROR_2("EH_GetIn: vehicle is not attached to a garrison: %1, %2", _unitVeh, _data);
 		};
 
+	} ENDMETHOD;
+
+	METHOD("getMessageLoop") {
+		gMessageLoopMain
 	} ENDMETHOD;
 
 ENDCLASS;
