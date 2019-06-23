@@ -26,7 +26,7 @@ CLASS("ActionGroupPatrol", "ActionGroup")
 		// Assign patrol waypoints
 		pr _AI = GETV(_thisObject, "AI");
 		pr _group = GETV(_AI, "agent");
-		diag_log format ["[ActionGroupPatrol::activate] Info: Started for AI: _AI"];
+		OOP_INFO_1("Started for AI: %1", _AI);
 		pr _gar = CALLM0(_group, "getGarrison");
 		pr _loc = CALLM0(_gar, "getLocation");
 		
