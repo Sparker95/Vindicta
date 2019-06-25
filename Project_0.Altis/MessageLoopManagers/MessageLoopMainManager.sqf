@@ -26,6 +26,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 
+		OOP_INFO_1("EH_Killed: %1", _this);
+
 		// Is this object an instance of Unit class?
 		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
@@ -73,6 +75,8 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	*/
 	METHOD("EH_GetIn") {
 		params ["_thisObject", "_vehicle", "_role", "_unit", "_turret"];
+
+		OOP_INFO_1("EH_GetIn: %1", _this);
 
 		ASSERT_THREAD(_thisObject);
 
