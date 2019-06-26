@@ -42,6 +42,8 @@ CLASS("GameModeBase", "")
 			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
 			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
 
+			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
@@ -131,6 +133,13 @@ CLASS("GameModeBase", "")
 
 			// Message loop for client side checks: undercover, location visibility, etc
 			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+
+			// Disable all the notification dots for map markers
+			0 spawn {
+				waitUntil {! isNil "serverInitDone"};
+				sleep 6;
+				CALLSM1("MapMarkerLocation", "setAllNotifications", false);
+			};
 
 			T_CALLM("initClientOnly", []);
 		};
@@ -467,7 +476,7 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 23) then {
+			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 10) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -751,6 +760,11 @@ CLASS("GameModeBase", "")
 		// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
 		"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
 		#endif
+	} ENDMETHOD;
+
+	// Returns the side of player faction
+	/* public virtual */ METHOD("getPlayerSide") {
+		WEST
 	} ENDMETHOD;
 
 	METHOD("doSpawning") {

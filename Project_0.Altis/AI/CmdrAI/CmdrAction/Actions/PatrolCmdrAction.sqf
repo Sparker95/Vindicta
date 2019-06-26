@@ -29,8 +29,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 
 		// Start date for this action, default to immediate
-		private _detachmentEffVar = MAKE_AST_VAR(DATE_NOW);
-		T_SETV("startDateVar", _detachmentEffVar);
+		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
@@ -226,9 +226,19 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				private _loc = CALLM(_world, "getLocation", [_locId]);
 				GETV(_loc, "actual")
 			};
+
+			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+			private _srcGarrPos = GETV(_srcGarr, "pos");
+			_routeTargetPositions pushBack _srcGarrPos;
+			
 			SETV(_intel, "waypoints", _routeTargetPositions);
 			SETV(_intel, "locations", _locations);
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
+
+			// Departure date is 20+ minutes from now but they depart instantly, I don't know why :/ 
+			//SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
+			SETV(_intel, "dateDeparture", DATE_NOW); // Sparker added this, I think it's allright??
+
 			CALLM(_intel, "create", []);
 		};
 
@@ -251,6 +261,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			{
 				T_CALLM("addIntelAt", [_world ARG _x]);
 			} forEach GETV(_intelClone, "waypoints");
+
+			// Reveal it to player side
+			if (random 100 < 70) then {
+				CALLSM1("AICommander", "revealIntelToPlayerSide", T_GETV("intel"));
+			};
 		} else {
 			CALLM(_intel, "updateInDb", []);
 		};

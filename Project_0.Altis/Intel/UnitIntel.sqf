@@ -19,6 +19,8 @@ Author: Sparker 18.05.2019
 
 CLASS("UnitIntel", "")
 
+	STATIC_VARIABLE("eventHandlerAdded");
+
 	/*
 	Method: (static)initUnit
 	Call it on server.
@@ -162,52 +164,64 @@ CLASS("UnitIntel", "")
 	STATIC_METHOD("initPlayer") {
 		params [P_THISCLASS];
 
+		diag_log "--- initPlayer";
+
 		//player removeAllEventHandlers "InventoryOpened";
-		player addEventHandler ["InventoryOpened", 
-		{
-			[{!isNull (findDisplay 602)}, {
-				
-				{ // forEach [619, 633, 638];
+		if (! GET_STATIC_VAR(_thisClass, "eventHandlerAdded") || !isMultiplayer) then { // In singleplayer event handler doesn't get magically on respawn transfered :/
 
-					(finddisplay 602 displayctrl _x) ctrlAddEventHandler ["LBDblClick", {
+			diag_log "--- adding event handler";
 
-						params ["_control", "_selectedIndex"];
-						_data = _control lbData _selectedIndex;
-						diag_log format ["Dbl click: index: %1, data: %2", _selectedIndex, _data];
-						
-						// Check if the class name of this item belongs to one of the predefined class names
-						pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {
-							(_data find _x) == 0
-						};
+			player addEventHandler ["InventoryOpened", 
+			{
 
-						if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
-							// Call code to inspect the intel item
-							CALLSM1("UnitIntel", "inspectIntel", _data);
+				diag_log "--- Inventory opened event handler!";
 
-							// Delete this document item from inventory
-							[{ // call CBA_fnc_waitAndExecute
-								params ["_IDC", "_data"];
-								//diag_log format ["Inside waitAndExecute: %1", _this];
-								switch (_IDC) do {
-									case 619: {diag_log "Backpack"; player removeItemFromBackpack _data;};
-									case 633: {diag_log "Uniform"; player removeItemFromUniform _data;};
-									case 638: {diag_log "Vest"; player removeItemFromVest _data;};
-								};
-							}, [ctrlIDC _control, _data], 0] call CBA_fnc_waitAndExecute; // Can't remove the item right in this frame because it will crash the game
-						
-						}; // if (_data == ...)
+				[{!isNull (findDisplay 602)}, {
+					
+					{ // forEach [619, 633, 638];
 
-					} ]; // ctrlAddEventHandler
+						(finddisplay 602 displayctrl _x) ctrlAddEventHandler ["LBDblClick", {
 
-				} forEach [619, 633, 638]; // These are IDCs of the uniform, vest and backpack containers
+							params ["_control", "_selectedIndex"];
+							_data = _control lbData _selectedIndex;
+							diag_log format ["Dbl click: index: %1, data: %2", _selectedIndex, _data];
+							
+							// Check if the class name of this item belongs to one of the predefined class names
+							pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {
+								(_data find _x) == 0
+							};
 
-			}, []] call CBA_fnc_waitUntilAndExecute;
+							if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
+								// Call code to inspect the intel item
+								CALLSM1("UnitIntel", "inspectIntel", _data);
 
-		}]; // Add event handler
-		
-		// 633 - uniform
-		// 619 - backpack
-		// 638 - vest
+								// Delete this document item from inventory
+								[{ // call CBA_fnc_waitAndExecute
+									params ["_IDC", "_data"];
+									//diag_log format ["Inside waitAndExecute: %1", _this];
+									switch (_IDC) do {
+										case 619: {diag_log "Backpack"; player removeItemFromBackpack _data;};
+										case 633: {diag_log "Uniform"; player removeItemFromUniform _data;};
+										case 638: {diag_log "Vest"; player removeItemFromVest _data;};
+									};
+								}, [ctrlIDC _control, _data], 0] call CBA_fnc_waitAndExecute; // Can't remove the item right in this frame because it will crash the game
+							
+							}; // if (_data == ...)
+
+						} ]; // ctrlAddEventHandler
+
+					} forEach [619, 633, 638]; // These are IDCs of the uniform, vest and backpack containers
+
+				}, []] call CBA_fnc_waitUntilAndExecute;
+
+			}]; // Add event handler
+			
+			// 633 - uniform
+			// 619 - backpack
+			// 638 - vest
+
+			SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", true);
+		};
 		
 	} ENDMETHOD;
 
@@ -226,3 +240,5 @@ CLASS("UnitIntel", "")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", false);

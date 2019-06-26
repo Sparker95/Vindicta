@@ -1,15 +1,11 @@
+#define OOP_INFO
+#define OOP_WARNING
 #define OOP_ERROR
+#define OFSTREAM_FILE "Main.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\AI\Stimulus\Stimulus.hpp"
 #include "..\AI\StimulusTypes.hpp"
-#include "Unit.hpp"
-
-/*
-Executed in unscheduled when a unit is destroyed.
-*/
-
-#define pr private
-
-CALLM2(gMessageLoopMainManager, "postMethodAsync", "EH_Killed", _this);
+#include "..\MessageReceiver\MessageReceiver.hpp"
+#include "..\Unit\Unit.hpp"

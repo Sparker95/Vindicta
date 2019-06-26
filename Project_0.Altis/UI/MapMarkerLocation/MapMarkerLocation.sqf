@@ -21,6 +21,7 @@ That's how we draw locations
 
 #define RADIUS_MARKER_SUFFIX "_rad"
 #define MARKER_SUFFIX "_mrk"
+#define NOTIFICATION_SUFFIX "_not"
 
 CLASS(CLASS_NAME, "MapMarker")
 
@@ -29,8 +30,11 @@ CLASS(CLASS_NAME, "MapMarker")
 	VARIABLE("intel"); // Intel object associated with this
 	VARIABLE("radius"); // The accuracy radius
 	VARIABLE("type");
+	VARIABLE("notification"); // Bool
 
 	STATIC_VARIABLE("selectedLocationMarkers");
+
+	STATIC_VARIABLE("all");
 
 	METHOD("new") {
 		params ["_thisObject", ["_intel", "", [""]]];
@@ -48,6 +52,17 @@ CLASS(CLASS_NAME, "MapMarker")
 		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
 		_mrkName setMarkerAlphaLocal 1.0;
 
+		// Create notification marker
+		pr _mrkName = _thisObject+NOTIFICATION_SUFFIX;
+		createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
+		_mrkName setMarkerShapeLocal "ICON";
+		_mrkName setMarkerColorLocal "ColorRed";
+		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
+		_mrkName setMarkerAlphaLocal 1.0;
+		_mrkName setMarkerType "p0_notification_top_right";
+
+		GET_STATIC_VAR(CLASS_NAME, "all") pushBack _thisObject;
+
 		/*
 		pr _radius = GETV(_intel, "accuracyRadius");
 		if (isNil "_radius") then { _radius = 0; };
@@ -61,8 +76,13 @@ CLASS(CLASS_NAME, "MapMarker")
 		params ["_thisObject"];
 
 		// Delete markers
-		deleteMarkerLocal (_thisObject + MARKER_SUFFIX);
-		deleteMarkerLocal (_thisObject + RADIUS_MARKER_SUFFIX);
+		{
+			deleteMarkerLocal (_thisObject + _x);
+		} forEach [MARKER_SUFFIX, RADIUS_MARKER_SUFFIX, NOTIFICATION_SUFFIX];
+
+		// Delete from 'all' array
+		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
+		_all deleteAt (_all find _thisObject);
 
 	} ENDMETHOD;
 
@@ -77,8 +97,9 @@ CLASS(CLASS_NAME, "MapMarker")
 		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
 
 		// Set marker position
-		_mrkName = _thisObject+MARKER_SUFFIX;
-		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
+		{
+			(_thisObject+_x) setMarkerPosLocal (T_GETV("pos")+[0]);
+		} forEach [MARKER_SUFFIX, NOTIFICATION_SUFFIX];
 
 	} ENDMETHOD;
 
@@ -126,19 +147,24 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		_mrkName setMarkerTypeLocal _type0;
 		_mrkName setMarkerSizeLocal [_size, _size];
+	} ENDMETHOD;
 
+	METHOD("setNotification") {
+		params ["_thisObject", ["_enable", false, [false]]];
 
+		(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal ([0, 1] select _enable);
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {
 		params ["_thisObject"];
 
 		pr _radius = T_GETV("radius");
+		pr _mrkName = _thisObject+RADIUS_MARKER_SUFFIX;
+
 		if (_radius == 0) then {
-			deleteMarkerLocal _thisObject;
+			deleteMarkerLocal _mrkName;
 		} else {
 			// Check if marker doesn't exist yet
-			pr _mrkName = _thisObject+RADIUS_MARKER_SUFFIX;
 			if (markerColor _thisObject == "") then {
 				createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
 				_mrkName setMarkerSizeLocal [_radius, _radius];
@@ -253,6 +279,9 @@ CLASS(CLASS_NAME, "MapMarker")
 			// Remove all selections if we push mouse button without Alt key
 			if (!_alt) then {
 				CALLSM(CLASS_NAME, "deselectAllMarkers", []);
+
+				// Disable the notification
+				CALLM1(_thisObject, "setNotification", false);
 			};
 
 			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers");
@@ -331,9 +360,18 @@ CLASS(CLASS_NAME, "MapMarker")
 		
 	} ENDMETHOD;
 
+	// Enables/disabled notification dots on all icons
+	STATIC_METHOD("setAllNotifications") {
+		params ["_thisClass", ["_enable", false, [false]]];
+		{
+			CALLM1(_x, "setNotification", _enable);
+		} forEach GET_STATIC_VAR(_thisClass, "all");
+	} ENDMETHOD;
+
 ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
+SET_STATIC_VAR(CLASS_NAME, "all", []);
 
 #ifndef _SQF_VM
 

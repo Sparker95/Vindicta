@@ -442,7 +442,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			};
 
 			case T_VEH: {
-				_hO triggerDynamicSimulation false;
+				_hO triggerDynamicSimulation true;
 				_hO enableDynamicSimulation true;
 			};
 
@@ -533,6 +533,9 @@ CLASS(UNIT_CLASS_NAME, "");
 	*/
 	METHOD("setGarrison") {
 		params [["_thisObject", "", [""]], ["_garrison", "", [""]] ];
+
+		OOP_INFO_1("SET GARRISON: %1", _garrison);
+
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [UNIT_DATA_ID_GARRISON, _garrison];
 	} ENDMETHOD;
