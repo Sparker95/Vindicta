@@ -15,8 +15,7 @@ class Dialog {
 	class Interact {
 		file = "Dialogue\Interact";
 		class interact_init {preinit = 1};
-		class interact_addAction {};
-		class interact_removeAction {};
+		class interact_talkAction {};
 		class interact_civilian {};
 	};
 

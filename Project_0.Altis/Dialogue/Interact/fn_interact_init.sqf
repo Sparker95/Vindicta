@@ -1,4 +1,4 @@
-#include "CURSORTARGET_TYPES.hpp"
+#include "defineCommon.hpp"
 
 /*
 	Author: Jeroen Notenbomer
@@ -24,17 +24,19 @@ terminate _spawnID;
 _spawnID = [] spawn {
 	while{true}do{
 		private _obj = cursorTarget;
-	
 		if(!isnull _obj)then{
 			private  _type = _obj getVariable ["p0_cursorTarget",CURSORTARGET_INVALID];
 			if(_type == CURSORTARGET_INVALID)exitWith{hint "wrong obj"};
-			if(_type == CURSORTARGET_CIVILIAN)exitWith{_obj call Dialog_fnc_interact_civilian};
+			if(_type == CURSORTARGET_CIVILIAN)exitWith{
+				_obj call Dialog_fnc_interact_civilian;
+			};
 
 		}else{
-			hint "no obj"
+
 		};
 		sleep UPDATE_INTERVAL;
 	};
 };
 missionNamespace setVariable ["p0_interact_spawnID", _spawnID];
+
 

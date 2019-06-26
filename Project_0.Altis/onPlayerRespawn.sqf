@@ -113,20 +113,6 @@ pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
     (!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
 };
 
-
-player addAction ["Talk to civilian", // title
-                 "cursorObject spawn CivPresence_fnc_talkTo", // Script
-                 0, // Arguments
-                 9000, // Priority
-                 true, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "call pr0_fnc_talkCond", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
 // Init the UnitIntel on player
 CALLSM1("UnitIntel", "initPlayer", player);
 

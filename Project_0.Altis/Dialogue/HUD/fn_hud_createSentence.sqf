@@ -58,8 +58,6 @@ if(_lipTimer_new >_lipTimer)then{
 if(!hasinterface)exitWith{};
 
 private _display = findDisplay 46;
-private _frame =  _display getvariable ["Dialog_compas_frame" ,controlNull];
-
 private _name = name _unit;
 private _icon = controlNull;
 private _structuredSentence = if(_unit isequalto player)then{
@@ -72,10 +70,11 @@ private _structuredSentence = if(_unit isequalto player)then{
 	private _colorTextHTML = ["#FFFFFF","#898989"] select (_target != player);
 	
 
-	_icon = _display ctrlCreate ["rscstructuredtext", -1,_frame];
+	_icon = _display ctrlCreate ["rscstructuredtext", -1];
 	//_icon ctrlsetBackgroundColor [.5,.5,.5,.5];
 	//_icon ctrlSetTextColor _color;
-	_icon ctrlSetPosition [666,0,FLOAT_ICON_WITDH,0.2];//spawn it out of site 
+	_icon ctrlSetPosition [666,666,FLOAT_ICON_WITDH,0.2];//spawn it out of site 
+	_icon ctrlSetFade 1;
 	_icon ctrlCommit 0;
 	_icon ctrlSetStructuredText parseText format ["<t align = 'center' shadow = '2' size = '1'><t color = '#FFFFFF'><img image='%2'/><t color = '%1'><br/>%3:</t>",_colorHTML,STRING_ICON_UP_ARROW,_name];
 	
@@ -84,17 +83,23 @@ private _structuredSentence = if(_unit isequalto player)then{
 };
 
 private _text = _display ctrlCreate ["rscstructuredtext", -1];
-_text ctrlsetBackgroundColor [.5,.5,.5,.5];
+//_text ctrlsetBackgroundColor [.5,.5,.5,.5];
 //_text ctrlSetTextColor _color;
-_text ctrlSetPosition [666,0,1,0.05];//spawn it out of site 
+_text ctrlSetPosition ARRAY_TEXT_POS_START;
+_text ctrlSetFade 1;//hiden
 _text ctrlCommit 0;
 _text ctrlSetStructuredText _structuredSentence;
 
+//update timer so we hide it a few seconds later then last message
 private _fadeTime = time + FLOAT_DISPLAYTIME; 
-private _removeTime = _fadeTime + FLOAT_FADE_OUT; 
-private _ctrl_sets = _display getvariable ["Dialog_text_ctrlSet" ,[]];
-_ctrl_sets pushBack [_icon, _text,_unit,_fadeTime,_removeTime];
-_display setvariable ["Dialog_text_ctrlSet" ,_ctrl_sets];
+_display setVariable ["dialogueHideTimer", _fadeTime];
+
+_text setVariable ["unit",_unit];
+_text setVariable ["icon",_icon];
+
+private _ctrl_sets = _display getvariable ["Dialog_text_ctrlNew" ,[]];
+_ctrl_sets pushBack _text;
+_display setvariable ["Dialog_text_ctrlNew" ,_ctrl_sets];
 
 
 

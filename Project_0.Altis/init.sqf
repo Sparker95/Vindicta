@@ -20,7 +20,8 @@ if (!IS_SERVER) then {
 };
 #endif
 
-// if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
+if(true) exitWith {}; // Keep it here in case we want to not start the actual mission but to test some other code
+
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
 		//case "Sparker": { "GameModeRandom" };

@@ -1,4 +1,4 @@
-#include "..\Dialogue\interact\CURSORTARGET_TYPES.hpp"
+#include "..\Dialogue\interact\defineCommon.hpp"
 
 params [["_module",objNull,[objNull]],["_pos",[],[[]]]];
 

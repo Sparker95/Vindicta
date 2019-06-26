@@ -12,85 +12,130 @@
 		nil
 */
 
-//FRAME-----------------------------------------------------------------------------
+
+
+
+//////////////////////
+private _cfg = missionConfigFile >> "dialogue_question";
+[_cfg, 46] call ui_fnc_createControlsFromConfig;
+
 private _display = findDisplay 46;
-private _frame =  _display getvariable ["Dialog_compas_frame" ,controlNull];
-ctrlDelete _frame;
-if(isnull _frame)then{
-	_frame = _display ctrlCreate ["RscEdit", -1];
-	_display setvariable ["Dialog_compas_frame" ,_frame];
-};
-_frame ctrlsetBackgroundColor [.5,.5,.5,.5];
-_frame ctrlSetPosition [0,FLOAT_POS_Y,1,0.1];
-_frame ctrlSetFade 1;
-_frame ctrlCommit 0;
+(_display displayCtrl 1) ctrlSetStructuredText parseText "<t align='center'>Response:</t><br/>[1] Yes<br/>[2] No<br/>[3] No<br/>[4] No<br/>[5] No";
+//////////////////////
+
+
+
+
+private _display = findDisplay 46;
 
 //clean old list incase you loaded a mission
-private _ctrl_sets = (_display getvariable ["Dialog_text_ctrlSet" ,[]]);
+private _ctrl_sets = (_display getvariable ["Dialog_text_ctrlNew" ,[]]) + (_display getvariable ["Dialog_text_ctrlShown" ,[]]);
 {
-	_x params ["_icon","_text"];
+	private _text = _x;
+	private _icon = _text getVariable ["icon",controlNull];
 	ctrlDelete _icon;
 	ctrlDelete _text;
 }forEach _ctrl_sets;
-_display setvariable ["Dialog_text_ctrlSet" ,[]];
+_display setvariable ["Dialog_text_ctrlNew" ,[]];
+_display setvariable ["Dialog_text_ctrlShown" ,[]];
 
 
 //call BIS_fnc_addStackedEventHandler
 ["dialog_HUD", "onEachFrame", {
 	private _display = findDisplay 46;
+	private _array_textShown =  _display getvariable ["Dialog_text_ctrlShown" ,[]];
+	private _array_textNew = _display getvariable ["Dialog_text_ctrlNew" ,[]];
+	if(count _array_textShown + count _array_textNew == 0)exitWith{};
+	private _timer = _display getVariable ["dialogueHideTimer", 0];
 
-	private _ctrl_sets = (_display getvariable ["Dialog_text_ctrlSet" ,[]]);
-	private _frame =  _display getvariable ["Dialog_compas_frame" ,controlNull];
-	
-	private _frameFaded =  _frame getvariable ["faded",true];
-	if(count _ctrl_sets == 0 )then{
-		if(!_frameFaded)then{
-			_frame setvariable ["faded",true];
-			_frame ctrlSetFade 1;
-			_frame ctrlCommit FLOAT_FADE_OUT;};
-	}else{
-		if(_frameFaded)then{
-			_frame setvariable ["faded",false];
-			_frame ctrlSetFade 0;
-			_frame ctrlCommit 0;
+	//remove ctrls that are markered for removal
+	{
+		private _text = _x;
+		private _icon = _x getVariable ["icon",controlNull];
+		private _remove = _text getVariable ["markForRemoval",false];
+		if(_remove)then{
+			if(ctrlFade _text == 1)then{
+				_array_textShown deleteAt (_array_textShown find _text);
+				ctrlDelete _text;
+				ctrlDelete _icon;
+			};
 		};
-	};
-	
-	//remove items if there are to many
-	while{count _ctrl_sets > INT_SENTENCE_LIMIT}do{
-		_ctrl_sets # 0 params ["_icon","_text","_unit","_fadeTime","_removeTime"];
-		ctrlDelete _icon;
-		ctrlDelete _text;
-		_ctrl_sets deleteAt 0;
-	};
-	
-	private _text_y  = FLOAT_POS_Y - 0.1;
-	for "_i" from (count _ctrl_sets) - 1 to 0 step -1 do{
-		(_ctrl_sets # _i) params ["_icon","_text","_unit","_fadeTime","_removeTime"];
+	}forEach _array_textShown;
 
-		if(time > _fadeTime)then{
-		
-		
-			if(_text getvariable ["faded",false])then{
-				if(time > _removeTime)then{
-					ctrlDelete _icon;
-					ctrlDelete _text;
-					_ctrl_sets deleteAt _i;
-				};
-			}else{
-				_text setvariable ["faded",true];
-				_icon ctrlSetFade 1;
-				_icon ctrlCommit FLOAT_FADE_OUT;
-				
+	//wait untill timer runs out and remove all ctrls 
+	if(time > _timer)exitWith{
+		{
+			private _text = _x;
+			private _icon = _x getVariable ["icon",controlNull];
+			private _remove = _text getVariable ["markForRemoval",false];
+			if(!_remove)then{
 				_text ctrlSetFade 1;
-				_text ctrlCommit FLOAT_FADE_OUT;
-			};			
+				_text ctrlCommit FLOAT_TEXT_SCROLL_SPEED;
+				_icon ctrlSetFade 1;
+				_icon ctrlCommit FLOAT_TEXT_SCROLL_SPEED;
+				_text setVariable ["markForRemoval",true];
+			};
+		}forEach _array_textShown;
+	};
+
+	//check if text is moving if it is we need to wait before adding more
+	private _isMoving = if(count  _array_textShown > 0)then{
+		private _textBottom =  _array_textShown select (count _array_textShown-1);
+		(ctrlPosition _textBottom)#1 != ARRAY_TEXT_POS_START#1 - ARRAY_TEXT_STEPSIZE;
+	}else{
+		false
+	};
+
+	if(!_isMoving )then{
+
+		if(count _array_textNew > 0)then{
+			//move from newArray to ActiveArray
+			private _ctrl = _array_textNew#0; //selecting the oldest message
+			private _icon = _ctrl getVariable ["icon",controlNull];
+			_array_textShown pushBack _ctrl;
+			_array_textNew deleteAt 0; 
+
+			//make it visable we commit this change later all at ones
+			_ctrl ctrlsetfade 0;
+			_icon ctrlsetfade 0; _icon ctrlCommit FLOAT_TEXT_SCROLL_SPEED;
+			//remove text that was hidden already
+			if(count _array_textShown == INT_MAX_LINES_DIALOGUE +1)then{
+				private _ctrl = _array_textShown#0;
+				private _icon = _ctrl getVariable ["icon",controlNull];
+				_array_textShown deleteAt 0;
+				ctrlDelete _ctrl;
+				ctrlDelete _icon;
+			};
+
+			//hide old messages so we dont show to many
+			if(count _array_textShown == INT_MAX_LINES_DIALOGUE)then{
+				private _ctrl = _array_textShown#0;
+				private _icon = _ctrl getVariable ["icon",controlNull];
+				_ctrl ctrlsetfade 1;
+				_icon ctrlsetfade 1;
+			};
+
+			//move all text up one step
+			{
+				private _clrl = _x;
+				
+				private _newPos = ctrlPosition _clrl;
+				_newPos set [1, ctrlPosition _clrl # 1 - ARRAY_TEXT_STEPSIZE];
+
+				_clrl ctrlSetPosition _newPos;
+				_clrl ctrlCommit FLOAT_TEXT_SCROLL_SPEED;
+			}forEach _array_textShown;
 		};
-		
+	};
+
+
+	//update icon (arrow icon, pointing to who is talking)
+	{
+		private _icon = _x getVariable ["icon",controlNull];
+		private _unit = _x getVariable ["unit",objNull];
+
+		//player it self doesnt need icon
 		if(!isnull _icon)then{
-			
-			
-			
 			//ALTERNITEVE worldToScreen BASED
 			private _pos_screen = (worldToScreen visiblePosition _unit);//returns [] if object is out of screen
 			private _icon_x = if(_pos_screen isequalTo [])then{
@@ -114,15 +159,9 @@ _display setvariable ["Dialog_text_ctrlSet" ,[]];
 			//ICONS
 			_icon ctrlsetposition [_icon_x, FLOAT_POS_Y];
 			_icon ctrlCommit 0;
-		};
-		
-		
-		//TEXT
-		_text ctrlsetposition [0, _text_y];
-		_text ctrlCommit 0;
-		
-		_text_y = _text_y - 0.05;	
-	};
+		}
+	}forEach _array_textShown;
+
 }] call BIS_fnc_addStackedEventHandler;
 
 
