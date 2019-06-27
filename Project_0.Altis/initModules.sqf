@@ -28,6 +28,7 @@ tAAF = call compile preprocessFileLineNumbers "Templates\Factions\AAF.sqf";
 tGUERILLA = call compile preprocessFileLineNumbers "Templates\Factions\GUERILLA.sqf";
 tPOLICE = call compile preprocessFileLineNumbers "Templates\Factions\POLICE.sqf";
 tCIVILIAN = call compile preprocessFileLineNumbers "Templates\Factions\CIVILIAN.sqf";
+tRHS_AAF2017_elite = call compile preprocessFileLineNumbers "Templates\Factions\RHS_AAF2017_elite.sqf";
 
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";

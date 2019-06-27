@@ -67,7 +67,7 @@ class CMUI_LOCP_TAB_TXT : MUI_BASE
     h = safeZoneH * 0.03;
     text = "TAB HEADLINE";
     font = "PuristaSemiBold";
-    sizeEx = MUI_TXT_SIZE_S
+    sizeEx = MUI_TXT_SIZE_S;
     style = 12+2;
     colorBackground[] = MUIC_BLACK;	
 };
