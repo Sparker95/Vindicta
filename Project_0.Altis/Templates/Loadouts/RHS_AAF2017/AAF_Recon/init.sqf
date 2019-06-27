@@ -1,9 +1,9 @@
 #include "..\..\common.hpp"
 
-ADD_LOADOUT("RHS_AAF2017_recon_expl.spec.",		"AAF_Recon\AAF_recon_expl.spec.sqf")
-ADD_LOADOUT("RHS_AAF2017_recon_JTAC",			"AAF_Recon\AAF_recon_JTAC.sqf")
-ADD_LOADOUT("RHS_AAF2017_recon_LAT",			"AAF_Recon\AAF_recon_LAT.sqf")
-ADD_LOADOUT("RHS_AAF2017_recon_medic",			"AAF_Recon\AAF_recon_medic.sqf")
-ADD_LOADOUT("RHS_AAF2017_recon_rifleman",		"AAF_Recon\AAF_recon_rifleman.sqf")
-ADD_LOADOUT("RHS_AAF2017_recon_sniper",			"AAF_Recon\AAF_recon_sniper.sqf")
-ADD_LOADOUT("RHS_AAF2017_recon_TL",				"AAF_Recon\AAF_recon_TL.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_expl.spec.",		"RHS_AAF2017\AAF_Recon\AAF_recon_expl.spec.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_JTAC",			"RHS_AAF2017\AAF_Recon\AAF_recon_JTAC.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_LAT",			"RHS_AAF2017\AAF_Recon\AAF_recon_LAT.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_medic",			"RHS_AAF2017\AAF_Recon\AAF_recon_medic.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_rifleman",		"RHS_AAF2017\AAF_Recon\AAF_recon_rifleman.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_sniper",			"RHS_AAF2017\AAF_Recon\AAF_recon_sniper.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_TL",				"RHS_AAF2017\AAF_Recon\AAF_recon_TL.sqf")
