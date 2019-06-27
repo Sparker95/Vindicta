@@ -9,7 +9,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 //==== Infantry ====
 _inf = [];
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["FNG_AAF_inf_rifleman"]];
+_inf set [T_INF_DEFAULT, ["FGN_AAF_inf_rifleman"]];
 
 _inf set [T_INF_SL, ["RHS_AAF2017_elite_SL"]];
 _inf set [T_INF_TL, ["RHS_AAF2017_elite_TL"]];
@@ -19,7 +19,7 @@ _inf set [T_INF_rifleman, ["RHS_AAF2017_elite_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_AAF2017_elite_marksman"]]; //TODO add FAL to loadout- currently in RHS DEV
 _inf set [T_INF_sniper, ["RHS_AAF2017_elite_sniper"]];
 _inf set [T_INF_spotter, ["RHS_AAF2017_elite_spotter"]];
-_inf set [T_INF_exp, ["RHS_AAF2017_elite_engineer"]];
+_inf set [T_INF_exp, ["RHS_AAF2017_elite_expl.spec."]];
 _inf set [T_INF_ammo, ["RHS_AAF2017_elite_MG_assist.", "RHS_AAF2017_elite_AT_assist."]];
 _inf set [T_INF_LAT, ["RHS_AAF2017_elite_rifleman"]];
 _inf set [T_INF_AT, ["RHS_AAF2017_elite_AT"]];
@@ -128,20 +128,21 @@ _drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 //==== Groups ====
 _group = [];
 _group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_fireteam"]]; //TODO - Sparker needs to set this to AAF
-_group set [T_GROUP_inf_AA_team, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_section_AA"]];
-_group set [T_GROUP_inf_AT_team, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_section_AT"]];
-_group set [T_GROUP_inf_rifle_squad, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_squad"]];
-_group set [T_GROUP_inf_assault_squad, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_squad_2mg"]];
-_group set [T_GROUP_inf_weapons_squad, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_squad_sniper"]];
-_group set [T_GROUP_inf_fire_team, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_fireteam"]];
-_group set [T_GROUP_inf_recon_patrol, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_fireteam"]];
-_group set [T_GROUP_inf_recon_sentry, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_MANEUVER"]];
-_group set [T_GROUP_inf_recon_squad, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_squad"]];
-_group set [T_GROUP_inf_recon_team, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_fireteam"]];
-_group set [T_GROUP_inf_sentry, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_MANEUVER"]];
-_group set [T_GROUP_inf_sniper_team, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry" >> "rhs_group_rus_vmf_infantry_section_marksman"]];
+_group set [T_GROUP_DEFAULT, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
 
+_group set [T_GROUP_inf_AA_team, [[T_INF, T_INF_TL], [T_INF, T_INF_AA], [T_INF, T_INF_AA], [T_INF, T_INF_ammo]]];
+_group set [T_GROUP_inf_AT_team, [[T_INF, T_INF_TL], [T_INF, T_INF_AT], [T_INF, T_INF_AT], [T_INF, T_INF_ammo]]];
+_group set [T_GROUP_inf_rifle_squad, [[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_GL], [T_INF, T_INF_LAT], [T_INF, T_INF_marksman], [T_INF, T_INF_medic]]];
+_group set [T_GROUP_inf_assault_squad, [[T_INF, T_INF_SL], [T_INF, T_INF_LMG], [T_INF, T_INF_LAT], [T_INF, T_INF_GL], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_LAT], [T_INF, T_INF_exp]]];
+_group set [T_GROUP_inf_weapons_squad, [[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_ammo], [T_INF, T_INF_LMG], [T_INF, T_INF_ammo], [T_INF, T_INF_LAT]]];
+_group set [T_GROUP_inf_fire_team, [[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_LAT], [T_INF, T_INF_GL]]];
+_group set [T_GROUP_inf_sentry, [[T_INF, T_INF_TL], [T_INF, T_INF_GL]]];
+_group set [T_GROUP_inf_sniper_team, [[T_INF, T_INF_sniper], [T_INF, T_INF_spotter]]];
+
+_group set [T_GROUP_inf_recon_patrol, [[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_medic]]];
+_group set [T_GROUP_inf_recon_sentry, [[T_INF, T_INF_recon_LAT], [T_INF, T_INF_recon_rifleman]]];
+_group set [T_GROUP_inf_recon_squad, [[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_medic], [T_INF, T_INF_recon_LAT],  [T_INF, T_INF_recon_JTAC], [T_INF, T_INF_recon_exp],[T_INF, T_INF_recon_rifleman] ]];
+_group set [T_GROUP_inf_recon_team, [[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_medic], [T_INF, T_INF_recon_LAT],  [T_INF, T_INF_recon_JTAC]]];
 
 
 //==== Set arrays ====
