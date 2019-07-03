@@ -1,9 +1,14 @@
 #include "common.hpp"
 
+/*
+Class: Phase3CmdrStrategy
+Strategy for commander to use during phase 3 gameplay.
+Default behaviour (see CmdrStrategy class) except:
+- Cities that are in revolt or suppressed will be occupied, as will their nearby roadblocks.
+*/
 CLASS("Phase3CmdrStrategy", "CmdrStrategy")
 	METHOD("new") {
 		params [P_THISOBJECT];
-
 	} ENDMETHOD;
 
 	METHOD("getLocationDesirability") {

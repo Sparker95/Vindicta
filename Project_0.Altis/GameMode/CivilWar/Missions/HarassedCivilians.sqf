@@ -78,11 +78,16 @@ pr0_fnc_AddCivilianFreeAction = {
 	//call BIS_fnc_holdActionAdd;
 };
 
-// This mission spawns a number of civilians that police will try to arrest (when they see them).
-// If the player frees them after they are arrested they will provide rewards of intel, and increase local
-// activity.
+/*
+Class: HarassedCiviliansAmbientMission
+This mission spawns a number of civilians that police will try to arrest (when they see them).
+If the player frees them after they are arrested they will provide rewards of intel, and increase local
+activity.
+*/
 CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
+	// How many missions of this type can be running at a time.
 	VARIABLE("maxActive");
+	// Currently running missions of this type (as represented by the civilian units).
 	VARIABLE("activeCivs");
 
 	METHOD("new") {
@@ -92,7 +97,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		T_SETV("activeCivs", []);
 
 		private _radius = GETV(_city, "boundingRadius");
-
+		// How many civilians should be harrassed at the same time for this city size?
 		private _maxActive = 1 + ((3 * ln(0.01 * _radius + 1)) min 5);
 		T_SETV("maxActive", _maxActive);
 	} ENDMETHOD;
@@ -103,7 +108,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 
 		T_PRVAR(activeCivs);
 
-		// Check for finished actions
+		// Check for finished missions
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
@@ -113,7 +118,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		// Add new actions if required
+		// Add new missions if required
 		T_PRVAR(activeCivs);
 		T_PRVAR(maxActive);
 		private _deficit = _maxActive - (count _activeCivs);
@@ -171,6 +176,7 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
+		// Clean up an active missions
 		T_PRVAR(activeCivs);
 		{
 			deleteVehicle _x;
