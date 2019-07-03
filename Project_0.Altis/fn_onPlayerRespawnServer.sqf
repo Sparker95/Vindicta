@@ -16,7 +16,7 @@ pr _args = [[], T_INF, T_INF_rifleman, -1, "", _newUnit];
 pr _unit = NEW("Unit", _args);
 
 // Add player's unit to the global garrison
-pr _gar = switch (side group player) do {
+pr _gar = switch (side group _newUnit) do {
 	case WEST: {gGarrisonPlayersWest};
 	case EAST: {gGarrisonPlayersEast};
 	case INDEPENDENT: {gGarrisonPlayersInd};

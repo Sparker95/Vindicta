@@ -49,6 +49,8 @@ CLASS("GameModeBase", "")
 			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
 			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
 
+			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
@@ -136,6 +138,13 @@ CLASS("GameModeBase", "")
 
 			// Message loop for client side checks: undercover, location visibility, etc
 			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+
+			// Disable all the notification dots for map markers
+			0 spawn {
+				waitUntil {! isNil "serverInitDone"};
+				sleep 6;
+				CALLSM1("MapMarkerLocation", "setAllNotifications", false);
+			};
 
 			T_CALLM("initClientOnly", []);
 		};
@@ -429,12 +438,23 @@ CLASS("GameModeBase", "")
 			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 
-			if(_locType == LOCATION_TYPE_CITY) then { 
+			if(_locType == LOCATION_TYPE_CITY) then {
+				private _baseRadius = 300; // Radius at which it 
+
+				_locBorder params ["_a", "_b"];
+				private _area = 4*_a*_b;
+				private _density_km2 = 60;	// Amount of civilians per square km
+				private _max = 35;			// Max amount of civilians
+				_locCapacityCiv = ((_density_km2/1e6) * _area) min 35;
+				_locCapacityCiv = ceil _locCapacityCiv;
+
 				// https://www.desmos.com/calculator/nahw1lso9f
+				/*
 				_locCapacityCiv = ceil (30 * log (0.0001 * _locBorder#0 * _locBorder#1 + 1));
 				OOP_INFO_MSG("%1 civ count set to %2", [_locName ARG _locCapacityCiv]);
 				//private _houses = _locSectorPos nearObjects ["House", _locBorder#0 max _locBorder#1];
 				//diag_log format["%1 houses at %2", count _houses, _locName];
+				*/
 
 				// https://www.desmos.com/calculator/nahw1lso9f
 				_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
@@ -465,7 +485,7 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 23) then {
+			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 10) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
@@ -749,6 +769,11 @@ CLASS("GameModeBase", "")
 		// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
 		"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
 		#endif
+	} ENDMETHOD;
+
+	// Returns the side of player faction
+	/* public virtual */ METHOD("getPlayerSide") {
+		WEST
 	} ENDMETHOD;
 
 	METHOD("doSpawning") {

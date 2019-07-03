@@ -13,10 +13,6 @@
 #define CLASS_NAME "ClientMapUI"
 #define pr private
 
-#define MARKER_INTEL_SOURCE			"mrk_intel_source"
-#define MARKER_INTEL_DESTINATION 	"mrk_intel_dest"
-#define MARKER_INTEL_ARROW			"mrk_intel_arrow"
-
 /*
 	Class: ClientMapUI
 	Singleton class that performs things related to map user interface
@@ -30,6 +26,9 @@ CLASS(CLASS_NAME, "")
 	STATIC_VARIABLE("currentMapMarker");
 
 	STATIC_VARIABLE("campAllowed");
+
+	// Array with route markers (route segments and source/destination markers)
+	STATIC_VARIABLE("routeMarkers");
 
 	// initialize UI event handlers
 	STATIC_METHOD("new") {
@@ -109,6 +108,9 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("onMapOpen") {
 		params ["_thisClass"];
 		pr _mapDisplay = findDisplay 12;
+
+		// Reset the map UI to default state
+		CALLSM0(_thisClass, "onMouseClickElsewhere");
 
 		// Check if current player position is valid position to create a Camp
 		pr _isPosAllowed = call {
@@ -245,6 +247,24 @@ CLASS(CLASS_NAME, "")
 		private _actionName = "Unknown";
 		private _text = "";
 
+		// - - - - P A T R O L - - - -
+		// The Hell Patrol! https://www.youtube.com/watch?v=om0sp1Srixw
+		if (_className == "IntelCommanderActionPatrol") exitWith {
+
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Enemy patrol route";
+
+			// Draw the route
+			pr _waypoints = +GETV(_data, "waypoints");
+			pr _args = [_waypoints,		// posArray
+						true,	// enable
+						true,	// cycle
+						false];	// drawSrcDest
+			CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
+		};
+
+
+
+		// - - - - - REINFORCE, ATTACK, RECON, BUILD - - - -
 		if (_className == "IntelCommanderActionReinforce") then { _actionName = "reinforce"; };
 		if (_className == "IntelCommanderActionBuild") then { _actionName = "build"; };
 		if (_className == "IntelCommanderActionRecon") then { _actionName = "recon"; };
@@ -256,6 +276,7 @@ CLASS(CLASS_NAME, "")
 		private _toName = "Unknown";
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 
+		// Find intel about locations close to _from or _to
 		{
 			private _className = GET_OBJECT_CLASS(_x);
 			if (_className == "IntelLocation") then {
@@ -281,8 +302,12 @@ CLASS(CLASS_NAME, "")
 			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText _text;
 		};
 
-		// Show markers on the map to highlight source and destination
-		CALLSM3("ClientMapUI", "setIntelMarkersParameters", true, _from, _to);
+		// Draw the route
+		pr _args = [[_from, _to],		// posArray
+					true,	// enable
+					false,	// cycle
+					true];	// drawSrcDest
+		CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
 	} ENDMETHOD;
 
 	/*
@@ -385,6 +410,11 @@ CLASS(CLASS_NAME, "")
 				case LOCATION_TYPE_CAMP: {"Camp"};
 				case LOCATION_TYPE_BASE: {"Base"};
 				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
+				case LOCATION_TYPE_CITY: {"City"};
+				case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
+				case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
+				case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
+				default {format ["ClientMapUI.sqf line %1", __LINE__]}; // If you see this then you know where to implement this!
 			};
 			
 			_timeText = str GETV(_intel, "dateUpdated");
@@ -424,7 +454,11 @@ CLASS(CLASS_NAME, "")
 		} forEach _vehList;
 
 		// Disable markers showing source and destination on the map
-		CALLSM1("ClientMapUI", "setIntelMarkersParameters", false);
+		pr _args = [[],		// posArray
+					false,	// enable
+					false,	// cycle
+					false];	// drawSrcDest
+		CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
 	} ENDMETHOD;
 
 	// Returns marker text of closest marker
@@ -441,26 +475,52 @@ CLASS(CLASS_NAME, "")
 		_return
 	} ENDMETHOD;
 
-	STATIC_METHOD("setIntelMarkersParameters") {
-		params ["_thisClass", ["_showMarkers", false, [false]], ["_posSource", [], [[]]], ["_posDestination", [], [[]]]];
-		if (_showMarkers) then {
-			if (count _posSource > 0) then { MARKER_INTEL_SOURCE setMarkerPosLocal _posSource; } else {
-				MARKER_INTEL_SOURCE setMarkerPosLocal [-666666, 0, 0];
-			};
-			if (count _posDestination > 0) then { MARKER_INTEL_DESTINATION setMarkerPosLocal _posDestination; } else {
-				MARKER_INTEL_DESTINATION setMarkerPosLocal [-666666, 0, 0];
+	// Draws or undraws a route for a given array of positions
+	STATIC_METHOD("drawRoute") {
+		params ["_thisClass", ["_posArray", [], [[]]], ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+
+		// Delete all previosly created markers
+		{
+			deleteMarkerLocal _x;
+		} forEach GETSV(_thisClass, "routeMarkers");
+		SETSV(_thisClass, "routeMarkers", []);
+
+		if (_enable) then {
+
+			if (count _posArray < 2) exitWith {
+				OOP_ERROR_1("setIntelMarkersParameters: less than two positions were provided: %1", _posArray);
 			};
 
-			// If both positions are defined, draw a line
-			if ((count _posSource > 0) && (count _posDestination > 0)) then {
-				[_posSource, _posDestination, "ColorRed", 66, MARKER_INTEL_ARROW] call misc_fnc_mapDrawLineLocal;
-			} else {
-				deleteMarkerLocal MARKER_INTEL_ARROW;
+			// If we need to cycle the waypoints, add the source pos to the end too
+			pr _positions = _posArray;
+			pr _count = count _positions;
+			pr _posSrc = _positions#0;
+			pr _posDst = _positions#(_count - 1);
+			if (_cycle) then { _positions pushBack (_positions#0); _count = _count + 1;};
+
+			pr _markers = GETSV(_thisClass, "routeMarkers");
+
+			// Create source and destination markers
+			if (_drawSrcDest) then {
+				{
+					_x params ["_name", "_pos", "_type", "_text"];
+					private _mrk = createMarkerLocal [_name, _pos];
+					_mrk setMarkerTypeLocal _type;
+					_mrk setMarkerColorLocal "ColorRed";
+					_mrk setMarkerAlphaLocal 1;
+					_mrk setMarkerTextLocal _text;
+					_markers pushBack _name; 
+				} forEach [["ClientMapUI_route_source", _posSrc, "mil_start", "Source"], ["ClientMapUI_route_dest", _posDst, "mil_end", "Destination"]];
 			};
-		} else {
-			MARKER_INTEL_SOURCE setMarkerPosLocal [-666666, 0, 0];
-			MARKER_INTEL_DESTINATION setMarkerPosLocal [-666666, 0, 0];
-			deleteMarkerLocal MARKER_INTEL_ARROW;
+
+			// Draw lines
+			for "_i" from 0 to (_count - 2) do {
+				pr _mrkName = format ["ClientMapUI_route_%1", _i];
+				pr _pos0 = _positions#_i;
+				pr _pos1 = _positions#(_i+1);
+				[_pos0, _pos1, "ColorRed", 66, _mrkName] call misc_fnc_mapDrawLineLocal;
+				_markers pushBack _mrkName;
+			};
 		};
 	} ENDMETHOD;
 
@@ -468,16 +528,5 @@ ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "currentMapMarker", "");
 SET_STATIC_VAR(CLASS_NAME, "campAllowed", true);
+SET_STATIC_VAR(CLASS_NAME, "routeMarkers", []);
 PUBLIC_STATIC_VAR(CLASS_NAME, "campAllowed");
-
-// Create local map markers to highlight source and destination of intel
-#ifndef _SQF_VM
-{
-	_x params ["_name", "_type", "_text"];
-	private _mrk = createMarkerLocal [_name, [-666666, -666666, 0]];
-	_mrk setMarkerTypeLocal _type;
-	_mrk setMarkerColorLocal "ColorRed";
-	_mrk setMarkerAlphaLocal 1;
-	_mrk setMarkerTextLocal _text;
-} forEach [[MARKER_INTEL_SOURCE, "mil_start", "Source"], [MARKER_INTEL_DESTINATION, "mil_end", "Destination"]];
-#endif

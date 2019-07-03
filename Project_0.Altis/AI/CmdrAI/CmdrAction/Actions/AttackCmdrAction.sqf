@@ -24,8 +24,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		T_SETV("srcGarrId", _srcGarrId);
 
 		// Start date for this action, default to immediate
-		private _detachmentEffVar = MAKE_AST_VAR(DATE_NOW);
-		T_SETV("startDateVar", _detachmentEffVar);
+		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
@@ -168,7 +168,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				format [" (start in %1 mins)", _mins]
 			} else {
 				" (started)"
-			}
+			};
 		};
 
 		private _targetName = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetLabel;
