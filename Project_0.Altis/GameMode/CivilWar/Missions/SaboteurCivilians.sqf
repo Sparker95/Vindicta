@@ -41,22 +41,6 @@ fnc_initSaboteur =
 	_this allowFleeing 0; // brave?
 };
 
-// Send a unit running away into the distance, then delete it when it gets there
-pr0_fnc_CivieRunAway = {
-	// Cleaning old orders by moving group
-	private _oldGrp = group _this;
-	private _grp = createGroup [FRIENDLY_SIDE, true];
-	[_this] joinSilent _grp;
-	deleteGroup _oldGrp;
-	// WAYPOINT - run away!
-	// Run far away!
-	private _wp = _grp addWaypoint [[position _this, 1000, 2000] call BIS_fnc_findSafePos, 0];
-	_wp setWaypointType "MOVE";
-	_wp setWaypointBehaviour "AWARE";
-	_wp setWaypointSpeed "NORMAL";
-	_wp setWaypointStatements ["true", "deleteVehicle this;"];
-};
-
 // Called when player interacts with the saboteur. 
 // They can take the explosives.
 // Called on players client.
@@ -140,15 +124,18 @@ pr0_fnc_SaboteurPlayer = {
 				sleep 2;
 			};
 
-			_target call pr0_fnc_SaboteurRunAway;
+			_target call pr0_fnc_CivieRunAway;
 		}] remoteExec ["spawn", 2];
 	};
 };
 
-// This mission spawns a number of civilians with IEDs who will try and blow up various buildings near the police station.
-// TODO: 
-//     Make them choose targets better, they should try and blow up police vehicles, the police station, the police themselves!
-//     Allow them to set traps for police, roadside bombs, blow up incoming reinforcements etc.
+/*
+Class: SaboteurCiviliansAmbientMission
+This mission spawns a number of civilians with IEDs who will try and blow up various buildings near the police station.
+TODO:
+    Make them choose targets better, they should try and blow up police vehicles, the police station, the police themselves!
+    Allow them to set traps for police, roadside bombs, blow up incoming reinforcements etc.
+*/
 CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	// Selection of target buildings remaining.
 	VARIABLE("targetBuildings");
@@ -185,7 +172,6 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		};
 		T_SETV("targetBuildings", _targetBuildings);
 
-		// Separate groups for each civilian so they can do their own thing
 #ifdef SABOTEUR_CIVILIANS_TESTING
 		// This should be interesting!
 		private _maxActive = 15;
@@ -194,6 +180,17 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		private _maxActive = 1 + (ln(0.01 * _radius + 1) min 1);
 #endif
 		T_SETV("maxActive", _maxActive);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		// Clean up an active missions
+		{ 
+			_x params ["_civie", "_trigger"];
+			deleteVehicle _civie;
+			deleteVehicle _trigger;
+		} forEach T_GETV("activeCivs");
 	} ENDMETHOD;
 
 #ifdef SABOTEUR_CIVILIANS_TESTING
@@ -357,14 +354,4 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		};
 	} ENDMETHOD;
 
-	METHOD("delete") {
-		params [P_THISOBJECT];
-
-		{ 
-			_x params ["_civie", "_trigger"];
-			deleteVehicle _civie;
-			deleteVehicle _trigger;
-		} forEach T_GETV("activeCivs");
-	} ENDMETHOD;
-	
 ENDCLASS;

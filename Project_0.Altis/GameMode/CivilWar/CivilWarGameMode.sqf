@@ -17,6 +17,12 @@ gCityStateNames = [
 	"LIBERATED"
 ];
 
+/*
+Class: CivilWarGameMode
+A game mode that models the progress of a civil war from scratch. It moves 
+through a set of phases that vary the options available to the players, and the 
+reactions of the enemy.
+*/
 CLASS("CivilWarGameMode", "GameModeBase")
 	// Gameplay phase: progresses forward from 1 to 5 only
 	VARIABLE("phase");
@@ -354,7 +360,10 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 ENDCLASS;
 
-// City data specific to this game mode
+/*
+Class: CivilWarCityData
+City data specific to this game mode.
+*/
 CLASS("CivilWarCityData", "")
 	// City state (stable, agitated, in revolt, suppressed, liberated)
 	VARIABLE("state");
@@ -362,7 +371,7 @@ CLASS("CivilWarCityData", "")
 	VARIABLE("instability");
 	// Ambient missions, active while location is spawned
 	VARIABLE("ambientMissions");
-	
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
@@ -397,7 +406,7 @@ CLASS("CivilWarCityData", "")
 		} forEach _ambientMissions;
 		T_SETV("ambientMissions", []);
 	} ENDMETHOD;
-	
+
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
@@ -465,7 +474,10 @@ CLASS("CivilWarCityData", "")
 
 ENDCLASS;
 
-// Police station game mode data
+/*
+Class: CivilWarPoliceStationData
+Police station data specific to this game mode.
+*/
 CLASS("CivilWarPoliceStationData", "")
 	// If a reinforcement regiment is on the way then it goes here. We ref count it ourselves as well
 	// so it doesn't get deleted until we are done with it.
