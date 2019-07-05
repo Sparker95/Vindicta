@@ -1,6 +1,5 @@
 #include "..\..\common.hpp"
 
-
 /*
 Class: AttackCmdrAction
 Bases class for CmdrAI attack action types.
@@ -9,7 +8,7 @@ TODO: refactor out commonality for actions that consist of a detachment and a ta
 Or at least share functionality via a library or something.
 */
 CLASS("AttackCmdrAction", "CmdrAction")
-	// Garrison ID the attack originates from.
+	// Garrison ID the attack originates from
 	VARIABLE("srcGarrId");
 	// Target (see CmdrAITarget.sqf), an AST_VAR wrapper
 	VARIABLE("targetVar");
