@@ -67,18 +67,18 @@
 	"DOC_FUNC": {
 		"prefix": "DOC_FUNC",
 		"body": [
-			"\t/*",
-			"\tMethod: $1",
-			"\t$0",
-			"\t",
-			"\tParameters: _a, _b, _c",
-			"\t",
-			"\t_a - ",
-			"\t_b - ",
-			"\t_c -",
-			"\t",
-			"\tReturns: nil",
-			"\t*/"
+			"/*",
+			"Method: $1",
+			"$0",
+			"",
+			"Parameters: _a, _b, _c",
+			"",
+			"_a - ",
+			"_b - ",
+			"_c -",
+			"",
+			"Returns: nil",
+			"*/"
 		],
 		"description": "Document a function"
 	}

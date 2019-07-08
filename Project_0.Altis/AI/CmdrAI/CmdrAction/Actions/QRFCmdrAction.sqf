@@ -10,6 +10,16 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 	// The target cluster model ID
 	VARIABLE("tgtClusterId");
 
+	/*
+	Method: new
+	Create a CmdrAI action to send a detachment from a garrison to destroy an enemy
+	cluster.
+	
+	Parameters: _srcGarrId, _tgtClusterId
+	
+	_srcGarrId - Number, GarrisonModel id from which to send the QRF detachment.
+	_tgtClusterId - Number, ClusterModel id to attack.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtClusterId")];
 

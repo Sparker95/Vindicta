@@ -1,5 +1,11 @@
 #include "..\..\common.hpp"
 
+/*
+Class: TakeOrJoinCmdrAction
+Base class for Take and Join like CmdrAI actions.
+Takes a source garrison id, from which a detachment can be formed to perform the action.
+See implementations in TakeLocationCmdrAction and ReinforceCmdrAction.
+*/
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("targetVar");

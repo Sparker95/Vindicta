@@ -1,8 +1,24 @@
 #include "..\..\common.hpp"
 
+/*
+Class: ReinforceCmdrAction
+CmdrAI garrison reinforcement action. 
+Takes a source and target garrison id.
+Sends a detachment from the source garrison to join the target garrison.
+*/
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtGarrId");
 
+	/*
+	Method: new
+	Create a CmdrAI action to send a detachment from the source garrison to join
+	the target garrison.
+	
+	Parameters: _srcGarrId, _tgtGarrId
+	
+	_srcGarrId - Number, GarrisonModel id from which to send the patrol detachment.
+	_tgtGarrId - Number, GarrisonModel id to reinforce with the detachment.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];
 		T_SETV("tgtGarrId", _tgtGarrId);
@@ -86,35 +102,50 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _side = GETV(_srcGarr, "side");
 
-		// Resource is how much src is *over* composition, scaled by distance (further is lower)
-		// i.e. How much units/vehicles src can spare.
+		// CALCULATE THE RESOURCE SCORE
+		// In this case it is how well the source garrison can meet the resource requirements of this action,
+		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
+		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
+		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
+
+		// What efficiency can we send for the detachment?
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
-		// Save the calculation for use if we decide to perform the action 
-		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
-		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
+		// Save the calculation of the efficiency for use later.
+		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
+		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
+		// which are only available now, during scoring/planning).
 		T_SET_AST_VAR("detachmentEffVar", _detachEff);
 
-		//CALLM1(_worldNow, "getOverDesiredEff", _srcGarr);
+		// We use the sum of the defensive efficiency sub vector for calculations
+		// TODO: is this right? should it be attack sub vector instead?
 		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 
+		// How much to scale the score for distance to target
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
 		private _dist = _srcGarrPos distance _tgtGarrPos;
+		// How much to scale the score for transport requirements
 		private _transportationScore = if(_dist < 1000) then {
+			// If we are less than 1000m then we don't need transport so set the transport score to 1
+			// (we "fullfilled" the transport requirements of not needing transport)
+			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF]);
 			1
 		} else {
-			// We will force transport on top of scoring if we need to.
+			// We will cheat transport on top of scoring if we need to
 			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT]);
+			// Call to the garrison to calculate the transportation score
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
+		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 
 		// TODO:OPT cache these scores!
 		private _scorePriority = if(_scoreResource == 0) then {0} else {CALLM(_worldFuture, "getReinforceRequiredScore", [_tgtGarr])};
 
+		// CALCULATE START DATE
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
 		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1))  * 0.1 + (0.5 + random 2);
@@ -135,6 +166,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		
 		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
+		// APPLY STRATEGY
+		// Get our Cmdr strategy implementation and apply it
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getReinforceScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _detachEff]);
@@ -161,31 +194,28 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
+		
+		// Calculate how much efficiency is available for reinforcements then clamp desired efficiency against it
 
-		// How much resources src can spare.
+		// How much resources src can spare (how much is it over its desired efficiency).
 		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
 
-		// How much resources tgt needs
+		// How much resources tgt needs (how much is it under its desired efficiency).
 		private _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
-		// If we are depleted at all then we will send a min size reinforcement at least
+
+		// If tgt is depleted at all then we will send a min size reinforcement at least
 		if(!EFF_LTE(_tgtUnderEff, EFF_ZERO)) then {
 			_tgtUnderEff = EFF_MAX(_tgtUnderEff, EFF_MIN_EFF);
 		};
 
-		// // If tgt is under desired eff at all then send reinforcements
-		// private _tgtEff = GETV(_tgtGarr, "efficiency");
-
-		// Min of those values
-		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
+		// Result is the mininum of the available and required efficiencies
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtUnderEff)), 0);
 
 		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 getDetachmentEff: _tgtUnderEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtGarr ARG _tgtUnderEff ARG _srcOverEff ARG _effAvailable]);
 
 		// Only send a reasonable amount at a time
-		// TODO: min compositions should be different for detachments and garrisons holding outposts.
 		if(!EFF_GTE(_effAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
 
-		//if(_effAvailable#0 < MIN_COMP#0 or _effAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
 		_effAvailable
 	} ENDMETHOD;
 ENDCLASS;

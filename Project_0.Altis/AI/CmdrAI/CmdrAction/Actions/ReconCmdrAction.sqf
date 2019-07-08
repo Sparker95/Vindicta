@@ -1,5 +1,14 @@
 #include "..\..\common.hpp"
 
+/*
+Class: ReconCmdrAction
+
+Currently not used, will be used as an action for Cmdr to discover more intel 
+about targets (locations/positions/garrisons etc.)
+Should probably involve moving a recon specific detachment to a certain location,
+setting up an OP (maybe a dynamic location) and then remaining for a certain 
+amount of time (retreating if discovered?).
+*/
 CLASS("ReconCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	// Actual position we are interested in

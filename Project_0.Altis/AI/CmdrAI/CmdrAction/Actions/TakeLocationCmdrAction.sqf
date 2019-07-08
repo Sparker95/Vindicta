@@ -1,8 +1,24 @@
 #include "..\..\common.hpp"
 
+/*
+Class: TakeLocationCmdrAction
+CmdrAI garrison action for taking a location.
+Takes a source garrison id and target location id.
+Sends a detachment from the source garrison to occupy the target location.
+*/
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtLocId");
 
+	/*
+	Method: new
+	Create a CmdrAI action to send a detachment from the source garrison to occupy
+	the target location.
+	
+	Parameters: _srcGarrId, _tgtLocId
+	
+	_srcGarrId - Number, GarrisonModel id from which to send the detachment.
+	_tgtLocId - Number, LocationModel id for the detachment to occupy.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtLocId")];
 
@@ -91,43 +107,49 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			// in the same planning cycle, and one gets accepted)
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
+ 
+		// CALCULATE THE RESOURCE SCORE
+		// In this case it is how well the source garrison can meet the resource requirements of this action,
+		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
+		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
+		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
 
-		// switch  do {
-		// 	case LOCATION_TYPE_ROADBLOCK: { "mil_triangle" };
-		// 	case LOCATION_TYPE_BASE: { "mil_circle" };
-		// 	case LOCATION_TYPE_OUTPOST: { "mil_box" };
-		// 	default { "mil_dot" };
-		// }
-		// Resource is how much src is *over* composition, scaled by distance (further is lower)
-		// i.e. How much units/vehicles src can spare.
+		// What efficiency can we send for the detachment?
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
-		// Save the calculation for use if we decide to perform the action 
-		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
-		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
+		// Save the calculation of the efficiency for use later.
+		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
+		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
+		// which are only available now, during scoring/planning).
 		T_SET_AST_VAR("detachmentEffVar", _detachEff);
 
-		//CALLM1(_worldNow, "getOverDesiredEff", _srcGarr);
+		// We use the sum of the defensive efficiency sub vector for calculations
+		// TODO: is this right? should it be attack sub vector instead?
 		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtLocPos = GETV(_tgtLoc, "pos");
 
+		// How much to scale the score for distance to target
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
 		private _dist = _srcGarrPos distance _tgtLocPos;
+		// How much to scale the score for transport requirements
 		private _transportationScore = if(_dist < 2000) then {
+			// If we are less than 2000m then we don't need transport so set the transport score to 1
+			// (we "fullfilled" the transport requirements of not needing transport)
 			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
 			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT ARG OCCUPYING_FORCE_HINT]);
+			// Call to the garrison to calculate the transportation score
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 		private _scorePriority = CALLM(_strategy, "getLocationDesirability", [_worldNow ARG _tgtLoc ARG _side]);
 
+		// CALCULATE START DATE
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8
 #ifndef RELEASE_BUILD
@@ -144,9 +166,14 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		T_SET_AST_VAR("startDateVar", _startDate);
 
+		// Uncomment for some more debug logging
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+
+		// APPLY STRATEGY
+		// Get our Cmdr strategy implementation and apply it
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _detachEff]);
 		T_CALLM("setScore", [_score]);
@@ -173,6 +200,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
 		ASSERT_OBJECT(_tgtLoc);
+
+		// Calculate how much efficiency is available for detachment then clamp desired efficiency against it
 
 		// How much resources src can spare.
 		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);

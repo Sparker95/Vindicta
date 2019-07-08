@@ -29,6 +29,16 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	VARIABLE("debugSymbol");
 #endif
 
+	/*
+	Method: new
+	Create a CmdrAI action to send a detachment from a garrison to patrol a specified 
+	route.
+	
+	Parameters: _srcGarrId, _routeTargets
+	
+	_srcGarrId - Number, GarrisonModel id from which to send the patrol detachment.
+	_routeTargets - Array<CmdrAITarget>, an array of patrol waypoints as targets.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_ARRAY("_routeTargets")];
 
