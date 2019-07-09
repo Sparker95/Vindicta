@@ -1,5 +1,13 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AST_AssignActionToGarrison
+Assigns a CmdrAction instance to a GarrisonModel.
+Example: 
+	Detachment GarrisonModels performing an action have the action assigned to 
+them with this AST. It indicates to CmdrAction generators that the GarrisonModel is currently
+doing something else.
+*/
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -7,6 +15,17 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	// Inputs
 	VARIABLE_ATTR("garrId", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to assign a CmdrAction instance to a GarrisonModel.
+	
+	Parameters: _action, _fromStates, _successState, _garrId
+	
+	_action - CmdrAction, action to assign
+	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
+	_successState - CMDR_ACTION_STATE*, state to return after success
+	_garrId - Number, Id of the GarrisonModel to assign the action to
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),			// Action to assign to the garrison

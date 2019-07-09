@@ -3,6 +3,8 @@
 /*
 Class: AST_ArrayPopFront
 Pop a value from the front of an array into another variable.
+Example:
+	Select next patrol waypoint.
 */
 CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	VARIABLE_ATTR("notEmptyState", [ATTR_PRIVATE]);
@@ -13,16 +15,16 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 
 	/*
 	Method: new
-	Create a ActionStateTransition to pop a value from the front of an array into a variable.
+	Create an AST to pop a value from the front of an array into a variable.
 	
 	Parameters: _fromStates, _notEmptyState, _emptyBeforeState, _emptyAfterState, _arrayVar, _resultVar
 	
-	_fromStates - Array<CMDR_ACTION_STATE*>, states it is valid from
-	_notEmptyState - CMDR_ACTION_STATE*, state when array is not empty after pop
-	_emptyBeforeState - CMDR_ACTION_STATE*, state when array is empty before pop
-	_emptyAfterState - CMDR_ACTION_STATE*, state when array is empty after pop
-	_arrayVar - AST_VAR(Array<Any>), array to pop front on
-	_resultVar - AST_VAR(Any), element that was popped
+	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
+	_notEmptyState - CMDR_ACTION_STATE*, state to return when array is not empty after pop
+	_emptyBeforeState - CMDR_ACTION_STATE*, state to return when array is empty before pop
+	_emptyAfterState - CMDR_ACTION_STATE*, state to return when array is empty after pop
+	_arrayVar - AST_VAR(Array<Any>), array to pop front off of
+	_resultVar - AST_VAR(Any), element that was popped from the array
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
@@ -45,8 +47,6 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 
 	/* override */ METHOD("apply") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world") ];
-
-		// if(GETV(_world, "type") != WORLD_TYPE_REAL) exitWith { CMDR_ACTION_STATE_NONE };
 
 		private _array = +T_GET_AST_VAR("arrayVar");
 		ASSERT_MSG(_array isEqualType [], "AST_ArrayPopFront only works with arrays");

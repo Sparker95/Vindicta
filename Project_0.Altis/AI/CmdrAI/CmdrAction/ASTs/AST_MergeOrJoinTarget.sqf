@@ -1,5 +1,10 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AST_MergeOrJoinTarget
+Merge to a garrison or join a location. Does NOT use an order or move the garrison at all,
+just directly merges/joins.
+*/
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -7,9 +12,23 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	VARIABLE_ATTR("targetDeadState", [ATTR_PRIVATE]);
 
 	// Inputs
-	VARIABLE_ATTR("fromGarrId", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("target", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("fromGarrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to merge or join a garrison to a target.
+
+	Parameters: _action, _fromStates, _successState, _fromGarrDeadState, _targetDeadState, _fromGarrIdVar, _targetVar
+
+	_action - CmdrAction, action this AST is part of, for debugging purposes
+	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
+	_successState - CMDR_ACTION_STATE*, state to return after success
+	_fromGarrDeadState - CMDR_ACTION_STATE*, state to return when garrison performing the action is dead
+	_targetDeadState - CMDR_ACTION_STATE*, state to return when the target is dead
+	_fromGarrIdVar - AST_VAR(Number), GarrisonModel Id of the garrison performing the action
+	_targetVar - AST_VAR(CmdrAITarget), target to merge or join to
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),			// Source action for debugging purposes
@@ -18,8 +37,8 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 			P_AST_STATE("_fromGarrDeadState"), 	// State if the fromGarr is dead (should really not get this far if it is)
 			P_AST_STATE("_targetDeadState"), 	// State if the target is dead (if is a garrison)
 			// inputs
-			P_AST_VAR("_fromGarrId"), 			// Id of garrison to merge/join from
-			P_AST_VAR("_target")				// Target to merge/join to (garrison or location)
+			P_AST_VAR("_fromGarrIdVar"), 		// Id of garrison to merge/join from
+			P_AST_VAR("_targetVar")				// Target to merge/join to (garrison or location)
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 
@@ -29,8 +48,8 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		T_SETV("successState", _successState);
 		T_SETV("fromGarrDeadState", _fromGarrDeadState);
 		T_SETV("targetDeadState", _targetDeadState);
-		T_SETV("fromGarrId", _fromGarrId);
-		T_SETV("target", _target);
+		T_SETV("fromGarrIdVar", _fromGarrIdVar);
+		T_SETV("targetVar", _targetVar);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
@@ -38,30 +57,33 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_PRVAR(action);
-		private _fromGarrId = T_GET_AST_VAR("fromGarrId");
-		ASSERT_MSG(_fromGarrId isEqualType 0, "fromGarrId should be a garrison Id");
+		private _fromGarrId = T_GET_AST_VAR("fromGarrIdVar");
+		ASSERT_MSG(_fromGarrId isEqualType 0, "fromGarrIdVar should be a garrison Id");
 		private _fromGarr = CALLM(_world, "getGarrison", [_fromGarrId]);
 		ASSERT_OBJECT(_fromGarr);
 
-		// If the detachment or target died then we just finish the whole action immediately
+		// If the detachment died then we return the appropriate state
 		if(CALLM(_fromGarr, "isDead", [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't merge to target", [_world]+[_action]+[LABEL(_fromGarr)]);
 			T_GETV("fromGarrDeadState")
 		};
 
-		T_GET_AST_VAR("target") params ["_targetType", "_target"];
+		T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
 
 		private _targetDead = false;
 
 		switch(_targetType) do {
+			// If the target is a garrison we merge to it
 			case TARGET_TYPE_GARRISON: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON target type expects a garrison ID");
 				private _toGarr = CALLM(_world, "getGarrison", [_target]);
 				ASSERT_OBJECT(_toGarr);
+				// Check if the target garrison is dead
 				_targetDead = if(CALLM(_toGarr, "isDead", [])) then {
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]);
 					true
 				} else {
+					// If target is alive then do the merge
 					if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 						CALLM(_fromGarr, "mergeSim", [_toGarr]);
 					} else {
@@ -70,13 +92,17 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 					false
 				};
 			};
+			// If the target is a location then we can join it
 			case TARGET_TYPE_LOCATION: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION target type expects a location ID");
 				private _loc = CALLM(_world, "getLocation", [_target]);
 				ASSERT_OBJECT(_loc);
 				private _side = GETV(_fromGarr, "side");
+				// Check for an existing garrison at the location, of the same side as us
 				private _toGarr = CALLM(_loc, "getGarrison", [_side]);
+				// If there is an existing garrison at the location then we merge to it
 				if(!IS_NULL_OBJECT(_toGarr)) then {
+					// Perform the merge
 					if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 						CALLM(_fromGarr, "mergeSim", [_toGarr]);
 					} else {
@@ -84,6 +110,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 					};
 					OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4 (at %5)", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]+[LABEL(_loc)]);
 				} else {
+					// Otherwise we join the location ourselves
 					if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 						CALLM(_fromGarr, "joinLocationSim", [_loc]);
 					} else {
