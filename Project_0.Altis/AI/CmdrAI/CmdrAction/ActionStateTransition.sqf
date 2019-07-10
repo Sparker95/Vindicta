@@ -1,6 +1,30 @@
-//#include "..\..\..\OOP_Light\OOP_Light.h"
 #include "..\common.hpp"
 
+/*
+Class: ActionStateTransition
+Base class for ASTs.
+
+An AST (Action State Transition) defines an operation to be performed when transitioning from
+one CmdrAction state to another, as well as what states it can transition from and to.
+
+ASTs form the bulk of the behaviour of CmdrActions implementations.
+
+fromStates defines what states the AST instance is valid from. All the from and to states in 
+ASTs should be passed in a constructor parameters, as the CmdrAction that owns them defines 
+what states it wants to use. Often they will be from a common set, or the same between actions
+but not always. e.g. An AST that performs a move operation might transition to a READY_TO_ATTACK
+state in a CmdrAction that is implementing an attack, but to DONE in a CmdrAction that is just 
+implementing a move.
+
+This operation can be parameterized using fixed values and/or AST_VARs.
+An AST_VAR is a reference to a variable that can be shared between multiple ASTs. 
+When one AST modifies the value the AST_VAR refers to, that modification is also visible to 
+other ASTs.
+See CmdrActionStates.hpp for the AST_VAR macros.
+
+
+
+*/
 CLASS("ActionStateTransition", "")
 
 	// If more than one Action Transition is available then 
@@ -9,9 +33,6 @@ CLASS("ActionStateTransition", "")
 	// State(s) this transition is valid from
 	VARIABLE("fromStates");
 
-	/*
-	Parameters: 
-	*/
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("priority", CMDR_ACTION_PRIOR_LOW);

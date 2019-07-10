@@ -23,19 +23,17 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	_notEmptyState - CMDR_ACTION_STATE*, state to return when array is not empty after pop
 	_emptyBeforeState - CMDR_ACTION_STATE*, state to return when array is empty before pop
 	_emptyAfterState - CMDR_ACTION_STATE*, state to return when array is empty after pop
-	_arrayVar - AST_VAR(Array<Any>), array to pop front off of
-	_resultVar - AST_VAR(Any), element that was popped from the array
+	_arrayVar - IN AST_VAR(Array<Any>), array to pop front off of
+	_resultVar - OUT AST_VAR(Any), element that was popped from the array
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_ARRAY("_fromStates"),				// states it is valid from
-			P_AST_STATE("_notEmptyState"),		// state when array is not empty after
-			P_AST_STATE("_emptyBeforeState"),	// state when array is empty before pop
-			P_AST_STATE("_emptyAfterState"),	// state when array is empty after
-			// input
-			P_AST_VAR("_arrayVar"),				// array to pop front on
-			// output
-			P_AST_VAR("_resultVar")				// element that was popped
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_notEmptyState"),
+			P_AST_STATE("_emptyBeforeState"),
+			P_AST_STATE("_emptyAfterState"),
+			P_AST_VAR("_arrayVar"),
+			P_AST_VAR("_resultVar")
 		];
 		T_SETV("fromStates", _fromStates);
 		T_SETV("notEmptyState", _notEmptyState);

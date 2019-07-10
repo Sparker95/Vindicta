@@ -26,21 +26,20 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 	_successState - CMDR_ACTION_STATE*, state to return after success
 	_failGarrisonDead - CMDR_ACTION_STATE*, state to return if the garrison performing the action is dead
 	_failTargetDead - CMDR_ACTION_STATE*, state to return if the target is dead
-	_garrIdVar - AST_VAR(Number), GarrisonModel Id of the garrison performing the move
-	_targetVar - AST_VAR(CmdrAITarget), target to move to
-	_radiusVar - AST_VAR(Number), radius around target within which to consider the move complete
+	_garrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison performing the move
+	_targetVar - IN AST_VAR(CmdrAITarget), target to move to
+	_radiusVar - IN AST_VAR(Number), radius around target within which to consider the move complete
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),			// Owner action for debugging purposes
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// if we reached the target
-			P_AST_STATE("_failGarrisonDead"), 	// if the garrison we are moving died
-			P_AST_STATE("_failTargetDead"), 	// if the target died (if it can)
-			// inputs
-			P_AST_VAR("_garrIdVar"), 			// garrison to move
-			P_AST_VAR("_targetVar"), 			// target [type, value] (garrison, location or position)
-			P_AST_VAR("_radiusVar") 			// radius we need to reach
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_failGarrisonDead"),
+			P_AST_STATE("_failTargetDead"),
+			P_AST_VAR("_garrIdVar"),
+			P_AST_VAR("_targetVar"),
+			P_AST_VAR("_radiusVar")
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 

@@ -26,19 +26,18 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	_successState - CMDR_ACTION_STATE*, state to return after success
 	_fromGarrDeadState - CMDR_ACTION_STATE*, state to return when garrison performing the action is dead
 	_targetDeadState - CMDR_ACTION_STATE*, state to return when the target is dead
-	_fromGarrIdVar - AST_VAR(Number), GarrisonModel Id of the garrison performing the action
-	_targetVar - AST_VAR(CmdrAITarget), target to merge or join to
+	_fromGarrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison performing the action
+	_targetVar - IN AST_VAR(CmdrAITarget), target to merge or join to
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),			// Source action for debugging purposes
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// State upon successful join
-			P_AST_STATE("_fromGarrDeadState"), 	// State if the fromGarr is dead (should really not get this far if it is)
-			P_AST_STATE("_targetDeadState"), 	// State if the target is dead (if is a garrison)
-			// inputs
-			P_AST_VAR("_fromGarrIdVar"), 		// Id of garrison to merge/join from
-			P_AST_VAR("_targetVar")				// Target to merge/join to (garrison or location)
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_fromGarrDeadState"),
+			P_AST_STATE("_targetDeadState"),
+			P_AST_VAR("_fromGarrIdVar"),
+			P_AST_VAR("_targetVar")
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 

@@ -20,20 +20,18 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 	
 	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
 	_successState - CMDR_ACTION_STATE*, state to return after success
-	_srcGarrIdVar - AST_VAR(Number), GarrisonModel Id of the garrison to use as a default fallback.
-	e.g. The original source garrison of a detachment.
-	_garrIdVar - AST_VAR(Number), GarrisonModel Id of the garrison to select a fallback target for.
-	_targetVar - AST_VAR(CmdrAITarget), target selected by this AST
+	_srcGarrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison to use as a default fallback.
+		e.g. The original source garrison of a detachment.
+	_garrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison to select a fallback target for.
+	_targetVar - OUT AST_VAR(CmdrAITarget), target selected by this AST
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// state on success (can't fail)
-			// inputs
-			P_AST_VAR("_srcGarrIdVar"),			// Original src garrison, default to fall back to
-			P_AST_VAR("_garrIdVar"),				// Garrison we are selecting a new target for
-			// outputs
-			P_AST_VAR("_targetVar")				// new target
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_VAR("_srcGarrIdVar"),
+			P_AST_VAR("_garrIdVar"),
+			P_AST_VAR("_targetVar")
 		];
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
@@ -56,7 +54,7 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 			NULL_OBJECT
 		};
 
-		// Prefer to go back to src garrison
+		// Prefer to fallback to src garrison unless it is dead
 		private _newTarget = [];
 		if(!IS_NULL_OBJECT(_srcGarr) and {!CALLM(_srcGarr, "isDead", [])}) then {
 			_newTarget = [TARGET_TYPE_GARRISON, _srcGarrId];

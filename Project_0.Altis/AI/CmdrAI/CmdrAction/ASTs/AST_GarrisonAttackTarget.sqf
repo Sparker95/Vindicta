@@ -21,7 +21,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 
 	/*
 	Method: new
-	Create an AST to give an attack order to a garrison against a target.
+	Create an AST to give an attack target order to a garrison.
 	
 	Parameters: _action, _fromStates, _successState, _garrDeadState, _timeOutState, _garrIdVar, _targetVar, _moveRadiusVar
 	
@@ -30,21 +30,20 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 	_successState - CMDR_ACTION_STATE*, state to return after success
 	_garrDeadState - CMDR_ACTION_STATE*, state to return when garrison performing the action is dead
 	_timeOutState - CMDR_ACTION_STATE*, state to return if this action times out
-	_garrIdVar - AST_VAR(Number), GarrisonModel Id of the garrison performing the attack
-	_targetVar - AST_VAR(CmdrAITarget), target to attack
-	_moveRadiusVar - AST_VAR(Number), radius around target at which to stop moving and start attacking
+	_garrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison performing the attack
+	_targetVar - IN AST_VAR(CmdrAITarget), target to attack
+	_moveRadiusVar - IN AST_VAR(Number), radius around target at which to stop moving and start attacking
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),					// Source action for debugging purposes
-			P_ARRAY("_fromStates"),						// States it is valid from
-			P_AST_STATE("_successState"),				// State upon successfully destroying the target
-			P_AST_STATE("_garrDeadState"), 				// State if the garrison is dead (should really not get this far if it is)
-			P_AST_STATE("_timeOutState"), 				// State if we timed out (couldn't kill and didn't get killed)
-			// inputs
-			P_AST_VAR("_garrIdVar"),	 				// Id of garrison to merge/join from
-			P_AST_VAR("_targetVar"),					// Target to attack (garrison, location or cluster)
-			P_AST_VAR("_moveRadiusVar")					// Radius around the target within which we consider ourselves "at the target" (so we don't need to move again)
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_garrDeadState"),
+			P_AST_STATE("_timeOutState"),
+			P_AST_VAR("_garrIdVar"),
+			P_AST_VAR("_targetVar"),
+			P_AST_VAR("_moveRadiusVar")
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 
