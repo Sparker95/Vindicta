@@ -5,6 +5,23 @@
 
 #include "..\common.hpp"
 
+/*
+Class: CmdrAction
+The base class for all commander actions. An Action is defined as any behaviour the commander can
+choose whether to perform. 
+In general the actions are parameterized and scored based on relevance and the commanders current strategy.
+The scoring can be a complex as required, but in the end is reduced down to a single number that can be 
+used in comparison between actions of the same type, and other types of the same priority level (see CmdrAI
+for how this works).
+The behaviour of the action is defined by a state machine, defined by a set of ActionStateTransitions and a 
+set of associated variables (kind of like a blackboard system).
+Usually one or more pieces of intel will be associated with a CmdrAction to allow them to be discoverable
+by other commanders.
+
+e.g. An action for a garrison to attack an outpost could be parameterized by the specific garrison and
+     outpost, and scored based on how much the commander wants to control that outpost, how close the garrison is
+     to it, and how well the garrison is predicted to do when fighting the enemy at the outpost.
+*/
 CLASS("CmdrAction", "RefCounted")
 
 	// The priority of this action in relation to other actions of the same or different type.
@@ -19,14 +36,20 @@ CLASS("CmdrAction", "RefCounted")
 	// State transition functions
 	VARIABLE_ATTR("transitions", [ATTR_PRIVATE]);
 
+	// Registered AST_VARs. AST_VARs should be registered when they can be modified by any of the 
+	// ASTs, so that they can be saved and restored during simulation (don't want simulation 
+	// to effect real world actions).
 	VARIABLE_ATTR("variables", [ATTR_PRIVATE]);
+	// AST_VARs saved during simulation, to be restored afterwards.
 	VARIABLE_ATTR("variablesStack", [ATTR_PRIVATE]);
-
+	// Garrisons associated with this action, so we can automatically unassign this action from them 
+	// when it is finished.
 	VARIABLE_ATTR("garrisons", [ATTR_PRIVATE]);
 
-	// Current state of the action
+	// Current AST state of this action
 	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
+	// Intel object associated with this action
 	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
@@ -63,6 +86,14 @@ CLASS("CmdrAction", "RefCounted")
 		};
 	} ENDMETHOD;
 
+	/*
+	Method: (protected) setScore
+	Unpacks a score array (4 element number vector) into the individual scoring properties.
+
+	Parameters: _scoreVec
+	
+	_scoreVec - Array<Number>, the score vector to assign
+	*/
 	/* protected */ METHOD("setScore") {
 		params [P_THISOBJECT, P_ARRAY("_scoreVec")];
 		T_SETV("scorePriority", GET_SCORE_PRIORITY(_scoreVec));
@@ -71,18 +102,43 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("scoreCompleteness", GET_SCORE_COMPLETENESS(_scoreVec));
 	} ENDMETHOD;
 
+	/*
+	Method: (protected virtual) createTransitions
+	Create the ASTs for the action and assign them to the transitions member variable.
+	We do NOT do this in the constructor, because it is only required for actions that will
+	definiely be used, and the vast majority of actions that are created are just speculative
+	(they are scored and then discarded if the score is too low).
+	*/
 	/* protected virtual */ METHOD("createTransitions") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 	
-	METHOD("registerGarrison") {
+	/*
+	Method: registerGarrison
+	Registers a garrison that has this action assigned to it, so we can automatically unassign 
+	this action from it when it is finished (helps with cleanup).
+	
+	Parameters: _garrison
+	
+	_garrison - GarrisonModel
+	*/
+	/*protected */ METHOD("registerGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		T_PRVAR(garrisons);
 		_garrisons pushBack _garrison;
 	} ENDMETHOD;
 
-	METHOD("unregisterGarrison") {
+	/*
+	Method: unregisterGarrison
+	Remove a garrison from the list for which we will automatically an assign this action when 
+	it is finished.
+	
+	Parameters: _garrison
+	
+	_garrison - GarrisonModel
+	*/
+	/*protected */ METHOD("unregisterGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		T_PRVAR(garrisons);
@@ -94,7 +150,7 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	// Add the intel object of this action to a specific garrison
-	METHOD("addIntelToGarrison") {
+	/*protected */ METHOD("addIntelToGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		if(CALLM(_garrison, "isActual", [])) then {
@@ -116,7 +172,7 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	// Add the intel object of this action to garrisons in an area
-	METHOD("addIntelAt") {
+	/*protected */ METHOD("addIntelAt") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 2000, [0]]];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		{
@@ -132,7 +188,7 @@ CLASS("CmdrAction", "RefCounted")
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 	} ENDMETHOD;
 
-	METHOD("createVariable") {
+	/*protected */ METHOD("createVariable") {
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
 		T_PRVAR(variables);
 		private _var = MAKE_AST_VAR(_initialValue);
@@ -140,7 +196,7 @@ CLASS("CmdrAction", "RefCounted")
 		_var
 	} ENDMETHOD;
 
-	METHOD("getFinalScore") {
+	/*protected */ METHOD("getFinalScore") {
 		params [P_THISOBJECT];
 		T_PRVAR(scorePriority);
 		T_PRVAR(scoreResource);

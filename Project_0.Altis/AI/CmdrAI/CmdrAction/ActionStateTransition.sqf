@@ -22,8 +22,13 @@ When one AST modifies the value the AST_VAR refers to, that modification is also
 other ASTs.
 See CmdrActionStates.hpp for the AST_VAR macros.
 
-
-
+The apply function is where the behaviour of the AST should be implemented. It should attempt to 
+perform the action required, and then return the new state, or CMDR_ACTION_STATE_NONE if no
+state change should occur. For ASTs whose behaviour cannot occur instantly (e.g. moving a 
+garrison to another location), the apply function should return CMDR_ACTION_STATE_NONE while the 
+behaviour is ongoing, then an appropriate state once it is complete (or failed). See 
+AST_GarrisonAttackTarget for an example of this. The CmdrAction will stay in the same state
+after calling an AST apply function if that function does returns CMDR_ACTION_STATE_NONE.
 */
 CLASS("ActionStateTransition", "")
 
@@ -39,14 +44,38 @@ CLASS("ActionStateTransition", "")
 		T_SETV("fromStates", []);
 	} ENDMETHOD;
 
+	/*
+	Method: isValidFromState
+	Returns true if this AST can apply a transition from _state. 
+	i.e. if fromStates contains _state.
+	
+	Parameters:_state
+	
+	_state - CMDR_ACTION_STATE_*, The state to test against
+	
+	Returns: Boolean, true if this AST can apply a transition from _state
+	*/
 	METHOD("isValidFromState") {
 		params [P_THISOBJECT, P_NUMBER("_state")];
 		private _states = T_GETV("fromStates");
 		(_state in _states) or (CMDR_ACTION_STATE_ALL in _states)
 	} ENDMETHOD;
 
+	/*
+	Method: (static) selectAndApply
+	
+	
+	Parameters: _world, _state, _transitions
+	
+	_world - WorldModel, the world we want to apply state transition behaviours in, could be 
+	REAL or SIM.
+	_state - CMDR_ACTION_STATE_*, the Current state from which we want to attempt transition.
+	_transitions - Array<ActionStateTransition>, possible transitions we can select from.
+	
+	Returns: CMDR_ACTION_STATE_*, new state (might not have changed)
+	*/
 	STATIC_METHOD("selectAndApply") {
-		params [P_THISCLASS, P_STRING("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
+		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
 
 		if(_state == CMDR_ACTION_STATE_END) exitWith { _state };
 
@@ -60,8 +89,10 @@ CLASS("ActionStateTransition", "")
 		// Lower value is higher priority (0 is top most priority)
 		_matchingTransitions sort ASCENDING;
 
+		// Check the transitions are available in case they have implemented the isAvailable function
 		private _foundIdx = _matchingTransitions findIf { CALLM(_x select 1, "isAvailable", [_world]) };
 		if(_foundIdx != NOT_FOUND) then {
+			// Get the transition we selected
 			private _selectedTransition = _matchingTransitions#_foundIdx#1;
 			private _newState = CALLM(_selectedTransition, "apply", [_world]);
 			ASSERT_MSG(_newState isEqualType 0, "ActionStateTransition apply should return a new state value, or CMDR_ACTION_STATE_NONE if unchanged");
@@ -81,45 +112,36 @@ CLASS("ActionStateTransition", "")
 	// |                 V I R T U A L   F U N C T I O N S                 |
 	// ----------------------------------+----------------------------------
 	/*
-	Method: isAvailable
-	    Implement in derived classes to check prerequisites for this state transition.
-	Return: true if prerequisites for this transition are met.
+	Method: (virtual) isAvailable
+	Implement in derived classes to check custom prerequisites for this AST.
+	
+	Parameters: _world
+	
+	_world - WorldModel, the world model we are currently applying ASTs to.
+
+	Returns: Boolean, if the AST is allowed to be applied now, defaults to true
 	*/
 	/* virtual */ METHOD("isAvailable") { 
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		true
 	} ENDMETHOD;
 
-	// /*
-	// Method: isAvailableSim
-	//     Implement in derived classes to check prerequisites for this state transition in sim world.
-	// Return: true if prerequisites for this transition are met.
-	// */
-	// /* virtual */ METHOD("isAvailableSim") { 
-	// 	params [P_THISOBJECT, P_STRING("_simWorld")];
-		
-	// } ENDMETHOD;
-
+	
 	/*
-	Method: apply
-		Implement in derived classes to attempt to apply the state transition.
-	Return: true if the transition was applied successfully.
+	Method: (abstract virtual) apply
+	Implement in derived classes to attempt to apply the state transition.
+	
+	Parameters: _world
+	
+	_world - WorldModel, the world model we are currently applying ASTs to.
+	
+	Return: CMDR_ACTION_STATE_*, the new state, or CMDR_ACTION_STATE_NONE to stay in the 
+	current state (can be used for transitions that take time).
 	*/
 	/* virtual */ METHOD("apply") { 
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		FAILURE("apply method must be implemented when deriving from ActionStateTransition");
 	} ENDMETHOD;
-
-	// /*
-	// Method: applySim
-	//     Implement in derived classes to attempt to apply the state transition to sim world.
-	// Return: true if the transition was applied successfully.
-	// */
-	// /* virtual */ METHOD("applySim") { 
-	// 	params [P_THISOBJECT, P_STRING("_simWorld")];
-	// 	// Always apply successfully by default
-	// 	true 
-	// } ENDMETHOD;
 ENDCLASS;
 
 // Unit test
