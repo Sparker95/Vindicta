@@ -149,7 +149,14 @@ CLASS("CmdrAction", "RefCounted")
 		_garrisons deleteAt _idx;
 	} ENDMETHOD;
 
-	// Add the intel object of this action to a specific garrison
+	/*
+	Method: (protected) addIntelToGarrison
+	Add the intel object of this action to a specific garrison.
+	
+	Parameters: _garrison
+	
+	_garrison - GarrisonModel, the garrion to assign the intel to.
+	*/
 	/*protected */ METHOD("addIntelToGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
@@ -171,7 +178,16 @@ CLASS("CmdrAction", "RefCounted")
 		};
 	} ENDMETHOD;
 
-	// Add the intel object of this action to garrisons in an area
+	/*
+	Method: (protected) addIntelAt
+	Add the intel object of this action to garrisons in an area specified.
+	
+	Parameters: _world, _pos, _radius
+	
+	_world - WorldModel, the world model in which to look for garrisons.
+	_pos - Position, the center of the area in which we are placing intel.
+	_radius - Number, default 2000, the radius in meters in which we are placing intel.
+	*/
 	/*protected */ METHOD("addIntelAt") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 2000, [0]]];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
@@ -184,16 +200,21 @@ CLASS("CmdrAction", "RefCounted")
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
 	} ENDMETHOD;	
 
+	/*
+	Method: (virtual) updateScore
+	Called by CmdrAI when evaluating potential actions. It should use the world states and settings this
+	action was initialized with to evaluate its subjective value, and then set the score* member variables 
+	appropriately.
+	
+	Parameters: _worldNow, _worldFuture
+	
+	_worldNow - WorldModel, simulation of world in its current state possibly with some instantaneous actions
+	applied (e.g. resource allocation).
+	_worldFuture - WorldModel, simulation of world in its predicted state once all currently planned
+	actions are complete.
+	*/
 	/* virtual */ METHOD("updateScore") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
-	} ENDMETHOD;
-
-	/*protected */ METHOD("createVariable") {
-		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
-		T_PRVAR(variables);
-		private _var = MAKE_AST_VAR(_initialValue);
-		_variables pushBack _var;
-		_var
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 	} ENDMETHOD;
 
 	/*protected */ METHOD("getFinalScore") {
@@ -208,7 +229,28 @@ CLASS("CmdrAction", "RefCounted")
 		_scorePriority * _scoreResource * _scoreStrategy * _scoreCompleteness
 	} ENDMETHOD;
 
+	/*
+	Method: createVariable
+	Creates and registers an AST_VAR variable for use with this actions ASTs. The registration ensures that the 
+	value of the variable is saved and restored when performing simulations using this action. It is only required 
+	if the value can be changed by any of the ASTs themselves. If it can't then you can just directly create 
+	an AST_VAR without calling this function.
 	
+	Parameters: _initialValue
+	
+	_initialValue - Any, initial value for the variable to hold.
+	
+	Returns: AST_VAR reference to the newly created and registered variable.
+	*/
+	/*protected */ METHOD("createVariable") {
+		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
+		T_PRVAR(variables);
+		private _var = MAKE_AST_VAR(_initialValue);
+		_variables pushBack _var;
+		_var
+	} ENDMETHOD;
+	
+	// Returns (after creating if necessary) the ASTs of this action.
 	/* private */ METHOD("getTransitions") {
 		params [P_THISOBJECT];
 		T_PRVAR(transitions);
@@ -219,8 +261,22 @@ CLASS("CmdrAction", "RefCounted")
 		_transitions
 	} ENDMETHOD;
 
+	/*
+	Method: applyToSim
+	Apply applicable ASTs to the specified world sim. What is applicable depends on 
+	current state, the type of world and the behaviour of the ASTs. Future world sims can 
+	have all ASTs applied until END state is reached, as ASTs should implement simulation of their 
+	final results. Now world sims can only have instantaneous AST results applied (e.g. allocating resources, 
+	splitting a Garrison, assigning an action), so will usually not transition to END state.
+	
+	Parameters: _world
+	
+	_world - WorldModel, world to apply simulation of this action to. Sim worlds only, not real.
+	
+	Returns: CMDR_ACTION_STATE_*, the state after applying all applicable ASTs
+	*/
 	METHOD("applyToSim") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		T_PRVAR(state);
 		private _transitions = T_CALLM("getTransitions", []);
 		ASSERT_MSG(count _transitions > 0, "CmdrAction hasn't got any _transitions assigned");
@@ -242,6 +298,7 @@ CLASS("CmdrAction", "RefCounted")
 		_state
 	} ENDMETHOD;
 
+	// Push the values of all registered variables.
 	/* private */ METHOD("pushVariables") {
 		params [P_THISOBJECT];
 		T_PRVAR(variables);
@@ -253,6 +310,7 @@ CLASS("CmdrAction", "RefCounted")
 		_variablesStack pushBack (_variables apply { +_x });
 	} ENDMETHOD;
 
+	// Pop the values of all registered variables.
 	/* private */ METHOD("popVariables") {
 		params [P_THISOBJECT];
 		T_PRVAR(variables);
@@ -268,10 +326,18 @@ CLASS("CmdrAction", "RefCounted")
 		} forEach _copy;
 	} ENDMETHOD;
 
+	/*
+	Method: update
+	Attempt to progress with this action in a real world model.
+	
+	Parameters: _world
+	
+	_world - WorldModel, real world to update this action for. Sim worlds are not valid.
+	*/
 	METHOD("update") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
-		ASSERT_MSG(GETV(_world, "type") == WORLD_TYPE_REAL, "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
+		ASSERT_MSG(CALLM(_world, "isReal", []), "Should only update CmdrActions on non sim world. Use applySim in sim worlds");
 
 		T_PRVAR(state);
 		private _transitions = T_CALLM("getTransitions", []);
@@ -286,40 +352,74 @@ CLASS("CmdrAction", "RefCounted")
 		};
 		T_SETV("state", _state);
 
-		if(CALLM(_world, "isReal", [])) then {
-			T_CALLM("updateIntel", [_world]);
-		};
+		T_CALLM("updateIntel", [_world]);
 
 		#ifdef DEBUG_CMDRAI
 		T_CALLM("debugDraw", [_world]);
 		#endif
 	} ENDMETHOD;
 
+	/*
+	Method: isComplete
+	Is this action complete? i.e. reached state CMDR_ACTION_STATE_END
+	Returns: Boolean, true if the action is complete.
+	*/
 	METHOD("isComplete") {
 		params [P_THISOBJECT];
 		T_GETV("state") == CMDR_ACTION_STATE_END
 	} ENDMETHOD;
 
+	/*
+	Method: (protected virtual) updateIntel
+	Implement to update intel object. 
+	
+	Parameters: _world
+	
+	_world - WorldModel, real world model that is being used.
+	*/
 	/* protected virtual */ METHOD("updateIntel") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 	} ENDMETHOD;
 
+	/*
+	Method: (protected virtual) getLabel
+	Implement to generate debug label for map marker for this action. 
+	
+	Parameters: _world
+	
+	_world - WorldModel, real world model that is being used.
+	*/
 	/* protected virtual */ METHOD("getLabel") {
-		params [P_THISOBJECT, P_STRING("_world")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		""
 	} ENDMETHOD;
 
+	/*
+	Method: (protected virtual) debugDraw
+	Implement to perform debug drawing (e.g. update a marker).
+	*/
 	/* protected virtual */ METHOD("debugDraw") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 
 	// Toolkit for scoring actions -----------------------------------------
 
-	// Get a value that falls off from 1 to 0 with distance, scaled by k.
-	// 0m = 1, 2000m = 0.5, 4000m = 0.25, 6000m = 0.2, 10000m = 0.0385
-	// See https://www.desmos.com/calculator/59i3cltsfr
+	/*
+	Method: (static) calcDistanceFalloff
+	Get a value that falls off from 1 to 0 with distance, scaled by k.
+	0m = 1, 2000m = 0.5, 4000m = 0.25, 6000m = 0.2, 10000m = 0.0385
+	See https://www.desmos.com/calculator/59i3cltsfr
+	
+	Parameters: _from, _to, _k
+	
+	_from - Position, distance to calculate from
+	_to - Position, distance to calculate to
+	_k - Number, optional, factor that scales falloff amount, see description for examples.
+	
+	Returns: Number, value in 0 to 1 range representing the falloff that should be applied for the specified positions.
+	*/
 	STATIC_METHOD("calcDistanceFalloff") {
-		params [P_THISCLASS, P_ARRAY("_from"), P_ARRAY("_to"), "_k"];
+		params [P_THISCLASS, P_POSITION("_from"), P_POSITION("_to"), "_k"];
 		private _kf = if(isNil "_k") then { 1 } else { _k };
 		// See https://www.desmos.com/calculator/59i3cltsfr
 		private _distScaled = 0.0005 * (_from distance _to) * _kf;
