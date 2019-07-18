@@ -58,7 +58,6 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("scoreResource", 1);
 		T_SETV("scoreStrategy", 1);
 		T_SETV("scoreCompleteness", 1);
-		//T_SETV("complete", false);
 		T_SETV("state", CMDR_ACTION_STATE_START);
 		T_SETV("transitions", []);
 		T_SETV("variables", []);
