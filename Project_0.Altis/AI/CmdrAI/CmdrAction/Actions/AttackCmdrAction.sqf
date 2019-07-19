@@ -1,7 +1,7 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AttackCmdrAction
+Class: AI.CmdrAI.CmdrAction.Actions.AttackCmdrAction
 Bases class for CmdrAI attack action types.
 
 TODO: refactor out commonality for actions that consist of a detachment and a target.
@@ -29,6 +29,13 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	VARIABLE("debugSymbol");
 #endif
 
+	/*
+	Constructor: AttackCmdrAction
+	Creates a new AttackCmdrAction originating from the specified source garrison.
+
+	Parameters:
+	  _srcGarrId - The <WorldModel> Id of the source garrison that should perform the attack.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
@@ -206,6 +213,10 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	Function: (protected) updateIntelFromDetachment
 	Parent classes can call this to update an intel item with the details
 	of the detachment garrison.
+
+	Parameters:
+		_world - <AI.CmdrAI.Model.WorldModel>, the world model being used, should be the real world as we don't create intel for sim worlds.
+		_intel - <Intel.IntelCommanderActionAttack>, the intel object to populate with info about the detachment performing the attack.
 	*/
 	/* protected */ METHOD("updateIntelFromDetachment") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];

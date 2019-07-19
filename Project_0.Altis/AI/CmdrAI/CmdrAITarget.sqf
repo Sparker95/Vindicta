@@ -1,5 +1,38 @@
 #include "common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAITarget
+A general reference to a target that can be used in AI where the type of target can vary.
+
+Not actually a class, but a set of functions and macros.
+
+Possible target types:
+	TARGET_TYPE_GARRISON - target is a garrison, the object contained will be a <AI.CmdrAI.Model.GarrisonModel> id.
+	TARGET_TYPE_LOCATION - target is a location, the object contained will be a <AI.CmdrAI.Model.LocationModel> id.
+	TARGET_TYPE_POSITION - target is a position, the object contained will be a standard position vector.
+	TARGET_TYPE_CLUSTER - target is a cluster, the object contained will be a <AI.CmdrAI.Model.ClusterModel> id.
+	NULL_TARGET - target is null.
+*/
+
+/*
+Method: IS_NULL_TARGET
+
+Parameters:
+	target - the CmdrAITarget to test
+
+Returns: Boolean, true if the CmdrAITarget is null
+*/
+
+/*
+Method: Target_fnc_GetPos
+Get the position of the target, if it can be evaluated.
+
+Parameters: 
+	_world - <AI.CmdrAI.Model.WorldModel>, world with which to lookup the target (if required)
+	_targetObj - <AI.CmdrAI.CmdrAITarget>, the target to get the position of.
+
+Returns: Position
+*/
 Target_fnc_GetPos = {
 	params ["_world", "_targetObj"];
 	_targetObj params ["_targetType", "_target"];
@@ -39,6 +72,17 @@ Target_fnc_GetPos = {
 	_targetPos
 };
 
+/*
+Method: Target_fnc_GetLabel
+Get a text label for the target, useful for debugging.
+
+Parameters: 
+	_world - <AI.CmdrAI.Model.WorldModel>, world with which to lookup the target (if required)
+	_targetObj - <AI.CmdrAI.CmdrAITarget>, the target to get the position of.
+	_default - String, defaults to "invalid", default value to return if the target cannot be resolved.
+
+Returns: String
+*/
 Target_fnc_GetLabel = {
 	params ["_world", "_targetObj", ["_default", "invalid", [""]]];
 

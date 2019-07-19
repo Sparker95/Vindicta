@@ -1,9 +1,9 @@
 #include "..\..\common.hpp"
 
 /*
-Class: PatrolCmdrAction
+Class: AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction
 CmdrAI garrison patrol action.
-Takes a predefined route composed of targets (see CmdrAITarget.sqf).
+Takes a predefined route composed of targets (see <CmdrAITarget>).
 */
 CLASS("PatrolCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
@@ -30,14 +30,13 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 
 	/*
-	Method: new
+	Constructor: PatrolCmdrAction
 	Create a CmdrAI action to send a detachment from a garrison to patrol a specified 
 	route.
 	
-	Parameters: _srcGarrId, _routeTargets
-	
-	_srcGarrId - Number, GarrisonModel id from which to send the patrol detachment.
-	_routeTargets - Array<CmdrAITarget>, an array of patrol waypoints as targets.
+	Parameters:
+		_srcGarrId - Number, GarrisonModel id from which to send the patrol detachment.
+		_routeTargets - Array of <CmdrAITarget>, an array of patrol waypoints as targets.
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_ARRAY("_routeTargets")];
@@ -187,7 +186,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		[_splitAST, _assignAST, _nextWaypointAST, _moveWaypointsAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
 	} ENDMETHOD;
 	
-	// Make a debug label from our properties
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -222,7 +220,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 
-	// Create the intel object for this action
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
@@ -330,7 +327,6 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// };
 	} ENDMETHOD;
 	
-	// Update score for this action
 	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");

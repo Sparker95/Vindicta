@@ -1,5 +1,9 @@
 #include "..\common.hpp"
 
+/*
+Class: AI.CmdrAI.Model.WorldModel
+Models either the real world state, or a derivation of it that can be used for simulation.
+*/
 CLASS("WorldModel", "")
 
 	VARIABLE("type");
