@@ -4,6 +4,8 @@
 Class: AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction
 CmdrAI garrison patrol action.
 Takes a predefined route composed of targets (see <CmdrAITarget>).
+
+Parent: <CmdrAction>
 */
 CLASS("PatrolCmdrAction", "CmdrAction")
 	// Garrison ID the attack originates from
@@ -30,12 +32,13 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 
 	/*
-	Constructor: PatrolCmdrAction
+	Constructor: new
+
 	Create a CmdrAI action to send a detachment from a garrison to patrol a specified 
 	route.
 	
 	Parameters:
-		_srcGarrId - Number, GarrisonModel id from which to send the patrol detachment.
+		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
 		_routeTargets - Array of <CmdrAITarget>, an array of patrol waypoints as targets.
 	*/
 	METHOD("new") {

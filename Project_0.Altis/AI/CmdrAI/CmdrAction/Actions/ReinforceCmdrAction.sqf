@@ -2,22 +2,25 @@
 
 /*
 Class: ReinforceCmdrAction
+
 CmdrAI garrison reinforcement action. 
 Takes a source and target garrison id.
 Sends a detachment from the source garrison to join the target garrison.
+
+Parent: <TakeOrJoinCmdrAction>
 */
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtGarrId");
-
+	
 	/*
-	Method: new
+	Constructor: new
+
 	Create a CmdrAI action to send a detachment from the source garrison to join
 	the target garrison.
 	
-	Parameters: _srcGarrId, _tgtGarrId
-	
-	_srcGarrId - Number, GarrisonModel id from which to send the patrol detachment.
-	_tgtGarrId - Number, GarrisonModel id to reinforce with the detachment.
+	Parameters:
+		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
+		_tgtGarrId - Number, <Model.GarrisonModel> id to reinforce with the detachment.
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtGarrId")];

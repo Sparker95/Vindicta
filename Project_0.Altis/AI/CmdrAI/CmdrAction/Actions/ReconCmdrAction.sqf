@@ -1,8 +1,6 @@
 #include "..\..\common.hpp"
 
 /*
-Class: ReconCmdrAction
-
 Currently not used, will be used as an action for Cmdr to discover more intel 
 about targets (locations/positions/garrisons etc.)
 Should probably involve moving a recon specific detachment to a certain location,

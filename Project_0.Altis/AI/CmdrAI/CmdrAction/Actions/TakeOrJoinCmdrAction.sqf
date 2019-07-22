@@ -2,9 +2,12 @@
 
 /*
 Class: TakeOrJoinCmdrAction
+
 Base class for Take and Join like CmdrAI actions.
 Takes a source garrison id, from which a detachment can be formed to perform the action.
 See implementations in TakeLocationCmdrAction and ReinforceCmdrAction.
+
+Parent: <CmdrAction>
 */
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
@@ -19,6 +22,14 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("debugSymbol");
 #endif
 
+	/*
+	Constructor: new
+	
+	Create a TakeOrJoinCmdrAction. See derived classes for details.
+	
+	Parameters:
+		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the detachment performing the action.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 

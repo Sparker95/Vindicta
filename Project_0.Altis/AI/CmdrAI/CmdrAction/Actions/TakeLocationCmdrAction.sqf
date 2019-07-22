@@ -1,23 +1,26 @@
 #include "..\..\common.hpp"
 
 /*
-Class: TakeLocationCmdrAction
+Class: AI.CmdrAI.CmdrAction.Actions.TakeLocationCmdrAction
+
 CmdrAI garrison action for taking a location.
 Takes a source garrison id and target location id.
 Sends a detachment from the source garrison to occupy the target location.
+
+Parent: <TakeOrJoinCmdrAction>
 */
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtLocId");
 
 	/*
-	Method: new
+	Constructor: new
+	
 	Create a CmdrAI action to send a detachment from the source garrison to occupy
 	the target location.
 	
-	Parameters: _srcGarrId, _tgtLocId
-	
-	_srcGarrId - Number, GarrisonModel id from which to send the detachment.
-	_tgtLocId - Number, LocationModel id for the detachment to occupy.
+	Parameters:
+		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the detachment.
+		_tgtLocId - Number, <Model.GarrisonModel> id for the detachment to occupy.
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtLocId")];
