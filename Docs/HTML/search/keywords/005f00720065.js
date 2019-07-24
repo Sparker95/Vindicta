@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("_re",["Function"],[["_registerGarrison",,[["AI.AICommander",,,,0,"File:AI/Commander/AICommander.sqf:AI.AICommander._registerGarrison","SQFClass:AI.AICommander:_registerGarrison"]]]]);

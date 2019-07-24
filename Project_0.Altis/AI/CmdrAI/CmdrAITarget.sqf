@@ -6,12 +6,7 @@ A general reference to a target that can be used in AI where the type of target 
 
 Not actually a class, but a set of functions and macros.
 
-Possible target types:
-	TARGET_TYPE_GARRISON - target is a garrison, the object contained will be a <AI.CmdrAI.Model.GarrisonModel> id.
-	TARGET_TYPE_LOCATION - target is a location, the object contained will be a <AI.CmdrAI.Model.LocationModel> id.
-	TARGET_TYPE_POSITION - target is a position, the object contained will be a standard position vector.
-	TARGET_TYPE_CLUSTER - target is a cluster, the object contained will be a <AI.CmdrAI.Model.ClusterModel> id.
-	NULL_TARGET - target is null.
+See <CmdrAction.TARGET_TYPE>
 */
 
 /*

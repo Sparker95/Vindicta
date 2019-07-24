@@ -1,8 +1,10 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_WaitGarrison
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_WaitGarrison
 Have a garrison wait for a period of time.
+
+Parent: <ActionStateTransition>
 */
 CLASS("AST_WaitGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
@@ -17,14 +19,13 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 	Method: new
 	Create an AST for a garrison to wait for a period of time.
 	
-	Parameters: _action, _fromStates, _successState, _failGarrisonDead, _timeOutState, _waitUntilDateVar, _garrIdVar
-	
-	_action - CmdrAction, action this AST is part of, for debugging purposes
-	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
-	_successState - CMDR_ACTION_STATE*, state to return after success, when wait is over and garrison is still alive
-	_failGarrisonDead - CMDR_ACTION_STATE*, state to return when garrison performing the action is dead
-	_waitUntilDateVar - IN AST_VAR(Date), date to wait until
-	_garrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison waiting
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success, when wait is over and garrison is still alive
+		_failGarrisonDead - <CMDR_ACTION_STATE>, state to return when garrison performing the action is dead
+		_waitUntilDateVar - IN <AST_VAR>(Date), date to wait until
+		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison waiting
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 

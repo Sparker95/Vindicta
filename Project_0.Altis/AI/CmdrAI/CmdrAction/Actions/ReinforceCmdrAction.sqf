@@ -1,7 +1,7 @@
 #include "..\..\common.hpp"
 
 /*
-Class: ReinforceCmdrAction
+Class: AI.CmdrAI.CmdrAction.Actions.ReinforceCmdrAction
 
 CmdrAI garrison reinforcement action. 
 Takes a source and target garrison id.

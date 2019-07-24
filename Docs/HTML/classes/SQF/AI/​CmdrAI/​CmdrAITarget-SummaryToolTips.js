@@ -1,0 +1,1 @@
+NDSummary.OnToolTipsLoaded("SQFClass:AI.​CmdrAI.​CmdrAITarget",{888:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Enum: TARGET_TYPE Supported &lt;CmdrAITarget&gt; types.</div></div>"});

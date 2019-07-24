@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("mil",["Class"],[["MilitantCiviliansAmbientMission",,[[,,,,0,"File:GameMode/CivilWar/Missions/MilitantCivilians.sqf:MilitantCiviliansAmbientMission","SQFClass:MilitantCiviliansAmbientMission"]]]]);

@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Location/getLocationAtPos.sqf",{318:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns location that has the provided position/object within its border.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Location/getLocationAtPos.sqf",{679:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Returns location that has the provided position/object within its border.</div></div>"});

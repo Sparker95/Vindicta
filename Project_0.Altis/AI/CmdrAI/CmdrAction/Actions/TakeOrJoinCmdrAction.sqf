@@ -1,7 +1,7 @@
 #include "..\..\common.hpp"
 
 /*
-Class: TakeOrJoinCmdrAction
+Class: AI.CmdrAI.CmdrAction.Actions.TakeOrJoinCmdrAction
 
 Base class for Take and Join like CmdrAI actions.
 Takes a source garrison id, from which a detachment can be formed to perform the action.

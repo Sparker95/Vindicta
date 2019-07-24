@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("har",["Class"],[["HarassedCiviliansAmbientMission",,[[,,,,0,"File:GameMode/CivilWar/Missions/HarassedCivilians.sqf:HarassedCiviliansAmbientMission","SQFClass:HarassedCiviliansAmbientMission"]]]]);

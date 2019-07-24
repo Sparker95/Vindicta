@@ -1,8 +1,10 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_MoveGarrison
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_MoveGarrison
 Order a garrison to move to a target within a certain radius.
+
+Parent: <ActionStateTransition>
 */
 CLASS("AST_MoveGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
@@ -19,16 +21,15 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 	Method: new
 	Create an AST to give a move to target order to a garrison.
 
-	Parameters: _action, _fromStates, _successState, _failGarrisonDead, _failTargetDead, _garrIdVar, _targetVar, _radiusVar
-
-	_action - CmdrAction, action this AST is part of, for debugging purposes
-	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
-	_successState - CMDR_ACTION_STATE*, state to return after success
-	_failGarrisonDead - CMDR_ACTION_STATE*, state to return if the garrison performing the action is dead
-	_failTargetDead - CMDR_ACTION_STATE*, state to return if the target is dead
-	_garrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison performing the move
-	_targetVar - IN AST_VAR(CmdrAITarget), target to move to
-	_radiusVar - IN AST_VAR(Number), radius around target within which to consider the move complete
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_failGarrisonDead - <CMDR_ACTION_STATE>, state to return if the garrison performing the action is dead
+		_failTargetDead - <CMDR_ACTION_STATE>, state to return if the target is dead
+		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison performing the move
+		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to move to
+		_radiusVar - IN <AST_VAR>(Number), radius around target within which to consider the move complete
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 

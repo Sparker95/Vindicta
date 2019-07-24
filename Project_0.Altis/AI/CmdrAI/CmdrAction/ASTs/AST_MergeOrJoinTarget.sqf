@@ -1,9 +1,11 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_MergeOrJoinTarget
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_MergeOrJoinTarget
 Merge to a garrison or join a location. Does NOT use an order or move the garrison at all,
 just directly merges/joins.
+
+Parent: <ActionStateTransition>
 */
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
@@ -19,15 +21,14 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 	Method: new
 	Create an AST to merge or join a garrison to a target.
 
-	Parameters: _action, _fromStates, _successState, _fromGarrDeadState, _targetDeadState, _fromGarrIdVar, _targetVar
-
-	_action - CmdrAction, action this AST is part of, for debugging purposes
-	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
-	_successState - CMDR_ACTION_STATE*, state to return after success
-	_fromGarrDeadState - CMDR_ACTION_STATE*, state to return when garrison performing the action is dead
-	_targetDeadState - CMDR_ACTION_STATE*, state to return when the target is dead
-	_fromGarrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison performing the action
-	_targetVar - IN AST_VAR(CmdrAITarget), target to merge or join to
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_fromGarrDeadState - <CMDR_ACTION_STATE>, state to return when garrison performing the action is dead
+		_targetDeadState - <CMDR_ACTION_STATE>, state to return when the target is dead
+		_fromGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison performing the action
+		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to merge or join to
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 

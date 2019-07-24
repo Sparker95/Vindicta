@@ -1,34 +1,34 @@
 #include "..\common.hpp"
 
 /*
-Class: ActionStateTransition
+Class: AI.CmdrAI.CmdrAction.ASTs.ActionStateTransition
 Base class for ASTs.
 
 An AST (Action State Transition) defines an operation to be performed when transitioning from
-one CmdrAction state to another, as well as what states it can transition from and to.
+one <CmdrAction> state to another, as well as what states it can transition from and to.
 
-ASTs form the bulk of the behaviour of CmdrActions implementations.
+ASTs form the bulk of the behaviour of <CmdrActions> implementations.
 
 fromStates defines what states the AST instance is valid from. All the from and to states in 
-ASTs should be passed in a constructor parameters, as the CmdrAction that owns them defines 
+ASTs should be passed in a constructor parameters, as the <CmdrAction> that owns them defines 
 what states it wants to use. Often they will be from a common set, or the same between actions
 but not always. e.g. An AST that performs a move operation might transition to a READY_TO_ATTACK
-state in a CmdrAction that is implementing an attack, but to DONE in a CmdrAction that is just 
+state in a <CmdrAction> that is implementing an attack, but to DONE in a <CmdrAction> that is just 
 implementing a move.
 
-This operation can be parameterized using fixed values and/or AST_VARs.
-An AST_VAR is a reference to a variable that can be shared between multiple ASTs. 
-When one AST modifies the value the AST_VAR refers to, that modification is also visible to 
+This operation can be parameterized using fixed values and/or <AST_VARs>.
+An <AST_VAR> is a reference to a variable that can be shared between multiple ASTs. 
+When one AST modifies the value the <AST_VAR> refers to, that modification is also visible to 
 other ASTs.
-See CmdrActionStates.hpp for the AST_VAR macros.
+See CmdrActionStates.hpp for the <AST_VAR> macros.
 
 The apply function is where the behaviour of the AST should be implemented. It should attempt to 
-perform the action required, and then return the new state, or CMDR_ACTION_STATE_NONE if no
+perform the action required, and then return the new state, or <CMDR_ACTION_STATE_NONE> if no
 state change should occur. For ASTs whose behaviour cannot occur instantly (e.g. moving a 
-garrison to another location), the apply function should return CMDR_ACTION_STATE_NONE while the 
+garrison to another location), the apply function should return <CMDR_ACTION_STATE_NONE> while the 
 behaviour is ongoing, then an appropriate state once it is complete (or failed). See 
-AST_GarrisonAttackTarget for an example of this. The CmdrAction will stay in the same state
-after calling an AST apply function if that function does returns CMDR_ACTION_STATE_NONE.
+<AST_GarrisonAttackTarget> for an example of this. The <CmdrAction> will stay in the same state
+after calling an AST apply function if that function does returns <CMDR_ACTION_STATE_NONE>.
 */
 CLASS("ActionStateTransition", "")
 
@@ -38,6 +38,10 @@ CLASS("ActionStateTransition", "")
 	// State(s) this transition is valid from
 	VARIABLE("fromStates");
 
+	/*
+	Method: new
+	Base constructor for ASTs. See implementing classes (AST_*) for concrete constuctor definitions.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("priority", CMDR_ACTION_PRIOR_LOW);
@@ -49,9 +53,8 @@ CLASS("ActionStateTransition", "")
 	Returns true if this AST can apply a transition from _state. 
 	i.e. if fromStates contains _state.
 	
-	Parameters:_state
-	
-	_state - CMDR_ACTION_STATE_*, The state to test against
+	Parameters:
+		_state - <CMDR_ACTION_STATE>, The state to test against
 	
 	Returns: Boolean, true if this AST can apply a transition from _state
 	*/
@@ -64,15 +67,13 @@ CLASS("ActionStateTransition", "")
 	/*
 	Method: (static) selectAndApply
 	
+	Parameters:
+		_world - <Model.WorldModel>, the world we want to apply state transition behaviours in, could be 
+		REAL or SIM.
+		_state - <CMDR_ACTION_STATE>, the Current state from which we want to attempt transition.
+		_transitions - Array of <ActionStateTransition>, possible transitions we can select from.
 	
-	Parameters: _world, _state, _transitions
-	
-	_world - WorldModel, the world we want to apply state transition behaviours in, could be 
-	REAL or SIM.
-	_state - CMDR_ACTION_STATE_*, the Current state from which we want to attempt transition.
-	_transitions - Array<ActionStateTransition>, possible transitions we can select from.
-	
-	Returns: CMDR_ACTION_STATE_*, new state (might not have changed)
+	Returns: <CMDR_ACTION_STATE>, new state (might not have changed)
 	*/
 	STATIC_METHOD("selectAndApply") {
 		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
@@ -115,9 +116,8 @@ CLASS("ActionStateTransition", "")
 	Method: (virtual) isAvailable
 	Implement in derived classes to check custom prerequisites for this AST.
 	
-	Parameters: _world
-	
-	_world - WorldModel, the world model we are currently applying ASTs to.
+	Parameters:
+		_world - <Model.WorldModel>, the world model we are currently applying ASTs to.
 
 	Returns: Boolean, if the AST is allowed to be applied now, defaults to true
 	*/
@@ -131,11 +131,10 @@ CLASS("ActionStateTransition", "")
 	Method: (abstract virtual) apply
 	Implement in derived classes to attempt to apply the state transition.
 	
-	Parameters: _world
+	Parameters:
+		_world - <Model.WorldModel>, the world model we are currently applying ASTs to.
 	
-	_world - WorldModel, the world model we are currently applying ASTs to.
-	
-	Return: CMDR_ACTION_STATE_*, the new state, or CMDR_ACTION_STATE_NONE to stay in the 
+	Return: <CMDR_ACTION_STATE>, the new state, or <CMDR_ACTION_STATE_NONE> to stay in the 
 	current state (can be used for transitions that take time).
 	*/
 	/* virtual */ METHOD("apply") { 

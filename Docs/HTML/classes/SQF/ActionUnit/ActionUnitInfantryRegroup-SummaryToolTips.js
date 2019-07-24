@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitInfantryRegroup",{150:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a unit follow his leader</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitInfantryRegroup",{318:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a unit follow his leader</div></div>"});

@@ -1,12 +1,14 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_AssignActionToGarrison
-Assigns a CmdrAction instance to a GarrisonModel.
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_AssignActionToGarrison
+Assigns a <CmdrAction> instance to a <Model.GarrisonModel>.
 Example: 
-	Detachment GarrisonModels performing an action have the action assigned to 
-them with this AST. It indicates to CmdrAction generators that the GarrisonModel is currently
+	Detachment <GarrisonModel>s performing an action have the action assigned to 
+them with this AST. It indicates to <CmdrAction> generators that the <Model.GarrisonModel> is currently
 doing something else.
+
+Parent: <ActionStateTransition>
 */
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
@@ -17,14 +19,13 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 
 	/*
 	Method: new
-	Create an AST to assign a CmdrAction instance to a GarrisonModel.
+	Create an AST to assign a <CmdrAction> instance to a <Model.GarrisonModel>.
 	
-	Parameters: _action, _fromStates, _successState, _garrIdVar
-	
-	_action - CmdrAction, action to assign
-	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
-	_successState - CMDR_ACTION_STATE*, state to return after success
-	_garrIdVar - IN AST_VAR(Number), Id of the GarrisonModel to assign the action to
+	Parameters:
+		_action - <CmdrAction>, action to assign
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_garrIdVar - IN <AST_VAR>(Number), Id of the <Model.GarrisonModel> to assign the action to
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 

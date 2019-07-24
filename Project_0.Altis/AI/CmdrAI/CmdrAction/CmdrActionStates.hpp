@@ -1,7 +1,7 @@
 
 
 /*
-Enum: CMDR_ACTION_STATE
+Enum: AI.CmdrAI.CmdrAction.CMDR_ACTION_STATE
 
 <ActionStateTransitions> are used by <CmdrAction> to transition between these states.
 
@@ -80,7 +80,8 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 #define CMDR_ACTION_PRIOR_HIGH 		1
 #define CMDR_ACTION_PRIOR_LOW 		10
 
-// ActionStateTransition variables (AST_VARs):
+// Class: AI.CmdrAI.CmdrAction.AST_VAR
+// ActionStateTransition variables.
 // These are wrappers for variables so the value can be shared between multiple ActionStateTransitions.
 // e.g. An output of one AST can be the input of another (such as the first AST selecting a target and the next 
 // AST giving a move order to the target), so the same AST_VAR can be assigned to both. When the first AST
@@ -88,23 +89,40 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 // both refer to the same underlying value. 
 // They also allow the CmdrAction state to be pushed/popped during simulation so that real world actions 
 // are not effected.
+
+// Function: MAKE_AST_VAR
 // Make a new AST_VAR
 #define MAKE_AST_VAR(value) [value]
+// Function: GET_AST_VAR
 // Get the value from an AST_VAR
 #define GET_AST_VAR(wrapper) (if((wrapper select 0) isEqualType {}) then { call (wrapper select 0) } else { (wrapper select 0) })
+// Function: SET_AST_VAR
 // Write a value to an AST_VAR
 #define SET_AST_VAR(wrapper, value) (wrapper set [0, value])
+// Function: T_GET_AST_VAR
 // Get the value from an AST_VAR that is a member variable of _thisObject.
 #define T_GET_AST_VAR(property) (T_GETV(property) select 0)
+// Function: T_SET_AST_VAR
 // Write a value to an AST_VAR that is a member variable of _thisObject.
 #define T_SET_AST_VAR(property, value) (T_GETV(property) set [0, value])
 
+// Function: P_AST_VAR
 // Function variable definition for an AST_VAR
 #define P_AST_VAR(paramNameStr) P_ARRAY(paramNameStr)
+// Function: P_AST_STATE
 // Function variable definition for a CMDR_ACTION_STATE
 #define P_AST_STATE(paramNameStr) P_NUMBER(paramNameStr)
 
-// Supported CmdrAITarget types (see CmdrAITarget.sqf).
+// Section: Globals
+
+// Class: AI.​CmdrAI.​CmdrAITarget
+// Enum: TARGET_TYPE
+// Supported <CmdrAITarget> types.
+//
+// TARGET_TYPE_GARRISON - <Model.GarrisonModel> Id
+// TARGET_TYPE_LOCATION - <Model.LocationModel> Id
+// TARGET_TYPE_POSITION - position vector (3 element array of Number)
+// TARGET_TYPE_CLUSTER  -  <Model.ClusterModel> Id
 #define TARGET_TYPE_GARRISON 0
 #define TARGET_TYPE_LOCATION 1
 #define TARGET_TYPE_POSITION 2

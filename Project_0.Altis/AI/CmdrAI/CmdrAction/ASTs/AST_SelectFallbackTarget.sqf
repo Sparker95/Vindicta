@@ -1,9 +1,11 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_SelectFallbackTarget
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_SelectFallbackTarget
 Select a target for a garrison that it can reasonably fallback to. e.g. RTB or retreat
 target.
+
+Parent: <ActionStateTransition>
 */
 CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -16,14 +18,13 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 	Create an AST to select or find a target for a garrison that it can reasonably fallback to. e.g. RTB or retreat
 	target. 
 	
-	Parameters: _fromStates, _successState, _srcGarrIdVar, _garrIdVar, _targetVar
-	
-	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
-	_successState - CMDR_ACTION_STATE*, state to return after success
-	_srcGarrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison to use as a default fallback.
-		e.g. The original source garrison of a detachment.
-	_garrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison to select a fallback target for.
-	_targetVar - OUT AST_VAR(CmdrAITarget), target selected by this AST
+	Parameters:
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_srcGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to use as a default fallback.
+			e.g. The original source garrison of a detachment.
+		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to select a fallback target for.
+		_targetVar - OUT <AST_VAR>(<CmdrAITarget>), target selected by this AST
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 

@@ -1,8 +1,10 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_SplitGarrison
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_SplitGarrison
 Split a garrison into two parts.
+
+Parent: <ActionStateTransition>
 */
 CLASS("AST_SplitGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
@@ -21,17 +23,16 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 	Method: new
 	Create an AST to split a garrison into two parts.
 	
-	Parameters: _action, _fromStates, _successState, _failState, _srcGarrIdVar, _detachmentEffVar, _splitFlagsVar, _detachedGarrIdVar
-	
-	_action - CmdrAction, action this AST is part of, for debugging purposes
-	_fromStates - Array<CMDR_ACTION_STATE*>, states this AST is valid from
-	_successState - CMDR_ACTION_STATE*, state to return after success
-	_failState - CMDR_ACTION_STATE*, state to return if the split fails for any reason
-	_srcGarrIdVar - IN AST_VAR(Number), GarrisonModel Id of the garrison to split
-	_detachmentEffVar - IN AST_VAR(Efficiency Vector), efficiency to take from the source garrison to form the new garrison
-	_splitFlagsVar - IN AST_VAR(Array<Number>), flags that define the rules when splitting the garrison, passed to GarrisonModel.splitActual
-		(see CmdrAI.hpp for the definitions)
-	_detachedGarrIdVar - OUT AST_VAR(Number), GarrisonModel Id of the newly formed garrison
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_failState - <CMDR_ACTION_STATE>, state to return if the split fails for any reason
+		_srcGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to split
+		_detachmentEffVar - IN <AST_VAR>(Efficiency Vector), efficiency to take from the source garrison to form the new garrison
+		_splitFlagsVar - IN <AST_VAR>(Array of Number), flags that define the rules when splitting the garrison, passed to <Model.GarrisonModel.splitActual>
+			(see CmdrAI.hpp for the definitions)
+		_detachedGarrIdVar - OUT <AST_VAR>(Number), <Model.GarrisonModel> Id of the newly formed garrison
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 

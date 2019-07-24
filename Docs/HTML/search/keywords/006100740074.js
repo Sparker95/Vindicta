@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("att",["Class"],[["AttackCmdrAction",,[["AI.CmdrAI.CmdrAction.Actions",,,,0,"File:AI/CmdrAI/CmdrAction/Actions/AttackCmdrAction.sqf:AI.CmdrAI.CmdrAction.Actions.AttackCmdrAction","SQFClass:AI.CmdrAI.CmdrAction.Actions.AttackCmdrAction"]]]]);

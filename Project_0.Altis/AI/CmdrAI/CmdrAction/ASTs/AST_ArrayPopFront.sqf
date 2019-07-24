@@ -1,10 +1,9 @@
 #include "..\..\common.hpp"
 
 /*
-Class: AST_ArrayPopFront
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_ArrayPopFront
 Pop a value from the front of an array into another variable.
-Example:
-	Select next patrol waypoint.
+For example to select the next patrol waypoint in an array of positions.
 
 Parent: <ActionStateTransition>
 */

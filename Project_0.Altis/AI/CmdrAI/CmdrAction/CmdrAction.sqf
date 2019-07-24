@@ -6,7 +6,7 @@
 #include "..\common.hpp"
 
 /*
-Class: CmdrAction
+Class: AI.CmdrAI.CmdrAction.CmdrAction
 The base class for all commander actions. An Action is defined as any behaviour the commander can
 choose whether to perform. 
 In general the actions are parameterized and scored based on relevance and the commanders current strategy.
@@ -21,6 +21,8 @@ by other commanders.
 e.g. An action for a garrison to attack an outpost could be parameterized by the specific garrison and
      outpost, and scored based on how much the commander wants to control that outpost, how close the garrison is
      to it, and how well the garrison is predicted to do when fighting the enemy at the outpost.
+
+Parent: <RefCounted>
 */
 CLASS("CmdrAction", "RefCounted")
 
@@ -89,9 +91,8 @@ CLASS("CmdrAction", "RefCounted")
 	Method: (protected) setScore
 	Unpacks a score array (4 element number vector) into the individual scoring properties.
 
-	Parameters: _scoreVec
-	
-	_scoreVec - Array<Number>, the score vector to assign
+	Parameters:	
+		_scoreVec - Array of Number, the score vector to assign
 	*/
 	/* protected */ METHOD("setScore") {
 		params [P_THISOBJECT, P_ARRAY("_scoreVec")];
@@ -117,9 +118,8 @@ CLASS("CmdrAction", "RefCounted")
 	Registers a garrison that has this action assigned to it, so we can automatically unassign 
 	this action from it when it is finished (helps with cleanup).
 	
-	Parameters: _garrison
-	
-	_garrison - GarrisonModel
+	Parameters:
+		_garrison - <Model.GarrisonModel>
 	*/
 	/*protected */ METHOD("registerGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
@@ -133,9 +133,8 @@ CLASS("CmdrAction", "RefCounted")
 	Remove a garrison from the list for which we will automatically an assign this action when 
 	it is finished.
 	
-	Parameters: _garrison
-	
-	_garrison - GarrisonModel
+	Parameters:
+		_garrison - <Model.GarrisonModel>
 	*/
 	/*protected */ METHOD("unregisterGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
@@ -152,9 +151,8 @@ CLASS("CmdrAction", "RefCounted")
 	Method: (protected) addIntelToGarrison
 	Add the intel object of this action to a specific garrison.
 	
-	Parameters: _garrison
-	
-	_garrison - GarrisonModel, the garrion to assign the intel to.
+	Parameters:
+		_garrison - <Model.GarrisonModel>, the garrion to assign the intel to.
 	*/
 	/*protected */ METHOD("addIntelToGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
@@ -181,11 +179,10 @@ CLASS("CmdrAction", "RefCounted")
 	Method: (protected) addIntelAt
 	Add the intel object of this action to garrisons in an area specified.
 	
-	Parameters: _world, _pos, _radius
-	
-	_world - WorldModel, the world model in which to look for garrisons.
-	_pos - Position, the center of the area in which we are placing intel.
-	_radius - Number, default 2000, the radius in meters in which we are placing intel.
+	Parameters:
+		_world - <Model.WorldModel>, the world model in which to look for garrisons.
+		_pos - Position, the center of the area in which we are placing intel.
+		_radius - Number, default 2000, the radius in meters in which we are placing intel.
 	*/
 	/*protected */ METHOD("addIntelAt") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 2000, [0]]];
@@ -201,16 +198,13 @@ CLASS("CmdrAction", "RefCounted")
 
 	/*
 	Method: (virtual) updateScore
-	Called by CmdrAI when evaluating potential actions. It should use the world states and settings this
+	Called by <AI.CmdrAI.CmdrAI> when evaluating potential actions. It should use the world states and settings this
 	action was initialized with to evaluate its subjective value, and then set the score* member variables 
 	appropriately.
 	
-	Parameters: _worldNow, _worldFuture
-	
-	_worldNow - WorldModel, simulation of world in its current state possibly with some instantaneous actions
-	applied (e.g. resource allocation).
-	_worldFuture - WorldModel, simulation of world in its predicted state once all currently planned
-	actions are complete.
+	Parameters:
+		_worldNow - <Model.WorldModel>, simulation of world in its current state possibly with some instantaneous actions applied (e.g. resource allocation).
+		_worldFuture - <Model.WorldModel>, simulation of world in its predicted state once all currently planned actions are complete.
 	*/
 	/* virtual */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
@@ -235,11 +229,10 @@ CLASS("CmdrAction", "RefCounted")
 	if the value can be changed by any of the ASTs themselves. If it can't then you can just directly create 
 	an AST_VAR without calling this function.
 	
-	Parameters: _initialValue
+	Parameters:
+		_initialValue - Any, initial value for the variable to hold.
 	
-	_initialValue - Any, initial value for the variable to hold.
-	
-	Returns: AST_VAR reference to the newly created and registered variable.
+	Returns: <AST_VAR> reference to the newly created and registered variable.
 	*/
 	/*protected */ METHOD("createVariable") {
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
