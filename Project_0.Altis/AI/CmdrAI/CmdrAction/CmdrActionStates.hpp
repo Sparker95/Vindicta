@@ -115,8 +115,7 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 
 // Section: Globals
 
-// Class: AI.​CmdrAI.​CmdrAITarget
-// Enum: TARGET_TYPE
+// Enum: AI.​CmdrAI.​CmdrAITarget.TARGET_TYPE
 // Supported <CmdrAITarget> types.
 //
 // TARGET_TYPE_GARRISON - <Model.GarrisonModel> Id

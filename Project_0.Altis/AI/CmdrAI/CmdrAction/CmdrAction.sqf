@@ -223,18 +223,18 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	/*
-	Method: createVariable
-	Creates and registers an AST_VAR variable for use with this actions ASTs. The registration ensures that the 
+	Method: (protected) createVariable
+	Creates and registers an <AST_VAR> variable for use with this actions ASTs. The registration ensures that the 
 	value of the variable is saved and restored when performing simulations using this action. It is only required 
 	if the value can be changed by any of the ASTs themselves. If it can't then you can just directly create 
-	an AST_VAR without calling this function.
+	an <AST_VAR> without calling this function.
 	
 	Parameters:
 		_initialValue - Any, initial value for the variable to hold.
 	
 	Returns: <AST_VAR> reference to the newly created and registered variable.
 	*/
-	/*protected */ METHOD("createVariable") {
+	/* protected */ METHOD("createVariable") {
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
 		T_PRVAR(variables);
 		private _var = MAKE_AST_VAR(_initialValue);
@@ -261,11 +261,10 @@ CLASS("CmdrAction", "RefCounted")
 	final results. Now world sims can only have instantaneous AST results applied (e.g. allocating resources, 
 	splitting a Garrison, assigning an action), so will usually not transition to END state.
 	
-	Parameters: _world
+	Parameters:	
+		_world - <Model.WorldModel>, world to apply simulation of this action to. Sim worlds only, not real.
 	
-	_world - WorldModel, world to apply simulation of this action to. Sim worlds only, not real.
-	
-	Returns: CMDR_ACTION_STATE_*, the state after applying all applicable ASTs
+	Returns: <CMDR_ACTION_STATE>, the state after applying all applicable ASTs
 	*/
 	METHOD("applyToSim") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
@@ -322,9 +321,8 @@ CLASS("CmdrAction", "RefCounted")
 	Method: update
 	Attempt to progress with this action in a real world model.
 	
-	Parameters: _world
-	
-	_world - WorldModel, real world to update this action for. Sim worlds are not valid.
+	Parameters:
+		_world - <Model.WorldModel>, real world to update this action for. Sim worlds are not valid.
 	*/
 	METHOD("update") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
@@ -353,7 +351,7 @@ CLASS("CmdrAction", "RefCounted")
 
 	/*
 	Method: isComplete
-	Is this action complete? i.e. reached state CMDR_ACTION_STATE_END
+	Is this action complete? i.e. reached state <CMDR_ACTION_STATE.CMDR_ACTION_STATE_END>
 	Returns: Boolean, true if the action is complete.
 	*/
 	METHOD("isComplete") {
@@ -365,9 +363,8 @@ CLASS("CmdrAction", "RefCounted")
 	Method: (protected virtual) updateIntel
 	Implement to update intel object. 
 	
-	Parameters: _world
-	
-	_world - WorldModel, real world model that is being used.
+	Parameters:
+		_world - <Model.WorldModel>, real world model that is being used.
 	*/
 	/* protected virtual */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
@@ -377,9 +374,8 @@ CLASS("CmdrAction", "RefCounted")
 	Method: (protected virtual) getLabel
 	Implement to generate debug label for map marker for this action. 
 	
-	Parameters: _world
-	
-	_world - WorldModel, real world model that is being used.
+	Parameters:	
+		_world - <Model.WorldModel>, real world model that is being used.
 	*/
 	/* protected virtual */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
@@ -402,11 +398,10 @@ CLASS("CmdrAction", "RefCounted")
 	0m = 1, 2000m = 0.5, 4000m = 0.25, 6000m = 0.2, 10000m = 0.0385
 	See https://www.desmos.com/calculator/59i3cltsfr
 	
-	Parameters: _from, _to, _k
-	
-	_from - Position, distance to calculate from
-	_to - Position, distance to calculate to
-	_k - Number, optional, factor that scales falloff amount, see description for examples.
+	Parameters:
+		_from - Position, distance to calculate from
+		_to - Position, distance to calculate to
+		_k - Number, optional, factor that scales falloff amount, see description for examples.
 	
 	Returns: Number, value in 0 to 1 range representing the falloff that should be applied for the specified positions.
 	*/
