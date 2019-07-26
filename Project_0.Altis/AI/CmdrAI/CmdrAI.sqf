@@ -32,6 +32,70 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 
 	/*
+	Method: plan
+	Do a planning cycle. What action types are considered at each cycle depends on priorities and rates defined.
+	
+	Parameters:
+		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
+	*/
+	METHOD("plan") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		
+		T_PRVAR(planningCycle);
+		T_SETV("planningCycle", _planningCycle + 1);
+
+		private _priority = switch true do {
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
+			default { -1 };
+		};
+
+		if(_priority != -1) then {
+			T_CALLM("_plan", [_world ARG _priority]);
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: update
+	Update active actions.
+	
+	Parameters:
+		_world - <Model.WorldModel>, real world model the actions are being performed in.
+	*/
+	METHOD("update") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+
+		// Sync before update
+		CALLM(_world, "sync", []);
+
+		T_PRVAR(side);
+		T_PRVAR(activeActions);
+
+		OOP_DEBUG_MSG("- - - - - U P D A T I N G - - - - -   on %1 active actions", [count _activeActions]);
+
+		// Update actions in real world
+		{ 
+			OOP_DEBUG_MSG("Updating action %1", [_x]);
+			CALLM(_x, "update", [_world]);
+		} forEach _activeActions;
+
+		// Remove complete actions
+		{ 
+			OOP_DEBUG_MSG("Completed action %1, removing", [_x]);
+			_activeActions deleteAt (_activeActions find _x);
+			UNREF(_x);
+		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
+
+		OOP_DEBUG_MSG("- - - - - U P D A T I N G   D O N E - - - - -", []);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
+		OOP_INFO_MSG(_str, []);
+		#endif
+	} ENDMETHOD;
+	
+	/*
 	Method: (private) generateAttackActions
 	Generate a list of possible/reasonable attack actions that could be performed. It will exclude ones that 
 	are impossible or impractical. Otherwise scoring of the actions should be used to determine if they should
@@ -320,45 +384,6 @@ CLASS("CmdrAI", "")
 	} ENDMETHOD;
 
 	/*
-	Method: update
-	Update active actions.
-	
-	Parameters:
-		_world - <Model.WorldModel>, real world model the actions are being performed in.
-	*/
-	METHOD("update") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-
-		// Sync before update
-		CALLM(_world, "sync", []);
-
-		T_PRVAR(side);
-		T_PRVAR(activeActions);
-
-		OOP_DEBUG_MSG("- - - - - U P D A T I N G - - - - -   on %1 active actions", [count _activeActions]);
-
-		// Update actions in real world
-		{ 
-			OOP_DEBUG_MSG("Updating action %1", [_x]);
-			CALLM(_x, "update", [_world]);
-		} forEach _activeActions;
-
-		// Remove complete actions
-		{ 
-			OOP_DEBUG_MSG("Completed action %1, removing", [_x]);
-			_activeActions deleteAt (_activeActions find _x);
-			UNREF(_x);
-		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
-
-		OOP_DEBUG_MSG("- - - - - U P D A T I N G   D O N E - - - - -", []);
-
-		#ifdef OOP_INFO
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
-		OOP_INFO_MSG(_str, []);
-		#endif
-	} ENDMETHOD;
-	
-	/*
 	Method: (private) selectActions
 	Generate and select new actions to add to the plan.
 	
@@ -442,31 +467,6 @@ CLASS("CmdrAI", "")
 		{
 			DELETE(_x);
 		} forEach _newActions;
-	} ENDMETHOD;
-
-	/*
-	Method: plan
-	Do a planning cycle. What action types are considered at each cycle depends on priorities and rates defined.
-	
-	Parameters:
-		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
-	*/
-	METHOD("plan") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-		
-		T_PRVAR(planningCycle);
-		T_SETV("planningCycle", _planningCycle + 1);
-
-		private _priority = switch true do {
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
-			default { -1 };
-		};
-
-		if(_priority != -1) then {
-			T_CALLM("_plan", [_world ARG _priority]);
-		};
 	} ENDMETHOD;
 
 	/*

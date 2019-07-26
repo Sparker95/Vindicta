@@ -1,5 +1,11 @@
 #include "../../common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrStrategy.Strategies.PassiveCmdrStrategy
+
+Commander does nothing ever.
+Parent: <AI.CmdrAI.CmdrStrategy.CmdrStrategy>
+*/
 CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 
 	METHOD("new") {

@@ -1,1 +1,0 @@
-NDSearch.OnPrefixDataLoaded("​cm",["Class"],[["​CmdrAITarget",,[["AI.​CmdrAI",,,,0,"File:AI/CmdrAI/CmdrAction/CmdrActionStates.hpp:AI.​CmdrAI.​CmdrAITarget","SQFClass:AI.​CmdrAI.​CmdrAITarget"]]]]);
