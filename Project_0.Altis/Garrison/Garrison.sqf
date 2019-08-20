@@ -2041,6 +2041,24 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("intelItems")
 	} ENDMETHOD;
 
+	// Updates spawn state of garrisons close to the provided position
+	STATIC_METHOD("updateSpawnStateOfGarrisonsNearPos") {
+		params ["_thisClass", ["_pos", [], [[]]]];
+
+		pr _gars = GETSV("Garrison", "all");
+		pr _garsToCheck = _gars select {
+			if (CALLM0(_x, "isAlive")) then {
+				CALLM0(_x, "getPos") distance2D _pos < 1500 // todo arbitrary number for now
+			} else {
+				false
+			};
+		};
+
+		{
+			CALLM2(_x, "postMethodAsync", "updateSpawnState", []);
+		} forEach _garsToCheck;
+	} ENDMETHOD;
+
 ENDCLASS;
 
 SETSV("Garrison", "all", []);
