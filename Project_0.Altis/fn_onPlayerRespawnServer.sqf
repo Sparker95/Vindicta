@@ -24,3 +24,11 @@ pr _gar = switch (side group _newUnit) do {
 };
 
 CALLM2(_gar, "postMethodAsync", "addUnit", [_unit]);
+
+// Re-evaluate spawn checks of city garrisons and city locations to accelerate the spawning of civilians
+// First, update the array of units which can spawn locations/garrisons
+CALLM0(gLUAP, "handleMessage"); // It doesn't care about the actual message; We don't care about thread safety here.
+// Update garrisons
+CALLSM1("Garrison", "updateSpawnStateOfGarrisonsNearPos", getPos _newUnit);
+// Update locations
+CALLSM1("Location", "processLocationsNearPos", getPos _newUnit);

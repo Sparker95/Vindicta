@@ -786,6 +786,20 @@ CLASS("Location", "MessageReceiverEx")
 		}
 	} ENDMETHOD;
 
+	// Runs "process" of locations within certain distance from the point
+	// Actually it only checks cities and roadblocks now, because other locations don't need to have "process" method to be called on them
+	STATIC_METHOD("processLocationsNearPos") {
+		params [P_THISCLASS, P_POSITION("_pos")];
+
+		pr _locs = CALLSM2("Location", "nearLocations", _pos, 1500) select { // todo arbitrary number for now
+			(GETV(_x, "type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK])
+		};
+
+		{
+			CALLM2(_x, "postMethodAsync", "process", []);
+		} forEach _locs;
+	} ENDMETHOD;
+
 ENDCLASS;
 
 SET_STATIC_VAR("Location", "all", []);

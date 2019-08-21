@@ -1,4 +1,4 @@
-//#define OOP_INFO
+#define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
 #include "..\OOP_light\OOP_light.h"
@@ -16,7 +16,7 @@ Author: Sparker 9 June 2019
 */
 
 // Update interval in seconds
-#define UPDATE_INTERVAL 6
+#define UPDATE_INTERVAL 5
 
 // How far we need to travel from our previous pos to update the list of nearby locations
 #define POS_TOLERANCE 250
@@ -92,13 +92,54 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 			T_SETV("nearLocations", _nearLocs);
 			T_SETV("prevPos", getPosASL _unit);
 		};
+		pr _nearLocs = T_GETV("nearLocations");
+
+		// -- Bail if there are no locations within range
+		if (count _nearLocs == 0) exitWith {};
+
+		// Find locations we are currently located at
+		pr _locationsAtPos = CALLSM2("Location", "getLocationsAtPos", getPosASL _unit, _nearLocs);
+
+		// First check locations we are located at
+		OOP_INFO_1("Located at locations: %1", _locationsAtPos);
+		{ // forEach _locationsAtPos;
+			// Ignore non-built locations
+			if (GETV(_x, "isBuilt")) then {
+				// Check if we don't have any local intel about this place yet
+				/*
+				pr _result0 = CALLM2(gIntelDatabaseClient, "getFromIndex", "location", _x);
+				pr _result1 = CALLM2(gIntelDatabaseClient, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
+				pr _intelResult = (_result0 arrayIntersect _result1) select 0;
+				pr _sendData = false;
+				if (isNil "_intelResult") then {
+					_sendData = true;
+				} else {
+					if (GETV(_intelResult, "side") == CLD_SIDE_UNKNOWN) exitWith {_sendData = true;};
+					if (GETV(_intelResult, "accuracyRadius") > 0) exitWith {_sendData = true;};
+					if (GETV(_intelResult, "type") == LOCATION_TYPE_UNKNOWN) exitWith {_sendData = true; };
+				};
+				*/
+				//if (_sendData) then {
+					// I've commented out all the checks because we're going to send reports all the time, regardless if we knew about this place or not
+					OOP_INFO_1("Sending data to commander: %1", _x);
+					CALLM2(_AICommander, "postMethodAsync", "updateLocationData", [_x ARG CLD_UPDATE_LEVEL_TYPE]);
+				//};
+			};
+		} forEach _locationsAtPos;
+
+		// Remaining locations we should check for visibility
+		pr _locsCheckVisibility = _nearLocs - _locationsAtPos;
+
+		// -- Bail if there are no locations to check visibility
+		if (count _locsCheckVisibility == 0) exitWith {};
 
 		// Check stuff
-		pr _nearLocs = T_GETV("nearLocations");
-		OOP_INFO_1("Near locations: %1", _nearLocs);
+		OOP_INFO_1("Checking visibility of locations: %1", _locsCheckVisibility);
 
 		// Screen area, used for inArea command
 		pr _screenArea = [[0.5, 0.5], 0.5*safeZoneW, 0.5*safeZoneH, 0, true];
+
+		// todo later we can replace it with https://community.bistudio.com/wiki/getObjectFOV which is currently in dev branch
 
 		// Horizontal angle of our camera, taking into account zoom
 		pr _p0 = AGLtoASL screenToWorld [safeZoneX+safeZoneW, safeZoneY+safeZoneH];
@@ -111,7 +152,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 		// Eye position
 		pr _eyePosASL = eyePos _unit;
 
-		{ // forEach _nearLocs;
+		{ // forEach _locsCheckVisibility;
 			pr _locPosAGL = +CALLM0(_x, "getPos");
 			_locPosAGL set [2, 15];
 			pr _locPosASL = AGLToASL _locPosAGL;
@@ -143,7 +184,14 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 							pr _result0 = CALLM2(gIntelDatabaseClient, "getFromIndex", "location", _x);
 							pr _result1 = CALLM2(gIntelDatabaseClient, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
 							pr _intelResult = (_result0 arrayIntersect _result1) select 0;
+							pr _sendData = false;
 							if (isNil "_intelResult") then {
+								_sendData = true; // Send data if we don't know about this palce yet at all
+							} else {
+								if (GETV(_intelResult, "accuracyRadius") != 0) then { _sendData = true; }; // Send data if coordinates are inaccurate
+							};
+
+							if (_sendData) then {
 								if (random 100 < (10 + _relativeAngularSize/0.06*30)) then {
 									// Send data to AI Commander
 									OOP_INFO_1("Sending data to commander: %1", _x);
@@ -154,11 +202,12 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 					};
 				};
 			};
-		} forEach _nearLocs;
+		} forEach _locsCheckVisibility;
 
-
-
-		
+		// Scale timer's interval with the amount of players in the game
+		// Because we don't want to overload the commander thread with these updates if many players are playing the scenario
+		pr _timer = T_GETV("timer");
+		CALLM1(_timer, "setInterval", (count allPlayers) * UPDATE_INTERVAL);
 
 	} ENDMETHOD;
 
