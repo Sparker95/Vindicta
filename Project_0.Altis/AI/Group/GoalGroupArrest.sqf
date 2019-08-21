@@ -25,7 +25,7 @@ CLASS("GoalGroupArrest", "Goal")
 		if !(isNil "_suspTarget") then { 
 			if (behaviour leader _hG == "COMBAT") then { _relevance = 0; } 
 			else {
-				_relevance = 120;
+				_relevance = GETSV("GoalGroupArrest", "relevance");
 			};
 		} else {
 			OOP_INFO_0("GoalGroupArrest: Evaluating relevance.");

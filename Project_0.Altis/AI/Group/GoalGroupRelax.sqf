@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 /*
-Goal for a group to perform patrol.
+Goal for a group to relax.
 */
 
 #define pr private
