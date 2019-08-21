@@ -14,10 +14,11 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupRelax",								1] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupNothing",							2] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupPatrol",								30] call AI_misc_fnc_setGoalIntrinsicRelevance;
-["GoalGroupArrest",								72] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupArrest",								32] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupRegroup",							35] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInVehiclesAsCrew",				40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInGarrisonVehiclesAsCargo",		40] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupStayInVehicles",						40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupOccupySentryPositions",				50] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupMoveGroundVehicles",					60] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupInfantryMove",						61] call AI_misc_fnc_setGoalIntrinsicRelevance;
@@ -40,6 +41,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupPatrol", "ActionGroupPatrol"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupArrest", "ActionGroupArrest"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupRegroup", "ActionGroupRegroup"] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupStayInVehicles", "ActioNGroupStayInVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupGetInVehiclesAsCrew", "ActionGroupGetInVehiclesAsCrew"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupGetInGarrisonVehiclesAsCargo", "ActionGroupGetInGarrisonVehiclesAsCargo"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupOccupySentryPositions", "ActionGroupOccupySentryPositions"] call AI_misc_fnc_setGoalPredefinedAction;

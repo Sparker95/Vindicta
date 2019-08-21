@@ -14,6 +14,7 @@ call compile preprocessFileLineNumbers "AI\Group\ActionGroupOccupySentryPosition
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupPatrol.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupRegroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupRelax.sqf";
+call compile preprocessFileLineNumbers "AI\Group\ActionGroupStayInVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\ActionGroupVehicleClearArea.sqf";
@@ -30,6 +31,7 @@ call compile preprocessFileLineNumbers "AI\Group\GoalGroupOccupySentryPositions.
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupPatrol.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupRegroup.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupRelax.sqf";
+call compile preprocessFileLineNumbers "AI\Group\GoalGroupStayInVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Group\GoalGroupUnflipVehicles.sqf";
 call compile preprocessFileLineNumbers "AI\Group\_SensorGroup.sqf";
