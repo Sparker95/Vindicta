@@ -95,6 +95,9 @@ CLASS("GameModeBase", "")
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 
+			// Initialize player database
+			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
+			// todo load it from profile namespace or whatever
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -140,6 +143,9 @@ CLASS("GameModeBase", "")
 				sleep 6;
 				CALLSM1("MapMarkerLocation", "setAllNotifications", false);
 			};
+
+			// Create PlayerDatabaseClient
+			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 
 			T_CALLM("initClientOnly", []);
 		};

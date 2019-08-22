@@ -44,8 +44,22 @@ CRITICAL_SECTION {
 	CALLM(gGameMode, "init", []);
 	systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
 
-	serverInitDone = 1;
-	PUBLIC_VARIABLE "serverInitDone";
+	// If we're a server, broadcast to everyone that initialization has been completed, so that clients can initialize as well
+	if (IS_SERVER) then {
+		serverInitDone = 1;
+		PUBLIC_VARIABLE "serverInitDone";
+	} else {
+		
+	};
+
+	// Notify server that we have initialized everything and our systems are ready to interact with server
+	if (HAS_INTERFACE) then {
+		0 spawn {
+			waitUntil {count (getPlayerUID player) > 1}; // Sometimes it might be ""
+			private _uid = profileNamespace getVariable ["p0_uid", getPlayerUID player]; // Alternative UID for testing purposes
+			[_uid, profileName, clientOwner] remoteExecCall ["fnc_onPlayerInitializedServer", 2];
+		};
+	};
 };
 
 // pr0_fn_getGlobalRectAndSize = {

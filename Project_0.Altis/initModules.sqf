@@ -36,6 +36,7 @@ call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 fnc_onPlayerRespawnServer = compile preprocessFileLineNumbers "fn_onPlayerRespawnServer.sqf";
+fnc_onPlayerInitializedServer = compile preprocessFileLineNumbers "fn_onPlayerInitializedServer.sqf";
 
 //Initialize cluster module
 call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
@@ -117,5 +118,11 @@ call compile preprocessFileLineNumbers "LocationVisibilityMonitor\LocationVisibi
 
 // Initialize GameModes
 call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
+
+// Initialize PlayerDatabases
+call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
+call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseServer.sqf";
+call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseClient.sqf";
+
 
 diag_log "[initModules] Done!";

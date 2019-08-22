@@ -5,8 +5,13 @@ _onPlayerConnectedMissionEH = {
 	params ["_id", "_uid", "_name", "_jip", "_owner"];
 	
 	if (_owner == 2) exitWith {};
+
+	
+
+	// Todo rework this player list thing
 	gPlayersList pushBackUnique _this;
 	publicVariable "gPlayersList";
+
 	diag_log format ["debug EHConn gPlayersList %1", gPlayersList];
 };
 handlerCon = addMissionEventHandler ["PlayerConnected", _onPlayerConnectedMissionEH];
