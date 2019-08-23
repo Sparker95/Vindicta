@@ -124,5 +124,7 @@ call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
 call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseServer.sqf";
 call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseClient.sqf";
 
+// Initialize the GarrisonServer
+call compile preprocessFileLineNumbers "GarrisonServer\initClasses.sqf";
 
 diag_log "[initModules] Done!";

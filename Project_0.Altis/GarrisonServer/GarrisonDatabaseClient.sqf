@@ -45,7 +45,7 @@ CLASS("GarrisonDatabaseClient", "")
 	} ENDMETHOD;
 
 	METHOD("deleteGarrisonRecord") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")]
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
 		// Remove it from the hashmap
 		pr _hm = T_GETV("hm");

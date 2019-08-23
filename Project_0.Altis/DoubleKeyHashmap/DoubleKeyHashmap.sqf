@@ -28,8 +28,10 @@ CLASS("DoubleKeyHashmap", "")
 	METHOD("new") {
 		params [P_THISOBJECT];
 
+		#ifndef _SQF_VM
 		pr _ns = [false] call CBA_fnc_createNamespace;
 		T_SETV("ns", _ns);
+		#endif
 	} ENDMETHOD;
 
 	METHOD("delete") {
