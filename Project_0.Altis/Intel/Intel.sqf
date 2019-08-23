@@ -295,8 +295,8 @@ CLASS("IntelLocation", "Intel")
 	STATIC_METHOD("setLocationMarkerProperties") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 
-		diag_log format ["--- setLocationMarkerProperties: %1", _intel];
-		[_intel] call oop_dumpAllVariables;
+		//diag_log format ["--- setLocationMarkerProperties: %1", _intel];
+		//[_intel] call oop_dumpAllVariables;
 
 
 		pr _mapMarker = GETV(_thisObject, "mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it

@@ -32,7 +32,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	VARIABLE("type");
 	VARIABLE("notification"); // Bool
 
-	STATIC_VARIABLE("selectedLocationMarkers");
+	STATIC_VARIABLE("selectedMarkers");
 
 	STATIC_VARIABLE("all");
 
@@ -284,7 +284,7 @@ CLASS(CLASS_NAME, "MapMarker")
 				CALLM1(_thisObject, "setNotification", false);
 			};
 
-			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers");
+			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
 
@@ -339,7 +339,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	STATIC_METHOD("deselectAllMarkers") {
 		params ["_thisClass"];
 
-		pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers");
+		pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
 		{
 			SETV(_x, "selected", false);
 			if (GETV(_x, "radius") != 0) then {
@@ -347,7 +347,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			};
 		} forEach _selectedMarkers;
 
-		SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
+		SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
 	} ENDMETHOD;
 
 	STATIC_METHOD("onMouseClickElsewhere") {
@@ -370,7 +370,7 @@ CLASS(CLASS_NAME, "MapMarker")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "selectedLocationMarkers", []);
+SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
 SET_STATIC_VAR(CLASS_NAME, "all", []);
 
 #ifndef _SQF_VM

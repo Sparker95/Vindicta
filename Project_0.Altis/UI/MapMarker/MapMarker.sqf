@@ -269,15 +269,7 @@ CLASS(CLASS_NAME, "")
 
 				// Check if the cursor position is inside marker
 				_mrkPosUI params ["_mrkPosUIX", "_mrkPosUIY"];
-				if ((_xCursorPosUI > (_mrkPosUIX - _eWidthUI)) && (_xCursorPosUI < (_mrkPosUIX + _eWidthUI))) then {
-					if ((_yCursorPosUI > (_mrkPosUIY - _eHeightUI)) && (_yCursorPosUI < (_mrkPosUIY + _eHeightUI))) then {
-						true
-					} else {
-						false
-					};
-				} else {
-					false
-				};
+				[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1])
 			};
 
 			if (_index == -1) then {

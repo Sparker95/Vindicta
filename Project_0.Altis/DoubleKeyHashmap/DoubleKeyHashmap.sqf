@@ -36,7 +36,7 @@ CLASS("DoubleKeyHashmap", "")
 		params [P_THISOBJECT];
 
 		pr _ns = T_GETV("ns");
-		DELETE(_ns);
+		_ns call CBA_fnc_deleteNamespace;
 	} ENDMETHOD;
 
 	/*
