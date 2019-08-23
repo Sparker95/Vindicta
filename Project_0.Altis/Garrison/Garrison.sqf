@@ -41,6 +41,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
 
+	// Array with composition: amount of units of specified
+	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
+
 	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
 
 	// ----------------------------------------------------------------------
@@ -80,6 +83,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
 		T_SETV("intelItems", []);
+
+		// Set value of composition counters
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {0});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+		T_SETV("composition", _comp);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
@@ -1622,6 +1634,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
+		// Update composition array
+		pr _comp = T_GETV("composition");
+		_comp#_catID set [_subcatID, (_comp#_catID#_subcatID) + 1];
+
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;	
 	
@@ -1665,6 +1681,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
 
+		// Update composition array
+		pr _comp = T_GETV("composition");
+		_comp#_catID set [_subcatID, (_comp#_catID#_subcatID) - 1];
+
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 	
@@ -1707,6 +1727,26 @@ CLASS("Garrison", "MessageReceiverEx");
 			+T_EFF_null
 		};
 		pr _return = +T_GETV("effTotal");
+		__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+	METHOD("getComposition") {
+		params [P_THISOBJECT];
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			pr _comp = [];
+			{
+				pr _tempArray = [];
+				_tempArray resize _x;
+				_comp pushBack (_tempArray apply {0});
+			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+			_comp
+		};
+		pr _return = +T_GETV("composition");
 		__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;

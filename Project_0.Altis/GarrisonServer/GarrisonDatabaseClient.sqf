@@ -1,43 +1,6 @@
 #include "common.hpp"
 
-
-
 #define pr private
-
-/*
-Class: GarrisonRecord
-Client-side representation of a garrison.
-
-Author: Sparker 23 August 2019
-*/
-
-CLASS("GarrisonRecord", "")
-
-	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_garRef")];
-
-		T_SETV("garRef", _garRef);
-	} ENDMETHOD;
-
-	// Ref to the actual garrison, which exists only on the server
-	VARIABLE("garRef");
-
-	// Ref to the map marker object
-	VARIABLE("mapMarker");
-
-	// Generic properties
-	VARIABLE("pos");
-	VARIABLE("side");
-	VARIABLE("composition");
-
-	// Current goal
-	VARIABLE("goal");
-	VARIABLE("goalPos");
-	VARIABLE("goalMapMarker");
-
-	// What else did I forget?
-
-ENDCLASS;
 
 /*
 Class: GarrisonDatabaseClient
@@ -60,6 +23,7 @@ CLASS("GarrisonDatabaseClient", "")
 		T_SETV("ns", _ns);
 	} ENDMETHOD;
 
+	// It really never gets deleted now, so we don't care about it
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
@@ -68,13 +32,73 @@ CLASS("GarrisonDatabaseClient", "")
 	} ENDMETHOD;
 
 	METHOD("addGarrisonRecord") {
-		params [P_THISOBJECT, P_STRING("_garRef")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
-		pr _record = NEW("GarrisonRecord", [_garRef]);
+		// Add the garrison reference to the hashmap
+		pr _hm = T_GETV("hm");
+		pr _garRef = GETV(_garRecord, "garRef");
+		_hm setVariable [_garRef, _garRecord];
+
+		// Initialize the client-side data of the GarrisonRecord
+		CALLM0(_garRecord, "clientInit");
+
 	} ENDMETHOD;
 
 	METHOD("deleteGarrisonRecord") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")]
 
+		// Remove it from the hashmap
+		pr _hm = T_GETV("hm");
+		pr _garRef = GETV(_garRecord, "garRef");
+		_hm setVariable [_garRef, nil];
+
+		// Destroy the GarrisonRecord
+		CALLM0(_garRecord, "clientDestroy");
+	} ENDMETHOD;
+
+	// - - - - - - Static methods called by the GarrisonServer - - - - - - 
+
+	STATIC_METHOD("destroy") {
+		params [P_THISCLASS, P_STRING("_garRef")];
+
+		// The global garrison database
+		pr _object = gGDBClient;
+		//if (isNil "_object") exitWith{}; // Sanity check
+
+		// Check if we have a local record about this garrison
+		pr _hm = T_GETV("hm");
+		pr _garRecordLocal = _hm getVariable _garRef;
+		if (isNil "_garRecordLocal") then {
+			// We don't have a record of such garrison anyway, ignore it
+		} else {
+			CALLM1(_object, "deleteGarrisonRecord", _garRecordLocal);
+		};
+	} ENDMETHOD;
+
+	// Receives a serialized GarrisonRecord from the GarrisonServer
+	STATIC_METHOD("update") {
+		params [P_THISCLASS, P_OOP_OBJECT("_recordSerial")];
+
+		// The global garrison database
+		pr _object = gGDBClient;
+		//if (isNil "_object") exitWith{}; // Sanity check
+
+		pr _garRecord = NEW("GarrisonRecord", []);
+		DESERIALIZE(_garRecord, _recordSerial);
+
+		pr _garRef = GETV(_garRecord, "garRef");
+
+		// Check if we have a local record about this garrison
+		pr _hm = T_GETV("hm");
+		pr _garRecordLocal = _hm getVariable _garRef;
+		if (isNil "_garRecordLocal") then {
+			// Store the just-created GarrisonRecord
+			CALLM1(_object, "addGarrisonRecord", _garRecord);
+		} else {
+			// Update data and then delete it
+			CALLM1(_garRecordLocal, "clientUpdate", _garRecord);
+			DELETE(_garRecord); // We have copied data and don't need this any more
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

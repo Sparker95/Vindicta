@@ -15,6 +15,9 @@ Author: Sparker 23 August 2019
 
 CLASS("GarrisonServer", "MessageReceiverEx")
 
+	// Array with garrisons which have just been created
+	VARIABLE("createdObjects");
+
 	// Array with garrisons for which update events will be broadcasted at next update cycle
 	VARIABLE("outdatedObjects");
 	
@@ -26,6 +29,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		T_SETV("outdatedObjects", []);
 		T_SETV("destroyedObjects", []);
+		T_SETV("createdObjects", []);
 
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
@@ -36,6 +40,54 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		SETV(_thisObject, "timer", _timer);
+	} ENDMETHOD;
+
+	// We only receive messages from timer now, so we don't care about the message type
+	// - - - - Processing of garrisons - - - - -
+	METHOD("handleMessageEx") {
+		params [P_THISOBJECT];
+
+		// Broadcast update messages
+		// This also corresponds to just created garrisons as they are outdated
+		pr _outdatedGarrisons = T_GETV("outdatedObjects") + T_GETV("createdObjects");
+		{
+			pr _gar = _x;
+			if (IS_OOP_OBJECT(_gar)) then {
+				if (CALLM0(_gar, "isAlive")) then { // We only serve update events here
+					// Create a GarrisonRecord to serialize it (to deserialize it at the client machine)
+					pr _tempRecord = NEW("GarrisonRecord", [_gar]);
+					CALLM1(_tempRecord, "initFromGarrison", _tempRecord);
+					pr _serArray = SERIALIZE(_tempRecord);
+					DELETE(_tempRecord);
+
+					// Now we can send the serialized array
+					pr _side = GETV(_gar, "side");
+					REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "update", [_serArray], _side, false); // classNameStr, methodNameStr, extraParams, targets, JIP
+				};
+			};
+		} forEach _outdatedGarrisons;
+
+		// Broadcast destroyed events
+		pr _destroyedGarrisons = T_GETV("destroyedGarrisons");
+		// Just send data to everyone, those who don't care about these objects will just ignore them
+		{
+			REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "destroy", [_x], [EAST, WEST, INDEPENDENT, CIVILIAN], false); // Execute on all machines with interface
+		} forEach _destroyedGarrisons;
+
+		// Reset the arrays of garrisons to broadcast
+		T_SETV("outdatedObjects", []);
+		T_SETV("destroyedObjects", []);
+		T_SETV("createdObjects", []);
+
+	} ENDMETHOD;
+
+	// - - - - Methods to be called by garrison on various events - - - - 
+
+	// Marks the garrison as just created
+	METHOD("onGarrisonCreated") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
+
+		T_GETV("createdObjects") pushBackUnique _gar;
 	} ENDMETHOD;
 
 	// Marks the garrison requiring an update broadcast
@@ -51,34 +103,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		T_GETV("destroyedObjects") pushBackUnique _gar;
 
-		// Make sure we don't send an update event
+		// Make sure we don't send an update event about it any more
 		pr _outdatedObjects = T_GETV("outdatedObjects");
 		_outdatedObjects deleteAt (_outdatedObjects find _gar);
-	} ENDMETHOD;
-
-	// We only receive messages from timer now, so we don't care about the message type
-	METHOD("handleMessageEx") {
-		params [P_THISOBJECT];
-
-		// Broadcast destroyed events
-		pr _destroyedGarrisons = T_GETV("destroyedGarrisons");
-		// Just send data to everyone, those who don't care about these objects will just ignore them
-		
-		{
-
-		} forEach _destroyedGarrisons;
-
-		// Broadcast update messages
-		pr _outdatedGarrisons = T_GETV("outdatedObjects");
-		{
-			pr _gar = _x;
-			if (IS_OOP_OBJECT(_gar)) then {
-				if (CALLM(_gar, "isAlive")) then { // We only serve update events here
-					
-				};
-			};
-		} forEach _outdatedObjects;
-
 	} ENDMETHOD;
 
 	// GarrisonServer is attached to the main message loop
