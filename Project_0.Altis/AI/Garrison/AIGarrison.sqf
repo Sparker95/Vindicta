@@ -382,6 +382,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		params ["_thisObject", "_pos"];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
 	} ENDMETHOD;
 
 	// Sets the position, because it is stored in the world state

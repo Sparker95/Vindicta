@@ -158,6 +158,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set 'active' flag
 		T_SETV("active", true);
 
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
 	} ENDMETHOD;
@@ -177,6 +180,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Set 'active' flag
 		T_SETV("active", true);
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 
 		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
 		nil
@@ -265,6 +271,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Unregister with the owning commander, do it last because it will cause an unref
 			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		};
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonDestroyed", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -1032,6 +1041,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Add to the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
 		CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
+ 
+		// Notify GarrisonServer
+		if (T_GETV("active")) then {
+			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+		};
 
 		__MUTEX_UNLOCK;
 
@@ -1101,6 +1115,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Substract from the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
 		CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
+
+		// Notify GarrisonServer
+		if (T_GETV("active")) then {
+			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+		};
 
 		__MUTEX_UNLOCK;
 

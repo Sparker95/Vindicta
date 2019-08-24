@@ -71,6 +71,10 @@ CLASS("GameModeBase", "")
 			T_CALLM("initServerOrHC", []);
 		};
 		if(IS_SERVER) then {
+
+			// Create the garrison server
+			gGarrisonServer = NEW("GarrisonServer", []);
+
 			T_CALLM("initCommanders", []);
 			#ifndef _SQF_VM
 			T_CALLM("initLocations", []);
@@ -147,6 +151,9 @@ CLASS("GameModeBase", "")
 			// Create PlayerDatabaseClient
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 
+			// Create GarrisonDatabaseClient
+			gGarrisonDBClient = NEW("GarrisonDatabaseClient", []);
+
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);
@@ -213,8 +220,10 @@ CLASS("GameModeBase", "")
 			{
 				private _sideCommander = GETV(_x, "side");
 				if (_sideCommander != WEST) then { // Enemies are smart
-					private _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+					if (CALLM0(_loc, "isBuilt")) then {
+						private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+					};
 				} else {
 					// If it's player side, let it only know about cities
 					if (_type == LOCATION_TYPE_CITY) then {

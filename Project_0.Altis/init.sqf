@@ -26,7 +26,7 @@ if (!IS_SERVER) then {
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		case "Sparker": 	{ "CivilWarGameMode" };
+		case "Sparker": 	{ "RedVsGreenGameMode" }; //"CivilWarGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };
@@ -57,7 +57,7 @@ CRITICAL_SECTION {
 		0 spawn {
 			waitUntil {count (getPlayerUID player) > 1}; // Sometimes it might be ""
 			private _uid = profileNamespace getVariable ["p0_uid", getPlayerUID player]; // Alternative UID for testing purposes
-			[_uid, profileName, clientOwner] remoteExecCall ["fnc_onPlayerInitializedServer", 2];
+			[_uid, profileName, clientOwner, playerSide] remoteExecCall ["fnc_onPlayerInitializedServer", 2];
 		};
 	};
 };

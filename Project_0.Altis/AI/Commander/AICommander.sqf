@@ -933,8 +933,9 @@ CLASS("AICommander", "AI")
 			pr _locPos = CALLM0(_loc, "getPos");
 			// Create a new garrison and register it
 			_gar = NEW("Garrison", [_side ARG _locPos]);
+			CALLM0(_gar, "activate");
 			CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
-			CALLM2(_gar, "postMethodAsync", "activate", []);
+			_activate = true;
 			_gar
 		};
 

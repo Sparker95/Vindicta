@@ -19,15 +19,17 @@ CLASS("GarrisonDatabaseClient", "")
 	METHOD("new") {
 		params [P_THISOBJECT];
 
+		#ifndef _SQF_VM
 		pr _ns = [false] call CBA_fnc_createNamespace;
-		T_SETV("ns", _ns);
+		T_SETV("hm", _ns);
+		#endif
 	} ENDMETHOD;
 
 	// It really never gets deleted now, so we don't care about it
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		pr _ns = T_GETV("ns");
+		pr _ns = T_GETV("hm");
 		_ns call CBA_fnc_deleteNamespace;
 	} ENDMETHOD;
 
@@ -54,6 +56,7 @@ CLASS("GarrisonDatabaseClient", "")
 
 		// Destroy the GarrisonRecord
 		CALLM0(_garRecord, "clientDestroy");
+		DELETE(_garRecord);
 	} ENDMETHOD;
 
 	// - - - - - - Static methods called by the GarrisonServer - - - - - - 
@@ -61,12 +64,14 @@ CLASS("GarrisonDatabaseClient", "")
 	STATIC_METHOD("destroy") {
 		params [P_THISCLASS, P_STRING("_garRef")];
 
+		OOP_INFO_1("DESTROY: %1", _garRef);
+
 		// The global garrison database
-		pr _object = gGDBClient;
+		pr _object = gGarrisonDBClient;
 		//if (isNil "_object") exitWith{}; // Sanity check
 
 		// Check if we have a local record about this garrison
-		pr _hm = T_GETV("hm");
+		pr _hm = GETV(_object, "hm");
 		pr _garRecordLocal = _hm getVariable _garRef;
 		if (isNil "_garRecordLocal") then {
 			// We don't have a record of such garrison anyway, ignore it
@@ -77,10 +82,12 @@ CLASS("GarrisonDatabaseClient", "")
 
 	// Receives a serialized GarrisonRecord from the GarrisonServer
 	STATIC_METHOD("update") {
-		params [P_THISCLASS, P_OOP_OBJECT("_recordSerial")];
+		params [P_THISCLASS, P_ARRAY("_recordSerial")];
+
+		OOP_INFO_1("UPDATE: %1", _recordSerial);
 
 		// The global garrison database
-		pr _object = gGDBClient;
+		pr _object = gGarrisonDBClient;
 		//if (isNil "_object") exitWith{}; // Sanity check
 
 		pr _garRecord = NEW("GarrisonRecord", []);
@@ -89,7 +96,7 @@ CLASS("GarrisonDatabaseClient", "")
 		pr _garRef = GETV(_garRecord, "garRef");
 
 		// Check if we have a local record about this garrison
-		pr _hm = T_GETV("hm");
+		pr _hm = GETV(_object, "hm");
 		pr _garRecordLocal = _hm getVariable _garRef;
 		if (isNil "_garRecordLocal") then {
 			// Store the just-created GarrisonRecord

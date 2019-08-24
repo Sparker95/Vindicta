@@ -11,17 +11,17 @@ Author: Sparker 23 August 2019
 CLASS("GarrisonRecord", "")
 
 	// Ref to the actual garrison, which exists only on the server
-	VARIABLE("garRef");
+	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]); 
 
 	// Generic properties
-	VARIABLE("pos");
-	VARIABLE("side");
-	VARIABLE("composition");
+	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("composition", [ATTR_SERIALIZABLE]);
 
 	// Current goal
-	VARIABLE("goal");
-	VARIABLE("goalPos");
-	VARIABLE("goalMapMarker");
+	VARIABLE_ATTR("goal", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("goalPos", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("goalMapMarker", [ATTR_SERIALIZABLE]);
 
 	// Ref to the map marker object
 	VARIABLE("mapMarker");
@@ -43,6 +43,8 @@ CLASS("GarrisonRecord", "")
 	METHOD("initFromGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 
+		T_SETV("garRef", _gar);
+
 		// Accessing data without proper interfaces now
 		// This is probably not so bad??
 		// todo need to rethink it probably...
@@ -55,6 +57,7 @@ CLASS("GarrisonRecord", "")
 	METHOD("_updateMapMarker") {
 		params [P_THISOBJECT];
 
+		pr _mapMarker = T_GETV("mapMarker");
 		CALLM1(_mapMarker, "setPos", T_GETV("pos"));
 		CALLM1(_mapMarker, "setSide", T_GETV("side"));
 
@@ -72,7 +75,7 @@ CLASS("GarrisonRecord", "")
 	} ENDMETHOD;
 
 	// Updates data in this object from another garrison record
-	#define __TCOPYVAR(objNameStr, varNameStr) T_SETV(objNameStr, GETV(objNameStr, varNameStr)) // I love the preprocessor :3
+	#define __TCOPYVAR(objNameStr, varNameStr) T_SETV(varNameStr, GETV(objNameStr, varNameStr)) // I love the preprocessor :3
 	METHOD("clientUpdate") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 

@@ -16,11 +16,13 @@ That's how we draw garrisons
 
 #define MARKER_SUFFIX "_mrk"
 
+#define pr private
+
 CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("selected");
 
-	STATIC_VARIABLE("selectedGarrisonMarkers");
+	STATIC_VARIABLE("selectedMarkers");
 	//STATIC_VARIABLE("all");
 
 	METHOD("new") {
@@ -28,11 +30,12 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		// Create marker
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
-		createMarkerLocal [_mrkName, [100, 100, 0];
+		createMarkerLocal [_mrkName, [100, 100, 0]];
 		_mrkName setMarkerShapeLocal "ICON";
 		_mrkName setMarkerPosLocal ([100, 100, 0]);
-		_mrkName setMarkerAlphaLocal 0.7;
+		_mrkName setMarkerAlphaLocal 0.85;
 		_mrkName setMarkerType "b_unknown";
+		_mrkName setMarkerText "  <Garrison>";
 
 	} ENDMETHOD;
 
@@ -47,10 +50,13 @@ CLASS(CLASS_NAME, "MapMarker")
 		_mrkName setMarkerColorLocal ([_side, true] call BIS_fnc_sideColor);
 	} ENDMETHOD;
 
-	METHOD("setPosition") {
+	METHOD("setPos") {
 		params [P_THISOBJECT, P_POSITION("_pos")];		
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		_mrkName setMarkerPosLocal _pos;
+
+		// Call base class method
+		CALL_CLASS_METHOD("MapMarker", _thisObject, "setPos", [_pos]);
 	} ENDMETHOD;
 
 	METHOD("onDraw") {
@@ -62,7 +68,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			_control drawIcon
 			[
 				"\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa",
-				[1.0, 0, 0, 1], //Color
+				[1.0, 0.5, 0, 1], //Color
 				_pos, // Pos
 				41, // Width
 				41, // Height
@@ -90,11 +96,6 @@ CLASS(CLASS_NAME, "MapMarker")
 			pr _selectedMarkers = GET_STATIC_VAR(CLASS_NAME, "selectedMarkers");
 			_selectedMarkers pushBackUnique _thisObject;
 			T_SETV("selected", true);
-
-			// Update the accuracy radius marker's alpha
-			if (T_GETV("radius") != 0) then {
-				CALLM0(_thisObject, "updateAccuracyRadiusMarker");
-			};
 
 			// If only this marker is selected now
 			if (count _selectedMarkers == 1) then {
@@ -138,5 +139,14 @@ CLASS(CLASS_NAME, "MapMarker")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "selectedGarrisonMarkers", []);
+SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
 //SET_STATIC_VAR(CLASS_NAME, "all", []);
+
+#ifndef _SQF_VM
+
+[missionNamespace, "MapMarker_MouseButtonDown_none", {
+	params ["_button", "_shift", "_ctrl", "_alt"];
+	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
+}] call BIS_fnc_addScriptedEventHandler;
+
+#endif

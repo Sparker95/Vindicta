@@ -225,12 +225,12 @@ CLASS(CLASS_NAME, "MapMarker")
 				_pos, // Pos
 				41, // Width
 				41, // Height
-				-_angle, // Angle
+				0, //-_angle, // Angle
 				"" // Text
 			];
 
 
-			T_SETV("angle", _angle + 20/diag_FPS);
+			//T_SETV("angle", _angle + 20/diag_FPS);
 		};
 
 	} ENDMETHOD;

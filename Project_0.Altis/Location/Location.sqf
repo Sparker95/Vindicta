@@ -772,6 +772,12 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD_FILE("build", "Location\build.sqf");
 
 	/*
+	Method: setBorder
+	Getter for isBuilt
+	*/
+	METHOD("isBuilt") { params [P_THISOBJECT]; T_GETV("isBuilt") } ENDMETHOD ;
+
+	/*
 	Method: (static)nearLocations
 	Returns an array of locations that are _radius meters from _pos. Distance is checked in 2D mode.
 
