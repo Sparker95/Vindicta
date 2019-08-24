@@ -1,5 +1,11 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_GarrisonAttackTarget
+Order a garrison to attack a target.
+
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -15,17 +21,30 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("startDate", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("clearing", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to give an attack target order to a garrison.
+	
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_garrDeadState - <CMDR_ACTION_STATE>, state to return when garrison performing the action is dead
+		_timeOutState - <CMDR_ACTION_STATE>, state to return if this action times out
+		_garrIdVar - IN <AST_VAR>(Number), GarrisonModel Id of the garrison performing the attack
+		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to attack
+		_moveRadiusVar - IN <AST_VAR>(Number), radius around target at which to stop moving and start attacking
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),					// Source action for debugging purposes
-			P_ARRAY("_fromStates"),						// States it is valid from
-			P_AST_STATE("_successState"),				// State upon successfully destroying the target
-			P_AST_STATE("_garrDeadState"), 				// State if the garrison is dead (should really not get this far if it is)
-			P_AST_STATE("_timeOutState"), 				// State if we timed out (couldn't kill and didn't get killed)
-			// inputs
-			P_AST_VAR("_garrIdVar"),	 				// Id of garrison to merge/join from
-			P_AST_VAR("_targetVar"),					// Target to attack (garrison, location or cluster)
-			P_AST_VAR("_moveRadiusVar")					// Radius around the target within which we consider ourselves "at the target" (so we don't need to move again)
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_garrDeadState"),
+			P_AST_STATE("_timeOutState"),
+			P_AST_VAR("_garrIdVar"),
+			P_AST_VAR("_targetVar"),
+			P_AST_VAR("_moveRadiusVar")
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 
@@ -63,6 +82,8 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			T_GETV("garrDeadState")
 		};
 
+		// Stop the attack if the target is dead, call it success.
+		// TODO: Perhaps we don't want to rely on this as a criteria to stop?
 		private _target = T_GET_AST_VAR("targetVar");
 		if(T_CALLM("isTargetDead", [_world ARG _target])) exitWith {
 			if(_clearing and GETV(_world, "type") == WORLD_TYPE_REAL) then {
@@ -72,6 +93,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			T_GETV("successState")
 		};
 
+		// If we can't get the target position then just finish with success. Blame commander.
 		private _targetPos = [_world, _target] call Target_fnc_GetPos;
 		if(!(_targetPos isEqualType [])) exitWith { 
 			OOP_WARNING_MSG("[w %1 a %2] Can't get position of target %3", [_world ARG _action ARG _target]);
@@ -79,15 +101,18 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		};
 
 		private _success = false;
+		// How we behave depends on world type.
 		switch(GETV(_world, "type")) do {
-			// Attack can't be applied instantly
+			// When update world NOW sim we do nothing, because we can't instantly move to and kill the enemy.
 			case WORLD_TYPE_SIM_NOW: {};
-			// Attack completes at some point in the future
+			// When update world FUTURE sim we will assume we succeeded. Its the power of positive thinking.
 			case WORLD_TYPE_SIM_FUTURE: {
 				CALLM(_garr, "moveSim", [_targetPos]);
 				T_CALLM("simKillTarget", [_world ARG _target]);
 				_success = true;
 			};
+			// When doing a real world update we give the attack order if it isn't already given, 
+			// or check if it is complete.
 			case WORLD_TYPE_REAL: {
 				if(!_clearing) then {
 					private _moveRadius = T_GET_AST_VAR("moveRadiusVar");
@@ -111,12 +136,15 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		}
 	} ENDMETHOD;
 
-	METHOD("isTargetDead") {
+	/* private */ METHOD("isTargetDead") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
 
 		private _isDead = false;
+		// How to determine if the target is "dead" depends on the target type. For some target types
+		// there is no such concept as dead.
+		// TODO: should we return true or false for target types that don't have a concept of "dead"?
 		switch(_targetType) do {
 			case TARGET_TYPE_GARRISON: {
 				ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");
@@ -146,7 +174,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 
 	} ENDMETHOD;
 
-	METHOD("getTargetRadius") {
+	/* private */ METHOD("getTargetRadius") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];
@@ -169,7 +197,8 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		_radius
 	} ENDMETHOD;
 
-	METHOD("simKillTarget") {
+	// Simulate the death of the target (for FUTURE sim worlds).
+	/* private */ METHOD("simKillTarget") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_ARRAY("_targetObj")];
 
 		_targetObj params ["_targetType", "_target"];

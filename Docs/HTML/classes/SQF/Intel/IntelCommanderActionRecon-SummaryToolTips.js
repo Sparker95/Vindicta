@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionRecon",{655:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">The commander is planning something so he sends some recon squads!</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionRecon",{583:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">The commander is planning something so he sends some recon squads!</div></div>"});

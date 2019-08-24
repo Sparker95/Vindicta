@@ -1,22 +1,40 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_WaitGarrison
+Have a garrison wait for a period of time.
+
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_WaitGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE]);
+
 	// Inputs
 	VARIABLE_ATTR("waitUntilDateVar", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST for a garrison to wait for a period of time.
+	
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success, when wait is over and garrison is still alive
+		_failGarrisonDead - <CMDR_ACTION_STATE>, state to return when garrison performing the action is dead
+		_waitUntilDateVar - IN <AST_VAR>(Date), date to wait until
+		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison waiting
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),			// Owner action for debugging purposes
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// if we reached the target
-			P_AST_STATE("_failGarrisonDead"), 	// if the garrison we are moving died
-			// inputs
-			P_AST_VAR("_waitUntilDateVar"), 		// target [type, value] (garrison, location or position)
-			P_AST_VAR("_garrIdVar") 				// garrison to move
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_failGarrisonDead"),
+			P_AST_VAR("_waitUntilDateVar"),
+			P_AST_VAR("_garrIdVar")
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 

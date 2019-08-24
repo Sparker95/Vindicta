@@ -1,31 +1,49 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_SplitGarrison
+Split a garrison into two parts.
 
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_SplitGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("failState", [ATTR_PRIVATE]);
 
 	// Inputs
-	VARIABLE_ATTR("srcGarrId", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("detachmentEff", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("splitFlags", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("detachmentEffVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("splitFlagsVar", [ATTR_PRIVATE]);
 
 	// Outputs
-	VARIABLE_ATTR("detachedGarrId", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to split a garrison into two parts.
+	
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_failState - <CMDR_ACTION_STATE>, state to return if the split fails for any reason
+		_srcGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to split
+		_detachmentEffVar - IN <AST_VAR>(Efficiency Vector), efficiency to take from the source garrison to form the new garrison
+		_splitFlagsVar - IN <AST_VAR>(Array of Number), flags that define the rules when splitting the garrison, passed to <Model.GarrisonModel.splitActual>
+			(see CmdrAI.hpp for the definitions)
+		_detachedGarrIdVar - OUT <AST_VAR>(Number), <Model.GarrisonModel> Id of the newly formed garrison
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
 			P_OOP_OBJECT("_action"),
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"), 		// Split succeeded
-			P_AST_STATE("_failState"), 			// Split failed (TODO: differentiate failure types)
-			// inputs
-			P_AST_VAR("_srcGarrId"), 			// Garrison we want to split
-			P_AST_VAR("_detachmentEff"), 		// Efficiency we want detachment to have
-			P_AST_VAR("_splitFlags"),			// Split flags (required transport etc.)
-			// outputs
-			P_AST_VAR("_detachedGarrId")		// Output Id of new detachment garrison
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_failState"),
+			P_AST_VAR("_srcGarrIdVar"),
+			P_AST_VAR("_detachmentEffVar"),
+			P_AST_VAR("_splitFlagsVar"),
+			P_AST_VAR("_detachedGarrIdVar")
 		];
 
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
@@ -33,10 +51,10 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("failState", _failState);
-		T_SETV("srcGarrId", _srcGarrId);
-		T_SETV("splitFlags", _splitFlags);
-		T_SETV("detachmentEff", _detachmentEff);
-		T_SETV("detachedGarrId", _detachedGarrId);
+		T_SETV("srcGarrIdVar", _srcGarrIdVar);
+		T_SETV("splitFlagsVar", _splitFlagsVar);
+		T_SETV("detachmentEffVar", _detachmentEffVar);
+		T_SETV("detachedGarrIdVar", _detachedGarrIdVar);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
@@ -44,13 +62,13 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 		T_PRVAR(action);
-		private _srcGarrId = T_GET_AST_VAR("srcGarrId");
+		private _srcGarrId = T_GET_AST_VAR("srcGarrIdVar");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 		//private _detachmentEff = CALLM(_action, "getDetachmentEff", [_world]);
 
 		// Get the previously calculated efficiency
-		private _detachmentEff = T_GET_AST_VAR("detachmentEff");
+		private _detachmentEff = T_GET_AST_VAR("detachmentEffVar");
 
 		ASSERT_MSG(EFF_GTE(_detachmentEff, EFF_ZERO), "Detachment efficiency is zero!");
 
@@ -59,7 +77,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		// Currently this will only apply changes to attack part of sim efficiency vector.
 		//private _attackEfficiency = EFF_MASK_ATT(_detachmentEff);
 		// Split can happen instantly so apply it to now and future sim worlds.
-		private _splitFlags = T_GET_AST_VAR("splitFlags");
+		private _splitFlags = T_GET_AST_VAR("splitFlagsVar");
 		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
 									CALLM(_srcGarr, "splitSim", [_detachmentEff ARG _splitFlags])
 								} else {
@@ -84,7 +102,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 
 		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_srcGarr)]);
 
-		T_SET_AST_VAR("detachedGarrId", GETV(_detachedGarr, "id"));
+		T_SET_AST_VAR("detachedGarrIdVar", GETV(_detachedGarr, "id"));
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;
@@ -202,8 +220,8 @@ ENDCLASS;
 // 	VARIABLE("failState");
 
 // 	// Inputs
-// 	VARIABLE("srcGarrId");
-// 	VARIABLE("detachmentEff");
+// 	VARIABLE("srcGarrIdVar");
+// 	VARIABLE("detachmentEffVar");
 
 // 	// DOING: bindings for inputs and outputs, not straight up values. We need 
 // 	// later actions to be able to access these values.
@@ -216,7 +234,7 @@ ENDCLASS;
 
 
 // 	// Outputs
-// 	VARIABLE("detachedGarrId");
+// 	VARIABLE("detachedGarrIdVar");
 
 // 	METHOD("new") {
 // 		params [P_THISOBJECT, P_STRING("_action"), P_NUMBER("_successState"), P_NUMBER("_failState")];
@@ -230,13 +248,13 @@ ENDCLASS;
 // 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
 // 		T_PRVAR(action);
-// 		private _srcGarrId = GETV(_action, "srcGarrId");
+// 		private _srcGarrId = GETV(_action, "srcGarrIdVar");
 // 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 // 		ASSERT_OBJECT(_srcGarr);
 // 		//private _detachEff = CALLM(_action, "getDetachmentEff", [_world]);
 
 // 		// Get the previously calculated efficiency
-// 		private _detachEff = GETV(_action, "detachmentEff");
+// 		private _detachEff = GETV(_action, "detachmentEffVar");
 
 // 		ASSERT_MSG(EFF_GTE(_detachEff, EFF_MIN_EFF), "Detachment efficiency is below min allowed");
 
@@ -273,7 +291,7 @@ ENDCLASS;
 // 		// apply them to simworlds in this case without breaking action state for real world?
 // 		// simCopy actions as well? Probably make sense.
 // 		CALLM(_detachedGarr, "setAction", [_action]);
-// 		SETV(_action, "detachedGarrId", GETV(_detachedGarr, "id"));
+// 		SETV(_action, "detachedGarrIdVar", GETV(_detachedGarr, "id"));
 // 		true
 // 	} ENDMETHOD;
 // ENDCLASS;

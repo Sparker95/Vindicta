@@ -1,5 +1,11 @@
 #include "..\..\common.hpp"
 
+/*
+Unused, not necessarily fully implemented, not tested.
+CmdrAI garrison retreat from current location to target location.
+TODO: Could this just be a general move action? Perhaps specific behaviours
+apply when retreating that don't for a normal move. Careless mode etc?
+*/
 CLASS("RetreatCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("targetVar");

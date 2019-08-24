@@ -1,16 +1,29 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.Actions.AttackCmdrAction
+Base class for CmdrAI attack action types.
 
-// TODO: refactor out commonality for actions that consist of a detachment and a target.
-// Or at least share functionality via a library or something.
+TODO: refactor out commonality for actions that consist of a detachment and a target.
+Or at least share functionality via a library or something.
+
+Parent: <CmdrAction>
+*/
 CLASS("AttackCmdrAction", "CmdrAction")
+	// Garrison ID the attack originates from
 	VARIABLE("srcGarrId");
+	// Target (see CmdrAITarget.sqf), an AST_VAR wrapper
 	VARIABLE("targetVar");
+	// Flags to use when splitting off the detachment to perform the attack, an AST_VAR wrapper
 	VARIABLE("splitFlagsVar");
+	// Efficency of the detachment, an AST_VAR wrapper
 	VARIABLE("detachmentEffVar");
+	// Garrison ID of the detachment performing the attack, an AST_VAR wrapper
 	VARIABLE("detachedGarrIdVar");
+	// Start date for the attack action, an AST_VAR wrapper
 	VARIABLE("startDateVar");
 
+	// Target to RTB to after the attack, an AST_VAR wrapper
 	VARIABLE("rtbTargetVar");
 
 #ifdef DEBUG_CMDRAI
@@ -18,6 +31,14 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	VARIABLE("debugSymbol");
 #endif
 
+	/*
+	Constructor: new
+
+	Creates a new AttackCmdrAction originating from the specified source garrison.
+
+	Parameters:
+	  _srcGarrId - Number, the <Model.GarrisonModel> Id of the source garrison that should perform the attack.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId")];
 
@@ -75,6 +96,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		private _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
 		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
+		// INITIALIZE THE ACTION STATE TRANSITIONS WE CAN USE IN THE ACTION
+		// First we will split off the required detachment garrison
 		private _splitAST_Args = [
 				_thisObject,						// This action (for debugging context)
 				[CMDR_ACTION_STATE_START], 			// First action we do
@@ -86,6 +109,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
+		// Assign the action we are performing to the detachment garrison (so it is marked as busy for other actions)
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
 				[CMDR_ACTION_STATE_SPLIT], 			// Do this after splitting
@@ -93,6 +117,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				_splitGarrIdVar]; 					// Id of garrison to assign the action to
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
+		// Perform the attack itself (this allows the garrison to decide how to move to the target)
 		private _attackAST_Args = [
 				_thisObject,
 				[CMDR_ACTION_STATE_READY_TO_MOVE], 	// Once we are split and assigned the action we can go
@@ -116,6 +141,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		// private _rtbMoveAST = NEW("AST_MoveGarrison", _rtbMoveAST_Args);
 
 		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
+		// Select an RTB target after the attack, or when the current one is destroyed or otherwise not valid
 		private _newRtbTargetAST_Args = [
 				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],
 				CMDR_ACTION_STATE_RTB, 				// RTB after we selected a target
@@ -124,6 +150,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				_rtbTargetVar]; 					// New target
 		private _newRtbTargetAST = NEW("AST_SelectFallbackTarget", _newRtbTargetAST_Args);
 
+		// Return to base
 		private _rtbAST_Args = [
 				_thisObject, 						// This action (for debugging context)
 				[CMDR_ACTION_STATE_RTB], 			// Required state
@@ -135,6 +162,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				MAKE_AST_VAR(200)]; 				// Radius to move within
 		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
 
+		// Merge back to the source garrison (or whatever RTB target was chosen instead)
 		private _mergeBackAST_Args = [
 				_thisObject,
 				[CMDR_ACTION_STATE_RTB_SUCCESS], 	// Merge once we reach the destination (whatever it is)
@@ -145,9 +173,11 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				_rtbTargetVar]; 					// Target to merge to (garrison or location is valid)
 		private _mergeBackAST = NEW("AST_MergeOrJoinTarget", _mergeBackAST_Args);
 
+		// Return the ASTs as an array
 		[_splitAST, _assignAST, _attackAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
 	} ENDMETHOD;
 	
+	// Make a debug label from our properties
 	/* protected override */ METHOD("getLabel") {
 		params [P_THISOBJECT, P_STRING("_world")];
 
@@ -182,7 +212,16 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 
-	METHOD("updateIntelFromDetachment") {
+	/*
+	Function: (protected) updateIntelFromDetachment
+	Parent classes can call this to update an intel item with the details
+	of the detachment garrison.
+
+	Parameters:
+		_world - <Model.WorldModel>, the world model being used, should be the real world as we don't create intel for sim worlds.
+		_intel - <Intel.IntelCommanderActionAttack>, the intel object to populate with info about the detachment performing the attack.
+	*/
+	/* protected */ METHOD("updateIntelFromDetachment") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");

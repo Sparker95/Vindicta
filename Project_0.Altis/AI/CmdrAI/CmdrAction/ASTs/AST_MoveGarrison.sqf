@@ -1,5 +1,11 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_MoveGarrison
+Order a garrison to move to a target within a certain radius.
+
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_MoveGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
@@ -7,21 +13,34 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("failTargetDead", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("moving", [ATTR_PRIVATE]);
 	// Inputs
-	VARIABLE_ATTR("garrId", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("target", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("radius", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("radiusVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to give a move to target order to a garrison.
+
+	Parameters:
+		_action - <CmdrAction>, action this AST is part of, for debugging purposes
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_failGarrisonDead - <CMDR_ACTION_STATE>, state to return if the garrison performing the action is dead
+		_failTargetDead - <CMDR_ACTION_STATE>, state to return if the target is dead
+		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison performing the move
+		_targetVar - IN <AST_VAR>(<CmdrAITarget>), target to move to
+		_radiusVar - IN <AST_VAR>(Number), radius around target within which to consider the move complete
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),			// Owner action for debugging purposes
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// if we reached the target
-			P_AST_STATE("_failGarrisonDead"), 	// if the garrison we are moving died
-			P_AST_STATE("_failTargetDead"), 	// if the target died (if it can)
-			// inputs
-			P_AST_VAR("_garrId"), 				// garrison to move
-			P_AST_VAR("_target"), 				// target [type, value] (garrison, location or position)
-			P_AST_VAR("_radius") 				// radius we need to reach
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_STATE("_failGarrisonDead"),
+			P_AST_STATE("_failTargetDead"),
+			P_AST_VAR("_garrIdVar"),
+			P_AST_VAR("_targetVar"),
+			P_AST_VAR("_radiusVar")
 		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 
@@ -31,9 +50,9 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 		T_SETV("failGarrisonDead", _failGarrisonDead);
 		T_SETV("failTargetDead", _failTargetDead);
 		T_SETV("moving", false);
-		T_SETV("garrId", _garrId);
-		T_SETV("target", _target);
-		T_SETV("radius", _radius);
+		T_SETV("garrIdVar", _garrIdVar);
+		T_SETV("targetVar", _targetVar);
+		T_SETV("radiusVar", _radiusVar);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
@@ -42,9 +61,10 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 
 		T_PRVAR(moving);
 
-		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
+		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
 		ASSERT_OBJECT(_garr);
 
+		// If the garrison is dead then return the appropriate state
 		if(CALLM(_garr, "isDead", [])) exitWith {
 			if(_moving and GETV(_world, "type") == WORLD_TYPE_REAL) then {
 				T_SETV("moving", false);
@@ -52,9 +72,9 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			T_GETV("failGarrisonDead")
 		};
 
-		//T_GET_AST_VAR("target") params ["_targetType", "_target"];
-
-		private _targetPos = [_world, T_GET_AST_VAR("target")] call Target_fnc_GetPos;
+		// If we can't get the target position, then return the appropriate state (cancel the move order
+		// as well if it is active)
+		private _targetPos = [_world, T_GET_AST_VAR("targetVar")] call Target_fnc_GetPos;
 		if(!(_targetPos isEqualType [])) exitWith {
 			if(_moving and GETV(_world, "type") == WORLD_TYPE_REAL) then {
 				CALLM(_garr, "cancelMoveActual", []);
@@ -65,18 +85,19 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 
 		private _arrived = false;
 
+		// What we do depends on if we are applying to a sim world model or the real world.
 		switch(GETV(_world, "type")) do {
-			// Move can't be applied instantly
+			// Move can't happen instantly so we don't change the NOW world sim model.
 			case WORLD_TYPE_SIM_NOW: {};
-			// Move completes at some point in the future
+			// Move completes at some point in the future so we apply it immediately to the FUTURE world model.
 			case WORLD_TYPE_SIM_FUTURE: {
 				CALLM(_garr, "moveSim", [_targetPos]);
 				_arrived = true;
 			};
 			case WORLD_TYPE_REAL: {
-				private _radius = T_GET_AST_VAR("radius");
+				private _radius = T_GET_AST_VAR("radiusVar");
+				// If we didn't start moving yet then start moving
 				if(!_moving) then {
-					// Start moving
 					OOP_INFO_MSG("[w %1] Move %2 to %3: started", [_world ARG _garr ARG _targetPos]);
 					CALLM(_garr, "moveActual", [_targetPos ARG _radius]);
 					T_SETV("moving", true);
@@ -85,11 +106,15 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 					private _done = CALLM(_garr, "moveActualComplete", []);
 					if(_done) then {
 						private _garrPos = GETV(_garr, "pos");
-						if((_garrPos distance _targetPos) <= _radius * 1.5) then {
+						// We scale up the radius we are checking against so we can be sure that the 
+						// move order has some leeway if it doesn't get the garrison exactly inside the 
+						// requested radius. We don't want to be stuck where the move order thinks it completes
+						// but we think it fails because the garrison is 1m outside the radius.
+						if((_garrPos distance _targetPos) <= _radius * 1.5 + 10) then {
 							OOP_INFO_MSG("[w %1] Move %2 to %3: complete, reached target within %4m", [_world ARG LABEL(_garr) ARG _targetPos ARG _radius]);
 							_arrived = true;
 						} else {
-							// Move again cos we didn't get there yet!
+							// Move again cos we didn't get within the required radius yet!
 							OOP_INFO_MSG("[w %1] Move %2 to %3: complete, didn't reach target within %4m, moving again", [_world ARG LABEL(_garr) ARG _targetPos ARG _radius]);
 						};
 						T_SETV("moving", false);

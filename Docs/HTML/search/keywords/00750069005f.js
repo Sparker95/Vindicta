@@ -1,1 +1,1 @@
-NDSearch.OnPrefixDataLoaded("ui_",["Function"],[["ui_fnc_createControlsFromConfig",,[[,,,,0,"File:UI/_old/fn_createControlsFromConfig.sqf:ui_fnc_createControlsFromConfig"]]]]);
+NDSearch.OnPrefixDataLoaded("ui_",["Function"],[["ui_fnc_createControlsFromConfig",,[[,,,,0,"File:UI/fn_createControlsFromConfig.sqf:ui_fnc_createControlsFromConfig"]]]]);

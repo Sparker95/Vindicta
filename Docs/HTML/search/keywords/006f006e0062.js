@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("onb",["Function"],[["onButtonDownCreateCamp",,[["ClientMapUI",,,,0,"File:UI/ClientMapUI/ClientMapUI.sqf:ClientMapUI.onButtonDownCreateCamp","SQFClass:ClientMapUI:onButtonDownCreateCamp"]]]]);

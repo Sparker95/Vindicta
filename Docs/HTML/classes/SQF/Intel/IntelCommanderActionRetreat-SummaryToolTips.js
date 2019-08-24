@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionRetreat",{722:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Intel about action to retreat from a location.</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:Intel.IntelCommanderActionRetreat",{582:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Intel about action to retreat from a location.</div></div>"});

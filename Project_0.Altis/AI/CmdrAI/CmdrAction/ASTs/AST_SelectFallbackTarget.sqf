@@ -1,43 +1,61 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_SelectFallbackTarget
+Select a target for a garrison that it can reasonably fallback to. e.g. RTB or retreat
+target.
+
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("srcGarrId", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("garrId", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("target", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("targetVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to select or find a target for a garrison that it can reasonably fallback to. e.g. RTB or retreat
+	target. 
+	
+	Parameters:
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_srcGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to use as a default fallback.
+			e.g. The original source garrison of a detachment.
+		_garrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to select a fallback target for.
+		_targetVar - OUT <AST_VAR>(<CmdrAITarget>), target selected by this AST
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// state on success (can't fail)
-			// inputs
-			P_AST_VAR("_srcGarrId"),			// Original src garrison, default to fall back to
-			P_AST_VAR("_garrId"),				// Garrison we are selecting a new target for
-			// outputs
-			P_AST_VAR("_target")				// new target
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_VAR("_srcGarrIdVar"),
+			P_AST_VAR("_garrIdVar"),
+			P_AST_VAR("_targetVar")
 		];
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
-		T_SETV("srcGarrId", _srcGarrId);
-		T_SETV("garrId", _garrId);
-		T_SETV("target", _target);
+		T_SETV("srcGarrIdVar", _srcGarrIdVar);
+		T_SETV("garrIdVar", _garrIdVar);
+		T_SETV("targetVar", _targetVar);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
-		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
+		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
 		ASSERT_OBJECT(_garr);
 
-		private _srcGarrId = T_GET_AST_VAR("srcGarrId");
+		private _srcGarrId = T_GET_AST_VAR("srcGarrIdVar");
 		private _srcGarr = if(_srcGarrId != MODEL_HANDLE_INVALID) then { 
 			CALLM(_world, "getGarrison", [_srcGarrId]) 
 		} else {
 			NULL_OBJECT
 		};
 
-		// Prefer to go back to src garrison
+		// Prefer to fallback to src garrison unless it is dead
 		private _newTarget = [];
 		if(!IS_NULL_OBJECT(_srcGarr) and {!CALLM(_srcGarr, "isDead", [])}) then {
 			_newTarget = [TARGET_TYPE_GARRISON, _srcGarrId];
@@ -80,7 +98,7 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 				};
 			};
 		};
-		T_SET_AST_VAR("target", _newTarget);
+		T_SET_AST_VAR("targetVar", _newTarget);
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;

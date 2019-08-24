@@ -1,6 +1,9 @@
 #include "../../common.hpp"
 
-CLASS("PassiveCmdrStrategy", "CmdrStrategy")
+/*
+Unused.
+*/
+CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 
 	METHOD("new") {
 		params [P_THISOBJECT];

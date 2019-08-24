@@ -83,9 +83,14 @@ pr0_fnc_CivilianJoinPlayer = {
 	};
 };
 
-// This mission spawns a number of civilians with various weapons who will fight with the police.
+/*
+Class: MilitantCiviliansAmbientMission
+This mission spawns a number of civilians with various weapons who will fight with the police.
+*/
 CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
+	// Max number of militants that can be active at one time.
 	VARIABLE("maxActive");
+	// The active militants.
 	VARIABLE("activeCivs");
 
 	METHOD("new") {
@@ -99,9 +104,20 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 #ifdef MILITANT_CIVILIANS_TESTING
 		private _maxActive = 15;
 #else
+		// Number of active militants relates to city size
 		private _maxActive = 1 + ((2 * ln(0.01 * _radius + 1)) min 5);
 #endif
 		T_SETV("maxActive", _maxActive);
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		// Clean up an active missions
+		T_PRVAR(activeCivs);
+		{
+			deleteVehicle _x;
+		} forEach _activeCivs;
 	} ENDMETHOD;
 
 #ifdef MILITANT_CIVILIANS_TESTING
@@ -112,7 +128,7 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 	} ENDMETHOD;
 #endif
 
-	METHOD("updateExisting") {
+	/* protected override */ METHOD("updateExisting") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -122,8 +138,8 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
 	} ENDMETHOD;
-	
-	METHOD("spawnNew") {
+
+	/* protected override */ METHOD("spawnNew") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
@@ -176,14 +192,6 @@ CLASS("MilitantCiviliansAmbientMission", "AmbientMission")
 				_wpCycle setWaypointType "CYCLE";
 			};
 		};
-	} ENDMETHOD;
-	METHOD("delete") {
-		params [P_THISOBJECT];
-
-		T_PRVAR(activeCivs);
-		{
-			deleteVehicle _x;
-		} forEach _activeCivs;
 	} ENDMETHOD;
 	
 ENDCLASS;

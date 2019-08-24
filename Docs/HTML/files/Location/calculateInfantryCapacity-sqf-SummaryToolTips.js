@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Location/calculateInfantryCapacity.sqf",{341:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Calculates infantry capacity based on buildings in this location.</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Location/calculateInfantryCapacity.sqf",{657:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Calculates infantry capacity based on buildings in this location.</div></div>"});

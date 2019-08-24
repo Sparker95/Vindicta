@@ -1,5 +1,12 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_ArrayPopFront
+Pop a value from the front of an array into another variable.
+For example to select the next patrol waypoint in an array of positions.
+
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	VARIABLE_ATTR("notEmptyState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("emptyBeforeState", [ATTR_PRIVATE]);
@@ -7,16 +14,27 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	VARIABLE_ATTR("arrayVar", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("resultVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+
+	Create an AST to pop a value from the front of an array into a variable.
+	
+	Parameters:
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_notEmptyState - <CMDR_ACTION_STATE>, state to return when array is not empty after pop
+		_emptyBeforeState - <CMDR_ACTION_STATE>, state to return when array is empty before pop
+		_emptyAfterState - <CMDR_ACTION_STATE>, state to return when array is empty after pop
+		_arrayVar - IN <AST_VAR>(Array of Any), array to pop front off of
+		_resultVar - OUT <AST_VAR>(Any), element that was popped from the array
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_ARRAY("_fromStates"),				// states it is valid from
-			P_AST_STATE("_notEmptyState"),		// state when array is not empty after
-			P_AST_STATE("_emptyBeforeState"),	// state when array is empty before pop
-			P_AST_STATE("_emptyAfterState"),	// state when array is empty after
-			// input
-			P_AST_VAR("_arrayVar"),				// array to pop front on
-			// output
-			P_AST_VAR("_resultVar")				// element that was popped
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_notEmptyState"),
+			P_AST_STATE("_emptyBeforeState"),
+			P_AST_STATE("_emptyAfterState"),
+			P_AST_VAR("_arrayVar"),
+			P_AST_VAR("_resultVar")
 		];
 		T_SETV("fromStates", _fromStates);
 		T_SETV("notEmptyState", _notEmptyState);
@@ -29,19 +47,20 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	/* override */ METHOD("apply") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world") ];
 
-		// if(GETV(_world, "type") != WORLD_TYPE_REAL) exitWith { CMDR_ACTION_STATE_NONE };
-
 		private _array = +T_GET_AST_VAR("arrayVar");
 		ASSERT_MSG(_array isEqualType [], "AST_ArrayPopFront only works with arrays");
 
+		// Array is empty before pop
 		if(count _array == 0) exitWith { T_GETV("emptyBeforeState") };
 
+		// Pop the value
 		private _result = _array deleteAt 0;
 		T_SET_AST_VAR("resultVar", _result);
 		T_SET_AST_VAR("arrayVar", _array);
 
 		OOP_INFO_MSG("%1 %2 %3", [_world ARG _array ARG _result]);
-
+		
+		// Array is empty after pop
 		if(count _array == 0) exitWith { T_GETV("emptyAfterState") };
 
 		T_GETV("notEmptyState");

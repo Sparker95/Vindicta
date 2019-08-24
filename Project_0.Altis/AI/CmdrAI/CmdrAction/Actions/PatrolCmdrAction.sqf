@@ -1,15 +1,29 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction
+CmdrAI garrison patrol action.
+Takes a predefined route composed of targets (see <CmdrAITarget>).
 
+Parent: <CmdrAction>
+*/
 CLASS("PatrolCmdrAction", "CmdrAction")
+	// Garrison ID the attack originates from
 	VARIABLE("srcGarrId");
+	// Route array composed of targets (see CmdrAITarget.sqf)
 	VARIABLE("routeTargets");
+	// Flags to use when splitting off the detachment to perform the patrol, an AST_VAR wrapper
 	VARIABLE("splitFlagsVar");
+	// Efficency of the detachment, an AST_VAR wrapper
 	VARIABLE("detachmentEffVar");
+	// Garrison ID of the detachment performing the patrol, an AST_VAR wrapper
 	VARIABLE("detachedGarrIdVar");
+	// Start date for the patrol action, an AST_VAR wrapper
 	VARIABLE("startDateVar");
 
+	// Next patrol waypoint target
 	VARIABLE("targetVar");
+	// Patrol waypoint targets array wrapped in AST_VAR
 	VARIABLE("routeTargetsVar");
 
 #ifdef DEBUG_CMDRAI
@@ -17,6 +31,16 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 	VARIABLE("debugSymbol");
 #endif
 
+	/*
+	Constructor: new
+
+	Create a CmdrAI action to send a detachment from a garrison to patrol a specified 
+	route.
+	
+	Parameters:
+		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the patrol detachment.
+		_routeTargets - Array of <CmdrAITarget>, an array of patrol waypoints as targets.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_ARRAY("_routeTargets")];
 
@@ -84,6 +108,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _splitGarrIdVar = T_CALLM("createVariable", [MODEL_HANDLE_INVALID]);
 		T_SETV("detachedGarrIdVar", _splitGarrIdVar);
 
+		// INITIALIZE THE ACTION STATE TRANSITIONS WE CAN USE IN THE ACTION
+		// First we will split off the required detachment garrison
 		private _splitAST_Args = [
 				_thisObject,						// This action (for debugging context)
 				[CMDR_ACTION_STATE_START], 			// First action we do
@@ -95,6 +121,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
+		// Assign the action we are performing to the detachment garrison (so it is marked as busy for other actions)
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
 				[CMDR_ACTION_STATE_SPLIT], 			// Do this after splitting
@@ -102,17 +129,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				_splitGarrIdVar]; 					// Id of garrison to assign the action to
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
-		// private _attackAST_Args = [
-		// 		_thisObject,
-		// 		[CMDR_ACTION_STATE_READY_TO_MOVE], 	// Once we are split and assigned the action we can go
-		// 		CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State when we succeed, it leads to selecting new target (usually home)
-		// 		CMDR_ACTION_STATE_END, 				// If we are dead then go to end
-		// 		CMDR_ACTION_STATE_RTB_SELECT_TARGET,// If we timeout then RTB
-		// 		_splitGarrIdVar, 					// Id of the garrison doing the attacking
-		// 		_targetVar, 						// Target to attack (cluster or garrison supported)
-		// 		MAKE_AST_VAR(200)];					// Move radius
-		// private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
-
+		// Select next waypoint for the patrol assigning it to targetVar
 		private _nextWaypointAST_Args = [
 				[CMDR_ACTION_STATE_NEXT_WAYPOINT],
 				CMDR_ACTION_STATE_READY_TO_MOVE,	// State change when waypoints remain
@@ -122,6 +139,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				_targetVar]; 						// The waypoint we are on
 		private _nextWaypointAST = NEW("AST_ArrayPopFront", _nextWaypointAST_Args);
 
+		// Move to the current patrol waypoint target
 		private _moveWaypointsAST_Args = [
 				_thisObject, 						// This action (for debugging context)
 				[CMDR_ACTION_STATE_READY_TO_MOVE], 		
@@ -132,8 +150,10 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				_targetVar, 						// Target to move to (next waypoint)
 				MAKE_AST_VAR(100)]; 				// Radius to move within
 		// We use attack instead of just move so that garrison will march around a bit at each waypoint. 
+		// TODO: Come up with a better AST for patrol move
 		private _moveWaypointsAST = NEW("AST_GarrisonAttackTarget", _moveWaypointsAST_Args);
 
+		// Select an RTB target after the attack, or when the current one is destroyed or otherwise not valid
 		private _newRtbTargetAST_Args = [
 				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],
 				CMDR_ACTION_STATE_RTB, 				// RTB after we selected a target
@@ -142,6 +162,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				_targetVar]; 						// New target
 		private _newRtbTargetAST = NEW("AST_SelectFallbackTarget", _newRtbTargetAST_Args);
 
+		// Return to base
 		private _rtbAST_Args = [
 				_thisObject, 						// This action (for debugging context)
 				[CMDR_ACTION_STATE_RTB], 			// Required state
@@ -153,6 +174,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				MAKE_AST_VAR(200)]; 				// Radius to move within
 		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
 
+		// Merge back to the source garrison (or whatever RTB target was chosen instead)
 		private _mergeBackAST_Args = [
 				_thisObject,
 				[CMDR_ACTION_STATE_RTB_SUCCESS], 	// Merge once we reach the destination (whatever it is)
@@ -163,6 +185,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				_targetVar]; 						// Target to merge to (garrison or location is valid)
 		private _mergeBackAST = NEW("AST_MergeOrJoinTarget", _mergeBackAST_Args);
 
+		// Return the ASTs as an array
 		[_splitAST, _assignAST, _nextWaypointAST, _moveWaypointsAST, _newRtbTargetAST, _rtbAST, _mergeBackAST]
 	} ENDMETHOD;
 	
@@ -200,7 +223,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 	} ENDMETHOD;
 
-/* protected override */ METHOD("updateIntel") {
+	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
@@ -306,7 +329,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
 		// };
 	} ENDMETHOD;
-
+	
 	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
@@ -325,42 +348,51 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		T_PRVAR(routeTargets);
 		private _routeTargetPositions = T_GETV("routeTargets") apply { [_worldNow, _x] call Target_fnc_GetPos };
-		private _maxDistance = 0;
 
+		// Here we will determine the maximum distance between two consecutive waypoints,
+		// so we can decide if transport is required or not. We could use the total route length or 
+		// some other metric instead here if we wanted.
+		private _maxDistance = 0;
 		private _lastPos = _srcGarrPos;
 		{
 			_maxDistance = _maxDistance max (_lastPos distance _x);
 			_lastPos = _x;
 		} forEach ( _routeTargetPositions + [_srcGarrPos]);
 
-		// Resource is how much src is *over* composition, scaled by distance (further is lower)
-		// i.e. How much units/vehicles src can spare.
+		// CALCULATE THE RESOURCE SCORE
+		// In this case it is how well the source garrison can meet the resource requirements of this action,
+		// specifically efficiency and transport. Score is 0 when full requirements cannot be met, and 
+		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
+		// required efficiency it is). 
 		private _detachEff = EFF_ZERO;
 		//private _desiredEff = EFF_FOOT_PATROL_EFF;
 		private _transportationScore = 0;
 		if(_maxDistance < 2000) then {
 			T_SET_AST_VAR("splitFlagsVar", [PATROL_FORCE_HINT]);
+			// Calculate our possible efficiency
 			_detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture ARG EFF_FOOT_PATROL_EFF]);
+			// We don't need transport so set it to 1 (we "fullfilled" the transport requirements of not needing transport)
 			_transportationScore = 1;
 		} else {
-			// We will force transport on top of scoring if we need to.
 			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG PATROL_FORCE_HINT]);
 			_detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture ARG EFF_MOUNTED_PATROL_EFF]);
+			// Call to the garrison to calculate the transportation score
 			_transportationScore = CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
-		// Save the calculation for use if we decide to perform the action 
-		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
-		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
+		// Save the calculation of the efficiency for use later.
+		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
+		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
+		// which are only available now, during scoring/planning).
 		T_SET_AST_VAR("detachmentEffVar", _detachEff);
 
+		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = EFF_SUB_SUM(EFF_ATT_SUB(_detachEff));
-
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
-
+		// Our final resource score
 		private _scoreResource = _detachEffStrength * _transportationScore;
 		private _scorePriority = 1;
 
+		// CALCULATE START DATE
 		// Work out time to start based on how much force we mustering.
 		// https://www.desmos.com/calculator/mawpkr88r3
 #ifndef RELEASE_BUILD
@@ -377,9 +409,14 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		T_SET_AST_VAR("startDateVar", _startDate);
 
+		// Uncomment this for more detailed logging
 		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+
+		// APPLY STRATEGY
+		// Get our Cmdr strategy implementation and apply it
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getPatrolScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _routeTargets ARG _detachEff]);
 		T_CALLM("setScore", [_score]);
@@ -391,7 +428,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		#endif
 	} ENDMETHOD;
 
-	// Get composition of patrol we should send
+	// Get efficency requirements of the patrol we should send
 	// TODO: factor out logic for working out detachments for various situations
 	/* private */ METHOD("getDetachmentEff") {
 		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture"), P_ARRAY("_desiredEff")];
@@ -403,12 +440,15 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
-		// How much resources src can spare, we allow garrison to take up to half of force for
+		// Calculate how much efficiency is available for patrols then clamp desired efficiency against it
+
+		// How much over the minimum patrol size the source garrison is
 		private _srcOverMinEff = EFF_MAX_SCALAR(EFF_DIFF(GETV(_srcGarr, "efficiency"), EFF_MIN_EFF), 0);
+		// We want to patrol with maximum of half the garrison so clamp to that amount
 		private _halfEff = EFF_MUL_SCALAR(GETV(_srcGarr, "efficiency"), 0.5);
 		private _srcOverEff = EFF_MIN(_srcOverMinEff, _halfEff);
-		//private _srcOverEff = EFF_MAX_SCALAR(, 0);
-		// Min of those values
+
+		// We cap the input desired efficiency against the value we calculated as available resources
 		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _desiredEff)), 0);
 
 		_effAvailable

@@ -1,30 +1,50 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.ASTs.AST_AssignActionToGarrison
+Assigns a <CmdrAction> instance to a <Model.GarrisonModel>.
+Example: 
+	Detachment <GarrisonModel>s performing an action have the action assigned to 
+them with this AST. It indicates to <CmdrAction> generators that the <Model.GarrisonModel> is currently
+doing something else.
+
+Parent: <ActionStateTransition>
+*/
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 
 	// Inputs
-	VARIABLE_ATTR("garrId", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
 
+	/*
+	Method: new
+	Create an AST to assign a <CmdrAction> instance to a <Model.GarrisonModel>.
+	
+	Parameters:
+		_action - <CmdrAction>, action to assign
+		_fromStates - Array of <CMDR_ACTION_STATE>, states this AST is valid from
+		_successState - <CMDR_ACTION_STATE>, state to return after success
+		_garrIdVar - IN <AST_VAR>(Number), Id of the <Model.GarrisonModel> to assign the action to
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
-			P_OOP_OBJECT("_action"),			// Action to assign to the garrison
-			P_ARRAY("_fromStates"),				// States it is valid from
-			P_AST_STATE("_successState"),		// State to transition do after completion
-			// inputs
-			P_AST_VAR("_garrId")];				// Id of the garrison to assign the action to
+			P_OOP_OBJECT("_action"),
+			P_ARRAY("_fromStates"),
+			P_AST_STATE("_successState"),
+			P_AST_VAR("_garrIdVar")
+		];
 		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 		T_SETV("action", _action);
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
-		T_SETV("garrId", _garrId);
+		T_SETV("garrIdVar", _garrIdVar);
 	} ENDMETHOD;
 
 	/* override */ METHOD("apply") {
 		params [P_THISOBJECT, P_STRING("_world")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
-		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrId")]);
+		private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
 		ASSERT_OBJECT(_garr);
 		T_PRVAR(action);
 		CALLM(_garr, "setAction", [_action]);

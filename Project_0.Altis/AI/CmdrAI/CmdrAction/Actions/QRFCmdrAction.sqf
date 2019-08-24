@@ -1,8 +1,27 @@
 #include "..\..\common.hpp"
 
+/*
+Class: AI.CmdrAI.CmdrAction.Actions.QRFCmdrAction
+
+CmdrAI QRF action.
+Takes a source garrison model ID and cluster model ID and generates an action
+to attack the cluster using the garrison.
+
+Parent: <AttackCmdrAction>
+*/
 CLASS("QRFCmdrAction", "AttackCmdrAction")
+	// The target cluster model ID
 	VARIABLE("tgtClusterId");
 
+	/*
+	Constructor: new
+	Create a CmdrAI action to send a detachment from a garrison to destroy an enemy
+	cluster.
+	
+	Parameters:
+		_srcGarrId - Number, <Model.GarrisonModel> id from which to send the QRF detachment.
+		_tgtClusterId - Number, <Model.ClusterModel> id to attack.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrId"), P_NUMBER("_tgtClusterId")];
 
@@ -17,12 +36,15 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 #endif
 	} ENDMETHOD;
 
+	// Create the intel object for this action
 	/* protected override */ METHOD("updateIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
 		T_PRVAR(intel);
+		// Created lazily here on the first call to update it. This ensures we only
+		// create intel objects for actions that are active rather than merely proposed.
 		private _intelNotCreated = IS_NULL_OBJECT(_intel);
 		if(_intelNotCreated) then
 		{
@@ -47,6 +69,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			SETV(_intel, "posTgt", GETV(_tgtCluster, "pos"));
 			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
 
+			// Call the base class function to update the detachment specific intel
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 			
@@ -57,11 +80,13 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtCluster, "pos")]);
 		} else {
+			// Call the base class function to update the detachment specific intel
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 			CALLM(_intel, "updateInDb", []);
 		};
 	} ENDMETHOD;
 
+	// Update score for this action
 	/* override */ METHOD("updateScore") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
@@ -75,21 +100,28 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
 		ASSERT_OBJECT(_tgtCluster);
 
+		// Source or target being dead means action is invalid, return 0 score
 		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _side = GETV(_srcGarr, "side");
 
-		// Resource is how much src is *over* composition, scaled by distance (further is lower)
-		// i.e. How much units/vehicles src can spare.
+		// CALCULATE THE RESOURCE SCORE
+		// In this case it is how well the source garrison can meet the resource requirements of this action,
+		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
+		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
+		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
+
+		// Calculate our possible efficiency
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
-		// Save the calculation for use if we decide to perform the action 
-		// We DON'T want to try and recalculate the detachment against the real world state when the action actually runs because
-		// it won't be correctly taking into account our knowledge about other actions (as represented in the sim world models)
+		// Save the calculation of the efficiency for use later.
+		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
+		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
+		// which are only available now, during scoring/planning).
 		T_SET_AST_VAR("detachmentEffVar", _detachEff);
 
-		//CALLM1(_worldNow, "getOverDesiredEff", _srcGarr);
+		// Take the sum of the attack part of the efficiency vector.
 		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
 
 		private _srcGarrPos = GETV(_srcGarr, "pos");
@@ -98,15 +130,18 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]) * 2;
 		private _dist = _srcGarrPos distance _tgtClusterPos;
-		// If we are less than 1000m then we don't need wheels
 		private _transportationScore = if(_dist < 1000) then {
+			// If we are less than 1000m then we don't need transport so set the transport score to 1
+			// (we "fullfilled" the transport requirements of not needing transport)
 			1
 		} else {
-			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT]+[CHEAT_TRANSPORT]);
+			// We will cheat transport on top of scoring if we need to
+			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG CHEAT_TRANSPORT]);
+			// Call to the garrison to calculate the transportation score
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
+		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 
 		// TODO: implement priority score for TakeLocationCmdrAction
@@ -117,6 +152,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtCluster) ARG [_scorePriority ARG _scoreResource] 
 		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
+		// APPLY STRATEGY
+		// Get our Cmdr strategy implementation and apply it
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
 		private _score = CALLM(_strategy, "getQRFScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtCluster ARG _detachEff]);
@@ -143,6 +180,8 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		ASSERT_OBJECT(_srcGarr);
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
 		ASSERT_OBJECT(_tgtCluster);
+
+		// Calculate how much efficiency is available for QRF then clamp desired efficiency against it
 
 		// How much resources src can spare.
 		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);

@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:UI/_old/defineCommonColors.hpp",{});

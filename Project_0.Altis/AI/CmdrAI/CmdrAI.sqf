@@ -9,12 +9,21 @@
 #define ACTION_SCORE_CUTOFF 0.001
 #define REINF_MAX_DIST 4000
 
-// Commander planning AI
+// Class: AI.CmdrAI.CmdrAI
+// Primary commander AI object. This does evaluation, planning and execution of actions (based on <CmdrAction.CmdrActions>).
+// Each <Commander.AICommander> needs one of these objects if it needs to perform actions.
 CLASS("CmdrAI", "")
 	VARIABLE("side");
 	VARIABLE("activeActions");
 	VARIABLE("planningCycle");
 
+	/*
+	Constructor: new
+	Create a new <CmdrAI> object for a specific side.
+	
+	Parameters:
+		_side - Side, the side (east, west, etc.) this AI will plan for.
+	*/
 	METHOD("new") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 		T_SETV("side", _side);
@@ -22,8 +31,84 @@ CLASS("CmdrAI", "")
 		T_SETV("planningCycle", 0);
 	} ENDMETHOD;
 
-	METHOD("generateAttackActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+	/*
+	Method: plan
+	Do a planning cycle. What action types are considered at each cycle depends on priorities and rates defined.
+	
+	Parameters:
+		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
+	*/
+	METHOD("plan") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		
+		T_PRVAR(planningCycle);
+		T_SETV("planningCycle", _planningCycle + 1);
+
+		private _priority = switch true do {
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
+			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
+			default { -1 };
+		};
+
+		if(_priority != -1) then {
+			T_CALLM("_plan", [_world ARG _priority]);
+		};
+	} ENDMETHOD;
+	
+	/*
+	Method: update
+	Update active actions.
+	
+	Parameters:
+		_world - <Model.WorldModel>, real world model the actions are being performed in.
+	*/
+	METHOD("update") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+
+		// Sync before update
+		CALLM(_world, "sync", []);
+
+		T_PRVAR(side);
+		T_PRVAR(activeActions);
+
+		OOP_DEBUG_MSG("- - - - - U P D A T I N G - - - - -   on %1 active actions", [count _activeActions]);
+
+		// Update actions in real world
+		{ 
+			OOP_DEBUG_MSG("Updating action %1", [_x]);
+			CALLM(_x, "update", [_world]);
+		} forEach _activeActions;
+
+		// Remove complete actions
+		{ 
+			OOP_DEBUG_MSG("Completed action %1, removing", [_x]);
+			_activeActions deleteAt (_activeActions find _x);
+			UNREF(_x);
+		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
+
+		OOP_DEBUG_MSG("- - - - - U P D A T I N G   D O N E - - - - -", []);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
+		OOP_INFO_MSG(_str, []);
+		#endif
+	} ENDMETHOD;
+	
+	/*
+	Method: (private) generateAttackActions
+	Generate a list of possible/reasonable attack actions that could be performed. It will exclude ones that 
+	are impossible or impractical. Otherwise scoring of the actions should be used to determine if they should
+	be used.
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+
+	Returns: Array of <CmdrAction.Actions.QRFCmdrAction>
+	*/
+	/* private */ METHOD("generateAttackActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(side);
 
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
@@ -66,8 +151,20 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
-	METHOD("generateReinforceActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+	/*
+	Method: (private) generateReinforceActions
+	Generate a list of possible/reasonable reinforcement actions that could be performed. It will exclude ones that 
+	are impossible or impractical. Otherwise scoring of the actions should be used to determine if they should
+	be used.
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+
+	Returns: Array of <CmdrAction.Actions.ReinforceCmdrAction>
+	*/
+	/* private */ METHOD("generateReinforceActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(side);
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
@@ -135,71 +232,20 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
-	METHOD("generateRetreatActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
-		T_PRVAR(side);
+	/*
+	Method: (private) generateTakeOutpostActions
+	Generate a list of possible/reasonable take outpost actions that could be performed. It will exclude ones that 
+	are impossible or impractical. Otherwise scoring of the actions should be used to determine if they should
+	be used.
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
 
-		// Take src garrisons from future, we want to consider future resource availability.
-		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
-			// Must be on our side and not involved in another action
-			GETV(_x, "side") == _side and 
-			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) } and 
-			{ !CALLM(_x, "isBusy", []) } and
-			{
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
-				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
-			}
-		};
-
-		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
-		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
-			// Must be on our side
-			GETV(_x, "side") == _side and 
-			{
-				// Not involved in another reinforce action
-				private _action = CALLM(_x, "getAction", []);
-				IS_NULL_OBJECT(_action) or { OBJECT_PARENT_CLASS_STR(_action) != "ReinforceCmdrAction" }
-			} and 
-			{
-				// Must be under desired efficiency by at least min reinforcement size
-				// private _eff = GETV(_x, "efficiency");
-				private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
-				!EFF_GT(_overDesiredEff, EFF_MUL_SCALAR(EFF_MIN_EFF, -1))
-			}
-		};
-
-		private _actions = [];
-		{
-			private _srcId = GETV(_x, "id");
-			private _srcFac = GETV(_x, "faction");
-			//private _srcPos = GETV(_x, "pos");
-			{
-				private _tgtId = GETV(_x, "id");
-				private _tgtFac = GETV(_x, "faction");
-				//private _tgtPos = GETV(_x, "pos");
-				if(_srcId != _tgtId 
-					and {_srcFac == _tgtFac}
-					// and {_srcPos distance _tgtPos < REINF_MAX_DIST}
-					) then {
-					private _params = [_srcId, _tgtId];
-					_actions pushBack (NEW("ReinforceCmdrAction", _params));
-				};
-			} forEach _tgtGarrisons;
-		} forEach _srcGarrisons;
-
-		OOP_INFO_MSG("Considering %1 Reinforce actions from %2 garrisons to %3 garrisons", [count _actions ARG count _srcGarrisons ARG count _tgtGarrisons]);
-
-		#ifdef OOP_INFO
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
-		OOP_INFO_MSG(_str, []);
-		#endif
-
-		_actions
-	} ENDMETHOD;
-
-	METHOD("generateTakeOutpostActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+	Returns: Array of <CmdrAction.Actions.TakeLocationCmdrAction>
+	*/
+	/* private */ METHOD("generateTakeOutpostActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
@@ -258,8 +304,20 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
-	METHOD("generatePatrolActions") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
+	/*
+	Method: (private) generatePatrolActions
+	Generate a list of possible/reasonable patrol actions that could be performed. It will exclude ones that 
+	are impossible or impractical. Otherwise scoring of the actions should be used to determine if they should
+	be used.
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+
+	Returns: Array of <CmdrAction.Actions.PatrolCmdrAction>
+	*/
+	/* private */ METHOD("generatePatrolActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
@@ -325,49 +383,18 @@ CLASS("CmdrAI", "")
 		_actions
 	} ENDMETHOD;
 
-	METHOD("update") {
-		params [P_THISOBJECT, P_STRING("_world")];
-
-		// Sync before update
-		CALLM(_world, "sync", []);
-
-		T_PRVAR(side);
-		T_PRVAR(activeActions);
-
-		OOP_DEBUG_MSG("- - - - - U P D A T I N G - - - - -   on %1 active actions", [count _activeActions]);
-
-		// Update actions in real world
-		{ 
-			OOP_DEBUG_MSG("Updating action %1", [_x]);
-			CALLM(_x, "update", [_world]);
-		} forEach _activeActions;
-
-		// Remove complete actions
-		{ 
-			OOP_DEBUG_MSG("Completed action %1, removing", [_x]);
-			_activeActions deleteAt (_activeActions find _x);
-			UNREF(_x);
-		} forEach (_activeActions select { CALLM(_x, "isComplete", []) });
-
-		OOP_DEBUG_MSG("- - - - - U P D A T I N G   D O N E - - - - -", []);
-
-		#ifdef OOP_INFO
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""active_actions"": %2}}", _side, count _activeActions];
-		OOP_INFO_MSG(_str, []);
-		#endif
-	} ENDMETHOD;
-
-	STATIC_METHOD("getActionGlobalPriority") {
-		params [P_THISCLASS, P_OOP_OBJECT("_action")];
-		private _class = GET_OBJECT_CLASS(_action);
-		switch(GET_OBJECT_CLASS(_action)) do {
-			case "QRFCmdrAction": { 3 };
-			case "ReinforceCmdrAction": { 2 };
-			default { 1 };
-		}
-	} ENDMETHOD;
+	/*
+	Method: (private) selectActions
+	Generate and select new actions to add to the plan.
 	
-	METHOD("selectActions") {
+	Parameters:
+		_actionFuncs - Array of strings, member functions of <CmdrAI> that generate actions that should be used.
+		_maxNewActions - Number, max new actions to add to the plan.
+		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details).
+		_simWorldNow - <Model.WorldModel>, now world model (see <Model.WorldModel> or <WORLD_TYPE> for details).
+		_simWorldFuture - <Model.WorldModel>, future world model (see <Model.WorldModel> or <WORLD_TYPE> for details).
+	*/
+	/* private */ METHOD("selectActions") {
 		params [P_THISOBJECT, P_ARRAY("_actionFuncs"), P_NUMBER("_maxNewActions"), P_OOP_OBJECT("_world"), P_OOP_OBJECT("_simWorldNow"), P_OOP_OBJECT("_simWorldFuture")];
 
 		CALLM(_simWorldNow, "resetScoringCache", []);
@@ -395,7 +422,6 @@ CLASS("CmdrAI", "")
 			// Sort the actions by their scores
 			private _scoresAndActions = _newActions apply { 
 				private _finalScore = CALLM(_x, "getFinalScore", []);
-				//private _priority = if(_finalScore > ACTION_SCORE_CUTOFF) then { CALLSM("CmdrAI", "getActionGlobalPriority", [_x]) } else { 0 };
 				[_finalScore, _x] 
 			};
 
@@ -443,26 +469,16 @@ CLASS("CmdrAI", "")
 		} forEach _newActions;
 	} ENDMETHOD;
 
-	METHOD("plan") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
-		
-		T_PRVAR(planningCycle);
-		T_SETV("planningCycle", _planningCycle + 1);
-
-		private _priority = switch true do {
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
-			default { -1 };
-		};
-
-		if(_priority != -1) then {
-			T_CALLM("_plan", [_world ARG _priority]);
-		};
-	} ENDMETHOD;
-
-	METHOD("_plan") {
-		params [P_THISOBJECT, P_STRING("_world"), P_NUMBER("_priority")];
+	/*
+	Method: (private) _plan
+	Planning implementation, once priority to plan at has been determined.
+	
+	Parameters:
+		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
+		_priority - Number, the priority of action types that should be considered.
+	*/
+	/* private */ METHOD("_plan") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_NUMBER("_priority")];
 
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (priority %1) - - - - -", [_priority]);
 

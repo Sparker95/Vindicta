@@ -272,7 +272,8 @@
 			"spawnGroup1",
 			"spawnGroup2",
 			"gGameMode",
-			"Dialog_fnc_hud_createSentence"
+			"Dialog_fnc_hud_createSentence",
+			"gLUAP"
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"
