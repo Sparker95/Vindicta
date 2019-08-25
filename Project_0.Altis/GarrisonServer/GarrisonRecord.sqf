@@ -16,22 +16,20 @@ CLASS("GarrisonRecord", "")
 	// Generic properties
 	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
-	VARIABLE_ATTR("composition", [ATTR_SERIALIZABLE]);
 
-	// Current goal
-	VARIABLE_ATTR("goal", [ATTR_SERIALIZABLE]);
-	VARIABLE_ATTR("goalPos", [ATTR_SERIALIZABLE]);
-	VARIABLE_ATTR("goalMapMarker", [ATTR_SERIALIZABLE]);
+	// Serialized CmdrActionRecord object
+	VARIABLE_ATTR("cmdrActionRecordSerial", [ATTR_SERIALIZABLE]);
+
+	// Array with composition
+	VARIABLE_ATTR("composition", [ATTR_SERIALIZABLE]);
 
 	// Ref to the map marker object, local on client side
 	VARIABLE("mapMarker");
 
-	// Serialized CmdrActionRecord object
-	VARIABLE_ATTR("cmdrActionRecordSerial", [ATTR_SERIALIZABLE]);
-	VARIABLE("cmdrActionRecord"); // The actual commander action, deserialized on client side
+	// The actual commander action, deserialized on client side
+	VARIABLE("cmdrActionRecord");
 
 	// What else did I forget?
-
 	
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -58,6 +56,9 @@ CLASS("GarrisonRecord", "")
 		T_SETV("composition", GETV(_gar, "composition"));
 	} ENDMETHOD;
 
+
+	// - - - - Client-side functions - - - -
+
 	// Updates the main map marker at the position of the garrison
 	METHOD("_updateMapMarker") {
 		params [P_THISOBJECT];
@@ -70,13 +71,15 @@ CLASS("GarrisonRecord", "")
 
 	// Updates the map markers of the action (line, pointer, etc)
 	#define __MRK_LINE "_line"
-	#define __MRK_PTR "_ptr"
+	#define __MRK_END "_ptr"
 	METHOD("_updateActionMapMarkers") {
 		params [P_THISOBJECT];
 
 		// Delete previous map markers
-		deleteMarkerLocal (_thisObject + __MRK_LINE);
-		deleteMarkerLocal (_thisObject + __MRK_PTR);
+		pr _mrkLine = _thisObject + __MRK_LINE;
+		pr _mrkEnd = _thisObject + __MRK_END;
+		deleteMarkerLocal _mrkLine;
+		deleteMarkerLocal _mrkEnd;
 
 		// Create them again if needed
 		pr _record = T_GETV("cmdrActionRecord");
@@ -84,12 +87,31 @@ CLASS("GarrisonRecord", "")
 			// Create line
 			pr _posStart = T_GETV("pos");
 			pr _recordClass = GET_OBJECT_CLASS(_record);
-			pr _posEnd = if (_recordClass in ["MoveCmdrActionRecord", "TakeLocationCmdrActionRecord", "QRFCmdrActionRecord", "ReinforceCmdrActionRecord"]) then {
-				CALLM0(_record, "getPos")
-			} else {
+			
+			if (_recordClass in ["MoveCmdrActionRecord", "TakeLocationCmdrActionRecord", "QRFCmdrActionRecord", "ReinforceCmdrActionRecord"]) then {
+				// Draw a line
+				pr _posEnd = CALLM0(_record, "getPos"); // It will resolve position of position, location or garrison
+				pr _mrkText = CALLSM0(_recordClass, "getText");
+				pr _color = "colorRed"; // [T_GETV("side"), true] call BIS_fnc_sideColor;
+				[_posStart, _posEnd, _color, 15, _mrkEnd] call misc_fnc_mapDrawLineLocal;
 
+				// Draw one marker at destination
+				createMarkerLocal [_mrkEnd, _posEnd];
+				_mrkEnd setMarkerShapeLocal "ICON";
+				//_mrkEnd setMarkerPosLocal ([100, 100, 0]);
+				_mrkEnd setMarkerAlphaLocal 1;
+				_mrkEnd setMarkerType "waypoint";
+				_mrkEnd setMarkerText _mrkText;
+
+				// 
+				private _mrk = CALLM0(T_GETV("mapMarker"), "getMarker");
+				_mrk setMarkerTextLocal "<Garrison on patrol>";
+			} else {
+				// NYI, patrols are not supported yet
+				// Just set marker text
+				private _mrk = CALLM0(T_GETV("mapMarker"), "getMarker");
+				_mrk setMarkerTextLocal "<Garrison on patrol>";
 			};
-			// Create marker at the end of line
 
 		};
 	} ENDMETHOD;
@@ -148,5 +170,7 @@ CLASS("GarrisonRecord", "")
 
 		// Notify the UI?
 	} ENDMETHOD;
+
+
 
 ENDCLASS;

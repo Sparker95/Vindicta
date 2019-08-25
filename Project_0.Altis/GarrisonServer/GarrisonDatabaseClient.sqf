@@ -59,7 +59,15 @@ CLASS("GarrisonDatabaseClient", "")
 		DELETE(_garRecord);
 	} ENDMETHOD;
 
-	// - - - - - - Static methods called by the GarrisonServer - - - - - - 
+	// Returns garrison record associated with this garrison reference
+	METHOD("getGarrisonRecord") {
+		params [P_THISOBJECT, P_STRING("_garRef")];
+
+		pr _hm = T_GETV("hm");
+		_hm getVariable [_garRef, ""]
+	} ENDMETHOD;
+
+	// - - - - - - Remotely executed static methods (by GarrisonServer) - - - - - - 
 
 	STATIC_METHOD("destroy") {
 		params [P_THISCLASS, P_STRING("_garRef")];

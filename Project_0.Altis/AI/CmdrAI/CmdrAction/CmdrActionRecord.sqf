@@ -16,11 +16,18 @@ Author: Sparker
 Parent: none
 */
 
+#define pr private
+
 CLASS("CmdrActionRecord", "")
 	
 	// Ref to the actual garrison
 	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
 	
+	STATIC_METHOD("getText") {
+		params [P_THISCLASS];
+		OOP_ERROR_0("getText must be called on final classes!");
+		"<Base class>"
+	} ENDMETHOD;
 ENDCLASS;
 
 // - - - - Targeted at position or location - - - -
@@ -47,24 +54,45 @@ CLASS("DirectedCmdrActionRecord", "")
 		if (!isNil "_loc") exitWith {CALLM0(_loc, "getPos")};
 
 		pr _gar = T_GETV("garRef");
-		if (!isNil "_gar") exitWith { [100, 200, 0] /* Ask GDBClient about position! */ };
+		pr _garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _gar);
+		if (_garRecord == "") exitWith {[]};
+		GETV(_garRecord, "pos")
+	} ENDMETHOD;
+
+	STATIC_METHOD("getText") {
+		params [P_THISCLASS];
+		OOP_ERROR_0("getText must be called on final classes!");
+		"<Directed base class>"
 	} ENDMETHOD;
 
 ENDCLASS;
 
 // Done
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
-
+	STATIC_METHOD("getText") {
+		"Move"
+	} ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
-
+	STATIC_METHOD("getText") {
+		"Capture"
+	} ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("QRFCmdrActionRecord", "DirectedCmdrActionRecord")
+	STATIC_METHOD("getText") {
+		"Attack"
+	} ENDMETHOD;
+ENDCLASS;
 
+// Done
+CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
+	STATIC_METHOD("getText") {
+		"Reinforce"
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
@@ -76,15 +104,12 @@ ENDCLASS;
 
 // - - - - Targeted at another garrison - - - -
 
-// Done
-CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
-
-ENDCLASS;
-
 // - - - - Other - - - -
 
 // todo
 CLASS("PatrolCmdrActionRecord", "CmdrActionRecord")
 
-
+	STATIC_METHOD("getText") {
+		"Patrol"
+	} ENDMETHOD;
 ENDCLASS;

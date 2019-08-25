@@ -34,8 +34,8 @@ CLASS(CLASS_NAME, "MapMarker")
 		_mrkName setMarkerShapeLocal "ICON";
 		_mrkName setMarkerPosLocal ([100, 100, 0]);
 		_mrkName setMarkerAlphaLocal 0.85;
-		_mrkName setMarkerType "b_unknown";
-		_mrkName setMarkerText "  <Garrison>";
+		_mrkName setMarkerTypeLocal "b_unknown";
+		_mrkName setMarkerTextLocal "<Garrison>";
 
 	} ENDMETHOD;
 
@@ -78,6 +78,10 @@ CLASS(CLASS_NAME, "MapMarker")
 		};
 	} ENDMETHOD;
 
+	METHOD("getMarker") {
+		params [P_THISOBJECT];
+		_thisObject+MARKER_SUFFIX
+	} ENDMETHOD;
 
 
 	// - - - - - - - Event handlers - - - - - - -
