@@ -23,4 +23,14 @@ CLASS("GoalGarrisonMove", "Goal")
 	} ENDMETHOD;
 	*/
 
+	// Must use this method to get the move radius if we are moving to a location
+	STATIC_METHOD("getLocationMoveRadius") {
+		params [P_THISCLASS, P_OOP_OBJECT("_loc")];
+
+		pr _border = CALLM0(_loc, "getBorder"); // [center, a, b, angle, isRectangle, c]
+		pr _minSize = (_border#1) min (_border#2);
+
+		(_minSize min 160) max 400 // Clamp it within some reasonable range
+	} ENDMETHOD;
+
 ENDCLASS;

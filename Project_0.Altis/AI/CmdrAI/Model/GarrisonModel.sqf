@@ -203,6 +203,15 @@ CLASS("GarrisonModel", "ModelBase")
 		T_CALLM("clearAction", []);
 		T_SETV("action", _action);
 		CALLM(_action, "registerGarrison", [_thisObject]);
+
+		// If this model is in the real world, notify the actual garrison, for the GarrisonServer to transmit updates
+		private _world = T_GETV("world");
+		if (CALLM0(_world, "isReal")) then {
+			T_PRVAR(actual);
+			private _AI = CALLM0(_actual, "getAI");
+			private _recordSerial = CALLM2(_action, "getRecordSerial", _thisObject, _world);
+			CALLM2(_AI, "postMethodAsync", "setCmdrActionSerial", _recordSerial);
+		};
 	} ENDMETHOD;
 
 	METHOD("clearAction") {
@@ -212,6 +221,13 @@ CLASS("GarrisonModel", "ModelBase")
 			CALLM(_currentAction, "unregisterGarrison", [_thisObject]);
 		};
 		T_SETV("action", NULL_OBJECT);
+
+		// If this model is in the real world, notify the actual garrison, for the GarrisonServer to transmit updates
+		if (CALLM0(T_GETV("world"), "isReal")) then {
+			T_PRVAR(actual);
+			private _AI = CALLM0(_actual, "getAI");
+			CALLM2(_AI, "postMethodAsync", "setCmdrActionSerial", []); // [] means no action is being done any more
+		};
 	} ENDMETHOD;
 
 	METHOD("isDead") {

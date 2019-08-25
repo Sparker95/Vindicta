@@ -703,6 +703,17 @@ CLASS("Location", "MessageReceiverEx")
 
 		T_CALLM("updateWaypoints", []);
 	} ENDMETHOD;
+
+	/*
+	Method: getBorder
+	gets border parameters of this location
+
+	Returns: [center, a, b, angle, isRectangle, c]
+	*/
+	METHOD("getBorder") {
+		params [P_THISOBJECT];
+		T_GETV("border")
+	} ENDMETHOD;
 	
 
 	// File-based methods

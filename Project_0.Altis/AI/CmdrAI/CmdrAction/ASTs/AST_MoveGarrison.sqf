@@ -4,6 +4,8 @@
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_MoveGarrison
 Order a garrison to move to a target within a certain radius.
 
+Radius is recalculated in case location is specified as destination
+
 Parent: <ActionStateTransition>
 */
 CLASS("AST_MoveGarrison", "ActionStateTransition")
@@ -99,6 +101,16 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 				// If we didn't start moving yet then start moving
 				if(!_moving) then {
 					OOP_INFO_MSG("[w %1] Move %2 to %3: started", [_world ARG _garr ARG _targetPos]);
+
+					// Recalculate radius according to the proper function if we are targeting a location
+					T_GET_AST_VAR("targetVar") params ["_targetType", "_targetTarget"];
+					if (_targetType == TARGET_TYPE_LOCATION) then {
+						private _locModel = CALLM(_world, "getLocation", [_targetTarget]);
+						private _radiusNew = CALLSM1("GoalGarrisonMove", "getLocationMoveRadius", GETV(_locModel, "actual"));
+						T_SET_AST_VAR("radiusVar", _radiusNew);
+						_radius = _radiusNew;
+					};
+
 					CALLM(_garr, "moveActual", [_targetPos ARG _radius]);
 					T_SETV("moving", true);
 				} else {

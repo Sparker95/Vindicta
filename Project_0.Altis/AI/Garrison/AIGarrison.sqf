@@ -38,6 +38,9 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Last time the garrison has any goal except for "GoalGarrisonRelax"
 	VARIABLE("lastBusyTime");
 
+	// A serialized CmdrActionRecord, to be read by GarrisonServer when it needs to
+	VARIABLE("cmdrActionRecordSerial");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -93,6 +96,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Set process interval
 		CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 		
+		// Commander action record serial
+		T_SETV("cmdrActionRecordSerial", []);
+
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
 		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
@@ -406,5 +412,15 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	} ENDMETHOD;
 	*/
+
+	// This is postMethodAsync'd from GarrisonModel.setAction, to synchronize the current action this garrison is doing
+	// _actionSerial can also be [], meaning there is no current action
+	METHOD("setCmdrActionSerial") {
+		params [P_THISOBJECT, P_ARRAY("_actionSerial")];
+		T_SETV("cmdrActionRecordSerial", _actionSerial);
+
+		// Notify the garrison server that this garrison should be updated on clients
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
+	} ENDMETHOD;
 
 ENDCLASS;

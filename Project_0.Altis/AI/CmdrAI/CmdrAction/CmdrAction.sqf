@@ -412,6 +412,21 @@ CLASS("CmdrAction", "RefCounted")
 		private _distScaled = 0.0005 * (_from distance _to) * _kf;
 		(1 / (1 + _distScaled * _distScaled))
 	} ENDMETHOD;
+
+	/*
+	Method: (virtual) getRecordSerial
+	Returns a serialized CmdrActionRecord associated with this action.
+	Derived classes should implement this to have proper support for client's UI.
+	
+	Parameters:	
+		_world - <Model.WorldModel>, real world model that is being used.
+	*/
+	/* virtual */ METHOD("getRecordSerial") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
+
+		// Return [] by default
+		[]
+	} ENDMETHOD;
 	
 ENDCLASS;
 

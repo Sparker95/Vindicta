@@ -221,6 +221,34 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		_effAvailable
 	} ENDMETHOD;
+
+	/*
+	Method: (virtual) getRecordSerial
+	Returns a serialized CmdrActionRecord associated with this action.
+	Derived classes should implement this to have proper support for client's UI.
+	
+	Parameters:	
+		_world - <Model.WorldModel>, real world model that is being used.
+	*/
+	/* virtual override */ METHOD("getRecordSerial") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
+
+		// Create a record
+		private _record = NEW("AttackCmdrActionRecord", "");
+
+		// Fill data values
+		SETV(_record, "garRef", GETV(_garModel, "actual"));
+		private _tgtGarModel = CALLM1(_world, "getGarrison", T_GETV("tgtGarrId"));
+		SETV(_record, "dstGarRef", GETV(_tgtGarModel, "actual"));
+
+		// Serialize and delete it
+		private _serial = SERIALIZE(_record);
+		DELETE(_record);
+
+		// Return the serialized data
+		_serial
+	} ENDMETHOD;
+
 ENDCLASS;
 
 #ifdef _SQF_VM

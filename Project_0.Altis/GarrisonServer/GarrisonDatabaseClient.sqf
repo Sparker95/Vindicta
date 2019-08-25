@@ -42,7 +42,7 @@ CLASS("GarrisonDatabaseClient", "")
 		_hm setVariable [_garRef, _garRecord];
 
 		// Initialize the client-side data of the GarrisonRecord
-		CALLM0(_garRecord, "clientInit");
+		CALLM0(_garRecord, "clientAdd");
 
 	} ENDMETHOD;
 
@@ -55,7 +55,7 @@ CLASS("GarrisonDatabaseClient", "")
 		_hm setVariable [_garRef, nil];
 
 		// Destroy the GarrisonRecord
-		CALLM0(_garRecord, "clientDestroy");
+		CALLM0(_garRecord, "clientRemove");
 		DELETE(_garRecord);
 	} ENDMETHOD;
 
