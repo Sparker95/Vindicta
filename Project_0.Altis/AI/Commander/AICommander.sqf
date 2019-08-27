@@ -18,22 +18,15 @@ CLASS("AICommander", "AI")
 
 	VARIABLE("side");
 	VARIABLE("msgLoop");
-	VARIABLE("locationDataWest");
-	VARIABLE("locationDataEast");
-	VARIABLE("locationDataInd");
-	VARIABLE("locationDataThis"); // Points to one of the above arrays depending on its side
-	VARIABLE("notificationID");
-	VARIABLE("notifications"); // Array with [task name, task creation time]
 	VARIABLE("intelDB"); // Intel database
 
 	// Friendly garrisons we can access
 	VARIABLE("garrisons");
 
+	// Used by SensorCommanderTargets
 	VARIABLE("targets"); // Array of targets known by this Commander
 	VARIABLE("targetClusters"); // Array with target clusters
 	VARIABLE("nextClusterID"); // A unique cluster ID generator
-
-	//VARIABLE("lastPlanningTime");
 	
 	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
 	VARIABLE("cmdrAI");
@@ -57,19 +50,9 @@ CLASS("AICommander", "AI")
 		ASSERT_OBJECT_CLASS(_msgLoop, "MessageLoop");
 		T_SETV("side", _side);
 		T_SETV("msgLoop", _msgLoop);
-		T_SETV("locationDataWest", []);
-		T_SETV("locationDataEast", []);
-		T_SETV("locationDataInd", []);
-		pr _thisLDArray = switch (_side) do {
-			case WEST: {T_GETV("locationDataWest")};
-			case EAST: {T_GETV("locationDataEast")};
-			case INDEPENDENT: {T_GETV("locationDataInd")};
-		};
-		T_SETV("locationDataThis", _thisLDArray);
-		T_SETV("notificationID", 0);
-		T_SETV("notifications", []);
 		
 		T_SETV("garrisons", []);
+		
 		
 		T_SETV("targets", []);
 		T_SETV("targetClusters", []);
@@ -157,21 +140,6 @@ CLASS("AICommander", "AI")
 				NEW("ClusterModel", [_worldModel ARG _cluster]);
 			};
 		} forEach T_GETV("targetClusters");
-
-		// Delete old notifications
-		pr _nots = T_GETV("notifications");
-		pr _i = 0;
-		while {_i < count (_nots)} do {
-			(_nots select _i) params ["_task", "_time"];
-			// If this notification ahs been here for too long
-			if (TIME_NOW - _time > 120) then {
-				[_task, T_GETV("side")] call BIS_fnc_deleteTask;
-				// Delete this notification from the list				
-				_nots deleteAt _i;
-			} else {
-				_i = _i + 1;
-			};
-		};
 
 		// C M D R A I   P L A N N I N G
 		T_PRVAR(cmdrAI);
@@ -305,16 +273,7 @@ CLASS("AICommander", "AI")
 		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
-
-		pr _thisSide = T_GETV("side");
-		
-		pr _ld = switch (_side) do {
-			case WEST: {T_GETV("locationDataWest")};
-			case EAST: {T_GETV("locationDataEast")};
-			case INDEPENDENT: {T_GETV("locationDataInd")};
-			default { _side = _thisSide; T_GETV("locationDataThis")};
-		};
-				
+	
 		// Check if we have intel about such location already
 		pr _intelDB = T_GETV("intelDB");
 		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
@@ -583,20 +542,6 @@ CLASS("AICommander", "AI")
 
 		// Reset this inventory item data
 		CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, nil);
-	} ENDMETHOD;
-
-	// Returns known locations which are assumed to be controlled by this AICommander
-	METHOD("getFriendlyLocations") {
-		params ["_thisObject"];
-		
-		pr _thisSide = T_GETV("side");
-		pr _friendlyLocs = T_GETV("locationDataThis") select {
-			_x select CLD_ID_SIDE == _thisSide
-		} apply {
-			_x select CLD_ID_LOCATION
-		};
-		
-		_friendlyLocs		
 	} ENDMETHOD;
 	
 	// Generates a new target cluster ID

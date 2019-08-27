@@ -18,13 +18,7 @@
 	Singleton class that performs things related to map user interface
 */
 CLASS(CLASS_NAME, "")
-	// Arrays of LOCATION_DATA structures
-	STATIC_VARIABLE("locationDataWest"); 	// What client's side knows about West knowledge about locations
-	STATIC_VARIABLE("locationDataEast");
-	STATIC_VARIABLE("locationDataInd");
-
 	STATIC_VARIABLE("currentMapMarker");
-
 	STATIC_VARIABLE("campAllowed");
 
 	// Array with route markers (route segments and source/destination markers)
