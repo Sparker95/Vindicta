@@ -2,6 +2,7 @@
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING
+
 #define OFSTREAM_FILE "Commander.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
@@ -23,3 +24,8 @@
 #include "LocationData.hpp"
 #include "AICommander.hpp"
 #include "..\..\MessageReceiver\MessageReceiver.hpp"
+#include "..\..\Mutex\Mutex.hpp"
+
+#define PROFILER_COUNTERS_ENABLE
+
+#include "CmdrAction\CmdrActionStates.hpp"

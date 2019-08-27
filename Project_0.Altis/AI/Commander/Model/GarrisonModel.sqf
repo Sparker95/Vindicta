@@ -1,7 +1,4 @@
 #include "..\common.hpp"
-#include "..\..\..\Group\Group.hpp"
-#include "..\..\parameterTags.hpp"
-#include "..\..\Action\Action.hpp"
 
 // GarrisonModel_getThread = {
 // 	params ["_garrisonModel"];

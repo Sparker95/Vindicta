@@ -12,9 +12,8 @@
 #include "..\..\..\Templates\Efficiency.hpp"
 #include "..\..\..\Mutex\Mutex.hpp"
 #include "..\CmdrAction\CmdrActionStates.hpp"
-#include "..\..\Commander\AICommander.hpp"
 #include "..\..\..\Location\Location.hpp"
-#include "..\CmdrAI.hpp"
+#include "..\AICommander.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.CmdrActionRecord

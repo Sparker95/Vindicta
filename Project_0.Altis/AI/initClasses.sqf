@@ -27,7 +27,6 @@ call compile preprocessFileLineNumbers "AI\Misc\testFunctions.sqf";
 
 
 // *Commander* AI
-call compile preprocessFileLineNumbers "AI\CmdrAI\initClasses.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\initClasses.sqf";
 
 // Garrison AI classes

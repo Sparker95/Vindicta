@@ -31,7 +31,7 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		_srcGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to split
 		_detachmentEffVar - IN <AST_VAR>(Efficiency Vector), efficiency to take from the source garrison to form the new garrison
 		_splitFlagsVar - IN <AST_VAR>(Array of Number), flags that define the rules when splitting the garrison, passed to <Model.GarrisonModel.splitActual>
-			(see CmdrAI.hpp for the definitions)
+			(see Commander.hpp for the definitions)
 		_detachedGarrIdVar - OUT <AST_VAR>(Number), <Model.GarrisonModel> Id of the newly formed garrison
 	*/
 	METHOD("new") {
