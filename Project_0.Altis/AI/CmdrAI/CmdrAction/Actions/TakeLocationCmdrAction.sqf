@@ -148,7 +148,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			CALLM(_srcGarr, "transportationScore", [_detachEff])
 		};
 
-
+		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 		private _scorePriority = CALLM(_strategy, "getLocationDesirability", [_worldNow ARG _tgtLoc ARG _side]);
 
@@ -239,12 +239,12 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
-		private _record = NEW("TakeLocationCmdrActionRecord", "");
+		private _record = NEW("TakeLocationCmdrActionRecord", []);
 
 		// Fill data values
-		SETV(_record, "garRef", GETV(_garModel, "actual"));
+		//SETV(_record, "garRef", GETV(_garModel, "actual"));
 		private _tgtLocModel = CALLM1(_world, "getLocation", T_GETV("tgtLocId"));
-		SETV(_record, "dstGarRef", GETV(_tgtLocModel, "actual"));
+		SETV(_record, "locRef", GETV(_tgtLocModel, "actual"));
 
 		// Serialize and delete it
 		private _serial = SERIALIZE(_record);

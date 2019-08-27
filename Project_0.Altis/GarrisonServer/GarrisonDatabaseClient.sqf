@@ -67,6 +67,28 @@ CLASS("GarrisonDatabaseClient", "")
 		_hm getVariable [_garRef, ""]
 	} ENDMETHOD;
 
+	// Returns an array of existing records which are pointing at the specified _garRef
+	METHOD("getLinkedGarrisonRecords") {
+		params [P_THISOBJECT, "_garRef"];
+
+		pr _allRecords = allVariables T_GETV("hm");
+		_allRecords select {
+			pr _actionRecord = GETV(_x, "cmdrActionRecord");
+			// Check if there is an action record
+			if (_actionRecord != "") then {
+				// Check if the action record has a garrison reference
+				pr _recordDstGarRef = GETV(_actionRecord, "dstGarRef");
+				if (isNil "_recordDstGarRef") then {
+					false
+				} else {
+					_recordDstGarRef == _garRef
+				};
+			} else {
+				false
+			} 
+		};
+	} ENDMETHOD;
+
 	// - - - - - - Remotely executed static methods (by GarrisonServer) - - - - - - 
 
 	STATIC_METHOD("destroy") {

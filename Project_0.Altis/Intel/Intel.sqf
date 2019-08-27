@@ -321,7 +321,7 @@ CLASS("IntelLocation", "Intel")
 			default {[COLOR_UNKNOWN, "ColorCIV"]}; // Purple color
 		};
 
-		diag_log format ["--- Setting color: %1", _color];
+		//diag_log format ["--- Setting color: %1", _color];
 
 		pr _radius = GETV(_intel, "accuracyRadius");
 		if (isNil "_radius") then {_radius = 0; };

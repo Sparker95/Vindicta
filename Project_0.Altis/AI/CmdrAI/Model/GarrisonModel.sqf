@@ -210,7 +210,7 @@ CLASS("GarrisonModel", "ModelBase")
 			T_PRVAR(actual);
 			private _AI = CALLM0(_actual, "getAI");
 			private _recordSerial = CALLM2(_action, "getRecordSerial", _thisObject, _world);
-			CALLM2(_AI, "postMethodAsync", "setCmdrActionSerial", _recordSerial);
+			CALLM2(_AI, "postMethodAsync", "setCmdrActionSerial", [_recordSerial]);
 		};
 	} ENDMETHOD;
 

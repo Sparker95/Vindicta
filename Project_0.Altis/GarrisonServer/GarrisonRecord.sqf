@@ -54,6 +54,7 @@ CLASS("GarrisonRecord", "")
 		T_SETV("pos", CALLM0(_AI, "getPos"));
 		T_SETV("side", GETV(_gar, "side"));
 		T_SETV("composition", GETV(_gar, "composition"));
+		T_SETV("cmdrActionRecordSerial", GETV(_AI, "cmdrActionRecordSerial"));
 	} ENDMETHOD;
 
 
@@ -66,12 +67,13 @@ CLASS("GarrisonRecord", "")
 		pr _mapMarker = T_GETV("mapMarker");
 		CALLM1(_mapMarker, "setPos", T_GETV("pos"));
 		CALLM1(_mapMarker, "setSide", T_GETV("side"));
+		CALLM1(_mapMarker, "setText", "");
 
 	} ENDMETHOD;
 
 	// Updates the map markers of the action (line, pointer, etc)
 	#define __MRK_LINE "_line"
-	#define __MRK_END "_ptr"
+	#define __MRK_END "_end"
 	METHOD("_updateActionMapMarkers") {
 		params [P_THISOBJECT];
 
@@ -88,42 +90,44 @@ CLASS("GarrisonRecord", "")
 			pr _posStart = T_GETV("pos");
 			pr _recordClass = GET_OBJECT_CLASS(_record);
 			
+			pr _actionText = CALLSM0(_recordClass, "getText"); // A friendly text of this action: "Attack", "Patrol", etc
+
 			if (_recordClass in ["MoveCmdrActionRecord", "TakeLocationCmdrActionRecord", "QRFCmdrActionRecord", "ReinforceCmdrActionRecord"]) then {
 				// Draw a line
 				pr _posEnd = CALLM0(_record, "getPos"); // It will resolve position of position, location or garrison
-				pr _mrkText = CALLSM0(_recordClass, "getText");
-				pr _color = "colorRed"; // [T_GETV("side"), true] call BIS_fnc_sideColor;
-				[_posStart, _posEnd, _color, 15, _mrkEnd] call misc_fnc_mapDrawLineLocal;
 
-				// Draw one marker at destination
-				createMarkerLocal [_mrkEnd, _posEnd];
-				_mrkEnd setMarkerShapeLocal "ICON";
-				//_mrkEnd setMarkerPosLocal ([100, 100, 0]);
-				_mrkEnd setMarkerAlphaLocal 1;
-				_mrkEnd setMarkerType "waypoint";
-				_mrkEnd setMarkerText _mrkText;
+				if (count _posEnd == 0) then {
+					// Print an error? CmdrActionRecord already prints an error
+				} else {
+					pr _color = "colorRed"; // [T_GETV("side"), true] call BIS_fnc_sideColor;
+					[_posStart, _posEnd, _color, 15, _mrkLine] call misc_fnc_mapDrawLineLocal;
+					_mrkLine setMarkerBrushLocal "SolidFull";
+					_mrkLine setMarkerAlphaLocal 1.0;
 
-				// 
-				private _mrk = CALLM0(T_GETV("mapMarker"), "getMarker");
-				_mrk setMarkerTextLocal "<Garrison on patrol>";
+					// Draw one marker at destination
+					createMarkerLocal [_mrkEnd, _posEnd];
+					_mrkEnd setMarkerShapeLocal "ICON";
+					//_mrkEnd setMarkerPosLocal ([100, 100, 0]);
+					_mrkEnd setMarkerTypeLocal "mil_circle";
+					//_mrkEnd setMarkerTextLocal _actionText;
+					_mrkEnd setMarkerColorLocal "colorRed";
+					_mrkEnd setMarkerAlphaLocal 1.0;
+					_mrkEnd setMarkerSizeLocal [1.5, 1.5];
+				};
 			} else {
 				// NYI, patrols are not supported yet
-				// Just set marker text
-				private _mrk = CALLM0(T_GETV("mapMarker"), "getMarker");
-				_mrk setMarkerTextLocal "<Garrison on patrol>";
 			};
 
+			// Set text of the garrison marker
+			CALLM1(T_GETV("mapMarker"), "setText", format ["<%1>" ARG _actionText]);
 		};
 	} ENDMETHOD;
+
+
 
 	// Initializes this object on the client side 
 	METHOD("clientAdd") {
 		params [P_THISOBJECT];
-
-		// Create the map marker
-		pr _mapMarker = NEW("MapMarkerGarrison", []);
-		T_SETV("mapMarker", _mapMarker);
-		T_CALLM0("_updateMapMarker");
 
 		// Deserialize the commander action record
 		pr _actionRecordSerial = T_GETV("cmdrActionRecordSerial");
@@ -137,6 +141,25 @@ CLASS("GarrisonRecord", "")
 			T_SETV("cmdrActionRecord", _actionRecord);
 		};
 
+		// Create the map marker
+		pr _mapMarker = NEW("MapMarkerGarrison", []);
+		T_SETV("mapMarker", _mapMarker);
+		T_CALLM0("_updateMapMarker");		
+		T_CALLM0("_updateActionMapMarkers");
+
+		// Update linked records if something was pointing at this garrison record
+		T_CALLM0("_updateLinkedRecords");
+	} ENDMETHOD;
+
+	// Check if any linked garrison records were pointing at this and update them too
+	METHOD("_updateLinkedRecords") {
+		params [P_THISOBJECT];
+
+		pr _linkedRecords = CALLM1(gGarrisonDBClient, "getLinkedGarrisonRecords", GETV(_thisObject, "garRef"));
+		{
+			CALLM0(_x, "_updateMapMarker");
+			CALLM0(_x, "_updateActionMapMarkers");
+		} forEach _linkedRecords;
 	} ENDMETHOD;
 
 	// Updates data in this object from another garrison record
@@ -144,13 +167,37 @@ CLASS("GarrisonRecord", "")
 	METHOD("clientUpdate") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
+		pr _posChanged = ! (T_GETV("pos") isEqualTo GETV(_garRecord, "pos") );
+
 		__TCOPYVAR(_garRecord, "pos");
 		__TCOPYVAR(_garRecord, "side");
 		__TCOPYVAR(_garRecord, "composition");
+		__TCOPYVAR(_garRecord, "cmdrActionRecordSerial");
 
-		// Update map marker properties
+		// Delete the old commander action record, if it existed
+		pr _record = T_GETV("cmdrActionRecord");
+		if (_record != "") then {DELETE(_record);};
+
+		// Deserialize the commander action record
+		pr _actionRecordSerial = T_GETV("cmdrActionRecordSerial");
+		if (count _actionRecordSerial == 0) then {
+			// [] means there is no current action
+			T_SETV("cmdrActionRecord", "");
+		} else {
+			pr _actionRecordClass = SERIALIZED_CLASS_NAME(_actionRecordSerial);
+			pr _actionRecord = NEW(_actionRecordClass, []);
+			DESERIALIZE(_actionRecord, _actionRecordSerial);
+			T_SETV("cmdrActionRecord", _actionRecord);
+		};
+
+		// Update map markers
 		T_CALLM0("_updateMapMarker");
 		T_CALLM0("_updateActionMapMarkers");
+
+		// Update linked records if position has changed
+		if (_posChanged) then {
+			T_CALLM0("_updateLinkedRecords");
+		};
 		
 	} ENDMETHOD;
 

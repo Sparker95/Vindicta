@@ -508,6 +508,7 @@ CLASS("CmdrAI", "")
 		OOP_DEBUG_MSG("Generating new actions", []);
 
 		private _maxNewActions = 2;
+		#ifndef CMDR_AI_TESTING
 		private _generators = switch(_priority) do {
 			case CMDR_PLANNING_PRIORITY_HIGH: {
 				["generateAttackActions"]
@@ -519,6 +520,10 @@ CLASS("CmdrAI", "")
 				["generateTakeOutpostActions"]
 			};
 		};
+		#else
+		// We will plan the shit ouf of this world model
+		private _generators = ["generateAttackActions", "generateReinforceActions", "generatePatrolActions", "generateTakeOutpostActions"];
+		#endif
 
 		T_CALLM("selectActions", [_generators ARG _maxNewActions ARG _world ARG _simWorldNow ARG _simWorldFuture]);
 

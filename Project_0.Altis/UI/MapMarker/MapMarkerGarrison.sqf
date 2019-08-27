@@ -40,6 +40,7 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("delete") {
+		params [P_THISOBJECT];
 
 		deleteMarkerLocal _thisObject+MARKER_SUFFIX;
 	} ENDMETHOD;
@@ -81,6 +82,11 @@ CLASS(CLASS_NAME, "MapMarker")
 	METHOD("getMarker") {
 		params [P_THISOBJECT];
 		_thisObject+MARKER_SUFFIX
+	} ENDMETHOD;
+
+	METHOD("setText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+		(_thisObject+MARKER_SUFFIX) setMarkerTextLocal _text;
 	} ENDMETHOD;
 
 

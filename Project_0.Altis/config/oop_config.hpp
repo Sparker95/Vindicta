@@ -1,4 +1,4 @@
-/*
+
 // Default oop config overrides.
 // Nothing here cos we don't want to override any stuff by default!
 // Undefine debug and info logging, leave warning and error logging.
@@ -22,7 +22,7 @@
 //#undef OFSTREAM_FILE
 
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
-//#define RELEASE_BUILD
+#define RELEASE_BUILD
 
 //#define CMDR_AI_TESTING
 
@@ -32,11 +32,11 @@
 #define OOP_PROFILE_MIN_T 0.002
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
-#define OOP_ASSERT
-*/
+//#define OOP_ASSERT
+
 
 // ========= Release config ============
-
+/*
 // Undefine debug and info logging, leave warning and error logging.
 #undef OOP_DEBUG
 #undef OOP_INFO
@@ -59,3 +59,4 @@
 
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
 #define RELEASE_BUILD
+*/

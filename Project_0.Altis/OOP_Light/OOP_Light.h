@@ -41,7 +41,7 @@
 // As well as other assertions
 // It's a global flag, must be defined here
 
-#define OOP_ASSERT
+//#define OOP_ASSERT
 // #define OOP_ASSERT_ACCESS
 
 // Enables support for Arma Script Profiler globally
@@ -954,14 +954,14 @@ objNameStr \
 #endif
 
 #ifdef OOP_ERROR
-#define OOP_ERROR_MSG(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
-#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_MSG(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format ([str]+a) ]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_0(str) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, str]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_1(str, a) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_2(str, a, b) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_3(str, a, b, c) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_4(str, a, b, c, d) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_5(str, a, b, c, d, e) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
+#define OOP_ERROR_6(str, a, b, c, d, e, f) private _o_str = format ["[%1.%2] ERROR: %3", LOG_0, LOG_1, format [str, a, b, c, d, e, f]]; WRITE_LOG(_o_str); diag_log _o_str; WRITE_CRITICAL(_o_str)
 #else
 #define OOP_ERROR_MSG(str, a)
 #define OOP_ERROR_0(str)

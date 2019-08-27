@@ -234,10 +234,10 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
-		private _record = NEW("AttackCmdrActionRecord", "");
+		private _record = NEW("ReinforceCmdrActionRecord", []);
 
 		// Fill data values
-		SETV(_record, "garRef", GETV(_garModel, "actual"));
+		//SETV(_record, "garRef", GETV(_garModel, "actual"));
 		private _tgtGarModel = CALLM1(_world, "getGarrison", T_GETV("tgtGarrId"));
 		SETV(_record, "dstGarRef", GETV(_tgtGarModel, "actual"));
 

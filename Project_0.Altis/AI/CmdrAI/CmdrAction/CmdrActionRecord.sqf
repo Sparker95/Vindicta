@@ -3,7 +3,18 @@
 #define OOP_WARNING
 #define OOP_ERROR
 
-#include "..\common.hpp"
+#define PROFILER_COUNTERS_ENABLE
+
+// It's really part of GarrisonServer, so we don't want to output text into the CmdrAI log file
+//#define OFSTREAM_FILE "CmdrAI.rpt"
+
+#include "..\..\..\OOP_Light\OOP_Light.h"
+#include "..\..\..\Templates\Efficiency.hpp"
+#include "..\..\..\Mutex\Mutex.hpp"
+#include "..\CmdrAction\CmdrActionStates.hpp"
+#include "..\..\Commander\AICommander.hpp"
+#include "..\..\..\Location\Location.hpp"
+#include "..\CmdrAI.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.CmdrActionRecord
@@ -20,9 +31,6 @@ Parent: none
 
 CLASS("CmdrActionRecord", "")
 	
-	// Ref to the actual garrison
-	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
-	
 	STATIC_METHOD("getText") {
 		params [P_THISCLASS];
 		OOP_ERROR_0("getText must be called on final classes!");
@@ -32,7 +40,7 @@ ENDCLASS;
 
 // - - - - Targeted at position or location - - - -
 
-CLASS("DirectedCmdrActionRecord", "")
+CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 
 	// Destination position
 	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
@@ -41,7 +49,7 @@ CLASS("DirectedCmdrActionRecord", "")
 	VARIABLE_ATTR("locRef", [ATTR_SERIALIZABLE]);
 
 	// Destination garrison (if exists)
-	VARIABLE_ATTR("garRef", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("dstGarRef", [ATTR_SERIALIZABLE]);
 
 	// Returns position, location position or garrison position, !! ON CLIENT !!
 	METHOD("getPos") {
@@ -53,10 +61,22 @@ CLASS("DirectedCmdrActionRecord", "")
 		pr _loc = T_GETV("locRef");
 		if (!isNil "_loc") exitWith {CALLM0(_loc, "getPos")};
 
-		pr _gar = T_GETV("garRef");
-		pr _garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _gar);
-		if (_garRecord == "") exitWith {[]};
-		GETV(_garRecord, "pos")
+		pr _gar = T_GETV("dstGarRef");
+		if (!isNil "_gar") exitWith {
+			pr _garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _gar);
+			if (_garRecord == "") then {
+				OOP_ERROR_1("Can't resolve position of target garrison: %1", _gar);
+				[_thisObject] call OOP_dumpAllVariables;
+				[]
+			} else {
+				GETV(_garRecord, "pos")
+			};
+		};
+
+		// Else return [] and print an error
+		OOP_ERROR_1("No target in cmdr action record %1", _thisObject);
+		[_thisObject] call OOP_dumpAllVariables;
+		[]
 	} ENDMETHOD;
 
 	STATIC_METHOD("getText") {

@@ -15,3 +15,4 @@ private _args = [_uid, _profileName, _clientOwner];
 CALLM(gPlayerDatabaseServer, "onPlayerConnected", _args);
 
 // Send data about all garrisons to the player
+CALLM2(gGarrisonServer, "postMethodAsync", "onClientConnected", [_clientOwner ARG _side]);

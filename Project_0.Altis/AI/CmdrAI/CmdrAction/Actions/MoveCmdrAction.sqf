@@ -75,10 +75,10 @@ CLASS("MoveCmdrAction", "CmdrAction")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
-		private _record = NEW("MoveCmdrActionRecord", "");
+		private _record = NEW("MoveCmdrActionRecord", []);
 
 		// Fill data values
-		SETV(_record, "garRef", GETV(_garModel, "actual"));
+		//SETV(_record, "garRef", GETV(_garModel, "actual"));
 
 		// Resolve target
 		private _target = T_GETV("target");
