@@ -900,16 +900,122 @@ CLASS("AICommander", "AI")
 		// That's all!
 	} ENDMETHOD;
 
+/*
+
+
+                                                                                           
+       db         ,ad8888ba,  888888888888  88    ,ad8888ba,    888b      88   ad88888ba   
+      d88b       d8"'    `"8b      88       88   d8"'    `"8b   8888b     88  d8"     "8b  
+     d8'`8b     d8'                88       88  d8'        `8b  88 `8b    88  Y8,          
+    d8'  `8b    88                 88       88  88          88  88  `8b   88  `Y8aaaaa,    
+   d8YaaaaY8b   88                 88       88  88          88  88   `8b  88    `"""""8b,  
+  d8""""""""8b  Y8,                88       88  Y8,        ,8P  88    `8b 88          `8b  
+ d8'        `8b  Y8a.    .a8P      88       88   Y8a.    .a8P   88     `8888  Y8a     a8P  
+d8'          `8b  `"Y8888Y"'       88       88    `"Y8888Y"'    88      `888   "Y88888P"   
+                                                                                           
+Methods for player commander to create new actions for garrisons
+
+http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
+*/
+
+
+	// Call it through postMethodAsync !
+	METHOD("createMoveAction") {
+		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+
+		ASSERT_THREAD(_thisObject); // Respect my threading!
+
+		// Get the garrison model associated with this _garRef
+		T_PRVAR(worldModel);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		if (isNull _garModel) exitWith {
+			OOP_ERROR_1("No model of garrison %1", _garRef);
+		};
+
+		// Resolve the destination position
+		pr _allResolved = true;
+		pr _targetOut = switch (_targetType) do {
+			case TARGET_TYPE_GARRISON: {
+				// Resolve the target garrison model
+				pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _target);
+				if (isNull _garModel) then {
+					OOP_ERROR_1("No model of location %1", _target);
+					_allResolved = false;
+				} else {
+					GETV(_garModel, "id")
+				};
+			};
+			case TARGET_TYPE_LOCATION: {
+				// Resolve the location model
+				pr _locModel = CALLM1(_worldModel, "findLocationByActual", _target);
+				if (isNull _locModel) then {
+					OOP_ERROR_1("No model of location %1", _target);
+					_allResolved = false;
+				} else {
+					GETV(_locModel, "id")
+				};
+			};
+			case TARGET_TYPE_POSITION: {
+				// Make sure it at least has two elements inside
+				if (count _target < 2) then {
+					OOP_ERROR_1("Wrong target position: %1", _target);
+					_allResolved = false;
+				} else {	
+					_target // It's position already
+				};
+			};
+			case TARGET_TYPE_CLUSTER: {
+				// Not supported (yet?)
+				_allResolved = false;
+				0
+			};
+			default {
+				// What the hell is this??
+				OOP_ERROR_1("Wrong target type: %1", _targetType);
+				_allResolved = false;
+				0
+			};
+		};
+
+		// Bail if we couldn't resolve something
+		if (!_allResolved) exitWith {
+			OOP_ERROR_1("Couldn't resolve target: %1", _this);
+		};
+
+		// So far all parameters are good, let's go on ...
+
+		// Cancel previously given action
+		CALLM0(_garModel, "clearAction"); // <- It doesn't unref its action
+		// <- I need to unref or delete the action somehow here??
+
+		// Create a new action
+		pr _cmdrTarget = [_targetType, _targetOut]; // must be ID of garrison/location or a [x,y,z] array
+		pr _args = [GETV(_garModel, "id"), _cmdrTarget, 150]; // id, target, radius
+		pr _action = NEW("MoveCmdrAction", _args);
+		T_GETV("activeActions") pushBack _action;
+
+		// Don't waste time, update the action ASAP!
+		CALLM1(_action, "update", _worldModel);
+
+	} ENDMETHOD;
 
 
 
-	// ===========================================================================================================================
-	//
-	//
-	//                                         P O R T E D   F R O M   C M D R A I
-	//
-	//
-	// ===========================================================================================================================
+/*
+  ,ad8888ba,   88b           d88  88888888ba,    88888888ba             db         88  
+ d8"'    `"8b  888b         d888  88      `"8b   88      "8b           d88b        88  
+d8'            88`8b       d8'88  88        `8b  88      ,8P          d8'`8b       88  
+88             88 `8b     d8' 88  88         88  88aaaaaa8P'         d8'  `8b      88  
+88             88  `8b   d8'  88  88         88  88""""88'          d8YaaaaY8b     88  
+Y8,            88   `8b d8'   88  88         8P  88    `8b         d8""""""""8b    88  
+ Y8a.    .a8P  88    `888'    88  88      .a8P   88     `8b       d8'        `8b   88  
+  `"Y8888Y"'   88     `8'     88  88888888Y"'    88      `8b     d8'          `8b  88  
+
+Methods ported from CmdrAI made by Bill
+
+http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI                                               
+*/
+
 
 	/*
 	Method: plan
