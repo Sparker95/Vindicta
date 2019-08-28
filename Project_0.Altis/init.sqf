@@ -26,7 +26,7 @@ if (!IS_SERVER) then {
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		case "Sparker": 	{ "RedVsGreenGameMode" }; //"CivilWarGameMode" };
+		case "Sparker": 	{ "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };

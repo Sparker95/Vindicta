@@ -19,3 +19,6 @@ class ClientMapUI
 		//#include "Controls\PlayerList.h"
 	};
 };
+
+// Will be included into the .ext root actually
+#include "Controls\GarrisonCommand.h"

@@ -1,4 +1,5 @@
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "defineCommonGrids.hpp"
 #include "UIProfileColors.h"
 
 #define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.48"
@@ -158,7 +159,7 @@ class MUI_LISTNBOX : MUI_BASE
 
 	maxHistoryDelay = 1;
 	lineSpacing = 0.0 * GUI_GRID_H;
-	rowHeight = 1.2 * GUI_GRID_H;
+	rowHeight = 1.0 * GUI_GRID_H; //1.2 * GUI_GRID_H;
 	headerHeight = 0.9 * GUI_GRID_H;
 
 	colorActive[] = MUIC_WHITE;

@@ -329,13 +329,13 @@ MapMarker_EH_Draw = {
 
 	// Add a Draw event handler to draw markers
 	// It will call onDraw of every MapMarker object
-	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
+	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
 
 	// ==== Add event handlers ====
 	/*
 	// These are moved into ClientMapUI now, which makes more sense.
 	// Mouse button down
-	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonDown", {
+	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonDown", {
 		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 		 pr _args = [_displayorcontrol, _xPos, _yPos];
@@ -350,7 +350,7 @@ MapMarker_EH_Draw = {
 	}];
 
 	// Mouse button up
-	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonUp", {
+	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonUp", {
 		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 		 diag_log format ["Map MouseButtonDown: %1 %2", [_xPos, _yPos], _displayorcontrol ctrlMapScreenToWorld [_xPos, _yPos]];
 
@@ -365,7 +365,7 @@ MapMarker_EH_Draw = {
 	}];
 
 	// Mouse button click
-	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonClick", {
+	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonClick", {
 		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
 		 pr _args = [_displayorcontrol, _xPos, _yPos];
@@ -380,7 +380,7 @@ MapMarker_EH_Draw = {
 	}];
 
 	// Mouse moving
-	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseMoving", {
+	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {
 		params ["_control", "_xPos", "_yPos", "_mouseOver"];
 
 		pr _args = [_control, _xPos, _yPos];

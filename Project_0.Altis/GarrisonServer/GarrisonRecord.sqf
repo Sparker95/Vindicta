@@ -47,6 +47,11 @@ CLASS("GarrisonRecord", "")
 		T_GETV("garRef")
 	} ENDMETHOD;
 
+	METHOD("getPos") {
+		params [P_THISOBJECT];
+		T_GETV("getPos")
+	} ENDMETHOD;
+
 	// Fills data fields from a garrison object
 	METHOD("initFromGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];

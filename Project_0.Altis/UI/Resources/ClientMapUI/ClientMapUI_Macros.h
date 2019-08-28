@@ -46,3 +46,9 @@
 //bottom panel, structured text panel for hints
 #define IDC_BPANEL_HINTS 6005
 
+// Garrison command UI
+
+// Listbox with a list of actions to give to a garrison
+#define IDC_GCOM_ACTION_LISTNBOX	7300
+// Background panel of this listbox
+#define IDC_GCOM_ACTION_LISTNBOX_BG	7301
