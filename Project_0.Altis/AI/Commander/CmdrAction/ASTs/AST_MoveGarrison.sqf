@@ -140,6 +140,28 @@ CLASS("AST_MoveGarrison", "ActionStateTransition")
 			CMDR_ACTION_STATE_NONE
 		}
 	} ENDMETHOD;
+
+	/* override */ METHOD("cancel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+
+		// What we do depends on if we are applying to a sim world model or the real world.
+		switch(GETV(_world, "type")) do {
+			case WORLD_TYPE_SIM_NOW: {
+				OOP_ERROR_0("cancel is only possible in real world");
+			};
+			
+			case WORLD_TYPE_SIM_FUTURE: {
+				OOP_ERROR_0("cancel is only possible in real world");
+			};
+			case WORLD_TYPE_REAL: {
+				if (T_GETV("moving")) then {
+					private _garr = CALLM(_world, "getGarrison", [T_GET_AST_VAR("garrIdVar")]);
+					ASSERT_OBJECT(_garr);
+					CALLM(_garr, "cancelMoveActual", []);
+				};
+			};
+		};
+	} ENDMETHOD;
 ENDCLASS;
 
 

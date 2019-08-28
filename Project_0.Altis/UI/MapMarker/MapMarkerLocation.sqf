@@ -4,6 +4,7 @@
 
 //#define NAMESPACE uiNamespace
 
+#define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Location\Location.hpp"
 
@@ -32,9 +33,9 @@ CLASS(CLASS_NAME, "MapMarker")
 	VARIABLE("type");
 	VARIABLE("notification"); // Bool
 
-	STATIC_VARIABLE("selectedMarkers");
-
-	STATIC_VARIABLE("all");
+	// All map marker objects
+	STATIC_VARIABLE("all"); // Child classes must also implement this
+	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
 
 	METHOD("new") {
 		params ["_thisObject", ["_intel", "", [""]]];
@@ -70,6 +71,11 @@ CLASS(CLASS_NAME, "MapMarker")
 		T_SETV("radius", _radius);
 		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
 		*/
+	} ENDMETHOD;
+
+	METHOD("getIntel") {
+		params [P_THISOBJECT];
+		T_GETV("intel")
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -370,15 +376,17 @@ CLASS(CLASS_NAME, "MapMarker")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
 SET_STATIC_VAR(CLASS_NAME, "all", []);
+SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
 
 #ifndef _SQF_VM
 
+/*
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
 	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
 }] call BIS_fnc_addScriptedEventHandler;
+*/
 
 /*
 [missionNamespace, "MapMarker_MouseButtonClick_none", {

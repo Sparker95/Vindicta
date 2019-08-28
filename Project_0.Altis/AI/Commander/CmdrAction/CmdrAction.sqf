@@ -350,6 +350,28 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	/*
+	Method: cancel
+	Cancel this action while it is in progress.
+	It will call a "cancel" on the current AST.
+	*/
+	METHOD("cancel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+
+		T_PRVAR(state);
+
+		// The action is over, so there is surely no current AST
+		if(_state == CMDR_ACTION_STATE_END) exitWith {};
+
+		// Get current AST and call "cancel" on it
+		private _transitions = T_CALLM("getTransitions", []);
+		private _AST = CALLSM("ActionStateTransition", "selectTransition", [_world ARG _state ARG _transitions]);
+		if (!IS_NULL_OBJECT(_AST)) then {
+			CALLM1(_AST, "cancel", _world);
+		};
+
+	} ENDMETHOD;
+
+	/*
 	Method: isComplete
 	Is this action complete? i.e. reached state <CMDR_ACTION_STATE.CMDR_ACTION_STATE_END>
 	Returns: Boolean, true if the action is complete.

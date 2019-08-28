@@ -928,7 +928,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Get the garrison model associated with this _garRef
 		T_PRVAR(worldModel);
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
-		if (isNull _garModel) exitWith {
+		if (IS_NULL_OBJECT(_garModel)) exitWith {
 			OOP_ERROR_1("No model of garrison %1", _garRef);
 		};
 
@@ -938,7 +938,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			case TARGET_TYPE_GARRISON: {
 				// Resolve the target garrison model
 				pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _target);
-				if (isNull _garModel) then {
+				if (IS_NULL_OBJECT(_garModel)) then {
 					OOP_ERROR_1("No model of location %1", _target);
 					_allResolved = false;
 				} else {
@@ -948,7 +948,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			case TARGET_TYPE_LOCATION: {
 				// Resolve the location model
 				pr _locModel = CALLM1(_worldModel, "findLocationByActual", _target);
-				if (isNull _locModel) then {
+				if (IS_NULL_OBJECT(_locModel)) then {
 					OOP_ERROR_1("No model of location %1", _target);
 					_allResolved = false;
 				} else {
@@ -985,8 +985,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// So far all parameters are good, let's go on ...
 
 		// Cancel previously given action
-		CALLM0(_garModel, "clearAction"); // <- It doesn't unref its action
-		// <- I need to unref or delete the action somehow here??
+		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
 
 		// Create a new action
 		pr _cmdrTarget = [_targetType, _targetOut]; // must be ID of garrison/location or a [x,y,z] array
@@ -996,7 +995,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Don't waste time, update the action ASAP!
 		CALLM1(_action, "update", _worldModel);
-
 	} ENDMETHOD;
 
 
@@ -1012,6 +1010,7 @@ Y8,            88   `8b d8'   88  88         8P  88    `8b         d8""""""""8b 
   `"Y8888Y"'   88     `8'     88  88888888Y"'    88      `8b     d8'          `8b  88  
 
 Methods ported from CmdrAI made by Bill
+and methods associated with actions, planning, ASTs, etc...
 
 http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI                                               
 */
@@ -1517,6 +1516,38 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		DELETE(_simWorldFuture);
 
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G   D O N E - - - - -", []);
+	} ENDMETHOD;
+
+	/*
+	Method: clearAndCancelGarrisonAction
+	Clears action at the garrison model, terminates and deletes the action as well.
+
+	Parameters: _garModel
+
+	_garModel - the garrison model
+
+	Returns: nil
+	*/
+	METHOD("clearAndCancelGarrisonAction") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garModel")];
+
+		pr _action = CALLM0(_garModel, "getAction");
+
+		// Clear previously given action from the garrison
+		// It doesn't termiante the actual action
+		CALLM0(_garModel, "clearAction");
+		
+		if (!IS_NULL_OBJECT(_action)) then {
+			// Cancel the action
+			CALLM0(_action, "cancel");
+
+			// Delete the action
+			UNREF(_action);
+
+			// Delete the action from our array of actions
+			T_PRVAR(activeActions);
+			_activeActions deleteAt (_activeActions find _action);
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

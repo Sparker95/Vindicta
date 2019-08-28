@@ -41,6 +41,12 @@ CLASS("GarrisonRecord", "")
 
 	} ENDMETHOD;
 
+	// Returns the garrison reference of the actual garrison
+	METHOD("getGarrison") {
+		params [P_THISOBJECT];
+		T_GETV("garRef")
+	} ENDMETHOD;
+
 	// Fills data fields from a garrison object
 	METHOD("initFromGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
@@ -142,7 +148,7 @@ CLASS("GarrisonRecord", "")
 		};
 
 		// Create the map marker
-		pr _mapMarker = NEW("MapMarkerGarrison", []);
+		pr _mapMarker = NEW("MapMarkerGarrison", [_thisObject]);
 		T_SETV("mapMarker", _mapMarker);
 		T_CALLM0("_updateMapMarker");		
 		T_CALLM0("_updateActionMapMarkers");

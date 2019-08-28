@@ -3,12 +3,15 @@
 #define OOP_ERROR
 #define OOP_DEBUG
 
+#define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\AI\Commander\LocationData.hpp"
+#include "..\..\AI\Commander\CmdrAction\CmdrActionStates.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
 #include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
 #include "..\Resources\UIProfileColors.h"
+#include "..\..\PlayerDatabase\PlayerDatabase.hpp"
 
 #define CLASS_NAME "ClientMapUI"
 #define pr private
@@ -64,6 +67,53 @@ CLASS(CLASS_NAME, "")
 
 		// set some properties that didn't work right in control classes
 		(_mapDisplay displayCtrl IDC_LOCP_TABCAT) ctrlSetFont "PuristaSemiBold";
+
+		// Add event handlers to the map
+		// Mouse button down
+		((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonDown", {
+			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+			CALLM(gClientMapUI, "onMouseButtonDown", _this);
+		}];
+
+		// Mouse button up
+		((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonUp", {
+			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+			CALLM(gClientMapUI, "onMouseButtonUp", _this);
+		}];
+
+		// Mouse button click
+		((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonClick", {
+			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+			CALLM(gClientMapUI, "onMouseButtonClick", _this);
+		}];
+
+		// Mouse moving
+		// Probably we don't need it now
+		/*
+		((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseMoving", {
+			params ["_control", "_xPos", "_yPos", "_mouseOver"];
+
+			pr _args = [_control, _xPos, _yPos];
+			pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
+
+			// Did something change?
+			if (_markerPrev != _markerCurrent) then {
+				// Did we leave any marker?
+				if (_markerPrev != "") then {
+					CALLM0(_markerPrev, "onMouseLeave");
+				};
+
+				// Did we enter a new marker?
+				if (_markerCurrent != "") then {
+					CALLM0(_markerCurrent, "onMouseEnter");
+				};
+
+				// Update the variable
+				SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
+			};
+		}];
+		*/
 
 	} ENDMETHOD;
 
@@ -517,6 +567,171 @@ CLASS(CLASS_NAME, "")
 			};
 		};
 	} ENDMETHOD;
+
+	// Sets hint text at the bottom of the screen
+	METHOD("setHintText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+		((finddisplay 12) displayCtrl IDC_BPANEL_HINTS) ctrlSetText _text; // (localize "STR_CMUI_BUTTON1");
+	} ENDMETHOD;
+
+	// Updates the hint text based on the current context
+	METHOD("updateHintTextFromContext") {
+		params [P_THISOBJECT];
+
+		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
+		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+
+		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
+		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
+
+		if (count _selectedGarrisons == 1) exitWith {
+			T_CALLM1("setHintText", "ALT+CLICK to give MOVE order to garrison");
+		};
+
+		T_CALLM1("setHintText", "You can click on something!");
+
+	} ENDMETHOD;
+
+
+
+
+
+
+/*                                                                                                        
+88888888888  8b           d8  88888888888  888b      88  888888888888                                            
+88           `8b         d8'  88           8888b     88       88                                                 
+88            `8b       d8'   88           88 `8b    88       88                                                 
+88aaaaa        `8b     d8'    88aaaaa      88  `8b   88       88                                                 
+88"""""         `8b   d8'     88"""""      88   `8b  88       88                                                 
+88               `8b d8'      88           88    `8b 88       88                                                 
+88                `888'       88           88     `8888       88                                                 
+88888888888        `8'        88888888888  88      `888       88                                                 
+                                                                                                                 
+                                                                                                                 
+                                                                                                                 
+88        88         db         888b      88  88888888ba,    88           88888888888  88888888ba    ad88888ba   
+88        88        d88b        8888b     88  88      `"8b   88           88           88      "8b  d8"     "8b  
+88        88       d8'`8b       88 `8b    88  88        `8b  88           88           88      ,8P  Y8,          
+88aaaaaaaa88      d8'  `8b      88  `8b   88  88         88  88           88aaaaa      88aaaaaa8P'  `Y8aaaaa,    
+88""""""""88     d8YaaaaY8b     88   `8b  88  88         88  88           88"""""      88""""88'      `"""""8b,  
+88        88    d8""""""""8b    88    `8b 88  88         8P  88           88           88    `8b            `8b  
+88        88   d8'        `8b   88     `8888  88      .a8P   88           88           88     `8b   Y8a     a8P  
+88        88  d8'          `8b  88      `888  88888888Y"'    88888888888  88888888888  88      `8b   "Y88888P"   
+*/
+
+	METHOD("onMouseButtonDown") {
+		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+
+		OOP_INFO_1("ON MOUSE BUTTON DOWN: %1", _this);
+
+		// Ignore right clicks for now
+		if (_button == 1) exitWith {};
+
+		/*
+		Contexts to filter:
+		Click anywhere AND with an alt AND one garrison marker has been selected before
+		We click on a location marker, No location markers have been selected before
+		*/
+
+		pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
+									CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
+
+		OOP_INFO_1("MARKERS UNDER CURSOR: %1", _markersUnderCursor);
+
+		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
+		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
+		OOP_INFO_1("SELECTED GARRISONS: %1", _selectedGarrisons);
+		OOP_INFO_1("SELECTED LOCATIONS: %1", _selectedLocations);
+
+		// Click anywhere AND with an alt AND one garrison marker has been selected before
+		// We probably want to give a waypoint to this garrison
+		if (_alt && (count _selectedGarrisons == 1)) exitWith {
+			OOP_INFO_0("GIVING ORDER TO GARRISON...");
+			// Make sure we have the rights to command garrisons
+			if (CALLM1(gPlayerDatabaseClient, "get", PDB_KEY_ALLOW_COMMAND_GARRISONS)) then {
+				pr _garRecord = CALLM0(_selectedGarrisons#0, "getGarrisonRecord"); // Get GarrisonRecord
+				pr _gar = CALLM0(_garRecord, "getGarrison"); // Ref to an actual garrison at the server
+
+				// Get position where to move to, it depends on what we actually click at
+				pr _targetType = -11; // Target type and the target where to move to, see CmdrAITarget.sqf
+				pr _target = 0;
+
+				if (count _markersUnderCursor > 0) then {
+					pr _destMarker = _markersUnderCursor#0;
+					switch (GET_OBJECT_CLASS(_destMarker)) do {
+						case "MapMarkerLocation" : {
+							_targetType = TARGET_TYPE_LOCATION;
+							pr _intel = CALLM0(_destMarker, "getIntel");
+							_target = GETV(_intel, "location");
+							OOP_INFO_1("	target: location %1", _target);
+						};
+						case "MapMarkerGarrison" : {
+							pr _dstGarRecord = CALLM0(_destMarker, "getGarrisonRecord");
+							if (_dstGarRecord == _garRecord) then {
+								OOP_INFO_0("	target: NONE, clicked on the same garrison");
+							} else {
+								_targetType = TARGET_TYPE_GARRISON;
+								_target = GETV(_dstGarRecord, "garRef");
+								OOP_INFO_1("	target: garrison %1", _target);
+							};
+						};
+						default {
+							OOP_ERROR_1("Unknown map marker class: %1", _destMarker); // What :/
+						};
+					};
+				} else {
+					_targetType = TARGET_TYPE_POSITION;
+					_target = _displayorcontrol posScreenToWorld [_xPos, _yPos];
+					OOP_INFO_1("	target: position %1", _target);
+				};
+
+				if (_targetType == -11) then {
+					OOP_ERROR_0("Can't resolve target position");
+				} else {
+					// We are good to go!
+					pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+					// Although it's on another machine, messageReceiver class will route the message for us
+					pr _args = [_gar, _targetType, _target];
+					CALLM2(_AI, "postMethodAsync", "createMoveAction", _args);
+				};
+			} else {
+				systemChat "You don't have the rights to command garrisons!";
+			};
+		};
+
+		
+		if (count _markersUnderCursor == 0) then {
+			// We are definitely not clicking on any map marker
+			// Deselect evereything
+			{
+				CALLM1(_x, "select", false);
+			} forEach (_selectedGarrisons + _selectedLocations);
+
+			T_CALLM0("updateHintTextFromContext");
+		} else {
+			// Hey we have clicked on something!
+
+			// Let's select it
+			{
+				CALLM1(_x, "select", true);
+			} forEach _markersUnderCursor;
+
+			T_CALLM0("updateHintTextFromContext");
+		};
+
+	} ENDMETHOD;
+
+	METHOD("onMouseButtonUp") {
+		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+
+	} ENDMETHOD;
+
+	METHOD("onMouseButtonClick") {
+		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+
+	} ENDMETHOD;
+
+
 
 ENDCLASS;
 

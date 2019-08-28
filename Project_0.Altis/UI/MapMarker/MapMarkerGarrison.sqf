@@ -4,6 +4,7 @@
 
 #include "..\..\OOP_Light\OOP_Light.h"
 
+#define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\MapUI\MapUI_Macros.h"
 #include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
 
@@ -22,11 +23,18 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("selected");
 
+	VARIABLE("garRecord"); // GarrisonRecord this map marker is attached to
+
 	STATIC_VARIABLE("selectedMarkers");
-	//STATIC_VARIABLE("all");
+
+	// All map marker objects
+	STATIC_VARIABLE("all"); // Child classes must also implement this
+	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
 
 	METHOD("new") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
+
+		T_SETV("garRecord", _garRecord);
 
 		// Create marker
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
@@ -43,6 +51,11 @@ CLASS(CLASS_NAME, "MapMarker")
 		params [P_THISOBJECT];
 
 		deleteMarkerLocal _thisObject+MARKER_SUFFIX;
+	} ENDMETHOD;
+
+	METHOD("getGarrisonRecord") {
+		params [P_THISOBJECT];
+		T_GETV("garRecord")
 	} ENDMETHOD;
 
 	METHOD("setSide") {
@@ -69,11 +82,11 @@ CLASS(CLASS_NAME, "MapMarker")
 			_control drawIcon
 			[
 				"\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa",
-				[1.0, 0.5, 0, 1], //Color
+				[0.1, 1.0, 0, 1], //Color
 				_pos, // Pos
 				41, // Width
 				41, // Height
-				0, // Angle
+				45, // Angle
 				"" // Text
 			];
 		};
@@ -149,14 +162,16 @@ CLASS(CLASS_NAME, "MapMarker")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "selectedMarkers", []);
-//SET_STATIC_VAR(CLASS_NAME, "all", []);
+SET_STATIC_VAR(CLASS_NAME, "all", []);
+SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
 
 #ifndef _SQF_VM
 
+/*
 [missionNamespace, "MapMarker_MouseButtonDown_none", {
 	params ["_button", "_shift", "_ctrl", "_alt"];
 	CALL_STATIC_METHOD(CLASS_NAME, "onMouseClickElsewhere", _this);
 }] call BIS_fnc_addScriptedEventHandler;
+*/
 
 #endif

@@ -2,6 +2,8 @@
 #define OOP_WARNING
 #define OOP_ERROR
 //#define NAMESPACE uiNamespace
+
+#define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\MapUI\MapUI_Macros.h"
 
@@ -17,9 +19,12 @@ It's much like a local map marker, but allows to attach events to them like you 
 CLASS(CLASS_NAME, "")
 
 	// All map marker objects
-	STATIC_VARIABLE("all");
-	STATIC_VARIABLE("markerUnderCursor");
-	STATIC_VARIABLE("timePrevButtonDown");
+	STATIC_VARIABLE("all"); // Child classes must also implement this
+	STATIC_VARIABLE("allSelected"); // Child classes must also implement this
+
+	// Width and height in UI units used for mouse events
+	VARIABLE("eWidthUI");
+	VARIABLE("eHeightUI");
 
 	// 2D position
 	VARIABLE("pos");
@@ -29,10 +34,6 @@ CLASS(CLASS_NAME, "")
 
 	// Color
 	VARIABLE("color");
-
-	// Width and height in UI units used for mouse events
-	VARIABLE("eWidthUI");
-	VARIABLE("eHeightUI");
 
 	/*
 	Method: new
@@ -44,23 +45,37 @@ CLASS(CLASS_NAME, "")
 
 		pr _args = [0, 0];
 		T_SETV("pos", _args);
+
 		T_SETV("eWidthUI", 20);
 		T_SETV("eHeightUI", 20);
 
-		// T_SETV("text", "");
-		// T_SETV("color", )
 
-		// Add to the array
+		// Add to the "all" array
+
+		// Add it to the array of the final class
+		pr _thisClass = GET_OBJECT_CLASS(_thisObject);
+		pr _all = GET_STATIC_VAR(_thisClass, "all");
+		_all pushBackUnique _thisObject;
+
+		// Add it to the array of base class
 		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
-		_all pushBack _thisObject;
+		_all pushBackUnique _thisObject;
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params ["_thisObject"];
 
-		// Remove from the all array
+		// Remove from the all array of the final class
+		pr _thisClass = GET_OBJECT_CLASS(_thisObject);
+		pr _all = GET_STATIC_VAR(_thisClass, "all");
+		_all deleteAt (_all find _thisObject);
+
+		// Remove from the all array of the base class
 		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 		_all deleteAt (_all find _thisObject);
+
+		pr _allSelected = GET_STATIC_VAR(_thisClass, "allSelected");
+		_allSelected deleteAt (_allSelected find _thisObject);
 	} ENDMETHOD;
 
 
@@ -96,6 +111,44 @@ CLASS(CLASS_NAME, "")
 			_thisObject // Text
 		];
 
+	} ENDMETHOD;
+
+	/*
+	Method: setPos
+	Sets position of the marker in world coordinates.
+	You can override this method, but then you must call the base class method for the "getMarkerUnderCursor" to work.
+	Parameters: _pos
+	_pos - Array, [x, y]
+	Returns: nil
+	*/
+	METHOD("setPos") {
+		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
+		T_SETV("pos", _pos);
+	} ENDMETHOD;
+
+	/*
+	Method: select
+	Sets the "selected" property of this map marker.
+
+	params: _select
+
+	_select - bool, default true.
+
+	Returns: nil
+	*/
+	METHOD("select") {
+		params ["_thisObject", ["_select", true]];
+
+		OOP_INFO_1("SELECT: %1", _select);
+
+		T_SETV("selected", _select);
+		pr _thisClass = GET_OBJECT_CLASS(_thisObject);
+		pr _selected = GETSV(_thisClass, "allSelected");
+		if (_select) then {
+			_selected pushBackUnique _thisObject;
+		} else {
+			_selected deleteAt (_selected find _thisObject);
+		};
 	} ENDMETHOD;
 
 
@@ -168,78 +221,6 @@ CLASS(CLASS_NAME, "")
 		OOP_INFO_3("CLICK Shift: %1, Ctrl: %2, Alt: %3", _shift, _ctrl, _alt);
 	} ENDMETHOD;
 
-
-	// ==== Setting properties ====
-	/*
-	Method: setPos
-	Sets position of the marker in world coordinates
-
-	Parameters: _pos
-
-	_pos - Array, [x, y]
-
-	Returns: nil
-	*/
-	METHOD("setPos") {
-		params [["_thisObject", "", [""]], ["_pos", [], [[]]]];
-
-		T_SETV("pos", _pos);
-	} ENDMETHOD;
-
-	/*
-	Method: setText
-	Sets "text" variable of this marker object.
-	You can use the text variable however you like.
-	However you are free not to use the text variable in your inherited classes.
-
-	Parameters: _text
-
-	_text - String
-
-	Returns: nil
-	*/
-	METHOD("setText") {
-		params [["_thisObject", "", [""]], ["_string", "", [""]]];
-
-		T_SETV("text", _text);
-	} ENDMETHOD;
-
-	METHOD("setColor") {
-		params [["_thisObject", "", [""]], "_color"];
-		T_SETV("color", _color);
-	} ENDMETHOD;
-
-	/*
-	Method: setEventSize
-	Mouse events are activated based on 'event size'.
-	This is done so that we can detach drawing from event detection.
-	Event size units are compatible with drawIcon width and height units.
-
-	Parameters: _width, _height
-
-	_width - Number
-	_height - Number
-
-	Returns: nil
-	*/
-
-	METHOD("setEventSize") {
-		params [["_thisObject", "", [""]], ["_width", 0, [0]], ["_height", 0, [0]] ];
-
-		T_SETV("eWidthUI", _width);
-		T_SETV("eHeightUI", _height);
-	} ENDMETHOD;
-
-
-
-
-
-
-
-
-
-
-
 	// === Static methods ====
 	/*
 	Method: (static)getMarkerUnderCursor
@@ -255,42 +236,91 @@ CLASS(CLASS_NAME, "")
 	*/
 	STATIC_METHOD("getMarkerUnderCursor") {
 		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
-			pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
+		pr _all = GET_STATIC_VAR(_thisClass, "all");
 
-			// Loop through all markers and find if the cursor is hovering over any of them
-			pr _index = _all findIf {
-				// Get UI pos of the marker
-				pr _mrkPosWorld = GETV(_x, "pos");
-				pr _mrkPosUI = _mapControl ctrlMapWorldToScreen _mrkPosWorld;
+		// Loop through all markers and find if the cursor is hovering over any of them
+		pr _index = _all findIf {
+			// Get event width in UI coordinates
+			pr _eWidthUI = 0.5*(GETV(_x, "eWidthUI"))/640;
+			pr _eHeightUI = 0.5*(GETV(_x, "eHeightUI"))/480;
 
-				// Get event width in UI coordinates
-				pr _eWidthUI = 0.5*(GETV(_x, "eWidthUI"))/640;
-				pr _eHeightUI = 0.5*(GETV(_x, "eHeightUI"))/480;
+			// Get UI pos of the marker
+			pr _mrkPosWorld = GETV(_x, "pos");
+			pr _mrkPosUI = _mapControl ctrlMapWorldToScreen _mrkPosWorld;
 
-				// Check if the cursor position is inside marker
-				_mrkPosUI params ["_mrkPosUIX", "_mrkPosUIY"];
-				[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1]
-			};
+			// Check if the cursor position is inside marker
+			_mrkPosUI params ["_mrkPosUIX", "_mrkPosUIY"];
+			[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1]
+		};
 
-			if (_index == -1) then {
-				""
-			} else {
-				_all select _index;
-			};
-		} ENDMETHOD;
+		if (_index == -1) then {
+			""
+		} else {
+			_all select _index;
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getMarkersUnderCursor
+	Returns MapMarker object which is currently under the cursor, or "" if there is none.
+
+	Parameters: _mapControl, _xCursorPosUI, _yCursorPosUI
+
+	_mapControl - the map control
+	_xCursorPosUI - X position of the cursor in global UI coordinates (compatible with Ctrl event handler coordinates)
+	_yCursorPosUI - Y position of the cursor in global UI coordinates (compatible with Ctrl event handler coordinates)
+
+	Returns: array of MapMarker objects.
+	*/
+	STATIC_METHOD("getMarkersUnderCursor") {
+		params ["_thisClass", "_mapControl", "_xCursorPosUI", "_yCursorPosUI"];
+		pr _all = GET_STATIC_VAR(_thisClass, "all");
+
+		// Loop through all markers and find if the cursor is hovering over any of them
+		_all select {
+			// Get event width in UI coordinates
+			pr _eWidthUI = 0.5*(GETV(_x, "eWidthUI"))/640;
+			pr _eHeightUI = 0.5*(GETV(_x, "eHeightUI"))/480;
+
+			// Get UI pos of the marker
+			pr _mrkPosWorld = GETV(_x, "pos");
+			pr _mrkPosUI = _mapControl ctrlMapWorldToScreen _mrkPosWorld;
+
+			// Check if the cursor position is inside marker
+			_mrkPosUI params ["_mrkPosUIX", "_mrkPosUIY"];
+			[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1]
+		}
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getAll
+	Returns an array of all map markers of this class.
+	*/
+	STATIC_METHOD("getAll") {
+		params [P_THISCLASS];
+		GETSV(_thisClass, "all");
+	} ENDMETHOD;
+
+	/*
+	Method: (static)getAllSelected
+	Returns an array of all selected map markers of this class
+	*/
+	STATIC_METHOD("getAllSelected") {
+		params [P_THISCLASS];
+		GETSV(_thisClass, "allSelected");
+	} ENDMETHOD;
+
 
 ENDCLASS;
 
 SET_STATIC_VAR(CLASS_NAME, "all", []);
-SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", "");
-SET_STATIC_VAR(CLASS_NAME, "timePrevButtonDown", 0);
+SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
 
 MapMarker_EH_Draw = {
 	params ["_control"];
-	pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
 	{
 		CALLM1(_x, "onDraw", _control);
-	} forEach _all;
+	} forEach GET_STATIC_VAR(CLASS_NAME, "all");
 };
 
 #ifndef _SQF_VM
@@ -302,7 +332,8 @@ MapMarker_EH_Draw = {
 	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
 
 	// ==== Add event handlers ====
-
+	/*
+	// These are moved into ClientMapUI now, which makes more sense.
 	// Mouse button down
 	((findDisplay 12) displayCtrl IDD_MAP) ctrlAddEventHandler ["MouseButtonDown", {
 		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
@@ -372,5 +403,6 @@ MapMarker_EH_Draw = {
 			SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
 		};
 	}];
+	*/
 };
 #endif

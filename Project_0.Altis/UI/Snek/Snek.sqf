@@ -584,4 +584,4 @@ CLASS("MapMarkerSnek", "MapMarker")
 
 ENDCLASS;
 
-NEW("MapMarkerSnek", []);
+//NEW("MapMarkerSnek", []);

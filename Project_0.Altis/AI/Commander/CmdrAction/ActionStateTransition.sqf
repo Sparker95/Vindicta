@@ -109,6 +109,43 @@ CLASS("ActionStateTransition", "")
 		_state
 	} ENDMETHOD;
 
+	/*
+	Method: (static) selectTransition
+	
+	Parameters:
+		_world - <Model.WorldModel>, the world we want to apply state transition behaviours in, could be 
+		REAL or SIM.
+		_state - <CMDR_ACTION_STATE>, the Current state from which we want to attempt transition.
+		_transitions - Array of <ActionStateTransition>, possible transitions we can select from.
+	
+	Returns: a transition which can be run from the current _state, or NULL_OBJECT
+	*/
+
+	STATIC_METHOD("selectTransition") {
+		params [P_THISCLASS, P_OOP_OBJECT("_world"), P_NUMBER("_state"), P_ARRAY("_transitions")];
+
+		if(_state == CMDR_ACTION_STATE_END) exitWith { NULL_OBJECT };
+
+		// For efficiency we will first filter to transitions whose fromStates include
+		// our current state, then sort by priority. Then we will check in decending
+		// order until we find one we can apply and attempt to apply it.
+		private _matchingTransitions = _transitions 
+			select { CALLM(_x, "isValidFromState", [_state]) }
+			apply { [GETV(_x, "priority"), _x] };
+
+		// Lower value is higher priority (0 is top most priority)
+		_matchingTransitions sort ASCENDING;
+
+		// Check the transitions are available in case they have implemented the isAvailable function
+		private _foundIdx = _matchingTransitions findIf { CALLM(_x select 1, "isAvailable", [_world]) };
+		if(_foundIdx != NOT_FOUND) then {
+			// Get the transition we selected
+			_matchingTransitions#_foundIdx#1;
+		} else {
+			NULL_OBJECT
+		};
+	} ENDMETHOD;
+
 	// ----------------------------------+----------------------------------
 	// |                 V I R T U A L   F U N C T I O N S                 |
 	// ----------------------------------+----------------------------------
@@ -140,6 +177,20 @@ CLASS("ActionStateTransition", "")
 	/* virtual */ METHOD("apply") { 
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		FAILURE("apply method must be implemented when deriving from ActionStateTransition");
+	} ENDMETHOD;
+
+	/*
+	Method: (abstract virtual) cancel
+	Implement in derived classes to cancel this action state transition while it is in progress.
+	
+	Parameters:
+		_world - <Model.WorldModel>, the world model we are currently applying ASTs to. Must be WORLD_TYPE_REAL.
+	
+	Return: <CMDR_ACTION_STATE>, the new state, or <CMDR_ACTION_STATE_NONE> to stay in the 
+	current state (can be used for transitions that take time).
+	*/
+	/* virtual */ METHOD("cancel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 	} ENDMETHOD;
 ENDCLASS;
 

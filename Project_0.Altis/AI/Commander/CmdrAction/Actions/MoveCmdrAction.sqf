@@ -39,15 +39,15 @@ CLASS("MoveCmdrAction", "CmdrAction")
 		T_PRVAR(target);
 
 		// Assign the action we are performing to the garrison (so it is marked as busy for other actions)
+		private _garrIdVar = MAKE_AST_VAR(_garrId);
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
 				[CMDR_ACTION_STATE_START], 			// Do this at start
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful (can't fail)
-				_garrId]; 					// Id of garrison to assign the action to
+				_garrIdVar]; 					// Id of garrison to assign the action to
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
 		// Add the move action
-		private _garrIdVar = MAKE_AST_VAR(_garrId);
 		private _targetVar = MAKE_AST_VAR(_target);
 		private _moveAST_Args = [
 				_thisObject, 						// This action (for debugging context)
@@ -83,11 +83,23 @@ CLASS("MoveCmdrAction", "CmdrAction")
 		// Resolve target
 		private _target = T_GETV("target");
 		_target params ["_tgtType", "_tgtTarget"];
-		if (_tgtType == TARGET_TYPE_LOCATION) then {
-			// It's a location model
-			SETV(_record, "locRef", GETV(_tgtTarget, "actual"));
-		} else {
-			SETV(_record, "pos", _tgtTarget);
+		switch (_tgtType) do {
+			case TARGET_TYPE_LOCATION: {
+				// It's a location model
+				private _locModel = CALLM1(_world, "getLocation", _tgtTarget);
+				SETV(_record, "locRef", GETV(_locModel, "actual"));
+			};
+			case TARGET_TYPE_GARRISON: {
+				// It's a garrison model
+				private _garModel = CALLM1(_world, "getGarrison", _tgtTarget);
+				SETV(_record, "dstGarRef", GETV(_garModel, "actual"));
+			};
+			case TARGET_TYPE_POSITION: {
+				SETV(_record, "pos", _tgtTarget);
+			};
+			default {
+				OOP_ERROR_2("Target type %1 is not implemented, target: %1", _tgtType, _tgtTarget);
+			};
 		};
 
 		// Serialize and delete it
