@@ -1,6 +1,5 @@
 #include "ClientMapUI_Macros.h"
 
-#include "..\MissionUIControlClasses.h"
 class ClientMapUI
 {
 	idd = -1;
@@ -22,3 +21,4 @@ class ClientMapUI
 
 // Will be included into the .ext root actually
 #include "Controls\GarrisonCommand.h"
+#include "Dialogs\GarrisonSplitDialog.h"

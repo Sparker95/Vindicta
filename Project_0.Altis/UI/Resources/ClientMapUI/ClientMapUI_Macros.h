@@ -52,3 +52,21 @@
 #define IDC_GCOM_ACTION_LISTNBOX	7300
 // Background panel of this listbox
 #define IDC_GCOM_ACTION_LISTNBOX_BG	7301
+
+
+
+
+// IDD / IDC for splitting the dialog
+//#define IDD_GSPLIT_DIALOG	6600
+
+//#define IDC_GSPLIT_LB_LEFT
+//#define IDC_GSPLIT_LB_RIGHT
+/*
+#define IDC_GSPLIT_
+#define IDC_GSPLIT_
+#define IDC_GSPLIT_
+#define IDC_GSPLIT_
+#define IDC_GSPLIT_
+#define IDC_GSPLIT_
+#define IDC_GSPLIT_
+*/

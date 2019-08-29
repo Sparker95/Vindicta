@@ -1,5 +1,4 @@
 #include "..\..\UIProfileColors.h"
-#include "..\..\MissionUIControlClasses.h"
 
 class CMUI_INFOBAR : MUI_STRUCT_TXT 
 {

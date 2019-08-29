@@ -2,11 +2,18 @@
 #include "defineCommonGrids.hpp"
 #include "UIProfileColors.h"
 
+/*
 #define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.48"
 #define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.52"
 #define MUI_TXT_SIZE_M "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.65"
 #define MUI_TXT_SIZE_L "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.7"
+*/
 
+// Sorry Marvis I had to tweak these a bit. Sparker.
+#define MUI_TXT_SIZE_XS safeZoneH*0.02
+#define MUI_TXT_SIZE_S safeZoneH*0.015
+#define MUI_TXT_SIZE_M safeZoneH*0.020
+#define MUI_TXT_SIZE_L safeZoneH*0.022
 
 #ifndef HG_MissionUIControlClassesh
 #define HG_MissionUIControlClassesh 1
@@ -137,8 +144,8 @@ class MUI_BUTTON_TXT : RscButton
 	onButtonUp = "";
 	onLBDrop = "";
 	onMouseButtonClick = "";
-	onMouseEnter = "";    
-    onMouseExit = "";  
+	onMouseEnter = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text black
+	onMouseExit = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text white
 };
 
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT

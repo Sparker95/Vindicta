@@ -757,7 +757,7 @@ Methods for the action listbox appears when we click on something to send some g
 		params ["_thisClass", "_control"];
 		pr _mapDisplay = findDisplay 12;
 		pr _idc = ctrlIDC _control;
-		_control ctrlSetTextColor [0, 0, 0, 1];
+		//_control ctrlSetTextColor [0, 0, 0, 1]; Sparker experimenting with UI colors
 
 		// hints to display if this control is enabled
 		if (ctrlEnabled (_mapDisplay displayCtrl _idc)) then {
@@ -798,7 +798,7 @@ Methods for the action listbox appears when we click on something to send some g
 	STATIC_METHOD("onMouseExit") {
 		params ["_thisClass", "_control"];
 		pr _mapDisplay = findDisplay 12;
-		_control ctrlSetTextColor [1, 1, 1, 1];
+		//_control ctrlSetTextColor [1, 1, 1, 1];
 
 		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_DEFAULT");
 
