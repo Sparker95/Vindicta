@@ -49,7 +49,7 @@ CLASS("GarrisonRecord", "")
 
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		T_GETV("getPos")
+		T_GETV("pos")
 	} ENDMETHOD;
 
 	// Fills data fields from a garrison object

@@ -118,10 +118,12 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 // Enum: AI.​CmdrAI.​CmdrAITarget.TARGET_TYPE
 // Supported <CmdrAITarget> types.
 //
+// TARGET_TYPE_INVALID - just to identify an invalid target
 // TARGET_TYPE_GARRISON - <Model.GarrisonModel> Id
 // TARGET_TYPE_LOCATION - <Model.LocationModel> Id
 // TARGET_TYPE_POSITION - position vector (3 element array of Number)
 // TARGET_TYPE_CLUSTER  -  <Model.ClusterModel> Id
+#define TARGET_TYPE_INVALID -1
 #define TARGET_TYPE_GARRISON 0
 #define TARGET_TYPE_LOCATION 1
 #define TARGET_TYPE_POSITION 2

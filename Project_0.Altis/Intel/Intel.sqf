@@ -327,7 +327,7 @@ CLASS("IntelLocation", "Intel")
 		if (isNil "_radius") then {_radius = 0; };
 
 		CALLM1(_mapMarker, "setPos", _pos);
-		CALLM1(_mapMarker, "setText", _text);
+		//CALLM1(_mapMarker, "setText", _text); // Let's not do this for now, not even sure if we want marker text anywhere
 		CALLM(_mapMarker, "setColorEx", _color);
 		CALLM1(_mapMarker, "setAccuracyRadius", _radius);
 		CALLM1(_mapMarker, "setType", _type);

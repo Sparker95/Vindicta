@@ -39,7 +39,6 @@ CLASS(CLASS_NAME, "MapMarker")
 
 	METHOD("new") {
 		params ["_thisObject", ["_intel", "", [""]]];
-		CALLM2(_thisObject, "setEventSize", 20, 20);
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
 		T_SETV("intel", _intel);

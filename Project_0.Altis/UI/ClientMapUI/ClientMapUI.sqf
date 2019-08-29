@@ -127,13 +127,13 @@ CLASS(CLASS_NAME, "")
 		pr _lb = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX", IDC_GCOM_ACTION_LISTNBOX]; // Listbox
 
 		// Set event handler
-		_lb ctrlAddEventHandler ["LBSelChanged", {CALLM1(gClientMapUI, "garActionLBOnSelChanged", _this); } ]; // params ["_control", "_selectedIndex"]; are passed
+		_lb ctrlAddEventHandler ["LBSelChanged", {CALLM(gClientMapUI, "garActionLBOnSelChanged", _this); } ]; // params ["_control", "_selectedIndex"]; are passed
 
-		_lb lnbAddRow ["Move"];			_lb lnbSetData [[0, 1], "move"]; // Data is an invisible variable, we use it for getting the button we have pressed
-		_lb lnbAddRow ["Attack NYI"];	_lb lnbSetData [[1, 1], "attack"];
-		_lb lnbAddRow ["Join NYI"];		_lb lnbSetData [[2, 1], "join"];
-		_lb lnbAddRow ["Patrol NYI"];	_lb lnbSetData [[3, 1], "patrol"];
-		_lb lnbAddRow ["< Close >"];	_lb lnbSetData [[4, 1], "close"];
+		_lb lnbAddRow ["Move"];			_lb lnbSetData [[0, 0], "move"]; // Data is an invisible variable, we use it for getting the button we have pressed
+		_lb lnbAddRow ["Attack (NYI)"];	_lb lnbSetData [[1, 0], "attack"];
+		_lb lnbAddRow ["Join (NYI)"];	_lb lnbSetData [[2, 0], "join"];
+		_lb lnbAddRow ["Patrol (NYI)"];	_lb lnbSetData [[3, 0], "patrol"];
+		_lb lnbAddRow ["< Close >"];	_lb lnbSetData [[4, 0], "close"];
 
 		// Set height to fit all the rows
 		pr _config = missionconfigfile >> "CMUI_GCOM_ACTION_LISTBOX" >> "rowHeight";
@@ -364,6 +364,11 @@ Methods for the action listbox appears when we click on something to send some g
 			_ctrl ctrlShow _enable;
 		} forEach [IDC_GCOM_ACTION_LISTNBOX, IDC_GCOM_ACTION_LISTNBOX_BG];
 
+		// Disable the previously selected row
+		if (_enable) then {
+			((finddisplay 12) displayCtrl IDC_GCOM_ACTION_LISTNBOX) lnbSetCurSelRow -1;
+		};
+
 		T_SETV("garActionLBShown", _enable);
 	} ENDMETHOD;
 
@@ -375,10 +380,8 @@ Methods for the action listbox appears when we click on something to send some g
 
 	METHOD("garActionLBUpdatePos") {
 		params [P_THISOBJECT];
-		diag_log "update pos was called";
 		// Move the garrison action listbox if needed
 		if (T_GETV("garActionLBShown")) then {
-			diag_log "actually updating update lb pos";
 			pr _posWorld = T_GETV("garActionPos");
 			pr _posScreen = ((findDisplay 12) displayCtrl IDC_MAP) posWorldToScreen _posWorld; //[_posWorld#0, _posWorld#1];
 			{
@@ -386,7 +389,6 @@ Methods for the action listbox appears when we click on something to send some g
 				pr _pos = ctrlPosition _ctrl;
 				_ctrl ctrlSetPosition [_posScreen#0, _posScreen#1, _pos#2, _pos#3];
 				_ctrl ctrlCommit 0;
-				diag_log format ["New ctrl pos: %1", [_posScreen#0, _posScreen#1, _pos#2, _pos#3]];
 			} forEach [IDC_GCOM_ACTION_LISTNBOX, IDC_GCOM_ACTION_LISTNBOX_BG];
 		};
 	} ENDMETHOD;
@@ -396,13 +398,44 @@ Methods for the action listbox appears when we click on something to send some g
 	METHOD("garActionLBOnSelChanged") {
 		params [P_THISOBJECT, "_control", "_selectedIndex"];
 
-		// Sanity check
+		// Sanity checks
 		if (!T_GETV("garActionLBShown")) exitWith {};
+		if (T_GETV("garActionTargetType") == TARGET_TYPE_INVALID) exitWith {};
 
 		// Get data
 		pr _lbdata = _control lnbData [_selectedIndex, 0];
+		diag_log format ["GARRISON ACTION LB: %1", _lbdata];
 
-		diag_log format ["LB SEL CHANGED: %1", _lbdata];
+		switch (_lbdata) do {
+			case "move" : {
+				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				// Although it's on another machine, messageReceiver class will route the message for us
+				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
+				CALLM2(_AI, "postMethodAsync", "createMoveAction", _args);
+				systemChat "Giving a MOVE order to garrison";
+			};
+			case "attack" : {
+				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
+				systemChat "This garrison order is not yet implemented";
+			};
+			case "join" : {
+				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
+				systemChat "This garrison order is not yet implemented";
+			};
+			case "patrol" : {
+				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
+				systemChat "This garrison order is not yet implemented";
+			};
+			case "close" : {
+				// Do nothing, it will just close itself
+			};
+			default {
+				OOP_ERROR_1("unknown garrison action: %1", _lbData);
+			};
+		};
+
+		// Close the LB
+		T_CALLM1("garActionLBEnable", false);
 
 	} ENDMETHOD;
 
@@ -479,7 +512,7 @@ Methods for the action listbox appears when we click on something to send some g
 							pr _intel = CALLM0(_destMarker, "getIntel");
 							_target = GETV(_intel, "location");
 							OOP_INFO_1("	target: location %1", _target);
-							_targetPos = CALLM0(_target, "getPos");
+							_targetPos = +CALLM0(_target, "getPos");
 						};
 						case "MapMarkerGarrison" : {
 							pr _dstGarRecord = CALLM0(_destMarker, "getGarrisonRecord");
@@ -487,9 +520,9 @@ Methods for the action listbox appears when we click on something to send some g
 								OOP_INFO_0("	target: NONE, clicked on the same garrison");
 							} else {
 								_targetType = TARGET_TYPE_GARRISON;
-								_target = GETV(_dstGarRecord, "garRef");
+								_target = CALLM0(_dstGarRecord, "getGarrison");
 								OOP_INFO_1("	target: garrison %1", _target);
-								_targetPos = CALLM0(_dstGarRecord, "getPos");
+								_targetPos = +CALLM0(_dstGarRecord, "getPos");
 							};
 						};
 						default {
@@ -500,7 +533,7 @@ Methods for the action listbox appears when we click on something to send some g
 					_targetType = TARGET_TYPE_POSITION;
 					_target = _displayorcontrol posScreenToWorld [_xPos, _yPos];
 					OOP_INFO_1("	target: position %1", _target);
-					_targetPos = _target;
+					_targetPos = +_target;
 				};
 
 				if (_targetType == TARGET_TYPE_INVALID) then {
@@ -516,13 +549,6 @@ Methods for the action listbox appears when we click on something to send some g
 					T_SETV("garActionGarRef", _gar);
 					T_SETV("garActionTargetType", _targetType);
 					T_SETV("garActionTarget", _target);
-
-					/*
-					pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
-					// Although it's on another machine, messageReceiver class will route the message for us
-					pr _args = [_gar, _targetType, _target];
-					CALLM2(_AI, "postMethodAsync", "createMoveAction", _args);
-					*/
 				};
 			} else {
 				systemChat "You don't have the rights to command garrisons!";
@@ -936,8 +962,6 @@ Methods for the action listbox appears when we click on something to send some g
 	*/
 	METHOD("onMapDraw") {
 		params [P_THISOBJECT];
-
-		diag_log "on map draw";
 
 		// Garrison action listbox will update its position 
 		T_CALLM0("garActionLBUpdatePos");

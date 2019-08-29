@@ -16,6 +16,8 @@ CLASS("GarrisonDatabaseClient", "")
 	// Hashmap that maps actual garrison references to garrison records
 	VARIABLE("hm");
 
+	VARIABLE("allRecords");
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 
@@ -23,6 +25,8 @@ CLASS("GarrisonDatabaseClient", "")
 		pr _ns = [false] call CBA_fnc_createNamespace;
 		T_SETV("hm", _ns);
 		#endif
+
+		T_SETV("allRecords", []);
 	} ENDMETHOD;
 
 	// It really never gets deleted now, so we don't care about it
@@ -44,6 +48,7 @@ CLASS("GarrisonDatabaseClient", "")
 		// Initialize the client-side data of the GarrisonRecord
 		CALLM0(_garRecord, "clientAdd");
 
+		T_GETV("allRecords") pushBack _garRecord;
 	} ENDMETHOD;
 
 	METHOD("deleteGarrisonRecord") {
@@ -57,6 +62,9 @@ CLASS("GarrisonDatabaseClient", "")
 		// Destroy the GarrisonRecord
 		CALLM0(_garRecord, "clientRemove");
 		DELETE(_garRecord);
+
+		pr _allrecords = T_GETV("allRecords");
+		_allRecords deleteAt (_allRecords find _garRecord);
 	} ENDMETHOD;
 
 	// Returns garrison record associated with this garrison reference
@@ -70,10 +78,12 @@ CLASS("GarrisonDatabaseClient", "")
 	// Returns an array of existing records which are pointing at the specified _garRef
 	METHOD("getLinkedGarrisonRecords") {
 		params [P_THISOBJECT, "_garRef"];
-
-		pr _allRecords = allVariables T_GETV("hm");
-		_allRecords select {
+		//OOP_INFO_1("GET LINKED GARRISON RECORDS: %1", _garRef);
+		pr _allRecords = T_GETV("allRecords");
+		//OOP_INFO_1("ALL RECORDS: %1", _allRecords);
+		pr _return = _allRecords select {
 			pr _actionRecord = GETV(_x, "cmdrActionRecord");
+			//OOP_INFO_2("  RECORD: %1, ACTION RECORD: %2", _x, _actionRecord);
 			// Check if there is an action record
 			if (_actionRecord != "") then {
 				// Check if the action record has a garrison reference
@@ -85,8 +95,10 @@ CLASS("GarrisonDatabaseClient", "")
 				};
 			} else {
 				false
-			} 
+			};
 		};
+		//OOP_INFO_1("RETURN: %1", _return);
+		_return
 	} ENDMETHOD;
 
 	// - - - - - - Remotely executed static methods (by GarrisonServer) - - - - - - 
