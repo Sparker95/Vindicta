@@ -10,6 +10,11 @@ t_fnc_convertConfigGroup = compile preprocessFileLineNumbers "Templates\fn_conve
 t_fnc_getDefaultCrew = compile preprocessFileLineNumbers "Templates\fn_getDefaultCrew.sqf";
 t_fnc_canDestroy = compile preprocessFileLineNumbers "Templates\fn_canDestroy.sqf";
 t_fnc_validateTemplate = compile preprocessFileLineNumbers "Templates\fn_validateTemplate.sqf";
+t_fnc_initializeTemplateFromFile = compile preprocessFileLineNumbers "Templates\fn_initializeTemplateFromFile.sqf";
+
+t_fnc_classNameToNumber = compile preprocessFileLineNumbers "Templates\fn_classNameToNumber.sqf";
+t_fnc_numberToClassName = compile preprocessFileLineNumbers "Templates\fn_numberToClassName.sqf";
+t_fnc_convertTemplateClassNamesToNumbers = compile preprocessFileLineNumbers "Templates\fn_convertTemplateClassNamesToNumbers.sqf";
 
 // Loadouts
 t_fnc_addLoadout = compile preprocessFileLineNumbers "Templates\fn_addLoadout.sqf";

@@ -41,7 +41,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
 
-	// Array with composition: amount of units of specified
+	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
+	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
 	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
 
 	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
@@ -84,12 +85,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("faction", _faction);
 		T_SETV("intelItems", []);
 
-		// Set value of composition counters
+		// Set value of composition array
 		pr _comp = [];
 		{
 			pr _tempArray = [];
 			_tempArray resize _x;
-			_comp pushBack (_tempArray apply {0});
+			_comp pushBack (_tempArray apply {[]});
 		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
 		T_SETV("composition", _comp);
 
@@ -1039,8 +1040,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM1(_unit, "setGarrison", _thisObject);
 		
 		// Add to the efficiency vector
-		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
-		CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
+		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
  
 		// Notify GarrisonServer
 		if (T_GETV("active")) then {
@@ -1113,8 +1114,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Substract from the efficiency vector
-		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
-		CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
+		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 
 		// Notify GarrisonServer
 		if (T_GETV("active")) then {
@@ -1168,8 +1169,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_units pushBackUnique _x;
 			
 			// Add to the efficiency vector
-			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-			CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
 		} forEach _groupUnits;
 		private _groups = GET_VAR(_thisObject, "groups");
 		_groups pushBackUnique _group;
@@ -1248,8 +1249,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_units deleteAt (_units find _x);
 			
 			// Substract from the efficiency vector
-			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-			CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 				
 		} forEach _groupUnits;
 		pr _groups = GET_VAR(_thisObject, "groups");
@@ -1622,7 +1623,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("increaseCounters") {
-		params [P_THISOBJECT, "_catID", "_subCatID"];
+		params [P_THISOBJECT, "_catID", "_subCatID", "_className"];
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -1655,7 +1656,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Update composition array
 		pr _comp = T_GETV("composition");
-		_comp#_catID set [_subcatID, (_comp#_catID#_subcatID) + 1];
+		(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;	
@@ -1669,7 +1670,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("decreaseCounters") {
-		params [P_THISOBJECT, "_catID", "_subCatID"];
+		params [P_THISOBJECT, "_catID", "_subCatID", "_className"];
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -1702,7 +1703,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Update composition array
 		pr _comp = T_GETV("composition");
-		_comp#_catID set [_subcatID, (_comp#_catID#_subcatID) - 1];
+		pr _array = _comp#_catID#_subCatID;
+		_array deleteAt (_array find ([_className] call t_fnc_classNameToNumber));
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -1761,7 +1763,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			{
 				pr _tempArray = [];
 				_tempArray resize _x;
-				_comp pushBack (_tempArray apply {0});
+				_comp pushBack (_tempArray apply {[]});
 			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
 			_comp
 		};

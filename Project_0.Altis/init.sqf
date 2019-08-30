@@ -22,7 +22,9 @@ if (!IS_SERVER) then {
 };
 #endif
 
-if(true) exitWith { // Keep it here in case we want to not start the actual mission but to test some other code
+//#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
+#ifdef DISABLE_MISSION_INIT
+if(true) exitWith { 
 	0 spawn {
 		0 spawn {
 			waitUntil {!((finddisplay 12) isEqualTo displayNull)};
@@ -31,7 +33,8 @@ if(true) exitWith { // Keep it here in case we want to not start the actual miss
 		_i = 0;
 		while {_i < 4} do { systemChat "!!! GAME MODE INIT WAS DISABLED !!! Check init.sqf"; sleep 4; _i = _i + 1; };
 	};
-}; 
+};
+#endif
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {

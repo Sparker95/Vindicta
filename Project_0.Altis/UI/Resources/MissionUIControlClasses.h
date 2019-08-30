@@ -72,7 +72,7 @@ class MUI_BG_BLACKSOLID : MUI_BASE
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_S;
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S; Sparker fulling around :/
 	colorBackground[] = MUIC_BLACK;
 };
 
@@ -81,7 +81,7 @@ class MUI_BG_BLACKTRANSPARENT : MUI_BASE
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_S;
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S;
 	colorBackground[] = MUIC_BLACKTRANSP;
 };
 
@@ -125,8 +125,8 @@ class MUI_BUTTON_TXT : RscButton
 	colorFocused[] = MUIC_BLACK;				// same as colorBackground to disable blinking
 	colorShadow[] = MUIC_TRANSPARENT;
 
-	offsetPressedX = 0;
-	offsetPressedY = 0;
+	offsetPressedX = 0; //0.1*MUI_TXT_SIZE_M;
+	offsetPressedY = 0; //0.1*MUI_TXT_SIZE_M;
 	offsetX = 0;
 	offsetY = 0;
 
@@ -191,6 +191,8 @@ class MUI_LISTNBOX : MUI_BASE
 	show = 1;
 	period = 0;
 
+	/*
+	// Doesn't work, probably be
 	class ListScrollBar
 	{
 	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
@@ -201,8 +203,29 @@ class MUI_LISTNBOX : MUI_BASE
 	colorDisabled[] = MUIC_WHITE;
 	thumb = "#(argb,8,8,3)color(1,1,1,1)";		
 	};
+	*/
+	class ListScrollBar
+	{
+		width = 0; // width of ListScrollBar
+		height = 0; // height of ListScrollBar
+		scrollSpeed = 0.01; // scrollSpeed of ListScrollBar
+
+		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa"; // Arrow
+		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa"; // Arrow when clicked on
+		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa"; // Slider background (stretched vertically)
+		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa"; // Dragging element (stretched vertically)
+
+		color[] = {1,1,1,1}; // Scrollbar color
+	};
 };
 
+// Use it for the left/right button of listnboxes
+class MUI_LISTNBOX_BUTTON : MUI_BUTTON_TXT
+{
+	width = 1.0 * GUI_GRID_H;
+	height = 1.0 * GUI_GRID_H;
+	text = "X";
+};
 
 class MUI_STRUCT_TXT : RscStructuredText
 {

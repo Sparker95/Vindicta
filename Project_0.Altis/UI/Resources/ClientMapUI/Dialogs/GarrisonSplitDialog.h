@@ -3,7 +3,7 @@
 
 class GSPLIT_DIALOG
 {
-	idd = 566;
+	idd = IDD_GSPLIT_DIALOG;
 	
 	class ControlsBackground
 	{
@@ -13,7 +13,6 @@ class GSPLIT_DIALOG
 	{
 		class GSPLIT_BG : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
 			idc = -1;
 			x = 0.15;
 			y = 0.00;
@@ -23,95 +22,118 @@ class GSPLIT_DIALOG
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
+
+		// LEFT LISTNBOX
+		class GSPLIT_LB_LEFT_BUTTON_LEFT : MUI_LISTNBOX_BUTTON
+		{
+			idc = IDC_GSPLIT_LB_LEFT_LEFT;
+			text = "<";
+		};
+		class GSPLIT_LB_LEFT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON
+		{
+			idc = IDC_GSPLIT_LB_LEFT_RIGHT;
+			text = ">";
+		};
 		class GSPLIT_LB_LEFT : MUI_LISTNBOX 
 		{
-			type = 5;
-			idc = -1;
-			style = 16;
+			idc = IDC_GSPLIT_LB_LEFT;
+			//style = 16;
 			x = 0.16;
 			y = 0.17;
 			w = 0.31;
 			h = 0.72;
+			columns[] = {0.1, 0.2};
+			idcLeft = IDC_GSPLIT_LB_LEFT_LEFT; // Left button IDC
+			idcRight = IDC_GSPLIT_LB_LEFT_RIGHT; // Right button IDC
+		};
+		// RIGHT LISTNBOX
+		class GSPLIT_LB_RIGHT_BUTTON_LEFT : MUI_LISTNBOX_BUTTON
+		{
+			idc = IDC_GSPLIT_LB_RIGHT_LEFT;
+			text = "<";
+		};
+		class GSPLIT_LB_RIGHT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON
+		{
+			idc = IDC_GSPLIT_LB_RIGHT_RIGHT;
+			text = ">";
 		};
 		class GSPLIT_LB_RIGHT : MUI_LISTNBOX 
 		{
-			type = 5;
-			idc = -1;
+			idc = IDC_GSPLIT_LB_RIGHT;
 			x = 0.53;
 			y = 0.17;
 			w = 0.31;
 			h = 0.72;
-			style = 16;
-			
+			columns[] = {0.1, 0.2};
+			idcLeft = IDC_GSPLIT_LB_RIGHT_LEFT; // Left button IDC
+			idcRight = IDC_GSPLIT_LB_RIGHT_RIGHT; // Right button IDC
 		};
+		// MOVE LEFT-RIGHT < << >> > BUTTONS
 		class GSPLIT_MOVE_RIGHT : MUI_BUTTON_TXT 
 		{
-			type = 1;
-			idc = -1;
-			x = 0.48;
-			y = 0.62;
-			w = 0.04;
-			h = 0.07;
-			style = 0+2;
-			text = ">";
-			borderSize = 0;
-			
-		};
-		class GSPLIT_MOVE_RIGHT_ALL : MUI_BUTTON_TXT 
-		{
-			type = 1;
-			idc = -1;
-			x = 0.48;
-			y = 0.54;
-			w = 0.04;
-			h = 0.07;
-			style = 0+2;
-			text = ">>";
-			borderSize = 0;
-			
-		};
-		class GSPLIT_MOVE_LEFT : MUI_BUTTON_TXT 
-		{
-			type = 1;
-			idc = -1;
-			x = 0.48;
-			y = 0.38;
-			w = 0.04;
-			h = 0.07;
-			style = 0+2;
-			text = "<";
-			borderSize = 0;
-			
-		};
-		class GSPLIT_MOVE_LEFT_ALL : MUI_BUTTON_TXT 
-		{
-			type = 1;
-			idc = -1;
+			idc = IDC_GSPLIT_BUTTON_MOVE_RIGHT;
 			x = 0.48;
 			y = 0.46;
 			w = 0.04;
 			h = 0.07;
 			style = 0+2;
+			text = ">";
+			borderSize = 0;
+			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
+		};
+		class GSPLIT_MOVE_RIGHT_ALL : MUI_BUTTON_TXT 
+		{
+			idc = IDC_GSPLIT_BUTTON_MOVE_RIGHT_ALL;
+			x = 0.48;
+			y = 0.38;
+			w = 0.04;
+			h = 0.07;
+			style = 0+2;
+			text = ">>";
+			borderSize = 0;
+			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
+		};
+		class GSPLIT_MOVE_LEFT : MUI_BUTTON_TXT 
+		{
+			idc = IDC_GSPLIT_BUTTON_MOVE_LEFT;
+			x = 0.48;
+			y = 0.54;
+			w = 0.04;
+			h = 0.07;			
+			style = 0+2;
+			text = "<";
+			borderSize = 0;
+			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
+		};
+		class GSPLIT_MOVE_LEFT_ALL : MUI_BUTTON_TXT 
+		{
+			idc = IDC_GSPLIT_BUTTON_MOVE_LEFT_ALL;
+			x = 0.48;
+			y = 0.62;
+			w = 0.04;
+			h = 0.07;
+			style = 0+2;
 			text = "<<";
 			borderSize = 0;
-			
+			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
 		};
+
 		class GSPLIT_HEADLINE : MUI_BG_BLACKSOLID 
 		{
-			type = 0;
 			idc = -1;
 			x = 0.15;
 			y = 0.00;
 			w = 0.65;
 			h = 0.04;
-			text = "Split garrison";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
-			
+			text = "Split garrison";			
 		};
 		class GSPLIT_HINTS : MUI_BG_BLACKSOLID 
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_GSPLIT_HINTS;
 			x = 0.15;
 			y = 0.95;
 			w = 0.7;
@@ -119,9 +141,8 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "We can place hints here";		
 		};
-		class GSPLIT_STATIC : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_NEW_GAR : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
 			idc = -1;
 			x = 0.53;
 			y = 0.05;
@@ -131,10 +152,9 @@ class GSPLIT_DIALOG
 			text = "New garrison";
 			
 		};
-		class GSPLIT_STATIC_copy1 : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_NEW_INF : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_GSPLIT_STATIC_NEW_INF;
 			x = 0.53;
 			y = 0.13;
 			w = 0.31;
@@ -143,9 +163,8 @@ class GSPLIT_DIALOG
 			text = "Infantry: 666";
 			
 		};
-		class GSPLIT_STATIC_copy1_copy1 : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_GAR : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
 			idc = -1;
 			x = 0.16;
 			y = 0.05;
@@ -155,10 +174,9 @@ class GSPLIT_DIALOG
 			text = "Current garrison";
 			
 		};
-		class GSPLIT_STATIC_copy1_copy2 : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_NEW_CARGO : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_GSPLIT_STATIC_NEW_CARGO;
 			x = 0.53;
 			y = 0.09;
 			w = 0.31;
@@ -166,10 +184,9 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Cargo seats: 666";
 		};
-		class GSPLIT_STATIC_copy1_copy2_copy1 : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_CARGO : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_GSPLIT_STATIC_CURRENT_CARGO;
 			x = 0.16;
 			y = 0.09;
 			w = 0.31;
@@ -177,10 +194,9 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Cargo seats: 666";			
 		};
-		class GSPLIT_STATIC_copy1_copy3 : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_INF : MUI_BG_BLACKTRANSPARENT 
 		{
-			type = 0;
-			idc = -1;
+			idc = IDC_GSPLIT_STATIC_CURRENT_INF;
 			x = 0.16;
 			y = 0.13;
 			w = 0.31;
@@ -190,32 +206,28 @@ class GSPLIT_DIALOG
 		};
 		class GSPLIT_BUTTON_CLOSE : MUI_BUTTON_TXT 
 		{
-			type = 1;
-			idc = -1;
+			idc = IDC_GSPLIT_BUTTON_CLOSE;
 			x = 0.80;
 			y = 0.0;
 			w = 0.05;
 			h = 0.04;
 			text = "X";
 			borderSize = 0;
-			colorBackground[] = {0.6,0,0,1};			
+			colorBackground[] = {0.6,0,0,1};	
 		};
 		class GSPLIT_BUTTON_CANCEL : MUI_BUTTON_TXT 
 		{
-			type = 1;
-			idc = -1;
+			idc = IDC_GSPLIT_BUTTON_CANCEL;
 			x = 0.64;
 			y = 0.9;
 			w = 0.11;
 			h = 0.04;
 			text = "Cancel";
 			borderSize = 0;
-			
 		};
-		class GSPLIT_BUTTON_SPLIT_copy1 : MUI_BUTTON_TXT 
+		class GSPLIT_BUTTON_SPLIT : MUI_BUTTON_TXT 
 		{
-			type = 1;
-			idc = -1;
+			idc = IDC_GSPLIT_BUTTON_SPLIT;
 			x = 0.25;
 			y = 0.90;
 			w = 0.11;

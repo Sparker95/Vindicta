@@ -6,6 +6,10 @@ params ["_t"];
 
 private _errorCount = 0;
 
+#ifdef _SQF_VM
+if (true) exitWith {0}; // Return no errors with SQF VM, since we can't check anything from VM anyway
+#endif
+
 // Validate infantry and vehicles
 { // forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE]]
 	_x params ["_catID", "_catSize"];
