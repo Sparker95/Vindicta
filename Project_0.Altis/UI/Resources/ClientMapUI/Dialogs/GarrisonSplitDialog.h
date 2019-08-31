@@ -34,10 +34,17 @@ class GSPLIT_DIALOG
 			idc = IDC_GSPLIT_LB_LEFT_RIGHT;
 			text = ">";
 		};
+		class GSPLIT_LB_LEFT_BG : MUI_BG_BLACKTRANSPARENT
+		{
+			idc = -1;
+			x = 0.16;
+			y = 0.17;
+			w = 0.31;
+			h = 0.72;
+		};
 		class GSPLIT_LB_LEFT : MUI_LISTNBOX 
 		{
 			idc = IDC_GSPLIT_LB_LEFT;
-			//style = 16;
 			x = 0.16;
 			y = 0.17;
 			w = 0.31;
@@ -56,6 +63,14 @@ class GSPLIT_DIALOG
 		{
 			idc = IDC_GSPLIT_LB_RIGHT_RIGHT;
 			text = ">";
+		};
+		class GSPLIT_LB_RIGHT_BG : MUI_BG_BLACKTRANSPARENT
+		{
+			idc = -1;
+			x = 0.53;
+			y = 0.17;
+			w = 0.31;
+			h = 0.72;
 		};
 		class GSPLIT_LB_RIGHT : MUI_LISTNBOX 
 		{
@@ -139,9 +154,9 @@ class GSPLIT_DIALOG
 			w = 0.7;
 			h = 0.05;
 			style = 0;
-			text = "We can place hints here";		
+			text = "Hint: double-click row to move a unit";		
 		};
-		class GSPLIT_STATIC_NEW_GAR : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_NEW_GAR : MUI_BG_TRANSPARENT 
 		{
 			idc = -1;
 			x = 0.53;
@@ -152,7 +167,7 @@ class GSPLIT_DIALOG
 			text = "New garrison";
 			
 		};
-		class GSPLIT_STATIC_NEW_INF : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_NEW_INF : MUI_BG_TRANSPARENT 
 		{
 			idc = IDC_GSPLIT_STATIC_NEW_INF;
 			x = 0.53;
@@ -163,7 +178,7 @@ class GSPLIT_DIALOG
 			text = "Infantry: 666";
 			
 		};
-		class GSPLIT_STATIC_CURRENT_GAR : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_GAR : MUI_BG_TRANSPARENT 
 		{
 			idc = -1;
 			x = 0.16;
@@ -174,7 +189,7 @@ class GSPLIT_DIALOG
 			text = "Current garrison";
 			
 		};
-		class GSPLIT_STATIC_NEW_CARGO : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_NEW_CARGO : MUI_BG_TRANSPARENT 
 		{
 			idc = IDC_GSPLIT_STATIC_NEW_CARGO;
 			x = 0.53;
@@ -184,7 +199,7 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Cargo seats: 666";
 		};
-		class GSPLIT_STATIC_CURRENT_CARGO : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_CARGO : MUI_BG_TRANSPARENT 
 		{
 			idc = IDC_GSPLIT_STATIC_CURRENT_CARGO;
 			x = 0.16;
@@ -194,7 +209,7 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Cargo seats: 666";			
 		};
-		class GSPLIT_STATIC_CURRENT_INF : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_INF : MUI_BG_TRANSPARENT 
 		{
 			idc = IDC_GSPLIT_STATIC_CURRENT_INF;
 			x = 0.16;

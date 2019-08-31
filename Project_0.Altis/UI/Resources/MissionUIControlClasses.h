@@ -85,6 +85,13 @@ class MUI_BG_BLACKTRANSPARENT : MUI_BASE
 	colorBackground[] = MUIC_BLACKTRANSP;
 };
 
+class MUI_BG_TRANSPARENT : MUI_BASE
+{
+	type = CT_STATIC;
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S;
+	//colorBackground[] = MUIC_TRANSPARENT;
+};
+
 
 class MUI_HEADLINE
 {

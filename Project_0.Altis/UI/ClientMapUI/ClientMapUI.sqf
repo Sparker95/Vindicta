@@ -1152,8 +1152,8 @@ CLASS("GarrisonSplitDialog", "")
 			CALLM0(gGarrisonSplitDialog, "onButtonMoveRight");
 		}];
 
-		T_CALLM1("updateListbox", 0);
-		T_CALLM1("updateListbox", 1);
+		T_CALLM1("updateListboxAndText", 0);
+		T_CALLM1("updateListboxAndText", 1);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -1185,8 +1185,8 @@ CLASS("GarrisonSplitDialog", "")
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListbox", 0);
-		T_CALLM1("updateListbox", 1);
+		T_CALLM1("updateListboxAndText", 0);
+		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
 	} ENDMETHOD;
@@ -1197,8 +1197,8 @@ CLASS("GarrisonSplitDialog", "")
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListbox", 0);
-		T_CALLM1("updateListbox", 1);
+		T_CALLM1("updateListboxAndText", 0);
+		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
 	} ENDMETHOD;
@@ -1209,8 +1209,8 @@ CLASS("GarrisonSplitDialog", "")
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListbox", 0);
-		T_CALLM1("updateListbox", 1);
+		T_CALLM1("updateListboxAndText", 0);
+		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
 	} ENDMETHOD;
@@ -1221,31 +1221,32 @@ CLASS("GarrisonSplitDialog", "")
 		_unitData params ["_catID", "_subcatID"];
 		if (_catID == -1) exitWith {}; // Bail if we were not able to move anything
 		// Update the listboxes
-		T_CALLM1("updateListbox", 0);
-		T_CALLM1("updateListbox", 1);
+		T_CALLM1("updateListboxAndText", 0);
+		T_CALLM1("updateListboxAndText", 1);
 		T_CALLM3("syncListboxRows", 0, _catID, _subcatID);
 		T_CALLM3("syncListboxRows", 1, _catID, _subcatID);
 	} ENDMETHOD;
 
 	// = = = = = = = = = Other methods = = = = = = = = = = 
 
-	METHOD("updateListbox") {
+	METHOD("updateListboxAndText") {
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight")];
-		pr _lnb = if (_leftOrRight == 1) then {
-			(findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT
+		private ["_lnb", "_idcInf", "_idcCargo", "_IDsArray", "_comp"];
+		if (_leftOrRight == 1) then {
+			_lnb = (findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_RIGHT;
+			_idcInf = IDC_GSPLIT_STATIC_NEW_INF;
+			_idcCargo = IDC_GSPLIT_STATIC_NEW_CARGO;
+			_IDsArray = T_GETV("IDsCompRight");
+			_comp = T_GETV("compRight");
 		} else {
-			(findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_LEFT
+			_lnb = (findDisplay IDD_GSPLIT_DIALOG) displayCtrl IDC_GSPLIT_LB_LEFT;
+			_idcInf = IDC_GSPLIT_STATIC_CURRENT_INF;
+			_idcCargo = IDC_GSPLIT_STATIC_CURRENT_CARGO;
+			_IDsArray = T_GETV("IDsCompLeft");
+			_comp = T_GETV("compLeft");
 		};
-		pr _IDsArray = if (_leftOrRight == 1) then {
-			T_GETV("IDsCompRight")
-		} else {
-			T_GETV("IDsCompLeft")
-		};
-		pr _comp = if (_leftOrRight == 1) then {
-			T_GETV("compRight")
-		} else {
-			T_GETV("compLeft")
-		};
+
+		// Update listbox
 		_IDsArray resize 0;
 		lnbClear _lnb;
 		{
@@ -1260,6 +1261,13 @@ CLASS("GarrisonSplitDialog", "")
 				};
 			} forEach _x;
 		} forEach _comp;
+		
+		// Update text
+		pr _nInf = T_CALLM1("getInfantryCount", _comp);
+		pr _nCargo = T_CALLM1("getCargoSeatCount", _comp);
+		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl _idcInf) ctrlSetText (format ["Infantry: %1", _nInf]);
+		((findDisplay IDD_GSPLIT_DIALOG) displayCtrl _idcCargo) ctrlSetText (format ["Cargo seats: %1", _nCargo]);
+
 		/*
 		for "_i" from 0 to 40 do {
 			_lnb lnbAddRow [str _i, "Uber soldier"];
@@ -1401,6 +1409,8 @@ CLASS("GarrisonSplitDialog", "")
 		T_CALLM2("setListboxRow", _leftOrRight, _rowDst);
 	} ENDMETHOD;
 
+	// Sets the currently selected row of a listbox
+	// We call this instead of directly setting the row because it triggers a callback, and we don't want that
 	METHOD("setListboxRow") {
 		params [P_THISOBJECT, P_NUMBER("_leftOrRight"), P_NUMBER("_row")];
 		private ["_lnbDst", "_lastRowVarName"];
@@ -1418,7 +1428,43 @@ CLASS("GarrisonSplitDialog", "")
 		OOP_INFO_0("  LB SET CUR SEL ROW END");
 		T_SETV("setCurSelInProgress", false);
 		T_SETV(_lastRowVarName, _row);
-
 	} ENDMETHOD;
 
+
+	// Returns amount of infantry units in the composition
+	METHOD("getInfantryCount") {
+		params [P_THISOBJECT, P_ARRAY("_comp")];
+
+		pr _num = 0;
+		{
+			_num = _num + (count _x);
+		} forEach _comp#T_INF;
+
+		_num
+	} ENDMETHOD;
+
+	// Returns amount of cargo seats all the vehicles in the composition have
+	METHOD("getCargoSeatCount") {
+		params [P_THISOBJECT, P_ARRAY("_comp")];
+
+		OOP_INFO_1("COMP: %1", _comp);
+		pr _num = 0;
+		pr _catID = _foreachindex;
+		{
+			{
+				pr _subcatID = _forEachIndex;
+				pr _classes = _x; // Array with IDs of classes
+				OOP_INFO_1("CLASSES: %1", _classes);
+				{
+					pr _classID = _x; // Each element in _classes is an ID of a class name
+					pr _className = [_classID] call t_fnc_numberToClassName;
+					pr _nCargo = [_className] call misc_fnc_getCargoInfantryCapacity;
+					_num = _num + _nCargo;
+					OOP_INFO_3("GET CARGO SEAT COUNT: class ID: %1, class: %2, count: %3", _classID, _className, _nCargo);
+				} forEach _classes;
+			} forEach _x;
+		} forEach [_comp#T_VEH, _comp#T_DRONE];
+
+		_num
+	} ENDMETHOD;
 ENDCLASS;
