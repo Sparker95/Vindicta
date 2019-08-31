@@ -1474,6 +1474,108 @@ CLASS("Garrison", "MessageReceiverEx");
 		true
 		
 	} ENDMETHOD;
+
+	/*
+	Method: addUnitsByComposition
+	Adds units to this garrison from another garrison.
+	Unit arrangement is specified by composition array.
+
+	Parameters: _garSrc, _comp
+	
+	_garSrc - source <Garrison>
+	_comp - composition array. See "composition" member variable and how it's organized.
+	
+	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
+	*/
+	METHOD("addUnitsByComposition") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
+
+		OOP_INFO_1("ADD UNITS BY COMPOSITION: %1", _this);
+
+		__MUTEX_LOCK;
+
+		// Number of unsatisfied constraints
+		pr _numUnsat = 0;
+
+		pr _unitsSrc = +CALLM0(_garSrc, "getUnits"); // Make a deep copy! Don't want to break it.
+
+		// Preprocess classnames into IDs in advance for each unit
+		pr _unitsSrcData = _unitsSrc apply {
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			pr _classID = [_className] call t_fnc_classNameToNumber;
+			if (_classID == -1) then {_ID = -2; }; // So that it doesn't equal a (potential) -1 in the incoming _comp array
+			[_catID, _subcatID, _classID]
+		};
+
+		// Find units for each category
+		pr _unitsFound = [[], [], []];
+		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones"];
+		// forEach [T_INF, T_VEH, T_DRONE];
+		{
+			pr _catID = _x;
+			// forEach _comp#_catID;
+			{
+				pr _classes = _x;
+				pr _subcatID = _foreachindex;
+				// forEach _classes;
+				{
+					pr _classID = _x;
+					// Find a unit which has the same classID, catID and subcatID
+					pr _index = _unitsSrcData find [_catID, _subcatID, _classID];
+					if (_index != -1) then {
+						// There is a match
+						(_unitsFound#_catID) pushBack (_unitsSrc#_index); // Move to the array with found units
+						_unitsSrc deleteAt _index;
+						_unitsSrcData deleteAt _index;
+					} else {
+						// Increase the fail counter
+						_numUnsat = _numUnsat + 1;
+					};
+				} forEach _classes;
+			} forEach _comp#_catID;
+		} forEach [T_INF, T_VEH, T_DRONE];
+
+		// Reorganize the infantry units we are moving
+		if (count _unitsFoundInf > 0) then {
+			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+			pr _newInfGroups = [_newGroup];
+			CALLM1(_garSrc, "addGroup", _newGroup);
+			// forEach _unitsFoundInf;
+			{
+				// Create a new inf group if the current one is 'full'
+				if (count GETV(_newGroup, "getUnits") > 6) then {
+					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+					_newInfGroups pushBack _newGroup;
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+
+				// Add the unit to the group
+				CALLM1(_newGroup, "addUnit", _x);
+			} forEach _unitsFoundInf;
+
+			// Move all the infantry groups
+			{
+				CALLM1(_thisObject, "addGroup", _x);
+			} forEach _newInfGroups;
+		};
+
+		// Move all the vehicle units into one group
+		// Vehicles need to be moved within a group too
+		pr _unitsAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		if (count _unitsAndDrones > 0) then {
+			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+			{
+				CALLM1(_newVehGroup, "addUnit", _x);
+			} forEach _unitsAndDrones;
+
+			// Move the veh group
+			CALLM1(_thisObject, "addGroup", _newVehGroup);
+		};
+
+		__MUTEX_UNLOCK;
+
+		_numUnsat
+	} ENDMETHOD;
 	
 	
 	/*

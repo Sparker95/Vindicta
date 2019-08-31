@@ -940,7 +940,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		T_PRVAR(worldModel);
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
-			OOP_ERROR_1("No model of garrison %1", _garRef);
+			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
 		};
 
 		// Resolve the destination position
@@ -1008,7 +1008,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM1(_action, "update", _worldModel);
 	} ENDMETHOD;
 
+	METHOD("splitGarrisonFromComposition") {
+		PARAMS[P_THISOBJECT, P_STRING("_garRef"), P_ARRAY("_comp"), P_NUMBER("_clientOwner")];
 
+		// Get the garrison model associated with this _garRef
+		T_PRVAR(worldModel);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		if (IS_NULL_OBJECT(_garModel)) exitWith {
+			OOP_ERROR_1("splitGarrisonFromComposition: No model of garrison %1", _garRef);
+		};
+	} ENDMETHOD;
 
 /*
   ,ad8888ba,   88b           d88  88888888ba,    88888888ba             db         88  
