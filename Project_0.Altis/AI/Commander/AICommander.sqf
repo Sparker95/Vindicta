@@ -1008,15 +1008,38 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM1(_action, "update", _worldModel);
 	} ENDMETHOD;
 
-	METHOD("splitGarrisonFromComposition") {
-		PARAMS[P_THISOBJECT, P_STRING("_garRef"), P_ARRAY("_comp"), P_NUMBER("_clientOwner")];
 
-		// Get the garrison model associated with this _garRef
+	// Gets called remotely from player's 'split garrison' dialog
+	METHOD("splitGarrisonFromComposition") {
+		PARAMS[P_THISOBJECT, P_STRING("_garSrcRef"), P_ARRAY("_comp"), P_NUMBER("_clientOwner")];
+
+		ASSERT_THREAD(_thisObject);
+
+		// Get the garrison model associated with this _garSrcRef
 		T_PRVAR(worldModel);
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garSrcRef);
 		if (IS_NULL_OBJECT(_garModel)) exitWith {
-			OOP_ERROR_1("splitGarrisonFromComposition: No model of garrison %1", _garRef);
+			OOP_ERROR_1("splitGarrisonFromComposition: No model of garrison %1", _garSrcRef);
+			// send data back to client owner...
+			REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonSplitDialog", "sendServerResponse", [11], _clientOwner, false); // REMOTE_EXEC_CALL_STATIC_METHOD(classNameStr, methodNameStr, extraParams, targets, JIP)
 		};
+
+		// Create a new garrison
+		pr _pos = CALLM0(_garSrcRef, "getPos");
+		pr _faction = CALLM(_garSrcRef, "getFaction", []);
+		pr _posNew = _pos getPos [50, random 360]; // We don't want them to be too much clustered at teh same place
+		pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
+
+		// Move units
+		pr _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromComposition", [_garSrcRef ARG _comp]);
+
+		// Activate the new garrison
+		// it will register itself here as well
+		CALLM0(_newGarr, "activate");
+
+		// Send data back to client
+		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonSplitDialog", "sendServerResponse", [22], _clientOwner, false);
+
 	} ENDMETHOD;
 
 /*

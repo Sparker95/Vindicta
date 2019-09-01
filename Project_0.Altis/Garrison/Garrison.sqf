@@ -61,7 +61,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("new") {
 		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction")];
 
-		OOP_INFO_0("NEW GARRISON");
+		OOP_INFO_1("NEW GARRISON: %1", _this);
 
 		// Take our own ref that we will release in "destroy" function. This makes sure that delete never pre-empts destroy (assuming ref counting is done properly by other classes)
 		T_CALLM("ref", []);
@@ -101,7 +101,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Set position if it was specified
 		if (count _pos > 0) then {
-			CALLM1(_AI, "setPos", _pos);
+			T_CALLM2("postMethodAsync", "setPos", [_pos]);
 		};
 
 		// Create a timer to call process method
@@ -118,9 +118,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		*/
 
 		GETSV("Garrison", "all") pushBack _thisObject;
-
-		// Handle the PROCESS message right now to make the garrison instantly switch to spawned state if required
-		//CALLM1(_thisObject, "handleMessage", _msg);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -1476,7 +1473,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: addUnitsByComposition
+	Method: addUnitsFromComposition
 	Adds units to this garrison from another garrison.
 	Unit arrangement is specified by composition array.
 
@@ -1487,10 +1484,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
 	*/
-	METHOD("addUnitsByComposition") {
+	METHOD("addUnitsFromComposition") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
 
-		OOP_INFO_1("ADD UNITS BY COMPOSITION: %1", _this);
+		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
 
 		__MUTEX_LOCK;
 
@@ -1539,11 +1536,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (count _unitsFoundInf > 0) then {
 			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
 			pr _newInfGroups = [_newGroup];
-			CALLM1(_garSrc, "addGroup", _newGroup);
+			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
 			// forEach _unitsFoundInf;
 			{
 				// Create a new inf group if the current one is 'full'
-				if (count GETV(_newGroup, "getUnits") > 6) then {
+				if (count CALLM0(_newGroup, "getUnits") > 6) then {
 					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
 					_newInfGroups pushBack _newGroup;
 					CALLM1(_garSrc, "addGroup", _newGroup);
@@ -1561,12 +1558,14 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Move all the vehicle units into one group
 		// Vehicles need to be moved within a group too
-		pr _unitsAndDrones = _unitsFoundVeh + _unitsFoundDrones;
-		if (count _unitsAndDrones > 0) then {
+		pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		if (count _vehiclesAndDrones > 0) then {
 			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+			CALLM1(_garSrc, "addGroup", _newVehGroup);
 			{
 				CALLM1(_newVehGroup, "addUnit", _x);
-			} forEach _unitsAndDrones;
+			} forEach _vehiclesAndDrones;
 
 			// Move the veh group
 			CALLM1(_thisObject, "addGroup", _newVehGroup);
