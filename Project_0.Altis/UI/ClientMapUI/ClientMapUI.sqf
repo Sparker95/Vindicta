@@ -38,8 +38,15 @@ CLASS(CLASS_NAME, "")
 	// Array with route markers (route segments and source/destination markers)
 	STATIC_VARIABLE("routeMarkers");
 
-	// GarrisonSplitDialog OOP object (see this class below)
+	// GarrisonSplitDialog OOP object
 	VARIABLE("garSplitDialog"); METHOD("onGarrisonSplitDialogDeleted") {params [P_THISOBJECT]; T_SETV("garSplitDialog", ""); } ENDMETHOD;
+
+	// Currently selected garrisons
+
+	// Current garrison record which is selected. There can be many garrisons selected, but only one will have the manu under it drawn.
+	VARIABLE("garSelMenuEnabled");
+	VARIABLE("garRecordCurrent");
+	VARIABLE("givingOrder"); // Bool, if true it means that we are giving order to a garrison. Current garrison record is garRecordCurrent
 
 	// initialize UI event handlers
 	STATIC_METHOD("new") {
@@ -47,13 +54,18 @@ CLASS(CLASS_NAME, "")
 
 		// garrison action variables
 		T_SETV("garActionPos", [0 ARG 0 ARG 0]);
-		T_SETV("garActionLBShown", true);
+		T_SETV("garActionLBShown", false);
 		T_SETV("garActionGarRef", "");
 		T_SETV("garActionTargetType", 0);
 		T_SETV("garActionTarget", 0);
 
 		// garrison split dialog
 		T_SETV("garSplitDialog", "");
+
+		// Currently selected garrisons
+		T_SETV("garRecordCurrent", "");
+		T_SETV("garSelMenuEnabled", false);
+		T_SETV("givingOrder", false);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -125,37 +137,42 @@ CLASS(CLASS_NAME, "")
 
 
 		//  = = = = = = = = Create garrison action list box = = = = = = = =
+
 		// Appears when we are about to give an order to a garrison
 		// delete prev controls
-		{ ctrlDelete ((finddisplay 12) displayCtrl _x); } forEach [IDC_GCOM_ACTION_LISTNBOX, IDC_GCOM_ACTION_LISTNBOX_BG];
+		ctrlDelete ((finddisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_GROUP);
+		pr _bg = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX_BG", IDC_GCOM_ACTION_MENU_GROUP]; // Background
+		T_CALLM1("garActionLBEnable", false);
 
-		pr _bg = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX_BG", IDC_GCOM_ACTION_LISTNBOX_BG]; // Background
-		pr _lb = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX", IDC_GCOM_ACTION_LISTNBOX]; // Listbox
+		((findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_BUTTON_MOVE) ctrlAddEventHandler ["ButtonClick", {
+			_thisObject = gClientMapUI;
+			CALLM1(_thisObject, "garActionLBOnSelChanged", "move");
+		}];
+		((findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_BUTTON_CLOSE) ctrlAddEventHandler ["ButtonClick", {
+			_thisObject = gClientMapUI;
+			CALLM1(_thisObject, "garActionLBOnSelChanged", "close");
+		}];
 
-		// Set event handler
-		_lb ctrlAddEventHandler ["LBSelChanged", {CALLM(gClientMapUI, "garActionLBOnSelChanged", _this); } ]; // params ["_control", "_selectedIndex"]; are passed
 
-		_lb lnbAddRow ["Move"];			_lb lnbSetData [[0, 0], "move"]; // Data is an invisible variable, we use it for getting the button we have pressed
-		_lb lnbAddRow ["Attack (NYI)"];	_lb lnbSetData [[1, 0], "attack"];
-		_lb lnbAddRow ["Join (NYI)"];	_lb lnbSetData [[2, 0], "join"];
-		_lb lnbAddRow ["Patrol (NYI)"];	_lb lnbSetData [[3, 0], "patrol"];
-		_lb lnbAddRow ["< Close >"];	_lb lnbSetData [[4, 0], "close"];
-
-		// Set height to fit all the rows
-		pr _config = missionconfigfile >> "CMUI_GCOM_ACTION_LISTBOX" >> "rowHeight";
-		pr _rowHeight = if (isText _config) then {
-			call compile (getText _config) // Call compile it if it's a string
-		} else {
-			getNumber _config // Or just get the plain nubmer
-		};
-
-		pr _nRows = (lnbSize _lb) select 0;
-		_height = _nRows*_rowHeight;
-		{
-			pr _pos = ctrlPosition _x;
-			_x ctrlSetPosition [_pos#0, _pos#1, _pos#2, _height+0.01*safeZoneH];
-			_x ctrlCommit 0;
-		} forEach [_lb, _bg];
+		// = = = = = = = = = = = = = = = Create the selected garrison menu = = = = = = = = = = = 
+		// It appears when we have selected a garrison
+		// Delete prev controls
+		ctrlDelete ((findDisplay 12) displayCtrl IDC_GSELECT_GROUP);
+		(findDisplay 12) ctrlCreate ["CMUI_GSELECTED_MENU", IDC_GSELECT_GROUP];
+		T_CALLM1("garSelMenuEnable", false);
+		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_SPLIT) ctrlAddEventHandler ["ButtonClick", {
+			_thisObject = gClientMapUI;
+			CALLM1(_thisObject, "garSelMenuOnButtonClick", "split");
+		}];
+		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlAddEventHandler ["ButtonClick", {
+			_thisObject = gClientMapUI;
+			CALLM1(_thisObject, "garSelMenuOnButtonClick", "order");
+		}];
+		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlAddEventHandler ["ButtonClick", {
+			_thisObject = gClientMapUI;
+			CALLM1(_thisObject, "garSelMenuOnButtonClick", "merge");
+		}];
+		
 
 
 		// Mouse moving
@@ -365,15 +382,8 @@ Methods for the action listbox appears when we click on something to send some g
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		// Move it away if we don't need to see it any more
-		{
-			pr _ctrl = (findDisplay 12) displayCtrl _x;
-			_ctrl ctrlShow _enable;
-		} forEach [IDC_GCOM_ACTION_LISTNBOX, IDC_GCOM_ACTION_LISTNBOX_BG];
-
-		// Disable the previously selected row
-		if (_enable) then {
-			((finddisplay 12) displayCtrl IDC_GCOM_ACTION_LISTNBOX) lnbSetCurSelRow -1;
-		};
+		pr _ctrl = (findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_GROUP;
+		_ctrl ctrlShow _enable;
 
 		T_SETV("garActionLBShown", _enable);
 	} ENDMETHOD;
@@ -390,29 +400,23 @@ Methods for the action listbox appears when we click on something to send some g
 		if (T_GETV("garActionLBShown")) then {
 			pr _posWorld = T_GETV("garActionPos");
 			pr _posScreen = ((findDisplay 12) displayCtrl IDC_MAP) posWorldToScreen _posWorld; //[_posWorld#0, _posWorld#1];
-			{
-				pr _ctrl = (findDisplay 12) displayCtrl _x;
-				pr _pos = ctrlPosition _ctrl;
-				_ctrl ctrlSetPosition [_posScreen#0, _posScreen#1, _pos#2, _pos#3];
-				_ctrl ctrlCommit 0;
-			} forEach [IDC_GCOM_ACTION_LISTNBOX, IDC_GCOM_ACTION_LISTNBOX_BG];
+			pr _ctrl = (findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_GROUP;
+			pr _pos = ctrlPosition _ctrl;
+			_ctrl ctrlSetPosition [_posScreen#0, _posScreen#1, _pos#2, _pos#3];
+			_ctrl ctrlCommit 0;
 		};
 	} ENDMETHOD;
 
 	// The selection in a listbox is changed.
 	// https://community.bistudio.com/wiki/User_Interface_Event_Handlers#onLBSelChanged
 	METHOD("garActionLBOnSelChanged") {
-		params [P_THISOBJECT, "_control", "_selectedIndex"];
+		params [P_THISOBJECT, "_action"];
 
 		// Sanity checks
 		if (!T_GETV("garActionLBShown")) exitWith {};
 		if (T_GETV("garActionTargetType") == TARGET_TYPE_INVALID) exitWith {};
 
-		// Get data
-		pr _lbdata = _control lnbData [_selectedIndex, 0];
-		diag_log format ["GARRISON ACTION LB: %1", _lbdata];
-
-		switch (_lbdata) do {
+		switch (_action) do {
 			case "move" : {
 				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
@@ -443,30 +447,143 @@ Methods for the action listbox appears when we click on something to send some g
 		// Close the LB
 		T_CALLM1("garActionLBEnable", false);
 
+		// We are not giving order any more, stop drawing the arrow
+		T_SETV("givingOrder", false);
+
 	} ENDMETHOD;
 
-/*                                                                                                        
-88888888888  8b           d8  88888888888  888b      88  888888888888                                            
-88           `8b         d8'  88           8888b     88       88                                                 
-88            `8b       d8'   88           88 `8b    88       88                                                 
-88aaaaa        `8b     d8'    88aaaaa      88  `8b   88       88                                                 
-88"""""         `8b   d8'     88"""""      88   `8b  88       88                                                 
-88               `8b d8'      88           88    `8b 88       88                                                 
-88                `888'       88           88     `8888       88                                                 
-88888888888        `8'        88888888888  88      `888       88                                                 
-                                                                                                                 
-                                                                                                                 
-                                                                                                                 
-88        88         db         888b      88  88888888ba,    88           88888888888  88888888ba    ad88888ba   
-88        88        d88b        8888b     88  88      `"8b   88           88           88      "8b  d8"     "8b  
-88        88       d8'`8b       88 `8b    88  88        `8b  88           88           88      ,8P  Y8,          
-88aaaaaaaa88      d8'  `8b      88  `8b   88  88         88  88           88aaaaa      88aaaaaa8P'  `Y8aaaaa,    
-88""""""""88     d8YaaaaY8b     88   `8b  88  88         88  88           88"""""      88""""88'      `"""""8b,  
-88        88    d8""""""""8b    88    `8b 88  88         8P  88           88           88    `8b            `8b  
-88        88   d8'        `8b   88     `8888  88      .a8P   88           88           88     `8b   Y8a     a8P  
-88        88  d8'          `8b  88      `888  88888888Y"'    88888888888  88888888888  88      `8b   "Y88888P"   
+
+
+
+
+
+
+
+
+
+/*                                                                                                  
+  ooooooo8      o      oooooooooo  oooooooooo  ooooo  oooooooo8    ooooooo  oooo   oooo       
+o888    88     888      888    888  888    888  888  888         o888   888o 8888o  88        
+888    oooo   8  88     888oooo88   888oooo88   888   888oooooo  888     888 88 888o88        
+888o    88   8oooo88    888  88o    888  88o    888          888 888o   o888 88   8888        
+ 888ooo888 o88o  o888o o888o  88o8 o888o  88o8 o888o o88oooo888    88ooo88  o88o    88        
+                                                                                              
+ oooooooo8 ooooooooooo ooooo       ooooooooooo  oooooooo8 ooooooooooo ooooooooooo ooooooooo   
+888         888    88   888         888    88 o888     88 88  888  88  888    88   888    88o 
+ 888oooooo  888ooo8     888         888ooo8   888             888      888ooo8     888    888 
+        888 888    oo   888      o  888    oo 888o     oo     888      888    oo   888    888 
+o88oooo888 o888ooo8888 o888ooooo88 o888ooo8888 888oooo88     o888o    o888ooo8888 o888ooo88   
+                                                                                              
+oooo     oooo ooooooooooo oooo   oooo ooooo  oooo                                             
+ 8888o   888   888    88   8888o  88   888    88                                              
+ 88 888o8 88   888ooo8     88 888o88   888    88                                              
+ 88  888  88   888    oo   88   8888   888    88                                              
+o88o  8  o88o o888ooo8888 o88o    88    888oo88     
+
+http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 */
+
+	METHOD("garSelMenuEnable") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+
+		T_SETV("garSelMenuEnabled", _enable);
+		((findDisplay 12) displayCtrl IDC_GSELECT_GROUP) ctrlShow _enable;
+	} ENDMETHOD;
+
+	METHOD("garSelMenuSetGarRecord") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
+		T_SETV("garRecordCurrent", _garRecord);
+	} ENDMETHOD;
+
+	// Called on each map draw event to update the position
+	METHOD("garSelMenuUpdatePos") {
+		params [P_THISOBJECT];
+
+		
+
+		if (T_GETV("garSelMenuEnabled")) then {
+			pr _garRecord = T_GETV("garRecordCurrent");
+			
+			// Make sure the garrison record is not destroyed
+			if (!IS_OOP_OBJECT(_garRecord)) exitWith {
+				T_SETV("garRecordCurrent", "");
+				T_CALLM1("garSelMenuEnable", false);
+			};
+
+			// Update the position of the group control
+			pr _posWorld = CALLM0(_garRecord, "getPos");
+			
+			pr _posScreen = ((findDisplay 12) displayCtrl IDC_MAP) posWorldToScreen _posWorld;
+			_posScreen params ["_xScreen", "_yScreen"];
+			pr _ctrl = ((findDisplay 12) displayCtrl IDC_GSELECT_GROUP);
+			pr _pos = ctrlPosition _ctrl;
+			_ctrl ctrlSetPosition [_xScreen - GSELECT_MENU_WIDTH/2, _yScreen + 0.04, _pos#2, _pos#3]; // We offset the control left and down a bit
+			_ctrl ctrlCommit 0;
+		};
+
+	} ENDMETHOD;
+
+	// Gets called when user clicks on one of these buttons
+	METHOD("garSelMenuOnButtonClick") {
+		params [P_THISOBJECT, P_STRING("_button")];
+
+		pr _garRecord = T_GETV("garRecordCurrent");
+		if (!IS_OOP_OBJECT(_garRecord)) exitWith { // Make sure it's not destroyed
+			// Just close everything if there is no such garrison record any more
+			T_CALLM1("garSelMenuSetGarRecord", "");
+			T_CALLM1("garSelMenuEnable", false);
+		};
+
+		// So far _garRecord is valid
+		switch(_button) do {
+
+			// Open the 'split garrison' dialog
+			case "split" : {
+				if (T_GETV("garSplitDialog") == "") then {
+					pr _garSplitDialog = CALLSM1("GarrisonSplitDialog", "newInstance", _garRecord);
+					T_SETV("garSplitDialog", _garSplitDialog);					
+				};
+			};
+
+			// Activate the 
+			case "order" : {
+				T_SETV("givingOrder", true);
+			};
+			default {
+				// Do nothing
+			};
+		};
+	} ENDMETHOD;
+
+
+
+
+
+/*                                                                                                        
+ooooooooooo ooooo  oooo ooooooooooo oooo   oooo ooooooooooo                                    
+ 888    88   888    88   888    88   8888o  88  88  888  88                                    
+ 888ooo8      888  88    888ooo8     88 888o88      888                                        
+ 888    oo     88888     888    oo   88   8888      888                                        
+o888ooo8888     888     o888ooo8888 o88o    88     o888o                                       
+                                                                                               
+ooooo ooooo      o      oooo   oooo ooooooooo  ooooo       ooooooooooo oooooooooo   oooooooo8  
+ 888   888      888      8888o  88   888    88o 888         888    88   888    888 888         
+ 888ooo888     8  88     88 888o88   888    888 888         888ooo8     888oooo88   888oooooo  
+ 888   888    8oooo88    88   8888   888    888 888      o  888    oo   888  88o           888 
+o888o o888o o88o  o888o o88o    88  o888ooo88  o888ooooo88 o888ooo8888 o888o  88o8 o88oooo888  
+
+http://patorjk.com/software/taag/#p=display&f=O8&t=EVENT%0AHANDLERS
+*/
+
+
+
 	/*
+  ooooooo  oooo   oooo      oooo     oooo oooooooooo       ooooooooo     ooooooo  oooo     oooo oooo   oooo 
+o888   888o 8888o  88        8888o   888   888    888       888    88o o888   888o 88   88  88   8888o  88  
+888     888 88 888o88        88 888o8 88   888oooo88        888    888 888     888  88 888 88    88 888o88  
+888o   o888 88   8888        88  888  88   888    888       888    888 888o   o888   888 888     88   8888  
+  88ooo88  o88o    88       o88o  8  o88o o888ooo888       o888ooo88     88ooo88      8   8     o88o    88  
+
 	Method: onMouseButtonDown
 	Gets called when user clicks on the map. There might be map markers under cursor and it will still be called.
 
@@ -482,6 +599,7 @@ Methods for the action listbox appears when we click on something to send some g
 
 		/*
 		Contexts to filter:
+		Click anywhere AND givingOrder == true
 		Click anywhere AND with an alt AND one garrison marker has been selected before
 		We click on a location marker, No location markers have been selected before
 		*/
@@ -498,13 +616,13 @@ Methods for the action listbox appears when we click on something to send some g
 		OOP_INFO_1("SELECTED GARRISONS: %1", _selectedGarrisons);
 		OOP_INFO_1("SELECTED LOCATIONS: %1", _selectedLocations);
 
-		// Click anywhere AND with an alt AND one garrison marker has been selected before
-		// We probably want to give a waypoint to this garrison
-		if (_alt && (count _selectedGarrisons == 1)) exitWith {
+		// Click anywhere AND givingOrder == true
+		// We want to give a waypoint/order to this garrison
+		if (T_GETV("givingOrder")) exitWith {
 			OOP_INFO_0("GIVING ORDER TO GARRISON...");
 			// Make sure we have the rights to command garrisons
 			if (CALLM1(gPlayerDatabaseClient, "get", PDB_KEY_ALLOW_COMMAND_GARRISONS)) then {
-				pr _garRecord = CALLM0(_selectedGarrisons#0, "getGarrisonRecord"); // Get GarrisonRecord
+				pr _garRecord = T_GETV("garRecordCurrent"); // Get GarrisonRecord
 				pr _gar = CALLM0(_garRecord, "getGarrison"); // Ref to an actual garrison at the server
 
 				// Get position where to move to, it depends on what we actually click at
@@ -570,6 +688,9 @@ Methods for the action listbox appears when we click on something to send some g
 			// Disable the garrison action listbox
 			T_CALLM1("garActionLBEnable", false);
 
+			// Disable the selected garrison menu
+			T_CALLM1("garSelMenuEnable", false);
+
 			// Deselect evereything
 			{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
 
@@ -588,11 +709,9 @@ Methods for the action listbox appears when we click on something to send some g
 
 			// If there is any garrison under cursor
 			if (count _garrisonsUnderCursor > 0) then {
-				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");;
-				if (T_GETV("garSplitDialog") == "") then {
-					pr _garSplitDialog = NEW("GarrisonSplitDialog", [_garRecord]);
-					T_SETV("garSplitDialog", _garSplitDialog);
-				};
+				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+				T_CALLM1("garSelMenuSetGarRecord", _garRecord);
+				T_CALLM1("garSelMenuEnable", true);
 			};
 
 			T_CALLM0("updateHintTextFromContext");
@@ -982,6 +1101,57 @@ Methods for the action listbox appears when we click on something to send some g
 
 		// Garrison action listbox will update its position 
 		T_CALLM0("garActionLBUpdatePos");
+
+		// Selected garrison menu will update its position
+		T_CALLM0("garSelMenuUpdatePos");
+
+		// Redraw the drawArrow on the map if we are currently giving order to something
+		T_CALLM0("garOrderUpdateArrow");
+
+		
+	} ENDMETHOD;
+
+
+/*
+ooooo  oooo oooooooooo ooooooooo      o   ooooooooooo ooooooooooo 
+ 888    88   888    888 888    88o   888  88  888  88  888    88  
+ 888    88   888oooo88  888    888  8  88     888      888ooo8    
+ 888    88   888        888    888 8oooo88    888      888    oo  
+  888oo88   o888o      o888ooo88 o88o  o888o o888o    o888ooo8888 
+                                                                  
+     o      oooooooooo  oooooooooo    ooooooo  oooo     oooo      
+    888      888    888  888    888 o888   888o 88   88  88       
+   8  88     888oooo88   888oooo88  888     888  88 888 88        
+  8oooo88    888  88o    888  88o   888o   o888   888 888         
+o88o  o888o o888o  88o8 o888o  88o8   88ooo88      8   8          
+
+http://patorjk.com/software/taag/#p=display&f=O8&t=UPDATE%0AARROW
+
+Redraws the order arrow when we are giving a waypoint
+Gets called from "onMapDraw"
+*/
+	METHOD("garOrderUpdateArrow") {
+		params [P_THISOBJECT];
+
+		if (T_GETV("givingOrder")) then {
+			pr _garRecord = T_GETV("garRecordCurrent");
+			// Make sure it's not destroyed
+			if (!IS_OOP_OBJECT(_garRecord)) exitWith {
+				T_SETV("givingOrder", false);
+			};
+
+			pr _posStartWorld = CALLM0(_garRecord, "getPos");
+			pr _ctrl = ((finddisplay 12) displayCtrl IDC_MAP);
+			// If the action LB is shown, we will be pointing at its position
+			if (T_GETV("garActionLBShown")) then {
+				pr _posEndWorld = T_GETV("garActionPos");
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+			} else {
+				pr _posEndScreen = getMousePosition;
+				pr _posEndWorld = _ctrl posScreenToWorld _posEndScreen;
+				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
+			};
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

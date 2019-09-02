@@ -46,17 +46,17 @@
 //bottom panel, structured text panel for hints
 #define IDC_BPANEL_HINTS 6005
 
-// Garrison command UI
+// ==== Garrison command UI ====
 
 // Listbox with a list of actions to give to a garrison
-#define IDC_GCOM_ACTION_LISTNBOX	7300
-// Background panel of this listbox
-#define IDC_GCOM_ACTION_LISTNBOX_BG	7301
+#define IDC_GCOM_ACTION_MENU_GROUP	7301
+#define IDC_GCOM_ACTION_MENU_BUTTON_MOVE 7302
+#define IDC_GCOM_ACTION_MENU_BUTTON_ATTACK 7303
+#define IDC_GCOM_ACTION_MENU_BUTTON_JOIN 7304
+#define IDC_GCOM_ACTION_MENU_BUTTON_PATROL 7305
+#define IDC_GCOM_ACTION_MENU_BUTTON_CLOSE 7306
 
-
-
-
-// IDD / IDC for splitting the dialog
+// ===== IDD / IDC for splitting the garrison =====
 #define IDD_GSPLIT_DIALOG	330
 
 #define IDC_GSPLIT_LB_LEFT	7500
@@ -82,3 +82,11 @@
 #define IDC_GSPLIT_LB_LEFT_RIGHT 7551
 #define IDC_GSPLIT_LB_RIGHT_LEFT 7552
 #define IDC_GSPLIT_LB_RIGHT_RIGHT 7553
+
+// ==== Garrison selected menu ====
+#define GSELECT_MENU_ROW_HEIGHT 0.04
+#define GSELECT_MENU_WIDTH 0.20
+#define IDC_GSELECT_GROUP 7600
+#define IDC_GSELECT_BUTTON_SPLIT 7601
+#define IDC_GSELECT_BUTTON_MERGE 7602
+#define IDC_GSELECT_BUTTON_GIVE_ORDER 7603

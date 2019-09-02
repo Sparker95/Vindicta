@@ -21,4 +21,5 @@ class ClientMapUI
 
 // Will be included into the .ext root actually
 #include "Controls\GarrisonCommand.h"
+#include "Controls\GarrisonSelectedMenu.h"
 #include "Dialogs\GarrisonSplitDialog.h"
