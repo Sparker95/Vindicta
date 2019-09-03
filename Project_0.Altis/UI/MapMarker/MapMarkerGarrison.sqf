@@ -38,19 +38,22 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		// Create marker
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
+		OOP_INFO_1("NEW mrkName: %1", _mrkName);
 		createMarkerLocal [_mrkName, [100, 100, 0]];
 		_mrkName setMarkerShapeLocal "ICON";
 		_mrkName setMarkerPosLocal ([100, 100, 0]);
 		_mrkName setMarkerAlphaLocal 0.85;
 		_mrkName setMarkerTypeLocal "b_unknown";
 		_mrkName setMarkerTextLocal "<Garrison>";
-
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		deleteMarkerLocal _thisObject+MARKER_SUFFIX;
+		// Delete the marker
+		pr _mrkName = _thisObject+MARKER_SUFFIX;
+		OOP_INFO_1("DELETE mrkName: %1", _mrkName);
+		deleteMarkerLocal _mrkName;
 	} ENDMETHOD;
 
 	METHOD("getGarrisonRecord") {
@@ -162,8 +165,10 @@ CLASS(CLASS_NAME, "MapMarker")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "all", []);
-SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+if (isNil {GET_STATIC_VAR(CLASS_NAME, "all")}) then {
+	SET_STATIC_VAR(CLASS_NAME, "all", []);
+	SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+};
 
 #ifndef _SQF_VM
 

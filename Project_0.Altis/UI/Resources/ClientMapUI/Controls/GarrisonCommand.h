@@ -62,7 +62,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 4*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "< Close >";	
+			text = "< Cancel >";	
 		};	
 	};
 };

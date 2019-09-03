@@ -17,7 +17,7 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 	x = 0;
 	y = 0;
 	w = __MENU_WIDTH + 0.01;
-	h = 2*__ROW_HEIGHT + 0.01;
+	h = 3*__ROW_HEIGHT + 0.01;
 
 	class Controls
 	{
@@ -30,15 +30,6 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			h = __ROW_HEIGHT + __DELTA;
 			//text = "<-\\-> Split";
 			text = "Split";			
-		};
-		class BUTTON_ORDER : MUI_BUTTON_TXT 
-		{
-			idc = IDC_GSELECT_BUTTON_GIVE_ORDER;
-			x = 0;
-			y = 1*__ROW_HEIGHT;
-			w = __MENU_WIDTH + __DELTA;
-			h = __ROW_HEIGHT + __DELTA;
-			text = "Give order ...";			
 		};
 		/*
 		class STATIC_HEADER : MUI_BASE 
@@ -66,6 +57,25 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			text = "Merge";
 		};
 		
+		class BUTTON_ORDER : MUI_BUTTON_TXT 
+		{
+			idc = IDC_GSELECT_BUTTON_GIVE_ORDER;
+			x = 0;
+			y = 1*__ROW_HEIGHT;
+			w = __MENU_WIDTH + __DELTA;
+			h = __ROW_HEIGHT + __DELTA;
+			text = "Give order ...";			
+		};
+
+		class BUTTON_CANCEL_ORDER : MUI_BUTTON_TXT 
+		{
+			idc = IDC_GSELECT_BUTTON_CANCEL_ORDER;
+			x = 0;
+			y = 2*__ROW_HEIGHT;
+			w = __MENU_WIDTH + __DELTA;
+			h = __ROW_HEIGHT + __DELTA;
+			text = "Cancel order";
+		};
 	};
 	
 };

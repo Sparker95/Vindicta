@@ -1466,6 +1466,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_thisObject, "addGroup", _group);
 		} forEach _groupsAndUnits;
 		
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+
 		__MUTEX_UNLOCK;
 
 		true
@@ -1570,6 +1573,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Move the veh group
 			CALLM1(_thisObject, "addGroup", _newVehGroup);
 		};
+
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
 
 		__MUTEX_UNLOCK;
 

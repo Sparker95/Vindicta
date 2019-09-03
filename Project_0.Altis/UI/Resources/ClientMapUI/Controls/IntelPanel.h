@@ -1,5 +1,6 @@
 #include "..\..\UIProfileColors.h"
 
+/*
 class CMUI_INFOBAR : MUI_STRUCT_TXT 
 {
     type = 13;
@@ -17,6 +18,7 @@ class CMUI_INFOBAR : MUI_STRUCT_TXT
         
     };
 };
+*/
 
 class CMUI_LOCP_HEADLINE : MUI_HEADLINE
 {

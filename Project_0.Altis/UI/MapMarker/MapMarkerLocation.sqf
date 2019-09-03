@@ -61,8 +61,6 @@ CLASS(CLASS_NAME, "MapMarker")
 		_mrkName setMarkerAlphaLocal 1.0;
 		_mrkName setMarkerType "p0_notification_top_right";
 
-		GET_STATIC_VAR(CLASS_NAME, "all") pushBack _thisObject;
-
 		/*
 		pr _radius = GETV(_intel, "accuracyRadius");
 		if (isNil "_radius") then { _radius = 0; };
@@ -70,11 +68,6 @@ CLASS(CLASS_NAME, "MapMarker")
 		T_SETV("radius", _radius);
 		CALLM0(_thisObject, "updateAccuracyRadiusMarker");
 		*/
-	} ENDMETHOD;
-
-	METHOD("getIntel") {
-		params [P_THISOBJECT];
-		T_GETV("intel")
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -85,10 +78,11 @@ CLASS(CLASS_NAME, "MapMarker")
 			deleteMarkerLocal (_thisObject + _x);
 		} forEach [MARKER_SUFFIX, RADIUS_MARKER_SUFFIX, NOTIFICATION_SUFFIX];
 
-		// Delete from 'all' array
-		pr _all = GET_STATIC_VAR(CLASS_NAME, "all");
-		_all deleteAt (_all find _thisObject);
+	} ENDMETHOD;
 
+	METHOD("getIntel") {
+		params [P_THISOBJECT];
+		T_GETV("intel")
 	} ENDMETHOD;
 
 	// Overwrite the base class method
@@ -106,6 +100,16 @@ CLASS(CLASS_NAME, "MapMarker")
 			(_thisObject+_x) setMarkerPosLocal (T_GETV("pos")+[0]);
 		} forEach [MARKER_SUFFIX, NOTIFICATION_SUFFIX];
 
+	} ENDMETHOD;
+
+	METHOD("select") {
+		params [P_THISOBJECT, P_BOOL("_selected")];
+
+		if (_selected) then {
+			T_CALLM1("setNotification", false);
+		};
+
+		CALL_CLASS_METHOD("MapMarker", _thisObject, "select", [_selected]);
 	} ENDMETHOD;
 
 	// Same as setColor but gets both an array and string
@@ -375,8 +379,10 @@ CLASS(CLASS_NAME, "MapMarker")
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "all", []);
-SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+if(isNil {GETSV(CLASS_NAME, "all")} ) then {
+	SET_STATIC_VAR(CLASS_NAME, "all", []);
+	SET_STATIC_VAR(CLASS_NAME, "allSelected", []);
+};
 
 #ifndef _SQF_VM
 

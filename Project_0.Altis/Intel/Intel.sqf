@@ -42,6 +42,10 @@ CLASS("Intel", "")
 	Reference to the source <Intel> item this object is linked with.*/
 	VARIABLE_ATTR("source", [ATTR_SERIALIZABLE]);
 
+	/* variable: accuracy
+	Can have arbitrary value. Represents how accurate the intel is.*/
+	VARIABLE_ATTR("accuracy", [ATTR_SERIALIZABLE]);
+
 	/* variable: dbEntry
 	Reference to the dbEntry copy of this intel item. This is filled in by 
 	the intelDb when the item is added via addIntelClone, and used in 

@@ -28,11 +28,15 @@ class GSPLIT_DIALOG
 		{
 			idc = IDC_GSPLIT_LB_LEFT_LEFT;
 			text = "<";
+			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
 		};
 		class GSPLIT_LB_LEFT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON
 		{
 			idc = IDC_GSPLIT_LB_LEFT_RIGHT;
 			text = ">";
+			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
 		};
 		class GSPLIT_LB_LEFT_BG : MUI_BG_BLACKTRANSPARENT
 		{
@@ -58,11 +62,15 @@ class GSPLIT_DIALOG
 		{
 			idc = IDC_GSPLIT_LB_RIGHT_LEFT;
 			text = "<";
+			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
 		};
 		class GSPLIT_LB_RIGHT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON
 		{
 			idc = IDC_GSPLIT_LB_RIGHT_RIGHT;
 			text = ">";
+			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
+			offsetPressedY = 0;
 		};
 		class GSPLIT_LB_RIGHT_BG : MUI_BG_BLACKTRANSPARENT
 		{
@@ -137,7 +145,7 @@ class GSPLIT_DIALOG
 			offsetPressedY = 0;
 		};
 
-		class GSPLIT_HEADLINE : MUI_BG_BLACKSOLID 
+		class GSPLIT_HEADLINE : MUI_HEADLINE
 		{
 			idc = -1;
 			x = 0.15;

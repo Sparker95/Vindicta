@@ -289,7 +289,7 @@ CLASS("AICommander", "AI")
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateType", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 	
@@ -307,29 +307,31 @@ CLASS("AICommander", "AI")
 
 			if (_updateIfFound) then {
 				OOP_INFO_1("Intel was found in existing database: %1", _loc);
+				// Update only if incoming accuracy is more or equal to existing one
+				if (_updateLevel >= GETV(_intelResult, "accuracy")) then {
+					// Create intel item from location, update the old item
+					pr _args = [_loc, _updateLevel, _accuracyRadius];
+					pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 
-				// Create intel item from location, update the old item
-				pr _args = [_loc, _updateType, _accuracyRadius];
-				pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
+					// Check if the created intel and the existing one are the same
+					pr _serialOld = SERIALIZE(_intelResult);
+					SERIALIZED_SET_OBJECT_NAME(_serialOld, nil);
+					_serialOld = _serialOld apply {if (isNil "_x") then {-123.45678} else {_x}};
+					pr _serialNew = SERIALIZE(_intel);
+					SERIALIZED_SET_OBJECT_NAME(_serialNew, nil);
+					_serialNew = _serialNew apply {if (isNil "_x") then {-123.45678} else {_x}};
 
-				// Check if the created intel and the existing one are the same
-				pr _serialOld = SERIALIZE(_intelResult);
-				SERIALIZED_SET_OBJECT_NAME(_serialOld, nil);
-				_serialOld = _serialOld apply {if (isNil "_x") then {-123.45678} else {_x}};
-				pr _serialNew = SERIALIZE(_intel);
-				SERIALIZED_SET_OBJECT_NAME(_serialNew, nil);
-				_serialNew = _serialNew apply {if (isNil "_x") then {-123.45678} else {_x}};
+					/*
+					OOP_INFO_1("   old: %1", _serialOld);
+					OOP_INFO_1("   new: %1", _serialNew);
+					*/
 
-				/*
-				OOP_INFO_1("   old: %1", _serialOld);
-				OOP_INFO_1("   new: %1", _serialNew);
-				*/
+					if (!(_serialOld isEqualTo _serialNew)) then {
+						CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 
-				if (!(_serialOld isEqualTo _serialNew)) then {
-					CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
-
-					// Delete the intel object that we have created temporary
-					DELETE(_intel);
+						// Delete the intel object that we have created temporary
+						DELETE(_intel);
+					};
 				};
 			};
 		} else {
@@ -338,7 +340,7 @@ CLASS("AICommander", "AI")
 			OOP_INFO_1("Intel was NOT found in existing database: %1", _loc);
 
 			// Create intel from location, add it
-			pr _args = [_loc, _updateType, _accuracyRadius];
+			pr _args = [_loc, _updateLevel, _accuracyRadius];
 			pr _intel = CALL_STATIC_METHOD("AICommander", "createIntelFromLocation", _args);
 			
 			OOP_INFO_1("Created intel item from location: %1", _intel);
@@ -366,6 +368,9 @@ CLASS("AICommander", "AI")
 		};
 		
 		pr _value = NEW("IntelLocation", []);
+
+		// Set accuracy
+		SETV(_value, "accuracy", _updateLevel);
 		
 		// Set position and accuracy radius
 		pr _locPos = +(CALLM0(_loc, "getPos"));

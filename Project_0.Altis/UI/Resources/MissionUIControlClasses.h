@@ -72,7 +72,7 @@ class MUI_BG_BLACKSOLID : MUI_BASE
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S; Sparker fulling around :/
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S; Sparker fooling around :/
 	colorBackground[] = MUIC_BLACK;
 };
 
@@ -93,7 +93,7 @@ class MUI_BG_TRANSPARENT : MUI_BASE
 };
 
 
-class MUI_HEADLINE
+class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, but grey
 {
 	type = CT_STATIC;
 
@@ -102,6 +102,10 @@ class MUI_HEADLINE
 	w = 0;
 	h = safeZoneH * 0.026;
 
+	sizeEx = MUI_TXT_SIZE_M;
+	colorBackground[] = {0.0666, 0.0666, 0.0666, 1.0}; // A slight delightfully-devilish shade of grey
+
+	/*
 	sizeEx = MUI_TXT_SIZE_S;
 	style = 192+2;
 	text = "";
@@ -110,6 +114,7 @@ class MUI_HEADLINE
 	colorBackground[] = {0.702,0.102,0.102,1};	// variable, selected outpost color
 	colorText[] = MUIC_WHITE;
 	shadow = 1;
+	*/
 };
 
 
@@ -128,7 +133,7 @@ class MUI_BUTTON_TXT : RscButton
 	colorBackgroundActive[] = MUIC_WHITE;
 	colorBackgroundDisabled[] = MUIC_BLACK;
 	colorBorder[] = MUIC_TRANSPARENT;
-	colorDisabled[] = MUIC_TRANSPARENT;
+	colorDisabled[] = MUIC_TXT_DISABLED;
 	colorFocused[] = MUIC_BLACK;				// same as colorBackground to disable blinking
 	colorShadow[] = MUIC_TRANSPARENT;
 

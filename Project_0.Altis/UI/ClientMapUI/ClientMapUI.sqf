@@ -39,13 +39,18 @@ CLASS(CLASS_NAME, "")
 	STATIC_VARIABLE("routeMarkers");
 
 	// GarrisonSplitDialog OOP object
-	VARIABLE("garSplitDialog"); METHOD("onGarrisonSplitDialogDeleted") {params [P_THISOBJECT]; T_SETV("garSplitDialog", ""); } ENDMETHOD;
+	VARIABLE("garSplitDialog");
+	METHOD("onGarrisonSplitDialogDeleted") {
+		params [P_THISOBJECT];
+		T_SETV("garSplitDialog", "");
+		T_CALLM0("updateHintTextFromContext");
+	} ENDMETHOD;
 
 	// Currently selected garrisons
 
 	// Current garrison record which is selected. There can be many garrisons selected, but only one will have the manu under it drawn.
 	VARIABLE("garSelMenuEnabled");
-	VARIABLE("garRecordCurrent");
+	VARIABLE("garRecordCurrent"); // Don't just set it manually, it's being set through funcs and event handlers
 	VARIABLE("givingOrder"); // Bool, if true it means that we are giving order to a garrison. Current garrison record is garRecordCurrent
 
 	// initialize UI event handlers
@@ -142,15 +147,15 @@ CLASS(CLASS_NAME, "")
 		// delete prev controls
 		ctrlDelete ((finddisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_GROUP);
 		pr _bg = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX_BG", IDC_GCOM_ACTION_MENU_GROUP]; // Background
-		T_CALLM1("garActionLBEnable", false);
+		T_CALLM1("garActionMenuEnable", false);
 
 		((findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_BUTTON_MOVE) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garActionLBOnSelChanged", "move");
+			CALLM1(_thisObject, "garActionLBOnButtonClick", "move");
 		}];
 		((findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_BUTTON_CLOSE) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garActionLBOnSelChanged", "close");
+			CALLM1(_thisObject, "garActionLBOnButtonClick", "close");
 		}];
 
 
@@ -167,6 +172,10 @@ CLASS(CLASS_NAME, "")
 		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = gClientMapUI;
 			CALLM1(_thisObject, "garSelMenuOnButtonClick", "order");
+		}];
+		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_CANCEL_ORDER) ctrlAddEventHandler ["ButtonClick", {
+			_thisObject = gClientMapUI;
+			CALLM1(_thisObject, "garSelMenuOnButtonClick", "cancelOrder");
 		}];
 		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlAddEventHandler ["ButtonClick", {
 			_thisObject = gClientMapUI;
@@ -257,15 +266,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	} ENDMETHOD;
 
 /*                                                                      
-88888888ba,    88888888ba          db    I8,        8        ,8I     88888888ba     ,ad8888ba,    88        88  888888888888  88888888888  
-88      `"8b   88      "8b        d88b   `8b       d8b       d8'     88      "8b   d8"'    `"8b   88        88       88       88           
-88        `8b  88      ,8P       d8'`8b   "8,     ,8"8,     ,8"      88      ,8P  d8'        `8b  88        88       88       88           
-88         88  88aaaaaa8P'      d8'  `8b   Y8     8P Y8     8P       88aaaaaa8P'  88          88  88        88       88       88aaaaa      
-88         88  88""""88'       d8YaaaaY8b  `8b   d8' `8b   d8'       88""""88'    88          88  88        88       88       88"""""      
-88         8P  88    `8b      d8""""""""8b  `8a a8'   `8a a8'        88    `8b    Y8,        ,8P  88        88       88       88           
-88      .a8P   88     `8b    d8'        `8b  `8a8'     `8a8'         88     `8b    Y8a.    .a8P   Y8a.    .a8P       88       88           
-88888888Y"'    88      `8b  d8'          `8b  `8'       `8'          88      `8b    `"Y8888Y"'     `"Y8888Y"'        88       88888888888  
-http://patorjk.com/software/taag/#p=display&f=Univers&t=DRAW%20ROUTE
+ooooooooo  oooooooooo       o  oooo     oooo      oooooooooo    ooooooo  ooooo  oooo ooooooooooo ooooooooooo 
+ 888    88o 888    888     888  88   88  88        888    888 o888   888o 888    88  88  888  88  888    88  
+ 888    888 888oooo88     8  88  88 888 88         888oooo88  888     888 888    88      888      888ooo8    
+ 888    888 888  88o     8oooo88  888 888          888  88o   888o   o888 888    88      888      888    oo  
+o888ooo88  o888o  88o8 o88o  o888o 8   8          o888o  88o8   88ooo88    888oo88      o888o    o888ooo8888 
+
+http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 */
 	// Draws or undraws a route for a given array of positions
 	STATIC_METHOD("drawRoute") {
@@ -317,16 +324,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=DRAW%20ROUTE
 	} ENDMETHOD;
 
 
-/*                                                                                                  
-88        88  88  888b      88  888888888888     888888888888  88888888888  8b        d8  888888888888  
-88        88  88  8888b     88       88               88       88            Y8,    ,8P        88       
-88        88  88  88 `8b    88       88               88       88             `8b  d8'         88       
-88aaaaaaaa88  88  88  `8b   88       88               88       88aaaaa          Y88P           88       
-88""""""""88  88  88   `8b  88       88               88       88"""""          d88b           88       
-88        88  88  88    `8b 88       88               88       88             ,8P  Y8,         88       
-88        88  88  88     `8888       88               88       88            d8'    `8b        88       
-88        88  88  88      `888       88               88       88888888888  8P        Y8       88       
-http://patorjk.com/software/taag/#p=display&f=Univers&t=HINT%20TEXT
+/*
+ooooo ooooo ooooo oooo   oooo ooooooooooo      ooooooooooo ooooooooooo ooooo  oooo ooooooooooo 
+ 888   888   888   8888o  88  88  888  88      88  888  88  888    88    888  88   88  888  88 
+ 888ooo888   888   88 888o88      888              888      888ooo8        888         888     
+ 888   888   888   88   8888      888              888      888    oo     88 888       888     
+o888o o888o o888o o88o    88     o888o            o888o    o888ooo8888 o88o  o888o    o888o    
+
+http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 */
 
 	// Sets hint text at the bottom of the screen
@@ -345,8 +350,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=HINT%20TEXT
 		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
 		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
 
-		if (count _selectedGarrisons == 1) exitWith {
-			T_CALLM1("setHintText", "ALT+CLICK to give MOVE order to garrison");
+		if (T_GETV("garActionLBShown")) exitWith {
+			T_CALLM1("setHintText", "Select the order to give to this garrison");
+		};
+
+		if (T_GETV("givingOrder")) exitWith {
+			T_CALLM1("setHintText", "Left-click on the map to set destination");
+		};
+		
+		if (T_GETV("garSplitDialog") != "") exitWith {
+			T_CALLM1("setHintText", "Choose composition of the new garrison on the right column and push the 'Split' button");
+		};
+
+		if (count _selectedGarrisons >= 1) exitWith {
+			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison");
 		};
 
 		T_CALLM1("setHintText", "You can click on something!");
@@ -354,31 +371,17 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=HINT%20TEXT
 	} ENDMETHOD;
 
 /*                                                                                                                                       
-       db         ,ad8888ba,  888888888888  88    ,ad8888ba,    888b      88        
-      d88b       d8"'    `"8b      88       88   d8"'    `"8b   8888b     88        
-     d8'`8b     d8'                88       88  d8'        `8b  88 `8b    88        
-    d8'  `8b    88                 88       88  88          88  88  `8b   88        
-   d8YaaaaY8b   88                 88       88  88          88  88   `8b  88        
-  d8""""""""8b  Y8,                88       88  Y8,        ,8P  88    `8b 88        
- d8'        `8b  Y8a.    .a8P      88       88   Y8a.    .a8P   88     `8888        
-d8'          `8b  `"Y8888Y"'       88       88    `"Y8888Y"'    88      `888        
-                                                                                    
-                                                                                    
-                                                                                    
-88           88   ad88888ba  888888888888  88888888ba     ,ad8888ba,  8b        d8  
-88           88  d8"     "8b      88       88      "8b   d8"'    `"8b  Y8,    ,8P   
-88           88  Y8,              88       88      ,8P  d8'        `8b  `8b  d8'    
-88           88  `Y8aaaaa,        88       88aaaaaa8P'  88          88    Y88P      
-88           88    `"""""8b,      88       88""""""8b,  88          88    d88b      
-88           88          `8b      88       88      `8b  Y8,        ,8P  ,8P  Y8,    
-88           88  Y8a     a8P      88       88      a8P   Y8a.    .a8P  d8'    `8b   
-88888888888  88   "Y88888P"       88       88888888P"     `"Y8888Y"'  8P        Y8
-
+     o       oooooooo8 ooooooooooo ooooo  ooooooo  oooo   oooo      oooo     oooo ooooooooooo oooo   oooo ooooo  oooo 
+    888    o888     88 88  888  88  888 o888   888o 8888o  88        8888o   888   888    88   8888o  88   888    88  
+   8  88   888             888      888 888     888 88 888o88        88 888o8 88   888ooo8     88 888o88   888    88  
+  8oooo88  888o     oo     888      888 888o   o888 88   8888        88  888  88   888    oo   88   8888   888    88  
+o88o  o888o 888oooo88     o888o    o888o  88ooo88  o88o    88       o88o  8  o88o o888ooo8888 o88o    88    888oo88   
+                                                                     
 Methods for the action listbox appears when we click on something to send some garrison do something
 */
 
 	// Enables or disables the garrison action listbox
-	METHOD("garActionLBEnable") {
+	METHOD("garActionMenuEnable") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		// Move it away if we don't need to see it any more
@@ -386,15 +389,17 @@ Methods for the action listbox appears when we click on something to send some g
 		_ctrl ctrlShow _enable;
 
 		T_SETV("garActionLBShown", _enable);
+
+		T_CALLM0("updateHintTextFromContext");
 	} ENDMETHOD;
 
 	// Sets the position of the garrison action listbox
-	METHOD("garActionLBSetPos") {
+	METHOD("garActionMenuSetPos") {
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		T_SETV("garActionPos", _pos);
 	} ENDMETHOD;
 
-	METHOD("garActionLBUpdatePos") {
+	METHOD("garActionMenuUpdatePos") {
 		params [P_THISOBJECT];
 		// Move the garrison action listbox if needed
 		if (T_GETV("garActionLBShown")) then {
@@ -409,7 +414,7 @@ Methods for the action listbox appears when we click on something to send some g
 
 	// The selection in a listbox is changed.
 	// https://community.bistudio.com/wiki/User_Interface_Event_Handlers#onLBSelChanged
-	METHOD("garActionLBOnSelChanged") {
+	METHOD("garActionLBOnButtonClick") {
 		params [P_THISOBJECT, "_action"];
 
 		// Sanity checks
@@ -445,11 +450,12 @@ Methods for the action listbox appears when we click on something to send some g
 		};
 
 		// Close the LB
-		T_CALLM1("garActionLBEnable", false);
+		T_CALLM1("garActionMenuEnable", false);
 
 		// We are not giving order any more, stop drawing the arrow
 		T_SETV("givingOrder", false);
 
+		T_CALLM0("updateHintTextFromContext");
 	} ENDMETHOD;
 
 
@@ -488,6 +494,29 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		T_SETV("garSelMenuEnabled", _enable);
 		((findDisplay 12) displayCtrl IDC_GSELECT_GROUP) ctrlShow _enable;
+
+		if (!_enable) then {	
+			T_SETV("garRecordCurrent", "");
+		};
+
+		// Check if we can command garrisons at all
+		pr _canCommand = CALLM1(gPlayerDatabaseClient, "get", PDB_KEY_ALLOW_COMMAND_GARRISONS);
+		if (isNil "_canCommand") then {_canCommand = false; };
+		if (!_canCommand) then {
+			{
+				((findDisplay 12) displayCtrl _x) ctrlEnable false;
+				((findDisplay 12) displayCtrl _x) ctrlSetTooltip "You don't have permissions to command garrisons";
+			} forEach [IDC_GSELECT_BUTTON_SPLIT, IDC_GSELECT_BUTTON_MERGE, IDC_GSELECT_BUTTON_GIVE_ORDER, IDC_GSELECT_BUTTON_CANCEL_ORDER];
+		} else {
+			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlEnable false;
+			((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlSetTooltip "NYI";
+			{
+				((findDisplay 12) displayCtrl _x) ctrlEnable true;
+				((findDisplay 12) displayCtrl _x) ctrlSetTooltip "";
+			} forEach [IDC_GSELECT_BUTTON_SPLIT, IDC_GSELECT_BUTTON_GIVE_ORDER, IDC_GSELECT_BUTTON_CANCEL_ORDER];
+		};
+
+		T_CALLM0("updateHintTextFromContext");
 	} ENDMETHOD;
 
 	METHOD("garSelMenuSetGarRecord") {
@@ -498,8 +527,6 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	// Called on each map draw event to update the position
 	METHOD("garSelMenuUpdatePos") {
 		params [P_THISOBJECT];
-
-		
 
 		if (T_GETV("garSelMenuEnabled")) then {
 			pr _garRecord = T_GETV("garRecordCurrent");
@@ -543,21 +570,242 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					pr _garSplitDialog = CALLSM1("GarrisonSplitDialog", "newInstance", _garRecord);
 					T_SETV("garSplitDialog", _garSplitDialog);					
 				};
+				// Abort giving order if we were giving order
+				if (T_GETV("givingOrder")) then {
+					T_CALLM1("garActionMenuEnable", false);
+					T_SETV("givingOrder", false);
+				};
 			};
 
 			// Activate the 
 			case "order" : {
-				T_SETV("givingOrder", true);
+				// Abort giving order if we were giving order
+				// Start giving order if we were not
+				pr _givingOrder = T_GETV("givingOrder");
+				T_SETV("givingOrder", !_givingOrder);
+				if (_givingOrder) then {
+					T_CALLM1("garActionMenuEnable", false);
+				};
+			};
+			case "cancelOrder" : {
+
 			};
 			default {
 				// Do nothing
 			};
 		};
+
+		T_CALLM0("updateHintTextFromContext");
 	} ENDMETHOD;
 
 
+	/*
+	ooooo oooo   oooo ooooooooooo ooooooooooo ooooo            oooooooooo   o      oooo   oooo ooooooooooo ooooo       
+	888   8888o  88  88  888  88  888    88   888              888    888 888      8888o  88   888    88   888        
+	888   88 888o88      888      888ooo8     888              888oooo88 8  88     88 888o88   888ooo8     888        
+	888   88   8888      888      888    oo   888      o       888      8oooo88    88   8888   888    oo   888      o 
+	o888o o88o    88     o888o    o888ooo8888 o888ooooo88      o888o   o88o  o888o o88o    88  o888ooo8888 o888ooooo88 
+
+	http://patorjk.com/software/taag/#p=display&f=O8&t=INTEL%20PANEL
+	*/
+
+	METHOD("intelPanelUpdateFromGarrisonRecord") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), ["_clear", true]];
+
+		OOP_INFO_1("intelPanelUpdateFromGarrisonRecord: %1", _garRecord);
+
+		// Bail if garrison record is destroyed
+		if (!IS_OOP_OBJECT(_garRecord)) exitWith {
+			OOP_INFO_0("Garrison record is destroyed");
+		};
+
+		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		_lnb lnbSetColumnsPos [0, 0.2];
+
+		pr _comp = CALLM0(_garRecord, "getComposition");
+		OOP_INFO_1("Composition: %1", _comp);
+		{
+			pr _catID = _foreachindex;
+			{
+				pr _subcatID = _forEachIndex;
+				pr _classes = _x; // Array with IDs of classes
+				if (count _classes > 0) then {
+					pr _name = T_NAMES#_catID#_subcatID;
+					_lnb lnbAddRow [str (count _classes), _name];
+				};
+			} forEach _x;
+		} forEach _comp;
+	} ENDMETHOD;
+
+	METHOD("intelPanelUpdateFromLocationIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), ["_clear", true], ["_showComposition", true]];
+
+		OOP_INFO_1("intelPanelUpdateFromLocationIntel: %1", _intel);
+
+		// Bail if this intel item is removed for some reason
+		if (!CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) exitWith {
+			OOP_INFO_0("Intel doesn't exist");
+		};
+
+		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		_lnb lnbSetColumnsPos [0, 0.2];
+
+		pr _typeText = "";
+		pr _timeText = "";
+		pr _sideText = "";
+		pr _soldierCount = 0;
+		pr _vehList = [];
+		
+		_typeText = switch (GETV(_intel, "type")) do {
+			case LOCATION_TYPE_OUTPOST: {"Outpost"};
+			case LOCATION_TYPE_CAMP: {"Camp"};
+			case LOCATION_TYPE_BASE: {"Base"};
+			case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
+			case LOCATION_TYPE_CITY: {"City"};
+			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
+			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
+			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
+			default {format ["ClientMapUI.sqf line %1", __LINE__]}; // If you see this then you know where to implement this!
+		};
+		
+		_timeText = str GETV(_intel, "dateUpdated");
+		_sideText = str GETV(_intel, "side");
+
+		// Apply new text for GUI elements
+		private _mapDisplay = findDisplay 12;
+		//(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "";
+		_lnb lnbSetCurSelRow -1;
+		_lnb lnbAddRow [ "Type:", _typeText];
+		_lnb lnbAddRow [ "Side:", _sideText];
+
+		pr _ua = GETV(_intel, "unitData");
+		if (count _ua > 0 && _showComposition) then {
+			_compositionText = "";
+			// Amount of infrantry
+			{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
+			_lnb lnbAddRow [ str _soldierCount, "Soldiers" ];
+
+			// Count vehicles
+			pr _uaveh = _ua select T_VEH;
+			{
+				// If there are some vehicles of this subcategory
+				if (_x > 0) then {
+					pr _subcatID = _forEachIndex;
+					pr _vehName = T_NAMES select T_VEH select _subcatID;
+					_lnb lnbAddRow [str _x, _vehName];
+				};
+			} forEach _uaveh;
+		};
+	} ENDMETHOD;
+
+	METHOD("intelPanelClear") {
+		params [P_THISOBJECT];
+		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		lnbClear _lnb;
+	} ENDMETHOD;
+
+	/*
+		Method: onLBSelChanged
+		Description: Called when the selection inside the listbox has changed.
+
+		Parameters: 
+		0: _control - Reference to the control which called this method
+	*/
+	STATIC_METHOD("onLBSelChanged") {
+
+		/*
+
+		params ["_thisClass", "_control"];
+
+		// Bail if a garrison is selected
+		if (T_GETV("garSelMenuEnabled")) exitWith {};
+
+		private _mapDisplay = findDisplay 12;
+		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
+		private _currentRow = lnbCurSelRow _control;
+
+		// Bail if current row is -1 - it means nothing is selected
+		if (_currentRow == -1) exitWith {
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Nothing is selected";
+		};
+
+		// Bail if we have selected a map marker (for now until we figure out what to do with the list box when we have selected a location)
+		pr _currentMapMarker = GET_STATIC_VAR("ClientMapUI", "currentMapMarker");
+		if (_currentMapMarker != "") exitWith {
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "What do we show here? What does it all mean?? Where am I???";
+		};
+
+		private _data = _control lnbData [_currentRow, 0];
+		private _className = GET_OBJECT_CLASS(_data);
+		private _actionName = "Unknown";
+		private _text = "";
+
+		// - - - - P A T R O L - - - -
+		// The Hell Patrol! https://www.youtube.com/watch?v=om0sp1Srixw
+		if (_className == "IntelCommanderActionPatrol") exitWith {
+
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Enemy patrol route";
+
+			// Draw the route
+			pr _waypoints = +GETV(_data, "waypoints");
+			pr _args = [_waypoints,		// posArray
+						true,	// enable
+						true,	// cycle
+						false];	// drawSrcDest
+			CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
+		};
 
 
+
+		// - - - - - REINFORCE, ATTACK, RECON, BUILD - - - -
+		if (_className == "IntelCommanderActionReinforce") then { _actionName = "reinforce"; };
+		if (_className == "IntelCommanderActionBuild") then { _actionName = "build"; };
+		if (_className == "IntelCommanderActionRecon") then { _actionName = "recon"; };
+		if (_className == "IntelCommanderActionAttack") then { _actionName = "attack"; };
+
+		private _from = GETV(_data, "posSrc");
+		private _fromName = "Unknown";
+		private _to = GETV(_data, "posTgt");
+		private _toName = "Unknown";
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+
+		// Find intel about locations close to _from or _to
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className == "IntelLocation") then {
+				private _pos = GETV(_x, "pos");
+				private _loc = GETV(_x, "location");
+
+				if (_from distance2D _pos < 10) then { _fromName = GETV(_loc, "name"); };
+				if (_to distance2D _pos < 10) then { _toName = GETV(_loc, "name"); };
+			};
+		} forEach _allIntels;
+
+		if (_fromName == "Unknown") then { _fromName = mapGridPosition _from; };
+		if (_toName == "Unknown") then { _toName = mapGridPosition _to; };
+
+		_text = format [
+			"%1 is going to %2 %3",
+			_fromName,
+			_actionName,
+			_toName
+		];
+
+		if (_actionName != "Unknown") then {
+			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText _text;
+		};
+
+		// Draw the route
+		pr _args = [[_from, _to],		// posArray
+					true,	// enable
+					false,	// cycle
+					true];	// drawSrcDest
+		CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
+		*/
+
+	} ENDMETHOD;
 
 /*                                                                                                        
 ooooooooooo ooooo  oooo ooooooooooo oooo   oooo ooooooooooo                                    
@@ -621,72 +869,69 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		if (T_GETV("givingOrder")) exitWith {
 			OOP_INFO_0("GIVING ORDER TO GARRISON...");
 			// Make sure we have the rights to command garrisons
-			if (CALLM1(gPlayerDatabaseClient, "get", PDB_KEY_ALLOW_COMMAND_GARRISONS)) then {
-				pr _garRecord = T_GETV("garRecordCurrent"); // Get GarrisonRecord
-				pr _gar = CALLM0(_garRecord, "getGarrison"); // Ref to an actual garrison at the server
+			pr _garRecord = T_GETV("garRecordCurrent"); // Get GarrisonRecord
+			pr _gar = CALLM0(_garRecord, "getGarrison"); // Ref to an actual garrison at the server
 
-				// Get position where to move to, it depends on what we actually click at
-				pr _targetType = TARGET_TYPE_INVALID; // Target type and the target where to move to, see CmdrAITarget.sqf
-				pr _target = 0;
-				pr _targetPos = [0, 0, 0];
+			// Get position where to move to, it depends on what we actually click at
+			pr _targetType = TARGET_TYPE_INVALID; // Target type and the target where to move to, see CmdrAITarget.sqf
+			pr _target = 0;
+			pr _targetPos = [0, 0, 0];
 
-				if (count _markersUnderCursor > 0) then {
-					pr _destMarker = _markersUnderCursor#0;
-					switch (GET_OBJECT_CLASS(_destMarker)) do {
-						case "MapMarkerLocation" : {
-							_targetType = TARGET_TYPE_LOCATION;
-							pr _intel = CALLM0(_destMarker, "getIntel");
-							_target = GETV(_intel, "location");
-							OOP_INFO_1("	target: location %1", _target);
-							_targetPos = +CALLM0(_target, "getPos");
-						};
-						case "MapMarkerGarrison" : {
-							pr _dstGarRecord = CALLM0(_destMarker, "getGarrisonRecord");
-							if (_dstGarRecord == _garRecord) then {
-								OOP_INFO_0("	target: NONE, clicked on the same garrison");
-							} else {
-								_targetType = TARGET_TYPE_GARRISON;
-								_target = CALLM0(_dstGarRecord, "getGarrison");
-								OOP_INFO_1("	target: garrison %1", _target);
-								_targetPos = +CALLM0(_dstGarRecord, "getPos");
-							};
-						};
-						default {
-							OOP_ERROR_1("Unknown map marker class: %1", _destMarker); // What :/
+			if (count _markersUnderCursor > 0) then {
+				pr _destMarker = _markersUnderCursor#0;
+				switch (GET_OBJECT_CLASS(_destMarker)) do {
+					case "MapMarkerLocation" : {
+						_targetType = TARGET_TYPE_LOCATION;
+						pr _intel = CALLM0(_destMarker, "getIntel");
+						_target = GETV(_intel, "location");
+						OOP_INFO_1("	target: location %1", _target);
+						_targetPos = +CALLM0(_target, "getPos");
+					};
+					case "MapMarkerGarrison" : {
+						pr _dstGarRecord = CALLM0(_destMarker, "getGarrisonRecord");
+						if (_dstGarRecord == _garRecord) then {
+							OOP_INFO_0("	target: NONE, clicked on the same garrison");
+							// If we click on the same garrison while giving order, abort giving order
+							T_SETV("givingOrder", false);
+						} else {
+							_targetType = TARGET_TYPE_GARRISON;
+							_target = CALLM0(_dstGarRecord, "getGarrison");
+							OOP_INFO_1("	target: garrison %1", _target);
+							_targetPos = +CALLM0(_dstGarRecord, "getPos");
 						};
 					};
-				} else {
-					_targetType = TARGET_TYPE_POSITION;
-					_target = _displayorcontrol posScreenToWorld [_xPos, _yPos];
-					OOP_INFO_1("	target: position %1", _target);
-					_targetPos = +_target;
-				};
-
-				if (_targetType == TARGET_TYPE_INVALID) then {
-					T_SETV("garActionTargetType", TARGET_TYPE_INVALID);
-					OOP_ERROR_0("Can't resolve target position");
-				} else {
-					// We are good to go!
-
-					// Enable the garrison action listbox
-					T_CALLM1("garActionLBSetPos", _targetPos);
-					T_CALLM1("garActionLBEnable", true);
-					// Store the garrison and target variables
-					T_SETV("garActionGarRef", _gar);
-					T_SETV("garActionTargetType", _targetType);
-					T_SETV("garActionTarget", _target);
+					default {
+						OOP_ERROR_1("Unknown map marker class: %1", _destMarker); // What :/
+					};
 				};
 			} else {
-				systemChat "You don't have the rights to command garrisons!";
+				_targetType = TARGET_TYPE_POSITION;
+				_target = _displayorcontrol posScreenToWorld [_xPos, _yPos];
+				OOP_INFO_1("	target: position %1", _target);
+				_targetPos = +_target;
+			};
+
+			if (_targetType == TARGET_TYPE_INVALID) then {
+				T_SETV("garActionTargetType", TARGET_TYPE_INVALID);
+				OOP_ERROR_0("Can't resolve target position");
+			} else {
+				// We are good to go!
+
+				// Enable the garrison action listbox
+				T_CALLM1("garActionMenuSetPos", _targetPos);
+				T_CALLM1("garActionMenuEnable", true);
+				// Store the garrison and target variables
+				T_SETV("garActionGarRef", _gar);
+				T_SETV("garActionTargetType", _targetType);
+				T_SETV("garActionTarget", _target);
 			};
 		};
 
-		
 		if (count _markersUnderCursor == 0) then {
 			// We are definitely not clicking on any map marker
 
 			// Disable the garrison action listbox
-			T_CALLM1("garActionLBEnable", false);
+			T_CALLM1("garActionMenuEnable", false);
 
 			// Disable the selected garrison menu
 			T_CALLM1("garSelMenuEnable", false);
@@ -694,12 +939,13 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			// Deselect evereything
 			{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
 
-			T_CALLM0("updateHintTextFromContext");
+			// Clear the intel panel
+			T_CALLM0("intelPanelClear");
 		} else {
 			// Hey we have clicked on something!
 
 			// Disable the garrison action listbox
-			T_CALLM1("garActionLBEnable", false);
+			T_CALLM1("garActionMenuEnable", false);
 
 			// Deselect evereything else
 			{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
@@ -714,10 +960,42 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				T_CALLM1("garSelMenuEnable", true);
 			};
 
-			T_CALLM0("updateHintTextFromContext");
+			//Decide what to do with the panel on the right
+			if (count _garrisonsUnderCursor == 1 && count _locationsUnderCursor == 1) then {
+				// If we have selected both a garrison and a location
+				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
+				T_CALLM3("intelPanelUpdateFromLocationIntel", _intel, true, false); // clear
+				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, false); // don't clear
+			} else {
+				// If one garrison was clicked, update the panel from its record
+				if (count _garrisonsUnderCursor == 1) then {
+					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
+					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, true); // clear
+				} else {
+					// If one location was clicked, update panel from the location intel
+					if (count _locationsUnderCursor == 1) then {
+						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
+						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, true); // clear
+					};
+				};
+			};
 		};
 
+		T_CALLM0("updateHintTextFromContext");
+
 	} ENDMETHOD;
+
+
+
+
+
+
+
+
+
+
+
 
 	METHOD("onMouseButtonUp") {
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
@@ -741,63 +1019,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		params ["_thisClass", ["_mapMarker", "", []], ["_intel", "", [""]]];
 
 		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", _mapMarker);
-
-		pr _typeText = "";
-		pr _timeText = "";
-		pr _sideText = "";
-		pr _soldierCount = 0;
-		pr _vehList = [];
-		
-		// Did we find a location in the database?
-		if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
-
-			_typeText = switch (GETV(_intel, "type")) do {
-				case LOCATION_TYPE_OUTPOST: {"Outpost"};
-				case LOCATION_TYPE_CAMP: {"Camp"};
-				case LOCATION_TYPE_BASE: {"Base"};
-				case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
-				case LOCATION_TYPE_CITY: {"City"};
-				case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
-				case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
-				case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
-				default {format ["ClientMapUI.sqf line %1", __LINE__]}; // If you see this then you know where to implement this!
-			};
-			
-			_timeText = str GETV(_intel, "dateUpdated");
-			_sideText = str GETV(_intel, "side");
-
-			pr _ua = GETV(_intel, "unitData");
-			if (count _ua > 0) then {
-				_compositionText = "";
-				// Amount of infrantry
-				{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
-
-				// Count vehicles
-				pr _uaveh = _ua select T_VEH;
-				{
-					// If there are some vehicles of this subcategory
-					if (_x > 0) then {
-						pr _subcatID = _forEachIndex;
-						pr _vehName = T_NAMES select T_VEH select _subcatID;
-						pr _str = format ["%1: %2", _vehName, _x];
-						_vehList pushBack _str;
-					};
-				} forEach _uaveh;
-			};
-		};
-
-		// Apply new text for GUI elements
-		CALLSM0(CLASS_NAME, "clearListNBox");
-		private _mapDisplay = findDisplay 12;
-		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "";
-		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
-		_ctrlListnbox lnbSetCurSelRow -1;
-		_ctrlListnbox lnbAddRow [ format ["Type: %1", _typeText] ];
-		_ctrlListnbox lnbAddRow [ format ["Side: %1", _sideText] ];
-		_ctrlListnbox lnbAddRow [ format ["Soldier Count: %1", str _soldierCount] ];
-		{
-			_ctrlListnbox lnbAddRow [_x];
-		} forEach _vehList;
 
 		// Disable markers showing source and destination on the map
 		pr _args = [[],		// posArray
@@ -941,98 +1162,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	} ENDMETHOD;
 
 	/*
-		Method: onLBSelChanged
-		Description: Called when the selection inside the listbox has changed.
-
-		Parameters: 
-		0: _control - Reference to the control which called this method
-	*/
-	STATIC_METHOD("onLBSelChanged") {
-		params ["_thisClass", "_control"];
-		private _mapDisplay = findDisplay 12;
-		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
-		private _currentRow = lnbCurSelRow _control;
-
-		// Bail if current row is -1 - it means nothing is selected
-		if (_currentRow == -1) exitWith {
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Nothing is selected";
-		};
-
-		// Bail if we have selected a map marker (for now until we figure out what to do with the list box when we have selected a location)
-		pr _currentMapMarker = GET_STATIC_VAR("ClientMapUI", "currentMapMarker");
-		if (_currentMapMarker != "") exitWith {
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "What do we show here? What does it all mean?? Where am I???";
-		};
-
-		private _data = _control lnbData [_currentRow, 0];
-		private _className = GET_OBJECT_CLASS(_data);
-		private _actionName = "Unknown";
-		private _text = "";
-
-		// - - - - P A T R O L - - - -
-		// The Hell Patrol! https://www.youtube.com/watch?v=om0sp1Srixw
-		if (_className == "IntelCommanderActionPatrol") exitWith {
-
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Enemy patrol route";
-
-			// Draw the route
-			pr _waypoints = +GETV(_data, "waypoints");
-			pr _args = [_waypoints,		// posArray
-						true,	// enable
-						true,	// cycle
-						false];	// drawSrcDest
-			CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
-		};
-
-
-
-		// - - - - - REINFORCE, ATTACK, RECON, BUILD - - - -
-		if (_className == "IntelCommanderActionReinforce") then { _actionName = "reinforce"; };
-		if (_className == "IntelCommanderActionBuild") then { _actionName = "build"; };
-		if (_className == "IntelCommanderActionRecon") then { _actionName = "recon"; };
-		if (_className == "IntelCommanderActionAttack") then { _actionName = "attack"; };
-
-		private _from = GETV(_data, "posSrc");
-		private _fromName = "Unknown";
-		private _to = GETV(_data, "posTgt");
-		private _toName = "Unknown";
-		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
-
-		// Find intel about locations close to _from or _to
-		{
-			private _className = GET_OBJECT_CLASS(_x);
-			if (_className == "IntelLocation") then {
-				private _pos = GETV(_x, "pos");
-				private _loc = GETV(_x, "location");
-
-				if (_from distance2D _pos < 10) then { _fromName = GETV(_loc, "name"); };
-				if (_to distance2D _pos < 10) then { _toName = GETV(_loc, "name"); };
-			};
-		} forEach _allIntels;
-
-		if (_fromName == "Unknown") then { _fromName = mapGridPosition _from; };
-		if (_toName == "Unknown") then { _toName = mapGridPosition _to; };
-
-		_text = format [
-			"%1 is going to %2 %3",
-			_fromName,
-			_actionName,
-			_toName
-		];
-
-		if (_actionName != "Unknown") then {
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText _text;
-		};
-
-		// Draw the route
-		pr _args = [[_from, _to],		// posArray
-					true,	// enable
-					false,	// cycle
-					true];	// drawSrcDest
-		CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
-	} ENDMETHOD;
-
-	/*
 		Method: onMouseClickElsewhere
 		Description: Gets called when user clicks on the map not on a marker.
 	*/
@@ -1100,7 +1229,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		params [P_THISOBJECT];
 
 		// Garrison action listbox will update its position 
-		T_CALLM0("garActionLBUpdatePos");
+		T_CALLM0("garActionMenuUpdatePos");
 
 		// Selected garrison menu will update its position
 		T_CALLM0("garSelMenuUpdatePos");
@@ -1108,7 +1237,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Redraw the drawArrow on the map if we are currently giving order to something
 		T_CALLM0("garOrderUpdateArrow");
 
-		
 	} ENDMETHOD;
 
 

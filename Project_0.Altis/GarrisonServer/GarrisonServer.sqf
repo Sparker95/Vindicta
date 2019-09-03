@@ -82,7 +82,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Broadcast destroyed events
 		pr _destroyedGarrisons = T_GETV("destroyedObjects");
-		if (count _destroyedGarrisons > 0) then { OOP_INFO_1("DESTROYED: %1", _outdatedGarrisons); };
+		if (count _destroyedGarrisons > 0) then { OOP_INFO_1("DESTROYED: %1", _destroyedGarrisons); };
 		// Just send data to everyone, those who don't care about these objects will just ignore them
 		{
 			pr _sides = [EAST, WEST, INDEPENDENT, CIVILIAN];
