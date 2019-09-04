@@ -43,8 +43,12 @@
 //bottom panel, button 3
 #define IDC_BPANEL_BUTTON_3 6004
 
+// bottom panel, buttons
+#define IDC_BPANEL_BUTTON_SHOW_INTEL 6005
+#define IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS 6006
+
 //bottom panel, structured text panel for hints
-#define IDC_BPANEL_HINTS 6005
+#define IDC_BPANEL_HINTS 6010
 
 // ==== Garrison command UI ====
 

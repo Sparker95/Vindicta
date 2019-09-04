@@ -228,7 +228,9 @@ CLASS("GarrisonRecord", "")
 		// Delete the action record
 		pr _actionRecord = T_GETV("cmdrActionRecord");
 		if (!isNil "_actionRecord") then {
-			DELETE(_actionRecord);
+			if (_actionRecord != "") then {
+				DELETE(_actionRecord);
+			};
 		};
 
 		// Notify the UI?

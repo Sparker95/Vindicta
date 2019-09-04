@@ -24,7 +24,7 @@
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
 #define RELEASE_BUILD
 
-//#define CMDR_AI_TESTING
+#define CMDR_AI_TESTING
 
 // Profiling
 //#define OOP_PROFILE

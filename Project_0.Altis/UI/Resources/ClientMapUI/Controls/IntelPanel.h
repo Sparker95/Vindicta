@@ -117,28 +117,47 @@ class CMUI_BPANEL_HINTS : MUI_BG_BLACKSOLID
 class CMUI_BPANEL_BUTTON_1 : MUI_BUTTON_TXT 
 {
     idc = IDC_BPANEL_BUTTON_1;
-    x = safeZoneX + safeZoneW * 0.33;
-    y = safeZoneY + safeZoneH * 0.943;
-    w = safeZoneW * 0.11;
-    text = "ADD FRIENDLY GROUP"; //"FAST TRAVEL";
+    x = safeZoneX + safeZoneW * 0.26;
+    y = safeZoneY + safeZoneH * 0.94;
+    w = safeZoneW * 0.1;
+    text = "DO SMTH"; //"FAST TRAVEL";
 };
 
 class CMUI_BPANEL_BUTTON_2 : MUI_BUTTON_TXT 
 {
     idc = IDC_BPANEL_BUTTON_2;
-    x = safeZoneX + safeZoneW * 0.445;
-    y = safeZoneY + safeZoneH * 0.943;
-    w = safeZoneW * 0.11;
-    text = "CREATE CAMP";
+    x = safeZoneX + safeZoneW * 0.37;
+    y = safeZoneY + safeZoneH * 0.94;
+    w = safeZoneW * 0.08;
+    text = "Create camp";
 };
 
 class CMUI_BPANEL_BUTTON_3 : MUI_BUTTON_TXT 
 {
     idc = IDC_BPANEL_BUTTON_3;
-    x = safeZoneX + safeZoneW * 0.56;
-    y = safeZoneY + safeZoneH * 0.943;
-    w = safeZoneW * 0.11;
-    text = "MISSION MENU";	
+    x = safeZoneX + safeZoneW * 0.46;
+    y = safeZoneY + safeZoneH * 0.94;
+    w = safeZoneW * 0.1;
+    text = "Mission menu";
+};
+
+class CMUI_BPANEL_BUTTON_SHOW_INTEL : MUI_BUTTON_TXT
+{
+    idc = IDC_BPANEL_BUTTON_SHOW_INTEL;
+    x = safeZoneX + safeZoneW * 0.57;
+    y = safeZoneY + safeZoneH * 0.94;
+    w = safeZoneW * 0.06;
+    h = safezoneH * 0.02;
+    text = "[ ] Show intel";
+};
+
+class CMUI_BPANEL_BUTTON_CLEAR_NOTIFICATIONS : MUI_BUTTON_TXT 
+{
+    idc = IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS;
+    x = safeZoneX + safeZoneW * 0.64;
+    y = safeZoneY + safeZoneH * 0.94;
+    w = safeZoneW * 0.1;
+    text = "Clear notifications";    
 };
 
 class CMUI_LOCP_DETAILBG : MUI_BG_BLACKSOLID 

@@ -53,6 +53,12 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("garRecordCurrent"); // Don't just set it manually, it's being set through funcs and event handlers
 	VARIABLE("givingOrder"); // Bool, if true it means that we are giving order to a garrison. Current garrison record is garRecordCurrent
 
+	// Bool, state of the intel button
+	VARIABLE("showIntelButtonChecked");
+
+	// Int, IDC of the control under the cursor, or -1
+	VARIABLE("currentControlIDC");
+
 	// initialize UI event handlers
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
@@ -72,6 +78,9 @@ CLASS(CLASS_NAME, "")
 		T_SETV("garSelMenuEnabled", false);
 		T_SETV("givingOrder", false);
 
+		T_SETV("showIntelButtonChecked", false);
+		T_SETV("currentControlIDC", -1);
+
 		pr _mapDisplay = findDisplay 12;
 
 		// open map EH
@@ -88,16 +97,15 @@ CLASS(CLASS_NAME, "")
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {CALLM0(gClientMapUI, "onMapDraw");} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
 
 		// bottom panel
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_1) ctrlAddEventHandler ["ButtonDown", { params ['_control']; CALLSM(CLASS_NAME, "onButtonDownAddFriendlyGroup", [_control]) }];
+		// MouseEnter / MouseExit event handlers
+		{
+			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseEnter", {CALLM1(gClientMapUI, "onMouseEnter", _this#0); }];
+			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseExit", {CALLM1(gClientMapUI, "onMouseExit", _this#0); }];
+		} forEach [IDC_BPANEL_BUTTON_1, IDC_BPANEL_BUTTON_2, IDC_BPANEL_BUTTON_3, IDC_BPANEL_BUTTON_SHOW_INTEL, IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS];
 
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlAddEventHandler ["ButtonDown", { params ['_control']; CALLSM0(CLASS_NAME, "onButtonDownCreateCamp") }];
-
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		// Button clicks
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM1(gClientMapUI, "onButtonClickShowIntel", _this#0); }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS) ctrlAddEventHandler ["ButtonClick", { CALLM1(gClientMapUI, "onButtonClickClearNotifications", _this#0); }];
 
 		// location panel
 		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
@@ -239,18 +247,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		
 	} ENDMETHOD;
 
-	/*
-	Method: clearListNBox
-	Description
-
-	Returns: nil
-	*/
-	STATIC_METHOD("clearListNBox") {
-		private _mapDisplay = findDisplay 12;
-		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
-		lnbClear _ctrlListnbox;
-	} ENDMETHOD;
-
 	// Returns marker text of closest marker
 	STATIC_METHOD("getNearestLocationName") {
 		params ["_thisClass", "_pos"];
@@ -265,6 +261,19 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		_return
 	} ENDMETHOD;
 
+	// Shows/hides all map representations of intel
+	METHOD("mapShowAllIntel") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+		// forEach _allIntels;
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className != "IntelLocation") then { // Add all non-location intel classes
+				CALLM1(_x, "showOnMap", _show);
+			};
+		} forEach _allIntels;
+	} ENDMETHOD;
+
 /*                                                                      
 ooooooooo  oooooooooo       o  oooo     oooo      oooooooooo    ooooooo  ooooo  oooo ooooooooooo ooooooooooo 
  888    88o 888    888     888  88   88  88        888    888 o888   888o 888    88  88  888  88  888    88  
@@ -274,16 +283,21 @@ o888ooo88  o888o  88o8 o88o  o888o 8   8          o888o  88o8   88ooo88    888oo
 
 http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 */
+
+	#define __MRK_ROUTE "_route_"
+	#define __MRK_SOURCE "_src"
+	#define __MRK_DEST "_dst"
 	// Draws or undraws a route for a given array of positions
 	STATIC_METHOD("drawRoute") {
-		params ["_thisClass", ["_posArray", [], [[]]], ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 
 		// Delete all previosly created markers
+		pr _query = _uniqueString+__MRK_ROUTE;
 		{
 			deleteMarkerLocal _x;
-		} forEach GETSV(_thisClass, "routeMarkers");
-		SETSV(_thisClass, "routeMarkers", []);
+		} forEach (allMapMarkers select { _x find _query == 0 });
 
+		pr _markers = [];
 		if (_enable) then {
 
 			if (count _posArray < 2) exitWith {
@@ -297,8 +311,6 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 			pr _posDst = _positions#(_count - 1);
 			if (_cycle) then { _positions pushBack (_positions#0); _count = _count + 1;};
 
-			pr _markers = GETSV(_thisClass, "routeMarkers");
-
 			// Create source and destination markers
 			if (_drawSrcDest) then {
 				{
@@ -309,18 +321,20 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 					_mrk setMarkerAlphaLocal 1;
 					_mrk setMarkerTextLocal _text;
 					_markers pushBack _name; 
-				} forEach [["ClientMapUI_route_source", _posSrc, "mil_start", "Source"], ["ClientMapUI_route_dest", _posDst, "mil_end", "Destination"]];
+				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_start", "Source"], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_end", "Destination"]];
 			};
 
 			// Draw lines
 			for "_i" from 0 to (_count - 2) do {
-				pr _mrkName = format ["ClientMapUI_route_%1", _i];
+				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, "ColorRed", 66, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, "ColorRed", 15, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};
+
+		_markers
 	} ENDMETHOD;
 
 
@@ -366,7 +380,36 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 			T_CALLM1("setHintText", "Use the menu to perform actions on the selected garrison");
 		};
 
-		T_CALLM1("setHintText", "You can click on something!");
+		pr _idc = T_GETV("currentControlIDC");
+		if (_idc != -1) exitWith {
+			if (ctrlEnabled (_mapDisplay displayCtrl _idc)) then {
+				switch (_idc) do {
+					// bottom panel
+					case IDC_BPANEL_BUTTON_1: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON1"); };
+					case IDC_BPANEL_BUTTON_2: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON2"); };
+					case IDC_BPANEL_BUTTON_3: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON3"); };
+
+					// location panel
+					case IDC_LOCP_TAB1: { T_CALLM1("setHintText", localize "STR_CMUI_TAB1"); };
+					case IDC_LOCP_TAB2: { T_CALLM1("setHintText", localize "STR_CMUI_TAB2"); };
+					case IDC_LOCP_TAB3: { T_CALLM1("setHintText", localize "STR_CMUI_TAB3"); };
+				};
+			} else { // hints to display if this control is disabled
+				switch (_idc) do {
+					// bottom panel
+					case IDC_BPANEL_BUTTON_1: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON1_DISABLED"); };
+					case IDC_BPANEL_BUTTON_2: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON2_DISABLED"); };
+					case IDC_BPANEL_BUTTON_3: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON3_DISABLED"); };
+
+					// location panel
+					case IDC_LOCP_TAB1: { T_CALLM1("setHintText", localize "STR_CMUI_TAB1"); };
+					case IDC_LOCP_TAB2: { T_CALLM1("setHintText", localize "STR_CMUI_TAB2"); };
+					case IDC_LOCP_TAB3: { T_CALLM1("setHintText", localize "STR_CMUI_TAB3"); };
+				};
+			};
+		};
+
+		T_CALLM1("setHintText", "... Hints are displayed here ...");
 
 	} ENDMETHOD;
 
@@ -700,6 +743,59 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 	} ENDMETHOD;
 
+	METHOD("intelPanelUpdateFromIntel") {
+		params [P_THISOBJECT, ["_clear", true]];
+		
+		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+		OOP_INFO_1("ALL INTEL: %1", _allIntels);
+		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		_lnb lnbSetColumnsPos [0, 0.2, 0.7];
+		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		// forEach _allIntels;
+		{
+			private _className = GET_OBJECT_CLASS(_x);
+			if (_className != "IntelLocation") then { // Add all non-location intel classes
+				private _intel = _x;
+				private _shortName = CALLM0(_intel, "getShortName");
+
+				// Calculate time difference between current date and departure date
+				private _dateDeparture = GETV(_intel, "dateDeparture");
+				private _dateNow = date;
+				private _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+				private _activeStr = "";
+				if (_numberDiff < 0) then {
+					_activeStr = "active ";
+					_numberDiff = -_numberDiff;
+				};
+				private _dateDiff = numberToDate [_dateNow#0, _numberDiff];
+				_dateDiff params ["_y", "_m", "_d", "_h", "_m"];
+				
+				// Make a string representation of time difference
+				private _timeDiffStr = if (_h > 0) then {
+					format ["%1H, %2M", _h, _m]
+				} else {
+					format ["%1M", _m]
+				};
+
+				// Make a string representation of side
+				private _side = GETV(_intel, "side");
+				_sideStr  = switch (_side) do {
+					case WEST: {"WEST"};
+					case EAST: {"EAST"};
+					case independent: {"IND"};
+					default {"ALIEN"};
+				};
+
+				private _rowStr = format ["%1 %2", _shortName, _activeStr];
+				pr _rowData = [_sideStr, _rowStr, _timeDiffStr];
+				private _index = _lnb lnbAddRow _rowData;
+				_lnb lnbSetData [[_index, 0], _x];
+
+				OOP_INFO_1("ADDED ROW: %1", _rowData);
+			};
+		} forEach _allIntels;
+	} ENDMETHOD;
+
 	METHOD("intelPanelClear") {
 		params [P_THISOBJECT];
 		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
@@ -940,7 +1036,10 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
 
 			// Clear the intel panel
-			T_CALLM0("intelPanelClear");
+			//T_CALLM0("intelPanelClear");
+
+			// Fill the intel panel from intel
+			T_CALLM1("intelPanelUpdateFromIntel", true);
 		} else {
 			// Hey we have clicked on something!
 
@@ -1019,13 +1118,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		params ["_thisClass", ["_mapMarker", "", []], ["_intel", "", [""]]];
 
 		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", _mapMarker);
-
-		// Disable markers showing source and destination on the map
-		pr _args = [[],		// posArray
-					false,	// enable
-					false,	// cycle
-					false];	// drawSrcDest
-		CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
 	} ENDMETHOD;
 
 
@@ -1040,6 +1132,30 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
 	} ENDMETHOD;
 
+	METHOD("onButtonClickShowIntel") {
+		params [P_THISOBJECT];
+
+		pr _checked = T_GETV("showIntelButtonChecked");
+		pr _ctrl = ((finddisplay 12) displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL);
+		if (_checked) then {
+			// Uncheck it
+			//_ctrl ctrlSetTextColor MUIC_COLOR_WHITE;
+			_ctrl ctrlSetText "[ ] Show intel";
+			T_CALLM1("mapShowAllIntel", false);
+		} else {
+			// Check it
+			//_ctrl ctrlSetTextColor [0.13, 0.7, 0.29, 1];
+			_ctrl ctrlSetText "[X] Show intel";
+			T_CALLM1("mapShowAllIntel", true);
+		};
+		T_SETV("showIntelButtonChecked", !_checked);
+	} ENDMETHOD;
+
+	METHOD("onButtonClickClearNotifications") {
+		params [P_THISOBJECT];
+
+		CALLSM1("MapMarkerLocation", "setAllNotifications", false);
+	} ENDMETHOD;
 
 	/*
 		Method: onMapOpen
@@ -1110,39 +1226,13 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	STATIC_METHOD("onMouseEnter") {
-		params ["_thisClass", "_control"];
+	METHOD("onMouseEnter") {
+		params [P_THISOBJECT, "_ctrl"];
 		pr _mapDisplay = findDisplay 12;
-		pr _idc = ctrlIDC _control;
-		//_control ctrlSetTextColor [0, 0, 0, 1]; Sparker experimenting with UI colors
-
-		// hints to display if this control is enabled
-		if (ctrlEnabled (_mapDisplay displayCtrl _idc)) then {
-			switch (_idc) do {
-				// bottom panel
-				case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1"); };
-				case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2"); };
-				case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3"); };
-
-				// location panel
-				case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
-				case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
-				case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
-			};
-		} else { // hints to display if this control is disabled
-			switch (_idc) do {
-				// bottom panel
-				case IDC_BPANEL_BUTTON_1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON1_DISABLED"); };
-				case IDC_BPANEL_BUTTON_2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON2_DISABLED"); };
-				case IDC_BPANEL_BUTTON_3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_BUTTON3_DISABLED"); };
-
-				// location panel
-				case IDC_LOCP_TAB1: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB1"); };
-				case IDC_LOCP_TAB2: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB2"); };
-				case IDC_LOCP_TAB3: { (_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_TAB3"); };
-			};
-		};
-
+		pr _idc = ctrlIDC _ctrl;
+		T_SETV("currentControlIDC", _idc);
+		T_CALLM0("updateHintTextFromContext");
+		false // Must return false to still make it do the config-defined action
 	} ENDMETHOD;
 
 	/*
@@ -1152,13 +1242,11 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	STATIC_METHOD("onMouseExit") {
-		params ["_thisClass", "_control"];
-		pr _mapDisplay = findDisplay 12;
-		//_control ctrlSetTextColor [1, 1, 1, 1];
-
-		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText (localize "STR_CMUI_DEFAULT");
-
+	METHOD("onMouseExit") {
+		params [P_THISOBJECT, "_ctrl"];
+		T_SETV("currentControlIDC", -1);
+		T_CALLM0("updateHintTextFromContext");
+		false // Must return false to still make it do the config-defined action
 	} ENDMETHOD;
 
 	/*
@@ -1169,52 +1257,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// Reset the current marker variable
 		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
-
-		CALLSM0(CLASS_NAME, "clearListNBox");
-		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
-		private _mapDisplay = findDisplay 12;
-		private _ctrlListnbox = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX;
-
-		{
-			private _className = GET_OBJECT_CLASS(_x);
-			if (_className != "IntelLocation") then { // Add all non-location intel classes
-				private _intel = _x;
-				private _shortName = CALLM0(_intel, "getShortName");
-
-				// Calculate time difference between current date and departure date
-				private _dateDeparture = GETV(_intel, "dateDeparture");
-				private _dateNow = date;
-				private _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-				private _activeStr = "";
-				if (_numberDiff < 0) then {
-					_activeStr = "active ";
-					_numberDiff = -_numberDiff;
-				};
-				private _dateDiff = numberToDate [_dateNow#0, _numberDiff];
-				_dateDiff params ["_y", "_m", "_d", "_h", "_m"];
-				
-				// Make a string representation of time difference
-				private _timeDiffStr = if (_h > 0) then {
-					format ["%1H, %2M", _h, _m]
-				} else {
-					format ["%1M", _m]
-				};
-
-				// Make a string representation of side
-				private _side = GETV(_intel, "side");
-				_sideStr  = switch (_side) do {
-					case WEST: {"WEST"};
-					case EAST: {"EAST"};
-					case independent: {"IND"};
-					default {"ALIEN"};
-				};
-
-				private _rowStr = format ["%1 %2 %3%4", _sideStr, _shortName, _activeStr, _timeDiffStr];
-
-				private _index = _ctrlListnbox lnbAddRow [_rowStr];
-				_ctrlListnbox lnbSetData [[_index, 0], _x];
-			};
-		} forEach _allIntels;
 
 		// change location panel headline
 		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];

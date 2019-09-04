@@ -432,19 +432,62 @@ CLASS("IntelCommanderAction", "Intel")
 	*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
 
-	METHOD("clientAdd") {
+	/* virtual override */ METHOD("clientAdd") {
 		params [P_THISOBJECT];
 
 		systemChat format ["Added intel: %1", _thisObject];
 
 		// Hint
 		hint format ["Added intel: %1", _thisObject];
+
+		// Show on map
+		//T_CALLM1("showOnMap", true);
+	} ENDMETHOD;
+
+	/* virtual override */ METHOD("clientRemove") {
+		params [P_THISOBJECT];
+
+		// Delete map markers
+		//T_CALLM1("showOnMap", false);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
 		"Action"
 	} ENDMETHOD;
+
+
+	/*
+	Method: showOnMap
+	This method is only relevant to commander actions.
+	Here we have logic to show this intel on the map or hide it.
+	*/
+	/* virtual */ METHOD("showOnMap") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		OOP_INFO_1("SHOW ON MAP: %1", _show);
+
+		if (_show) then {
+			pr _args = [[T_GETV("posSrc"), T_GETV("posTgt")],
+						_thisObject, // Unique string
+						true, // Enable
+						false, // Cycle
+						true]; // Draw src and dest markers
+			CALLSM("ClientMapUI", "drawRoute", _args);
+			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		
+
+		} else {
+			// Delete the markers
+			pr _args = [[],
+						_thisObject, // Unique string
+						false, // Enable
+						false, // Cycle
+						false]; // Draw src and dest markers
+			CALLSM("ClientMapUI", "drawRoute", _args);
+		};
+	} ENDMETHOD;
+
 ENDCLASS;
 
 /*
@@ -526,6 +569,35 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* variable: locations
 	Locations that the patrol will visit. */
 	VARIABLE_ATTR("locations", [ATTR_SERIALIZABLE]);
+
+	/*
+	Method: showOnMap
+	This method is only relevant to commander actions.
+	Here we have logic to show this intel on the map or hide it.
+	*/
+	/* virtual override */ METHOD("showOnMap") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		if (_show) then {
+			pr _args = [T_GETV("waypoints"),
+						_thisObject, // Unique string
+						true, // Enable
+						true, // Cycle
+						false]; // Draw src and dest markers
+			CALLSM("ClientMapUI", "drawRoute", _args);
+			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		
+
+		} else {
+			// Delete the markers
+			pr _args = [[],
+						_thisObject, // Unique string
+						false, // Enable
+						false, // Cycle
+						false]; // Draw src and dest markers
+			CALLSM("ClientMapUI", "drawRoute", _args);
+		};
+	} ENDMETHOD;
 
 	METHOD("getShortName") {
 		"Patrol"

@@ -147,13 +147,6 @@ CLASS("GameModeBase", "")
 			// Message loop for client side checks: undercover, location visibility, etc
 			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
 
-			// Disable all the notification dots for map markers
-			0 spawn {
-				waitUntil {! isNil "serverInitDone"};
-				sleep 6;
-				CALLSM1("MapMarkerLocation", "setAllNotifications", false);
-			};
-
 			// Create PlayerDatabaseClient
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 

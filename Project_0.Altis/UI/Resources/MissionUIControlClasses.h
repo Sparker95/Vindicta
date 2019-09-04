@@ -166,6 +166,80 @@ class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
 };
 
+// Button with text that behaves like it's a checkbox
+// This control type is trash, don't use it
+// Can't set BG color when mouse if over it, wtf
+class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
+{
+	idc = -1;
+	type = CT_CHECKBOXES;
+	style = 2;
+	h = safezoneh * 0.02;
+	colorText[] = MUIC_WHITE; //  text color of the unchecked checkbox
+	colorTextSelect[] = {0.13, 0.7, 0.29, 1}; // text color of the checked checkbox
+	color[] = {0,0,1,1}; // unknown
+
+	colorBackground[] = {1,0,0,1}; // background color when checkbox is not in focus (doesn't matter if checked or not)
+	colorSelectedBg[] = {0,1,0,1}; // background color when checkbox is in focus (doesn't matter if checked or not)  !! doesn't seem to work !!
+
+	onMouseEnter = "(_this select 0) ctrlSetBackgroundColor [1,1,1,1]; (_this select 0) ctrlSetTextColor [0,0,0,1];";
+	onMouseExit = "(_this select 0) ctrlSetBackgroundColor [0,0,0,0]; (_this select 0) ctrlSetTextColor [1,1,1,1];";
+
+	colorSelect[] = {0, 0, 1, 0}; // unknown
+	colorTextDisable[] =
+	{
+		0.4,
+		0.4,
+		0.4,
+		1
+	};
+	colorDisable[] =
+	{
+		0.4,
+		0.4,
+		0.4,
+		1
+	};
+	tooltipColorText[] =
+	{
+		1,
+		1,
+		1,
+		1
+	};
+	tooltipColorBox[] =
+	{
+		1,
+		1,
+		1,
+		1
+	};
+	tooltipColorShade[] =
+	{
+		0,
+		0,
+		0,
+		0.65
+	};
+	font = "RobotoCondensed";
+	sizeEx = MUI_TXT_SIZE_M;
+	rows = 1;
+	columns = 1;
+	strings[] =
+	{
+		"Show intel"
+	};
+	checked_strings[] =
+	{
+		"Show intel"
+	};
+
+	soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
+	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
+	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
+	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
+};
+
 // RscListNBox
 class MUI_LISTNBOX : MUI_BASE 
 {
