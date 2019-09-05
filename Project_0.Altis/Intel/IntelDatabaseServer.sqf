@@ -49,6 +49,8 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
+			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]);
+
 			// Broadcast that intel was removed to existing clients
 			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "removeIntelClient", [_item], T_GETV("side"), false); // Broadcast without JIP
 

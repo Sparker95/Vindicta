@@ -231,25 +231,11 @@ CLASS("IntelDatabase", "")
 			ASSERT_OBJECT(_dbEntry);
 			OOP_INFO_MSG("REMOVE INTEL: %1 (%2)", [_item ARG _dbEntry]);
 
-			// Remove from index
-			CALLM1(_dbEntry, "removeFromDatabaseIndex", _thisObject);
-
-			pr _items = T_GETV("items");
-			_items setVariable [_dbEntry, nil];
-
-
-
-			// Check if the item was linked to a source item
-			// Although why should it be linked with any?? It's not meant to work like that!
-			// If it was, then remove the source item from hashmap too
-			pr _itemSource = GETV(_item, "source");
-			if (!isNil "_itemSource") then {
-				OOP_INFO_2("  source item of item %1: %2", _item, _itemSource);
-				T_GETV("linkedItems") setVariable [_itemSource, nil];
-			};
+			T_CALLM1("removeIntel", _dbEntry);
 		};
 		nil
 	} ENDMETHOD;
+
 
 	/*
 	Method: queryIntel
