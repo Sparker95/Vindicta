@@ -378,6 +378,12 @@ ENDCLASS;
 	Base class for all intel about commander actions.
 */
 CLASS("IntelCommanderAction", "Intel")
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("shownOnMap", false);
+	} ENDMETHOD;
+
 	/* 
 		variable: side
 		Side of the faction that has planned to do this
@@ -432,6 +438,9 @@ CLASS("IntelCommanderAction", "Intel")
 	*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
 
+	// Bool, only makes sense on client
+	VARIABLE("shownOnMap");
+
 	/* virtual override */ METHOD("clientAdd") {
 		params [P_THISOBJECT];
 
@@ -468,24 +477,42 @@ CLASS("IntelCommanderAction", "Intel")
 		OOP_INFO_1("SHOW ON MAP: %1", _show);
 
 		if (_show) then {
-			pr _args = [[T_GETV("posSrc"), T_GETV("posTgt")],
-						_thisObject, // Unique string
-						true, // Enable
-						false, // Cycle
-						true]; // Draw src and dest markers
-			CALLSM("ClientMapUI", "drawRoute", _args);
+			if(!T_GETV("shownOnMap")) then {
+				pr _args = [[T_GETV("posSrc"), T_GETV("posTgt")],
+							_thisObject, // Unique string
+							true, // Enable
+							false, // Cycle
+							true]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", true);
+			};
 			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 		
 
 		} else {
 			// Delete the markers
-			pr _args = [[],
-						_thisObject, // Unique string
-						false, // Enable
-						false, // Cycle
-						false]; // Draw src and dest markers
-			CALLSM("ClientMapUI", "drawRoute", _args);
+			if(T_GETV("shownOnMap")) then {
+				pr _args = [[],
+							_thisObject, // Unique string
+							false, // Enable
+							false, // Cycle
+							false]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", false);
+			};
 		};
+	} ENDMETHOD;
+
+	/*
+	Method: showOnMap
+	It's meant to return where the map will zoom into on client
+	*/
+	METHOD("getMapZoomPos") {
+		params [P_THISOBJECT];
+		pr _pos0 = +T_GETV("posSrc");
+		pr _pos1 = T_GETV("posTgt");
+		pr _ret = (_pos0 vectorAdd _pos1) vectorMultiply 0.5;
+		_ret
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -579,24 +606,33 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		if (_show) then {
-			pr _args = [T_GETV("waypoints"),
-						_thisObject, // Unique string
-						true, // Enable
-						true, // Cycle
-						false]; // Draw src and dest markers
-			CALLSM("ClientMapUI", "drawRoute", _args);
-			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
-		
-
+			if(!T_GETV("shownOnMap")) then {
+				pr _args = [T_GETV("waypoints"),
+							_thisObject, // Unique string
+							true, // Enable
+							true, // Cycle
+							false]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+				T_SETV("shownOnMap", true);
+			};
 		} else {
-			// Delete the markers
-			pr _args = [[],
-						_thisObject, // Unique string
-						false, // Enable
-						false, // Cycle
-						false]; // Draw src and dest markers
-			CALLSM("ClientMapUI", "drawRoute", _args);
+			if(T_GETV("shownOnMap")) then {
+				// Delete the markers
+				pr _args = [[],
+							_thisObject, // Unique string
+							false, // Enable
+							false, // Cycle
+							false]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", false);
+			};
 		};
+	} ENDMETHOD;
+
+	METHOD("getMapZoomPos") {
+		params [P_THISOBJECT];
+		selectRandom T_GETV("waypoints")
 	} ENDMETHOD;
 
 	METHOD("getShortName") {

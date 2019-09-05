@@ -98,6 +98,7 @@ CLASS(CLASS_NAME, "")
 		
 		//listbox events
 		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { CALLM(gClientMapUI, "intelPanelOnSelChanged", _this); }];
+		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBDblClick", { CALLM(gClientMapUI, "intelPanelOnDblClick", _this); }];
 
 		// = = = = = = Add event handlers = = = = = =
 
@@ -873,6 +874,20 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			};
 		};
 
+	} ENDMETHOD;
+
+	METHOD("intelPanelOnDblClick") {
+		params [P_THISOBJECT, "_lnb", "_index"];
+
+		if (_index != -1) then {
+			// Zoom into the area of this intel
+			pr _intel = _lnb lnbData [_index, 0];
+			pr _zoomPos = CALLM0(_intel, "getMapZoomPos");
+			pr _ctrl = ((finddisplay 12) displayCtrl 51);
+			_ctrl ctrlMapAnimAdd [0.3, 0.06, _zoomPos];
+			ctrlMapAnimCommit _ctrl;
+		};
+		
 	} ENDMETHOD;
 
 	// Hides or shows the sort-by-... buttons
