@@ -23,8 +23,10 @@
 */
 CLASS(CLASS_NAME, "")
 	
-	// todo maybe redo this
-	STATIC_VARIABLE("currentMapMarker");
+	VARIABLE("selectedGarrisonMarkers");
+	VARIABLE("selectedLocationMarkers");
+
+	// todo maybe redo THIS_ACTION_NAME
 	STATIC_VARIABLE("campAllowed");
 
 	// Position where the action listbox is going to be attached to
@@ -34,9 +36,6 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("garActionGarRef");
 	VARIABLE("garActionTargetType");
 	VARIABLE("garActionTarget");
-
-	// Array with route markers (route segments and source/destination markers)
-	STATIC_VARIABLE("routeMarkers");
 
 	// GarrisonSplitDialog OOP object
 	VARIABLE("garSplitDialog");
@@ -54,7 +53,11 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("givingOrder"); // Bool, if true it means that we are giving order to a garrison. Current garrison record is garRecordCurrent
 
 	// Bool, state of the intel button
-	VARIABLE("showIntelButtonChecked");
+	VARIABLE("showAllIntel");
+	// Defines if we are sorting intel inversed or not
+	VARIABLE("intelPanelSortInverse");
+	// By which category we're going to sort the intel panel
+	VARIABLE("intelPanelSortCategory");
 
 	// Int, IDC of the control under the cursor, or -1
 	VARIABLE("currentControlIDC");
@@ -62,6 +65,10 @@ CLASS(CLASS_NAME, "")
 	// initialize UI event handlers
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
+
+		// Selected markers
+		T_SETV("selectedGarrisonMarkers", []);
+		T_SETV("selectedLocationMarkers", []);
 
 		// garrison action variables
 		T_SETV("garActionPos", [0 ARG 0 ARG 0]);
@@ -78,17 +85,19 @@ CLASS(CLASS_NAME, "")
 		T_SETV("garSelMenuEnabled", false);
 		T_SETV("givingOrder", false);
 
-		T_SETV("showIntelButtonChecked", false);
+		T_SETV("showAllIntel", false);
+		T_SETV("intelPanelSortInverse", false);
+		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
 
 		pr _mapDisplay = findDisplay 12;
 
 		// open map EH
 		addMissionEventHandler ["Map", { 
-		params ["_mapIsOpened", "_mapIsForced"]; if !(visibleMap) then { CALLSM0(CLASS_NAME, "onMapOpen") }; }];
+		params ["_mapIsOpened", "_mapIsForced"]; if !(visibleMap) then { CALLM0(gClientMapUI, "onMapOpen"); }; }];
 		
 		//listbox events
-		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { params ['_control']; CALLSM(CLASS_NAME, "onLBSelChanged", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { CALLM(gClientMapUI, "intelPanelOnSelChanged", _this); }];
 
 		// = = = = = = Add event handlers = = = = = =
 
@@ -99,23 +108,23 @@ CLASS(CLASS_NAME, "")
 		// bottom panel
 		// MouseEnter / MouseExit event handlers
 		{
-			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseEnter", {CALLM1(gClientMapUI, "onMouseEnter", _this#0); }];
-			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseExit", {CALLM1(gClientMapUI, "onMouseExit", _this#0); }];
+			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseEnter", {CALLM(gClientMapUI, "onMouseEnter", _this); }];
+			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseExit", {CALLM(gClientMapUI, "onMouseExit", _this); }];
 		} forEach [IDC_BPANEL_BUTTON_1, IDC_BPANEL_BUTTON_2, IDC_BPANEL_BUTTON_3, IDC_BPANEL_BUTTON_SHOW_INTEL, IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS];
 
 		// Button clicks
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM1(gClientMapUI, "onButtonClickShowIntel", _this#0); }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS) ctrlAddEventHandler ["ButtonClick", { CALLM1(gClientMapUI, "onButtonClickClearNotifications", _this#0); }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
+		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
 
 		// location panel
-		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
-		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseEnter", { CALLM(gClientMapUI, "onMouseEnter", _this); }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseExit", { CALLM(gClientMapUI, "onMouseExit", _this); }];
 
-		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
-		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseEnter", { CALLM(gClientMapUI, "onMouseEnter", _this); }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseExit", { CALLM(gClientMapUI, "onMouseExit", _this); }];
 
-		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseEnter", { params ['_control']; CALLSM(CLASS_NAME, "onMouseEnter", [_control]) }];
-		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseExit", { params ['_control']; CALLSM(CLASS_NAME, "onMouseExit", [_control]) }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseEnter", { CALLM(gClientMapUI, "onMouseEnter",_this); }];
+		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseExit", { CALLM(gClientMapUI, "onMouseExit", _this); }];
 
 
 		// = = = = = = Initialize default text = = = = = =
@@ -190,6 +199,22 @@ CLASS(CLASS_NAME, "")
 			CALLM1(_thisObject, "garSelMenuOnButtonClick", "merge");
 		}];
 		
+		// = = = = = = = = = = = = = = = Create the listbox buttons = = = = = = = = = = = = = = =
+		pr _ctrlGroup = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP; 
+		pr _btns = [_mapDisplay, "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.25, 0.75], true] call ui_fnc_createButtonsInGroup;
+		_btns#0 ctrlSetText "Side";
+		_btns#1 ctrlSetText "Type";
+		_btns#2 ctrlSetText "Time";
+
+		_btns#0 ctrlAddEventHandler ["ButtonClick", {
+			CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "side");
+		}];
+		_btns#1 ctrlAddEventHandler ["ButtonClick", {
+			CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "type");
+		}];
+		_btns#2 ctrlAddEventHandler ["ButtonClick", {
+			CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "time");
+		}];
 
 
 		// Mouse moving
@@ -456,7 +481,6 @@ Methods for the action listbox appears when we click on something to send some g
 	} ENDMETHOD;
 
 	// The selection in a listbox is changed.
-	// https://community.bistudio.com/wiki/User_Interface_Event_Handlers#onLBSelChanged
 	METHOD("garActionLBOnButtonClick") {
 		params [P_THISOBJECT, "_action"];
 
@@ -743,6 +767,18 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 	} ENDMETHOD;
 
+	METHOD("intelPanelClear") {
+		params [P_THISOBJECT];
+		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		lnbClear _lnb;
+	} ENDMETHOD;
+
+	METHOD("intelPanelDeselect") {
+		params [P_THISOBJECT];
+		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		_lnb lnbSetCurSelRow -1;
+	} ENDMETHOD;
+
 	METHOD("intelPanelUpdateFromIntel") {
 		params [P_THISOBJECT, ["_clear", true]];
 		
@@ -753,32 +789,34 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
 		// forEach _allIntels;
 		{
-			private _className = GET_OBJECT_CLASS(_x);
+			pr _intel = _x;
+			pr _className = GET_OBJECT_CLASS(_intel);
 			if (_className != "IntelLocation") then { // Add all non-location intel classes
-				private _intel = _x;
-				private _shortName = CALLM0(_intel, "getShortName");
+				pr _shortName = CALLM0(_intel, "getShortName");
 
 				// Calculate time difference between current date and departure date
-				private _dateDeparture = GETV(_intel, "dateDeparture");
-				private _dateNow = date;
-				private _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-				private _activeStr = "";
+				pr _dateDeparture = GETV(_intel, "dateDeparture");
+				pr _dateNow = date;
+				pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+				pr _activeStr = "";
+				pr _futureEvent = true;
 				if (_numberDiff < 0) then {
 					_activeStr = "active ";
 					_numberDiff = -_numberDiff;
+					_futureEvent = false;
 				};
-				private _dateDiff = numberToDate [_dateNow#0, _numberDiff];
+				pr _dateDiff = numberToDate [_dateNow#0, _numberDiff];
 				_dateDiff params ["_y", "_m", "_d", "_h", "_m"];
 				
 				// Make a string representation of time difference
-				private _timeDiffStr = if (_h > 0) then {
+				pr _timeDiffStr = if (_h > 0) then {
 					format ["%1H, %2M", _h, _m]
 				} else {
 					format ["%1M", _m]
 				};
 
 				// Make a string representation of side
-				private _side = GETV(_intel, "side");
+				pr _side = GETV(_intel, "side");
 				_sideStr  = switch (_side) do {
 					case WEST: {"WEST"};
 					case EAST: {"EAST"};
@@ -786,121 +824,104 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					default {"ALIEN"};
 				};
 
-				private _rowStr = format ["%1 %2", _shortName, _activeStr];
+				pr _rowStr = format ["%1 %2", _shortName, _activeStr];
 				pr _rowData = [_sideStr, _rowStr, _timeDiffStr];
-				private _index = _lnb lnbAddRow _rowData;
-				_lnb lnbSetData [[_index, 0], _x];
+				pr _index = _lnb lnbAddRow _rowData;
+				_lnb lnbSetData [[_index, 0], _intel];
 
-				OOP_INFO_1("ADDED ROW: %1", _rowData);
+				// Set values for sorting
+				pr _valueSide = [WEST, EAST, INDEPENDENT] find _side; // Enumerate side
+				pr _valueType = [	"IntelCommanderActionReinforce",
+									"IntelCommanderActionBuild", "IntelCommanderActionAttack",
+									"IntelCommanderActionPatrol", "IntelCommanderActionRetreat",
+									"IntelCommanderActionRecon"] find _className; // Enumerate class name
+				pr _valueTime = _m + _h*60 + _d*24*60 + _m*30*24*60;
+				if (!_futureEvent) then {_valueTime = -_valueTime; };
+
+				_lnb lnbSetValue [[_index, 0], _valueSide];
+				_lnb lnbSetValue [[_index, 1], _valueType];
+				_lnb lnbSetValue [[_index, 2], _valueTime];
+
+				//OOP_INFO_1("ADDED ROW: %1", _rowData);
 			};
 		} forEach _allIntels;
 	} ENDMETHOD;
 
-	METHOD("intelPanelClear") {
-		params [P_THISOBJECT];
-		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
-		lnbClear _lnb;
-	} ENDMETHOD;
-
 	/*
-		Method: onLBSelChanged
+		Method: intelPanelOnSelChanged
 		Description: Called when the selection inside the listbox has changed.
 
 		Parameters: 
 		0: _control - Reference to the control which called this method
 	*/
-	STATIC_METHOD("onLBSelChanged") {
+	METHOD("intelPanelOnSelChanged") {
+		params [P_THISOBJECT, "_lnb"];
 
-		/*
-
-		params ["_thisClass", "_control"];
-
-		// Bail if a garrison is selected
-		if (T_GETV("garSelMenuEnabled")) exitWith {};
-
-		private _mapDisplay = findDisplay 12;
-		(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText (localize "STR_CMUI_INTEL_DEFAULT");
-		private _currentRow = lnbCurSelRow _control;
-
-		// Bail if current row is -1 - it means nothing is selected
-		if (_currentRow == -1) exitWith {
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Nothing is selected";
-		};
-
-		// Bail if we have selected a map marker (for now until we figure out what to do with the list box when we have selected a location)
-		pr _currentMapMarker = GET_STATIC_VAR("ClientMapUI", "currentMapMarker");
-		if (_currentMapMarker != "") exitWith {
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "What do we show here? What does it all mean?? Where am I???";
-		};
-
-		private _data = _control lnbData [_currentRow, 0];
-		private _className = GET_OBJECT_CLASS(_data);
-		private _actionName = "Unknown";
-		private _text = "";
-
-		// - - - - P A T R O L - - - -
-		// The Hell Patrol! https://www.youtube.com/watch?v=om0sp1Srixw
-		if (_className == "IntelCommanderActionPatrol") exitWith {
-
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "Enemy patrol route";
-
-			// Draw the route
-			pr _waypoints = +GETV(_data, "waypoints");
-			pr _args = [_waypoints,		// posArray
-						true,	// enable
-						true,	// cycle
-						false];	// drawSrcDest
-			CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
-		};
-
-
-
-		// - - - - - REINFORCE, ATTACK, RECON, BUILD - - - -
-		if (_className == "IntelCommanderActionReinforce") then { _actionName = "reinforce"; };
-		if (_className == "IntelCommanderActionBuild") then { _actionName = "build"; };
-		if (_className == "IntelCommanderActionRecon") then { _actionName = "recon"; };
-		if (_className == "IntelCommanderActionAttack") then { _actionName = "attack"; };
-
-		private _from = GETV(_data, "posSrc");
-		private _fromName = "Unknown";
-		private _to = GETV(_data, "posTgt");
-		private _toName = "Unknown";
-		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
-
-		// Find intel about locations close to _from or _to
-		{
-			private _className = GET_OBJECT_CLASS(_x);
-			if (_className == "IntelLocation") then {
-				private _pos = GETV(_x, "pos");
-				private _loc = GETV(_x, "location");
-
-				if (_from distance2D _pos < 10) then { _fromName = GETV(_loc, "name"); };
-				if (_to distance2D _pos < 10) then { _toName = GETV(_loc, "name"); };
+		// We only care if nothing is selected
+		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
+			pr _row = lnbCurSelRow _lnb;
+			if (_row >= 0) then {
+				pr _intel = _lnb lnbData [_row, 0];
+				// Make sure that's a valid intel piece
+				if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
+					// Hide all intel on the map, except for this one
+					T_CALLM1("mapShowAllIntel", false);
+					CALLM1(_intel, "showOnMap", true);
+				};
+			} else {
+				T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
 			};
-		} forEach _allIntels;
-
-		if (_fromName == "Unknown") then { _fromName = mapGridPosition _from; };
-		if (_toName == "Unknown") then { _toName = mapGridPosition _to; };
-
-		_text = format [
-			"%1 is going to %2 %3",
-			_fromName,
-			_actionName,
-			_toName
-		];
-
-		if (_actionName != "Unknown") then {
-			(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText _text;
 		};
 
-		// Draw the route
-		pr _args = [[_from, _to],		// posArray
-					true,	// enable
-					false,	// cycle
-					true];	// drawSrcDest
-		CALLSM("ClientMapUI", "drawRoute", _args); // "_posArray", "_enable", "_cycle", "_drawSrcDest"
-		*/
+	} ENDMETHOD;
 
+	// Hides or shows the sort-by-... buttons
+	METHOD("intelPanelShowButtons") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		// Show buttons
+		{
+			((findDisplay 12) displayCtrl _x) ctrlShow _show;
+		} forEach [	IDC_LOCP_LISTNBOX_BUTTONS_GROUP,
+					IDC_LOCP_LISTNBOX_BUTTONS_0,
+					IDC_LOCP_LISTNBOX_BUTTONS_1,
+					IDC_LOCP_LISTNBOX_BUTTONS_2];
+
+		// Hide panel behind it or whatever it is
+		{
+			((findDisplay 12) displayCtrl _x) ctrlShow !_show;
+		} forEach [IDC_LOCP_TABCAT];
+		
+	} ENDMETHOD;
+
+	METHOD("intelPanelSortIntel") {
+		params [P_THISOBJECT, P_STRING("_category"), P_BOOL("_inverse")];
+		pr _col = ["side", "type", "time"] find _category;
+		if (_col != -1) then {
+			pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+			pr _row = lnbCurSelRow _lnb;
+			if (_row != -1) then {
+				// Try to select the proper row after sorting again
+				pr _oldRowData = _lnb lnbData [_row, 0];
+				_lnb lnbSortByValue [_col, _inverse];
+				(lnbSize _lnb) params ["_nRows", "_nCols"];
+				for "_i" from 0 to (_nRows - 1) do {
+					if ((_lnb lnbData [_i, 0]) == _oldRowData) exitWith {
+						_lnb lnbSetCurSelRow _i;
+					};
+				};
+			}else { 
+				_lnb lnbSortByValue [_col, _inverse];
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("intelPanelOnSortButtonClick") {
+		params [P_THISOBJECT, P_STRING("_button")];
+		pr _inverse = !T_GETV("intelPanelSortInverse");
+		T_CALLM2("intelPanelSortIntel", _button, _inverse); // _button - "side", "type", "time"
+		T_SETV("intelPanelSortInverse", _inverse);
+		T_SETV("intelPanelSortCategory", _button);
 	} ENDMETHOD;
 
 /*                                                                                                        
@@ -1025,21 +1046,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		if (count _markersUnderCursor == 0) then {
 			// We are definitely not clicking on any map marker
-
-			// Disable the garrison action listbox
-			T_CALLM1("garActionMenuEnable", false);
-
-			// Disable the selected garrison menu
-			T_CALLM1("garSelMenuEnable", false);
-
-			// Deselect evereything
-			{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
-
-			// Clear the intel panel
-			//T_CALLM0("intelPanelClear");
-
-			// Fill the intel panel from intel
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM0("onMouseClickElsewhere");
 		} else {
 			// Hey we have clicked on something!
 
@@ -1066,34 +1073,91 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
 				T_CALLM3("intelPanelUpdateFromLocationIntel", _intel, true, false); // clear
 				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, false); // don't clear
+				T_CALLM1("intelPanelShowButtons", false);
 			} else {
 				// If one garrison was clicked, update the panel from its record
 				if (count _garrisonsUnderCursor == 1) then {
 					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
 					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, true); // clear
+					T_CALLM1("intelPanelShowButtons", false);
 				} else {
 					// If one location was clicked, update panel from the location intel
 					if (count _locationsUnderCursor == 1) then {
 						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
 						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, true); // clear
+						T_CALLM1("intelPanelShowButtons", false);
 					};
 				};
 			};
 		};
 
+		T_SETV("selectedGarrisonMarkers", _garrisonsUnderCursor);
+		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
 		T_CALLM0("updateHintTextFromContext");
 
 	} ENDMETHOD;
 
 
+	/*
+		Method: onMouseClickElsewhere
+		Description: Gets called when user clicks on the map not on a marker.
+	*/
+	METHOD("onMouseClickElsewhere") {
+		params [P_THISOBJECT];
 
+		// Disable the garrison action listbox
+		T_CALLM1("garActionMenuEnable", false);
 
+		// Disable the selected garrison menu
+		T_CALLM1("garSelMenuEnable", false);
 
+		// Deselect evereything
+		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
+		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
+		{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
 
+		// Clear the intel panel
+		//T_CALLM0("intelPanelClear");
 
+		// Fill the intel panel from intel
+		T_CALLM1("intelPanelUpdateFromIntel", true);
+		T_CALLM0("intelPanelDeselect");
+		T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
+		// Reset the map view
+		T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
 
+		// Show the buttons of the listbox
+		T_CALLM1("intelPanelShowButtons", true);
+	} ENDMETHOD;
 
+	METHOD("onIntelAdded") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+
+		// We only care if nothing is selected
+		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
+			// todo if we have something currently selected, we should select the old item, etc, etc, probably don't care much for that now ... 
+
+			// Fill the intel panel from intel
+			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM0("intelPanelDeselect");
+			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
+
+			// Reset the map view
+			T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
+		} else {
+			// Something must be selected
+			// So we want to check if drawing of all intel on the map is enabled or not
+			T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
+		};
+	} ENDMETHOD;
+
+	METHOD("onIntelRemoved") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+
+		// They are the same now
+		T_CALLM1("onIntelAdded", _intel);
+	} ENDMETHOD;
 
 
 	METHOD("onMouseButtonUp") {
@@ -1104,20 +1168,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	METHOD("onMouseButtonClick") {
 		params [P_THISOBJECT, "_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-	} ENDMETHOD;
-
-	/*
-	Method: onMapMarkerMouseButtonDown
-	Gets called when user clicks on a map marker
-
-	Parameters: _mapMarker, _intel
-
-	Returns: nil
-	*/
-	STATIC_METHOD("onMapMarkerMouseButtonDown") {
-		params ["_thisClass", ["_mapMarker", "", []], ["_intel", "", [""]]];
-
-		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", _mapMarker);
 	} ENDMETHOD;
 
 
@@ -1135,7 +1185,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	METHOD("onButtonClickShowIntel") {
 		params [P_THISOBJECT];
 
-		pr _checked = T_GETV("showIntelButtonChecked");
+		pr _checked = T_GETV("showAllIntel");
 		pr _ctrl = ((finddisplay 12) displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL);
 		if (_checked) then {
 			// Uncheck it
@@ -1148,7 +1198,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			_ctrl ctrlSetText "[X] Show intel";
 			T_CALLM1("mapShowAllIntel", true);
 		};
-		T_SETV("showIntelButtonChecked", !_checked);
+		T_SETV("showAllIntel", !_checked);
 	} ENDMETHOD;
 
 	METHOD("onButtonClickClearNotifications") {
@@ -1163,14 +1213,15 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		No parameters
 	*/
-	STATIC_METHOD("onMapOpen") {
-		params ["_thisClass"];
+	METHOD("onMapOpen") {
+		params [P_THISOBJECT];
 		pr _mapDisplay = findDisplay 12;
 
 		// Reset the map UI to default state
-		CALLSM0(_thisClass, "onMouseClickElsewhere");
+		T_CALLM0("onMouseClickElsewhere");
 
 		// Check if current player position is valid position to create a Camp
+		// todo refactor that
 		pr _isPosAllowed = call {
 			pr _allLocations = GETSV("Location", "all");
 			_isPosAllowed = true;
@@ -1195,9 +1246,11 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		};
 	} ENDMETHOD;
 
+	// Not used now
 	STATIC_METHOD("onButtonDownAddFriendlyGroup") {
 		params ["_thisClass", "_control"];
 
+		/*
 		pr _mapDisplay = findDisplay 12;
 
 		// Get currently selected marker
@@ -1216,6 +1269,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc ARG 5]);
 
 		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText "A friendly group has been added to the location!";
+		*/
 	} ENDMETHOD;
 
 
@@ -1250,21 +1304,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	} ENDMETHOD;
 
 	/*
-		Method: onMouseClickElsewhere
-		Description: Gets called when user clicks on the map not on a marker.
-	*/
-	STATIC_METHOD("onMouseClickElsewhere") {
-
-		// Reset the current marker variable
-		SET_STATIC_VAR("ClientMapUI", "currentMapMarker", "");
-
-		// change location panel headline
-		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
-		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
-	} ENDMETHOD;
-
-	/*
-		Method: onMouseClickElsewhere
+		Method: onMouseDraw
 		Description: Gets called each frame if map is open and being redrawn.
 	*/
 	METHOD("onMapDraw") {
@@ -1326,7 +1366,5 @@ Gets called from "onMapDraw"
 
 ENDCLASS;
 
-SET_STATIC_VAR(CLASS_NAME, "currentMapMarker", "");
 SET_STATIC_VAR(CLASS_NAME, "campAllowed", true);
-SET_STATIC_VAR(CLASS_NAME, "routeMarkers", []);
 PUBLIC_STATIC_VAR(CLASS_NAME, "campAllowed");

@@ -73,6 +73,15 @@ class CMUI_LOCP_TAB_TXT : MUI_BASE
     colorBackground[] = MUIC_BLACK;	
 };
 
+class CMUI_LOCP_HEADLINE_GROUP : MUI_GROUP
+{
+    idc = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
+    x = safeZoneX + safeZoneW * 0.87;
+    y = safeZoneY + safeZoneH * 0.135;
+    w = safeZoneW * 0.126;
+    h = safeZoneH * 0.03;
+};
+
 class CMUI_LOCP_LISTBOXBG : MUI_BASE 
 {
     idc = IDC_LOCP_LISTBOXBG;
@@ -84,6 +93,7 @@ class CMUI_LOCP_LISTBOXBG : MUI_BASE
     colorText[] = MUIC_TRANSPARENT;
     text = "";
 };
+
 class CMUI_LOCP_LISTBOX : MUI_LISTNBOX 
 {
     idc = IDC_LOCP_LISTNBOX;

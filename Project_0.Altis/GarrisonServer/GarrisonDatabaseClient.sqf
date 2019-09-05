@@ -40,6 +40,8 @@ CLASS("GarrisonDatabaseClient", "")
 	METHOD("addGarrisonRecord") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
 
+		OOP_INFO_1("ADD GARRISON RECORD: %1", _garRecord);
+
 		// Add the garrison reference to the hashmap
 		pr _hm = T_GETV("hm");
 		pr _garRef = GETV(_garRecord, "garRef");
@@ -53,6 +55,8 @@ CLASS("GarrisonDatabaseClient", "")
 
 	METHOD("deleteGarrisonRecord") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord")];
+
+		OOP_INFO_1("DELETE GARRISON RECORD: %1", _garRecord);
 
 		// Remove it from the hashmap
 		pr _hm = T_GETV("hm");
@@ -105,6 +109,7 @@ CLASS("GarrisonDatabaseClient", "")
 
 	STATIC_METHOD("destroy") {
 		params [P_THISCLASS, P_STRING("_garRef")];
+		_thisClass = "GarrisonDatabaseClient";
 
 		OOP_INFO_1("DESTROY: %1", _garRef);
 
@@ -125,6 +130,7 @@ CLASS("GarrisonDatabaseClient", "")
 	// Receives a serialized GarrisonRecord from the GarrisonServer
 	STATIC_METHOD("update") {
 		params [P_THISCLASS, P_ARRAY("_recordSerial")];
+		_thisClass = "GarrisonDatabaseClient";
 
 		OOP_INFO_1("UPDATE: %1", _recordSerial);
 

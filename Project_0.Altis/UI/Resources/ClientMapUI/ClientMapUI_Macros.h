@@ -31,6 +31,14 @@
 //location panel, text field
 #define IDC_LOCP_DETAILTXT 4010
 
+//Group panel located atop of the headline
+#define IDC_LOCP_LISTNBOX_BUTTONS_GROUP 4011
+
+// Buttons insde the group above ^, they are created dynamicly with fn_createButtonsInGroup
+#define IDC_LOCP_LISTNBOX_BUTTONS_0 4012
+#define IDC_LOCP_LISTNBOX_BUTTONS_1 4012
+#define IDC_LOCP_LISTNBOX_BUTTONS_2 4012
+
 //bottom panel, black transparent background 
 #define IDC_BPANEL_BG 6001
 

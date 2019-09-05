@@ -440,15 +440,15 @@ CLASS("IntelCommanderAction", "Intel")
 		// Hint
 		hint format ["Added intel: %1", _thisObject];
 
-		// Show on map
-		//T_CALLM1("showOnMap", true);
+		// Notify ClientMapUI
+		CALLM1(gClientMapUI, "onIntelAdded", _thisObject);
 	} ENDMETHOD;
 
 	/* virtual override */ METHOD("clientRemove") {
 		params [P_THISOBJECT];
 
-		// Delete map markers
-		//T_CALLM1("showOnMap", false);
+		// Notify ClientMapUI
+		CALLM1(gClientMapUI, "onIntelRemoved", _thisObject);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
