@@ -135,12 +135,21 @@ CLASS("PlayerDatabaseServer", "DoubleKeyHashmap")
 		} else {
 			// Generic users have no permissions by default
 			[
+				/*
 				[PDB_KEY_ALLOW_COMMAND_GARRISONS,	false],
 				[PDB_KEY_ALLOW_CREATE_CAMPS,		false],
 				[PDB_KEY_ALLOW_BUILD_OBJECTS,		false],
 				[PDB_KEY_ALLOW_CHANGE_PERMISSIONS, 	false],
 				[PDB_KEY_ALLOW_KICK,				false],
 				[PDB_KEY_ALLOW_BAN,					false]
+				*/
+
+				[PDB_KEY_ALLOW_COMMAND_GARRISONS,	true],
+				[PDB_KEY_ALLOW_CREATE_CAMPS,		true],
+				[PDB_KEY_ALLOW_BUILD_OBJECTS,		true],
+				[PDB_KEY_ALLOW_CHANGE_PERMISSIONS, 	true],
+				[PDB_KEY_ALLOW_KICK,				true],
+				[PDB_KEY_ALLOW_BAN,					true]
 			]
 		};
 

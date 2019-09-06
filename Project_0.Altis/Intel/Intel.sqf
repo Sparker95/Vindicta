@@ -368,7 +368,6 @@ CLASS("IntelCommanderAction", "Intel")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
-		T_SETV("shownOnMap", false);
 	} ENDMETHOD;
 
 	/* 
@@ -464,6 +463,9 @@ CLASS("IntelCommanderAction", "Intel")
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		OOP_INFO_1("SHOW ON MAP: %1", _show);
+
+		// Variable might be not initialized
+		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
 
 		if (_show) then {
 			if(!T_GETV("shownOnMap")) then {
@@ -593,6 +595,9 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	*/
 	/* virtual override */ METHOD("showOnMap") {
 		params [P_THISOBJECT, P_BOOL("_show")];
+
+		// Variable might be not initialized
+		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
 
 		if (_show) then {
 			if(!T_GETV("shownOnMap")) then {
