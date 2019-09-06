@@ -225,7 +225,7 @@ CLASS("IntelDatabase", "")
 	*/
 	METHOD("removeIntelForClone") {
 		CRITICAL_SECTION {
-			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+			params [P_THISOBJECT, P_OOP_OBJECT("_item"), P_OOP_OBJECT("_itemClone")];
 
 			pr _dbEntry = GETV(_item, "dbEntry");
 			ASSERT_OBJECT(_dbEntry);

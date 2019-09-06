@@ -81,9 +81,23 @@ CLASS("CmdrAction", "RefCounted")
 			};
 		} foreach +_garrisons;
 
-		T_PRVAR(intel);
-		if(!IS_NULL_OBJECT(_intel)) then {
-			DELETE(_intel);
+		private _intelClone = T_GETV("intel"); // We have a clone of intel
+		if(!IS_NULL_OBJECT(_intelClone)) then {
+
+			// If db is valid then we can directly remove our matching intel entry from it.
+			private _db = GETV(_intelClone, "db");
+			if(!isNil "_db") then {
+				private _dbEntry = GETV(_intelClone, "dbEntry");
+				ASSERT_MSG(_dbEntry != _intelClone, "Circular reference in Intel!");
+
+				OOP_INFO_MSG("cleaning up intel object from db", []);
+				CALLM(_db, "removeIntelForClone", [_intelClone]);
+				CALLSM1("AICommander", "unregisterIntelCommanderAction", _intelClone);
+				DELETE(_dbEntry);
+				OOP_INFO_MSG("cleaned up intel object from db", []);
+			};
+
+			DELETE(_intelClone);
 		};
 	} ENDMETHOD;
 

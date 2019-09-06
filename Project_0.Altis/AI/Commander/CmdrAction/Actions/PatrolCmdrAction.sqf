@@ -287,7 +287,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 			// Reveal it to player side
 			if (random 100 < 70) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", T_GETV("intel"));
+				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
 		} else {
 			CALLM(_intel, "updateInDb", []);

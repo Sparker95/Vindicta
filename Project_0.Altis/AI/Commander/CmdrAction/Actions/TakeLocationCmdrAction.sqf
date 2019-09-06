@@ -78,7 +78,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 			// Reveal it to player side
 			if (random 100 < 80) then {
-				CALLSM1("AICommander", "revealIntelToPlayerSide", T_GETV("intel"));
+				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);

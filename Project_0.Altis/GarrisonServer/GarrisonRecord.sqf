@@ -139,6 +139,14 @@ CLASS("GarrisonRecord", "")
 		};
 	} ENDMETHOD;
 
+	METHOD("_removeActionMapMarkers") {
+		params [P_THISOBJECT];
+		pr _mrkLine = _thisObject + __MRK_LINE;
+		pr _mrkEnd = _thisObject + __MRK_END;
+		deleteMarkerLocal _mrkLine;
+		deleteMarkerLocal _mrkEnd;
+	} ENDMETHOD;
+
 
 
 	// Initializes this object on the client side 
@@ -224,6 +232,9 @@ CLASS("GarrisonRecord", "")
 		// Delete the map marker
 		pr _mapMarker = T_GETV("mapMarker");
 		DELETE(_mapMarker);
+
+		// Clear up the map markers
+		T_CALLM0("_removeActionMapMarkers");
 
 		// Delete the action record
 		pr _actionRecord = T_GETV("cmdrActionRecord");

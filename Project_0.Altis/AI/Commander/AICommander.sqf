@@ -885,7 +885,33 @@ CLASS("AICommander", "AI")
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 
 		T_PRVAR(intelDB);
-		CALLM(_intelDB, "addIntelClone", [_intel])
+		private _intelClone = CALLM(_intelDB, "addIntelClone", [_intel]);
+		_intelClone
+	} ENDMETHOD;
+
+	/*
+	Method: removeIntelCommanderAction
+	
+	*/
+	STATIC_METHOD("unregisterIntelCommanderAction") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
+		private _side = GETV(_intel, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		// Notify enemy commanders that this intel has been destroyed
+		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
+		{
+			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+			private _db = GETV(_AI, "intelDB");
+			// Check if this DB has an intel which has _intel as source
+			private _intelInDB = CALLM1(_db, "getIntelFromSource", _intel);
+			if (!IS_NULL_OBJECT(_intelInDB)) then {
+				// Remove intel from source directly
+				// We can do this without caring about thread safety because intelDB operations are atomic and thread safe
+				CALLM1(_db, "removeIntel", _intelInDB);
+				DELETE(_intelInDB);
+			};
+		} forEach _enemySides;
 	} ENDMETHOD;
 
 	// Temporary function that adds infantry to some location
