@@ -174,7 +174,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-		T_CALLM("plan", [_worldModel]);
+		//T_CALLM("plan", [_worldModel]);
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -1037,6 +1037,23 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Don't waste time, update the action ASAP!
 		CALLM1(_action, "update", _worldModel);
+	} ENDMETHOD;
+
+	// Gets called from client to cancel the current order this garrison is doing
+	METHOD("cancelCurrentAction") {
+		params [P_THISOBJECT, P_STRING("_garRef") ];
+
+		ASSERT_THREAD(_thisObject); // Respect my threading!
+
+		// Get the garrison model associated with this _garRef
+		T_PRVAR(worldModel);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		if (IS_NULL_OBJECT(_garModel)) exitWith {
+			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
+		};
+
+		// Cancel previously given action
+		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
 	} ENDMETHOD;
 
 

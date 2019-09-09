@@ -656,7 +656,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 				};
 			};
 			case "cancelOrder" : {
-
+				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				// Although it's on another machine, messageReceiver class will route the message for us
+				pr _garRef = CALLM0(_garRecord, "getGarrison");
+				pr _args = [_garRef];
+				CALLM2(_AI, "postMethodAsync", "cancelCurrentAction", [_garRef]);
+				systemChat "Cancelling the current order of the garrison";
 			};
 			default {
 				// Do nothing
