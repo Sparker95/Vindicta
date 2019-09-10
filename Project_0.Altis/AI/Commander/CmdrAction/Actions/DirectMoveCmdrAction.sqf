@@ -2,13 +2,13 @@
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.MoveCmdrAction
-A simple action to move a garrison.
+Action to make an already existing garrison move somewhere.
 Not really meant for simulations for now.
 
 Parent: <CmdrAction>
 */
 
-CLASS("MoveCmdrAction", "CmdrAction")
+CLASS("DirectMoveCmdrAction", "CmdrAction")
 
 	// ID of the garrison
 	VARIABLE("garrId");

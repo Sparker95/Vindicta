@@ -167,15 +167,15 @@ CLASS(CLASS_NAME, "")
 		pr _bg = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX_BG", IDC_GCOM_ACTION_MENU_GROUP]; // Background
 		T_CALLM1("garActionMenuEnable", false);
 
-		((findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_BUTTON_MOVE) ctrlAddEventHandler ["ButtonClick", {
-			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garActionLBOnButtonClick", "move");
-		}];
-		((findDisplay 12) displayCtrl IDC_GCOM_ACTION_MENU_BUTTON_CLOSE) ctrlAddEventHandler ["ButtonClick", {
-			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garActionLBOnButtonClick", "close");
-		}];
-
+		{
+			_x params ["_idc", "_button"];
+			((findDisplay 12) displayCtrl _idc) ctrlAddEventHandler ["ButtonClick", {
+				_thisObject = gClientMapUI;
+				CALLM1(_thisObject, "garActionLBOnButtonClick", _button);
+			}];
+		} forEach [	[IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move"],
+					[IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "reinforce"],
+					[IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close"]];
 
 		// = = = = = = = = = = = = = = = Create the selected garrison menu = = = = = = = = = = = 
 		// It appears when we have selected a garrison
@@ -183,22 +183,16 @@ CLASS(CLASS_NAME, "")
 		ctrlDelete ((findDisplay 12) displayCtrl IDC_GSELECT_GROUP);
 		(findDisplay 12) ctrlCreate ["CMUI_GSELECTED_MENU", IDC_GSELECT_GROUP];
 		T_CALLM1("garSelMenuEnable", false);
-		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_SPLIT) ctrlAddEventHandler ["ButtonClick", {
-			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garSelMenuOnButtonClick", "split");
-		}];
-		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_GIVE_ORDER) ctrlAddEventHandler ["ButtonClick", {
-			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garSelMenuOnButtonClick", "order");
-		}];
-		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_CANCEL_ORDER) ctrlAddEventHandler ["ButtonClick", {
-			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garSelMenuOnButtonClick", "cancelOrder");
-		}];
-		((findDisplay 12) displayCtrl IDC_GSELECT_BUTTON_MERGE) ctrlAddEventHandler ["ButtonClick", {
-			_thisObject = gClientMapUI;
-			CALLM1(_thisObject, "garSelMenuOnButtonClick", "merge");
-		}];
+		{
+			_x params ["_idc", "_button"];
+			((findDisplay 12) displayCtrl _idc) ctrlAddEventHandler ["ButtonClick", {
+				_thisObject = gClientMapUI;
+				CALLM1(_thisObject, "garActionLBOnButtonClick", _button);
+			}];
+		} forEach [	[IDC_GSELECT_BUTTON_SPLIT, "split"],
+					[IDC_GSELECT_BUTTON_GIVE_ORDER, "order"],
+					[IDC_GSELECT_BUTTON_CANCEL_ORDER, "cancelOrder"],
+					[IDC_GSELECT_BUTTON_MERGE, "merge"]];
 		
 		// = = = = = = = = = = = = = = = Create the listbox buttons = = = = = = = = = = = = = = =
 		pr _ctrlGroup = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP; 
@@ -459,6 +453,45 @@ Methods for the action listbox appears when we click on something to send some g
 
 		T_SETV("garActionLBShown", _enable);
 
+		if (_enable) then {
+			// Enable or disable certain action buttons depending on the selected target
+			pr _idcs = [
+							IDC_GCOM_ACTION_MENU_BUTTON_MOVE,
+							IDC_GCOM_ACTION_MENU_BUTTON_ATTACK,
+							IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE,
+							IDC_GCOM_ACTION_MENU_BUTTON_PATROL
+						];
+			pr _enBools = switch (T_GETV("garActionTargetType")) do {
+				case TARGET_TYPE_GARRISON: {
+					[	true,
+						false,
+						true,
+						false]
+				};
+				case TARGET_TYPE_LOCATION: {
+					[	true,
+						true,
+						true,
+						false]
+				};
+				case TARGET_TYPE_POSITION: {
+					[	true,
+						true,
+						false,
+						false]
+				};
+				default {
+					[	false,
+						false,
+						false,
+						false]
+				};
+			};
+			{
+				((finddisplay 12) displayCtrl (_idcs#_foreachindex)) ctrlEnable _x;
+			} forEach _enBools;
+		};
+
 		T_CALLM0("updateHintTextFromContext");
 	} ENDMETHOD;
 
@@ -501,9 +534,12 @@ Methods for the action listbox appears when we click on something to send some g
 				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
 				systemChat "This garrison order is not yet implemented";
 			};
-			case "join" : {
-				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
-				systemChat "This garrison order is not yet implemented";
+			case "reinforce" : {
+				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				// Although it's on another machine, messageReceiver class will route the message for us
+				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
+				CALLM2(_AI, "postMethodAsync", "createReinforceAction", _args);
+				systemChat "Giving a REINFORCE order to garrison";
 			};
 			case "patrol" : {
 				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
@@ -1056,11 +1092,12 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 				// Enable the garrison action listbox
 				T_CALLM1("garActionMenuSetPos", _targetPos);
-				T_CALLM1("garActionMenuEnable", true);
 				// Store the garrison and target variables
 				T_SETV("garActionGarRef", _gar);
 				T_SETV("garActionTargetType", _targetType);
 				T_SETV("garActionTarget", _target);
+				// Enable the menu
+				T_CALLM1("garActionMenuEnable", true);
 			};
 		};
 

@@ -1032,7 +1032,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Create a new action
 		pr _cmdrTarget = [_targetType, _targetOut]; // must be ID of garrison/location or a [x,y,z] array
 		pr _args = [GETV(_garModel, "id"), _cmdrTarget, 150]; // id, target, radius
-		pr _action = NEW("MoveCmdrAction", _args);
+		pr _action = NEW("DirectMoveCmdrAction", _args);
 		T_GETV("activeActions") pushBack _action;
 
 		// Don't waste time, update the action ASAP!

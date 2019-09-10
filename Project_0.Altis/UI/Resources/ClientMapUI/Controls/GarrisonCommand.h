@@ -26,7 +26,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 0*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Move";			
+			text = "Move";
 		};
 		class BUTTON_ATTACK : MUI_BUTTON_TXT 
 		{
@@ -35,16 +35,16 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 1*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Attack (NYI)";			
+			text = "Attack (NYI)";
 		};
-        class BUTTON_JOIN : MUI_BUTTON_TXT 
+        class BUTTON_REINFORCE : MUI_BUTTON_TXT 
 		{
-			idc = IDC_GCOM_ACTION_MENU_BUTTON_JOIN;
+			idc = IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE;
 			x = 0;
 			y = 2*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Join (NYI)";			
+			text = "Reinforce";
 		};
         class BUTTON_PATROL : MUI_BUTTON_TXT 
 		{
@@ -53,7 +53,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 3*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Patrol (NYI)";			
+			text = "Patrol (NYI)";
 		};
         class BUTTON_CLOSE : MUI_BUTTON_TXT 
 		{
@@ -62,7 +62,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 4*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "< Cancel >";	
+			text = "< Cancel >";
 		};	
 	};
 };
