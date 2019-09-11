@@ -49,7 +49,7 @@ if(hasInterface)then{
 
     //add arsenal button
     _id = _object addaction [
-        "",
+		(format ["<img image='%1' size='2' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL] + format["<t size='1.4'>   %1</t>", STR_ACTION_TEXT_ARSENAL]),
         {
             pr _object = _this select 0;
 
@@ -114,11 +114,11 @@ if(hasInterface)then{
         "",
         "alive _target && {_target distance _this < 5} && {vehicle player == player}"
     ];
-	ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL, STR_ACTION_ICON_ARSENAL);
+	//ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL, STR_ACTION_ICON_ARSENAL);
 
     //add vehicle/box filling button
     _id = _object addaction [
-		"",
+		(format ["<img image='%1' size='2' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_CONTAINER] + format["<t size='1.4'>   %1</t>", STR_ACTION_TEXT_ARSENAL_CONTAINER]),
         {
 			pr _object = _this select 0;
 			
@@ -202,11 +202,11 @@ if(hasInterface)then{
         "alive _target && {_target distance _this < 5} && {vehicle player == player}"
 			
     ];
-	ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_CONTAINER, STR_ACTION_ICON_ARSENAL_CONTAINER);
+	//ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_CONTAINER, STR_ACTION_ICON_ARSENAL_CONTAINER);
 	
 	//add Action to unload object
     _id = _object addaction [
-		"",
+		(format ["<img image='%1' size='2' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_UNLOAD] + format["<t size='1.4'>   %1</t>", STR_ACTION_TEXT_ARSENAL_UNLOAD]),
         {
 			pr _object = _this select 0;
 			
@@ -262,7 +262,7 @@ if(hasInterface)then{
         "alive _target && {_target distance _this < 5} && {vehicle player == player}"
 			
     ];
-	ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_UNLOAD, STR_ACTION_ICON_ARSENAL_UNLOAD);
+	//ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_UNLOAD, STR_ACTION_ICON_ARSENAL_UNLOAD);
 		
 
     if(missionNamespace getVariable ["jna_first_init",true])then{
