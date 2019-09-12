@@ -167,15 +167,15 @@ CLASS(CLASS_NAME, "")
 		pr _bg = ((finddisplay 12)) ctrlCreate ["CMUI_GCOM_ACTION_LISTBOX_BG", IDC_GCOM_ACTION_MENU_GROUP]; // Background
 		T_CALLM1("garActionMenuEnable", false);
 
-		{
-			_x params ["_idc", "_button"];
-			((findDisplay 12) displayCtrl _idc) ctrlAddEventHandler ["ButtonClick", {
-				_thisObject = gClientMapUI;
-				CALLM1(_thisObject, "garActionLBOnButtonClick", _button);
-			}];
-		} forEach [	[IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move"],
-					[IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "reinforce"],
-					[IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close"]];
+		// Just a macro to give event handlers to buttons cause I'm LZ AF
+		#define __GAR_ACTION_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
+				_thisObject = gClientMapUI; \
+				CALLM1(_thisObject, "garActionLBOnButtonClick", buttonStr); \
+			}]
+
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "reinforce");
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close");
 
 		// = = = = = = = = = = = = = = = Create the selected garrison menu = = = = = = = = = = = 
 		// It appears when we have selected a garrison
@@ -183,16 +183,17 @@ CLASS(CLASS_NAME, "")
 		ctrlDelete ((findDisplay 12) displayCtrl IDC_GSELECT_GROUP);
 		(findDisplay 12) ctrlCreate ["CMUI_GSELECTED_MENU", IDC_GSELECT_GROUP];
 		T_CALLM1("garSelMenuEnable", false);
-		{
-			_x params ["_idc", "_button"];
-			((findDisplay 12) displayCtrl _idc) ctrlAddEventHandler ["ButtonClick", {
-				_thisObject = gClientMapUI;
-				CALLM1(_thisObject, "garActionLBOnButtonClick", _button);
-			}];
-		} forEach [	[IDC_GSELECT_BUTTON_SPLIT, "split"],
-					[IDC_GSELECT_BUTTON_GIVE_ORDER, "order"],
-					[IDC_GSELECT_BUTTON_CANCEL_ORDER, "cancelOrder"],
-					[IDC_GSELECT_BUTTON_MERGE, "merge"]];
+
+		// Another lazy macro to give event handlers to buttons
+		#define __GAR_SELECT_BUTTON_CLICK_EH(idc, buttonStr) ((findDisplay 12) displayCtrl idc) ctrlAddEventHandler ["ButtonClick", { \
+				_thisObject = gClientMapUI; \
+				CALLM1(_thisObject, "garSelMenuOnButtonClick", buttonStr); \
+			}]
+
+		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_SPLIT, "split");
+		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_GIVE_ORDER, "order");
+		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_CANCEL_ORDER, "cancelOrder");
+		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_MERGE, "merge");
 		
 		// = = = = = = = = = = = = = = = Create the listbox buttons = = = = = = = = = = = = = = =
 		pr _ctrlGroup = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP; 
@@ -527,7 +528,7 @@ Methods for the action listbox appears when we click on something to send some g
 				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
-				CALLM2(_AI, "postMethodAsync", "createMoveAction", _args);
+				CALLM2(_AI, "postMethodAsync", "clientCreateMoveAction", _args);
 				systemChat "Giving a MOVE order to garrison";
 			};
 			case "attack" : {
@@ -538,7 +539,7 @@ Methods for the action listbox appears when we click on something to send some g
 				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
-				CALLM2(_AI, "postMethodAsync", "createReinforceAction", _args);
+				CALLM2(_AI, "postMethodAsync", "clientCreateReinforceAction", _args);
 				systemChat "Giving a REINFORCE order to garrison";
 			};
 			case "patrol" : {

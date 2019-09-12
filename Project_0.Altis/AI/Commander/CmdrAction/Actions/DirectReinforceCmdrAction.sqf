@@ -70,7 +70,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 				_targetVar]; 						// Target to merge to (garrison or location is valid)
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
-		[_assignAST, _moveAST]
+		[_assignAST, _moveAST, _mergeAST]
 	} ENDMETHOD;
 
 	/*

@@ -960,21 +960,22 @@ Methods for player commander to create new actions for garrisons
 http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 */
 
+	/*
+	Method: resolveTarget
+	Returns a <CmdrAITarget>
 
-	// Call it through postMethodAsync !
-	METHOD("createMoveAction") {
-		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+	Parameters: _targetType, _target
 
-		ASSERT_THREAD(_thisObject); // Respect my threading!
+	_targetType - one of <AI.​CmdrAI.​CmdrAITarget.TARGET_TYPE>
+	_target - position, garrison ref, location ref
 
-		// Get the garrison model associated with this _garRef
+	Returns: [TARGET_TYPE_POSITION, _pos], [TARGET_TYPE_LOCATION, _locID], [TARGET_TYPE_GARRISON, _garrID]
+	*/
+	METHOD("resolveTarget") {
+		params [P_THISOBJECT, P_NUMBER("_targetType"), ["_target", [], [[], ""] ]];
+
 		T_PRVAR(worldModel);
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
-		if (IS_NULL_OBJECT(_garModel)) exitWith {
-			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
-		};
 
-		// Resolve the destination position
 		pr _allResolved = true;
 		pr _targetOut = switch (_targetType) do {
 			case TARGET_TYPE_GARRISON: {
@@ -1019,8 +1020,32 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			};
 		};
 
+		if (_allResolved) then {
+			[_targetType, _targetOut]
+		} else {
+			[]
+		};
+
+	} ENDMETHOD;
+
+	// Call it through postMethodAsync !
+	METHOD("clientCreateMoveAction") {
+		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+
+		ASSERT_THREAD(_thisObject); // Respect my threading!
+
+		// Get the garrison model associated with this _garRef
+		T_PRVAR(worldModel);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		if (IS_NULL_OBJECT(_garModel)) exitWith {
+			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
+		};
+
+		// Resolve the destination position
+		pr _cmdrTarget = T_CALLM2("resolveTarget", _targetType, _target);
+
 		// Bail if we couldn't resolve something
-		if (!_allResolved) exitWith {
+		if (_cmdrTarget isEqualTo []) exitWith {
 			OOP_ERROR_1("Couldn't resolve target: %1", _this);
 		};
 
@@ -1030,9 +1055,42 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
 
 		// Create a new action
-		pr _cmdrTarget = [_targetType, _targetOut]; // must be ID of garrison/location or a [x,y,z] array
 		pr _args = [GETV(_garModel, "id"), _cmdrTarget, 150]; // id, target, radius
 		pr _action = NEW("DirectMoveCmdrAction", _args);
+		T_GETV("activeActions") pushBack _action;
+
+		// Don't waste time, update the action ASAP!
+		CALLM1(_action, "update", _worldModel);
+	} ENDMETHOD;
+
+	METHOD("clientCreateReinforceAction") {
+		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+
+		ASSERT_THREAD(_thisObject); // Respect my threading!
+
+		// Get the garrison model associated with this _garRef
+		T_PRVAR(worldModel);
+		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
+		if (IS_NULL_OBJECT(_garModel)) exitWith {
+			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
+		};
+
+		// Resolve the destination position
+		pr _cmdrTarget = T_CALLM2("resolveTarget", _targetType, _target);
+
+		// Bail if we couldn't resolve something
+		if (_cmdrTarget isEqualTo []) exitWith {
+			OOP_ERROR_1("Couldn't resolve target: %1", _this);
+		};
+
+		// So far all parameters are good, let's go on ...
+
+		// Cancel previously given action
+		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
+
+		// Create a new action
+		pr _args = [GETV(_garModel, "id"), _cmdrTarget]; // id, target, radius
+		pr _action = NEW("DirectReinforceCmdrAction", _args);
 		T_GETV("activeActions") pushBack _action;
 
 		// Don't waste time, update the action ASAP!
