@@ -328,10 +328,9 @@ CLASS("AICommander", "AI")
 
 					if (!(_serialOld isEqualTo _serialNew)) then {
 						CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
-
-						// Delete the intel object that we have created temporary
-						DELETE(_intel);
 					};
+					// Delete the intel object that we have created temporary
+					DELETE(_intel);
 				};
 			};
 		} else {
@@ -357,14 +356,19 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 	
 	// Creates a LocationData array from Location
-	STATIC_METHOD("createIntelFromLocation") {
+	METHOD("createIntelFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
 		
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 		
-		pr _gar = CALLM0(_loc, "getGarrisons") select 0;
-		if (isNil "_gar") then {
-			_gar = "";
+		// Try to find friendly garrisons there first
+		// Otherwise try to find any garrisons there
+		pr _garFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side"));
+		pr _gar = if (count _garFriendly != 0) then {
+			_garFriendly#0
+		} else {
+			pr _allGars = CALLM0(_loc, "getGarrisons");
+			if (count _allGars != 0) then { _allGars#0 } else { "" };
 		};
 		
 		pr _value = NEW("IntelLocation", []);
@@ -1034,39 +1038,28 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
 
-		// Get the garrison model associated with this _garRef
-		T_PRVAR(worldModel);
-		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
-		if (IS_NULL_OBJECT(_garModel)) exitWith {
-			OOP_ERROR_1("createMoveAction: No model of garrison %1", _garRef);
-		};
-
-		// Resolve the destination position
-		pr _cmdrTarget = T_CALLM2("resolveTarget", _targetType, _target);
-
-		// Bail if we couldn't resolve something
-		if (_cmdrTarget isEqualTo []) exitWith {
-			OOP_ERROR_1("Couldn't resolve target: %1", _this);
-		};
-
-		// So far all parameters are good, let's go on ...
-
-		// Cancel previously given action
-		T_CALLM1("clearAndCancelGarrisonAction", _garModel);
-
-		// Create a new action
-		pr _args = [GETV(_garModel, "id"), _cmdrTarget, 150]; // id, target, radius
-		pr _action = NEW("DirectMoveCmdrAction", _args);
-		T_GETV("activeActions") pushBack _action;
-
-		// Don't waste time, update the action ASAP!
-		CALLM1(_action, "update", _worldModel);
+		T_CALLM4("_clientCreateGarrisonAction", _garRef, _targetType, _target, "DirectMoveCmdrAction");
 	} ENDMETHOD;
 
 	METHOD("clientCreateReinforceAction") {
 		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
 
 		ASSERT_THREAD(_thisObject); // Respect my threading!
+
+		T_CALLM4("_clientCreateGarrisonAction", _garRef, _targetType, _target, "DirectReinforceCmdrAction");
+	} ENDMETHOD;
+
+	METHOD("clientCreateAttackAction") {
+		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ] ];
+
+		ASSERT_THREAD(_thisObject); // Respect my threading!
+
+		T_CALLM4("_clientCreateGarrisonAction", _garRef, _targetType, _target, "DirectAttackCmdrAction");
+	} ENDMETHOD;
+
+	// Thread unsafe, private
+	METHOD("_clientCreateGarrisonAction") {
+		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
 
 		// Get the garrison model associated with this _garRef
 		T_PRVAR(worldModel);
@@ -1090,7 +1083,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Create a new action
 		pr _args = [GETV(_garModel, "id"), _cmdrTarget]; // id, target, radius
-		pr _action = NEW("DirectReinforceCmdrAction", _args);
+		pr _action = NEW(_actionName, _args);
 		T_GETV("activeActions") pushBack _action;
 
 		// Don't waste time, update the action ASAP!

@@ -174,6 +174,7 @@ CLASS(CLASS_NAME, "")
 			}]
 
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_ATTACK, "attack");
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "reinforce");
 		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close");
 
@@ -532,8 +533,11 @@ Methods for the action listbox appears when we click on something to send some g
 				systemChat "Giving a MOVE order to garrison";
 			};
 			case "attack" : {
-				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
-				systemChat "This garrison order is not yet implemented";
+				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				// Although it's on another machine, messageReceiver class will route the message for us
+				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
+				CALLM2(_AI, "postMethodAsync", "clientCreateAttackAction", _args);
+				systemChat "Giving an ATTACK order to garrison";
 			};
 			case "reinforce" : {
 				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);

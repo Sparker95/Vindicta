@@ -26,7 +26,8 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			idc = IDC_GSELECT_BUTTON_SPLIT;
 			x = 0;
 			y = 0*__ROW_HEIGHT;
-			w = __MENU_WIDTH/2 + __DELTA;
+			//w = __MENU_WIDTH/2 + __DELTA;
+			w = __MENU_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
 			//text = "<-\\-> Split";
 			text = "Split";			
@@ -45,6 +46,8 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			
 		};
 		*/
+
+		/*
 		class BUTTON_MERGE : MUI_BUTTON_TXT 
 		{
 			type = 1;
@@ -55,7 +58,7 @@ class CMUI_GSELECTED_MENU : MUI_GROUP
 			h = __ROW_HEIGHT + __DELTA;
 			//text = "->\<-Merge";	
 			text = "Merge";
-		};
+		};*/
 		
 		class BUTTON_ORDER : MUI_BUTTON_TXT 
 		{

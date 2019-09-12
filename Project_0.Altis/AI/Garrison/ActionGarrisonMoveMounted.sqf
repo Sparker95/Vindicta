@@ -152,6 +152,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					pr _garPos = CALLM0(_AI, "getPos");
 					CALLM1(_vr, "setPos", _garPos);
 					CALLM0(_vr, "start");
+					CALLM0(_gar, "detachFromLocation");
 					_state = ACTION_STATE_ACTIVE;
 				} else { 
 					if(GETV(_vr, "failed")) then {

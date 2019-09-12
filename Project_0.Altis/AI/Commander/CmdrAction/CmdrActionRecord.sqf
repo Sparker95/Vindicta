@@ -101,7 +101,7 @@ CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
 ENDCLASS;
 
 // Done
-CLASS("QRFCmdrActionRecord", "DirectedCmdrActionRecord")
+CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD("getText") {
 		"Attack"
 	} ENDMETHOD;

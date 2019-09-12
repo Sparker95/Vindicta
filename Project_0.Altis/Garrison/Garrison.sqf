@@ -471,8 +471,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		ASSERT_THREAD(_thisObject);
-
-		T_SETV("location", _location);
 		
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "handleLocationChanged", _location);
@@ -491,6 +489,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		T_SETV("location", _location);
 		
+		// Tell commander to update its location data
+		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+		if (!IS_NULL_OBJECT(_AI)) then {
+			if (_currentLoc != "") then {
+				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
+				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
+			};
+			if (_location != "") then {
+				pr _args1 = [_location, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
+				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args1);
+			};
+		};
+
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
@@ -511,6 +522,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (_currentLoc != "") then {
 			CALLM1(_currentLoc, "unregisterGarrison", _thisObject);
 			T_SETV("location", "");
+
+			// Notify commander
+			pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+			if (!IS_NULL_OBJECT(_AI)) then {
+				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
+				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
+			};
 		};
 		
 		__MUTEX_UNLOCK;

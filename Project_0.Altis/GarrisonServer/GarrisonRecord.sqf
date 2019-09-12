@@ -108,7 +108,7 @@ CLASS("GarrisonRecord", "")
 			
 			pr _actionText = CALLSM0(_recordClass, "getText"); // A friendly text of this action: "Attack", "Patrol", etc
 
-			if (_recordClass in ["MoveCmdrActionRecord", "TakeLocationCmdrActionRecord", "QRFCmdrActionRecord", "ReinforceCmdrActionRecord"]) then {
+			if (_recordClass in ["MoveCmdrActionRecord", "TakeLocationCmdrActionRecord", "AttackCmdrActionRecord", "ReinforceCmdrActionRecord"]) then {
 				// Draw a line
 				pr _posEnd = CALLM0(_record, "getPos"); // It will resolve position of position, location or garrison
 

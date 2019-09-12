@@ -218,7 +218,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garModel"), P_OOP_OBJECT("_world")];
 
 		// Create a record
-		private _record = NEW("QRFCmdrActionRecord", []);
+		private _record = NEW("AttackCmdrActionRecord", []);
 
 		// Fill data values
 		//SETV(_record, "garRef", GETV(_garModel, "actual"));

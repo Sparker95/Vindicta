@@ -35,7 +35,7 @@ class CMUI_GCOM_ACTION_LISTBOX_BG : MUI_GROUP
 			y = 1*__ROW_HEIGHT;
 			w = __ROW_WIDTH + __DELTA;
 			h = __ROW_HEIGHT + __DELTA;
-			text = "Attack (NYI)";
+			text = "Attack";
 		};
         class BUTTON_REINFORCE : MUI_BUTTON_TXT 
 		{

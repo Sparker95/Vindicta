@@ -10,3 +10,4 @@ call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\Reinforc
 // Direct actions
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\DirectMoveCmdrAction.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\DirectReinforceCmdrAction.sqf";
+call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\Actions\DirectAttackCmdrAction.sqf";
