@@ -1,11 +1,19 @@
 #include "..\..\OOP_Light\OOP_Light.h"
+#include "defineCommonGrids.hpp"
 #include "UIProfileColors.h"
 
+/*
 #define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.48"
 #define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.52"
 #define MUI_TXT_SIZE_M "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.65"
 #define MUI_TXT_SIZE_L "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.7"
+*/
 
+// Sorry Marvis I had to tweak these a bit. Sparker.
+#define MUI_TXT_SIZE_XS safeZoneH*0.02
+#define MUI_TXT_SIZE_S safeZoneH*0.015
+#define MUI_TXT_SIZE_M safeZoneH*0.020
+#define MUI_TXT_SIZE_L safeZoneH*0.022
 
 #ifndef HG_MissionUIControlClassesh
 #define HG_MissionUIControlClassesh 1
@@ -64,7 +72,7 @@ class MUI_BG_BLACKSOLID : MUI_BASE
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_S;
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S; Sparker fooling around :/
 	colorBackground[] = MUIC_BLACK;
 };
 
@@ -73,12 +81,19 @@ class MUI_BG_BLACKTRANSPARENT : MUI_BASE
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_S;
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S;
 	colorBackground[] = MUIC_BLACKTRANSP;
 };
 
+class MUI_BG_TRANSPARENT : MUI_BASE
+{
+	type = CT_STATIC;
+	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S;
+	//colorBackground[] = MUIC_TRANSPARENT;
+};
 
-class MUI_HEADLINE
+
+class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, but grey
 {
 	type = CT_STATIC;
 
@@ -87,6 +102,10 @@ class MUI_HEADLINE
 	w = 0;
 	h = safeZoneH * 0.026;
 
+	sizeEx = MUI_TXT_SIZE_M;
+	colorBackground[] = {0.0666, 0.0666, 0.0666, 1.0}; // A slight delightfully-devilish shade of grey
+
+	/*
 	sizeEx = MUI_TXT_SIZE_S;
 	style = 192+2;
 	text = "";
@@ -95,6 +114,7 @@ class MUI_HEADLINE
 	colorBackground[] = {0.702,0.102,0.102,1};	// variable, selected outpost color
 	colorText[] = MUIC_WHITE;
 	shadow = 1;
+	*/
 };
 
 
@@ -113,12 +133,12 @@ class MUI_BUTTON_TXT : RscButton
 	colorBackgroundActive[] = MUIC_WHITE;
 	colorBackgroundDisabled[] = MUIC_BLACK;
 	colorBorder[] = MUIC_TRANSPARENT;
-	colorDisabled[] = MUIC_TRANSPARENT;
+	colorDisabled[] = MUIC_TXT_DISABLED;
 	colorFocused[] = MUIC_BLACK;				// same as colorBackground to disable blinking
 	colorShadow[] = MUIC_TRANSPARENT;
 
-	offsetPressedX = 0;
-	offsetPressedY = 0;
+	offsetPressedX = 0; //0.1*MUI_TXT_SIZE_M;
+	offsetPressedY = 0; //0.1*MUI_TXT_SIZE_M;
 	offsetX = 0;
 	offsetY = 0;
 
@@ -136,14 +156,88 @@ class MUI_BUTTON_TXT : RscButton
 	onButtonUp = "";
 	onLBDrop = "";
 	onMouseButtonClick = "";
-	onMouseEnter = "";    
-    onMouseExit = "";  
+	onMouseEnter = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text black
+	onMouseExit = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text white
 };
 
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	type = CT_BUTTON;
 	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
+};
+
+// Button with text that behaves like it's a checkbox
+// This control type is trash, don't use it
+// Can't set BG color when mouse if over it, wtf
+class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
+{
+	idc = -1;
+	type = CT_CHECKBOXES;
+	style = 2;
+	h = safezoneh * 0.02;
+	colorText[] = MUIC_WHITE; //  text color of the unchecked checkbox
+	colorTextSelect[] = {0.13, 0.7, 0.29, 1}; // text color of the checked checkbox
+	color[] = {0,0,1,1}; // unknown
+
+	colorBackground[] = {1,0,0,1}; // background color when checkbox is not in focus (doesn't matter if checked or not)
+	colorSelectedBg[] = {0,1,0,1}; // background color when checkbox is in focus (doesn't matter if checked or not)  !! doesn't seem to work !!
+
+	onMouseEnter = "(_this select 0) ctrlSetBackgroundColor [1,1,1,1]; (_this select 0) ctrlSetTextColor [0,0,0,1];";
+	onMouseExit = "(_this select 0) ctrlSetBackgroundColor [0,0,0,0]; (_this select 0) ctrlSetTextColor [1,1,1,1];";
+
+	colorSelect[] = {0, 0, 1, 0}; // unknown
+	colorTextDisable[] =
+	{
+		0.4,
+		0.4,
+		0.4,
+		1
+	};
+	colorDisable[] =
+	{
+		0.4,
+		0.4,
+		0.4,
+		1
+	};
+	tooltipColorText[] =
+	{
+		1,
+		1,
+		1,
+		1
+	};
+	tooltipColorBox[] =
+	{
+		1,
+		1,
+		1,
+		1
+	};
+	tooltipColorShade[] =
+	{
+		0,
+		0,
+		0,
+		0.65
+	};
+	font = "RobotoCondensed";
+	sizeEx = MUI_TXT_SIZE_M;
+	rows = 1;
+	columns = 1;
+	strings[] =
+	{
+		"Show intel"
+	};
+	checked_strings[] =
+	{
+		"Show intel"
+	};
+
+	soundClick[] = {"\A3\ui_f\data\sound\RscButton\soundClick",0.09,1};
+	soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1};
+	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
+	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
 };
 
 // RscListNBox
@@ -158,7 +252,7 @@ class MUI_LISTNBOX : MUI_BASE
 
 	maxHistoryDelay = 1;
 	lineSpacing = 0.0 * GUI_GRID_H;
-	rowHeight = 1.2 * GUI_GRID_H;
+	rowHeight = 1.0 * GUI_GRID_H; //1.2 * GUI_GRID_H;
 	headerHeight = 0.9 * GUI_GRID_H;
 
 	colorActive[] = MUIC_WHITE;
@@ -183,6 +277,8 @@ class MUI_LISTNBOX : MUI_BASE
 	show = 1;
 	period = 0;
 
+	/*
+	// Doesn't work, probably be
 	class ListScrollBar
 	{
 	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
@@ -193,8 +289,29 @@ class MUI_LISTNBOX : MUI_BASE
 	colorDisabled[] = MUIC_WHITE;
 	thumb = "#(argb,8,8,3)color(1,1,1,1)";		
 	};
+	*/
+	class ListScrollBar
+	{
+		width = 0; // width of ListScrollBar
+		height = 0; // height of ListScrollBar
+		scrollSpeed = 0.01; // scrollSpeed of ListScrollBar
+
+		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa"; // Arrow
+		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa"; // Arrow when clicked on
+		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa"; // Slider background (stretched vertically)
+		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa"; // Dragging element (stretched vertically)
+
+		color[] = {1,1,1,1}; // Scrollbar color
+	};
 };
 
+// Use it for the left/right button of listnboxes
+class MUI_LISTNBOX_BUTTON : MUI_BUTTON_TXT
+{
+	width = 1.0 * GUI_GRID_H;
+	height = 1.0 * GUI_GRID_H;
+	text = "X";
+};
 
 class MUI_STRUCT_TXT : RscStructuredText
 {
@@ -241,6 +358,34 @@ class MUI_EDIT : MUI_BASE
 	colorBackground[] = MUIC_TRANSPARENT; 
 
 	lineSpacing = 1.1 * GUI_GRID_H;
+};
+
+class MUI_GROUP : MUI_BASE
+{
+
+	deletable = 0;
+	fade = 0;
+	class VScrollbar
+	{
+		color[] = MUIC_WHITE;
+		width = 0.021;
+		autoScrollEnabled = 1;
+	};
+	class HScrollbar
+	{
+		color[] = MUIC_WHITE;
+		height = 0.028;
+	};
+	class Controls
+	{
+	};
+	type = 15;
+	idc = -1;
+	x = 0;
+	y = 0;
+	w = 1;
+	h = 1;
+	shadow = 0;
 };
 
 #endif

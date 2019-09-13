@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:ActionGroup.ActionGroupArrest",{665:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Tell group to arrest a suspicious player unit.</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:ActionGroup.ActionGroupArrest",{294:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Tell group to arrest a suspicious player unit.</div></div>"});

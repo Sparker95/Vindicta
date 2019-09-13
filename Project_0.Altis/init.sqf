@@ -22,11 +22,24 @@ if (!IS_SERVER) then {
 };
 #endif
 
-//if(true) exitWith { 0 spawn { _i = 0; while {_i < 4} do { systemChat "!!! GAME MODE INIT WAS DISABLED !!! Check init.sqf"; sleep 4; _i = _i + 1; }; }; }; // Keep it here in case we want to not start the actual mission but to test some other code
+//#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
+#ifdef DISABLE_MISSION_INIT
+if(true) exitWith { 
+	0 spawn {
+		0 spawn {
+			waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
+			call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+		};
+		_i = 0;
+		while {_i < 4} do { systemChat "!!! GAME MODE INIT WAS DISABLED !!! Check init.sqf"; sleep 4; _i = _i + 1; };
+	};
+};
+#endif
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		case "Sparker": 	{ "CivilWarGameMode" };
+		case "Sparker": 	{ "CivilWarGameMode" }; //"RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };
@@ -44,8 +57,22 @@ CRITICAL_SECTION {
 	CALLM(gGameMode, "init", []);
 	systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
 
-	serverInitDone = 1;
-	PUBLIC_VARIABLE "serverInitDone";
+	// If we're a server, broadcast to everyone that initialization has been completed, so that clients can initialize as well
+	if (IS_SERVER) then {
+		serverInitDone = 1;
+		PUBLIC_VARIABLE "serverInitDone";
+	} else {
+		
+	};
+
+	// Notify server that we have initialized everything and our systems are ready to interact with server
+	if (HAS_INTERFACE) then {
+		0 spawn {
+			waitUntil {count (getPlayerUID player) > 1}; // Sometimes it might be ""
+			private _uid = profileNamespace getVariable ["p0_uid", getPlayerUID player]; // Alternative UID for testing purposes
+			[_uid, profileName, clientOwner, playerSide] remoteExecCall ["fnc_onPlayerInitializedServer", 2];
+		};
+	};
 };
 
 // pr0_fn_getGlobalRectAndSize = {

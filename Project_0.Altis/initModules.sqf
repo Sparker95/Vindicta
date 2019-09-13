@@ -22,13 +22,13 @@ call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 
 //Initialize the NATO template
-tNATO = call compile preprocessFileLineNumbers "Templates\Factions\NATO.sqf";
-tCSAT = call compile preprocessFileLineNumbers "Templates\Factions\CSAT.sqf";
-tAAF = call compile preprocessFileLineNumbers "Templates\Factions\AAF.sqf";
-tGUERILLA = call compile preprocessFileLineNumbers "Templates\Factions\GUERILLA.sqf";
-tPOLICE = call compile preprocessFileLineNumbers "Templates\Factions\POLICE.sqf";
-tCIVILIAN = call compile preprocessFileLineNumbers "Templates\Factions\CIVILIAN.sqf";
-tRHS_AAF2017_elite = call compile preprocessFileLineNumbers "Templates\Factions\RHS_AAF2017_elite.sqf";
+tNATO =					["Templates\Factions\NATO.sqf"]					call t_fnc_initializeTemplateFromFile;
+tCSAT =					["Templates\Factions\CSAT.sqf"]					call t_fnc_initializeTemplateFromFile;
+tAAF = 					["Templates\Factions\AAF.sqf"]					call t_fnc_initializeTemplateFromFile;
+tGUERILLA = 			["Templates\Factions\GUERILLA.sqf"]				call t_fnc_initializeTemplateFromFile;
+tPOLICE = 				["Templates\Factions\POLICE.sqf"]				call t_fnc_initializeTemplateFromFile;
+tCIVILIAN = 			["Templates\Factions\CIVILIAN.sqf"]				call t_fnc_initializeTemplateFromFile;
+tRHS_AAF2017_elite =	["Templates\Factions\RHS_AAF2017_elite.sqf"]	call t_fnc_initializeTemplateFromFile;
 
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
@@ -36,6 +36,7 @@ call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 fnc_onPlayerRespawnServer = compile preprocessFileLineNumbers "fn_onPlayerRespawnServer.sqf";
+fnc_onPlayerInitializedServer = compile preprocessFileLineNumbers "fn_onPlayerInitializedServer.sqf";
 
 //Initialize cluster module
 call compile preprocessFileLineNumbers "Cluster\initFunctions.sqf";
@@ -117,5 +118,13 @@ call compile preprocessFileLineNumbers "LocationVisibilityMonitor\LocationVisibi
 
 // Initialize GameModes
 call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
+
+// Initialize PlayerDatabases
+call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
+call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseServer.sqf";
+call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseClient.sqf";
+
+// Initialize the GarrisonServer
+call compile preprocessFileLineNumbers "GarrisonServer\initClasses.sqf";
 
 diag_log "[initModules] Done!";

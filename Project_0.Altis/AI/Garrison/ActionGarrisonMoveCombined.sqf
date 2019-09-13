@@ -127,6 +127,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 			if (_state == ACTION_STATE_INACTIVE) then {
 				CALLM0(_vr, "start");
+				CALLM0(_gar, "detachFromLocation");
 				_state = ACTION_STATE_ACTIVE;
 			};
 

@@ -47,7 +47,7 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 
 			CALLM1(_item, "clientRemove", _item);
 
-			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]); // It will copy values
+			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]);
 		};
 	} ENDMETHOD;
 

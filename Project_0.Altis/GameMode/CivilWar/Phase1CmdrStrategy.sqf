@@ -1,5 +1,10 @@
 #include "common.hpp"
 
+/*
+Class: Phase1CmdrStrategy
+Strategy for commander to use during phase 1 gameplay.
+Entirely passive behaviour, no actions of any kind are taken.
+*/
 CLASS("Phase1CmdrStrategy", "PassiveCmdrStrategy")
 	METHOD("new") {
 		params [P_THISOBJECT];

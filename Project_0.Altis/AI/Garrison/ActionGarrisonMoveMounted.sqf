@@ -38,10 +38,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		// Unpack radius
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_MOVE_RADIUS);
 		if (isNil "_radius") then {
-			// todo Try to figure out completion radius from location
-			//pr _radius = CALLM0(_loc, "getBoundingRadius"); // there is no such function
-			// Just use 100 meters for now
-			T_SETV("radius", 100);
+			_radius = CALLSM1("GoalGarrisonMove", "getLocationMoveRadius", _loc);
+			T_SETV("radius", _radius);
 		} else {
 			T_SETV("radius", _radius);
 		};
@@ -154,6 +152,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					pr _garPos = CALLM0(_AI, "getPos");
 					CALLM1(_vr, "setPos", _garPos);
 					CALLM0(_vr, "start");
+					CALLM0(_gar, "detachFromLocation");
 					_state = ACTION_STATE_ACTIVE;
 				} else { 
 					if(GETV(_vr, "failed")) then {

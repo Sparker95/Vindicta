@@ -16,9 +16,9 @@ It checks for messages in the loop and calls handleMessages of objects.
 
 #define pr private
 
-#ifndef RELEASE_BUILD
+//#ifndef RELEASE_BUILD
 #define THREAD_FUNC_DEBUG
-#endif
+//#endif
 
 #ifdef THREAD_FUNC_DEBUG
 private _nextTickTime = time + 5;

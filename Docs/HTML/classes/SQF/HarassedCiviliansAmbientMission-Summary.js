@@ -1,0 +1,1 @@
+NDFramePage.OnPageTitleLoaded("SQFClass:HarassedCiviliansAmbientMission","HarassedCiviliansAmbientMission");NDSummary.OnSummaryLoaded("SQFClass:HarassedCiviliansAmbientMission",[["SQF","SQF"]],[["Classes","Class"]],[[378,0,0,"HarassedCiviliansAmbientMission"]]);

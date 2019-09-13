@@ -41,3 +41,6 @@
 
 // Location Visibility Monitor
 #define LVMON_MESSAGE_PROCESS 800
+
+// Garrison Server
+#define GARRISON_SERVER_MESSAGE_PROCESS 900

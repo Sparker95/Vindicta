@@ -1,10 +1,14 @@
 #include "common.hpp"
 
+// Base class for Game Modes. A Game Mode is a set of customizations to 
+// scenario initialization and ongoing gameplay mechanics.
 CLASS("GameModeBase", "")
-
 	VARIABLE("name");
+	// If we want to spawn in enemy reinforcements automatically at bases
 	VARIABLE("spawningEnabled");
+	// How often we should spawn in reinforcements for the enemy
 	VARIABLE("spawningInterval");
+	// When we last spawned in reinforcements for the enemy
 	VARIABLE("lastSpawn");
 
 	METHOD("new") {
@@ -14,6 +18,7 @@ CLASS("GameModeBase", "")
 		#ifdef RELEASE_BUILD
 		T_SETV("spawningInterval", 3600);
 		#else
+		// Faster spawning when we are testing
 		T_SETV("spawningInterval", 120);
 		#endif
 		T_SETV("lastSpawn", TIME_NOW);
@@ -24,6 +29,8 @@ CLASS("GameModeBase", "")
 
 	} ENDMETHOD;
 
+	// Called in init.sqf. Do NOT override this, implement the various specialized virtual functions
+	// below it instead.
 	METHOD("init") {
 		params [P_THISOBJECT];
 
@@ -47,7 +54,6 @@ CLASS("GameModeBase", "")
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
-			
 
 			// Message loop for group AI
 			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
@@ -71,6 +77,10 @@ CLASS("GameModeBase", "")
 			T_CALLM("initServerOrHC", []);
 		};
 		if(IS_SERVER) then {
+
+			// Create the garrison server
+			gGarrisonServer = NEW("GarrisonServer", []);
+
 			T_CALLM("initCommanders", []);
 			#ifndef _SQF_VM
 			T_CALLM("initLocations", []);
@@ -82,7 +92,7 @@ CLASS("GameModeBase", "")
 
 			T_CALLM("initServerOnly", []);
 
-			// Call our first process event immediately
+			// Call our first process event immediately, to help things "settle" before we show them to the player.
 			T_CALLM("process", []);
 
 			// Add message loop for game mode
@@ -95,12 +105,14 @@ CLASS("GameModeBase", "")
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 
+			// Initialize player database
+			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
+			// todo load it from profile namespace or whatever
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
 		};
 		if (IS_HEADLESSCLIENT) then {
-
 			private _str = format ["Mission: I am a headless client! My player object is: %1. I have just connected! My owner ID is: %2", player, clientOwner];
 			OOP_INFO_0(_str);
 			systemChat _str;
@@ -127,6 +139,7 @@ CLASS("GameModeBase", "")
 				waitUntil {!((finddisplay 12) isEqualTo displayNull)};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 			};
+
 			#ifndef RELEASE_BUILD
 			[] call pr0_fnc_initDebugMenu;
 			#endif
@@ -134,12 +147,11 @@ CLASS("GameModeBase", "")
 			// Message loop for client side checks: undercover, location visibility, etc
 			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
 
-			// Disable all the notification dots for map markers
-			0 spawn {
-				waitUntil {! isNil "serverInitDone"};
-				sleep 6;
-				CALLSM1("MapMarkerLocation", "setAllNotifications", false);
-			};
+			// Create PlayerDatabaseClient
+			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
+
+			// Create GarrisonDatabaseClient
+			gGarrisonDBClient = NEW("GarrisonDatabaseClient", []);
 
 			T_CALLM("initClientOnly", []);
 		};
@@ -148,13 +160,17 @@ CLASS("GameModeBase", "")
 		PROFILE_SCOPE_START(GameModeEnd);
 	} ENDMETHOD;
 
-	/* private */METHOD("process") {
+	// Called regularly in its own thread to update gameplay
+	// states, mechanics etc. implemented by the Game Mode.
+	/* private */ METHOD("process") {
 		params [P_THISOBJECT];
+		// Do spawning if it is enabled.
 		if(T_GETV("spawningEnabled")) then {
 			PROFILE_SCOPE_START(GameModeSpawning);
 			T_CALLM("doSpawning", []);
 			PROFILE_SCOPE_END(GameModeSpawning, 1);
 		};
+		// Call the update implementation.
 		PROFILE_SCOPE_START(GameModeUpdate);
 		T_CALLM("update", []);
 		PROFILE_SCOPE_END(GameModeUpdate, 1);
@@ -207,8 +223,10 @@ CLASS("GameModeBase", "")
 			{
 				private _sideCommander = GETV(_x, "side");
 				if (_sideCommander != WEST) then { // Enemies are smart
-					private _updateLevel = [CLD_UPDATE_LEVEL_TYPE_UNKNOWN, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-					CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+					if (CALLM0(_loc, "isBuilt")) then {
+						private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+					};
 				} else {
 					// If it's player side, let it only know about cities
 					if (_type == LOCATION_TYPE_CITY) then {

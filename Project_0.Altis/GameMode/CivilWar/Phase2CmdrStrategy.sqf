@@ -1,9 +1,18 @@
 #include "common.hpp"
 
+/*
+Class: Phase2CmdrStrategy
+Strategy for commander to use during phase 2 gameplay.
+Mostly passive behaviour except:
+- Cities that are in revolt or suppressed will be occupied, as will their nearby roadblocks.
+- Default QRFs (always respond to clusters)
+- Default reinforcement (always reinforce if able)
+*/
 CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 	METHOD("new") {
 		params [P_THISOBJECT];
 
+		// Disable all normal location occupation
 		T_SETV("takeLocOutpostPriority", 0);
 		T_SETV("takeLocOutpostPriorityActivityCoeff", 0);
 		T_SETV("takeLocBasePriority", 0);
@@ -11,10 +20,10 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);
 		T_SETV("takeLocCityPriority", 0);
-		T_SETV("takeLocCityPriorityActivityCoeff", 1);
+		T_SETV("takeLocCityPriorityActivityCoeff", 0);
 	} ENDMETHOD;
 
-	METHOD("getLocationDesirability") {
+	/* override */ METHOD("getLocationDesirability") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
 		private _locPos = GETV(_loc, "pos");
@@ -60,7 +69,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 		// }
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("getQRFScore") {
+	/* override */ METHOD("getQRFScore") {
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -73,7 +82,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 		_defaultScore
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("getReinforceScore") {
+	/* override */ METHOD("getReinforceScore") {
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),
@@ -86,7 +95,7 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 		_defaultScore
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("getTakeLocationScore") {
+	/* override */ METHOD("getTakeLocationScore") {
 		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"), 
 			P_ARRAY("_defaultScore"),

@@ -1,5 +1,6 @@
 #include "..\common.hpp"
 
+// Callback for the start of the free civilian action
 pr0_fnc_StartFreeingCivilian = {
 	params ["_target", "_caller", "_actionId", "_arguments"];
 
@@ -11,11 +12,10 @@ pr0_fnc_StartFreeingCivilian = {
 	[player, "Let me free you brother!", _target] call Dialog_fnc_hud_createSentence;
 };
 
-pr0_fnc_FreeCivilianAnim = {
-	_this playMoveNow "Acts_ExecutionVictim_Unbow";
-};
-
+// Callback for the end of the free civilian action
 pr0_fnc_CompleteFreeingCivilian = {
+	// This is all done in its own scheduled script, as it is mostly
+	// just waiting for conversation to progress.
 	_this spawn {
 		params ["_target", "_caller", "_actionId", "_arguments", "_progress", "_maxProgress"];
 
@@ -24,7 +24,7 @@ pr0_fnc_CompleteFreeingCivilian = {
 			// Untie them
 			_this playMoveNow "Acts_ExecutionVictim_Unbow";
 			// Make sure they don't get arrested again
-			_this  setVariable [UNDERCOVER_TARGET, false, false];
+			_this setVariable [UNDERCOVER_TARGET, false, false];
 		}] remoteExec ["call", 0];
 
 		[player, "There you go, tell your friends of what transpired here today!", _target] call Dialog_fnc_hud_createSentence;
@@ -48,19 +48,14 @@ pr0_fnc_CompleteFreeingCivilian = {
 		[[_target, _caller], {
 			params ["_target", "_caller"];
 
+			// Make sure the civilian is allowed to move again
 			_target enableAI "MOVE";
 			_target enableAI "AUTOTARGET";
-			_target enableAI "ANIM";							
+			_target enableAI "ANIM";
 			_target setBehaviour "SAFE";
 
 			// Run far away!
-			private _wp = group _target addWaypoint [[getPos _target, 1000, 2000] call BIS_fnc_findSafePos, 0];
-			_wp setWaypointType "MOVE";
-			_wp setWaypointBehaviour "AWARE";
-			_wp setWaypointSpeed "NORMAL";
-
-			// Delete the civie once he escapes
-			_wp setWaypointStatements ["true", "deleteVehicle this;"];
+			_target call pr0_fnc_CivieRunAway;
 
 			// Increase area activity
 			CALLSM("AICommander", "addActivity", [ENEMY_SIDE ARG getPos _caller ARG (10+random(20))]);
@@ -68,6 +63,7 @@ pr0_fnc_CompleteFreeingCivilian = {
 	};
 };
 
+// Add the free action to a civilian
 pr0_fnc_AddCivilianFreeAction = {
 	[
 		_this, "Free this civilian", "", "",
@@ -78,11 +74,16 @@ pr0_fnc_AddCivilianFreeAction = {
 	//call BIS_fnc_holdActionAdd;
 };
 
-// This mission spawns a number of civilians that police will try to arrest (when they see them).
-// If the player frees them after they are arrested they will provide rewards of intel, and increase local
-// activity.
+/*
+Class: HarassedCiviliansAmbientMission
+This mission spawns a number of civilians that police will try to arrest (when they see them).
+If the player frees them after they are arrested they will provide rewards of intel, and increase local
+activity.
+*/
 CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
+	// How many missions of this type can be running at a time.
 	VARIABLE("maxActive");
+	// Currently running missions of this type (as represented by the civilian units).
 	VARIABLE("activeCivs");
 
 	METHOD("new") {
@@ -92,28 +93,38 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 		T_SETV("activeCivs", []);
 
 		private _radius = GETV(_city, "boundingRadius");
-
+		// How many civilians should be harrassed at the same time for this city size?
 		private _maxActive = 1 + ((3 * ln(0.01 * _radius + 1)) min 5);
 		T_SETV("maxActive", _maxActive);
 	} ENDMETHOD;
 
-	METHOD("updateExisting") {
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		// Clean up an active missions
+		T_PRVAR(activeCivs);
+		{
+			deleteVehicle _x;
+		} forEach _activeCivs;
+	} ENDMETHOD;
+
+	/* protected override */ METHOD("updateExisting") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
 		T_PRVAR(activeCivs);
 
-		// Check for finished actions
+		// Check for finished missions
 		{
 			_activeCivs deleteAt (_activeCivs find _x);
 		} forEach (_activeCivs select { !alive _x });
 	} ENDMETHOD;
 
-	METHOD("spawnNew") {
+	/* protected override */ METHOD("spawnNew") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 
-		// Add new actions if required
+		// Add new missions if required
 		T_PRVAR(activeCivs);
 		T_PRVAR(maxActive);
 		private _deficit = _maxActive - (count _activeCivs);
@@ -165,16 +176,5 @@ CLASS("HarassedCiviliansAmbientMission", "AmbientMission")
 				}
 			};
 		};
-	} ENDMETHOD;
-
-
-	METHOD("delete") {
-		params [P_THISOBJECT];
-
-		T_PRVAR(activeCivs);
-		{
-			deleteVehicle _x;
-		} forEach _activeCivs;
-	} ENDMETHOD;
-	
+	} ENDMETHOD;	
 ENDCLASS;

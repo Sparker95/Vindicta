@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("File:Cluster/common.sqf","common.sqf");NDSummary.OnSummaryLoaded("File:Cluster/common.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[60,0,0,"Cluster","Cluster"]]);
+NDFramePage.OnPageTitleLoaded("File:Cluster/common.sqf","common.sqf");NDSummary.OnSummaryLoaded("File:Cluster/common.sqf",[["SQF","SQF"]],[["Classes","Class"]],[[371,0,0,"Cluster","Cluster"]]);

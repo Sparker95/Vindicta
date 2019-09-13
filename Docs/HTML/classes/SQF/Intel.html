@@ -8,97 +8,107 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic599"></a><div class="CTopic TClass LSQF first">
+<a name="Topic527"></a><div class="CTopic TClass LSQF first">
  <div class="CTitle">Intel</div>
  <div class="CBody"><p>Intel base class. It stores variables that describe intel. It is a base class for more intel types.</p></div>
 </div>
 
-<a name="Variables"></a><a name="Topic600"></a><div class="CTopic TGroup LSQF">
+<a name="Variables"></a><a name="Topic528"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Variables</div>
 </div>
 
-<a name="dateCreated"></a><a name="Topic658"></a><div class="CTopic TVariable LSQF">
+<a name="dateCreated"></a><a name="Topic529"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">dateCreated</div>
  <div class="CBody"><p>Date when this intel was created initially in format returned by date command</p></div>
 </div>
 
-<a name="dateUpdated"></a><a name="Topic659"></a><div class="CTopic TVariable LSQF">
+<a name="dateUpdated"></a><a name="Topic530"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">dateUpdated</div>
  <div class="CBody"><p>Date when this intel was updated in format returned by date command</p></div>
 </div>
 
-<a name="pos"></a><a name="Topic603"></a><div class="CTopic TVariable LSQF">
+<a name="pos"></a><a name="Topic531"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">pos</div>
  <div class="CBody"><p>Position</p></div>
 </div>
 
-<a name="location"></a><a name="Topic616"></a><div class="CTopic TVariable LSQF">
+<a name="location"></a><a name="Topic532"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">location</div>
- <div class="CBody"><p>Reference to the <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,277);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> object</p></div>
+ <div class="CBody"><p>Reference to the <a href="../../index.html#SQFClass:Location" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,609);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Location</a> object</p></div>
 </div>
 
-<a name="method"></a><a name="Topic617"></a><div class="CTopic TVariable LSQF">
+<a name="method"></a><a name="Topic533"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">method</div>
  <div class="CBody"><p>Method of how we have got this Intel (from radio, surveilance, etc)</p></div>
 </div>
 
-<a name="source"></a><a name="Topic618"></a><div class="CTopic TVariable LSQF">
+<a name="source"></a><a name="Topic534"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">source</div>
- <div class="CBody"><p>Reference to the source <a href="../../index.html#SQFClass:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item this object is linked with.</p></div>
+ <div class="CBody"><p>Reference to the source <a href="../../index.html#SQFClass:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,527);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item this object is linked with.</p></div>
 </div>
 
-<a name="dbEntry"></a><a name="Topic703"></a><div class="CTopic TVariable LSQF">
+<a name="dbEntry"></a><a name="Topic535"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">dbEntry</div>
  <div class="CBody"><p>Reference to the dbEntry copy of this intel item. This is filled in by the intelDb when the item is added via addIntelClone, and used in subsequent updateIntelClone operations.</p></div>
 </div>
 
-<a name="db"></a><a name="Topic704"></a><div class="CTopic TVariable LSQF">
+<a name="db"></a><a name="Topic536"></a><div class="CTopic TVariable LSQF">
  <div class="CTitle">db</div>
  <div class="CBody"><p>Reference to the intel database that owns this intel. This is set in addIntelClone, and enables the updateInDb function.</p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic619"></a><div class="CTopic TGroup LSQF">
+<a name="Functions"></a><a name="Topic537"></a><div class="CTopic TGroup LSQF">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="new"></a><a name="Topic620"></a><div class="CTopic TFunction LSQF">
+<a name="new"></a><a name="Topic538"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">new</div>
  <div class="CBody"><p>Constructor. Takes no arguments.</p></div>
 </div>
 
-<a name="delete"></a><a name="Topic705"></a><div class="CTopic TFunction LSQF">
+<a name="delete"></a><a name="Topic539"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">delete</div>
  <div class="CBody"><p>Destructor. Takes no arguments. Will remove item from associated intelDb if it was created using addIntelClone.</p></div>
 </div>
 
-<a name="isCreated"></a><a name="Topic706"></a><div class="CTopic TFunction LSQF">
+<a name="isCreated"></a><a name="Topic540"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">isCreated</div>
  <div class="CBody"><p>Returns: Bool, true if this Intel object has been created already (assigned dateCreated and initialized by owner).</p></div>
 </div>
 
-<a name="create"></a><a name="Topic707"></a><div class="CTopic TFunction LSQF">
+<a name="create"></a><a name="Topic541"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">create</div>
  <div class="CBody"><p>Set dateCreated to now to indicate that this object is valid.</p></div>
 </div>
 
-<a name="updateInDb"></a><a name="Topic708"></a><div class="CTopic TFunction LSQF">
+<a name="updateInDb"></a><a name="Topic542"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">updateInDb</div>
  <div class="CBody"><p>Valid only for intel created using addIntelClone. This will updateIntelFromClone directly to the database that owns this intel.</p></div>
 </div>
 
-<a name="clientAdd"></a><a name="Topic621"></a><div class="CTopic TFunction LSQF">
+<a name="clientAdd"></a><a name="Topic543"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">clientAdd</div>
  <div class="CBody"><p>Gets called on client when this intel item is created.&nbsp; It should add itself to UI, map, other systems.</p><p>Returns: nil</p></div>
 </div>
 
-<a name="clientUpdate"></a><a name="Topic622"></a><div class="CTopic TFunction LSQF">
+<a name="clientUpdate"></a><a name="Topic544"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">clientUpdate</div>
- <div class="CBody"><p>Gets called on client when this intel item is updated. It should update data in UI, map, other systems.&nbsp; !! You don't need to copy member variables here manually !! They will be copied automatically by database methods.&nbsp; Just update necessary data of map markers and other things if you need.</p><p>Parameters: _intelSrc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_intelSrc</td><td class="CDLDefinition"><p>the the <a href="../../index.html#SQFClass:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,599);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item where values will be copied from</p></td></tr></table><p>Returns: nil</p></div>
+ <div class="CBody"><p>Gets called on client when this intel item is updated. It should update data in UI, map, other systems.&nbsp; !! You don't need to copy member variables here manually !! They will be copied automatically by database methods.&nbsp; Just update necessary data of map markers and other things if you need.</p><p>Parameters: _intelSrc</p><table class="CDefinitionList"><tr><td class="CDLEntry">_intelSrc</td><td class="CDLDefinition"><p>the the <a href="../../index.html#SQFClass:Intel" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,527);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >Intel</a> item where values will be copied from</p></td></tr></table><p>Returns: nil</p></div>
 </div>
 
-<a name="clientRemove"></a><a name="Topic623"></a><div class="CTopic TFunction LSQF last">
+<a name="clientRemove"></a><a name="Topic545"></a><div class="CTopic TFunction LSQF">
  <div class="CTitle">clientRemove</div>
  <div class="CBody"><p>Gets called on client before this intel item is deleted.&nbsp; It should unregister itself from UI, map, other systems.</p><p>Returns: nil</p></div>
+</div>
+
+<a name="addToDatabaseIndex"></a><a name="Topic546"></a><div class="CTopic TFunction LSQF">
+ <div class="CTitle">addToDatabaseIndex</div>
+ <div class="CBody"><p>Gets called after this intel item was added to a database.&nbsp; Here we should add this item to index for specific variable names.</p><p>Returns: nil</p></div>
+</div>
+
+<a name="remofeFromDatabaseIndex"></a><a name="Topic547"></a><div class="CTopic TFunction LSQF last">
+ <div class="CTitle">remofeFromDatabaseIndex</div>
+ <div class="CBody"><p>Gets called after this intel item was added to a database.&nbsp; Here we should remove this item from the index of specific variable names.</p><p>Returns: nil</p></div>
 </div>
 
 </body></html>

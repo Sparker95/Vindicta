@@ -1,1 +1,1 @@
-NDContentPage.OnToolTipsLoaded({434:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">It\'s much like a local map marker, but allows to attach events to them like you can do with controls.</div></div>"});
+NDContentPage.OnToolTipsLoaded({808:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">It\'s much like a local map marker, but allows to attach events to them like you can do with controls.</div></div>"});

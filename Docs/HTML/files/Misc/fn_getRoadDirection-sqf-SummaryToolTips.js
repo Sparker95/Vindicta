@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("File:Misc/fn_getRoadDirection.sqf",{692:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Measures the direction of this road segment</div></div>"});
+NDSummary.OnToolTipsLoaded("File:Misc/fn_getRoadDirection.sqf",{748:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Measures the direction of this road segment</div></div>"});

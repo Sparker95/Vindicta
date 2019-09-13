@@ -1,1 +1,1 @@
-NDContentPage.OnToolTipsLoaded({469:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.</div></div>"});
+NDContentPage.OnToolTipsLoaded({830:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.</div></div>"});

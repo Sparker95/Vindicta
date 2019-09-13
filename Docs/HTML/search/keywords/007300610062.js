@@ -1,0 +1,1 @@
+NDSearch.OnPrefixDataLoaded("sab",["Class"],[["SaboteurCiviliansAmbientMission",,[[,,,,0,"File:GameMode/CivilWar/Missions/SaboteurCivilians.sqf:SaboteurCiviliansAmbientMission","SQFClass:SaboteurCiviliansAmbientMission"]]]]);

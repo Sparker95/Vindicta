@@ -141,7 +141,7 @@ class MUI_BUTTON_TXT : MUI_BASE
 	offsetPressedY = 0;
 	offsetX = 0;
 	offsetY = 0;
-	sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.98);
+	sizeEx = MUI_TXT_SIZE_M;
 	soundClick[] = {"",0.0,0.0};
 	soundEnter[] = {"",0.0,0.0};
 	soundEscape[] = {"",0.0,0.0};
@@ -191,6 +191,16 @@ class MUI_STRUCT_TXT : MUI_BASE
 	{
 		
 	};
+	
+};
+class Custom_ADC_Static : MUI_BASE 
+{
+	colorBackground[] = {0,0,0,1};
+	
+};
+class MUI_BG_BLACKSOLID : MUI_BASE 
+{
+	colorBackground[] = {0,0,0,1};
 	
 };
 #endif

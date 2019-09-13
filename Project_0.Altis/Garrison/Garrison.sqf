@@ -41,6 +41,10 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
 
+	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
+	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
+	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
+
 	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
 
 	// ----------------------------------------------------------------------
@@ -57,7 +61,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("new") {
 		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction")];
 
-		OOP_INFO_0("NEW GARRISON");
+		OOP_INFO_1("NEW GARRISON: %1", _this);
 
 		// Take our own ref that we will release in "destroy" function. This makes sure that delete never pre-empts destroy (assuming ref counting is done properly by other classes)
 		T_CALLM("ref", []);
@@ -81,6 +85,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("faction", _faction);
 		T_SETV("intelItems", []);
 
+		// Set value of composition array
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {[]});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+		T_SETV("composition", _comp);
+
 		// Create AI object
 		// Create an AI brain of this garrison and start it
 		pr _AI = NEW("AIGarrison", [_thisObject]);
@@ -88,7 +101,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Set position if it was specified
 		if (count _pos > 0) then {
-			CALLM1(_AI, "setPos", _pos);
+			T_CALLM2("postMethodAsync", "setPos", [_pos]);
 		};
 
 		// Create a timer to call process method
@@ -105,9 +118,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		*/
 
 		GETSV("Garrison", "all") pushBack _thisObject;
-
-		// Handle the PROCESS message right now to make the garrison instantly switch to spawned state if required
-		//CALLM1(_thisObject, "handleMessage", _msg);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -146,6 +156,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set 'active' flag
 		T_SETV("active", true);
 
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
 	} ENDMETHOD;
@@ -165,6 +178,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Set 'active' flag
 		T_SETV("active", true);
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 
 		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
 		nil
@@ -253,6 +269,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Unregister with the owning commander, do it last because it will cause an unref
 			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		};
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonDestroyed", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -452,8 +471,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		ASSERT_THREAD(_thisObject);
-
-		T_SETV("location", _location);
 		
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "handleLocationChanged", _location);
@@ -472,6 +489,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		T_SETV("location", _location);
 		
+		// Tell commander to update its location data
+		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+		if (!IS_NULL_OBJECT(_AI)) then {
+			if (_currentLoc != "") then {
+				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
+				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
+			};
+			if (_location != "") then {
+				pr _args1 = [_location, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
+				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args1);
+			};
+		};
+
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
@@ -492,6 +522,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (_currentLoc != "") then {
 			CALLM1(_currentLoc, "unregisterGarrison", _thisObject);
 			T_SETV("location", "");
+
+			// Notify commander
+			pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+			if (!IS_NULL_OBJECT(_AI)) then {
+				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
+				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
+			};
 		};
 		
 		__MUTEX_UNLOCK;
@@ -1018,8 +1055,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM1(_unit, "setGarrison", _thisObject);
 		
 		// Add to the efficiency vector
-		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
-		CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
+		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+ 
+		// Notify GarrisonServer
+		if (T_GETV("active")) then {
+			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+		};
 
 		__MUTEX_UNLOCK;
 
@@ -1087,8 +1129,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Substract from the efficiency vector
-		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID"];
-		CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
+		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
+		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+
+		// Notify GarrisonServer
+		if (T_GETV("active")) then {
+			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+		};
 
 		__MUTEX_UNLOCK;
 
@@ -1137,8 +1184,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_units pushBackUnique _x;
 			
 			// Add to the efficiency vector
-			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-			CALLM2(_thisObject, "increaseCounters", _catID, _subcatID);
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
 		} forEach _groupUnits;
 		private _groups = GET_VAR(_thisObject, "groups");
 		_groups pushBackUnique _group;
@@ -1217,8 +1264,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_units deleteAt (_units find _x);
 			
 			// Substract from the efficiency vector
-			CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-			CALLM2(_thisObject, "decreaseCounters", _catID, _subcatID);
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 				
 		} forEach _groupUnits;
 		pr _groups = GET_VAR(_thisObject, "groups");
@@ -1437,10 +1484,120 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_thisObject, "addGroup", _group);
 		} forEach _groupsAndUnits;
 		
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+
 		__MUTEX_UNLOCK;
 
 		true
 		
+	} ENDMETHOD;
+
+	/*
+	Method: addUnitsFromComposition
+	Adds units to this garrison from another garrison.
+	Unit arrangement is specified by composition array.
+
+	Parameters: _garSrc, _comp
+	
+	_garSrc - source <Garrison>
+	_comp - composition array. See "composition" member variable and how it's organized.
+	
+	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
+	*/
+	METHOD("addUnitsFromComposition") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
+
+		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
+
+		__MUTEX_LOCK;
+
+		// Number of unsatisfied constraints
+		pr _numUnsat = 0;
+
+		pr _unitsSrc = +CALLM0(_garSrc, "getUnits"); // Make a deep copy! Don't want to break it.
+
+		// Preprocess classnames into IDs in advance for each unit
+		pr _unitsSrcData = _unitsSrc apply {
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			pr _classID = [_className] call t_fnc_classNameToNumber;
+			if (_classID == -1) then {_ID = -2; }; // So that it doesn't equal a (potential) -1 in the incoming _comp array
+			[_catID, _subcatID, _classID]
+		};
+
+		// Find units for each category
+		pr _unitsFound = [[], [], []];
+		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones"];
+		// forEach [T_INF, T_VEH, T_DRONE];
+		{
+			pr _catID = _x;
+			// forEach _comp#_catID;
+			{
+				pr _classes = _x;
+				pr _subcatID = _foreachindex;
+				// forEach _classes;
+				{
+					pr _classID = _x;
+					// Find a unit which has the same classID, catID and subcatID
+					pr _index = _unitsSrcData find [_catID, _subcatID, _classID];
+					if (_index != -1) then {
+						// There is a match
+						(_unitsFound#_catID) pushBack (_unitsSrc#_index); // Move to the array with found units
+						_unitsSrc deleteAt _index;
+						_unitsSrcData deleteAt _index;
+					} else {
+						// Increase the fail counter
+						_numUnsat = _numUnsat + 1;
+					};
+				} forEach _classes;
+			} forEach _comp#_catID;
+		} forEach [T_INF, T_VEH, T_DRONE];
+
+		// Reorganize the infantry units we are moving
+		if (count _unitsFoundInf > 0) then {
+			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+			pr _newInfGroups = [_newGroup];
+			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+			// forEach _unitsFoundInf;
+			{
+				// Create a new inf group if the current one is 'full'
+				if (count CALLM0(_newGroup, "getUnits") > 6) then {
+					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+					_newInfGroups pushBack _newGroup;
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+
+				// Add the unit to the group
+				CALLM1(_newGroup, "addUnit", _x);
+			} forEach _unitsFoundInf;
+
+			// Move all the infantry groups
+			{
+				CALLM1(_thisObject, "addGroup", _x);
+			} forEach _newInfGroups;
+		};
+
+		// Move all the vehicle units into one group
+		// Vehicles need to be moved within a group too
+		pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		if (count _vehiclesAndDrones > 0) then {
+			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+			CALLM1(_garSrc, "addGroup", _newVehGroup);
+			{
+				CALLM1(_newVehGroup, "addUnit", _x);
+			} forEach _vehiclesAndDrones;
+
+			// Move the veh group
+			CALLM1(_thisObject, "addGroup", _newVehGroup);
+		};
+
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+
+		__MUTEX_UNLOCK;
+
+		_numUnsat
 	} ENDMETHOD;
 	
 	
@@ -1591,7 +1748,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("increaseCounters") {
-		params [P_THISOBJECT, "_catID", "_subCatID"];
+		params [P_THISOBJECT, "_catID", "_subCatID", "_className"];
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -1622,6 +1779,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
+		// Update composition array
+		pr _comp = T_GETV("composition");
+		(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
+
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;	
 	
@@ -1634,7 +1795,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	Returns: nil
 	*/
 	METHOD("decreaseCounters") {
-		params [P_THISOBJECT, "_catID", "_subCatID"];
+		params [P_THISOBJECT, "_catID", "_subCatID", "_className"];
 		
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -1664,6 +1825,11 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_DRONE: {_varName = "countDrone"};
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
+
+		// Update composition array
+		pr _comp = T_GETV("composition");
+		pr _array = _comp#_catID#_subCatID;
+		_array deleteAt (_array find ([_className] call t_fnc_classNameToNumber));
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -1707,6 +1873,26 @@ CLASS("Garrison", "MessageReceiverEx");
 			+T_EFF_null
 		};
 		pr _return = +T_GETV("effTotal");
+		__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+	METHOD("getComposition") {
+		params [P_THISOBJECT];
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			pr _comp = [];
+			{
+				pr _tempArray = [];
+				_tempArray resize _x;
+				_comp pushBack (_tempArray apply {[]});
+			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+			_comp
+		};
+		pr _return = +T_GETV("composition");
 		__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;

@@ -1,5 +1,5 @@
 //// Panel of the location data
-#define IDD_MAP 51
+#define IDC_MAP 51
 #define IDD_LD_PANEL 7006
 #define IDC_LD_PANEL 7000
 #define IDC_LD_TYPE 7001

@@ -125,9 +125,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
 		pr _groupIsSpawned = CALLM0(_thisObject, "isSpawned");
 
+		/* Can't really remember why it was here
 		if (_unitIsSpawned && !_groupIsSpawned || !_unitIsSpawned && _groupIsSpawned) exitWith {
-			OOP_ERROR_4("Group %1 is spawned: %2, unit %3 is spawned: %3", _thisObject, _groupIsSpawned, _unit, _unitIsSpawned);
+			OOP_ERROR_4("Group %1 is spawned: %2, unit %3 is spawned: %4", _thisObject, _groupIsSpawned, _unit, _unitIsSpawned);
 		};
+		*/
 
 		// Get unit's group
 		pr _unitGroup = CALLM0(_unit, "getGroup");

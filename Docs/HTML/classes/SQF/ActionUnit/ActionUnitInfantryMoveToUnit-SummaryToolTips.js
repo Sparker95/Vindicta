@@ -1,1 +1,1 @@
-NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitInfantryMoveToUnit",{151:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a single unit move to a specified another Unit, destination position will be updated.</div></div>"});
+NDSummary.OnToolTipsLoaded("SQFClass:ActionUnit.ActionUnitInfantryMoveToUnit",{317:"<div class=\"NDToolTip TClass LSQF\"><div class=\"TTSummary\">Makes a single unit move to a specified another Unit, destination position will be updated.</div></div>"});

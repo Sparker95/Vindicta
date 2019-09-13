@@ -1,1 +1,1 @@
-NDFramePage.OnPageTitleLoaded("SQFClass:UndercoverUI","UndercoverUI");NDSummary.OnSummaryLoaded("SQFClass:UndercoverUI",[["SQF","SQF"]],[["Classes","Class"]],[[447,0,0,"UndercoverUI"]]);
+NDFramePage.OnPageTitleLoaded("SQFClass:UndercoverUI","UndercoverUI");NDSummary.OnSummaryLoaded("SQFClass:UndercoverUI",[["SQF","SQF"]],[["Classes","Class"]],[[822,0,0,"UndercoverUI"]]);

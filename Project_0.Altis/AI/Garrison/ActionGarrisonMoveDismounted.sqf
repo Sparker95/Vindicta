@@ -77,6 +77,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		if (!CALLM0(_gar, "isSpawned")) then {
 			// If not spawned, move in a straight line for now
 
+			if (T_GETV("state") == ACTION_STATE_INACTIVE) then {
+				CALLM0(_gar, "detachFromLocation");
+			};
+
 			pr _state = ACTION_STATE_ACTIVE;
 
 			// Get a normalized vector heading towards destination

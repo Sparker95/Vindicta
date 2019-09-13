@@ -91,7 +91,9 @@ class CfgFunctions {
 
 //==== Dialogs and UIs ====
 #include "UI\Resources\UIBase.hpp"
+#include "UI\Resources\MissionUIControlClasses.h"
 #include "UI\Resources\ClientMapUI\ClientMapUI.h"
+
 
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"

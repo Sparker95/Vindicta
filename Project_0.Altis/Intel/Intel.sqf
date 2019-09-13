@@ -42,6 +42,10 @@ CLASS("Intel", "")
 	Reference to the source <Intel> item this object is linked with.*/
 	VARIABLE_ATTR("source", [ATTR_SERIALIZABLE]);
 
+	/* variable: accuracy
+	Can have arbitrary value. Represents how accurate the intel is.*/
+	VARIABLE_ATTR("accuracy", [ATTR_SERIALIZABLE]);
+
 	/* variable: dbEntry
 	Reference to the dbEntry copy of this intel item. This is filled in by 
 	the intelDb when the item is added via addIntelClone, and used in 
@@ -70,19 +74,6 @@ CLASS("Intel", "")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		//OOP_INFO_0("DELETE");
-
-		// If db is valid then we can directly remove our matching intel entry from it.
-		private _db = T_GETV("db");
-		if(!isNil "_db") then {
-			T_PRVAR(dbEntry);
-			ASSERT_MSG(_dbEntry != _thisObject, "Circular reference in Intel!");
-
-			OOP_INFO_MSG("cleaning up intel object from db", []);
-			CALLM(_db, "removeIntelForClone", [_thisObject]);
-			DELETE(T_GETV("dbEntry"));
-			OOP_INFO_MSG("cleaned up intel object from db", []);
-		};
 	} ENDMETHOD;
 	
 
@@ -295,8 +286,8 @@ CLASS("IntelLocation", "Intel")
 	STATIC_METHOD("setLocationMarkerProperties") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 
-		diag_log format ["--- setLocationMarkerProperties: %1", _intel];
-		[_intel] call oop_dumpAllVariables;
+		//diag_log format ["--- setLocationMarkerProperties: %1", _intel];
+		//[_intel] call oop_dumpAllVariables;
 
 
 		pr _mapMarker = GETV(_thisObject, "mapMarker"); // Get map marker from this object, not from source object, because source object doesn't have a marker connected to it
@@ -321,13 +312,13 @@ CLASS("IntelLocation", "Intel")
 			default {[COLOR_UNKNOWN, "ColorCIV"]}; // Purple color
 		};
 
-		diag_log format ["--- Setting color: %1", _color];
+		//diag_log format ["--- Setting color: %1", _color];
 
 		pr _radius = GETV(_intel, "accuracyRadius");
 		if (isNil "_radius") then {_radius = 0; };
 
 		CALLM1(_mapMarker, "setPos", _pos);
-		CALLM1(_mapMarker, "setText", _text);
+		//CALLM1(_mapMarker, "setText", _text); // Let's not do this for now, not even sure if we want marker text anywhere
 		CALLM(_mapMarker, "setColorEx", _color);
 		CALLM1(_mapMarker, "setAccuracyRadius", _radius);
 		CALLM1(_mapMarker, "setType", _type);
@@ -374,6 +365,11 @@ ENDCLASS;
 	Base class for all intel about commander actions.
 */
 CLASS("IntelCommanderAction", "Intel")
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+
 	/* 
 		variable: side
 		Side of the faction that has planned to do this
@@ -428,19 +424,88 @@ CLASS("IntelCommanderAction", "Intel")
 	*/
 	VARIABLE_ATTR("strength", [ATTR_SERIALIZABLE]);
 
-	METHOD("clientAdd") {
+	// Bool, only makes sense on client
+	VARIABLE("shownOnMap");
+
+	/* virtual override */ METHOD("clientAdd") {
 		params [P_THISOBJECT];
 
 		systemChat format ["Added intel: %1", _thisObject];
 
 		// Hint
 		hint format ["Added intel: %1", _thisObject];
+
+		// Notify ClientMapUI
+		CALLM1(gClientMapUI, "onIntelAdded", _thisObject);
+	} ENDMETHOD;
+
+	/* virtual override */ METHOD("clientRemove") {
+		params [P_THISOBJECT];
+
+		systemChat format ["Removed intel: %1", _thisObject];
+
+		// Notify ClientMapUI
+		CALLM1(gClientMapUI, "onIntelRemoved", _thisObject);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
 	METHOD("getShortName") {
 		"Action"
 	} ENDMETHOD;
+
+
+	/*
+	Method: showOnMap
+	This method is only relevant to commander actions.
+	Here we have logic to show this intel on the map or hide it.
+	*/
+	/* virtual */ METHOD("showOnMap") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		OOP_INFO_1("SHOW ON MAP: %1", _show);
+
+		// Variable might be not initialized
+		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
+
+		if (_show) then {
+			if(!T_GETV("shownOnMap")) then {
+				pr _args = [[T_GETV("posSrc"), T_GETV("posTgt")],
+							_thisObject, // Unique string
+							true, // Enable
+							false, // Cycle
+							true]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", true);
+			};
+			// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		
+
+		} else {
+			// Delete the markers
+			if(T_GETV("shownOnMap")) then {
+				pr _args = [[],
+							_thisObject, // Unique string
+							false, // Enable
+							false, // Cycle
+							false]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", false);
+			};
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: showOnMap
+	It's meant to return where the map will zoom into on client
+	*/
+	METHOD("getMapZoomPos") {
+		params [P_THISOBJECT];
+		pr _pos0 = +T_GETV("posSrc");
+		pr _pos1 = T_GETV("posTgt");
+		pr _ret = (_pos0 vectorAdd _pos1) vectorMultiply 0.5;
+		_ret
+	} ENDMETHOD;
+
 ENDCLASS;
 
 /*
@@ -522,6 +587,47 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* variable: locations
 	Locations that the patrol will visit. */
 	VARIABLE_ATTR("locations", [ATTR_SERIALIZABLE]);
+
+	/*
+	Method: showOnMap
+	This method is only relevant to commander actions.
+	Here we have logic to show this intel on the map or hide it.
+	*/
+	/* virtual override */ METHOD("showOnMap") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		// Variable might be not initialized
+		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
+
+		if (_show) then {
+			if(!T_GETV("shownOnMap")) then {
+				pr _args = [T_GETV("waypoints"),
+							_thisObject, // Unique string
+							true, // Enable
+							true, // Cycle
+							false]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				// params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+				T_SETV("shownOnMap", true);
+			};
+		} else {
+			if(T_GETV("shownOnMap")) then {
+				// Delete the markers
+				pr _args = [[],
+							_thisObject, // Unique string
+							false, // Enable
+							false, // Cycle
+							false]; // Draw src and dest markers
+				CALLSM("ClientMapUI", "drawRoute", _args);
+				T_SETV("shownOnMap", false);
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("getMapZoomPos") {
+		params [P_THISOBJECT];
+		selectRandom T_GETV("waypoints")
+	} ENDMETHOD;
 
 	METHOD("getShortName") {
 		"Patrol"

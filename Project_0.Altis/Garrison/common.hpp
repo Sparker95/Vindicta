@@ -16,6 +16,7 @@
 #include "..\MessageReceiver\MessageReceiver.hpp"
 #include "..\Mutex\Mutex.hpp"
 #include "..\MutexRecursive\MutexRecursive.hpp"
+#include "..\AI\Commander\LocationData.hpp"
 
 // Mutex used in this file
 #ifndef _SQF_VM

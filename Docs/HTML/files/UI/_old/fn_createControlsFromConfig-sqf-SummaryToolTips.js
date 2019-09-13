@@ -1,1 +1,0 @@
-NDSummary.OnToolTipsLoaded("File:UI/_old/fn_createControlsFromConfig.sqf",{449:"<div class=\"NDToolTip TFunction LSQF\"><div class=\"TTSummary\">Creates controls fron config</div></div>"});
