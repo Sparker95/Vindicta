@@ -1157,6 +1157,16 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		T_SETV("selectedLocationMarkers", _locationsUnderCursor);
 		T_CALLM0("updateHintTextFromContext");
 
+		// Launch snek
+		pr _posWorld = _displayorcontrol posScreenToWorld [_xPos, _yPos];
+		if ((_posWorld distance2D [0, 0, 0]) < 150 ) then {
+			if (CALLSM0("Snek", "isRunning")) then {
+				CALLSM0("Snek", "stop");
+			} else {
+				CALLSM0("Snek", "start");
+			};
+		};
+
 	} ENDMETHOD;
 
 

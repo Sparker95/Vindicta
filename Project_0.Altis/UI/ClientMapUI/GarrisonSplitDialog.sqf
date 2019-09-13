@@ -624,8 +624,9 @@ CLASS("GarrisonSplitDialog", "")
 			};
 			case 22: {
 				// It's a success
+				T_CALLM1("setHintText", "Garrison was split successfully");
 				systemChat "Garrison was split successfully";
-				CALLSM0("GarrisonSplitDialog", "deleteInstance");
+				//CALLSM0("GarrisonSplitDialog", "deleteInstance"); no let's rather not auto-close it, because we might have opened another dialog already
 			};
 		};
 

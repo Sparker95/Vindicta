@@ -541,7 +541,7 @@ SETSV("Snek", "snek", "");
 
 
 // Map marker that starts the game
-
+/*
 CLASS("MapMarkerSnek", "MapMarker")
 
 	METHOD("new") {
@@ -564,24 +564,9 @@ CLASS("MapMarkerSnek", "MapMarker")
 
 
 	METHOD("onDraw") {
-		/*
-		params ["_thisObject", "_control"];
 
-		pr _pos = T_GETV("pos");
-
-		_control drawIcon
-		[
-			"#(rgb,1,1,1)color(1,1,1,0.5)", // Texture
-			[0,1,0,1], //Color
-			_pos, // Pos
-			T_GETV("eWidthUI"), // Width
-			T_GETV("eHeightUI"), // Height
-			0, // Angle
-			_thisObject // Text
-		];
-		*/
 	} ENDMETHOD;
 
 ENDCLASS;
-
+*/
 //NEW("MapMarkerSnek", []);
