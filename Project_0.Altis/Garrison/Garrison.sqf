@@ -1510,6 +1510,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
 
+		// Bail if garSrc is destroyed for some reason
+		if (!IS_OOP_OBJECT(_garSrc)) exitWith {
+			OOP_ERROR_1("Source garrison object is invalid: %1", _garSrc);
+			1
+		};
+
 		__MUTEX_LOCK;
 
 		// Number of unsatisfied constraints

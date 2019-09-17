@@ -13,6 +13,8 @@ Author: Sparker 23 August 2019
 
 #define pr private
 
+#define __JIP_ID_SUFFIX "_srv_update"
+
 CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// Array with garrisons which have just been created
@@ -58,7 +60,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		OOP_INFO_1("  data: %1", _serArray);
 
 		// Now we can send the serialized array
-		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "update", [_serArray], _target, false); // classNameStr, methodNameStr, extraParams, targets, JIP
+		pr _jipid = _gar + __JIP_ID_SUFFIX;
+		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "update", [_serArray], _target, _jipid); // classNameStr, methodNameStr, extraParams, targets, JIP
 	} ENDMETHOD;
 
 	// We only receive messages from timer now, so we don't care about the message type
@@ -86,7 +89,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Just send data to everyone, those who don't care about these objects will just ignore them
 		{
 			pr _sides = [EAST, WEST, INDEPENDENT, CIVILIAN];
-			REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "destroy", [_x], _sides, false); // Execute on all machines with interface
+			REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonDatabaseClient", "destroy", [_x], _sides, false); // Execute on all machines with interface, don't add to JIP!
+			// Remove the message from the JIP queue
+			pr _jipid = _x + __JIP_ID_SUFFIX;
+			remoteExecCall ["", _jipid];
 		} forEach _destroyedGarrisons;
 
 		// Reset the arrays of garrisons to broadcast
