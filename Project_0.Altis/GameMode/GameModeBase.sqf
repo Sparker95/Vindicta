@@ -150,9 +150,6 @@ CLASS("GameModeBase", "")
 			// Create PlayerDatabaseClient
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 
-			// Create GarrisonDatabaseClient
-			gGarrisonDBClient = NEW("GarrisonDatabaseClient", []);
-
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);
