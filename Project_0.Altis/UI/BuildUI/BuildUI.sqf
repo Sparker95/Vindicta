@@ -1043,8 +1043,3 @@ build_UI_setObjectMovable = {
 	OOP_INFO_2("'build_UI_setObjectMovable' method called with %1, %2", _obj, _val);
 	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);
 };
-
-#ifndef _SQF_VM
-NEW("BuildUI", []);
-#endif
-

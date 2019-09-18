@@ -19,3 +19,5 @@ uiNamespace setVariable ["clientMapUI_display", displayNull];
 // Init abstract classes representing the UI
 CALLSM0("PlayerListUI", "new");
 gClientMapUI = NEW("ClientMapUI", []);
+
+gBuildUI = NEW("BuildUI", []);
