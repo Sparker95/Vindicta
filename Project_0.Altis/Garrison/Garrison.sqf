@@ -40,6 +40,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE]);
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
@@ -80,6 +81,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("countInf", 0);
 		T_SETV("countVeh", 0);
 		T_SETV("countDrone", 0);
+		T_SETV("countCargo", 0);
 		T_SETV("location", "");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
@@ -91,7 +93,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _tempArray = [];
 			_tempArray resize _x;
 			_comp pushBack (_tempArray apply {[]});
-		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 		T_SETV("composition", _comp);
 
 		// Create AI object
@@ -1782,6 +1784,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_INF: {_varName = "countInf"};
 			case T_VEH: {_varName = "countVeh"};
 			case T_DRONE: {_varName = "countDrone"};
+			case T_CARGO: {_varName = "countCargo"};
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
@@ -1829,6 +1832,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_INF: {_varName = "countInf"};
 			case T_VEH: {_varName = "countVeh"};
 			case T_DRONE: {_varName = "countDrone"};
+			case T_CARGO: {_varName = "countCargo"};
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
 
@@ -1895,7 +1899,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				pr _tempArray = [];
 				_tempArray resize _x;
 				_comp pushBack (_tempArray apply {[]});
-			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 			_comp
 		};
 		pr _return = +T_GETV("composition");
@@ -2155,7 +2159,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	/*
 	Method: countVehicleUnits
-	Returns the amount of infantry units
+	Returns the amount of vehicle units
 
 	Returns: Number
 	*/
@@ -2166,13 +2170,24 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	/*
 	Method: countDroneUnits
-	Returns the amount of infantry units
+	Returns the amount of drone units
 
 	Returns: Number
 	*/
 	METHOD("countDroneUnits") {
 		params [P_THISOBJECT];
 		T_GETV("countDrone")
+	} ENDMETHOD;
+
+	/*
+	Method: countCargoUnits
+	Returns the amount of cargo units
+
+	Returns: Number
+	*/
+	METHOD("countCargoUnits") {
+		params [P_THISOBJECT];
+		T_GETV("countCargo")
 	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================

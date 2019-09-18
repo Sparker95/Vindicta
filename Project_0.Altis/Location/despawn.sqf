@@ -29,4 +29,10 @@ T_SETV("spawned", false);
 //despawn civilians
 T_GETV("cpModule") call CivPresence_fnc_despawn; 
 
+// Reset counters
+private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
+{
+	_x set [LOCATION_SPT_ID_COUNTER, 0];
+} forEach _stAll;
+
 CALLM(gGameMode, "locationDespawned", [_thisObject]);

@@ -48,4 +48,15 @@ class CfgMagazines
 	COPY_CLASS_512(vin_document_1, vin_document_1)
 	COPY_CLASS_512(vin_tablet_0, vin_tablet_0)
 	COPY_CLASS_512(vin_tablet_1, vin_tablet_1)
+
+	class vin_build_res_0: CA_Magazine
+	{
+		buildResource = 10;
+		mass = 80; // In arma it's really volume, not mass
+		scope=2;
+		displayName="Construction resources (x10)";
+		descriptionShort = "Resources to build different things";
+		picture = "\A3\EditorPreviews_F_Orange\Data\CfgVehicles\Land_PaperBox_01_small_closed_brown_F.jpg";
+		model = "\A3\Props_F_Orange\Humanitarian\Supplies\PaperBox_01_small_closed_F.p3d";
+	};
 };

@@ -44,6 +44,7 @@ _inf set [T_INF_diver_exp, "Diver Explosive Specialist"]; //			= 33; //Diver exp
 
 T_NAMES set [T_INF, _inf];
 
+// Vehicles
 private _veh = [];
 _veh set [T_VEH_default, "Unknown Vehicle"];
 _veh set [T_VEH_car_unarmed, "Unarmed Car"]; //	= 1; //Car like Prowler or UAZ
@@ -86,3 +87,12 @@ _veh set [T_VEH_truck_fuel, "Fuel Truck"];//	= 37; //Fuel truck
 _veh set [T_VEH_submarine, "Submarine"];//		= 38; //Submarine
 
 T_NAMES set [T_VEH, _veh];
+
+// Cargo boxes
+private _cargo = [];
+_cargo set [T_CARGO_default, "Unknown cargo box"];
+_cargo set [T_CARGO_box_small, "Small cargo box"];
+_cargo set [T_CARGO_box_medium, "Medium cargo box"];
+_cargo set [T_CARGO_box_big, "Big cargo box"];
+
+T_NAMES set [T_CARGO, _cargo];

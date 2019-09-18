@@ -329,6 +329,52 @@ CLASS(UNIT_CLASS_NAME, "");
 				};
 				case T_DRONE: {
 				};
+
+				case T_CARGO: {
+					private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+					
+					// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
+					pr _special = "CAN_COLLIDE";
+					/*
+					if ([_catID, _subcatID] in T_static) then {
+						_special = "CAN_COLLIDE";
+					};
+					*/
+
+					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
+
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
+						_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
+					};
+
+					_objectHandle allowDamage false;
+					private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
+						params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+						OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
+						// if(_force > 100) then {
+						// 	deleteVehicle _object1;
+						// };
+					}];
+
+					[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
+						params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+						sleep 1;
+						_objectHandle allowDamage true;
+						// If it survived spawning
+						if (alive _objectHandle) then {
+							OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
+							_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
+						} else {
+							
+						};
+					};
+
+					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
+					//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
+					// Give intel to this unit
+					//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
+				};
 			};
 
 
@@ -448,6 +494,11 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			case T_DRONE: {
 				_hO triggerDynamicSimulation true;
+				_hO enableDynamicSimulation false;
+			};
+
+			case T_CARGO: {
+				_hO triggerDynamicSimulation false;
 				_hO enableDynamicSimulation false;
 			};
 		};
@@ -910,6 +961,18 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		_data select UNIT_DATA_ID_CAT == T_DRONE
 	} ENDMETHOD;
+
+	/*
+	Method: isCargo
+	Returns true if given <Unit> is cargo
+
+	Returns: Bool
+	*/
+	METHOD("isCargo") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_CARGO
+	} ENDMETHOD;
 	
 	//                         I S   S T A T I C
 	/*
@@ -924,6 +987,36 @@ CLASS(UNIT_CLASS_NAME, "");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
 	} ENDMETHOD;
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               B U I L D   R E S O U R C E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	METHOD("setBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data set [UNIT_DATA_ID_BUILD_RESOURCE, _value];
+	} ENDMETHOD;
+
+	METHOD("getBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _return = if (T_CALLM0("isSpawned")) then {
+			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+			pr _magCargo = getMagazineCargo _hO;
+			pr _index = _magCargo#0 find "vin_build_res_0";
+			if (_index != -1) then {
+				pr _amount = _magCargo#1#_index;
+				pr _buildResPerMag = 10; //configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource";
+				_amount * _buildResPerMag
+			} else {
+				0
+			};
+		} else {
+			_data select UNIT_DATA_ID_BUILD_RESOURCE
+		};
+		
+		_return
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               G O A P
@@ -968,21 +1061,43 @@ CLASS(UNIT_CLASS_NAME, "");
 		["ActionUnitSalute","ActionUnitScareAway"]
 	} ENDMETHOD;
 
+	/*
+	Method: createDefaultCrew
+	Creates default crew for a vehicle.
+	The vehicle must be in a group.
 
+	Parameters: _template
 
+	_template - the template array to get unit's class name from.
 
+	Returns: nil
+	*/
 
+	METHOD("createDefaultCrew") {
+		params [ ["_thisObject", "", [""]], ["_template", [], [[]]] ];
+
+		private _data = GET_VAR(_thisObject, "data");
+
+		// Check if the unit is in a group
+		private _group = _data select UNIT_DATA_ID_GROUP;
+		if (_group == "") exitWith { diag_log format ["[Unit::createDefaultCrew] Error: cannot create crew for a unit which has no group: %1", CALL_METHOD(_thisObject, "getData", [])] };
+
+		private _className = _data select UNIT_DATA_ID_CLASS_NAME;
+		private _catID = _data select UNIT_DATA_ID_CAT;
+		private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+		private _crewData = [_catID, _subcatID, _className] call t_fnc_getDefaultCrew;
+
+		{
+			private _unitCatID = _x select 0; // Unit's category
+			private _unitSubcatID = _x select 1; // Unit's subcategory
+			private _unitClassID = _x select 2;
+			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
+			private _newUnit = NEW("Unit", _args);
+		} forEach _crewData;
+	} ENDMETHOD;
 
 	// ================= File based methods ======================
 	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
-	//METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
-	//METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
-	//METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
-	//METHOD_FILE("doGetUpFromBench", "Unit\doGetUpFromBench.sqf");
-	//METHOD_FILE("doAnimRepairVehicle", "Unit\doAnimRepairVehicle.sqf");
-	//METHOD_FILE("doInteractAnimObject", "Unit\doInteractAnimObject.sqf");
-	//METHOD_FILE("doStopInteractAnimObject", "Unit\doStopInteractAnimObject.sqf");
-	//METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
 
 ENDCLASS;
 

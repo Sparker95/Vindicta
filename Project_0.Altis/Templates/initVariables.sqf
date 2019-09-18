@@ -3,6 +3,7 @@ call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
 call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
 call compile preprocessFileLineNumbers "Templates\initPlayerSpawnTemplates.sqf";
 call compile preprocessFileLineNumbers "Templates\initLoadouts.sqf";
+call compile preprocessFileLineNumbers "Templates\initFactions.sqf";
 
 #ifndef _SQF_VM
 // Hashmap that matches class name to number

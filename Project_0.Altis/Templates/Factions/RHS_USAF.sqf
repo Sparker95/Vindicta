@@ -7,7 +7,7 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = [];
+_inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["rhsusf_army_ocp_rifleman_m4"]];
 
@@ -51,7 +51,7 @@ _inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
 
 
 //==== Vehicles ====
-_veh = [];
+_veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhsusf_m1025_w_m2"]];
 
@@ -104,7 +104,7 @@ _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 
 //==== Drones ====
-_drone = [];
+_drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["B_UAV_01_F"]];
 
@@ -119,6 +119,8 @@ _drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
 _drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
 _group = [];
@@ -143,6 +145,7 @@ _group set [T_GROUP_inf_sniper_team, [configFile >> "CfgGroups" >> "West" >> "rh
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
+_array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
 

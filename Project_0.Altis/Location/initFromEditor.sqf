@@ -96,6 +96,13 @@ private _bdir = 0; //Building direction
 			CALL_METHOD(_thisObject, "addSpawnPos", _args);
 			deleteVehicle _object;
 		};
+
+		// A cargo container defines a position for cargo boxes
+		if (_type == "B_Slingload_01_Cargo_F") then {
+			private _args = [T_PL_cargo, [GROUP_TYPE_IDLE], getPosATL _object, direction _object, objNull];
+			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			deleteVehicle _object;
+		};
 		
 		// Process buildings
 		if (_type isKindOf "House") then {

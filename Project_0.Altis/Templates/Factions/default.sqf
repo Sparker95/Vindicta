@@ -7,52 +7,19 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
+_inf = [];
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT,  ["B_Soldier_F"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_default, ["B_Soldier_F"]];
-_inf set [T_INF_SL, ["B_Soldier_SL_F"]];
-_inf set [T_INF_TL, ["B_Soldier_TL_F"]];
-_inf set [T_INF_officer, ["B_officer_F"]];
-_inf set [T_INF_GL, ["B_Soldier_GL_F"]];
-_inf set [T_INF_rifleman, ["B_Soldier_F"]];
-_inf set [T_INF_marksman, ["B_soldier_M_F"]];
-_inf set [T_INF_sniper, ["B_Sharpshooter_F"]];
-_inf set [T_INF_spotter, ["B_Soldier_lite_F"]];
-_inf set [T_INF_exp, ["B_soldier_exp_F"]];
-_inf set [T_INF_ammo, ["B_Soldier_A_F"]];
-_inf set [T_INF_LAT, ["B_soldier_LAT2_F"]];
-_inf set [T_INF_AT, ["B_soldier_LAT_F"]];
-_inf set [T_INF_AA, ["B_soldier_AA_F"]];
-_inf set [T_INF_LMG, ["B_soldier_AR_F"]];
-_inf set [T_INF_HMG, ["B_HeavyGunner_F"]];
-_inf set [T_INF_medic, ["B_medic_F"]];
-_inf set [T_INF_engineer, ["B_engineer_F"]];
-_inf set [T_INF_crew, ["B_crew_F"]];
-_inf set [T_INF_crew_heli, ["B_helicrew_F"]];
-_inf set [T_INF_pilot, ["B_Fighter_Pilot_F"]];
-_inf set [T_INF_pilot_heli, ["B_Helipilot_F"]];
-_inf set [T_INF_survivor, ["B_Survivor_F"]];
-_inf set [T_INF_unarmed, ["B_Soldier_unarmed_F"]];
 
 //Recon
-_inf set [T_INF_recon_TL, ["B_recon_TL_F"]];
-_inf set [T_INF_recon_rifleman, ["B_recon_F"]];
-_inf set [T_INF_recon_medic, ["B_recon_medic_F"]];
-_inf set [T_INF_recon_exp, ["B_recon_exp_F"]];
-_inf set [T_INF_recon_LAT, ["B_recon_LAT_F"]];
-_inf set [T_INF_recon_marksman, ["B_recon_M_F"]];
-_inf set [T_INF_recon_JTAC, ["B_recon_JTAC_F"]];
 
 //Divers
-_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
-_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
-_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
+
 
 //==== Vehicles ====
 
-_veh = +(tDefault select T_VEH);
+_veh = [];
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_MRAP_01_F"]];
 
@@ -97,7 +64,7 @@ _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 
 //==== Drones ====
-_drone = +(tDefault select T_DRONE);
+_drone = [];
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["B_UAV_01_F"]];
 
@@ -113,7 +80,12 @@ _drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
 //==== Cargo ====
-_cargo = +(tDefault select T_CARGO);
+_cargo = [];
+
+_cargo set [T_CARGO_default,	["I_supplyCrate_F"]];
+_cargo set [T_CARGO_box_small,	["Box_Syndicate_Ammo_F"]];
+_cargo set [T_CARGO_box_medium,	["I_supplyCrate_F"]];
+_cargo set [T_CARGO_box_big,	["B_CargoNet_01_ammo_F"]];
 
 //==== Groups ====
 _group = [];

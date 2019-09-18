@@ -14,8 +14,8 @@ OR it could be done through a get-function
 Author: Sparker 08.2017
 */
 
-T_SIZE = 4; //Number of categories in template
-T_WEIGHTS_OFFSET = 4; //Number of categories in template
+T_SIZE = 5; //Number of categories in template
+T_WEIGHTS_OFFSET = 5; //Number of categories in template
 
 T_INF = 0;			//The ID of this category
 T_INF_SIZE = 34;	//The size of this category
@@ -170,8 +170,17 @@ T_DRONE_stat_HMG_low	= 8;
 T_DRONE_stat_GMG_low	= 9;
 T_DRONE_stat_AA			= 10;
 
+//Cargo
+T_CARGO = 3;
+T_CARGO_SIZE = 4;
+
+T_CARGO_default		= 0;
+T_CARGO_box_small	= 1;
+T_CARGO_box_medium	= 2;
+T_CARGO_box_big		= 3;
+
 //Groups
-T_GROUP = 3;
+T_GROUP = 4;
 T_GROUP_SIZE = 13;
 
 T_GROUP_default				= 0; //Default group if group is not specified
@@ -272,6 +281,14 @@ T_PL_inf_main = //Main infantry (excluding recon and divers)
 	[T_INF, T_INF_pilot_heli],
 	[T_INF, T_INF_survivor],
 	[T_INF, T_INF_unarmed]
+];
+
+// Cargo boxes
+T_PL_cargo =
+[
+	[T_CARGO, T_CARGO_box_small],
+	[T_CARGO, T_CARGO_box_medium],
+	[T_CARGO, T_CARGO_box_big]
 ];
 
 //Transport vehicles (those that can potentially carry cargo)

@@ -21,15 +21,6 @@ if (isNil "OOP_Light_initialized") then {
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 
-//Initialize the NATO template
-tNATO =					["Templates\Factions\NATO.sqf"]					call t_fnc_initializeTemplateFromFile;
-tCSAT =					["Templates\Factions\CSAT.sqf"]					call t_fnc_initializeTemplateFromFile;
-tAAF = 					["Templates\Factions\AAF.sqf"]					call t_fnc_initializeTemplateFromFile;
-tGUERILLA = 			["Templates\Factions\GUERILLA.sqf"]				call t_fnc_initializeTemplateFromFile;
-tPOLICE = 				["Templates\Factions\POLICE.sqf"]				call t_fnc_initializeTemplateFromFile;
-tCIVILIAN = 			["Templates\Factions\CIVILIAN.sqf"]				call t_fnc_initializeTemplateFromFile;
-tRHS_AAF2017_elite =	["Templates\Factions\RHS_AAF2017_elite.sqf"]	call t_fnc_initializeTemplateFromFile;
-
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
 

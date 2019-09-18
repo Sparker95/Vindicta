@@ -7,7 +7,7 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = [];
+_inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["FGN_AAF_inf_rifleman"]];
 
@@ -52,7 +52,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_AAF2017_recon_JTAC"]];
 
 
 //==== Vehicles ====
-_veh = [];
+_veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["FGN_AAF_M1025_unarmed"]];
 
@@ -108,7 +108,7 @@ _veh set [T_VEH_truck_fuel, ["FGN_AAF_Ural_Fuel","FGN_AAF_Zamak_Fuel"]];
 
 
 //==== Drones ====
-_drone = [];
+_drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 _drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 
@@ -124,6 +124,8 @@ _drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 //_drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
 _group = [];
@@ -149,6 +151,7 @@ _group set [T_GROUP_inf_recon_team,		[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_re
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
+_array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 
 

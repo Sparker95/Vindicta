@@ -291,8 +291,9 @@ CLASS("GameModeBase", "")
 				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
-				private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);				
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry])
+				private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);
+				private _cCargoBoxes = 2;			
+				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
 				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
@@ -547,7 +548,7 @@ CLASS("GameModeBase", "")
 	#define ADD_APCS_IFVS
 	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
-		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry")];
+		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 		
 		private _gar = NEW("Garrison", [_side]);
 		CALLM1(_gar, "setFaction", _faction);
@@ -730,6 +731,25 @@ CLASS("GameModeBase", "")
 				CALLM(_gar, "addGroup", [_staticGroup]);
 			};
 		};
+
+		// Cargo boxes
+		_i = 0;
+		while {_cCargoBoxes > 0 && _i < 3} do {
+			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
+			if (CALL_METHOD(_newUnit, "isValid", [])) then {
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+				} else {
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
+				OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
+				_cCargoBoxes = _cCargoBoxes - 1;
+			} else {
+				DELETE(_newUnit);
+			};
+			_i = _i + 1;
+		};
+
 		_gar
 	} ENDMETHOD;
 

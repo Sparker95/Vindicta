@@ -3,7 +3,7 @@ POLICE templates for ARMA III
 */
 
 // //==== Infantry ====
-// _inf = [];
+// _inf = +(tDefault select T_INF);
 // _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 // _inf set [T_INF_DEFAULT, ["B_GEN_Soldier_F"]];					//Default infantry if nothing is found
 
@@ -32,7 +32,7 @@ POLICE templates for ARMA III
 // _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 
 //==== Vehicles ====
-_veh = [];
+_veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_default, [
     "C_Hatchback_01_sport_F",
@@ -115,7 +115,7 @@ _vehWeights set [T_VEH_default, [
 
 
 // //==== Drones ====
-// _drone = [];
+// +(tDefault select T_DRONE);
 // _drone set [T_DRONE_SIZE-1, nil];
 // _drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
 
@@ -130,6 +130,8 @@ _vehWeights set [T_VEH_default, [
 // _drone set [T_DRONE_stat_GMG_low, ["O_GMG_01_A_F"]];
 // //_drone set [T_DRONE_stat_AA, ["O_SAM_System_04_F"]];
 
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
 
 // //==== Groups ====
 // _group = [];
@@ -158,6 +160,7 @@ _array set [T_SIZE*2-1, nil]; //Make an array having the size equal to the numbe
 _array set [T_INF, []];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
+_array set [T_CARGO, _cargo];
 _array set [T_GROUP, []];
 _array set [T_VEH+T_WEIGHTS_OFFSET, _vehWeights];
 
