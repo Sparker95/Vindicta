@@ -668,7 +668,7 @@ CLASS("GameModeBase", "")
 					CALLM(_gar, "addUnit", [_newUnit]);
 				};
 				OOP_INFO_MSG("%1: Added truck %2", [_gar ARG _newUnit]);
-				_cVehGround = _cVehGround - 1;w
+				_cVehGround = _cVehGround - 1;
 			} else {
 				DELETE(_newUnit);
 			};
@@ -736,6 +736,7 @@ CLASS("GameModeBase", "")
 		_i = 0;
 		while {_cCargoBoxes > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
+			CALLM1(_newUnit, "setBuildResources", 110);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);

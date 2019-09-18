@@ -57,6 +57,8 @@ class CfgMagazines
 		displayName="Construction resources (x10)";
 		descriptionShort = "Resources to build different things";
 		picture = "\A3\EditorPreviews_F_Orange\Data\CfgVehicles\Land_PaperBox_01_small_closed_brown_F.jpg";
+		hiddenSelections[] = {"Camo"};
+		hiddenSelectionsTextures[] = {"\A3\Props_F_Orange\Humanitarian\Supplies\Data\PaperBox_01_small_brown_CO.paa"};
 		model = "\A3\Props_F_Orange\Humanitarian\Supplies\PaperBox_01_small_closed_F.p3d";
 	};
 };

@@ -139,7 +139,9 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_MEM(_thisObject, "data");
 
 		//Despawn this unit if it was spawned
-		CALLM(_thisObject, "despawn", []);
+		if (T_CALLM0("isSpawned")) then {
+			CALLM(_thisObject, "despawn", []);
+		};
 
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
@@ -172,9 +174,16 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("isValid") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
-		if (isNil "_data") exitWith {false};
-		//Return true if the data array is of the correct size
-		( (count _data) == UNIT_DATA_SIZE)
+		pr _return = if (isNil "_data") then {
+			false
+		} else {
+			//Return true if the data array is of the correct size
+			( (count _data) == UNIT_DATA_SIZE)
+		};
+
+		if (!_return) then {OOP_ERROR_1("INVALID UNIT, _data: %1", _data);};
+
+		_return
 	} ENDMETHOD;
 
 
@@ -236,6 +245,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		private _buildResources = _data select UNIT_DATA_ID_BUILD_RESOURCE;
 		if (isNull _objectHandle) then { //If it's not spawned yet
 			private _className = _data select UNIT_DATA_ID_CLASS_NAME;
 			private _group = _data select UNIT_DATA_ID_GROUP;
@@ -326,6 +336,11 @@ CLASS(UNIT_CLASS_NAME, "");
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");					
 					// Give intel to this unit
 					CALLSM1("UnitIntel", "initUnit", _thisObject);
+
+					// Set build resources
+					if (_buildResources > 0) then {
+						T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+					};
 				};
 				case T_DRONE: {
 				};
@@ -374,6 +389,11 @@ CLASS(UNIT_CLASS_NAME, "");
 					//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
 					// Give intel to this unit
 					//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
+
+					// Set build resources
+					if (_buildResources > 0) then {
+						T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+					};
 				};
 			};
 
@@ -540,6 +560,15 @@ CLASS(UNIT_CLASS_NAME, "");
 				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
 				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 				_data set [UNIT_DATA_ID_AI, ""];
+			};
+
+			// Get the amount of actual build resources in inventory
+			// And store them into the array before we delete the vehicle
+			pr _buildResources = 0;
+			pr _catID = _data select UNIT_DATA_ID_CAT;
+			if (_catID == T_VEH || _catID == T_CARGO) then {
+				_buildResources = T_CALLM0("_getBuildResourcesSpawned");
+				_data set [UNIT_DATA_ID_BUILD_RESOURCE, _buildResources];
 			};
 
 			// Delete the vehicle
@@ -995,27 +1024,66 @@ CLASS(UNIT_CLASS_NAME, "");
 		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [UNIT_DATA_ID_BUILD_RESOURCE, _value];
+		if (T_CALLM0("isSpawned")) then {
+			T_CALLM1("_setBuildResourcesSpawned", _value);
+		};
 	} ENDMETHOD;
 
 	METHOD("getBuildResources") {
-		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
 		private _return = if (T_CALLM0("isSpawned")) then {
-			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-			pr _magCargo = getMagazineCargo _hO;
-			pr _index = _magCargo#0 find "vin_build_res_0";
-			if (_index != -1) then {
-				pr _amount = _magCargo#1#_index;
-				pr _buildResPerMag = 10; //configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource";
-				_amount * _buildResPerMag
-			} else {
-				0
-			};
+			T_CALLM0("_getBuildResourcesSpawned")
 		} else {
 			_data select UNIT_DATA_ID_BUILD_RESOURCE
 		};
-		
 		_return
+	} ENDMETHOD;
+
+	METHOD("_setBuildResourcesSpawned") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		private _data = GET_VAR(_thisObject, "data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {0};
+
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _nItemsNeeded = ceil (_value/_buildResPerMag);
+		pr _magCargo = getMagazineCargo _hO;
+		pr _index = _magCargo#0 find "vin_build_res_0";
+
+		// Make the exact needed amount of items in the inventory
+		pr _nItemsInCargo = 0;
+		pr _nItemsToAdd = _nItemsNeeded;
+		if (_index != -1) then { // If such items are already in the inventory
+			pr _nItemsInCargo = _magCargo#1#_index;
+			_nItemsToAdd = _nItemsNeeded - _nItemsInCargo;
+		};
+		if (_nItemsToAdd > 0) then {
+			// Add items
+			_hO addMagazineCargoGlobal ["vin_build_res_0", _nItemsToAdd];
+		} else {
+			if (_nItemsToAdd < 0) then {
+				// Remove items
+				[_hO, "vin_build_res_0", -_nItemsToAdd] call CBA_fnc_removeMagazineCargo;
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("_getBuildResourcesSpawned") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {0};
+		pr _magCargo = getMagazineCargo _hO;
+		pr _index = _magCargo#0 find "vin_build_res_0";
+		if (_index != -1) then {
+			pr _amount = _magCargo#1#_index;
+			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+			_amount * _buildResPerMag
+		} else {
+			0
+		};
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1097,7 +1165,6 @@ CLASS(UNIT_CLASS_NAME, "");
 	} ENDMETHOD;
 
 	// ================= File based methods ======================
-	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
 
 ENDCLASS;
 
