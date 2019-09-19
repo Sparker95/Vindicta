@@ -11,13 +11,10 @@ _idd = 12;
 
 g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register UndercoverUI layer
 uiNamespace setVariable ["undercoverUI_display", displayNull];			
-g_rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];
-
-g_rscLayerClientMapUI = ["rscLayerClientMapUI"] call BIS_fnc_rscLayer;	// register clientMapUI layer
-uiNamespace setVariable ["clientMapUI_display", displayNull];			
+g_rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];	
 
 // Init abstract classes representing the UI
 CALLSM0("PlayerListUI", "new");
 gClientMapUI = NEW("ClientMapUI", []);
-
+gInGameUI = NEW("InGameUI", []);
 gBuildUI = NEW("BuildUI", []);

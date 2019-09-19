@@ -36,6 +36,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
 	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
 
+	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE]);
+
 	// Counters of subcategories
 	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
@@ -47,6 +49,12 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
 
 	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
+
+	// Flag which is reset at each process call
+	// It is set by various functions changing state of this garrison
+	// We use it to delay a large amount of big computations when many changes happen rapidly,
+	// which would otherwise cause a lot of computations on each change
+	VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -86,6 +94,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
 		T_SETV("intelItems", []);
+		T_SETV("buildResources", -1);
+		T_SETV("outdated", true);
+
 
 		// Set value of composition array
 		pr _comp = [];
@@ -159,7 +170,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("active", true);
 
 		// Notify GarrisonServer
-		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		T_SETV("outdated", true);
 
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
@@ -181,8 +192,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set 'active' flag
 		T_SETV("active", true);
 
-		// Notify GarrisonServer
-		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		T_SETV("outdated", true);
 
 		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
 		nil
@@ -273,7 +283,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Notify GarrisonServer
-		CALLM1(gGarrisonServer, "onGarrisonDestroyed", _thisObject);
+		T_SETV("outdated", true);
 
 		__MUTEX_UNLOCK;
 
@@ -390,6 +400,19 @@ CLASS("Garrison", "MessageReceiverEx");
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
+			};
+
+			pr _loc = T_GETV("location");
+			// Players might be messing with inventories, so we must update our amount of build resources more often
+			pr _locHasPlayers = (_loc != "" && { CALLM0(_loc, "hasPlayers") } );
+			if (T_GETV("outdated") || _locHasPlayers) then {
+				// Update build resources from the actual units
+				T_CALLM0("updateBuildResources");
+
+				// Notify GarrisonServer
+				CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+
+				T_SETV("outdated", false);
 			};
 		};
 
@@ -733,6 +756,99 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	/*
+	Method: getBuildResources
+
+	Returns: number
+	*/
+	METHOD("getBuildResources") {
+		params [P_THISOBJECT, ["_forceUpdate", false]];
+
+		pr _buildRes = T_GETV("buildResources");
+		__MUTEX_LOCK;
+		if (_buildRes == -1 || _forceUpdate) then {
+			T_CALLM0("updateBuildResources");
+		};
+		__MUTEX_UNLOCK;
+
+		_buildRes
+	} ENDMETHOD;
+
+	// This is rather computation-heavy
+	// An internal function
+	METHOD("_getBuildResources") {
+		params [P_THISOBJECT];
+
+		pr _return = 0;
+		pr _units = T_GETV("units");
+		{
+			_return = _return + CALLM0(_x, "getBuildResources");
+		} forEach _units;
+
+		_return
+	} ENDMETHOD;
+
+	// Call this to update the buildResources variable
+	// After this call, getBuildResources should be returning the most actual value
+	METHOD("updateBuildResources") {
+		params [P_THISOBJECT];
+		_buildRes = T_CALLM0("_getBuildResources");
+		T_SETV("buildResources", _buildRes);
+	} ENDMETHOD;
+
+	METHOD("addBuildResources") {
+		params [P_THISOBJECT, P_NUMBER("_value")];
+
+		// Bail if number is negative
+		if (_value <= 0) exitWith {};
+		
+		// Find units which can have build resources
+		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+
+		// Bail if there are no units which can have build resources
+		if (count _units == 0) exitWith {};
+
+		pr _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
+		{
+			CALLM1(_x, "addBuildResources", _valuePerUnit);
+		} forEach _units;
+	} ENDMETHOD;
+
+	METHOD("removeBuildResources") {
+		params [P_THISOBJECT, P_NUMBER("_valueToRemove")];
+
+		// Bail if number is negative
+		if (_valueToRemove <= 0) exitWith {};
+
+		pr _resCurrent = T_CALLM0("getBuildResources");
+
+		// Find units which can have build resources
+		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+
+		// Bail if there are no units which can have build resources
+		if (count _units == 0) exitWith {};
+
+		pr _resRemoved = 0; // Amount of resources removed so far
+		pr _i = 0;
+		pr _go = true;
+		while {(_i < (count _units)) && (_resRemoved < _valueToRemove) && _go} do {
+			pr _unit = _units#_i;
+			pr _resAtUnit = CALLM0(_x, "getBuildResources");
+			pr _resLeftToRemove = _valueToRemove - _resRemoved;
+			if (_resAtUnit <= _resLeftToRemove) then {
+				// Remove everything at this unit
+				CALLM1(_x, "removeBuildResource", _resAtUnit);
+				_resRemoved = _resRemoved + _resAtUnit;
+			} else {
+				// Remove only what is needed to remove
+				CALLM1(_x, "removeBuildResource", _resLeftToRemove);
+				_resRemoved = _resRemoved + _resLeftToRemove;
+				_go = false; // Terminate the loop
+			};
+			_i = _i + 1;
+		};
+	} ENDMETHOD;
+
 	// |                         G E T   D R O N E   U N I T S
 	/*
 	Method: getVehicleUnits
@@ -1061,9 +1177,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
  
 		// Notify GarrisonServer
-		if (T_GETV("active")) then {
-			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
-		};
+		T_SETV("outdated", true);
 
 		__MUTEX_UNLOCK;
 
@@ -1135,9 +1249,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 
 		// Notify GarrisonServer
-		if (T_GETV("active")) then {
-			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
-		};
+		T_SETV("outdated", true);
 
 		__MUTEX_UNLOCK;
 

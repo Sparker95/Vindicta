@@ -56,7 +56,7 @@ switch (T_GETV("spawned")) do {
 			CALLM0(_thisObject, "spawn");
 
 			// Set timer interval
-			CALLM1(_timer, "setInterval", 10); // Despawn conditions can be evaluated with even lower frequency
+			CALLM1(_timer, "setInterval", 4); // Despawn conditions can be evaluated with even lower frequency
 			
 			T_SETV("spawned", true);
 		} else {

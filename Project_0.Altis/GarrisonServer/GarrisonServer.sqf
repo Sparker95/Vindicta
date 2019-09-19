@@ -27,6 +27,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	VARIABLE("destroyedObjects");
 
 	VARIABLE("timer");
+	VARIABLE("timer1");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -35,15 +36,17 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		T_SETV("destroyedObjects", []);
 		T_SETV("createdObjects", []);
 
+		// Timer to send garrison update messages
 		private _msg = MESSAGE_NEW();
 		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
 		_msg set [MESSAGE_ID_SOURCE, ""];
-		_msg set [MESSAGE_ID_DATA, 0];
-		_msg set [MESSAGE_ID_TYPE, GARRISON_SERVER_MESSAGE_PROCESS];
+		_msg set [MESSAGE_ID_DATA, []];
+		_msg set [MESSAGE_ID_TYPE, "process"];
 		pr _processInterval = 1;
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		SETV(_thisObject, "timer", _timer);
+
 	} ENDMETHOD;
 
 	// Sends update messages about a garrison(_gar) to _target(same as remoteExecCall target)
@@ -66,7 +69,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// We only receive messages from timer now, so we don't care about the message type
 	// - - - - Processing of garrisons - - - - -
-	METHOD("handleMessageEx") {
+	METHOD("process") {
 		params [P_THISOBJECT];
 
 		// Broadcast update messages

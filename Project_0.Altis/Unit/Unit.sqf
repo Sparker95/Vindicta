@@ -336,11 +336,6 @@ CLASS(UNIT_CLASS_NAME, "");
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");					
 					// Give intel to this unit
 					CALLSM1("UnitIntel", "initUnit", _thisObject);
-
-					// Set build resources
-					if (_buildResources > 0) then {
-						T_CALLM1("_setBuildResourcesSpawned", _buildResources);
-					};
 				};
 				case T_DRONE: {
 				};
@@ -389,11 +384,6 @@ CLASS(UNIT_CLASS_NAME, "");
 					//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
 					// Give intel to this unit
 					//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
-
-					// Set build resources
-					if (_buildResources > 0) then {
-						T_CALLM1("_setBuildResourcesSpawned", _buildResources);
-					};
 				};
 			};
 
@@ -406,6 +396,11 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			// Initialize dynamic simulation
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
+
+			// Set build resources
+			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
+				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+			};
 
 			_objectHandle setDir _dir;
 			_objectHandle setPos _pos;
@@ -566,7 +561,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			// And store them into the array before we delete the vehicle
 			pr _buildResources = 0;
 			pr _catID = _data select UNIT_DATA_ID_CAT;
-			if (_catID == T_VEH || _catID == T_CARGO) then {
+			if (T_CALLM0("canHaveBuildResources")) then {
 				_buildResources = T_CALLM0("_getBuildResourcesSpawned");
 				_data set [UNIT_DATA_ID_BUILD_RESOURCE, _buildResources];
 			};
@@ -1022,6 +1017,10 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("setBuildResources") {
 		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		// Bail if we can't carry any build resources
+		if (!T_CALLM0("canHaveBuildResources")) exitWith {};
+
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [UNIT_DATA_ID_BUILD_RESOURCE, _value];
 		if (T_CALLM0("isSpawned")) then {
@@ -1032,12 +1031,40 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("getBuildResources") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_VAR(_thisObject, "data");
+
+		if (_data#UNIT_DATA_ID_CAT == T_INF) exitWith { 0 };
+
 		private _return = if (T_CALLM0("isSpawned")) then {
 			T_CALLM0("_getBuildResourcesSpawned")
 		} else {
 			_data select UNIT_DATA_ID_BUILD_RESOURCE
 		};
 		_return
+	} ENDMETHOD;
+
+	METHOD("addBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		// Bail if a negative number is specified
+		if(_value < 0) exitWith {};
+
+		if (!T_CALLM0("canHaveBuildResources")) exitWith {};
+
+		pr _resCurrent = T_CALLM0("getBuildResources");
+		pr _resNew = _resCurrent + _value;
+		T_CALLM1("setBuildResources", _resNew);
+	} ENDMETHOD;
+
+	METHOD("removeBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		// Bail if a negative number is specified
+		if (_value < 0) exitWith {};
+
+		pr _resCurrent = T_CALLM0("getBuildResources");
+		pr _resNew = _resCurrent - _value;
+		if (_resNew < 0) then {_resNew = 0;};
+		T_CALLM1("setBuildResources", _resNew);
 	} ENDMETHOD;
 
 	METHOD("_setBuildResourcesSpawned") {
@@ -1084,6 +1111,13 @@ CLASS(UNIT_CLASS_NAME, "");
 		} else {
 			0
 		};
+	} ENDMETHOD;
+
+	METHOD("canHaveBuildResources") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		pr _cat = _data#UNIT_DATA_ID_CAT;
+		_cat != T_INF
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

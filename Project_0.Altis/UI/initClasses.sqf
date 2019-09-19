@@ -4,6 +4,7 @@ call compile preprocessFileLineNumbers "UI\PlayerList\PlayerList.sqf";
 call compile preprocessFileLineNumbers "UI\ClientMapUI\ClientMapUI.sqf";
 call compile preprocessFileLineNumbers "UI\ClientMapUI\GarrisonSplitDialog.sqf";
 call compile preprocessFileLineNumbers "UI\UndercoverUI\UndercoverUI.sqf";
+call compile preprocessFileLineNumbers "UI\InGameUI\InGameUI.sqf";
 
 call compile preprocessFileLineNumbers "UI\MapMarker\MapMarker.sqf";
 call compile preprocessFileLineNumbers "UI\MapMarker\MapMarkerLocation.sqf";

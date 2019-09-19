@@ -1,4 +1,4 @@
-//#define OOP_INFO
+#define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
 #include "..\OOP_light\OOP_light.h"
@@ -21,27 +21,21 @@ Author: Sparker 9 June 2019
 // How far we need to travel from our previous pos to update the list of nearby locations
 #define POS_TOLERANCE 250
 
-// Maximum view distance toobserve locations
-#define LOCATION_VIEW_DISTANCE_MAX 2300
-
 #define pr private
 
 CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 
 	VARIABLE("timer");			// Timer
-	VARIABLE("prevPos");		// Previous pos when we updated nearby locations
 	VARIABLE("unit");			// Unit (object handle) this is attached to
-	VARIABLE("nearLocations");	// Nearby locations which we will be checking periodycally
 	VARIABLE("AICommander");	// AI Commander where we will send reports about locations
+	VARIABLE_ATTR("playerMonitor", [ATTR_REFCOUNTED]);	// PlayerMonitor where we will be taking data from
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_OBJECT("_unit")];
-
-		T_SETV("prevPos", [0 ARG 0 ARG 0]);
+		params [P_THISOBJECT, P_OBJECT("_unit"), P_OOP_OBJECT("_playerMonitor")];
 
 		T_SETV("unit", _unit);
 
-		T_SETV("nearLocations", []);
+		T_SETV_REF("playerMonitor", _playerMonitor); // Reference the player monitor, we'll auto-unref it in delete method
 
 		// Create timer
 		pr _msg = MESSAGE_NEW();
@@ -65,6 +59,11 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 			DELETE(_timer);
 		};
 
+		// Unref the player monitor
+		// Actually no need for this, we are using the ATTR_REFCOUNTED attribute
+		//pr _pmon = T_GETV("playerMonitor");
+		//CALLM0(_pmon, "unref");
+
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
@@ -80,25 +79,18 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 		pr _AICommander = T_GETV("AICommander");
 
 		// Are we dead already?
+		pr _pmon = T_GETV("playerMonitor");
 		if (!alive _unit) exitWith {
 			DELETE(_thisObject);
 		};
 
-		// Update nearby locations if needed
-		pr _prevPos = T_GETV("prevPos");
-		if ((_unit distance _prevPos) > POS_TOLERANCE) then {
-			OOP_INFO_0("UPDATING NEAR LOCATIONS");
-			pr _nearLocs = CALLSM2("Location", "nearLocations", getPosASL _unit, LOCATION_VIEW_DISTANCE_MAX);
-			T_SETV("nearLocations", _nearLocs);
-			T_SETV("prevPos", getPosASL _unit);
-		};
-		pr _nearLocs = T_GETV("nearLocations");
+		pr _nearLocs = CALLM0(_pmon, "getNearLocations");
 
 		// -- Bail if there are no locations within range
 		if (count _nearLocs == 0) exitWith {};
 
 		// Find locations we are currently located at
-		pr _locationsAtPos = CALLSM2("Location", "getLocationsAtPos", getPosASL _unit, _nearLocs);
+		pr _locationsAtPos = CALLM0(_pmon, "getCurrentLocations");
 
 		// First check locations we are located at
 		OOP_INFO_1("Located at locations: %1", _locationsAtPos);

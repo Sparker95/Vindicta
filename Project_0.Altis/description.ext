@@ -95,7 +95,6 @@ class CfgFunctions {
 #include "UI\Resources\ClientMapUI\ClientMapUI.h"
 
 
-
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
 //#include "\A3\ui_f\hpp\defineCommonColors.inc"
 
@@ -133,6 +132,7 @@ class RscTitles {
 #include "UI\Resources\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
 #include "UI\Resources\BuildUI\BuildUI.h"
+#include "UI\Resources\InGameUI\Vin_InGameUI.h"
 
 };
 

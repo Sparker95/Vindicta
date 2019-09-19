@@ -131,6 +131,7 @@ _newUnit addAction ["Talk to civilian", // title
 CALLSM0("UnitIntel", "initPlayer");
 
 // Init the Location Visibility Monitor on player
-NEW("LocationVisibilityMonitor", [_newUnit]);
+private _pmon = NEW("PlayerMonitor", [_newUnit]);
+NEW("LocationVisibilityMonitor", [_newUnit ARG _pmon]); // When this self-deletes, it will unref the player monitor
 
 CALLM(gGameMode, "playerSpawn", _this);

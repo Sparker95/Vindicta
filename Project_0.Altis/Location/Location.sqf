@@ -56,6 +56,8 @@ CLASS("Location", "MessageReceiverEx")
 	
 	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
 
+	VARIABLE("hasPlayers"); // Bool, means that there are players at this location, updated at each process call
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -92,6 +94,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
 		T_SETV("gameModeData", NULL_OBJECT);
+		T_SETV("hasPlayers", false);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -284,6 +287,18 @@ CLASS("Location", "MessageReceiverEx")
 		T_GETV("spawned")
 	} ENDMETHOD;
 
+	/*
+	Method: hasPlayers
+	Returns true if there are any players in the location area.
+	The actual value gets updated infrequently, on timer.
+
+	Returns: Bool
+	*/
+	METHOD("hasPlayers") {
+		params [P_THISOBJECT];
+		T_GETV("hasPlayers")
+	} ENDMETHOD;
+
 	// |               G E T   P A T R O L   W A Y P O I N T S
 	/*
 	Method: getPatrolWaypoints
@@ -414,6 +429,16 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getType") {
 		params [ P_THISOBJECT ];
 		GET_VAR(_thisObject, "type")
+	} ENDMETHOD;
+
+	/*
+	Method: getName
+
+	Returns: String
+	*/
+	METHOD("getName") {
+		params [P_THISOBJECT];
+		T_GETV("name")
 	} ENDMETHOD;
 	
 	/*
@@ -819,7 +844,9 @@ CLASS("Location", "MessageReceiverEx")
 
 ENDCLASS;
 
-SET_STATIC_VAR("Location", "all", []);
+if (isNil {GETSV("Location", "all")}) then {
+	SET_STATIC_VAR("Location", "all", []);
+};
 
 // Initialize arrays with building types
 call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";

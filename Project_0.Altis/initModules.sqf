@@ -104,8 +104,8 @@ call compile preprocessFileLineNumbers "Intel\initClasses.sqf";
 // Initialize the garbage collector
 call compile preprocessFileLineNumbers "GarbageCollector\GarbageCollector.sqf";
 
-// Initialize Location Visibility Monitor
-call compile preprocessFileLineNumbers "LocationVisibilityMonitor\LocationVisibilityMonitor.sqf";
+// Initialize client side checks
+call compile preprocessFileLineNumbers "ClientSideChecks\initClasses.sqf";
 
 // Initialize GameModes
 call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";

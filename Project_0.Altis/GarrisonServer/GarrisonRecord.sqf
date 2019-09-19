@@ -23,11 +23,15 @@ CLASS("GarrisonRecord", "")
 	// Array with composition
 	VARIABLE_ATTR("composition", [ATTR_SERIALIZABLE]);
 
+	// Amount of build resources (number)
+	VARIABLE_ATTR("buildResources", [ATTR_SERIALIZABLE]);
+
 	// Ref to the map marker object, local on client side
 	VARIABLE("mapMarker");
 
 	// The actual commander action, deserialized on client side
 	VARIABLE("cmdrActionRecord");
+	
 
 	// What else did I forget?
 	
@@ -71,6 +75,7 @@ CLASS("GarrisonRecord", "")
 		T_SETV("side", GETV(_gar, "side"));
 		T_SETV("composition", GETV(_gar, "composition"));
 		T_SETV("cmdrActionRecordSerial", GETV(_AI, "cmdrActionRecordSerial"));
+		T_SETV("buildResources", CALLM0(_gar, "getBuildResources"));
 	} ENDMETHOD;
 
 
