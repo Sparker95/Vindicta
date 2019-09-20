@@ -1,5 +1,6 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\MessageReceiver\MessageReceiver.hpp"
+#include "Location.hpp"
 
 // Class: Location
 /*

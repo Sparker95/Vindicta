@@ -174,7 +174,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-		T_CALLM("plan", [_worldModel]);
+		//T_CALLM("plan", [_worldModel]);
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER

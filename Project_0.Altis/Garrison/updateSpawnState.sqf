@@ -6,7 +6,7 @@ params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
 
-OOP_INFO_0("UPDATE SPAWN STATE");
+//OOP_INFO_0("UPDATE SPAWN STATE");
 
 if(T_CALLM("isDestroyed", [])) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);

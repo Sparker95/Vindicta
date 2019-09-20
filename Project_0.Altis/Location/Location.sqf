@@ -77,8 +77,8 @@ CLASS("Location", "MessageReceiverEx")
 		if (isNil "gLUAP") exitWith {"[MessageLoop] Error: global location unit array provider doesn't exist!";};
 
 		T_SETV("side", CIVILIAN);
-		T_SETV("name", "noname");
-		T_SETV("garrisons", []);
+		SET_VAR_PUBLIC(_thisObject, "name", "noname");
+		SET_VAR_PUBLIC(_thisObject, "garrisons", []);
 		SET_VAR_PUBLIC(_thisObject, "boundingRadius", 50);
 		SET_VAR_PUBLIC(_thisObject, "border", 50);
 		T_SETV("borderPatrolWaypoints", []);
@@ -126,7 +126,7 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("setName") {
 		params [P_THISOBJECT, ["_name", "", [""]]];
-		T_SETV("name", _name);
+		SET_VAR_PUBLIC(_thisObject, "name", _name);
 	} ENDMETHOD;
 
 	METHOD("setCapacityInf") {
@@ -330,6 +330,7 @@ CLASS("Location", "MessageReceiverEx")
 		pr _gars = T_GETV("garrisons");
 		if (! (_gar in _gars)) then {
 			_gars pushBack _gar;
+			PUBLIC_VAR(_thisObject, "garrisons");
 			CALLM2(_gar, "postMethodAsync", "ref", []);
 
 			// TODO: work out how this should work properly? This isn't terrible but we will
@@ -347,6 +348,7 @@ CLASS("Location", "MessageReceiverEx")
 		pr _gars = T_GETV("garrisons");
 		if (_gar in _gars) then {
 			_gars deleteAt (_gars find _gar);
+			PUBLIC_VAR(_thisObject, "garrisons");
 			CALLM2(_gar, "postMethodAsync", "unref", []);
 		};
 	} ENDMETHOD;
@@ -392,7 +394,7 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "type", _type);
 
 		// Create a timer object if the type of the location is a city or a roadblock
-		if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
+		//if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
 			
 			// Delete previous timer if we had it
 			pr _timer = T_GETV("timer");
@@ -409,7 +411,7 @@ CLASS("Location", "MessageReceiverEx")
 			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
 			private _timer = NEW("Timer", _args);
 			SET_VAR(_thisObject, "timer", _timer);
-		};
+		//};
 
 		if (_type == LOCATION_TYPE_ROADBLOCK) then {
 			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this

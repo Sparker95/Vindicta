@@ -408,6 +408,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			if (T_GETV("outdated") || _locHasPlayers) then {
 				// Update build resources from the actual units
 				T_CALLM0("updateBuildResources");
+				OOP_INFO_1("HAS PLAYERS: %1", _locHasPlayers);
 
 				// Notify GarrisonServer
 				CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);

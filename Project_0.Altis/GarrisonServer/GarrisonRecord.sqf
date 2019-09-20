@@ -17,14 +17,14 @@ CLASS("GarrisonRecord", "")
 	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
 
+	// Amount of build resources (number)
+	VARIABLE_ATTR("buildResources", [ATTR_SERIALIZABLE]);
+
 	// Serialized CmdrActionRecord object
 	VARIABLE_ATTR("cmdrActionRecordSerial", [ATTR_SERIALIZABLE]);
 
 	// Array with composition
 	VARIABLE_ATTR("composition", [ATTR_SERIALIZABLE]);
-
-	// Amount of build resources (number)
-	VARIABLE_ATTR("buildResources", [ATTR_SERIALIZABLE]);
 
 	// Ref to the map marker object, local on client side
 	VARIABLE("mapMarker");
@@ -59,6 +59,11 @@ CLASS("GarrisonRecord", "")
 	METHOD("getComposition") {
 		params [P_THISOBJECT];
 		T_GETV("composition")
+	} ENDMETHOD;
+
+	METHOD("getBuildResources") {
+		params [P_THISOBJECT];
+		T_GETV("buildResources")
 	} ENDMETHOD;
 
 	// Fills data fields from a garrison object
@@ -202,6 +207,7 @@ CLASS("GarrisonRecord", "")
 		__TCOPYVAR(_garRecord, "side");
 		__TCOPYVAR(_garRecord, "composition");
 		__TCOPYVAR(_garRecord, "cmdrActionRecordSerial");
+		__TCOPYVAR(_garRecord, "buildResources");
 
 		// Delete the old commander action record, if it existed
 		pr _record = T_GETV("cmdrActionRecord");

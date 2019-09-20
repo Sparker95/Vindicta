@@ -55,9 +55,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 
 		// Delete the timer
 		pr _timer = T_GETV("timer");
-		if (_timer != "") then {
-			DELETE(_timer);
-		};
+		DELETE(_timer);
 
 		// Unref the player monitor
 		// Actually no need for this, we are using the ATTR_REFCOUNTED attribute

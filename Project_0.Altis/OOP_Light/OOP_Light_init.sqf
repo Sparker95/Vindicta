@@ -826,7 +826,7 @@ OOP_delete = {
 			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
 			FORCE_SET_MEM(_objNameStr, _memName, nil);
 			PUBLIC_VAR(_objNameStr, OOP_PARENT_STR);
-		} forEach _oop_memList;
+		} forEach (_oop_memList+[OOP_PUBLIC_STR]);
 	} else {
 		{
 			// If the var is REFCOUNTED then unref it

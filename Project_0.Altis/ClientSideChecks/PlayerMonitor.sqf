@@ -31,6 +31,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 	VARIABLE("timer");			// Timer
 	VARIABLE("timerUI");		// Timer for UI checks
+
 	VARIABLE("prevPos");		// Previous pos when we updated nearby locations
 	VARIABLE("unit");			// Unit (object handle) this is attached to
 	VARIABLE("nearLocations");	// Nearby locations to return to other objects
@@ -73,14 +74,10 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		// Delete the timer
 		pr _timer = T_GETV("timer");
-		if (_timer != "") then {
-			DELETE(_timer);
-		};
+		DELETE(_timer);
 
 		pr _timer = T_GETV("timerUI");
-		if (_timer != "") then {
-			DELETE(_timer);
-		};
+		DELETE(_timer);
 
 	} ENDMETHOD;
 
@@ -102,7 +99,8 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		// Update nearby locations if needed
 		pr _prevPos = T_GETV("prevPos");
-		if ((_unit distance _prevPos) > POS_TOLERANCE) then {
+		pr _dist = _unit distance _prevPos;
+		if ((_dist) > POS_TOLERANCE) then {
 			OOP_INFO_0("UPDATING NEAR LOCATIONS");
 			
 			// Update nearby locations
@@ -115,6 +113,14 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			T_SETV("currentLocations", _currentLocs);
 
 			T_SETV("prevPos", getPosASL _unit);
+		};
+
+
+		// If our position has changed a lot, send msg to the server to process nearby locations and garrisons
+		if (_dist > 200) then {
+			pr _newPos = getPos _unit;
+			REMOTE_EXEC_CALL_STATIC_METHOD("Location", "processLocationsNearPos", [_newPos], 2, false);
+			REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "updateSpawnStateOfGarrisonsNearPos", [_newPos], 2, false);
 		};
 
 		OOP_INFO_1("NEAR LOCATIONS: %1", T_GETV("nearLocations"));
@@ -145,8 +151,26 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			*/
 			pr _text = format ["%1 %2", CALLM0(_loc, "getType"), CALLM0(_loc, "getName")];
 			CALLM1(gInGameUI, "setLocationText", _text);
+
+			// Check if the location has any garrisons we know about
+			pr _gars = CALLM0(_loc, "getGarrisons");
+			pr _garRecord = "";
+			pr _buildRes = 0;
+			CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
+				_gars findIf {
+					_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _x);
+					_garRecord != ""
+				};
+				// Get build resources of this garrison
+				//OOP_INFO_1("Garr record: %1", _garRecord);
+				if (_garRecord != "") then {
+					_buildRes = CALLM0(_garRecord, "getBuildResources");
+				};
+			};
+			CALLM1(gInGameUI, "setBuildResourcesAmount", _buildRes);
 		} else {
-			CALLM1(gInGameUI, "setLocationText", "no location");
+			CALLM1(gInGameUI, "setLocationText", "");
+			CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
 		};
 	} ENDMETHOD;
 

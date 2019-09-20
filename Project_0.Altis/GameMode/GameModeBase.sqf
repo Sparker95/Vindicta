@@ -39,7 +39,7 @@ CLASS("GameModeBase", "")
 		// Global flags
 		gFlagAllCommanders = true; //false;
 		// Main timer service
-		gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
+		gTimerServiceMain = NEW("TimerService", [0.45]); // timer resolution
 
 		T_CALLM("preInitAll", []);
 

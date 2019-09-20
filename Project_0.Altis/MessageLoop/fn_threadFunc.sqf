@@ -101,35 +101,37 @@ while {true} do {
 			//Get destination object
 			private _dest = _msg select MESSAGE_ID_DESTINATION;
 			//Call handleMessage
-			// todo make sure we call a method on an existing object
+			if(IS_OOP_OBJECT(_dest)) then {
+				#ifdef PROFILE_MESSAGE_JSON
+				pr _objectClass = GET_OBJECT_CLASS(_dest);
+				private _profileTimeStart = diag_tickTime;
+				#endif
 
-			#ifdef PROFILE_MESSAGE_JSON
-			pr _objectClass = GET_OBJECT_CLASS(_dest);
-			private _profileTimeStart = diag_tickTime;
-			#endif
+				pr _result = CALL_METHOD(_dest, "handleMessage", [_msg]);
 
-			pr _result = CALL_METHOD(_dest, "handleMessage", [_msg]);
+				#ifdef PROFILE_MESSAGE_JSON
+				private _profileTime = diag_tickTime - _profileTimeStart;
+				pr _dest = _msg#MESSAGE_ID_DESTINATION;
+				pr _type = _msg#MESSAGE_ID_TYPE;
+				private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4} }", _name, _type, _objectClass, _profileTime];
+				OOP_DEBUG_MSG(_str, []);
+				#endif
 
-			#ifdef PROFILE_MESSAGE_JSON
-			private _profileTime = diag_tickTime - _profileTimeStart;
-			pr _dest = _msg#MESSAGE_ID_DESTINATION;
-			pr _type = _msg#MESSAGE_ID_TYPE;
-			private _str = format ["{ ""name"": ""%1"", ""msg"": { ""type"": ""%2"", ""destClass"": ""%3"", ""time"": %4} }", _name, _type, _objectClass, _profileTime];
-			OOP_DEBUG_MSG(_str, []);
-			#endif
-
-			if (isNil "_result") then {_result = 0;};
-			// Were we asked to mark the message as processed?
-			if (_msgID != MESSAGE_ID_NOT_REQUESTED) then {
-				// Did the message originate from this machine?
-				pr _msgSourceOwner = _msg select MESSAGE_ID_SOURCE_OWNER;
-				if (_msgSourceOwner == clientOwner) then {
-					// Mark this message processed on this machine
-					[_msgID, _result, _dest] call MsgRcvr_fnc_setMsgDone;
-				} else {
-					// Mark this message processed on the remote machine
-					[_msgID, _result, _dest] remoteExecCall ["MsgRcvr_fnc_setMsgDone", _msgSourceOwner, false];
+				if (isNil "_result") then {_result = 0;};
+				// Were we asked to mark the message as processed?
+				if (_msgID != MESSAGE_ID_NOT_REQUESTED) then {
+					// Did the message originate from this machine?
+					pr _msgSourceOwner = _msg select MESSAGE_ID_SOURCE_OWNER;
+					if (_msgSourceOwner == clientOwner) then {
+						// Mark this message processed on this machine
+						[_msgID, _result, _dest] call MsgRcvr_fnc_setMsgDone;
+					} else {
+						// Mark this message processed on the remote machine
+						[_msgID, _result, _dest] remoteExecCall ["MsgRcvr_fnc_setMsgDone", _msgSourceOwner, false];
+					};
 				};
+			} else {
+				OOP_WARNING_1("Destination object does not exist: %1", _dest);
 			};
 			#ifdef THREAD_FUNC_DEBUG
 			};
