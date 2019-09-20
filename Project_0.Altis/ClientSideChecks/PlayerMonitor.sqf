@@ -7,6 +7,7 @@
 #include "..\AI\Stimulus\Stimulus.hpp"
 #include "..\AI\stimulusTypes.hpp"
 #include "..\AI\Commander\LocationData.hpp"
+#include "PlayerMonitor.hpp"
 
 /*
 Class: PlayerMonitor
@@ -35,7 +36,10 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	VARIABLE("prevPos");		// Previous pos when we updated nearby locations
 	VARIABLE("unit");			// Unit (object handle) this is attached to
 	VARIABLE("nearLocations");	// Nearby locations to return to other objects
+	VARIABLE("currentLocation"); // The nearest location we are currently at
 	VARIABLE("currentLocations"); // Locations we are currently located at
+	VARIABLE("currentGarrisonRecord"); // Garrison record at the current location
+	VARIABLE("canBuild");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_OBJECT("_unit")];
@@ -45,14 +49,17 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("unit", _unit);
 
 		T_SETV("nearLocations", []);
+		T_SETV("currentLocation", "");
 		T_SETV("currentLocations", []);
+		T_SETV("currentGarrisonRecord", "");
+		T_SETV("canBuild", false);
 
 		// Create timer
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, "process");
 		MESSAGE_SET_DATA(_msg, []);
-		pr _updateInterval = 4;
+		pr _updateInterval = 3.5;
 		pr _args = [_thisObject, _updateInterval, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
@@ -67,6 +74,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timerUI", _timer);
 
+		_unit setVariable [PLAYER_MONITOR_UNIT_VAR, _thisObject];
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -78,6 +86,8 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		pr _timer = T_GETV("timerUI");
 		DELETE(_timer);
+
+		T_GETV("unit") setVariable [PLAYER_MONITOR_UNIT_VAR, nil];
 
 	} ENDMETHOD;
 
@@ -100,7 +110,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		// Update nearby locations if needed
 		pr _prevPos = T_GETV("prevPos");
 		pr _dist = _unit distance _prevPos;
-		if ((_dist) > POS_TOLERANCE) then {
+		//if ((_dist) > POS_TOLERANCE) then { // What if new locations are created??
 			OOP_INFO_0("UPDATING NEAR LOCATIONS");
 			
 			// Update nearby locations
@@ -109,12 +119,33 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			T_SETV("nearLocations", _nearLocs);
 
 			// Update current locations
-			pr _currentLocs = CALLSM1("Location", "getLocationsAtPos", _posASL);
-			T_SETV("currentLocations", _currentLocs);
+			pr _locs = CALLSM1("Location", "getLocationsAtPos", _posASL);
+			T_SETV("currentLocations", _locs);
 
-			T_SETV("prevPos", getPosASL _unit);
-		};
+			if (count _locs != 0) then {
+				// Get the nearest location
+				_locs = _locs apply {[CALLM0(_x, "getPos") distance2D _unit, _x]};
+				_locs sort true; // Ascending
+				pr _loc = _locs#0#1;
+				T_SETV("currentLocation", _loc);
 
+				// Check if the location has any garrisons we know about
+				pr _gars = CALLM0(_loc, "getGarrisons");
+				pr _garRecord = "";
+				CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
+					_gars findIf {
+						_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _x);
+						_garRecord != ""
+					};
+					T_SETV("currentGarrisonRecord", _garRecord);
+				};
+				T_SETV("canBuild", _garRecord != "");
+			} else {
+				T_SETV("currentGarrisonRecord", "");
+				T_SETV("canBuild", false);
+			};
+			
+		//};
 
 		// If our position has changed a lot, send msg to the server to process nearby locations and garrisons
 		if (_dist > 200) then {
@@ -126,6 +157,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		OOP_INFO_1("NEAR LOCATIONS: %1", T_GETV("nearLocations"));
 		OOP_INFO_1("CURRENT LOCATIONS: %1", T_GETV("currentLocations"));
 
+		T_SETV("prevPos", getPosASL _unit);
 	} ENDMETHOD;
 
 	METHOD("processUI") {
@@ -135,36 +167,22 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		pr _unit = T_GETV("unit");
 		pr _locs = T_GETV("currentLocations");
-		if (count _locs != 0) then {
-			// Get the nearest location
-			_locs apply {[CALLM0(_x, "getPos") distance2D _unit, _x]};
-			_locs sort true; // Ascending
-			pr _loc = _locs#0;
-
-			// Check if we know about this location
-			/*
-			pr _result0 = CALLM2(gIntelDatabaseClient, "getFromIndex", "location", _x);
-			pr _result1 = CALLM2(gIntelDatabaseClient, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
-			pr _intelResult = (_result0 arrayIntersect _result1) select 0;
-			if (! isNil "_intelResult") then {				
-			};
-			*/
-			pr _text = format ["%1 %2", CALLM0(_loc, "getType"), CALLM0(_loc, "getName")];
+		pr _loc = T_GETV("currentLocation");
+		pr _garRecord = T_GETV("currentGarrisonRecord");
+		if (_loc != "") then {
+			// Set current location text
+			pr _typeStr = CALLSM("Location, "getTypeString", CALLM0(_loc, "getType"));
+			pr _text = format ["%1 %2", _typeStr, CALLM0(_loc, "getName")];
 			CALLM1(gInGameUI, "setLocationText", _text);
 
 			// Check if the location has any garrisons we know about
-			pr _gars = CALLM0(_loc, "getGarrisons");
-			pr _garRecord = "";
+			pr _garRecord = T_GETV("currentGarrisonRecord");
 			pr _buildRes = 0;
 			CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
-				_gars findIf {
-					_garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _x);
-					_garRecord != ""
-				};
-				// Get build resources of this garrison
-				//OOP_INFO_1("Garr record: %1", _garRecord);
 				if (_garRecord != "") then {
-					_buildRes = CALLM0(_garRecord, "getBuildResources");
+					if (IS_OOP_OBJECT(_garRecord)) then {
+						_buildRes = CALLM0(_garRecord, "getBuildResources");
+					};
 				};
 			};
 			CALLM1(gInGameUI, "setBuildResourcesAmount", _buildRes);
@@ -182,6 +200,16 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	METHOD("getNearLocations") {
 		params [P_THISOBJECT];
 		T_GETV("nearLocations")
+	} ENDMETHOD;
+
+	STATIC_METHOD("canPlayerBuild") {
+		params [P_THISCLASS, "_unit"];
+		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
+		if (!isNil "_thisObject") then {
+			T_GETV("canBuild")
+		} else {
+			false
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

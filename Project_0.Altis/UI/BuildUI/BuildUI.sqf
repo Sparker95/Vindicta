@@ -522,7 +522,10 @@ CLASS("BuildUI", "")
 			if ((_x < 0) OR (_x > _itemCatIndexSize)) then { 
 				_return pushBack ""; 
 			} else {
-				_return pushBack (toUpper ((_itemCat select _x) select 1));
+				pr _itemName = getText (configfile >> "CfgVehicles" >> (_itemCat select _x select 0) >> "displayName"); //toUpper ((_itemCat select _x) select 1);
+				pr _itemCost = (_itemCat select _x) select 2;
+				pr _str = format ["%1 [%2]", _itemName, _itemCost];
+				_return pushBack _str;
 			};
 		} forEach _UIarray; 
 

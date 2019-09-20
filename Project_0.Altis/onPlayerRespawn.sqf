@@ -131,7 +131,21 @@ _newUnit addAction ["Talk to civilian", // title
 CALLSM0("UnitIntel", "initPlayer");
 
 // Init the Location Visibility Monitor on player
-private _pmon = NEW("PlayerMonitor", [_newUnit]);
-NEW("LocationVisibilityMonitor", [_newUnit ARG _pmon]); // When this self-deletes, it will unref the player monitor
+gPlayerMonitor = NEW("PlayerMonitor", [_newUnit]);
+NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this self-deletes, it will unref the player monitor
 
 CALLM(gGameMode, "playerSpawn", _this);
+
+// Action to start building stuff
+_newUnit addAction ["Start building", // title
+                 "systemChat 'Lets build something...';", // Script
+                 0, // Arguments
+                 0, // Priority
+                 true, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "['', player] call PlayerMonitor_fnc_canPlayerBuild", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint

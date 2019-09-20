@@ -772,17 +772,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		pr _soldierCount = 0;
 		pr _vehList = [];
 		
-		_typeText = switch (GETV(_intel, "type")) do {
-			case LOCATION_TYPE_OUTPOST: {"Outpost"};
-			case LOCATION_TYPE_CAMP: {"Camp"};
-			case LOCATION_TYPE_BASE: {"Base"};
-			case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
-			case LOCATION_TYPE_CITY: {"City"};
-			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
-			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
-			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
-			default {format ["ClientMapUI.sqf line %1", __LINE__]}; // If you see this then you know where to implement this!
-		};
+		_typeText = CALLSM1("Location", "getTypeString", T_GETV("type"));
 		
 		_timeText = str GETV(_intel, "dateUpdated");
 		_sideText = str GETV(_intel, "side");

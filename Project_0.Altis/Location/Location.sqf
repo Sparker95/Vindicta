@@ -434,6 +434,27 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	/*
+	Method: getType
+	Returns a nice string associated with this location type
+
+	Returns: String
+	*/
+	STATIC_METHOD("getTypeString") {
+		params [P_THISCLASS, "_type"];
+		switch (_type) do {
+			case LOCATION_TYPE_OUTPOST: {"Outpost"};
+			case LOCATION_TYPE_CAMP: {"Camp"};
+			case LOCATION_TYPE_BASE: {"Base"};
+			case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
+			case LOCATION_TYPE_CITY: {"City"};
+			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
+			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
+			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
+			default {"ERROR LOC TYPE"};
+		};
+	} ENDMETHOD;
+
+	/*
 	Method: getName
 
 	Returns: String

@@ -1,5 +1,9 @@
 #include "BuildUI_Macros.h"
 
+#define TEXT_SIZE_CAT		safeZoneH * 0.025
+#define TEXT_SIZE_ITEM		safeZoneH * 0.017
+#define TEXT_SIZE_TOOLTIP	safeZoneH * 0.02
+
 class BuildUI
 {
 	idd = 3981;
@@ -63,7 +67,7 @@ class BuildUI
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensed";
-			size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			size = TEXT_SIZE_TOOLTIP;
 			shadow = 1;
 		};
 		class Tooltip2
@@ -79,7 +83,7 @@ class BuildUI
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensed";
-			size = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			size = TEXT_SIZE_TOOLTIP;
 			shadow = 1;
 		};
 		class CategoryText_Center
@@ -95,7 +99,7 @@ class BuildUI
 			colorBackground[] = {0.5873,0.7698,0.7302,0};
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			sizeEx = TEXT_SIZE_CAT;
 		};
 		class CategoryText_L2
 		{
@@ -110,7 +114,7 @@ class BuildUI
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			sizeEx = TEXT_SIZE_CAT;
 			
 		};
 		class CategoryText_L1 
@@ -126,7 +130,7 @@ class BuildUI
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			sizeEx = TEXT_SIZE_CAT;
 			
 		};
 		class CategoryText_R1 
@@ -142,7 +146,7 @@ class BuildUI
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			sizeEx = TEXT_SIZE_CAT;
 			
 		};
 		class CategoryText_R2
@@ -158,87 +162,87 @@ class BuildUI
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+			sizeEx = TEXT_SIZE_CAT;
 			
 		};
 		class ItemText_Center
 		{
 			type = 0;
 			idc = IDC_ITEXTC;
-			x = safeZoneX + safeZoneW * 0.46041667;
-			y = safeZoneY + safeZoneH * 0.723;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.01296297;
+			x = safeZoneX + safeZoneW * 0.43;
+			y = safeZoneY + safeZoneH * 0.72;
+			w = safeZoneW * 0.13;
+			h = safeZoneH * 0.02;
 			style = 2;
 			text = "Defenses";
 			colorBackground[] = {0.5873,0.7698,0.7302,0};
 			colorText[] = {1,1,1,1};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			sizeEx = TEXT_SIZE_ITEM;
 			
 		};
 		class ItemText_R1
 		{
 			type = 0;
 			idc = IDC_ITEXTR1;
-			x = safeZoneX + safeZoneW * 0.54270834;
-			y = safeZoneY + safeZoneH * 0.723;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.01296297;
+			x = safeZoneX + safeZoneW * 0.56;
+			y = safeZoneY + safeZoneH * 0.72;
+			w = safeZoneW * 0.13;
+			h = safeZoneH * 0.02;
 			style = 2;
 			text = "Shooting Range";
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			sizeEx = TEXT_SIZE_ITEM;
 			
 		};
 		class ItemText_L1
 		{
 			type = 0;
 			idc = IDC_ITEXTL1;
-			x = safeZoneX + safeZoneW * 0.378125;
-			y = safeZoneY + safeZoneH * 0.723;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.01296297;
+			x = safeZoneX + safeZoneW * 0.3;
+			y = safeZoneY + safeZoneH * 0.72;
+			w = safeZoneW * 0.13;
+			h = safeZoneH * 0.02;
 			style = 2;
 			text = "Decoration";
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.5};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			sizeEx = TEXT_SIZE_ITEM;
 			
 		};
 		class ItemText_R2 
 		{
 			type = 0;
 			idc = IDC_ITEXTR2;
-			x = safeZoneX + safeZoneW * 0.62552084;
-			y = safeZoneY + safeZoneH * 0.72314815;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.01296297;
+			x = safeZoneX + safeZoneW * 0.69;
+			y = safeZoneY + safeZoneH * 0.72;
+			w = safeZoneW * 0.13;
+			h = safeZoneH * 0.02;
 			style = 2;
 			text = "Shooting Range";
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			sizeEx = TEXT_SIZE_ITEM;
 			
 		};
 		class ItemText_L2
 		{
 			type = 0;
 			idc = IDC_ITEXTL2;
-			x = safeZoneX + safeZoneW * 0.2953125;
-			y = safeZoneY + safeZoneH * 0.723;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.01296297;
+			x = safeZoneX + safeZoneW * 0.17;
+			y = safeZoneY + safeZoneH * 0.72;
+			w = safeZoneW * 0.13;
+			h = safeZoneH * 0.02;
 			style = 2;
 			text = "Shooting Range";
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {1,1,1,0.3};
 			font = "RobotoCondensedBold";
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.8);
+			sizeEx = TEXT_SIZE_ITEM;
 			
 		};
 		

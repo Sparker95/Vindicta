@@ -18,13 +18,14 @@ class Vin_InGameUI
 			idc = IDC_INGAME_STATIC_LOCATION_NAME;
 			x = safeZoneX + safeZoneW * 0.23;
 			y = safeZoneY + safeZoneH * 0.00;
-			w = safeZoneW * 0.12;
-			h = safeZoneH * 0.02;
+			w = safeZoneW * 0.18;
+			h = safeZoneH * 0.025;
 			style = 0;
 			text = "Camp Potato";
 			colorBackground[] = {0,0,0,0};
-			sizeEx = safezoneh*0.02;
-			
+			sizeEx = safezoneh*0.025;
+			//colorText[] = {4/255, 213/255, 206/255, 1};
+			colorText[] = {1, 0, 0, 1};
 		};
 		class STATIC_CONSTRUCTION_RESOURCES : MUI_BASE 
 		{
@@ -32,13 +33,14 @@ class Vin_InGameUI
 			idc = IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES;
 			x = safeZoneX + safeZoneW * 0.23;
 			y = safeZoneY + safeZoneH * 0.02;
-			w = safeZoneW * 0.12;
-			h = safeZoneH * 0.02;
+			w = safeZoneW * 0.18;
+			h = safeZoneH * 0.025;
 			style = 0;
 			text = "Construction resources:  9000";
 			colorBackground[] = {0,0,0,0};
-			sizeEx = safezoneh*0.02;
-			
+			sizeEx = safezoneh*0.025;
+			//colorText[] = {4/255, 213/255, 206/255, 1};
+			colorText[] = {1, 0, 0, 1};
 		};
 		
 	};
