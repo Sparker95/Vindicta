@@ -79,7 +79,8 @@ CLASS("GameModeBase", "")
 		if(IS_SERVER) then {
 
 			// Create the garrison server
-			gGarrisonServer = NEW("GarrisonServer", []);
+			gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
+			PUBLIC_VARIABLE "gGarrisonServer";
 
 			T_CALLM("initCommanders", []);
 			#ifndef _SQF_VM

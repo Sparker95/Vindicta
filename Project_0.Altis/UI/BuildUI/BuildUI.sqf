@@ -438,7 +438,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT];
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
-		T_SETV("currentItemID", 0);
+		//T_SETV("currentItemID", 0);
 		T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_CALLM0("clearCarousel");
 		T_CALLM0("enterMoveMode");
@@ -944,15 +944,28 @@ CLASS("BuildUI", "")
 
 			// If it is a new object then we must create a server version.
 			if (_object getVariable ["build_ui_newObject", false]) then {
-				_actualObject = (typeOf _object) createVehicle _currPos;
-				CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _actualObject, true);
+				// We are creating a new object
+				// Ask server to do that
+
+				pr _pos = [_currPos select 0, _currPos select 1, 0];
+				pr _dir = getDir _ghostObject;
+				// These are template catID and subcatID of the object, not catID of the build menu
+				pr _itemArray = ((g_BuildUIObjects select T_GETV("currentCatID")) select 0) select T_GETV("currentItemID");
+				_itemArray params ["_className", "_displayName", "_buildRes", "_catID", "_subcatID"];
+				pr _gar = CALLM0(gPlayerMonitor, "getCurrentGarrison");
+				pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+
+				// Send the request to server
+				CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
+
 				deleteVehicle _object;
-				_object = _actualObject;
+			} else {
+				// We are just moving an already existing object
+				_object setDir (getDir _ghostObject);
+				_object setPos [_currPos select 0, _currPos select 1, 0];
+				// _object enableSimulationGlobal true;
+				_object hideObject false;
 			};
-			_object setDir (getDir _ghostObject);
-			_object setPos [_currPos select 0, _currPos select 1, 0];
-			// _object enableSimulationGlobal true;
-			_object hideObject false;
 
 			deleteVehicle _ghostObject;
 		} forEach _movingObjectGhosts;

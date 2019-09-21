@@ -77,6 +77,10 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(MESSAGE_LOOP);
+		ASSERT_GLOBAL_OBJECT(gGarrisonServer);
+		//ASSERT_GLOBAL_OBJECT(gGarrisonAbandonedVehicles);
+		ASSERT_GLOBAL_OBJECT(gTimerServiceMain);
+		
 
 		T_SETV("units", []);
 		T_SETV("groups", []);
@@ -170,7 +174,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("active", true);
 
 		// Notify GarrisonServer
-		T_SETV("outdated", true);
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
@@ -283,7 +287,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Notify GarrisonServer
-		T_SETV("outdated", true);
+		CALLM1(gGarrisonServer, "onGarrisonDestroyed", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -407,11 +411,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _locHasPlayers = (_loc != "" && { CALLM0(_loc, "hasPlayers") } );
 			if (T_GETV("outdated") || _locHasPlayers) then {
 				// Update build resources from the actual units
+				// It will cause an update broadcast by garrison server
 				T_CALLM0("updateBuildResources");
-				OOP_INFO_1("HAS PLAYERS: %1", _locHasPlayers);
-
-				// Notify GarrisonServer
-				CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 				T_SETV("outdated", false);
 			};
@@ -795,6 +796,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT];
 		_buildRes = T_CALLM0("_getBuildResources");
 		T_SETV("buildResources", _buildRes);
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 	} ENDMETHOD;
 
 	METHOD("addBuildResources") {
@@ -813,6 +817,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			CALLM1(_x, "addBuildResources", _valuePerUnit);
 		} forEach _units;
+
+		T_CALLM0("updateBuildResources");
 	} ENDMETHOD;
 
 	METHOD("removeBuildResources") {
@@ -834,20 +840,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _go = true;
 		while {(_i < (count _units)) && (_resRemoved < _valueToRemove) && _go} do {
 			pr _unit = _units#_i;
-			pr _resAtUnit = CALLM0(_x, "getBuildResources");
+			pr _resAtUnit = CALLM0(_unit, "getBuildResources");
 			pr _resLeftToRemove = _valueToRemove - _resRemoved;
 			if (_resAtUnit <= _resLeftToRemove) then {
 				// Remove everything at this unit
-				CALLM1(_x, "removeBuildResource", _resAtUnit);
+				CALLM1(_unit, "removeBuildResources", _resAtUnit);
 				_resRemoved = _resRemoved + _resAtUnit;
 			} else {
 				// Remove only what is needed to remove
-				CALLM1(_x, "removeBuildResource", _resLeftToRemove);
+				CALLM1(_unit, "removeBuildResources", _resLeftToRemove);
 				_resRemoved = _resRemoved + _resLeftToRemove;
 				_go = false; // Terminate the loop
 			};
 			_i = _i + 1;
 		};
+
+		T_CALLM0("updateBuildResources");
 	} ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -1178,7 +1186,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
  
 		// Notify GarrisonServer
-		T_SETV("outdated", true);
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -1250,7 +1258,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 
 		// Notify GarrisonServer
-		T_SETV("outdated", true);
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 		__MUTEX_UNLOCK;
 

@@ -17,6 +17,9 @@ Author: Sparker 23 August 2019
 
 CLASS("GarrisonServer", "MessageReceiverEx")
 
+	// Array with all objects
+	VARIABLE("objects");
+
 	// Array with garrisons which have just been created
 	VARIABLE("createdObjects");
 
@@ -29,12 +32,15 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	VARIABLE("timer");
 	VARIABLE("timer1");
 
+	STATIC_VARIABLE("instance");
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 
 		T_SETV("outdatedObjects", []);
 		T_SETV("destroyedObjects", []);
 		T_SETV("createdObjects", []);
+		T_SETV("objects", []);
 
 		// Timer to send garrison update messages
 		private _msg = MESSAGE_NEW();
@@ -46,6 +52,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		private _args = [_thisObject, _processInterval, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		SETV(_thisObject, "timer", _timer);
+
+		if (!isNil {GETSV("GarrisonServer", "instance")}) then {
+			OOP_ERROR_1("Multiple instances of GarrisonServer are not allowed! %1", _thisObject);
+		};
+		SETSV("GarrisonServer", "instance", _thisObject);
 
 	} ENDMETHOD;
 
@@ -96,6 +107,13 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			// Remove the message from the JIP queue
 			pr _jipid = _x + __JIP_ID_SUFFIX;
 			remoteExecCall ["", _jipid];
+
+			// Remove from our array of objects
+			pr _objects = T_GETV("objects");
+			_objects deleteAt (_objects find _x);
+
+			// Unref
+			CALLM0(_x, "unref");
 		} forEach _destroyedGarrisons;
 
 		// Reset the arrays of garrisons to broadcast
@@ -128,6 +146,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 
 		T_GETV("createdObjects") pushBackUnique _gar;
+		T_GETV("objects") pushBackUnique _gar;
+
+		// Ref
+		CALLM0(_gar, "ref");
 	} ENDMETHOD;
 
 	// Marks the garrison requiring an update broadcast
@@ -156,6 +178,49 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	// GarrisonServer is attached to the main message loop
 	METHOD("getMessageLoop") {
 		gMessageLoopMain
+	} ENDMETHOD;
+
+	// Player's requests
+
+	// This runs in the thread
+	METHOD("buildFromGarrison") {
+		diag_log format ["BUILD FROM GARRISON: %1", _this];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_STRING("_className"),
+				P_NUMBER("_cost"),	P_NUMBER("_catID"), P_NUMBER("_subcatID"),
+				P_POSITION("_pos"), P_NUMBER("_dir")];
+		
+		// Bail if the garrison isn't registered any more
+		if (!(_gar in T_GETV("objects"))) exitWith {
+			"We can't build here any more" remoteExecCall ["systemChat", _clientOwner];
+		};
+
+		pr _buildRes = CALLM1(_gar, "getBuildResources", true); // Force update
+
+		// Bail if there is not enough resources
+		if (_buildRes < _cost) exitWith {
+			pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
+			pr _text = format ["Not enough resources to build %1", _objName];
+			_text remoteExecCall ["systemChat", _clientOwner];
+		};
+
+		// Looks like we are able to build it
+		CALLM1(_gar, "removeBuildResources", _cost);
+
+		// Create a unit or just a plain object
+		pr _hO = _className createVehicle _pos;
+		_hO setPos _pos;
+		_hO setDir _dir;
+		if (_catID != -1) then {
+			pr _args = [[], _catID, _subcatID, -1, "", _hO];
+			pr _unit = NEW("Unit", _args);
+			CALLM1(_gar, "addUnit", _unit);
+		};
+
+		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
+
+		pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
+		pr _text = format ["Object %1 was build successfully!", _objName];
+		_text remoteExecCall ["systemChat", _clientOwner];
 	} ENDMETHOD;
 
 ENDCLASS;

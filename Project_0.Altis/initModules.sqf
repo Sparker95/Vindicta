@@ -22,7 +22,7 @@ call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 
 // Initialize Build menu object templates
-call compile preprocessFileLineNumbers "Templates\BuildUI\initFunctions.sqf";
+call compile preprocessFileLineNumbers "Templates\BuildUI\init.sqf";
 
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";

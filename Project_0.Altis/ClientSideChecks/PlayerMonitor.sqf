@@ -39,6 +39,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	VARIABLE("currentLocation"); // The nearest location we are currently at
 	VARIABLE("currentLocations"); // Locations we are currently located at
 	VARIABLE("currentGarrisonRecord"); // Garrison record at the current location
+	VARIABLE("currentGarrison");
 	VARIABLE("canBuild");
 
 	METHOD("new") {
@@ -52,6 +53,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("currentLocation", "");
 		T_SETV("currentLocations", []);
 		T_SETV("currentGarrisonRecord", "");
+		T_SETV("currentGarrison", "");
 		T_SETV("canBuild", false);
 
 		// Create timer
@@ -138,10 +140,15 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 						_garRecord != ""
 					};
 					T_SETV("currentGarrisonRecord", _garRecord);
+					if (_garRecord != "") then {
+						pr _gar = CALLM0(_garRecord, "getGarrison");
+						T_SETV("currentGarrison", _gar);
+					};
 				};
 				T_SETV("canBuild", _garRecord != "");
 			} else {
 				T_SETV("currentGarrisonRecord", "");
+				T_SETV("currentGarrison", "");
 				T_SETV("canBuild", false);
 			};
 			
@@ -171,7 +178,8 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		pr _garRecord = T_GETV("currentGarrisonRecord");
 		if (_loc != "") then {
 			// Set current location text
-			pr _typeStr = CALLSM("Location, "getTypeString", CALLM0(_loc, "getType"));
+			pr _type = CALLM0(_loc, "getType");
+			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
 			pr _text = format ["%1 %2", _typeStr, CALLM0(_loc, "getName")];
 			CALLM1(gInGameUI, "setLocationText", _text);
 
@@ -200,6 +208,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	METHOD("getNearLocations") {
 		params [P_THISOBJECT];
 		T_GETV("nearLocations")
+	} ENDMETHOD;
+
+	METHOD("getCurrentGarrison") {
+		params [P_THISOBJECT];
+		T_GETV("currentGarrison")
 	} ENDMETHOD;
 
 	STATIC_METHOD("canPlayerBuild") {
