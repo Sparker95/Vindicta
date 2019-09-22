@@ -4,27 +4,30 @@
 
 private _dlg0 = NEW("DialogBase", [findDisplay 46]);
 
-CALLM2(_dlg0, "setContentSize", 0.5, 0.9);
+//CALLM2(_dlg0, "setContentSize", 0.78, 0.9);
+
+// Multi tab test
+CALLM1(_dlg0, "enableMultiTab", true);
+CALLM2(_dlg0, "addTab", "DialogTabBase", "Construction");
+CALLM2(_dlg0, "addTab", "DialogTabBase", "User Settings");
+CALLM2(_dlg0, "addTab", "DialogTabBase", "Admin Settings");
+CALLM2(_dlg0, "addTab", "DialogTabBase", "Call the police");
+CALLM2(_dlg0, "addTab", "DialogTabBase", "Rate this app");
+CALLM1(_dlg0, "setCurrentTab", 0);
 
 
-CALLM2(_dlg0, "addTab", "123", "Construction");
-CALLM2(_dlg0, "addTab", "123", "User Settings");
-CALLM2(_dlg0, "addTab", "123", "Admin Settings");
-CALLM2(_dlg0, "addTab", "123", "Call the police");
-CALLM2(_dlg0, "addTab", "123", "Rate this app");
-CALLM2(_dlg0, "addTab", "123", "Uninstall arma");
-CALLM2(_dlg0, "addTab", "123", "Report UFO");
-CALLM2(_dlg0, "addTab", "123", "Loadout");
-CALLM2(_dlg0, "addTab", "123", "Jam Satellites");
-CALLM2(_dlg0, "addTab", "123", "Build Wall");
-CALLM2(_dlg0, "addTab", "123", "Tab 2");
-CALLM2(_dlg0, "addTab", "123", "Tab 2");
-CALLM2(_dlg0, "addTab", "123", "Tab 2");
 
+//CALLM1(_dlg0, "setCurrentTab", 1);
 
-private _d0 = CALLM0(_dlg0, "getDisplay");
-systemChat format ["1 %1", _d0];
+//CALLM1(_dlg0, "enableMultiTab", false);
 
+// Single tab test
+/*
+//CALLM1(_dlg0, "enableMultiTab", false);
+CALLM2(_dlg0, "addTab", "DialogTabBase", "noname");
+CALLM1(_dlg0, "setCurrentTab", 0);
+//CALLM2(_dlg0, "addTab", "DialogTabBase", "noname");
+*/
 
 /*
 private _dlg1 = NEW("DialogBase", [_d0]);
