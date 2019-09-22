@@ -9,7 +9,7 @@
 #include "..\..\Location\Location.hpp"
 
 #include "..\Resources\MapUI\MapUI_Macros.h"
-#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
+#include "..\ClientMapUI\ClientMapUI_Macros.h"
 
 /*
 Class: MapMarkerLocation

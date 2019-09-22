@@ -1,4 +1,4 @@
-#include "..\..\UIProfileColors.h"
+#include "..\..\Resources\UIProfileColors.h"
 #include "..\ClientMapUI_Macros.h"
 
 // The menu under garrison marker when a garrison is selected

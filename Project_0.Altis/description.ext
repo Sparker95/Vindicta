@@ -92,8 +92,8 @@ class CfgFunctions {
 //==== Dialogs and UIs ====
 #include "UI\Resources\UIBase.hpp"
 #include "UI\Resources\MissionUIControlClasses.h"
-#include "UI\Resources\ClientMapUI\ClientMapUI.h"
-#include "UI\Resources\DialogBase\DialogBase.h"
+#include "UI\ClientMapUI\ClientMapUI.h"
+#include "UI\DialogBase\DialogBase.h"
 
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
@@ -130,10 +130,10 @@ class RscTitles {
         duration = 2;
     };
 
-#include "UI\Resources\UndercoverUI\UndercoverUI.h"
+#include "UI\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
-#include "UI\Resources\BuildUI\BuildUI.h"
-#include "UI\Resources\InGameUI\Vin_InGameUI.h"
+#include "UI\BuildUI\BuildUI.h"
+#include "UI\InGameUI\Vin_InGameUI.h"
 
 };
 

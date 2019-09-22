@@ -1,4 +1,4 @@
-#include "..\..\UIProfileColors.h"
+#include "..\..\Resources\UIProfileColors.h"
 #include "..\ClientMapUI_Macros.h"
 
 // Classes for UI associated with commanding garrisons

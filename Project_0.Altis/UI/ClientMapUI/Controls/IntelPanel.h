@@ -1,4 +1,4 @@
-#include "..\..\UIProfileColors.h"
+#include "..\..\Resources\UIProfileColors.h"
 
 /*
 class CMUI_INFOBAR : MUI_STRUCT_TXT 

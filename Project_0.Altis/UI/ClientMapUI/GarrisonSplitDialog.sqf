@@ -9,7 +9,7 @@
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\..\AI\Commander\CmdrAction\CmdrActionStates.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
-#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
+#include "ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
 #include "..\Resources\UIProfileColors.h"
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"

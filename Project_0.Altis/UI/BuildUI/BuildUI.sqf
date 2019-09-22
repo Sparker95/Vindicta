@@ -4,7 +4,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "buildUI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
-#include "..\Resources\BuildUI\BuildUI_Macros.h"
+#include "BuildUI_Macros.h"
 #include "..\..\GlobalAssert.hpp"
 
 #define TIME_FADE_TT 0.84

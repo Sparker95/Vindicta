@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Undercover\undercoverMonitor.hpp"
-#include "..\Resources\UndercoverUI\UndercoverUI_Macros.h"
+#include "UndercoverUI_Macros.h"
 
 /*
 Class: UndercoverUI

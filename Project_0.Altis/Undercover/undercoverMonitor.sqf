@@ -8,7 +8,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
+#include "..\UI\UndercoverUI\UndercoverUI_Macros.h"
 
 #define pr private
 #define sUNDERCOVER 0

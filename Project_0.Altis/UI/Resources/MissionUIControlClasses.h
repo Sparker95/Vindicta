@@ -412,5 +412,39 @@ class MUI_GROUP : MUI_BASE
 
 __MUI_CLASS_ABS(MUI_GROUP);
 
+class MUI_COMBOBOX : MUI_BASE
+{
+	access = 0;
+	type = CT_COMBO;
+	style = ST_LEFT;
+	h = 0.05;
+	rowHeight = 0.025;
+	wholeHeight = 0.25;
+	colorSelect[] = {0.6,0.6,0.6,1};
+	colorText[] = {1,1,1,1};
+	colorBackground[] = {0.2,0.2,0.2,1};
+	colorScrollbar[] = {1,1,1,1};
+	font = "TahomaB";
+	sizeEx = MUI_TXT_SIZE_M;
+	soundSelect[] = {"",0.1,1};
+	soundExpand[] = {"",0.1,1};
+	soundCollapse[] = {"",0.1,1};
+	maxHistoryDelay = 1.0;
+	shadow = 0;
+	class ComboScrollBar : ScrollBar
+	{
+		color[] = {1,1,1,0.6};
+		colorActive[] = {1,1,1,1};
+		colorDisabled[] = {1,1,1,0.3};
+		thumb = "#(argb,8,8,3)color(1,1,1,1)";
+		arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
+		arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
+		border = "#(argb,8,8,3)color(1,1,1,1)";
+		shadow = 0;
+	};
+};
+
+__MUI_CLASS_ABS(MUI_COMBOBOX)
+
 #endif
 

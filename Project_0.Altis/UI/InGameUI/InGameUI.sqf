@@ -6,7 +6,7 @@
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\Resources\defineCommonGrids.hpp"
 #include "..\..\OOP_Light\OOP_Light.h"
-#include "..\Resources\InGameUI\InGameUI_Macros.h"
+#include "InGameUI_Macros.h"
 #include "..\Resources\UIProfileColors.h"
 
 /*

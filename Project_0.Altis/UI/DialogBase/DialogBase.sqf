@@ -7,7 +7,7 @@
 #include "..\Resources\defineCommonGrids.hpp"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\Resources\UIProfileColors.h"
-#include "..\Resources\DialogBase\DialogBase_Macros.h"
+#include "DialogBase_Macros.h"
 
 /*
 Class : DialogBase
