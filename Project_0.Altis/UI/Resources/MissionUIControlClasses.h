@@ -26,6 +26,7 @@
 // #-0
 class MUI_BASE
 {
+	idc = -1;
 	type = CT_STATIC;
 
 	x = 0;
@@ -183,7 +184,6 @@ __MUI_CLASS_ABS(MUI_BUTTON_TAB);
 // Can't set BG color when mouse if over it, wtf
 class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 {
-	idc = -1;
 	type = CT_CHECKBOXES;
 	style = 2;
 	h = safezoneh * 0.02;
@@ -403,7 +403,6 @@ class MUI_GROUP : MUI_BASE
 	{
 	};
 	type = 15;
-	idc = -1;
 	x = 0;
 	y = 0;
 	w = 1;

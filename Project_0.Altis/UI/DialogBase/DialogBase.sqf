@@ -18,16 +18,32 @@ It has a headline, close button, hint bar, and an optinal multi-tab capability.
 
 #define pr private
 
+// Tab struct macros
+#define __TAB_ID_CLASS_NAME	0
+#define __TAB_ID_TEXT		1
+
+#define __TAB_NEW()	[0, 0]
+
+// We store the display in ui namespace and use _thisObject+this macro for var name
 #define __DISPLAY_SUFFIX "_display"
 
 CLASS("DialogBase", "")
 
-	// Handle to the created display
-	VARIABLE("IDD");
 	// We set it to true in destructor to ensure proper work of event handlers
 	VARIABLE("deleted");
 
+	// ID of current tab
+	VARIABLE("currentTab");
+
+	// Array of tab structures
+	VARIABLE("tabs");
+
+	// Bool
 	VARIABLE("multiTab");
+
+	// W and H of the content area of the dialog
+	VARIABLE("contentW");
+	VARIABLE("contentH");
 
 	METHOD("new") {
 		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
@@ -48,14 +64,21 @@ CLASS("DialogBase", "")
 
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, _display];
 		T_SETV("deleted", false);
-		T_SETV("multiTab", true);
+		T_SETV("multiTab", false);
+		T_SETV("currentTab", 0);
+		T_SETV("tabs", []);
+
+		T_SETV("contentW", 0.5);
+		T_SETV("contentH", 0.5);
+
+		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
 
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		pr _display = findDisplay T_GETV("IDD");
+		pr _display = T_CALLM0("getDisplay");
 		if (!isNull _display) then {
 			T_SETV("deleted", true);
 			_display closeDisplay 0;
@@ -64,22 +87,36 @@ CLASS("DialogBase", "")
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
 	} ENDMETHOD;
 
+	METHOD("enableMultiTab") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+		T_SETV("multiTab", _enable);
+		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
+		T_CALLM0("redraw");
+	} ENDMETHOD;
+
 	METHOD("getDisplay") {
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
 	} ENDMETHOD;
 
-	// takes width and height of user area
+	METHOD("setContentSize") {
+		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
+		T_SETV("contentW", _contentw);
+		T_SETV("contentH", _contenth);
+		T_CALLM2("resize", _contentw, _contenth);
+	} ENDMETHOD;
+
+	// Performs one-time resize of controls according to dialog content size
 	METHOD("resize") {
-		params [P_THISOBJECT, P_NUMBER("_userw"), P_NUMBER("_userh")];
+		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
 
 		pr _multitab = T_GETV("multiTab");
 		pr _display = uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull];
 
 		// Full width and height
-		pr _fullw = _userw;
+		pr _fullw = _contentw + DIALOG_BASE_GROUP_TAB_BUTTONS_W;
 		if (_multiTab) then {_fullw = _fullw + DIALOG_BASE_GROUP_TAB_BUTTONS_W; };
-		pr _fullh = _userh + DIALOG_BASE_STATIC_HEADLINE_H + DIALOG_BASE_STATIC_HINTS_H;
+		pr _fullh = _contenth + DIALOG_BASE_STATIC_HEADLINE_H + DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_BACKGROUND;
 		_ctrl ctrlSetPosition [0, 0, _fullw, _fullh];
 		_ctrl ctrlCommit 0;
@@ -114,10 +151,59 @@ CLASS("DialogBase", "")
 		_ctrl ctrlCommit 0;
 
 		// Group of tab buttons
-		pr _tbgrouph = _fullh - DIALOG_BASE_STATIC_HEADLINE_H;
+		pr _tbgrouph = _fullh - DIALOG_BASE_STATIC_HEADLINE_H - DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_GROUP_TAB_BUTTONS;
 		_ctrl ctrlSetPosition [0, DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
 		_ctrl ctrlCommit 0;
+
+		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_TAB_BUTTONS_BACKGROUND;
+		_ctrl ctrlSetPosition [0, DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
+		_ctrl ctrlCommit 0;
+
+	} ENDMETHOD;
+
+	// Hides/shows appropriate controls according to settings
+	// Doesn't resize anything
+	METHOD("redraw") {
+		params [P_THISOBJECT];
+
+		pr _display = T_CALLM0("getDisplay");
+
+		// Hide/show the multi tab view
+		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_GROUP_TAB_BUTTONS;
+		_ctrl ctrlShow T_GETV("multiTab");
+
+		// todo hint bar, esc button, etc
+	} ENDMETHOD;
+
+	METHOD("addTab") {
+		params [P_THISOBJECT, P_STRING("_ctrlClass"), P_STRING("_tabText")];
+
+		pr _display = T_CALLM0("getDisplay");
+
+		pr _struct = __TAB_NEW();
+		_struct set [__TAB_ID_CLASS_NAME, _ctrlClass];
+		_struct set [__TAB_ID_TEXT, _tabText];
+
+		// Add a button
+		pr _tabs = T_GETV("tabs");
+		pr _buttonID = count _tabs;
+		pr _buttonIDC = IDC_DIALOG_BASE_TAB_BUTTONS_START + _buttonID;
+
+		// Push the struct into array
+		_tabs pushBack _struct;
+
+		pr _ctrlGroup = _display displayCtrl IDC_DIALOG_BASE_GROUP_TAB_BUTTONS;
+		OOP_INFO_1("CTRL GROUP: %1", _ctrlGroup);
+		pr _ctrl = _display ctrlCreate ["MUI_BUTTON_TXT", _buttonIDC, _ctrlGroup];
+		pr _gap = DIALOG_BASE_TAB_BUTTON_GAP;
+		pr _buttonx = _gap;
+		pr _buttony = (DIALOG_BASE_TAB_BUTTON_H + 2*_gap) * _buttonID + _gap;
+		pr _buttonw = DIALOG_BASE_GROUP_TAB_BUTTONS_W - 2*_gap; // - 0.025; // Also account for the scroll bar
+		pr _buttonh = DIALOG_BASE_TAB_BUTTON_H;
+		_ctrl ctrlSetPosition [_buttonx, _buttony, _buttonw, _buttonh];
+		_ctrl ctrlCommit 0;
+		_ctrl ctrlSetText _tabText;
 
 	} ENDMETHOD;
 
