@@ -11,7 +11,7 @@ class GSPLIT_DIALOG
 	};
 	class Controls
 	{
-		class GSPLIT_BG : MUI_BG_BLACKTRANSPARENT 
+		class GSPLIT_BG : MUI_BG_BLACKTRANSPARENT_ABS 
 		{
 			idc = -1;
 			x = 0.15;
@@ -24,21 +24,21 @@ class GSPLIT_DIALOG
 		};
 
 		// LEFT LISTNBOX
-		class GSPLIT_LB_LEFT_BUTTON_LEFT : MUI_LISTNBOX_BUTTON
+		class GSPLIT_LB_LEFT_BUTTON_LEFT : MUI_LISTNBOX_BUTTON_ABS
 		{
 			idc = IDC_GSPLIT_LB_LEFT_LEFT;
 			text = "<";
 			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_LB_LEFT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON
+		class GSPLIT_LB_LEFT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON_ABS
 		{
 			idc = IDC_GSPLIT_LB_LEFT_RIGHT;
 			text = ">";
 			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_LB_LEFT_BG : MUI_BG_BLACKTRANSPARENT
+		class GSPLIT_LB_LEFT_BG : MUI_BG_BLACKTRANSPARENT_ABS
 		{
 			idc = -1;
 			x = 0.16;
@@ -46,7 +46,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.72;
 		};
-		class GSPLIT_LB_LEFT : MUI_LISTNBOX 
+		class GSPLIT_LB_LEFT : MUI_LISTNBOX_ABS
 		{
 			idc = IDC_GSPLIT_LB_LEFT;
 			x = 0.16;
@@ -58,21 +58,21 @@ class GSPLIT_DIALOG
 			idcRight = IDC_GSPLIT_LB_LEFT_RIGHT; // Right button IDC
 		};
 		// RIGHT LISTNBOX
-		class GSPLIT_LB_RIGHT_BUTTON_LEFT : MUI_LISTNBOX_BUTTON
+		class GSPLIT_LB_RIGHT_BUTTON_LEFT : MUI_LISTNBOX_BUTTON_ABS
 		{
 			idc = IDC_GSPLIT_LB_RIGHT_LEFT;
 			text = "<";
 			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_LB_RIGHT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON
+		class GSPLIT_LB_RIGHT_BUTTON_RIGHT : MUI_LISTNBOX_BUTTON_ABS
 		{
 			idc = IDC_GSPLIT_LB_RIGHT_RIGHT;
 			text = ">";
 			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_LB_RIGHT_BG : MUI_BG_BLACKTRANSPARENT
+		class GSPLIT_LB_RIGHT_BG : MUI_BG_BLACKTRANSPARENT_ABS
 		{
 			idc = -1;
 			x = 0.53;
@@ -80,7 +80,7 @@ class GSPLIT_DIALOG
 			w = 0.31;
 			h = 0.72;
 		};
-		class GSPLIT_LB_RIGHT : MUI_LISTNBOX 
+		class GSPLIT_LB_RIGHT : MUI_LISTNBOX_ABS 
 		{
 			idc = IDC_GSPLIT_LB_RIGHT;
 			x = 0.53;
@@ -92,7 +92,7 @@ class GSPLIT_DIALOG
 			idcRight = IDC_GSPLIT_LB_RIGHT_RIGHT; // Right button IDC
 		};
 		// MOVE LEFT-RIGHT < << >> > BUTTONS
-		class GSPLIT_MOVE_RIGHT : MUI_BUTTON_TXT 
+		class GSPLIT_MOVE_RIGHT : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_MOVE_RIGHT;
 			x = 0.48;
@@ -105,7 +105,7 @@ class GSPLIT_DIALOG
 			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_MOVE_RIGHT_ALL : MUI_BUTTON_TXT 
+		class GSPLIT_MOVE_RIGHT_ALL : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_MOVE_RIGHT_ALL;
 			x = 0.48;
@@ -118,7 +118,7 @@ class GSPLIT_DIALOG
 			offsetPressedX = 0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_MOVE_LEFT : MUI_BUTTON_TXT 
+		class GSPLIT_MOVE_LEFT : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_MOVE_LEFT;
 			x = 0.48;
@@ -131,7 +131,7 @@ class GSPLIT_DIALOG
 			offsetPressedX = -0.1*MUI_TXT_SIZE_M;
 			offsetPressedY = 0;
 		};
-		class GSPLIT_MOVE_LEFT_ALL : MUI_BUTTON_TXT 
+		class GSPLIT_MOVE_LEFT_ALL : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_MOVE_LEFT_ALL;
 			x = 0.48;
@@ -145,7 +145,7 @@ class GSPLIT_DIALOG
 			offsetPressedY = 0;
 		};
 
-		class GSPLIT_HEADLINE : MUI_HEADLINE
+		class GSPLIT_HEADLINE : MUI_HEADLINE_ABS
 		{
 			idc = -1;
 			x = 0.15;
@@ -154,7 +154,7 @@ class GSPLIT_DIALOG
 			h = 0.04;
 			text = "Split garrison";			
 		};
-		class GSPLIT_HINTS : MUI_BG_BLACKSOLID 
+		class GSPLIT_HINTS : MUI_BG_BLACKSOLID_ABS 
 		{
 			idc = IDC_GSPLIT_HINTS;
 			x = 0.15;
@@ -164,7 +164,7 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Hint: double-click row to move a unit";		
 		};
-		class GSPLIT_STATIC_NEW_GAR : MUI_BG_TRANSPARENT 
+		class GSPLIT_STATIC_NEW_GAR : MUI_BG_TRANSPARENT_ABS 
 		{
 			idc = -1;
 			x = 0.53;
@@ -175,7 +175,7 @@ class GSPLIT_DIALOG
 			text = "New garrison";
 			
 		};
-		class GSPLIT_STATIC_NEW_INF : MUI_BG_TRANSPARENT 
+		class GSPLIT_STATIC_NEW_INF : MUI_BG_TRANSPARENT_ABS 
 		{
 			idc = IDC_GSPLIT_STATIC_NEW_INF;
 			x = 0.53;
@@ -186,7 +186,7 @@ class GSPLIT_DIALOG
 			text = "Infantry: 666";
 			
 		};
-		class GSPLIT_STATIC_CURRENT_GAR : MUI_BG_TRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_GAR : MUI_BG_TRANSPARENT_ABS 
 		{
 			idc = -1;
 			x = 0.16;
@@ -197,7 +197,7 @@ class GSPLIT_DIALOG
 			text = "Current garrison";
 			
 		};
-		class GSPLIT_STATIC_NEW_CARGO : MUI_BG_TRANSPARENT 
+		class GSPLIT_STATIC_NEW_CARGO : MUI_BG_TRANSPARENT_ABS 
 		{
 			idc = IDC_GSPLIT_STATIC_NEW_CARGO;
 			x = 0.53;
@@ -207,7 +207,7 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Cargo seats: 666";
 		};
-		class GSPLIT_STATIC_CURRENT_CARGO : MUI_BG_TRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_CARGO : MUI_BG_TRANSPARENT_ABS 
 		{
 			idc = IDC_GSPLIT_STATIC_CURRENT_CARGO;
 			x = 0.16;
@@ -217,7 +217,7 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Cargo seats: 666";			
 		};
-		class GSPLIT_STATIC_CURRENT_INF : MUI_BG_TRANSPARENT 
+		class GSPLIT_STATIC_CURRENT_INF : MUI_BG_TRANSPARENT_ABS 
 		{
 			idc = IDC_GSPLIT_STATIC_CURRENT_INF;
 			x = 0.16;
@@ -227,7 +227,7 @@ class GSPLIT_DIALOG
 			style = 0;
 			text = "Infantry: 666";			
 		};
-		class GSPLIT_BUTTON_CLOSE : MUI_BUTTON_TXT 
+		class GSPLIT_BUTTON_CLOSE : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_CLOSE;
 			x = 0.80;
@@ -238,7 +238,7 @@ class GSPLIT_DIALOG
 			borderSize = 0;
 			colorBackground[] = {0.6,0,0,1};	
 		};
-		class GSPLIT_BUTTON_CANCEL : MUI_BUTTON_TXT 
+		class GSPLIT_BUTTON_CANCEL : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_CANCEL;
 			x = 0.64;
@@ -248,7 +248,7 @@ class GSPLIT_DIALOG
 			text = "Cancel";
 			borderSize = 0;
 		};
-		class GSPLIT_BUTTON_SPLIT : MUI_BUTTON_TXT 
+		class GSPLIT_BUTTON_SPLIT : MUI_BUTTON_TXT_ABS 
 		{
 			idc = IDC_GSPLIT_BUTTON_SPLIT;
 			x = 0.25;

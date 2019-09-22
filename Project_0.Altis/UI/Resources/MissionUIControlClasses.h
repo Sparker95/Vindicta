@@ -10,14 +10,18 @@
 */
 
 // Sorry Marvis I had to tweak these a bit. Sparker.
-#define MUI_TXT_SIZE_XS safeZoneH*0.02
-#define MUI_TXT_SIZE_S safeZoneH*0.015
 #define MUI_TXT_SIZE_M safeZoneH*0.020
-#define MUI_TXT_SIZE_L safeZoneH*0.022
+// For safezone UIs
+#define MUI_TXT_SIZE_M_SZ MUI_TXT_SIZE_M
+// For absolute units UIs
+#define MUI_TXT_SIZE_M_ABS 0.04
 
 #ifndef HG_MissionUIControlClassesh
 #define HG_MissionUIControlClassesh 1
 //Create a header guard to prevent duplicate include.
+
+// Macro to duplicate existing classes for absolute units
+#define __MUI_CLASS_ABS(class0) class class0##_ABS : class0 { sizeEx = MUI_TXT_SIZE_M_ABS; }
 
 // #-0
 class MUI_BASE
@@ -67,31 +71,34 @@ class MUI_BASE
 	tileW = 0;
 };
 
+__MUI_CLASS_ABS(MUI_BASE);
 
 class MUI_BG_BLACKSOLID : MUI_BASE 
 {
 	type = CT_STATIC;
-
-	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S; Sparker fooling around :/
 	colorBackground[] = MUIC_BLACK;
 };
 
+__MUI_CLASS_ABS(MUI_BG_BLACKSOLID);
 
 class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S;
+	sizeEx = MUI_TXT_SIZE_M;
 	colorBackground[] = MUIC_BLACKTRANSP;
 };
+
+__MUI_CLASS_ABS(MUI_BG_BLACKTRANSPARENT);
 
 class MUI_BG_TRANSPARENT : MUI_BASE
 {
 	type = CT_STATIC;
-	sizeEx = MUI_TXT_SIZE_M; // MUI_TXT_SIZE_S;
+	sizeEx = MUI_TXT_SIZE_M;
 	//colorBackground[] = MUIC_TRANSPARENT;
 };
 
+__MUI_CLASS_ABS(MUI_BG_TRANSPARENT);
 
 class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, but grey
 {
@@ -117,6 +124,7 @@ class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, bu
 	*/
 };
 
+__MUI_CLASS_ABS(MUI_HEADLINE);
 
 class MUI_BUTTON_TXT : RscButton
 {
@@ -160,11 +168,15 @@ class MUI_BUTTON_TXT : RscButton
 	onMouseExit = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text white
 };
 
+__MUI_CLASS_ABS(MUI_BUTTON_TXT);
+
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	type = CT_BUTTON;
 	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
 };
+
+__MUI_CLASS_ABS(MUI_BUTTON_TAB);
 
 // Button with text that behaves like it's a checkbox
 // This control type is trash, don't use it
@@ -240,6 +252,8 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
 };
 
+__MUI_CLASS_ABS(MUI_BUTTON_TXT_CHECKBOX);
+
 // RscListNBox
 class MUI_LISTNBOX : MUI_BASE 
 {
@@ -305,6 +319,8 @@ class MUI_LISTNBOX : MUI_BASE
 	};
 };
 
+__MUI_CLASS_ABS(MUI_LISTNBOX);
+
 // Use it for the left/right button of listnboxes
 class MUI_LISTNBOX_BUTTON : MUI_BUTTON_TXT
 {
@@ -312,6 +328,8 @@ class MUI_LISTNBOX_BUTTON : MUI_BUTTON_TXT
 	height = 1.0 * GUI_GRID_H;
 	text = "X";
 };
+
+__MUI_CLASS_ABS(MUI_LISTNBOX_BUTTON);
 
 class MUI_STRUCT_TXT : RscStructuredText
 {
@@ -326,22 +344,25 @@ class MUI_STRUCT_TXT : RscStructuredText
 	};
 };
 
+__MUI_CLASS_ABS(MUI_STRUCT_TXT);
 
 class MUI_ST_FRAME : MUI_BASE
 {
 	type = CT_STATIC;
 
-	sizeEx = MUI_TXT_SIZE_XS;
+	sizeEx = MUI_TXT_SIZE_M;
 	style = ST_FRAME;
 	text = "";
 	font = "PuristaLight";
 };
 
+__MUI_CLASS_ABS(MUI_ST_FRAME);
+
 class MUI_EDIT : MUI_BASE
 {
 	type = CT_EDIT;
 
-	sizeEx = MUI_TXT_SIZE_XS;
+	sizeEx = MUI_TXT_SIZE_M;
 	style = ST_MULTI + ST_NO_RECT; // multi line + no border
 
 	text = "";
@@ -359,6 +380,8 @@ class MUI_EDIT : MUI_BASE
 
 	lineSpacing = 1.1 * GUI_GRID_H;
 };
+
+__MUI_CLASS_ABS(MUI_EDIT);
 
 class MUI_GROUP : MUI_BASE
 {
@@ -387,6 +410,8 @@ class MUI_GROUP : MUI_BASE
 	h = 1;
 	shadow = 0;
 };
+
+__MUI_CLASS_ABS(MUI_GROUP);
 
 #endif
 

@@ -14,3 +14,5 @@ call compile preprocessFileLineNumbers "UI\Snek\Snek.sqf";
 
 call compile preprocessFileLineNumbers "UI\BuildUI\BuildFunctions.sqf";
 call compile preprocessFileLineNumbers "UI\BuildUI\BuildUI.sqf";
+
+call compile preprocessFileLineNumbers "UI\DialogBase\DialogBase.sqf";

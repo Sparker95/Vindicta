@@ -137,7 +137,7 @@ NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this se
 CALLM(gGameMode, "playerSpawn", _this);
 
 // Action to start building stuff
-_newUnit addAction ["Start building", // title
+_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Start building"], // title
                  "systemChat 'Lets build something...';", // Script
                  0, // Arguments
                  0, // Priority

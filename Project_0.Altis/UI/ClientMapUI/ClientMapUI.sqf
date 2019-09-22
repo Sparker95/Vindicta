@@ -772,7 +772,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		pr _soldierCount = 0;
 		pr _vehList = [];
 		
-		_typeText = CALLSM1("Location", "getTypeString", T_GETV("type"));
+		_typeText = CALLSM1("Location", "getTypeString", GETV(_intel, "type"));
 		
 		_timeText = str GETV(_intel, "dateUpdated");
 		_sideText = str GETV(_intel, "side");
