@@ -77,6 +77,19 @@ CLASS("DialogTabBase", "")
 		pr _ctrl = uiNamespace getVariable [_thisObject+__CONTROL_SUFFIX, controlNull];
     	ctrlParent _ctrl
 	} ENDMETHOD;
+
+	// Finds a control by its class name
+	METHOD("findControl") {
+		params [P_THISOBJECT, P_STRING("_className")];
+		pr _display = T_CALLM0("getDisplay");
+		pr _allControls = allControls _display;
+		pr _index = _allControls findIf {(ctrlClassName _x) == _className};
+		if (_index != -1) then {
+			_allControls select _index
+		} else {
+			controlNull
+		};
+	} ENDMETHOD;
 	
 	// Adds an event handler which will call some method of this object
 	METHOD("controlAddEventHandler") {

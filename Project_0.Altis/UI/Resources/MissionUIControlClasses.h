@@ -431,8 +431,9 @@ class MUI_COMBOBOX : MUI_BASE
 	soundCollapse[] = {"",0.1,1};
 	maxHistoryDelay = 1.0;
 	shadow = 0;
-	class ComboScrollBar : ScrollBar
+	class ComboScrollBar
 	{
+		/*
 		color[] = {1,1,1,0.6};
 		colorActive[] = {1,1,1,1};
 		colorDisabled[] = {1,1,1,0.3};
@@ -441,6 +442,18 @@ class MUI_COMBOBOX : MUI_BASE
 		arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
 		border = "#(argb,8,8,3)color(1,1,1,1)";
 		shadow = 0;
+		*/
+
+		width = 0; // width of ComboScrollBar
+		height = 0; // height of ComboScrollBar
+		scrollSpeed = 0.01; // scrollSpeed of ComboScrollBar
+
+		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa"; // Arrow
+		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa"; // Arrow when clicked on
+		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa"; // Slider background (stretched vertically)
+		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa"; // Dragging element (stretched vertically)
+
+		color[] = {1,1,1,1}; // Scrollbar color
 	};
 };
 

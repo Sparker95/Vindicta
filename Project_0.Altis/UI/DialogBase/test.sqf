@@ -16,7 +16,6 @@ CALLM2(_dlg0, "addTab", "DialogTabBase", "Rate this app");
 CALLM1(_dlg0, "setCurrentTab", 0);
 
 
-
 //CALLM1(_dlg0, "setCurrentTab", 1);
 
 //CALLM1(_dlg0, "enableMultiTab", false);
@@ -34,3 +33,15 @@ private _dlg1 = NEW("DialogBase", [_d0]);
 CALLM2(_dlg1, "resize", 0.6, 0.6);
 systemChat format ["2 %1", _d0];
 */
+
+private _display = CALLM0(_dlg0, "getDisplay");
+private _allControls = allControls _display;
+diag_log "- - - - - - - - - -";
+{
+	private _idc = ctrlIDC _x;
+	private _className = ctrlClassName _x;
+	diag_log format ["Class: %1, IDC: %2", _classname, _idc];
+} forEach _allControls;
+
+diag_log "";
+diag_log "";
