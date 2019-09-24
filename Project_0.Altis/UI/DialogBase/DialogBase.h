@@ -2,7 +2,7 @@
 
 class MUI_DIALOG_BASE
 {
-	idd = -1;
+	idd = IDD_MUI_DIALOG_BASE;
 	
 	class ControlsBackground
 	{

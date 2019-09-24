@@ -11,10 +11,10 @@ class TAB_CMDR
 		{
 			type = 0;
 			idc = -1;
-			x = 0;
-			y = 0.00000018;
-			w = 0.7;
-			h = 0.9;
+			x = safeZoneX + safeZoneW * 0.29375;
+			y = safeZoneY + safeZoneH * 0.225;
+			w = safeZoneW * 0.28854167;
+			h = safeZoneH * 0.49537038;
 			style = 0;
 			text = "";
 			
@@ -24,11 +24,12 @@ class TAB_CMDR
 			type = 0;
 			idc = -1;
 			x = 0.01000001;
-			y = 0.02000025;
-			w = 0.68;
-			h = 0.13000011;
-			style = 64;
-			text = "Create a location";
+			y = 0.01000014;
+			w = 0.34055589;
+			h = 0.04;
+			style = 0;
+			text = "Create a location:";
+			colorBackground[] = {0.702,0.702,0.102,1};
 			font = "PuristaMedium";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
@@ -41,8 +42,8 @@ class TAB_CMDR
 		{
 			type = 4;
 			idc = -1;
-			x = 0.1;
-			y = 0.09000001;
+			x = 0.09000001;
+			y = 0.11000001;
 			w = 0.26;
 			h = 0.04;
 			style = 16;
@@ -75,8 +76,8 @@ class TAB_CMDR
 		{
 			type = 2;
 			idc = -1;
-			x = 0.1;
-			y = 0.04000001;
+			x = 0.09000001;
+			y = 0.06000002;
 			w = 0.26;
 			h = 0.04;
 			style = 0;
@@ -94,8 +95,8 @@ class TAB_CMDR
 		{
 			type = 0;
 			idc = -1;
-			x = 0.02;
-			y = 0.04;
+			x = 0.01;
+			y = 0.06000001;
 			w = 0.07000006;
 			h = 0.04;
 			style = 0;
@@ -109,8 +110,8 @@ class TAB_CMDR
 		{
 			type = 0;
 			idc = -1;
-			x = 0.02;
-			y = 0.09000004;
+			x = 0.01;
+			y = 0.11000004;
 			w = 0.07;
 			h = 0.04;
 			style = 0;
@@ -124,10 +125,10 @@ class TAB_CMDR
 		{
 			type = 1;
 			idc = -1;
-			x = 0.48000023;
-			y = 0.05000018;
+			x = 0.36000025;
+			y = 0.06000018;
 			w = 0.13000001;
-			h = 0.07000001;
+			h = 0.09000002;
 			text = "Create";
 			borderSize = 0;
 			colorBorder[] = {0,0,0,0};

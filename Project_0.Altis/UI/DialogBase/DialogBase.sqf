@@ -54,7 +54,9 @@ CLASS("DialogBase", "")
 		OOP_INFO_0("NEW");
 
 		// Create the dialog
-		pr _display = _displayParent createDisplay "MUI_DIALOG_BASE";
+		//pr _display = _displayParent createDisplay "MUI_DIALOG_BASE";
+		pr _displayCreated = createDialog "MUI_DIALOG_BASE";
+		pr _display = findDisplay IDD_MUI_DIALOG_BASE;
 		_display setVariable ["__DialogBase_obj_ref", _thisObject];
 		_display displayAddEventHandler ["Unload", {
 			params ["_display", "_exitCode"];
@@ -132,6 +134,10 @@ CLASS("DialogBase", "")
 		T_CALLM2("resize", _contentw, _contenth);
 	} ENDMETHOD;
 
+	METHOD("setHeadlineText") {
+
+	} ENDMETHOD;
+
 	METHOD("getDisplay") {
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
@@ -145,7 +151,7 @@ CLASS("DialogBase", "")
 		pr _display = uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull];
 
 		// Full width and height
-		pr _fullw = _contentw + DIALOG_BASE_GROUP_TAB_BUTTONS_W;
+		pr _fullw = _contentw;
 		if (_multiTab) then {_fullw = _fullw + DIALOG_BASE_GROUP_TAB_BUTTONS_W; };
 		pr _fullh = _contenth + DIALOG_BASE_STATIC_HEADLINE_H + DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_BACKGROUND;
@@ -198,10 +204,7 @@ CLASS("DialogBase", "")
 			if (_multitab) then {
 				_contentx = _contentx + DIALOG_BASE_GROUP_TAB_BUTTONS_W;
 			};
-			#ifndef _SQF_VM
-			_ctrl ctrlSetPositionX _contentx;
-			_ctrl ctrlSetPositionY DIALOG_BASE_STATIC_HEADLINE_H;
-			#endif
+			_ctrl ctrlSetPosition [_contentx, DIALOG_BASE_STATIC_HEADLINE_H, T_GETV("contentW"), T_GETV("contentH")];
 			_ctrl ctrlCommit 0;
 		};
 
@@ -292,7 +295,7 @@ CLASS("DialogBase", "")
 
 		// Create new tab
 		pr _tabObjClassName = _tabs#_tabID#__TAB_ID_CLASS_NAME;
-		_tabObj = NEW(_tabObjClassName, [T_CALLM0("getDisplay")]);
+		_tabObj = NEW(_tabObjClassName, [_thisObject]);
 		ASSERT_OBJECT_CLASS(_tabObj, "DialogTabBase");
 		T_SETV("currentTabObj", _tabObj);
 

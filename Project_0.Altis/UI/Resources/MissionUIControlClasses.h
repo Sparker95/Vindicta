@@ -369,11 +369,11 @@ class MUI_EDIT : MUI_BASE
 	font = "PuristaMedium";
 	
 	autocomplete = "";
-	canModify = false; 
+	canModify = true; 
 	maxChars = 1000; 
 	forceDrawCaret = false;
 
-	colorSelection[] = MUIC_TRANSPARENT;
+	colorSelection[] = {0.13, 0.54, 0.21, 1};
 	colorText[] = MUIC_WHITE;
 	colorDisabled[] = MUIC_TRANSPARENT; 
 	colorBackground[] = MUIC_TRANSPARENT; 
@@ -412,28 +412,34 @@ class MUI_GROUP : MUI_BASE
 
 __MUI_CLASS_ABS(MUI_GROUP);
 
-class MUI_COMBOBOX : MUI_BASE
+class MUI_COMBOBOX : RscCombo
 {
+	idc = -1;
+	sizeEx = MUI_TXT_SIZE_M;
+	text = "";
+	style = 4;
+	font = "PuristaMedium";
+
 	access = 0;
 	type = CT_COMBO;
-	style = ST_LEFT;
 	h = 0.05;
 	rowHeight = 0.025;
 	wholeHeight = 0.25;
-	colorSelect[] = {0.6,0.6,0.6,1};
-	colorText[] = {1,1,1,1};
-	colorBackground[] = {0.2,0.2,0.2,1};
+	colorSelect[] = MUIC_BLACK; // Text color when selected
+	colorText[] = MUIC_WHITE;
+	colorBackground[] = MUIC_BLACK;
 	colorScrollbar[] = {1,1,1,1};
-	font = "TahomaB";
-	sizeEx = MUI_TXT_SIZE_M;
+	colorDisabled[] = {0.0,0.0,0.5,0.5};
 	soundSelect[] = {"",0.1,1};
 	soundExpand[] = {"",0.1,1};
 	soundCollapse[] = {"",0.1,1};
 	maxHistoryDelay = 1.0;
 	shadow = 0;
+	arrowEmpty = "\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_ca.paa";
+	arrowFull = "\A3\ui_f\data\GUI\RscCommon\rsccombo\arrow_combo_active_ca.paa";
 	class ComboScrollBar
 	{
-		/*
+
 		color[] = {1,1,1,0.6};
 		colorActive[] = {1,1,1,1};
 		colorDisabled[] = {1,1,1,0.3};
@@ -442,18 +448,21 @@ class MUI_COMBOBOX : MUI_BASE
 		arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
 		border = "#(argb,8,8,3)color(1,1,1,1)";
 		shadow = 0;
-		*/
 
+		/*
 		width = 0; // width of ComboScrollBar
 		height = 0; // height of ComboScrollBar
 		scrollSpeed = 0.01; // scrollSpeed of ComboScrollBar
+
+		color[] = {1,1,1,0.6};
+		colorActive[] = {1,1,1,1};
+		colorDisabled[] = {1,1,1,0.3};
 
 		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa"; // Arrow
 		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa"; // Arrow when clicked on
 		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa"; // Slider background (stretched vertically)
 		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa"; // Dragging element (stretched vertically)
-
-		color[] = {1,1,1,1}; // Scrollbar color
+		*/
 	};
 };
 

@@ -21,13 +21,19 @@ SQF class that represents individual tabs of a <DialogBase>
 
 CLASS("DialogTabBase", "")
 
+	VARIABLE("dialogObj");
+
 	// Private, don't call this on your own
 	METHOD("new") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_dialogObj")];
+
+		T_SETV("dialogObj", _dialogObj);
+		pr _displayParent = CALLM0(_dialogObj, "getDisplay");
 
 		OOP_INFO_0("NEW");
 
 		pr _ctrl = T_CALLM1("createControl", _displayParent);
+		OOP_INFO_1("NEW   setting control: %1", _ctrl);
 		uiNamespace setVariable [_thisObject+__CONTROL_SUFFIX, _ctrl];
 	} ENDMETHOD;
 
@@ -74,15 +80,17 @@ CLASS("DialogTabBase", "")
 
 	METHOD("getDisplay") {
 		params [P_THISOBJECT];
-		pr _ctrl = uiNamespace getVariable [_thisObject+__CONTROL_SUFFIX, controlNull];
-    	ctrlParent _ctrl
+		CALLM0(T_GETV("dialogObj"), "getDisplay")
 	} ENDMETHOD;
 
 	// Finds a control by its class name
 	METHOD("findControl") {
 		params [P_THISOBJECT, P_STRING("_className")];
 		pr _display = T_CALLM0("getDisplay");
+		OOP_INFO_1("FIND CONTROL: %1", _className);
+		OOP_INFO_1(" DISPLAY: %1", _display);
 		pr _allControls = allControls _display;
+		OOP_INFO_1(" ALL CONTROLS: %1", _allControls);
 		pr _index = _allControls findIf {(ctrlClassName _x) == _className};
 		if (_index != -1) then {
 			_allControls select _index

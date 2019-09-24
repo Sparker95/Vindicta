@@ -94,6 +94,7 @@ class CfgFunctions {
 #include "UI\Resources\MissionUIControlClasses.h"
 #include "UI\ClientMapUI\ClientMapUI.h"
 #include "UI\DialogBase\DialogBase.h"
+#include "UI\InGameMenu\InGameMenu.h"
 
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
