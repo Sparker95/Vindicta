@@ -4,6 +4,9 @@ class MUI_DIALOG_BASE
 {
 	idd = IDD_MUI_DIALOG_BASE;
 	
+	// On creation of the dialog we set a variable, which we immediately read to get the handle to the new display
+	onLoad = "uiNamespace setVariable ['gDialogBaseNewDisplay', _this select 0];";
+	
 	class ControlsBackground
 	{
 		class STATIC_BACKGROUND : MUI_BG_BLACKTRANSPARENT_ABS

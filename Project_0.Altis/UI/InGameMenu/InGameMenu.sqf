@@ -9,7 +9,7 @@
 CLASS("InGameMenu", "DialogBase")
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
+		params [P_THISOBJECT];
 
 		T_CALLM2("addTab", "DialogTabBase", "Mission");
 		T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
@@ -17,6 +17,9 @@ CLASS("InGameMenu", "DialogBase")
 		
 		T_CALLM1("enableMultiTab", true);
 		T_CALLM2("setContentSize", 0.7, 0.9);
+
+		T_CALLM1("setHeadlineText", "Mission Menu");
+		T_CALLM1("setHintText", "Vindicta pre-alpha version");
 
 	} ENDMETHOD;
 

@@ -289,18 +289,15 @@ CLASS("AICommander", "AI")
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 	
 		// Check if we have intel about such location already
+		pr _intelResult = T_CALLM1("getIntelAboutLocation", _loc);
 		pr _intelDB = T_GETV("intelDB");
-		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
-		pr _result1 = CALLM2(_intelDB, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
-		pr _intelResult = (_result0 arrayIntersect _result1) select 0;
 
-		if (! isNil "_intelResult") then {
-
+		if (!IS_NULL_OBJECT(_intelResult)) then {
 			OOP_INFO_1("Intel query result: %1;", _intelResult);
 
 			// There is an intel item with this location
@@ -355,6 +352,24 @@ CLASS("AICommander", "AI")
 		
 	} ENDMETHOD;
 	
+	// Returns intel we have about specified location
+	METHOD("getIntelAboutLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		pr _intelDB = T_GETV("intelDB");
+		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
+		if (count _result0 == 0) then {
+			""
+		} else {
+			pr _result1 = CALLM2(_intelDB, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
+			pr _intelResult = (_result0 arrayIntersect _result1);
+			if (count _intelResult > 0) then {
+				_intelResult#0
+			} else {
+				""
+			};
+		};
+	} ENDMETHOD;
+
 	// Creates a LocationData array from Location
 	METHOD("createIntelFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
@@ -1139,6 +1154,33 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Send data back to client
 		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonSplitDialog", "sendServerResponse", [22], _clientOwner, false);
 
+	} ENDMETHOD;
+
+	METHOD("clientCreateLocation") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_pos"), P_STRING("_locType"), P_STRING("_locName")];
+
+		// Make sure the position is not very close to an existing location
+		pr _locsNear = CALLSM2("Location", "nearLocations", _pos, 50);
+		pr _index = _locsNear findIf {
+			T_CALLM1("getIntelAboutLocation", _x) != ""
+		};
+		if (_index != -1) exitWith {
+			pr _args = ["We can't create a location so close to another location!"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		};
+
+		// Create the location
+		pr _loc = NEW("Location", [_pos]);
+		CALLM2(_loc, "setBorder", "circle", 100);
+		CALLM1(_loc, "setType", _locType);
+		CALLM1(_loc, "setName", _locName);
+
+		// Update intel about the location
+		T_CALLM1("updateLocationData", _loc);
+
+		pr _args = ["We have successfully created a location here!"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		
 	} ENDMETHOD;
 
 /*

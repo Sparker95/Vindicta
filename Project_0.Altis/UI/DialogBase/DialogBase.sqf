@@ -49,14 +49,14 @@ CLASS("DialogBase", "")
 	VARIABLE("contentH");
 
 	METHOD("new") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
+		params [P_THISOBJECT];
 
 		OOP_INFO_0("NEW");
 
 		// Create the dialog
 		//pr _display = _displayParent createDisplay "MUI_DIALOG_BASE";
 		pr _displayCreated = createDialog "MUI_DIALOG_BASE";
-		pr _display = findDisplay IDD_MUI_DIALOG_BASE;
+		pr _display = uiNamespace getVariable "gDialogBaseNewDisplay";
 		_display setVariable ["__DialogBase_obj_ref", _thisObject];
 		_display displayAddEventHandler ["Unload", {
 			params ["_display", "_exitCode"];
@@ -135,7 +135,15 @@ CLASS("DialogBase", "")
 	} ENDMETHOD;
 
 	METHOD("setHeadlineText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HEADLINE;
+		_ctrl ctrlSetText _text;
+	} ENDMETHOD;
 
+	METHOD("setHintText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HINTS;
+		_ctrl ctrlSetText _text;
 	} ENDMETHOD;
 
 	METHOD("getDisplay") {

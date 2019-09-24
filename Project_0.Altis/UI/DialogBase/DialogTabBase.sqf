@@ -83,6 +83,11 @@ CLASS("DialogTabBase", "")
 		CALLM0(T_GETV("dialogObj"), "getDisplay")
 	} ENDMETHOD;
 
+	METHOD("getDialogObject") {
+		params [P_THISOBJECT];
+		T_GETV("dialogObj")
+	} ENDMETHOD;
+
 	// Finds a control by its class name
 	METHOD("findControl") {
 		params [P_THISOBJECT, P_STRING("_className")];
@@ -101,10 +106,9 @@ CLASS("DialogTabBase", "")
 	
 	// Adds an event handler which will call some method of this object
 	METHOD("controlAddEventHandler") {
-		params [P_THISOBJECT, P_NUMBER("_idc"), P_STRING("_type"), P_STRING("_methodName")];
+		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_type"), P_STRING("_methodName")];
 
-		pr _display = T_CALLM0("getDisplay");
-		pr _ctrl = _display displayCtrl _idc;
+		pr _ctrl = T_CALLM1("findControl", _className);
 		_ctrl setVariable ["__tabobject", _thisObject];
 		_ctrl setVariable ["__methodName", _methodName];
 		_ctrl ctrlAddEventHandler [_type, {
