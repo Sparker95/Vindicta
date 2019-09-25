@@ -329,7 +329,7 @@ CLASS("Location", "MessageReceiverEx")
 		
 		pr _gars = T_GETV("garrisons");
 		if (! (_gar in _gars)) then {
-			_gars pushBack _gar;
+			_gars pushBackUnique _gar;
 			PUBLIC_VAR(_thisObject, "garrisons");
 			CALLM2(_gar, "postMethodAsync", "ref", []);
 

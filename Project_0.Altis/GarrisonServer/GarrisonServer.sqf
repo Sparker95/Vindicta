@@ -184,7 +184,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// This runs in the thread
 	METHOD("buildFromGarrison") {
-		diag_log format ["BUILD FROM GARRISON: %1", _this];
+		OOP_INFO_1("BUILD FROM GARRISON: %1", _this);
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_STRING("_className"),
 				P_NUMBER("_cost"),	P_NUMBER("_catID"), P_NUMBER("_subcatID"),
 				P_POSITION("_pos"), P_NUMBER("_dir")];

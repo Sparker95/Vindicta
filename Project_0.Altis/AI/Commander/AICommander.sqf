@@ -185,7 +185,7 @@ CLASS("AICommander", "AI")
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
-		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) });
+		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {CALLM0(_x, "getLocation") == ""} });
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -1174,6 +1174,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM2(_loc, "setBorder", "circle", 100);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
+
+		// Create the garrison
+		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+		CALLM0(_gar, "activate");
 
 		// Update intel about the location
 		T_CALLM1("updateLocationData", _loc);

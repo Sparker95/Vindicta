@@ -1,6 +1,6 @@
 // Add controls to the map
 #include "..\OOP_Light\OOP_Light.h"
-#include "ClientMapUI\ClientMapUI_Macros.h";
+#include "ClientMapUI\ClientMapUI_Macros.h"
 #include "UndercoverUI\UndercoverUI_Macros.h"
 
 diag_log "--- Initializing player UI";
@@ -18,3 +18,18 @@ CALLSM0("PlayerListUI", "new");
 gClientMapUI = NEW("ClientMapUI", []);
 gInGameUI = NEW("InGameUI", []);
 gBuildUI = NEW("BuildUI", []);
+
+(finddisplay 46) displayAddEventHandler ["KeyDown", {
+	params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
+	diag_log format ["KeyDown: %1", _this];
+	if (_key == 0x16) then { // U key
+		if (isNil "gInGameMenu") then {
+			gInGameMenu = NEW("InGameMenu", []);
+			private _code = {gInGameMenu = nil;};
+			CALLM1(gInGameMenu, "onDelete", _code);
+			true
+		};
+	} else {
+		false
+	};
+}];

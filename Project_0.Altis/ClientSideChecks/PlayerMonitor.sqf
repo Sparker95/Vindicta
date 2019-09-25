@@ -215,7 +215,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_GETV("currentGarrison")
 	} ENDMETHOD;
 
-	STATIC_METHOD("canPlayerBuild") {
+	STATIC_METHOD("canUnitBuildAtLocation") {
 		params [P_THISCLASS, "_unit"];
 		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
 		if (!isNil "_thisObject") then {
@@ -223,6 +223,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		} else {
 			false
 		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("canUnitBuildFromInventory") {
+		params [P_THISCLASS, "_unit"];
+		
 	} ENDMETHOD;
 
 ENDCLASS;

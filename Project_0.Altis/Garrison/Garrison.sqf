@@ -399,8 +399,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		if (T_GETV("active")) then { 
 			T_CALLM("updateSpawnState", []);
 
-			// If we are empty except for vehicles then we must abandon them
-			if(T_GETV("side") != CIVILIAN and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
+			// If we are empty except for vehicles and we are not at a location then we must abandon them
+			if((T_GETV("side") != CIVILIAN) and {T_GETV("location") == ""} and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
@@ -528,6 +528,9 @@ CLASS("Garrison", "MessageReceiverEx");
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args1);
 			};
 		};
+
+		// Position change might change spawn state so update it before returning.
+		T_CALLM("updateSpawnState", []);
 
 		__MUTEX_UNLOCK;
 		
@@ -961,7 +964,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			false
 		};
 		private _unitList = T_GETV("units");
-		private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
+		//private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
+		private _return = (T_GETV("countInf") == 0);
 		__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;

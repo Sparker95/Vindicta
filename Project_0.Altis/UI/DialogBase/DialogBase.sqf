@@ -48,6 +48,9 @@ CLASS("DialogBase", "")
 	VARIABLE("contentW");
 	VARIABLE("contentH");
 
+	// Event handler which will run in the destructor of this dialog
+	VARIABLE("onDeleteCode");
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 
@@ -92,6 +95,7 @@ CLASS("DialogBase", "")
 		T_SETV("currentTabID", -1);
 		T_SETV("currentTabObj", "");
 		T_SETV("tabs", []);
+		T_SETV("onDeleteCode", {});
 
 		T_SETV("contentW", 0.7);
 		T_SETV("contentH", 0.7);
@@ -106,6 +110,8 @@ CLASS("DialogBase", "")
 
 		OOP_INFO_0("DELETE");
 
+		call T_GETV("onDeleteCode");
+
 		pr _display = T_CALLM0("getDisplay");
 		if (!isNull _display) then {
 			T_SETV("deleted", true);
@@ -118,6 +124,12 @@ CLASS("DialogBase", "")
 		};
 
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
+	} ENDMETHOD;
+
+	// Adds an event handler which will run in the destructor of this dialog
+	METHOD("onDelete") {
+		params [P_THISOBJECT, P_CODE("_code")];
+		T_SETV("onDeleteCode", _code);
 	} ENDMETHOD;
 
 	METHOD("enableMultiTab") {

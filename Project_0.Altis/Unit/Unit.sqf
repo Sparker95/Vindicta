@@ -1120,6 +1120,14 @@ CLASS(UNIT_CLASS_NAME, "");
 		_cat != T_INF
 	} ENDMETHOD;
 
+	STATIC_METHOD("getInfantryBuildResources") {
+		params [P_THISOBJECT, P_OBJECT("_hO")];
+		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
+		pr _nItems = {_x == "vin_build_res_0"} count _items;
+		_buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		_nItems*_buildResPerMag
+	} ENDMETHOD;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               G O A P
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
