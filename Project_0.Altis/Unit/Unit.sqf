@@ -1124,8 +1124,19 @@ CLASS(UNIT_CLASS_NAME, "");
 		params [P_THISOBJECT, P_OBJECT("_hO")];
 		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
 		pr _nItems = {_x == "vin_build_res_0"} count _items;
-		_buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		_nItems*_buildResPerMag
+	} ENDMETHOD;
+
+	STATIC_METHOD("removeInfantryBuildResources") {
+		params [P_THISOBJECT, P_OBJECT("_hO"), P_NUMBER("_value")];
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _nItemsToRemove = round (_value / _buildResPerMag);
+		pr _i = 0;
+		while {_i < _nItemsToRemove} do {
+			_hO removeMagazine "vin_build_res_0";
+			_i = _i + 1;
+		};
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

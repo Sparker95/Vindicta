@@ -27,8 +27,8 @@ gBuildUI = NEW("BuildUI", []);
 			gInGameMenu = NEW("InGameMenu", []);
 			private _code = {gInGameMenu = nil;};
 			CALLM1(gInGameMenu, "onDelete", _code);
-			true
 		};
+		true
 	} else {
 		false
 	};

@@ -979,14 +979,26 @@ CLASS("BuildUI", "")
 				pr _gar = CALLM0(gPlayerMonitor, "getCurrentGarrison");
 
 				if (T_GETV("resourceSource") == __RESOURCE_SOURCE_INVENTORY) then {
-					// todo remove build resources from player
-					_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
+					// Check player's resources
+					pr _playerBuildRes = CALLSM1("Unit", "getInfantryBuildResources", player);
+					if (_playerBuildRes >= _buildRes) then {
+						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
+						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
+						pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+						// Send the request to server
+						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
+					} else {
+						// Show error message
+						systemChat format ["Not enough build resources in your inventory: %1 (%2 required)", _playerBuildRes, _buildRes];
+					};
+					
+				} else {
+					// We are building from the location garrison's resources
+					pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+
+					// Send the request to server
+					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 				};
-
-				pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
-
-				// Send the request to server
-				CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 
 				deleteVehicle _object;
 			} else {
