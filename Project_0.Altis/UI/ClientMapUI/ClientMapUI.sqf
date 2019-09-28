@@ -22,6 +22,9 @@
 	Singleton class that performs things related to map user interface
 */
 CLASS(CLASS_NAME, "")
+
+	// Array with markers which are currently under cursor, gets updated on mouse moving event handler
+	VARIABLE("markersUnderCursor");
 	
 	VARIABLE("selectedGarrisonMarkers");
 	VARIABLE("selectedLocationMarkers");
@@ -66,6 +69,9 @@ CLASS(CLASS_NAME, "")
 	STATIC_METHOD("new") {
 		params [["_thisObject", "", [""]]];
 
+		// Markers under cursor
+		T_SETV("markersUnderCursor", []);
+
 		// Selected markers
 		T_SETV("selectedGarrisonMarkers", []);
 		T_SETV("selectedLocationMarkers", []);
@@ -105,6 +111,11 @@ CLASS(CLASS_NAME, "")
 		// Map OnDraw
 		// Gets called on each frame, only when the map is open
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {CALLM0(gClientMapUI, "onMapDraw");} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
+
+		// Map OnMouseMoving
+		// Fires continuously while moving the mouse with a certain interval
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {CALLM(gClientMapUI, "onMapMouseMoving", _this);} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
+
 
 		// bottom panel
 		// MouseEnter / MouseExit event handlers
@@ -1380,6 +1391,48 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// Redraw the drawArrow on the map if we are currently giving order to something
 		T_CALLM0("garOrderUpdateArrow");
+
+	} ENDMETHOD;
+
+	/*
+		Method: onMouseMoving
+		Fires continuously while moving the mouse with a certain interval.
+	*/
+	METHOD("onMapMouseMoving") {
+		params [P_THISOBJECT, "_control", "_xPos", "_yPos", "_mouseOver"];
+
+		//pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
+		pr _garrisonsUnderCursor = [];
+		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]);
+		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
+
+		// Previous markers under cursor
+		pr _markersUnderCursorOld = T_GETV("markersUnderCursor");
+
+		OOP_INFO_1("ON MAP MOUSE MOVING: current: %1", _markersUnderCursor);
+		OOP_INFO_1("ON MAP MOUSE MOVING: old: %1", _markersUnderCursorOld);
+
+		// Check if mouse has entered any new markers
+		{
+			if (!(_x in _markersUnderCursorOld)) then {
+				OOP_INFO_1("Entered marker: %1", _x);
+				// Mouse has entered this marker
+				CALLM1(_x, "setMouseOver", true);
+			};
+		} forEach _markersUnderCursor;
+
+		// Check if any old markers are not under cursor any more
+		{
+			if (!(_x in _markersUnderCursor)) then {
+				// Mouse has left this marker
+				if (IS_OOP_OBJECT(_x)) then {
+					OOP_INFO_1("Left marker: %1", _x);
+					CALLM1(_x, "setMouseOver", false);
+				};
+			};
+		} forEach _markersUnderCursorOld;
+
+		T_SETV("markersUnderCursor", _markersUnderCursor);
 
 	} ENDMETHOD;
 

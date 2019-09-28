@@ -76,7 +76,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtGarr, "pos")]);
 
 			// Reveal it to player side
-			if (random 100 < 30) then {
+			if (random 100 < 80) then {
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
 		} else {

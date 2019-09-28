@@ -23,11 +23,13 @@ That's how we draw locations
 #define RADIUS_MARKER_SUFFIX "_rad"
 #define MARKER_SUFFIX "_mrk"
 #define NOTIFICATION_SUFFIX "_not"
+#define BG_SUFFIX "_bg"
 
 CLASS(CLASS_NAME, "MapMarker")
 
 	VARIABLE("angle");
 	VARIABLE("selected");
+	VARIABLE("mouseOver");
 	VARIABLE("intel"); // Intel object associated with this
 	VARIABLE("radius"); // The accuracy radius
 	VARIABLE("type");
@@ -41,25 +43,42 @@ CLASS(CLASS_NAME, "MapMarker")
 		params ["_thisObject", ["_intel", "", [""]]];
 		T_SETV("angle", 0);
 		T_SETV("selected", false);
+		T_SETV("mouseOver", false);
 		T_SETV("intel", _intel);
 		T_SETV("radius", 0);
 
+		// Create background marker
+		// We will colorize it
+		pr _mrkName = _thisObject + BG_SUFFIX;
+		createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
+		_mrkName setMarkerShapeLocal "ICON";
+		//_mrkName setMarkerColorLocal "colorCivilian";
+		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
+		_mrkName setMarkerAlphaLocal 1.0;
+		_mrkName setMarkerTypeLocal "vin_location_background";
+
 		// Create marker
+		// This is the marker with the icon itself
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 		createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
 		_mrkName setMarkerShapeLocal "ICON";
-		_mrkName setMarkerColorLocal "colorCivilian";
+		_mrkName setMarkerColorLocal "ColorWhite"; // Colorized marker icon on white bg 
 		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
-		_mrkName setMarkerAlphaLocal 1.0;
+		//_mrkName setMarkerAlphaLocal ALPHA_NOT_SELECTED;
 
 		// Create notification marker
 		pr _mrkName = _thisObject+NOTIFICATION_SUFFIX;
 		createMarkerLocal [_mrkName, T_GETV("pos")+[0]];
 		_mrkName setMarkerShapeLocal "ICON";
-		_mrkName setMarkerColorLocal "ColorRed";
+		//_mrkName setMarkerColorLocal "ColorRed";
+		_mrkName setMarkerColorLocal "ColorWhite"; // It's colored already
 		_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
-		_mrkName setMarkerAlphaLocal 1.0;
-		_mrkName setMarkerType "p0_notification_top_right";
+		//_mrkName setMarkerAlphaLocal 1.0;
+		_mrkName setMarkerTypeLocal "vin_notification_top_right_exclamation";
+
+
+		T_CALLM1("select", false);
+		T_CALLM1("setNotification", false);
 
 		/*
 		pr _radius = GETV(_intel, "accuracyRadius");
@@ -76,8 +95,105 @@ CLASS(CLASS_NAME, "MapMarker")
 		// Delete markers
 		{
 			deleteMarkerLocal (_thisObject + _x);
-		} forEach [MARKER_SUFFIX, RADIUS_MARKER_SUFFIX, NOTIFICATION_SUFFIX];
+		} forEach [MARKER_SUFFIX, RADIUS_MARKER_SUFFIX, NOTIFICATION_SUFFIX, BG_SUFFIX];
 
+	} ENDMETHOD;
+
+	// Sets the "mouse over" state of this object
+	METHOD("setMouseOver") {
+		params [P_THISOBJECT, P_BOOL("_mouseOver")];
+
+		OOP_INFO_1("SET MOUSE OVER: %1", _mouseOver);
+
+		T_SETV("mouseOver", _mouseOver);
+		T_CALLM0("update");
+	} ENDMETHOD;
+
+	METHOD("select") {
+		params [P_THISOBJECT, P_BOOL("_selected")];
+
+		// Reset notification if we have selected it
+		if (_selected) then {
+			T_CALLM1("setNotification", false);
+		};
+
+		T_SETV("selected", _selected);
+		T_CALLM0("update");
+
+		// Call the base class method
+		CALL_CLASS_METHOD("MapMarker", _thisObject, "select", [_selected]);
+	} ENDMETHOD;
+
+	// Updates markers according to various states
+	METHOD("update") {
+		params [P_THISOBJECT];
+		pr _selected = T_GETV("selected");
+		pr _mouseOver = T_GETV("mouseOver");
+
+		// Overall state of the button
+		pr _state = ([0, 2] select _selected) + ([0, 1] select _mouseOver);
+		/*
+		0 - idle
+		1 - mouse is over
+		2 - selected
+		3 - selected and mouse is over
+		*/
+
+		OOP_INFO_1("UPDATE state: %1", _state);
+
+		pr _size = 1;
+		pr _alpha = 0.5;
+		pr _iconColor = "";
+		switch (_state) do {
+			case 0: { // Idle
+				_alpha = 0.7;
+				_size = 0.7;
+				_iconColor = "ColorWhite";
+			};
+			case 1: { // Mouse is over
+				_alpha = 1.0;
+				_size = 1.0;
+				_iconColor = "ColorWhite";
+			};
+			case 2: { // Selected
+				_alpha = 1.0;
+				_size = 1.0;
+				_iconColor = "ColorBlack";
+
+			};
+			case 3: { // Selected and mouse is over
+				_alpha = 1.0;
+				_size = 1.0;
+				_iconColor = "ColorBlack";
+			};
+		};
+
+		pr _mrkBG = _thisObject + BG_SUFFIX;
+		pr _mrkIcon = _thisObject + MARKER_SUFFIX;
+
+		/*
+		! ! ! ! ! ! ! ! ! ! ! !
+		Make sure you only use setMarkerSomethingLOCAL commands!
+		Make sure you only use setMarkerSomethingLOCAL commands!
+		Make sure you only use setMarkerSomethingLOCAL commands!
+		! ! ! ! ! ! ! ! ! ! ! ! 
+		*/
+
+		// Background
+		_mrkBG setMarkerSizeLocal [_size, _size];
+		_mrkBG setMarkerAlphaLocal _alpha;
+
+		// Icon
+		_mrkIcon setMarkerSizeLocal [_size, _size];
+		_mrkIcon setMarkerAlphaLocal _alpha;
+		_mrkIcon setMarkerColorLocal _iconColor;
+
+	} ENDMETHOD;
+
+	METHOD("setNotification") {
+		params ["_thisObject", ["_enable", false, [false]]];
+
+		(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal ([0, 1] select _enable);
 	} ENDMETHOD;
 
 	METHOD("getIntel") {
@@ -98,18 +214,8 @@ CLASS(CLASS_NAME, "MapMarker")
 		// Set marker position
 		{
 			(_thisObject+_x) setMarkerPosLocal (T_GETV("pos")+[0]);
-		} forEach [MARKER_SUFFIX, NOTIFICATION_SUFFIX];
+		} forEach [MARKER_SUFFIX, NOTIFICATION_SUFFIX, BG_SUFFIX];
 
-	} ENDMETHOD;
-
-	METHOD("select") {
-		params [P_THISOBJECT, P_BOOL("_selected")];
-
-		if (_selected) then {
-			T_CALLM1("setNotification", false);
-		};
-
-		CALL_CLASS_METHOD("MapMarker", _thisObject, "select", [_selected]);
 	} ENDMETHOD;
 
 	// Same as setColor but gets both an array and string
@@ -118,7 +224,7 @@ CLASS(CLASS_NAME, "MapMarker")
 		T_SETV("color", _colorRGBA);
 
 		// Set color of the associated marker
-		_mrkName = _thisObject+MARKER_SUFFIX;
+		_mrkName = _thisObject+BG_SUFFIX;
 		_mrkName setMarkerColorLocal _colorString;
 	} ENDMETHOD;
 
@@ -135,33 +241,29 @@ CLASS(CLASS_NAME, "MapMarker")
 
 		pr _mrkName = _thisObject+MARKER_SUFFIX;
 
-		pr _type0 = "mil_destroy";
-		pr _size = 1;
+		//pr _size = 1;
 
-		switch (_type) do {
-			case LOCATION_TYPE_CITY: {
-				_type0 = "loc_Tourism";
-				_size = 2;
-			};
+		pr _type0 = switch (_type) do {
 
-			case LOCATION_TYPE_UNKNOWN: {
-				_type0 = "mil_unknown";
-			};
+			case LOCATION_TYPE_POWER_PLANT:		{ "vin_location_power_plant" };
+			case LOCATION_TYPE_DEPOT:			{ "vin_location_depot" };
+			case LOCATION_TYPE_POLICE_STATION:	{ "vin_location_police_station" };
+			case LOCATION_TYPE_RADIO_STATION:	{ "vin_location_radio_station" };
+			case LOCATION_TYPE_CITY:			{ "vin_location_city" };
+			case LOCATION_TYPE_AIRPORT:			{ "vin_location_airport" };
+			case LOCATION_TYPE_OUTPOST:			{ "vin_location_outpost" };
+			case LOCATION_TYPE_ROADBLOCK:		{ "vin_location_roadblock" };
+			case LOCATION_TYPE_CAMP:			{ "vin_location_camp" };
+
+			case LOCATION_TYPE_UNKNOWN: { "mil_unknown"; };
 
 			// The rest are military places
 			default {
-				_type0 = "n_unknown";
+				"vin_location_outpost";
 			};
 		};
 
 		_mrkName setMarkerTypeLocal _type0;
-		_mrkName setMarkerSizeLocal [_size, _size];
-	} ENDMETHOD;
-
-	METHOD("setNotification") {
-		params ["_thisObject", ["_enable", false, [false]]];
-
-		(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal ([0, 1] select _enable);
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {
@@ -188,7 +290,10 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("onDraw") {
+		//if (true) exitWith {};
 		params ["_thisObject", "_control"];
+
+
 
 		//pr _pos = T_GETV("pos");
 
@@ -229,8 +334,8 @@ CLASS(CLASS_NAME, "MapMarker")
 
 			_control drawIcon
 			[
-				"\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa",
-				[1.0, 0, 0, 1], //Color
+				"\z\project_0\addons\ui\markers\MI_marker_selected.paa",
+				[0.9, 0.0, 0.0, 1], //Color
 				_pos, // Pos
 				41, // Width
 				41, // Height

@@ -532,6 +532,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Position change might change spawn state so update it before returning.
 		T_CALLM("updateSpawnState", []);
 
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
@@ -560,6 +563,9 @@ CLASS("Garrison", "MessageReceiverEx");
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
 			};
 		};
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 		
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;

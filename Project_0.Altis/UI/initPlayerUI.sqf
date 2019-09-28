@@ -21,7 +21,7 @@ gBuildUI = NEW("BuildUI", []);
 
 (finddisplay 46) displayAddEventHandler ["KeyDown", {
 	params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
-	diag_log format ["KeyDown: %1", _this];
+	//diag_log format ["KeyDown: %1", _this];
 	if (_key == 0x16) then { // U key
 		if (isNil "gInGameMenu") then {
 			gInGameMenu = NEW("InGameMenu", []);

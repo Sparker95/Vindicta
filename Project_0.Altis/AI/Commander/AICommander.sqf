@@ -174,7 +174,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-		//T_CALLM("plan", [_worldModel]);
+		T_CALLM("plan", [_worldModel]);
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -325,7 +325,14 @@ CLASS("AICommander", "AI")
 
 					if (!(_serialOld isEqualTo _serialNew)) then {
 						CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+					
+						// Enable or disable player respawn here
+						pr _locSide = GETV(_intel, "side");
+						pr _thisSide = T_GETV("side");
+						pr _enable = _locSide == _thisSide;
+						CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
 					};
+
 					// Delete the intel object that we have created temporary
 					DELETE(_intel);
 				};
@@ -344,6 +351,12 @@ CLASS("AICommander", "AI")
 
 			CALLM1(_intelDB, "addIntel", _intel);
 			// Don't delete the intel object now! It's in the database from now.
+
+			// Enable or disable player respawn here
+			pr _locSide = GETV(_intel, "side");
+			pr _thisSide = T_GETV("side");
+			pr _enable = _locSide == _thisSide;
+			CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
 
 			// Register with the World Model
 			T_PRVAR(worldModel);

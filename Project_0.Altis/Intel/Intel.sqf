@@ -309,7 +309,7 @@ CLASS("IntelLocation", "Intel")
 			case WEST: {[COLOR_WEST, "ColorWEST"]};
 			case EAST: {[COLOR_EAST, "ColorEAST"]};
 			case INDEPENDENT: {[COLOR_IND, "ColorGUER"]};
-			default {[COLOR_UNKNOWN, "ColorCIV"]}; // Purple color
+			default {[COLOR_UNKNOWN, "ColorUNKNOWN"]}; // Purple color
 		};
 
 		//diag_log format ["--- Setting color: %1", _color];

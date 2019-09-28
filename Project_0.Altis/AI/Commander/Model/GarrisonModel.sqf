@@ -698,6 +698,9 @@ CLASS("GarrisonModel", "ModelBase")
 			CALLM(_newGarrActual, "postMethodSync", ["addUnits" ARG [_extraUnits]]);
 		};
 
+		// WIP temporary fix to give resources to convoys
+		CALLM2(_newGarrActual, "postMethodAsync", "addBuildResources", [120]);
+
 		OOP_INFO_0("Successfully split garrison");
 
 		// Register it at the commander (do it after adding the units so the sync is correct)

@@ -837,6 +837,28 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("isBuilt") { params [P_THISOBJECT]; T_GETV("isBuilt") } ENDMETHOD ;
 
 	/*
+	Method: enablePlayerRespawn
+	
+	Parameters: _side, _enable
+	*/
+	METHOD("enablePlayerRespawn") {
+		params [P_THISOBJECT, P_SIDE("_side"), P_BOOL("_enable")];
+
+		pr _markName = switch (_side) do {
+			case WEST: {"respawn_west"};
+			case EAST: {"respawn_east"};
+			case INDEPENDENT: {"respawn_guerrila"};
+			default {"respawn_civilian"};
+		};
+
+		if (_enable) then {
+			createMarker [_markName + _thisObject, T_GETV("pos")]; 
+		} else {
+			deleteMarker (_markName + _thisObject);
+		};
+	} ENDMETHOD;
+
+	/*
 	Method: (static)nearLocations
 	Returns an array of locations that are _radius meters from _pos. Distance is checked in 2D mode.
 

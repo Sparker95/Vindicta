@@ -58,7 +58,15 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		if(_type == LOCATION_TYPE_BASE or _type == LOCATION_TYPE_POLICE_STATION) then {
 			ENEMY_SIDE
 		} else {
-			CIVILIAN
+			if (_type == LOCATION_TYPE_OUTPOST) then {
+				if (random 100 < 50) then {
+					ENEMY_SIDE
+				} else {
+					CIVILIAN
+				};
+			} else {
+				CIVILIAN
+			};
 		}
 	} ENDMETHOD;
 

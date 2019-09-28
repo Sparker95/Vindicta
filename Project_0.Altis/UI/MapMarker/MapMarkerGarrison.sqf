@@ -77,6 +77,8 @@ CLASS(CLASS_NAME, "MapMarker")
 	} ENDMETHOD;
 
 	METHOD("onDraw") {
+		//if (true) exitWith {};
+
 		params ["_thisObject", "_control"];
 
 		// Draw a surrounding icon if selected
@@ -84,12 +86,12 @@ CLASS(CLASS_NAME, "MapMarker")
 			pr _pos = T_GETV("pos");
 			_control drawIcon
 			[
-				"\A3\ui_f\data\map\groupicons\selector_selectable_ca.paa",
-				[0.1, 1.0, 0, 1], //Color
+				"\z\project_0\addons\ui\markers\MI_marker_selected.paa",
+				[0.9, 0.0, 0.0, 1], //Color
 				_pos, // Pos
 				41, // Width
 				41, // Height
-				45, // Angle
+				0, //-_angle, // Angle
 				"" // Text
 			];
 		};
@@ -103,6 +105,12 @@ CLASS(CLASS_NAME, "MapMarker")
 	METHOD("setText") {
 		params [P_THISOBJECT, P_STRING("_text")];
 		(_thisObject+MARKER_SUFFIX) setMarkerTextLocal _text;
+	} ENDMETHOD;
+
+	METHOD("show") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+		pr _alpha = [0, 0.85] select _show;
+		(_thisObject+MARKER_SUFFIX) setMarkerAlphaLocal _alpha;
 	} ENDMETHOD;
 
 
