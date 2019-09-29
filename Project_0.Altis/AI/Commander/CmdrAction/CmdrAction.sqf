@@ -92,7 +92,7 @@ CLASS("CmdrAction", "RefCounted")
 
 				OOP_INFO_MSG("cleaning up intel object from db", []);
 				CALLM(_db, "removeIntelForClone", [_intelClone]);
-				CALLSM1("AICommander", "unregisterIntelCommanderAction", _intelClone);
+				CALLSM2("AICommander", "unregisterIntelCommanderAction", _dbEntry, _intelClone);
 				DELETE(_dbEntry);
 				OOP_INFO_MSG("cleaned up intel object from db", []);
 			};

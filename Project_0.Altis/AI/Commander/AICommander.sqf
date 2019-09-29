@@ -521,21 +521,23 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("revealIntelToPlayerSide") {
 		params ["_thisClass", ["_item", "", [""]]];
 
+		// Make a clone of this intel item in our thread
+		pr _itemClone = CLONE(_item);
+		SETV(_itemClone, "source", _item); // Link it with the source
+
 		pr _playerSide = CALLM0(gGameMode, "getPlayerSide");
 		pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _playerSide);
-		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item]);
+		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item ARG _itemClone]);
 	} ENDMETHOD;
 
 	// Handles stealing intel item which this commander doesn't own
 	METHOD("stealIntel") {
-		 params ["_thisObject", ["_item", "", [""]]];
+		 params ["_thisObject", ["_item", "", [""]], P_OOP_OBJECT("_itemClone")];
 
 		// Bail if object is wrong
-		if (!IS_OOP_OBJECT(_item)) exitWith { };
+		//if (!IS_OOP_OBJECT(_item)) exitWith { };
 
 		pr _thisDB = T_GETV("intelDB");
-		pr _itemClone = CLONE(_item);
-		SETV(_itemClone, "source", _item); // Link it with the source
 		CALLM1(_thisDB, "addIntel", _itemClone);
 	} ENDMETHOD;
 
@@ -927,13 +929,17 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD("unregisterIntelCommanderAction") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
+
+		OOP_INFO_2("UNREGISTER INTEL COMMANDER ACTION: intel: %1, intel clone: %2", _intel, _intelClone);
+
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		// Notify enemy commanders that this intel has been destroyed
 		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		{
-			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+			pr _enemySide = _x;
+			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
 			private _intelInDB = CALLM1(_db, "getIntelFromSource", _intel);

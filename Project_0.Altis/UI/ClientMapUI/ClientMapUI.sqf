@@ -835,6 +835,28 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
 		_lnb lnbSetColumnsPos [0, 0.2, 0.7];
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
+
+		/*
+		// Fill dummy data for testing
+		_allIntels = [];
+		pr _i = 0;
+		while {_i < 10} do {
+			pr _intel = NEW("IntelCommanderActionAttack", []);
+			SETV(_intel, "posSrc", [random 10000 ARG random 20000 ARG 3]);
+			SETV(_intel, "posTgt", [random 10000 ARG random 20000 ARG 3]);
+			pr _dateNow = date;
+			pr _minuteNow = _dateNow#4;
+			pr _year = _dateNow#0;
+			pr _dateDeparture = +_dateNow;
+			_dateDeparture set [4, _minuteNow + (random 120)];
+			// Fix the minute overflow by converting twice
+			//_dateDeparture = numberToDate [_year, dateToNumber _dateDeparture];
+			SETV(_intel, "dateDeparture", _dateDeparture);
+			_allIntels pushBack _intel;
+			_i = _i + 1;m
+		};
+		*/
+
 		// forEach _allIntels;
 		{
 			pr _intel = _x;
@@ -853,8 +875,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					_numberDiff = -_numberDiff;
 					_futureEvent = false;
 				};
-				pr _dateDiff = numberToDate [_dateNow#0, _numberDiff];
-				_dateDiff params ["_y", "_m", "_d", "_h", "_m"];
+				pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+				_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
+				_month = _month - 1; // Because month counting starts with 1
+				_d = _d - 1; // Because day counting starts with 1
+
+				OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
 				
 				// Make a string representation of time difference
 				pr _timeDiffStr = if (_h > 0) then {
@@ -883,8 +909,10 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 									"IntelCommanderActionBuild", "IntelCommanderActionAttack",
 									"IntelCommanderActionPatrol", "IntelCommanderActionRetreat",
 									"IntelCommanderActionRecon"] find _className; // Enumerate class name
-				pr _valueTime = _m + _h*60 + _d*24*60 + _m*30*24*60;
+				pr _valueTime = _m + _h*60 + _d*24*60 + _month*30*24*60;
 				if (!_futureEvent) then {_valueTime = -_valueTime; };
+
+				OOP_INFO_1("  value time: %1", _valuetime);
 
 				_lnb lnbSetValue [[_index, 0], _valueSide];
 				_lnb lnbSetValue [[_index, 1], _valueType];

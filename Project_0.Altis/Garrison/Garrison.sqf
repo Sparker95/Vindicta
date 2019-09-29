@@ -379,6 +379,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
+	Method: (static) getAll
+
+	Returns absolutely all garrison objects
+	*/
+	STATIC_METHOD("getAll") {
+		params [P_THISCLASS];
+		GETSV("Garrison", "all")
+	} ENDMETHOD;
+
+	/*
 	Method: getMessageLoop
 	See <MessageReceiver.getMessageLoop>
 
@@ -1524,6 +1534,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
+			false
 		};
 
 		// Check if all units are still in the same garrison

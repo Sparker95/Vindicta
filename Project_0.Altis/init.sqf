@@ -8,33 +8,6 @@
 // No saving
 enableSaving [ false, false ]; // Saving disabled without autosave.
 
-// Display test
-diag_log format ["All displays start: %1", (allDisplays)];
-
-{
-	diag_log format ["Display: %1, IDD: %2, class name: %3", _x, ctrlIDD _x, _x getVariable ["BIS_fnc_initDisplay_configClass", ""]];
-	private _idd = ctrlIDD _x;
-	{
-		diag_log format ["  Control: %1, idc: %2, class name: %3", _x, ctrlIDC _x, ctrlClassName _x];
-		private _idc = ctrlIDC _x;
-		//_x ctrlSetBackgroundColor [1, 0, 0, 1];
-		//_x ctrlSetPosition [0, 0, 1, 1];
-		//_x ctrlCommit 0;
-	} forEach (allcontrols _x);
-	/*
-	_ctrl = _x ctrlCreate ["RscText", -1]; // 52, 63
-	_ctrl ctrlSetPosition [0, 0, 1, 1];
-	_ctrl ctrlSetText "Arma III";
-	_ctrl ctrlSetBackgroundColor [1, 0, 0, 0.5];
-	_ctrl ctrlCommit 0;
-	*/
-} forEach (allDisplays);
-
-private _ctrl = uiNamespace getVariable "vin_loadctrl";
-_ctrl ctrlSetText "INIT SQF STARTED";
-diag_log format [">>> control read: %1", _ctrl];
-
-
 // If a client, wait for the server to finish its initialization
 if (!IS_SERVER) then {
 	private _str = format ["Waiting for server init, time: %1", diag_tickTime];
@@ -49,7 +22,7 @@ if (!IS_SERVER) then {
 };
 #endif
 
-#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
+//#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
 #ifdef DISABLE_MISSION_INIT
 if(true) exitWith { 
 	0 spawn {
@@ -61,14 +34,13 @@ if(true) exitWith {
 		_i = 0;
 		while {_i < 4} do { systemChat "!!! GAME MODE INIT WAS DISABLED !!! Check init.sqf"; sleep 4; _i = _i + 1; };
 	};
-	sleep 4;
 };
 #endif
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
 		case "Sparker": 	{ "CivilWarGameMode" };  // "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
-		//case "Sparker": 	{ "EmptyGameMode" };
+		//case "Sparker": 	{ "RedVsGreenGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };
@@ -104,7 +76,6 @@ CRITICAL_SECTION {
 	};
 };
 
-diag_log format ["All displays end: %1", allDisplays];
 
 // pr0_fn_getGlobalRectAndSize = {
 // 	params [["_pos", [], [[]]], ["_dir", 0, [0]], ["_bbox", [], [[]]] ];
@@ -238,5 +209,3 @@ diag_log format ["All displays end: %1", allDisplays];
 // };
 
 // player addAction ["dd", fn_do_thing];
-
-_ctrl ctrlSetText "INIT SQF ENDED";
