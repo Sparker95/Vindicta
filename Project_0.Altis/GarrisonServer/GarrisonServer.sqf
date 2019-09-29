@@ -110,10 +110,13 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 			// Remove from our array of objects
 			pr _objects = T_GETV("objects");
-			_objects deleteAt (_objects find _x);
+			pr _index = _objects find _x;
+			_objects deleteAt _index;
 
-			// Unref
-			CALLM0(_x, "unref");
+			// Unref if we have ever referenced it
+			if (_index != -1) then {
+				UNREF(_x);
+			};
 		} forEach _destroyedGarrisons;
 
 		// Reset the arrays of garrisons to broadcast
@@ -149,7 +152,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		T_GETV("objects") pushBackUnique _gar;
 
 		// Ref
-		CALLM0(_gar, "ref");
+		REF(_gar);
 	} ENDMETHOD;
 
 	// Marks the garrison requiring an update broadcast

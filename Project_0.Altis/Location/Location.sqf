@@ -331,7 +331,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (! (_gar in _gars)) then {
 			_gars pushBackUnique _gar;
 			PUBLIC_VAR(_thisObject, "garrisons");
-			CALLM2(_gar, "postMethodAsync", "ref", []);
+			REF(_gar);
 
 			// TODO: work out how this should work properly? This isn't terrible but we will
 			// have resource constraints etc. Probably it should be in Garrison.process to build
@@ -349,7 +349,7 @@ CLASS("Location", "MessageReceiverEx")
 		if (_gar in _gars) then {
 			_gars deleteAt (_gars find _gar);
 			PUBLIC_VAR(_thisObject, "garrisons");
-			CALLM2(_gar, "postMethodAsync", "unref", []);
+			UNREF(_gar);
 		};
 	} ENDMETHOD;
 	

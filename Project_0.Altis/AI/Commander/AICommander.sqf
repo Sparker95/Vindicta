@@ -790,7 +790,7 @@ CLASS("AICommander", "AI")
 
 		OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 		T_GETV("garrisons") pushBack _gar; // I need you for my army!
-		CALLM(_gar, "ref", []);
+		REF(_gar);
 		T_PRVAR(worldModel);
 		NEW("GarrisonModel", [_worldModel ARG _gar])
 	} ENDMETHOD;
@@ -857,7 +857,6 @@ CLASS("AICommander", "AI")
 		private _newModel = NULL_OBJECT;
 		OOP_DEBUG_MSG("Registering location %1", [_loc]);
 		//T_GETV("locations") pushBack _loc; // I need you for my army!
-		// CALLM2(_loc, "postMethodAsync", "ref", []);
 		T_PRVAR(worldModel);
 		// Just creating the location model is registering it with CmdrAI
 		NEW("LocationModel", [_worldModel ARG _loc]);
@@ -898,7 +897,7 @@ CLASS("AICommander", "AI")
 			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
-			CALLM(_gar, "unref", []);
+			UNREF(_gar);
 		} else {
 			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
