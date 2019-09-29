@@ -1183,7 +1183,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Create the location
-		pr _loc = NEW("Location", [_pos]);
+		pr _loc = NEW_PUBLIC("Location", [_pos]);
 		CALLM2(_loc, "setBorder", "circle", 100);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);

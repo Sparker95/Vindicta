@@ -1409,13 +1409,13 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Previous markers under cursor
 		pr _markersUnderCursorOld = T_GETV("markersUnderCursor");
 
-		OOP_INFO_1("ON MAP MOUSE MOVING: current: %1", _markersUnderCursor);
-		OOP_INFO_1("ON MAP MOUSE MOVING: old: %1", _markersUnderCursorOld);
+		//OOP_INFO_1("ON MAP MOUSE MOVING: current: %1", _markersUnderCursor);
+		//OOP_INFO_1("ON MAP MOUSE MOVING: old: %1", _markersUnderCursorOld);
 
 		// Check if mouse has entered any new markers
 		{
 			if (!(_x in _markersUnderCursorOld)) then {
-				OOP_INFO_1("Entered marker: %1", _x);
+				//OOP_INFO_1("Entered marker: %1", _x);
 				// Mouse has entered this marker
 				CALLM1(_x, "setMouseOver", true);
 			};
@@ -1426,7 +1426,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			if (!(_x in _markersUnderCursor)) then {
 				// Mouse has left this marker
 				if (IS_OOP_OBJECT(_x)) then {
-					OOP_INFO_1("Left marker: %1", _x);
+					//OOP_INFO_1("Left marker: %1", _x);
 					CALLM1(_x, "setMouseOver", false);
 				};
 			};

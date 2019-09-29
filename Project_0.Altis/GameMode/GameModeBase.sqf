@@ -380,8 +380,9 @@ CLASS("GameModeBase", "")
 	METHOD("startCommanders") {
 		params [P_THISOBJECT];
 		{
-			CALLM(_x, "setProcessInterval", [10]);
-			CALLM(_x, "start", []);
+			// We postMethodAsync them, because we don't want to start processing right after mission start
+			CALLM2(_x, "postMethodAsync", "setProcessInterval", [10]);
+			CALLM2(_x, "postMethodAsync", "start", []);
 		} forEach gCommanders;
 	} ENDMETHOD;
 
