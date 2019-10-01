@@ -30,6 +30,9 @@ pr _primaryWeaponItems = [];
 pr _secondaryWeaponItems = [];
 pr _handgunWeaponItems = [];
 
+// General items
+pr _items = [];
+
 while {_subCatID < _catSize} do {
 	pr _classArray = _t#_catID#_subCatID;
 	{
@@ -45,10 +48,16 @@ while {_subCatID < _catSize} do {
 		// Create a unit from which we will read data
 		pr _hO = objNull;
 		pr _unitClassName = _classDefault;
+
 		if (!_isLoadout) then {
 			_unitClassName = _classOrLoadout;
 		};
+
 		_hO = _group createUnit [_unitClassName, [0, 0, 0], [], 100, "CAN_COLLIDE"];
+
+		if (_isLoadout) then {
+			[_hO, _classOrLoadout] call t_fnc_setUnitLoadout;
+		};
 
 		// Process primary weapon
 		pr _weap = primaryWeapon _hO;
@@ -80,6 +89,11 @@ while {_subCatID < _catSize} do {
 			{ if (_x != "") then {_handgunWeaponItems pushBackUnique _x} } forEach _items;
 		};
 
+		// Process items
+		{
+			_items pushBackUnique _x;
+		} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
+
 		// Delete the unit
 		deleteVehicle _hO;
 	} forEach _classArray;
@@ -100,3 +114,82 @@ diag_log format ["Handgun weapons:", _handgunWeapons];
 diag_log format ["  %1", _handgunWeapons];
 diag_log format ["  %1", _handgunWeaponMagazines];
 diag_log format ["  %1", _handgunWeaponItems];
+
+diag_log format ["Items:"];
+diag_log format ["  %1", _items];
+
+
+// Export to string
+
+// Prepare arrays
+pr _primary = [];
+pr _secondary = [];
+pr _handgun = [];
+
+pr _i = 0;
+while {_i < count _primaryWeapons} do {
+	_primary pushBack [_primaryWeapons#_i, _primaryWeaponMagazines#_i];
+	_i = _i + 1;
+};
+
+pr _i = 0;
+while {_i < count _secondaryWeapons} do {
+	_secondary pushBack [_secondaryWeapons#_i, _secondaryWeaponMagazines#_i];
+	_i = _i + 1;
+};
+
+pr _i = 0;
+while {_i < count _handgunWeapons} do {
+	_handgun pushBack [_handgunWeapons#_i, _handgunWeaponMagazines#_i];
+	_i = _i + 1;
+};
+
+pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items];
+
+pr _tab = toString [9];
+pr _nl = toString [10];
+
+// Function to convert array to a beautyful string with tabs and stuff
+_fnc_arrayToString = {
+	params ["_array", "_str", "_level"];
+	
+	private _arraySize = count _array;
+
+	for "_i" from 0 to (_level-1) do {_str = _str + _tab;}; // Add tabs
+	_str = _str + "[";
+	_str = _str + _nl;
+
+	private _index = 0;
+	while {_index < (count _array) } do {
+		//_str = _str + _nl; // New line
+		private _element = _array#_index;
+
+		// Check element, if it's an array or not
+		if (_element isEqualType "") then {
+			// Add tabs plus one more tab
+			for "_i" from 0 to (_level) do {_str = _str + _tab;};
+			_str = _str + (format ['"%1"', _element]);
+		} else {
+			_str = [_element, _str, _level+1] call _fnc_arrayToString;
+		};
+
+		if (_index <= (_arraySize - 2)) then {
+			_str = _str + ",";
+		};
+		_str = _str + _nl;
+
+		_index = _index + 1;
+	};
+
+	//_str = _str + _nl;
+	for "_i" from 0 to (_level-1) do {_str = _str + _tab;}; // Add tabs
+	_str = _str + "]";
+	
+	_str
+};
+
+pr _strStart = 	(format ["/* Exported with t_fnc_processTemplateItems for template %1", _t select T_NAME]) + _nl + "Primary weapons" + _nl + "Primary weapon items" + _nl + 
+				"Secondary weapons" + _nl + "Secondary weapon items" + _nl + "Handguns" + _nl + "Handgun items" + _nl + "General items */" + _nl;
+
+pr _str = [_arrayExport, _strStart, 0] call _fnc_arrayToString;
+_str

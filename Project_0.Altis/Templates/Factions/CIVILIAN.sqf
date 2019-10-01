@@ -162,6 +162,7 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, []];
+_array set [T_NAME, "tCivilian"];
 _array set [T_VEH+T_WEIGHTS_OFFSET, _vehWeights];
 
 _array

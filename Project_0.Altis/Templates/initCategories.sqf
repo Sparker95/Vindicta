@@ -14,8 +14,10 @@ OR it could be done through a get-function
 Author: Sparker 08.2017
 */
 
-T_SIZE = 5; //Number of categories in template
-T_WEIGHTS_OFFSET = 5; //Number of categories in template
+T_SIZE = 7; //Number of categories in template
+T_WEIGHTS_OFFSET = T_SIZE; //Number of categories in template
+
+// = = = = = = = = = = I N F A N T R Y = = = = = = = = = = 
 
 T_INF = 0;			//The ID of this category
 T_INF_SIZE = 34;	//The size of this category
@@ -59,6 +61,11 @@ T_INF_recon_JTAC		= 30; //Recon JTAC
 T_INF_diver_TL			= 31; //Diver team leader
 T_INF_diver_rifleman	= 32; //Diver rifleman
 T_INF_diver_exp			= 33; //Diver explosive specialist
+
+
+
+
+// = = = = = = = = = = V E H I C L E S = = = = = = = = = = 
 
 //Vehicles
 T_VEH				= 1;
@@ -154,6 +161,11 @@ T_VEH_ground_combat =
 	T_VEH_MBT
 ];
 
+
+
+
+// = = = = = = = = = = D R O N E S = = = = = = = = = = 
+
 //Drones
 T_DRONE = 2;
 T_DRONE_SIZE = 11;
@@ -170,6 +182,11 @@ T_DRONE_stat_HMG_low	= 8;
 T_DRONE_stat_GMG_low	= 9;
 T_DRONE_stat_AA			= 10;
 
+
+
+
+// = = = = = = = = = = C A R G O = = = = = = = = = = 
+
 //Cargo
 T_CARGO = 3;
 T_CARGO_SIZE = 4;
@@ -178,6 +195,16 @@ T_CARGO_default		= 0;
 T_CARGO_box_small	= 1;
 T_CARGO_box_medium	= 2;
 T_CARGO_box_big		= 3;
+
+
+
+
+
+
+
+
+
+// = = = = = = = = = = G R O U P S = = = = = = = = = = 
 
 //Groups
 T_GROUP = 4;
@@ -196,6 +223,15 @@ T_GROUP_inf_recon_squad		= 9;
 T_GROUP_inf_recon_team		= 10;
 T_GROUP_inf_sentry			= 11;
 T_GROUP_inf_sniper_team		= 12;
+
+
+
+
+
+
+
+
+// = = = = = = = = = = P L A C E M E N T = = = = = = = = = = 
 
 //Subcategories sorted by their PLacement type
 T_PL_tracked_wheeled = //Tracked and wheeled vehicles
@@ -309,3 +345,20 @@ T_static = [
 	[T_DRONE, T_DRONE_stat_AA]
 ];
 
+
+
+// = = = = = = = = = = T E M P L A T E   N A M E = = = = = = = = = = 
+T_NAME = 5;
+
+
+// = = = = = = = = = = I N V E N T O R Y = = = = = = = = = = 
+T_INV = 6;
+
+// Subcategories
+T_INV_primary			= 0;	// Array of [_weapon, _magazines]
+T_INV_primary_items		= 1;
+T_INV_secondary			= 2;	// Array of [_weapon, _magazines]
+T_INV_secondary_items	= 3;
+T_INV_handgun			= 4;	// Array of [_weapon, _magazines]
+T_INV_handgun_items		= 5;
+T_INV_items				= 6;	// Array of item class names

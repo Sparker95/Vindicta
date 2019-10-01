@@ -1,6 +1,6 @@
 #include "..\..\common.hpp"
 
-ADD_LOADOUT("RHS_AAF2017_recon_expl.spec.",		"RHS_AAF2017\AAF_Recon\AAF_recon_expl.spec.sqf")
+ADD_LOADOUT("RHS_AAF2017_recon_expl_spec",		"RHS_AAF2017\AAF_Recon\AAF_recon_expl_spec.sqf")
 ADD_LOADOUT("RHS_AAF2017_recon_JTAC",			"RHS_AAF2017\AAF_Recon\AAF_recon_JTAC.sqf")
 ADD_LOADOUT("RHS_AAF2017_recon_LAT",			"RHS_AAF2017\AAF_Recon\AAF_recon_LAT.sqf")
 ADD_LOADOUT("RHS_AAF2017_recon_medic",			"RHS_AAF2017\AAF_Recon\AAF_recon_medic.sqf")

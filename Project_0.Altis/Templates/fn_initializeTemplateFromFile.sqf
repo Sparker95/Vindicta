@@ -16,5 +16,13 @@ if (_errorCount > 0) exitWith {
 [_t] call t_fnc_convertTemplateClassNamesToNumbers;
 #endif
 
+// Set mission namespace variable
+private _tName = _t select T_NAME;
+if (isNil "_tName") exitWith {
+	diag_log format ["[template] error: tempalte name was not specified for %1", _filePath];
+};
+
+missionNamespace setVariable [_tName, _t];
+
 // Return the array
 _t

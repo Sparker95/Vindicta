@@ -19,8 +19,8 @@ _inf set [T_INF_rifleman, ["RHS_AAF2017_elite_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_AAF2017_elite_marksman"]]; //TODO add FAL to loadout- currently in RHS DEV
 _inf set [T_INF_sniper, ["RHS_AAF2017_elite_sniper"]];
 _inf set [T_INF_spotter, ["RHS_AAF2017_elite_spotter"]];
-_inf set [T_INF_exp, ["RHS_AAF2017_elite_expl.spec."]];
-_inf set [T_INF_ammo, ["RHS_AAF2017_elite_MG_assist.", "RHS_AAF2017_elite_AT_assist."]];
+_inf set [T_INF_exp, ["RHS_AAF2017_elite_expl_spec"]];
+_inf set [T_INF_ammo, ["RHS_AAF2017_elite_MG_assist", "RHS_AAF2017_elite_AT_assist"]];
 _inf set [T_INF_LAT, ["RHS_AAF2017_elite_rifleman"]];
 _inf set [T_INF_AT, ["RHS_AAF2017_elite_AT"]];
 _inf set [T_INF_AA, ["RHS_AAF2017_elite_AA"]];
@@ -39,7 +39,7 @@ _inf set [T_INF_unarmed, ["RHS_AAF2017_elite_rifleman"]];
 _inf set [T_INF_recon_TL, ["RHS_AAF2017_recon_TL"]];
 _inf set [T_INF_recon_rifleman, ["RHS_AAF2017_recon_rifleman"]];
 _inf set [T_INF_recon_medic, ["RHS_AAF2017_recon_medic"]];
-_inf set [T_INF_recon_exp, ["RHS_AAF2017_recon_expl.spec."]];
+_inf set [T_INF_recon_exp, ["RHS_AAF2017_recon_expl_spec"]];
 _inf set [T_INF_recon_LAT, ["RHS_AAF2017_recon_LAT"]];
 _inf set [T_INF_recon_marksman, ["RHS_AAF2017_recon_sniper"]];
 _inf set [T_INF_recon_JTAC, ["RHS_AAF2017_recon_JTAC"]];
@@ -153,6 +153,299 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
+_array set [T_NAME, "tRHS_AAF2017_elite"];
 
+_inv = /* Exported with t_fnc_processTemplateItems for template tRHS_AAF2017_elite
+Primary weapons
+Primary weapon items
+Secondary weapons
+Secondary weapon items
+Handguns
+Handgun items
+General items */
+[
+	[
+		[
+			"rhs_weap_m21a",
+			[
+				"rhsgref_30rnd_556x45_m21",
+				"rhsgref_30rnd_556x45_m21_t"
+			]
+		],
+		[
+			"rhs_weap_m21s",
+			[
+				"rhsgref_30rnd_556x45_m21",
+				"rhsgref_30rnd_556x45_m21_t"
+			]
+		],
+		[
+			"rhs_weap_m21a_pbg40",
+			[
+				"rhsgref_30rnd_556x45_m21",
+				"rhsgref_30rnd_556x45_m21_t"
+			]
+		],
+		[
+			"rhs_weap_svdp",
+			[
+				"rhs_10Rnd_762x54mmR_7N1",
+				"rhs_10Rnd_762x54mmR_7N14"
+			]
+		],
+		[
+			"rhs_weap_t5000",
+			[
+				"rhs_5Rnd_338lapua_t5000"
+			]
+		],
+		[
+			"rhs_weap_g36kv",
+			[
+				"rhssaf_30rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SOST_G36",
+				"rhssaf_100rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SPR_G36",
+				"rhssaf_30rnd_556x45_Tracers_G36",
+				"rhssaf_30rnd_556x45_MDIM_G36",
+				"rhssaf_30rnd_556x45_TDIM_G36",
+				"150Rnd_556x45_Drum_Mag_F",
+				"150Rnd_556x45_Drum_Mag_Tracer_F"
+			]
+		],
+		[
+			"rhs_weap_m249",
+			[
+				"rhsusf_200Rnd_556x45_box",
+				"rhsusf_200rnd_556x45_mixed_box",
+				"rhsusf_200rnd_556x45_M855_box",
+				"rhsusf_200rnd_556x45_M855_mixed_box",
+				"rhsusf_200Rnd_556x45_soft_pouch",
+				"rhsusf_200Rnd_556x45_mixed_soft_pouch",
+				"rhsusf_200Rnd_556x45_M855_soft_pouch",
+				"rhsusf_200Rnd_556x45_M855_mixed_soft_pouch",
+				"rhsusf_200Rnd_556x45_soft_pouch_ucp",
+				"rhsusf_200Rnd_556x45_mixed_soft_pouch_ucp",
+				"rhsusf_200Rnd_556x45_M855_soft_pouch_ucp",
+				"rhsusf_200Rnd_556x45_M855_mixed_soft_pouch_ucp",
+				"rhsusf_200Rnd_556x45_soft_pouch_coyote",
+				"rhsusf_200Rnd_556x45_mixed_soft_pouch_coyote",
+				"rhsusf_200Rnd_556x45_M855_soft_pouch_coyote",
+				"rhsusf_200Rnd_556x45_M855_mixed_soft_pouch_coyote",
+				"rhsusf_100Rnd_556x45_soft_pouch",
+				"rhsusf_100Rnd_556x45_mixed_soft_pouch",
+				"rhsusf_100Rnd_556x45_M855_soft_pouch",
+				"rhsusf_100Rnd_556x45_M855_mixed_soft_pouch",
+				"rhsusf_100Rnd_556x45_M200_soft_pouch",
+				"rhsusf_100Rnd_556x45_soft_pouch_ucp",
+				"rhsusf_100Rnd_556x45_mixed_soft_pouch_ucp",
+				"rhsusf_100Rnd_556x45_M855_soft_pouch_ucp",
+				"rhsusf_100Rnd_556x45_M855_mixed_soft_pouch_ucp",
+				"rhsusf_100Rnd_556x45_M200_soft_pouch_ucp",
+				"rhsusf_100Rnd_556x45_soft_pouch_coyote",
+				"rhsusf_100Rnd_556x45_mixed_soft_pouch_coyote",
+				"rhsusf_100Rnd_556x45_M855_soft_pouch_coyote",
+				"rhsusf_100Rnd_556x45_M855_mixed_soft_pouch_coyote",
+				"rhsusf_100Rnd_556x45_M200_soft_pouch_coyote",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855_Stanag",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_Mk318_Stanag",
+				"rhs_mag_30Rnd_556x45_Mk262_Stanag",
+				"rhs_mag_30Rnd_556x45_M193_Stanag",
+				"rhs_mag_30Rnd_556x45_M196_Stanag_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M200_Stanag",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Pull",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Pull_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Pull",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Pull_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_Mk318_Stanag_Pull",
+				"rhs_mag_30Rnd_556x45_Mk262_Stanag_Pull",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Ranger_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Ranger",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Ranger_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_Mk318_Stanag_Ranger",
+				"rhs_mag_30Rnd_556x45_Mk262_Stanag_Ranger",
+				"rhs_mag_30Rnd_556x45_M855A1_EPM",
+				"rhs_mag_30Rnd_556x45_M855A1_EPM_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855A1_EPM_Pull",
+				"rhs_mag_30Rnd_556x45_M855A1_EPM_Pull_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855A1_EPM_Ranger",
+				"rhs_mag_30Rnd_556x45_M855A1_EPM_Ranger_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_Mk318_SCAR",
+				"rhs_mag_30Rnd_556x45_Mk318_SCAR_Pull",
+				"rhs_mag_30Rnd_556x45_Mk318_SCAR_Ranger",
+				"rhs_mag_30Rnd_556x45_M855A1_PMAG",
+				"rhs_mag_30Rnd_556x45_M855A1_PMAG_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855_PMAG",
+				"rhs_mag_30Rnd_556x45_M855_PMAG_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_Mk318_PMAG",
+				"rhs_mag_30Rnd_556x45_Mk262_PMAG",
+				"rhs_mag_30Rnd_556x45_M855A1_PMAG_Tan",
+				"rhs_mag_30Rnd_556x45_M855A1_PMAG_Tan_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_M855_PMAG_Tan",
+				"rhs_mag_30Rnd_556x45_M855_PMAG_Tan_Tracer_Red",
+				"rhs_mag_30Rnd_556x45_Mk318_PMAG_Tan",
+				"rhs_mag_30Rnd_556x45_Mk262_PMAG_Tan",
+				"rhs_mag_20Rnd_556x45_M193_Stanag",
+				"rhs_mag_20Rnd_556x45_M196_Stanag_Tracer_Red",
+				"rhs_mag_20Rnd_556x45_M855_Stanag",
+				"rhs_mag_20Rnd_556x45_M855A1_Stanag",
+				"rhs_mag_20Rnd_556x45_Mk262_Stanag",
+				"rhs_mag_20Rnd_556x45_M200_Stanag",
+				"rhs_mag_20Rnd_556x45_M193_2MAG_Stanag",
+				"rhs_mag_20Rnd_556x45_M196_2MAG_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"rhs_200rnd_556x45_M_SAW",
+				"rhs_200rnd_556x45_T_SAW",
+				"rhs_200rnd_556x45_B_SAW",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_No_Tracer",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Green",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Yellow",
+				"rhs_mag_30Rnd_556x45_M855A1_Stanag_Tracer_Orange",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Green",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Yellow",
+				"rhs_mag_30Rnd_556x45_M855_Stanag_Tracer_Orange"
+			]
+		],
+		[
+			"rhs_weap_pkp",
+			[
+				"rhs_100Rnd_762x54mmR",
+				"rhs_100Rnd_762x54mmR_green",
+				"rhs_100Rnd_762x54mmR_7N13",
+				"rhs_100Rnd_762x54mmR_7N26",
+				"rhs_100Rnd_762x54mmR_7BZ3"
+			]
+		],
+		[
+			"rhs_weap_savz61",
+			[
+				"rhsgref_20rnd_765x17_vz61",
+				"rhsgref_10rnd_765x17_vz61"
+			]
+		],
+		[
+			"rhs_weap_g36c",
+			[
+				"rhssaf_30rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SOST_G36",
+				"rhssaf_100rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SPR_G36",
+				"rhssaf_30rnd_556x45_Tracers_G36",
+				"rhssaf_30rnd_556x45_MDIM_G36",
+				"rhssaf_30rnd_556x45_TDIM_G36",
+				"150Rnd_556x45_Drum_Mag_F",
+				"150Rnd_556x45_Drum_Mag_Tracer_F"
+			]
+		],
+		[
+			"rhs_weap_g36kv_grip1",
+			[
+				"rhssaf_30rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SOST_G36",
+				"rhssaf_100rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SPR_G36",
+				"rhssaf_30rnd_556x45_Tracers_G36",
+				"rhssaf_30rnd_556x45_MDIM_G36",
+				"rhssaf_30rnd_556x45_TDIM_G36",
+				"150Rnd_556x45_Drum_Mag_F",
+				"150Rnd_556x45_Drum_Mag_Tracer_F"
+			]
+		],
+		[
+			"rhs_weap_m24sws",
+			[
+				"rhsusf_5Rnd_762x51_m118_special_Mag",
+				"rhsusf_5Rnd_762x51_m993_Mag",
+				"rhsusf_5Rnd_762x51_m62_Mag"
+			]
+		],
+		[
+			"rhs_weap_g36kv_ag36",
+			[
+				"rhssaf_30rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SOST_G36",
+				"rhssaf_100rnd_556x45_EPR_G36",
+				"rhssaf_30rnd_556x45_SPR_G36",
+				"rhssaf_30rnd_556x45_Tracers_G36",
+				"rhssaf_30rnd_556x45_MDIM_G36",
+				"rhssaf_30rnd_556x45_TDIM_G36",
+				"150Rnd_556x45_Drum_Mag_F",
+				"150Rnd_556x45_Drum_Mag_Tracer_F"
+			]
+		]
+	],
+	[
+		"rhs_acc_2dpZenit",
+		"rhs_acc_pkas",
+		"rhs_acc_pso1m2",
+		"rhs_acc_dh520x56",
+		"rhs_acc_harris_swivel",
+		"rhs_acc_2dpZenit_ris",
+		"rhsusf_acc_eotech_xps3",
+		"rhsusf_acc_saw_bipod",
+		"rhs_acc_perst3",
+		"rhsusf_acc_g33_xps3",
+		"rhsusf_acc_grip1",
+		"rhsusf_acc_m24_silencer_black",
+		"rhsusf_acc_M8541_low",
+		"rhsusf_acc_harris_swivel"
+	],
+	[
+		[
+			"rhs_weap_rpg75",
+			[
+				"rhs_rpg75_mag"
+			]
+		],
+		[
+			"FGN_AAF_CarlGustav",
+			[
+				"rhs_mag_maaws_HEAT",
+				"rhs_mag_maaws_HEDP",
+				"rhs_mag_maaws_HE"
+			]
+		],
+		[
+			"rhs_weap_igla",
+			[
+				"rhs_mag_9k38_rocket"
+			]
+		]
+	],
+	[
+		"rhs_optic_maaws"
+	],
+	[
+		[
+			"rhsusf_weap_glock17g4",
+			[
+				"rhsusf_mag_17Rnd_9x19_JHP",
+				"rhsusf_mag_17Rnd_9x19_FMJ"
+			]
+		],
+		[
+			"rhs_weap_makarov_pm",
+			[
+				"rhs_mag_9x18_8_57N181S"
+			]
+		]
+	],
+	[
+	],
+	[
+		"ItemGPS",
+		"Binocular",
+		"rhs_pdu4"
+	]
+];
+
+_array set [T_INV, _inv];
 
 _array // End template
