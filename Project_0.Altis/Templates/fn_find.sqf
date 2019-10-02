@@ -24,35 +24,37 @@ while {_catID < T_SIZE} do
 	_cat = _template select _catID;
 	if (! (isNil "_cat")) then
 	{
-		_count2 = count _cat;
-		_subcatID = 0;
-		while {_subcatID < _count2} do
-		{
-			_subcat = _cat select _subcatID;
-			if(!(isNil "_subcat")) then
+		if (_cat isEqualType []) then {
+			_count2 = count _cat;
+			_subcatID = 0;
+			while {_subcatID < _count2} do
 			{
-				_count3 = count _subcat;
-				_classID = 0;
-				while {_classID < _count3} do
+				_subcat = _cat select _subcatID;
+				if(!(isNil "_subcat")) then
 				{
-					//diag_log format ["%1 %2 %3", _catID, _subcatID, _classID];
-					_item = _subcat select _classID;
-					//diag_log format ["item: %1", _item];
-					if(typeName _item isEqualTo typeName _class) then
+					_count3 = count _subcat;
+					_classID = 0;
+					while {_classID < _count3} do
 					{
-						if ( _item == _class && _subcatID != 0) then //If it's not a default class
+						//diag_log format ["%1 %2 %3", _catID, _subcatID, _classID];
+						_item = _subcat select _classID;
+						//diag_log format ["item: %1", _item];
+						if(typeName _item isEqualTo typeName _class) then
 						{
-							_return pushback [_catID, _subcatID, _classID];
-							//_found = true;
+							if ( _item == _class && _subcatID != 0) then //If it's not a default class
+							{
+								_return pushback [_catID, _subcatID, _classID];
+								//_found = true;
+							};
 						};
-					};
 
-					//if(_found) exitWith {};
-					_classID = _classID + 1;
+						//if(_found) exitWith {};
+						_classID = _classID + 1;
+					};
 				};
+				//if(_found) exitWith {};
+				_subcatID = _subcatID + 1;
 			};
-			//if(_found) exitWith {};
-			_subcatID = _subcatID + 1;
 		};
 	};
 	//if(_found) exitWith {};
