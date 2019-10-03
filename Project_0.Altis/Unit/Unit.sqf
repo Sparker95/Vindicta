@@ -12,7 +12,7 @@
 
 /*
 Class: Unit
-A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.
+A virtualized Unit is a man, vehicle or a drone (or a cargo box!) which can be spawned or not spawned.
 
 Author: Sparker
 10.06.2018
@@ -381,6 +381,10 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
+
+					// Initialize limited arsenal
+					T_CALLM0("limitedArsenalOnSpawn");
+
 					//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
 					// Give intel to this unit
 					//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
@@ -396,6 +400,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			// Initialize dynamic simulation
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
+
+			// Initialize cargo if there is no limited arsenal
+			CALLM0(_thisObject, "initObjectInventory");
 
 			// Set build resources
 			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
@@ -519,6 +526,86 @@ CLASS(UNIT_CLASS_NAME, "");
 		};
 	} ENDMETHOD;
 
+	METHOD("initObjectInventory") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+
+		// Bail if not spawned
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {};
+
+		pr _catid = _data select UNIT_DATA_ID_CAT;
+		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
+			// Clear cargo
+			clearItemCargoGlobal _hO;
+			clearWeaponCargoGlobal _hO;
+			clearMagazineCargoGlobal _hO;
+			clearBackpackCargoGlobal _hO;
+
+			// Bail if there is a limited arsenal
+			pr _arsenalDataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+			if ((count _arsenalDataList) != 0) exitWith {};
+
+			// Otherwise fill the ammo box with stuff from the template
+			pr _gar = _data select UNIT_DATA_ID_GARRISON;
+			if (_gar == "") exitWith {};
+			pr _nInf = CALLM0(_gar, "countInfantryUnits");
+			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
+			pr _nCargo = CALLM0(_gar, "countCargoUnits");
+			pr _tName = CALLM0(_gar, "getTemplateName");
+			if (_tName == "") exitWith {};
+
+			// Add stuff to cargo from the template
+			pr _t = [_tName] call t_fnc_getTemplate;
+			pr _tInv = _t#T_INV;
+
+			// Some number which scales the amount of items in this box
+			pr _nGuns = _nInf / 2 / ((_nVeh + _nCargo) max 1);
+
+			// Add weapons and magazines
+			pr _arr = [[T_INV_primary, _nGuns], [T_INV_secondary, 0.2*_nGuns], [T_INV_handgun, 0.1*_nGuns]]; // [_subcatID, num. attempts]
+			{
+				_x params ["_subcatID", "_n"];
+				if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
+
+					// Randomize _n
+					_n = round (random [0.2*_n, _n, 1.8*_n]);
+
+					for "_i" from 0 to (_n-1) do {
+						pr _weaponsAndMags = _tInv#_subcatID;
+						pr _weaponAndMag = selectRandom _weaponsAndMags;
+						_weaponAndMag params ["_weaponClassName", "_magazines"];
+						_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
+						if (count _magazines > 0) then {
+							_hO addMagazineCargoGlobal [selectRandom _magazines, 5];
+						};
+					};
+				};
+			} forEach _arr;
+
+			// Add items
+			pr _arr = [	[T_INV_primary_items, 0.3*_nGuns], [T_INV_secondary_items, 0.2*_nGuns],
+						[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.1*_nGuns]]; // [_subcatID, num. attempts]
+			{
+				_x params ["_subcatID", "_n"];
+
+				if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
+
+					// Randomize _n
+					_n = round (random [0.2*_n, _n, 1.8*_n]);
+					pr _items = _tInv#_subcatID;
+					for "_i" from 0 to (_n-1) do {
+						_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
+					};
+				};
+			} forEach _arr;
+
+			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
+			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)];
+		};
+	} ENDMETHOD;
+
 	//                            D E S P A W N
 	/*
 	Method: despawn
@@ -565,6 +652,9 @@ CLASS(UNIT_CLASS_NAME, "");
 				_buildResources = T_CALLM0("_getBuildResourcesSpawned");
 				_data set [UNIT_DATA_ID_BUILD_RESOURCE, _buildResources];
 			};
+
+			// Deinitialize the limited arsenal
+			T_CALLM0("limitedArsenalOnDespawn");
 
 			// Delete the vehicle
 			deleteVehicle _objectHandle;
@@ -1217,7 +1307,95 @@ CLASS(UNIT_CLASS_NAME, "");
 		} forEach _crewData;
 	} ENDMETHOD;
 
-	// ================= File based methods ======================
+	
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               L I M I T E D   A R S E N A L
+	// | Methods for manipulating the limited arsenal
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	METHOD("limitedArsenalEnable") {
+		params [P_THISOBJECT, P_BOOL("_enabled")];
+
+		pr _data = T_GETV("data");
+
+		// Bail if this item can't have a limited arsenal
+		pr _catID = _data select UNIT_DATA_ID_CAT;
+		if (_catID != T_CARGO) exitWith {};
+
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		pr _arsenalAlreadyEnabled = count _dataList > 0;
+
+		// Bail if object is already in this state
+		if (_enabled && _arsenalAlreadyEnabled || (!_enabled) && (!_arsenalAlreadyEnabled) ) exitWith {};
+
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		if (_enabled) then {
+			pr _emptyArray = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _emptyArray]; // Limited Arsenal's empty array for items
+			if (isNull _hO) then {
+				// Object is currently despawned
+			} else {
+				// Object is currently spawned
+
+				// Clear the inventory
+				/// although, maybe we should move it into the arsenal?
+				// For now I only care to clear the inventory when we create an ammo box
+				clearItemCargoGlobal _hO;
+				clearWeaponCargoGlobal _hO;
+				clearMagazineCargoGlobal _hO;
+				clearBackpackCargoGlobal _hO;
+
+				[_hO] call jn_fnc_arsenal_initPersistent;
+			};
+		} else {
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, []]; // This unit doesn't have arsenal any more
+			if (isNull _hO) then {
+				// Object is currently despawned
+				// Do nothing
+			} else {
+				// Object is spawned
+				// todo remove actions, kick players out of arsenal, etc ...
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("limitedArsenalOnSpawn") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList > 0) then {
+			// This object has a limited arsenal
+			// We need to initialize the object
+
+			// Restore the jna_dataList variable with the arsenal contents
+			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+			_hO setVariable ["jna_dataList", _dataList];
+
+			// Initialize the limited arsenal
+			[_hO] call jn_fnc_arsenal_initPersistent;
+		};
+	} ENDMETHOD;
+
+	METHOD("limitedArsenalOnDespawn") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList > 0) then {
+			// This object has a limited arsenal
+			// We need to save data
+
+			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+			pr _dataList = _hO getVariable "jna_dataList";
+			if (isNil "_dataList") exitWith {
+				OOP_ERROR_2("Limited Arsenal was not initialized for unit: %1: %2", _thisObject, _dataList);
+			};
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _dataList];
+		};
+	} ENDMETHOD;
 
 ENDCLASS;
 

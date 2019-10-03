@@ -217,6 +217,11 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			pr _args = [[], _catID, _subcatID, -1, "", _hO];
 			pr _unit = NEW("Unit", _args);
 			CALLM1(_gar, "addUnit", _unit);
+
+			// If it's a cargo box, initialize the limited arsenal on it
+			if (_catID == T_CARGO) then {
+				CALLM1(_unit, "limitedArsenalEnable", true);
+			};
 		};
 
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);

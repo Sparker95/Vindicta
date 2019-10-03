@@ -176,6 +176,7 @@ CLASS("BuildUI", "")
 			CALLM4(g_BuildUI, "onKeyHandler", _dikCode, _shiftState, _ctrlState, _altState);
 		}];
 
+		OOP_INFO_1(" Saved key down EH ID: %1", _EHKeyDown);
 		T_SETV("EHKeyDown", _EHKeyDown);
 
 		pr _playerEvents = [
@@ -390,6 +391,7 @@ CLASS("BuildUI", "")
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
 		pr _EHKeyDown = T_GETV("EHKeyDown");
+		OOP_INFO_1(" Recovered keyDown EH ID: %1", _EHKeyDown);
 		(findDisplay 46) displayRemoveEventHandler ["KeyDown", _EHKeyDown];
 
 		T_SETV("EHKeyDown", nil);

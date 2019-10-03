@@ -34,6 +34,7 @@ class JN {
 		class arsenal_cargoToArsenal {};
 		class arsenal_container {};
 		class arsenal_init {};
+		class arsenal_initPersistent {};
 		class arsenal_inList {};
 		class arsenal_itemCount {};
 		class arsenal_itemType {};

@@ -16,10 +16,12 @@ params [["_object", objNull, [objNull]]];
 if (isNull _object) exitWith {};
 
 // Generate a JIP ID
-private _ID = jna_nextID;
+private _ID = 0;
 if(isNil "jna_nextID") then {
 	jna_nextID = 0;
 	_ID = 0;
+} else {
+	_ID = jna_nextID;
 };
 jna_nextID = jna_nextID + 1;
 

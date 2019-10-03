@@ -20,6 +20,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
 
+	VARIABLE_ATTR("templateName", [ATTR_PRIVATE]);
+
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
 	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
 
@@ -68,7 +70,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction")];
+		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
 
 		OOP_INFO_1("NEW GARRISON: %1", _this);
 
@@ -101,6 +103,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
 
+		// Ensure some template
+		if (_templateName == "") then {
+			_templateName = "tDefault";
+		};
+		T_SETV("templateName", _templateName);
 
 		// Set value of composition array
 		pr _comp = [];
@@ -2406,6 +2413,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			CALLM2(_x, "postMethodAsync", "updateSpawnState", []);
 		} forEach _garsToCheck;
+	} ENDMETHOD;
+
+	METHOD("getTemplateName") {
+		params [P_THISOBJECT];
+		T_GETV("templateName")
 	} ENDMETHOD;
 
 ENDCLASS;
