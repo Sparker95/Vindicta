@@ -1115,6 +1115,8 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data set [UNIT_DATA_ID_BUILD_RESOURCE, _value];
 		if (T_CALLM0("isSpawned")) then {
 			T_CALLM1("_setBuildResourcesSpawned", _value);
+		} else {
+			pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
 		};
 	} ENDMETHOD;
 
@@ -1124,12 +1126,15 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		if (_data#UNIT_DATA_ID_CAT == T_INF) exitWith { 0 };
 
+		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
+		// There is no limited arsenal in it
 		private _return = if (T_CALLM0("isSpawned")) then {
 			T_CALLM0("_getBuildResourcesSpawned")
 		} else {
 			_data select UNIT_DATA_ID_BUILD_RESOURCE
 		};
 		_return
+		
 	} ENDMETHOD;
 
 	METHOD("addBuildResources") {
@@ -1166,23 +1171,49 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		pr _nItemsNeeded = ceil (_value/_buildResPerMag);
-		pr _magCargo = getMagazineCargo _hO;
-		pr _index = _magCargo#0 find "vin_build_res_0";
+		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList == 0) then {
+			// There is no limited arsenal, it's a plain cargo container
+			pr _magCargo = getMagazineCargo _hO;
+			pr _index = _magCargo#0 find "vin_build_res_0";
 
-		// Make the exact needed amount of items in the inventory
-		pr _nItemsInCargo = 0;
-		pr _nItemsToAdd = _nItemsNeeded;
-		if (_index != -1) then { // If such items are already in the inventory
-			pr _nItemsInCargo = _magCargo#1#_index;
-			_nItemsToAdd = _nItemsNeeded - _nItemsInCargo;
-		};
-		if (_nItemsToAdd > 0) then {
-			// Add items
-			_hO addMagazineCargoGlobal ["vin_build_res_0", _nItemsToAdd];
+			// Make the exact needed amount of items in the inventory
+			pr _nItemsInCargo = 0;
+			pr _nItemsToAdd = _nItemsNeeded;
+			if (_index != -1) then { // If such items are already in the inventory
+				pr _nItemsInCargo = _magCargo#1#_index;
+				_nItemsToAdd = _nItemsNeeded - _nItemsInCargo;
+			};
+			if (_nItemsToAdd > 0) then {
+				// Add items
+				_hO addMagazineCargoGlobal ["vin_build_res_0", _nItemsToAdd];
+			} else {
+				if (_nItemsToAdd < 0) then {
+					// Remove items
+					[_hO, "vin_build_res_0", -_nItemsToAdd] call CBA_fnc_removeMagazineCargo;
+				};
+			};
 		} else {
-			if (_nItemsToAdd < 0) then {
-				// Remove items
-				[_hO, "vin_build_res_0", -_nItemsToAdd] call CBA_fnc_removeMagazineCargo;
+			// There is a limited arsenal
+			_dataList = _hO getVariable "jna_dataList";
+			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
+			pr _nItemsInArsenal = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
+			
+			// Make the exact needed amount of items in the inventory
+			pr _nItemsToAdd = _nItemsNeeded;
+			if (_nItemsInArsenal > 0) then { // If such items are already in the arsenal
+				_nItemsToAdd = _nItemsNeeded - _nItemsInArsenal;
+			};
+			OOP_INFO_1(" >>> Adding build resources: %1", _nItemsToAdd);
+			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
+			if (_nItemsToAdd > 0) then {
+				// Add items
+				[_hO, _index, "vin_build_res_0", _nItemsToAdd] call jn_fnc_arsenal_addItem;
+			} else {
+				if (_nItemsToAdd < 0) then {
+					// Remove items
+					[_hO, _index, "vin_build_res_0", -_nItemsToAdd] call jn_fnc_arsenal_removeItem;
+				};
 			};
 		};
 	} ENDMETHOD;
@@ -1192,14 +1223,26 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {0};
-		pr _magCargo = getMagazineCargo _hO;
-		pr _index = _magCargo#0 find "vin_build_res_0";
-		if (_index != -1) then {
-			pr _amount = _magCargo#1#_index;
-			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
-			_amount * _buildResPerMag
+
+		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList == 0) then {
+			// There is no limited arsenal, it's a plain cargo container
+			pr _magCargo = getMagazineCargo _hO;
+			pr _index = _magCargo#0 find "vin_build_res_0";
+			if (_index != -1) then {
+				pr _amount = _magCargo#1#_index;
+				pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+				_amount * _buildResPerMag
+			} else {
+				0
+			};
 		} else {
-			0
+			// There is a limited arsenal
+			_dataList = _hO getVariable "jna_dataList";
+			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
+			_count = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
+			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+			_count*_buildResPerMag
 		};
 	} ENDMETHOD;
 

@@ -51,7 +51,8 @@ class CfgMagazines
 
 	class vin_build_res_0: CA_Magazine
 	{
-		buildResource = 10;
+		buildResource = 10; // Amount of build resources, used by the scenario
+		count = 1; // Ammount of bullets, we make it so that one box = one box in the arsenal, ok?
 		mass = 80; // In arma it's really volume, not mass
 		scope=2;
 		displayName="Construction resources (x10)";

@@ -739,6 +739,7 @@ CLASS("GameModeBase", "")
 		while {_cCargoBoxes > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
 			CALLM1(_newUnit, "setBuildResources", 110);
+			CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
