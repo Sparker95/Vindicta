@@ -104,7 +104,7 @@ while {_i < _c} do
 {
 	private _obj = _o select _i;
 	//diag_log format ["type: %1", _t];
-	if ( (_obj isKindOf "allVehicles") &&
+	if ( ( (_obj isKindOf "allVehicles") || (_obj isKindOf "ThingX") ) &&
 	    (!(_obj isKindOf "Man")) ) exitWith {
     	_good = false;
     };

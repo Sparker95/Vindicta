@@ -230,12 +230,14 @@ CLASS(UNIT_CLASS_NAME, "");
 	Returns: nil
 	*/
 	METHOD("spawn") {
-		params [["_thisObject", "", [""]], "_pos", "_dir"];
+		params [["_thisObject", "", [""]], "_pos", "_dir", ["_spawnAtPrevPos", false]];
 
-		OOP_INFO_2("SPAWN pos: %1, dir: %2", _pos, _dir);
+		OOP_INFO_1("SPAWN: %1", _this);
 
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
+
+		OOP_INFO_1("  current data: %1", _data);
 
 		//private _mutex = _data select UNIT_DATA_ID_MUTEX;
 
@@ -249,6 +251,14 @@ CLASS(UNIT_CLASS_NAME, "");
 		if (isNull _objectHandle) then { //If it's not spawned yet
 			private _className = _data select UNIT_DATA_ID_CLASS_NAME;
 			private _group = _data select UNIT_DATA_ID_GROUP;
+
+			pr _posATLPrev = _data#UNIT_DATA_ID_POS_ATL;
+			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
+			pr _locPrev = _data#UNIT_DATA_ID_LOCATION;
+			if (_spawnAtPrevPos && _locPrev != "") then {
+				OOP_INFO_3("  spawning at prev location: %1, %2, %3", _posATLPrev, _dirAndUpPrev, _locPrev);
+				_pos = _posATLPrev;
+			};
 
 			//Perform object creation
 			private _catID = _data select UNIT_DATA_ID_CAT;
@@ -391,6 +401,14 @@ CLASS(UNIT_CLASS_NAME, "");
 				};
 			};
 
+			if (_spawnAtPrevPos) then {
+				_objectHandle setPosATL _posATLPrev;
+				_objectHandle setVectorDirAndUp _dirAndUpPrev;
+			} else {
+				_objectHandle setDir _dir;
+				_objectHandle setPos _pos;
+			};
+
 
 			// Initialize variables
 			CALLM0(_thisObject, "initObjectVariables");
@@ -409,8 +427,6 @@ CLASS(UNIT_CLASS_NAME, "");
 				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 			};
 
-			_objectHandle setDir _dir;
-			_objectHandle setPos _pos;
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
@@ -656,6 +672,15 @@ CLASS(UNIT_CLASS_NAME, "");
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
 
+			// Set the pos, vector dir and up, location
+			pr _posATL = getPosATL _objectHandle;
+			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
+			pr _gar = _data#UNIT_DATA_ID_GARRISON;
+			pr _loc = if (_gar != "") then {CALLM0(_gar, "getLocation")} else {""};
+			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
+			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
+			_data set [UNIT_DATA_ID_LOCATION, _loc];
+
 			// Delete the vehicle
 			deleteVehicle _objectHandle;
 			private _group = _data select UNIT_DATA_ID_GROUP;
@@ -861,6 +886,18 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		getPos _oh
+	} ENDMETHOD;
+
+	/*
+	Method: getDespawnLocation
+	Returns the location this unit despawned at last time, or ""
+
+	Returns: <Location> or ""
+	*/
+	METHOD("getDespawnLocation") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data#UNIT_DATA_ID_LOCATION
 	} ENDMETHOD;
 
 
