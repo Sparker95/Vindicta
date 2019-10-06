@@ -150,6 +150,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				T_SETV("currentGarrisonRecord", "");
 				T_SETV("currentGarrison", "");
 				T_SETV("canBuild", false);
+				T_SETV("currentLocation", "");
 			};
 			
 		//};
