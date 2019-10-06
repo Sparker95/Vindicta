@@ -292,9 +292,6 @@ CLASS(UNIT_CLASS_NAME, "");
 					pr _AI = CALLM1(_thisObject, "createAI", "AIUnitInfantry");
 
 					pr _groupType = CALLM0(_group, "getType");
-					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {
-						CALLM1(_AI, "setSentryPos", _pos);
-					};
 
 					// Give intel to this unit
 					//if ((random 10) < 4) then {

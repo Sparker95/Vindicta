@@ -29,8 +29,7 @@ GROUP_TYPE_PATROL - Patrols that are walking around
 #define GROUP_TYPE_IDLE 			0 
 #define GROUP_TYPE_VEH_STATIC 		1
 #define GROUP_TYPE_VEH_NON_STATIC	2
-#define GROUP_TYPE_BUILDING_SENTRY	3
-#define GROUP_TYPE_PATROL			4
+#define GROUP_TYPE_PATROL			3
 
 // Array with all group types
 #define GROUP_TYPE_ALL [0, 1, 2, 3, 4]

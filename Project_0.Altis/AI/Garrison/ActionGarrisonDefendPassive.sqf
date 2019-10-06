@@ -46,14 +46,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 						_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
 					};
 					
-					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = if (_loc != "") then {
-							["GoalGroupOccupySentryPositions", 0, [], _AI];
-						} else {
-							["GoalGroupRegroup", 0, [], _AI];
-						};
-					};
-					
 					case GROUP_TYPE_PATROL: {
 						_args = ["GoalGroupRegroup", 0, [], _AI];
 					};
@@ -120,14 +112,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
 						_args = ["GoalGroupGetInVehiclesAsCrew", ""];
-					};
-					
-					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = if (_loc != "") then {
-							["GoalGroupOccupySentryPositions", ""];
-						} else {
-							["GoalGroupRegroup", ""];
-						};
 					};
 					
 					case GROUP_TYPE_PATROL: {

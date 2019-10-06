@@ -292,7 +292,7 @@ CLASS("GameModeBase", "")
 				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
-				private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);
+				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;			
 				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
@@ -500,6 +500,8 @@ CLASS("GameModeBase", "")
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
 				private _policeStationBuilding = nearestBuilding _posPolice;
 				private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
+				CALLM2(_policeStation, "setBorder", "circle", 10);
+				CALLM0(_policeStation, "processBuildings"); // We must add buildings to the array
 				CALLM1(_policeStation, "setSide", _side);
 				CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
 				CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
@@ -575,7 +577,7 @@ CLASS("GameModeBase", "")
 			};
 
 			// Remainder back at station
-			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 			private _remainder = 1 max (_cInf * 0.25);
 			for "_i" from 1 to _remainder do {
 				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
@@ -643,7 +645,7 @@ CLASS("GameModeBase", "")
 
 		// Add building sentries
 		if (_cBuildingSentry > 0) then {
-			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 			while {_cBuildingSentry > 0} do {
 				private _variants = [T_INF_marksman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_LMG];
 				private _newUnit = NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
@@ -739,7 +741,7 @@ CLASS("GameModeBase", "")
 		while {_cCargoBoxes > 0 && _i < 3} do {
 			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
 			CALLM1(_newUnit, "setBuildResources", 110);
-			CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
+			//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);

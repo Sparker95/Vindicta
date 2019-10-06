@@ -29,7 +29,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Create a pool of units we can use to fill vehicle slots
 		pr _freeUnits = [];
-		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL, GROUP_TYPE_BUILDING_SENTRY];
+		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 		pr _freeGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		{
 			_freeUnits append CALLM0(_x, "getUnits");

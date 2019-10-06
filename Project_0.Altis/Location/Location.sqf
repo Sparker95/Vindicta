@@ -58,6 +58,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("hasPlayers"); // Bool, means that there are players at this location, updated at each process call
 
+	VARIABLE("buildings"); // Handles of buildings which can be entered
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -95,6 +97,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("parent", NULL_OBJECT);
 		T_SETV("gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
+		T_SETV("buildings", []);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -856,6 +859,44 @@ CLASS("Location", "MessageReceiverEx")
 		} else {
 			deleteMarker (_markName + _thisObject);
 		};
+	} ENDMETHOD;
+
+	/*
+	Method: iterates through buildings inside the border and updated the buildings variable
+	Returns: nothing
+	*/
+	METHOD("processBuildings") {
+		params [P_THISOBJECT];
+
+		// Setup location's spawn positions
+		private _radius = GET_VAR(_thisObject, "boundingRadius");
+		private _locPos = GET_VAR(_thisObject, "pos");
+		private _no = _locPos nearObjects _radius;
+
+		pr _buildings = [];
+		// forEach _nO;
+		{
+			_object = _x;
+			if(T_CALLM1("isInBorder", _object)) then {
+				if (_object isKindOf "House") then {
+					// Add to the array of buildings into which AI can enter
+					if ( ( ( count (_object buildingPos -1) ) > 0 ) && ( (damage _object) < 0.99) ) then {
+						_buildings pushBack _object;
+					};
+				};
+			};
+		} forEach _nO;
+
+		T_SETV("buildings", _buildings);
+	} ENDMETHOD;
+
+	/*
+	Method: getOpenBuildings
+	Returns an array of object handles of buildings in which AI infantry can enter (they must return buildingPos positions)
+	*/
+	METHOD("getOpenBuildings") {
+		params [P_THISOBJECT];
+		T_GETV("buildings") select {damage _x < 0.98}
 	} ENDMETHOD;
 
 	/*

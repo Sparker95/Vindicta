@@ -26,8 +26,27 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		
 		// Give goals to groups
 		pr _gar = GETV(T_GETV("AI"), "agent");
+		pr _loc = CALLM0(_gar, "getLocation");
+		pr _buildings = if (_loc != "") then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
 		pr _AI = T_GETV("AI");
-		pr _groups = CALLM0(_gar, "getGroups");
+		pr _groups = +CALLM0(_gar, "getGroups");
+		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
+
+		// Order to some groups to occupy buildings
+		pr _i = 0;
+		while {(count _groupsInf > 0) && (count _buildings > 0)} do {
+			pr _group = _groupsInf#0;
+			pr _groupAI = CALLM0(_group, "getAI");
+			pr _goalParameters = [["building", _buildings select 0]];
+			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
+			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
+
+			_buildings deleteAt 0;
+			_groupsInf deleteAt 0;
+			_groups deleteAt (_groups find _group);
+		};
+
+		// Give goals to remaining groups
 		{ // foreach _groups
 			pr _type = CALLM0(_x, "getType");
 			pr _groupAI = CALLM0(_x, "getAI");
@@ -44,10 +63,6 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupRelax", 0, [], _AI];
-					};
-					
-					case GROUP_TYPE_BUILDING_SENTRY: {
 						_args = ["GoalGroupRelax", 0, [], _AI];
 					};
 					
@@ -117,31 +132,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			if (_groupAI != "") then {
 				pr _args = [];
-				switch (_type) do {
-					case GROUP_TYPE_IDLE: {
-						_args = ["GoalGroupRelax", ""];
-					};
-					
-					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupRelax", ""];
-					};
-					
-					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupRelax", ""];
-					};
-					
-					case GROUP_TYPE_BUILDING_SENTRY: {
-						_args = ["GoalGroupRelax", ""];
-					};
-					
-					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupPatrol", ""];						
-					};
-				};
-				
-				if (count _args > 0) then {
-					CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
-				};
+				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", ["goalGroupRelax" ARG ""]);
+				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", ["goalGroupPatrol" ARG ""]);
+				CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", ["goalGroupGetInBuilding" ARG ""]);
 			};
 		} forEach _groups;
 		

@@ -19,7 +19,7 @@ CLASS("GoalGroupClearArea", "Goal")
 		pr _group = GETV(_AI, "agent");
 		pr _groupType = CALLM0(_group, "getType");
 		
-		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL]) exitWith {
+		if (_groupType in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) exitWith {
 			pr _args = [_AI, _parameters];
 			pr _action = NEW("ActionGroupInfantryClearArea", _args);
 			_action

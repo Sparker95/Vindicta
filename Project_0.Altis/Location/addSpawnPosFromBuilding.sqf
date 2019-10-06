@@ -40,6 +40,7 @@ if(count _bps > 0) then {
 };
 
 //Pre-defined positions for sentries inside buildings
+/*
 _bps = location_bp_sentry select { _class in (_x select 0)};
 if(count _bps > 0) then {
 	//Add every position from the array to the spawn positions array
@@ -57,3 +58,4 @@ if(count _bps > 0) then {
 		};
 	} forEach ((_bps select 0) select 1);
 };
+*/

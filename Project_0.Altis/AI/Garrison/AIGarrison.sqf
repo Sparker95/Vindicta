@@ -32,6 +32,9 @@ CLASS("AIGarrison", "AI_GOAP")
 	// Bool, set to true if garrison is aware of any targets in the 'assigned targets' area
 	VARIABLE("awareOfAssignedTargets");
 	
+	// List of building object handles at the territory of this garrison
+	VARIABLE("buildings");
+
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
 	

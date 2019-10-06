@@ -569,7 +569,7 @@ CLASS("GarrisonModel", "ModelBase")
 				if (_x in _allocatedUnits) then { false } else {
 					private _group = CALLM0(_x, "getGroup");
 					if (_group == "") then { false } else {
-						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL, GROUP_TYPE_BUILDING_SENTRY]) then {
+						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
 							true
 						} else {false};
 					};
