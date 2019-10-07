@@ -28,6 +28,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _gar = GETV(T_GETV("AI"), "agent");
 		pr _loc = CALLM0(_gar, "getLocation");
 		pr _buildings = if (_loc != "") then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
+		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
+		_buildings = _buildings apply {[abs ((boundingBoxReal _x) select 1 select 2), _x]};
+		_buildings sort false;
 		pr _AI = T_GETV("AI");
 		pr _groups = +CALLM0(_gar, "getGroups");
 		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
@@ -37,7 +40,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		while {(count _groupsInf > 0) && (count _buildings > 0)} do {
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
-			pr _goalParameters = [["building", _buildings select 0]];
+			pr _goalParameters = [["building", _buildings#0#1]];
 			pr _args = ["GoalGroupGetInBuilding", 0, _goalParameters, _AI]; // Get in the house!
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 
