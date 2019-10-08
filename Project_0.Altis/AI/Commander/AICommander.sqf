@@ -327,10 +327,14 @@ CLASS("AICommander", "AI")
 						CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 					
 						// Enable or disable player respawn here
-						pr _locSide = GETV(_intel, "side");
-						pr _thisSide = T_GETV("side");
-						pr _enable = _locSide == _thisSide;
-						CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+						pr _locRealType = CALLM0(_loc, "getType");
+						if (_locRealType != LOCATION_TYPE_CITY) then {
+							pr _locSide = GETV(_intel, "side");
+							pr _thisSide = T_GETV("side");
+							pr _locRealType = CALLM0(_loc, "getType");
+							pr _enable = (_locSide == _thisSide);
+							CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+						};
 					};
 
 					// Delete the intel object that we have created temporary
@@ -353,10 +357,13 @@ CLASS("AICommander", "AI")
 			// Don't delete the intel object now! It's in the database from now.
 
 			// Enable or disable player respawn here
-			pr _locSide = GETV(_intel, "side");
-			pr _thisSide = T_GETV("side");
-			pr _enable = _locSide == _thisSide;
-			CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+			pr _locRealType = CALLM0(_loc, "getType");
+			if (_locRealType != LOCATION_TYPE_CITY) then {
+				pr _locSide = GETV(_intel, "side");
+				pr _thisSide = T_GETV("side");
+				pr _enable = (_locSide == _thisSide);
+				CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+			};
 
 			// Register with the World Model
 			T_PRVAR(worldModel);

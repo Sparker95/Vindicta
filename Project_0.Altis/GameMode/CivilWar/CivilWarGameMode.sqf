@@ -75,18 +75,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 	*/
 
-	// Overrides GameModeBase, we need to clean up the existing spawn markers, and we delete these markers globally
-	/* protected virtual */ METHOD("initServerOnly") {
+	// Overrides GameModeBase, we do a bunch of custom setup here for this game mode
+	/* protected override */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
+
 		// Delete all existing spawns
 		{
 			deleteMarker _x;
 		} forEach (allMapMarkers select { _x find "respawn_west" == 0});
-	} ENDMETHOD;
-
-	// Overrides GameModeBase, we do a bunch of custom setup here for this game mode
-	/* protected override */ METHOD("initServerOnly") {
-		params [P_THISOBJECT];
 
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GET_STATIC_VAR("Location", "all") select { 
@@ -102,38 +98,27 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			SETV(_x, "gameModeData", _cityData);
 		} forEach _activeCities;
 
-		// Add spawns near police stations on the map
+		// Select a city as a spawn point for players
 		private _spawnPoints = [];
+		private _cities = (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY });
+		if (count _cities > 0) then {
+			private _citySpawn = selectRandom _cities;
+			CALLM2(_citySpawn, "enablePlayerRespawn", FRIENDLY_SIDE, true);
+			_spawnPoints pushBack [_citySpawn, CALLM0(_citySpawn, "getPos")];
+		};
+		T_SETV("spawnPoints", _spawnPoints);
+
+		// Create game mode data for police stations
 		{
 			private _policeStation = _x;
-
 			// Create the game mode data object and assign it to the police station for use later by us
 			private _data = NEW("CivilWarPoliceStationData", []);
 			SETV(_policeStation, "gameModeData", _data);
-
-			// Find appropriate player spawn point, not to near and not to far from the police station, inside a house
-			private _ppos = CALLM0(_policeStation, "getPos");
-			private _nearbyHouses = (_ppos nearObjects ["House", 200]) apply { [_ppos distance getPos _x, _x] };
-			_nearbyHouses sort DESCENDING;
-			private _spawnPos = _ppos vectorAdd [100, 100, 0];
-			{
-				_x params ["_dist", "_building"];
-				private _positions = _building buildingPos -1;
-				if(count _positions > 0) exitWith {
-					_spawnPos = selectRandom _positions;
-				}
-			} forEach _nearbyHouses;
-
-			// Create Respawn Marker at one of the houses
-			private _marker = createMarker ["respawn_west_" + GETV(_x, "name"), _spawnPos]; // magic
-			_marker setMarkerAlpha 0.0;
-			private _city = GETV(_policeStation, "parent");
-			_spawnPoints pushBack [GETV(_city, "name"), _spawnPos];
 		} forEach (GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION });
-		T_SETV("spawnPoints", _spawnPoints);
+
 
 #ifndef _SQF_VM
-		ASSERT_MSG(count _spawnPoints > 0, "Couldn't create any spawn points, no police stations found? Check your map setup!");
+		//ASSERT_MSG(count _spawnPoints > 0, "Couldn't create any spawn points, no police stations found? Check your map setup!");
 
 		// Single player specific setup
 		if(!IS_MULTIPLAYER) then {

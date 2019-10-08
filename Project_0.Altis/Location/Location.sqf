@@ -855,7 +855,27 @@ CLASS("Location", "MessageReceiverEx")
 		};
 
 		if (_enable) then {
-			createMarker [_markName + _thisObject, T_GETV("pos")]; 
+
+			pr _pos = T_GETV("pos");
+			pr _type = T_GETV("type");
+			
+			// Find an alternative spawn place for a city or police station
+			if (_type == LOCATION_TYPE_CITY) then {
+				// Find appropriate player spawn point, not to near and not to far from the police station, inside a house
+				private _nearbyHouses = (_pos nearObjects ["House", 200]) apply { [_pos distance getPos _x, _x] };
+				_nearbyHouses sort false; // Descending
+				private _spawnPos = _pos vectorAdd [100, 100, 0];
+				{
+					_x params ["_dist", "_building"];
+					private _positions = _building buildingPos -1;
+					if(count _positions > 0) exitWith {
+						_spawnPos = selectRandom _positions;
+					}
+				} forEach _nearbyHouses;
+				_pos = _spawnPos;
+			};
+
+			createMarker [_markName + _thisObject, _pos];
 		} else {
 			deleteMarker (_markName + _thisObject);
 		};
