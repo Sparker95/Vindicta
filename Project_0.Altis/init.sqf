@@ -27,7 +27,7 @@ if (!IS_SERVER) then {
 if(true) exitWith { 
 	0 spawn {
 		0 spawn {
-			waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+			waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 			call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 		};

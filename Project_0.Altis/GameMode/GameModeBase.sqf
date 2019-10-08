@@ -137,7 +137,7 @@ CLASS("GameModeBase", "")
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
 			0 spawn {
-				waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 			};
 
