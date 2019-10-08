@@ -48,7 +48,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		pr _posStart = ASLTOAGL (getPosASL CALLM0(_leaderUnit, "getObjectHandle"));
 		pr _bpos = ASLTOAGL (getPosASL _hBuilding);
 		pr _dist = (abs ((_bpos select 0) - (_posStart select 0)) ) + (abs ((_bpos select 1) - (_posStart select 1))) + (abs ((_bpos select 2) - (_posStart select 2))); // Manhattan distance
-		pr _ETA = time + (_dist/1.4 + 40);
+		pr _ETA = time + (_dist/1.5 + 20);
 		T_SETV("timeComplete", time + _ETA);
 		
 		// Find all available building positions
@@ -117,6 +117,8 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 			};
 		};
 
+
+		T_SETV("state", _state);
 		_state
 	} ENDMETHOD;
 	

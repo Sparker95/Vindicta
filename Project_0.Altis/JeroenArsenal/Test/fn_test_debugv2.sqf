@@ -233,7 +233,7 @@ fnc_debugv2_overwrite = {
 			};
 			
 			_ctrl ctrlSetText _name;
-			_ctrl ctrlAddEventHandler ["ButtonClick", format["%1 call %2",_index,_code]];
+			_ctrl ctrlAddEventHandler ["ButtonClick", format["0 spawn { isNil {%1 call %2}};",_index,_code]];
 			
 			
 			_posX = _posX + _button_width + _spacingY;

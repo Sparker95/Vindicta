@@ -10,7 +10,7 @@ All crew of vehicles mounts assigned vehicles.
 
 // Duration of this action
 
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 
 	VARIABLE("pos");
 	VARIABLE("radius");
@@ -99,6 +99,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			if (_awareOfEnemy) then {
 				T_SETV("lastCombatTime", time); // Reset the timer
+
+				T_CALLM0("attackEnemyBuildings"); // Attack buildings occupied by enemies
 			} else {
 				if ((time - T_GETV("lastCombatTime")) > T_GETV("duration") ) then {
 					_state = ACTION_STATE_COMPLETED;
@@ -126,7 +128,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _groups = CALLM0(_gar, "getGroups");
 		{ // foreach _groups
 			pr _groupAI = CALLM0(_x, "getAI");
-			pr _args = ["GoalGroupClearArea",_AI];
+			pr _args = ["",_AI];
 			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
 		} forEach _groups;
 		

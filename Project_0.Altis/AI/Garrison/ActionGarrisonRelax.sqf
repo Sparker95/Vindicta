@@ -8,7 +8,7 @@ Relax action
 
 #define THIS_ACTION_NAME "ActionGarrisonRelax"
 
-CLASS(THIS_ACTION_NAME, "ActionGarrison")
+CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 	
 	// ------------ N E W ------------
 	/*

@@ -76,6 +76,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 				}
 			} forEach _groups;
 		};
+
+
 		
 		// Set the world state property
 		// Are we aware of any targets?
@@ -127,6 +129,23 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			SETV(_AI, "assignedTargets", []);
 		};
 		
+		// Update the array of buildings with targets
+		pr _buildings = [];
+		{ // forEach _knownTargets
+			pr _pos = +(_x#TARGET_ID_POS);
+			_pos resize 3;
+			_pos set [2, 0];
+			pr _posASL = AGLToASL _pos;
+			pr _posASLStart = _posASL vectorAdd [0, 0, 100];
+			pr _posASLEnd = _posASL vectorAdd [0, 0, -100];
+			pr _objs = (lineIntersectsObjs [_posASLStart, _posASLEnd, objNull, objNull, false, 16 + 32]) select {
+				(_x isKindOf "House") && (! ( (_x buildingPos 0) isEqualTo [0, 0, 0] ) )
+			}; // We need only enterable houses
+			_buildings append _objs;
+		} forEach _knownTargets;
+		_buildings = _buildings arrayIntersect _buildings;
+		SETV(_AI, "buildingsWithTargets", _buildings);
+
 	} ENDMETHOD;
 	
 	// ----------------------------------------------------------------------
