@@ -900,6 +900,18 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	/*
+	Method: addSpawnPosFromBuildings
+	Iterates its buildings and adds spawn positions from them
+	*/
+	METHOD("addSpawnPosFromBuildings") {
+		params [P_THISOBJECT];
+		pr _buildings = T_GETV("buildings");
+		{
+			T_CALLM1("addSpawnPosFromBuilding", _x);
+		} forEach _buildings;
+	} ENDMETHOD;
+
+	/*
 	Method: (static)nearLocations
 	Returns an array of locations that are _radius meters from _pos. Distance is checked in 2D mode.
 

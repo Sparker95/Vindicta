@@ -327,6 +327,12 @@ T_PL_cargo =
 	[T_CARGO, T_CARGO_box_big]
 ];
 
+T_PL_cargo_small_medium =
+[
+	[T_CARGO, T_CARGO_box_small],
+	[T_CARGO, T_CARGO_box_medium]
+];
+
 //Transport vehicles (those that can potentially carry cargo)
 T_canLoadCargo = [];
 

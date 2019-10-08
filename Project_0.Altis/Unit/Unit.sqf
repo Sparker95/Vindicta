@@ -574,7 +574,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			pr _tInv = _t#T_INV;
 
 			// Some number which scales the amount of items in this box
-			pr _nGuns = _nInf / 2 / ((_nVeh + _nCargo) max 1);
+			pr _nGuns = _nInf / ((_nVeh + _nCargo) max 1);
 
 			// Add weapons and magazines
 			pr _arr = [[T_INV_primary, _nGuns], [T_INV_secondary, 0.2*_nGuns], [T_INV_handgun, 0.1*_nGuns]]; // [_subcatID, num. attempts]

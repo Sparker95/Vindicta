@@ -76,3 +76,85 @@ location_b_capacity =
 		4
 	]
 ];
+
+// Positions for cargo boxes
+location_bp_cargo_medium =
+[
+	[
+		["Land_i_House_Small_01_V3_F", "Land_i_House_Small_01_V1_F", "Land_i_House_Small_01_V2_F", "Land_u_House_Small_01_V1_F"],
+		[[2.07516,262.755,0.29788], [3.47262,218.056,0.29805]]
+	],
+	[
+		["Land_i_House_Big_01_V1_F", "Land_i_House_Big_01_V2_F", "Land_i_House_Big_01_V3_F", "Land_u_House_Big_01_V1_F"],
+		[[1.64695,117.933,0.498999], [5.47226,166.207,0.498999]]
+	],
+	[
+		["Land_i_Stone_HouseBig_V1_F", "Land_i_Stone_HouseBig_V2_F", "Land_i_Stone_HouseBig_V3_F", "Land_u_Stone_HouseBig_V3_F"],
+		[[0.439735,11.0105,3.059], [3.10748,83.2502,3.059]]
+	],
+	[
+		["Land_i_Stone_HouseSmall_V1_F", "Land_i_Stone_HouseSmall_V2_F", "Land_i_Stone_HouseSmall_V3_F", "Land_u_Stone_HouseSmall_V1_F"],
+		[[7.5625,69.7211,1.26548], [4.66482,54.9392,1.2517]]
+	],
+	[
+		["Land_i_House_Small_02_V1_F", "Land_i_House_Small_02_V2_F", "Land_i_House_Small_02_V3_F", "Land_u_House_Small_02_V1_F"],
+		[[3.10205,87.7267,0.418344], [5.15135,88.892,0.420984]]
+	],
+	[
+		["Land_i_Shop_01_V1_F", "Land_i_Shop_01_V2_F", "Land_i_Shop_01_V3_F", "Land_u_Shop_01_V1_F"],
+		[[1.14865,286.802,0.302086], [3.6354,341.39,0.302084]]
+	],
+	[
+		["Land_i_House_Big_02_V1_F", "Land_i_House_Big_02_V2_F", "Land_i_House_Big_02_V3_F", "Land_u_House_Big_02_V1_F"],
+		[[3.55678,42.062,0.258254], [3.1946,326.951,0.258255]]
+	]
+];
+
+location_bt_police = 
+[
+	"Land_i_Shop_01_V2_F",
+	"Land_i_Shop_01_V3_F",
+	"Land_u_Shop_01_V1_F",
+	"Land_i_House_Small_01_V3_F",
+	"Land_u_House_Small_01_V1_F",
+	"Land_i_House_Small_01_V2_F",
+	"Land_u_House_Big_02_V1_F",
+	"Land_i_Stone_HouseBig_V3_F",
+	"Land_i_Stone_HouseBig_V2_F",
+	"Land_i_Stone_HouseBig_V1_F",
+	"Land_u_House_Small_02_V1_F",
+	"Land_i_House_Small_02_V1_F",
+	"Land_i_House_Small_02_V3_F",
+	"Land_i_House_Small_02_V2_F",
+	"Land_i_House_Big_02_V3_F",
+	"Land_i_House_Big_02_V2_F",
+	"Land_i_House_Big_02_V1_F",
+	"Land_i_Stone_HouseSmall_V3_F",
+	"Land_i_Stone_HouseSmall_V1_F",
+	"Land_i_Stone_HouseSmall_V2_F",
+	"Land_i_House_Big_01_V1_F",
+	"Land_i_House_Big_01_V2_F",
+	"Land_u_House_Big_01_V1_F",
+	"Land_i_House_Big_01_V3_F"
+];
+
+/*
+_newdir = direction b + 180;
+(vehicle player) setDir _newDir;
+vehicle player setPos ((b getPos [1.5, (direction b) + 240]) vectorAdd [0, 0, 4.4]);
+*/
+
+/*
+// Code to get the coordinates in cylindrical form
+_b = gBuilding;
+_o = cursorObject;
+
+_bPos = getPosATL _b;
+_oPos = getPosATL _o;
+
+_dirRel = (_bPos getDir _oPos) - (direction _b);
+_zRel = _oPos#2 - _bPos#2;
+_distRel = _bPos distance2D _oPos;
+
+[_distRel, _dirRel, _zRel]
+*/

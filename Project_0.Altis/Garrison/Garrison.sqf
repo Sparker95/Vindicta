@@ -2360,7 +2360,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG _type]);
 		// Create units from template
-		private _count = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [GET_TEMPLATE(_side) ARG _subcatID]);
+		pr _templateName = GET_TEMPLATE_NAME(_side);
+		pr _template = [_templateName] call t_fnc_getTemplate;
+		private _count = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template ARG _subcatID]);
 		T_CALLM("addGroup", [_newGroup]);
 		[_newGroup, _count]
 	} ENDMETHOD;
@@ -2369,7 +2371,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
-		private _template = GET_TEMPLATE(_side);
+		pr _templateName = GET_TEMPLATE_NAME(_side);
+		pr _template = [_templateName] call t_fnc_getTemplate;
 		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
 		// Create crew for the vehicle
 		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
