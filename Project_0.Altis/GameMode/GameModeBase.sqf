@@ -512,7 +512,7 @@ CLASS("GameModeBase", "")
 					CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
 
 					// TODO: Get city size or building count and scale police capacity from that ?
-					CALLM1(_policeStation, "setCapacityInf", _locCapacityInf);
+					CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
 					CALLM(_loc, "addChild", [_policeStation]);
 					SETV(_policeStation, "useParentPatrolWaypoints", true);
 					// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
