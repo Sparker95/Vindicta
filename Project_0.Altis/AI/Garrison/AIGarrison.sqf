@@ -36,6 +36,7 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
+	VARIABLE("sensorObserved");
 	
 	// Last time the garrison has any goal except for "GoalGarrisonRelax"
 	VARIABLE("lastBusyTime");
@@ -63,6 +64,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorObserved);
+		T_SETV("sensorObserved", _sensorObserved);
 
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
@@ -154,6 +156,18 @@ CLASS("AIGarrison", "AI_GOAP")
 			#ifdef DEBUG_GOAL_MARKERS
 			CALLM0(_thisObject, "_updateDebugMarkers");
 			#endif
+		} else {
+			// Update only the garrisonIsObserved sensor, because vehicles and cargo boxes can still be observed
+			pr _sensor = T_GETV("sensorObserved");
+			
+			// Update the sensor if it's time to update it
+			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
+			// If timeNextUpdate is 0, we never update this sensor
+			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate)) then {
+				CALLM(_sensor, "update", []);
+				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
+				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
+			};
 		};
 
 		// Add a "spawned" field to profiling output 

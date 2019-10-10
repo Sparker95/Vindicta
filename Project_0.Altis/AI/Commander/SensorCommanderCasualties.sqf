@@ -45,12 +45,16 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 					pr _TC = _x;
 					pr _targets = _TC select TARGET_CLUSTER_ID_CLUSTER select CLUSTER_ID_OBJECTS; // Array with TARGET_COMMANDER structures
 					// If the target was found in this cluster
-					if ( _targets findIf {_hOKiller isEqualTo (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE)} != -1 ) exitWith {
+					pr _index = _targets findIf {_hOKiller isEqualTo (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE)};
+					if ( _index != -1 ) exitWith {
 						// The damage caused by this cluster gets increased by _eff
 						pr _dmg = _TC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;
 						_TC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, EFF_ADD(_dmg, _eff)];
 						_killerFound = true;
-						OOP_INFO_0("Killer was found in target cluster");
+						OOP_INFO_0("  Killer was found in target cluster");
+
+						// Add activity in this area ... addDamage already does that! :/
+						//CALLM2(_AI, "_addActivity", getPosASL _hOKiller, 5); // Thread unsafe, but we're in this thread already
 					};
 				} forEach _targetClusters;
 				CALLM(_worldModel, "addDamage", [_pos]+[_eff]);

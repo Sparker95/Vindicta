@@ -576,6 +576,11 @@ CLASS(UNIT_CLASS_NAME, "");
 			// Some number which scales the amount of items in this box
 			pr _nGuns = _nInf / ((_nVeh + _nCargo) max 1);
 
+			// Modifier for cargo boxes
+			if (_catID == T_CARGO) then {
+				_nGuns = _nGuns * 3;
+			};
+
 			// Add weapons and magazines
 			pr _arr = [[T_INV_primary, _nGuns], [T_INV_secondary, 0.2*_nGuns], [T_INV_handgun, 0.1*_nGuns]]; // [_subcatID, num. attempts]
 			{

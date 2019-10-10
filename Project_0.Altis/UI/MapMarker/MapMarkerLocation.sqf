@@ -284,7 +284,7 @@ CLASS(CLASS_NAME, "MapMarker")
 				_mrkName setMarkerColorLocal "colorCivilian";
 			};
 			_mrkName setMarkerPosLocal (T_GETV("pos")+[0]);
-			pr _alpha = [0.3, 0.8] select T_GETV("selected");
+			pr _alpha = [0.3, 0.45] select T_GETV("selected");
 			_mrkName setMarkerAlphaLocal _alpha;
 		};
 	} ENDMETHOD;

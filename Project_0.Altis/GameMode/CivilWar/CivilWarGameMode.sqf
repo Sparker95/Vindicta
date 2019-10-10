@@ -87,15 +87,19 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GET_STATIC_VAR("Location", "all") select { 
 			// If it is a city with a police station
-			CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
-			{ { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION } count GETV(_x, "children") > 0 }
+			// CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
+			// { { CALLM0(_x, "getType") == LOCATION_TYPE_POLICE_STATION } count GETV(_x, "children") > 0 }
+
+			// If it is any city
+			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
 		};
 		T_SETV("activeCities", _activeCities);
 
 		// Create custom game mode data objects for active city locations
 		{
-			private _cityData = NEW("CivilWarCityData", []);
-			SETV(_x, "gameModeData", _cityData);
+			private _cityData = NEW_PUBLIC("CivilWarCityData", []);
+			//SETV(_x, "gameModeData", _cityData);
+			SET_VAR_PUBLIC(_x, "gameModeData", _cityData);
 		} forEach _activeCities;
 
 		// Select a city as a spawn point for players
@@ -351,6 +355,39 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			CALLM(_cityData, "despawned", [_location]);
 		};
 	} ENDMETHOD;
+
+	// Returns the the distance in meters, how far we can recruit units from a location which we own
+	STATIC_METHOD("getRecruitmentRadius") {
+		params [P_THISCLASS];
+		2000
+	} ENDMETHOD;
+
+	// Returns an array of cities where we can recruit from
+	STATIC_METHOD("getRecruitCities") {
+		params [P_THISCLASS, P_POSITION("_pos")];
+		private _radius = CALLSM0("CivilWarGameMode", "getRecruitmentRadius");
+
+		// Get nearby cities
+		private _cities = ( CALLSM2("Location", "nearLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
+			private _gmdata = GETV(_x, "gameModeData");
+			CALLM0(_gmData, "getRecruitCount") > 0
+		};
+
+		_cities
+	} ENDMETHOD;
+
+	// Returns how many recruits we can get at a certain place from nearby cities
+	STATIC_METHOD("getRecruitCount") {
+		params [P_THISCLASS, P_ARRAY("_cities")];
+
+		private _sum = 0;
+		{
+			private _gmdata = GETV(_x, "gameModeData");
+			_sum = _sum + CALLM0(_gmData, "getRecruitCount");
+		} forEach _cities;
+
+		_sum
+	} ENDMETHOD;
 ENDCLASS;
 
 /*
@@ -364,12 +401,15 @@ CLASS("CivilWarCityData", "")
 	VARIABLE("instability");
 	// Ambient missions, active while location is spawned
 	VARIABLE("ambientMissions");
+	// Amount of available recruits
+	VARIABLE("nRecruits");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
+		SET_VAR_PUBLIC(_thisObject, "nRecruits", 0);
 	} ENDMETHOD;
 
 	METHOD("spawned") {
@@ -406,7 +446,16 @@ CLASS("CivilWarCityData", "")
 		T_PRVAR(state);
 
 		private _cityPos = CALLM0(_city, "getPos");
-		private _cityRadius = 500 max GETV(_city, "boundingRadius");
+		private _cityRadius = 300 max GETV(_city, "boundingRadius");
+
+		// Increase recruit count from instability
+		private _inst = T_GETV("instability");
+		private _nRecruitsMax = _cityRadius*_cityRadius/8123; // Magic numbers
+		private _nRecruits = T_GETV("nRecruits");
+		if (_nRecruits < _nRecruitsMax) then {
+			private _recruitIncome = _inst / 6; // todo scale this properly
+			T_CALLM1("addRecruits", _recruitIncome);
+		};
 
 		// If City is stable or agitated then instability is a factor
 		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
@@ -417,7 +466,7 @@ CLASS("CivilWarCityData", "")
 			// as we want instability to)
 			// Instability is activity / radius
 			// TODO: add other interesting factors here to the instability rate.
-			private _instability = _activity * 500 / _cityRadius;
+			private _instability = _activity * 2000 / _cityRadius;
 			T_SETV("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
@@ -463,6 +512,37 @@ CLASS("CivilWarCityData", "")
 		{
 			CALLM(_x, "update", [_city]);
 		} forEach _ambientMissions;
+	} ENDMETHOD;
+
+	// Add/remove recruits
+
+	METHOD("addRecruits") {
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_NUMBER("_amount")];
+
+			private _n = T_GETV("nRecruits");
+			_n = (_n + _amount) max 0;
+			SET_VAR_PUBLIC(_thisObject, "nRecruits", _amount);
+		};
+	} ENDMETHOD;
+
+	METHOD("removeRecruits") {
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_NUMBER("_amount")];
+
+			private _n = T_GETV("nRecruits");
+			_n = (_n + _amount) max 0;
+			SET_VAR_PUBLIC(_thisObject, "nRecruits", _amount);
+		};
+	} ENDMETHOD;
+
+	METHOD("getRecruitCount") {
+		private _return = 0;
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			_return = floor T_GETV("nRecruits");
+		};
+		_return
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -514,7 +594,8 @@ CLASS("CivilWarPoliceStationData", "")
 				private _spawnInPos = [_locPos, 1000, 4000, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
 				// This function returns 2D vector for some reason
 				if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
-				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround]);
+				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
 				T_SETV_REF("reinfGarrison", _newGarrison);
 
 				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);

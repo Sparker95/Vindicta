@@ -37,7 +37,10 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 		
 		// Bail if not spawned
 		pr _gar = T_GETV("gar");
+
 		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		OOP_INFO_1("UPDATE: %1", GETV(_gar, "AI"));
 
 		// Bail if there is no location (for now)
 		pr _loc = CALLM0(_gar, "getLocation");
