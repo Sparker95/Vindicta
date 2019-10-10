@@ -231,4 +231,67 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		_text remoteExecCall ["systemChat", _clientOwner];
 	} ENDMETHOD;
 
+	// Recruits a unit at this location from one of nearby cities
+	METHOD("recruitUnitAtLocation") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
+
+		// Ensure that we can recruit at this place
+		pr _pos = CALLM0(_loc, "getPos");
+		pr _cities = CALLSM1("CivilWarGameMode", "getRecruitCities", _pos);
+		pr _nRecruits = CALLSM1("CivilWarGameMode", "getRecruitCount", _cities);
+
+		// Bail if we can't recruit here any more
+		if (_nRecruits < 1) exitWith {
+			"Not enough recruits in this area any more!" remoteExecCall ["systemChat", _clientOwner];
+		};
+
+		// Remove recruits from any city
+		pr _gmdata = GETV(_cities#0, "gameModeData");
+		CALLM1(_gmdata, "removeRecruits", 1);
+
+		// Find an existing garrison here or create one
+		pr _gars = CALLM1(_loc, "getGarrisons", _side);
+		pr _gar = if ((count _gars) > 0) then {
+			_gars#0
+		} else {
+			pr _locPos = CALLM0(_loc, "getPos");
+			// Create a new garrison and register it
+			_gar = NEW("Garrison", [_side ARG _locPos]);
+			CALLM0(_gar, "activate");
+			CALLM1(_gar, "setLocation", _loc);
+			_activate = true;
+			_gar
+		};
+
+		// Create a group or pick an existing one
+		pr _groupToJoin = "";
+		pr _groups = CALLM0(_gar, "getGroups") select {(CALLM0(_x, "getType") == GROUP_TYPE_IDLE) && ((count CALLM0(_x, "getUnits")) < 5)};
+		if (count _groups != 0) then {
+			_groupToJoin = _groups#0;
+		};
+
+		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+
+		// Create a unit
+		pr _subcatid = selectRandom [T_INF_rifleman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_medic];
+		pr _template = ["tGuerilla"] call t_fnc_getTemplate;
+		// ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
+		pr _args = [_template, T_INF, _subcatID, -1, _group];
+		pr _unit = NEW("Unit", _args);
+
+		// Add its new group to the garrison
+		CALLM1(_gar, "addGroup", _group);
+
+		// Join an existing group if it exists
+		if (_groupToJoin != "") then {
+			CALLM1(_groupToJoin, "addGroup", _group);
+		};
+
+		// Send msg back
+		pr _name = T_NAMES#T_INF#_subcatID;
+		pr _text = format ["We have recruited one %1", _name];
+		_text remoteExecCall ["systemChat", _clientOwner];
+
+	} ENDMETHOD;
+
 ENDCLASS;

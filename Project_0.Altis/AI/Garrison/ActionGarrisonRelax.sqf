@@ -58,7 +58,11 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 				pr _args = [];
 				switch (_type) do {
 					case GROUP_TYPE_IDLE: {
-						_args = ["GoalGroupRelax", 0, [], _AI];
+						if (random 10 < 5) then {
+							_args = ["GoalGroupRelax", 0, [], _AI];
+						} else {
+							_args = ["GoalGroupPatrol", 0, [], _AI];
+						};
 					};
 					
 					case GROUP_TYPE_VEH_STATIC: {

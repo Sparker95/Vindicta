@@ -863,7 +863,10 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		switch (_button) do {
 			case "recruit" : {
-				systemChat "Recruit...";
+				pr _args = [clientOwner, _loc, playerSide];
+				CALLM2(gGarrisonServer, "postMethodAsync", "recruitUnitAtLocation", _args);
+				systemChat "Recruiting a soldier...";
+				// todo implement periodic UI refresh or on incoming update event
 			};
 
 			case "disband" : {

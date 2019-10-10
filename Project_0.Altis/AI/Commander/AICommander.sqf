@@ -749,7 +749,7 @@ CLASS("AICommander", "AI")
 		
 	// Thread unsafe
 	METHOD("_addActivity") {
-		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
 		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG _side]);
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "addActivity", [_pos ARG _activity])

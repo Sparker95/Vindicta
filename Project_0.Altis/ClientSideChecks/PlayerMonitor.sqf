@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+#define OFSTREAM_FILE "ClientChecks.rpt"
 #include "..\OOP_light\OOP_light.h"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"

@@ -522,7 +522,7 @@ CLASS("CivilWarCityData", "")
 
 			private _n = T_GETV("nRecruits");
 			_n = (_n + _amount) max 0;
-			SET_VAR_PUBLIC(_thisObject, "nRecruits", _amount);
+			SET_VAR_PUBLIC(_thisObject, "nRecruits", _n);
 		};
 	} ENDMETHOD;
 
@@ -531,8 +531,8 @@ CLASS("CivilWarCityData", "")
 			params [P_THISOBJECT, P_NUMBER("_amount")];
 
 			private _n = T_GETV("nRecruits");
-			_n = (_n + _amount) max 0;
-			SET_VAR_PUBLIC(_thisObject, "nRecruits", _amount);
+			_n = (_n - _amount) max 0;
+			SET_VAR_PUBLIC(_thisObject, "nRecruits", _n);
 		};
 	} ENDMETHOD;
 
