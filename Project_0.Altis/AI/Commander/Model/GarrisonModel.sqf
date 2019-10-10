@@ -102,12 +102,12 @@ CLASS("GarrisonModel", "ModelBase")
 	/* private */ METHOD("_sync") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
 		
-		if(CALLM(_actual, "isDestroyed", [])) exitWith {
+		if(CALLM(_actual, "isDestroyed", []) && CALLM0(_actual, "getLocation") == "") exitWith {
 			T_CALLM("killed", []);
 		};
 
 		private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
-		if(EFF_LTE(_newEff, EFF_ZERO)) then {
+		if(EFF_LTE(_newEff, EFF_ZERO) && (CALLM0(_actual, "getLocation") == "") ) then {
 			T_CALLM("killed", []);
 		} else {
 			private _actualSide = CALLM(_actual, "getSide", []);

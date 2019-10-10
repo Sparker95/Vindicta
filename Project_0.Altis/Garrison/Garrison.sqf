@@ -1369,6 +1369,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM0(_AI, "updateComposition");
 		};
 
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+
 		__MUTEX_UNLOCK;
 
 		nil
@@ -1427,6 +1430,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		CALLM1(_group, "setGarrison", "");
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 		__MUTEX_UNLOCK;
 

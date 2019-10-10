@@ -79,7 +79,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 				private _toGarr = CALLM(_world, "getGarrison", [_target]);
 				ASSERT_OBJECT(_toGarr);
 				// Check if the target garrison is dead
-				_targetDead = if(CALLM(_toGarr, "isDead", [])) then {
+				_targetDead = if(CALLM(_toGarr, "isDead", []) && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
 					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]);
 					true
 				} else {

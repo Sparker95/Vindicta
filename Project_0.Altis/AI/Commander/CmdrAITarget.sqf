@@ -38,11 +38,14 @@ Target_fnc_GetPos = {
 			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_GARRISON expects a garrison ID");
 			private _garr = CALLM(_world, "getGarrison", [_target]);
 			ASSERT_OBJECT(_garr);
+			/*
 			_targetPos = if(CALLM(_garr, "isDead", [])) then {
 				false
 			} else {
 				GETV(_garr, "pos")
 			};
+			*/
+			_targetPos = GETV(_garr, "pos");
 		};
 		case TARGET_TYPE_LOCATION: {
 			ASSERT_MSG(_target isEqualType 0, "TARGET_TYPE_LOCATION expects a location ID");
@@ -64,6 +67,9 @@ Target_fnc_GetPos = {
 			FAILURE("Target is not valid");
 		};
 	};
+
+	OOP_INFO_2("TARGET GET POS: %1, return: %2", _targetObj, _targetPos);
+
 	_targetPos
 };
 

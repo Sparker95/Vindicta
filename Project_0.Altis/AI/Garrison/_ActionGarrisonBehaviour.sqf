@@ -13,6 +13,11 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 	// Array of buildings we are currently attacking
 	VARIABLE("buildingsAttack");
 
+	METHOD("new") {
+		params [P_THISOBJECT];
+		T_SETV("buildingsAttack", []);
+	} ENDMETHOD;
+
 	// Gives goals to groups to attack enemy buildings
 	METHOD("attackEnemyBuildings") {
 		params [P_THISOBJECT];

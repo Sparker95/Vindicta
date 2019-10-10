@@ -620,6 +620,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			} forEach _arr;
 
 			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
+			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
 			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)];
 		};
 	} ENDMETHOD;

@@ -174,7 +174,9 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		#ifndef CMDR_AI_NO_PLAN
 		T_CALLM("plan", [_worldModel]);
+		#endif
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -1108,6 +1110,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	METHOD("_clientCreateGarrisonAction") {
 		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
 
+		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
+
 		// Get the garrison model associated with this _garRef
 		T_PRVAR(worldModel);
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
@@ -1206,6 +1210,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM2(_loc, "setBorder", "circle", 100);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
+
 
 		// Create the garrison
 		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);

@@ -1257,8 +1257,17 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			pr _target = 0;
 			pr _targetPos = [0, 0, 0];
 
-			if (count _markersUnderCursor > 0) then {
-				pr _destMarker = _markersUnderCursor#0;
+			if ((count _markersUnderCursor > 0) && (count _markersUnderCursor <= 2)) then {
+				pr _destMarker = if (count _markersUnderCursor == 2) then {
+					// Try to prioritize location marker
+					if (count _locationsUnderCursor > 0) then {
+						_locationsUnderCursor#0
+					} else {
+						_markersUnderCursor#0
+					};
+				} else {
+					_markersUnderCursor#0;
+				};
 				switch (GET_OBJECT_CLASS(_destMarker)) do {
 					case "MapMarkerLocation" : {
 						_targetType = TARGET_TYPE_LOCATION;

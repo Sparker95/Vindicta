@@ -8,6 +8,9 @@ Radius is recalculated in case location is specified as destination
 
 Parent: <ActionStateTransition>
 */
+
+#define DEBUG
+
 CLASS("AST_MoveGarrison", "ActionStateTransition")
 	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
