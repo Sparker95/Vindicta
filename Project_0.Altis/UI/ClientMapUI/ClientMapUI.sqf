@@ -1130,10 +1130,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		if (_index != -1) then {
 			// Zoom into the area of this intel
 			pr _intel = _lnb lnbData [_index, 0];
-			pr _zoomPos = CALLM0(_intel, "getMapZoomPos");
-			pr _ctrl = ((finddisplay 12) displayCtrl 51);
-			_ctrl ctrlMapAnimAdd [0.3, 0.06, _zoomPos];
-			ctrlMapAnimCommit _ctrl;
+			if (IS_OOP_OBJECT(_intel)) then {
+				pr _zoomPos = CALLM0(_intel, "getMapZoomPos");
+				pr _ctrl = ((finddisplay 12) displayCtrl 51);
+				_ctrl ctrlMapAnimAdd [0.3, 0.06, _zoomPos];
+				ctrlMapAnimCommit _ctrl;
+			};
 		};
 		
 	} ENDMETHOD;

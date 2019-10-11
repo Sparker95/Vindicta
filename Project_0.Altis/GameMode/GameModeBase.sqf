@@ -557,7 +557,7 @@ CLASS("GameModeBase", "")
 	#define ADD_UNARMED_MRAPS
 	#define ADD_ARMED_MRAPS
 	#define ADD_TANKS
-	#define ADD_APCS_IFVS
+	//#define ADD_APCS_IFVS
 	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
@@ -620,7 +620,7 @@ CLASS("GameModeBase", "")
 			while {_i < _cCargoBoxes} do {
 				private _subcatid = selectRandom [T_CARGO_box_small, T_CARGO_box_medium];
 				private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG _subcatid ARG -1 ARG ""]);
-				CALLM1(_newUnit, "setBuildResources", 80);
+				CALLM1(_newUnit, "setBuildResources", 40);
 				//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
 				if (CALL_METHOD(_newUnit, "isValid", [])) then {
 					if(canSuspend) then {
@@ -702,7 +702,7 @@ CLASS("GameModeBase", "")
 		// Some trucks
 		private _i = 0;
 		#ifdef ADD_TRUCKS
-		while {_cVehGround > 0 && _i < 3} do {
+		while {_cVehGround > 0 && _i < 4} do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				if(canSuspend) then {

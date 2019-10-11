@@ -444,6 +444,9 @@ CLASS("IntelCommanderAction", "Intel")
 
 		systemChat format ["Removed intel: %1", _thisObject];
 
+		// Remove map markers
+		T_CALLM1("showOnMap", false);
+
 		// Notify ClientMapUI
 		CALLM1(gClientMapUI, "onIntelRemoved", _thisObject);
 	} ENDMETHOD;
@@ -495,7 +498,7 @@ CLASS("IntelCommanderAction", "Intel")
 	} ENDMETHOD;
 
 	/*
-	Method: showOnMap
+	Method: getMapZoomPos
 	It's meant to return where the map will zoom into on client
 	*/
 	METHOD("getMapZoomPos") {

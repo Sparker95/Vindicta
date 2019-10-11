@@ -453,7 +453,7 @@ CLASS("CivilWarCityData", "")
 		private _nRecruitsMax = _cityRadius*_cityRadius/8123; // Magic numbers
 		private _nRecruits = T_GETV("nRecruits");
 		if (_nRecruits < _nRecruitsMax) then {
-			private _recruitIncome = _inst / 6; // todo scale this properly
+			private _recruitIncome = _inst / 12; // todo scale this properly
 			T_CALLM1("addRecruits", _recruitIncome);
 		};
 
@@ -466,7 +466,7 @@ CLASS("CivilWarCityData", "")
 			// as we want instability to)
 			// Instability is activity / radius
 			// TODO: add other interesting factors here to the instability rate.
-			private _instability = _activity * 2000 / _cityRadius;
+			private _instability = _activity * 1000 / _cityRadius;
 			T_SETV("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {

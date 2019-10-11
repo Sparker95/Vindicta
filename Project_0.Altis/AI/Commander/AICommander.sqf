@@ -1378,6 +1378,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(side);
 
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
+		if (_count > 4) exitWith {[]};
+
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
@@ -1460,6 +1465,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction"} count _activeActions;
+		if (_count > 3) exitWith {[]};
+
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			private _potentialSrcGarr = _x;
@@ -1531,6 +1541,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
+
+		//OOP_INFO_0("GENERATE PATROL ACTIONS");
+
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "PatrolCmdrAction"} count _activeActions;
+		//OOP_INFO_1("  Existing patrol actions: %1", _count);
+		if (_count > 6) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military" ARG "police"]]) select { 
