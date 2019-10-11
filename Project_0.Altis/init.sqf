@@ -39,8 +39,8 @@ if(true) exitWith {
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		 case "Sparker": 	{ "CivilWarGameMode" };  // "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
-		//case "Sparker": 	{ "RedVsGreenGameMode" };
+		//case "Sparker": 	{ "CivilWarGameMode" };  // "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
+		case "Sparker": 	{ "EmptyGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };

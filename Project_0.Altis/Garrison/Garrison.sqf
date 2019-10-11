@@ -102,6 +102,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("intelItems", []);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
+		pr _mutex = MUTEX_RECURSIVE_NEW();
+		T_SETV("mutex", _mutex);
 
 		// Ensure some template
 		if (_templateName == "") then {
@@ -412,9 +414,13 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("process") {
 		params [P_THISOBJECT];
 
+		OOP_INFO_0("PROCESS");
+
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
 			T_CALLM("updateSpawnState", []);
+
+			OOP_INFO_0("  ACTIVE");
 
 			// If we are empty except for vehicles and we are not at a location then we must abandon them
 			if((T_GETV("side") != CIVILIAN) and {T_GETV("location") == ""} and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
@@ -426,6 +432,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _loc = T_GETV("location");
 			// Players might be messing with inventories, so we must update our amount of build resources more often
 			pr _locHasPlayers = (_loc != "" && { CALLM0(_loc, "hasPlayers") } );
+			OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
 			if (T_GETV("outdated") || _locHasPlayers) then {
 				// Update build resources from the actual units
 				// It will cause an update broadcast by garrison server
@@ -792,11 +799,12 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getBuildResources") {
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
-		pr _buildRes = T_GETV("buildResources");
+		pr _buildRes = 0;
 		__MUTEX_LOCK;
 		if (_buildRes == -1 || _forceUpdate) then {
 			T_CALLM0("updateBuildResources");
 		};
+		_buildRes = T_GETV("buildResources");
 		__MUTEX_UNLOCK;
 
 		_buildRes
@@ -820,8 +828,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	// After this call, getBuildResources should be returning the most actual value
 	METHOD("updateBuildResources") {
 		params [P_THISOBJECT];
+
 		_buildRes = T_CALLM0("_getBuildResources");
 		T_SETV("buildResources", _buildRes);
+
+		OOP_INFO_1("UPDATE BUILD RESOURCES: %1", _buildRes);
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);

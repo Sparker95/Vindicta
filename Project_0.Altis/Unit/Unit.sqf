@@ -1162,15 +1162,18 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("getBuildResources") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("GET BUILD RESOURCES");
+
 		private _data = GET_VAR(_thisObject, "data");
 
 		if (_data#UNIT_DATA_ID_CAT == T_INF) exitWith { 0 };
 
-		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
-		// There is no limited arsenal in it
 		private _return = if (T_CALLM0("isSpawned")) then {
+			OOP_INFO_0("  spawned");
 			T_CALLM0("_getBuildResourcesSpawned")
 		} else {
+			OOP_INFO_0("  despawned");
 			_data select UNIT_DATA_ID_BUILD_RESOURCE
 		};
 		_return
@@ -1260,12 +1263,20 @@ CLASS(UNIT_CLASS_NAME, "");
 
 	METHOD("_getBuildResourcesSpawned") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("_getBuildResourcesSpawned");
+
 		private _data = GET_VAR(_thisObject, "data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-		if (isNull _hO) exitWith {0};
+		if (isNull _hO) exitWith {
+			OOP_ERROR_0("getBuildResourcesSpawned: object handle is null");
+			0
+		};
 
 		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
 		if (count _dataList == 0) then {
+			OOP_INFO_0("  no limited arsenal at this unit");
+
 			// There is no limited arsenal, it's a plain cargo container
 			pr _magCargo = getMagazineCargo _hO;
 			pr _index = _magCargo#0 find "vin_build_res_0";
@@ -1279,10 +1290,20 @@ CLASS(UNIT_CLASS_NAME, "");
 		} else {
 			// There is a limited arsenal
 			_dataList = _hO getVariable "jna_dataList";
+
+			OOP_INFO_1("  there is limited arsenal at this unit: %1", _dataList);
+
 			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
 			_count = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
+
+			OOP_INFO_1("  amount of build res items: %1", _count);
+
 			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
-			_count*_buildResPerMag
+			pr _return = _count*_buildResPerMag;
+
+			OOP_INFO_1("  return value: %1", _return);
+
+			_return
 		};
 	} ENDMETHOD;
 
