@@ -1,3 +1,9 @@
+// #define OOP_INFO
+// #define OOP_ERROR
+// #define OOP_WARNING
+// #define OOP_DEBUG
+// #define OFSTREAM_FILE "Dialog.rpt"
+// #include "..\..\OOP_Light\OOP_Light.h"
 #include "defineCommon.inc"
 
 /*
@@ -22,6 +28,8 @@ params[["_unit",objnull,[objnull]],["_sentence","",[""]],["_target",objnull,[obj
 if(isnull _unit ||{isnull _unit})exitWith{};
 
 diag_log format["Create Dialog from:'%1' to:'%2' saying:'%3'",name _unit,name _target,_sentence];
+// OOP_DEBUG_3("Create Dialog from: '%1' to: '%2' saying: '%3'", name _unit, name _target, _sentence);
+
 //set message to nearby players
 //check if message was send by script, exclude relayed messag because we dont want to create a endless loop
 if(!_relayed)exitWith{

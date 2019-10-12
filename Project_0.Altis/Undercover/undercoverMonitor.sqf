@@ -620,7 +620,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	} ENDMETHOD;
 
 	/* 
-		ActionUnitArrest remoteExecutes this on this computer when an enemy group is arresting the player.
+		setUnitFree remoteExecutes this on this computer when an enemy group is arresting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
 	STATIC_METHOD("setUnitFree") {

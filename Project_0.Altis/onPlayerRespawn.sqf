@@ -134,3 +134,4 @@ CALLSM0("UnitIntel", "initPlayer");
 NEW("LocationVisibilityMonitor", [_newUnit]);
 
 CALLM(gGameMode, "playerSpawn", _this);
+_newUnit setPos [11488.2,11652.8,0.00143814];

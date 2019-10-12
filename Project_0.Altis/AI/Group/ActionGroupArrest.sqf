@@ -59,7 +59,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		} else {
 			pr _unitAI = CALLM0(_unit, "getAI");
 			pr _parameters = [["target", _target]];
-			CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
+
+			// randomly try to shoot the leg
+			if (random 10 <= 2) then {
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitShootNearTarget", 0, _parameters, _AI);
+			} else {
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
+			}
 			OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
 			// Return ACTIVE state
 			T_SETV("state", ACTION_STATE_ACTIVE);

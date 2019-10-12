@@ -50,8 +50,6 @@ CLASS("GoalUnitScareAway", "Goal")
 	STATIC_METHOD("createPredefinedAction") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
 		
-		diag_log "createPredefinedAction";
-		
 		// Find the unit to salute to from the world fact
 		pr _target = objNull;
 		pr _query = WF_NEW();
@@ -63,7 +61,7 @@ CLASS("GoalUnitScareAway", "Goal")
 		pr _args = [_AI, _target];
 		pr _action = NEW("ActionUnitScareAway", _args);
 		
-		diag_log format ["[GoalWarningshot:createPredefinedAction] AI: %1, created action to warningShot to: %2", _AI, _target];
+		OOP_DEBUG_2("[GoalWarningshot:createPredefinedAction] AI: %1, created action to warningShot to: %2", _AI, _target0);
 		
 		// Return the created action
 		_action
