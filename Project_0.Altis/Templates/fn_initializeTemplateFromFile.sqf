@@ -22,6 +22,12 @@ if (isNil "_tName") exitWith {
 	diag_log format ["[template] error: tempalte name was not specified for %1", _filePath];
 };
 
+// Process inventory items
+#ifndef _SQF_VM
+private _templateItems = [_t] call t_fnc_processTemplateItems;
+_t set [T_INV, _templateItems];
+#endif
+
 missionNamespace setVariable [_tName, _t];
 
 // Return the array

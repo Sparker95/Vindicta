@@ -80,9 +80,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		params [P_THISOBJECT];
 
 		// Delete all existing spawns
+		// WTF it doesn't work on dedicated???
 		{
 			deleteMarker _x;
-		} forEach (allMapMarkers select { _x find "respawn_west" == 0});
+			OOP_INFO_1("Deleted respawn marker: %1", _x);
+		} forEach (allMapMarkers select { _x find "respawn" == 0});
 
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GET_STATIC_VAR("Location", "all") select { 
@@ -446,11 +448,11 @@ CLASS("CivilWarCityData", "")
 		T_PRVAR(state);
 
 		private _cityPos = CALLM0(_city, "getPos");
-		private _cityRadius = 300 max GETV(_city, "boundingRadius");
+		private _cityRadius = (300 max GETV(_city, "boundingRadius")) min 700;
 
 		// Increase recruit count from instability
 		private _inst = T_GETV("instability");
-		private _nRecruitsMax = _cityRadius*_cityRadius/8123; // Magic numbers
+		private _nRecruitsMax = _cityRadius*_cityRadius/16000; // Magic numbers
 		private _nRecruits = T_GETV("nRecruits");
 		if (_nRecruits < _nRecruitsMax) then {
 			private _recruitIncome = _inst / 12; // todo scale this properly

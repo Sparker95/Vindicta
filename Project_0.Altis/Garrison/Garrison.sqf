@@ -82,6 +82,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_GLOBAL_OBJECT(gGarrisonServer);
 		//ASSERT_GLOBAL_OBJECT(gGarrisonAbandonedVehicles);
 		ASSERT_GLOBAL_OBJECT(gTimerServiceMain);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopMainManager);
 		
 
 		T_SETV("units", []);
@@ -414,13 +415,13 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("process") {
 		params [P_THISOBJECT];
 
-		OOP_INFO_0("PROCESS");
+		//OOP_INFO_0("PROCESS");
 
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
 			T_CALLM("updateSpawnState", []);
 
-			OOP_INFO_0("  ACTIVE");
+			//OOP_INFO_0("  ACTIVE");
 
 			// If we are empty except for vehicles and we are not at a location then we must abandon them
 			if((T_GETV("side") != CIVILIAN) and {T_GETV("location") == ""} and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
@@ -2418,7 +2419,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	// Updates spawn state of garrisons close to the provided position
+	// Public, thread-safe
 	STATIC_METHOD("updateSpawnStateOfGarrisonsNearPos") {
+		params ["_thisClass", ["_pos", [], [[]]]];
+		pr _args = ["Garrison", "_updateSpawnStateOfGarrisonsNearPos", [_pos]];
+		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
+	} ENDMETHOD;
+
+	// Private, thread-unsafe
+	STATIC_METHOD("_updateSpawnStateOfGarrisonsNearPos") {
 		params ["_thisClass", ["_pos", [], [[]]]];
 
 		pr _gars = GETSV("Garrison", "all");
@@ -2431,7 +2440,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		{
-			CALLM2(_x, "postMethodAsync", "updateSpawnState", []);
+			CALLM0(_x, "updateSpawnState");
 		} forEach _garsToCheck;
 	} ENDMETHOD;
 

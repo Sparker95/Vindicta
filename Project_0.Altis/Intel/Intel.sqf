@@ -370,6 +370,15 @@ CLASS("IntelCommanderAction", "Intel")
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		// If it's deleted on client, make sure we clear the map, although it must be also cleared on clientRemove method
+		if (! isNil {T_GETV("shownOnMap")}) then {
+			T_CALLM1("showOnMap", false);
+		};
+	} ENDMETHOD;
+
 	/* 
 		variable: side
 		Side of the faction that has planned to do this
@@ -432,6 +441,8 @@ CLASS("IntelCommanderAction", "Intel")
 
 		systemChat format ["Added intel: %1", _thisObject];
 
+		T_SETV("shownOnMap", false);
+
 		// Hint
 		hint format ["Added intel: %1", _thisObject];
 
@@ -444,11 +455,11 @@ CLASS("IntelCommanderAction", "Intel")
 
 		systemChat format ["Removed intel: %1", _thisObject];
 
-		// Remove map markers
-		T_CALLM1("showOnMap", false);
-
 		// Notify ClientMapUI
 		CALLM1(gClientMapUI, "onIntelRemoved", _thisObject);
+
+		// Remove map markers
+		T_CALLM1("showOnMap", false);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
@@ -468,7 +479,9 @@ CLASS("IntelCommanderAction", "Intel")
 		OOP_INFO_1("SHOW ON MAP: %1", _show);
 
 		// Variable might be not initialized
-		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
+		if (isNil {T_GETV("shownOnMap")}) exitWith {
+			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+		};
 
 		if (_show) then {
 			if(!T_GETV("shownOnMap")) then {
@@ -600,7 +613,9 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 		params [P_THISOBJECT, P_BOOL("_show")];
 
 		// Variable might be not initialized
-		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
+		if (isNil {T_GETV("shownOnMap")}) exitWith {
+			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+		};
 
 		if (_show) then {
 			if(!T_GETV("shownOnMap")) then {

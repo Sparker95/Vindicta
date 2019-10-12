@@ -5,7 +5,7 @@ Author: Sparker 30 september 2019
 
 #define pr private
 
-params ["_t"];
+params ["_t", ["_returnString", false]];
 
 pr _catID = T_INF;
 pr _catSize = T_INF_SIZE;
@@ -32,6 +32,12 @@ pr _handgunWeaponItems = [];
 
 // General items
 pr _items = [];
+
+// Vests
+pr _vests = [];
+
+// Backpacks
+pr _backpacks = [];
 
 while {_subCatID < _catSize} do {
 	pr _classArray = _t#_catID#_subCatID;
@@ -92,7 +98,22 @@ while {_subCatID < _catSize} do {
 		// Process items
 		{
 			_items pushBackUnique _x;
-		} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
+		} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass" /*, "ItemRadio"*/ ]);
+
+		// Process vest
+		pr _vest = vest _hO;
+		if (_vest != "") then {
+			_vests pushBackUnique _vest;
+		};
+
+		// Process backpack
+		pr _backpack = backpack _hO;
+		if (_backpack != "") then {
+			pr _backpackBase = _backpack call bis_fnc_basicbackpack;
+			if (_backpackBase != "") then {
+				_backpacks pushBackUnique _backpackBase;
+			};
+		};
 
 		// Delete the unit
 		deleteVehicle _hO;
@@ -117,6 +138,12 @@ diag_log format ["  %1", _handgunWeaponItems];
 
 diag_log format ["Items:"];
 diag_log format ["  %1", _items];
+
+diag_log format ["Vests:"];
+diag_log format ["  %1", _vests];
+
+diag_log format ["Backpacks:"];
+diag_log format ["  %1", _backpacks];
 
 
 // Export to string
@@ -144,52 +171,58 @@ while {_i < count _handgunWeapons} do {
 	_i = _i + 1;
 };
 
-pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items];
+pr _arrayExport = [_primary, _primaryWeaponItems, _secondary, _secondaryWeaponItems, _handgun, _handgunWeaponItems, _items, _vests, _backpacks];
 
-pr _tab = toString [9];
-pr _nl = toString [10];
+// Export a human-readable string if requested
+if (_returnString) then {
+	pr _tab = toString [9];
+	pr _nl = toString [10];
 
-// Function to convert array to a beautyful string with tabs and stuff
-_fnc_arrayToString = {
-	params ["_array", "_str", "_level"];
-	
-	private _arraySize = count _array;
+	// Function to convert array to a beautyful string with tabs and stuff
+	_fnc_arrayToString = {
+		params ["_array", "_str", "_level"];
+		
+		private _arraySize = count _array;
 
-	for "_i" from 0 to (_level-1) do {_str = _str + _tab;}; // Add tabs
-	_str = _str + "[";
-	_str = _str + _nl;
-
-	private _index = 0;
-	while {_index < (count _array) } do {
-		//_str = _str + _nl; // New line
-		private _element = _array#_index;
-
-		// Check element, if it's an array or not
-		if (_element isEqualType "") then {
-			// Add tabs plus one more tab
-			for "_i" from 0 to (_level) do {_str = _str + _tab;};
-			_str = _str + (format ['"%1"', _element]);
-		} else {
-			_str = [_element, _str, _level+1] call _fnc_arrayToString;
-		};
-
-		if (_index <= (_arraySize - 2)) then {
-			_str = _str + ",";
-		};
+		for "_i" from 0 to (_level-1) do {_str = _str + _tab;}; // Add tabs
+		_str = _str + "[";
 		_str = _str + _nl;
 
-		_index = _index + 1;
+		private _index = 0;
+		while {_index < (count _array) } do {
+			//_str = _str + _nl; // New line
+			private _element = _array#_index;
+
+			// Check element, if it's an array or not
+			if (_element isEqualType "") then {
+				// Add tabs plus one more tab
+				for "_i" from 0 to (_level) do {_str = _str + _tab;};
+				_str = _str + (format ['"%1"', _element]);
+			} else {
+				_str = [_element, _str, _level+1] call _fnc_arrayToString;
+			};
+
+			if (_index <= (_arraySize - 2)) then {
+				_str = _str + ",";
+			};
+			_str = _str + _nl;
+
+			_index = _index + 1;
+		};
+
+		//_str = _str + _nl;
+		for "_i" from 0 to (_level-1) do {_str = _str + _tab;}; // Add tabs
+		_str = _str + "]";
+		
+		_str
 	};
 
-	//_str = _str + _nl;
-	for "_i" from 0 to (_level-1) do {_str = _str + _tab;}; // Add tabs
-	_str = _str + "]";
-	
+	pr _strStart = 	(format ["/* Exported with t_fnc_processTemplateItems for template %1", _t select T_NAME]) + _nl + "Primary weapons" + _nl + "Primary weapon items" + _nl + 
+					"Secondary weapons" + _nl + "Secondary weapon items" + _nl + "Handguns" + _nl + "Handgun items" + _nl + "General items */" + _nl;
+
+	pr _str = [_arrayExport, _strStart, 0] call _fnc_arrayToString;
 	_str
+} else {
+	// Otherwise we return an array
+	_arrayExport
 };
-
-pr _strStart = 	(format ["/* Exported with t_fnc_processTemplateItems for template %1", _t select T_NAME]) + _nl + "Primary weapons" + _nl + "Primary weapon items" + _nl + 
-				"Secondary weapons" + _nl + "Secondary weapon items" + _nl + "Handguns" + _nl + "Handgun items" + _nl + "General items */" + _nl;
-
-pr _str = [_arrayExport, _strStart, 0] call _fnc_arrayToString;
-_str

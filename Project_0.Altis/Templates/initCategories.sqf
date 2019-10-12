@@ -368,3 +368,5 @@ T_INV_secondary_items	= 3;
 T_INV_handgun			= 4;	// Array of [_weapon, _magazines]
 T_INV_handgun_items		= 5;
 T_INV_items				= 6;	// Array of item class names
+T_INV_vests				= 7;
+T_INV_backpacks			= 8;

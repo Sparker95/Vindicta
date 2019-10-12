@@ -3,10 +3,12 @@ POLICE templates for ARMA III
 */
 
 // //==== Infantry ====
-// _inf = +(tDefault select T_INF);
-// _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-// _inf set [T_INF_DEFAULT, ["B_GEN_Soldier_F"]];					//Default infantry if nothing is found
-
+ _inf = +(tDefault select T_INF);
+ _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
+ _inf set [T_INF_DEFAULT, ["B_GEN_Soldier_F"]];				//Default infantry if nothing is found
+for "_i" from 1 to (T_INF_SIZE-1) do {
+    _inf set [_i, []];
+};
 // _inf set [T_INF_SL, ["B_Captain_Dwarden_F"]];
 // _inf set [T_INF_TL, ["B_Captain_Dwarden_F"]];
 // _inf set [T_INF_officer, ["B_GEN_Commander_F"]];
@@ -157,7 +159,7 @@ _array = [];
 
 _array set [T_SIZE*2-1, nil]; //Make an array having the size equal to the number of categories first
 
-_array set [T_INF, []];
+_array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, []];
 _array set [T_CARGO, _cargo];

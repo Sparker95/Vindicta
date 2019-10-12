@@ -622,6 +622,20 @@ CLASS(UNIT_CLASS_NAME, "");
 			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
 			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
 			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)];
+
+			// Add vests
+			pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+			pr _vests = _tInv#T_INV_vests;
+			for "_i" from 0 to _nVests do {
+				_hO addItemCargoGlobal [selectRandom _vests, 1];
+			};
+
+			// Add backpacks
+			pr _nBackpacks = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+			pr _backpacks = _tInv#T_INV_backpacks;
+			for "_i" from 0 to _nVests do {
+				_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
+			};
 		};
 	} ENDMETHOD;
 

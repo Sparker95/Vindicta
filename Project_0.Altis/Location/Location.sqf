@@ -948,15 +948,23 @@ CLASS("Location", "MessageReceiverEx")
 
 	// Runs "process" of locations within certain distance from the point
 	// Actually it only checks cities and roadblocks now, because other locations don't need to have "process" method to be called on them
+	// Public, thread-safe
 	STATIC_METHOD("processLocationsNearPos") {
 		params [P_THISCLASS, P_POSITION("_pos")];
+		
+		pr _args = ["Location", "_processLocationsNearPos", [_pos]];
+		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
+	} ENDMETHOD;
 
+	// Private, thread-unsafe
+	STATIC_METHOD("_processLocationsNearPos") {
+		params [P_THISCLASS, P_POSITION("_pos")];
 		pr _locs = CALLSM2("Location", "nearLocations", _pos, 1500) select { // todo arbitrary number for now
 			(GETV(_x, "type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK])
 		};
 
 		{
-			CALLM2(_x, "postMethodAsync", "process", []);
+			CALLM0(_x, "process");
 		} forEach _locs;
 	} ENDMETHOD;
 

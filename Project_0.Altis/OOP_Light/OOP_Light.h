@@ -92,6 +92,7 @@
 #define IS_MULTIPLAYER false
 
 #define PROFILE_NAME "Satan"
+#define SCRIPT_NULL objNull
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -112,6 +113,7 @@
 
 #define PROFILE_NAME profileName
 
+#define SCRIPT_NULL scriptNull
 #endif
 // ^^^ ARMA ^^^
 

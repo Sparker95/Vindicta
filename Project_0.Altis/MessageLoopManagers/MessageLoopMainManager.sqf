@@ -31,7 +31,7 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 		// Is this object an instance of Unit class?
 		private _unit = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_objectHandle]);
 
-		if (_unit != "") then {
+		if (_unit != "" && IS_OOP_OBJECT(_unit)) then {
 
 			OOP_INFO_2("EH_killed: %1 %2", _unit, GETV(_unit, "data") );
 
@@ -86,11 +86,11 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 		OOP_INFO_4("EH_GetIn: _this: %1, _unitVeh: %2, _unitInf: %3, typeOf _vehicle: %4", _this, _unitVeh, _unitInf, typeof _vehicle);
 
-		if (_unitVeh == "") exitWith {
+		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
 			OOP_ERROR_0("EH_GetIn: vehicle doesn't have a Unit object!");
 		};
 
-		if (_unitInf == "") exitWith {
+		if (_unitInf == "" || {!IS_OOP_OBJECT(_unitInf)}) exitWith {
 			OOP_ERROR_0("EH_GetIn: unit doesn't have a Unit object!");
 		};
 
@@ -104,8 +104,26 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	} ENDMETHOD;
 
+	/*
+	Method: deleteObject
+	Deletes object in this thread.
+
+	Returns: nil
+	*/
+	METHOD("deleteObject") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
+		DELETE(_objectRef);
+	} ENDMETHOD;
+
 	METHOD("getMessageLoop") {
 		gMessageLoopMain
+	} ENDMETHOD;
+
+	// We use that to call some static methods in the main thread
+	METHOD("callStaticMethodInThread") {
+		params [P_THISOBJECT, P_STRING("_className"), P_STRING("_methodName"), P_ARRAY("_parameters")];
+		OOP_INFO_1("callStaticMethodInThread: %1", _this);
+		CALL_STATIC_METHOD(_className, _methodName, _parameters);
 	} ENDMETHOD;
 
 ENDCLASS;

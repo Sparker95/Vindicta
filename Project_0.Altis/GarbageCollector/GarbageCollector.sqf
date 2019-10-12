@@ -63,7 +63,8 @@ CLASS("GarbageCollector", "")
 					if (_unit != "") then {
 						OOP_INFO_1("GarbageCollector: deleted unit %1", _unit);
 						if (IS_OOP_OBJECT(_unit)) then { // Even more sanity check
-							DELETE(_unit);
+							// Make sure we delete it in the proper thread
+							CALLM2(gMessageLoopMainManager, "postMethodAsync", "deleteObject", [_unit]);
 						};
 					};
 				};
