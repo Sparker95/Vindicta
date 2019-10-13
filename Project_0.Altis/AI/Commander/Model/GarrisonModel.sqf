@@ -416,6 +416,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		private _side = CALLM(_actual, "getSide", []);
 		private _faction = CALLM(_actual, "getFaction", []);
+		private _templateName = CALLM(_actual, "getTemplateName", []);
 		private _units = CALLM0(_actual, "getUnits") select { 
 			// Not interested in statics
 			!CALLM0(_x, "isStatic") and
@@ -665,7 +666,7 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
-		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction]);
+		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
 		private _pos = CALLM(_actual, "getPos", []);
 		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 

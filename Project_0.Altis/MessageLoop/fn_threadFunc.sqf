@@ -53,9 +53,9 @@ private _fractionsRequired = GET_VAR(_thisObject, "updateFrequencyFractions");
 if(true) exitWith {};
 #endif
 
-scriptName _thisObject;
-
 private _name = T_GETV("name");
+
+scriptName _name;
 
 while {true} do {
 

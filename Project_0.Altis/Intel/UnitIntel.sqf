@@ -171,6 +171,8 @@ CLASS("UnitIntel", "")
 
 			diag_log "--- adding event handler";
 
+			/*
+			// Old code which would examing intel when player would double click it
 			player addEventHandler ["InventoryOpened", 
 			{
 
@@ -219,6 +221,35 @@ CLASS("UnitIntel", "")
 			// 633 - uniform
 			// 619 - backpack
 			// 638 - vest
+
+			*/
+
+
+			private _ehid = player addEventHandler ["Take", 
+			{
+				params ["_unit", "_container", "_item"];
+
+				// Check if the class name of this item belongs to one of the predefined class names
+				pr _index = INTEL_INVENTORY_ALL_CLASSES findIf {
+					(_item find _x) == 0
+				};
+
+				if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
+					// Call code to inspect the intel item
+					CALLSM1("UnitIntel", "inspectIntel", _item);
+
+					// Delete this document item from inventory
+					[{ // call CBA_fnc_waitAndExecute
+						params ["_item"];
+						//diag_log format ["Inside waitAndExecute: %1", _this];
+						player removeItemFromBackpack _item;
+						player removeItemFromUniform _item;
+						player removeItemFromVest _item;
+					}, [_item], 0] call CBA_fnc_waitAndExecute; // Can't remove the item right in this frame because it will crash the game
+				
+				};
+			}];
+			player setVariable ["UnitIntel_take_EH", _ehid];
 
 			SET_STATIC_VAR("UnitIntel", "eventHandlerAdded", true);
 		};

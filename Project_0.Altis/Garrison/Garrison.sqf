@@ -109,6 +109,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Ensure some template
 		if (_templateName == "") then {
 			_templateName = "tDefault";
+			OOP_WARNING_1("Garrison without template name was created: %1", _this);
 		};
 		T_SETV("templateName", _templateName);
 
@@ -244,7 +245,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Despawn if spawned
 		if(T_GETV("spawned")) then {
+			__MUTEX_UNLOCK;
 			CALLM(_thisObject, "despawn", []);
+			__MUTEX_LOCK;
 		};
 
 		T_PRVAR(units);
@@ -258,6 +261,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_ERROR_1("Deleting garrison which has groups: %1", _groups);
 		};
 		
+		// Despawn method of gorups and units might need to lock this garrison object
+		__MUTEX_UNLOCK;
 		{
 			DELETE(_x);
 		} forEach _units;
@@ -265,6 +270,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			DELETE(_x);
 		} forEach _groups;
+		__MUTEX_LOCK;
 
 		T_SETV("units", nil);
 		T_SETV("groups", nil);
@@ -278,9 +284,6 @@ CLASS("Garrison", "MessageReceiverEx");
 			DELETE(T_GETV("timer"));
 			T_SETV("timer", nil);
 		};
-
-		// Delete ourselves from the process category
-		//CALLM1(MESSAGE_LOOP, "deleteProcessCategoryObject", _thisObject);
 
 		// Delete the AI object
 		// We delete it instantly because Garrison AI is in the same thread

@@ -24,8 +24,10 @@ if (isNil "_tName") exitWith {
 
 // Process inventory items
 #ifndef _SQF_VM
-private _templateItems = [_t] call t_fnc_processTemplateItems;
-_t set [T_INV, _templateItems];
+if (isServer) then {
+	private _templateItems = [_t] call t_fnc_processTemplateItems;
+	_t set [T_INV, _templateItems];
+};
 #endif
 
 missionNamespace setVariable [_tName, _t];

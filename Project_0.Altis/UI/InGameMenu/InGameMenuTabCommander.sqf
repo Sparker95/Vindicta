@@ -64,7 +64,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		// Send data to cmdr at the server
 		pr _locType = _ctrlLocType lbData _row;
 		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
-		pr _args = [clientOwner, getPos player, _locType, _locName];
+		pr _args = [clientOwner, getPosWorld player, _locType, _locName];
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
 		

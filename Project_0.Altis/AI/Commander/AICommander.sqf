@@ -336,6 +336,17 @@ CLASS("AICommander", "AI")
 							pr _locRealType = CALLM0(_loc, "getType");
 							pr _enable = (_locSide == _thisSide);
 							CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+
+							// If we have a camp, enable respawn at cities near it
+							// todo improve that
+							if (_locRealType == LOCATION_TYPE_CAMP && _enable) then {
+								// Enable respawn on nearby cities
+								pr _locRealPos = CALLM0(_loc, "getPos");
+								private _nearCities = CALLSM2("Location", "nearLocations", _locRealPos, 2000) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
+								{
+									CALLM2(_x, "enablePlayerRespawn", _thisSide, true);
+								} forEach _nearCities;
+							};
 						};
 					};
 
@@ -365,6 +376,17 @@ CLASS("AICommander", "AI")
 				pr _thisSide = T_GETV("side");
 				pr _enable = (_locSide == _thisSide);
 				CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+
+				// If we have a camp, enable respawn at cities near it
+				// todo improve that
+				if (_locRealType == LOCATION_TYPE_CAMP && _enable) then {
+					// Enable respawn on nearby cities
+					pr _locRealPos = CALLM0(_loc, "getPos");
+					private _nearCities = CALLSM2("Location", "nearLocations", _locRealPos, 2000) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
+					{
+						CALLM2(_x, "enablePlayerRespawn", _thisSide, true);
+					} forEach _nearCities;
+				};
 			};
 
 			// Register with the World Model
@@ -1204,6 +1226,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			pr _args = ["We can't create a location so close to another location!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
+
+		// Create a little composition at this place
+		[_pos] call misc_fnc_createCampComposition;
 
 		// Create the location
 		pr _loc = NEW_PUBLIC("Location", [_pos]);

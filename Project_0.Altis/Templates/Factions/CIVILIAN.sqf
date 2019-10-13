@@ -5,7 +5,7 @@ POLICE templates for ARMA III
 // //==== Infantry ====
  _inf = +(tDefault select T_INF);
  _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
- _inf set [T_INF_DEFAULT, ["B_GEN_Soldier_F"]];				//Default infantry if nothing is found
+ _inf set [T_INF_DEFAULT, ["I_L_Looter_SG_F"]];				//Default infantry if nothing is found
 for "_i" from 1 to (T_INF_SIZE-1) do {
     _inf set [_i, []];
 };

@@ -851,7 +851,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 				pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
 				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
 				_data set [GROUP_DATA_ID_AI, ""];
-				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
+				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 			};
 
 			// Despawn everything
