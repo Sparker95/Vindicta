@@ -1406,7 +1406,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Limit amount of concurrent actions
 		T_PRVAR(activeActions);
 		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
-		if (_count > 4) exitWith {[]};
+		if (_count > 2) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
@@ -1493,7 +1493,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Limit amount of concurrent actions
 		T_PRVAR(activeActions);
 		pr _count = {GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction"} count _activeActions;
-		if (_count > 3) exitWith {[]};
+		if (_count > 2) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 

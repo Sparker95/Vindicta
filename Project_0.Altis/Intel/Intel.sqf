@@ -439,6 +439,8 @@ CLASS("IntelCommanderAction", "Intel")
 	/* virtual override */ METHOD("clientAdd") {
 		params [P_THISOBJECT];
 
+		//OOP_INFO_0("CLIENT ADD");
+
 		systemChat format ["Added intel: %1", _thisObject];
 
 		T_SETV("shownOnMap", false);
@@ -452,6 +454,8 @@ CLASS("IntelCommanderAction", "Intel")
 
 	/* virtual override */ METHOD("clientRemove") {
 		params [P_THISOBJECT];
+
+		//OOP_INFO_0("CLIENT REMOVE");
 
 		systemChat format ["Removed intel: %1", _thisObject];
 
@@ -476,7 +480,7 @@ CLASS("IntelCommanderAction", "Intel")
 	/* virtual */ METHOD("showOnMap") {
 		params [P_THISOBJECT, P_BOOL("_show")];
 
-		OOP_INFO_1("SHOW ON MAP: %1", _show);
+		//OOP_INFO_1("SHOW ON MAP: %1", _show);
 
 		// Variable might be not initialized
 		if (isNil {T_GETV("shownOnMap")}) exitWith {
@@ -611,6 +615,8 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	*/
 	/* virtual override */ METHOD("showOnMap") {
 		params [P_THISOBJECT, P_BOOL("_show")];
+
+		OOP_INFO_1("SHOW ON MAP: %1", _show);
 
 		// Variable might be not initialized
 		if (isNil {T_GETV("shownOnMap")}) exitWith {

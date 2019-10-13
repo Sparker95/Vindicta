@@ -261,7 +261,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_ERROR_1("Deleting garrison which has groups: %1", _groups);
 		};
 		
-		// Despawn method of gorups and units might need to lock this garrison object
+		// Despawn method of groups and units might need to lock this garrison object
 		__MUTEX_UNLOCK;
 		{
 			DELETE(_x);

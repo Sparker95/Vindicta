@@ -365,6 +365,11 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 	STATIC_METHOD("drawRoute") {
 		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
 
+		//OOP_INFO_1("DRAW ROUTE: %1", _this);
+
+		// Convert unique string to lowercase to be safe
+		_uniqueString = toLower _uniqueString;
+
 		// Delete all previosly created markers
 		pr _query = _uniqueString+__MRK_ROUTE;
 		{
@@ -403,7 +408,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, "ColorRed", 15, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, "ColorRed", 20, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};

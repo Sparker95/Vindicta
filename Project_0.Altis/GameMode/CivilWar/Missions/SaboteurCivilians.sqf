@@ -177,7 +177,7 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		private _maxActive = 15;
 #else
 		// Don't want many of these guys
-		private _maxActive = 1 + (ln(0.01 * _radius + 1) min 1);
+		private _maxActive = 1; //1 + (ln(0.01 * _radius + 1) min 1); // Probably that's too many already
 #endif
 		T_SETV("maxActive", _maxActive);
 	} ENDMETHOD;
