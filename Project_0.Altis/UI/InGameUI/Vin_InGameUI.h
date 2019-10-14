@@ -1,5 +1,7 @@
 #include "InGameUI_Macros.h"
 
+#define __ROW_H 0.025
+
 class Vin_InGameUI
 {
 	idd = -1;
@@ -18,8 +20,8 @@ class Vin_InGameUI
 			idc = IDC_INGAME_STATIC_LOCATION_BACKGROUND;
 			x = safeZoneX + safeZoneW * 0.23;
 			y = safeZoneY + safeZoneH * 0;
-			w = safeZoneW * 0.15;
-			h = safeZoneH * 0.06;
+			w = safeZoneW * 0.145;
+			h = safeZoneH * __ROW_H * 3;
 			style = 0;
 			text = "";
 			colorBackground[] = MUIC_BLACKTRANSP;			
@@ -30,9 +32,9 @@ class Vin_InGameUI
 			type = 0;
 			idc = IDC_INGAME_STATIC_LOCATION_NAME;
 			x = safeZoneX + safeZoneW * 0.23;
-			y = safeZoneY + safeZoneH * 0.00;
+			y = safeZoneY + safeZoneH * __ROW_H * 0;
 			w = safeZoneW * 0.18;
-			h = safeZoneH * 0.025;
+			h = safeZoneH * __ROW_H;
 			style = 0;
 			text = "Camp Potato";
 			colorBackground[] = {0,0,0,0};
@@ -45,9 +47,9 @@ class Vin_InGameUI
 			type = 0;
 			idc = IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES;
 			x = safeZoneX + safeZoneW * 0.23;
-			y = safeZoneY + safeZoneH * 0.02;
+			y = safeZoneY + safeZoneH * __ROW_H * 1;
 			w = safeZoneW * 0.18;
-			h = safeZoneH * 0.025;
+			h = safeZoneH * __ROW_H;
 			style = 0;
 			text = "Construction resources:  9000";
 			colorBackground[] = {0,0,0,0};
@@ -61,9 +63,9 @@ class Vin_InGameUI
 			type = 0;
 			idc = IDC_INGAME_STATIC_MAX_INF;
 			x = safeZoneX + safeZoneW * 0.23;
-			y = safeZoneY + safeZoneH * 0.04;
+			y = safeZoneY + safeZoneH * __ROW_H * 2;
 			w = safeZoneW * 0.12;
-			h = safeZoneH * 0.02;
+			h = safeZoneH * __ROW_H;
 			style = 0;
 			text = "Max infantry: 123";
 			colorBackground[] = {0,0,0,0};

@@ -968,7 +968,7 @@ CLASS("Location", "MessageReceiverEx")
 	Returns: nothing
 	*/
 	METHOD("processObjectsInArea") {
-		params [P_THISOBJECT, ["_filter", "House", [""]]];
+		params [P_THISOBJECT, ["_filter", "House", [""]], ["_addSpecialObjects", false, [false]]];
 
 		// Setup location's spawn positions
 		private _radius = GET_VAR(_thisObject, "boundingRadius");
@@ -981,6 +981,14 @@ CLASS("Location", "MessageReceiverEx")
 			if(T_CALLM1("isInBorder", _object)) then {
 				if (_object isKindOf _filter) then {
 					T_CALLM1("addObject", _object);
+				} else {
+					pr _type = typeOf _object;
+					if (_addSpecialObjects) then {
+						private _index = location_b_capacity findIf {_type in _x#0};
+						if (_index != -1) then {
+							T_CALLM1("addObject", _object);
+						};
+					};
 				};
 			};
 		} forEach _nO;

@@ -1219,7 +1219,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM2(_loc, "setBorder", "circle", 50);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
-		CALLM1(_loc, "processObjectsInArea", "House");
+		CALLM2(_loc, "processObjectsInArea", "House", true);
 
 
 		// Create the garrison
