@@ -90,6 +90,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("spawnPosTypes", []);
 		T_SETV("spawned", false);
 		T_SETV("capacityInf", 0);
+		SET_VAR_PUBLIC(_thisObject, "capacityInf", 0);
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
 		SET_VAR_PUBLIC(_thisObject, "isBuilt", true); // Location is built at start, except for roadblocks, it's changed in setType function
@@ -137,7 +138,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	METHOD("setCapacityInf") {
 		params [P_THISOBJECT, ["_capacityInf", 0, [0]]];
-		T_SETV("capacityInf", _capacityInf);
+		T_SETV("capacityInf", _capacityInf);		
+		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capacityInf);
 	} ENDMETHOD;
 
 	METHOD("setCapacityCiv") {
@@ -198,7 +200,9 @@ CLASS("Location", "MessageReceiverEx")
 		};
 
 		// Increase infantry capacity
-		T_SETV("capacityInf", T_GETV("capacityInf") + _cap);
+		pr _capnew = T_GETV("capacityInf") + _cap;
+		T_SETV("capacityInf", _capnew);		
+		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capnew);
 	} ENDMETHOD;
 
 

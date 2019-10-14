@@ -967,10 +967,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			pr _pos = CALLM0(_loc, "getPos");
 			pr _cities = CALLSM1("CivilWarGameMode", "getRecruitCities", _pos);
 			pr _nRecruits = CALLSM1("CivilWarGameMode", "getRecruitCount", _cities);
-			_lnb lnbAddRow ["Recr.:", str _nRecruits];
+			_lnb lnbAddRow [format ["Recruits available: %1", _nRecruits], "", ""];
 		};
 
-		
+		// Add inf capacity
+		pr _capinf = CALLM0(_loc, "getCapacityInf");
+		_lnb lnbAddRow [format ["Max infantry: %1", _capInf], "", ""];
 
 		// Add unit data
 		pr _ua = GETV(_intel, "unitData");

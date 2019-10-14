@@ -213,6 +213,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _hO = _className createVehicle _pos;
 		_hO setPos _pos;
 		_hO setDir _dir;
+		pr _surfaceVectorUp = surfaceNormal _pos;
+		_hO setVectorUp _surfaceVectorUp;
 		if (_catID != -1) then {
 			pr _args = [[], _catID, _subcatID, -1, "", _hO];
 			pr _unit = NEW("Unit", _args);
@@ -269,6 +271,15 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			_activate = true;
 			_gar
 		};
+
+
+		// Bail if the infantry capacity of the location has been reached
+		pr _capinf = CALLM0(_loc, "getCapacityInf");
+		pr _nInf = CALLM0(_gar, "countInfantryUnits");
+		if (_nInf >= _capInf) exitWith {
+			"Infantry capacity of this location has been reached!" remoteExecCall ["systemChat", _clientOwner];
+		};
+
 
 		// Create a group or pick an existing one
 		pr _groupToJoin = "";

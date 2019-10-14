@@ -75,10 +75,20 @@ pr _catMisc = [
 	["Land_Sun_chair_F",	"123",									10, -1, -1]
 ];
 
+pr _catTents = [
+	["Land_MedicalTent_01_wdl_generic_inner_F","",40,-1,-1],
+	["Land_MedicalTent_01_aaf_generic_inner_F","",40,-1,-1],
+	["Land_MedicalTent_01_CSAT_brownhex_generic_inner_F","",40,-1,-1],
+	["Land_MedicalTent_01_NATO_generic_inner_F","",40,-1,-1],
+	["Land_MedicalTent_01_CSAT_greenhex_generic_inner_F","",40,-1,-1],
+	["Land_MedicalTent_01_NATO_tropic_generic_inner_F","",40,-1,-1]
+];
+
 // array of categories and category names
 
 g_BuildUIObjects = [
 	[_catStorage, "Storage"],
+	[_catTents, "Tents"],
 	[_catCamo, "Camouflage"],
 	[_catDefense, "Fortification"],
 	[_catLights, "Lights"],

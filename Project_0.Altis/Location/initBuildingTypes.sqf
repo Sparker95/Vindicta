@@ -75,6 +75,16 @@ location_b_capacity =
 	[ //The military metal box
 		["Land_Cargo_House_V1_F", "Land_Cargo_House_V2_F", "Land_Cargo_House_V3_F"],
 		4
+	],
+	// Tents
+	[
+		["Land_MedicalTent_01_wdl_generic_inner_F",
+		"Land_MedicalTent_01_aaf_generic_inner_F",
+		"Land_MedicalTent_01_CSAT_brownhex_generic_inner_F",
+		"Land_MedicalTent_01_NATO_generic_inner_F",
+		"Land_MedicalTent_01_CSAT_greenhex_generic_inner_F",
+		"Land_MedicalTent_01_NATO_tropic_generic_inner_F"],
+		8
 	]
 ];
 

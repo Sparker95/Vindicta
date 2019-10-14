@@ -196,9 +196,13 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				};
 			};
 			CALLM1(gInGameUI, "setBuildResourcesAmount", _buildRes);
+			CALLM1(gInGameUI, "setLocationCapacityInf", CALLM0(_loc, "getCapacityInf"));
+			CALLM1(gInGameUI, "enableLocationPanel", true);
 		} else {
-			CALLM1(gInGameUI, "setLocationText", "");
-			CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
+			//CALLM1(gInGameUI, "setLocationText", "");
+			//CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
+			//CALLM1(gInGameUI, "setLocationCapacityInf", -1);
+			CALLM1(gInGameUI, "enableLocationPanel", false);
 		};
 	} ENDMETHOD;
 

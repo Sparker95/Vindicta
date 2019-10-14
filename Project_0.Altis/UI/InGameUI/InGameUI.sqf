@@ -60,4 +60,28 @@ CLASS("InGameUI", "")
 		};
 	} ENDMETHOD;
 
+	METHOD("setLocationCapacityInf") {
+		params [P_THISOBJECT, P_NUMBER("_capacity")];
+		pr _display = uiNamespace getVariable "p0_InGameUI_display";
+		if (_capacity < 0) then {
+			(_display displayCtrl IDC_INGAME_STATIC_MAX_INF) ctrlSetText "";
+		} else {
+			pr _text = format ["Max infantry: %1", _capacity];
+			(_display displayCtrl IDC_INGAME_STATIC_MAX_INF) ctrlSetText _text;
+		};
+	} ENDMETHOD;
+
+	METHOD("enableLocationPanel") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+
+		pr _display = uiNamespace getVariable "p0_InGameUI_display";
+		{
+			pr _ctrl = _display displayCtrl _x;
+			_ctrl ctrlShow _enable;
+		} forEach [IDC_INGAME_STATIC_LOCATION_NAME,
+					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES,
+					IDC_INGAME_STATIC_MAX_INF,
+					IDC_INGAME_STATIC_LOCATION_BACKGROUND]
+	} ENDMETHOD;
+
 ENDCLASS;

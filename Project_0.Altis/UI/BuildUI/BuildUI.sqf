@@ -884,6 +884,8 @@ CLASS("BuildUI", "")
 			_worldPos set [2, _height];
 			_ghostObject attachTo [player, player worldToModel _worldPos];
 			_ghostObject setDir (_relativeRot + _rotation);
+			private _surfaceVectorUp = surfaceNormal _worldPos;
+			_ghostObject setVectorUp (player vectorWorldToModel _surfaceVectorUp);
 			_ghostObject setVariable ["build_ui_dist", _dist];
 		} forEach _movingObjectGhosts;
 		
