@@ -107,12 +107,7 @@ private _bdir = 0; //Building direction
 		
 		// Process buildings
 		if (_type isKindOf "House") then {
-			CALL_METHOD(_thisObject, "addSpawnPosFromBuilding", [_object]);
-
-			// Add to the array of buildings into which AI can enter
-			if ( ( ( count (_object buildingPos -1) ) > 0 ) && ( (damage _object) < 0.98) ) then {
-				T_GETV("buildings") pushBack _object;
-			};
+			T_CALLM1("addObject", _object);
 		};
 
 		if(_type == "Flag_BI_F") then {
@@ -131,5 +126,3 @@ private _bdir = 0; //Building direction
 		};
 	};
 } forEach _no;
-
-CALL_METHOD(_thisObject, "calculateInfantryCapacity", []);

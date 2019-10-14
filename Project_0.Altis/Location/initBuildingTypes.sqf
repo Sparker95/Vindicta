@@ -56,7 +56,8 @@ location_bp_sentry =
 	]
 ];
 
-//Capacities of buildings for infantry
+// Capacities of buildings for infantry
+// Typically a building's inf capacity is amount of its buildingPos, however for some buildings we can override that here
 location_b_capacity =
 [
 	[ //The giant military tower

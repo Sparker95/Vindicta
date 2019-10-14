@@ -58,7 +58,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("hasPlayers"); // Bool, means that there are players at this location, updated at each process call
 
-	VARIABLE("buildings"); // Handles of buildings which can be entered
+	VARIABLE("buildingsOpen"); // Handles of buildings which can be entered (have buildingPos)
+	VARIABLE("objects"); // Handles of objects which can't be entered and other objects
 
 	STATIC_VARIABLE("all");
 
@@ -97,7 +98,9 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("parent", NULL_OBJECT);
 		T_SETV("gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
-		T_SETV("buildings", []);
+
+		T_SETV("buildingsOpen", []);
+		T_SETV("objects", []);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -164,6 +167,38 @@ CLASS("Location", "MessageReceiverEx")
 		T_GETV("children") pushBack _childLocation;
 		SETV(_childLocation, "parent", _thisObject);
 		nil
+	} ENDMETHOD;
+
+	/*
+	Method: addStaticObject
+	Adds an object to this location (building or another object)
+	
+	Arguments: _hObject
+	*/
+	METHOD("addObject") {
+		params [P_THISOBJECT, P_OBJECT("_hObject")];
+
+		private _type = typeOf _hObject;
+		private _countBP = count (_hObject buildingPos -1);
+
+		if (_countBP > 0) then {
+			T_GETV("buildingsOpen") pushBackUnique _hObject;
+			T_CALLM1("addSpawnPosFromBuilding", _hObject);
+		} else {
+			T_GETV("objects") pushBackUnique _hObject;
+		};
+
+		// Check how it affects the location's infantry capacity
+		private _index = location_b_capacity findIf {_type in _x#0};
+		private _cap = 0;
+		if (_index != -1) then {
+			_cap = location_b_capacity#_index#1;
+		} else {
+			_cap = _countBP;
+		};
+
+		// Increase infantry capacity
+		T_SETV("capacityInf", T_GETV("capacityInf") + _cap);
 	} ENDMETHOD;
 
 
@@ -342,6 +377,12 @@ CLASS("Location", "MessageReceiverEx")
 			iF(!T_GETV("isBuilt")) then {
 				T_CALLM("build", []);
 			};
+
+			// Update player respawn rules
+			pr _gmdata = T_GETV("gameModeData");
+			if (!IS_NULL_OBJECT(_gmdata)) then {
+				CALLM0(_gmdata, "updatePlayerRespawn");
+			};	
 		};
 	} ENDMETHOD;
 	
@@ -353,6 +394,12 @@ CLASS("Location", "MessageReceiverEx")
 			_gars deleteAt (_gars find _gar);
 			PUBLIC_VAR(_thisObject, "garrisons");
 			UNREF(_gar);
+
+			// Update player respawn rules
+			pr _gmdata = T_GETV("gameModeData");
+			if (!IS_NULL_OBJECT(_gmdata)) then {
+				CALLM0(_gmdata, "updatePlayerRespawn");
+			};
 		};
 	} ENDMETHOD;
 	
@@ -380,49 +427,6 @@ CLASS("Location", "MessageReceiverEx")
 			_myGarrisons = _myGarrisons + CALLM(_x, "getGarrisonsRecursive", [_side]);
 		} forEach _children;
 		_myGarrisons
-	} ENDMETHOD;
-
-	/*
-	Method: setType
-	Set the Type.
-
-	Parameters: _type
-
-	_type - String
-
-	Returns: nil
-	*/
-	METHOD("setType") {
-		params [P_THISOBJECT, ["_type", "", [""]]];
-		SET_VAR_PUBLIC(_thisObject, "type", _type);
-
-		// Create a timer object if the type of the location is a city or a roadblock
-		//if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
-			
-			// Delete previous timer if we had it
-			pr _timer = T_GETV("timer");
-			if (_timer != "") then {
-				DELETE(_timer);
-			};
-
-			// Create timer object
-			private _msg = MESSAGE_NEW();
-			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
-			_msg set [MESSAGE_ID_SOURCE, ""];
-			_msg set [MESSAGE_ID_DATA, 0];
-			_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
-			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
-			private _timer = NEW("Timer", _args);
-			SET_VAR(_thisObject, "timer", _timer);
-		//};
-
-		if (_type == LOCATION_TYPE_ROADBLOCK) then {
-			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
-		};
-
-		T_CALLM("updateWaypoints", []);
-
-		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 
 	/*
@@ -496,7 +500,35 @@ CLASS("Location", "MessageReceiverEx")
 		GET_VAR(_thisObject, "capacityInf")
 	} ENDMETHOD;
 
+	/*
+	Method: getCapacityCiv
+	Returns type of this location
+
+	Returns: Integer
+	*/
+	METHOD("getCapacityCiv") {
+		params [ P_THISOBJECT ];
+		GET_VAR(_thisObject, "capacityCiv")
+	} ENDMETHOD;
 	
+	/*
+	Method: getOpenBuildings
+	Returns an array of object handles of buildings in which AI infantry can enter (they must return buildingPos positions)
+	*/
+	METHOD("getOpenBuildings") {
+		params [P_THISOBJECT];
+		T_GETV("buildingsOpen") select {damage _x < 0.98}
+	} ENDMETHOD;
+
+	/*
+	Method: getGameModeData
+	Returns gameModeData object
+	*/
+	METHOD("getGameModeData") {
+		params [P_THISOBJECT];
+		T_GETV("gameModeData")
+	} ENDMETHOD;
+
 	STATIC_METHOD("findRoadblocks") {
 		params [P_THISCLASS, P_POSITION("_pos")];
 
@@ -567,6 +599,60 @@ CLASS("Location", "MessageReceiverEx")
 			_itr = _itr + 1;
 		};
 		_roadblocksPosDir
+	} ENDMETHOD;
+
+	/*
+	Method: getBorder
+	gets border parameters of this location
+
+	Returns: [center, a, b, angle, isRectangle, c]
+	*/
+	METHOD("getBorder") {
+		params [P_THISOBJECT];
+		T_GETV("border")
+	} ENDMETHOD;
+
+	/*
+	Method: setType
+	Set the Type.
+
+	Parameters: _type
+
+	_type - String
+
+	Returns: nil
+	*/
+	METHOD("setType") {
+		params [P_THISOBJECT, ["_type", "", [""]]];
+		SET_VAR_PUBLIC(_thisObject, "type", _type);
+
+		// Create a timer object if the type of the location is a city or a roadblock
+		//if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
+			
+			// Delete previous timer if we had it
+			pr _timer = T_GETV("timer");
+			if (_timer != "") then {
+				DELETE(_timer);
+			};
+
+			// Create timer object
+			private _msg = MESSAGE_NEW();
+			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+			_msg set [MESSAGE_ID_SOURCE, ""];
+			_msg set [MESSAGE_ID_DATA, 0];
+			_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
+			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
+			private _timer = NEW("Timer", _args);
+			SET_VAR(_thisObject, "timer", _timer);
+		//};
+
+		if (_type == LOCATION_TYPE_ROADBLOCK) then {
+			SET_VAR_PUBLIC(_thisObject, "isBuilt", false); // Unbuild this
+		};
+
+		T_CALLM("updateWaypoints", []);
+
+		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
 
 	// /*
@@ -755,16 +841,6 @@ CLASS("Location", "MessageReceiverEx")
 		T_CALLM("updateWaypoints", []);
 	} ENDMETHOD;
 
-	/*
-	Method: getBorder
-	gets border parameters of this location
-
-	Returns: [center, a, b, angle, isRectangle, c]
-	*/
-	METHOD("getBorder") {
-		params [P_THISOBJECT];
-		T_GETV("border")
-	} ENDMETHOD;
 	
 
 	// File-based methods
@@ -788,6 +864,7 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD_FILE("addSpawnPosFromBuilding", "Location\addSpawnposFromBuilding.sqf");
 
 	// Calculates infantry capacity based on buildings at this location
+	// It's old and better not to use it
 	METHOD_FILE("calculateInfantryCapacity", "Location\calculateInfantryCapacity.sqf");
 
 	// Gets a spawn position to spawn some unit
@@ -882,41 +959,27 @@ CLASS("Location", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	/*
-	Method: iterates through buildings inside the border and updated the buildings variable
+	Method: iterates through objects inside the border and updated the buildings variable
+	Parameters: _filter - String, each object will be tested with isKindOf command against this filter
 	Returns: nothing
 	*/
-	METHOD("processBuildings") {
-		params [P_THISOBJECT];
+	METHOD("processObjectsInArea") {
+		params [P_THISOBJECT, ["_filter", "House", [""]]];
 
 		// Setup location's spawn positions
 		private _radius = GET_VAR(_thisObject, "boundingRadius");
 		private _locPos = GET_VAR(_thisObject, "pos");
 		private _no = _locPos nearObjects _radius;
 
-		pr _buildings = [];
 		// forEach _nO;
 		{
 			_object = _x;
 			if(T_CALLM1("isInBorder", _object)) then {
-				if (_object isKindOf "House") then {
-					// Add to the array of buildings into which AI can enter
-					if ( ( ( count (_object buildingPos -1) ) > 0 ) && ( (damage _object) < 0.99) ) then {
-						_buildings pushBack _object;
-					};
+				if (_object isKindOf _filter) then {
+					T_CALLM1("addObject", _object);
 				};
 			};
 		} forEach _nO;
-
-		T_SETV("buildings", _buildings);
-	} ENDMETHOD;
-
-	/*
-	Method: getOpenBuildings
-	Returns an array of object handles of buildings in which AI infantry can enter (they must return buildingPos positions)
-	*/
-	METHOD("getOpenBuildings") {
-		params [P_THISOBJECT];
-		T_GETV("buildings") select {damage _x < 0.98}
 	} ENDMETHOD;
 
 	/*
@@ -925,7 +988,7 @@ CLASS("Location", "MessageReceiverEx")
 	*/
 	METHOD("addSpawnPosFromBuildings") {
 		params [P_THISOBJECT];
-		pr _buildings = T_GETV("buildings");
+		pr _buildings = T_GETV("buildingsOpen");
 		{
 			T_CALLM1("addSpawnPosFromBuilding", _x);
 		} forEach _buildings;

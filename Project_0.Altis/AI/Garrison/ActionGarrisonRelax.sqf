@@ -29,7 +29,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		pr _loc = CALLM0(_gar, "getLocation");
 		pr _buildings = if (_loc != "") then {+CALLM0(_loc, "getOpenBuildings")} else {[]}; // Buildings into which groups will be ordered to move
 		// Sort buildings by their height (or maybe there is a better criteria, but higher is better, right?)
-		_buildings = _buildings apply {[abs ((boundingBoxReal _x) select 1 select 2), _x]};
+		_buildings = _buildings apply {[2 * (abs ((boundingBoxReal _x) select 1 select 2)), _x]};
 		_buildings sort false;
 		pr _AI = T_GETV("AI");
 		pr _groups = +CALLM0(_gar, "getGroups");

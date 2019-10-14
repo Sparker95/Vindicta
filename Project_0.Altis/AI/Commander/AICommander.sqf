@@ -329,6 +329,8 @@ CLASS("AICommander", "AI")
 						CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
 					
 						// Enable or disable player respawn here
+						// Now it was moved to game mode
+						/*
 						pr _locRealType = CALLM0(_loc, "getType");
 						if (_locRealType != LOCATION_TYPE_CITY) then {
 							pr _locSide = GETV(_intel, "side");
@@ -336,18 +338,8 @@ CLASS("AICommander", "AI")
 							pr _locRealType = CALLM0(_loc, "getType");
 							pr _enable = (_locSide == _thisSide);
 							CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
-
-							// If we have a camp, enable respawn at cities near it
-							// todo improve that
-							if (_locRealType == LOCATION_TYPE_CAMP && _enable) then {
-								// Enable respawn on nearby cities
-								pr _locRealPos = CALLM0(_loc, "getPos");
-								private _nearCities = CALLSM2("Location", "nearLocations", _locRealPos, 2000) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
-								{
-									CALLM2(_x, "enablePlayerRespawn", _thisSide, true);
-								} forEach _nearCities;
-							};
 						};
+						*/
 					};
 
 					// Delete the intel object that we have created temporary
@@ -370,24 +362,16 @@ CLASS("AICommander", "AI")
 			// Don't delete the intel object now! It's in the database from now.
 
 			// Enable or disable player respawn here
+			// Was moved to game mode
+			/*
 			pr _locRealType = CALLM0(_loc, "getType");
 			if (_locRealType != LOCATION_TYPE_CITY) then {
 				pr _locSide = GETV(_intel, "side");
 				pr _thisSide = T_GETV("side");
 				pr _enable = (_locSide == _thisSide);
 				CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
-
-				// If we have a camp, enable respawn at cities near it
-				// todo improve that
-				if (_locRealType == LOCATION_TYPE_CAMP && _enable) then {
-					// Enable respawn on nearby cities
-					pr _locRealPos = CALLM0(_loc, "getPos");
-					private _nearCities = CALLSM2("Location", "nearLocations", _locRealPos, 2000) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
-					{
-						CALLM2(_x, "enablePlayerRespawn", _thisSide, true);
-					} forEach _nearCities;
-				};
 			};
+			*/
 
 			// Register with the World Model
 			T_PRVAR(worldModel);
@@ -1232,9 +1216,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Create the location
 		pr _loc = NEW_PUBLIC("Location", [_pos]);
-		CALLM2(_loc, "setBorder", "circle", 100);
+		CALLM2(_loc, "setBorder", "circle", 50);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
+		CALLM1(_loc, "processObjectsInArea", "House");
 
 
 		// Create the garrison

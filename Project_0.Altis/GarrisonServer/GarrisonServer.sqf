@@ -226,6 +226,13 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
 
+		// Add the built object to the location
+		pr _loc = CALLM0(_gar, "getLocation");
+		if (!IS_NULL_OBJECT(_loc)) then {
+			CALLM1(_loc, "addObject", _hO);
+		};
+
+		// Send message to player
 		pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
 		pr _text = format ["Object %1 was build successfully!", _objName];
 		_text remoteExecCall ["systemChat", _clientOwner];

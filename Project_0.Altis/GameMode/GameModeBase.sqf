@@ -290,7 +290,7 @@ CLASS("GameModeBase", "")
 		switch (_type) do {
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
-				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cInf = (CALLM0(_loc, "getCapacityInf") min 45) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = 0;
@@ -299,7 +299,7 @@ CLASS("GameModeBase", "")
 				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
-				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cInf = (CALLM0(_loc, "getCapacityInf") min 16) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
@@ -382,11 +382,15 @@ CLASS("GameModeBase", "")
 
 	METHOD("startCommanders") {
 		params [P_THISOBJECT];
-		{
-			// We postMethodAsync them, because we don't want to start processing right after mission start
-			CALLM2(_x, "postMethodAsync", "setProcessInterval", [10]);
-			CALLM2(_x, "postMethodAsync", "start", []);
-		} forEach gCommanders;
+		0 spawn {
+			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
+			sleep 40;
+			{
+				// We postMethodAsync them, because we don't want to start processing right after mission start
+				CALLM2(_x, "postMethodAsync", "setProcessInterval", [10]);
+				CALLM2(_x, "postMethodAsync", "start", []);
+			} forEach gCommanders;
+		};
 	} ENDMETHOD;
 
 	fnc_getLocName = {
@@ -447,7 +451,7 @@ CLASS("GameModeBase", "")
 			private _locSide = _locSector getVariable ["Side", ""];
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
 			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
-			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
+			//private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""]; // capacityInf is calculated from actual buildings
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 
 			if(_locType == LOCATION_TYPE_CITY) then {
@@ -469,8 +473,8 @@ CLASS("GameModeBase", "")
 				*/
 
 				// https://www.desmos.com/calculator/nahw1lso9f
-				_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
-				OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
+				//_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
+				//OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
 			} else {
 				_locCapacityCiv = 0;
 			};
@@ -493,8 +497,8 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
 			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
-			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
-			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
+			//CALLM1(_loc, "setCapacityInf", _locCapacityInf); // capacityInf is calculated from actual buildings
+			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
 
 			// Create police stations in cities
 			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 10) then {
@@ -508,7 +512,7 @@ CLASS("GameModeBase", "")
 					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
 					private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
 					CALLM2(_policeStation, "setBorder", "circle", 10);
-					CALLM0(_policeStation, "processBuildings"); // We must add buildings to the array
+					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
 					CALLM0(_policeStation, "addSpawnPosFromBuildings");
 					CALLM1(_policeStation, "setSide", _side);
 					CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
