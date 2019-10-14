@@ -232,6 +232,13 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _loc = CALLM0(_gar, "getLocation");
 		if (!IS_NULL_OBJECT(_loc)) then {
 			CALLM1(_loc, "addObject", _hO);
+
+			// Player might have added an object which affects location's player respawn capabilities,
+			// so we must update it
+			pr _gmdata = CALLM0(_loc, "getGameModeData");
+			if (!IS_NULL_OBJECT(_gmdata)) then {
+				CALLM0(_gmdata, "updatePlayerRespawn");
+			};
 		};
 
 		// Send message to player

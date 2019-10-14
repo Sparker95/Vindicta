@@ -61,6 +61,8 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("buildingsOpen"); // Handles of buildings which can be entered (have buildingPos)
 	VARIABLE("objects"); // Handles of objects which can't be entered and other objects
 
+	VARIABLE("respawnSides"); // Sides for which player respawn is enabled
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -102,6 +104,8 @@ CLASS("Location", "MessageReceiverEx")
 
 		T_SETV("buildingsOpen", []);
 		T_SETV("objects", []);
+
+		T_SETV("respawnSides", []);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -935,6 +939,8 @@ CLASS("Location", "MessageReceiverEx")
 			default {"respawn_civilian"};
 		};
 
+		pr _respawnSides = T_GETV("respawnSides");
+
 		if (_enable) then {
 
 			pr _pos = T_GETV("pos");
@@ -957,9 +963,25 @@ CLASS("Location", "MessageReceiverEx")
 			};
 
 			createMarker [_markName + _thisObject, _pos];
+
+			_respawnSides pushBackUnique _side;
 		} else {
 			deleteMarker (_markName + _thisObject);
+
+			_respawnSides deleteAt (_respawnSides find _side);
 		};
+	} ENDMETHOD;
+
+	/*
+	Method: playerRespawnEnabled
+
+	Parameters: _side
+
+	Returns true if player respawn is enabled for this side
+	*/
+	METHOD("playerRespawnEnabled") {
+		params [P_THISOBJECT, P_SIDE("_side")];
+		_side in T_GETV("respawnSides")
 	} ENDMETHOD;
 
 	/*

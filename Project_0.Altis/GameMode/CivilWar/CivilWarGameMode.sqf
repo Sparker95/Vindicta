@@ -5,6 +5,8 @@ Design documentation:
 https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/edit#bookmark=id.ev4wu6mmqtgf
 */
 
+#define pr private
+
 #ifndef RELEASE_BUILD
 #define DEBUG_CIVIL_WAR_GAME_MODE
 #endif
@@ -45,6 +47,36 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
+	} ENDMETHOD;
+
+	// Creates gameModeData of a location
+	/* protected override */	METHOD("initLocationGameModeData") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		private _type = CALLM0(_loc, "getType");
+		switch (_type) do {
+			case LOCATION_TYPE_CITY : {
+				private _cityData = NEW_PUBLIC("CivilWarCityData", [_loc]); // City data is public!
+				SET_VAR_PUBLIC(_x, "gameModeData", _cityData);
+			};
+			case LOCATION_TYPE_POLICE_STATION : {
+				private _data = NEW("CivilWarPoliceStationData", [_loc]);
+				SETV(_loc, "gameModeData", _data);
+			};
+			default {
+				// Other locations get generic location game mode data
+				private _data = NEW("CivilWarLocationData", [_loc]);
+				SETV(_loc, "gameModeData", _data);
+			};
+		};
+
+		// Update respawn rules
+		if (_type != LOCATION_TYPE_CITY) then { // Cities will search for other nearby locations which will slow down everything probably, let's not use that
+			private _gmdata = CALLM0(_loc, "getGameModeData");
+			CALLM0(_gmdata, "updatePlayerRespawn");
+		};
+
+		// Return
+		CALLM0(_loc, "getGameModeData")
 	} ENDMETHOD;
 
 	// Overrides GameModeBase, we give only bases and police stations to enemy to start with
@@ -109,26 +141,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Create LocationGameModeData objects for all locations
 		{
 			private _loc = _x;
-			private _type = CALLM0(_x, "getType");
-			switch (_type) do {
-				case LOCATION_TYPE_CITY : {
-					private _cityData = NEW_PUBLIC("CivilWarCityData", [_loc]); // City data is public!
-					SET_VAR_PUBLIC(_x, "gameModeData", _cityData);
-				};
-				case LOCATION_TYPE_POLICE_STATION : {
-					private _data = NEW("CivilWarPoliceStationData", [_loc]);
-					SETV(_loc, "gameModeData", _data);
-				};
-				default {
-					// Other locations get generic location game mode data
-					private _data = NEW("CivilWarLocationData", [_loc]);
-					SETV(_loc, "gameModeData", _data);
-				};
-			};
-
-			// Update respawn rules
-			private _gmdata = CALLM0(_loc, "getGameModeData");
-			CALLM0(_gmdata, "updatePlayerRespawn");
+			T_CALLM1("initLocationGameModeData", _loc);
 		} forEach GET_STATIC_VAR("Location", "all");
 
 		// Select a city as a spawn point for players
@@ -564,6 +577,23 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			_return = floor T_GETV("nRecruits");
 		};
 		_return
+	} ENDMETHOD;
+
+	/* virtual override */ METHOD("updatePlayerRespawn") {
+		params [P_THISOBJECT];
+
+		// Player respawn is enabled in a city which has non-city locations nearby with enabled player respawn
+		pr _loc = T_GETV("location");
+
+		pr _nearLocs = CALLSM2("Location", "nearLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {CALLM0(_x, "getType") != LOCATION_TYPE_CITY};
+
+		pr _forceEnable = T_GETV("forceEnablePlayerRespawn");
+		{
+			pr _side = _x;
+			pr _index = _nearLocs findIf {CALLM1(_x, "playerRespawnEnabled", _side)};
+			pr _enable = (_index != -1) || _forceEnable;
+			CALLM2(_loc, "enablePlayerRespawn", _side, _enable);
+		} forEach [WEST, EAST, INDEPENDENT];
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -1220,6 +1220,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
 		CALLM2(_loc, "processObjectsInArea", "House", true);
+		CALLM1(gGameMode, "initLocationGameModeData", _loc);
 
 
 		// Create the garrison

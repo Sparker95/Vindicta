@@ -328,6 +328,11 @@ CLASS("GameModeBase", "")
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	} ENDMETHOD;
 
+	// Override this to create gameModeData of a location
+	/* protected virtual */	METHOD("initLocationGameModeData") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+	} ENDMETHOD;
+
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
 	// -------------------------------------------------------------------------

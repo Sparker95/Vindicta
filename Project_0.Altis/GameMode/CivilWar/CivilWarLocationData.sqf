@@ -31,6 +31,18 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 			pr _enable = (_x in _sidesOccupied) && (_capInf > 0) || T_GETV("forceEnablePlayerRespawn");
 			CALLM2(_loc, "enablePlayerRespawn", _x, _enable);
 		} forEach [WEST, EAST, INDEPENDENT];
+
+		// Search for nearby cities now
+		pr _nearCities = CALLSM2("Location", "nearLocations", CALLM0(_loc, "getPos"), CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS) select {
+			CALLM0(_x, "getType") == LOCATION_TYPE_CITY
+		};
+		{
+			pr _gmdata = CALLM0(_x, "getGameModeData");
+			if (!IS_NULL_OBJECT(_gmdata)) then {
+				CALLM0(_gmdata, "updatePlayerRespawn"); // Cities have an instance of "CivilWarCityData" class
+			};
+		} forEach _nearCities;
+		CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS
 	} ENDMETHOD;
 
 	METHOD("forceEnablePlayerRespawn") {
