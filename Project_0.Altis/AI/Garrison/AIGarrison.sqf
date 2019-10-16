@@ -44,6 +44,12 @@ CLASS("AIGarrison", "AI_GOAP")
 	// A serialized CmdrActionRecord, to be read by GarrisonServer when it needs to
 	VARIABLE("cmdrActionRecordSerial");
 
+	// Variables below serve for player to get intel from this garrison about various things
+	// Through picking up tablet items or interrogations or whatever
+	VARIABLE("intelGeneral"); // Array with intel item refs known by this garrison
+	VARIABLE("intelPersonal"); // Ref to intel about cmdr action inwhich this garrison ai is involved
+	VARIABLE("knownFriendlyLocations"); // Array with locations about which this garrison knows
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -103,6 +109,10 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Commander action record serial
 		T_SETV("cmdrActionRecordSerial", []);
+
+		T_SETV("intelGeneral", []); // Array with intel item refs known by this garrison
+		T_SETV("intelPersonal", NULL_OBJECT); // Ref to intel about cmdr action inwhich this garrison ai is involved
+		T_SETV("knownFriendlyLocations", []); // Array with locations about which this garrison knows
 
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
@@ -438,6 +448,41 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Notify the garrison server that this garrison should be updated on clients
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
+	} ENDMETHOD;
+
+	// Intel stuff
+	METHOD("addGeneralIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+		T_GETV("intelGeneral") pushBackUnique _item;
+	} ENDMETHOD;
+
+	METHOD("setPersonalIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		OOP_INFO_1(" SET PERSONAL INTEL: %1", _item);
+
+		T_SETV("intelPersonal", _item);
+	} ENDMETHOD;
+
+	METHOD("addKnownFriendlyLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		T_GETV("knownFriendlyLocations") pushBackUnique _loc;
+	} ENDMETHOD;
+
+	// Returns a serialized UnitIntelData object
+	// Typically we are going to assign the returned value to personal inventory
+	METHOD("getUnitIntelDataSerial") {
+		params [P_THISOBJECT];
+
+		pr _temp = NEW("UnitIntelData", []);
+
+		SETV(_temp, "intelGeneral", +T_GETV("intelGeneral"));
+		SETV(_temp, "intelPersonal", T_GETV("intelPersonal"));
+		SETV(_temp, "knownFriendlyLocations", +T_GETV("knownFriendlyLocations"));
+
+		pr _serial = SERIALIZE(_temp);
+		DELETE(_temp);
+		_serial
 	} ENDMETHOD;
 
 ENDCLASS;

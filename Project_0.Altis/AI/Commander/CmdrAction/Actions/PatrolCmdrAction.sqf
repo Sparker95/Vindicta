@@ -257,6 +257,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			SETV(_intel, "waypoints", _routeTargetPositions);
 			SETV(_intel, "locations", _locations);
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
+			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
 
 			// Departure date is 20+ minutes from now but they depart instantly, I don't know why :/ 
 			//SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
@@ -266,7 +267,14 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		};
 
 		// Update progress of the garrison
-		T_PRVAR(srcGarrId);
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		// if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+		// 	private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+		// 	ASSERT_OBJECT(_detachedGarr);
+		// 	private _detachedGarrPos = GETV(_detachedGarr, "pos");
+		// 	[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
+		// };
+
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		SETV(_intel, "garrison", GETV(_srcGarr, "actual"));
 		SETV(_intel, "pos", GETV(_srcGarr, "pos"));
@@ -291,6 +299,20 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			};
 		} else {
 			CALLM(_intel, "updateInDb", []);
+
+			// Give the intel ref to the actual garrison doing the action
+			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+			 	private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			 	ASSERT_OBJECT(_detachedGarr);
+
+				// Send intel to the garrison doing this action
+				T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
+
+			 	//private _detachedGarrPos = GETV(_detachedGarr, "pos");
+				//[_detachedGarrPos, _centerPos, "ColorBlack", 4, _thisObject + "_line2"] call misc_fnc_mapDrawLine;
+			};
 		};
 	} ENDMETHOD;
 	

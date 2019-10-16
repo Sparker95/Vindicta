@@ -204,6 +204,9 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+
+			// Send intel to the garrison doing this action
+			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
 		};
 	} ENDMETHOD;
 	/* protected override */ METHOD("updateIntel") {
@@ -244,6 +247,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 		if(_intelNotCreated) then {
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intel", _intelClone);
+
 		} else {
 			CALLM(_intel, "updateInDb", []);
 		};

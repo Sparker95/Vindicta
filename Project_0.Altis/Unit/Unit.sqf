@@ -243,7 +243,6 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		//Lock the mutex
 		//MUTEX_LOCK(_mutex);
-		CRITICAL_SECTION_START
 
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -259,6 +258,8 @@ CLASS(UNIT_CLASS_NAME, "");
 				OOP_INFO_3("  spawning at prev location: %1, %2, %3", _posATLPrev, _dirAndUpPrev, _locPrev);
 				_pos = _posATLPrev;
 			};
+
+			CRITICAL_SECTION_START
 
 			//Perform object creation
 			private _catID = _data select UNIT_DATA_ID_CAT;
@@ -292,11 +293,6 @@ CLASS(UNIT_CLASS_NAME, "");
 					pr _AI = CALLM1(_thisObject, "createAI", "AIUnitInfantry");
 
 					pr _groupType = CALLM0(_group, "getType");
-
-					// Give intel to this unit
-					//if ((random 10) < 4) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
-					//};
 				};
 				case T_VEH: {
 
@@ -340,9 +336,7 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
-					CALLM1(_thisObject, "createAI", "AIUnitVehicle");					
-					// Give intel to this unit
-					CALLSM1("UnitIntel", "initUnit", _thisObject);
+					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
 				};
 				case T_DRONE: {
 				};
@@ -406,7 +400,6 @@ CLASS(UNIT_CLASS_NAME, "");
 				_objectHandle setPos _pos;
 			};
 
-
 			// Initialize variables
 			CALLM0(_thisObject, "initObjectVariables");
 
@@ -416,20 +409,24 @@ CLASS(UNIT_CLASS_NAME, "");
 			// Initialize dynamic simulation
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
 
-			// Initialize cargo if there is no limited arsenal
-			CALLM0(_thisObject, "initObjectInventory");
+			CRITICAL_SECTION_END
+			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
 			// Set build resources
 			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 			};
 
+			// Initialize cargo if there is no limited arsenal
+			CALLM0(_thisObject, "initObjectInventory");
+					
+			// Give intel to this unit
+			CALLSM1("UnitIntel", "initUnit", _thisObject)
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
 		};
 
-		CRITICAL_SECTION_END
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;

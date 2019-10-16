@@ -161,14 +161,21 @@ CLASS("CmdrAction", "RefCounted")
 		_garrisons deleteAt _idx;
 	} ENDMETHOD;
 
+
+	// Garrison's Intel:
+
+	// Note that we now differentiate "general" intel known to garrison and garrison's "personal" intel
+	// "general" intel is typically not related to this garrison but to other garrisons
+	// "personal" intel is intel about cmdr action in which this garrison is currently involved
+
 	/*
-	Method: (protected) addIntelToGarrison
+	Method: (protected) addGeneralIntelToGarrison
 	Add the intel object of this action to a specific garrison.
 	
 	Parameters:
 		_garrison - <Model.GarrisonModel>, the garrion to assign the intel to.
 	*/
-	/*protected */ METHOD("addIntelToGarrison") {
+	/*protected */ METHOD("addGeneralGarrisonIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		if(CALLM(_garrison, "isActual", [])) then {
@@ -178,13 +185,43 @@ CLASS("CmdrAction", "RefCounted")
 			if (!IS_NULL_OBJECT(_intel)) then { // Because it can be objNull
 				private _actual = GETV(_garrison, "actual");
 				// It will make sure itself that it doesn't add duplicates of intel
-				CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]); 
-				//CALLM1(_actual, "addIntel", _intel);
+				private _AI = CALLM0(_actual, "getAI");
+				CALLM2(_AI, "postMethodAsync", "addGeneralIntel", [_intel]);
+				//CALLM2(_AI, "postMethodAsync", "setIntelThis", [_intel]);
 				
 				// TODO: implement this Sparker. 
 				// 	NOTES: Make Garrison.addIntel add the intel to the occupied location as well.
 				// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
-				// CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]);
+			};
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: (protected) setPersonalGarrisonIntel
+	*/
+	METHOD("setPersonalGarrisonIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+
+		OOP_INFO_1("setPersonalGarrisonIntel: %1", _garrison);
+
+		if(CALLM(_garrison, "isActual", [])) then {
+
+			OOP_INFO_0("  garrison is actual");
+
+			T_PRVAR(intel);
+
+			// Bail if null
+			if (!IS_NULL_OBJECT(_intel)) then { // Because it can be objNull
+
+				OOP_INFO_0("  intel is not null");
+
+				private _actual = GETV(_garrison, "actual");
+				// It will make sure itself that it doesn't add duplicates of intel
+				private _AI = CALLM0(_actual, "getAI");
+				CALLM2(_AI, "postMethodAsync", "setPersonalIntel", [_intel]);
+
+				OOP_INFO_2("  sent intel %1 to AI: %2", _intel, _AI);
 			};
 		};
 	} ENDMETHOD;
@@ -199,14 +236,18 @@ CLASS("CmdrAction", "RefCounted")
 		_radius - Number, default 2000, the radius in meters in which we are placing intel.
 	*/
 	/*protected */ METHOD("addIntelAt") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 2000, [0]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 3500, [0]]];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		{
 			_x params ["_distance", "_garrison"];
+			// For now let's give intel to all garrisons in range?
+			/*
 			private _chance =  1 - (_distance / _radius) ^ 2 + 0.1;
 			if(_chance > random 1) then {
 				T_CALLM("addIntelToGarrison", [_garrison]);
 			};
+			*/
+			T_CALLM1("addGeneralGarrisonIntel", _garrison); // Note that we give general intel to this garrison, not personal
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
 	} ENDMETHOD;	
 

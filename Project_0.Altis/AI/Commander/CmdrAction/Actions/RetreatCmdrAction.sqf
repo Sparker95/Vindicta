@@ -191,6 +191,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		if(_intelNotCreated) then {
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intel", _intelClone);
+
 		} else {
 			CALLM(_intel, "updateInDb", []);
 		};

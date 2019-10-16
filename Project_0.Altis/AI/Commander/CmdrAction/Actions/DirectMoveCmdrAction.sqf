@@ -98,7 +98,7 @@ CLASS("DirectMoveCmdrAction", "CmdrAction")
 				SETV(_record, "pos", _tgtTarget);
 			};
 			default {
-				OOP_ERROR_2("Target type %1 is not implemented, target: %1", _tgtType, _tgtTarget);
+				OOP_ERROR_2("Target type %1 is not implemented, target: %2", _tgtType, _tgtTarget);
 			};
 		};
 

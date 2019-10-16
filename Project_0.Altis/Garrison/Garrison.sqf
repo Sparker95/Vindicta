@@ -50,8 +50,6 @@ CLASS("Garrison", "MessageReceiverEx");
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
 	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
 
-	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
-
 	// Flag which is reset at each process call
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
@@ -100,7 +98,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("location", "");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
-		T_SETV("intelItems", []);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
 		pr _mutex = MUTEX_RECURSIVE_NEW();
@@ -2399,26 +2396,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
 		T_CALLM("addGroup", [_newGroup]);
 		_newGroup
-	} ENDMETHOD;
-
-	// Adds an intel item to this garrison
-	METHOD("addIntel") {
-		pr _return = params ["_thisObject", ["_intel", "", [""]]];
-
-		if(!_return) exitWith {
-			DUMP_CALLSTACK;
-		};
-
-		T_GETV("intelItems") pushBackUnique _intel;
-
-		OOP_INFO_1("Added intel: %1", _intel);
-	} ENDMETHOD;
-
-	// Gets all intel items from this garrison
-	METHOD("getIntel") {
-		params ["_thisObject"];
-
-		T_GETV("intelItems")
 	} ENDMETHOD;
 
 	// Updates spawn state of garrisons close to the provided position

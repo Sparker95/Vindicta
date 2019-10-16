@@ -76,8 +76,9 @@ CLASS("PersonalInventory", "")
 			} else {
 				OOP_ERROR_1("Base class name %1 not found", _className);
 			};
+			
+			OOP_INFO_3("getInventoryData: %1 %2   return: %3", _className, _ID, [_returnData ARG _returnDataExists]);
 		};
-		OOP_INFO_3("getInventoryData: %1 %2   return: %3", _className, _ID, [_returnData ARG _returnDataExists]);
 		[_returnData, _returnDataExists]
 	} ENDMETHOD;
 
