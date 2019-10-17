@@ -124,11 +124,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _AI = NEW("AIGarrison", [_thisObject]);
 		SETV(_thisObject, "AI", _AI);
 
-		// Set position if it was specified
-		if (count _pos > 0) then {
-			T_CALLM2("postMethodAsync", "setPos", [_pos]);
-		};
-
 		// Create a timer to call process method
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
@@ -136,6 +131,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
+
+		// Set position if it was specified
+		if (count _pos > 0) then {
+			T_CALLM2("postMethodAsync", "setPos", [_pos]);
+		};
 
 		/*
 		T_SETV("timer", "");
