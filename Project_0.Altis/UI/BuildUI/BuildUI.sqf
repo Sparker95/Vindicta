@@ -232,54 +232,54 @@ CLASS("BuildUI", "")
 			if (_ItemCatOpen) then { 
 
 				// tooltips
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
+				([_display, "TOOLTIP1"] call ui_fnc_findControl) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
+				([_display, "TOOLTIP2"] call ui_fnc_findControl) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
 
-				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0.6];
-				(_display displayCtrl IDC_ITEXTL2) ctrlSetText format ["%1", (_UIItemTexts select 0)];
-				(_display displayCtrl IDC_ITEXTL1) ctrlSetText format ["%1", (_UIItemTexts select 1)];
-				(_display displayCtrl IDC_ITEXTC) ctrlSetText format ["%1", (_UIItemTexts select 2)];
-				(_display displayCtrl IDC_ITEXTR1) ctrlSetText format ["%1", (_UIItemTexts select 3)];
-				(_display displayCtrl IDC_ITEXTR2) ctrlSetText format ["%1", (_UIItemTexts select 4)];
+				([_display, "ITEMCAT_BG"] call ui_fnc_findControl) ctrlSetBackgroundColor [0,0,0,0.6];
+				([_display, "ITEMTEXT_L2"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UIItemTexts select 0)];
+				([_display, "ITEMTEXT_L1"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UIItemTexts select 1)];
+				([_display, "ITEMTEXT_CENTER"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UIItemTexts select 2)];
+				([_display, "ITEMTEXT_R1"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UIItemTexts select 3)];
+				([_display, "ITEMTEXT_R2"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UIItemTexts select 4)];
 
 				{
-					(_display displayCtrl _x) ctrlShow true;
-					(_display displayCtrl _x) ctrlCommit 0;
-				} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+					([_display, _x] call ui_fnc_findControl) ctrlShow true;
+					([_display, _x] call ui_fnc_findControl) ctrlCommit 0;
+				} forEach ["ITEMTEXT_R2", "ITEMTEXT_R1", "ITEMTEXT_CENTER", "ITEMTEXT_L1", "ITEMTEXT_L2", "ITEMCAT_BG"];
 
 			} else { 
 				// tooltips
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>BACKSPACE: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t> <t color='%1' align='center' valign='bottom'>  |  ARROW KEYS: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>", _color];
+				([_display, "TOOLTIP1"] call ui_fnc_findControl) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
+				([_display, "TOOLTIP2"] call ui_fnc_findControl) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>BACKSPACE: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t> <t color='%1' align='center' valign='bottom'>  |  ARROW KEYS: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>", _color];
 
-				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
+				([_display, "ITEMCAT_BG"] call ui_fnc_findControl) ctrlSetBackgroundColor [0,0,0,0];
 				{
-					(_display displayCtrl _x) ctrlShow false;
-					(_display displayCtrl _x) ctrlCommit 0;
-				} forEach [IDC_ITEXTR2, IDC_ITEXTR1, IDC_ITEXTC, IDC_ITEXTL1, IDC_ITEXTL2, IDC_ITEXTBG];
+					([_display, _x] call ui_fnc_findControl) ctrlShow false;
+					([_display, _x] call ui_fnc_findControl) ctrlCommit 0;
+				} forEach ["ITEMTEXT_R2", "ITEMTEXT_R1", "ITEMTEXT_CENTER", "ITEMTEXT_L1", "ITEMTEXT_L2", "ITEMCAT_BG"];
 			};
 
 			if (_isMovingObj) then { 
-				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
-				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
+				([_display, "TOOLTIP1"] call ui_fnc_findControl) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
+				([_display, "TOOLTIP2"] call ui_fnc_findControl) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>Q/E:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> ROTATE OBJECT</t>", _color];
 			};
 
 			// cat menu
-			(_display displayCtrl IDC_TEXTL2) ctrlSetText format ["%1", (_UICatTexts select 0)];
-			(_display displayCtrl IDC_TEXTL1) ctrlSetText format ["%1", (_UICatTexts select 1)];
-			(_display displayCtrl IDC_TEXTC) ctrlSetText format ["%1", (_UICatTexts select 2)];
+			([_display, "CATEGORYTEXT_L2"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UICatTexts select 0)];
+			([_display, "CATEGORYTEXT_L1"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UICatTexts select 1)];
+			([_display, "CATEGORYTEXT_CENTER"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UICatTexts select 2)];
 
 			// button highlight effect
 			if (_TimeFadeIn > time) then { 
-				(_display displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, (_TimeFadeIn - time)];
-			} else { (_display displayCtrl IDC_TEXTC) ctrlSetBackgroundColor [1, 1, 1, 0]; };
+				([_display, "CATEGORYTEXT_CENTER"] call ui_fnc_findControl) ctrlSetBackgroundColor [1, 1, 1, (_TimeFadeIn - time)];
+			} else { ([_display, "CATEGORYTEXT_CENTER"] call ui_fnc_findControl) ctrlSetBackgroundColor [1, 1, 1, 0]; };
 
-			(_display displayCtrl IDC_TEXTR1) ctrlSetText format ["%1", (_UICatTexts select 3)];
-			(_display displayCtrl IDC_TEXTR2) ctrlSetText format ["%1", (_UICatTexts select 4)];
+			([_display, "CATEGORYTEXT_R1"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UICatTexts select 3)];
+			([_display, "CATEGORYTEXT_R2"] call ui_fnc_findControl) ctrlSetText format ["%1", (_UICatTexts select 4)];
 
 			{
-				(_display displayCtrl _x) ctrlCommit 0;
-			} forEach [IDC_TEXTL2, IDC_TEXTL1, IDC_TEXTC, IDC_TEXTR1, IDC_TEXTR2];
+				([_display, _x] call ui_fnc_findControl) ctrlCommit 0;
+			} forEach ["CATEGORYTEXT_L2", "CATEGORYTEXT_L1", "CATEGORYTEXT_CENTER", "CATEGORYTEXT_R1", "CATEGORYTEXT_R2"];
 
 			T_CALLM0("updateCarouselOffsets");
 		};
