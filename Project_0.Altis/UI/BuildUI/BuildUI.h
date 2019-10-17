@@ -22,7 +22,7 @@ class BuildUI
 
 		class CATEGORY_BG : RSCPICTURE {
 
-			IDC = -1; 
+			IDC = IDC_CTEXTBG; 
 			x = safeZoneX + safeZoneW * 0.293; 
 			y = safeZoneY + safeZoneH * 0.744; 
 			w = safeZoneW * 0.412; 
@@ -175,9 +175,9 @@ class BuildUI
 		class ITEMTEXT_CENTER : MUI_BASE {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.457; 
+			x = safeZoneX + safeZoneW * 0.430; 
 			y = safeZoneY + safeZoneH * 0.720; 
-			w = safeZoneW * 0.084; 
+			w = safeZoneW * 0.138; 
 			h = safeZoneH * 0.018; 
 			style = ST_CENTER; 
 			text = "item category"; 
@@ -191,9 +191,9 @@ class BuildUI
 		class ITEMTEXT_L1 : MUI_BASE {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.353; 
+			x = safeZoneX + safeZoneW * 0.284; 
 			y = safeZoneY + safeZoneH * 0.720; 
-			w = safeZoneW * 0.084; 
+			w = safeZoneW * 0.138; 
 			h = safeZoneH * 0.018; 
 			style = ST_CENTER; 
 			text = "item category"; 
@@ -207,9 +207,9 @@ class BuildUI
 		class ITEMTEXT_L2 : MUI_BASE {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.249; 
+			x = safeZoneX + safeZoneW * 0.138; 
 			y = safeZoneY + safeZoneH * 0.720; 
-			w = safeZoneW * 0.084; 
+			w = safeZoneW * 0.138; 
 			h = safeZoneH * 0.018; 
 			style = ST_CENTER; 
 			text = "item category"; 
@@ -223,9 +223,9 @@ class BuildUI
 		class ITEMTEXT_R1 : MUI_BASE {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.561; 
+			x = safeZoneX + safeZoneW * 0.577; 
 			y = safeZoneY + safeZoneH * 0.720; 
-			w = safeZoneW * 0.084; 
+			w = safeZoneW * 0.138; 
 			h = safeZoneH * 0.018; 
 			style = ST_CENTER; 
 			text = "item category"; 
@@ -239,9 +239,9 @@ class BuildUI
 		class ITEMTEXT_R2 : MUI_BASE {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.665; 
+			x = safeZoneX + safeZoneW * 0.723; 
 			y = safeZoneY + safeZoneH * 0.720; 
-			w = safeZoneW * 0.084; 
+			w = safeZoneW * 0.138; 
 			h = safeZoneH * 0.018; 
 			style = ST_CENTER; 
 			text = "item category"; 
