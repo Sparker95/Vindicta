@@ -566,6 +566,108 @@ CLASS("AICommander", "AI")
 		pr _ret = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
 		_ret params ["_data", "_dataIsNotNil"];
 
+		if (!_dataIsNotNil) exitWith {
+			pr _text = "No data registered for this device in TactiCommNetWork!\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+
+			pr _text = "Retinal scan identity mismatch!\nDevice will be locked.\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+		};
+
+		OOP_INFO_1("  data from pers. inv.: %1", _data);
+
+		// Unpack the data
+		pr _temp = NEW("UnitIntelData", []);
+		DESERIALIZE(_temp, _data);
+		pr _intelGeneral = GETV(_temp, "intelGeneral");
+		pr _intelPersonal = GETV(_temp, "intelPersonal");
+		pr _locs = GETV(_temp, "knownFriendlyLocations");
+		DELETE(_temp);
+
+		// Process the intel about this garrison's action
+		if (!IS_NULL_OBJECT(_intelPersonal)) then {
+			if (IS_OOP_OBJECT(_intelPersonal)) then {
+				pr _actionName = CALLM0(_intelPersonal, "getShortName");
+				pr _dateDeparture = GETV(_intelPersonal, "dateDeparture");
+				pr _posSrc = GETV(_intelPersonal, "posSrc");
+				pr _posTgt = GETV(_intelPersonal, "posTgt");
+
+				if (!isNil "_posTgt") then {
+					pr _text = format ["\n  Current order: %1 at grid %2\n", _actionName, mapGridPosition _posTgt];
+					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				} else {
+					pr _text = format ["\n  Current order: %1\n", _actionName];
+					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				};
+
+				
+
+				if (!isNil "_posSrc") then {
+					pr _text = format ["Departure from %1, at date %2\n", mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
+					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				};
+			};
+		} else {
+			pr _text = format ["\n  Current order: none\n"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+		};
+
+		// Process the intel about other intel items known to the garrison
+		pr _intelGeneralUnique = _intelGeneral - [_intelPersonal]; // We don't want to process known intel
+		if (count _intelGeneralUnique > 0) then {
+
+			pr _text = "  Friendly squad orders:\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+
+			{
+				pr _intel = _x;
+				if (!IS_NULL_OBJECT(_intel)) then {
+					if (IS_OOP_OBJECT(_intel)) then {
+						pr _actionName = CALLM0(_intel, "getShortName");
+						pr _dateDeparture = GETV(_intel, "dateDeparture");
+						pr _posSrc = GETV(_intel, "posSrc");
+						pr _posTgt = GETV(_intel, "posTgt");
+
+						pr _text = _actionName;
+						if (!isNil "_posSrc") then {
+							_text = _text + format [" from %1", mapGridPosition _posSrc];
+						};
+
+						if (!isNil "_posTgt") then {
+							_text = _text + format [" to %1", mapGridPosition _posTgt];
+						};
+
+						if (!isNil "_dateDeparture") then {
+							_text = _text + format [" at date %1", _dateDeparture call misc_fnc_dateToISO8601];
+						};
+
+						_text = _text + "\n";
+						REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
+					};
+				}
+			} forEach (_intelGeneral - [_intelPersonal]);
+		};
+
+		// Process locations known by this garrison
+		if (count _locs > 0) then {
+			pr _text = "  Friendly outpost data:\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
+			{
+				pr _loc = _x;
+				pr _type = CALLM0(_loc, "getType");
+				pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+				pr _pos = CALLM0(_loc, "getPos");
+				pr _text = format ["Grid %1: %2 %3\n", mapGridPosition _pos, _typeStr, CALLM0(_loc, "getName")];
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
+			} forEach _locs;
+		};
+
+		pr _text = "\nRetinal scan identity mismatch! Device is locked.\n";
+		REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+
+		// Bail out for now
+		if (true) exitWith {};
+
 		// Make sure _data is valid
 		pr _foundSomething = false;
 		if (_dataIsNotNil) then {
@@ -758,14 +860,14 @@ CLASS("AICommander", "AI")
 	// Thread unsafe
 	METHOD("_addActivity") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
-		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG _side]);
+		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "addActivity", [_pos ARG _activity])
 	} ENDMETHOD;
 
 	METHOD("_addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
-		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG _side]);
+		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "addDamage", [_pos ARG _activity])
 	} ENDMETHOD;

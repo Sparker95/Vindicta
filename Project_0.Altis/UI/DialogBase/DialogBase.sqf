@@ -10,7 +10,7 @@
 #include "DialogBase_Macros.h"
 
 /*
-Class : DialogBase
+Class : TacticalTablet
 
 SQF class made to help streamline use of dialogs with standard appearence.
 It has a headline, close button, hint bar, and an optinal multi-tab capability. 

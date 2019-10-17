@@ -96,6 +96,7 @@ class CfgFunctions {
 #include "UI\DialogBase\DialogBase.h"
 #include "UI\InGameMenu\InGameMenu.h"
 #include "UI\IADCTest\PlayerUI.h"
+#include "UI\TacticalTablet\TacticalTablet.h"
 
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"

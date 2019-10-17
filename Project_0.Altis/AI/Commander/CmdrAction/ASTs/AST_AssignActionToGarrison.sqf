@@ -48,8 +48,11 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 		ASSERT_OBJECT(_garr);
 		T_PRVAR(action);
 		CALLM(_garr, "setAction", [_action]);
-		CALLM(_action, "addIntelToGarrison", [_garr]);
+
+		// Give personal intel to garrison
+		CALLM(_action, "setPersonalGarrisonIntel", [_garr]);
 		T_GETV("successState")
+
 	} ENDMETHOD;
 ENDCLASS;
 

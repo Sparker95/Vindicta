@@ -184,6 +184,9 @@ CLASS("ReconCmdrAction", "CmdrAction")
 			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+
+			// Send intel to the garrison doing this action
+			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
 		};
 	} ENDMETHOD;
 	

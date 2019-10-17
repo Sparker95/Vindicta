@@ -37,6 +37,10 @@ CLASS("UnitIntel", "")
 
 		ASSERT_GLOBAL_OBJECT(gPersonalInventory);
 
+		// Civilians are not having any of the intel items for now
+		pr _gar = CALLM0(_unit, "getGarrison");
+		if (CALLM0(_gar, "getSide") == CIVILIAN) exitWith {};
+
 		if (CALLM0(_unit, "isInfantry")) then {
 			pr _group = CALLM0(_unit, "getGroup");
 			pr _groupLeader = CALLM0(_group, "getLeader");
@@ -50,8 +54,9 @@ CLASS("UnitIntel", "")
 				if (count _IDs == 0) exitWith {};
 
 				pr _gar = CALLM0(_unit, "getGarrison");
-				pr _intelArray = CALLM0(_gar, "getIntel");
-				CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _intelArray);
+				pr _AI = CALLM0(_gar, "getAI");
+				pr _dataSerial = CALLM0(_AI, "getUnitIntelDataSerial");
+				CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _dataSerial);
 
 				// Add to uniform
 				pr _hO = CALLM0(_unit, "getObjectHandle");
@@ -85,12 +90,13 @@ CLASS("UnitIntel", "")
 			if (count _IDs == 0) exitWith {};
 
 			pr _gar = CALLM0(_unit, "getGarrison");
-			pr _intelArray = CALLM0(_gar, "getIntel");
-			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _intelArray);
+			pr _AI = CALLM0(_gar, "getAI");
+			pr _dataSerial = CALLM0(_AI, "getUnitIntelDataSerial");
+			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _dataSerial);
 
 			// Add to the cargo
 			pr _hO = CALLM0(_unit, "getObjectHandle");
-			_ho addMagazineCargoGlobal [PERSONAL_INVENTORY_FULL_CLASS(_baseClass, _IDs#0), 1];
+			_hO addMagazineCargoGlobal [PERSONAL_INVENTORY_FULL_CLASS(_baseClass, _IDs#0), 1];
 
 			// Add event handler to free the used inventory items when the unit is destroyed
 			_hO addEventHandler ["Deleted", { 
@@ -256,6 +262,7 @@ CLASS("UnitIntel", "")
 		
 	} ENDMETHOD;
 
+	// Called on player's computer when he picks up the intel item
 	STATIC_METHOD("inspectIntel") {
 		params ["_thisObject", ["_fullClassName", "", [""]] ];
 
@@ -266,8 +273,59 @@ CLASS("UnitIntel", "")
 		// Tell to commander! He must know about it :D !
 		pr _playerCommander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
 		//CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", [clientOwner]);
-		//CALLM2(_playerCommander, "postMethodAsync", "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner]);
-		REMOTE_EXEC_CALL_METHOD(_playerCommander, "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner], 2);
+		CALLM2(_playerCommander, "postMethodAsync", "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner]);
+		//REMOTE_EXEC_CALL_METHOD(_playerCommander, "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner], 2);
+
+		private _inst = CALLSM0("TacticalTablet", "newInstance");
+
+		private _tipOfTheDay = 	[	"Always wear a helmet, even at base!",
+									"Have you checked your ammo?",
+									"Stay alert when on patrol!",
+									"Ensure your radio frequency and channel!",
+									"Never do a selfie in fight!",
+									"Remember to stay in formation, ... but not too close!",
+									"Remember to check fuel of your vehicles!",
+									"Find your gun safety switch before fight!"];
+
+		// Make us some time while we are waiting for server response...
+		CALLM2(_inst,"appendTextDelay", "Welcome to TactiCool OS v28.3!\nDetected 128 GB RAM, 16 TB SSD\n", 0.1);
+		pr _text = format ["System date: %1, grid: %2\n", date call misc_fnc_dateToISO8601, mapGridPosition player];
+		CALLM2(_inst,"appendTextDelay", _text, 0.2);
+		pr _text = format ["User class: %1\n", typeof player];
+		CALLM2(_inst,"appendTextDelay", _text, 0.06);
+		pr _text = format ["Primary weapon: %1\n", primaryWeapon player];
+		CALLM2(_inst,"appendTextDelay", _text, 0.06);
+		pr _text = format ["Secondary weapon: %1\n", secondaryWeapon player];
+		CALLM2(_inst,"appendTextDelay", _text, 0.06);
+		pr _text = format ["Dammage: %1 percent\n", round ((damage player)*100)];
+		CALLM2(_inst,"appendTextDelay", _text, 0.05);
+
+		CALLM2(_inst,"appendTextDelay", "\nTip of the day:\n",  0.1 + random 0.2);
+		CALLM2(_inst,"appendTextDelay", selectrandom _tipOfTheDay, 0);
+		CALLM2(_inst,"appendTextDelay", "\n", 0);
+
+		CALLM2(_inst,"appendTextDelay", "\nConnecting to TactiCommNetwork server...\n",  0.15 + random 0.2);
+		CALLM2(_inst,"appendTextDelay", "Tx SYN\n",  0.2 + random 0.2);
+		CALLM2(_inst,"appendTextDelay", "Rx SYN-ACK\nTx ACK\n",  0.2 + random 0.2);
+		//CALLM2(_inst,"appendTextDelay", ".", 0.3);
+		//CALLM2(_inst,"appendTextDelay", ".", 0.3);
+		//CALLM2(_inst,"appendTextDelay", ".", 0.1);
+		CALLM2(_inst,"appendTextDelay", "Tx RQ-DATA\n", 0.2);
+		CALLM2(_inst,"appendTextDelay", "Rx INTEL_CMDR_ACTION\n", 0.2);
+		CALLM2(_inst,"appendTextDelay", "\nConnection established!\n", 0.1);
+
+		CALLM2(_inst, "setTextDelay", "Logged in Altis Armed Forces TactiCommNetWork\n", 0.4);
+		pr _text = format ["System date: %1\n", date call misc_fnc_dateToISO8601];
+		CALLM2(_inst, "appendTextDelay", _text, 0.1);
+
+		/*
+		pr _intelDataSerial = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
+		{
+			CALLM2(_inst,"appendTextDelay", str _x, 0);
+			CALLM2(_inst,"appendTextDelay", "\n", 0);
+		} forEach _intelDataSerial;
+		*/
+
 	} ENDMETHOD;
 
 ENDCLASS;

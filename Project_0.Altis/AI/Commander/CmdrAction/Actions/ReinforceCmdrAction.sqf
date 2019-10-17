@@ -45,7 +45,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
-			_intel = NEW("IntelCommanderActionAttack", []);
+			_intel = NEW("IntelCommanderActionReinforce", []);
 
 			T_PRVAR(srcGarrId);
 			T_PRVAR(tgtGarrId);
@@ -70,7 +70,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			// If we just created this intel then register it now 
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
 			T_SETV("intel", _intelClone);
-			
+
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtGarr, "pos")]);
