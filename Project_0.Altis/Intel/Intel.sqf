@@ -4,6 +4,7 @@
 #define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Location\Location.hpp"
+#include "Intel.hpp"
 
 /*
 Classes of intel items
@@ -94,6 +95,7 @@ CLASS("Intel", "")
 	METHOD("create") {
 		params [P_THISOBJECT];
 		T_SETV("dateCreated", date);
+		T_SETV("state", INTEL_ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
 
 	/*
@@ -106,6 +108,15 @@ CLASS("Intel", "")
 		private _db = T_GETV("db");
 		ASSERT_MSG(!isNil "_db", "This intel wasn't created using addIntelClone so you can't use updateInDb.");
 		CALLM(_db, "updateIntelFromClone", [_thisObject]);
+	} ENDMETHOD;
+
+	/*
+	Method: getDBEntry
+	Returns the db entry of the intel if it associated with its clone.
+	*/
+	METHOD("getDbEntry") {
+		params [P_THISOBJECT];
+		T_GETV("dbEntry")
 	} ENDMETHOD;
 	
 
@@ -365,6 +376,9 @@ ENDCLASS;
 	Base class for all intel about commander actions.
 */
 CLASS("IntelCommanderAction", "Intel")
+
+	// State of this commander action (inactive, active, complete, failed, etc), see Intel.hpp for states
+	VARIABLE_ATTR("state", [ATTR_SERIALIZABLE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];

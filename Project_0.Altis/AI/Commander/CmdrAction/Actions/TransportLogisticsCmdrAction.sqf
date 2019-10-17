@@ -214,8 +214,8 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intel);
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		T_PRVAR(intelClone);
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
@@ -240,16 +240,16 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar"));
 		};
 
-		T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
+		T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
 		if(_intelNotCreated) then {
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
+			T_SETV("intelClone", _intelClone);
 
 		} else {
-			CALLM(_intel, "updateInDb", []);
+			CALLM(_intelClone, "updateInDb", []);
 		};
 	} ENDMETHOD;
 

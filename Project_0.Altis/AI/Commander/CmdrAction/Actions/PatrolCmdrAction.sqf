@@ -233,9 +233,10 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
-		T_PRVAR(intel);
+		private _intel = NULL_OBJECT;
+		T_PRVAR(intelClone);
 	
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
@@ -259,11 +260,11 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
 			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
 
-			// Departure date is 20+ minutes from now but they depart instantly, I don't know why :/ 
 			//SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
 			SETV(_intel, "dateDeparture", DATE_NOW); // Sparker added this, I think it's allright??
 
 			CALLM(_intel, "create", []);
+			SETV(_intel, "state", INTEL_ACTION_STATE_ACTIVE); // It's instantly active
 		};
 
 		// Update progress of the garrison
@@ -276,16 +277,17 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// };
 
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		SETV(_intel, "garrison", GETV(_srcGarr, "actual"));
-		SETV(_intel, "pos", GETV(_srcGarr, "pos"));
-		SETV(_intel, "posCurrent", GETV(_srcGarr, "pos"));
-		SETV(_intel, "strength", GETV(_srcGarr, "efficiency"));
+		private _intelUpdate = if (_intelNotCreated) then {_intel} else {_intelClone};
+		SETV(_intelUpdate, "garrison", GETV(_srcGarr, "actual"));
+		SETV(_intelUpdate, "pos", GETV(_srcGarr, "pos"));
+		SETV(_intelUpdate, "posCurrent", GETV(_srcGarr, "pos"));
+		SETV(_intelUpdate, "strength", GETV(_srcGarr, "efficiency"));
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
 		if(_intelNotCreated) then {
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
+			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
@@ -298,7 +300,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
 		} else {
-			CALLM(_intel, "updateInDb", []);
+			CALLM(_intelClone, "updateInDb", []);
 
 			// Give the intel ref to the actual garrison doing the action
 			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
@@ -427,7 +429,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		// _delay = 0 max (120 min _delay);
 		private _startDate = DATE_NOW;
 
-		_startDate set [4, _startDate#4 + _delay];
+		//_startDate set [4, _startDate#4 + _delay]; // Now there is no delay AST anyway
 
 		T_SET_AST_VAR("startDateVar", _startDate);
 

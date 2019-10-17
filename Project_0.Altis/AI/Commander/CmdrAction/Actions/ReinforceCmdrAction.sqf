@@ -40,8 +40,9 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intel);
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		T_PRVAR(intelClone);
+		private _intel = NULL_OBJECT;
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
@@ -68,8 +69,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
+			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
@@ -80,8 +81,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
 		} else {
-			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
-			CALLM(_intel, "updateInDb", []);
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
+			CALLM(_intelClone, "updateInDb", []);
 		};
 	} ENDMETHOD;
 

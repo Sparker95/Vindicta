@@ -187,6 +187,11 @@ CLASS("ReconCmdrAction", "CmdrAction")
 
 			// Send intel to the garrison doing this action
 			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
+
+			private _state = T_GETV("state");
+			if (_state == CMDR_ACTION_STATE_READY_TO_MOVE) then {
+				T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
+			};
 		};
 	} ENDMETHOD;
 	

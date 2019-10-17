@@ -25,6 +25,7 @@
 #include "AICommander.hpp"
 #include "..\..\MessageReceiver\MessageReceiver.hpp"
 #include "..\..\Mutex\Mutex.hpp"
+#include "..\..\Intel\Intel.hpp"
 
 #define PROFILER_COUNTERS_ENABLE
 

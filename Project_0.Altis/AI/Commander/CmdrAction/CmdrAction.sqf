@@ -52,7 +52,8 @@ CLASS("CmdrAction", "RefCounted")
 	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
 	// Intel object associated with this action
-	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
+	// It's an intel clone! The actual intel is in the database
+	VARIABLE_ATTR("intelClone", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -65,7 +66,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("variables", []);
 		T_SETV("variablesStack", []);
 		T_SETV("garrisons", []);
-		T_SETV("intel", NULL_OBJECT);
+		T_SETV("intelClone", NULL_OBJECT);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -81,8 +82,12 @@ CLASS("CmdrAction", "RefCounted")
 			};
 		} foreach +_garrisons;
 
-		private _intelClone = T_GETV("intel"); // We have a clone of intel
+		private _intelClone = T_GETV("intelClone"); // We have a clone of intel
 		if(!IS_NULL_OBJECT(_intelClone)) then {
+
+			// Mark the action state as END
+			SETV(_intelClone, "state", INTEL_ACTION_STATE_END);
+			CALLM0(_intelClone, "updateInDb"); // Broadcast it to friendlies, also update _intel from _intelClone
 
 			// If db is valid then we can directly remove our matching intel entry from it.
 			private _db = GETV(_intelClone, "db");
@@ -91,13 +96,13 @@ CLASS("CmdrAction", "RefCounted")
 				ASSERT_MSG(_dbEntry != _intelClone, "Circular reference in Intel!");
 
 				OOP_INFO_MSG("cleaning up intel object from db", []);
-				CALLM(_db, "removeIntelForClone", [_intelClone]);
+				// CALLM(_db, "removeIntelForClone", [_intelClone]);
 				CALLSM2("AICommander", "unregisterIntelCommanderAction", _dbEntry, _intelClone);
-				DELETE(_dbEntry);
+				// DELETE(_dbEntry); // We DO NOT DELETE the intel in the database so that players can discover it !!
 				OOP_INFO_MSG("cleaned up intel object from db", []);
 			};
 
-			DELETE(_intelClone);
+			DELETE(_intelClone); // We delete only the local clone of intel we temporarily used for updating the actual intel in the database
 		};
 	} ENDMETHOD;
 
@@ -179,10 +184,11 @@ CLASS("CmdrAction", "RefCounted")
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
 		if(CALLM(_garrison, "isActual", [])) then {
-			T_PRVAR(intel);
+			T_PRVAR(intelClone);
 
 			// Bail if null
-			if (!IS_NULL_OBJECT(_intel)) then { // Because it can be objNull
+			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+				private _intel = CALLM0(_intelClone, "getDbEntry");
 				private _actual = GETV(_garrison, "actual");
 				// It will make sure itself that it doesn't add duplicates of intel
 				private _AI = CALLM0(_actual, "getAI");
@@ -209,10 +215,11 @@ CLASS("CmdrAction", "RefCounted")
 
 			OOP_INFO_0("  garrison is actual");
 
-			T_PRVAR(intel);
+			T_PRVAR(intelClone);
 
 			// Bail if null
-			if (!IS_NULL_OBJECT(_intel)) then { // Because it can be objNull
+			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+				private _intel = CALLM0(_intelClone, "getDbEntry");
 
 				OOP_INFO_0("  intel is not null");
 
@@ -249,7 +256,38 @@ CLASS("CmdrAction", "RefCounted")
 			*/
 			T_CALLM1("addGeneralGarrisonIntel", _garrison); // Note that we give general intel to this garrison, not personal
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
-	} ENDMETHOD;	
+	} ENDMETHOD;
+
+	/*
+	Method: updateIntelForEnemies
+
+	Call this when we need to broadcast an intel update to enemies (enemy commanders)
+	*/
+	METHOD("updateIntelForEnemies") {
+		params [P_THISOBJECT];
+		T_PRVAR(intelClone);
+		if (!IS_NULL_OBJECT(_intelClone)) then {
+			private _intel = CALLM0(_intelClone, "getDbEntry");
+			CALLSM2("AICommander", "updateIntelCommanderActionForEnemies", _intel, _intelClone);
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: setIntelStateAndUpdateForEnemies
+	Sets the state of the intel associated with this action. Updates it for enemies, but only if state was changed.
+	*/
+	METHOD("setIntelState") {
+		params [P_THISOBJECT, ["_state"], ["_updateForEnemies", true]];
+		T_PRVAR(intelClone);
+		if (!IS_NULL_OBJECT(_intelClone)) then {
+			private _statePrev = GETV(_intelClone, "state");
+			SETV(_intelClone, "state", _state);
+			// If state has changed and update for enemies was requested
+			if (_state != _statePrev && _updateForEnemies) then {
+				T_CALLM0("updateIntelForEnemies");
+			};
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: (virtual) updateScore

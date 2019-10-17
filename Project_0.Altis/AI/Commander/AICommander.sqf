@@ -536,6 +536,10 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("revealIntelToPlayerSide") {
 		params ["_thisClass", ["_item", "", [""]]];
 
+		if (true) exitWith {
+			OOP_WARNING_0("revealIntelToPlayerSide is currently disabled!");
+		};
+
 		// Make a clone of this intel item in our thread
 		pr _itemClone = CLONE(_item);
 		SETV(_itemClone, "source", _item); // Link it with the source
@@ -546,6 +550,7 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 
 	// Handles stealing intel item which this commander doesn't own
+	// Temporary function to reveal stuff to players
 	METHOD("stealIntel") {
 		 params ["_thisObject", ["_item", "", [""]], P_OOP_OBJECT("_itemClone")];
 
@@ -554,6 +559,38 @@ CLASS("AICommander", "AI")
 
 		pr _thisDB = T_GETV("intelDB");
 		CALLM1(_thisDB, "addIntel", _itemClone);
+	} ENDMETHOD;
+
+	// Checks intel in some other cmdr's database
+	// Makes a copy of that intel and takes it to this commander
+	METHOD("inspectIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+
+		OOP_INFO_1("INSPECT INTEL: %1", _intel);
+
+		// Bail if null object for some reason
+		if (IS_NULL_OBJECT(_intel)) exitWith {
+			OOP_ERROR_0("INSPECT INTEL: null object was passed");
+		};
+
+		pr _srcSide = GETV(_intel, "side");
+		if (_srcSide == T_GETV("side")) exitWith {
+			OOP_INFO_0("  it's our own intel!");
+		};
+
+		// Check if we have an intel from this source already
+		pr _db = T_GETV("intelDB");
+		if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then { // If it's not our own intel, then this intel item might be a source of our intel item 
+			// Update the intel
+			OOP_INFO_1("  Intel with source %1 found in DB, updating from source...", _intel);
+			CALLM1(_db, "updateIntelFromSource", _intel);
+		} else {
+			// Make a clone for ourselves and add it to our database
+			pr _ourIntel = CLONE(_intel);
+			OOP_INFO_2("  Intel with source %1 NOT found in DB, made a clone: %2", _intel, _ourIntel);
+			SETV(_ourIntel, "source", _intel); // We must mark the external intel item as as source of this intel, for future updates
+			CALLM1(_db, "addIntel", _ourIntel);
+		};
 	} ENDMETHOD;
 
 	// Gets called after player has analyzed up an inventory item with intel
@@ -587,6 +624,11 @@ CLASS("AICommander", "AI")
 		// Process the intel about this garrison's action
 		if (!IS_NULL_OBJECT(_intelPersonal)) then {
 			if (IS_OOP_OBJECT(_intelPersonal)) then {
+
+				// Add to our db if needed
+				T_CALLM1("inspectIntel", _intelPersonal);
+
+				// Process what to show on the remote player's tablet
 				pr _actionName = CALLM0(_intelPersonal, "getShortName");
 				pr _dateDeparture = GETV(_intelPersonal, "dateDeparture");
 				pr _posSrc = GETV(_intelPersonal, "posSrc");
@@ -600,12 +642,12 @@ CLASS("AICommander", "AI")
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				};
 
-				
-
 				if (!isNil "_posSrc") then {
 					pr _text = format ["Departure from %1, at date %2\n", mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				};
+			} else {
+				OOP_ERROR_1("Invalid personal intel ref: %1", _intelPersonal);
 			};
 		} else {
 			pr _text = format ["\n  Current order: none\n"];
@@ -623,6 +665,11 @@ CLASS("AICommander", "AI")
 				pr _intel = _x;
 				if (!IS_NULL_OBJECT(_intel)) then {
 					if (IS_OOP_OBJECT(_intel)) then {
+
+						// Add to our db if needed
+						T_CALLM1("inspectIntel", _intel);
+
+						// Process what to show on the remote player's tablet
 						pr _actionName = CALLM0(_intel, "getShortName");
 						pr _dateDeparture = GETV(_intel, "dateDeparture");
 						pr _posSrc = GETV(_intel, "posSrc");
@@ -643,6 +690,9 @@ CLASS("AICommander", "AI")
 
 						_text = _text + "\n";
 						REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
+
+					} else {
+						OOP_ERROR_1("Invalid general intel ref: %1", _intelPersonal);
 					};
 				}
 			} forEach (_intelGeneral - [_intelPersonal]);
@@ -1047,7 +1097,7 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 
 	/*
-	Method: removeIntelCommanderAction
+	Method: unregisterIntelCommanderAction
 	
 	*/
 	STATIC_METHOD("unregisterIntelCommanderAction") {
@@ -1065,12 +1115,42 @@ CLASS("AICommander", "AI")
 			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
-			private _intelInDB = CALLM1(_db, "getIntelFromSource", _intel);
-			if (!IS_NULL_OBJECT(_intelInDB)) then {
+			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
+				// The enemy commander has finished or aborted some task
+				// Mark the intel in our database as END state
+				// Then update it for everyone at this side _enemySide
+				CALLM1(_db, "updateIntelFromSource", _intel);
+
+				/*
 				// Remove intel from source directly
 				// We can do this without caring about thread safety because intelDB operations are atomic and thread safe
 				CALLM1(_db, "removeIntel", _intelInDB);
 				DELETE(_intelInDB);
+				*/
+			};
+		} forEach _enemySides;
+	} ENDMETHOD;
+
+	// Some intel about our own action has changed, so we are going to notify enemies which have such intel about an update
+	STATIC_METHOD("updateIntelCommanderActionForEnemies") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
+
+		OOP_INFO_2("UPDATE INTEL COMMANDER ACTION FOR ENEMIES: intel: %1, intel clone: %2", _intel, _intelClone);
+
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
+		private _side = GETV(_intel, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		// Notify enemy commanders that this intel has been destroyed
+		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
+		{
+			pr _enemySide = _x;
+			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
+			private _db = GETV(_AI, "intelDB");
+			// Check if this DB has an intel which has _intel as source
+			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
+				// The enemy commander has updated intel about some task
+				// Update it for everyone at this side _enemySide
+				CALLM1(_db, "updateIntelFromSource", _intel);
 			};
 		} forEach _enemySides;
 	} ENDMETHOD;
