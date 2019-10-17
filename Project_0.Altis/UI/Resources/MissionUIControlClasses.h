@@ -74,15 +74,16 @@ class MUI_BASE
 
 __MUI_CLASS_ABS(MUI_BASE);
 
-class MUI_BG_BLACKSOLID : MUI_BASE 
+class MUI_BG_BLACKSOLID : MUI_BASE
 {
 	type = CT_STATIC;
 	colorBackground[] = MUIC_BLACK;
+	style = ST_UPPERCASE;
 };
 
 __MUI_CLASS_ABS(MUI_BG_BLACKSOLID);
 
-class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
+class MUI_BG_BLACKTRANSPARENT : MUI_BASE
 {
 	type = CT_STATIC;
 
@@ -108,21 +109,11 @@ class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, bu
 	x = 0;
 	y = 0;
 	w = 0;
-	h = safeZoneH * 0.026;
+	h = safeZoneH * 0.022;
 
 	sizeEx = MUI_TXT_SIZE_M;
-	colorBackground[] = {0.0666, 0.0666, 0.0666, 1.0}; // A slight delightfully-devilish shade of grey
+	colorBackground[] = MUIC_MISSION; // A slight delightfully-devilish shade of grey
 
-	/*
-	sizeEx = MUI_TXT_SIZE_S;
-	style = 192+2;
-	text = "";
-	font = "PuristaMedium";
-	
-	colorBackground[] = {0.702,0.102,0.102,1};	// variable, selected outpost color
-	colorText[] = MUIC_WHITE;
-	shadow = 1;
-	*/
 };
 
 __MUI_CLASS_ABS(MUI_HEADLINE);
@@ -255,12 +246,12 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 __MUI_CLASS_ABS(MUI_BUTTON_TXT_CHECKBOX);
 
 // RscListNBox
-class MUI_LISTNBOX : MUI_BASE 
+class MUI_LISTNBOX : MUI_BASE
 {
 	type = CT_LISTNBOX;
 
 	style = ST_MULTI;
-	columns[] = {3.0 * GUI_GRID_H, 0.0}; 
+	columns[] = {3.0 * GUI_GRID_H, 0.0};
 	sizeEx = MUI_TXT_SIZE_M;
 	font = "PuristaMedium";
 
@@ -278,14 +269,14 @@ class MUI_LISTNBOX : MUI_BASE
 
 	soundSelect[] = {"\A3\ui_f\data\sound\RscListbox\soundSelect",0.09,1};
 
-	autoScrollSpeed = -1; 
-	autoScrollDelay = 5; 
+	autoScrollSpeed = -1;
+	autoScrollDelay = 5;
 	autoScrollRewind = 0;
 	disableOverflow = 0;
 	drawSideArrows = 0;
 
-	idcLeft = -1; 
-	idcRight = -1; 
+	idcLeft = -1;
+	idcRight = -1;
 
 	fade = 0;
 	show = 1;
@@ -301,7 +292,7 @@ class MUI_LISTNBOX : MUI_BASE
 	color[] = MUIC_WHITE;
 	colorActive[] = MUIC_WHITE;
 	colorDisabled[] = MUIC_WHITE;
-	thumb = "#(argb,8,8,3)color(1,1,1,1)";		
+	thumb = "#(argb,8,8,3)color(1,1,1,1)";
 	};
 	*/
 	class ListScrollBar
@@ -367,16 +358,16 @@ class MUI_EDIT : MUI_BASE
 
 	text = "";
 	font = "PuristaMedium";
-	
+
 	autocomplete = "";
-	canModify = true; 
-	maxChars = 1000; 
+	canModify = true;
+	maxChars = 1000;
 	forceDrawCaret = false;
 
 	colorSelection[] = {0.13, 0.54, 0.21, 1};
 	colorText[] = MUIC_WHITE;
-	colorDisabled[] = MUIC_TRANSPARENT; 
-	colorBackground[] = MUIC_TRANSPARENT; 
+	colorDisabled[] = MUIC_TRANSPARENT;
+	colorBackground[] = MUIC_TRANSPARENT;
 
 	lineSpacing = 1.1 * GUI_GRID_H;
 };
@@ -469,4 +460,3 @@ class MUI_COMBOBOX : RscCombo
 __MUI_CLASS_ABS(MUI_COMBOBOX)
 
 #endif
-

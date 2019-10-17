@@ -1,251 +1,302 @@
 #include "BuildUI_Macros.h"
+#include "..\Resources\UIProfileColors.h"
 
 #define TEXT_SIZE_CAT		safeZoneH * 0.025
 #define TEXT_SIZE_ITEM		safeZoneH * 0.017
 #define TEXT_SIZE_TOOLTIP	safeZoneH * 0.02
 
+
 class BuildUI
 {
-	idd = 3981;
-	enableSimulation = true;
+
 	name = "BuildUI";
+	IDD = 3981;
 	onLoad = "uiNamespace setVariable ['buildUI_display', _this select 0]";
 	onUnload = "uiNamespace setVariable ['buildUI_display', displayNull]";
+	enableSimulation = true;
 	duration = 10000000;
-	
-	class ControlsBackground
-	{
-		
-	};
-	class Controls
-	{
-		class TooltipBG : RscPicture
-		{
-			idc = IDC_TTEXTBG;
-			x = safeZoneX + safeZoneW * 0.29375;
-			y = safeZoneY + safeZoneH * 0.78148149;
-			w = safeZoneW * 0.4125;
-			h = safeZoneH * 0.05370371;
-			text = "UI\Images\gradient_2way.paa";
-			colorText[] = {0.82, 0.561, 0.129, 1.0};
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+
+	class ControlsBackground {};
+
+	class Controls {
+
+		class CATEGORY_BG : RSCPICTURE {
+
+			IDC = IDC_CTEXTBG; 
+			x = safeZoneX + safeZoneW * 0.293; 
+			y = safeZoneY + safeZoneH * 0.744; 
+			w = safeZoneW * 0.412; 
+			h = safeZoneH * 0.030; 
+			text = "UI\Images\gradient_2way.paa"; 
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1); 
+			colorText[] = MUIC_BLACK; 
+			colorBackground[] = MUIC_BLACK; 
+
 		};
-		class CategoryBG : RscPicture
-		{
-			idc = IDC_CTEXTBG;
-			x = safeZoneX + safeZoneW * 0.29375;
-			y = safeZoneY + safeZoneH * 0.74537038;
-			w = safeZoneW * 0.4125;
-			h = safeZoneH * 0.03055556;
-			text = "UI\Images\gradient_2way.paa";
-			colorBackground[] = {0.2,0.2,0.2,0.6};
-			colorText[] = {0.1, 0.1, 0.1, 1};
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+
+		class TOOLTIP_BG : RSCPICTURE {
+
+			IDC = IDC_TTEXTBG; 
+			x = safeZoneX + safeZoneW * 0.293; 
+			y = safeZoneY + safeZoneH * 0.779; 
+			w = safeZoneW * 0.412; 
+			h = safeZoneH * 0.056; 
+			text = "UI\Images\gradient_2way.paa"; 
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1); 
+			colorText[] = MUIC_MISSION; 
+			colorBackground[] = MUIC_MISSION; 
+
 		};
-		class ItemCatBG : RscPicture
-		{
-			idc = IDC_ITEXTBG;
-			x = safeZoneX + safeZoneW * 0.29375;
-			y = safeZoneY + safeZoneH * 0.7212963;
-			w = safeZoneW * 0.4125;
-			h = safeZoneH * 0.01851852;
-			text = "UI\Images\gradient_2way.paa";
-			colorBackground[] = {0,0,0,0.6};
-			colorText[] = {0.1, 0.1, 0.1, 1};
-			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
+
+		class CATEGORYTEXT_CENTER : MUI_BASE {
+
+			IDC = IDC_TEXTC; 
+			x = safeZoneX + safeZoneW * 0.457; 
+			y = safeZoneY + safeZoneH * 0.747; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.024; 
+			style = ST_CENTER; 
+			text = "CATEGORY 1"; 
+			sizeEx = TEXT_SIZE_CAT; 
+			font = "PuristaMedium";
+			colorText[] = MUIC_WHITE; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class Tooltip1
-		{
-			type = 13;
-			idc = IDC_TOOLTIP1;
-			x = safeZoneX + safeZoneW * 0.30989584;
-			y = safeZoneY + safeZoneH * 0.78611112;
-			w = safeZoneW * 0.38020834;
-			h = safeZoneH * 0.0175926;
-			style = 2;
-			text = "TAB: OPEN BUILD MENU";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,1};
+
+		class ITEMCAT_BG : RSCPICTURE {
+
+			IDC = IDC_ITEXTBG; 
+			x = safeZoneX + safeZoneW * 0.293; 
+			y = safeZoneY + safeZoneH * 0.721; 
+			w = safeZoneW * 0.412; 
+			h = safeZoneH * 0.018; 
+			text = "UI\Images\gradient_2way.paa"; 
+			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1); 
+			colorText[] = {0,0,0,0.6}; 
+			colorBackground[] = MUIC_BLACK; 
+
+		};
+
+		class TOOLTIP1 : MUI_STRUCT_TXT {
+
+			IDC = IDC_TOOLTIP1; 
+			x = safeZoneX + safeZoneW * 0.382; 
+			y = safeZoneY + safeZoneH * 0.786; 
+			w = safeZoneW * 0.117; 
+			h = safeZoneH * 0.042; 
+			style = ST_CENTER; 
+			text = "TAB: OPEN BUILD MENU"; 
 			font = "RobotoCondensed";
+			colorText[] = MUIC_BLACK; 
+			colorBackground[] = MUIC_TRANSPARENT; 
 			size = TEXT_SIZE_TOOLTIP;
-			shadow = 1;
 		};
-		class Tooltip2
-		{
-			type = 13;
-			idc = IDC_TOOLTIP2;
-			x = safeZoneX + safeZoneW * 0.30989584;
-			y = safeZoneY + safeZoneH * 0.80925926;
-			w = safeZoneW * 0.38020834;
-			h = safeZoneH * 0.0175926;
-			style = 2;
-			text = "TAB: OPEN BUILD MENU";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,1};
+
+		class TOOLTIP2 : MUI_STRUCT_TXT {
+
+			IDC = IDC_TOOLTIP2; 
+			x = safeZoneX + safeZoneW * 0.506; 
+			y = safeZoneY + safeZoneH * 0.786; 
+			w = safeZoneW * 0.111; 
+			h = safeZoneH * 0.042; 
+			style = ST_CENTER; 
+			text = "TAB: OPEN BUILD MENU"; 
 			font = "RobotoCondensed";
+			colorText[] = MUIC_BLACK; 
+			colorBackground[] = MUIC_TRANSPARENT; 
 			size = TEXT_SIZE_TOOLTIP;
-			shadow = 1;
 		};
-		class CategoryText_Center
-		{
-			type = 0;
-			idc = IDC_TEXTC;
-			x = safeZoneX + safeZoneW * 0.46041667;
-			y = safeZoneY + safeZoneH * 0.75;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.02222223;
-			style = 2;
-			text = "Defenses";
-			colorBackground[] = {0.5873,0.7698,0.7302,0};
-			colorText[] = {1,1,1,1};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_CAT;
+
+		class CATEGORYTEXT_L1 : MUI_BASE {
+
+			IDC = IDC_TEXTL1; 
+			x = safeZoneX + safeZoneW * 0.353; 
+			y = safeZoneY + safeZoneH * 0.747; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.024; 
+			style = ST_CENTER; 
+			text = "CATEGORY 1"; 
+			sizeEx = TEXT_SIZE_CAT; 
+			font = "PuristaMedium";
+			colorText[] = {1,1,1,0.5}; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class CategoryText_L2
-		{
-			type = 0;
-			idc = IDC_TEXTL2;
-			x = safeZoneX + safeZoneW * 0.2953125;
-			y = safeZoneY + safeZoneH * 0.75;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.02222223;
-			style = 2;
-			text = "Shooting Range";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.3};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_CAT;
-			
+
+		class CATEGORYTEXT_L2 : MUI_BASE {
+
+			IDC = IDC_TEXTL2; 
+			x = safeZoneX + safeZoneW * 0.251; 
+			y = safeZoneY + safeZoneH * 0.747; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.024; 
+			style = ST_CENTER; 
+			text = "CATEGORY 1"; 
+			sizeEx = TEXT_SIZE_CAT; 
+			font = "PuristaMedium";
+			colorText[] = {1,1,1,0.3}; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class CategoryText_L1 
-		{
-			type = 0;
-			idc = IDC_TEXTL1;
-			x = safeZoneX + safeZoneW * 0.378125;
-			y = safeZoneY + safeZoneH * 0.75;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.02222223;
-			style = 2;
-			text = "Decoration";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.5};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_CAT;
-			
+
+		class CATEGORYTEXT_R1 : MUI_BASE {
+
+			IDC = IDC_TEXTR1; 
+			x = safeZoneX + safeZoneW * 0.561; 
+			y = safeZoneY + safeZoneH * 0.747; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.024; 
+			style = ST_CENTER; 
+			text = "CATEGORY 1"; 
+			sizeEx = TEXT_SIZE_CAT; 
+			font = "PuristaMedium";
+			colorText[] = {1,1,1,0.5}; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class CategoryText_R1 
-		{
-			type = 0;
-			idc = IDC_TEXTR1;
-			x = safeZoneX + safeZoneW * 0.54270834;
-			y = safeZoneY + safeZoneH * 0.75;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.02222223;
-			style = 2;
-			text = "Shooting Range";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.5};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_CAT;
-			
+
+		class CATEGORYTEXT_R2 : MUI_BASE {
+
+			IDC = IDC_TEXTR2; 
+			x = safeZoneX + safeZoneW * 0.663; 
+			y = safeZoneY + safeZoneH * 0.747; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.024; 
+			style = ST_CENTER; 
+			text = "CATEGORY 1"; 
+			sizeEx = TEXT_SIZE_CAT; 
+			font = "PuristaMedium";
+			colorText[] = {1,1,1,0.3}; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class CategoryText_R2
-		{
-			type = 0;
-			idc = IDC_TEXTR2;
-			x = safeZoneX + safeZoneW * 0.62552084;
-			y = safeZoneY + safeZoneH * 0.75;
-			w = safeZoneW * 0.07916667;
-			h = safeZoneH * 0.02222223;
-			style = 2;
-			text = "Shooting Range";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.3};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_CAT;
-			
+
+		class ITEMTEXT_CENTER : MUI_BASE {
+
+			IDC = IDC_ITEXTC; 
+			x = safeZoneX + safeZoneW * 0.457; 
+			y = safeZoneY + safeZoneH * 0.720; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.018; 
+			style = ST_CENTER; 
+			text = "item category"; 
+			sizeEx = TEXT_SIZE_ITEM; 
+			font = "PuristaLight";
+			colorText[] = MUIC_WHITE; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class ItemText_Center
-		{
-			type = 0;
-			idc = IDC_ITEXTC;
-			x = safeZoneX + safeZoneW * 0.43;
-			y = safeZoneY + safeZoneH * 0.72;
-			w = safeZoneW * 0.13;
-			h = safeZoneH * 0.02;
-			style = 2;
-			text = "Defenses";
-			colorBackground[] = {0.5873,0.7698,0.7302,0};
-			colorText[] = {1,1,1,1};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_ITEM;
-			
+
+		class ITEMTEXT_L1 : MUI_BASE {
+
+			IDC = IDC_ITEXTL1; 
+			x = safeZoneX + safeZoneW * 0.353; 
+			y = safeZoneY + safeZoneH * 0.720; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.018; 
+			style = ST_CENTER; 
+			text = "item category"; 
+			sizeEx = TEXT_SIZE_ITEM; 
+			font = "PuristaLight";
+			colorText[] = MUIC_WHITE; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class ItemText_R1
-		{
-			type = 0;
-			idc = IDC_ITEXTR1;
-			x = safeZoneX + safeZoneW * 0.56;
-			y = safeZoneY + safeZoneH * 0.72;
-			w = safeZoneW * 0.13;
-			h = safeZoneH * 0.02;
-			style = 2;
-			text = "Shooting Range";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.5};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_ITEM;
-			
+
+		class ITEMTEXT_L2 : MUI_BASE {
+
+			IDC = IDC_ITEXTL2; 
+			x = safeZoneX + safeZoneW * 0.249; 
+			y = safeZoneY + safeZoneH * 0.720; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.018; 
+			style = ST_CENTER; 
+			text = "item category"; 
+			sizeEx = TEXT_SIZE_ITEM; 
+			font = "PuristaLight";
+			colorText[] = MUIC_WHITE; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class ItemText_L1
-		{
-			type = 0;
-			idc = IDC_ITEXTL1;
-			x = safeZoneX + safeZoneW * 0.3;
-			y = safeZoneY + safeZoneH * 0.72;
-			w = safeZoneW * 0.13;
-			h = safeZoneH * 0.02;
-			style = 2;
-			text = "Decoration";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.5};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_ITEM;
-			
+
+		class ITEMTEXT_R1 : MUI_BASE {
+
+			IDC = IDC_ITEXTR1; 
+			x = safeZoneX + safeZoneW * 0.561; 
+			y = safeZoneY + safeZoneH * 0.720; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.018; 
+			style = ST_CENTER; 
+			text = "item category"; 
+			sizeEx = TEXT_SIZE_ITEM; 
+			font = "PuristaLight";
+			colorText[] = MUIC_WHITE; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class ItemText_R2 
-		{
-			type = 0;
-			idc = IDC_ITEXTR2;
-			x = safeZoneX + safeZoneW * 0.69;
-			y = safeZoneY + safeZoneH * 0.72;
-			w = safeZoneW * 0.13;
-			h = safeZoneH * 0.02;
-			style = 2;
-			text = "Shooting Range";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.3};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_ITEM;
-			
+
+		class ITEMTEXT_R2 : MUI_BASE {
+
+			IDC = IDC_ITEXTR2; 
+			x = safeZoneX + safeZoneW * 0.665; 
+			y = safeZoneY + safeZoneH * 0.720; 
+			w = safeZoneW * 0.084; 
+			h = safeZoneH * 0.018; 
+			style = ST_CENTER; 
+			text = "item category"; 
+			sizeEx = TEXT_SIZE_ITEM; 
+			font = "PuristaLight";
+			colorText[] = MUIC_WHITE; 
+			colorBackground[] = MUIC_TRANSPARENT; 
+
 		};
-		class ItemText_L2
-		{
-			type = 0;
-			idc = IDC_ITEXTL2;
-			x = safeZoneX + safeZoneW * 0.17;
-			y = safeZoneY + safeZoneH * 0.72;
-			w = safeZoneW * 0.13;
-			h = safeZoneH * 0.02;
-			style = 2;
-			text = "Shooting Range";
-			colorBackground[] = {0,0,0,0};
-			colorText[] = {1,1,1,0.3};
-			font = "RobotoCondensedBold";
-			sizeEx = TEXT_SIZE_ITEM;
-			
+
+		class INFO_COST : MUI_STRUCT_TXT {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.703; 
+			y = safeZoneY + safeZoneH * 0.079; 
+			w = safeZoneW * 0.109; 
+			h = safeZoneH * 0.209; 
+			style = ST_CENTER; 
+			text = "COST: Mo que nonsequ iscipit molorerovit quodicidebis di officiis derovitem. Ecte erumquia coreici llanisque sit ut aut perionsequos debit aut et qui torest, si nis et illam fugiatur, omnihicitio. Ut am, quatist dolluptas nus es et occabo. Nem ditaepernat qui senecerio comnitatiusa doluptae. "; 
+			font = "PuristaMedium";
+			colorText[] = MUIC_BLACK; 
+			colorBackground[] = {0,0,0,0.85}; 
+
 		};
-		
+
+		class INFO_NAME : MUI_BASE {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.398; 
+			y = safeZoneY + safeZoneH * 0.074; 
+			w = safeZoneW * 0.203; 
+			h = safeZoneH * 0.024; 
+			style = ST_CENTER; 
+			text = "OBJECT NAME"; 
+			font = "PuristaSemiBold";
+			colorText[] = MUIC_BLACK; 
+			colorBackground[] = MUIC_MISSION; 
+
+		};
+
+		class INFO_COST_DECOLINE : MUI_BASE {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.703; 
+			y = safeZoneY + safeZoneH * 0.075; 
+			w = safeZoneW * 0.109; 
+			h = safeZoneH * 0.003; 
+			style = ST_CENTER; 
+			text = ""; 
+			font = "PuristaLight";
+			colorText[] = MUIC_BLACK; 
+			colorBackground[] = MUIC_MISSION; 
+
+		};
+
 	};
-	
+
 };
