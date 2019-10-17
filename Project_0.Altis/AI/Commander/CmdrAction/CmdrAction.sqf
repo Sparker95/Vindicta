@@ -236,7 +236,7 @@ CLASS("CmdrAction", "RefCounted")
 		_radius - Number, default 2000, the radius in meters in which we are placing intel.
 	*/
 	/*protected */ METHOD("addIntelAt") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 3500, [0]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 3500, [0]]]; // Testing
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		{
 			_x params ["_distance", "_garrison"];

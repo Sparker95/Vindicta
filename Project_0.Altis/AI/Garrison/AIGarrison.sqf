@@ -114,6 +114,14 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("intelPersonal", NULL_OBJECT); // Ref to intel about cmdr action inwhich this garrison ai is involved
 		T_SETV("knownFriendlyLocations", []); // Array with locations about which this garrison knows
 
+		// Test to make all garrisons 'know' about some locations
+		/*
+		pr _allLocs = CALLSM0("Location", "getAll");
+		for "_i" from 0 to 4 do {
+			T_GETV("knownFriendlyLocations") pushBackUnique (selectRandom _allLocs);
+		};
+		*/
+
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
 		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;

@@ -18,3 +18,5 @@ misc_fnc_getRoadWidth = compile preprocessFileLineNumbers "Misc\fn_getRoadWidth.
 misc_fnc_polygonCollision = compile preprocessFileLineNumbers "Misc\Math\fn_polygonCollision.sqf";
 
 misc_fnc_createCampComposition = compile preprocessFileLineNumbers "Misc\fn_createCampComposition.sqf";
+
+misc_fnc_dateToISO8601 = compile preprocessFileLineNumbers "Misc\fn_dateToISO8601.sqf";
