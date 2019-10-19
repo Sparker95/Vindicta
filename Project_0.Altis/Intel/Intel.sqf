@@ -560,6 +560,13 @@ ENDCLASS;
 	Intel about reinforcement commander action.
 */
 CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
+
+	/*
+		variable: type
+		type of reinforcement?
+	*/
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+
 	/* 
 		variable: srcGarrison
 		The source garrison that sent the reinforcements. Probably players have no use to this.

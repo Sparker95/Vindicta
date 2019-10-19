@@ -283,7 +283,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			case 1: {
 				// If player managed to push city to revolt then move to next phase
 				if( (_activeCities findIf { GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }) != -1 ) then {
-					"MOVING TO PHASE 2\nCreation of camps is now enabled!\nEnemy commander will respond to unrest." remoteExec ["hint"];
+					"MOVING TO PHASE 2\nEnemy commander will respond to unrest." remoteExec ["hint"];
 
 					// Enable camp creation
 					SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
@@ -311,7 +311,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 					CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
 					{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
 				then {
-					"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
+					"MOVING TO PHASE 3\nEnemy commander will be aggressive." remoteExec ["hint"];
 
 					// Set enemy commander strategy
 					private _strategy = NEW("Phase3CmdrStrategy", []);

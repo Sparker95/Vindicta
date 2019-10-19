@@ -178,7 +178,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		pr _locs = T_GETV("currentLocations");
 		pr _loc = T_GETV("currentLocation");
 		pr _garRecord = T_GETV("currentGarrisonRecord");
-		if (_loc != "") then {
+		if (_loc != "" && _garRecord != "") then {
 			// Set current location text
 			pr _type = CALLM0(_loc, "getType");
 			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
@@ -186,7 +186,6 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			CALLM1(gInGameUI, "setLocationText", _text);
 
 			// Check if the location has any garrisons we know about
-			pr _garRecord = T_GETV("currentGarrisonRecord");
 			pr _buildRes = 0;
 			CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
 				if (_garRecord != "") then {
