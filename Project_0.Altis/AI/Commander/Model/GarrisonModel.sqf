@@ -702,6 +702,9 @@ CLASS("GarrisonModel", "ModelBase")
 		// WIP temporary fix to give resources to convoys
 		CALLM2(_newGarrActual, "postMethodAsync", "addBuildResources", [120]);
 
+		// Copy intel from the old garrison into the new one
+		CALLM2(_newGarrActual, "postMethodAsync", "copyIntelFrom", [_actual]);
+
 		OOP_INFO_0("Successfully split garrison");
 
 		// Register it at the commander (do it after adding the units so the sync is correct)
@@ -885,6 +888,32 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_ARRAY("_eff")];
 		// TODO: non linearity
 		0 max (T_GETV("transport") - CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_eff]));
+	} ENDMETHOD;
+
+	// ------------------------- Intel -----------------------------------
+	// Adds known friendly locations closer that _radius from the _pos
+	METHOD("addKnownFriendlyLocationsActual") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius")];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+
+		// Bail if the garrison has been unregistered/destroyed
+		if (T_CALLM0("isDead")) exitWith {};
+
+		private _world = T_GETV("world");
+		private _side = T_GETV("side");
+		private _nearLocs = CALLM0(_world, "getLocations") select { // Array of location models
+			((GETV(_x, "pos") distance2D _pos) < _radius) &&		// Is close enough
+			{!IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))}	// Belongs to our side (right now at least!)
+		};
+
+		private _AI = CALLM0(_actual, "getAI");
+		{
+			private _locActual = GETV(_x, "actual");
+			CALLM2(_AI, "postMethodAsync", "addKnownFriendlyLocation", [_locActual]);
+		} forEach _nearLocs;
+
 	} ENDMETHOD;
 	
 ENDCLASS;

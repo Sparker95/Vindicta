@@ -37,4 +37,4 @@ T_GETV("cpModule") call CivPresence_fnc_spawn;
 	CALLM2(_x, "postMethodAsync", "updateSpawnState", []);
 } forEach T_GETV("garrisons");
 
-CALLM(gGameMode, "locationSpawned", [_thisObject]);
+CALLM2(gGameMode, "postMethodAsync", "locationSpawned", [_thisObject]);

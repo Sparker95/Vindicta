@@ -377,9 +377,6 @@ ENDCLASS;
 */
 CLASS("IntelCommanderAction", "Intel")
 
-	// State of this commander action (inactive, active, complete, failed, etc), see Intel.hpp for states
-	VARIABLE_ATTR("state", [ATTR_SERIALIZABLE]);
-
 	METHOD("new") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
@@ -392,6 +389,9 @@ CLASS("IntelCommanderAction", "Intel")
 			T_CALLM1("showOnMap", false);
 		};
 	} ENDMETHOD;
+
+	// State of this commander action (inactive, active, complete, failed, etc), see Intel.hpp for states
+	VARIABLE_ATTR("state", [ATTR_SERIALIZABLE]);
 
 	/* 
 		variable: side
@@ -485,6 +485,19 @@ CLASS("IntelCommanderAction", "Intel")
 		"Action"
 	} ENDMETHOD;
 
+	/*
+	Method: isEnded
+	Returns true if state of this action is END
+	*/
+	METHOD("isEnded") {
+		params [P_THISOBJECT];
+		pr _state = T_GETV("state");
+		if (!isNil "_state") then {
+			_state != INTEL_ACTION_STATE_END
+		} else {
+			false
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: showOnMap

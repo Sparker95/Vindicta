@@ -290,6 +290,8 @@ CLASS("AICommander", "AI")
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it
+	// !!! _side parameter seems to be not used any more, need to delete it. We obviously update intel for our own side in this method.
+	// !!! _showNotifications also seems to not work any more
 	METHOD("updateLocationData") {
 		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
@@ -700,10 +702,15 @@ CLASS("AICommander", "AI")
 
 		// Process locations known by this garrison
 		if (count _locs > 0) then {
-			pr _text = "  Friendly outpost data:\n";
+			pr _text = "  Friendly stationary forces:\n";
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
 			{
 				pr _loc = _x;
+
+				// Update location data, maximum precision
+				T_CALLM2("updateLocationData", _x, CLD_UPDATE_LEVEL_UNITS);
+
+				// Show stuff on the tablet
 				pr _type = CALLM0(_loc, "getType");
 				pr _typeStr = CALLSM1("Location", "getTypeString", _type);
 				pr _pos = CALLM0(_loc, "getPos");

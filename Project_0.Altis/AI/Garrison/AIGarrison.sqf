@@ -472,6 +472,25 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("intelPersonal", _item);
 	} ENDMETHOD;
 
+	// Copies intel from another AIGarrison by adding intel items and locations to this object
+	METHOD("copyIntelFrom") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_otherAI")];
+
+		pr _intelGeneral = T_GETV("intelGeneral");
+		pr _locs = T_GETV("knownFriendlyLocations");
+		// Merge known general intel
+		{
+			// We don't want to accumulate intel about finished cmdr actions
+			if (!CALLM0(_x, "isEnded")) then {
+				_intelGeneral pushBackUnique _x;
+			};
+		} forEach GETV(_otherAI, "intelGeneral");
+		// Merge known friendly locations
+		{
+			_locs pushBackUnique _x;
+		} forEach GETV(_otherAI, "knownFriendlyLocations");
+	} ENDMETHOD;
+
 	METHOD("addKnownFriendlyLocation") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		T_GETV("knownFriendlyLocations") pushBackUnique _loc;

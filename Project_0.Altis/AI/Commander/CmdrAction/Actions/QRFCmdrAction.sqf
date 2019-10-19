@@ -81,6 +81,15 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtCluster, "pos")]);
+
+			// Reveal some friendly locations near the destination to the garrison performing the task
+			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+				private _detachedGarrModel = CALLM(_world, "getGarrison", [_detachedGarrId]);
+				{
+					CALLM2(_x, "addKnownFriendlyLocationsActual", GETV(_tgtCluster, "pos"), 2000 ); // Reveal friendly locations within 2000 meters
+				} forEach [_srcGarr, _detachedGarrModel];
+			};
 		} else {
 			// Call the base class function to update the detachment specific intel
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);

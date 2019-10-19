@@ -2,7 +2,7 @@
 
 // Base class for Game Modes. A Game Mode is a set of customizations to 
 // scenario initialization and ongoing gameplay mechanics.
-CLASS("GameModeBase", "")
+CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE("name");
 	// If we want to spawn in enemy reinforcements automatically at bases
 	VARIABLE("spawningEnabled");
@@ -540,6 +540,7 @@ CLASS("GameModeBase", "")
 			};
 		} forEach (entities "Project_0_LocationSector");
 
+		/*
 		{
 			_x params ["_pos", "_side"];
 			// TODO: improve this later
@@ -561,6 +562,7 @@ CLASS("GameModeBase", "")
 				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
 			} forEach _roadBlocks;
 		} forEach _locationsForRoadblocks;
+		*/
 	} ENDMETHOD;
 
 	#define ADD_TRUCKS
@@ -905,4 +907,9 @@ CLASS("GameModeBase", "")
 			};
 		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
 	} ENDMETHOD;
+
+	METHOD("getMessageLoop") {
+		gMessageLoopGameMode;
+	} ENDMETHOD;
+
 ENDCLASS;

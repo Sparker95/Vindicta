@@ -80,6 +80,16 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			if (random 100 < 80) then {
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
+
+			// Reveal some friendly locations near the destination to the garrison performing the task
+			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+				private _detachedGarrModel = CALLM(_world, "getGarrison", [_detachedGarrId]);
+				{
+					CALLM2(_x, "addKnownFriendlyLocationsActual", GETV(_tgtGarr, "pos"), 2000); // Reveal friendly locations to src. and detachment which are within 2000 meters from destination
+				} forEach [_srcGarr, _detachedGarrModel];
+				CALLM2(_tgtGarr, "addKnownFriendlyLocationsActual", GETV(_srcGarr, "pos"), 2000); // Reveal friendly locations to dest. which are within 2000 meters from source
+			};
 		} else {
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
 			CALLM(_intelClone, "updateInDb", []);

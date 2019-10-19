@@ -183,7 +183,7 @@ CLASS("CmdrAction", "RefCounted")
 	/*protected */ METHOD("addGeneralGarrisonIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
-		if(CALLM(_garrison, "isActual", [])) then {
+		if(CALLM(_garrison, "isActual", []) && !CALLM0(_garrison, "isDead")) then {
 			T_PRVAR(intelClone);
 
 			// Bail if null
@@ -211,7 +211,7 @@ CLASS("CmdrAction", "RefCounted")
 
 		OOP_INFO_1("setPersonalGarrisonIntel: %1", _garrison);
 
-		if(CALLM(_garrison, "isActual", [])) then {
+		if(CALLM(_garrison, "isActual", []) && !CALLM0(_garrison, "isDead")) then {
 
 			OOP_INFO_0("  garrison is actual");
 
@@ -273,7 +273,7 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	/*
-	Method: setIntelStateAndUpdateForEnemies
+	Method: setIntelState
 	Sets the state of the intel associated with this action. Updates it for enemies, but only if state was changed.
 	*/
 	METHOD("setIntelState") {

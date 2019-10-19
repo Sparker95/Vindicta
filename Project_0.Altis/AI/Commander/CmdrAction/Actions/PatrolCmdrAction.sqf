@@ -290,9 +290,16 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
+			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			{
 				T_CALLM("addIntelAt", [_world ARG _x]);
+				CALLM2(_srcGarr, "addKnownFriendlyLocationsActual", _x, 2000); // Reveal friendly locations to dest. which are within 2000 meters from source
+				if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+					private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+					ASSERT_OBJECT(_detachedGarr);
+					CALLM2(_detachedGarr, "addKnownFriendlyLocationsActual", _x, 2000);
+				};
 			} forEach GETV(_intelClone, "waypoints");
 
 			// Reveal it to player side

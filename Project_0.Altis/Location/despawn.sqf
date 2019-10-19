@@ -36,4 +36,4 @@ private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
 	_x set [LOCATION_SPT_ID_COUNTER, 0];
 } forEach _stAll;
 
-CALLM(gGameMode, "locationDespawned", [_thisObject]);
+CALLM2(gGameMode, "postMethodAsync", "locationDespawned", [_thisObject]);

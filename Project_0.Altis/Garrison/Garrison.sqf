@@ -560,6 +560,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
+		// Update our intel - now we certainly know about this location
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "addKnownFriendlyLocation", _location);
+
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
@@ -1526,6 +1530,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		// 	// CALLM(_garrison, "destroy", []);
 		// };
 
+		// Merge intel and known locations
+		pr _AI = T_GETV("AI");
+		pr _otherAI = GETV(_garrison, "AI");
+		CALLM1(_AI, "copyIntelFrom", _otherAI);
+
 		__MUTEX_UNLOCK;
 		
 		nil
@@ -2355,6 +2364,20 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("countCargoUnits") {
 		params [P_THISOBJECT];
 		T_GETV("countCargo")
+	} ENDMETHOD;
+
+	/*
+	Method: copyIntelFrom
+	Calls AI.copyIntelFrom another garrison's AI.
+
+	Parameters: _gar - another garrison
+	*/
+	METHOD("copyIntelFrom") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
+
+		pr _AI = T_GETV("AI");
+		pr _otherAI = GETV(_gar, "AI");
+		CALLM1(_AI, "copyIntelFrom", _otherAI);
 	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
