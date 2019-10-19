@@ -94,4 +94,23 @@ CLASS("ActionGarrisonBehaviour", "ActionGarrison")
 
 	} ENDMETHOD;
 
+	METHOD("terminate") {
+		params [["_thisObject", "", [""]]];
+		
+		// Bail if not spawned
+		pr _gar = T_GETV("gar");
+		if (!CALLM0(_gar, "isSpawned")) exitWith {};
+
+		pr _args = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
+		pr _infGroups = CALLM1(_gar, "findGroupsByType", _args);
+
+		{
+			// Delete goal to mount vehicles
+			pr _groupAI = CALLM0(_x, "getAI");
+			pr _args = ["GoalGroupGetInBuilding", ""];
+			CALLM2(_groupAI, "postMethodAsync", "deleteExternalGoal", _args);
+		} forEach _infGroups;
+		
+	} ENDMETHOD;
+
 ENDCLASS;

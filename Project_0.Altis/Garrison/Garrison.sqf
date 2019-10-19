@@ -646,19 +646,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getFaction") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 
 		private _return = "";
 
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			_return
 		};
 
 		_return = GET_VAR(_thisObject, "faction");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -672,17 +672,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getSide") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			sideUnknown
 		};
 
 		private _return = GET_VAR(_thisObject, "side");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -696,15 +696,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getLocation") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
 		private _return = GET_VAR(_thisObject, "location");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -719,15 +719,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getGroups") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		pr _return = +GET_VAR(_thisObject, "groups");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -740,15 +740,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _return = +T_GETV("units");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -761,16 +761,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getInfantryUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _unitList = T_GETV("units");
 		private _return = _unitList select {CALLM0(_x, "isInfantry")};
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -783,16 +783,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getVehicleUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _unitList = T_GETV("units");
 		private _return = _unitList select {CALLM0(_x, "isVehicle")};
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -805,12 +805,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, ["_forceUpdate", false]];
 
 		pr _buildRes = 0;
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		if (_buildRes == -1 || _forceUpdate) then {
 			T_CALLM0("updateBuildResources");
 		};
 		_buildRes = T_GETV("buildResources");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 
 		_buildRes
 	} ENDMETHOD;
@@ -909,16 +909,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getDroneUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _unitList = T_GETV("units");
 		private _return = _unitList select {CALLM0(_x, "isDrone")};
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -931,15 +931,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getAI") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
 		private _AI = T_GETV("AI");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_AI
 	} ENDMETHOD;
 
@@ -952,16 +952,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		pr _AI = T_GETV("AI");
 		private _return = CALLM0(_AI, "getPos");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 	
@@ -974,15 +974,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isEmpty") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			true
 		};
 		private _return = (count T_GETV("units")) == 0;
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -995,17 +995,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isOnlyEmptyVehicles") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			false
 		};
-		private _unitList = T_GETV("units");
+		//private _unitList = T_GETV("units");
 		//private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
 		private _return = (T_GETV("countInf") == 0);
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -1018,15 +1018,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isSpawned") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			false
 		};
 		private _return = T_GETV("spawned");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 	
@@ -1045,11 +1045,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("findGroupsByType") {
 		params [P_THISOBJECT, ["_types", 0, [0, []]]];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 
@@ -1063,7 +1063,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			};
 		} forEach _groups;
 		
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		
 		_return
 	} ENDMETHOD;
@@ -1074,15 +1074,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("countAllUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			0
 		};
 		private _return = count T_GETV("units");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -1097,12 +1097,12 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getTransportCapacity") {
 		params [P_THISOBJECT, P_ARRAY("_vehicleCategories")];
 		
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			0
 		};
 
@@ -1124,7 +1124,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			_transportCapacity = _transportCapacity + _x;
 		} foreach _transportCapacityPerUnit;
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 
 		_transportCapacity
 	} ENDMETHOD;
@@ -1795,17 +1795,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getRequiredCrew") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 		};
 
 		pr _units = T_GETV("units");
 		private _return = CALLSM1("Unit", "getRequiredCrew", _units);
 
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 
 		_return
 	} ENDMETHOD;
@@ -2029,16 +2029,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyMobile") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
 
 		private _return = +T_GETV("effMobile");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 	
@@ -2051,25 +2051,25 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyTotal") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
 		pr _return = +T_GETV("effTotal");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
 	METHOD("getComposition") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			pr _comp = [];
 			{
 				pr _tempArray = [];
@@ -2079,29 +2079,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			_comp
 		};
 		pr _return = +T_GETV("composition");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
-	} ENDMETHOD;
-	
-	/*
-	Method: spawnAndDetach
-	Spawnes the garrison and detaches it from its current location
-	
-	Returns: nil
-	*/
-	METHOD("spawnAndDetach") {
-		params [P_THISOBJECT];
-
-		ASSERT_THREAD(_thisObject);
-
-		__MUTEX_LOCK;
-
-		CALLM0(_thisObject, "spawn");
-		CALLM1(_thisObject, "setLocation", "");
-
-		__MUTEX_UNLOCK;
-
-		nil
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2378,6 +2357,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _AI = T_GETV("AI");
 		pr _otherAI = GETV(_gar, "AI");
 		CALLM1(_AI, "copyIntelFrom", _otherAI);
+	} ENDMETHOD;
+
+	/*
+	Method: updateSpawnedUnitsIntel
+	Updates intel of units if this garrison is spawned
+	*/
+	METHOD("updateUnitsIntel") {
+		params [P_THISOBJECT];
+		if (T_GETV("spawned")) then {
+			{
+				CALLSM1("UnitIntel", "updateUnit", _x);
+			} forEach T_GETV("units");
+		};
 	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================

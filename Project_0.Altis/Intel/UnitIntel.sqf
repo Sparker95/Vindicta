@@ -15,7 +15,7 @@ Author: Sparker 18.05.2019
 
 #define pr private
 
-#define HAS_INTEL_VAR_NAME "__int"
+#define __INV_ITEM_DATA "__intel_inv_item"
 
 CLASS("UnitIntel", "")
 
@@ -37,9 +37,18 @@ CLASS("UnitIntel", "")
 
 		ASSERT_GLOBAL_OBJECT(gPersonalInventory);
 
+		// Bail if not spawned
+		if (!CALLM0(_unit, "isSpawned")) exitWith {};
+
 		// Civilians are not having any of the intel items for now
 		pr _gar = CALLM0(_unit, "getGarrison");
 		if (CALLM0(_gar, "getSide") == CIVILIAN) exitWith {};
+
+		// Bail if already initialized on this unit
+		pr _hO = CALLM0(_unit, "getObjectHandle");
+		if (!isNil {_hO getVariable __INV_ITEM_DATA}) exitWith {
+			OOP_WARNING_1("Unit intel already initialized: %1", _unit);
+		};
 
 		if (CALLM0(_unit, "isInfantry")) then {
 			pr _group = CALLM0(_unit, "getGroup");
@@ -59,8 +68,11 @@ CLASS("UnitIntel", "")
 				CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _dataSerial);
 
 				// Add to uniform
-				pr _hO = CALLM0(_unit, "getObjectHandle");
 				_hO addItemToUniform PERSONAL_INVENTORY_FULL_CLASS(_baseClass, _IDs#0);
+
+				// Set base class and class ID on the unit
+				// So that we can update that later if needed
+				_hO setVariable [__INV_ITEM_DATA, [_baseClass, _IDs#0]];
 
 				// Add event handler to free the used inventory items when the unit is destroyed
 				_hO addEventHandler ["Deleted", { 
@@ -95,8 +107,11 @@ CLASS("UnitIntel", "")
 			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _IDs#0, _dataSerial);
 
 			// Add to the cargo
-			pr _hO = CALLM0(_unit, "getObjectHandle");
 			_hO addMagazineCargoGlobal [PERSONAL_INVENTORY_FULL_CLASS(_baseClass, _IDs#0), 1];
+
+			// Set base class and class ID on the unit
+			// So that we can update that later if needed
+			_hO setVariable [__INV_ITEM_DATA, [_baseClass, _IDs#0]];
 
 			// Add event handler to free the used inventory items when the unit is destroyed
 			_hO addEventHandler ["Deleted", { 
@@ -135,6 +150,21 @@ CLASS("UnitIntel", "")
 	STATIC_METHOD("updateUnit") {
 		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
 
+		// Bail if unit doesn't have an inventory item
+		if (!CALLSM1("UnitIntel", "unitHasInventoryItem", _unit)) exitWith {};
+
+		pr _hO = CALLM0(_unit, "getObjectHandle");
+		pr _classAndID = _hO getVariable __INV_ITEM_DATA;
+		_classAndID params ["_invItemBaseClass", "_invItemID"];
+		
+		pr _gar = CALLM0(_unit, "getGarrison");
+		pr _AI = CALLM0(_gar, "getAI");
+		pr _dataSerial = CALLM0(_AI, "getUnitIntelDataSerial");
+		CALLM3(gPersonalInventory, "setInventoryData", _invItemBaseClass, _invItemID, _dataSerial);
+
+		// Old code which searched for all inventory items of a unit
+		// Very fair but might take lot of time
+		/*
 		// Get all inventory items of the unit which match the pattern
 		pr _hO = CALLM0(_unit, "getObjectHandle");
 		
@@ -154,7 +184,25 @@ CLASS("UnitIntel", "")
 			_classAndID params ["_baseClass", "_ID"];
 			CALLM3(gPersonalInventory, "setInventoryData", _baseClass, _ID, _intelArray);
 		} forEach _personalInventoryItems;
+		*/
+	} ENDMETHOD;
 
+	/*
+	Method: unitHasInventoryItem
+	Call it on server.
+	Returns true if the unit has an intel inventory item
+
+	Parameters: _unit
+
+	_unit - Unit object
+
+	Returns: bool
+	*/
+	STATIC_METHOD("unitHasInventoryItem") {
+		params [P_THISCLASS, P_OOP_OBJECT("_unit")];
+		pr _hO = CALLM0(_unit, "getObjectHandle");
+
+		!(isNil {_hO getVariable __INV_ITEM_DATA})
 	} ENDMETHOD;
 
 	/*
@@ -241,6 +289,9 @@ CLASS("UnitIntel", "")
 				};
 
 				if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
+					// Deinitialize this _containter
+					_container setVariable [__INV_ITEM_DATA, nil, true]; // todo Erase the varibalbe globally, we should only erase it on server.. but maybe another time
+
 					// Call code to inspect the intel item
 					CALLSM1("UnitIntel", "inspectIntel", _item);
 

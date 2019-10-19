@@ -462,6 +462,9 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("addGeneralIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 		T_GETV("intelGeneral") pushBackUnique _item;
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
 	} ENDMETHOD;
 
 	METHOD("setPersonalIntel") {
@@ -470,6 +473,17 @@ CLASS("AIGarrison", "AI_GOAP")
 		OOP_INFO_1(" SET PERSONAL INTEL: %1", _item);
 
 		T_SETV("intelPersonal", _item);
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
+	} ENDMETHOD;
+
+	METHOD("addKnownFriendlyLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		T_GETV("knownFriendlyLocations") pushBackUnique _loc;
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
 	} ENDMETHOD;
 
 	// Copies intel from another AIGarrison by adding intel items and locations to this object
@@ -489,11 +503,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		{
 			_locs pushBackUnique _x;
 		} forEach GETV(_otherAI, "knownFriendlyLocations");
-	} ENDMETHOD;
 
-	METHOD("addKnownFriendlyLocation") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
-		T_GETV("knownFriendlyLocations") pushBackUnique _loc;
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
 	} ENDMETHOD;
 
 	// Returns a serialized UnitIntelData object

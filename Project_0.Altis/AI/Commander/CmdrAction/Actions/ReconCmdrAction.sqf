@@ -174,7 +174,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 	METHOD("updateIntelFromDetachment") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
-		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
+		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
 		// Update progress of the detachment
 		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");

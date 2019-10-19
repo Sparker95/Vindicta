@@ -277,7 +277,7 @@ CLASS("CmdrAction", "RefCounted")
 	Sets the state of the intel associated with this action. Updates it for enemies, but only if state was changed.
 	*/
 	METHOD("setIntelState") {
-		params [P_THISOBJECT, ["_state"], ["_updateForEnemies", true]];
+		params [P_THISOBJECT, ["_state", INTEL_ACTION_STATE_INACTIVE, [0]], ["_updateForEnemies", true, [true]]];
 		T_PRVAR(intelClone);
 		if (!IS_NULL_OBJECT(_intelClone)) then {
 			private _statePrev = GETV(_intelClone, "state");

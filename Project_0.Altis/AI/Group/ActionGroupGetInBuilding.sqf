@@ -41,6 +41,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		pr _leaderUnit = CALLM0(_group, "getLeader");
 		if (IS_NULL_OBJECT(_leaderUnit)) exitWith {
 			T_SETV("state", ACTION_STATE_FAILED);
+			OOP_INFO_0("Action failed: no leader");
 			ACTION_STATE_FAILED
 		};
 
@@ -48,7 +49,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		pr _posStart = ASLTOAGL (getPosASL CALLM0(_leaderUnit, "getObjectHandle"));
 		pr _bpos = ASLTOAGL (getPosASL _hBuilding);
 		pr _dist = (abs ((_bpos select 0) - (_posStart select 0)) ) + (abs ((_bpos select 1) - (_posStart select 1))) + (abs ((_bpos select 2) - (_posStart select 2))); // Manhattan distance
-		pr _ETA = time + (_dist/1.5 + 20);
+		pr _ETA = time + (_dist + 60);
 		T_SETV("timeComplete", time + _ETA);
 		
 		// Find all available building positions
@@ -98,6 +99,7 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 		pr _hBuilding = T_GETV("hBuilding");
 		if (!(alive _hBuilding)) exitWith { // Alive will return false on objNull too
 			T_SETV("state", ACTION_STATE_FAILED);
+			OOP_INFO_0("Action failed: building is null or destroyed");
 			ACTION_STATE_FAILED
 		};
 		

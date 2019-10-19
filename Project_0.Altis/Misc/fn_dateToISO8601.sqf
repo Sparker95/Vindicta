@@ -22,4 +22,4 @@ __numToStrZeroPad = {
 };
 _date = _date apply {_x call __numToStrZeroPad}; // We zero-pad all numbers below 10
 _date params ["_year", "_month", "_day", "_h", "_m", "_s"];
-format ["%1-%2-%3 %4:%5", _year, _month, _day, _h, _m]
+format ["%1-%2-%3 %4:%5", _year, _month, _day, floor _h, floor _m]
