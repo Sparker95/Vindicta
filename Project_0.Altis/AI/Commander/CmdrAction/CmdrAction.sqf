@@ -256,6 +256,13 @@ CLASS("CmdrAction", "RefCounted")
 			*/
 			T_CALLM1("addGeneralGarrisonIntel", _garrison); // Note that we give general intel to this garrison, not personal
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
+
+		// Make enemies intercept this intel
+		T_PRVAR(intelClone);
+		if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+			private _intel = CALLM0(_intelClone, "getDbEntry");
+			CALLSM2("AICommander", "interceptIntelAt", _intel, _pos);
+		};
 	} ENDMETHOD;
 
 	/*

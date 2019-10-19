@@ -563,6 +563,35 @@ CLASS("AICommander", "AI")
 		CALLM1(_thisDB, "addIntel", _itemClone);
 	} ENDMETHOD;
 
+	// Gets called when enemy has produced some intel and sends it to some place
+	// Enemies might have a chance to intercept it
+	STATIC_METHOD("interceptIntelAt") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
+
+		pr _thisSide = GETV(_intel, "side");
+		{
+			pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _x);
+			CALLM2(_ai, "postMethodAsync", "_interceptIntelAt", [_intel ARG _pos]);
+		} forEach ([WEST, EAST, INDEPENDENT] - [_thisSide]);
+	} ENDMETHOD;
+
+	METHOD("_interceptIntelAt") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
+
+		// Check if we have friendly locations nearby
+		pr _side = T_GETV("side");
+		pr _friendlyLocs = CALLSM0("Location", "getAll") select {
+			(CALLM0(_x, "getPos") distance _pos) < 3500
+		} select {
+			pr _gars = CALLM1(_x, "getGarrisons", _side);
+			(count _gars) > 0
+		};
+
+		if (count _friendlyLocs > 0) then {
+			T_CALLM1("inspectIntel", _intel);
+		};
+	} ENDMETHOD;
+
 	// Checks intel in some other cmdr's database
 	// Makes a copy of that intel and takes it to this commander
 	METHOD("inspectIntel") {
