@@ -65,7 +65,7 @@ CLASS("ActionUnitArrest", "Action")
 
 		CALLM(_thisObject, "activateIfInactive", []);
 		
-		pr _state = GETV(_thisObject, "state");
+		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
 
 		pr _captor = T_GETV("objectHandle");
@@ -239,8 +239,7 @@ CLASS("ActionUnitArrest", "Action")
 								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
 							};
 
-							pr _return = _animationDone;
-							_return
+							_animationDone
 						};
 					};
 						

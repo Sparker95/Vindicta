@@ -59,7 +59,7 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 
 		CALLM0(_thisObject, "activateIfInactive");
 
-		pr _state = GETV(_thisObject, "state");
+		pr _state = T_GETV("state");
 		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
 
 		pr _oh = T_GETV("objectHandle");
@@ -81,7 +81,6 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		};
 
 		if ((_posUnit distance2D _posTarget) < 40 ) then {
-
 			if (T_GETV("isHandleSpawned") != 1) then {
 				T_SETV("startSpawnedTime", time);
 				pr _spawnedTime = T_GETV("startSpawnedTime");
