@@ -184,6 +184,8 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("addObject") {
 		params [P_THISOBJECT, P_OBJECT("_hObject")];
 
+		OOP_INFO_1("ADD OBJECT: %1", _hObject);
+
 		private _type = typeOf _hObject;
 		private _countBP = count (_hObject buildingPos -1);
 
@@ -997,17 +999,26 @@ CLASS("Location", "MessageReceiverEx")
 		private _locPos = GET_VAR(_thisObject, "pos");
 		private _no = _locPos nearObjects _radius;
 
+		OOP_INFO_1("PROCESS OBJECTS IN AREA: %1", _this);
+		OOP_INFO_2("	Radius: %1, pos: %2", _radius, _locPos);
+		OOP_INFO_1("	Objects: %1", _no);
+
 		// forEach _nO;
 		{
 			_object = _x;
+			OOP_INFO_1("	Object: %1", _object);
 			if(T_CALLM1("isInBorder", _object)) then {
+				OOP_INFO_0("	In border");
 				if (_object isKindOf _filter) then {
+					OOP_INFO_0("		Is kind of filter");
 					T_CALLM1("addObject", _object);
 				} else {
+					OOP_INFO_0("    	Does not match filter");
 					pr _type = typeOf _object;
 					if (_addSpecialObjects) then {
 						private _index = location_b_capacity findIf {_type in _x#0};
 						if (_index != -1) then {
+							OOP_INFO_0("    	Is a special object");
 							T_CALLM1("addObject", _object);
 						};
 					};

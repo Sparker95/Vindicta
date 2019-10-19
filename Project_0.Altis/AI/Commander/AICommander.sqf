@@ -1417,7 +1417,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateLocation") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_pos"), P_STRING("_locType"), P_STRING("_locName")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName")];
+
+		// Nullify vertical component, we use position ATL for locations anyway
+		pr _pos = +_posWorld;
+		_pos set [2, 0];
 
 		// Make sure the position is not very close to an existing location
 		pr _locsNear = CALLSM2("Location", "nearLocations", _pos, 50);
@@ -1430,7 +1434,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Create a little composition at this place
-		[_pos] call misc_fnc_createCampComposition;
+		[_posWorld] call misc_fnc_createCampComposition;
 
 		// Create the location
 		pr _loc = NEW_PUBLIC("Location", [_pos]);
