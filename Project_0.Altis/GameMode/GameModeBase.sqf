@@ -2,7 +2,7 @@
 
 // Base class for Game Modes. A Game Mode is a set of customizations to 
 // scenario initialization and ongoing gameplay mechanics.
-CLASS("GameModeBase", "")
+CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE("name");
 	// If we want to spawn in enemy reinforcements automatically at bases
 	VARIABLE("spawningEnabled");
@@ -39,7 +39,7 @@ CLASS("GameModeBase", "")
 		// Global flags
 		gFlagAllCommanders = true; //false;
 		// Main timer service
-		gTimerServiceMain = NEW("TimerService", [0.2]); // timer resolution
+		gTimerServiceMain = NEW("TimerService", [0.45]); // timer resolution
 
 		T_CALLM("preInitAll", []);
 
@@ -79,7 +79,8 @@ CLASS("GameModeBase", "")
 		if(IS_SERVER) then {
 
 			// Create the garrison server
-			gGarrisonServer = NEW("GarrisonServer", []);
+			gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
+			PUBLIC_VARIABLE "gGarrisonServer";
 
 			T_CALLM("initCommanders", []);
 			#ifndef _SQF_VM
@@ -136,7 +137,7 @@ CLASS("GameModeBase", "")
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
 			0 spawn {
-				waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 			};
 
@@ -149,9 +150,6 @@ CLASS("GameModeBase", "")
 
 			// Create PlayerDatabaseClient
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
-
-			// Create GarrisonDatabaseClient
-			gGarrisonDBClient = NEW("GarrisonDatabaseClient", []);
 
 			T_CALLM("initClientOnly", []);
 		};
@@ -208,7 +206,8 @@ CLASS("GameModeBase", "")
 
 			// Create vehicles in civilian area for player to steal
 			if(_type == LOCATION_TYPE_CITY) then {
-				private _gar = NEW("Garrison", [CIVILIAN]);
+				private _args = [CIVILIAN, [], "", "tCIVILIAN"];
+				private _gar = NEW("Garrison", _args);
 				private _maxCars = 3 max (25 min (0.03 * _radius));
 				for "_i" from 0 to _maxCars do {
 					private _newUnit = NEW("Unit", [tCIVILIAN ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
@@ -291,16 +290,19 @@ CLASS("GameModeBase", "")
 		switch (_type) do {
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
-				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cInf = (CALLM0(_loc, "getCapacityInf") min 45) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
-				private _cBuildingSentry = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_BUILDING_SENTRY]]);				
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry])
+				private _cBuildingSentry = 0;
+				private _cCargoBoxes = 2;
+				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
-				private _cInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
+				private _cInf = (CALLM0(_loc, "getCapacityInf") min 16) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround])
+				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
 			};
 			default { NULL_OBJECT };
 		};
@@ -324,6 +326,11 @@ CLASS("GameModeBase", "")
 	// Override this to perform actions when a location despawns
 	/* protected virtual */METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
+	} ENDMETHOD;
+
+	// Override this to create gameModeData of a location
+	/* protected virtual */	METHOD("initLocationGameModeData") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -380,10 +387,15 @@ CLASS("GameModeBase", "")
 
 	METHOD("startCommanders") {
 		params [P_THISOBJECT];
-		{
-			CALLM(_x, "setProcessInterval", [10]);
-			CALLM(_x, "start", []);
-		} forEach gCommanders;
+		0 spawn {
+			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
+			sleep 40;
+			{
+				// We postMethodAsync them, because we don't want to start processing right after mission start
+				CALLM2(_x, "postMethodAsync", "setProcessInterval", [10]);
+				CALLM2(_x, "postMethodAsync", "start", []);
+			} forEach gCommanders;
+		};
 	} ENDMETHOD;
 
 	fnc_getLocName = {
@@ -444,7 +456,7 @@ CLASS("GameModeBase", "")
 			private _locSide = _locSector getVariable ["Side", ""];
 			private _locBorder = _locSector getVariable ["objectArea", [50, 50, 0, true]];
 			private _locBorderType = ["circle", "rectangle"] select _locBorder#3;
-			private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""];
+			//private _locCapacityInf = _locSector getVariable ["CapacityInfantry", ""]; // capacityInf is calculated from actual buildings
 			private _locCapacityCiv = _locSector getVariable ["CivPresUnitCount", ""];
 
 			if(_locType == LOCATION_TYPE_CITY) then {
@@ -466,8 +478,8 @@ CLASS("GameModeBase", "")
 				*/
 
 				// https://www.desmos.com/calculator/nahw1lso9f
-				_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
-				OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
+				//_locCapacityInf = ceil (40 * log (0.00001 * _locBorder#0 * _locBorder#1 + 1));
+				//OOP_INFO_MSG("%1 inf count set to %1", [_locCapacityInf]);
 			} else {
 				_locCapacityCiv = 0;
 			};
@@ -490,25 +502,33 @@ CLASS("GameModeBase", "")
 			CALLM1(_loc, "setSide", _side);
 			CALLM1(_loc, "setType", _locType);
 			CALLM2(_loc, "setBorder", _locBorderType, _locBorder);
-			CALLM1(_loc, "setCapacityInf", _locCapacityInf);
-			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv);
+			//CALLM1(_loc, "setCapacityInf", _locCapacityInf); // capacityInf is calculated from actual buildings
+			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
 
 			// Create police stations in cities
 			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 10) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];
-				private _policeStationBuilding = nearestBuilding _posPolice;
-				private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
-				CALLM1(_policeStation, "setSide", _side);
-				CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
-				CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
+				// Find first building which is one of the police building types
+				private _possiblePoliceBuildings = (_posPolice nearObjects 200) select {_x isKindOf "House"} select {(typeOf _x) in location_bt_police};
 
-				// TODO: Get city size or building count and scale police capacity from that ?
-				CALLM1(_policeStation, "setCapacityInf", _locCapacityInf);
-				CALLM(_loc, "addChild", [_policeStation]);
-				SETV(_policeStation, "useParentPatrolWaypoints", true);
-				// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+				if ((count _possiblePoliceBuildings) > 0) then {
+					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
+					private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
+					CALLM2(_policeStation, "setBorder", "circle", 10);
+					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
+					CALLM0(_policeStation, "addSpawnPosFromBuildings");
+					CALLM1(_policeStation, "setSide", _side);
+					CALLM1(_policeStation, "setName", format ["%1 police station" ARG _locName] );
+					CALLM1(_policeStation, "setType", LOCATION_TYPE_POLICE_STATION);
+
+					// TODO: Get city size or building count and scale police capacity from that ?
+					CALLM1(_policeStation, "setCapacityInf", floor (8 + random 6));
+					CALLM(_loc, "addChild", [_policeStation]);
+					SETV(_policeStation, "useParentPatrolWaypoints", true);
+					// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+				};
 			};
 
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
@@ -520,6 +540,7 @@ CLASS("GameModeBase", "")
 			};
 		} forEach (entities "Project_0_LocationSector");
 
+		/*
 		{
 			_x params ["_pos", "_side"];
 			// TODO: improve this later
@@ -541,30 +562,36 @@ CLASS("GameModeBase", "")
 				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
 			} forEach _roadBlocks;
 		} forEach _locationsForRoadblocks;
+		*/
 	} ENDMETHOD;
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	#define ADD_ARMED_MRAPS
 	#define ADD_TANKS
-	#define ADD_APCS_IFVS
+	//#define ADD_APCS_IFVS
 	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
-		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry")];
-		
-		private _gar = NEW("Garrison", [_side]);
-		CALLM1(_gar, "setFaction", _faction);
-
-		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 		
 		if (_faction == "police") exitWith {
+			
+			private _templateName = "tPolice";
+			private _template = [_templateName] call t_fnc_getTemplate;
+
+			private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
+			private _gar = NEW("Garrison", _args);
+
+			OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+			
+
 			// 75% out on patrol
 			private _patrolGroups = 1 max (_cInf * 0.75 * 0.5);
 			for "_i" from 1 to _patrolGroups do {
 				private _patrolGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
 				for "_i" from 0 to 1 do {
 					private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
-					NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
+					NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
 				};
 				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
 				if(canSuspend) then {
@@ -575,11 +602,11 @@ CLASS("GameModeBase", "")
 			};
 
 			// Remainder back at station
-			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 			private _remainder = 1 max (_cInf * 0.25);
 			for "_i" from 1 to _remainder do {
 				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
-				NEW("Unit", [tPOLICE ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
+				NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
 			};
 			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
 			if(canSuspend) then {
@@ -591,7 +618,7 @@ CLASS("GameModeBase", "")
 			// Patrol vehicles
 			for "_i" from 1 to (2 max _cVehGround) do {
 				// Add a car in front of police station
-				private _newUnit = NEW("Unit", [tPOLICE ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
 				} else {
@@ -600,9 +627,37 @@ CLASS("GameModeBase", "")
 				OOP_INFO_MSG("%1: Added police car %2", [_gar ARG _newUnit]);
 			};
 
+			// Cargo boxes
+			private _i = 0;
+			while {_i < _cCargoBoxes} do {
+				private _subcatid = selectRandom [T_CARGO_box_small, T_CARGO_box_medium];
+				private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG _subcatid ARG -1 ARG ""]);
+				CALLM1(_newUnit, "setBuildResources", 40);
+				//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
+				if (CALL_METHOD(_newUnit, "isValid", [])) then {
+					if(canSuspend) then {
+						CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+					} else {
+						CALLM(_gar, "addUnit", [_newUnit]);
+					};
+					OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
+				} else {
+					DELETE(_newUnit);
+				};
+				_i = _i + 1;
+			};
+
 			_gar
 		};
 
+		private _templateName = GET_TEMPLATE_NAME(_side);
+		private _template = [_templateName] call t_fnc_getTemplate;
+
+		private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
+		private _gar = NEW("Garrison", _args);
+
+		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
+		
 
 		// Add default units to the garrison
 
@@ -638,12 +693,10 @@ CLASS("GameModeBase", "")
 				_i = _i + 1;
 			};
 		} forEach _infSpec;
-		
-		private _template = GET_TEMPLATE(_side);
 
 		// Add building sentries
 		if (_cBuildingSentry > 0) then {
-			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 			while {_cBuildingSentry > 0} do {
 				private _variants = [T_INF_marksman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_LMG];
 				private _newUnit = NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
@@ -661,7 +714,7 @@ CLASS("GameModeBase", "")
 		// Some trucks
 		private _i = 0;
 		#ifdef ADD_TRUCKS
-		while {_cVehGround > 0 && _i < 3} do {
+		while {_cVehGround > 0 && _i < 4} do {
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
 			if (CALL_METHOD(_newUnit, "isValid", [])) then {
 				if(canSuspend) then {
@@ -670,7 +723,7 @@ CLASS("GameModeBase", "")
 					CALLM(_gar, "addUnit", [_newUnit]);
 				};
 				OOP_INFO_MSG("%1: Added truck %2", [_gar ARG _newUnit]);
-				_cVehGround = _cVehGround - 1;w
+				_cVehGround = _cVehGround - 1;
 			} else {
 				DELETE(_newUnit);
 			};
@@ -733,6 +786,27 @@ CLASS("GameModeBase", "")
 				CALLM(_gar, "addGroup", [_staticGroup]);
 			};
 		};
+
+		// Cargo boxes
+		_i = 0;
+		while {_cCargoBoxes > 0 && _i < 3} do {
+			private _newUnit = NEW("Unit", [_template ARG T_CARGO ARG T_CARGO_box_medium ARG -1 ARG ""]);
+			CALLM1(_newUnit, "setBuildResources", 110);
+			//CALLM1(_newUnit, "limitedArsenalEnable", true); // Make them all limited arsenals
+			if (CALL_METHOD(_newUnit, "isValid", [])) then {
+				if(canSuspend) then {
+					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
+				} else {
+					CALLM(_gar, "addUnit", [_newUnit]);
+				};
+				OOP_INFO_MSG("%1: Added cargo box %2", [_gar ARG _newUnit]);
+				_cCargoBoxes = _cCargoBoxes - 1;
+			} else {
+				DELETE(_newUnit);
+			};
+			_i = _i + 1;
+		};
+
 		_gar
 	} ENDMETHOD;
 
@@ -794,7 +868,9 @@ CLASS("GameModeBase", "")
 		{
 			private _loc = _x;
 			private _side = GETV(_loc, "side");
-			private _template = GET_TEMPLATE(_side);
+			private _templateName = GET_TEMPLATE_NAME(_side);
+			private _template = [_templateName] call t_fnc_getTemplate;
+
 			private _targetCInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
 
 			private _garrisons = CALLM(_loc, "getGarrisons", [_side]);
@@ -831,4 +907,9 @@ CLASS("GameModeBase", "")
 			};
 		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
 	} ENDMETHOD;
+
+	METHOD("getMessageLoop") {
+		gMessageLoopGameMode;
+	} ENDMETHOD;
+
 ENDCLASS;

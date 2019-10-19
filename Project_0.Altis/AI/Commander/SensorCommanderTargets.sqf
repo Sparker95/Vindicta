@@ -25,6 +25,10 @@ Author: Sparker 21.12.2018
 
 //#define DEBUG_TARGETS
 
+// Makes commander forget destroyed targets
+// It might make sense to keep in memory destroyed targets
+#define KEEP_DESTROYED_TARGETS
+
 CLASS("SensorCommanderTargets", "SensorStimulatable")
 
 	VARIABLE("newTargets"); // Targets which were recognized as new will be added to this array on receiving new targets stimulus
@@ -75,7 +79,14 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _t = time;
 			
 			_deletedTargets append (
-				_knownTargets select { ((_t - (_x select TARGET_COMMANDER_ID_TIME)) > TARGET_MAX_AGE) || (! alive (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE)) }
+				_knownTargets select {
+					((_t - (_x select TARGET_COMMANDER_ID_TIME)) > TARGET_MAX_AGE)
+					#ifdef KEEP_DESTROYED_TARGETS
+					|| (! alive (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE) )
+					#else
+					|| ( isNull (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE) )
+					#endif
+				}
 			);
 			
 			_knownTargets = _knownTargets - _deletedTargets;
@@ -414,7 +425,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		{ // forEach (STIMULUS_GET_VALUE(_stimulus));
 			// Check if the target is already known
 			pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
+			#ifdef KEEP_DESTROYED_TARGETS
 			if (alive _hO) then {
+			#endif
 				pr _index = _knownTargets findIf {(_x select TARGET_ID_OBJECT_HANDLE) isEqualTo _hO};
 				if (_index == -1) then {
 					// Didn't find an existing entry
@@ -427,6 +440,8 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					
 					// Add it to the array
 					_knownTargets pushBack _newCommanderTarget;
+
+					
 				} else {
 				
 					#ifdef DEBUG_TARGETS
@@ -448,7 +463,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 						(_targetExisting select TARGET_COMMANDER_ID_OBSERVED_BY) pushBackUnique _sourceGarrison;
 					};
 				};
+			#ifdef KEEP_DESTROYED_TARGETS
 			};
+			#endif
 		} forEach (STIMULUS_GET_VALUE(_stimulus));
 		
 	} ENDMETHOD;

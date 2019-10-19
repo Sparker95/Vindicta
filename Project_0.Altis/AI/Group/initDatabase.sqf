@@ -16,6 +16,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupPatrol",								30] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupArrest",								32] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupRegroup",							35] call AI_misc_fnc_setGoalIntrinsicRelevance;
+["GoalGroupGetInBuilding",						36] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInVehiclesAsCrew",				40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupGetInGarrisonVehiclesAsCargo",		40] call AI_misc_fnc_setGoalIntrinsicRelevance;
 ["GoalGroupStayInVehicles",						40] call AI_misc_fnc_setGoalIntrinsicRelevance;
@@ -45,6 +46,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 ["GoalGroupGetInVehiclesAsCrew", "ActionGroupGetInVehiclesAsCrew"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupGetInGarrisonVehiclesAsCargo", "ActionGroupGetInGarrisonVehiclesAsCargo"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupOccupySentryPositions", "ActionGroupOccupySentryPositions"] call AI_misc_fnc_setGoalPredefinedAction;
+["GoalGroupGetInBuilding", "ActionGroupGetInBuilding"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupMoveGroundVehicles", "ActionGroupMoveGroundVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupUnflipVehicles", "ActionGroupUnflipVehicles"] call AI_misc_fnc_setGoalPredefinedAction;
 ["GoalGroupInfantryMove", "ActionGroupInfantryMove"] call AI_misc_fnc_setGoalPredefinedAction;

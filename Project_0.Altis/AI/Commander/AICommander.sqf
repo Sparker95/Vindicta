@@ -174,7 +174,9 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		#ifndef CMDR_AI_NO_PLAN
 		T_CALLM("plan", [_worldModel]);
+		#endif
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -185,7 +187,7 @@ CLASS("AICommander", "AI")
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
-		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) });
+		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {CALLM0(_x, "getLocation") == ""} });
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -288,19 +290,18 @@ CLASS("AICommander", "AI")
 	// Location data
 	// If you pass any side except EAST, WEST, INDEPENDENT, then this AI object will update its own knowledge about provided locations
 	// _updateIfFound - if true, will update an existing item. if false, will not update it
+	// !!! _side parameter seems to be not used any more, need to delete it. We obviously update intel for our own side in this method.
+	// !!! _showNotifications also seems to not work any more
 	METHOD("updateLocationData") {
-		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
+		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
 	
 		// Check if we have intel about such location already
+		pr _intelResult = T_CALLM1("getIntelAboutLocation", _loc);
 		pr _intelDB = T_GETV("intelDB");
-		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
-		pr _result1 = CALLM2(_intelDB, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
-		pr _intelResult = (_result0 arrayIntersect _result1) select 0;
 
-		if (! isNil "_intelResult") then {
-
+		if (!IS_NULL_OBJECT(_intelResult)) then {
 			OOP_INFO_1("Intel query result: %1;", _intelResult);
 
 			// There is an intel item with this location
@@ -328,7 +329,21 @@ CLASS("AICommander", "AI")
 
 					if (!(_serialOld isEqualTo _serialNew)) then {
 						CALLM2(_intelDB, "updateIntel", _intelResult, _intel);
+					
+						// Enable or disable player respawn here
+						// Now it was moved to game mode
+						/*
+						pr _locRealType = CALLM0(_loc, "getType");
+						if (_locRealType != LOCATION_TYPE_CITY) then {
+							pr _locSide = GETV(_intel, "side");
+							pr _thisSide = T_GETV("side");
+							pr _locRealType = CALLM0(_loc, "getType");
+							pr _enable = (_locSide == _thisSide);
+							CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+						};
+						*/
 					};
+
 					// Delete the intel object that we have created temporary
 					DELETE(_intel);
 				};
@@ -348,6 +363,18 @@ CLASS("AICommander", "AI")
 			CALLM1(_intelDB, "addIntel", _intel);
 			// Don't delete the intel object now! It's in the database from now.
 
+			// Enable or disable player respawn here
+			// Was moved to game mode
+			/*
+			pr _locRealType = CALLM0(_loc, "getType");
+			if (_locRealType != LOCATION_TYPE_CITY) then {
+				pr _locSide = GETV(_intel, "side");
+				pr _thisSide = T_GETV("side");
+				pr _enable = (_locSide == _thisSide);
+				CALLM2(_loc, "enablePlayerRespawn", _thisSide, _enable);
+			};
+			*/
+
 			// Register with the World Model
 			T_PRVAR(worldModel);
 			CALLM(_worldModel, "findOrAddLocationByActual", [_loc]);
@@ -355,6 +382,24 @@ CLASS("AICommander", "AI")
 		
 	} ENDMETHOD;
 	
+	// Returns intel we have about specified location
+	METHOD("getIntelAboutLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		pr _intelDB = T_GETV("intelDB");
+		pr _result0 = CALLM2(_intelDB, "getFromIndex", "location", _loc);
+		if (count _result0 == 0) then {
+			""
+		} else {
+			pr _result1 = CALLM2(_intelDB, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
+			pr _intelResult = (_result0 arrayIntersect _result1);
+			if (count _intelResult > 0) then {
+				_intelResult#0
+			} else {
+				""
+			};
+		};
+	} ENDMETHOD;
+
 	// Creates a LocationData array from Location
 	METHOD("createIntelFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
@@ -493,22 +538,90 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("revealIntelToPlayerSide") {
 		params ["_thisClass", ["_item", "", [""]]];
 
+		if (true) exitWith {
+			OOP_WARNING_0("revealIntelToPlayerSide is currently disabled!");
+		};
+
+		// Make a clone of this intel item in our thread
+		pr _itemClone = CLONE(_item);
+		SETV(_itemClone, "source", _item); // Link it with the source
+
 		pr _playerSide = CALLM0(gGameMode, "getPlayerSide");
 		pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _playerSide);
-		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item]);
+		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item ARG _itemClone]);
 	} ENDMETHOD;
 
 	// Handles stealing intel item which this commander doesn't own
+	// Temporary function to reveal stuff to players
 	METHOD("stealIntel") {
-		 params ["_thisObject", ["_item", "", [""]]];
+		 params ["_thisObject", ["_item", "", [""]], P_OOP_OBJECT("_itemClone")];
 
 		// Bail if object is wrong
-		if (!IS_OOP_OBJECT(_item)) exitWith { };
+		//if (!IS_OOP_OBJECT(_item)) exitWith { };
 
 		pr _thisDB = T_GETV("intelDB");
-		pr _itemClone = CLONE(_item);
-		SETV(_itemClone, "source", _item); // Link it with the source
 		CALLM1(_thisDB, "addIntel", _itemClone);
+	} ENDMETHOD;
+
+	// Gets called when enemy has produced some intel and sends it to some place
+	// Enemies might have a chance to intercept it
+	STATIC_METHOD("interceptIntelAt") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
+
+		pr _thisSide = GETV(_intel, "side");
+		{
+			pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _x);
+			CALLM2(_ai, "postMethodAsync", "_interceptIntelAt", [_intel ARG _pos]);
+		} forEach ([WEST, EAST, INDEPENDENT] - [_thisSide]);
+	} ENDMETHOD;
+
+	METHOD("_interceptIntelAt") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
+
+		// Check if we have friendly locations nearby
+		pr _side = T_GETV("side");
+		pr _friendlyLocs = CALLSM0("Location", "getAll") select {
+			(CALLM0(_x, "getPos") distance _pos) < 3500
+		} select {
+			pr _gars = CALLM1(_x, "getGarrisons", _side);
+			(count _gars) > 0
+		};
+
+		if (count _friendlyLocs > 0) then {
+			T_CALLM1("inspectIntel", _intel);
+		};
+	} ENDMETHOD;
+
+	// Checks intel in some other cmdr's database
+	// Makes a copy of that intel and takes it to this commander
+	METHOD("inspectIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+
+		OOP_INFO_1("INSPECT INTEL: %1", _intel);
+
+		// Bail if null object for some reason
+		if (IS_NULL_OBJECT(_intel)) exitWith {
+			OOP_ERROR_0("INSPECT INTEL: null object was passed");
+		};
+
+		pr _srcSide = GETV(_intel, "side");
+		if (_srcSide == T_GETV("side")) exitWith {
+			OOP_INFO_0("  it's our own intel!");
+		};
+
+		// Check if we have an intel from this source already
+		pr _db = T_GETV("intelDB");
+		if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then { // If it's not our own intel, then this intel item might be a source of our intel item 
+			// Update the intel
+			OOP_INFO_1("  Intel with source %1 found in DB, updating from source...", _intel);
+			CALLM1(_db, "updateIntelFromSource", _intel);
+		} else {
+			// Make a clone for ourselves and add it to our database
+			pr _ourIntel = CLONE(_intel);
+			OOP_INFO_2("  Intel with source %1 NOT found in DB, made a clone: %2", _intel, _ourIntel);
+			SETV(_ourIntel, "source", _intel); // We must mark the external intel item as as source of this intel, for future updates
+			CALLM1(_db, "addIntel", _ourIntel);
+		};
 	} ENDMETHOD;
 
 	// Gets called after player has analyzed up an inventory item with intel
@@ -520,6 +633,126 @@ CLASS("AICommander", "AI")
 		// Get data from the inventory item
 		pr _ret = CALLM2(gPersonalInventory, "getInventoryData", _baseClass, _ID);
 		_ret params ["_data", "_dataIsNotNil"];
+
+		if (!_dataIsNotNil) exitWith {
+			pr _text = "No data registered for this device in TactiCommNetWork!\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+
+			pr _text = "Retinal scan identity mismatch!\nDevice will be locked.\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+		};
+
+		OOP_INFO_1("  data from pers. inv.: %1", _data);
+
+		// Unpack the data
+		pr _temp = NEW("UnitIntelData", []);
+		DESERIALIZE(_temp, _data);
+		pr _intelGeneral = GETV(_temp, "intelGeneral");
+		pr _intelPersonal = GETV(_temp, "intelPersonal");
+		pr _locs = GETV(_temp, "knownFriendlyLocations");
+		DELETE(_temp);
+
+		// Process the intel about this garrison's action
+		if (!IS_NULL_OBJECT(_intelPersonal)) then {
+			if (IS_OOP_OBJECT(_intelPersonal)) then {
+
+				// Add to our db if needed
+				T_CALLM1("inspectIntel", _intelPersonal);
+
+				// Process what to show on the remote player's tablet
+				pr _actionName = CALLM0(_intelPersonal, "getShortName");
+				pr _dateDeparture = GETV(_intelPersonal, "dateDeparture");
+				pr _posSrc = GETV(_intelPersonal, "posSrc");
+				pr _posTgt = GETV(_intelPersonal, "posTgt");
+
+				if (!isNil "_posTgt") then {
+					pr _text = format ["\n  Current order: %1 at grid %2\n", _actionName, mapGridPosition _posTgt];
+					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				} else {
+					pr _text = format ["\n  Current order: %1\n", _actionName];
+					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				};
+
+				if (!isNil "_posSrc") then {
+					pr _text = format ["Departure from %1, at date %2\n", mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
+					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+				};
+			} else {
+				OOP_ERROR_1("Invalid personal intel ref: %1", _intelPersonal);
+			};
+		} else {
+			pr _text = format ["\n  Current order: none\n"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+		};
+
+		// Process the intel about other intel items known to the garrison
+		pr _intelGeneralUnique = _intelGeneral - [_intelPersonal]; // We don't want to process known intel
+		if (count _intelGeneralUnique > 0) then {
+
+			pr _text = "  Friendly squad orders:\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+
+			{
+				pr _intel = _x;
+				if (!IS_NULL_OBJECT(_intel)) then {
+					if (IS_OOP_OBJECT(_intel)) then {
+
+						// Add to our db if needed
+						T_CALLM1("inspectIntel", _intel);
+
+						// Process what to show on the remote player's tablet
+						pr _actionName = CALLM0(_intel, "getShortName");
+						pr _dateDeparture = GETV(_intel, "dateDeparture");
+						pr _posSrc = GETV(_intel, "posSrc");
+						pr _posTgt = GETV(_intel, "posTgt");
+
+						pr _text = _actionName;
+						if (!isNil "_posSrc") then {
+							_text = _text + format [" from %1", mapGridPosition _posSrc];
+						};
+
+						if (!isNil "_posTgt") then {
+							_text = _text + format [" to %1", mapGridPosition _posTgt];
+						};
+
+						if (!isNil "_dateDeparture") then {
+							_text = _text + format [" at date %1", _dateDeparture call misc_fnc_dateToISO8601];
+						};
+
+						_text = _text + "\n";
+						REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
+
+					} else {
+						OOP_ERROR_1("Invalid general intel ref: %1", _intelPersonal);
+					};
+				}
+			} forEach (_intelGeneral - [_intelPersonal]);
+		};
+
+		// Process locations known by this garrison
+		if (count _locs > 0) then {
+			pr _text = "  Friendly stationary forces:\n";
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
+			{
+				pr _loc = _x;
+
+				// Update location data, maximum precision
+				T_CALLM2("updateLocationData", _x, CLD_UPDATE_LEVEL_UNITS);
+
+				// Show stuff on the tablet
+				pr _type = CALLM0(_loc, "getType");
+				pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+				pr _pos = CALLM0(_loc, "getPos");
+				pr _text = format ["Grid %1: %2 %3\n", mapGridPosition _pos, _typeStr, CALLM0(_loc, "getName")];
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
+			} forEach _locs;
+		};
+
+		pr _text = "\nRetinal scan identity mismatch! Device is locked.\n";
+		REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+
+		// Bail out for now
+		if (true) exitWith {};
 
 		// Make sure _data is valid
 		pr _foundSomething = false;
@@ -712,10 +945,17 @@ CLASS("AICommander", "AI")
 		
 	// Thread unsafe
 	METHOD("_addActivity") {
-		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
-		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG _side]);
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
+		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
 		T_PRVAR(worldModel);
 		CALLM(_worldModel, "addActivity", [_pos ARG _activity])
+	} ENDMETHOD;
+
+	METHOD("_addDamage") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_activity")];
+		OOP_DEBUG_MSG("Adding %1 activity at %2 for side %3", [_activity ARG _pos ARG T_GETV("side")]);
+		T_PRVAR(worldModel);
+		CALLM(_worldModel, "addDamage", [_pos ARG _activity])
 	} ENDMETHOD;
 
 	// Thread safe
@@ -724,7 +964,7 @@ CLASS("AICommander", "AI")
 
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			T_CALLM2("postMethodAsync", "_addActivity", [_side ARG _pos ARG _activity]);
+			T_CALLM2("postMethodAsync", "_addActivity", [_pos ARG _activity]);
 		};
 	} ENDMETHOD;
 
@@ -760,7 +1000,7 @@ CLASS("AICommander", "AI")
 
 		OOP_DEBUG_MSG("Registering garrison %1", [_gar]);
 		T_GETV("garrisons") pushBack _gar; // I need you for my army!
-		CALLM(_gar, "ref", []);
+		REF(_gar);
 		T_PRVAR(worldModel);
 		NEW("GarrisonModel", [_worldModel ARG _gar])
 	} ENDMETHOD;
@@ -827,7 +1067,6 @@ CLASS("AICommander", "AI")
 		private _newModel = NULL_OBJECT;
 		OOP_DEBUG_MSG("Registering location %1", [_loc]);
 		//T_GETV("locations") pushBack _loc; // I need you for my army!
-		// CALLM2(_loc, "postMethodAsync", "ref", []);
 		T_PRVAR(worldModel);
 		// Just creating the location model is registering it with CmdrAI
 		NEW("LocationModel", [_worldModel ARG _loc]);
@@ -868,7 +1107,7 @@ CLASS("AICommander", "AI")
 			private _garrisonModel = CALLM(_worldModel, "findGarrisonByActual", [_gar]);
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
-			CALLM(_gar, "unref", []);
+			UNREF(_gar);
 		} else {
 			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
@@ -894,26 +1133,60 @@ CLASS("AICommander", "AI")
 	} ENDMETHOD;
 
 	/*
-	Method: removeIntelCommanderAction
+	Method: unregisterIntelCommanderAction
 	
 	*/
 	STATIC_METHOD("unregisterIntelCommanderAction") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
+
+		OOP_INFO_2("UNREGISTER INTEL COMMANDER ACTION: intel: %1, intel clone: %2", _intel, _intelClone);
+
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		// Notify enemy commanders that this intel has been destroyed
 		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		{
-			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+			pr _enemySide = _x;
+			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
-			private _intelInDB = CALLM1(_db, "getIntelFromSource", _intel);
-			if (!IS_NULL_OBJECT(_intelInDB)) then {
+			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
+				// The enemy commander has finished or aborted some task
+				// Mark the intel in our database as END state
+				// Then update it for everyone at this side _enemySide
+				CALLM1(_db, "updateIntelFromSource", _intel);
+
+				/*
 				// Remove intel from source directly
 				// We can do this without caring about thread safety because intelDB operations are atomic and thread safe
 				CALLM1(_db, "removeIntel", _intelInDB);
 				DELETE(_intelInDB);
+				*/
+			};
+		} forEach _enemySides;
+	} ENDMETHOD;
+
+	// Some intel about our own action has changed, so we are going to notify enemies which have such intel about an update
+	STATIC_METHOD("updateIntelCommanderActionForEnemies") {
+		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_OOP_OBJECT("_intelClone")];
+
+		OOP_INFO_2("UPDATE INTEL COMMANDER ACTION FOR ENEMIES: intel: %1, intel clone: %2", _intel, _intelClone);
+
+		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
+		private _side = GETV(_intel, "side");
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		// Notify enemy commanders that this intel has been destroyed
+		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
+		{
+			pr _enemySide = _x;
+			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
+			private _db = GETV(_AI, "intelDB");
+			// Check if this DB has an intel which has _intel as source
+			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
+				// The enemy commander has updated intel about some task
+				// Update it for everyone at this side _enemySide
+				CALLM1(_db, "updateIntelFromSource", _intel);
 			};
 		} forEach _enemySides;
 	} ENDMETHOD;
@@ -1061,6 +1334,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	METHOD("_clientCreateGarrisonAction") {
 		params [P_THISOBJECT, P_STRING("_garRef"), P_NUMBER("_targetType"), ["_target", [], [[], ""] ], ["_actionName", "", [""]]];
 
+		OOP_INFO_1("CLIENT CREATE GARRISON ACTION: %1", _this);
+
 		// Get the garrison model associated with this _garRef
 		T_PRVAR(worldModel);
 		pr _garModel = CALLM1(_worldModel, "findGarrisonByActual", _garRef);
@@ -1139,6 +1414,44 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Send data back to client
 		REMOTE_EXEC_CALL_STATIC_METHOD("GarrisonSplitDialog", "sendServerResponse", [22], _clientOwner, false);
 
+	} ENDMETHOD;
+
+	METHOD("clientCreateLocation") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_pos"), P_STRING("_locType"), P_STRING("_locName")];
+
+		// Make sure the position is not very close to an existing location
+		pr _locsNear = CALLSM2("Location", "nearLocations", _pos, 50);
+		pr _index = _locsNear findIf {
+			T_CALLM1("getIntelAboutLocation", _x) != ""
+		};
+		if (_index != -1) exitWith {
+			pr _args = ["We can't create a location so close to another location!"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		};
+
+		// Create a little composition at this place
+		[_pos] call misc_fnc_createCampComposition;
+
+		// Create the location
+		pr _loc = NEW_PUBLIC("Location", [_pos]);
+		CALLM2(_loc, "setBorder", "circle", 50);
+		CALLM1(_loc, "setType", _locType);
+		CALLM1(_loc, "setName", _locName);
+		CALLM2(_loc, "processObjectsInArea", "House", true);
+		CALLM1(gGameMode, "initLocationGameModeData", _loc);
+
+
+		// Create the garrison
+		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+		CALLM0(_gar, "activate");
+
+		// Update intel about the location
+		T_CALLM1("updateLocationData", _loc);
+
+		pr _args = ["We have successfully created a location here!"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		
 	} ENDMETHOD;
 
 /*
@@ -1294,6 +1607,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(side);
 
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
+		if (_count > 2) exitWith {[]};
+
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
@@ -1376,6 +1694,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
 
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction"} count _activeActions;
+		if (_count > 2) exitWith {[]};
+
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			private _potentialSrcGarr = _x;
@@ -1447,6 +1770,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
 		T_PRVAR(activeActions);
 		T_PRVAR(side);
+
+		//OOP_INFO_0("GENERATE PATROL ACTIONS");
+
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "PatrolCmdrAction"} count _activeActions;
+		//OOP_INFO_1("  Existing patrol actions: %1", _count);
+		if (_count > 6) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military" ARG "police"]]) select { 

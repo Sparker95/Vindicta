@@ -63,6 +63,7 @@ private _inf_capacity = 0;
 private _position = [];
 private _bdir = 0; //Building direction
 
+// forEach _no;
 {
 	_object = _x;
 	if(CALLM1(_thisObject, "isInBorder", _object)) then
@@ -96,24 +97,32 @@ private _bdir = 0; //Building direction
 			CALL_METHOD(_thisObject, "addSpawnPos", _args);
 			deleteVehicle _object;
 		};
+
+		// A cargo container defines a position for cargo boxes
+		if (_type == "B_Slingload_01_Cargo_F") then {
+			private _args = [T_PL_cargo, [GROUP_TYPE_IDLE], getPosATL _object, direction _object, objNull];
+			CALL_METHOD(_thisObject, "addSpawnPos", _args);
+			deleteVehicle _object;
+		};
 		
 		// Process buildings
 		if (_type isKindOf "House") then {
-			CALL_METHOD(_thisObject, "addSpawnPosFromBuilding", [_object]);
+			T_CALLM1("addObject", _object);
 		};
 
 		if(_type == "Flag_BI_F") then {
 			//Probably add support for the flag later
+			// Why do we even need it
 		};
 
 		if(_type == "Sign_Arrow_Large_F") then { //Red arrow
+			// Why do we need it
 			deleteVehicle _object;
 		};
 
 		if(_type == "Sign_Arrow_Large_Blue_F") then { //Blue arrow
+			// Why do we need it
 			deleteVehicle _object;
 		};
 	};
 } forEach _no;
-
-CALL_METHOD(_thisObject, "calculateInfantryCapacity", []);

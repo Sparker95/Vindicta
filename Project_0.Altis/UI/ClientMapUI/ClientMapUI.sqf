@@ -9,7 +9,7 @@
 #include "..\..\AI\Commander\LocationData.hpp"
 #include "..\..\AI\Commander\CmdrAction\CmdrActionStates.hpp"
 #include "..\Resources\MapUI\MapUI_Macros.h"
-#include "..\Resources\ClientMapUI\ClientMapUI_Macros.h"
+#include "ClientMapUI_Macros.h"
 #include "..\..\Location\Location.hpp"
 #include "..\Resources\UIProfileColors.h"
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"
@@ -22,6 +22,9 @@
 	Singleton class that performs things related to map user interface
 */
 CLASS(CLASS_NAME, "")
+
+	// Array with markers which are currently under cursor, gets updated on mouse moving event handler
+	VARIABLE("markersUnderCursor");
 	
 	VARIABLE("selectedGarrisonMarkers");
 	VARIABLE("selectedLocationMarkers");
@@ -52,6 +55,10 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("garRecordCurrent"); // Don't just set it manually, it's being set through funcs and event handlers
 	VARIABLE("givingOrder"); // Bool, if true it means that we are giving order to a garrison. Current garrison record is garRecordCurrent
 
+	// Currently selected location and the menu shown for it
+	VARIABLE("locSelMenuEnabled");
+	VARIABLE("locationCurrent");	// Location for which the menu is shown
+
 	// Bool, state of the intel button
 	VARIABLE("showAllIntel");
 	// Defines if we are sorting intel inversed or not
@@ -63,8 +70,11 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("currentControlIDC");
 
 	// initialize UI event handlers
-	STATIC_METHOD("new") {
+	METHOD("new") {
 		params [["_thisObject", "", [""]]];
+
+		// Markers under cursor
+		T_SETV("markersUnderCursor", []);
 
 		// Selected markers
 		T_SETV("selectedGarrisonMarkers", []);
@@ -84,6 +94,10 @@ CLASS(CLASS_NAME, "")
 		T_SETV("garRecordCurrent", "");
 		T_SETV("garSelMenuEnabled", false);
 		T_SETV("givingOrder", false);
+
+		// Currently selected location
+		T_SETV("locSelMenuEnabled", false);
+		T_SETV("locationCurrent", "");
 
 		T_SETV("showAllIntel", false);
 		T_SETV("intelPanelSortInverse", false);
@@ -105,6 +119,11 @@ CLASS(CLASS_NAME, "")
 		// Map OnDraw
 		// Gets called on each frame, only when the map is open
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {CALLM0(gClientMapUI, "onMapDraw");} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
+
+		// Map OnMouseMoving
+		// Fires continuously while moving the mouse with a certain interval
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {CALLM(gClientMapUI, "onMapMouseMoving", _this);} ]; // Mind this sh1t: https://feedback.bistudio.com/T123355
+
 
 		// bottom panel
 		// MouseEnter / MouseExit event handlers
@@ -195,7 +214,26 @@ CLASS(CLASS_NAME, "")
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_GIVE_ORDER, "order");
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_CANCEL_ORDER, "cancelOrder");
 		__GAR_SELECT_BUTTON_CLICK_EH(IDC_GSELECT_BUTTON_MERGE, "merge");
-		
+
+
+		// = = = = = = = = = = = = = = = Create the selected location menu = = = = = = = = = = = 
+		// It appears when we have selected a friendly location
+		// Delete previous controls
+		pr _ctrl = T_CALLM1("findControl", "CMUI_LSELECTED_MENU");
+		ctrlDelete _ctrl;
+
+		(findDisplay 12) ctrlCreate ["CMUI_LSELECTED_MENU", -1];
+		T_CALLM1("locSelMenuEnable", false);
+
+		// Give actions to buttons
+		#define __LOC_SELECT_BUTTON_CLICK_EH(className, buttonStr) T_CALLM1("findControl", className) ctrlAddEventHandler ["ButtonClick", { \
+			_thisObject = gClientMapUI; \
+			CALLM1(_thisObject, "locSelMenuOnButtonClick", buttonStr); \
+		}]
+
+		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_RECRUIT", "recruit");
+		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_DISBAND", "disband");
+
 		// = = = = = = = = = = = = = = = Create the listbox buttons = = = = = = = = = = = = = = =
 		pr _ctrlGroup = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP; 
 		pr _btns = [_mapDisplay, "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.25, 0.75], true] call ui_fnc_createButtonsInGroup;
@@ -296,6 +334,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		} forEach _allIntels;
 	} ENDMETHOD;
 
+	// Finds a control by its class name
+	METHOD("findControl") {
+		params [P_THISOBJECT, P_STRING("_className")];
+		pr _display = findDisplay 12;
+		//OOP_INFO_1("FIND CONTROL: %1", _className);
+		pr _allControls = allControls _display;
+		pr _index = _allControls findIf {(ctrlClassName _x) == _className};
+		if (_index != -1) then {
+			_allControls select _index
+		} else {
+			controlNull
+		};
+	} ENDMETHOD;
+
 /*                                                                      
 ooooooooo  oooooooooo       o  oooo     oooo      oooooooooo    ooooooo  ooooo  oooo ooooooooooo ooooooooooo 
  888    88o 888    888     888  88   88  88        888    888 o888   888o 888    88  88  888  88  888    88  
@@ -312,6 +364,11 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 	// Draws or undraws a route for a given array of positions
 	STATIC_METHOD("drawRoute") {
 		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+
+		//OOP_INFO_1("DRAW ROUTE: %1", _this);
+
+		// Convert unique string to lowercase to be safe
+		_uniqueString = toLower _uniqueString;
 
 		// Delete all previosly created markers
 		pr _query = _uniqueString+__MRK_ROUTE;
@@ -351,7 +408,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, "ColorRed", 15, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, "ColorRed", 20, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};
@@ -653,7 +710,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			_posScreen params ["_xScreen", "_yScreen"];
 			pr _ctrl = ((findDisplay 12) displayCtrl IDC_GSELECT_GROUP);
 			pr _pos = ctrlPosition _ctrl;
-			_ctrl ctrlSetPosition [_xScreen - GSELECT_MENU_WIDTH/2, _yScreen + 0.04, _pos#2, _pos#3]; // We offset the control left and down a bit
+			_ctrl ctrlSetPosition [_xScreen /*- GSELECT_MENU_WIDTH/2*/, _yScreen + 0.04, _pos#2, _pos#3];
 			_ctrl ctrlCommit 0;
 		};
 
@@ -710,6 +767,118 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 
 		T_CALLM0("updateHintTextFromContext");
+	} ENDMETHOD;
+
+
+	/*
+	ooooo         ooooooo     oooooooo8     o   ooooooooooo ooooo  ooooooo  oooo   oooo           
+	888        o888   888o o888     88    888  88  888  88  888 o888   888o 8888o  88            
+	888        888     888 888           8  88     888      888 888     888 88 888o88            
+	888      o 888o   o888 888o     oo  8oooo88    888      888 888o   o888 88   8888            
+	o888ooooo88   88ooo88    888oooo88 o88o  o888o o888o    o888o  88ooo88  o88o    88            
+																								
+	oooooooo8 ooooooooooo ooooo       ooooooooooo  oooooooo8 ooooooooooo ooooooooooo ooooooooo   
+	888         888    88   888         888    88 o888     88 88  888  88  888    88   888    88o 
+	888oooooo  888ooo8     888         888ooo8   888             888      888ooo8     888    888 
+			888 888    oo   888      o  888    oo 888o     oo     888      888    oo   888    888 
+	o88oooo888 o888ooo8888 o888ooooo88 o888ooo8888 888oooo88     o888o    o888ooo8888 o888ooo88   
+																								
+	oooo     oooo ooooooooooo oooo   oooo ooooo  oooo                                             
+	8888o   888   888    88   8888o  88   888    88                                              
+	88 888o8 88   888ooo8     88 888o88   888    88                                              
+	88  888  88   888    oo   88   8888   888    88                                              
+	o88o  8  o88o o888ooo8888 o88o    88    888oo88                                               
+	*/
+
+	METHOD("locSelMenuEnable") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+
+		T_SETV("locSelMenuEnabled", _enable);
+		pr _ctrl = T_CALLM1("findControl", "CMUI_LSELECTED_MENU");
+		_ctrl ctrlShow _enable;
+
+/*
+		if (!_enable) then {	
+			T_SETV("garRecordCurrent", "");
+		};
+*/
+
+		// Check if we can command garrisons at all
+		pr _canCommand = CALLM1(gPlayerDatabaseClient, "get", PDB_KEY_ALLOW_COMMAND_GARRISONS);
+		if (isNil "_canCommand") then {_canCommand = false; };
+		if (!_canCommand) then {
+			{
+				pr _ctrl0 = T_CALLM1("findControl", _x);
+				_ctrl0 ctrlEnable false;
+				_ctrl0 ctrlSetTooltip "You don't have permissions to command garrisons";
+			} forEach ["LSELECTED_BUTTON_RECRUIT"];
+		} else {
+			{
+				pr _ctrl0 = T_CALLM1("findControl", _x);
+				_ctrl0 ctrlEnable true;
+				_ctrl0 ctrlSetTooltip "";
+			} forEach ["LSELECTED_BUTTON_RECRUIT"];
+		};
+
+		T_CALLM0("updateHintTextFromContext");
+	} ENDMETHOD;
+
+	METHOD("locSelMenuSetLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		T_SETV("locationCurrent", _loc);
+	} ENDMETHOD;
+
+	METHOD("locSelMenuUpdatePos") {
+		params [P_THISOBJECT];
+
+		if (T_GETV("locSelMenuEnabled")) then {
+			pr _loc = T_GETV("locationCurrent");
+			
+			// Make sure the location exists
+			if (!IS_OOP_OBJECT(_loc)) exitWith {
+				T_SETV("locationCurrent", "");
+				T_CALLM1("locSelMenuEnable", false);
+			};
+
+			// Update the position of the group control
+			pr _posWorld = CALLM0(_loc, "getPos");
+			pr _posScreen = ((findDisplay 12) displayCtrl IDC_MAP) posWorldToScreen _posWorld;
+			_posScreen params ["_xScreen", "_yScreen"];
+			pr _ctrl = T_CALLM1("findControl", "CMUI_LSELECTED_MENU");
+			pr _pos = ctrlPosition _ctrl;
+			_ctrl ctrlSetPosition [_xScreen - LSELECT_MENU_WIDTH, _yScreen + 0.04, _pos#2, _pos#3]; // We offset the control left and down a bit
+			_ctrl ctrlCommit 0;
+		};
+
+	} ENDMETHOD;
+
+	METHOD("locSelMenuOnButtonClick") {
+		params [P_THISOBJECT, P_STRING("_button")];
+
+		pr _loc = T_GETV("locationCurrent");
+
+		// Bail if location doesn't exist any more (why??)
+		if (!IS_OOP_OBJECT(_loc)) exitWith {
+			T_SETV("locationCurrent", "");
+			T_CALLM1("locSelMenuEnable", false);
+		};
+
+		// Bail if we don't own this location any more
+		// todo ...
+
+		switch (_button) do {
+			case "recruit" : {
+				pr _args = [clientOwner, _loc, playerSide];
+				CALLM2(gGarrisonServer, "postMethodAsync", "recruitUnitAtLocation", _args);
+				systemChat "Recruiting a soldier...";
+				// todo implement periodic UI refresh or on incoming update event
+			};
+
+			case "disband" : {
+				systemChat "Not yet implemented...";
+			};
+		};
+
 	} ENDMETHOD;
 
 
@@ -772,17 +941,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		pr _soldierCount = 0;
 		pr _vehList = [];
 		
-		_typeText = switch (GETV(_intel, "type")) do {
-			case LOCATION_TYPE_OUTPOST: {"Outpost"};
-			case LOCATION_TYPE_CAMP: {"Camp"};
-			case LOCATION_TYPE_BASE: {"Base"};
-			case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
-			case LOCATION_TYPE_CITY: {"City"};
-			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
-			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
-			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
-			default {format ["ClientMapUI.sqf line %1", __LINE__]}; // If you see this then you know where to implement this!
-		};
+		_typeText = CALLSM1("Location", "getTypeString", GETV(_intel, "type"));
 		
 		_timeText = str GETV(_intel, "dateUpdated");
 		_sideText = str GETV(_intel, "side");
@@ -794,6 +953,28 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		_lnb lnbAddRow [ "Type:", _typeText];
 		_lnb lnbAddRow [ "Side:", _sideText];
 
+		// Add amount of recruits if it's a city
+		pr _loc = GETV(_intel, "location");
+		if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+			pr _gameModeData = GETV(_loc, "gameModeData");
+			pr _nRecruits = -666;
+			if ( !(IS_NULL_OBJECT(_gameModeData)) && {IS_OOP_OBJECT(_gameModeData)}) then {
+				_nRecruits = CALLM0(_gameModeData, "getRecruitCount");
+			};
+			_lnb lnbAddRow ["Recr.:", str _nRecruits];
+		} else {
+			// Add amount of recruits we can recruit at this place if it's not a city
+			pr _pos = CALLM0(_loc, "getPos");
+			pr _cities = CALLSM1("CivilWarGameMode", "getRecruitCities", _pos);
+			pr _nRecruits = CALLSM1("CivilWarGameMode", "getRecruitCount", _cities);
+			_lnb lnbAddRow [format ["Recruits available: %1", _nRecruits], "", ""];
+		};
+
+		// Add inf capacity
+		pr _capinf = CALLM0(_loc, "getCapacityInf");
+		_lnb lnbAddRow [format ["Max infantry: %1", _capInf], "", ""];
+
+		// Add unit data
 		pr _ua = GETV(_intel, "unitData");
 		if (count _ua > 0 && _showComposition) then {
 			_compositionText = "";
@@ -834,6 +1015,28 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
 		_lnb lnbSetColumnsPos [0, 0.2, 0.7];
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
+
+		/*
+		// Fill dummy data for testing
+		_allIntels = [];
+		pr _i = 0;
+		while {_i < 10} do {
+			pr _intel = NEW("IntelCommanderActionAttack", []);
+			SETV(_intel, "posSrc", [random 10000 ARG random 20000 ARG 3]);
+			SETV(_intel, "posTgt", [random 10000 ARG random 20000 ARG 3]);
+			pr _dateNow = date;
+			pr _minuteNow = _dateNow#4;
+			pr _year = _dateNow#0;
+			pr _dateDeparture = +_dateNow;
+			_dateDeparture set [4, _minuteNow + (random 120)];
+			// Fix the minute overflow by converting twice
+			//_dateDeparture = numberToDate [_year, dateToNumber _dateDeparture];
+			SETV(_intel, "dateDeparture", _dateDeparture);
+			_allIntels pushBack _intel;
+			_i = _i + 1;m
+		};
+		*/
+
 		// forEach _allIntels;
 		{
 			pr _intel = _x;
@@ -852,8 +1055,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					_numberDiff = -_numberDiff;
 					_futureEvent = false;
 				};
-				pr _dateDiff = numberToDate [_dateNow#0, _numberDiff];
-				_dateDiff params ["_y", "_m", "_d", "_h", "_m"];
+				pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+				_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
+				_month = _month - 1; // Because month counting starts with 1
+				_d = _d - 1; // Because day counting starts with 1
+
+				OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
 				
 				// Make a string representation of time difference
 				pr _timeDiffStr = if (_h > 0) then {
@@ -882,8 +1089,10 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 									"IntelCommanderActionBuild", "IntelCommanderActionAttack",
 									"IntelCommanderActionPatrol", "IntelCommanderActionRetreat",
 									"IntelCommanderActionRecon"] find _className; // Enumerate class name
-				pr _valueTime = _m + _h*60 + _d*24*60 + _m*30*24*60;
+				pr _valueTime = _m + _h*60 + _d*24*60 + _month*30*24*60;
 				if (!_futureEvent) then {_valueTime = -_valueTime; };
+
+				OOP_INFO_1("  value time: %1", _valuetime);
 
 				_lnb lnbSetValue [[_index, 0], _valueSide];
 				_lnb lnbSetValue [[_index, 1], _valueType];
@@ -928,10 +1137,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		if (_index != -1) then {
 			// Zoom into the area of this intel
 			pr _intel = _lnb lnbData [_index, 0];
-			pr _zoomPos = CALLM0(_intel, "getMapZoomPos");
-			pr _ctrl = ((finddisplay 12) displayCtrl 51);
-			_ctrl ctrlMapAnimAdd [0.3, 0.06, _zoomPos];
-			ctrlMapAnimCommit _ctrl;
+			if (IS_OOP_OBJECT(_intel)) then {
+				pr _zoomPos = CALLM0(_intel, "getMapZoomPos");
+				pr _ctrl = ((finddisplay 12) displayCtrl 51);
+				_ctrl ctrlMapAnimAdd [0.3, 0.06, _zoomPos];
+				ctrlMapAnimCommit _ctrl;
+			};
 		};
 		
 	} ENDMETHOD;
@@ -1055,8 +1266,17 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			pr _target = 0;
 			pr _targetPos = [0, 0, 0];
 
-			if (count _markersUnderCursor > 0) then {
-				pr _destMarker = _markersUnderCursor#0;
+			if ((count _markersUnderCursor > 0) && (count _markersUnderCursor <= 2)) then {
+				pr _destMarker = if (count _markersUnderCursor == 2) then {
+					// Try to prioritize location marker
+					if (count _locationsUnderCursor > 0) then {
+						_locationsUnderCursor#0
+					} else {
+						_markersUnderCursor#0
+					};
+				} else {
+					_markersUnderCursor#0;
+				};
 				switch (GET_OBJECT_CLASS(_destMarker)) do {
 					case "MapMarkerLocation" : {
 						_targetType = TARGET_TYPE_LOCATION;
@@ -1116,7 +1336,17 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			T_CALLM1("garActionMenuEnable", false);
 
 			// Deselect evereything else
-			{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
+			{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
+			{
+				CALLM1(_x, "select", false);
+				pr _intel = CALLM0(_x, "getIntel");
+				// Disable the circle marker which shows the recruitment radius
+				if (IS_OOP_OBJECT(_intel)) then {
+					if (GETV(_intel, "side") == playerSide) then {
+						CALLM1(_x, "setAccuracyRadius", 0);
+					};
+				};
+			} forEach _selectedLocations;
 
 			// Let's select it
 			{ CALLM1(_x, "select", true); } forEach _markersUnderCursor;
@@ -1126,6 +1356,17 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
 				T_CALLM1("garSelMenuSetGarRecord", _garRecord);
 				T_CALLM1("garSelMenuEnable", true);
+			};
+
+			// If there is any location under cursor
+			if (count _locationsUnderCursor > 0) then {
+				pr _locIntel = CALLM0(_locationsUnderCursor#0, "getIntel");
+				if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
+					T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
+					T_CALLM1("locSelMenuEnable", true);
+					pr _radius = CALLSM0("CivilWarGameMode", "getRecruitmentRadius");
+					CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
+				};
 			};
 
 			//Decide what to do with the panel on the right
@@ -1183,10 +1424,23 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Disable the selected garrison menu
 		T_CALLM1("garSelMenuEnable", false);
 
+		// Disable the selected location menu
+		T_CALLM1("locSelMenuEnable", false);
+
 		// Deselect evereything
 		pr _selectedGarrisons = CALLSM0("MapMarkerGarrison", "getAllSelected");
+		{ CALLM1(_x, "select", false); } forEach _selectedGarrisons;
 		pr _selectedLocations = CALLSM0("MapMarkerLocation", "getAllSelected");
-		{ CALLM1(_x, "select", false); } forEach (_selectedGarrisons + _selectedLocations);
+		{
+			CALLM1(_x, "select", false);
+			pr _intel = CALLM0(_x, "getIntel");
+			// Disable the circle marker which shows the recruitment radius
+			if (IS_OOP_OBJECT(_intel)) then {
+				if (GETV(_intel, "side") == playerSide) then {
+					CALLM1(_x, "setAccuracyRadius", 0);
+				};
+			};
+		} forEach _selectedLocations;
 
 		// Clear the intel panel
 		//T_CALLM0("intelPanelClear");
@@ -1388,8 +1642,53 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Selected garrison menu will update its position
 		T_CALLM0("garSelMenuUpdatePos");
 
+		// Selected location menu will update its position
+		T_CALLM0("locSelMenuUpdatePos");
+
 		// Redraw the drawArrow on the map if we are currently giving order to something
 		T_CALLM0("garOrderUpdateArrow");
+
+	} ENDMETHOD;
+
+	/*
+		Method: onMouseMoving
+		Fires continuously while moving the mouse with a certain interval.
+	*/
+	METHOD("onMapMouseMoving") {
+		params [P_THISOBJECT, "_control", "_xPos", "_yPos", "_mouseOver"];
+
+		//pr _garrisonsUnderCursor = CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]); // Let's not do it for garrison markers yet, ok?
+		pr _garrisonsUnderCursor = [];
+		pr _locationsUnderCursor = CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_control ARG _xPos ARG _yPos]);
+		pr _markersUnderCursor = _garrisonsUnderCursor + _locationsUnderCursor;
+
+		// Previous markers under cursor
+		pr _markersUnderCursorOld = T_GETV("markersUnderCursor");
+
+		//OOP_INFO_1("ON MAP MOUSE MOVING: current: %1", _markersUnderCursor);
+		//OOP_INFO_1("ON MAP MOUSE MOVING: old: %1", _markersUnderCursorOld);
+
+		// Check if mouse has entered any new markers
+		{
+			if (!(_x in _markersUnderCursorOld)) then {
+				//OOP_INFO_1("Entered marker: %1", _x);
+				// Mouse has entered this marker
+				CALLM1(_x, "setMouseOver", true);
+			};
+		} forEach _markersUnderCursor;
+
+		// Check if any old markers are not under cursor any more
+		{
+			if (!(_x in _markersUnderCursor)) then {
+				// Mouse has left this marker
+				if (IS_OOP_OBJECT(_x)) then {
+					//OOP_INFO_1("Left marker: %1", _x);
+					CALLM1(_x, "setMouseOver", false);
+				};
+			};
+		} forEach _markersUnderCursorOld;
+
+		T_SETV("markersUnderCursor", _markersUnderCursor);
 
 	} ENDMETHOD;
 

@@ -23,6 +23,8 @@ CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison
 	VARIABLE("targets");
+	// Array of buildings occupied by enemies known by this garrison
+	VARIABLE("buildingsWithTargets");
 	// Array of targets known by this AI which are within the radius from the assignedTargetsPos, updated by sensorGarrisonTargets
 	VARIABLE("assignedTargets");
 	// Position of the assigned targets (the center of the cluster typically)
@@ -31,15 +33,22 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("assignedTargetsRadius");
 	// Bool, set to true if garrison is aware of any targets in the 'assigned targets' area
 	VARIABLE("awareOfAssignedTargets");
-	
+
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
+	VARIABLE("sensorObserved");
 	
 	// Last time the garrison has any goal except for "GoalGarrisonRelax"
 	VARIABLE("lastBusyTime");
 
 	// A serialized CmdrActionRecord, to be read by GarrisonServer when it needs to
 	VARIABLE("cmdrActionRecordSerial");
+
+	// Variables below serve for player to get intel from this garrison about various things
+	// Through picking up tablet items or interrogations or whatever
+	VARIABLE("intelGeneral"); // Array with intel item refs known by this garrison
+	VARIABLE("intelPersonal"); // Ref to intel about cmdr action inwhich this garrison ai is involved
+	VARIABLE("knownFriendlyLocations"); // Array with locations about which this garrison knows
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -61,6 +70,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorObserved);
+		T_SETV("sensorObserved", _sensorObserved);
 
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
@@ -84,6 +94,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		T_SETV("worldState", _ws);
 		T_SETV("targets", []);
+		T_SETV("buildingsWithTargets", []);
 		T_SETV("assignedTargets", []);
 		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
 		T_SETV("assignedTargetsRadius", 0);
@@ -98,6 +109,18 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		// Commander action record serial
 		T_SETV("cmdrActionRecordSerial", []);
+
+		T_SETV("intelGeneral", []); // Array with intel item refs known by this garrison
+		T_SETV("intelPersonal", NULL_OBJECT); // Ref to intel about cmdr action inwhich this garrison ai is involved
+		T_SETV("knownFriendlyLocations", []); // Array with locations about which this garrison knows
+
+		// Test to make all garrisons 'know' about some locations
+		/*
+		pr _allLocs = CALLSM0("Location", "getAll");
+		for "_i" from 0 to 4 do {
+			T_GETV("knownFriendlyLocations") pushBackUnique (selectRandom _allLocs);
+		};
+		*/
 
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
@@ -151,6 +174,18 @@ CLASS("AIGarrison", "AI_GOAP")
 			#ifdef DEBUG_GOAL_MARKERS
 			CALLM0(_thisObject, "_updateDebugMarkers");
 			#endif
+		} else {
+			// Update only the garrisonIsObserved sensor, because vehicles and cargo boxes can still be observed
+			pr _sensor = T_GETV("sensorObserved");
+			
+			// Update the sensor if it's time to update it
+			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
+			// If timeNextUpdate is 0, we never update this sensor
+			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate)) then {
+				CALLM(_sensor, "update", []);
+				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
+				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
+			};
 		};
 
 		// Add a "spawned" field to profiling output 
@@ -421,6 +456,72 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Notify the garrison server that this garrison should be updated on clients
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
+	} ENDMETHOD;
+
+	// Intel stuff
+	METHOD("addGeneralIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+		T_GETV("intelGeneral") pushBackUnique _item;
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
+	} ENDMETHOD;
+
+	METHOD("setPersonalIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
+
+		OOP_INFO_1(" SET PERSONAL INTEL: %1", _item);
+
+		T_SETV("intelPersonal", _item);
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
+	} ENDMETHOD;
+
+	METHOD("addKnownFriendlyLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		T_GETV("knownFriendlyLocations") pushBackUnique _loc;
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
+	} ENDMETHOD;
+
+	// Copies intel from another AIGarrison by adding intel items and locations to this object
+	METHOD("copyIntelFrom") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_otherAI")];
+
+		pr _intelGeneral = T_GETV("intelGeneral");
+		pr _locs = T_GETV("knownFriendlyLocations");
+		// Merge known general intel
+		{
+			// We don't want to accumulate intel about finished cmdr actions
+			if (!CALLM0(_x, "isEnded")) then {
+				_intelGeneral pushBackUnique _x;
+			};
+		} forEach GETV(_otherAI, "intelGeneral");
+		// Merge known friendly locations
+		{
+			_locs pushBackUnique _x;
+		} forEach GETV(_otherAI, "knownFriendlyLocations");
+
+		// Update intel of units inventory items if garrison is spawned
+		CALLM0(T_GETV("agent"), "updateUnitsIntel");
+	} ENDMETHOD;
+
+	// Returns a serialized UnitIntelData object
+	// Typically we are going to assign the returned value to personal inventory
+	METHOD("getUnitIntelDataSerial") {
+		params [P_THISOBJECT];
+
+		pr _temp = NEW("UnitIntelData", []);
+
+		SETV(_temp, "intelGeneral", +T_GETV("intelGeneral"));
+		SETV(_temp, "intelPersonal", T_GETV("intelPersonal"));
+		SETV(_temp, "knownFriendlyLocations", +T_GETV("knownFriendlyLocations"));
+
+		pr _serial = SERIALIZE(_temp);
+		DELETE(_temp);
+		_serial
 	} ENDMETHOD;
 
 ENDCLASS;

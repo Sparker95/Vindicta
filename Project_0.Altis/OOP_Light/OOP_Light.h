@@ -55,6 +55,8 @@
 // Notifies code that Arma Debug Engine is enabled. Currently it is used to dump callstack.
 #define ADE
 
+// Enables logging of each REF/UNREF on OOP objects
+//#define OOP_LOG_REF_UNREF
 
 // ----------------------------------------------------------------------
 // |               C O N F I G   E N T R Y   P O I N T                  |
@@ -90,6 +92,7 @@
 #define IS_MULTIPLAYER false
 
 #define PROFILE_NAME "Satan"
+#define SCRIPT_NULL objNull
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -110,6 +113,7 @@
 
 #define PROFILE_NAME profileName
 
+#define SCRIPT_NULL scriptNull
 #endif
 // ^^^ ARMA ^^^
 
@@ -248,8 +252,8 @@
 #define FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
 	isNil { \
 		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), objNull]; \
-		if (_oldVal isEqualType "") then { CALLM0(_oldVal, "unref") }; \
-		if ((value) isEqualType "") then { CALLM0((value), "ref") }; \
+		if (_oldVal isEqualType "") then { UNREF(_oldVal); }; \
+		if ((value) isEqualType "") then { REF((value)); }; \
 		NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value] \
 	}
 
@@ -850,8 +854,18 @@ objNameStr \
 // |         R E F   C O U N T I N G           |
 // ---------------------------------------------
 
+#ifdef OOP_LOG_REF_UNREF
+
+#define REF(objNameStr) CALLM0(objNameStr, "ref"); \
+diag_log format ["[REF/UNREF]: REF: %1, %2, %3", objNameStr, __FILE__, __LINE__]
+
+#define UNREF(objNameStr) CALLM0(objNameStr, "unref"); \
+diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE__]
+
+#else
 #define REF(objNameStr) CALLM0(objNameStr, "ref")
 #define UNREF(objNameStr) CALLM0(objNameStr, "unref")
+#endif
 
 // ---------------------------------------------------
 // |         T H R E A D I N G    U T I L S          |

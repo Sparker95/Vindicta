@@ -2,6 +2,7 @@
 call compile preprocessFileLineNumbers "AI\Garrison\AIGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\_ActionCompositeParallelGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\_ActionGarrison.sqf";
+call compile preprocessFileLineNumbers "AI\Garrison\_ActionGarrisonBehaviour.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonClearArea.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonDefendPassive.sqf";
 call compile preprocessFileLineNumbers "AI\Garrison\ActionGarrisonJoinGarrison.sqf";

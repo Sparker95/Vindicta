@@ -41,12 +41,12 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intel);
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		T_PRVAR(intelClone);
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
-			_intel = NEW("IntelCommanderActionAttack", []);
+			private _intel = NEW("IntelCommanderActionAttack", []);
 
 			T_PRVAR(srcGarrId);
 			T_PRVAR(tgtLocId);
@@ -70,7 +70,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 			// If we just created this intel then register it now 
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
+			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
@@ -81,8 +81,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
 		} else {
-			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
-			CALLM(_intel, "updateInDb", []);
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
+			CALLM(_intelClone, "updateInDb", []);
 		};
 	} ENDMETHOD;
 
@@ -158,7 +158,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 #ifndef RELEASE_BUILD
 		private _delay = random 2;
 #else
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + random 18;
+		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1)) * 0.1 + 2 + (random 15 + 30);
 #endif
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!

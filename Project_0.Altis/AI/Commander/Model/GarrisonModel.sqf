@@ -102,12 +102,12 @@ CLASS("GarrisonModel", "ModelBase")
 	/* private */ METHOD("_sync") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
 		
-		if(CALLM(_actual, "isDestroyed", [])) exitWith {
+		if(CALLM(_actual, "isDestroyed", []) && CALLM0(_actual, "getLocation") == "") exitWith {
 			T_CALLM("killed", []);
 		};
 
 		private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
-		if(EFF_LTE(_newEff, EFF_ZERO)) then {
+		if(EFF_LTE(_newEff, EFF_ZERO) && (CALLM0(_actual, "getLocation") == "") ) then {
 			T_CALLM("killed", []);
 		} else {
 			private _actualSide = CALLM(_actual, "getSide", []);
@@ -416,6 +416,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		private _side = CALLM(_actual, "getSide", []);
 		private _faction = CALLM(_actual, "getFaction", []);
+		private _templateName = CALLM(_actual, "getTemplateName", []);
 		private _units = CALLM0(_actual, "getUnits") select { 
 			// Not interested in statics
 			!CALLM0(_x, "isStatic") and
@@ -569,7 +570,7 @@ CLASS("GarrisonModel", "ModelBase")
 				if (_x in _allocatedUnits) then { false } else {
 					private _group = CALLM0(_x, "getGroup");
 					if (_group == "") then { false } else {
-						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL, GROUP_TYPE_BUILDING_SENTRY]) then {
+						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
 							true
 						} else {false};
 					};
@@ -665,7 +666,7 @@ CLASS("GarrisonModel", "ModelBase")
 		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
 
 		// Make a new garrison
-		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction]);
+		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
 		private _pos = CALLM(_actual, "getPos", []);
 		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
 
@@ -697,6 +698,12 @@ CLASS("GarrisonModel", "ModelBase")
 		if(count _extraUnits > 0) then {
 			CALLM(_newGarrActual, "postMethodSync", ["addUnits" ARG [_extraUnits]]);
 		};
+
+		// WIP temporary fix to give resources to convoys
+		CALLM2(_newGarrActual, "postMethodAsync", "addBuildResources", [120]);
+
+		// Copy intel from the old garrison into the new one
+		CALLM2(_newGarrActual, "postMethodAsync", "copyIntelFrom", [_actual]);
 
 		OOP_INFO_0("Successfully split garrison");
 
@@ -881,6 +888,32 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_ARRAY("_eff")];
 		// TODO: non linearity
 		0 max (T_GETV("transport") - CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_eff]));
+	} ENDMETHOD;
+
+	// ------------------------- Intel -----------------------------------
+	// Adds known friendly locations closer that _radius from the _pos
+	METHOD("addKnownFriendlyLocationsActual") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_radius")];
+
+		T_PRVAR(actual);
+		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
+
+		// Bail if the garrison has been unregistered/destroyed
+		if (T_CALLM0("isDead")) exitWith {};
+
+		private _world = T_GETV("world");
+		private _side = T_GETV("side");
+		private _nearLocs = CALLM0(_world, "getLocations") select { // Array of location models
+			((GETV(_x, "pos") distance2D _pos) < _radius) &&		// Is close enough
+			{!IS_NULL_OBJECT(CALLM(_x, "getGarrison", [_side]))}	// Belongs to our side (right now at least!)
+		};
+
+		private _AI = CALLM0(_actual, "getAI");
+		{
+			private _locActual = GETV(_x, "actual");
+			CALLM2(_AI, "postMethodAsync", "addKnownFriendlyLocation", [_locActual]);
+		} forEach _nearLocs;
+
 	} ENDMETHOD;
 	
 ENDCLASS;

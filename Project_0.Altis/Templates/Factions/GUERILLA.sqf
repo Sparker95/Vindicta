@@ -7,7 +7,7 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = [];
+_inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT,  ["B_G_Soldier_F"]];					//Default infantry if nothing is found
 
@@ -52,7 +52,7 @@ _inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
 
 //==== Vehicles ====
 
-_veh = [];
+_veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_MRAP_01_F"]];
 
@@ -97,7 +97,7 @@ _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 
 
 //==== Drones ====
-_drone = [];
+_drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 _veh set [T_DRONE_DEFAULT , ["B_UAV_01_F"]];
 
@@ -112,6 +112,8 @@ _drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
 _drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
 
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
 _group = [];
@@ -136,7 +138,304 @@ _group set [T_GROUP_inf_sniper_team, [configfile >> "CfgGroups" >> "West" >> "BL
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
+_array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
+_array set [T_NAME, "tGuerilla"];
+
+_inv = /* Exported with t_fnc_processTemplateItems for template tGuerilla
+Primary weapons
+Primary weapon items
+Secondary weapons
+Secondary weapon items
+Handguns
+Handgun items
+General items */
+[
+	[
+		[
+			"arifle_TRG21_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"arifle_TRG20_ACO_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"arifle_Mk20_GL_ACO_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"arifle_MXC_ACO_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_TRG21_GL_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"arifle_Mk20_MRCO_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"srifle_DMR_03_tan_AMS_LP_F",
+			[
+				"20Rnd_762x51_Mag"
+			]
+		],
+		[
+			"arifle_MX_ACO_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_MXC_Holo_pointer_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_TRG20_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"arifle_MX_ACO_pointer_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"LMG_Mk200_BI_F",
+			[
+				"200Rnd_65x39_cased_Box",
+				"200Rnd_65x39_cased_Box_Tracer",
+				"200Rnd_65x39_cased_Box_Red",
+				"200Rnd_65x39_cased_Box_Tracer_Red"
+			]
+		],
+		[
+			"MMG_02_sand_RCO_LP_F",
+			[
+				"130Rnd_338_Mag"
+			]
+		],
+		[
+			"arifle_Mk20_F",
+			[
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_red",
+				"30Rnd_556x45_Stanag_green"
+			]
+		],
+		[
+			"arifle_MXC_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_MXC_Holo_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"SMG_01_Holo_F",
+			[
+				"30Rnd_45ACP_Mag_SMG_01",
+				"30Rnd_45ACP_Mag_SMG_01_tracer_green",
+				"30Rnd_45ACP_Mag_SMG_01_Tracer_Red",
+				"30Rnd_45ACP_Mag_SMG_01_Tracer_Yellow"
+			]
+		],
+		[
+			"arifle_MX_RCO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_MX_ACO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_MXC_ACO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_MXM_DMS_LP_BI_snds_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_MX_GL_Holo_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_mag"
+			]
+		],
+		[
+			"arifle_SDAR_F",
+			[
+				"20Rnd_556x45_UW_mag",
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_green",
+				"30Rnd_556x45_Stanag_red"
+			]
+		]
+	],
+	[
+		"optic_ACO_grn",
+		"optic_Aco",
+		"optic_MRCO",
+		"acc_pointer_IR",
+		"optic_AMS_snd",
+		"bipod_01_F_snd",
+		"optic_Holosight",
+		"bipod_03_F_blk",
+		"optic_Hamr",
+		"optic_Holosight_smg",
+		"muzzle_snds_H",
+		"optic_DMS"
+	],
+	[
+		[
+			"launch_MRAWS_sand_F",
+			[
+				"MRAWS_HEAT_F",
+				"MRAWS_HE_F",
+				"MRAWS_HEAT55_F"
+			]
+		],
+		[
+			"launch_RPG32_F",
+			[
+				"RPG32_F",
+				"RPG32_HE_F"
+			]
+		],
+		[
+			"launch_B_Titan_F",
+			[
+				"Titan_AA"
+			]
+		],
+		[
+			"launch_NLAW_F",
+			[
+				"NLAW_F"
+			]
+		]
+	],
+	[
+	],
+	[
+		[
+			"hgun_ACPC2_F",
+			[
+				"9Rnd_45ACP_Mag"
+			]
+		],
+		[
+			"hgun_Pistol_heavy_01_MRD_F",
+			[
+				"11Rnd_45ACP_Mag"
+			]
+		],
+		[
+			"hgun_P07_F",
+			[
+				"16Rnd_9x21_Mag",
+				"16Rnd_9x21_red_Mag",
+				"16Rnd_9x21_green_Mag",
+				"16Rnd_9x21_yellow_Mag",
+				"30Rnd_9x21_Mag",
+				"30Rnd_9x21_Red_Mag",
+				"30Rnd_9x21_Yellow_Mag",
+				"30Rnd_9x21_Green_Mag"
+			]
+		],
+		[
+			"hgun_P07_snds_F",
+			[
+				"16Rnd_9x21_Mag",
+				"16Rnd_9x21_red_Mag",
+				"16Rnd_9x21_green_Mag",
+				"16Rnd_9x21_yellow_Mag",
+				"30Rnd_9x21_Mag",
+				"30Rnd_9x21_Red_Mag",
+				"30Rnd_9x21_Yellow_Mag",
+				"30Rnd_9x21_Green_Mag"
+			]
+		]
+	],
+	[
+		"optic_MRD",
+		"muzzle_snds_L"
+	],
+	[
+		"Binocular",
+		"ItemGPS",
+		"NVGoggles",
+		"Rangefinder",
+		"Laserdesignator"
+	]
+];
+_array set [T_INV, _inv];
 
 
 _array // End template

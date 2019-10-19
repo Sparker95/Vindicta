@@ -104,7 +104,7 @@ while {_i < _c} do
 {
 	private _obj = _o select _i;
 	//diag_log format ["type: %1", _t];
-	if ( (_obj isKindOf "allVehicles") &&
+	if ( ( (_obj isKindOf "allVehicles") || (_obj isKindOf "ThingX") ) &&
 	    (!(_obj isKindOf "Man")) ) exitWith {
     	_good = false;
     };
@@ -130,7 +130,7 @@ _arrow setPosATL _posCheck;
 
 //diag_log format ["%1 %2", _posCheck, _bx];
 private _radius = sqrt (_bx*_bx + _by*_by);
-_o = nearestObjects [_posCheck, ["allVehicles"], (_radius + 1) max 1.7, true];
+_o = nearestObjects [_posCheck, ["allVehicles", "ThingX"], (_radius + 1) max 1.7, true];
 //player setPos _pos;
 
 #ifdef DEBUG

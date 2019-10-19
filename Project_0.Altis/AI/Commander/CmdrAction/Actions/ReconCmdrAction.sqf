@@ -174,7 +174,7 @@ CLASS("ReconCmdrAction", "CmdrAction")
 	METHOD("updateIntelFromDetachment") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
 
-		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
+		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
 		
 		// Update progress of the detachment
 		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
@@ -184,6 +184,14 @@ CLASS("ReconCmdrAction", "CmdrAction")
 			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+
+			// Send intel to the garrison doing this action
+			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
+
+			private _state = T_GETV("state");
+			if (_state == CMDR_ACTION_STATE_READY_TO_MOVE) then {
+				T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
+			};
 		};
 	} ENDMETHOD;
 	

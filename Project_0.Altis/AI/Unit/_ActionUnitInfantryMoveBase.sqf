@@ -32,30 +32,42 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 	
 	// logic to run when the goal is activated
 	METHOD("activate") {
-		params [["_thisObject", "", [""]]];		
+		params [["_thisObject", "", [""]]];
 		
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
 		if (GETV(_AI, "new")) then {
-			SETV(_AI, "new", false);
-		};
+			// Teleport the unit to where it needs to be
+			pr _hO = T_GETV("hO");
+			pr _pos = T_GETV("pos");
+			_ho setPos _pos;
+			doStop _hO;
 
-		pr _hO = T_GETV("hO");
-		pr _pos = T_GETV("pos");
-		_hO doMove _pos;
-		
-		// Set ETA
-		// Use manhattan distance
-		pr _posStart = ASLTOAGL (getPosASL _hO);
-		pr _dist = (abs ((_pos select 0) - (_posStart select 0)) ) + (abs ((_pos select 1) - (_posStart select 1))) + (abs ((_pos select 2) - (_posStart select 2)));
-		pr _ETA = time + (_dist/1.4 + 40);
-		T_SETV("ETA", _ETA);
-		
-		// Set state
-		SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
-		
-		// Return ACTIVE state
-		ACTION_STATE_ACTIVE
+			// Set state
+			SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
+
+			SETV(_AI, "new", false);
+
+			// Return completed state
+			ACTION_STATE_COMPLETED
+		} else {
+			pr _hO = T_GETV("hO");
+			pr _pos = T_GETV("pos");
+			_hO doMove _pos;
+			
+			// Set ETA
+			// Use manhattan distance
+			pr _posStart = ASLTOAGL (getPosASL _hO);
+			pr _dist = (abs ((_pos select 0) - (_posStart select 0)) ) + (abs ((_pos select 1) - (_posStart select 1))) + (abs ((_pos select 2) - (_posStart select 2)));
+			pr _ETA = time + (_dist/1.4 + 40);
+			T_SETV("ETA", _ETA);
+			
+			// Set state
+			SETV(_thisObject, "state", ACTION_STATE_ACTIVE);
+			
+			// Return ACTIVE state
+			ACTION_STATE_ACTIVE
+		};
 		
 	} ENDMETHOD;
 	
@@ -96,6 +108,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 			};
 			
 		};
+		_state
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied

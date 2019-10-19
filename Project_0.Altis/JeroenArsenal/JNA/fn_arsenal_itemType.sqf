@@ -37,7 +37,7 @@
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMACC,["AccessoryPointer"]];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMBIPOD,["AccessoryBipod"]];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL,["Bullet","Missile","Rocket","Shell","ShotgunShell","SmokeShell","Laser"]];\
+		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL,["Bullet","Missile","Rocket","Shell","ShotgunShell","SmokeShell","Laser", "vin_build_res_0"]];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOTHROW,["Grenade","SmokeShell","Flare"]];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,["Mine","MineBounding","MineDirectional"]];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC,["FirstAidKit","Medikit","MineDetector","Toolkit"]];
@@ -56,7 +56,7 @@ INITTYPES
 (_item call bis_fnc_itemType) params ["_weaponTypeCategory", "_weaponTypeSpecific"];
 
 {
-	if (_weaponTypeSpecific in _x) exitwith {_return = _foreachindex;};
+	if ((_weaponTypeSpecific in _x) || (_item in _x)) exitwith {_return = _foreachindex;};
 } foreach _types;
 
 

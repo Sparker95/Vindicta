@@ -1,5 +1,6 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\MessageReceiver\MessageReceiver.hpp"
+#include "Location.hpp"
 
 // Class: Location
 /*
@@ -29,4 +30,10 @@ T_SETV("spawned", false);
 //despawn civilians
 T_GETV("cpModule") call CivPresence_fnc_despawn; 
 
-CALLM(gGameMode, "locationDespawned", [_thisObject]);
+// Reset counters
+private _stAll = GET_VAR(_thisObject, "spawnPosTypes");
+{
+	_x set [LOCATION_SPT_ID_COUNTER, 0];
+} forEach _stAll;
+
+CALLM2(gGameMode, "postMethodAsync", "locationDespawned", [_thisObject]);

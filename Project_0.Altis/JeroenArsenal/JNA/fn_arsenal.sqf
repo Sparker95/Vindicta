@@ -153,7 +153,7 @@ switch _mode do {
                     _weaponTypeSpecific = _weaponType select 1;
                     _weaponTypeID = -1;
                     {
-                        if (_weaponTypeSpecific in _x) exitwith {_weaponTypeID = _foreachindex;};
+                        if ((_weaponTypeSpecific in _x) || (_className in _x)) exitwith {_weaponTypeID = _foreachindex;};
                     } foreach _types;
                     if (_weaponTypeID >= 0) then {
                         pr _items = _data select _weaponTypeID;

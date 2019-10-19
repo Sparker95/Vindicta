@@ -12,7 +12,7 @@
 
 /*
 Class: Unit
-A virtualized Unit is a man, vehicle or a drone which can be spawned or not spawned.
+A virtualized Unit is a man, vehicle or a drone (or a cargo box!) which can be spawned or not spawned.
 
 Author: Sparker
 10.06.2018
@@ -139,7 +139,9 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_MEM(_thisObject, "data");
 
 		//Despawn this unit if it was spawned
-		CALLM(_thisObject, "despawn", []);
+		if (T_CALLM0("isSpawned")) then {
+			CALLM(_thisObject, "despawn", []);
+		};
 
 		// Remove the unit from its group
 		private _group = _data select UNIT_DATA_ID_GROUP;
@@ -172,9 +174,16 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("isValid") {
 		params [["_thisObject", "", [""]]];
 		private _data = GET_MEM(_thisObject, "data");
-		if (isNil "_data") exitWith {false};
-		//Return true if the data array is of the correct size
-		( (count _data) == UNIT_DATA_SIZE)
+		pr _return = if (isNil "_data") then {
+			false
+		} else {
+			//Return true if the data array is of the correct size
+			( (count _data) == UNIT_DATA_SIZE)
+		};
+
+		if (!_return) then {OOP_ERROR_1("INVALID UNIT, _data: %1", _data);};
+
+		_return
 	} ENDMETHOD;
 
 
@@ -221,24 +230,36 @@ CLASS(UNIT_CLASS_NAME, "");
 	Returns: nil
 	*/
 	METHOD("spawn") {
-		params [["_thisObject", "", [""]], "_pos", "_dir"];
+		params [["_thisObject", "", [""]], "_pos", "_dir", ["_spawnAtPrevPos", false]];
 
-		OOP_INFO_2("SPAWN pos: %1, dir: %2", _pos, _dir);
+		OOP_INFO_1("SPAWN: %1", _this);
 
 		//Unpack data
 		private _data = GET_MEM(_thisObject, "data");
+
+		OOP_INFO_1("  current data: %1", _data);
 
 		//private _mutex = _data select UNIT_DATA_ID_MUTEX;
 
 		//Lock the mutex
 		//MUTEX_LOCK(_mutex);
-		CRITICAL_SECTION_START
 
 		//Unpack more data...
 		private _objectHandle = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		private _buildResources = _data select UNIT_DATA_ID_BUILD_RESOURCE;
 		if (isNull _objectHandle) then { //If it's not spawned yet
 			private _className = _data select UNIT_DATA_ID_CLASS_NAME;
 			private _group = _data select UNIT_DATA_ID_GROUP;
+
+			pr _posATLPrev = _data#UNIT_DATA_ID_POS_ATL;
+			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
+			pr _locPrev = _data#UNIT_DATA_ID_LOCATION;
+			if (_spawnAtPrevPos && _locPrev != "") then {
+				OOP_INFO_3("  spawning at prev location: %1, %2, %3", _posATLPrev, _dirAndUpPrev, _locPrev);
+				_pos = _posATLPrev;
+			};
+
+			CRITICAL_SECTION_START
 
 			//Perform object creation
 			private _catID = _data select UNIT_DATA_ID_CAT;
@@ -272,14 +293,6 @@ CLASS(UNIT_CLASS_NAME, "");
 					pr _AI = CALLM1(_thisObject, "createAI", "AIUnitInfantry");
 
 					pr _groupType = CALLM0(_group, "getType");
-					if (_groupType == GROUP_TYPE_BUILDING_SENTRY) then {
-						CALLM1(_AI, "setSentryPos", _pos);
-					};
-
-					// Give intel to this unit
-					//if ((random 10) < 4) then {
-						CALLSM1("UnitIntel", "initUnit", _thisObject);
-					//};
 				};
 				case T_VEH: {
 
@@ -323,14 +336,69 @@ CLASS(UNIT_CLASS_NAME, "");
 					};
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
-					CALLM1(_thisObject, "createAI", "AIUnitVehicle");					
-					// Give intel to this unit
-					CALLSM1("UnitIntel", "initUnit", _thisObject);
+					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
 				};
 				case T_DRONE: {
 				};
+
+				case T_CARGO: {
+					private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+					
+					// Check if it's a static vehicle. If it is, we can create it wherever we want without engine-provided collision check
+					pr _special = "CAN_COLLIDE";
+					/*
+					if ([_catID, _subcatID] in T_static) then {
+						_special = "CAN_COLLIDE";
+					};
+					*/
+
+					_objectHandle = createVehicle [_className, _pos, [], 0, _special];
+
+					if (isNull _objectHandle) then {
+						OOP_ERROR_1("Created vehicle is Null. Unit data: %1", _data);
+						_objectHandle = createVehicle ["C_Kart_01_Red_F", _pos, [], 0, _special];
+					};
+
+					_objectHandle allowDamage false;
+					private _spawnCheckEv = _objectHandle addEventHandler ["EpeContactStart", {
+						params ["_object1", "_object2", "_selection1", "_selection2", "_force"];
+						OOP_INFO_MSG("Vehicle %1 failed spawn check, collided with %2 force %3!", [_object1 ARG _object2 ARG _force]);
+						// if(_force > 100) then {
+						// 	deleteVehicle _object1;
+						// };
+					}];
+
+					[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
+						params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
+						sleep 1;
+						_objectHandle allowDamage true;
+						// If it survived spawning
+						if (alive _objectHandle) then {
+							OOP_INFO_MSG("Vehicle %1 passed spawn check, did not explode!", [_objectHandle]);
+							_objectHandle removeEventHandler ["EpeContactStart", _spawnCheckEv];
+						} else {
+							
+						};
+					};
+
+					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
+
+					// Initialize limited arsenal
+					T_CALLM0("limitedArsenalOnSpawn");
+
+					//CALLM1(_thisObject, "createAI", "AIUnitVehicle");		// A box probably has no AI?			
+					// Give intel to this unit
+					//CALLSM1("UnitIntel", "initUnit", _thisObject); // We probably don't put intel into boxes yet
+				};
 			};
 
+			if (_spawnAtPrevPos) then {
+				_objectHandle setPosATL _posATLPrev;
+				_objectHandle setVectorDirAndUp _dirAndUpPrev;
+			} else {
+				_objectHandle setDir _dir;
+				_objectHandle setPos _pos;
+			};
 
 			// Initialize variables
 			CALLM0(_thisObject, "initObjectVariables");
@@ -341,14 +409,24 @@ CLASS(UNIT_CLASS_NAME, "");
 			// Initialize dynamic simulation
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
 
-			_objectHandle setDir _dir;
-			_objectHandle setPos _pos;
+			CRITICAL_SECTION_END
+			// !! Functions below might need to lock the garrison mutex, so we release the critical section
+
+			// Set build resources
+			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
+				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
+			};
+
+			// Initialize cargo if there is no limited arsenal
+			CALLM0(_thisObject, "initObjectInventory");
+					
+			// Give intel to this unit
+			CALLSM1("UnitIntel", "initUnit", _thisObject)
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;
 		};
 
-		CRITICAL_SECTION_END
 		//Unlock the mutex
 		//MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
@@ -415,11 +493,17 @@ CLASS(UNIT_CLASS_NAME, "");
 		pr _catID = _data select UNIT_DATA_ID_CAT;
 
 		// Killed
-		_hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+		if (isNil {_hO getVariable UNIT_EH_KILLED_STR}) then {
+			pr _ehid = _hO addEventHandler ["Killed", Unit_fnc_EH_Killed];
+			_hO setVariable [UNIT_EH_KILLED_STR, _ehid];
+		};
 		
 		// HandleDamage for infantry
 		if (_data select UNIT_DATA_ID_CAT == T_INF) then {
-			_hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
+				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
+			};
 		};
 
 		// GetIn, if it's a vehicle
@@ -449,6 +533,111 @@ CLASS(UNIT_CLASS_NAME, "");
 			case T_DRONE: {
 				_hO triggerDynamicSimulation true;
 				_hO enableDynamicSimulation false;
+			};
+
+			case T_CARGO: {
+				_hO triggerDynamicSimulation false;
+				_hO enableDynamicSimulation false;
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("initObjectInventory") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+
+		// Bail if not spawned
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {};
+
+		pr _catid = _data select UNIT_DATA_ID_CAT;
+		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
+			// Clear cargo
+			clearItemCargoGlobal _hO;
+			clearWeaponCargoGlobal _hO;
+			clearMagazineCargoGlobal _hO;
+			clearBackpackCargoGlobal _hO;
+
+			// Bail if there is a limited arsenal
+			pr _arsenalDataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+			if ((count _arsenalDataList) != 0) exitWith {};
+
+			// Otherwise fill the ammo box with stuff from the template
+			pr _gar = _data select UNIT_DATA_ID_GARRISON;
+			if (_gar == "") exitWith {};
+			pr _nInf = CALLM0(_gar, "countInfantryUnits");
+			pr _nVeh = CALLM0(_gar, "countVehicleUnits");
+			pr _nCargo = CALLM0(_gar, "countCargoUnits");
+			pr _tName = CALLM0(_gar, "getTemplateName");
+			if (_tName == "") exitWith {};
+
+			// Add stuff to cargo from the template
+			pr _t = [_tName] call t_fnc_getTemplate;
+			pr _tInv = _t#T_INV;
+
+			// Some number which scales the amount of items in this box
+			pr _nGuns = _nInf / ((_nVeh + _nCargo) max 1);
+
+			// Modifier for cargo boxes
+			if (_catID == T_CARGO) then {
+				_nGuns = _nGuns * 3;
+			};
+
+			// Add weapons and magazines
+			pr _arr = [[T_INV_primary, _nGuns], [T_INV_secondary, 0.2*_nGuns], [T_INV_handgun, 0.1*_nGuns]]; // [_subcatID, num. attempts]
+			{
+				_x params ["_subcatID", "_n"];
+				if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
+
+					// Randomize _n
+					_n = round (random [0.2*_n, _n, 1.8*_n]);
+
+					for "_i" from 0 to (_n-1) do {
+						pr _weaponsAndMags = _tInv#_subcatID;
+						pr _weaponAndMag = selectRandom _weaponsAndMags;
+						_weaponAndMag params ["_weaponClassName", "_magazines"];
+						_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
+						if (count _magazines > 0) then {
+							_hO addMagazineCargoGlobal [selectRandom _magazines, 5];
+						};
+					};
+				};
+			} forEach _arr;
+
+			// Add items
+			pr _arr = [	[T_INV_primary_items, 0.3*_nGuns], [T_INV_secondary_items, 0.2*_nGuns],
+						[T_INV_handgun_items, 0.1*_nGuns], [T_INV_items, 0.1*_nGuns]]; // [_subcatID, num. attempts]
+			{
+				_x params ["_subcatID", "_n"];
+
+				if (count (_tInv#_subcatID) > 0) then { // If there are any items in this subcategory
+
+					// Randomize _n
+					_n = round (random [0.2*_n, _n, 1.8*_n]);
+					pr _items = _tInv#_subcatID;
+					for "_i" from 0 to (_n-1) do {
+						_hO addItemCargoGlobal [selectRandom _items, round (1 + random 1)];
+					};
+				};
+			} forEach _arr;
+
+			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
+			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
+			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)];
+
+			// Add vests
+			pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+			pr _vests = _tInv#T_INV_vests;
+			for "_i" from 0 to _nVests do {
+				_hO addItemCargoGlobal [selectRandom _vests, 1];
+			};
+
+			// Add backpacks
+			pr _nBackpacks = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
+			pr _backpacks = _tInv#T_INV_backpacks;
+			for "_i" from 0 to _nVests do {
+				_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
 			};
 		};
 	} ENDMETHOD;
@@ -490,6 +679,27 @@ CLASS(UNIT_CLASS_NAME, "");
 				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 				_data set [UNIT_DATA_ID_AI, ""];
 			};
+
+			// Get the amount of actual build resources in inventory
+			// And store them into the array before we delete the vehicle
+			pr _buildResources = 0;
+			pr _catID = _data select UNIT_DATA_ID_CAT;
+			if (T_CALLM0("canHaveBuildResources")) then {
+				_buildResources = T_CALLM0("_getBuildResourcesSpawned");
+				_data set [UNIT_DATA_ID_BUILD_RESOURCE, _buildResources];
+			};
+
+			// Deinitialize the limited arsenal
+			T_CALLM0("limitedArsenalOnDespawn");
+
+			// Set the pos, vector dir and up, location
+			pr _posATL = getPosATL _objectHandle;
+			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
+			pr _gar = _data#UNIT_DATA_ID_GARRISON;
+			pr _loc = if (_gar != "") then {CALLM0(_gar, "getLocation")} else {""};
+			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
+			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
+			_data set [UNIT_DATA_ID_LOCATION, _loc];
 
 			// Delete the vehicle
 			deleteVehicle _objectHandle;
@@ -696,6 +906,18 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		getPos _oh
+	} ENDMETHOD;
+
+	/*
+	Method: getDespawnLocation
+	Returns the location this unit despawned at last time, or ""
+
+	Returns: <Location> or ""
+	*/
+	METHOD("getDespawnLocation") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data#UNIT_DATA_ID_LOCATION
 	} ENDMETHOD;
 
 
@@ -910,6 +1132,18 @@ CLASS(UNIT_CLASS_NAME, "");
 		private _data = GET_VAR(_thisObject, "data");
 		_data select UNIT_DATA_ID_CAT == T_DRONE
 	} ENDMETHOD;
+
+	/*
+	Method: isCargo
+	Returns true if given <Unit> is cargo
+
+	Returns: Bool
+	*/
+	METHOD("isCargo") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		_data select UNIT_DATA_ID_CAT == T_CARGO
+	} ENDMETHOD;
 	
 	//                         I S   S T A T I C
 	/*
@@ -924,6 +1158,197 @@ CLASS(UNIT_CLASS_NAME, "");
 		[_data select UNIT_DATA_ID_CAT, _data select UNIT_DATA_ID_SUBCAT] in T_static
 	} ENDMETHOD;
 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               B U I L D   R E S O U R C E S
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	METHOD("setBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		// Bail if we can't carry any build resources
+		if (!T_CALLM0("canHaveBuildResources")) exitWith {};
+
+		private _data = GET_VAR(_thisObject, "data");
+		_data set [UNIT_DATA_ID_BUILD_RESOURCE, _value];
+		if (T_CALLM0("isSpawned")) then {
+			T_CALLM1("_setBuildResourcesSpawned", _value);
+		} else {
+			pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
+		};
+	} ENDMETHOD;
+
+	METHOD("getBuildResources") {
+		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("GET BUILD RESOURCES");
+
+		private _data = GET_VAR(_thisObject, "data");
+
+		if (_data#UNIT_DATA_ID_CAT == T_INF) exitWith { 0 };
+
+		private _return = if (T_CALLM0("isSpawned")) then {
+			OOP_INFO_0("  spawned");
+			T_CALLM0("_getBuildResourcesSpawned")
+		} else {
+			OOP_INFO_0("  despawned");
+			_data select UNIT_DATA_ID_BUILD_RESOURCE
+		};
+		_return
+		
+	} ENDMETHOD;
+
+	METHOD("addBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		// Bail if a negative number is specified
+		if(_value < 0) exitWith {};
+
+		if (!T_CALLM0("canHaveBuildResources")) exitWith {};
+
+		pr _resCurrent = T_CALLM0("getBuildResources");
+		pr _resNew = _resCurrent + _value;
+		T_CALLM1("setBuildResources", _resNew);
+	} ENDMETHOD;
+
+	METHOD("removeBuildResources") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		// Bail if a negative number is specified
+		if (_value < 0) exitWith {};
+
+		pr _resCurrent = T_CALLM0("getBuildResources");
+		pr _resNew = _resCurrent - _value;
+		if (_resNew < 0) then {_resNew = 0;};
+		T_CALLM1("setBuildResources", _resNew);
+	} ENDMETHOD;
+
+	METHOD("_setBuildResourcesSpawned") {
+		params [["_thisObject", "", [""]], ["_value", 0, [0]]];
+
+		private _data = GET_VAR(_thisObject, "data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {0};
+
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _nItemsNeeded = ceil (_value/_buildResPerMag);
+		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList == 0) then {
+			// There is no limited arsenal, it's a plain cargo container
+			pr _magCargo = getMagazineCargo _hO;
+			pr _index = _magCargo#0 find "vin_build_res_0";
+
+			// Make the exact needed amount of items in the inventory
+			pr _nItemsInCargo = 0;
+			pr _nItemsToAdd = _nItemsNeeded;
+			if (_index != -1) then { // If such items are already in the inventory
+				pr _nItemsInCargo = _magCargo#1#_index;
+				_nItemsToAdd = _nItemsNeeded - _nItemsInCargo;
+			};
+			if (_nItemsToAdd > 0) then {
+				// Add items
+				_hO addMagazineCargoGlobal ["vin_build_res_0", _nItemsToAdd];
+			} else {
+				if (_nItemsToAdd < 0) then {
+					// Remove items
+					[_hO, "vin_build_res_0", -_nItemsToAdd] call CBA_fnc_removeMagazineCargo;
+				};
+			};
+		} else {
+			// There is a limited arsenal
+			_dataList = _hO getVariable "jna_dataList";
+			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
+			pr _nItemsInArsenal = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
+			
+			// Make the exact needed amount of items in the inventory
+			pr _nItemsToAdd = _nItemsNeeded;
+			if (_nItemsInArsenal > 0) then { // If such items are already in the arsenal
+				_nItemsToAdd = _nItemsNeeded - _nItemsInArsenal;
+			};
+			OOP_INFO_1(" >>> Adding build resources: %1", _nItemsToAdd);
+			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
+			if (_nItemsToAdd > 0) then {
+				// Add items
+				[_hO, _index, "vin_build_res_0", _nItemsToAdd] call jn_fnc_arsenal_addItem;
+			} else {
+				if (_nItemsToAdd < 0) then {
+					// Remove items
+					[_hO, _index, "vin_build_res_0", -_nItemsToAdd] call jn_fnc_arsenal_removeItem;
+				};
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("_getBuildResourcesSpawned") {
+		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("_getBuildResourcesSpawned");
+
+		private _data = GET_VAR(_thisObject, "data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {
+			OOP_ERROR_0("getBuildResourcesSpawned: object handle is null");
+			0
+		};
+
+		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList == 0) then {
+			OOP_INFO_0("  no limited arsenal at this unit");
+
+			// There is no limited arsenal, it's a plain cargo container
+			pr _magCargo = getMagazineCargo _hO;
+			pr _index = _magCargo#0 find "vin_build_res_0";
+			if (_index != -1) then {
+				pr _amount = _magCargo#1#_index;
+				pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+				_amount * _buildResPerMag
+			} else {
+				0
+			};
+		} else {
+			// There is a limited arsenal
+			_dataList = _hO getVariable "jna_dataList";
+
+			OOP_INFO_1("  there is limited arsenal at this unit: %1", _dataList);
+
+			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
+			_count = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
+
+			OOP_INFO_1("  amount of build res items: %1", _count);
+
+			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+			pr _return = _count*_buildResPerMag;
+
+			OOP_INFO_1("  return value: %1", _return);
+
+			_return
+		};
+	} ENDMETHOD;
+
+	METHOD("canHaveBuildResources") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		pr _cat = _data#UNIT_DATA_ID_CAT;
+		_cat != T_INF
+	} ENDMETHOD;
+
+	STATIC_METHOD("getInfantryBuildResources") {
+		params [P_THISOBJECT, P_OBJECT("_hO")];
+		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
+		pr _nItems = {_x == "vin_build_res_0"} count _items;
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		_nItems*_buildResPerMag
+	} ENDMETHOD;
+
+	STATIC_METHOD("removeInfantryBuildResources") {
+		params [P_THISOBJECT, P_OBJECT("_hO"), P_NUMBER("_value")];
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _nItemsToRemove = round (_value / _buildResPerMag);
+		pr _i = 0;
+		while {_i < _nItemsToRemove} do {
+			_hO removeMagazine "vin_build_res_0";
+			_i = _i + 1;
+		};
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               G O A P
@@ -968,21 +1393,130 @@ CLASS(UNIT_CLASS_NAME, "");
 		["ActionUnitSalute","ActionUnitScareAway"]
 	} ENDMETHOD;
 
+	/*
+	Method: createDefaultCrew
+	Creates default crew for a vehicle.
+	The vehicle must be in a group.
 
+	Parameters: _template
 
+	_template - the template array to get unit's class name from.
 
+	Returns: nil
+	*/
 
+	METHOD("createDefaultCrew") {
+		params [ ["_thisObject", "", [""]], ["_template", [], [[]]] ];
 
-	// ================= File based methods ======================
-	METHOD_FILE("createDefaultCrew", "Unit\createDefaultCrew.sqf");
-	//METHOD_FILE("doMoveInf", "Unit\doMoveInf.sqf");
-	//METHOD_FILE("doStopInf", "Unit\doStopInf.sqf");
-	//METHOD_FILE("doSitOnBench", "Unit\doSitOnBench.sqf");
-	//METHOD_FILE("doGetUpFromBench", "Unit\doGetUpFromBench.sqf");
-	//METHOD_FILE("doAnimRepairVehicle", "Unit\doAnimRepairVehicle.sqf");
-	//METHOD_FILE("doInteractAnimObject", "Unit\doInteractAnimObject.sqf");
-	//METHOD_FILE("doStopInteractAnimObject", "Unit\doStopInteractAnimObject.sqf");
-	//METHOD_FILE("distance", "Unit\distance.sqf"); // Returns distance between this unit and another position
+		private _data = GET_VAR(_thisObject, "data");
+
+		// Check if the unit is in a group
+		private _group = _data select UNIT_DATA_ID_GROUP;
+		if (_group == "") exitWith { diag_log format ["[Unit::createDefaultCrew] Error: cannot create crew for a unit which has no group: %1", CALL_METHOD(_thisObject, "getData", [])] };
+
+		private _className = _data select UNIT_DATA_ID_CLASS_NAME;
+		private _catID = _data select UNIT_DATA_ID_CAT;
+		private _subcatID = _data select UNIT_DATA_ID_SUBCAT;
+		private _crewData = [_catID, _subcatID, _className] call t_fnc_getDefaultCrew;
+
+		{
+			private _unitCatID = _x select 0; // Unit's category
+			private _unitSubcatID = _x select 1; // Unit's subcategory
+			private _unitClassID = _x select 2;
+			private _args = [_template, _unitCatID, _unitSubcatID, _unitClassID, _group]; // ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]]
+			private _newUnit = NEW("Unit", _args);
+		} forEach _crewData;
+	} ENDMETHOD;
+
+	
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// |                               L I M I T E D   A R S E N A L
+	// | Methods for manipulating the limited arsenal
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+	METHOD("limitedArsenalEnable") {
+		params [P_THISOBJECT, P_BOOL("_enabled")];
+
+		pr _data = T_GETV("data");
+
+		// Bail if this item can't have a limited arsenal
+		pr _catID = _data select UNIT_DATA_ID_CAT;
+		if (_catID != T_CARGO) exitWith {};
+
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		pr _arsenalAlreadyEnabled = count _dataList > 0;
+
+		// Bail if object is already in this state
+		if (_enabled && _arsenalAlreadyEnabled || (!_enabled) && (!_arsenalAlreadyEnabled) ) exitWith {};
+
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+
+		if (_enabled) then {
+			pr _emptyArray = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _emptyArray]; // Limited Arsenal's empty array for items
+			if (isNull _hO) then {
+				// Object is currently despawned
+			} else {
+				// Object is currently spawned
+
+				// Clear the inventory
+				/// although, maybe we should move it into the arsenal?
+				// For now I only care to clear the inventory when we create an ammo box
+				clearItemCargoGlobal _hO;
+				clearWeaponCargoGlobal _hO;
+				clearMagazineCargoGlobal _hO;
+				clearBackpackCargoGlobal _hO;
+
+				[_hO] call jn_fnc_arsenal_initPersistent;
+			};
+		} else {
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, []]; // This unit doesn't have arsenal any more
+			if (isNull _hO) then {
+				// Object is currently despawned
+				// Do nothing
+			} else {
+				// Object is spawned
+				// todo remove actions, kick players out of arsenal, etc ...
+			};
+		};
+	} ENDMETHOD;
+
+	METHOD("limitedArsenalOnSpawn") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList > 0) then {
+			// This object has a limited arsenal
+			// We need to initialize the object
+
+			// Restore the jna_dataList variable with the arsenal contents
+			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+			_hO setVariable ["jna_dataList", _dataList];
+
+			// Initialize the limited arsenal
+			[_hO] call jn_fnc_arsenal_initPersistent;
+		};
+	} ENDMETHOD;
+
+	METHOD("limitedArsenalOnDespawn") {
+		params [P_THISOBJECT];
+
+		pr _data = T_GETV("data");
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList > 0) then {
+			// This object has a limited arsenal
+			// We need to save data
+
+			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+			pr _dataList = _hO getVariable "jna_dataList";
+			if (isNil "_dataList") exitWith {
+				OOP_ERROR_2("Limited Arsenal was not initialized for unit: %1: %2", _thisObject, _dataList);
+			};
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _dataList];
+		};
+	} ENDMETHOD;
 
 ENDCLASS;
 

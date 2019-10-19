@@ -7,7 +7,7 @@ _array = [];
 _array set [T_SIZE-1, nil]; //Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = [];
+_inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; //Make an array full of nil
 _inf set [T_INF_DEFAULT,  ["O_Soldier_F"]];		//Default infantry if nothing is found
 
@@ -51,7 +51,7 @@ _inf set [T_INF_diver_exp, ["O_diver_exp_F"]];
 
 
 //==== Vehicles ====
-_veh = [];
+_veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["O_MRAP_02_F"]];
 
@@ -96,7 +96,7 @@ _veh set [T_VEH_submarine, ["O_SDV_01_F"]];
 
 
 //==== Drones ====
-_drone = [];
+_drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 _drone set [T_DRONE_DEFAULT, ["O_UAV_01_F"]];
 
@@ -111,6 +111,8 @@ _drone set [T_DRONE_stat_HMG_low, ["O_HMG_01_A_F"]];
 _drone set [T_DRONE_stat_GMG_low, ["O_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, ["O_SAM_System_04_F"]];
 
+//==== Cargo ====
+_cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
 _group = [];
@@ -135,7 +137,261 @@ _group set [T_GROUP_inf_sniper_team, [configfile >> "CfgGroups" >> "East" >> "OP
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
+_array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
+_array set [T_NAME, "tCSAT"];
 
+
+_inv = /* Exported with t_fnc_processTemplateItems for template tCSAT
+Primary weapons
+Primary weapon items
+Secondary weapons
+Secondary weapon items
+Handguns
+Handgun items
+General items */
+[
+	[
+		[
+			"arifle_Katiba_ACO_pointer_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_ARCO_pointer_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_GL_ARCO_pointer_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_C_ACO_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_GL_ACO_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"srifle_DMR_01_DMS_BI_F",
+			[
+				"10Rnd_762x54_Mag"
+			]
+		],
+		[
+			"srifle_GM6_camo_LRPS_F",
+			[
+				"5Rnd_127x108_Mag",
+				"5Rnd_127x108_APDS_Mag"
+			]
+		],
+		[
+			"arifle_Katiba_ARCO_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_C_ACO_pointer_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_ACO_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"LMG_Zafir_pointer_F",
+			[
+				"150Rnd_762x54_Box",
+				"150Rnd_762x54_Box_Tracer"
+			]
+		],
+		[
+			"MMG_01_hex_ARCO_LP_F",
+			[
+				"150Rnd_93x64_Mag"
+			]
+		],
+		[
+			"arifle_Katiba_pointer_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_C_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"SMG_02_ACO_F",
+			[
+				"30Rnd_9x21_Mag_SMG_02",
+				"30Rnd_9x21_Mag_SMG_02_Tracer_Red",
+				"30Rnd_9x21_Mag_SMG_02_Tracer_Yellow",
+				"30Rnd_9x21_Mag_SMG_02_Tracer_Green",
+				"30Rnd_9x21_Mag",
+				"30Rnd_9x21_Red_Mag",
+				"30Rnd_9x21_Yellow_Mag",
+				"30Rnd_9x21_Green_Mag"
+			]
+		],
+		[
+			"arifle_Katiba_ARCO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_ACO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_Katiba_C_ACO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"srifle_DMR_01_DMS_snds_BI_F",
+			[
+				"10Rnd_762x54_Mag"
+			]
+		],
+		[
+			"arifle_Katiba_GL_ACO_pointer_snds_F",
+			[
+				"30Rnd_65x39_caseless_green",
+				"30Rnd_65x39_caseless_green_mag_Tracer"
+			]
+		],
+		[
+			"arifle_SDAR_F",
+			[
+				"20Rnd_556x45_UW_mag",
+				"30Rnd_556x45_Stanag",
+				"30Rnd_556x45_Stanag_Tracer_Red",
+				"30Rnd_556x45_Stanag_Tracer_Green",
+				"30Rnd_556x45_Stanag_Tracer_Yellow",
+				"30Rnd_556x45_Stanag_green",
+				"30Rnd_556x45_Stanag_red"
+			]
+		]
+	],
+	[
+		"acc_pointer_IR",
+		"optic_ACO_grn",
+		"optic_Arco_blk_F",
+		"optic_DMS",
+		"bipod_02_F_blk",
+		"optic_LRPS",
+		"optic_Arco",
+		"bipod_02_F_hex",
+		"optic_ACO_grn_smg",
+		"muzzle_snds_H",
+		"muzzle_snds_B"
+	],
+	[
+		[
+			"launch_RPG32_F",
+			[
+				"RPG32_F",
+				"RPG32_HE_F"
+			]
+		],
+		[
+			"launch_O_Vorona_brown_F",
+			[
+				"Vorona_HEAT",
+				"Vorona_HE"
+			]
+		],
+		[
+			"launch_O_Titan_F",
+			[
+				"Titan_AA"
+			]
+		]
+	],
+	[
+	],
+	[
+		[
+			"hgun_Rook40_F",
+			[
+				"16Rnd_9x21_Mag",
+				"16Rnd_9x21_red_Mag",
+				"16Rnd_9x21_green_Mag",
+				"16Rnd_9x21_yellow_Mag",
+				"30Rnd_9x21_Mag",
+				"30Rnd_9x21_Red_Mag",
+				"30Rnd_9x21_Yellow_Mag",
+				"30Rnd_9x21_Green_Mag"
+			]
+		],
+		[
+			"hgun_Pistol_heavy_02_Yorris_F",
+			[
+				"6Rnd_45ACP_Cylinder"
+			]
+		],
+		[
+			"hgun_Rook40_snds_F",
+			[
+				"16Rnd_9x21_Mag",
+				"16Rnd_9x21_red_Mag",
+				"16Rnd_9x21_green_Mag",
+				"16Rnd_9x21_yellow_Mag",
+				"30Rnd_9x21_Mag",
+				"30Rnd_9x21_Red_Mag",
+				"30Rnd_9x21_Yellow_Mag",
+				"30Rnd_9x21_Green_Mag"
+			]
+		]
+	],
+	[
+		"optic_Yorris",
+		"muzzle_snds_L"
+	],
+	[
+		"NVGoggles_OPFOR",
+		"ItemGPS",
+		"Binocular",
+		"Rangefinder",
+		"Laserdesignator_02"
+	]
+];
+
+_array set [T_INV, _inv];
 
 _array

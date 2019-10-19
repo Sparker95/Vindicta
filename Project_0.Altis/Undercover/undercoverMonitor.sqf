@@ -8,7 +8,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
+#include "..\UI\UndercoverUI\UndercoverUI_Macros.h"
 
 #define pr private
 #define sUNDERCOVER 0
@@ -539,15 +539,19 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					_grpDistances pushBack _tempDist;
 				} forEach units _msgData;
 
-				pr _minDist = selectMin _grpDistances;
-				pr _minDistIndex = _grpDistances find _minDist;
+				if (count _grpDistances > 0) then {
+					pr _minDist = selectMin _grpDistances;
+					pr _minDistIndex = _grpDistances find _minDist;
 
-				pr _nearestEnemy = (units _msgData) select _minDistIndex;
-				T_SETV("nearestEnemy", _nearestEnemy);
+					pr _nearestEnemy = (units _msgData) select _minDistIndex;
+					T_SETV("nearestEnemy", _nearestEnemy);
 
-				if !(captive _unit) then {
-					T_CALLM("setState", [sWANTED]);
-				}; 
+					if !(captive _unit) then {
+						T_CALLM("setState", [sWANTED]);
+					};
+				} else {
+					T_SETV("nearestEnemy", objNull);
+				};
 			}; // end SMON_MESSAGE_BEING_SPOTTED
 
 			// messages sent here will temporarily make this object's unit overt 

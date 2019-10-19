@@ -45,9 +45,9 @@ CLASS("IntelDatabaseClient", "IntelDatabase")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-			CALLM1(_item, "clientRemove", _item);
-
 			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]);
+
+			CALLM0(_item, "clientRemove");
 		};
 	} ENDMETHOD;
 

@@ -4,6 +4,7 @@
 #define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Location\Location.hpp"
+#include "Intel.hpp"
 
 /*
 Classes of intel items
@@ -94,6 +95,7 @@ CLASS("Intel", "")
 	METHOD("create") {
 		params [P_THISOBJECT];
 		T_SETV("dateCreated", date);
+		T_SETV("state", INTEL_ACTION_STATE_INACTIVE);
 	} ENDMETHOD;
 
 	/*
@@ -106,6 +108,15 @@ CLASS("Intel", "")
 		private _db = T_GETV("db");
 		ASSERT_MSG(!isNil "_db", "This intel wasn't created using addIntelClone so you can't use updateInDb.");
 		CALLM(_db, "updateIntelFromClone", [_thisObject]);
+	} ENDMETHOD;
+
+	/*
+	Method: getDBEntry
+	Returns the db entry of the intel if it associated with its clone.
+	*/
+	METHOD("getDbEntry") {
+		params [P_THISOBJECT];
+		T_GETV("dbEntry")
 	} ENDMETHOD;
 	
 
@@ -309,7 +320,7 @@ CLASS("IntelLocation", "Intel")
 			case WEST: {[COLOR_WEST, "ColorWEST"]};
 			case EAST: {[COLOR_EAST, "ColorEAST"]};
 			case INDEPENDENT: {[COLOR_IND, "ColorGUER"]};
-			default {[COLOR_UNKNOWN, "ColorCIV"]}; // Purple color
+			default {[COLOR_UNKNOWN, "ColorUNKNOWN"]}; // Purple color
 		};
 
 		//diag_log format ["--- Setting color: %1", _color];
@@ -369,6 +380,18 @@ CLASS("IntelCommanderAction", "Intel")
 	METHOD("new") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		// If it's deleted on client, make sure we clear the map, although it must be also cleared on clientRemove method
+		if (! isNil {T_GETV("shownOnMap")}) then {
+			T_CALLM1("showOnMap", false);
+		};
+	} ENDMETHOD;
+
+	// State of this commander action (inactive, active, complete, failed, etc), see Intel.hpp for states
+	VARIABLE_ATTR("state", [ATTR_SERIALIZABLE]);
 
 	/* 
 		variable: side
@@ -430,7 +453,11 @@ CLASS("IntelCommanderAction", "Intel")
 	/* virtual override */ METHOD("clientAdd") {
 		params [P_THISOBJECT];
 
+		//OOP_INFO_0("CLIENT ADD");
+
 		systemChat format ["Added intel: %1", _thisObject];
+
+		T_SETV("shownOnMap", false);
 
 		// Hint
 		hint format ["Added intel: %1", _thisObject];
@@ -442,10 +469,15 @@ CLASS("IntelCommanderAction", "Intel")
 	/* virtual override */ METHOD("clientRemove") {
 		params [P_THISOBJECT];
 
+		//OOP_INFO_0("CLIENT REMOVE");
+
 		systemChat format ["Removed intel: %1", _thisObject];
 
 		// Notify ClientMapUI
 		CALLM1(gClientMapUI, "onIntelRemoved", _thisObject);
+
+		// Remove map markers
+		T_CALLM1("showOnMap", false);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this
@@ -453,6 +485,19 @@ CLASS("IntelCommanderAction", "Intel")
 		"Action"
 	} ENDMETHOD;
 
+	/*
+	Method: isEnded
+	Returns true if state of this action is END
+	*/
+	METHOD("isEnded") {
+		params [P_THISOBJECT];
+		pr _state = T_GETV("state");
+		if (!isNil "_state") then {
+			_state != INTEL_ACTION_STATE_END
+		} else {
+			false
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: showOnMap
@@ -462,10 +507,12 @@ CLASS("IntelCommanderAction", "Intel")
 	/* virtual */ METHOD("showOnMap") {
 		params [P_THISOBJECT, P_BOOL("_show")];
 
-		OOP_INFO_1("SHOW ON MAP: %1", _show);
+		//OOP_INFO_1("SHOW ON MAP: %1", _show);
 
 		// Variable might be not initialized
-		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
+		if (isNil {T_GETV("shownOnMap")}) exitWith {
+			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+		};
 
 		if (_show) then {
 			if(!T_GETV("shownOnMap")) then {
@@ -495,7 +542,7 @@ CLASS("IntelCommanderAction", "Intel")
 	} ENDMETHOD;
 
 	/*
-	Method: showOnMap
+	Method: getMapZoomPos
 	It's meant to return where the map will zoom into on client
 	*/
 	METHOD("getMapZoomPos") {
@@ -513,6 +560,13 @@ ENDCLASS;
 	Intel about reinforcement commander action.
 */
 CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
+
+	/*
+		variable: type
+		type of reinforcement?
+	*/
+	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
+
 	/* 
 		variable: srcGarrison
 		The source garrison that sent the reinforcements. Probably players have no use to this.
@@ -596,8 +650,12 @@ CLASS("IntelCommanderActionPatrol", "IntelCommanderAction")
 	/* virtual override */ METHOD("showOnMap") {
 		params [P_THISOBJECT, P_BOOL("_show")];
 
+		OOP_INFO_1("SHOW ON MAP: %1", _show);
+
 		// Variable might be not initialized
-		if (isNil {T_GETV("shownOnMap")}) then { T_SETV("shownOnMap", false); };
+		if (isNil {T_GETV("shownOnMap")}) exitWith {
+			OOP_ERROR_0("showOnMap: shownOnMap is nil!");
+		};
 
 		if (_show) then {
 			if(!T_GETV("shownOnMap")) then {

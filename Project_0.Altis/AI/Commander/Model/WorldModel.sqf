@@ -1,5 +1,8 @@
 #include "..\common.hpp"
 
+// Constant for addDamage function, scales damage to activity
+#define DAMAGE_SCALE 1.0
+
 /*
 Class: AI.CmdrAI.Model.WorldModel
 Models either the real world state, or a derivation of it that can be used for simulation.
@@ -138,20 +141,25 @@ CLASS("WorldModel", "")
 		T_PRVAR(rawActivityGrid);
 
 		// Fade grids over time
-		// Threat fades to 50% over 60 minutes or so
-		// Damage fades to 50% over 7 hours or so
+
+		// (Old code was based on this)
 		// https://www.desmos.com/calculator/iyesusko7z
-		#define THREAT_FADE_RATE 0.93
-		#define ACTIVITY_FADE_RATE 0.98
-		#define FADE_RATE_PERIOD 360
+		//
+
+		//https://www.desmos.com/calculator/yplowc31cg
+
+		// Decays twice after 30 minutes
+		#define THREAT_FADE_PERIOD (30*60)
+		// Decays twice after 100 minutes
+		#define ACTIVITY_FADE_PERIOD (100*60)
 
 		T_PRVAR(lastGridUpdate);
 		private _dt = TIME_NOW - _lastGridUpdate;
 		T_SETV("lastGridUpdate", TIME_NOW);
 
-		private _threatFade = THREAT_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
+		private _threatFade = 2 ^ (-_dt / THREAT_FADE_PERIOD);
 		CALLM(_rawThreatGrid, "fade", [_threatFade]);
-		private _activityFade = ACTIVITY_FADE_RATE ^ (_dt / FADE_RATE_PERIOD);
+		private _activityFade = 2 ^ (-_dt / ACTIVITY_FADE_PERIOD);
 		CALLM(_rawActivityGrid, "fade", [_activityFade]);
 
 		#define THREAT_GRID_CLUSTER_OVERSIZE 500
@@ -195,7 +203,7 @@ CLASS("WorldModel", "")
 	METHOD("addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
 		T_PRVAR(rawActivityGrid);
-		CALLM(_rawActivityGrid, "addValue", [_pos ARG EFF_SUM(_effDamage)]);
+		CALLM(_rawActivityGrid, "addValue", [_pos ARG DAMAGE_SCALE*EFF_SUM(_effDamage)]);
 	} ENDMETHOD;
 
 	METHOD("addActivity") {

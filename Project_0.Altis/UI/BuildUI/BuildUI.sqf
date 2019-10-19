@@ -4,7 +4,7 @@
 #define OOP_ERROR
 #define OFSTREAM_FILE "buildUI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
-#include "..\Resources\BuildUI\BuildUI_Macros.h"
+#include "BuildUI_Macros.h"
 #include "..\..\GlobalAssert.hpp"
 
 #define TIME_FADE_TT 0.84
@@ -22,6 +22,9 @@ Author: Marvis
 #define pr private
 
 g_BuildUI = nil;
+
+#define __RESOURCE_SOURCE_LOCATION 0
+#define __RESOURCE_SOURCE_INVENTORY 1
 
 CLASS("BuildUI", "")
 
@@ -53,6 +56,9 @@ CLASS("BuildUI", "")
 	VARIABLE("rotation");					// Rotational offset in build and carousel
 	VARIABLE("targetRotation");				// Target rotational offset for smooth animation
 	VARIABLE("lastFrameTime");				// Time of last frame
+
+	// Source of resources: unit's inventory or location's resources
+	VARIABLE("resourceSource");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -95,6 +101,8 @@ CLASS("BuildUI", "")
 
 		T_CALLM("makeCatTexts", [0]); 			// initialize UI category strings
 
+		T_SETV("resourceSource", __RESOURCE_SOURCE_LOCATION);
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -136,10 +144,13 @@ CLASS("BuildUI", "")
 		} forEach T_GETV("activeBuildMenus");
 	} ENDMETHOD;
 
+	// _source: 0 - building from location, 1 - building from our inventory, -1 - don't care and keep building from anywhere
 	METHOD("openUI") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, ["_source", -1]];
 
 		OOP_INFO_0("'openUI' method called.");
+
+		T_SETV("resourceSource", _source);
 
 		if(T_GETV("isMenuOpen")) exitWith {};
 		T_SETV("isMenuOpen", true);
@@ -165,6 +176,7 @@ CLASS("BuildUI", "")
 			CALLM4(g_BuildUI, "onKeyHandler", _dikCode, _shiftState, _ctrlState, _altState);
 		}];
 
+		OOP_INFO_1(" Saved key down EH ID: %1", _EHKeyDown);
 		T_SETV("EHKeyDown", _EHKeyDown);
 
 		pr _playerEvents = [
@@ -183,8 +195,21 @@ CLASS("BuildUI", "")
 		// Also for when they leave camp area.
 	} ENDMETHOD;
 
+	STATIC_METHOD("getInstanceOpenUI") {
+		params [P_THISOBJECT, P_NUMBER("_source")];
+		pr _thisObject = g_BuildUI;
+		if (isNil "_thisObject") exitWith {};
+		CALLM1(_thisObject, "openUI", _source);
+	} ENDMETHOD;
+
 	METHOD("UIFrameUpdate") {
 		params [P_THISOBJECT];
+
+		// Bail if we can't build any more here
+		if ((!CALLSM1("PlayerMonitor", "canUnitBuildAtLocation", player)) && (T_GETV("resourceSource") != -1)) exitWith {
+			T_CALLM0("closeUI");
+		};
+
 		pr _UICatTexts = GETV(g_BuildUI, "UICatTexts");
 		pr _UIItemTexts = GETV(g_BuildUI, "UIItemTexts");
 		pr _TimeFadeIn = GETV(g_BuildUI, "TimeFadeIn");
@@ -366,6 +391,7 @@ CLASS("BuildUI", "")
 		g_rscLayerBuildUI cutRsc ["Default", "PLAIN", -1, false]; // hide UI
 
 		pr _EHKeyDown = T_GETV("EHKeyDown");
+		OOP_INFO_1(" Recovered keyDown EH ID: %1", _EHKeyDown);
 		(findDisplay 46) displayRemoveEventHandler ["KeyDown", _EHKeyDown];
 
 		T_SETV("EHKeyDown", nil);
@@ -438,7 +464,7 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT];
 		OOP_INFO_0("'closeItems' method called");
 		T_SETV("ItemCatOpen", false);
-		T_SETV("currentItemID", 0);
+		//T_SETV("currentItemID", 0);
 		T_SETV("TimeFadeInTT", (time+TIME_FADE_TT));
 		T_CALLM0("clearCarousel");
 		T_CALLM0("enterMoveMode");
@@ -522,7 +548,10 @@ CLASS("BuildUI", "")
 			if ((_x < 0) OR (_x > _itemCatIndexSize)) then { 
 				_return pushBack ""; 
 			} else {
-				_return pushBack (toUpper ((_itemCat select _x) select 1));
+				pr _itemName = getText (configfile >> "CfgVehicles" >> (_itemCat select _x select 0) >> "displayName"); //toUpper ((_itemCat select _x) select 1);
+				pr _itemCost = (_itemCat select _x) select 2;
+				pr _str = format ["%1 [%2]", _itemName, _itemCost];
+				_return pushBack _str;
 			};
 		} forEach _UIarray; 
 
@@ -855,6 +884,8 @@ CLASS("BuildUI", "")
 			_worldPos set [2, _height];
 			_ghostObject attachTo [player, player worldToModel _worldPos];
 			_ghostObject setDir (_relativeRot + _rotation);
+			private _surfaceVectorUp = surfaceNormal _worldPos;
+			_ghostObject setVectorUp (player vectorWorldToModel _surfaceVectorUp);
 			_ghostObject setVariable ["build_ui_dist", _dist];
 		} forEach _movingObjectGhosts;
 		
@@ -941,15 +972,46 @@ CLASS("BuildUI", "")
 
 			// If it is a new object then we must create a server version.
 			if (_object getVariable ["build_ui_newObject", false]) then {
-				_actualObject = (typeOf _object) createVehicle _currPos;
-				CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _actualObject, true);
+				// We are creating a new object
+				// Ask server to do that
+
+				pr _pos = [_currPos select 0, _currPos select 1, 0];
+				pr _dir = getDir _ghostObject;
+				// These are template catID and subcatID of the object, not catID of the build menu
+				pr _itemArray = ((g_BuildUIObjects select T_GETV("currentCatID")) select 0) select T_GETV("currentItemID");
+				_itemArray params ["_className", "_displayName", "_buildRes", "_catID", "_subcatID"];
+				pr _gar = CALLM0(gPlayerMonitor, "getCurrentGarrison");
+
+				if (T_GETV("resourceSource") == __RESOURCE_SOURCE_INVENTORY) then {
+					// Check player's resources
+					pr _playerBuildRes = CALLSM1("Unit", "getInfantryBuildResources", player);
+					if (_playerBuildRes >= _buildRes) then {
+						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
+						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
+						pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+						// Send the request to server
+						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
+					} else {
+						// Show error message
+						systemChat format ["Not enough build resources in your inventory: %1 (%2 required)", _playerBuildRes, _buildRes];
+					};
+					
+				} else {
+					// We are building from the location garrison's resources
+					pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+
+					// Send the request to server
+					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
+				};
+
 				deleteVehicle _object;
-				_object = _actualObject;
+			} else {
+				// We are just moving an already existing object
+				_object setDir (getDir _ghostObject);
+				_object setPos [_currPos select 0, _currPos select 1, 0];
+				// _object enableSimulationGlobal true;
+				_object hideObject false;
 			};
-			_object setDir (getDir _ghostObject);
-			_object setPos [_currPos select 0, _currPos select 1, 0];
-			// _object enableSimulationGlobal true;
-			_object hideObject false;
 
 			deleteVehicle _ghostObject;
 		} forEach _movingObjectGhosts;
@@ -1043,8 +1105,3 @@ build_UI_setObjectMovable = {
 	OOP_INFO_2("'build_UI_setObjectMovable' method called with %1, %2", _obj, _val);
 	CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _obj, _val);
 };
-
-#ifndef _SQF_VM
-NEW("BuildUI", []);
-#endif
-

@@ -7,7 +7,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
+#include "..\UI\UndercoverUI\UndercoverUI_Macros.h"
 
 /* 
 	Tests the "compromise" feature of the undercoverMonitor by sending a message to the monitor.

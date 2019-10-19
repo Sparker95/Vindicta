@@ -42,10 +42,11 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intel);
+		private _intel = NULL_OBJECT;
+		T_PRVAR(intelClone);
 		// Created lazily here on the first call to update it. This ensures we only
 		// create intel objects for actions that are active rather than merely proposed.
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
@@ -59,6 +60,7 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 			ASSERT_OBJECT(_tgtCluster);
 
 			CALLM(_intel, "create", []);
+			SETV(_intel, "state", INTEL_ACTION_STATE_ACTIVE); // It's instantly active
 
 			SETV(_intel, "type", "Take Location");
 			SETV(_intel, "side", GETV(_srcGarr, "side"));
@@ -74,15 +76,24 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 
 			// If we just created this intel then register it now 			
 			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
+			T_SETV("intelClone", _intelClone);
 
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtCluster, "pos")]);
+
+			// Reveal some friendly locations near the destination to the garrison performing the task
+			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+				private _detachedGarrModel = CALLM(_world, "getGarrison", [_detachedGarrId]);
+				{
+					CALLM2(_x, "addKnownFriendlyLocationsActual", GETV(_tgtCluster, "pos"), 2000 ); // Reveal friendly locations within 2000 meters
+				} forEach [_srcGarr, _detachedGarrModel];
+			};
 		} else {
 			// Call the base class function to update the detachment specific intel
-			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
-			CALLM(_intel, "updateInDb", []);
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
+			CALLM(_intelClone, "updateInDb", []);
 		};
 	} ENDMETHOD;
 

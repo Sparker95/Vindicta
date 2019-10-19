@@ -153,46 +153,54 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
 
-		T_PRVAR(intel);
-	
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		T_PRVAR(intelClone);
+		private _intel = NULL_OBJECT;
+
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
 			_intel = NEW("IntelCommanderActionRetreat", []);
 			CALLM(_intel, "create", []);
-		};
+		
+			switch(_targetType) do {
+				case TARGET_TYPE_LOCATION: {
+					private _tgtLoc = CALLM(_world, "getLocation", [_target]);
+					ASSERT_OBJECT(_tgtLoc);
+					SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
+					SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
+				};
+				case TARGET_TYPE_GARRISON: {
+					private _tgtGarr = CALLM(_world, "getGarrison", [_target]);
+					ASSERT_OBJECT(_tgtGarr);
+					SETV(_intel, "tgtGarrison", GETV(_tgtGarr, "actual"));
+					SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
+				};
+			};
 
-		switch(_targetType) do {
-			case TARGET_TYPE_LOCATION: {
-				private _tgtLoc = CALLM(_world, "getLocation", [_target]);
-				ASSERT_OBJECT(_tgtLoc);
-				SETV(_intel, "tgtLocation", GETV(_tgtLoc, "actual"));
-				SETV(_intel, "posTgt", GETV(_tgtLoc, "pos"));
-			};
-			case TARGET_TYPE_GARRISON: {
-				private _tgtGarr = CALLM(_world, "getGarrison", [_target]);
-				ASSERT_OBJECT(_tgtGarr);
-				SETV(_intel, "tgtGarrison", GETV(_tgtGarr, "actual"));
-				SETV(_intel, "posTgt", GETV(_tgtGarr, "pos"));
-			};
 		};
 
 		// Update progress of the garrison
 		T_PRVAR(srcGarrId);
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
-		SETV(_intel, "garrison", GETV(_srcGarr, "actual"));
-		SETV(_intel, "pos", GETV(_srcGarr, "pos"));
-		SETV(_intel, "posCurrent", GETV(_srcGarr, "pos"));
-		SETV(_intel, "strength", GETV(_srcGarr, "efficiency"));
+		private _intelUpdate = if (_intelNotCreated) then {_intel} else {_intelClone};
+		SETV(_intelUpdate, "garrison", GETV(_srcGarr, "actual"));
+		SETV(_intelUpdate, "pos", GETV(_srcGarr, "pos"));
+		SETV(_intelUpdate, "posCurrent", GETV(_srcGarr, "pos"));
+		SETV(_intelUpdate, "strength", GETV(_srcGarr, "efficiency"));
 
 		// If we just created this intel then register it now 
 		// (we don't want to do this above before we have updated it or it will result in a partial intel record)
 		if(_intelNotCreated) then {
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
+			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intelClone", _intelClone);
 		} else {
-			CALLM(_intel, "updateInDb", []);
+			CALLM(_intelClone, "updateInDb", []);
+		};
+
+		// If we have reached a certain state, mark action intel as active
+		if (T_GETV("state") == CMDR_ACTION_STATE_READY_TO_MOVE) then {
+			T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
 		};
 	} ENDMETHOD;
 	

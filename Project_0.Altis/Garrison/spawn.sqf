@@ -48,7 +48,6 @@ pr _spawningHandled = if (_action != "") then {
 
 if (!_spawningHandled) then {
 	// If there is no current action (how is that possible??) we perform spawning manually
-	// todo what happens if there is no location?
 
 	private _loc = GET_VAR(_thisObject, "location");
 
@@ -65,10 +64,17 @@ if (!_spawningHandled) then {
 		{
 			private _unit = _x;
 			if (CALL_METHOD(_x, "getGroup", []) == "") then {
-				private _unitData = CALL_METHOD(_unit, "getMainData", []);
-				private _args = _unitData + [0]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-				private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-				CALL_METHOD(_unit, "spawn", _posAndDir);
+				private _prevLoc = CALLM0(_x, "getDespawnLocation");
+				if (_prevLoc == _loc && _prevLoc != "") then {
+					// Spawn at the previous spawn position
+					CALLM3(_unit, "spawn", [0 ARG 0 ARG 0], 0, true);
+				} else {
+					// Get new spawn position
+					private _unitData = CALL_METHOD(_unit, "getMainData", []);
+					private _args = _unitData + [0]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
+					private _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
+					CALL_METHOD(_unit, "spawn", _posAndDir);
+				};
 			};
 		} forEach _units;
 	} else {

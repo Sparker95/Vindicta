@@ -131,6 +131,36 @@ _newUnit addAction ["Talk to civilian", // title
 CALLSM0("UnitIntel", "initPlayer");
 
 // Init the Location Visibility Monitor on player
-NEW("LocationVisibilityMonitor", [_newUnit]);
+gPlayerMonitor = NEW("PlayerMonitor", [_newUnit]);
+NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this self-deletes, it will unref the player monitor
 
 CALLM(gGameMode, "playerSpawn", _this);
+
+// Action to start building stuff
+_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from location"], // title
+                 {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}, // 0 - build from location's resources
+                 0, // Arguments
+                 0, // Priority
+                 true, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "(vehicle player == player) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation)", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint
+
+// Action to start building stuff
+_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from inventory"], // title
+                 {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}, // 1 - build from our own inventory
+                 0, // Arguments
+                 -1, // Priority
+                 true, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "(vehicle player == player) && (((['', player] call unit_fnc_getInfantryBuildResources) > 0) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint
+

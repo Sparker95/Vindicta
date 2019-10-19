@@ -1,3 +1,4 @@
+t_fnc_getTemplate = compile preprocessfilelinenumbers "Templates\fn_getTemplate.sqf";
 t_fnc_selectArray = compile preprocessfilelinenumbers "Templates\fn_selectArray.sqf";
 t_fnc_selectRandom = compile preprocessfilelinenumbers "Templates\fn_selectRandom.sqf";
 t_fnc_select = compile preprocessfilelinenumbers "Templates\fn_select.sqf";
@@ -20,3 +21,5 @@ t_fnc_convertTemplateClassNamesToNumbers = compile preprocessFileLineNumbers "Te
 t_fnc_addLoadout = compile preprocessFileLineNumbers "Templates\fn_addLoadout.sqf";
 t_fnc_setUnitLoadout = compile preprocessFileLineNumbers "Templates\fn_setUnitLoadout.sqf";
 t_fnc_isLoadout = compile preprocessFileLineNumbers "Templates\fn_isLoadout.sqf";
+
+t_fnc_processTemplateItems = compile preprocessFileLineNumbers "Templates\fn_processTemplateItems.sqf";

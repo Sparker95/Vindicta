@@ -30,7 +30,7 @@ CLASS("LocationUnitArrayProvider", "MessageReceiver");
 		// Create a timer for gLUAP
 		private _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
-		private _args = [_thisObject, 2, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
+		private _args = [_thisObject, 3.5, _msg, gTimerServiceMain]; // message receiver, interval, message, timer service
 		private _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 	} ENDMETHOD;

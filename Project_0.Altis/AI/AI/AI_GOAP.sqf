@@ -419,11 +419,12 @@ CLASS("AI_GOAP", "AI")
 	
 	_goalClassName - <Goal> class name
 	_goalSourceAI - <AI> object that gave this goal or "" to ignore this field. If "" is provided, source field will be ignored.
-	
+	_goalParameters - parameter array, if specified then the function will only delete goals which have all tags set to specified values
+
 	Returns: nil
 	*/
 	METHOD("deleteExternalGoal") {
-		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSourceAI", ""]];
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSourceAI", ""], ["_goalParameters", []]];
 
 		/*
 		if (_goalSourceAI != "") then {
@@ -441,14 +442,35 @@ CLASS("AI_GOAP", "AI")
 			if (	(((_cg select 0) == _goalClassName) || (_goalClassName == "")) &&
 					( ((_cg select 3) == _goalSourceAI) || (_goalSourceAI == ""))) then {
 				
-				// Call the "onGoalDeleted" static method
-				private _thisGoalClassName = _cg select 0;
-				CALLSM(_cg select 0, "onGoalDeleted", [_thisObject ARG _cg select 2]);
+				// Ensure external goal parameters
+				/*
+				pr _nParamMismatch = 0;
+				scopeName "__s1";
+				if (count _goalParameters > 0) then {
+					_nParamMismatch = count _goalParameters;
+					{
+						_x params ["_tag", "_value"];
+						pr _extGoalParams = _cg select 2;
+						pr _index = _extGoalParams findIf {_x#0 == _tag};
+						if (_index != -1) then {
+							if ( ((_extGoalParams#_index#1) isEqualTo _value)) then {
+								_nParamMismatch = _nParamMismatch - 1;
+							};
+						};
+					} forEach _goalParameters;
+				};
+				*/
+				
+				//if (_nParamMismatch == 0) then {
+					// Call the "onGoalDeleted" static method
+					private _thisGoalClassName = _cg select 0;
+					CALLSM(_cg select 0, "onGoalDeleted", [_thisObject ARG _cg select 2]);
 
-				// Delete this goal
-				pr _deletedGoal = _goalsExternal deleteAt _i;
-				OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
-				_goalDeleted = true;
+					// Delete this goal
+					pr _deletedGoal = _goalsExternal deleteAt _i;
+					OOP_INFO_1("DELETED EXTERNAL GOAL: %1", _deletedGoal);
+					_goalDeleted = true;
+				//};
 			} else {
 				_i = _i + 1;
 			};
@@ -494,6 +516,37 @@ CLASS("AI_GOAP", "AI")
 			_return = _goalsExternal select _index select 4;
 		} else {
 			//OOP_WARNING_2("can't find external goal: %1, external goals: %2", _goalClassName, _goalsExternal);
+		};
+		CRITICAL_SECTION_END
+		
+		_return
+	} ENDMETHOD;
+
+	/*
+	Method: hasExternalGoal
+	Returns true if this agent has specified external goal from specified source
+	
+	Parameters: _goalClassName, _source
+	
+	_goalClassName - <Goal> class name
+	_source - string, source of the goal, or "" to ignore this field. If "" is provided, source field will be ignored.
+	
+	Returns: Bool
+	*/
+	METHOD("hasExternalGoal") {
+		params [["_thisObject", "", [""]], ["_goalClassName", "", [""]], ["_goalSource", ""]];
+
+		pr _return = false;
+		CRITICAL_SECTION_START
+		// [_goalClassName, _bias, _parameters, _source, action state];
+		pr _goalsExternal = GETV(_thisObject, "goalsExternal");
+		pr _index = if (_goalSource == "") then {
+			_goalsExternal findIf {(_x select 0) == _goalClassName}
+		} else {
+			_goalsExternal findIf {((_x select 0) == _goalClassName) && (_x select 3 == _goalSource)}
+		};
+		if (_index != -1) then {
+			_return = true
 		};
 		CRITICAL_SECTION_END
 		

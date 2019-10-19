@@ -27,7 +27,7 @@ if (!IS_SERVER) then {
 if(true) exitWith { 
 	0 spawn {
 		0 spawn {
-			waitUntil {!((finddisplay 12) isEqualTo displayNull)};
+			waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 			call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
 		};
@@ -39,7 +39,8 @@ if(true) exitWith {
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		case "Sparker": 	{ "CivilWarGameMode" }; //"RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
+		case "Sparker": 	{ "CivilWarGameMode" };  // "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
+		//case "Sparker": 	{ "EmptyGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };
@@ -74,6 +75,7 @@ CRITICAL_SECTION {
 		};
 	};
 };
+
 
 // pr0_fn_getGlobalRectAndSize = {
 // 	params [["_pos", [], [[]]], ["_dir", 0, [0]], ["_bbox", [], [[]]] ];

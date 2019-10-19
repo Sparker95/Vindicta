@@ -15,4 +15,5 @@ private _args = [_uid, _profileName, _clientOwner];
 CALLM(gPlayerDatabaseServer, "onPlayerConnected", _args);
 
 // Send data about all garrisons to the player
-CALLM2(gGarrisonServer, "postMethodAsync", "onClientConnected", [_clientOwner ARG _side]);
+// Don't need it any more since I've converted it to use JIP IDs instead
+//CALLM2(gGarrisonServer, "postMethodAsync", "onClientConnected", [_clientOwner ARG _side]);

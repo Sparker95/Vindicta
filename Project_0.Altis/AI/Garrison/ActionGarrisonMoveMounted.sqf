@@ -117,7 +117,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
 			
 			// Give goals to infantry groups
-			pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
+			pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 			pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 			{
 				pr _group = _x;
@@ -275,7 +275,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		} forEach _vehGroups;
 
 		// Terminate infantry group goals
-		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
+		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		{
 			pr _group = _x;

@@ -785,7 +785,7 @@ OOP_deref_var = {
 		private _memObj = FORCE_GET_MEM(_objNameStr, _memName);
 		switch(typeName _memObj) do {
 			case "STRING": {
-				CALLM0(_memObj, "unref");
+				UNREF(_memObj);
 			};
 			// Lets not use this, it is a bit ambiguous as automatic ref counting in arrays can only
 			// ever be partial, unless we make a whole suite of functions to replace all normal array 
@@ -826,7 +826,7 @@ OOP_delete = {
 			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
 			FORCE_SET_MEM(_objNameStr, _memName, nil);
 			PUBLIC_VAR(_objNameStr, OOP_PARENT_STR);
-		} forEach _oop_memList;
+		} forEach (_oop_memList+[OOP_PUBLIC_STR]);
 	} else {
 		{
 			// If the var is REFCOUNTED then unref it

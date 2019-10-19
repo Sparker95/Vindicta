@@ -36,6 +36,7 @@ CLASS("ActionGroup", "Action")
 		params ["_thisObject"];
 		if (CALLM0(T_GETV("group"), "isEmpty")) then {
 			T_SETV("state", ACTION_STATE_FAILED);
+			OOP_INFO_0("Action failed: group is empty");
 			ACTION_STATE_FAILED
 		} else {
 			T_GETV("state")
@@ -53,6 +54,7 @@ CLASS("ActionGroup", "Action")
 		
 		if ((count CALLM0(T_GETV("group"), "getInfantryUnits")) == 0) then {
 			T_SETV("state", ACTION_STATE_FAILED);
+			OOP_INFO_0("Action failed: no infantry in group");
 			ACTION_STATE_FAILED
 		} else {
 			T_GETV("state")

@@ -6,7 +6,7 @@ params [P_THISOBJECT];
 
 ASSERT_THREAD(_thisObject);
 
-OOP_INFO_0("UPDATE SPAWN STATE");
+//OOP_INFO_0("UPDATE SPAWN STATE");
 
 if(T_CALLM("isDestroyed", [])) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
@@ -32,7 +32,14 @@ pr _speedMax = 200;
 
 // Get distances to all garrisons of other sides
 pr _garrisonDist = if(_side != CIVILIAN) then {
-		CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM(_x, "getPos", []) distance _thisPos}
+		CALLSM0("Garrison", "getAll") select {
+			GETV(_x, "active") &&											// Is active
+			{ !(GETV(_x, "side") in [_side, CIVILIAN]) } && 				// Side is not our side and is not civilian
+			{ (GETV(_x, "countInf") > 0) || (GETV(_x, "countDrone") > 0) }	// There is some infantry or drones
+		} apply {
+			CALLM(_x, "getPos", []) distance _thisPos
+		};
+		//CALL_STATIC_METHOD("Garrison", "getAllActive", [[] ARG [_side ARG CIVILIAN]]) apply {CALLM(_x, "getPos", []) distance _thisPos}
 	} else {
 		[]
 	};
@@ -56,7 +63,7 @@ switch (T_GETV("spawned")) do {
 			CALLM0(_thisObject, "spawn");
 
 			// Set timer interval
-			CALLM1(_timer, "setInterval", 10); // Despawn conditions can be evaluated with even lower frequency
+			CALLM1(_timer, "setInterval", 4); // Despawn conditions can be evaluated with even lower frequency
 			
 			T_SETV("spawned", true);
 		} else {

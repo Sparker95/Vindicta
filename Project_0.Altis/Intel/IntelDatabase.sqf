@@ -33,6 +33,8 @@ CLASS("IntelDatabase", "")
 	METHOD("new") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 
+		OOP_INFO_1("NEW, side: %1", _side);
+
 		T_SETV("side", _side);
 		#ifndef _SQF_VM
 		pr _namespaceLinked = [false] call CBA_fnc_createNamespace;
@@ -136,7 +138,7 @@ CLASS("IntelDatabase", "")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_srcItem")];
 
-			OOP_INFO_1("UPDATE FROM SOURCE: %1", _srcItem);
+			OOP_INFO_1("UPDATE INTEL FROM SOURCE: %1", _srcItem);
 
 			// Check if we have an item with given source
 			pr _linkedItems = T_GETV("linkedItems");
@@ -168,7 +170,7 @@ CLASS("IntelDatabase", "")
 		pr _clone = CLONE(_item);
 		SETV(_clone, "dbEntry", _item);
 		SETV(_clone, "db", _thisObject);
-		OOP_INFO_1("ADD INTEL: %1", _item);
+		OOP_INFO_2("ADD INTEL CLONE: intel: %1, clone: %2", _item, _clone);
 
 		CRITICAL_SECTION {
 			// Add to index
@@ -205,6 +207,8 @@ CLASS("IntelDatabase", "")
 		CRITICAL_SECTION {
 			params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
+			OOP_INFO_1("UPDATE INTEL FROM CLONE: %1", _item);
+
 			pr _dbEntry = GETV(_item, "dbEntry");
 			ASSERT_OBJECT(_dbEntry);
 
@@ -229,7 +233,7 @@ CLASS("IntelDatabase", "")
 
 			pr _dbEntry = GETV(_item, "dbEntry");
 			ASSERT_OBJECT(_dbEntry);
-			OOP_INFO_MSG("REMOVE INTEL: %1 (%2)", [_item ARG _dbEntry]);
+			OOP_INFO_MSG("REMOVE INTEL FOR CLONE: item: %1, db entry: %2", [_item ARG _dbEntry]);
 
 			T_CALLM1("removeIntel", _dbEntry);
 		};
@@ -355,7 +359,11 @@ CLASS("IntelDatabase", "")
 	METHOD("getIntelFromSource") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_item")];
 
-		T_GETV("linkedItems") getVariable [_item, ""]
+		pr _return = T_GETV("linkedItems") getVariable [_item, ""];
+		
+		OOP_INFO_2("GET INTEL FROM SOURCE: %1, result: %2", _item, _return);
+
+		_return
 	} ENDMETHOD;
 
 	/*

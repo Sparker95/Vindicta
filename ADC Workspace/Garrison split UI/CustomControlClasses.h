@@ -141,7 +141,6 @@ class MUI_BUTTON_TXT : MUI_BASE
 	offsetPressedY = 0;
 	offsetX = 0;
 	offsetY = 0;
-	sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 0.98);
 	soundClick[] = {"",0.0,0.0};
 	soundEnter[] = {"",0.0,0.0};
 	soundEscape[] = {"",0.0,0.0};

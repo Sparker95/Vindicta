@@ -11,6 +11,7 @@ _build
 Project_0.Altis/.vscode/ipch/*
 
 #TEMP
+temp
 temp/*
 temp.sqf
 ~tempMissionSP.Altis

@@ -16,6 +16,10 @@ CLASS("GarrisonRecord", "")
 	// Generic properties
 	VARIABLE_ATTR("pos", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("location", [ATTR_SERIALIZABLE]);
+
+	// Amount of build resources (number)
+	VARIABLE_ATTR("buildResources", [ATTR_SERIALIZABLE]);
 
 	// Serialized CmdrActionRecord object
 	VARIABLE_ATTR("cmdrActionRecordSerial", [ATTR_SERIALIZABLE]);
@@ -28,6 +32,7 @@ CLASS("GarrisonRecord", "")
 
 	// The actual commander action, deserialized on client side
 	VARIABLE("cmdrActionRecord");
+	
 
 	// What else did I forget?
 	
@@ -57,6 +62,11 @@ CLASS("GarrisonRecord", "")
 		T_GETV("composition")
 	} ENDMETHOD;
 
+	METHOD("getBuildResources") {
+		params [P_THISOBJECT];
+		T_GETV("buildResources")
+	} ENDMETHOD;
+
 	// Fills data fields from a garrison object
 	METHOD("initFromGarrison") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
@@ -71,6 +81,8 @@ CLASS("GarrisonRecord", "")
 		T_SETV("side", GETV(_gar, "side"));
 		T_SETV("composition", GETV(_gar, "composition"));
 		T_SETV("cmdrActionRecordSerial", GETV(_AI, "cmdrActionRecordSerial"));
+		T_SETV("buildResources", CALLM0(_gar, "getBuildResources"));
+		T_SETV("location", GETV(_gar, "location"));
 	} ENDMETHOD;
 
 
@@ -85,6 +97,8 @@ CLASS("GarrisonRecord", "")
 		CALLM1(_mapMarker, "setSide", T_GETV("side"));
 		CALLM1(_mapMarker, "setText", "");
 
+		pr _loc = T_GETV("location");
+		CALLM1(_mapMarker, "show", _loc == "");
 	} ENDMETHOD;
 
 	// Updates the map markers of the action (line, pointer, etc)
@@ -195,8 +209,10 @@ CLASS("GarrisonRecord", "")
 
 		__TCOPYVAR(_garRecord, "pos");
 		__TCOPYVAR(_garRecord, "side");
+		__TCOPYVAR(_garRecord, "location");
 		__TCOPYVAR(_garRecord, "composition");
 		__TCOPYVAR(_garRecord, "cmdrActionRecordSerial");
+		__TCOPYVAR(_garRecord, "buildResources");
 
 		// Delete the old commander action record, if it existed
 		pr _record = T_GETV("cmdrActionRecord");

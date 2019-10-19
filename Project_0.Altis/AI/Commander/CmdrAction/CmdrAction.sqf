@@ -52,7 +52,8 @@ CLASS("CmdrAction", "RefCounted")
 	VARIABLE_ATTR("state", [ATTR_GET_ONLY]);
 
 	// Intel object associated with this action
-	VARIABLE_ATTR("intel", [ATTR_GET_ONLY]);
+	// It's an intel clone! The actual intel is in the database
+	VARIABLE_ATTR("intelClone", [ATTR_GET_ONLY]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -65,7 +66,7 @@ CLASS("CmdrAction", "RefCounted")
 		T_SETV("variables", []);
 		T_SETV("variablesStack", []);
 		T_SETV("garrisons", []);
-		T_SETV("intel", NULL_OBJECT);
+		T_SETV("intelClone", NULL_OBJECT);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -81,8 +82,12 @@ CLASS("CmdrAction", "RefCounted")
 			};
 		} foreach +_garrisons;
 
-		private _intelClone = T_GETV("intel"); // We have a clone of intel
+		private _intelClone = T_GETV("intelClone"); // We have a clone of intel
 		if(!IS_NULL_OBJECT(_intelClone)) then {
+
+			// Mark the action state as END
+			SETV(_intelClone, "state", INTEL_ACTION_STATE_END);
+			CALLM0(_intelClone, "updateInDb"); // Broadcast it to friendlies, also update _intel from _intelClone
 
 			// If db is valid then we can directly remove our matching intel entry from it.
 			private _db = GETV(_intelClone, "db");
@@ -91,13 +96,13 @@ CLASS("CmdrAction", "RefCounted")
 				ASSERT_MSG(_dbEntry != _intelClone, "Circular reference in Intel!");
 
 				OOP_INFO_MSG("cleaning up intel object from db", []);
-				CALLM(_db, "removeIntelForClone", [_intelClone]);
-				CALLSM1("AICommander", "unregisterIntelCommanderAction", _intelClone);
-				DELETE(_dbEntry);
+				// CALLM(_db, "removeIntelForClone", [_intelClone]);
+				CALLSM2("AICommander", "unregisterIntelCommanderAction", _dbEntry, _intelClone);
+				// DELETE(_dbEntry); // We DO NOT DELETE the intel in the database so that players can discover it !!
 				OOP_INFO_MSG("cleaned up intel object from db", []);
 			};
 
-			DELETE(_intelClone);
+			DELETE(_intelClone); // We delete only the local clone of intel we temporarily used for updating the actual intel in the database
 		};
 	} ENDMETHOD;
 
@@ -161,30 +166,69 @@ CLASS("CmdrAction", "RefCounted")
 		_garrisons deleteAt _idx;
 	} ENDMETHOD;
 
+
+	// Garrison's Intel:
+
+	// Note that we now differentiate "general" intel known to garrison and garrison's "personal" intel
+	// "general" intel is typically not related to this garrison but to other garrisons
+	// "personal" intel is intel about cmdr action in which this garrison is currently involved
+
 	/*
-	Method: (protected) addIntelToGarrison
+	Method: (protected) addGeneralIntelToGarrison
 	Add the intel object of this action to a specific garrison.
 	
 	Parameters:
 		_garrison - <Model.GarrisonModel>, the garrion to assign the intel to.
 	*/
-	/*protected */ METHOD("addIntelToGarrison") {
+	/*protected */ METHOD("addGeneralGarrisonIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
-		if(CALLM(_garrison, "isActual", [])) then {
-			T_PRVAR(intel);
+		if(CALLM(_garrison, "isActual", []) && !CALLM0(_garrison, "isDead")) then {
+			T_PRVAR(intelClone);
 
 			// Bail if null
-			if (!IS_NULL_OBJECT(_intel)) then { // Because it can be objNull
+			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+				private _intel = CALLM0(_intelClone, "getDbEntry");
 				private _actual = GETV(_garrison, "actual");
 				// It will make sure itself that it doesn't add duplicates of intel
-				CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]); 
-				//CALLM1(_actual, "addIntel", _intel);
+				private _AI = CALLM0(_actual, "getAI");
+				CALLM2(_AI, "postMethodAsync", "addGeneralIntel", [_intel]);
+				//CALLM2(_AI, "postMethodAsync", "setIntelThis", [_intel]);
 				
 				// TODO: implement this Sparker. 
 				// 	NOTES: Make Garrison.addIntel add the intel to the occupied location as well.
 				// 	NOTES: Make Garrison.addIntel only add if it isn't already there because this will happen often.
-				// CALLM2(_actual, "postMethodAsync", "addIntel", [_intel]);
+			};
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: (protected) setPersonalGarrisonIntel
+	*/
+	METHOD("setPersonalGarrisonIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garrison")];
+		ASSERT_OBJECT_CLASS(_garrison, "GarrisonModel");
+
+		OOP_INFO_1("setPersonalGarrisonIntel: %1", _garrison);
+
+		if(CALLM(_garrison, "isActual", []) && !CALLM0(_garrison, "isDead")) then {
+
+			OOP_INFO_0("  garrison is actual");
+
+			T_PRVAR(intelClone);
+
+			// Bail if null
+			if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+				private _intel = CALLM0(_intelClone, "getDbEntry");
+
+				OOP_INFO_0("  intel is not null");
+
+				private _actual = GETV(_garrison, "actual");
+				// It will make sure itself that it doesn't add duplicates of intel
+				private _AI = CALLM0(_actual, "getAI");
+				CALLM2(_AI, "postMethodAsync", "setPersonalIntel", [_intel]);
+
+				OOP_INFO_2("  sent intel %1 to AI: %2", _intel, _AI);
 			};
 		};
 	} ENDMETHOD;
@@ -199,16 +243,58 @@ CLASS("CmdrAction", "RefCounted")
 		_radius - Number, default 2000, the radius in meters in which we are placing intel.
 	*/
 	/*protected */ METHOD("addIntelAt") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 2000, [0]]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_POSITION("_pos"), ["_radius", 3500, [0]]]; // Testing
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 		{
 			_x params ["_distance", "_garrison"];
+			// For now let's give intel to all garrisons in range?
+			/*
 			private _chance =  1 - (_distance / _radius) ^ 2 + 0.1;
 			if(_chance > random 1) then {
 				T_CALLM("addIntelToGarrison", [_garrison]);
 			};
+			*/
+			T_CALLM1("addGeneralGarrisonIntel", _garrison); // Note that we give general intel to this garrison, not personal
 		} forEach CALLM(_world, "getNearestGarrisons", [_pos ARG _radius]);
-	} ENDMETHOD;	
+
+		// Make enemies intercept this intel
+		T_PRVAR(intelClone);
+		if (!IS_NULL_OBJECT(_intelClone)) then { // Because it can be objNull
+			private _intel = CALLM0(_intelClone, "getDbEntry");
+			CALLSM2("AICommander", "interceptIntelAt", _intel, _pos);
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: updateIntelForEnemies
+
+	Call this when we need to broadcast an intel update to enemies (enemy commanders)
+	*/
+	METHOD("updateIntelForEnemies") {
+		params [P_THISOBJECT];
+		T_PRVAR(intelClone);
+		if (!IS_NULL_OBJECT(_intelClone)) then {
+			private _intel = CALLM0(_intelClone, "getDbEntry");
+			CALLSM2("AICommander", "updateIntelCommanderActionForEnemies", _intel, _intelClone);
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: setIntelState
+	Sets the state of the intel associated with this action. Updates it for enemies, but only if state was changed.
+	*/
+	METHOD("setIntelState") {
+		params [P_THISOBJECT, ["_state", INTEL_ACTION_STATE_INACTIVE, [0]], ["_updateForEnemies", true, [true]]];
+		T_PRVAR(intelClone);
+		if (!IS_NULL_OBJECT(_intelClone)) then {
+			private _statePrev = GETV(_intelClone, "state");
+			SETV(_intelClone, "state", _state);
+			// If state has changed and update for enemies was requested
+			if (_state != _statePrev && _updateForEnemies) then {
+				T_CALLM0("updateIntelForEnemies");
+			};
+		};
+	} ENDMETHOD;
 
 	/*
 	Method: (virtual) updateScore

@@ -150,6 +150,15 @@ _eff_drone set [T_DRONE_stat_AA,			[2,		0,		0,		0,		0,		0,		0,		4]];
 //											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 _eff set [T_DRONE, _eff_drone];
 
+//==== CARGO ====
+private _eff_cargo = [];
+//											[soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
+_eff_cargo set [T_CARGO_default, 			[0,		0,		0,		0,		0,		0,		0,		0]];
+_eff_cargo set [T_CARGO_box_small, 			[0,		0,		0,		0,		0,		0,		0,		0]];
+_eff_cargo set [T_CARGO_box_medium, 		[0,		0,		0,		0,		0,		0,		0,		0]];
+_eff_cargo set [T_CARGO_box_big, 			[0,		0,		0,		0,		0,		0,		0,		0]];
+_eff set [T_CARGO, _eff_cargo];
+
 // Do post processing to make the numbers float-safe
 // We need to do that to avoid floating point round-off errors when we add or substract the numbers a lot of times
 // So we round these numbers to nearest (1/2)^n, n=5 in this case, should be enough

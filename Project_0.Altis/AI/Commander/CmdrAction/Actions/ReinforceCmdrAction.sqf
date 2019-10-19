@@ -40,12 +40,13 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
 
-		T_PRVAR(intel);
-		private _intelNotCreated = IS_NULL_OBJECT(_intel);
+		T_PRVAR(intelClone);
+		private _intel = NULL_OBJECT;
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
 		if(_intelNotCreated) then
 		{
 			// Create new intel object and fill in the constant values
-			_intel = NEW("IntelCommanderActionAttack", []);
+			_intel = NEW("IntelCommanderActionReinforce", []);
 
 			T_PRVAR(srcGarrId);
 			T_PRVAR(tgtGarrId);
@@ -68,20 +69,30 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
 
 			// If we just created this intel then register it now 
-			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
-			T_SETV("intel", _intelClone);
-			
+			_intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intelClone", _intelClone);
+
 			// Send the intel to some places that should "know" about it
 			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
 			T_CALLM("addIntelAt", [_world ARG GETV(_tgtGarr, "pos")]);
 
 			// Reveal it to player side
-			if (random 100 < 30) then {
+			if (random 100 < 80) then {
 				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
 			};
+
+			// Reveal some friendly locations near the destination to the garrison performing the task
+			private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+			if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+				private _detachedGarrModel = CALLM(_world, "getGarrison", [_detachedGarrId]);
+				{
+					CALLM2(_x, "addKnownFriendlyLocationsActual", GETV(_tgtGarr, "pos"), 2000); // Reveal friendly locations to src. and detachment which are within 2000 meters from destination
+				} forEach [_srcGarr, _detachedGarrModel];
+				CALLM2(_tgtGarr, "addKnownFriendlyLocationsActual", GETV(_srcGarr, "pos"), 2000); // Reveal friendly locations to dest. which are within 2000 meters from source
+			};
 		} else {
-			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
-			CALLM(_intel, "updateInDb", []);
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
+			CALLM(_intelClone, "updateInDb", []);
 		};
 	} ENDMETHOD;
 
@@ -151,7 +162,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// CALCULATE START DATE
 		// Work out time to start based on how much force we mustering and distance we are travelling.
 		// https://www.desmos.com/calculator/mawpkr88r3 * https://www.desmos.com/calculator/0vb92pzcz8 * 0.1
-		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1))  * 0.1 + (0.5 + random 2);
+		private _delay = 50 * log (0.1 * _detachEffStrength + 1) * (1 + 2 * log (0.0003 * _dist + 1))  * 0.1 + (30 + random 15);
 
 		// Shouldn't need to cap it, the functions above should always return something reasonable, if they don't then fix them!
 		// _delay = 0 max (120 min _delay);

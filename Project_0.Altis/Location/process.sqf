@@ -17,8 +17,6 @@ pr _dstMin = if (count _dst > 0) then {(selectMin _dst) - _radius} else {100000}
 pr _dstSpawn = 300; // Temporary, distance from nearest player to city border when the city spawns
 pr _timer = T_GETV("timer");
 
-
-
 switch (T_GETV("spawned")) do {
 	case false: { // Location is currently not spawned
 		if (_dstMin < _dstSpawn) then {
@@ -32,13 +30,13 @@ switch (T_GETV("spawned")) do {
 			} forEach T_GETV("buildObjects");
 
 			// Set timer interval
-			CALLM1(_timer, "setInterval", 10);
+			CALLM1(_timer, "setInterval", 7);
 			
 			T_SETV("spawned", true);
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawn;
-			pr _interval = (_dstToThreshold / _speedMax) max 4;
+			pr _interval = (_dstToThreshold / _speedMax) max 4; // Dynamic update interval
 			// pr _interval = 2; // todo override this some day later
 			
 			CALLM1(_timer, "setInterval", _interval);
@@ -56,6 +54,11 @@ switch (T_GETV("spawned")) do {
 			} forEach T_GETV("buildObjects");
 
 			T_SETV("spawned", false);
+			T_SETV("hasPlayers", false);
+		} else {
+			// Check if there are any players inside this location
+			pr _index = allPlayers findIf {T_CALLM1("isInBorder", _x)};
+			T_SETV("hasPlayers", _index != -1);
 		};
 	}; // case 1
 }; // switch spawn state

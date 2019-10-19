@@ -7,7 +7,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\UI\Resources\UndercoverUI\UndercoverUI_Macros.h"
+#include "..\UI\UndercoverUI\UndercoverUI_Macros.h"
 
 /*
 Undercover Monitor: Determines if the enemy should identify a player as

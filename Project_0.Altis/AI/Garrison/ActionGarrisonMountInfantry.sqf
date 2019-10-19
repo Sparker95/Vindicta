@@ -28,7 +28,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		pr _gar = T_GETV("gar");
 		
 		// Find all non-vehicle groups
-		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
+		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		 
 		// Do we need to mount or dismount?
@@ -67,7 +67,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 			
 			if (_state == ACTION_STATE_ACTIVE) then {
 				pr _gar = T_GETV("gar");
-				pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
+				pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 				pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 				
 				// This action is completed when all infantry groups have mounted
@@ -101,7 +101,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		// Delete goals given by this action
 		pr _gar = T_GETV("gar");
-		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_PATROL];
+		pr _groupTypes = [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL];
 		pr _infGroups = CALLM1(_gar, "findGroupsByType", _groupTypes);
 		
 		{

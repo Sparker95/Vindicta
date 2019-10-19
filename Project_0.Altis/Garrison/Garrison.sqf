@@ -20,6 +20,8 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
 
+	VARIABLE_ATTR("templateName", [ATTR_PRIVATE]);
+
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
 	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
 
@@ -36,16 +38,23 @@ CLASS("Garrison", "MessageReceiverEx");
 	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
 	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
 
+	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE]);
+
 	// Counters of subcategories
 	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
 	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
+	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE]);
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
 	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
 
-	VARIABLE_ATTR("intelItems",	[ATTR_PRIVATE]); // Array of intel items player can discover from this garrison
+	// Flag which is reset at each process call
+	// It is set by various functions changing state of this garrison
+	// We use it to delay a large amount of big computations when many changes happen rapidly,
+	// which would otherwise cause a lot of computations on each change
+	VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -59,15 +68,20 @@ CLASS("Garrison", "MessageReceiverEx");
 	_pos - optional, default position to set to the garrison
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction")];
+		params [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
 
 		OOP_INFO_1("NEW GARRISON: %1", _this);
 
 		// Take our own ref that we will release in "destroy" function. This makes sure that delete never pre-empts destroy (assuming ref counting is done properly by other classes)
-		T_CALLM("ref", []);
+		REF(_thisObject);
 
 		// Check existance of neccessary global objects
 		ASSERT_GLOBAL_OBJECT(MESSAGE_LOOP);
+		ASSERT_GLOBAL_OBJECT(gGarrisonServer);
+		//ASSERT_GLOBAL_OBJECT(gGarrisonAbandonedVehicles);
+		ASSERT_GLOBAL_OBJECT(gTimerServiceMain);
+		ASSERT_GLOBAL_OBJECT(gMessageLoopMainManager);
+		
 
 		T_SETV("units", []);
 		T_SETV("groups", []);
@@ -80,10 +94,21 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("countInf", 0);
 		T_SETV("countVeh", 0);
 		T_SETV("countDrone", 0);
+		T_SETV("countCargo", 0);
 		T_SETV("location", "");
 		T_SETV("active", false);
 		T_SETV("faction", _faction);
-		T_SETV("intelItems", []);
+		T_SETV("buildResources", -1);
+		T_SETV("outdated", true);
+		pr _mutex = MUTEX_RECURSIVE_NEW();
+		T_SETV("mutex", _mutex);
+
+		// Ensure some template
+		if (_templateName == "") then {
+			_templateName = "tDefault";
+			OOP_WARNING_1("Garrison without template name was created: %1", _this);
+		};
+		T_SETV("templateName", _templateName);
 
 		// Set value of composition array
 		pr _comp = [];
@@ -91,18 +116,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _tempArray = [];
 			_tempArray resize _x;
 			_comp pushBack (_tempArray apply {[]});
-		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 		T_SETV("composition", _comp);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
 		pr _AI = NEW("AIGarrison", [_thisObject]);
 		SETV(_thisObject, "AI", _AI);
-
-		// Set position if it was specified
-		if (count _pos > 0) then {
-			T_CALLM2("postMethodAsync", "setPos", [_pos]);
-		};
 
 		// Create a timer to call process method
 		pr _msg = MESSAGE_NEW();
@@ -111,6 +131,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
+
+		// Set position if it was specified
+		if (count _pos > 0) then {
+			T_CALLM2("postMethodAsync", "setPos", [_pos]);
+		};
 
 		/*
 		T_SETV("timer", "");
@@ -179,8 +204,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set 'active' flag
 		T_SETV("active", true);
 
-		// Notify GarrisonServer
-		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		T_SETV("outdated", true);
 
 		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
 		nil
@@ -218,7 +242,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Despawn if spawned
 		if(T_GETV("spawned")) then {
+			__MUTEX_UNLOCK;
 			CALLM(_thisObject, "despawn", []);
+			__MUTEX_LOCK;
 		};
 
 		T_PRVAR(units);
@@ -232,6 +258,8 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_ERROR_1("Deleting garrison which has groups: %1", _groups);
 		};
 		
+		// Despawn method of groups and units might need to lock this garrison object
+		__MUTEX_UNLOCK;
 		{
 			DELETE(_x);
 		} forEach _units;
@@ -239,6 +267,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			DELETE(_x);
 		} forEach _groups;
+		__MUTEX_LOCK;
 
 		T_SETV("units", nil);
 		T_SETV("groups", nil);
@@ -252,9 +281,6 @@ CLASS("Garrison", "MessageReceiverEx");
 			DELETE(T_GETV("timer"));
 			T_SETV("timer", nil);
 		};
-
-		// Delete ourselves from the process category
-		//CALLM1(MESSAGE_LOOP, "deleteProcessCategoryObject", _thisObject);
 
 		// Delete the AI object
 		// We delete it instantly because Garrison AI is in the same thread
@@ -276,7 +302,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 
 		// Release our own ref. This might call delete if all other holders already released their refs.
-		T_CALLM("unref", []);
+		UNREF(_thisObject);
 	} ENDMETHOD;
 
 	/*
@@ -363,6 +389,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
+	Method: (static) getAll
+
+	Returns absolutely all garrison objects
+	*/
+	STATIC_METHOD("getAll") {
+		params [P_THISCLASS];
+		GETSV("Garrison", "all")
+	} ENDMETHOD;
+
+	/*
 	Method: getMessageLoop
 	See <MessageReceiver.getMessageLoop>
 
@@ -379,15 +415,31 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("process") {
 		params [P_THISOBJECT];
 
+		//OOP_INFO_0("PROCESS");
+
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
 			T_CALLM("updateSpawnState", []);
 
-			// If we are empty except for vehicles then we must abandon them
-			if(T_GETV("side") != CIVILIAN and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
+			//OOP_INFO_0("  ACTIVE");
+
+			// If we are empty except for vehicles and we are not at a location then we must abandon them
+			if((T_GETV("side") != CIVILIAN) and {T_GETV("location") == ""} and {T_CALLM("isOnlyEmptyVehicles", [])}) then {
 				OOP_INFO_MSG("This garrison only has vehicles left, abandoning them", []);
 				// Move the units to the abandoned vehicle garrison
 				CALLM(gGarrisonAbandonedVehicles, "addGarrison", [_thisObject]);
+			};
+
+			pr _loc = T_GETV("location");
+			// Players might be messing with inventories, so we must update our amount of build resources more often
+			pr _locHasPlayers = (_loc != "" && { CALLM0(_loc, "hasPlayers") } );
+			OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
+			if (T_GETV("outdated") || _locHasPlayers) then {
+				// Update build resources from the actual units
+				// It will cause an update broadcast by garrison server
+				T_CALLM0("updateBuildResources");
+
+				T_SETV("outdated", false);
 			};
 		};
 
@@ -502,6 +554,16 @@ CLASS("Garrison", "MessageReceiverEx");
 			};
 		};
 
+		// Position change might change spawn state so update it before returning.
+		T_CALLM("updateSpawnState", []);
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+
+		// Update our intel - now we certainly know about this location
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "addKnownFriendlyLocation", _location);
+
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
@@ -530,6 +592,9 @@ CLASS("Garrison", "MessageReceiverEx");
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
 			};
 		};
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 		
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -581,19 +646,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getFaction") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 
 		private _return = "";
 
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			_return
 		};
 
 		_return = GET_VAR(_thisObject, "faction");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -607,17 +672,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getSide") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			sideUnknown
 		};
 
 		private _return = GET_VAR(_thisObject, "side");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -631,15 +696,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getLocation") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
 		private _return = GET_VAR(_thisObject, "location");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -654,15 +719,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getGroups") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		pr _return = +GET_VAR(_thisObject, "groups");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -675,15 +740,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _return = +T_GETV("units");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -696,16 +761,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getInfantryUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _unitList = T_GETV("units");
 		private _return = _unitList select {CALLM0(_x, "isInfantry")};
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -718,17 +783,121 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getVehicleUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _unitList = T_GETV("units");
 		private _return = _unitList select {CALLM0(_x, "isVehicle")};
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
+	} ENDMETHOD;
+
+	/*
+	Method: getBuildResources
+
+	Returns: number
+	*/
+	METHOD("getBuildResources") {
+		params [P_THISOBJECT, ["_forceUpdate", false]];
+
+		pr _buildRes = 0;
+		//__MUTEX_LOCK;
+		if (_buildRes == -1 || _forceUpdate) then {
+			T_CALLM0("updateBuildResources");
+		};
+		_buildRes = T_GETV("buildResources");
+		//__MUTEX_UNLOCK;
+
+		_buildRes
+	} ENDMETHOD;
+
+	// This is rather computation-heavy
+	// An internal function
+	METHOD("_getBuildResources") {
+		params [P_THISOBJECT];
+
+		pr _return = 0;
+		pr _units = T_GETV("units");
+		{
+			_return = _return + CALLM0(_x, "getBuildResources");
+		} forEach _units;
+
+		_return
+	} ENDMETHOD;
+
+	// Call this to update the buildResources variable
+	// After this call, getBuildResources should be returning the most actual value
+	METHOD("updateBuildResources") {
+		params [P_THISOBJECT];
+
+		_buildRes = T_CALLM0("_getBuildResources");
+		T_SETV("buildResources", _buildRes);
+
+		OOP_INFO_1("UPDATE BUILD RESOURCES: %1", _buildRes);
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+	} ENDMETHOD;
+
+	METHOD("addBuildResources") {
+		params [P_THISOBJECT, P_NUMBER("_value")];
+
+		// Bail if number is negative
+		if (_value <= 0) exitWith {};
+		
+		// Find units which can have build resources
+		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+
+		// Bail if there are no units which can have build resources
+		if (count _units == 0) exitWith {};
+
+		pr _valuePerUnit = ceil (_value / (count _units)); // Round the values a bit
+		{
+			CALLM1(_x, "addBuildResources", _valuePerUnit);
+		} forEach _units;
+
+		T_CALLM0("updateBuildResources");
+	} ENDMETHOD;
+
+	METHOD("removeBuildResources") {
+		params [P_THISOBJECT, P_NUMBER("_valueToRemove")];
+
+		// Bail if number is negative
+		if (_valueToRemove <= 0) exitWith {};
+
+		pr _resCurrent = T_CALLM0("getBuildResources");
+
+		// Find units which can have build resources
+		pr _units = T_GETV("units") select {CALLM0(_x, "canHaveBuildResources")};
+
+		// Bail if there are no units which can have build resources
+		if (count _units == 0) exitWith {};
+
+		pr _resRemoved = 0; // Amount of resources removed so far
+		pr _i = 0;
+		pr _go = true;
+		while {(_i < (count _units)) && (_resRemoved < _valueToRemove) && _go} do {
+			pr _unit = _units#_i;
+			pr _resAtUnit = CALLM0(_unit, "getBuildResources");
+			pr _resLeftToRemove = _valueToRemove - _resRemoved;
+			if (_resAtUnit <= _resLeftToRemove) then {
+				// Remove everything at this unit
+				CALLM1(_unit, "removeBuildResources", _resAtUnit);
+				_resRemoved = _resRemoved + _resAtUnit;
+			} else {
+				// Remove only what is needed to remove
+				CALLM1(_unit, "removeBuildResources", _resLeftToRemove);
+				_resRemoved = _resRemoved + _resLeftToRemove;
+				_go = false; // Terminate the loop
+			};
+			_i = _i + 1;
+		};
+
+		T_CALLM0("updateBuildResources");
 	} ENDMETHOD;
 
 	// |                         G E T   D R O N E   U N I T S
@@ -740,16 +909,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getDroneUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		private _unitList = T_GETV("units");
 		private _return = _unitList select {CALLM0(_x, "isDrone")};
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -762,15 +931,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getAI") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			NULL_OBJECT
 		};
 		private _AI = T_GETV("AI");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_AI
 	} ENDMETHOD;
 
@@ -783,16 +952,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("getPos") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 		pr _AI = T_GETV("AI");
 		private _return = CALLM0(_AI, "getPos");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 	
@@ -805,15 +974,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isEmpty") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			true
 		};
 		private _return = (count T_GETV("units")) == 0;
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -826,16 +995,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isOnlyEmptyVehicles") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			false
 		};
-		private _unitList = T_GETV("units");
-		private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
-		__MUTEX_UNLOCK;
+		//private _unitList = T_GETV("units");
+		//private _return = (_unitList findIf {CALLM0(_x, "isInfantry")}) == -1 and {(_unitList findIf {CALLM0(_x, "isVehicle")}) != -1};
+		private _return = (T_GETV("countInf") == 0);
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -848,15 +1018,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("isSpawned") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			false
 		};
 		private _return = T_GETV("spawned");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 	
@@ -875,11 +1045,11 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("findGroupsByType") {
 		params [P_THISOBJECT, ["_types", 0, [0, []]]];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			[]
 		};
 
@@ -893,7 +1063,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			};
 		} forEach _groups;
 		
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		
 		_return
 	} ENDMETHOD;
@@ -904,15 +1074,15 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("countAllUnits") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			0
 		};
 		private _return = count T_GETV("units");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
@@ -927,12 +1097,12 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getTransportCapacity") {
 		params [P_THISOBJECT, P_ARRAY("_vehicleCategories")];
 		
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			0
 		};
 
@@ -954,7 +1124,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		{
 			_transportCapacity = _transportCapacity + _x;
 		} foreach _transportCapacityPerUnit;
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 
 		_transportCapacity
 	} ENDMETHOD;
@@ -1059,9 +1229,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
  
 		// Notify GarrisonServer
-		if (T_GETV("active")) then {
-			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
-		};
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -1133,9 +1301,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
 
 		// Notify GarrisonServer
-		if (T_GETV("active")) then {
-			CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
-		};
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -1219,6 +1385,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM0(_AI, "updateComposition");
 		};
 
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
+
 		__MUTEX_UNLOCK;
 
 		nil
@@ -1277,6 +1446,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		CALLM1(_group, "setGarrison", "");
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
 		__MUTEX_UNLOCK;
 
@@ -1358,6 +1530,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		// 	// CALLM(_garrison, "destroy", []);
 		// };
 
+		// Merge intel and known locations
+		pr _AI = T_GETV("AI");
+		pr _otherAI = GETV(_garrison, "AI");
+		CALLM1(_AI, "copyIntelFrom", _otherAI);
+
 		__MUTEX_UNLOCK;
 		
 		nil
@@ -1391,6 +1568,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
+			false
 		};
 
 		// Check if all units are still in the same garrison
@@ -1510,6 +1688,12 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
 
+		// Bail if garSrc is destroyed for some reason
+		if (!IS_OOP_OBJECT(_garSrc)) exitWith {
+			OOP_ERROR_1("Source garrison object is invalid: %1", _garSrc);
+			1
+		};
+
 		__MUTEX_LOCK;
 
 		// Number of unsatisfied constraints
@@ -1611,17 +1795,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("getRequiredCrew") {
 		params [P_THISOBJECT];
 
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 		};
 
 		pr _units = T_GETV("units");
 		private _return = CALLSM1("Unit", "getRequiredCrew", _units);
 
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 
 		_return
 	} ENDMETHOD;
@@ -1776,6 +1960,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_INF: {_varName = "countInf"};
 			case T_VEH: {_varName = "countVeh"};
 			case T_DRONE: {_varName = "countDrone"};
+			case T_CARGO: {_varName = "countCargo"};
 		};
 		T_SETV(_varName, T_GETV(_varName)+1);
 
@@ -1823,6 +2008,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			case T_INF: {_varName = "countInf"};
 			case T_VEH: {_varName = "countVeh"};
 			case T_DRONE: {_varName = "countDrone"};
+			case T_CARGO: {_varName = "countCargo"};
 		};
 		T_SETV(_varName, T_GETV(_varName)-1);
 
@@ -1843,16 +2029,16 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyMobile") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
 
 		private _return = +T_GETV("effMobile");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 	
@@ -1865,57 +2051,36 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	METHOD("getEfficiencyTotal") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			+T_EFF_null
 		};
 		pr _return = +T_GETV("effTotal");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
 
 	METHOD("getComposition") {
 		params [P_THISOBJECT];
-		__MUTEX_LOCK;
+		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
-			__MUTEX_UNLOCK;
+			//__MUTEX_UNLOCK;
 			pr _comp = [];
 			{
 				pr _tempArray = [];
 				_tempArray resize _x;
 				_comp pushBack (_tempArray apply {[]});
-			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE];
+			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 			_comp
 		};
 		pr _return = +T_GETV("composition");
-		__MUTEX_UNLOCK;
+		//__MUTEX_UNLOCK;
 		_return
-	} ENDMETHOD;
-	
-	/*
-	Method: spawnAndDetach
-	Spawnes the garrison and detaches it from its current location
-	
-	Returns: nil
-	*/
-	METHOD("spawnAndDetach") {
-		params [P_THISOBJECT];
-
-		ASSERT_THREAD(_thisObject);
-
-		__MUTEX_LOCK;
-
-		CALLM0(_thisObject, "spawn");
-		CALLM1(_thisObject, "setLocation", "");
-
-		__MUTEX_UNLOCK;
-
-		nil
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2149,7 +2314,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	/*
 	Method: countVehicleUnits
-	Returns the amount of infantry units
+	Returns the amount of vehicle units
 
 	Returns: Number
 	*/
@@ -2160,13 +2325,51 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	/*
 	Method: countDroneUnits
-	Returns the amount of infantry units
+	Returns the amount of drone units
 
 	Returns: Number
 	*/
 	METHOD("countDroneUnits") {
 		params [P_THISOBJECT];
 		T_GETV("countDrone")
+	} ENDMETHOD;
+
+	/*
+	Method: countCargoUnits
+	Returns the amount of cargo units
+
+	Returns: Number
+	*/
+	METHOD("countCargoUnits") {
+		params [P_THISOBJECT];
+		T_GETV("countCargo")
+	} ENDMETHOD;
+
+	/*
+	Method: copyIntelFrom
+	Calls AI.copyIntelFrom another garrison's AI.
+
+	Parameters: _gar - another garrison
+	*/
+	METHOD("copyIntelFrom") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
+
+		pr _AI = T_GETV("AI");
+		pr _otherAI = GETV(_gar, "AI");
+		CALLM1(_AI, "copyIntelFrom", _otherAI);
+	} ENDMETHOD;
+
+	/*
+	Method: updateSpawnedUnitsIntel
+	Updates intel of units if this garrison is spawned
+	*/
+	METHOD("updateUnitsIntel") {
+		params [P_THISOBJECT];
+		if (T_GETV("spawned")) then {
+			{
+				CALLSM1("UnitIntel", "updateUnit", _x);
+			} forEach T_GETV("units");
+		};
 	} ENDMETHOD;
 	
 	// ======================================= FILES ==============================================
@@ -2190,7 +2393,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG _type]);
 		// Create units from template
-		private _count = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [GET_TEMPLATE(_side) ARG _subcatID]);
+		pr _templateName = GET_TEMPLATE_NAME(_side);
+		pr _template = [_templateName] call t_fnc_getTemplate;
+		private _count = CALL_METHOD(_newGroup, "createUnitsFromTemplate", [_template ARG _subcatID]);
 		T_CALLM("addGroup", [_newGroup]);
 		[_newGroup, _count]
 	} ENDMETHOD;
@@ -2199,7 +2404,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, "_side", "_catID", "_subcatID", "_classID"];
 		// Create an empty group
 		private _newGroup = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
-		private _template = GET_TEMPLATE(_side);
+		pr _templateName = GET_TEMPLATE_NAME(_side);
+		pr _template = [_templateName] call t_fnc_getTemplate;
 		private _newUnit = NEW("Unit", [_template ARG _catID ARG _subcatID ARG -1 ARG _newGroup]);
 		// Create crew for the vehicle
 		CALL_METHOD(_newUnit, "createDefaultCrew", [_template]);
@@ -2207,28 +2413,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		_newGroup
 	} ENDMETHOD;
 
-	// Adds an intel item to this garrison
-	METHOD("addIntel") {
-		pr _return = params ["_thisObject", ["_intel", "", [""]]];
-
-		if(!_return) exitWith {
-			DUMP_CALLSTACK;
-		};
-
-		T_GETV("intelItems") pushBackUnique _intel;
-
-		OOP_INFO_1("Added intel: %1", _intel);
-	} ENDMETHOD;
-
-	// Gets all intel items from this garrison
-	METHOD("getIntel") {
-		params ["_thisObject"];
-
-		T_GETV("intelItems")
-	} ENDMETHOD;
-
 	// Updates spawn state of garrisons close to the provided position
+	// Public, thread-safe
 	STATIC_METHOD("updateSpawnStateOfGarrisonsNearPos") {
+		params ["_thisClass", ["_pos", [], [[]]]];
+		pr _args = ["Garrison", "_updateSpawnStateOfGarrisonsNearPos", [_pos]];
+		CALLM2(gMessageLoopMainManager, "postMethodAsync", "callStaticMethodInThread", _args);
+	} ENDMETHOD;
+
+	// Private, thread-unsafe
+	STATIC_METHOD("_updateSpawnStateOfGarrisonsNearPos") {
 		params ["_thisClass", ["_pos", [], [[]]]];
 
 		pr _gars = GETSV("Garrison", "all");
@@ -2241,8 +2435,13 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		{
-			CALLM2(_x, "postMethodAsync", "updateSpawnState", []);
+			CALLM0(_x, "updateSpawnState");
 		} forEach _garsToCheck;
+	} ENDMETHOD;
+
+	METHOD("getTemplateName") {
+		params [P_THISOBJECT];
+		T_GETV("templateName")
 	} ENDMETHOD;
 
 ENDCLASS;

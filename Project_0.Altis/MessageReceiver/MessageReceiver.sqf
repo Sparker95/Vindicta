@@ -286,7 +286,23 @@ CLASS("MessageReceiver", "")
 
 			#ifdef WAIT_UNTIL_TIMEOUT_ENABLE
 			if (time - _timeStartedWaiting > WAIT_UNTIL_TIMEOUT) then {
-				diag_log "---------- waitUntilMessageDone has exceeded threshold!";
+				OOP_ERROR_0("waitUntilMessageDone has exceeded threshold!");
+				if (!isNil "_thisScript") then {
+					OOP_ERROR_1("  This script: %1", _thisScript);
+				};
+				OOP_ERROR_0("  Active SQF scripts:");
+				OOP_ERROR_1("%1", diag_activeSQFScripts);
+				{
+					/*  scriptName: String - function or filename. Custom name can be set with scriptName
+						fileName: String
+						isRunning: Boolean
+						currentLine: Number - line currently executing */
+					_x params ["_scriptName", "_fileName", "_isRunning", "_currentLine"];
+					OOP_ERROR_1("  Script name: %1", _scriptName);
+					OOP_ERROR_1("    File name: %1", _fileName);
+					OOP_ERROR_1("    Is running: %1", _isRunning);
+					OOP_ERROR_1("    Current line: %1", _currentLine);
+				} forEach diag_activeSQFScripts;
 				DUMP_CALLSTACK;
 				// Reset warning timer
 				_timeStartedWaiting = time;

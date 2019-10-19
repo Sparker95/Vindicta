@@ -92,8 +92,10 @@ class CfgFunctions {
 //==== Dialogs and UIs ====
 #include "UI\Resources\UIBase.hpp"
 #include "UI\Resources\MissionUIControlClasses.h"
-#include "UI\Resources\ClientMapUI\ClientMapUI.h"
-
+#include "UI\ClientMapUI\ClientMapUI.h"
+#include "UI\DialogBase\DialogBase.h"
+#include "UI\InGameMenu\InGameMenu.h"
+#include "UI\TacticalTablet\TacticalTablet.h"
 
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
@@ -130,9 +132,10 @@ class RscTitles {
         duration = 2;
     };
 
-#include "UI\Resources\UndercoverUI\UndercoverUI.h"
+#include "UI\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
-#include "UI\Resources\BuildUI\BuildUI.h"
+#include "UI\BuildUI\BuildUI.h"
+#include "UI\InGameUI\Vin_InGameUI.h"
 
 };
 
@@ -170,3 +173,31 @@ wreckRemovalMaxTime = 7200; // seconds. Default: 36000 (10 hours)
 
 // The minimum distance between corpse or wreck and nearest player before the corpse or wreck is allowed to be removed by the garbage collector.
 minPlayerDistance = 1500; // meters. Default: 0
+
+// Test adding stuff to standard displays
+class Extended_DisplayLoad_EventHandlers {
+    class RscDisplayLoading {
+        Mission_customLoadingScreen = "_this call compile preprocessFileLineNumbers 'loadDisplay.sqf';";
+    };
+    /*
+    class RscDisplayLoadCustom {
+        Mission_customLoadingScreen = "diag_log format [' >>> DisplayLoadCustom: %1', _this];";
+    };
+
+    class RscDisplayLoadingBlack {
+        Mission_customLoadingScreen = "diag_log format [' >>> DisplayLoadingBlack: %1', _this];";
+    };
+
+    class RscDisplayLoadMission {
+        Mission_customLoadingScreen = "diag_log format [' >>> DisplayLoadMission: %1', _this];";
+    };
+
+    class RscDisplayMission {
+        Mission_customLoadingScreen = "diag_log format [' >>> DisplayMission: %1', _this];";
+    };
+
+     class RscDisplayMultiplayerSetup {
+        Mission_customLoadingScreen = "diag_log format [' >>> DisplayMission: %1', _this];";
+    };
+    */
+};

@@ -28,7 +28,10 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_item);
-			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], T_GETV("side"), _item);
+			private _side = T_GETV("side");
+			_thisObject = nil;
+			_thisClass = nil;
+			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], _side, _item);
 		};
 	} ENDMETHOD;
 
@@ -41,7 +44,10 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_itemDst);
-			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], T_GETV("side"), _itemDst);
+			private _side = T_GETV("side");
+			_thisObject = nil;
+			_thisClass = nil;
+			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], _side, _itemDst);
 		};
 	} ENDMETHOD;
 
@@ -52,7 +58,10 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			CALL_CLASS_METHOD("IntelDatabase", _thisObject, "removeIntel", [_item]);
 
 			// Broadcast that intel was removed to existing clients
-			REMOTE_EXEC_STATIC_METHOD("IntelDatabaseClient", "removeIntelClient", [_item], T_GETV("side"), false); // Broadcast without JIP
+			private _side = T_GETV("side");
+			_thisObject = nil;
+			_thisClass = nil;
+			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "removeIntelClient", [_item], _side, false); // Broadcast without JIP
 
 			// Remove it from JIP queue
 			remoteExec ["", _item]; 
