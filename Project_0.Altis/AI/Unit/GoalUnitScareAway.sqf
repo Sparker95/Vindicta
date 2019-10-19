@@ -49,7 +49,7 @@ CLASS("GoalUnitScareAway", "Goal")
 	
 	STATIC_METHOD("createPredefinedAction") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]]];
-		
+
 		diag_log "createPredefinedAction";
 		
 		// Find the unit to salute to from the world fact

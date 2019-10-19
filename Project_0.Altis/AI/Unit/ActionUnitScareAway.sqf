@@ -19,7 +19,7 @@ CLASS("ActionUnitScareAway", "Action")
 	
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
-		
+
 		SETV(_thisObject,"step",0);
 		
 		pr _laserT = createVehicle ["LaserTargetW", [0,0,0], [], 0, "NONE"];
@@ -41,7 +41,7 @@ CLASS("ActionUnitScareAway", "Action")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];
 		
-		diag_log "Unit is pissed off!";
+		OOP_DEBUG_0("active: Unit is pissed off!");
 		
 		//might what to move this to Action base class
 		SETV(_thisObject, "activationTime", time);

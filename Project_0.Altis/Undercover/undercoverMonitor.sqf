@@ -440,14 +440,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
 							T_SETV("bCaptive", true);
-							[_unit] call fnc_UM_addActionUntieLocal;
-							[_unit] call fnc_UM_addActionUntieMP;
+							// TODO: Sparker hide/show action behavior
+							pr _addAction = [_unit] call fnc_UM_addActionUntieLocal;
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
 						// exit arrested state
 						if !(T_GETV("bCaptive")) then {
-							player playMoveNow "Acts_ExecutionVictim_Unbow";
+							player playMoveNow "acts_aidlpsitmstpssurwnondnon_out";
 							T_CALLM("setState", [sUNDERCOVER]);
 							_unit setVariable [UNDERCOVER_TARGET, false, true];
 						};
@@ -482,8 +482,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				//OOP_INFO_1("hintKeys: %1", _hintKeys);
 
 				
-				
-		
 				// set captive status of unit
 				pr _args = [_suspicionArr, _state];
 				T_CALLM("calcCaptive", _args);
@@ -624,7 +622,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	} ENDMETHOD;
 
 	/* 
-		ActionUnitArrest remoteExecutes this on this computer when an enemy group is arresting the player.
+		setUnitFree remoteExecutes this on this computer when an enemy group is arresting the player.
 		This function resolves undercoverMonitor of player and posts a message to it.
 	*/
 	STATIC_METHOD("setUnitFree") {

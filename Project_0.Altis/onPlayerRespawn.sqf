@@ -163,3 +163,4 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
                  false, //unconscious
                  "", //selection
                  ""]; //memoryPoint
+
