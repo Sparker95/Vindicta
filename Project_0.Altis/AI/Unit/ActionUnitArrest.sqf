@@ -144,7 +144,7 @@ CLASS("ActionUnitArrest", "Action")
 							_return
 						};
 					};
-					
+					terminate T_GETV("spawnHandle");
 					T_SETV("spawnHandle", _handle);
 				} else {
 					// been following for 30 secs
