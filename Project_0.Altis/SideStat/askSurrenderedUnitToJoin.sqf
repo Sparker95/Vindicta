@@ -12,6 +12,7 @@ params ["_target", "_caller", "_actionId", "_arguments"];
 
 
 // This is sent to server
+// TODO: need to update this script to use new recruitment system
 [[_caller, _target], {
 	params ["_caller", "_target"];
 	
