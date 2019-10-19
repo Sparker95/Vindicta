@@ -3,8 +3,8 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OOP_DEBUG
-#define IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD !(alive _target) || (animationState _target == "unconsciousoutprone") || (animationState _target == "unconsciousfacedown") || (animationState _target == "unconsciousfaceup") || (animationState _target == "Acts_ExecutionVictim_Loop")
 #include "common.hpp"
+#define IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD !(alive _target) || (animationState _target == "unconsciousoutprone") || (animationState _target == "unconsciousfacedown") || (animationState _target == "unconsciousfaceup") || (animationState _target == "unconsciousrevivedefault") || (animationState _target == "acts_aidlpsitmstpssurwnondnon_loop") || (animationState _target == "acts_aidlpsitmstpssurwnondnon01")
 
 /*
 Class: Action.ActionUnitShootLegTarget
@@ -20,6 +20,9 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 	VARIABLE("target");
 	VARIABLE("objectHandle");
 	VARIABLE("countAmmo");
+	VARIABLE("spawnHandle");
+	VARIABLE("isHandleSpawned");
+	VARIABLE("startSpawnedTime");
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_target", objNull, [objNull]] ];
@@ -28,6 +31,8 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 		pr _oh = CALLM0(_a, "getObjectHandle");
 		pr _count = _oh ammo primaryWeapon _oh;
 
+		T_SETV("isHandleSpawned", 0);
+		T_SETV("spawnHandle", scriptNull);
 		T_SETV("objectHandle", _oh);
 		T_SETV("countAmmo", _count);
 		T_SETV("target", _target);
@@ -54,6 +59,9 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 
 		CALLM0(_thisObject, "activateIfInactive");
 
+		pr _state = GETV(_thisObject, "state");
+		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
+
 		pr _oh = T_GETV("objectHandle");
 		pr _oldCount = T_GETV("countAmmo");
 		pr _count = _oh ammo primaryWeapon _oh;
@@ -72,41 +80,57 @@ CLASS("ActionUnitShootLegTarget", "ActionUnit")
 			ACTION_STATE_COMPLETED
 		};
 
-		if ((_posUnit distance2D _posTarget) < 50) then {
-			pr _fakeTarget = "FireSectorTarget" createVehicle (getpos _target);
-			_fakeTarget attachto [_target, [0, 0, 0], "leftleg"];
-			_fakeTarget hideObject true;
+		if ((_posUnit distance2D _posTarget) < 40 ) then {
 
-			_oh disableAI "autotarget";
-			_oh disableAI "target";
-			_oh setBehaviour "combat";
-			_oh reveal [_fakeTarget, 1];
-			_oh doTarget _fakeTarget;
-			sleep 0.5;
-			// add check to not fire GL or anything other than bullets
-			_oh doFire _fakeTarget;
-			sleep 0.5;
-			_oh forceWeaponFire [weaponState _oh select 1, weaponState _oh select 2];
+			if (T_GETV("isHandleSpawned") != 1) then {
+				T_SETV("startSpawnedTime", time);
+				pr _spawnedTime = T_GETV("startSpawnedTime");
 
-			waitUntil { 
-				_oldCount - 1 >= (_oh ammo primaryWeapon _oh) ||
-				(_posUnit distance2D _posTarget) > 150 ||
-				!(alive _target) ||
-				IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD
-			};
+				pr _handle = [_target, _oh, _oldCount, _posUnit, _posTarget, _spawnedTime] spawn {
+					params ["_target", "_oh", "_oldCount", "_posUnit", "_posTarget", "_spawnedTime"];
 
-			deleteVehicle _fakeTarget;
-			_oh enableAI "target";
-			_oh enableAI "autotarget";
-			
-			if (_oldCount - 1 <= (_oh ammo primaryWeapon _oh)) exitWith {
-				T_SETV("state", ACTION_STATE_COMPLETED);
-				ACTION_STATE_COMPLETED
+					pr _fakeTarget = "FireSectorTarget" createVehicle (getpos _target);
+					_fakeTarget attachto [_target, [0, 0, 0], "leftleg"];
+					_fakeTarget hideObject true;
+					doStop _oh;
+					_oh disableAI "autotarget";
+					_oh disableAI "target";
+					_oh setBehaviour "combat";
+					_oh reveal [_fakeTarget, 1];
+
+					// add check to not fire GL or anything other than bullets
+					_oh selectWeapon (primaryWeapon _oh);
+					sleep 1;
+					_oh doTarget _fakeTarget;
+					sleep 0.5;
+					_oh forceWeaponFire [weaponState _oh select 1, weaponState _oh select 2];
+
+					waitUntil {
+						_oldCount - 1 >= (_oh ammo primaryWeapon _oh) ||
+						(_posUnit distance2D _posTarget) > 100 ||
+						IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD ||
+						time > (20 + _spawnedTime)
+					};
+
+					deleteVehicle _fakeTarget;
+					_oh enableAI "target";
+					_oh enableAI "autotarget";
+					_oh setBehaviour "SAFE";
+				};
+
+				T_SETV("spawnHandle", _handle);
+				T_SETV("isHandleSpawned", 1);
+				ACTION_STATE_ACTIVE
+			} else {				
+				if (scriptDone T_GETV("spawnHandle")) then {
+					ACTION_STATE_COMPLETED
+				} else {
+					ACTION_STATE_ACTIVE
+				};
 			};
 		} else {
 			_oh doMove _posTarget;
+			ACTION_STATE_ACTIVE
 		};
-
-		ACTION_STATE_ACTIVE
 	} ENDMETHOD;
 ENDCLASS;

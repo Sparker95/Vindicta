@@ -12,7 +12,7 @@
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"
 #include "..\worldFactTypes.hpp"
-#define IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD !(alive _target) || (animationState _target == "unconsciousoutprone") || (animationState _target == "unconsciousfacedown") || (animationState _target == "unconsciousfaceup") || (animationState _target == "Acts_ExecutionVictim_Loop")
+#define IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD !(alive _target) || (animationState _target == "unconsciousoutprone") || (animationState _target == "unconsciousfacedown") || (animationState _target == "unconsciousfaceup") || (animationState _target == "unconsciousrevivedefault") || (animationState _target == "acts_aidlpsitmstpssurwnondnon_loop") || (animationState _target == "acts_aidlpsitmstpssurwnondnon01")
 
 /*
 Template of an Action class
@@ -65,14 +65,22 @@ CLASS("ActionUnitArrest", "Action")
 
 		CALLM(_thisObject, "activateIfInactive", []);
 		
-		pr _state = ACTION_STATE_ACTIVE;
+		pr _state = GETV(_thisObject, "state");
+		if (_state != ACTION_STATE_ACTIVE) exitWith {_state};
+
 		pr _captor = T_GETV("objectHandle");
 		pr _target = T_GETV("target");
 
-		if (!(alive _captor) OR (behaviour _captor == "COMBAT")) then {
+		if (!(alive _captor) || (behaviour _captor == "COMBAT")) then {
 			OOP_INFO_0("ActionUnitArrest: FAILED, reason: Captor unit dead or in combat."); 
 			T_SETV("stateChanged", true);
 			T_SETV("stateMachine", 2);
+		};
+
+		if (IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) then {
+			OOP_INFO_0("ActionUnitArrest: completed, reason: target unit dead, unconscious or arrested."); 
+			T_SETV("stateChanged", true);
+			T_SETV("stateMachine", 3);
 		};
 		
 		scopename "switch";
@@ -81,11 +89,27 @@ CLASS("ActionUnitArrest", "Action")
 			// CATCH UP
 			case 0: {
 				OOP_DEBUG_1("CATCH UP %1", getPos _captor distance2D getPos _target);
-				if (getPos _captor distance2D getPos _target < 6) then {
-					_target setUnconscious true;
-					sleep 0.5;
-					_target setUnconscious false;
-					sleep 1;
+
+				if (
+					getPos _captor distance2D getPos _target < 6 && 
+					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
+					random 4 <= 2
+				) then {
+					[[_target], {
+						params ["_target"];
+						if (!hasInterface) exitWith {};
+
+						OOP_DEBUG_0("uncon");
+						_target playMoveNow "unconsciousfacedown"; // face plant
+						sleep 2;
+						_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
+
+					}] remoteExec ["spawn", _target, false];
+
+					_target setVariable ["timeArrested", time+10];
+
+					REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
+					
 					T_SETV("stateMachine", 1);
 					breakTo "switch";
 				};
@@ -105,10 +129,14 @@ CLASS("ActionUnitArrest", "Action")
 						params ["_target", "_captor"];
 						waitUntil {
 							pr _pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
+							
 							_captor doMove _pos;
 							_captor doWatch _target;
 							_pos_arrest = getpos _target;
+
+							if (getpos _target distance getpos _captor > 30) then { sleep 3;};
 							sleep 1;
+
 							_isMoving = !(_pos_arrest distance getpos _target < 0.1);
 							_target setVariable ["isMoving", _isMoving];
 							
@@ -163,7 +191,7 @@ CLASS("ActionUnitArrest", "Action")
 					pr _handle = [_captor, _target] spawn {
 						params ["_captor", "_target"];
 						waitUntil {
-								
+							
 							_animationDone = false;
 							_pos = (eyeDirection _target vectorMultiply 1.6) vectorAdd getpos _target;
 							_captor doMove _pos;
@@ -171,7 +199,7 @@ CLASS("ActionUnitArrest", "Action")
 							_pos_search = getpos _target;
 
 							// play animation if close enough, finishing the script
-							if (_pos_search distance getPos _target < 0.5) then {
+							if (getPos _captor distance getPos _target < 1) then {
 								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
 									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
@@ -195,9 +223,9 @@ CLASS("ActionUnitArrest", "Action")
 								waitUntil {animationState _captor == _animation};
 								waitUntil {animationState _captor != _animation};
 								
-								// _target playMoveNow "Acts_ExecutionVictim_Loop";
-								_target playMoveNow "Acts_AidlPsitMstpSsurWnonDnon01"; // sitting down and tied up
-								if(!isPlayer _target) then {
+								_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
+
+								if (!isPlayer _target) then {
 									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
 									_target disableAI "MOVE"; // Disable AI Movement
 									_target disableAI "AUTOTARGET"; // Disable AI Autotarget
@@ -205,6 +233,7 @@ CLASS("ActionUnitArrest", "Action")
 									_target allowFleeing 0; // Disable AI Fleeing
 									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
 								};
+								
 								_target setVariable ["timeArrested", time+10];
 
 								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
@@ -237,7 +266,7 @@ CLASS("ActionUnitArrest", "Action")
 
 			// FAILED
 			case 2: {
-				OOP_INFO_0("ActionUnitArrest: FAILED.");
+				OOP_INFO_0("ActionUnitArrest: FAILED CATCH UP.");
 
 				_state = ACTION_STATE_FAILED;
 			};
@@ -249,7 +278,7 @@ CLASS("ActionUnitArrest", "Action")
 				_state = ACTION_STATE_COMPLETED;
 			};
 		};
-		
+
 		// Return the current state
 		T_SETV("state", _state);
 		_state

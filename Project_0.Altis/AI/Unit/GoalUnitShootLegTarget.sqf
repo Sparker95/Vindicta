@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 /*
-Class: Goal.GoalUnitShootNearTarget
+Class: Goal.GoalUnitShootLegTarget
 Makes a single unit to move to a specified building position.
 
 Parameters:
@@ -9,7 +9,7 @@ Parameters:
 */
 #define pr private
 
-CLASS("GoalUnitShootNearTarget", "Goal")
+CLASS("GoalUnitShootLegTarget", "Goal")
 
 	STATIC_METHOD("createPredefinedAction") {
 		params [ ["_thisClass", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]]];

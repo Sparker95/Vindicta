@@ -62,11 +62,13 @@ CLASS("ActionGroupArrest", "ActionGroup")
 
 			// randomly try to shoot the leg
 			if (random 10 <= 2) then {
-				CALLM4(_unitAI, "addExternalGoal", "GoalUnitShootNearTarget", 0, _parameters, _AI);
+				CALLM4(_unitAI, "addExternalGoal", "GoalUnitShootLegTarget", 0, _parameters, _AI);
 			} else {
 				CALLM4(_unitAI, "addExternalGoal", "GoalUnitArrest", 0, _parameters, _AI);
-			}
+			};
+
 			OOP_INFO_1("ActionGroupArrest: unit performing arrest: %1", _unit);
+
 			// Return ACTIVE state
 			T_SETV("state", ACTION_STATE_ACTIVE);
 			ACTION_STATE_ACTIVE
@@ -86,7 +88,18 @@ CLASS("ActionGroupArrest", "ActionGroup")
 			pr _group = T_GETV("group");
 			pr _units = CALLM0(_group, "getUnits");
 			pr _AI = T_GETV("AI");
-			if (CALLSM3("AI_GOAP", "allAgentsCompletedExternalGoal", _units, "GoalUnitArrest", _AI)) then {
+			pr _isOneSuccess = 0;
+
+			{
+				pr _unitAI = CALLM0(_x, "getAI");
+				pr _goalUnitArrestState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitArrest", "");
+				pr _goalUnitShootState = CALLM2(_unitAI, "getExternalGoalActionState", "GoalUnitShootLegTarget", "");
+				if (_goalUnitArrestState == ACTION_STATE_COMPLETED || _goalUnitShootState == ACTION_STATE_COMPLETED) exitWith {
+					_isOneSuccess = 1;
+				};
+			} forEach _units;
+
+			if (1 == _isOneSuccess) then {
 				_state = ACTION_STATE_COMPLETED;
 				OOP_INFO_0("ActionGroupArrest: Completed.");
 			};

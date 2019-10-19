@@ -33,7 +33,7 @@ call compile preprocessFileLineNumbers "AI\Unit\GoalUnitNothing.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitRepairVehicle.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSalute.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitScareAway.sqf";
-call compile preprocessFileLineNumbers "AI\Unit\GoalUnitShootNearTarget.sqf";
+call compile preprocessFileLineNumbers "AI\Unit\GoalUnitShootLegTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitSurrender.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\GoalUnitVehicleUnflip.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\_SensorUnit.sqf";

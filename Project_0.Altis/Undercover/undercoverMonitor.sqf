@@ -61,6 +61,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("EHLoadout");
 	VARIABLE("EHFiredMan");
 	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
+	// VARIABLE("activedAddActions");											// List of AddActions already present on client
 
 	// ------------ N E W ------------
 
@@ -440,14 +441,15 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
 							T_SETV("bCaptive", true);
-							[_unit] call fnc_UM_addActionUntieLocal;
-							[_unit] call fnc_UM_addActionUntieMP;
+							// save this and don't launch it if already there
+							pr _addAction = [_unit] call fnc_UM_addActionUntieLocal;
+							// T_SETV("activatedAddActions", _addAction);
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
 						// exit arrested state
 						if !(T_GETV("bCaptive")) then {
-							player playMoveNow "Acts_ExecutionVictim_Unbow";
+							player playMoveNow "acts_aidlpsitmstpssurwnondnon_out";
 							T_CALLM("setState", [sUNDERCOVER]);
 							_unit setVariable [UNDERCOVER_TARGET, false, true];
 						};
@@ -482,8 +484,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				//OOP_INFO_1("hintKeys: %1", _hintKeys);
 
 				
-				
-		
 				// set captive status of unit
 				pr _args = [_suspicionArr, _state];
 				T_CALLM("calcCaptive", _args);

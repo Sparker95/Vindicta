@@ -13,6 +13,7 @@ CLASS("GoalUnitArrest", "Goal")
 		
 		pr _target = CALLSM2("Action", "getParameterValue", _parameters, "target");
 		pr _args = [_AI, _target];
+
 		pr _action = NEW("ActionUnitArrest", _args);
 	
 		_action

@@ -1,6 +1,16 @@
 // Relevance levels
 
 
+
+
+
+// TODO: REMOVE THIS FILES (FIX DEPENDENCIES)
+
+
+
+
+
+
 // Relevance from 200 and beyond is for goals supplied by higher agents
 #define GOAL_RELEVANCE_BIAS_HIGHER	200
 
