@@ -43,6 +43,7 @@ private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" =
 	
 	#ifdef RELEASE_BUILD
 	_x setMarkerAlpha 0;
+	deleteMarker _x;
 	#endif
 	
 	OOP_INFO_1("Adding allowed area: %1", _x);

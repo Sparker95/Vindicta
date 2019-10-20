@@ -25,6 +25,11 @@
 #define SUSP_OFFROAD 0.3							// Suspiciousness gained for being too far from roads
 #define SUSP_INCREMENT 0.08							// UNUSED: value for gradual increase of suspiciousness when performing suspicous behavior while seen
 
+// suspicion values for looking into inventory
+#define SUSP_INV_CIV 0.2							// Looking into civilian vehicle or own inventory
+#define SUSP_INV_MIL 0.4							// Looking into military inventory
+#define SUSP_INV_TAKE_PUT_BOOST	0.2					// A boost added to susp level each time we take/put something
+
 /*
 	Suspiciousness values for different items. 
 	Example calculation: Uniform (0.5) + Vest (0.5) = 1 Suspicion = fully overt/non-captive.
@@ -74,6 +79,7 @@
 #define HK_OFFROAD 73
 #define HK_SUSPGEARVEH 70
 #define HK_SUSPBEHAVIOR 60
+#define HK_INVENTORY 55
 #define HK_SUSPGEAR 50
 #define HK_ALLOWEDAREA 46
 #define HK_OFFROAD 45

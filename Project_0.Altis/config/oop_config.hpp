@@ -22,7 +22,7 @@
 //#undef OFSTREAM_FILE
 
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
-//#define RELEASE_BUILD
+#define RELEASE_BUILD
 
 #define CMDR_AI_TESTING
 

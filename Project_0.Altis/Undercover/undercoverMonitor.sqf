@@ -44,6 +44,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("stateChanged");												// "do once" variable for state changes
 	VARIABLE("suspicion");													// unit's final suspiciousness for each interval
 	VARIABLE("incrementSusp");												// a temporary variable for suspicion increases over time
+	VARIABLE("suspicionBoost");												// A one-time suspicion increment active for the current time interval
 	VARIABLE("timeSeen");														
 	VARIABLE("timeHostility");												// greater than current mission time if player recently fired a weapon
 	VARIABLE("eyePosOld");													
@@ -61,6 +62,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("EHLoadout");
 	VARIABLE("EHFiredMan");
 	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
+	VARIABLE("inventoryOpen");												// Bool, set from event handlers
+	VARIABLE("inventoryContainer");											// Object handle, current inventory container we are accessing
+	VARIABLE("eventHandlers");										// Array with inventory EH IDs
 
 	// ------------ N E W ------------
 
@@ -77,6 +81,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 		// UM variables
 		T_SETV("suspicion", 0);
+		T_SETV("suspicionBoost", 0);
 		T_SETV("incrementSusp", 0);
 		T_SETV("timeSeen", 0);
 		T_SETV("timeHostility", 0);
@@ -93,6 +98,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		pr _camoCoeff = _unit getUnitTrait "camouflageCoef";
 		T_SETV("camoCoeff", _camoCoeff);
 		T_SETV("bGhillie", false);
+		T_SETV("inventoryOpen", false);
+		T_SETV("inventoryContainer", objNull);
+
+		T_SETV("eventHandlers", []);
 
 		// Global unit variables
 		_unit setVariable [UNDERCOVER_EXPOSED, true, true];					// GLOBAL: true if player unit's exposure is above some threshold while he's in a vehicle
@@ -144,6 +153,63 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 
+		// Add inventory event handlers
+		pr _ID = _unit addEventHandler ["InventoryClosed", {
+			params ["_unit", "_container"];
+			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
+			if (_thisObject != "") then {
+				T_SETV("inventoryOpen", false);
+				T_SETV("inventoryContainer", objNull);
+			};
+		}];
+		T_GETV("eventHandlers") pushBack ["InventoryClosed", _ID];
+
+		pr _ID = _unit addEventHandler ["InventoryOpened", {
+			params ["_unit", "_container"];
+			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
+			if (_thisObject != "") then {
+				T_SETV("inventoryOpen", true);
+				T_SETV("inventoryContainer", _container);
+			};
+		}];
+		T_GETV("eventHandlers") pushBack ["InventoryOpened", _ID];
+
+		// Take/put event handlers
+		private _ehid = player addEventHandler ["Take", 
+		{
+			params ["_unit", "_container", "_item"];
+
+			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
+			if (_thisObject != "") then {
+				pr _type = typeOf _container;
+				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
+				// Only give boost if we are accessing military containers/vehicles
+				if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
+					pr _boost = T_GETV("suspicionBoost");
+					T_SETV("suspicionBoost", _boost + SUSP_INV_TAKE_PUT_BOOST);
+				};
+			};
+		}];
+		T_GETV("eventHandlers") pushBack ["Take", _ID];
+
+		private _ehid = player addEventHandler ["Put", 
+		{
+			params ["_unit", "_container", "_item"];
+
+			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
+			if (_thisObject != "") then {
+				pr _type = typeOf _container;
+				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
+				// Only give boost if we are accessing military containers/vehicles
+				if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
+					pr _boost = T_GETV("suspicionBoost");
+					T_SETV("suspicionBoost", _boost + SUSP_INV_TAKE_PUT_BOOST);
+				};
+			};
+		}];
+		T_GETV("eventHandlers") pushBack ["Put", _ID];
+
+
 	} ENDMETHOD;
 
 
@@ -153,9 +219,18 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		params [["_thisObject", "", [""]]];
 		// Delete the timer
 		pr _timer = T_GETV("timer");
+		DELETE(_timer);
 		pr _unit = T_GETV("unit");
 		_unit setVariable ["undercoverMonitor", nil];
 
+		// Delete event handlers
+		{
+			_unit removeEventHandler _x;
+		} forEach (T_GETV("eventHandlers"));
+
+		/*
+		// No need to set them to nil manually, it gets cleared on its own by OOP light
+		// Let it be here like a monument
 		T_SETV("EHLoadout", nil);
 		T_SETV("EHFiredMan", nil);
 		T_SETV("unit", nil);
@@ -179,8 +254,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("camoCoeff", nil);
 		T_SETV("bGhillie", nil);
 		T_SETV("timer", nil);
+		*/
 
-		DELETE(_timer);
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
@@ -248,10 +323,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	
 						// check if unit is in allowed area
 						pr _pos = getPos _unit;
-						pr _bInAllowedArea = false;
-				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]);
+				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
 				 		if (_loc != "") then { 	
-							if ( CALLM(_loc, "isInAllowedArea", [_pos]) ) then { 
+							if ( CALLM(_loc, "isInAllowedArea", [_pos]) ) then { // Will always return true for city or roadblock, regardless of actual allowed area marker area
 								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
 							} else { 
 								_suspicionArr pushBack [SUSPICIOUS, "In military area"];
@@ -283,9 +357,39 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					    			case "PRONE": { _suspStance = SUSP_PRONE; _camoCoeffMod = _camoCoeffMod + CAMO_PRONE; };
 					    		};
 
+								// suspiciousness for inventory
+								pr _suspInv = 0;
+								if (T_GETV("inventoryOpen")) then {
+									pr _cont = T_GETV("inventoryContainer");
+
+									pr _type = typeOf _cont;
+									/* // https://community.bistudio.com/wiki/CfgVehicles_Config_Reference#side
+									#define NO_SIDE -1
+									#define EAST 0			// (Russian)
+									#define WEST 1			// (NATO)
+									#define RESISTANCE 2	// Guerilla 
+									#define CIVILIAN 3
+									#define NEUTRAL 4
+									#define ENEMY 5
+									#define FRIENDLY 6
+									#define LOGIC 7
+									*/
+									// When player opens his own inv, the container is a "GroundWeaponHolder" which has side 3 (civilian)
+									// "ThingX" type corresponds to supply crates
+									pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
+									if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
+										_suspInv = SUSP_INV_MIL;
+									} else {
+										_suspInv = SUSP_INV_CIV;
+									};
+
+									_hintKeys pushBack HK_INVENTORY;
+								};
+
 								_suspicionArr pushBack [_suspGear, "On foot equipment"]; 
 								_suspicionArr pushBack [_suspSpeed, "Movement speed"]; 
-								_suspicionArr pushBack [_suspStance, "Stance"]; 
+								_suspicionArr pushBack [_suspStance, "Stance"];
+								_suspicionArr pushBack [_suspInv, "Open inventory"];
 							};
 
 							// ------------------------------------------- 
@@ -670,6 +774,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				_suspicion = _suspicion + _var;
 			};
 		} forEach _suspicionArr;
+
+		// Aply the temporary boost
+		_suspicion = _suspicion + T_GETV("suspicionBoost");
+		T_SETV("suspicionBoost", 0); // It only lasts for this interval
 
 		if (_suspicion >= 1) then { 
 			_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];

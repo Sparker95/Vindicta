@@ -164,7 +164,10 @@
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
-			</Key>																						
+			</Key>
+			<Key ID="STR_UM_HINT_INVENTORY">
+				<Original>ACCESSING INVENTORY</Original>
+			</Key>																
 		</Container>	
 	</Package>
 </Project>
