@@ -18,4 +18,18 @@ CLASS("Phase1CmdrStrategy", "PassiveCmdrStrategy")
 		T_SETV("takeLocCityPriority", 0);
 		T_SETV("takeLocCityPriorityActivityCoeff", 0);
 	} ENDMETHOD;
+
+	// We want QRFs to work even at mission start
+	/* override */ METHOD("getQRFScore") {
+		params [P_THISOBJECT,
+			P_OOP_OBJECT("_action"), 
+			P_ARRAY("_defaultScore"),
+			P_OOP_OBJECT("_worldNow"),
+			P_OOP_OBJECT("_worldFuture"),
+			P_OOP_OBJECT("_srcGarr"),
+			P_OOP_OBJECT("_tgtCluster"),
+			P_ARRAY("_detachEff")];
+		// Default QRFs
+		_defaultScore
+	} ENDMETHOD;
 ENDCLASS;

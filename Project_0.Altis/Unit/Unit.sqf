@@ -412,13 +412,13 @@ CLASS(UNIT_CLASS_NAME, "");
 			CRITICAL_SECTION_END
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
+			// Initialize cargo if there is no limited arsenal
+			CALLM0(_thisObject, "initObjectInventory");
+
 			// Set build resources
 			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
 				T_CALLM1("_setBuildResourcesSpawned", _buildResources);
 			};
-
-			// Initialize cargo if there is no limited arsenal
-			CALLM0(_thisObject, "initObjectInventory");
 					
 			// Give intel to this unit
 			CALLSM1("UnitIntel", "initUnit", _thisObject)
