@@ -152,6 +152,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			private _gmdata = CALLM0(_citySpawn, "getGameModeData");
 			CALLM1(_gmdata, "forceEnablePlayerRespawn", true);
 			CALLM0(_gmdata, "updatePlayerRespawn");
+			_spawnPoints pushBack [_citySpawn, CALLM0(_citySpawn, "getPos")];
 		};
 		T_SETV("spawnPoints", _spawnPoints);
 
@@ -205,7 +206,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		// Select a random spawn point, create a unit and give player control of it.
 		private _respawnLoc = selectRandom _spawnPoints;
-		private _tmpGroup = createGroup (side _oldUnit);
+		private _tmpGroup = createGroup (side group _oldUnit);
 		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
 		[_newUnit] joinSilent (group _oldUnit);
 		deleteGroup _tmpGroup;

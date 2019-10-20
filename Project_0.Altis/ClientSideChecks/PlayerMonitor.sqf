@@ -57,6 +57,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_SETV("currentGarrison", "");
 		T_SETV("canBuild", false);
 
+
 		// Create timer
 		pr _msg = MESSAGE_NEW();
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
