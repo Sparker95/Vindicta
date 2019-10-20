@@ -19,8 +19,10 @@ This class is made for easy serialization and deserialization of tablet data.
 
 CLASS("UnitIntelData", "")
 
-	VARIABLE_ATTR("intelGeneral", [ATTR_SERIALIZABLE]);			// Array with refs to intel
+	VARIABLE_ATTR("side", [ATTR_SERIALIZABLE]);						// What side is this data?
+	VARIABLE_ATTR("intelGeneral", [ATTR_SERIALIZABLE]);				// Array with refs to intel
 	VARIABLE_ATTR("intelPersonal", [ATTR_SERIALIZABLE]);			// Ref to intel or NULL_OBJECT
 	VARIABLE_ATTR("knownFriendlyLocations", [ATTR_SERIALIZABLE]);	// Array with refs to locations
+	VARIABLE_ATTR("radioKey", [ATTR_SERIALIZABLE]);					// Radio key, string, (see AICommander and AIGarrison)
 
 ENDCLASS;

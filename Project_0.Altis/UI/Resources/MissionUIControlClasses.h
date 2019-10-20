@@ -378,7 +378,7 @@ class MUI_EDIT : MUI_BASE
 	colorDisabled[] = MUIC_TRANSPARENT; 
 	colorBackground[] = MUIC_TRANSPARENT; 
 
-	lineSpacing = 1.1 * GUI_GRID_H;
+	lineSpacing = 1;
 };
 
 __MUI_CLASS_ABS(MUI_EDIT);

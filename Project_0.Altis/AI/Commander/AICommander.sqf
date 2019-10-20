@@ -45,6 +45,10 @@ CLASS("AICommander", "AI")
 	VARIABLE("stateStart");
 	#endif
 
+	// Radio
+	VARIABLE("radioKeyGrid"); 	// Grid object which stores our own radio keys
+	VARIABLE("enemyRadioKeys");	// Enemy radio keys we have found
+
 	// Ported from CmdrAI
 	VARIABLE("activeActions");
 	VARIABLE("planningCycle");
@@ -115,6 +119,10 @@ CLASS("AICommander", "AI")
 		// Ported from CmdrAI
 		T_SETV("activeActions", []);
 		T_SETV("planningCycle", 0);
+
+		// Initialize the radio keys
+		T_SETV("enemyRadioKeys", []);
+		T_CALLM0("initRadioKeys"); // Will set the radioKeyGrid variable
 
 	} ENDMETHOD;
 	
@@ -628,6 +636,8 @@ CLASS("AICommander", "AI")
 	METHOD("getIntelFromInventoryItem") {
 		params ["_thisObject", ["_baseClass", "", [""]], ["_ID", 0, [0]], ["_clientOwner", 0, [0]]];
 
+		private _endl = toString [13,10];
+
 		OOP_INFO_1("GET INTEL FROM INTENTORY ITEM: %1", [_baseClass ARG _ID]);
 
 		// Get data from the inventory item
@@ -635,10 +645,10 @@ CLASS("AICommander", "AI")
 		_ret params ["_data", "_dataIsNotNil"];
 
 		if (!_dataIsNotNil) exitWith {
-			pr _text = "No data registered for this device in TactiCommNetWork!\n";
+			pr _text = "No data registered for this device in TactiCommNetWork!" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 
-			pr _text = "Retinal scan identity mismatch!\nDevice will be locked.\n";
+			pr _text = "Retinal scan identity mismatch!" + _endl + "Device will be locked." + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 		};
 
@@ -650,14 +660,42 @@ CLASS("AICommander", "AI")
 		pr _intelGeneral = GETV(_temp, "intelGeneral");
 		pr _intelPersonal = GETV(_temp, "intelPersonal");
 		pr _locs = GETV(_temp, "knownFriendlyLocations");
+		pr _radioKey = GETV(_temp, "radioKey");
+		pr _itemSide = GETV(_temp, "side");
 		DELETE(_temp);
+
+		pr _side = T_GETV("side");
+
+		// Process the radioKey value
+		if (!isNil "_radioKey") then {
+			if (count _radioKey > 0) then {
+				// Check if we have this radio key
+				if (_itemSide != _side) then {
+					if (_radioKey in T_GETV("enemyRadioKeys")) then {
+						"We have this cryptokey already..." remoteExecCall ["systemChat", _clientOwner];
+					} else {
+						"We don't have this cryptokey! I should add it to notes and return it back to base!" remoteExecCall ["systemChat", _clientOwner];
+
+						// Copy stuff into player's notes
+						pr _text = format [_endl + "%1 Found enemy radio cryptokey: %2" + _endl, date call misc_fnc_dateToISO8601, _radioKey];
+						REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabNotes", "staticAppendText", [_text], _clientOwner, false);
+					};
+				};
+
+				// Send data to tablet
+				pr _text = format [_endl + "  Radio cryptokey: %1" + _endl, _radioKey];
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+			};
+		};
 
 		// Process the intel about this garrison's action
 		if (!IS_NULL_OBJECT(_intelPersonal)) then {
 			if (IS_OOP_OBJECT(_intelPersonal)) then {
 
 				// Add to our db if needed
-				T_CALLM1("inspectIntel", _intelPersonal);
+				if (_itemSide != _side) then {
+					T_CALLM1("inspectIntel", _intelPersonal);
+				};
 
 				// Process what to show on the remote player's tablet
 				pr _actionName = CALLM0(_intelPersonal, "getShortName");
@@ -666,22 +704,22 @@ CLASS("AICommander", "AI")
 				pr _posTgt = GETV(_intelPersonal, "posTgt");
 
 				if (!isNil "_posTgt") then {
-					pr _text = format ["\n  Current order: %1 at grid %2\n", _actionName, mapGridPosition _posTgt];
+					pr _text = format ["  Current order: %1 at grid %2" + _endl, _actionName, mapGridPosition _posTgt];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				} else {
-					pr _text = format ["\n  Current order: %1\n", _actionName];
+					pr _text = format ["  Current order: %1" + _endl, _actionName];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				};
 
 				if (!isNil "_posSrc") then {
-					pr _text = format ["Departure from %1, at date %2\n", mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
+					pr _text = format ["Departure from %1, at date %2" + _endl, mapGridPosition _posSrc, _dateDeparture call misc_fnc_dateToISO8601];
 					REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 				};
 			} else {
 				OOP_ERROR_1("Invalid personal intel ref: %1", _intelPersonal);
 			};
 		} else {
-			pr _text = format ["\n  Current order: none\n"];
+			pr _text = format [_endl + "  Current order: none" + _endl];
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 		};
 
@@ -689,7 +727,7 @@ CLASS("AICommander", "AI")
 		pr _intelGeneralUnique = _intelGeneral - [_intelPersonal]; // We don't want to process known intel
 		if (count _intelGeneralUnique > 0) then {
 
-			pr _text = "  Friendly squad orders:\n";
+			pr _text = "  Friendly squad orders:" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
 
 			{
@@ -698,7 +736,9 @@ CLASS("AICommander", "AI")
 					if (IS_OOP_OBJECT(_intel)) then {
 
 						// Add to our db if needed
-						T_CALLM1("inspectIntel", _intel);
+						if (_itemSide != _side) then {
+							T_CALLM1("inspectIntel", _intel);
+						};
 
 						// Process what to show on the remote player's tablet
 						pr _actionName = CALLM0(_intel, "getShortName");
@@ -719,7 +759,7 @@ CLASS("AICommander", "AI")
 							_text = _text + format [" at date %1", _dateDeparture call misc_fnc_dateToISO8601];
 						};
 
-						_text = _text + "\n";
+						_text = _text + _endl;
 						REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
 
 					} else {
@@ -731,27 +771,32 @@ CLASS("AICommander", "AI")
 
 		// Process locations known by this garrison
 		if (count _locs > 0) then {
-			pr _text = "  Friendly stationary forces:\n";
+			pr _text = "  Friendly stationary forces:" + _endl;
 			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.2], _clientOwner, false);
 			{
 				pr _loc = _x;
 
 				// Update location data, maximum precision
-				T_CALLM2("updateLocationData", _x, CLD_UPDATE_LEVEL_UNITS);
+				if (_itemSide != _side) then {
+					T_CALLM2("updateLocationData", _x, CLD_UPDATE_LEVEL_UNITS);
+				};
 
 				// Show stuff on the tablet
 				pr _type = CALLM0(_loc, "getType");
 				pr _typeStr = CALLSM1("Location", "getTypeString", _type);
 				pr _pos = CALLM0(_loc, "getPos");
-				pr _text = format ["Grid %1: %2 %3\n", mapGridPosition _pos, _typeStr, CALLM0(_loc, "getName")];
+				pr _text = format ["Grid %1: %2 %3" + _endl, mapGridPosition _pos, _typeStr, CALLM0(_loc, "getName")];
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1 + (random 0.1)], _clientOwner, false);
 			} forEach _locs;
 		};
 
-		pr _text = "\nRetinal scan identity mismatch! Device is locked.\n";
-		REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+		if (_itemSide != _side) then {
+			pr _text = _endl + "Retinal scan identity mismatch! Device is locked." + _endl;
+			REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0], _clientOwner, false);
+		};
 
-		// Bail out for now
+		// =========== Bail out for now =========
+		// ! ! ! ! Some legacy code below ! ! ! !
 		if (true) exitWith {};
 
 		// Make sure _data is valid
@@ -2025,6 +2070,83 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			T_PRVAR(activeActions);
 			_activeActions deleteAt (_activeActions find _action);
 		};
+	} ENDMETHOD;
+
+
+
+
+	// = = = = = = = = = = = Radio = = = = = = = = = = = = =
+
+	// Initializes the radio key grid
+	METHOD("initRadioKeys") {
+		params [P_THISOBJECT];
+
+		if (!isNil {T_GETV("radioKeyGrid")}) exitWith {
+			OOP_ERROR_0("Radio key grid is already initialized!");
+		};
+
+		// Create new grid object
+		pr _cellSize = 5000;
+		pr _grid = NEW("Grid", [_cellSize ARG "_error_"]);
+		pr _gridSize = CALLM0(_grid, "getGridSize"); // Amount of cells in the grid
+		
+		// Initialize the grid with values
+		for "_x" from 0 to (_gridSize - 1) do {
+			for "_y" from 0 to (_gridSize - 1) do {
+				pr _pos = [_x*_cellSize, _y*_cellSize];
+				pr _key = CALLSM3("AICommander", "generateRadioKey", T_GETV("side"), _pos, _cellSize);
+				CALLM2(_grid, "setValue", _pos, _key);
+			};
+		};
+
+		T_SETV("radioKeyGrid", _grid);
+	} ENDMETHOD;
+
+	// Generates a random radio key for given position
+	STATIC_METHOD("generateRadioKey") {
+		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_cellSize")];
+
+		private _numdigits = 6;		// Amount of digits in the key code
+
+		_pos params ["_px", "_py"];
+		private _ix = floor (_px / _cellSize);
+		private _iy = floor (_py / _cellSize);
+
+		__numToStrZeroPad = {
+			if (_this < 10) then {
+				"0" + (str (floor _this))
+			} else {
+				str (floor _this)
+			};
+		};
+
+		private _sideStr = switch (_side) do {
+			case WEST: {"BLU"};
+			case EAST: {"RED"};
+			case INDEPENDENT: {"GREEN"};
+			default {"CIV"};
+		};
+
+		private _str = format ["%1-%2-%3-", (_ix*_cellSize/1000) call __numToStrZeroPad, (_iy*_cellSize/1000) call __numToStrZeroPad, _sideStr];
+
+		private _acc = 0;
+		for "_i" from 0 to ((_numDigits-1)) do {
+			_str = _str + str(floor random 10);
+			_acc = _acc + 1;
+			if (_acc == 3 && (_i != (_numDigits-1))) then {
+				_str = _str + "-";
+				_acc = 0;
+			};
+		};
+
+		_str
+	} ENDMETHOD;
+
+	// Returns the radio key for given position
+	METHOD("getRadioKey") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		pr _grid = T_GETV("radioKeyGrid");
+		CALLM1(_grid, "getValueSafe", _pos);
 	} ENDMETHOD;
 
 ENDCLASS;

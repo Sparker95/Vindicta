@@ -524,6 +524,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		ASSERT_THREAD(_thisObject);
 		
+		// Notify AI object
 		pr _AI = T_GETV("AI");
 		CALLM1(_AI, "handleLocationChanged", _location);
 		
@@ -560,10 +561,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
-		// Update our intel - now we certainly know about this location
-		pr _AI = T_GETV("AI");
-		CALLM1(_AI, "addKnownFriendlyLocation", _location);
-
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
@@ -592,6 +589,10 @@ CLASS("Garrison", "MessageReceiverEx");
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
 			};
 		};
+
+		// Notify AI object
+		pr _AI = T_GETV("AI");
+		CALLM1(_AI, "handleLocationChanged", "");
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);

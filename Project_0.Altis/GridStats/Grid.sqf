@@ -25,10 +25,10 @@ CLASS("Grid", "");
 	STATIC_VARIABLE("currentValue");
 	STATIC_VARIABLE("currentScale");
 	
-	VARIABLE("cellSize");
-	VARIABLE("gridSize");
-	VARIABLE("gridArray");
-	VARIABLE("defaultValue");
+	VARIABLE("cellSize");		// Cell size in meters
+	VARIABLE("gridSize");		// Integer, amount of cells
+	VARIABLE("gridArray");		// Array with arrays with values
+	VARIABLE("defaultValue");	// Default value
 
 	/*
 	Method: new
@@ -40,7 +40,7 @@ CLASS("Grid", "");
 	*/
 
 	METHOD("new") {
-		params ["_thisObject", ["_cellSize", 500], ["_defaultValue", 0, [0, []]]];
+		params ["_thisObject", ["_cellSize", 500], ["_defaultValue", 0, GRID_ELEMENT_TYPES]];
 
 		private _gridSize = ceil(WORLD_SIZE / _cellSize); //Size of the grid measured in squares
 		T_SETV("gridSize", _gridSize);
@@ -49,10 +49,19 @@ CLASS("Grid", "");
 		
 		private _gridArray = [];
 		_gridArray resize _gridSize;
+		private _initCode = if (_defaultValue isEqualType []) then {
+			{
+				+_defaultValue	// Make a deep copy if an array was passed
+			}
+		} else {
+			{
+				_defaultValue	// For number or string, just make a basic copy
+			}
+		};
 		{
 			pr _a = [];
 			_a resize _gridSize;
-			_gridArray set [_forEachIndex, _a apply  { +_defaultValue }];
+			_gridArray set [_forEachIndex, _a apply  _initCode];
 		} forEach _gridArray;
 
 		T_SETV("gridArray", _gridArray);
@@ -80,6 +89,15 @@ CLASS("Grid", "");
 		T_GETV("cellSize")
 	} ENDMETHOD;
 
+	/*
+	Method: getGridSize
+	Returns grid size - integer number, amount of cells in this grid
+	*/
+	METHOD("getGridSize") {
+		params ["_thisObject"];
+		T_GETV("gridSize");
+	} ENDMETHOD;
+
 	// - - - - Setting values - - - -
 
 	/*
@@ -93,7 +111,7 @@ CLASS("Grid", "");
 	Returns: nil
 	*/
 	METHOD("setValueAll") {
-		params ["_thisObject", ["_value", 0, [0, []]]];
+		params ["_thisObject", ["_value", 0, GRID_ELEMENT_TYPES]];
 		
 		pr _gridArray = T_GETV("gridArray");
 		pr _n = count _gridArray;
@@ -117,7 +135,7 @@ CLASS("Grid", "");
 	*/
 	
 	METHOD("setValue") {
-		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, [0, []]]];
+		params ["_thisObject", ["_pos", [], [[]]], ["_value", 0, GRID_ELEMENT_TYPES]];
 	
 		_pos params ["_x", "_y"];
 		
@@ -281,6 +299,32 @@ CLASS("Grid", "");
 
 		pr _xID = floor(_x / _cellSize);
 		pr _yID = floor(_y / _cellSize);
+
+		pr _v = (_array select _xID) select _yID;
+
+		_v
+	} ENDMETHOD;
+
+	/*
+	Method: getValueSafe
+	Same as getValue, but ensures that coordinates are within range.
+
+	If not, default value is returned.
+	*/
+	METHOD("getValueSafe") {
+		params ["_thisObject", ["_pos", [], [[]]]];
+
+		_pos params ["_x", "_y"];
+
+		pr _array = T_GETV("gridArray");
+		pr _cellSize = T_GETV("cellSize");
+		pr _gridSize = T_GETV("gridSize");
+
+		pr _xID = floor(_x / _cellSize);
+		pr _yID = floor(_y / _cellSize);
+
+		if (_xID < 0 || _xID >= _gridSize) exitWith {T_GETV("defaultValue")};
+		if (_yID < 0 || _yID >= _gridSize) exitWith {T_GETV("defaultValue")};
 
 		pr _v = (_array select _xID) select _yID;
 
