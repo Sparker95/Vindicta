@@ -573,30 +573,44 @@ CLASS("AICommander", "AI")
 
 	// Gets called when enemy has produced some intel and sends it to some place
 	// Enemies might have a chance to intercept it
+	// Thread-safe function, it will postMethodAsync to other commanders
 	STATIC_METHOD("interceptIntelAt") {
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
 
 		pr _thisSide = GETV(_intel, "side");
+		pr _thisAI = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		pr _radioKey = CALLM1(_thisAI, "getRadioKey", _pos); // Enemies must have the radio key to intercept this data
 		{
 			pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _x);
-			CALLM2(_ai, "postMethodAsync", "_interceptIntelAt", [_intel ARG _pos]);
+			CALLM2(_ai, "postMethodAsync", "_interceptIntelAt", [_intel ARG _pos ARG _radioKey]);
 		} forEach ([WEST, EAST, INDEPENDENT] - [_thisSide]);
 	} ENDMETHOD;
 
+	// Local function, called in thread, on the commander which is tryint to intercept the enemy intel
 	METHOD("_interceptIntelAt") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos"), P_STRING("_radioKey")];
+
+		// Check if we have the radio key
+		pr _ourKnownEnemyKeys = T_GETV("enemyRadioKeys");
+		pr _weHaveRadioKey = _radioKey in _ourKnownRadioKeys;
 
 		// Check if we have friendly locations nearby
 		pr _side = T_GETV("side");
 		pr _friendlyLocs = CALLSM0("Location", "getAll") select {
 			(CALLM0(_x, "getPos") distance _pos) < 3500
+			// Todo also check if there is necessary radio equipment
 		} select {
 			pr _gars = CALLM1(_x, "getGarrisons", _side);
 			(count _gars) > 0
 		};
 
+		// Do we have friendly locations nearby?
 		if (count _friendlyLocs > 0) then {
-			T_CALLM1("inspectIntel", _intel);
+			if (_weHaveRadioKey) then {
+				T_CALLM1("inspectIntel", _intel);
+			} else {
+				// Todo Mark an unknown radio transmission on the map??
+			};
 		};
 	} ENDMETHOD;
 

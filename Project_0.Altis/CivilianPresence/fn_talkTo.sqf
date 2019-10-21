@@ -34,7 +34,7 @@ if(selectRandom[true,false])then{
 	// Check nearby locations
 	private _locs = CALLSM0("Location", "getAll");
 	private _locsNear = _locs select {
-		CALLM0(_x, "getPos") distance player < 5000
+		CALLM0(_x, "getPos") distance player < 4000
 	};
 
 	if (count _locsNear == 0) then {
@@ -86,7 +86,7 @@ if(selectRandom[true,false])then{
 
 	sleep 1;
 	
-	[_civ,"Yes, I know some...", player] call  Dialog_fnc_hud_createSentence;
+	[_civ,"No, I dont know any, sorry", player] call  Dialog_fnc_hud_createSentence;
 
 	sleep 1;
 	
