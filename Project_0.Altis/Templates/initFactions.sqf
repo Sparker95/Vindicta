@@ -9,3 +9,5 @@
 ["Templates\Factions\POLICE.sqf"]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CIVILIAN.sqf"]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF2017_elite.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_AFRF.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_USAF.sqf"]	call t_fnc_initializeTemplateFromFile;
