@@ -22,6 +22,6 @@ this addPrimaryWeaponItem "rhs_75Rnd_762x39mm_tracer";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToBackpack "rhs_75Rnd_762x39mm_tracer";};
-this addHeadgear "FGN_AAF_PASGT_Lizard";
+
 
 this linkItem "ItemWatch";
