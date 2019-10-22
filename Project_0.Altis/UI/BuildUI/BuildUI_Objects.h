@@ -41,12 +41,12 @@ class BuildObjects
 			displayName = "Tents";
 			// Big tents
 			#define __TENT_BIG_COST 40
-			__BUILD_OBJECT_CLASS(Tent0, Land_MedicalTent_01_wdl_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent1, Land_MedicalTent_01_aaf_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent2, Land_MedicalTent_01_CSAT_brownhex_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent3, Land_MedicalTent_01_NATO_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent4, Land_MedicalTent_01_CSAT_greenhex_generic_inner_F, __TENT_BIG_COST)
-			__BUILD_OBJECT_CLASS(Tent5, Land_MedicalTent_01_NATO_tropic_generic_inner_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent0,Land_MedicalTent_01_wdl_generic_inner_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent1,Land_MedicalTent_01_aaf_generic_inner_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent2,Land_MedicalTent_01_CSAT_brownhex_generic_inner_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent3,Land_MedicalTent_01_NATO_generic_inner_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent4,Land_MedicalTent_01_CSAT_greenhex_generic_inner_F, __TENT_BIG_COST)
+			__BUILD_OBJECT_CLASS(Tent5,Land_MedicalTent_01_NATO_tropic_generic_inner_F, __TENT_BIG_COST)
 		};
 
 		class CatStorage {
@@ -80,9 +80,9 @@ class BuildObjects
 		class CatCamo {
 			displayName = "Camouflage";
 			// Camo nets
-			__BUILD_OBJECT_CLASS(Camo0, CamoNet_OPFOR_F, 30)
-			__BUILD_OBJECT_CLASS(Camo1, CamoNet_OPFOR_open_F, 30)
-			__BUILD_OBJECT_CLASS(Camo2, CamoNet_OPFOR_big_F, 30)
+			__BUILD_OBJECT_CLASS(Camo0,CamoNet_OPFOR_F, 30)
+			__BUILD_OBJECT_CLASS(Camo1,CamoNet_OPFOR_open_F, 30)
+			__BUILD_OBJECT_CLASS(Camo2,CamoNet_OPFOR_big_F, 30)
 		};
 	};
 };
