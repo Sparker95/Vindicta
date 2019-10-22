@@ -1,5 +1,12 @@
 #define pr private
 
+// ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+// THIS FILE IS DEPRECATED
+// AND SERVES ONLY FOR REFERENCE OF CLASS NAMES
+// Currently class names are being read from config file
+// See UI\BuildUI\BuildUI_Objects.hpp
+// ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+
 // format: Classname, Display name string, build resources (cost), template category, template subcategory 
 
 pr _catDefense = [

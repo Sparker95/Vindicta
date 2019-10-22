@@ -201,3 +201,6 @@ class Extended_DisplayLoad_EventHandlers {
     };
     */
 };
+
+// Build UI
+#include "UI\BuildUI\BuildUI_Objects.h"

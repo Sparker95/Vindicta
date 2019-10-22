@@ -69,8 +69,8 @@ CLASS("BuildUI", "")
 		};
 
 		g_BuildUI = _thisObject;
-		T_SETV("currentCatID", 0);  			// index in g_buildUIObjects array of objects
-		T_SETV("currentItemID", 0);  			// index in g_buildUIObjects category subarray of objects
+		T_SETV("currentCatID", 0);  			// index in Categories class
+		T_SETV("currentItemID", 0);  			// index in the current Category class
 		T_SETV("TimeFadeIn", 0);
 		T_SETV("TimeFadeInTT", 0);
 		T_SETV("UICatTexts", []);
