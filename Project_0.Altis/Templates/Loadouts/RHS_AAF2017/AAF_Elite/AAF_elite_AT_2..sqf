@@ -18,14 +18,14 @@ this addBackpack "FGN_AAF_Bergen_Type07";
 
 this addWeapon "rhs_weap_m21s";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-this addWeapon "FGN_AAF_CarlGustav";
-this addSecondaryWeaponItem "rhs_optic_maaws";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
-for "_i" from 1 to 7 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
+for "_i" from 1 to 5 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_maaws_HEAT";};
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_maaws_HE";};
+this addItemToBackpack "rhs_mag_maaws_HEDP";
+
 
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";

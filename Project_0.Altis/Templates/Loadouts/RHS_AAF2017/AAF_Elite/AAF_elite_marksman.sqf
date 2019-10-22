@@ -1,4 +1,3 @@
-
 removeAllWeapons this;
 removeAllItems this;
 removeAllAssignedItems this;
@@ -8,24 +7,25 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-this forceAddUniform "FGN_AAF_M10_Type07_Summer";
-this addItemToUniform "FirstAidKit";
-this addVest "FGN_AAF_CIRAS_MM";
-for "_i" from 1 to 3 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
-for "_i" from 1 to 8 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N1";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_f1";};
-_RandomHeadgear = ["FGN_AAF_PASGT_Type07","FGN_AAF_PASGT_Type07_ESS","FGN_AAF_PASGT_Type07_ESS_2"] call BIS_fnc_selectRandom;  
-  
-
+_RandomHeadgear = ["FGN_AAF_PASGT_Type07","FGN_AAF_PASGT_Type07_ESS","FGN_AAF_PASGT_Type07_ESS_2"] call BIS_fnc_selectRandom;
 this addHeadgear _RandomHeadgear;
-_RandomGoggles = ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","","","",""] call BIS_fnc_selectRandom;  
-  
-
+_RandomGoggles = ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","","","",""] call BIS_fnc_selectRandom;
 this addGoggles _RandomGoggles;
+this forceAddUniform "FGN_AAF_M10_Type07_Summer";
+this addVest "FGN_AAF_CIRAS_MM";
+this addBackpack "B_LegStrapBag_coyote_F";
 
-this addWeapon "rhs_weap_svdp";
-this addPrimaryWeaponItem "rhs_acc_pso1m2";
-this addWeapon "rhsusf_weap_glock17g4";
+this addWeapon "rhs_weap_l1a1";
+this addPrimaryWeaponItem "rhsgref_acc_falMuzzle_l1a1";
+this addPrimaryWeaponItem "rhsgref_acc_l1a1_l2a2_3d";
+
+this addItemToUniform "FirstAidKit";
+this addItemToUniform "FGN_AAF_PatrolCap_Type07";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_20Rnd_762x51_m80a1_fnfal";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_20Rnd_762x51_m61_fnfal";};
+this addItemToBackpack "rhsgref_acc_l1a1_anpvs2";
+for "_i" from 1 to 4 do {this addItemToBackpack "rhs_mag_20Rnd_762x51_m80a1_fnfal";};
 
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
