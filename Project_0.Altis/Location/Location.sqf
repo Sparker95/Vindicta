@@ -101,6 +101,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("buildObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
+		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
 		T_SETV("gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
 
@@ -175,7 +176,8 @@ CLASS("Location", "MessageReceiverEx")
 		ASSERT_OBJECT_CLASS(_childLocation, "Location");
 		ASSERT_MSG(IS_NULL_OBJECT(GETV(_childLocation, "parent")), "Location is already assigned to another parent");
 		T_GETV("children") pushBack _childLocation;
-		SETV(_childLocation, "parent", _thisObject);
+		//SETV(_childLocation, "parent", _thisObject);
+		SET_VAR_PUBLIC(_childLocation, "parent", _thisObject);
 		nil
 	} ENDMETHOD;
 
