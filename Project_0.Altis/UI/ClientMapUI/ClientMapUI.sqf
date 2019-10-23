@@ -13,6 +13,7 @@
 #include "..\..\Location\Location.hpp"
 #include "..\Resources\UIProfileColors.h"
 #include "..\..\PlayerDatabase\PlayerDatabase.hpp"
+#include "..\..\Intel\Intel.hpp"
 
 #define CLASS_NAME "ClientMapUI"
 #define pr private
@@ -1048,10 +1049,15 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 				pr _dateDeparture = GETV(_intel, "dateDeparture");
 				pr _dateNow = date;
 				pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-				pr _activeStr = "";
+				pr _intelState = GETV(_intel, "state");
+				pr _stateStr = switch (_intelState) do {
+					case INTEL_ACTION_STATE_ACTIVE: {"Active"};
+					case INTEL_ACTION_STATE_INACTIVE: {"Inactive"};
+					case INTEL_ACTION_STATE_END: {"Ended"};
+					default {"error"};
+				};
 				pr _futureEvent = true;
 				if (_numberDiff < 0) then {
-					_activeStr = "active ";
 					_numberDiff = -_numberDiff;
 					_futureEvent = false;
 				};
@@ -1078,7 +1084,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					default {"ALIEN"};
 				};
 
-				pr _rowStr = format ["%1 %2", _shortName, _activeStr];
+				pr _rowStr = format ["%1 %2", _shortName, _stateStr];
 				pr _rowData = [_sideStr, _rowStr, _timeDiffStr];
 				pr _index = _lnb lnbAddRow _rowData;
 				_lnb lnbSetData [[_index, 0], _intel];
