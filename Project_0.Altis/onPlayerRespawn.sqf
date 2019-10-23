@@ -44,6 +44,8 @@ saluteKeys = actionKeys "Salute";
     };
 }];*/
 
+/*
+// Code to send msg to AIs to salute back to you
 _newUnit addEventHandler ["AnimChanged", {
     params ["_unit", "_anim"];
 
@@ -67,6 +69,7 @@ _newUnit addEventHandler ["AnimChanged", {
         [_args, {CALLM(gStimulusManager, "postMethodAsync", _this);}] remoteExecCall["call", 0, false];
     };
 }];
+*/
 
 //player setUnitTrait ["audibleCoef",0,true];
 //player setUnitTrait ["camouflageCoef",0,true];

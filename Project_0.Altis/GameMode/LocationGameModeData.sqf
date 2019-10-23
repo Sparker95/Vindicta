@@ -10,7 +10,7 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 	VARIABLE("location");
 
 	// 
-	/* virtual */ METHOD("new") {
+	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		T_SETV("location", _location);
 	} ENDMETHOD;

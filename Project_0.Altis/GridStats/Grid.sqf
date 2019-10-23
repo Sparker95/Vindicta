@@ -186,6 +186,26 @@ CLASS("Grid", "");
 		_v
 	} ENDMETHOD;
 
+	/*
+	Method: findValue
+	Checks if there is a given value in this grid.
+	
+	Parameters: _value
+	
+	Returns: Bool
+	*/
+	METHOD("findValue") {
+		params [P_THISOBJECT, ["_value", 0, GRID_ELEMENT_TYPES]];
+
+		pr _gridArray = T_GETV("gridArray");
+		pr _index = _gridArray findIf {
+			pr _index0 = _x findIf {_x isEqualTo _value};
+			_index0 != -1
+		};
+
+		_index != -1
+	} ENDMETHOD;
+
 	METHOD("applyRect") {
 		params [P_THISOBJECT, P_ARRAY("_pos"), P_ARRAY("_size"), P_CODE("_fnApplyRect")];
 

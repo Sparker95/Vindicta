@@ -63,6 +63,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("respawnSides"); // Sides for which player respawn is enabled
 
+	VARIABLE("hasRadio"); // Bool, means that this location has a radio
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -109,6 +111,8 @@ CLASS("Location", "MessageReceiverEx")
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
+
+		T_SETV("hasRadio", false);
 
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);
@@ -184,7 +188,7 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("addObject") {
 		params [P_THISOBJECT, P_OBJECT("_hObject")];
 
-		OOP_INFO_1("ADD OBJECT: %1", _hObject);
+		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 
 		private _type = typeOf _hObject;
 		private _countBP = count (_hObject buildingPos -1);
@@ -209,6 +213,14 @@ CLASS("Location", "MessageReceiverEx")
 		pr _capnew = T_GETV("capacityInf") + _cap;
 		T_SETV("capacityInf", _capnew);		
 		SET_VAR_PUBLIC(_thisObject, "capacityInf", _capnew);
+
+		// Check if it enabled radio functionality for the location
+		private _index = location_bt_radio find _type;
+		if (_index != -1) then {
+			T_SETV("hasRadio", _index != -1);
+			// Init radio object actions
+			CALLSM1("Location", "initRadioObject", _hObject);
+		};
 	} ENDMETHOD;
 
 
@@ -537,6 +549,15 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getGameModeData") {
 		params [P_THISOBJECT];
 		T_GETV("gameModeData")
+	} ENDMETHOD;
+
+	/*
+	Method: hasRadio
+	Returns true if this location has any object of the radio object types
+	*/
+	METHOD("hasRadio") {
+		params [P_THISOBJECT];
+		T_GETV("hasRadio")
 	} ENDMETHOD;
 
 	STATIC_METHOD("findRoadblocks") {
@@ -1016,8 +1037,12 @@ CLASS("Location", "MessageReceiverEx")
 					OOP_INFO_0("    	Does not match filter");
 					pr _type = typeOf _object;
 					if (_addSpecialObjects) then {
+						// Check if this object has capacity defined
+						//   or adds radio functionality
+						//  or... 
 						private _index = location_b_capacity findIf {_type in _x#0};
-						if (_index != -1) then {
+						private _indexRadio = location_bt_radio find _type;
+						if (_index != -1 || _indexRadio != -1) then {
 							OOP_INFO_0("    	Is a special object");
 							T_CALLM1("addObject", _object);
 						};
@@ -1074,6 +1099,70 @@ CLASS("Location", "MessageReceiverEx")
 		{
 			CALLM0(_x, "process");
 		} forEach _locs;
+	} ENDMETHOD;
+
+
+
+	// Initalization of different objects
+	STATIC_METHOD("initRadioObject") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		if (!isServer) exitWith {
+			OOP_ERROR_0("initRadioObject must be called on server!");
+		};
+
+		// Generate a JIP ID
+		private _ID = 0;
+		if(isNil "location_radio_nextID") then {
+			location_radio_nextID = 0;
+			_ID = 0;
+		} else {
+			_ID = location_radio_nextID;
+		};
+		location_radio_nextID = location_radio_nextID + 1;
+
+		private _JIPID = format ["loc_radio_jip_%1", _ID];
+		_object setVariable ["loc_radio_jip", _JIPID];
+
+		// Add an event handler to delete the init from the JIP queue when the object is gone
+		_object addEventHandler ["Deleted", {
+			params ["_entity"];
+			private _JIPID = _entity getVariable "loc_radio_jip";
+			if (isNil "_JIPID") exitWith {
+				OOP_ERROR_1("loc_radio_jip not found for object %1", _entity);
+			};
+			remoteExecCall ["", _JIPID]; // Remove it from the queue
+		}];
+
+		//OOP_INFO_2("INIT RADIO OBJECT: %1 at %2", _object, getPos _object);
+		//OOP_INFO_1("  JIP ID: %1", _JIPID);
+
+		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "initRadioObjectAction", [_object], 0, _JIPID); // global, JIP
+	} ENDMETHOD;
+
+	STATIC_METHOD("initRadioObjectAction") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		OOP_INFO_1("INIT RADIO OBJECT ACTION: %1", _object);
+
+		// Estimate usage radius
+		private _radius = (sizeof typeof _object) + 5;
+
+		_object addAction ["Manage radio cryptokeys", // title
+			{
+				// Open the radio key dialog
+				private _dlg0 = NEW("RadioKeyDialog", []);
+			}, 
+			0, // Arguments
+			100, // Priority
+			true, // ShowWindow
+			false, //hideOnUse
+			"", //shortcut
+			"['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation", //condition
+			_radius, //radius
+			false, //unconscious
+			"", //selection
+			""]; //memoryPoint
 	} ENDMETHOD;
 
 ENDCLASS;

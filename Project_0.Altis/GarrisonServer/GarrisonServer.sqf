@@ -188,9 +188,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	// This runs in the thread
 	METHOD("buildFromGarrison") {
 		OOP_INFO_1("BUILD FROM GARRISON: %1", _this);
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"), P_STRING("_className"),
-				P_NUMBER("_cost"),	P_NUMBER("_catID"), P_NUMBER("_subcatID"),
-				P_POSITION("_pos"), P_NUMBER("_dir")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_gar"),
+				P_STRING("_catCfgClassNameStr"), P_STRING("_objCfgClassNameStr"),
+				P_POSITION("_pos"), P_NUMBER("_dir"), P_BOOL("_checkGarrisonBuildRes")];
 		
 		// Bail if the garrison isn't registered any more
 		if (!(_gar in T_GETV("objects"))) exitWith {
@@ -199,8 +199,16 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		pr _buildRes = CALLM1(_gar, "getBuildResources", true); // Force update
 
+		// Get data from config
+		pr _objClass = missionConfigFile >> "BuildObjects" >> "Categories" >> _catCfgClassNameStr >> _objCfgClassNameStr;
+		pr _className = getText (_objClass >> "className");
+		pr _cost = getNumber (_objClass >> "buildResource");
+		pr _catID = getNumber (_objClass >> "templateCatID");
+		pr _subcatID = getNumber (_objClass >> "templateSubcatID");
+		pr _isRadio = [false, true] select (getNumber (_objClass >> "isRadio"));
+
 		// Bail if there is not enough resources
-		if (_buildRes < _cost) exitWith {
+		if (_buildRes < _cost && _checkGarrisonBuildRes) exitWith {
 			pr _objName = getText (configfile >> "CfgVehicles" >> _className >> "displayName");
 			pr _text = format ["Not enough resources to build %1", _objName];
 			_text remoteExecCall ["systemChat", _clientOwner];
@@ -231,7 +239,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Add the built object to the location
 		pr _loc = CALLM0(_gar, "getLocation");
 		if (!IS_NULL_OBJECT(_loc)) then {
-			CALLM1(_loc, "addObject", _hO);
+			// Add this object to location, if it's not a Unit object but a basic object
+			if (_catID == -1) then {
+				CALLM1(_loc, "addObject", _hO);
+			};
 
 			// Player might have added an object which affects location's player respawn capabilities,
 			// so we must update it

@@ -491,7 +491,7 @@ CLASS("BuildUI", "")
 			T_SETV("animStartTime", time); 
 			T_SETV("animCompleteTime", time + 0.2); 
 			// How many items in the currently selected category
-			pr _itemIndexSize = count ( ( "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories") ) select _currentCatID);
+			pr _itemIndexSize = count ( "true" configClasses ( ( "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories") ) select _currentCatID) );
 
 			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
 			pr _newItemID = (_currentItemID + _num + _itemIndexSize) mod _itemIndexSize;
@@ -544,7 +544,7 @@ CLASS("BuildUI", "")
 		pr _categoryClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
 		pr _itemCatClass = _categoryClasses select _currentCatID; // Class of current category
 		pr _objClasses = "true" configClasses _itemCatClass; // Array with object classes
-		pr _itemCatIndexSize = (count _itemCatClass) -1;
+		pr _itemCatIndexSize = (count _objClasses) -1;
 		pr _UIarray = [_ItemID-2, _ItemID-1, _ItemID, _ItemID+1, _ItemID+2]; 
 		pr _return = [];
 
@@ -554,7 +554,13 @@ CLASS("BuildUI", "")
 			} else {
 				pr _objClass = _objClasses select _x;
 				pr _objClassName = getText ( _objClass >> "className");
-				pr _itemName = getText (configfile >> "CfgVehicles" >> _objClassName >> "displayName"); //toUpper ((_itemCat select _x) select 1);
+				pr _objDisplayName = getText (_objClass >> "displayName");
+				// If display name is specified in our config, use it, otherwise take it from cfgVehicles
+				pr _itemName = if (_objDisplayName != "") then {
+					_objDisplayName
+				} else {
+					getText (configfile >> "CfgVehicles" >> _objClassName >> "displayName");
+				};
 				pr _itemCost = getNumber (_objClass >> "buildResource");
 				pr _str = format ["%1 [%2]", _itemName, _itemCost];
 				_return pushBack _str;
@@ -672,7 +678,7 @@ CLASS("BuildUI", "")
 		// How many items in the currently selected category?
 		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
 		pr _objClasses = "true" configClasses _catClass;
-		pr _itemIndexSize = count _objClasses - 1;
+		pr _itemIndexSize = (count _objClasses) - 1;
 		pr _offsets = T_CALLM0("getCarouselOffsets");
 
 		// Create the objects local to the player with the correct offsets.
@@ -990,8 +996,10 @@ CLASS("BuildUI", "")
 				// These are template catID and subcatID of the object, not catID of the build menu
 				pr _currentCatID = T_GETV("currentCatID");
 				pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+				pr _catConfigClassNameStr = configName _catClass; // "catTents" and such
 				pr _objClasses = "true" configClasses _catClass;
 				pr _objClass = _objClasses select T_GETV("currentItemID");
+				pr _objConfigClassNameStr = configName _objClass; // "Tent1" and such
 				pr _className = getText (_objClass >> "className");
 				pr _buildRes = getNumber (_objClass >> "buildResource");
 				pr _catID = getNumber (_objClass >> "templateCatID");
@@ -1004,7 +1012,7 @@ CLASS("BuildUI", "")
 					if (_playerBuildRes >= _buildRes) then {
 						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
 						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
-						pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, false];
 						// Send the request to server
 						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 					} else {
@@ -1014,7 +1022,7 @@ CLASS("BuildUI", "")
 					
 				} else {
 					// We are building from the location garrison's resources
-					pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, true];
 
 					// Send the request to server
 					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);

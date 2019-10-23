@@ -34,13 +34,14 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	VARIABLE("timer");			// Timer
 	VARIABLE("timerUI");		// Timer for UI checks
 
-	VARIABLE("prevPos");		// Previous pos when we updated nearby locations
-	VARIABLE("unit");			// Unit (object handle) this is attached to
-	VARIABLE("nearLocations");	// Nearby locations to return to other objects
-	VARIABLE("currentLocation"); // The nearest location we are currently at
-	VARIABLE("currentLocations"); // Locations we are currently located at
-	VARIABLE("currentGarrisonRecord"); // Garrison record at the current location
-	VARIABLE("currentGarrison");
+	VARIABLE("prevPos");					// Previous pos when we updated nearby locations
+	VARIABLE("unit");						// Unit (object handle) this is attached to
+	VARIABLE("nearLocations");				// Nearby locations to return to other objects
+	VARIABLE("currentLocation");			// The nearest location we are currently at
+	VARIABLE("atFriendlyLocation");	// Bool, set to true if this location is friendly
+	VARIABLE("currentLocations");			// Locations we are currently located at
+	VARIABLE("currentGarrisonRecord");		// Garrison record at the current location
+	VARIABLE("currentGarrison");			// Garrison linked to current garrison record
 	VARIABLE("canBuild");
 
 	METHOD("new") {
@@ -52,6 +53,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 
 		T_SETV("nearLocations", []);
 		T_SETV("currentLocation", "");
+		T_SETV("atFriendlyLocation", false);
 		T_SETV("currentLocations", []);
 		T_SETV("currentGarrisonRecord", "");
 		T_SETV("currentGarrison", "");
@@ -148,11 +150,13 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 					};
 				};
 				T_SETV("canBuild", _garRecord != "");
+				T_SETV("atFriendlyLocation", _garRecord != "");
 			} else {
 				T_SETV("currentGarrisonRecord", "");
 				T_SETV("currentGarrison", "");
 				T_SETV("canBuild", false);
 				T_SETV("currentLocation", "");
+				T_SETV("atFriendlyLocation", false);
 			};
 			
 		//};
@@ -221,6 +225,11 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		T_GETV("currentGarrison")
 	} ENDMETHOD;
 
+	METHOD("isAtFriendlyLocation") {
+		params [P_THISOBJECT];
+		T_GETV("atFriendlyLocation")
+	} ENDMETHOD;
+
 	STATIC_METHOD("canUnitBuildAtLocation") {
 		params [P_THISCLASS, "_unit"];
 		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
@@ -234,6 +243,16 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 	STATIC_METHOD("canUnitBuildFromInventory") {
 		params [P_THISCLASS, "_unit"];
 		
+	} ENDMETHOD;
+
+	STATIC_METHOD("isUnitAtFriendlyLocation") {
+		params [P_THISCLASS, "_unit"];
+		pr _thisObject = _unit getVariable PLAYER_MONITOR_UNIT_VAR;
+		if (!isNil "_thisObject") then {
+			T_GETV("atFriendlyLocation")
+		} else {
+			false
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

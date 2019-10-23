@@ -48,6 +48,7 @@ CLASS("AICommander", "AI")
 	// Radio
 	VARIABLE("radioKeyGrid"); 	// Grid object which stores our own radio keys
 	VARIABLE("enemyRadioKeys");	// Enemy radio keys we have found
+	VARIABLE("enemyRadioKeysAddedBy"); // List of player names who have added the radio keys
 
 	// Ported from CmdrAI
 	VARIABLE("activeActions");
@@ -121,7 +122,10 @@ CLASS("AICommander", "AI")
 		T_SETV("planningCycle", 0);
 
 		// Initialize the radio keys
+		//T_SETV("enemyRadioKeys", ["123" ARG "abc"]);
+		//T_SETV("enemyRadioKeysAddedBy", ["Potato" ARG "Tomato"]);
 		T_SETV("enemyRadioKeys", []);
+		T_SETV("enemyRadioKeysAddedBy", []);
 		T_CALLM0("initRadioKeys"); // Will set the radioKeyGrid variable
 
 	} ENDMETHOD;
@@ -235,6 +239,9 @@ CLASS("AICommander", "AI")
 			};
 			case INDEPENDENT: {
 				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
+			};
+			default {
+				OOP_ERROR_1("AICommander of side %1 does not exist", _side);
 			};
 		};
 		_cmdr
@@ -590,15 +597,17 @@ CLASS("AICommander", "AI")
 	METHOD("_interceptIntelAt") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos"), P_STRING("_radioKey")];
 
+		OOP_INFO_1("INTERCEPT INTEL AT: %1", _this);
+
 		// Check if we have the radio key
 		pr _ourKnownEnemyKeys = T_GETV("enemyRadioKeys");
-		pr _weHaveRadioKey = _radioKey in _ourKnownRadioKeys;
+		pr _weHaveRadioKey = _radioKey in _ourKnownEnemyKeys;
 
-		// Check if we have friendly locations nearby
+		// Check if we have friendly locations nearby which have the radio
 		pr _side = T_GETV("side");
 		pr _friendlyLocs = CALLSM0("Location", "getAll") select {
-			(CALLM0(_x, "getPos") distance _pos) < 3500
-			// Todo also check if there is necessary radio equipment
+			(CALLM0(_x, "getPos") distance _pos) < 4500 &&
+			CALLM0(_x, "hasRadio")
 		} select {
 			pr _gars = CALLM1(_x, "getGarrisons", _side);
 			(count _gars) > 0
@@ -608,9 +617,13 @@ CLASS("AICommander", "AI")
 		if (count _friendlyLocs > 0) then {
 			if (_weHaveRadioKey) then {
 				T_CALLM1("inspectIntel", _intel);
+				OOP_INFO_0("  successfull interception");
 			} else {
 				// Todo Mark an unknown radio transmission on the map??
+				OOP_INFO_0("  we don't have this radio key");
 			};
+		} else {
+			OOP_INFO_0("  no friendly locations with radio nearby...");
 		};
 	} ENDMETHOD;
 
@@ -1492,6 +1505,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
+		// Check if there are any cities directly at this place
+		pr _locsAtPos = CALLSM1("Location", "getLocationsAtPos", _pos);
+		pr _indexCity = _locsAtPos findIf {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
+		if (_indexCity != -1) exitWith {
+			pr _args = ["We can't create a location inside a city!"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		};
+
+		// Remove build resources from player
+		pr _playerObj = allPlayers select {owner _x == _clientOwner} select 0;
+		if (!isNil "_playerObj") then {
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_playerObj ARG 20], _clientOwner, false);
+		};
+
 		// Create a little composition at this place
 		[_posWorld] call misc_fnc_createCampComposition;
 
@@ -1502,7 +1529,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM1(_loc, "setName", _locName);
 		CALLM2(_loc, "processObjectsInArea", "House", true);
 		CALLM1(gGameMode, "initLocationGameModeData", _loc);
-
 
 		// Create the garrison
 		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
@@ -2120,7 +2146,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	STATIC_METHOD("generateRadioKey") {
 		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_cellSize")];
 
-		private _numdigits = 6;		// Amount of digits in the key code
+		private _numdigits = 12;		// Amount of digits in the key code
 
 		_pos params ["_px", "_py"];
 		private _ix = floor (_px / _cellSize);
@@ -2161,6 +2187,88 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_POSITION("_pos")];
 		pr _grid = T_GETV("radioKeyGrid");
 		CALLM1(_grid, "getValueSafe", _pos);
+	} ENDMETHOD;
+
+	METHOD("clientAddRadioKey") {
+		params [P_THISOBJECT, P_SIDE("_side"), P_NUMBER("_clientOwner"), P_STRING("_key"), P_STRING("_playerName")];
+
+		// Check if we have this radio key
+		if (_key in T_GETV("enemyRadioKeys")) exitWith {
+			// Show response for player
+			pr _text = "We already have this key!";
+			pr _args = [_text];
+			REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
+		};
+
+		// Check if it's a valid key at all, we don't want to store trash...
+
+		// Check if it's our own key
+		pr _radioKeyGrid = T_GETV("radioKeyGrid");
+		pr _foundInOurGrid = CALLM1(_radioKeyGrid, "findValue", _key);
+		if (_foundInOurGrid) exitWith {
+			pr _text = format ["Key %1 belongs to our side!", _key];
+			pr _args = [_text];
+			REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
+		};
+
+		// Check if it's one of enemy radio keys
+		pr _keyFoundInEnemy = false;
+		{
+			pr _enemyAI = CALLSM1("AICommander", "getCommanderAIOfSide", _x);
+			pr _radioKeyGrid = GETV(_enemyAI, "radioKeyGrid");
+			pr _valueFound = CALLM1(_radioKeyGrid, "findValue", _key);
+			if (_valueFound) exitWith {
+				_keyFoundInEnemy = true;
+			}; // No need to check other commanders
+		} forEach ([WEST, EAST, INDEPENDENT] - [_side]);
+
+		// Bail if player has entered some unknown key
+		if (!_keyFoundInEnemy) exitWith {
+			pr _text = format ["Key %1 is invalid!", _key];
+			pr _args = [_text];
+			REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
+		};
+
+		// Add key
+		T_GETV("enemyRadioKeys") pushBack _key;
+		T_GETV("enemyRadioKeysAddedBy") pushBack _playerName;
+
+		// Show response for player
+		pr _text = format ["Key %1 was added!", _key];
+		pr _args = [_text];
+		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowResponse", _args, _clientOwner, false);
+
+		// Todo notify other players that someone has found a valid radio key?
+
+		// Send new list of keys back to player
+		CALLSM2("AICommander", "staticClientRequestRadioKeys", _side, _clientOwner);
+	} ENDMETHOD;
+
+	STATIC_METHOD("staticClientAddRadioKey") {
+		params [P_THISCLASS, P_SIDE("_side"), P_NUMBER("_clientOwner"), P_STRING("_key"), P_STRING("_playerName")];
+
+		OOP_INFO_1("STATIC CLIENT ADD RADIO KEY: %1", _this);
+
+		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+
+		if (IS_NULL_OBJECT(_AI)) exitWith {	};
+
+		CALLM4(_AI, "clientAddRadioKey", _side, _clientOwner, _key, _playerName);
+	} ENDMETHOD;
+
+	// Called REMOTELY by client to get radio keys
+	// Thread unsafe, but getting radio keys is quite safe and trivial so we don't care about thread safety
+	STATIC_METHOD("staticClientRequestRadioKeys") {
+		params [P_THISCLASS, P_SIDE("_side"), P_NUMBER("_clientOwner")];
+
+		OOP_INFO_1("STATIC CLIENT REQUEST RADIO KEYS: %1", _this);
+
+		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+
+		if (IS_NULL_OBJECT(_AI)) exitWith {	};
+
+		pr _args = [+GETV(_AI, "enemyRadiokeys"), +GETV(_AI, "enemyRadiokeysAddedBy")];
+		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
 	} ENDMETHOD;
 
 ENDCLASS;
