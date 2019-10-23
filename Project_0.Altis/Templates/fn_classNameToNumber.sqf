@@ -15,7 +15,7 @@ private _num = t_classnames_hashmap getVariable [_className, -1];
 if (_num == -1) then {
 	_num = t_classnames_array pushBack _className;
 	t_classnames_hashmap setVariable [_className, _num];
-	diag_log format ["[Template::classNameToNumber] Added class name: %1, id: %2", _className, _num];
+	// diag_log format ["[Template::classNameToNumber] Added class name: %1, id: %2", _className, _num];
 };
 
 _num
