@@ -119,4 +119,10 @@ CLASS("DialogTabBase", "")
 		}];
 	} ENDMETHOD;
 
+	// Called before this tab is deleted but when controls still exist
+	// Override for custom functionality
+	/* virtual */ METHOD("beforeDelete") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+
 ENDCLASS;

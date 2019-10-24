@@ -14,6 +14,7 @@ CLASS("InGameMenu", "DialogBase")
 		T_CALLM2("addTab", "DialogTabBase", "Mission");
 		T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
 		T_CALLM2("addTab", "DialogTabBase", "Admin");
+		T_CALLM2("addTab", "InGameMenuTabNotes", "Notes");
 		
 		T_CALLM1("enableMultiTab", true);
 		T_CALLM2("setContentSize", 0.7, 0.9);

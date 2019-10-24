@@ -50,6 +50,9 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("intelPersonal"); // Ref to intel about cmdr action inwhich this garrison ai is involved
 	VARIABLE("knownFriendlyLocations"); // Array with locations about which this garrison knows
 
+	// Radio key, string, used for player to intercept intel
+	VARIABLE("radioKey");
+
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
@@ -121,6 +124,9 @@ CLASS("AIGarrison", "AI_GOAP")
 			T_GETV("knownFriendlyLocations") pushBackUnique (selectRandom _allLocs);
 		};
 		*/
+
+		// Get radio key from AICommander
+		T_CALLM0("updateRadioKey");
 
 		#ifdef DEBUG_GOAL_MARKERS
 		// Main marker
@@ -374,11 +380,18 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_LOCATION, _loc] call ws_setPropertyValue;
 
-		// Set position world state property
+		// If we now are attached to a location
 		if (_loc != "") then {
+			// Set position world state property
 			pr _pos = CALLM0(_loc, "getPos");
 			[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+			
+			// Now we know about this location
+			T_CALLM1("addKnownFriendlyLocation", _loc);
 		};
+
+		// Update our radio key
+		T_CALLM0("updateRadioKey");
 
 		// Update the debug markers
 		#ifdef DEBUG_GOAL_MARKERS
@@ -423,6 +436,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		params ["_thisObject", "_pos"];
 		pr _ws = T_GETV("worldState");
 		[_ws, WSP_GAR_POSITION, _pos] call ws_setPropertyValue;
+
+		// Update our radio key, if someone has forced a position change on us
+		T_CALLM0("updateRadioKey");
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", T_GETV("agent"));
@@ -487,11 +503,13 @@ CLASS("AIGarrison", "AI_GOAP")
 	} ENDMETHOD;
 
 	// Copies intel from another AIGarrison by adding intel items and locations to this object
+	// Should call it when garrisons are being split if we want them to inherit intel
 	METHOD("copyIntelFrom") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_otherAI")];
 
 		pr _intelGeneral = T_GETV("intelGeneral");
 		pr _locs = T_GETV("knownFriendlyLocations");
+
 		// Merge known general intel
 		{
 			// We don't want to accumulate intel about finished cmdr actions
@@ -499,13 +517,31 @@ CLASS("AIGarrison", "AI_GOAP")
 				_intelGeneral pushBackUnique _x;
 			};
 		} forEach GETV(_otherAI, "intelGeneral");
+
 		// Merge known friendly locations
 		{
 			_locs pushBackUnique _x;
 		} forEach GETV(_otherAI, "knownFriendlyLocations");
 
+		// Copy the radio key
+		T_SETV("radioKey", GETV(_otherAI, "radioKey"));
+
 		// Update intel of units inventory items if garrison is spawned
 		CALLM0(T_GETV("agent"), "updateUnitsIntel");
+	} ENDMETHOD;
+
+	// Gets the radio key corresponding to the current position
+	METHOD("updateRadioKey") {
+		params [P_THISOBJECT];
+		pr _side = CALLM0(T_GETV("agent"), "getSide"); // Garrison's side
+		pr _AICommander = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		if (!IS_NULL_OBJECT(_AICommander)) then {
+			pr _pos = T_CALLM0("getPos");
+			pr _key = CALLM1(_AICommander, "getRadioKey", _pos);
+			T_SETV("radioKey", _key);
+		} else {
+			T_SETV("radioKey", "666-ERROR-666");
+		};
 	} ENDMETHOD;
 
 	// Returns a serialized UnitIntelData object
@@ -514,10 +550,19 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT];
 
 		pr _temp = NEW("UnitIntelData", []);
+		pr _gar = T_GETV("agent");
 
 		SETV(_temp, "intelGeneral", +T_GETV("intelGeneral"));
 		SETV(_temp, "intelPersonal", T_GETV("intelPersonal"));
 		SETV(_temp, "knownFriendlyLocations", +T_GETV("knownFriendlyLocations"));
+		SETV(_temp, "side", CALLM0(_gar, "getSide"));
+
+		// Only military tablets have the radio key
+		if (CALLM0(_gar, "getFaction") == "military") then {
+			SETV(_temp, "radioKey", T_GETV("radioKey"));
+		} else {
+			SETV(_temp, "radioKey", "");
+		};
 
 		pr _serial = SERIALIZE(_temp);
 		DELETE(_temp);

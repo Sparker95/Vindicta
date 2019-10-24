@@ -69,8 +69,8 @@ CLASS("BuildUI", "")
 		};
 
 		g_BuildUI = _thisObject;
-		T_SETV("currentCatID", 0);  			// index in g_buildUIObjects array of objects
-		T_SETV("currentItemID", 0);  			// index in g_buildUIObjects category subarray of objects
+		T_SETV("currentCatID", 0);  			// index in Categories class
+		T_SETV("currentItemID", 0);  			// index in the current Category class
 		T_SETV("TimeFadeIn", 0);
 		T_SETV("TimeFadeInTT", 0);
 		T_SETV("UICatTexts", []);
@@ -491,7 +491,7 @@ CLASS("BuildUI", "")
 			T_SETV("animStartTime", time); 
 			T_SETV("animCompleteTime", time + 0.2); 
 			// How many items in the currently selected category
-			pr _itemIndexSize = count (g_buildUIObjects select _currentCatID select 0);
+			pr _itemIndexSize = count ( "true" configClasses ( ( "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories") ) select _currentCatID) );
 
 			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
 			pr _newItemID = (_currentItemID + _num + _itemIndexSize) mod _itemIndexSize;
@@ -502,7 +502,7 @@ CLASS("BuildUI", "")
 			T_SETV("TimeFadeIn", (time+(0.4)));
 			pr _newCatID = _currentCatID + (_num);
 			// How many categories
-			pr _categoryIndexSize = count g_buildUIObjects;
+			pr _categoryIndexSize = count ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories"));
 			// Update the index and modulus to make it loop back around in both directions. https://stackoverflow.com/a/24093024
 			pr _newCatID = (_currentCatID + _num + _categoryIndexSize) mod _categoryIndexSize;
 
@@ -521,11 +521,13 @@ CLASS("BuildUI", "")
 		pr _UIarray = [_currentCatID-2, _currentCatID-1, _currentCatID, _currentCatID+1, _currentCatID+2]; 
 		pr _return = [];
 
+		pr _categoryClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
+		pr _numCategories = count _categoryClasses;
 		{ 
-			if ((_x < 0) OR (_x > ((count g_buildUIObjects) - 1))) then { 
+			if ((_x < 0) OR (_x > (_numCategories - 1))) then { 
 				_return pushBack ""; 
 			} else {
-				_return pushBack (toUpper ((g_buildUIObjects select _x) select 1));
+				_return pushBack (toUpper ( getText ( (_categoryClasses select _x) >> "displayName") ) );
 			};
 		} forEach _UIarray; 
 
@@ -539,8 +541,10 @@ CLASS("BuildUI", "")
 		params [P_THISOBJECT, "_ItemID"];
 		OOP_INFO_0("'makeItemTexts' method called");
 		pr _currentCatID = T_GETV("currentCatID");
-		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		pr _itemCatIndexSize = (count _itemCat) -1;
+		pr _categoryClasses = "true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories");
+		pr _itemCatClass = _categoryClasses select _currentCatID; // Class of current category
+		pr _objClasses = "true" configClasses _itemCatClass; // Array with object classes
+		pr _itemCatIndexSize = (count _objClasses) -1;
 		pr _UIarray = [_ItemID-2, _ItemID-1, _ItemID, _ItemID+1, _ItemID+2]; 
 		pr _return = [];
 
@@ -548,8 +552,16 @@ CLASS("BuildUI", "")
 			if ((_x < 0) OR (_x > _itemCatIndexSize)) then { 
 				_return pushBack ""; 
 			} else {
-				pr _itemName = getText (configfile >> "CfgVehicles" >> (_itemCat select _x select 0) >> "displayName"); //toUpper ((_itemCat select _x) select 1);
-				pr _itemCost = (_itemCat select _x) select 2;
+				pr _objClass = _objClasses select _x;
+				pr _objClassName = getText ( _objClass >> "className");
+				pr _objDisplayName = getText (_objClass >> "displayName");
+				// If display name is specified in our config, use it, otherwise take it from cfgVehicles
+				pr _itemName = if (_objDisplayName != "") then {
+					_objDisplayName
+				} else {
+					getText (configfile >> "CfgVehicles" >> _objClassName >> "displayName");
+				};
+				pr _itemCost = getNumber (_objClass >> "buildResource");
 				pr _str = format ["%1 [%2]", _itemName, _itemCost];
 				_return pushBack _str;
 			};
@@ -576,8 +588,9 @@ CLASS("BuildUI", "")
 		if (_ItemCatOpen) then {
 			T_PRVAR(currentCatID);
 			T_PRVAR(currentItemID);
-			pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-			_return = (_itemCat select _currentItemID) select 0;
+			pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+			pr _objClasses = "true" configClasses _catClass;
+			_return = getText ((_objClasses select _currentItemID) >> "className");
 			OOP_INFO_4("'currentClassname' %1 %2 %3 %4", _currentCatID, _currentItemID, _itemCat, _return);
 		};
 
@@ -604,8 +617,9 @@ CLASS("BuildUI", "")
 		T_PRVAR(currentItemID);
 
 		// How many items in the currently selected category
-		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		pr _itemIndexSize = count _itemCat - 1;
+		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+		pr _objClasses = "true" configClasses _catClass;
+		pr _itemIndexSize = (count _objClasses) - 1;
 
 		pr _offsets = [];
 
@@ -619,8 +633,8 @@ CLASS("BuildUI", "")
 
 		// Work out carousel x offsets based on object sizes.
 		for "_i" from 0 to _itemIndexSize do {
-			pr _item = (_itemCat select _i) select 0;
-			pr _size = sizeOf _item;
+			pr _itemClassName = getText ((_objClasses select _i) >> "className" );
+			pr _size = sizeOf _itemClassName;
 			_xtotal = _xtotal + _size + 1;
 			pr _xpos = _xtotal - (_size + 1) * 0.5;
 			if (_i == _previousItemID) then { _prevx = _xpos; };
@@ -662,13 +676,14 @@ CLASS("BuildUI", "")
 		if (!_ItemCatOpen) exitWith { [] };
 
 		// How many items in the currently selected category?
-		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		pr _itemIndexSize = count _itemCat - 1;
+		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+		pr _objClasses = "true" configClasses _catClass;
+		pr _itemIndexSize = (count _objClasses) - 1;
 		pr _offsets = T_CALLM0("getCarouselOffsets");
 
 		// Create the objects local to the player with the correct offsets.
 		for "_i" from 0 to _itemIndexSize do {
-			pr _type = (_itemCat select _i) select 0;
+			pr _type = getText ((_objClasses select _i) >> "className");
 			OOP_INFO_1("Creating carousel item %1", _type);
 			pr _offs = _offsets select _i;
 			pr _newObj = _type createVehicleLocal (player modelToWorld _offs);
@@ -689,8 +704,9 @@ CLASS("BuildUI", "")
 		if (!_ItemCatOpen) exitWith { [] };
 
 		// How many items in the currently selected category
-		pr _itemCat = (g_buildUIObjects select _currentCatID) select 0;
-		pr _itemIndexSize = count _itemCat - 1;
+		pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+		pr _objClasses = "true" configClasses _catClass;
+		pr _itemIndexSize = count _objClasses - 1;
 		pr _offsets = T_CALLM0("getCarouselOffsets");
 		for "_i" from 0 to _itemIndexSize do {
 			pr _offs = _offsets select _i;
@@ -978,8 +994,16 @@ CLASS("BuildUI", "")
 				pr _pos = [_currPos select 0, _currPos select 1, 0];
 				pr _dir = getDir _ghostObject;
 				// These are template catID and subcatID of the object, not catID of the build menu
-				pr _itemArray = ((g_BuildUIObjects select T_GETV("currentCatID")) select 0) select T_GETV("currentItemID");
-				_itemArray params ["_className", "_displayName", "_buildRes", "_catID", "_subcatID"];
+				pr _currentCatID = T_GETV("currentCatID");
+				pr _catClass = ("true" configClasses (missionConfigFile >> "BuildObjects" >> "Categories")) select _currentCatID;
+				pr _catConfigClassNameStr = configName _catClass; // "catTents" and such
+				pr _objClasses = "true" configClasses _catClass;
+				pr _objClass = _objClasses select T_GETV("currentItemID");
+				pr _objConfigClassNameStr = configName _objClass; // "Tent1" and such
+				pr _className = getText (_objClass >> "className");
+				pr _buildRes = getNumber (_objClass >> "buildResource");
+				pr _catID = getNumber (_objClass >> "templateCatID");
+				pr _subcatID = getNumber (_objClass >> "templateSubcatID");
 				pr _gar = CALLM0(gPlayerMonitor, "getCurrentGarrison");
 
 				if (T_GETV("resourceSource") == __RESOURCE_SOURCE_INVENTORY) then {
@@ -988,7 +1012,7 @@ CLASS("BuildUI", "")
 					if (_playerBuildRes >= _buildRes) then {
 						CALLSM2("Unit", "removeInfantryBuildResources", player, _buildRes);
 						_buildRes = -1; // buildFromGarrison will bypass the resource check at the target garrison
-						pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+						pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, false];
 						// Send the request to server
 						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 					} else {
@@ -998,7 +1022,7 @@ CLASS("BuildUI", "")
 					
 				} else {
 					// We are building from the location garrison's resources
-					pr _args = [clientOwner, _gar, _className, _buildRes, _catID, _subcatID, _pos, _dir];
+					pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, true];
 
 					// Send the request to server
 					CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);

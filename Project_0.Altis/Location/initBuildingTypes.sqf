@@ -121,6 +121,7 @@ location_bp_cargo_medium =
 	]
 ];
 
+// Buildings which can be used as police stations
 location_bt_police = 
 [
 	"Land_i_Shop_01_V2_F",
@@ -147,6 +148,17 @@ location_bt_police =
 	"Land_i_House_Big_01_V2_F",
 	"Land_u_House_Big_01_V1_F",
 	"Land_i_House_Big_01_V3_F"
+];
+
+// Buildings which add radio functionality to the location
+location_bt_radio =
+[
+	"Land_TBox_F",				// Transmitter box which can be created through build UI
+	// "Land_TTowerSmall_1_F",	// Not sure, looks like some small mobile phone antenna
+	"Land_TTowerSmall_2_F",		// Verticall array of small dipoles
+	"Land_TTowerBig_1_F",		// A-like transmitter tower
+	"Land_TTowerBig_2_F",		// Tall I-like transmitter tower
+	"Land_Communication_F"		// Tall tower with antennas on top, often found at military outposts
 ];
 
 /*

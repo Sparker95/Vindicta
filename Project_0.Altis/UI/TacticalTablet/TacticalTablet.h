@@ -91,9 +91,9 @@ class TACTICAL_TABLET
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			
 		};
-		class TABLET_DISPLAY_TEXT
+		class TABLET_DISPLAY_TEXT : MUI_EDIT_ABS
 		{
-			type = 0;
+			type = 2; // Edit
 			idc = -1;
 			x = 0.08500066;
 			y = 0.08500066;
@@ -103,9 +103,11 @@ class TACTICAL_TABLET
 			text = "Line 1 Line 2 Line 3";
 			colorBackground[] = {0,0,0,0};
 			colorText[] = {0.949,0.949,0.949,1};
+			colorSelection[] = {0.3024,0.5545,0.3141,1};
 			font = "EtelkaMonospacePro";
 			sizeEx = 0.04;
-			lineSpacing = 1;			
+			lineSpacing = 1;	
+			canModify = false; // Can't modify it but can select text		
 		};
 		
 	};

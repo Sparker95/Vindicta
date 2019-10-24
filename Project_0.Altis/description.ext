@@ -96,6 +96,7 @@ class CfgFunctions {
 #include "UI\DialogBase\DialogBase.h"
 #include "UI\InGameMenu\InGameMenu.h"
 #include "UI\TacticalTablet\TacticalTablet.h"
+#include "UI\RadioKeyDialog\RadioKeyDialog.h"
 
 
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
@@ -201,3 +202,6 @@ class Extended_DisplayLoad_EventHandlers {
     };
     */
 };
+
+// Build UI
+#include "UI\BuildUI\BuildUI_Objects.h"

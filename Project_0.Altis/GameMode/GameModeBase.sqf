@@ -151,6 +151,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Create PlayerDatabaseClient
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 
+			// Hide the allowed area markers
+			#ifdef RELEASE_BUILD
+			private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
+			{_x setMarkerAlpha 0;} forEach _allowedAreas;
+			#endif
+
 			T_CALLM("initClientOnly", []);
 		};
 		T_CALLM("postInitAll", []);

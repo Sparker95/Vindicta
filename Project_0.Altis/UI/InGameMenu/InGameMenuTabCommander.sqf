@@ -50,9 +50,17 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 
 		pr _ctrlLocType = T_CALLM1("findControl", "TAB_CMDR_COMBO_LOC_TYPE");
 		pr _row = lbCurSel _ctrlLocType;
+		
+		pr _dialogObj = T_CALLM0("getDialogObject");
+
+		// Ensure that player has enough resources
+		pr _playerBuildRes = CALLSM1("Unit", "getInfantryBuildResources", player);
+		OOP_INFO_1("Player's build resources: %1", _playerBuildRes);
+		if (_playerBuildRes < 20) exitWith {
+			CALLM1(_dialogObj, "setHintText", "You must have at least 20 build resources in your backpack!");
+		};
 
 		// Ensure proper input
-		pr _dialogObj = T_CALLM0("getDialogObject");
 		if (count _locName == 0) exitWith {
 			CALLM1(_dialogObj, "setHintText", "You must specify a proper name");
 		};
@@ -62,12 +70,12 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		};
 
 		// Send data to cmdr at the server
+		// Server might run extra checks
 		pr _locType = _ctrlLocType lbData _row;
 		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
 		pr _args = [clientOwner, getPosWorld player, _locType, _locName];
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
-		
 		CALLM1(_dialogObj, "setHintText", "Creating new location ...");
 	} ENDMETHOD;
 

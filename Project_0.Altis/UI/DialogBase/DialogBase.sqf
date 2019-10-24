@@ -120,6 +120,7 @@ CLASS("DialogBase", "")
 
 		pr _tabobj = T_GETV("currentTabObj");
 		if (_tabobj != "") then {
+			CALLM0(_tabObj, "beforeDelete");
 			DELETE(_tabobj);
 		};
 
@@ -310,6 +311,7 @@ CLASS("DialogBase", "")
 		// Delete old tab
 		pr _tabObj = T_GETV("currentTabObj");
 		if (_tabObj != "") then {
+			CALLM0(_tabObj, "beforeDelete");
 			DELETE(_tabObj);
 		};
 
