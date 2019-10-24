@@ -118,6 +118,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
+			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			CALLM0(_thisObject, "initObjectVariables");
 			CALLM0(_thisObject, "initObjectEventHandlers");
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
@@ -335,6 +336,8 @@ CLASS(UNIT_CLASS_NAME, "");
 							
 						};
 					};
+
+					_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
 
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
