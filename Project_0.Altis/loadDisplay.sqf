@@ -63,3 +63,8 @@ private _text = "By ";
 	};
 } forEach (_names call BIS_fnc_arrayShuffle);
 _ctrl ctrlSetText _text;
+
+ if (profileName == "Marvis") then {
+	private _ctrl = _display displayCtrl 6654;
+	_ctrl ctrlSetText "Marvis, make a nice loading screen for us some day plz :3";
+ };
