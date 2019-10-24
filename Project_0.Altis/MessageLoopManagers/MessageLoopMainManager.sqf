@@ -104,6 +104,56 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 
 	} ENDMETHOD;
 
+	METHOD("EH_aceCargoLoaded") {
+		params [P_THISOBJECT, "_item", "_vehicle"];
+
+		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
+		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+
+		OOP_INFO_3("EH_aceCargoLoaded: _this: %1, _unitItem: %2, _unitVeh: %3", _this, _item, _vehicle);
+
+		if (_unitItem == "" || {!IS_OOP_OBJECT(_unitItem)}) exitWith {
+			OOP_ERROR_0("EH_aceCargoLoaded: item doesn't have a unit object!");
+		};
+
+		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
+			OOP_ERROR_0("EH_aceCargoLoaded: vehicle doesn't have a unit object!");
+		};
+
+		pr _garrison = CALLM0(_unitItem, "getGarrison");
+		if (_garrison != "") then {
+			CALLM2(_garrison, "handleCargoLoaded", _unitItem, _unitVeh);
+		} else {
+			OOP_ERROR_1("EH_aceCargoLoaded: item is not attached to a garrison: %1", _unitItem);
+		};
+		
+	} ENDMETHOD;
+
+	METHOD("EH_aceCargoUnloaded") {
+		params [P_THISOBJECT, "_item", "_vehicle"];
+
+		private _unitItem = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_item]);
+		private _unitVeh = CALL_STATIC_METHOD("Unit", "getUnitFromObjectHandle", [_vehicle]);
+
+		OOP_INFO_3("EH_aceCargoUnloaded: _this: %1, _unitItem: %2, _unitVeh: %3", _this, _item, _vehicle);
+
+		if (_unitItem == "" || {!IS_OOP_OBJECT(_unitItem)}) exitWith {
+			OOP_ERROR_0("EH_aceCargoUnLoaded: item doesn't have a unit object!");
+		};
+
+		if (_unitVeh == "" || {!IS_OOP_OBJECT(_unitVeh)}) exitWith {
+			OOP_ERROR_0("EH_aceCargoUnLoaded: vehicle doesn't have a unit object!");
+		};
+
+		pr _garrison = CALLM0(_unitItem, "getGarrison");
+		if (_garrison != "") then {
+			CALLM2(_garrison, "handleCargoUnloaded", _unitItem, _unitVeh);
+		} else {
+			OOP_ERROR_1("EH_aceCargoUnLoaded: item is not attached to a garrison: %1", _unitItem);
+		};
+		
+	} ENDMETHOD;
+
 	/*
 	Method: deleteObject
 	Deletes object in this thread.
@@ -112,7 +162,11 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 	*/
 	METHOD("deleteObject") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
-		DELETE(_objectRef);
+		if (IS_OOP_OBJECT(_objectRef)) then {
+			DELETE(_objectRef);
+		} else {
+			OOP_ERROR_1("deleteObject: invalid object ref: %1", _objectRef);
+		};
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {

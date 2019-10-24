@@ -39,4 +39,9 @@ CLASS("AIUnit", "AI_GOAP")
 		gMessageLoopGroupAI
 	} ENDMETHOD;
 
+	// Common interface
+	/* virtual */ METHOD("getCargo") {
+		[]
+	} ENDMETHOD;
+
 ENDCLASS;

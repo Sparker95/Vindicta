@@ -433,7 +433,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _loc = T_GETV("location");
 			// Players might be messing with inventories, so we must update our amount of build resources more often
 			pr _locHasPlayers = (_loc != "" && { CALLM0(_loc, "hasPlayers") } );
-			OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
+			//OOP_INFO_1("  hasPlayers: %1", _locHasPlayers);
 			if (T_GETV("outdated") || _locHasPlayers) then {
 				// Update build resources from the actual units
 				// It will cause an update broadcast by garrison server
@@ -1229,6 +1229,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
 		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
  
+		// Move all cargo of this unit too!
+		pr _unitAI = CALLM0(_unit, "getAI");
+		if (_unitAI != "") then {
+			pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
+			{
+				T_CALLM1("addUnit", _x);
+			} forEach _unitCargo;
+		};
+
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
 
@@ -1300,6 +1309,15 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Substract from the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
 		CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+
+		// Remove all cargo of this unit too!
+		pr _unitAI = CALLM0(_unit, "getAI");
+		if (_unitAI != "") then {
+			pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
+			{
+				T_CALLM1("removeUnit", _x);
+			} forEach _unitCargo;
+		};
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonOutdated", _thisObject);
@@ -2242,6 +2260,84 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Move the vehicle into the other garrison
 			CALLM1(_garDest, "addUnit", _unitVeh);
 		};
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	/*
+	Method: handleCargoLoaded
+	Called when someone loads a cargo unit that belongs to this garrison.
+
+	Must be called inside the garrison thread through postMethodAsync, not inside event handler.
+
+	Parameters: _unitCargo, _unitVehicle
+
+	_unitCargo - the cargo item (static gun or cargo box or whatever) which was loaded
+	_unitVehicle - the vehicle unit into which the cargo was loaded
+
+	Returns: nil
+	*/
+
+	METHOD("handleCargoLoaded") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
+
+		ASSERT_OBJECT_CLASS(_unitCargo, "Unit");
+		ASSERT_OBJECT_CLASS(_unitVeh, "Unit");
+
+		OOP_INFO_2("HANDLE CARGO LOADED: %1, %2", _unitCargo, _unitVeh);
+
+		ASSERT_THREAD(_thisObject);
+
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+		};
+
+		// Get garrison of the vehicle into which cargo was loaded
+		pr _garDest = CALLM0(_unitVeh, "getGarrison");
+		if (_garDest == "") then {
+			_garDest = gGarrisonAmbient;
+			OOP_ERROR_2("handleCargoLoaded: vehicle has no garrison: %1, %2", _unitVeh, CALLM0(_unitVeh, "getData"));
+		};
+
+		// Remove the cargo from its group
+		pr _cargoGroup = CALLM0(_unitCargo, "getGroup");
+		if (_cargoGroup != "") then {
+			CALLM1(_cargoGroup, "removeUnit", _unitCargo);
+		};
+
+		// Check garrison of the destination vehicle
+		if (_garDest != _thisObject) then {
+
+			// Move the vehicle into the other garrison
+			CALLM1(_garDest, "addUnit", _unitCargo);
+		};
+
+		// Call destination unit's specific function
+		CALLM1(_unitVeh, "handleCargoLoaded", _unitCargo);
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	METHOD("handleCargoUnloaded") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
+
+		ASSERT_OBJECT_CLASS(_unitCargo, "Unit");
+		ASSERT_OBJECT_CLASS(_unitVeh, "Unit");
+
+		OOP_INFO_2("HANDLE CARGO UNLOADED: %1, %2", _unitCargo, _unitVeh);
+
+		__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+		};
+
+		// Cargo's garrison doesn't need to change when it is unloaded, so we don't really need to do much here
+
+		// Call destination unit's specific function
+		CALLM1(_unitVeh, "handleCargoUnloaded", _unitCargo);
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
