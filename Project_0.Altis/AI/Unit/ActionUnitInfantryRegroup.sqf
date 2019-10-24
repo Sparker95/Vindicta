@@ -21,13 +21,19 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 	METHOD("activate") {
 		params [["_thisObject", "", [""]]];		
 		
+		pr _hO = T_GETV("hO");
+
 		// Handle AI just spawned state
 		pr _AI = T_GETV("AI");
 		if (GETV(_AI, "new")) then {
+
+			// Instantly move the unit into its required formation position
+			pr _pos = getPos (leader group _hO);
+			_hO setPos _pos;
+
 			SETV(_AI, "new", false);
 		};
 
-		pr _hO = T_GETV("hO");
 		
 		// Regroup
 		_hO doFollow (leader _hO);

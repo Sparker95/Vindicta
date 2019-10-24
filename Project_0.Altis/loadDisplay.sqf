@@ -2,7 +2,8 @@ diag_log [">>> testLoadDisplay %1", _this];
 
 params ["_display"];
 
-
+/*
+// Old loading screen code which resizes everything
  _ctrl = _display ctrlCreate ["RscText", -1]; // 52, 63 
  _ctrl ctrlSetPosition [0.2 + random 0.3, 0.2 + random 0.3, 0.8, 0.3]; 
  _ctrl ctrlSetText (format ["Display IDD: %1 %2", ctrlIDD _display, diag_ticktime]);
@@ -44,3 +45,26 @@ params ["_display"];
 	 };
 	 _x ctrlCommit 0;
  } forEach (allControls _display);
+ */
+
+{
+	ctrlDelete _x;
+} forEach (allControls _display);
+
+_display ctrlCreate ["LoadingScreenGroup", -1];
+
+private _ctrl = _display displayCtrl 12366;
+private _names = ["Sparker", "BillW", "Jeroen Not", "Marvis", "Sen", "Dusty", "Sebastian"];
+private _text = "By ";
+{
+	_text = _text + _x;
+	if (_foreachindex < ((count _names) - 1)) then {
+		_text = _text + ", ";
+	};
+} forEach (_names call BIS_fnc_arrayShuffle);
+_ctrl ctrlSetText _text;
+
+ if (profileName == "Marvis") then {
+	private _ctrl = _display displayCtrl 6654;
+	_ctrl ctrlSetText "Marvis, make a nice loading screen for us some day plz :3";
+ };

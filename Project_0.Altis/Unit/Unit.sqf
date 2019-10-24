@@ -23,7 +23,24 @@ Author: Sparker
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
 Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
+Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
+Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
 
+// Add CBA ACE event handler for loading cargo
+#ifndef _SQF_VM
+if (isNil "Unit_aceCargoLoaded_EH") then {
+	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
+	{
+		_this call Unit_fnc_EH_aceCargoLoaded;
+	}] call CBA_fnc_addEventHandler;
+};
+if (isNil "Unit_aceCargoUnloaded_EH") then {
+	Unit_aceCargoUnloaded_EH = ["ace_cargoUnloaded", 
+	{
+		_this call Unit_fnc_EH_aceCargoUnloaded;
+	}] call CBA_fnc_addEventHandler;
+};
+#endif
 
 CLASS(UNIT_CLASS_NAME, "");
 	VARIABLE_ATTR("data", [ATTR_PRIVATE]);
@@ -118,6 +135,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		// Initialize variables, event handlers and other things
 		if (!isNull _hO) then {
+			_hO enableWeaponDisassembly false; // Disable weapon disassmbly
 			CALLM0(_thisObject, "initObjectVariables");
 			CALLM0(_thisObject, "initObjectEventHandlers");
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
@@ -336,6 +354,8 @@ CLASS(UNIT_CLASS_NAME, "");
 						};
 					};
 
+					_objectHandle enableWeaponDisassembly false; // Disable weapon disassmbly
+
 					_data set [UNIT_DATA_ID_OBJECT_HANDLE, _objectHandle];
 					CALLM1(_thisObject, "createAI", "AIUnitVehicle");
 				};
@@ -526,9 +546,12 @@ CLASS(UNIT_CLASS_NAME, "");
 		};
 		
 		// HandleDamage for infantry
-		if (_data select UNIT_DATA_ID_CAT == T_INF) then {
+		diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
+		if (_data select UNIT_DATA_ID_CAT == T_INF && {owner _hO in [0, clientOwner]}) then { // We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
+				_hO removeAllEventHandlers "handleDamage";
 				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
+				diag_log format ["Added damage event handler: %1", _thisObject];
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
@@ -972,6 +995,24 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data set [UNIT_DATA_ID_GROUP, ""];
 	} ENDMETHOD;
 
+	// Some cargo was loaded into this unit
+	METHOD("handleCargoLoaded") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
+		pr _AI = T_CALLM0("getAI");
+		if (_AI != "") then {
+			CALLM1(_AI, "addCargoUnit", _cargoUnit);
+		};
+	} ENDMETHOD;
+
+	// Some cargo was unloaded from this unit
+	METHOD("handleCargoUnloaded") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
+		pr _AI = T_CALLM0("getAI");
+		if (_AI != "") then {
+			CALLM1(_AI, "removeCargoUnit", _cargoUnit);
+		};
+	} ENDMETHOD;
+
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               S T A T I C   M E T H O D S
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1207,7 +1248,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("getBuildResources") {
 		params [["_thisObject", "", [""]]];
 
-		OOP_INFO_0("GET BUILD RESOURCES");
+		//OOP_INFO_0("GET BUILD RESOURCES");
 
 		private _data = GET_VAR(_thisObject, "data");
 
@@ -1308,7 +1349,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	METHOD("_getBuildResourcesSpawned") {
 		params [["_thisObject", "", [""]]];
 
-		OOP_INFO_0("_getBuildResourcesSpawned");
+		//OOP_INFO_0("_getBuildResourcesSpawned");
 
 		private _data = GET_VAR(_thisObject, "data");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
@@ -1319,7 +1360,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 		pr _dataList = _data#UNIT_DATA_ID_LIMITED_ARSENAL;
 		if (count _dataList == 0) then {
-			OOP_INFO_0("  no limited arsenal at this unit");
+			//OOP_INFO_0("  no limited arsenal at this unit");
 
 			// There is no limited arsenal, it's a plain cargo container
 			pr _magCargo = getMagazineCargo _hO;
@@ -1335,17 +1376,17 @@ CLASS(UNIT_CLASS_NAME, "");
 			// There is a limited arsenal
 			_dataList = _hO getVariable "jna_dataList";
 
-			OOP_INFO_1("  there is limited arsenal at this unit: %1", _dataList);
+			//OOP_INFO_1("  there is limited arsenal at this unit: %1", _dataList);
 
 			pr _index = ["vin_build_res_0"] call jn_fnc_arsenal_itemType;
 			_count = ["vin_build_res_0", _dataList#_index] call jn_fnc_arsenal_itemCount;
 
-			OOP_INFO_1("  amount of build res items: %1", _count);
+			//OOP_INFO_1("  amount of build res items: %1", _count);
 
 			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 			pr _return = _count*_buildResPerMag;
 
-			OOP_INFO_1("  return value: %1", _return);
+			//OOP_INFO_1("  return value: %1", _return);
 
 			_return
 		};

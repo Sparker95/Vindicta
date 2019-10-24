@@ -10,6 +10,10 @@ Author: Sparker 12.11.2018
 
 CLASS("AIUnitVehicle", "AI_GOAP")
 
+	// Array with units which are loaded into cargo space of this unit (through ace cargo system currently).
+	// Doesn't list infantry units sitting on cargo infantry seats!! 
+	VARIABLE("cargo");
+
 	// Assigned crew variables
 	VARIABLE("assignedDriver");
 	VARIABLE("assignedCargo"); // Array of [unit, cargo index]
@@ -30,6 +34,8 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 		// Initialize sensors
 		
 		//SETV(_thisObject, "worldState", _ws);
+
+		T_SETV("cargo", []);
 
 		// Set "new" flag
 		T_SETV("new", true);
@@ -75,6 +81,31 @@ CLASS("AIUnitVehicle", "AI_GOAP")
 			} forEach _turrets;
 		};
 		
+	} ENDMETHOD;
+
+	/*
+	Method: addCargoUnit
+	*/
+	METHOD("addCargoUnit") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
+		T_GETV("cargo") pushBackUnique _cargoUnit;
+	} ENDMETHOD;
+
+	/*
+	Method: removeCargoUnit
+	*/
+	METHOD("removeCargoUnit") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_cargoUnit")];
+		pr _cargoUnits = T_GETV("cargo");
+		_cargoUnits deleteAt (_cargoUnits find _cargoUnit);
+	} ENDMETHOD;
+
+	/*
+	Method: getCargo
+	*/
+	/* override */ METHOD("getCargoUnits") {
+		params [P_THISOBJECT];
+		+T_GETV("cargo")
 	} ENDMETHOD;
 	
 	/*

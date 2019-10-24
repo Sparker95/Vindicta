@@ -97,7 +97,7 @@ class BuildObjects
 			class RadioShack : BuildObjectBase {
 				className = "Land_TBox_F";
 				displayName = "Radio Shack";
-				buildResource = 20;
+				buildResource = 100;
 				isRadio = true;
 				description = "Small building with radio equipment. Intercepts enemy radio communications in the range of ~5km, if you have the radio key";
 			};
