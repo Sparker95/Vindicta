@@ -712,6 +712,10 @@ CLASS("AICommander", "AI")
 				// Send data to tablet
 				pr _text = format [_endl + "  Radio cryptokey: %1" + _endl, _radioKey];
 				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
+			} else {
+				// Send data to tablet
+				pr _text = _endl + "  Radio cryptokey: only in military tablets" + _endl;
+				REMOTE_EXEC_CALL_STATIC_METHOD("TacticalTablet", "staticAppendTextDelay", [_text ARG 0.1], _clientOwner, false);
 			};
 		};
 

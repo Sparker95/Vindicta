@@ -259,10 +259,11 @@ CLASS(UNIT_CLASS_NAME, "");
 				_pos = _posATLPrev;
 			};
 
+			private _catID = _data select UNIT_DATA_ID_CAT;
+
 			CRITICAL_SECTION_START
 
 			//Perform object creation
-			private _catID = _data select UNIT_DATA_ID_CAT;
 			switch(_catID) do {
 				case T_INF: {
 					private _groupHandle = CALL_METHOD(_group, "getGroupHandle", []);
@@ -421,7 +422,33 @@ CLASS(UNIT_CLASS_NAME, "");
 			};
 					
 			// Give intel to this unit
-			CALLSM1("UnitIntel", "initUnit", _thisObject)
+
+			switch (_catID) do {
+				case T_INF: {
+					// Leaders get intel tablets
+					if (CALLM0(_group, "getLeader") == _thisObject) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					} else {
+						// todo give intel to some special unit types, like radio specialists, etc...
+						// Some random infantry units get tablets too
+						if (random 10 < 2) then {
+							CALLSM1("UnitIntel", "initUnit", _thisObject);
+						};
+					};
+				};
+				case T_VEH: {
+					// A very little amount of vehicles gets intel
+					if (random 10 < 3) then {
+						CALLSM1("UnitIntel", "initUnit", _thisObject);
+					};
+				};
+				case T_DRONE: {
+					// Don't put intel into drones?
+				};
+				case T_CARGO: {
+					// Don't put intel into cargo boxes?
+				};
+			};
 		} else {
 			OOP_ERROR_0("Already spawned");
 			DUMP_CALLSTACK;

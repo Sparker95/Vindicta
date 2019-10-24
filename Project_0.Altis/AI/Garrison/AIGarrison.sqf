@@ -550,12 +550,19 @@ CLASS("AIGarrison", "AI_GOAP")
 		params [P_THISOBJECT];
 
 		pr _temp = NEW("UnitIntelData", []);
+		pr _gar = T_GETV("agent");
 
 		SETV(_temp, "intelGeneral", +T_GETV("intelGeneral"));
 		SETV(_temp, "intelPersonal", T_GETV("intelPersonal"));
 		SETV(_temp, "knownFriendlyLocations", +T_GETV("knownFriendlyLocations"));
-		SETV(_temp, "radioKey", T_GETV("radioKey"));
-		SETV(_temp, "side", CALLM0(T_GETV("agent"), "getSide"));
+		SETV(_temp, "side", CALLM0(_gar, "getSide"));
+
+		// Only military tablets have the radio key
+		if (CALLM0(_gar, "getFaction") == "military") then {
+			SETV(_temp, "radioKey", T_GETV("radioKey"));
+		} else {
+			SETV(_temp, "radioKey", "");
+		};
 
 		pr _serial = SERIALIZE(_temp);
 		DELETE(_temp);
