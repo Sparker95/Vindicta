@@ -8,7 +8,7 @@ class EditorData
 	toggles=577;
 	class ItemIDProvider
 	{
-		nextID=1640;
+		nextID=1641;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=121;
+		nextID=124;
 	};
 	class Camera
 	{
-		pos[]={6584.0581,495.62076,19534.252};
-		dir[]={0.56930423,-0.59128255,-0.57122254};
-		up[]={0.41740036,0.80645859,-0.41880685};
-		aside[]={-0.70830053,-2.552988e-007,-0.70592207};
+		pos[]={21665.961,59.352112,17615.449};
+		dir[]={-0.54511905,-0.2119509,-0.81117988};
+		up[]={-0.11825013,0.97726703,-0.1759636};
+		aside[]={-0.83003348,-1.2691598e-006,0.55778813};
 	};
 };
 binarizationWanted=0;
@@ -404,7 +404,7 @@ class CustomAttributes
 							"SCALAR"
 						};
 					};
-					value=1;
+					value=0;
 				};
 			};
 		};
@@ -5942,8 +5942,8 @@ class Mission
 			dataType="Logic";
 			class PositionInfo
 			{
-				position[]={23612,98.464867,21104};
-				angles[]={0.3372674,0.022514746,0.20889845};
+				position[]={23551.908,91.237991,21116.432};
+				angles[]={0.059927464,0.022514746,6.253859};
 			};
 			areaSize[]={212.89999,0,134.01601};
 			areaIsRectangle=1;
