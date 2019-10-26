@@ -7,15 +7,15 @@ class ClientMapUI
 	movingEnable = true;
 	moving = true;
 	canDrag = true;
-	
+
 	class ControlsBackground
 	{
-		
+
 	};
 	class Controls
 	{
-		#include "Controls\IntelPanel.h"
-		//#include "Controls\PlayerList.h"
+		#include "Controls\IntelPanelUI.h"
+		#include "Controls\ButtonPanelUI.h"
 	};
 };
 

@@ -97,7 +97,7 @@ class MUI_BG_TRANSPARENT : MUI_BASE
 {
 	type = CT_STATIC;
 	sizeEx = MUI_TXT_SIZE_M;
-	//colorBackground[] = MUIC_TRANSPARENT;
+	colorBackground[] = MUIC_TRANSPARENT;
 };
 
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT);
