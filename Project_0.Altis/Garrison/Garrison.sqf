@@ -417,6 +417,11 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		//OOP_INFO_0("PROCESS");
 
+		// 
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+		};
+
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
 			T_CALLM("updateSpawnState", []);
