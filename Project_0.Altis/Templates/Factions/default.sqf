@@ -82,6 +82,7 @@ _drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
 //==== Cargo ====
 _cargo = [];
 
+// Note that we have increased their capacity through the addon, other boxes are going to have reduced capacity
 _cargo set [T_CARGO_default,	["I_supplyCrate_F"]];
 _cargo set [T_CARGO_box_small,	["Box_Syndicate_Ammo_F"]];
 _cargo set [T_CARGO_box_medium,	["I_supplyCrate_F"]];
