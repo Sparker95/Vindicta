@@ -52,7 +52,7 @@
 #define TIME_SEEN 5									// Time it takes, in seconds, for player unit to go from "seen" to "unseen"
 #define TIME_HOSTILITY 3							// Time in seconds player unit is overt after a hostile action
 #define TIME_UNSEEN_WANTED_EXIT -1200				// Time in seconds it takes for player unit to be unseen before going from WANTED state back to UNDERCOVER state
-#define WANTED_CIRCLE_RADIUS 500					// Diameter of wanted state marker. Player must be half this value from the marker to leave WANTED state.
+#define WANTED_CIRCLE_RADIUS 800					// Diameter of wanted state marker. Player must be half this value from the marker to leave WANTED state.
 
 /* 
 	Player gains some camouflage for being prone, crouching, and for wearing a ghillie suit. 
