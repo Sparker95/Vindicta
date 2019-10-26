@@ -273,8 +273,25 @@ CLASS(UNIT_CLASS_NAME, "");
 			pr _dirAndUpPrev = _data#UNIT_DATA_ID_VECTOR_DIR_UP;
 			pr _locPrev = _data#UNIT_DATA_ID_LOCATION;
 			if (_spawnAtPrevPos && _locPrev != "") then {
-				OOP_INFO_3("  spawning at prev location: %1, %2, %3", _posATLPrev, _dirAndUpPrev, _locPrev);
-				_pos = _posATLPrev;
+				OOP_INFO_3("  Trying to spawn at prev location: %1, %2, %3", _posATLPrev, _dirAndUpPrev, _locPrev);
+
+				// Ensure that position is safe
+				pr _vectorDir = _dirAndUpPrev#0;
+				pr _dirToCheck = (_vectorDir#0) atan2 (_vectorDir#1);
+
+				pr _prevPosSafe = CALLSM3("Location", "isPosSafe", _posATLPrev, _dirToCheck, _className);
+				if (_prevPosSafe) then {
+					_pos = _posATLPrev;
+				} else {
+					// Fall back to getting a valid spawn position from our location
+					private _unitData = T_CALLM0("getMainData");
+					private _args = _unitData + [0];
+					private _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+					_posAndDir params ["_pos0", "_dir0"];
+					_pos = _pos0;
+					_dir = _dir0;
+					_spawnAtPrevPos = false;
+				};
 			};
 
 			private _catID = _data select UNIT_DATA_ID_CAT;
@@ -343,7 +360,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 					[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
 						params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
-						sleep 1;
+						sleep 2;
 						_objectHandle allowDamage true;
 						// If it survived spawning
 						if (alive _objectHandle) then {
@@ -391,7 +408,7 @@ CLASS(UNIT_CLASS_NAME, "");
 
 					[_thisObject, _objectHandle, _group, _spawnCheckEv, _data] spawn {
 						params ["_thisObject", "_objectHandle", "_group", "_spawnCheckEv", "_data"];
-						sleep 1;
+						sleep 2;
 						_objectHandle allowDamage true;
 						// If it survived spawning
 						if (alive _objectHandle) then {
