@@ -691,7 +691,14 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
 			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
-			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)];
+			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)]; // Backpacks
+
+			// Add some maps and radios for non-civilian units
+			if (CALLM0(_data#UNIT_DATA_ID_GARRISON, "getSide") != CIVILIAN) then {
+				{
+					_hO addItemCargoGlobal [_x, 4 + ( ceil random 10)];
+				} forEach ["ItemMap", "ItemCompass", "ItemRadio" ];
+			};
 
 			// Add vests
 			pr _nVests = ceil (0.5*_nGuns + (random (0.5*_nGuns)));
