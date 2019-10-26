@@ -44,6 +44,7 @@ _createControlFromConfig = {
 	pr _parentName = configName _cfgParent;
 	pr _idc = getNumber (_cfg >> "idc");
 	pr _ctrl = (findDisplay _idd) ctrlCreate [_parentName, _idc];
+	_ctrl setVariable ["_trueClassName", configName _cfg];
 	diag_log format ["[ui_fnc_createControlsFromConfig] Created control: %1", _ctrl];
 
 	// Apply properties

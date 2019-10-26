@@ -2,7 +2,7 @@
 
 class CMUI_LOCP_LISTBOX : MUI_LISTNBOX {
 
-	IDC = -1; 
+	idc = -1; 
 	x = safeZoneX + safeZoneW * 0.845; 
 	y = safeZoneY + safeZoneH * 0.093; 
 	w = safeZoneW * 0.148; 
@@ -12,7 +12,7 @@ class CMUI_LOCP_LISTBOX : MUI_LISTNBOX {
 
 class CMUI_LOCP_FILTERTXT : MUI_BG_BLACKSOLID {
 
-	IDC = -1; 
+	idc = -1; 
 	x = safeZoneX + safeZoneW * 0.845; 
 	y = safeZoneY + safeZoneH * 0.068; 
 	w = safeZoneW * 0.054; 
@@ -26,7 +26,7 @@ class CMUI_LOCP_FILTERTXT : MUI_BG_BLACKSOLID {
 
 class CMUI_LOCP_FILTER : MUI_COMBOBOX {
 
-	IDC = -1; 
+	idc = -1; 
 	x = safeZoneX + safeZoneW * 0.9; 
 	y = safeZoneY + safeZoneH * 0.068; 
 	w = safeZoneW * 0.093; 
@@ -36,7 +36,7 @@ class CMUI_LOCP_FILTER : MUI_COMBOBOX {
 
 class CMUI_LOCP_HEADLINE : MUI_HEADLINE {
 
-	IDC = -1; 
+	idc = -1; 
 	x = safeZoneX + safeZoneW * 0.845; 
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.148; 
@@ -48,7 +48,7 @@ class CMUI_LOCP_HEADLINE : MUI_HEADLINE {
 
 class CMUI_INTEL_MINIMIZE : RSCPICTURE {
 
-	IDC = -1; 
+	idc = -1; 
 	x = safeZoneX + safeZoneW * 0.981; 
 	y = safeZoneY + safeZoneH * 0.045; 
 	w = safeZoneW * 0.010; 

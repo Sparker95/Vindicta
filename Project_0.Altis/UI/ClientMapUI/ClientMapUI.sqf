@@ -1007,7 +1007,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		_lnb lnbSetColumnsPos [0, 0.2, 0.7];
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
 
-		/*
+		
 		// Fill dummy data for testing
 		_allIntels = [];
 		pr _i = 0;
@@ -1026,7 +1026,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			_allIntels pushBack _intel;
 			_i = _i + 1;m
 		};
-		*/
+		
 
 		// forEach _allIntels;
 		{
