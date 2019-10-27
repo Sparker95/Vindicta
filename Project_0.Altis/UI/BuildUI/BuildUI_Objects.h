@@ -58,6 +58,7 @@ class BuildObjects
 
 		class CatStorage {
 			displayName = "Storage";
+			// Note that we have increased capacity of these boxes through the addon 
 			class Box0 : BuildObjectBase {
 				className = "Box_FIA_Support_F";
 				buildResource = 20;

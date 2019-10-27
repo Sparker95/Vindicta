@@ -8,7 +8,7 @@ class CfgMagazines
 		mass=0;
 		scope=2;
 		displayName="Military documents";
-		descriptionShort = "A few military documents. Pick it up and double-click to study the intel.";
+		descriptionShort = "A few military documents. Pick it up to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Document_01_F.jpg";
 		model = "\A3\Structures_F_EPC\Items\Documents\Document_01_F.p3d";
 	};
@@ -18,7 +18,7 @@ class CfgMagazines
 		mass=0;
 		scope=2;
 		displayName="Military documents";
-		descriptionShort = "Some military documents. Pick it up and double-click to study the intel.";
+		descriptionShort = "Some military documents. Pick it up to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_FilePhotos_F.jpg";
 		model = "\A3\Structures_F\Items\Documents\FilePhotos_F.p3d";
 	};
@@ -28,7 +28,7 @@ class CfgMagazines
 		mass = 0.1;
 		scope=2;
 		displayName="Tactical tablet";
-		descriptionShort = "A military tactical tablet. Pick it up and double-click to study the intel.";
+		descriptionShort = "A military tactical tablet. Pick it up to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Tablet_02_F.jpg";
 		model = "\A3\Props_F_Exp_A\Military\Equipment\Tablet_02_F.p3d";
 	};
@@ -38,7 +38,7 @@ class CfgMagazines
 		mass = 0.1;
 		scope=2;
 		displayName="Personal tablet";
-		descriptionShort = "A personal tablet. Pick it up and double-click to study the intel";
+		descriptionShort = "A personal tablet. Pick it up to study the intel";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Tablet_01_F.jpg";
 		model = "\A3\Structures_F_Heli\Items\Electronics\Tablet_01_F.p3d";
 	};

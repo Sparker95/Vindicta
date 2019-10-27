@@ -164,4 +164,19 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		nil
 	} ENDMETHOD;
 
+
+	METHOD("onGarrisonSpawned") {
+		params ["_thisObject"];
+
+		// Reset action state so that it reactivates
+		T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
+	
+	METHOD("onGarrisonDespawned") {
+		params ["_thisObject"];
+		
+		// Reset action state so that it reactivates
+		T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
+
 ENDCLASS;

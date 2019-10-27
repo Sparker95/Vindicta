@@ -95,10 +95,10 @@ while {_subCatID < _catSize} do {
 			{ if (_x != "") then {_handgunWeaponItems pushBackUnique _x} } forEach _items;
 		};
 
-		// Process items
+		// Process items, except for map, watch, etc
 		{
 			_items pushBackUnique _x;
-		} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass" /*, "ItemRadio"*/ ]);
+		} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
 
 		// Process vest
 		pr _vest = vest _hO;

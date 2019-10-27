@@ -1,6 +1,7 @@
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
+#define OOP_DEBUG
 #define OFSTREAM_FILE "Intel.rpt"
 #include "..\OOP_Light\OOP_Light.h"
 #include "InventoryItems.hpp"
@@ -91,13 +92,16 @@ CLASS("PersonalInventory", "")
 			pr _index = _data findIf {_x#__ID_CLASS_NAME == _className};
 
 			if (_index != -1) then {
+				// Set or reset value
 				(_data#_index#__ID_DATA) set [_ID, _inventoryData];
+
+				//OOP_DEBUG_MSG("Set data for id: %1, value: %2", [_ID ARG _inventoryData]);
+
+				// Set or reset bitfield
+				(_data#_index#__ID_BITFIELD) set [_ID, !isNil "_inventoryData"];
 
 				// Return this ID to the free ID pool if we have set data to nil
 				if (isNil "_inventoryData") then {
-					// Reset bitfield
-					(_data#_index#__ID_BITFIELD) set [_ID, false];
-
 					// Decrease the counter
 					pr _counter = _data#_index#__ID_COUNTER;
 					(_data#_index) set [__ID_COUNTER, _counter - 1];
@@ -219,3 +223,44 @@ CLASS("PersonalInventory", "")
 	} ENDMETHOD;
 
 ENDCLASS;
+
+#ifdef _SQF_VM
+
+["PersonalInventory_new", {
+	gInv = NEW("PersonalInventory", []);
+	
+	private _class = OBJECT_PARENT_CLASS_STR(gInv);
+	["Object exists", (!isNil "_class")] call test_Assert;
+}] call test_AddTest;
+
+["PersonalInventory_getClassIDs", {
+	gInv = NEW("PersonalInventory", []);
+	
+	private _class = OBJECT_PARENT_CLASS_STR(gInv);
+	
+	private _IDs = CALLM2(gInv, "getInventoryClassIDs", "vin_tablet_0", 10);
+	//diag_log format ["Returned class IDs: %1", _IDs];
+	["Return enough IDs", count _IDs == 10] call test_Assert;
+}] call test_AddTest;
+
+["PersonalInventory_setAndGet", {
+	gInv = NEW("PersonalInventory", []);
+	
+	// "vin_tablet_0"
+	private _value = 123.456;
+	CALLM3(gInv, "setInventoryData", "vin_tablet_0", 4, _value);
+	private _dataAndExists = CALLM2(gInv, "getInventoryData", "vin_tablet_0", 4);
+	//diag_log format ["Returned value: %1", _dataAndExists];
+	["Return value exists", _dataAndExists#1] call test_Assert;
+	["Set and return values equal", _value == _dataAndExists#0] call test_Assert;
+
+	// Now try to erase it
+	CALLM3(gInv, "setInventoryData", "vin_tablet_0", 4, nil);
+	private _dataAndExists = CALLM2(gInv, "getInventoryData", "vin_tablet_0", 4);
+	["Return must not exist after erasure", !(_dataAndExists#1)] call test_Assert;
+
+}] call test_AddTest;
+
+
+
+#endif

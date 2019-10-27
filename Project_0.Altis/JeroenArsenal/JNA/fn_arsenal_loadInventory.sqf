@@ -147,8 +147,10 @@ removeBackpack player;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  ADD
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pr _availableItems = [_dataList, _arrayPlaced] call _addArrays;
+pr _itemCounts =+ _availableItems;
 
 //TODO add member only stuff
+// Let's not add it maybe? Not sure if we need that.
 /*
 pr _isMember = true;
 {
@@ -178,20 +180,20 @@ pr _assignedItems = ((_inventory select 9) + [_inventory select 3] + [_inventory
 	} else {
 
 		//TFAR fix
-		pr   = getText(configfile >> "CfgWeapons" >> _item >> "tf_parent");
+		pr _radioName = getText(configfile >> "CfgWeapons" >> _item >> "tf_parent");
 		if!(_radioName isEqualTo "")then{
 			_item =_radioName;
 		};
 
 		call {
-			if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
+			if ([_item, _itemCounts select _index] call jn_fnc_arsenal_itemCount == -1) exitWith {
 				if(_item isEqualTo (_inventory select 5) )then{
 					player addweapon _item;
 				}else{
 					player linkItem _item;
 				};
 			};
-			if ([_availableItems select _index, _item] call jn_fnc_arsenal_itemCount > 0) then {
+			if ([_item, _availableItems select _index] call jn_fnc_arsenal_itemCount > 0) then {
 				if(_item isEqualTo (_inventory select 5) )then{
 					player addweapon _item;
 				}else{
@@ -223,11 +225,11 @@ pr _weapons = [_inventory select 6,_inventory select 7,_inventory select 8];
 
 		//add ammo to backpack, which need to be loaded in the gun.
 		call {
-			if ([_itemCounts select _indexMag, _itemMag] call jn_fnc_arsenal_itemCount == -1) exitWith {
+			if ([_itemMag, _itemCounts select _indexMag] call jn_fnc_arsenal_itemCount == -1) exitWith {
 				player addMagazine [_itemMag, _amountMag];
 			};
 
-			pr _amountMagAvailable = [_availableItems select _indexMag, _itemMag] call jn_fnc_arsenal_itemCount;
+			pr _amountMagAvailable = [_itemMag, _availableItems select _indexMag] call jn_fnc_arsenal_itemCount;
 			if (_amountMagAvailable > 0) then {
 				if (_amountMagAvailable < _amountMag) then {
 					_arrayMissing = [_arrayMissing,[_itemMag,_amountMag]] call jn_fnc_common_array_add;
@@ -243,11 +245,11 @@ pr _weapons = [_inventory select 6,_inventory select 7,_inventory select 8];
 
 		//adding the gun
 		call {
-			if ((_index != -1) AND ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1)) exitWith {
+			if ((_index != -1) AND ([_item, _itemCounts select _index] call jn_fnc_arsenal_itemCount == -1)) exitWith {
 				player addWeapon _item;
 			};
 
-			if ((_index != -1) AND {[_availableItems select _index, _item] call jn_fnc_arsenal_itemCount > 0}) then {
+			if ((_index != -1) AND {[_item, _availableItems select _index] call jn_fnc_arsenal_itemCount > 0}) then {
 				player addWeapon _item;
 				[_arrayTaken,_index,_item,_amount] call _addToArray;
 				[_availableItems,_index,_item,_amount] call _removeFromArray;
@@ -265,7 +267,7 @@ pr _weapons = [_inventory select 6,_inventory select 7,_inventory select 8];
 
 				call {
 
-					if ((_indexAcc != -1) AND ([_itemCounts select _indexAcc, _itemAcc] call jn_fnc_arsenal_itemCount == -1)) exitWith {
+					if ((_indexAcc != -1) AND ([_itemAcc, _itemCounts select _indexAcc] call jn_fnc_arsenal_itemCount == -1)) exitWith {
 						switch _index do{
 							case IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON:{player addPrimaryWeaponItem _itemAcc;};
 							case IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON:{player addSecondaryWeaponItem _itemAcc;};
@@ -273,7 +275,7 @@ pr _weapons = [_inventory select 6,_inventory select 7,_inventory select 8];
 						};
 					};
 
-					if ((_indexAcc != -1) AND {[_availableItems select _indexAcc, _itemAcc] call jn_fnc_arsenal_itemCount != 0}) then {
+					if ((_indexAcc != -1) AND {[_itemAcc, _availableItems select _indexAcc] call jn_fnc_arsenal_itemCount != 0}) then {
 						switch _index do{
 							case IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON:{player addPrimaryWeaponItem _itemAcc;};
 							case IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON:{player addSecondaryWeaponItem _itemAcc;};
@@ -319,11 +321,11 @@ pr _invCallArray = [
 		] select _foreachindex;
 
 		call {
-			if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
+			if ([_item, _itemCounts select _index] call jn_fnc_arsenal_itemCount == -1) exitWith {
 				  _item call (_invCallArray select _foreachindex);
 			};
 
-			if ([_availableItems select _index, _item] call jn_fnc_arsenal_itemCount > 0) then {
+			if ([_item, _availableItems select _index] call jn_fnc_arsenal_itemCount > 0) then {
 				_item call (_invCallArray select _foreachindex);
 				[_arrayTaken,_index,_item,_amount] call _addToArray;
 				[_availableItems,_index,_item,_amount] call _removeFromArray;
@@ -354,11 +356,11 @@ pr _invCallArray = [
 			pr _amount = 1; // we will never know the ammo count in the magazines anymore :c
 			_arrayMissing = [_arrayMissing,[_item,_amount]] call jn_fnc_common_array_add;
 		} else {
-			pr _amountAvailable = [_availableItems select _index, _item] call jn_fnc_arsenal_itemCount;
+			pr _amountAvailable = [_item, _availableItems select _index] call jn_fnc_arsenal_itemCount;
 			if (_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL) then {
 				pr _amount = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
 				call {
-					if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
+					if ([_item, _itemCounts select _index] call jn_fnc_arsenal_itemCount == -1) exitWith {
 						_container addMagazineAmmoCargo [_item,1, _amount];
 					};
 
@@ -375,7 +377,7 @@ pr _invCallArray = [
 			} else {
 				pr _amount = 1;
 				call {
-					if ([_itemCounts select _index, _item] call jn_fnc_arsenal_itemCount == -1) exitWith {
+					if ([_item, _itemCounts select _index] call jn_fnc_arsenal_itemCount == -1) exitWith {
 						_container addItemCargo [_item, 1];
 					};
 
