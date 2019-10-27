@@ -150,6 +150,18 @@ location_bt_police =
 	"Land_i_House_Big_01_V3_F"
 ];
 
+location_police_decorations =
+[
+	[
+		["Land_i_Shop_01_V2_F", "Land_u_Shop_01_V1_F"],
+		[[4.14646,259.002,1.82516,90],[4.67004,216.463,1.82516,0]]
+	],
+	[
+		["Land_i_Shop_01_V2_F", "Land_u_Shop_01_V1_F"],
+		[[4.14646,259.002,1.82516,90],[4.67004,216.463,1.82516,0]]
+	]
+];
+
 // Buildings which add radio functionality to the location
 location_bt_radio =
 [
@@ -180,4 +192,58 @@ _zRel = _oPos#2 - _bPos#2;
 _distRel = _bPos distance2D _oPos;
 
 [_distRel, _dirRel, _zRel]
+*/
+
+/*
+// Same code as above, also gives the direction of object relative to direction of house
+_b = gBuilding;
+_o = cursorObject;
+
+_bPos = getPosATL _b;
+_oPos = getPosATL _o;
+
+_dirRel = (_bPos getDir _oPos) - (direction _b);
+_zRel = _oPos#2 - _bPos#2;
+_distRel = _bPos distance2D _oPos;
+
+_objDir = (direction _o) - (direction _b);
+
+[_distRel, _dirRel, _zRel, _objDir]
+*/
+
+
+/*
+// Code to export texture offsets right from the editor
+// Must select house and texture objects
+
+_objects = get3DENSelected "object";
+_house = _objects select {_x isKindOf "House"} select 0;
+_textures = _objects select {_x isKindOf "UserTexture1m_F"};
+
+_arrayExport = []; // dist, posDir, zrel, dir
+
+{
+_b = _house; 
+_o = _x; 
+ 
+_bPos = getPosATL _b; 
+_oPos = getPosATL _o; 
+ 
+_dirRel = (_bPos getDir _oPos) - (direction _b); 
+_zRel = _oPos#2 - _bPos#2; 
+_distRel = _bPos distance2D _oPos; 
+ 
+_objDir = (direction _o) - (direction _b); 
+ 
+_arrayExport pushBack [_distRel, _dirRel, _zRel, round _objDir];
+} forEach _textures;
+
+_arrayExport
+*/
+
+
+
+/*
+//Code to get class names of all selected eden objects
+(get3DENSelected "object") apply {typeof _x}
 */
