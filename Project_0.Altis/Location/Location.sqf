@@ -39,7 +39,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("garrisons");
 
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
-	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
+	VARIABLE("border"); // [center, a, b, angle, isRectangle, c]
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
 	VARIABLE("useParentPatrolWaypoints"); // If true then use the parents patrol waypoints instead
 	VARIABLE("allowedAreas"); // Array with allowed areas
@@ -493,6 +493,20 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("getName") {
 		params [P_THISOBJECT];
 		T_GETV("name")
+	} ENDMETHOD;
+
+	/*
+	Method: getDisplayName
+
+	Returns a display name to show in UIs. Format is: <type> <name>, like "Camp Potato".
+	*/
+	METHOD("getDisplayName") {
+		params [P_THISOBJECT];
+
+		pr _name = T_GETV("name");
+		pr _type = T_GETV("type");
+		pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+		format ["%1 %2", _typeStr, _name];
 	} ENDMETHOD;
 	
 	/*

@@ -19,7 +19,7 @@ class TAB_CMDR
 			text = "";
 			
 		};
-		class Control77110713 : MUI_BASE 
+		class TAB_CMDR_STATIC_CREATE_A_LOCATION : MUI_BASE 
 		{
 			type = 0;
 			idc = -1;
@@ -44,7 +44,7 @@ class TAB_CMDR
 			idc = -1;
 			x = 0.09000001;
 			y = 0.11000001;
-			w = 0.26;
+			w = 0.41000004;
 			h = 0.04;
 			style = 16;
 			arrowEmpty = "\A3\ui_f\data\GUI\RscCommon\RscCombo\arrow_combo_ca.paa";
@@ -78,7 +78,7 @@ class TAB_CMDR
 			idc = -1;
 			x = 0.09000001;
 			y = 0.06000002;
-			w = 0.26;
+			w = 0.41000007;
 			h = 0.04;
 			style = 0;
 			text = "Noname";
@@ -125,8 +125,8 @@ class TAB_CMDR
 		{
 			type = 1;
 			idc = -1;
-			x = 0.36000025;
-			y = 0.06000018;
+			x = 0.54000028;
+			y = 0.09000019;
 			w = 0.13000001;
 			h = 0.09000002;
 			text = "Create";
@@ -142,6 +142,51 @@ class TAB_CMDR
 			soundEnter[] = {"\A3\ui_f\data\sound\RscButton\soundEnter",0.09,1.0};
 			soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1.0};
 			soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1.0};
+			
+		};
+		class TAB_CMDR_STATIC_HELP : MUI_BASE 
+		{
+			type = 0;
+			idc = -1;
+			x = 0.01;
+			y = 0.21000008;
+			w = 0.68000039;
+			h = 0.08;
+			style = 16+0;
+			text = "Construction resources must be in your backpack or in the vehicle you are looking at";
+			colorBackground[] = {0.4,0.6,0.4,1};
+			font = "PuristaMedium";
+			sizeEx = 0.04;
+			
+		};
+		class TAB_CMDR_STATIC_BUILD_RESOURCES : MUI_BASE 
+		{
+			type = 0;
+			idc = -1;
+			x = 0.09000001;
+			y = 0.16000005;
+			w = 0.41000007;
+			h = 0.04;
+			style = 0;
+			text = "10 build resources";
+			colorBackground[] = {0.4,0.6,0.4,1};
+			font = "PuristaMedium";
+			sizeEx = 0.04;
+			
+		};
+		class TAB_CMDR_STATIC_2 : MUI_BASE 
+		{
+			type = 0;
+			idc = -1;
+			x = 0.01;
+			y = 0.16000005;
+			w = 0.07;
+			h = 0.04;
+			style = 0;
+			text = "Cost:";
+			colorBackground[] = {0.4,0.6,0.4,1};
+			font = "PuristaMedium";
+			sizeEx = 0.04;
 			
 		};
 		

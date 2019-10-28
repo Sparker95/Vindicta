@@ -53,6 +53,7 @@ CLASS("DialogTabBase", "")
 	// Derived classes must override this!
 	// Create your tab control here (most likely group control)
 	// Must return the handle of the created control
+	// ! ! ! ! Note that createControl is called before the constructor of the inherited class ! ! ! ! !
 	METHOD("createControl") {
 		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
 

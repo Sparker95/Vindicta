@@ -22,7 +22,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 		};
 		*/
 
-		class TAB_CMDR_STATIC_CREATE_LOCATION : MUI_BASE_ABS 
+		class TAB_CMDR_STATIC_CREATE_A_LOCATION : MUI_BASE_ABS 
 		{
 			idc = -1;
 			x = 0.01000001;
@@ -38,7 +38,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 		{
 			x = 0.09000001;
 			y = 0.11000001;
-			w = 0.26;
+			w = 0.41000004;
 			h = 0.04;
 			maxHistoryDelay = 0;	
 		};
@@ -47,7 +47,7 @@ class TAB_CMDR : MUI_GROUP_ABS
 			idc = -1;
 			x = 0.09000001;
 			y = 0.06000002;
-			w = 0.26;
+			w = 0.41000007;
 			h = 0.04;
 			style = 0;
 			text = "Noname";
@@ -82,13 +82,47 @@ class TAB_CMDR : MUI_GROUP_ABS
 		{
 			type = 1;
 			idc = -1;
-			x = 0.36000025;
-			y = 0.06000018;
+			x = 0.54000028;
+			y = 0.09000019;
 			w = 0.13000001;
 			h = 0.09000002;
 			text = "Create";			
 		};
-		
+		class TAB_CMDR_STATIC_2 : MUI_BASE_ABS
+		{
+			type = 0;
+			idc = -1;
+			x = 0.01;
+			y = 0.16000005;
+			w = 0.07;
+			h = 0.04;
+			font = "PuristaMedium";
+			text = "Cost:";		
+		};
+		class TAB_CMDR_STATIC_BUILD_RESOURCES : MUI_BASE_ABS 
+		{
+			type = 0;
+			idc = -1;
+			x = 0.09000001;
+			y = 0.16000005;
+			w = 0.41000007;
+			h = 0.04;
+			style = 0; // Left
+			text = "666 build resources";			
+		};
+
+		class TAB_CMDR_STATIC_HELP : MUI_BASE_ABS
+		{
+			type = 0;
+			idc = -1;
+			x = 0.01;
+			y = 0.21000008;
+			w = 0.68000039;
+			h = 0.08;
+			style = 16+0+0x200; // multi line, no rect
+			text = "Build resources must be in your backpack or in the vehicle you are looking at";
+			lineSpacing = 1;	
+		};
 	};
 	
 };

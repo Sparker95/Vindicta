@@ -1387,15 +1387,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			//OOP_INFO_0("  no limited arsenal at this unit");
 
 			// There is no limited arsenal, it's a plain cargo container
-			pr _magCargo = getMagazineCargo _hO;
-			pr _index = _magCargo#0 find "vin_build_res_0";
-			if (_index != -1) then {
-				pr _amount = _magCargo#1#_index;
-				pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
-				_amount * _buildResPerMag
-			} else {
-				0
-			};
+			CALLSM1("Unit", "getVehicleBuildResources", _hO)
 		} else {
 			// There is a limited arsenal
 			_dataList = _hO getVariable "jna_dataList";
@@ -1424,7 +1416,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	} ENDMETHOD;
 
 	STATIC_METHOD("getInfantryBuildResources") {
-		params [P_THISOBJECT, P_OBJECT("_hO")];
+		params [P_THISCLASS, P_OBJECT("_hO")];
 		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
 		pr _nItems = {_x == "vin_build_res_0"} count _items;
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
@@ -1432,7 +1424,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	} ENDMETHOD;
 
 	STATIC_METHOD("removeInfantryBuildResources") {
-		params [P_THISOBJECT, P_OBJECT("_hO"), P_NUMBER("_value")];
+		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		pr _nItemsToRemove = round (_value / _buildResPerMag);
 		pr _i = 0;
@@ -1440,6 +1432,32 @@ CLASS(UNIT_CLASS_NAME, "");
 			_hO removeMagazine "vin_build_res_0";
 			_i = _i + 1;
 		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("getVehicleBuildResources") {
+		params [P_THISCLASS, P_OBJECT("_hO")];
+
+		pr _magCargo = getMagazineCargo _hO;
+		pr _index = _magCargo#0 find "vin_build_res_0";
+		if (_index != -1) then {
+			pr _amount = _magCargo#1#_index;
+			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+			_amount * _buildResPerMag
+		} else {
+			0
+		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("removeVehicleBuildResources") {
+		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
+
+		// Bail if negative number is passed
+		if (_value < 0) exitWith {};
+
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _nItemsToRemove = ceil (_value/_buildResPerMag);
+
+		[_hO, "vin_build_res_0", _nItemsToRemove] call CBA_fnc_removeMagazineCargo;
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

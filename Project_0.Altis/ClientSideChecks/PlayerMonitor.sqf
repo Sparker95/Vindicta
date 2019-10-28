@@ -185,9 +185,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		pr _garRecord = T_GETV("currentGarrisonRecord");
 		if (_loc != "" && _garRecord != "") then {
 			// Set current location text
-			pr _type = CALLM0(_loc, "getType");
-			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-			pr _text = format ["%1 %2", _typeStr, CALLM0(_loc, "getName")];
+			pr _text = CALLM0(_loc, "getDisplayName");
 			CALLM1(gInGameUI, "setLocationText", _text);
 
 			// Check if the location has any garrisons we know about
