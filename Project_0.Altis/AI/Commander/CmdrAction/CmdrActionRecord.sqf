@@ -63,7 +63,7 @@ CLASS("DirectedCmdrActionRecord", "CmdrActionRecord")
 		pr _gar = T_GETV("dstGarRef");
 		if (!isNil "_gar") exitWith {
 			pr _garRecord = CALLM1(gGarrisonDBClient, "getGarrisonRecord", _gar);
-			if (_garRecord == "") then {
+			if (IS_NULL_OBJECT(_garRecord)) then {
 				OOP_ERROR_1("Can't resolve position of target garrison: %1", _gar);
 				[_thisObject] call OOP_dumpAllVariables;
 				[]

@@ -57,6 +57,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
 
 	VARIABLE("hasPlayers"); // Bool, means that there are players at this location, updated at each process call
+	VARIABLE("hasPlayerSides"); // Array of sides of players at this location
 
 	VARIABLE("buildingsOpen"); // Handles of buildings which can be entered (have buildingPos)
 	VARIABLE("objects"); // Handles of objects which can't be entered and other objects
@@ -104,6 +105,7 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
 		T_SETV("gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
+		T_SETV("hasPlayerSides", []);
 
 		T_SETV("buildingsOpen", []);
 		T_SETV("objects", []);
@@ -359,6 +361,17 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("hasPlayers") {
 		params [P_THISOBJECT];
 		T_GETV("hasPlayers")
+	} ENDMETHOD;
+
+	/*
+	Method: getPlayerSides
+	Returns array of sides of players within this location.
+
+	Returns: Bool
+	*/
+	METHOD("getPlayerSides") {
+		params [P_THISOBJECT];
+		T_GETV("hasPlayerSides")
 	} ENDMETHOD;
 
 	// |               G E T   P A T R O L   W A Y P O I N T S

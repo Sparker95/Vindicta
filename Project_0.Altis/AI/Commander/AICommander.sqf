@@ -199,7 +199,7 @@ CLASS("AICommander", "AI")
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
-		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {CALLM0(_x, "getLocation") == ""} });
+		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -462,7 +462,7 @@ CLASS("AICommander", "AI")
 		
 		// Set side
 		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
-			if (_gar != "") then {
+			if (!IS_NULL_OBJECT(_gar)) then {
 				SETV(_value, "side", CALLM0(_gar, "getSide"));
 			} else {
 				SETV(_value, "side", CLD_SIDE_UNKNOWN);
@@ -474,7 +474,7 @@ CLASS("AICommander", "AI")
 		// Set unit count
 		if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
 			pr _CLD_full = CLD_UNIT_AMOUNT_FULL;
-			if (_gar != "") then {
+			if (!IS_NULL_OBJECT(_gar)) then {
 				{
 					_x params ["_catID", "_catSize"];
 					pr _query = [[_catID, 0]];
@@ -1154,23 +1154,24 @@ CLASS("AICommander", "AI")
 	
 	Parameters:
 	_gar - <Garrison>
+	_destroy - will destroy the garrison after unregistering, default false
 	
 	Returns: nil
 	*/
 	STATIC_METHOD("unregisterGarrison") {
-		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
+		params [P_THISCLASS, P_OOP_OBJECT("_gar"), ["_destroy", false, [false]]];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
+			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar ARG _destroy]);
 		} else {
 			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar ARG _side]);
 		};
 	} ENDMETHOD;
 
 	METHOD("_unregisterGarrison") {
-		params [P_THISOBJECT, P_STRING("_gar")];
+		params [P_THISOBJECT, P_STRING("_gar"), ["_destroy", false, [false]]];
 		ASSERT_THREAD(_thisObject);
 
 		T_PRVAR(garrisons);
@@ -1184,6 +1185,11 @@ CLASS("AICommander", "AI")
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
 			UNREF(_gar);
+
+			// Send msg to garrison to destroy it
+			if (_destroy) then {
+				CALLM2(_gar, "postMethodAsync", "destroy", [false]); // Dont unregister from cmdr
+			};
 		} else {
 			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
@@ -1502,7 +1508,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Make sure the position is not very close to an existing location
 		pr _locsNear = CALLSM2("Location", "nearLocations", _pos, 50);
 		pr _index = _locsNear findIf {
-			T_CALLM1("getIntelAboutLocation", _x) != ""
+			!IS_NULL_OBJECT(T_CALLM1("getIntelAboutLocation", _x))
 		};
 		if (_index != -1) exitWith {
 			pr _args = ["We can't create a location so close to another location!"];

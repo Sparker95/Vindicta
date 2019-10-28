@@ -102,12 +102,12 @@ CLASS("GarrisonModel", "ModelBase")
 	/* private */ METHOD("_sync") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_actual")];
 		
-		if(CALLM(_actual, "isDestroyed", []) && CALLM0(_actual, "getLocation") == "") exitWith {
+		if(CALLM(_actual, "isDestroyed", []) && (IS_NULL_OBJECT(CALLM0(_actual, "getLocation")))) exitWith {
 			T_CALLM("killed", []);
 		};
 
 		private _newEff = CALLM(_actual, "getEfficiencyMobile", []);
-		if(EFF_LTE(_newEff, EFF_ZERO) && (CALLM0(_actual, "getLocation") == "") ) then {
+		if(EFF_LTE(_newEff, EFF_ZERO) && (IS_NULL_OBJECT(CALLM0(_actual, "getLocation"))) ) then {
 			T_CALLM("killed", []);
 		} else {
 			private _actualSide = CALLM(_actual, "getSide", []);
@@ -423,7 +423,7 @@ CLASS("GarrisonModel", "ModelBase")
 			// Don't want crew
 			{
 				private _group = CALLM0(_x, "getGroup");
-				private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
+				private _groupType = if (!IS_NULL_OBJECT(_group)) then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
 				// Try not to take troops from vehicle groups
 				!(CALLM0(_x, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC])
 			} and
@@ -517,7 +517,7 @@ CLASS("GarrisonModel", "ModelBase")
 				// If it was a vehicle, and it had crew in its group, add the crew as well
 				if (CALLM0(_unit, "isVehicle")) then {
 					private _group = CALLM0(_unit, "getGroup");
-					private _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
+					private _groupUnits = if (!IS_NULL_OBJECT(_group)) then {CALLM0(_group, "getUnits");} else {[]};
 					// If there are more than one unit in a vehicle's group, then add the whole group
 					if (count _groupUnits > 1) then {
 						_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
@@ -569,7 +569,7 @@ CLASS("GarrisonModel", "ModelBase")
 			private _freeInfUnits = CALLM0(_actual, "getInfantryUnits") select {
 				if (_x in _allocatedUnits) then { false } else {
 					private _group = CALLM0(_x, "getGroup");
-					if (_group == "") then { false } else {
+					if (IS_NULL_OBJECT(_group)) then { false } else {
 						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
 							true
 						} else {false};
