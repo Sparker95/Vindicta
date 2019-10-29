@@ -1,0 +1,1 @@
+call compile preprocessFileLineNumbers "UI\Dialogs\DialogOneTabButtons.sqf"

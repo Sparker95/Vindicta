@@ -18,25 +18,24 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 		params [P_THISOBJECT];
 		
 		SETSV("InGameMenuTabNotes", "instance", _thisObject);
-	} ENDMETHOD;
 
-	METHOD("delete") {
-		params [P_THISOBJECT];
 
-		SETSV("InGameMenuTabNotes", "instance", nil);
-	} ENDMETHOD;
-
-	METHOD("createControl") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
-
+		// Create the controls
+		pr _displayParent = T_CALLM0("getDisplay");
 		pr _group = _displayParent ctrlCreate ["TAB_NOTES", -1];
+		T_CALLM1("setControl", _group);
 
 		// Set previous text
 		pr _text = GETSV("InGameMenuTabNotes", "text");
 		pr _ctrl = T_CALLM1("findControl", "TAB_NOTES_EDIT");
 		_ctrl ctrlSetText _text;
 
-		_group
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+
+		SETSV("InGameMenuTabNotes", "instance", nil);
 	} ENDMETHOD;
 
 	/*

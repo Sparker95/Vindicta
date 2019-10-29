@@ -11,7 +11,7 @@ CLASS("RadioKeyDialog", "DialogBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		T_CALLM2("addTab", "RadioKeyTab", "Mission");
+		T_CALLM2("addTab", "RadioKeyTab", "");
 		
 		T_CALLM1("enableMultiTab", false);
 		T_CALLM1("setCurrentTab", 0);

@@ -21,18 +21,15 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		params [P_THISOBJECT];
 
 		gTabCommander = _thisObject;
-	} ENDMETHOD;
 
-	METHOD("delete") {
-		params [P_THISOBJECT];
-		gTabCommander = nil;
-	} ENDMETHOD;
 
-	METHOD("createControl") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
+
+		// Create the controls
+		pr _displayParent = T_CALLM0("getDisplay");
 
 		// Create the tab
 		pr _group = _displayParent ctrlCreate ["TAB_CMDR", -1];
+		T_CALLM1("setControl", _group);
 
 		// Initialize variables
 		pr _pos = getPos player;
@@ -116,7 +113,11 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			T_CALLM3("controlAddEventHandler", "TAB_CMDR_BUTTON_CREATE_LOC", "buttonClick", "onButtonClaimLocation");
 		};
 
-		_group
+	} ENDMETHOD;
+
+	METHOD("delete") {
+		params [P_THISOBJECT];
+		gTabCommander = nil;
 	} ENDMETHOD;
 
 	METHOD("onButtonCreateLocation") {

@@ -101,6 +101,23 @@ class MUI_BG_TRANSPARENT : MUI_BASE
 
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT);
 
+class MUI_BG_TRANSPARENT_MULTILINE_LEFT : MUI_BASE
+{
+	type = CT_STATIC;
+	sizeEx = MUI_TXT_SIZE_M;
+	style = 16+0+0x200; // multi line, no rect, left alighnemt
+	lineSpacing = 1; // must set it for multi line to work
+};
+
+__MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_LEFT);
+
+class MUI_BG_TRANSPARENT_MULTILINE_CENTER : MUI_BG_TRANSPARENT_MULTILINE_LEFT
+{
+	style = ST_CENTER + 16+0+0x200;
+};
+
+__MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_CENTER);
+
 class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, but grey
 {
 	type = CT_STATIC;

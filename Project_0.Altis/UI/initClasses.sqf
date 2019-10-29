@@ -23,3 +23,5 @@ call compile preprocessFileLineNumbers "UI\InGameMenu\initClasses.sqf";
 call compile preprocessFileLineNumbers "UI\RadioKeyDialog\initClasses.sqf";
 
 call compile preprocessFileLineNumbers "UI\TacticalTablet\TacticalTablet.sqf";
+
+call compile preprocessFileLineNumbers "UI\Dialogs\initClasses.sqf";

@@ -28,13 +28,18 @@ CLASS("DialogTabBase", "")
 		params [P_THISOBJECT, P_OOP_OBJECT("_dialogObj")];
 
 		T_SETV("dialogObj", _dialogObj);
-		pr _displayParent = CALLM0(_dialogObj, "getDisplay");
 
 		OOP_INFO_0("NEW");
 
-		pr _ctrl = T_CALLM1("createControl", _displayParent);
-		OOP_INFO_1("NEW   setting control: %1", _ctrl);
-		uiNamespace setVariable [_thisObject+__CONTROL_SUFFIX, _ctrl];
+		// Example of how to create the controls for derived tab classes		
+		pr _displayParent = T_CALLM0("getDisplay");
+		pr _ctrl = _displayParent ctrlCreate ["MUI_BASE", -1];
+		_ctrl ctrlSetPosition [0, 0, 0.5, 0.5];
+		_ctrl ctrlSetBackgroundColor [0.6, 0.1, 0.1, 0.8];
+		_ctrl ctrlSetText _thisObject;
+		_ctrl ctrlCommit 2.0;
+
+		T_CALLM1("setControl", _ctrl);
 	} ENDMETHOD;
 
 	// Private, don't call this on your own
@@ -50,33 +55,29 @@ CLASS("DialogTabBase", "")
 		uiNamespace setVariable [_thisObject+__CONTROL_SUFFIX, nil];
 	} ENDMETHOD;
 
-	// Derived classes must override this!
-	// Create your tab control here (most likely group control)
-	// Must return the handle of the created control
-	// ! ! ! ! Note that createControl is called before the constructor of the inherited class ! ! ! ! !
-	METHOD("createControl") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
-
-		pr _ctrl = _displayParent ctrlCreate ["MUI_BASE", -1];
-		_ctrl ctrlSetPosition [0, 0, 0.5, 0.5];
-		_ctrl ctrlSetBackgroundColor [0.6, 0.1, 0.1, 0.8];
-		_ctrl ctrlSetText _thisObject;
-		_ctrl ctrlCommit 2.0;
-
-		_ctrl
-	} ENDMETHOD;
-
-	// After creating the control, derived classes should call this in the constructor
 	/*
-	METHOD("setControl") {
-		params [P_THISOBJECT, ["_ctrl", controlNull]];
-		uiNamespace setVariable [_thisObject+__CONTROL_SUFFIX, _ctrl];
-	} ENDMETHOD; */
-
-	// Returns the control of this tab.
+	Method: getControl
+	Returns the control of this tab, previously set by setControl
+	*/
 	METHOD("getControl") {
 		params [P_THISOBJECT];
 		uiNamespace getVariable [_thisObject+__CONTROL_SUFFIX, controlNull];
+	} ENDMETHOD;
+
+	/*
+	Method: setControl
+	Sets the control (typically group control with child controls) associated with this tab.
+	You must call this method from within the constructor of the derived class after creating the control group for this tab.
+
+	Parameters: 
+	*/
+	METHOD("setControl") {
+		params [P_THISOBJECT, ["_control", controlNull, [controlNull]]];
+
+		pr _ctrl = uiNamespace getVariable [_thisObject+__CONTROL_SUFFIX, controlNull];
+		ctrlDelete _ctrl; // Just to be sure, delete the previous control
+
+		uiNamespace setVariable [_thisObject+__CONTROL_SUFFIX, _control];
 	} ENDMETHOD;
 
 	METHOD("getDisplay") {
@@ -89,20 +90,46 @@ CLASS("DialogTabBase", "")
 		T_GETV("dialogObj")
 	} ENDMETHOD;
 
-	// Finds a control by its class name
+	// Finds a control by its class name or tag assigned by createControl
 	METHOD("findControl") {
 		params [P_THISOBJECT, P_STRING("_className")];
 		pr _display = T_CALLM0("getDisplay");
 		OOP_INFO_1("FIND CONTROL: %1", _className);
 		OOP_INFO_1(" DISPLAY: %1", _display);
 		pr _allControls = allControls _display;
-		OOP_INFO_1(" ALL CONTROLS: %1", _allControls);
-		pr _index = _allControls findIf {(ctrlClassName _x) == _className};
+		//OOP_INFO_1(" ALL CONTROLS: %1", _allControls);
+		pr _index = _allControls findIf {_className in [ctrlClassName _x, _x getVariable ["__tag", ""]]};
 		if (_index != -1) then {
+			OOP_INFO_1("  found control: %1", _allControls select _index);
 			_allControls select _index
 		} else {
+			OOP_WARNING_1("  control not found: %1", _className);
 			controlNull
 		};
+	} ENDMETHOD;
+
+	METHOD("createControl") {
+		params [P_THISOBJECT, P_STRING("_className"), ["_idc", -1, [0]], ["_controlsGroup", controlNull, [controlNull]], P_STRING("_tag")];
+
+		OOP_INFO_1("CREATE CONTROL: %1", _this);
+
+		if (_tag == "") then {_tag = "666"};
+
+		pr _display = T_CALLM0("getDisplay");
+		pr _ctrl = controlNull;
+		if (isNull _controlsGroup) then {
+			_ctrl = _display ctrlCreate [_className, _idc];
+		} else {
+			_ctrl = _display ctrlCreate [_className, _idc, _controlsGroup];
+		};
+
+		// Set tag to be used by findControl
+		_ctrl setVariable ["__tag", _tag];
+
+		OOP_INFO_1("  created control: %1", _ctrl);
+
+		// Return control
+		_ctrl
 	} ENDMETHOD;
 	
 	// Adds an event handler which will call some method of this object
@@ -124,6 +151,13 @@ CLASS("DialogTabBase", "")
 	// Override for custom functionality
 	/* virtual */ METHOD("beforeDelete") {
 		params [P_THISOBJECT];
+	} ENDMETHOD;
+
+	// Called when Dialog.resize is called
+	// Derived classes can implement this if they need to resize themselves
+	// The main control of the tab (group) is resized separately, no need to resize it
+	/* virtual */ METHOD("resize") {
+		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
 	} ENDMETHOD;
 
 ENDCLASS;
