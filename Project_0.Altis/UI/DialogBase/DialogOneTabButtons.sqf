@@ -19,6 +19,16 @@ Class: DialogSingleTabWithButtons
 A simple dialog which has a multi line text field and variable amount of buttons at the bottom.
 Can be used for simple things like popup messages.
 
+Inherit from DialogOneTabButtons to implement functionality (opposed to typical way of inheriting from DialogTabBase).
+
+Use methods setText, setContentSize, etc..., to configure the dialog appearence.
+
+Call createButtons to create the buttons at the bottom of the text box
+
+Override the onButtonClick method to implement custom button click handling.
+
+You can also use getButtonControl to get the control handle of the button with the required ID (0, 1, 2, ... depending on the amount of created buttons)
+
 Author: Sparker 29 October 2019
 */
 
@@ -32,9 +42,6 @@ CLASS("DialogOneTabButtons", "DialogBase")
 		T_CALLM2("addTab", "TabTextWithButtons", "");
 
 		T_CALLM1("enableMultiTab", false);
-		//T_CALLM2("setContentSize", 0.7, 0.5);
-		//T_CALLM1("setHeadlineText", _headlineText);
-		//T_CALLM1("setHintText", _hintText);
 
 		T_SETV("buttonTexts", []);
 
@@ -69,6 +76,14 @@ CLASS("DialogOneTabButtons", "DialogBase")
 		OOP_INFO_1("Button was clicked: %1", _ID);
 
 		//DELETE(_thisObject);
+	} ENDMETHOD;
+
+	// Returns button control with given ID
+	METHOD("getButtonControl") {
+		params [P_THISOBJECT, P_NUMBER("_ID")];
+		pr _tag = format ["TAG_BUTTON_%1", _ID];
+		pr _tab = T_CALLM0("getCurrentTab");
+		CALLM1(_tab, "findControl", _tag)
 	} ENDMETHOD;
 
 ENDCLASS;

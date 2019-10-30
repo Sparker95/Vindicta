@@ -13,7 +13,10 @@
 Class : TacticalTablet
 
 SQF class made to help streamline use of dialogs with standard appearence.
-It has a headline, close button, hint bar, and an optinal multi-tab capability. 
+It has a headline, close button, hint bar, and an optinal multi-tab capability.
+
+It has methods for singleton class template: newInstance, deleteInstance, getInstance.
+To use them, you must add a static variable "instance" to your class.
 */
 
 #define pr private
@@ -126,6 +129,43 @@ CLASS("DialogBase", "")
 
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
 	} ENDMETHOD;
+
+	// = = = = = = = = = = = = = = = = = = = = =
+	// Singleton class template
+	STATIC_METHOD("newInstance") {
+		params [P_THISCLASS, P_ARRAY("_constructorArguments")];
+
+		pr _inst = GETSV(_thisClass, "instance");
+		// Bail if it already exists
+		if (!IS_NULL_OBJECT(_inst)) exitWith {
+			_inst
+		};
+
+		// Create the object
+		_inst = NEW(_thisClass, _constructorArguments);
+		SETSV(_thisClass, "instance", _inst);
+
+		_inst
+	} ENDMETHOD;
+
+	STATIC_METHOD("deleteInstance") {
+		params [P_THISCLASS];
+
+		pr _inst = GETSV(_thisClass, "instance");
+		if (!IS_NULL_OBJECT(_inst)) then {
+			DELETE(_inst);
+			SETSV(_thisClass, "instance", NULL_OBJECT);
+		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("getInstance") {
+		params [P_THISCLASS];
+		pr _inst = GETSV(_thisClass, "instance");
+		if (isNil "_inst") exitWith {NULL_OBJECT};
+		_inst
+	} ENDMETHOD;
+
+	// = = = = = = = = = = = = = = = = = = = = =
 
 	// Adds an event handler which will run in the destructor of this dialog
 	METHOD("onDelete") {

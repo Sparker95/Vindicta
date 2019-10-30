@@ -141,10 +141,10 @@ CALLM(gGameMode, "playerSpawn", _this);
 
 // Action to start building stuff
 _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from location"], // title
-                 {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}, // 0 - build from location's resources
+                 {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
                  0, // Arguments
                  0, // Priority
-                 true, // ShowWindow
+                 false, // ShowWindow
                  false, //hideOnUse
                  "", //shortcut
                  "(vehicle player == player) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation)", //condition
@@ -155,10 +155,10 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
 
 // Action to start building stuff
 _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from inventory"], // title
-                 {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}, // 1 - build from our own inventory
+                 {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
                  0, // Arguments
                  -1, // Priority
-                 true, // ShowWindow
+                 false, // ShowWindow
                  false, //hideOnUse
                  "", //shortcut
                  "(vehicle player == player) && (((['', player] call unit_fnc_getInfantryBuildResources) > 0) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
@@ -167,3 +167,25 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
                  "", //selection
                  ""]; //memoryPoint
 
+// Action to attach units to garrison
+pr0_fnc_attachUnitCond = {
+    _co = cursorObject;
+    (vehicle player == player)                                              // Player must be on foot
+    && {_co distance player < 7}                                            // Player must be close to object
+    && {! (_co isKindOf "Man")}                                               // Object must not be infantry
+    && {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}       // Player must be at a friendly location
+    && {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}   // Object must be a valid unit OOP object (no shit spawned by zeus for now)
+    && {alive cursorObject}                                                 // Object must be alive
+};
+_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
+                 {isNil {NEW("AttachToGarrisonDialog", [cursorObject])}}, // Open the UI dialog
+                 0, // Arguments
+                 0.1, // Priority
+                 false, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "call pr0_fnc_attachUnitCond", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint

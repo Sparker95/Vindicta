@@ -994,6 +994,15 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data#UNIT_DATA_ID_LOCATION
 	} ENDMETHOD;
 
+	/*
+	Method: getCategory
+	Returns category ID, number
+	*/
+	METHOD("getCategory") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		_data#UNIT_DATA_ID_CAT
+	} ENDMETHOD;
 
 	//                     H A N D L E   K I L L E D
 	/*

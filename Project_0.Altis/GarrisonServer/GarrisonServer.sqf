@@ -150,6 +150,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		T_GETV("createdObjects") pushBackUnique _gar;
 		T_GETV("objects") pushBackUnique _gar;
+		SETV(_gar, "regAtServer", true); // We will check this variable
 
 		// Ref
 		REF(_gar);
@@ -159,7 +160,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 	METHOD("onGarrisonOutdated") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_gar")];
 
-		T_GETV("outdatedObjects") pushBackUnique _gar;
+		// Check if it's registered here
+		if (GETV(_gar, "regAtServer")) then {
+			T_GETV("outdatedObjects") pushBackUnique _gar;
+		};
 	} ENDMETHOD;
 
 	// Marks the garrison requiring a destroyed event broadcast
@@ -327,6 +331,65 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _name = T_NAMES#T_INF#_subcatID;
 		pr _text = format ["We have recruited one %1", _name];
 		_text remoteExecCall ["systemChat", _clientOwner];
+
+	} ENDMETHOD;
+
+	// Called from AttachToGarrisonDialog
+	METHOD("getUnitData") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_unit")];
+
+		// Ensure this unit exists
+		if (!IS_OOP_OBJECT(_unit)) exitWith {
+			pr _args = [_unit, 0]; // Report wrong unit
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			OOP_ERROR_1("getUnitData: unit %1 does not exist!", _unit);
+		};
+
+		// Ensure that the unit's garrison is correct
+		pr _gar = CALLM0(_unit, "getGarrison");
+		if (!IS_OOP_OBJECT(_gar) || {IS_NULL_OBJECT(_gar)}) exitWith {
+			pr _args = [_unit, 1]; // Report wrong garrison
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			OOP_ERROR_2("getUnitData: garrison %1 of unit %2 is not valid!", _gar, _unit);
+		};
+
+		// Report garrison's properties and other data to client
+		pr _catID = CALLM0(_unit, "getCategory");
+		pr _garSide = CALLM0(_gar, "getSide");
+
+		pr _args = [_unit, 2,	// 2 is an OK code
+					_catID, _gar, _garSide];
+		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+
+	} ENDMETHOD;
+
+	// Called from AttachToGarrisonDialog
+	METHOD("attachUnit") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_unit"), P_OOP_OBJECT("_gar")];
+
+		OOP_INFO_1("ATTACH UNIT: %1", _this);
+
+		// Ensure this unit exists
+		if (!IS_OOP_OBJECT(_unit)) exitWith {
+			pr _args = [_unit, 0]; // Report wrong unit
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			OOP_ERROR_1("attachUnit: unit %1 does not exist!", _unit);
+		};
+
+		// Ensure garrison is correct
+		if (!IS_OOP_OBJECT(_gar) || {IS_NULL_OBJECT(_gar)}) exitWith {
+			pr _args = [_unit, 3]; // Report wrong garrison
+			REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
+			OOP_ERROR_1("attachUnit: garrison %1 is not valid!", _gar);
+		};
+
+		// We are good to go
+		CALLM1(_gar, "captureUnit", _unit);
+
+		// Report success to user
+		pr _args = [_unit, 2,	// 2 is an OK code
+					CALLM0(_unit, "getCategory"), _gar, CALLM0(_gar, "getSide")];
+		REMOTE_EXEC_CALL_STATIC_METHOD("AttachToGarrisonDialog", "staticShowServerResponse_0", _args, _clientOwner, false);
 
 	} ENDMETHOD;
 

@@ -55,6 +55,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
 	VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+	VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -100,6 +101,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("faction", _faction);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
+		T_SETV("regAtServer", false);
 		pr _mutex = MUTEX_RECURSIVE_NEW();
 		T_SETV("mutex", _mutex);
 
@@ -1412,8 +1414,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _groupUnits = CALL_METHOD(_group, "getUnits", []);
 		private _units = GET_VAR(_thisObject, "units");
 		{
+			// Add to units array
 			_units pushBackUnique _x;
 			
+			// Move all cargo of this unit too!
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (_unitAI != "") then {
+				pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
+				{
+					_units pushBackUnique _x;
+
+					// Add to the efficiency vector
+					CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+					CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+				} forEach _unitCargo;
+			};
+
 			// Add to the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
 			CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
@@ -1496,6 +1512,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _units = GET_VAR(_thisObject, "units");
 		{
 			_units deleteAt (_units find _x);
+
+			// Remove all cargo of this unit too!
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (_unitAI != "") then {
+				pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
+				{
+					_units deleteAt (_units find _x);
+
+					// Remove from the efficiency vector
+					CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+					CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+				} forEach _unitCargo;
+			};
 			
 			// Substract from the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
