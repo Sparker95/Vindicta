@@ -264,6 +264,16 @@ CLASS(CLASS_NAME, "MapMarker")
 		};
 
 		_mrkName setMarkerTypeLocal _type0;
+
+		// Set marker text
+		_mrkName = _thisObject + BG_SUFFIX; // We set text on the background marker, not on the front marker, because BG is colorized, front is white/black
+		if (_type in [LOCATION_TYPE_UNKNOWN, LOCATION_TYPE_CITY, LOCATION_TYPE_POLICE_STATION]) then {
+			_mrkName setMarkerTextLocal "";
+		} else {
+			pr _loc = GETV(T_GETV("intel"), "location");
+			pr _displayName = CALLM0(_loc, "getDisplayName");
+			_mrkName setMarkerTextLocal ("  " + _displayName);
+		};
 	} ENDMETHOD;
 
 	METHOD("updateAccuracyRadiusMarker") {
