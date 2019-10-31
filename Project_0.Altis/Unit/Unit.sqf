@@ -510,7 +510,7 @@ CLASS(UNIT_CLASS_NAME, "");
 		// Set variables of the object
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
-			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true];
+			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true]; // Global variable!
 			pr _cat = _data select UNIT_DATA_ID_CAT;
 			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
 			
