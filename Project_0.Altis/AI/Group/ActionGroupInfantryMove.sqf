@@ -44,6 +44,7 @@ CLASS("ActionGroupInfantryMove", "ActionGroup")
 		_wp setWaypointType "MOVE";
 		_wp setWaypointFormation "DIAMOND";
 		_wp setWaypointBehaviour "AWARE";
+		_wp setWaypointSpeed "NORMAL";
 		_hG setCurrentWaypoint _wp;
 		
 		// Give goals to units to regroup
