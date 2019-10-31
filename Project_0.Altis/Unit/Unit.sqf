@@ -28,13 +28,13 @@ Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCar
 
 // Add CBA ACE event handler for loading cargo
 #ifndef _SQF_VM
-if (isNil "Unit_aceCargoLoaded_EH") then {
+if (isNil "Unit_aceCargoLoaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
 	{
 		_this call Unit_fnc_EH_aceCargoLoaded;
 	}] call CBA_fnc_addEventHandler;
 };
-if (isNil "Unit_aceCargoUnloaded_EH") then {
+if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoUnloaded_EH = ["ace_cargoUnloaded", 
 	{
 		_this call Unit_fnc_EH_aceCargoUnloaded;
@@ -510,7 +510,7 @@ CLASS(UNIT_CLASS_NAME, "");
 		// Set variables of the object
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
-			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject];
+			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true];
 			pr _cat = _data select UNIT_DATA_ID_CAT;
 			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
 			
@@ -563,12 +563,12 @@ CLASS(UNIT_CLASS_NAME, "");
 		};
 		
 		// HandleDamage for infantry
-		diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
+		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
 		if (_data select UNIT_DATA_ID_CAT == T_INF && {owner _hO in [0, clientOwner]}) then { // We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
 				_hO removeAllEventHandlers "handleDamage";
 				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
-				diag_log format ["Added damage event handler: %1", _thisObject];
+				//diag_log format ["Added damage event handler: %1", _thisObject];
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
