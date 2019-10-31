@@ -124,6 +124,7 @@ class CMUI_BPANEL_HINTS : MUI_BG_BLACKSOLID
     text = "Place hint texts here. Text should be centered, white, Purista Medium.";
 };
 
+/*
 class CMUI_BPANEL_BUTTON_1 : MUI_BUTTON_TXT 
 {
     idc = IDC_BPANEL_BUTTON_1;
@@ -132,7 +133,9 @@ class CMUI_BPANEL_BUTTON_1 : MUI_BUTTON_TXT
     w = safeZoneW * 0.1;
     text = "DO SMTH"; //"FAST TRAVEL";
 };
+*/
 
+/*
 class CMUI_BPANEL_BUTTON_2 : MUI_BUTTON_TXT 
 {
     idc = IDC_BPANEL_BUTTON_2;
@@ -141,7 +144,9 @@ class CMUI_BPANEL_BUTTON_2 : MUI_BUTTON_TXT
     w = safeZoneW * 0.08;
     text = "Create camp";
 };
+*/
 
+/*
 class CMUI_BPANEL_BUTTON_3 : MUI_BUTTON_TXT 
 {
     idc = IDC_BPANEL_BUTTON_3;
@@ -150,16 +155,7 @@ class CMUI_BPANEL_BUTTON_3 : MUI_BUTTON_TXT
     w = safeZoneW * 0.1;
     text = "Mission menu";
 };
-
-class CMUI_BPANEL_BUTTON_SHOW_INTEL : MUI_BUTTON_TXT
-{
-    idc = IDC_BPANEL_BUTTON_SHOW_INTEL;
-    x = safeZoneX + safeZoneW * 0.57;
-    y = safeZoneY + safeZoneH * 0.94;
-    w = safeZoneW * 0.06;
-    h = safezoneH * 0.02;
-    text = "[ ] Show intel";
-};
+*/
 
 class CMUI_BPANEL_BUTTON_CLEAR_NOTIFICATIONS : MUI_BUTTON_TXT 
 {
@@ -202,3 +198,61 @@ class CMUI_LOCP_DETAILTXT : MUI_EDIT
     colorBackground[] = MUIC_TRANSPARENT;
     colorText[] = MUIC_WHITE;           
 };
+
+// Buttons to show intel
+
+class CMUI_STATIC_SHOW_INTEL : MUI_BG_BLACKSOLID
+{
+    idc = -1;
+    x = safeZoneX + safeZoneW * 0.80;
+    y = safeZoneY + safeZoneH * 0.07;
+    w = safeZoneW * 0.06;
+    h = safeZoneH * 0.02;
+    style = 2;
+    text = "Show intel:";
+};
+
+class CMUI_BUTTON_INTEL_INACTIVE : MUI_BUTTON_TXT 
+{
+    idc = -1;
+    x = safeZoneX + safeZoneW * 0.8;
+    y = safeZoneY + safeZoneH * 0.09074075;
+    w = safeZoneW * 0.06041667;
+    h = safeZoneH * 0.02037038;
+    style = 192+0;
+    text = "[ ] Inactive";    
+};
+class CMUI_BUTTON_INTEL_ACTIVE : MUI_BUTTON_TXT 
+{
+    idc = -1;
+    x = safeZoneX + safeZoneW * 0.8;
+    y = safeZoneY + safeZoneH * 0.11111112;
+    w = safeZoneW * 0.05989584;
+    h = safeZoneH * 0.02037038;
+    style = 192+0;
+    text = "[ ] Active";
+};
+class CMUI_BUTTON_INTEL_ENDED : MUI_BUTTON_TXT 
+{
+    idc = -1;
+    x = safeZoneX + safeZoneW * 0.8;
+    y = safeZoneY + safeZoneH * 0.13240741;
+    w = safeZoneW * 0.05989584;
+    h = safeZoneH * 0.02037038;
+    style = 192+0;
+    text = "[ ] Ended";
+    borderSize = 0;
+    sizeEx = safeZoneH*0.02;
+};
+
+/*
+class CMUI_BPANEL_BUTTON_SHOW_INTEL : MUI_BUTTON_TXT
+{
+    idc = IDC_BPANEL_BUTTON_SHOW_INTEL;
+    x = safeZoneX + safeZoneW * 0.57;
+    y = safeZoneY + safeZoneH * 0.94;
+    w = safeZoneW * 0.06;
+    h = safezoneH * 0.02;
+    text = "[ ] Show intel";
+};
+*/
