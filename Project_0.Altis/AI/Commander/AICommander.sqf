@@ -199,7 +199,7 @@ CLASS("AICommander", "AI")
 			// Unregister from ourselves straight away
 			T_CALLM("_unregisterGarrison", [_x]);
 			CALLM2(_x, "postMethodAsync", "destroy", [false]); // false = don't unregister from owning cmdr (as we just did it above!)
-		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {CALLM0(_x, "getLocation") == ""} });
+		} forEach (T_GETV("garrisons") select { CALLM(_x, "isEmpty", []) && {IS_NULL_OBJECT(CALLM0(_x, "getLocation"))} });
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "inactive");
@@ -423,7 +423,7 @@ CLASS("AICommander", "AI")
 		
 		// Try to find friendly garrisons there first
 		// Otherwise try to find any garrisons there
-		pr _garFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side"));
+		pr _garFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
 		pr _gar = if (count _garFriendly != 0) then {
 			_garFriendly#0
 		} else {
@@ -462,7 +462,7 @@ CLASS("AICommander", "AI")
 		
 		// Set side
 		if (_updateLevel >= CLD_UPDATE_LEVEL_SIDE) then {
-			if (_gar != "") then {
+			if (!IS_NULL_OBJECT(_gar)) then {
 				SETV(_value, "side", CALLM0(_gar, "getSide"));
 			} else {
 				SETV(_value, "side", CLD_SIDE_UNKNOWN);
@@ -474,7 +474,7 @@ CLASS("AICommander", "AI")
 		// Set unit count
 		if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
 			pr _CLD_full = CLD_UNIT_AMOUNT_FULL;
-			if (_gar != "") then {
+			if (!IS_NULL_OBJECT(_gar)) then {
 				{
 					_x params ["_catID", "_catSize"];
 					pr _query = [[_catID, 0]];
@@ -1154,23 +1154,24 @@ CLASS("AICommander", "AI")
 	
 	Parameters:
 	_gar - <Garrison>
+	_destroy - will destroy the garrison after unregistering, default false
 	
 	Returns: nil
 	*/
 	STATIC_METHOD("unregisterGarrison") {
-		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
+		params [P_THISCLASS, P_OOP_OBJECT("_gar"), ["_destroy", false, [false]]];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar]);
+			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar ARG _destroy]);
 		} else {
 			OOP_WARNING_MSG("Can't unregisterGarrison %1, no AICommander found for side %2", [_gar ARG _side]);
 		};
 	} ENDMETHOD;
 
 	METHOD("_unregisterGarrison") {
-		params [P_THISOBJECT, P_STRING("_gar")];
+		params [P_THISOBJECT, P_STRING("_gar"), ["_destroy", false, [false]]];
 		ASSERT_THREAD(_thisObject);
 
 		T_PRVAR(garrisons);
@@ -1184,6 +1185,11 @@ CLASS("AICommander", "AI")
 			CALLM(_worldModel, "removeGarrison", [_garrisonModel]);
 			_garrisons deleteAt _idx; // Get out of my sight you useless garrison!
 			UNREF(_gar);
+
+			// Send msg to garrison to destroy it
+			if (_destroy) then {
+				CALLM2(_gar, "postMethodAsync", "destroy", [false]); // Dont unregister from cmdr
+			};
 		} else {
 			OOP_WARNING_MSG("Garrison %1 not registered so can't _unregisterGarrison", [_gar]);
 		};
@@ -1493,7 +1499,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 	} ENDMETHOD;
 
 	METHOD("clientCreateLocation") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_POSITION("_posWorld"), P_STRING("_locType"), P_STRING("_locName"), P_OBJECT("_hBuildResSrc")];
 
 		// Nullify vertical component, we use position ATL for locations anyway
 		pr _pos = +_posWorld;
@@ -1502,25 +1508,29 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Make sure the position is not very close to an existing location
 		pr _locsNear = CALLSM2("Location", "nearLocations", _pos, 50);
 		pr _index = _locsNear findIf {
-			T_CALLM1("getIntelAboutLocation", _x) != ""
+			!IS_NULL_OBJECT(T_CALLM1("getIntelAboutLocation", _x))
 		};
 		if (_index != -1) exitWith {
 			pr _args = ["We can't create a location so close to another location!"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
-		// Check if there are any cities directly at this place
+		// Check if there are any locations directly at this place
 		pr _locsAtPos = CALLSM1("Location", "getLocationsAtPos", _pos);
-		pr _indexCity = _locsAtPos findIf {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
-		if (_indexCity != -1) exitWith {
-			pr _args = ["We can't create a location inside a city!"];
+		//pr _indexCity = _locsAtPos findIf {CALLM0(_x, "getType") == LOCATION_TYPE_CITY};
+		if (count _locsAtPos > 0) exitWith {
+			//pr _args = ["We can't create a location inside a city!"];
+			pr _args = ["We can't create a location inside another location"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
-		// Remove build resources from player
-		pr _playerObj = allPlayers select {owner _x == _clientOwner} select 0;
-		if (!isNil "_playerObj") then {
-			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_playerObj ARG 20], _clientOwner, false);
+		// Remove build resources from player or vehicle
+		if (_hBuildResSrc isKindOf "man") then {
+			// Remove resources from player
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+		} else {
+			// Remove resources from vehicle
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
 		};
 
 		// Create a little composition at this place
@@ -1540,11 +1550,63 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		CALLM0(_gar, "activate");
 
 		// Update intel about the location
-		T_CALLM1("updateLocationData", _loc);
+		//T_CALLM1("updateLocationData", _loc);
 
+		// Send a success message to player
 		pr _args = ["We have successfully created a location here!"];
 		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		
+	} ENDMETHOD;
+
+	METHOD("clientClaimLocation") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_OBJECT("_hBuildResSrc")];
+
+		// Check if we already own it
+		pr _garsFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
+		if (count _garsFriendly > 0) exitWith {
+			pr _args = ["We already own this place!"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		};
+
+		// Check if there are still enemy forces here
+		pr _thisSide = T_GETV("side");
+		CALLM0(gMessageLoopMain, "lock");
+		pr  _garsEnemy = CALLM1(_loc, "getGarrisons", CIVILIAN) select {
+			pr _side = CALLM0(_x, "getSide");
+			_side != _thisSide
+			&& _side != CIVILIAN
+			&& (CALLM0(_x, "countInfantryUnits") > 0)
+		};
+		CALLM0(gMessageLoopMain, "unlock");
+
+		// Bail if this place is still occupied by enemy
+		if (count _garsEnemy > 0) exitWith {
+			pr _args = ["We can't capture this place because enemies still control it!"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+		};
+
+		// Remove build resources from player or vehicle
+		if (_hBuildResSrc isKindOf "man") then {
+			// Remove resources from player
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeInfantryBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+		} else {
+			// Remove resources from vehicle
+			REMOTE_EXEC_CALL_STATIC_METHOD("Unit", "removeVehicleBuildResources", [_hBuildResSrc ARG 20], _clientOwner, false);
+		};
+
+		// Create the garrison
+		pr _pos = CALLM0(_loc, "getPos");
+		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
+		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
+		CALLM0(_gar, "activate");
+
+		// Update intel about the location
+		//T_CALLM1("updateLocationData", _loc);
+
+		// Send a success message to player
+		pr _args = ["Now we own this place!"];
+		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
+
 	} ENDMETHOD;
 
 /*

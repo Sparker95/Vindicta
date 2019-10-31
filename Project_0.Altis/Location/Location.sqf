@@ -39,7 +39,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("garrisons");
 
 	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
-	VARIABLE("border"); // _radius for circle or [_a, _b, _dir] for rectangle
+	VARIABLE("border"); // [center, a, b, angle, isRectangle, c]
 	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
 	VARIABLE("useParentPatrolWaypoints"); // If true then use the parents patrol waypoints instead
 	VARIABLE("allowedAreas"); // Array with allowed areas
@@ -57,6 +57,7 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
 
 	VARIABLE("hasPlayers"); // Bool, means that there are players at this location, updated at each process call
+	VARIABLE("hasPlayerSides"); // Array of sides of players at this location
 
 	VARIABLE("buildingsOpen"); // Handles of buildings which can be entered (have buildingPos)
 	VARIABLE("objects"); // Handles of objects which can't be entered and other objects
@@ -64,6 +65,8 @@ CLASS("Location", "MessageReceiverEx")
 	VARIABLE("respawnSides"); // Sides for which player respawn is enabled
 
 	VARIABLE("hasRadio"); // Bool, means that this location has a radio
+
+	VARIABLE("wasOccupied"); // Bool, false at start but sets to true when garrisons are attached here
 
 	STATIC_VARIABLE("all");
 
@@ -104,6 +107,7 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
 		T_SETV("gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
+		T_SETV("hasPlayerSides", []);
 
 		T_SETV("buildingsOpen", []);
 		T_SETV("objects", []);
@@ -114,6 +118,10 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
 		T_SETV("hasRadio", false);
+
+		SET_VAR_PUBLIC(_thisObject, "wasOccupied", false);
+		T_SETV("wasOccupied", false);
+
 
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);
@@ -361,6 +369,17 @@ CLASS("Location", "MessageReceiverEx")
 		T_GETV("hasPlayers")
 	} ENDMETHOD;
 
+	/*
+	Method: getPlayerSides
+	Returns array of sides of players within this location.
+
+	Returns: Bool
+	*/
+	METHOD("getPlayerSides") {
+		params [P_THISOBJECT];
+		T_GETV("hasPlayerSides")
+	} ENDMETHOD;
+
 	// |               G E T   P A T R O L   W A Y P O I N T S
 	/*
 	Method: getPatrolWaypoints
@@ -408,6 +427,9 @@ CLASS("Location", "MessageReceiverEx")
 				CALLM0(_gmdata, "updatePlayerRespawn");
 			};	
 		};
+
+		// From now on this place is occupied or was occupied
+		SET_VAR_PUBLIC(_thisObject, "wasOccupied", true);
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
@@ -494,6 +516,20 @@ CLASS("Location", "MessageReceiverEx")
 		params [P_THISOBJECT];
 		T_GETV("name")
 	} ENDMETHOD;
+
+	/*
+	Method: getDisplayName
+
+	Returns a display name to show in UIs. Format is: <type> <name>, like "Camp Potato".
+	*/
+	METHOD("getDisplayName") {
+		params [P_THISOBJECT];
+
+		pr _name = T_GETV("name");
+		pr _type = T_GETV("type");
+		pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+		format ["%1 %2", _typeStr, _name];
+	} ENDMETHOD;
 	
 	/*
 	Method: getSide
@@ -560,6 +596,15 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("hasRadio") {
 		params [P_THISOBJECT];
 		T_GETV("hasRadio")
+	} ENDMETHOD;
+
+	/*
+	Method: wasOccupied
+	Returns value of wasOccupied variable.
+	*/
+	METHOD("wasOccupied") {
+		params [P_THISOBJECT];
+		T_GETV("wasOccupied")
 	} ENDMETHOD;
 
 	STATIC_METHOD("findRoadblocks") {

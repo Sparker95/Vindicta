@@ -55,6 +55,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
 	VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+	VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -100,6 +101,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("faction", _faction);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
+		T_SETV("regAtServer", false);
 		pr _mutex = MUTEX_RECURSIVE_NEW();
 		T_SETV("mutex", _mutex);
 
@@ -333,6 +335,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		params [P_THISOBJECT, P_OOP_OBJECT("_obj"), P_STRING("_funcName"), P_ARRAY("_args")];
 		__MUTEX_LOCK;
 		CALLM(_obj, _funcName, _args);
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
+	METHOD("lock") {
+		params [P_THISOBJECT];
+		__MUTEX_LOCK;
+	} ENDMETHOD;
+
+	METHOD("unlock") {
+		params [P_THISOBJECT];
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
@@ -1251,6 +1263,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		nil
 	} ENDMETHOD;
 
+	/*
+	Method: addUnits
+	Same as addUnit, but for an array of units.
+
+	Parameters: _units
+
+	_units - array of <Unit> object
+
+	Returns: nil
+	*/
+
 	METHOD("addUnits") {
 		params[P_THISOBJECT, P_ARRAY("_units")];
 		__MUTEX_LOCK;
@@ -1266,6 +1289,36 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
+	/*
+	Method: captureUnit
+	Same as addUnit, but also ungroups the unit if it's in a group. Should be used only on vehicles/cargo boxes.
+
+	Threading: should be called through postMethod (see <MessageReceiverEx>)
+
+	Parameters: _unit
+
+	_unit - <Unit> object
+
+	Returns: nil
+	*/
+	METHOD("captureUnit") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+
+		// Warn if used on infantry
+		if (CALLM0(_unit, "isInfantry")) exitWith {
+			OOP_ERROR_1("Capture unit must not be used for infantry units! Unit: %1", CALLM0(_unit, "getData"));
+		};
+
+		pr _group = CALLM0(_unit, "getGroup");
+
+		// Ungroup the unit if it's in a group
+		if (!IS_NULL_OBJECT(_group)) then {
+			CALLM1(_group, "removeUnit", _unit);
+		};
+
+		T_CALLM1("addUnit", _unit);
+
+	} ENDMETHOD;
 
 	/*
 	Method: removeUnit
@@ -1371,8 +1424,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		private _groupUnits = CALL_METHOD(_group, "getUnits", []);
 		private _units = GET_VAR(_thisObject, "units");
 		{
+			// Add to units array
 			_units pushBackUnique _x;
 			
+			// Move all cargo of this unit too!
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (_unitAI != "") then {
+				pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
+				{
+					_units pushBackUnique _x;
+
+					// Add to the efficiency vector
+					CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+					CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+				} forEach _unitCargo;
+			};
+
 			// Add to the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
 			CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
@@ -1455,6 +1522,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _units = GET_VAR(_thisObject, "units");
 		{
 			_units deleteAt (_units find _x);
+
+			// Remove all cargo of this unit too!
+			pr _unitAI = CALLM0(_x, "getAI");
+			if (_unitAI != "") then {
+				pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
+				{
+					_units deleteAt (_units find _x);
+
+					// Remove from the efficiency vector
+					CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+					CALLM3(_thisObject, "decreaseCounters", _catID, _subcatID, _className);
+				} forEach _unitCargo;
+			};
 			
 			// Substract from the efficiency vector
 			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
@@ -1522,9 +1602,22 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[P_THISOBJECT, P_OOP_OBJECT("_garrison")];
 		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
 
+		// Bail if adding myself
+		if (_thisObject == _garrison) exitWith {
+			OOP_ERROR_0("Attempt to add garrison to itself");
+		};
+ 
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_ERROR_0("addGarrison: this garrison is destroyed!");
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			nil
+		};
+
+		if(IS_GARRISON_DESTROYED(_garrison)) exitWith {
+			OOP_ERROR_1("addGarrison: garrison is destroyed: %1", _garrison);
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 			nil
@@ -1562,6 +1655,63 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 		
 		nil
+	} ENDMETHOD;
+
+	/*
+	Method: capturesGarrison
+	Captures all units from another garrison to this one. The other garrison must not have any infantry.
+	See difference between <addUnit> and <captureUnit>.
+	
+	Parameters: _garrison, _destroy
+	
+	_garrison - <Garrison> object
+	_destroy - bool, default true, will destroy the source garrison on success.
+	
+	Returns: nil
+	*/
+	METHOD("captureGarrison") {
+		params[P_THISOBJECT, P_OOP_OBJECT("_garrison"), P_BOOL_DEFAULT_TRUE("_destroy")];
+		ASSERT_OBJECT_CLASS(_garrison, "Garrison");
+
+		// Bail if captureing myself
+		if (_thisObject == _garrison) exitWith {
+			OOP_ERROR_0("Attempt to capture the same garrison");
+		};
+
+		__MUTEX_LOCK;
+
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			OOP_ERROR_0("captureGarrison: this garrison is destroyed!");
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			nil
+		};
+
+		if(IS_GARRISON_DESTROYED(_garrison)) exitWith {
+			OOP_ERROR_1("captureGarrison: garrison is destroyed: %1", _garrison);
+			WARN_GARRISON_DESTROYED;
+			__MUTEX_UNLOCK;
+			nil
+		};
+
+		// Bail if source garrison has infantry
+		if (GETV(_garrison, "countInf") > 0) exitWith {
+			OOP_ERROR_1("Cant capture a garrison which has infantry: %1", _garrison);
+		};
+
+		// Capture all units
+		pr _srcUnits = GETV(_garrison, "units");
+		{
+			T_CALLM1("captureUnit", _x);
+		} forEach _srcUnits;
+
+		// Destroy the source garrison
+		if (_destroy) then {
+			CALLSM2("AICommander", "unregisterGarrison", _garrison, true); // Unregister and destroy
+		};
+
+		__MUTEX_UNLOCK;
+
 	} ENDMETHOD;
 	
 	/*

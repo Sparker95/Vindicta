@@ -306,6 +306,7 @@ CLASS("IntelLocation", "Intel")
 		pr _pos = GETV(_intel, "pos");
 		pr _side = GETV(_intel, "side");
 		pr _mrkType = "unknown";
+		/*
 		pr _text = "??";
 		if (_type != LOCATION_TYPE_UNKNOWN) then {
 			pr _t = CALL_STATIC_METHOD("ClientMapUI", "getNearestLocationName", [_pos]);
@@ -315,6 +316,7 @@ CLASS("IntelLocation", "Intel")
 				_text = _t;
 			};
 		};
+		*/
 
 		pr _color = switch(_side) do { // See colors defined right above the class
 			case WEST: {[COLOR_WEST, "ColorWEST"]};

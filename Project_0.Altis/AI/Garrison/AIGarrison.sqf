@@ -194,6 +194,25 @@ CLASS("AIGarrison", "AI_GOAP")
 			};
 		};
 
+		// Check if we can capture other garrisons attached to this place
+		pr _loc = CALLM0(_gar, "getLocation");
+		if (!IS_NULL_OBJECT(_loc)) then {										// Copture something only if we are at location
+			pr _side = CALLM0(_gar, "getSide");									
+			if ((CALLM0(_gar, "countInfantryUnits") > 0) ||						// We must have some infantry ...
+				{ _side in CALLM0(_loc, "getPlayerSides") } ) then {				// ... or some friendly players at this location
+				pr _otherGars = CALLM1(_loc, "getGarrisons", CIVILIAN); 		// Get all garrisons of any sides
+				{																// Iterate those garrisons
+					if (_x != _gar) then {										// We can't capture ourselves...
+						if (CALLM0(_x, "getSide") != CIVILIAN) then {			// We aren't commies to capture civilian property...
+							if (CALLM0(_x, "countInfantryUnits") == 0) then {	// We can't capture a garrison which has infantry...
+								CALLM1(_gar, "captureGarrison", _x);			// Now all your units are belong to us!
+							};
+						};
+					};
+				} forEach _otherGars;
+			};
+		};
+
 		// Add a "spawned" field to profiling output 
 		PROFILE_ADD_EXTRA_FIELD("spawned", GETV(_gar, "spawned"));
 		

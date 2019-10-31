@@ -13,7 +13,10 @@
 Class : TacticalTablet
 
 SQF class made to help streamline use of dialogs with standard appearence.
-It has a headline, close button, hint bar, and an optinal multi-tab capability. 
+It has a headline, close button, hint bar, and an optinal multi-tab capability.
+
+It has methods for singleton class template: newInstance, deleteInstance, getInstance.
+To use them, you must add a static variable "instance" to your class.
 */
 
 #define pr private
@@ -127,6 +130,43 @@ CLASS("DialogBase", "")
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
 	} ENDMETHOD;
 
+	// = = = = = = = = = = = = = = = = = = = = =
+	// Singleton class template
+	STATIC_METHOD("newInstance") {
+		params [P_THISCLASS, P_ARRAY("_constructorArguments")];
+
+		pr _inst = GETSV(_thisClass, "instance");
+		// Bail if it already exists
+		if (!IS_NULL_OBJECT(_inst)) exitWith {
+			_inst
+		};
+
+		// Create the object
+		_inst = NEW(_thisClass, _constructorArguments);
+		SETSV(_thisClass, "instance", _inst);
+
+		_inst
+	} ENDMETHOD;
+
+	STATIC_METHOD("deleteInstance") {
+		params [P_THISCLASS];
+
+		pr _inst = GETSV(_thisClass, "instance");
+		if (!IS_NULL_OBJECT(_inst)) then {
+			DELETE(_inst);
+			SETSV(_thisClass, "instance", NULL_OBJECT);
+		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("getInstance") {
+		params [P_THISCLASS];
+		pr _inst = GETSV(_thisClass, "instance");
+		if (isNil "_inst") exitWith {NULL_OBJECT};
+		_inst
+	} ENDMETHOD;
+
+	// = = = = = = = = = = = = = = = = = = = = =
+
 	// Adds an event handler which will run in the destructor of this dialog
 	METHOD("onDelete") {
 		params [P_THISOBJECT, P_CODE("_code")];
@@ -164,6 +204,11 @@ CLASS("DialogBase", "")
 		uiNamespace getVariable [_thisObject+__DISPLAY_SUFFIX, displayNull]
 	} ENDMETHOD;
 
+	METHOD("getContentSize") {
+		params [P_THISOBJECT];
+		[T_GETV("contentW"), T_GETV("contentH")]
+	} ENDMETHOD;
+
 	// Performs one-time resize of controls according to dialog content size
 	METHOD("resize") {
 		params [P_THISOBJECT, P_NUMBER("_contentw"), P_NUMBER("_contenth")];
@@ -175,13 +220,20 @@ CLASS("DialogBase", "")
 		pr _fullw = _contentw;
 		if (_multiTab) then {_fullw = _fullw + DIALOG_BASE_GROUP_TAB_BUTTONS_W; };
 		pr _fullh = _contenth + DIALOG_BASE_STATIC_HEADLINE_H + DIALOG_BASE_STATIC_HINTS_H;
+
+		// Offset position of the controls to center everything
+		// todo should have put everything into a control instead...
+		pr _ox = 0.5 - 0.5*_fullw;
+		pr _oy = 0.5 - 0.5*_fullh;
+
+		// Background position
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_BACKGROUND;
-		_ctrl ctrlSetPosition [0, 0, _fullw, _fullh];
+		_ctrl ctrlSetPosition [0 + _ox, 0 + _oy, _fullw, _fullh];
 		_ctrl ctrlCommit 0;
 
 		// Headline
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_HEADLINE;
-		_ctrl ctrlSetPosition [0, 0, _fullw, DIALOG_BASE_STATIC_HEADLINE_H];
+		_ctrl ctrlSetPosition [0 + _ox, 0 + _oy, _fullw, DIALOG_BASE_STATIC_HEADLINE_H];
 		_ctrl ctrlCommit 0;
 
 		// Top-right buttons
@@ -189,11 +241,11 @@ CLASS("DialogBase", "")
 		pr _bquestx = _fullw - 2*DIALOG_BASE_BUTTON_CLOSE_W;
 		// Close btn
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_BUTTON_CLOSE;
-		_ctrl ctrlSetPosition [_bclosex, 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
+		_ctrl ctrlSetPosition [_ox + _bclosex, _oy + 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
 		_ctrl ctrlCommit 0;
 		// Question btn
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_BUTTON_QUESTION;
-		_ctrl ctrlSetPosition [_bquestx, 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
+		_ctrl ctrlSetPosition [_ox + _bquestx, _oy+ 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
 		_ctrl ctrlCommit 0;
 
 		// Hint bar
@@ -205,16 +257,16 @@ CLASS("DialogBase", "")
 		};
 		pr _hinty = _fullh - DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_HINTS;
-		_ctrl ctrlSetPosition [_hintx, _hinty, _hintw, DIALOG_BASE_STATIC_HINTS_H];
+		_ctrl ctrlSetPosition [_ox + _hintx, _oy + _hinty, _hintw, DIALOG_BASE_STATIC_HINTS_H];
 		_ctrl ctrlCommit 0;
 
 		// Group of tab buttons and its BG
 		pr _tbgrouph = _fullh - DIALOG_BASE_STATIC_HEADLINE_H; //- DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_GROUP_TAB_BUTTONS;
-		_ctrl ctrlSetPosition [0, DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
+		_ctrl ctrlSetPosition [_ox + 0, _oy + DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
 		_ctrl ctrlCommit 0;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_TAB_BUTTONS_BACKGROUND;
-		_ctrl ctrlSetPosition [0, DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
+		_ctrl ctrlSetPosition [_ox + 0, _oy + DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
 		_ctrl ctrlCommit 0;
 
 		// Current tab control
@@ -225,8 +277,11 @@ CLASS("DialogBase", "")
 			if (_multitab) then {
 				_contentx = _contentx + DIALOG_BASE_GROUP_TAB_BUTTONS_W;
 			};
-			_ctrl ctrlSetPosition [_contentx, DIALOG_BASE_STATIC_HEADLINE_H, T_GETV("contentW"), T_GETV("contentH")];
+			_ctrl ctrlSetPosition [_ox + _contentx, _oy + DIALOG_BASE_STATIC_HEADLINE_H, T_GETV("contentW"), T_GETV("contentH")];
 			_ctrl ctrlCommit 0;
+
+			// Call user-defined resize of the tab
+			CALLM2(_tabobj, "resize", T_GETV("contentW"), T_GETV("contentH"));
 		};
 
 	} ENDMETHOD;
@@ -249,7 +304,7 @@ CLASS("DialogBase", "")
 
 	// Returns new tab ID
 	METHOD("addTab") {
-		params [P_THISOBJECT, P_STRING("_tabClass"), P_STRING("_tabText")];
+		params [P_THISOBJECT, P_STRING("_tabClass"), P_STRING("_tabText"), P_ARRAY("_tabParameters")];
 
 		pr _display = T_CALLM0("getDisplay");
 
@@ -325,6 +380,17 @@ CLASS("DialogBase", "")
 		T_CALLM2("resize", T_GETV("contentW"), T_GETV("contentH"));
 
 		T_SETV("currentTabID", _tabID);
+	} ENDMETHOD;
+
+	/*
+	Method: getCurrentTab
+
+	Returns current tab object
+	*/
+	METHOD("getCurrentTab") {
+		params [P_THISOBJECT];
+
+		T_GETV("currentTabObj");
 	} ENDMETHOD;
 
 	// Overridable methods

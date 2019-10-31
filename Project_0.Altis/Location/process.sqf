@@ -57,8 +57,16 @@ switch (T_GETV("spawned")) do {
 			T_SETV("hasPlayers", false);
 		} else {
 			// Check if there are any players inside this location
-			pr _index = allPlayers findIf {T_CALLM1("isInBorder", _x)};
-			T_SETV("hasPlayers", _index != -1);
+			pr _playersInLoc = allPlayers select {T_CALLM1("isInBorder", _x)};
+			if (count _playersInLoc > 0) then {
+				pr _playerSides = _playersInLoc apply {side group _x};
+				pr _arraySides = _playerSides arrayIntersect _playerSides;
+				T_SETV("hasPlayerSides", _arraySides);
+				T_SETV("hasPlayers", true);
+			} else {
+				T_SETV("hasPlayers", false);
+				T_GETV("hasPlayerSides") resize 0;
+			};			
 		};
 	}; // case 1
 }; // switch spawn state

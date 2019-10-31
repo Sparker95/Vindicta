@@ -40,7 +40,7 @@ CLASS("AIUnit", "AI_GOAP")
 	} ENDMETHOD;
 
 	// Common interface
-	/* virtual */ METHOD("getCargo") {
+	/* virtual */ METHOD("getCargoUnits") {
 		[]
 	} ENDMETHOD;
 

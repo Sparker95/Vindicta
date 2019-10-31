@@ -113,6 +113,23 @@ pr0_fnc_toggleMarkers = {
 	} ] remoteExec ["call", 2];
 }] call pr0_fnc_addDebugMenuItem;
 
+["Dump", "All locations", {
+	[[], {
+		// {
+		// 	_x call OOP_dumpAsJson;
+		// } forEach CALLSM0("Location", "getAll");
+		CALLSM0("Location", "getAll") call OOP_dumpAsJson;
+	} ] remoteExec ["call", 2];
+}] call pr0_fnc_addDebugMenuItem;
+
+["Add", "Add friendly inf to this location", {
+	private _loc = CALLSM1("Location", "getLocationAtPos", getpos player);
+	if (!IS_NULL_OBJECT(_loc)) then {
+		private _AI = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc]);
+	};
+}] call pr0_fnc_addDebugMenuItem;
+
 #else
 
 pr0_fnc_addDebugMenuItem = {};

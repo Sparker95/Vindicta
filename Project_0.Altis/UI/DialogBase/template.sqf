@@ -10,12 +10,18 @@
 
 CLASS("MyTab", "DialogTabBase")
 
-	METHOD("createControl") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
+	METHOD("new") {
+		params [P_THISOBJECT];
+		
+		// Example of how to create the controls for derived tab classes		
+		pr _displayParent = T_CALLM0("getDisplay");
+		pr _ctrl = _displayParent ctrlCreate ["MUI_BASE", -1];
+		_ctrl ctrlSetPosition [0, 0, 0.5, 0.5];
+		_ctrl ctrlSetBackgroundColor [0.6, 0.1, 0.1, 0.8];
+		_ctrl ctrlSetText _thisObject;
+		_ctrl ctrlCommit 2.0;
 
-		pr _group = _displayParent ctrlCreate ["TAB_CMDR", -1];
-
-		_group
+		T_CALLM1("setControl", _ctrl);
 	} ENDMETHOD;
 
 ENDCLASS;

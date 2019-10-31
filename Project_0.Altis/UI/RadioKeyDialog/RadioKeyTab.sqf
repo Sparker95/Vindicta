@@ -20,27 +20,23 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		T_SETV("state", 0);
 		SETSV("RadioKeyTab", "instance", _thisObject);
 
-		//0 spawn {
-			//sleep 0.1;
-			pr _args = [playerSide, clientOwner];
-			REMOTE_EXEC_CALL_STATIC_METHOD("AICommander", "staticClientRequestRadioKeys", _args, 2, false); // Call it on server
-		//};
+		// Create controls
+		pr _displayParent = T_CALLM0("getDisplay");
+		pr _group = _displayParent ctrlCreate ["RadioKeyTab", -1];
+		T_CALLM1("setControl", _group);
+
+		// Add button event handler
+		T_CALLM3("controlAddEventHandler", "BUTTON_ADD_KEY", "buttonClick", "onButtonAddKey");
+
+		// Ask for radio keys from server
+		pr _args = [playerSide, clientOwner];
+		REMOTE_EXEC_CALL_STATIC_METHOD("AICommander", "staticClientRequestRadioKeys", _args, 2, false); // Call it on server
 	} ENDMETHOD;
 
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
 		SETSV("RadioKeyTab", "instance", nil);
-	} ENDMETHOD;
-
-	METHOD("createControl") {
-		params [P_THISOBJECT, ["_displayParent", displayNull, [displayNull]]];
-		pr _group = _displayParent ctrlCreate ["RadioKeyTab", -1];
-
-		// Add button event handler
-		T_CALLM3("controlAddEventHandler", "BUTTON_ADD_KEY", "buttonClick", "onButtonAddKey");
-
-		_group
 	} ENDMETHOD;
 
 	METHOD("getInstance") {

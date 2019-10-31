@@ -28,13 +28,13 @@ Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCar
 
 // Add CBA ACE event handler for loading cargo
 #ifndef _SQF_VM
-if (isNil "Unit_aceCargoLoaded_EH") then {
+if (isNil "Unit_aceCargoLoaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoLoaded_EH = ["ace_cargoLoaded", 
 	{
 		_this call Unit_fnc_EH_aceCargoLoaded;
 	}] call CBA_fnc_addEventHandler;
 };
-if (isNil "Unit_aceCargoUnloaded_EH") then {
+if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs this event
 	Unit_aceCargoUnloaded_EH = ["ace_cargoUnloaded", 
 	{
 		_this call Unit_fnc_EH_aceCargoUnloaded;
@@ -510,7 +510,7 @@ CLASS(UNIT_CLASS_NAME, "");
 		// Set variables of the object
 		if (!isNull _hO) then {
 			// Variable with a reference to Unit object
-			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject];
+			_hO setVariable [UNIT_VAR_NAME_STR, _thisObject, true]; // Global variable!
 			pr _cat = _data select UNIT_DATA_ID_CAT;
 			pr _subcat = _data select UNIT_DATA_ID_SUBCAT;
 			
@@ -563,12 +563,12 @@ CLASS(UNIT_CLASS_NAME, "");
 		};
 		
 		// HandleDamage for infantry
-		diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
+		//diag_log format ["Trying to add damage EH. Objects owner: %1, my clientOwner: %2", owner _hO, clientOwner];
 		if (_data select UNIT_DATA_ID_CAT == T_INF && {owner _hO in [0, clientOwner]}) then { // We only add handleDamage to the units which we own. 0 is owner ID of a just-created unit
 			if (isNil {_hO getVariable UNIT_EH_DAMAGE_STR}) then {
 				_hO removeAllEventHandlers "handleDamage";
 				pr _ehid = _hO addEventHandler ["handleDamage", Unit_fnc_EH_handleDamageInfantry];
-				diag_log format ["Added damage event handler: %1", _thisObject];
+				//diag_log format ["Added damage event handler: %1", _thisObject];
 				_hO setVariable [UNIT_EH_DAMAGE_STR, _ehid];
 			};
 		};
@@ -994,6 +994,15 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data#UNIT_DATA_ID_LOCATION
 	} ENDMETHOD;
 
+	/*
+	Method: getCategory
+	Returns category ID, number
+	*/
+	METHOD("getCategory") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		_data#UNIT_DATA_ID_CAT
+	} ENDMETHOD;
 
 	//                     H A N D L E   K I L L E D
 	/*
@@ -1387,15 +1396,7 @@ CLASS(UNIT_CLASS_NAME, "");
 			//OOP_INFO_0("  no limited arsenal at this unit");
 
 			// There is no limited arsenal, it's a plain cargo container
-			pr _magCargo = getMagazineCargo _hO;
-			pr _index = _magCargo#0 find "vin_build_res_0";
-			if (_index != -1) then {
-				pr _amount = _magCargo#1#_index;
-				pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
-				_amount * _buildResPerMag
-			} else {
-				0
-			};
+			CALLSM1("Unit", "getVehicleBuildResources", _hO)
 		} else {
 			// There is a limited arsenal
 			_dataList = _hO getVariable "jna_dataList";
@@ -1424,7 +1425,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	} ENDMETHOD;
 
 	STATIC_METHOD("getInfantryBuildResources") {
-		params [P_THISOBJECT, P_OBJECT("_hO")];
+		params [P_THISCLASS, P_OBJECT("_hO")];
 		pr _items = (uniformItems _hO) + (vestItems _hO) + (backpackitems _hO);
 		pr _nItems = {_x == "vin_build_res_0"} count _items;
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
@@ -1432,7 +1433,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	} ENDMETHOD;
 
 	STATIC_METHOD("removeInfantryBuildResources") {
-		params [P_THISOBJECT, P_OBJECT("_hO"), P_NUMBER("_value")];
+		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
 		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
 		pr _nItemsToRemove = round (_value / _buildResPerMag);
 		pr _i = 0;
@@ -1440,6 +1441,32 @@ CLASS(UNIT_CLASS_NAME, "");
 			_hO removeMagazine "vin_build_res_0";
 			_i = _i + 1;
 		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("getVehicleBuildResources") {
+		params [P_THISCLASS, P_OBJECT("_hO")];
+
+		pr _magCargo = getMagazineCargo _hO;
+		pr _index = _magCargo#0 find "vin_build_res_0";
+		if (_index != -1) then {
+			pr _amount = _magCargo#1#_index;
+			pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+			_amount * _buildResPerMag
+		} else {
+			0
+		};
+	} ENDMETHOD;
+
+	STATIC_METHOD("removeVehicleBuildResources") {
+		params [P_THISCLASS, P_OBJECT("_hO"), P_NUMBER("_value")];
+
+		// Bail if negative number is passed
+		if (_value < 0) exitWith {};
+
+		pr _buildResPerMag = getNumber (configfile >> "CfgMagazines" >> "vin_build_res_0" >> "buildResource");
+		pr _nItemsToRemove = ceil (_value/_buildResPerMag);
+
+		[_hO, "vin_build_res_0", _nItemsToRemove] call CBA_fnc_removeMagazineCargo;
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

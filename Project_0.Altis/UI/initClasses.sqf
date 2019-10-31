@@ -15,11 +15,12 @@ call compile preprocessFileLineNumbers "UI\Snek\Snek.sqf";
 call compile preprocessFileLineNumbers "UI\BuildUI\BuildFunctions.sqf";
 call compile preprocessFileLineNumbers "UI\BuildUI\BuildUI.sqf";
 
-call compile preprocessFileLineNumbers "UI\DialogBase\DialogBase.sqf";
-call compile preprocessFileLineNumbers "UI\DialogBase\DialogTabBase.sqf";
+call compile preprocessFileLineNumbers "UI\DialogBase\initClasses.sqf";
 
 call compile preprocessFileLineNumbers "UI\InGameMenu\initClasses.sqf";
 
 call compile preprocessFileLineNumbers "UI\RadioKeyDialog\initClasses.sqf";
 
 call compile preprocessFileLineNumbers "UI\TacticalTablet\TacticalTablet.sqf";
+
+call compile preprocessFileLineNumbers "UI\AttachToGarrisonDialog\AttachToGarrisonDialog.sqf";
