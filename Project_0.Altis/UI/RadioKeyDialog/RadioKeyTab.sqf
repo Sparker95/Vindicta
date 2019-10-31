@@ -23,6 +23,7 @@ CLASS("RadioKeyTab", "DialogTabBase")
 		// Create controls
 		pr _displayParent = T_CALLM0("getDisplay");
 		pr _group = _displayParent ctrlCreate ["RadioKeyTab", -1];
+		T_CALLM1("setControl", _group);
 
 		// Add button event handler
 		T_CALLM3("controlAddEventHandler", "BUTTON_ADD_KEY", "buttonClick", "onButtonAddKey");

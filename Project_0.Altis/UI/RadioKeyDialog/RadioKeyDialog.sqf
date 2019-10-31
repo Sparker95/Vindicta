@@ -14,10 +14,10 @@ CLASS("RadioKeyDialog", "DialogBase")
 		T_CALLM2("addTab", "RadioKeyTab", "");
 		
 		T_CALLM1("enableMultiTab", false);
-		T_CALLM1("setCurrentTab", 0);
 		T_CALLM2("setContentSize", 0.7, 1.0);
+		T_CALLM1("setCurrentTab", 0);
 		T_CALLM1("setHeadlineText", "Manage radio cryptokeys");
-		T_CALLM1("setHintText", "Check enemy tablets to find their radio cryptokeys");
+		T_CALLM1("setHintText", "Hint: Check enemy tablets to find their radio cryptokeys");
 
 	} ENDMETHOD;
 
