@@ -66,6 +66,8 @@ CLASS("Location", "MessageReceiverEx")
 
 	VARIABLE("hasRadio"); // Bool, means that this location has a radio
 
+	VARIABLE("wasOccupied"); // Bool, false at start but sets to true when garrisons are attached here
+
 	STATIC_VARIABLE("all");
 
 	// |                              N E W
@@ -116,6 +118,10 @@ CLASS("Location", "MessageReceiverEx")
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
 
 		T_SETV("hasRadio", false);
+
+		SET_VAR_PUBLIC(_thisObject, "wasOccupied", false);
+		T_SETV("wasOccupied", false);
+
 
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);
@@ -421,6 +427,9 @@ CLASS("Location", "MessageReceiverEx")
 				CALLM0(_gmdata, "updatePlayerRespawn");
 			};	
 		};
+
+		// From now on this place is occupied or was occupied
+		SET_VAR_PUBLIC(_thisObject, "wasOccupied", true);
 	} ENDMETHOD;
 	
 	METHOD("unregisterGarrison") {
@@ -587,6 +596,15 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("hasRadio") {
 		params [P_THISOBJECT];
 		T_GETV("hasRadio")
+	} ENDMETHOD;
+
+	/*
+	Method: wasOccupied
+	Returns value of wasOccupied variable.
+	*/
+	METHOD("wasOccupied") {
+		params [P_THISOBJECT];
+		T_GETV("wasOccupied")
 	} ENDMETHOD;
 
 	STATIC_METHOD("findRoadblocks") {

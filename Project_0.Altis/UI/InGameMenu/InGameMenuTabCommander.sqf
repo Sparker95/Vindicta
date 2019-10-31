@@ -70,6 +70,13 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_BUTTON_CREATE_LOC");
 			_ctrl ctrlSetText "CLAIM";
 
+			// Check if we are trying to claim a city
+			if (CALLM0(_currentLoc, "getType") == LOCATION_TYPE_CITY) then {
+				_ctrl ctrlSetTooltip "We can't claim a city!";
+				_ctrl ctrlEnable false;
+			};
+
+			// Check if we already own this place
 			pr _result0 = CALLM2(gIntelDatabaseClient, "getFromIndex", "location", _currentLoc);
 			pr _result1 = CALLM2(gIntelDatabaseClient, "getFromIndex", OOP_PARENT_STR, "IntelLocation");
 			//OOP_INFO_2("Intel result: %1 %2", _result0, _result1);
@@ -86,20 +93,29 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 			_ctrl ctrlSetText "Claim a location";
 
 			// Set cost text
-			pr _locBorder = CALLM0(_currentLoc, "getBorder");
-			_locBorder params ["_borderPos", "_a", "_b", "_angle", "_isRectangle"];
-			pr _borderArea = if (_isRectangle) then {
-				_a*_b*4
-			} else {
-				3.14*_a*_b
+			pr _buildResCost = 0;
+			// If location was never occupied, we require some build resources to occupy it
+			// If it was occupied before, it's free \o/
+			// You just need to let potential enemies go away or kill them
+			if (!CALLM0(_currentLoc, "wasOccupied")) then {
+				// This place was never occupied, calculate the cost
+				pr _locBorder = CALLM0(_currentLoc, "getBorder");
+				_locBorder params ["_borderPos", "_a", "_b", "_angle", "_isRectangle"];
+				pr _borderArea = if (_isRectangle) then {
+					_a*_b*4
+				} else {
+					3.14*_a*_b
+				};
+				pr _borderLinearSize = sqrt _borderArea;
+				pr _buildResPerSize = CREATE_LOCATION_COST / (sqrt (3.14*50*50)); // We require CREATE_LOCATION_COST build res for a circle with 50 meter radius
+				_buildResCost = _borderLinearSize * _buildResPerSize;
+				_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
 			};
-			pr _borderLinearSize = sqrt _borderArea;
-			pr _buildResPerSize = CREATE_LOCATION_COST / (sqrt (3.14*50*50)); // We require CREATE_LOCATION_COST build res for a circle with 50 meter radius
-			pr _buildResCost = _borderLinearSize * _buildResPerSize;
-			_buildResCost = 10 * (ceil (_buildResCost / 10) ); // Round it to nearest 10 up
+			
+			// Set cost text
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_STATIC_BUILD_RESOURCES");
 			_ctrl ctrlSetText (format ["%1 construction resources", _buildResCost]);
-			T_SETV("buildResourcesCost", _buildResCost);
+			T_SETV("buildResourcesCost", _buildResCost); // Store the cost, we will check it later when button is pushed
 
 			// Set name text
 			pr _ctrl = T_CALLM1("findControl", "TAB_CMDR_EDIT_LOC_NAME");

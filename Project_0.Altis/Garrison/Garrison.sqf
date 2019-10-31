@@ -338,6 +338,16 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
 
+	METHOD("lock") {
+		params [P_THISOBJECT];
+		__MUTEX_LOCK;
+	} ENDMETHOD;
+
+	METHOD("unlock") {
+		params [P_THISOBJECT];
+		__MUTEX_UNLOCK;
+	} ENDMETHOD;
+
 	/*
 	Method: (static) getAllActive
 	Returns all garrisons
