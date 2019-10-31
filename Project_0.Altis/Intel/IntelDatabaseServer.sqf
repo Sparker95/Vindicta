@@ -29,7 +29,7 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_item);
 			private _side = T_GETV("side");
-			_thisObject = nil;
+			_thisObject = nil; // Otherwise it gets passed into inner scope of remoteExecCall on local machine
 			_thisClass = nil;
 			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], _side, _item);
 		};
@@ -45,7 +45,7 @@ CLASS("IntelDatabaseServer", "IntelDatabase")
 			// Broadcast the message
 			private _serialIntel = SERIALIZE(_itemDst);
 			private _side = T_GETV("side");
-			_thisObject = nil;
+			_thisObject = nil; // Otherwise it gets passed into inner scope of remoteExecCall on local machine
 			_thisClass = nil;
 			REMOTE_EXEC_CALL_STATIC_METHOD("IntelDatabaseClient", "updateIntelClient", [_serialIntel], _side, _itemDst);
 		};
