@@ -257,4 +257,16 @@ CLASS("MessageLoop", "");
 		};
 	} ENDMETHOD;
 
+	METHOD("lock") {
+		params [P_THISOBJECT];
+		pr _mutex = T_GETV("mutex");
+		MUTEX_LOCK(_mutex);
+	} ENDMETHOD;
+
+	METHOD("unlock") {
+		params [P_THISOBJECT];
+		pr _mutex = T_GETV("mutex");
+		MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
+
 ENDCLASS;

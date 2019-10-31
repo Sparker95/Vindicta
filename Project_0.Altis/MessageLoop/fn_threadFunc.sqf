@@ -72,6 +72,10 @@ while {true} do {
 	//Do we have anything in the queue?
 
 	if ( (count _msgQueue) > 0 ) then {
+
+		// Lock mutex
+		MUTEX_LOCK(_mutex);
+
 		private _countMessages = 0;
 		private _countMessagesMax = T_GETV("nMessagesInSeries");
 		while {(count _msgQueue) > 0 && _countMessages < _countMessagesMax} do {
@@ -139,12 +143,18 @@ while {true} do {
 
 			_countMessages = _countMessages + 1;
 		};
+
+		// Unlock mutex
+		MUTEX_UNLOCK(_mutex);
 	};
 
 	// Process the process categories
 	pr _count = count _processCategories;
 	if (_count > 0) then {
 		
+		// Lock the mutex
+		MUTEX_LOCK(_mutex);
+
 		// Calculate time spent by each process category
 		pr _fractionsCurrent = _processCategories apply {
 			private _countObjects = count (_x select __PC_ID_OBJECTS);
@@ -289,6 +299,9 @@ while {true} do {
 			_nextProcessLogTime = time + 5;
 		};
 		#endif
+
+		// Unlock the mutex
+		MUTEX_UNLOCK(_mutex);
 	};
 
 	// Give time to other threads in the SQF scheduler

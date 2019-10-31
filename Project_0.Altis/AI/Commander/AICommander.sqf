@@ -1570,11 +1570,19 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 
 		// Check if there are still enemy forces here
 		pr _thisSide = T_GETV("side");
+		CALLM0(gMessageLoopMain, "lock");
 		pr  _garsEnemy = CALLM1(_loc, "getGarrisons", CIVILIAN) select {
 			pr _side = CALLM0(_x, "getSide");
 			_side != _thisSide
 			&& _side != CIVILIAN
 			&& (CALLM0(_x, "countInfantryUnits") > 0)
+		};
+		CALLM0(gMessageLoopMain, "unlock");
+
+		// Bail if this place is still occupied by enemy
+		if (count _garsEnemy > 0) exitWith {
+			pr _args = ["We can't capture this place because enemies still control it!"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabCommander", "showServerResponse", _args, _clientOwner, false);
 		};
 
 		// Remove build resources from player or vehicle
