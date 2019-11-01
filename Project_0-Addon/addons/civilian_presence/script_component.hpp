@@ -1,5 +1,5 @@
-#define COMPONENT civilianPresence
-#define COMPONENT_BEAUTIFIED CivilianPresence
+#define COMPONENT civilian_presence
+#define COMPONENT_BEAUTIFIED Civilian_Presence
 #include "\z\project_0\addons\main\script_mod.hpp"
 
 // #define DEBUG_MODE_FULL
