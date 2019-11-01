@@ -22,7 +22,7 @@ if (!IS_SERVER) then {
 };
 #endif
 
-#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
+//#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
 #ifdef DISABLE_MISSION_INIT
 if(true) exitWith { 
 	0 spawn {
@@ -39,8 +39,8 @@ if(true) exitWith {
 
 if(IS_SERVER) then {
 	gGameModeName = switch (PROFILE_NAME) do {
-		//case "Sparker": 	{ "CivilWarGameMode" };  // "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
-		case "Sparker": 	{ "EmptyGameMode" };
+		case "Sparker": 	{ "CivilWarGameMode" };  // "RedVsGreenGameMode" }; //"CivilWarGameMode" }; // "EmptyGameMode"
+		//case "Sparker": 	{ "EmptyGameMode" };
 		case "billw": 		{ "CivilWarGameMode" };
 		case "Jeroen not": 	{ "EmptyGameMode" };
 		case "Marvis": 	{ "EmptyGameMode" };

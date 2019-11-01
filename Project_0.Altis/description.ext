@@ -9,7 +9,9 @@ allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
 enableDebugConsole = 2;
 
-
+// Enables createVehicleLocal
+// todo: we might want to redo out build UI to work with CreateSimpleObject local
+unsafeCVL = 1;
 
 // ---- Respawn ----
 respawn = 3;
