@@ -135,6 +135,7 @@ CLASS("ActionGroupArrest", "ActionGroup")
 		{
 			pr _unitAI = CALLM0(_x, "getAI");
 			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitArrest", "");
+			CALLM2(_unitAI, "deleteExternalGoal", "GoalUnitShootLegTarget", "");
 		} forEach _units;
 		
 	} ENDMETHOD;
