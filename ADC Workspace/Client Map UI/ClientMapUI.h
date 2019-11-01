@@ -214,6 +214,7 @@ class ClientMapUI
 			x = safeZoneX + safeZoneW * 0.56927084;
 			y = safeZoneY + safeZoneH * 0.93981482;
 			w = safeZoneW * 0.06041667;
+			style = 2;
 			text = "[X] Show intel";
 			borderSize = 0;
 			sizeEx = safeZoneH*0.02;
@@ -264,6 +265,49 @@ class ClientMapUI
 			};
 			
 		};
+		class CMUI_STATIC_SHOW_INTEL : MUI_BASE 
+		{
+			type = 0;
+			idc = IDC_LOCP_TABCAT;
+			x = safeZoneX + safeZoneW * 0.80;
+			y = safeZoneY + safeZoneH * 0.07;
+			w = safeZoneW * 0.06;
+			h = safeZoneH * 0.02;
+			style = 2;
+			text = "Show intel:";
+			colorBackground[] = {0,0,0,1};
+			colorText[] = {1,1,1,1};
+			font = "PuristaMedium";
+			sizeEx = safeZoneH * 0.02;
+			blinkingPeriod = 0;
+			fixedWidth = false;
+			lineSpacing = 0;
+			moving = false;
+			onCanDestroy = "";
+			onChar = "";
+			onDestroy = "";
+			onIMEChar = "";
+			onIMEComposition = "";
+			onJoystickButton = "";
+			onKeyDown = "";
+			onKeyUp = "";
+			onKillFocus = "";
+			onLoad = "";
+			onMouseButtonDblClick = "";
+			onMouseButtonDown = "";
+			onMouseButtonUp = "";
+			onMouseEnter = "";
+			onMouseExit = "";
+			onMouseMoving = "";
+			onMouseZChanged = "";
+			onSetFocus = "";
+			onTimer = "";
+			onVideoStopped = "";
+			shadow = 0;
+			tileH = 0;
+			tileW = 0;
+			
+		};
 		class CMUI_BUTTON_INTEL_INACTIVE : MUI_BUTTON_TXT 
 		{
 			type = 1;
@@ -272,7 +316,7 @@ class ClientMapUI
 			y = safeZoneY + safeZoneH * 0.09074075;
 			w = safeZoneW * 0.06041667;
 			h = safeZoneH * 0.02037038;
-			style = 192+0;
+			style = 0;
 			text = "[X] Inactive";
 			borderSize = 0;
 			colorBackground[] = {0,0,0,1};
@@ -322,11 +366,6 @@ class ClientMapUI
 			onTimer = "";
 			onVideoStopped = "";
 			shadow = 0;
-			fixedWidth = false;
-			lineSpacing = 0;
-			moving = false;
-			tileH = 0;
-			tileW = 0;
 			
 		};
 		class CMUI_BUTTON_INTEL_ACTIVE : MUI_BUTTON_TXT 
@@ -337,7 +376,7 @@ class ClientMapUI
 			y = safeZoneY + safeZoneH * 0.11111112;
 			w = safeZoneW * 0.05989584;
 			h = safeZoneH * 0.02037038;
-			style = 192+0;
+			style = 0;
 			text = "[X] Active";
 			borderSize = 0;
 			colorBackground[] = {0,0,0,1};
@@ -397,22 +436,22 @@ class ClientMapUI
 			y = safeZoneY + safeZoneH * 0.13240741;
 			w = safeZoneW * 0.05989584;
 			h = safeZoneH * 0.02037038;
-			style = 192+0;
+			style = 0;
 			text = "[X] Ended";
 			borderSize = 0;
 			sizeEx = safeZoneH*0.02;
 			
 		};
-		class CMUI_STATIC_SHOW_INTEL : MUI_BASE 
+		class CMUI_STATIC_SHOW_ON_MAP : MUI_BASE 
 		{
 			type = 0;
 			idc = IDC_LOCP_TABCAT;
-			x = safeZoneX + safeZoneW * 0.80;
-			y = safeZoneY + safeZoneH * 0.07;
-			w = safeZoneW * 0.06;
-			h = safeZoneH * 0.02;
+			x = safeZoneX + safeZoneW * 0.79010417;
+			y = safeZoneY + safeZoneH * 0.17037038;
+			w = safeZoneW * 0.06979167;
+			h = safeZoneH * 0.02037038;
 			style = 2;
-			text = "Show intel:";
+			text = "Show on the map:";
 			colorBackground[] = {0,0,0,1};
 			colorText[] = {1,1,1,1};
 			font = "PuristaMedium";
@@ -444,6 +483,34 @@ class ClientMapUI
 			shadow = 0;
 			tileH = 0;
 			tileW = 0;
+			
+		};
+		class CMUI_BUTTON_SHOW_ENEMIES : MUI_BUTTON_TXT 
+		{
+			type = 1;
+			idc = IDC_BPANEL_BUTTON_3;
+			x = safeZoneX + safeZoneW * 0.79;
+			y = safeZoneY + safeZoneH * 0.21;
+			w = safeZoneW * 0.07;
+			h = safeZoneH * 0.02;
+			style = 0;
+			text = "[X] Enemies";
+			borderSize = 0;
+			sizeEx = safeZoneH*0.02;
+			
+		};
+		class CMUI_BUTTON_SHOW_LOCATIONS : MUI_BUTTON_TXT 
+		{
+			type = 1;
+			idc = IDC_BPANEL_BUTTON_3;
+			x = safeZoneX + safeZoneW * 0.79010417;
+			y = safeZoneY + safeZoneH * 0.19;
+			w = safeZoneW * 0.07;
+			h = safeZoneH * 0.02;
+			style = 0;
+			text = "[X] Locations";
+			borderSize = 0;
+			sizeEx = safeZoneH*0.02;
 			
 		};
 		

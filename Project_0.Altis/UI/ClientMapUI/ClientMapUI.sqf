@@ -61,11 +61,18 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("locationCurrent");	// Location for which the menu is shown
 
 	// Bool, state of the intel button
-	VARIABLE("showAllIntel");
+	VARIABLE("showIntelInactive");
+	VARIABLE("showIntelActive");
+	VARIABLE("showIntelEnded");
 	// Defines if we are sorting intel inversed or not
 	VARIABLE("intelPanelSortInverse");
 	// By which category we're going to sort the intel panel
 	VARIABLE("intelPanelSortCategory");
+
+	// Bools, show things on map
+	VARIABLE("showLocations");
+	VARIABLE("showEnemies");
+	// todo players?
 
 	// Int, IDC of the control under the cursor, or -1
 	VARIABLE("currentControlIDC");
@@ -100,7 +107,11 @@ CLASS(CLASS_NAME, "")
 		T_SETV("locSelMenuEnabled", false);
 		T_SETV("locationCurrent", "");
 
-		T_SETV("showAllIntel", false);
+		T_SETV("showIntelInactive", false);
+		T_SETV("showIntelActive", false);
+		T_SETV("showIntelEnded", false);
+		T_SETV("showLocations", true);
+		T_SETV("showEnemies", true);
 		T_SETV("intelPanelSortInverse", false);
 		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
@@ -134,7 +145,12 @@ CLASS(CLASS_NAME, "")
 		} forEach [IDC_BPANEL_BUTTON_1, IDC_BPANEL_BUTTON_2, IDC_BPANEL_BUTTON_3, IDC_BPANEL_BUTTON_SHOW_INTEL, IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS];
 
 		// Button clicks
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_INTEL_INACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_INTEL_ACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_INTEL_ENDED"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_SHOW_LOCATIONS"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
+		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
 
 		// location panel
@@ -322,15 +338,30 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		_return
 	} ENDMETHOD;
 
-	// Shows/hides all map representations of intel
+	// Shows/hides all map representations of intel, depending on which intel types are selected
+	// Or depending on the bools passed
 	METHOD("mapShowAllIntel") {
-		params [P_THISOBJECT, P_BOOL("_show")];
+		params [P_THISOBJECT, P_BOOL("_forceShow"), P_BOOL("_forceHide")];
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
+
+		private _showInactive = T_GETV("showIntelInactive");
+		private _showActive = T_GETV("showIntelActive");
+		private _showEnded = T_GETV("showIntelEnded");
+
 		// forEach _allIntels;
 		{
+			pr _intel = _x;
+			pr _state = GETV(_intel, "state");
+			pr _show = switch (_state) do {
+				case INTEL_ACTION_STATE_INACTIVE: {_showInactive};
+				case INTEL_ACTION_STATE_ACTIVE: {_showActive};
+				case INTEL_ACTION_STATE_END: {_showEnded};
+				default {false};
+			};
 			private _className = GET_OBJECT_CLASS(_x);
 			if (_className != "IntelLocation") then { // Add all non-location intel classes
-				CALLM1(_x, "showOnMap", _show);
+				pr _show0 = (_show || _forceShow) && (!_forceHide);
+				CALLM1(_x, "showOnMap", _show0);
 			};
 		} forEach _allIntels;
 	} ENDMETHOD;
@@ -1015,28 +1046,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
 		_lnb lnbSetColumnsPos [0, 0.2, 0.7];
-		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		if (_clear) then { T_CALLM0("intelPanelClear"); };		
 
-		/*
-		// Fill dummy data for testing
-		_allIntels = [];
-		pr _i = 0;
-		while {_i < 10} do {
-			pr _intel = NEW("IntelCommanderActionAttack", []);
-			SETV(_intel, "posSrc", [random 10000 ARG random 20000 ARG 3]);
-			SETV(_intel, "posTgt", [random 10000 ARG random 20000 ARG 3]);
-			pr _dateNow = date;
-			pr _minuteNow = _dateNow#4;
-			pr _year = _dateNow#0;
-			pr _dateDeparture = +_dateNow;
-			_dateDeparture set [4, _minuteNow + (random 120)];
-			// Fix the minute overflow by converting twice
-			//_dateDeparture = numberToDate [_year, dateToNumber _dateDeparture];
-			SETV(_intel, "dateDeparture", _dateDeparture);
-			_allIntels pushBack _intel;
-			_i = _i + 1;m
-		};
-		*/
+		// Read some variables...
+		private _showInactive = T_GETV("showIntelInactive");
+		private _showActive = T_GETV("showIntelActive");
+		private _showEnded = T_GETV("showIntelEnded");			
 
 		// forEach _allIntels;
 		{
@@ -1045,66 +1060,77 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			if (_className != "IntelLocation") then { // Add all non-location intel classes
 				pr _shortName = CALLM0(_intel, "getShortName");
 
-				// Calculate time difference between current date and departure date
-				pr _dateDeparture = GETV(_intel, "dateDeparture");
-				pr _dateNow = date;
-				pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
-				pr _intelState = GETV(_intel, "state");
-				pr _stateStr = switch (_intelState) do {
-					case INTEL_ACTION_STATE_ACTIVE: {"Active"};
-					case INTEL_ACTION_STATE_INACTIVE: {"Inactive"};
-					case INTEL_ACTION_STATE_END: {"Ended"};
-					default {"error"};
-				};
-				pr _futureEvent = true;
-				if (_numberDiff < 0) then {
-					_numberDiff = -_numberDiff;
-					_futureEvent = false;
-				};
-				pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
-				_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
-				_month = _month - 1; // Because month counting starts with 1
-				_d = _d - 1; // Because day counting starts with 1
-
-				OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
-				
-				// Make a string representation of time difference
-				pr _timeDiffStr = if (_h > 0) then {
-					format ["%1H, %2M", _h, _m]
-				} else {
-					format ["%1M", _m]
+				// Check if we need to show intel with this state
+				pr _state = GETV(_intel, "state");
+				pr _show = switch (_state) do {
+					case INTEL_ACTION_STATE_INACTIVE: {_showInactive};
+					case INTEL_ACTION_STATE_ACTIVE: {_showActive};
+					case INTEL_ACTION_STATE_END: {_showEnded};
+					default {false};
 				};
 
-				// Make a string representation of side
-				pr _side = GETV(_intel, "side");
-				_sideStr  = switch (_side) do {
-					case WEST: {"WEST"};
-					case EAST: {"EAST"};
-					case independent: {"IND"};
-					default {"ALIEN"};
+				if (_show) then {
+					// Calculate time difference between current date and departure date
+					pr _dateDeparture = GETV(_intel, "dateDeparture");
+					pr _dateNow = date;
+					pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+					pr _intelState = GETV(_intel, "state");
+					pr _stateStr = switch (_intelState) do {
+						case INTEL_ACTION_STATE_ACTIVE: {"Active"};
+						case INTEL_ACTION_STATE_INACTIVE: {"Inactive"};
+						case INTEL_ACTION_STATE_END: {"Ended"};
+						default {"error"};
+					};
+					pr _futureEvent = true;
+					if (_numberDiff < 0) then {
+						_numberDiff = -_numberDiff;
+						_futureEvent = false;
+					};
+					pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+					_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
+					_month = _month - 1; // Because month counting starts with 1
+					_d = _d - 1; // Because day counting starts with 1
+
+					OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
+					
+					// Make a string representation of time difference
+					pr _timeDiffStr = if (_h > 0) then {
+						format ["%1H, %2M", _h, _m]
+					} else {
+						format ["%1M", _m]
+					};
+
+					// Make a string representation of side
+					pr _side = GETV(_intel, "side");
+					_sideStr  = switch (_side) do {
+						case WEST: {"WEST"};
+						case EAST: {"EAST"};
+						case independent: {"IND"};
+						default {"ALIEN"};
+					};
+
+					pr _rowStr = format ["%1 %2", _shortName, _stateStr];
+					pr _rowData = [_sideStr, _rowStr, _timeDiffStr];
+					pr _index = _lnb lnbAddRow _rowData;
+					_lnb lnbSetData [[_index, 0], _intel];
+
+					// Set values for sorting
+					pr _valueSide = [WEST, EAST, INDEPENDENT] find _side; // Enumerate side
+					pr _valueType = [	"IntelCommanderActionReinforce",
+										"IntelCommanderActionBuild", "IntelCommanderActionAttack",
+										"IntelCommanderActionPatrol", "IntelCommanderActionRetreat",
+										"IntelCommanderActionRecon"] find _className; // Enumerate class name
+					pr _valueTime = _m + _h*60 + _d*24*60 + _month*30*24*60;
+					if (!_futureEvent) then {_valueTime = -_valueTime; };
+
+					OOP_INFO_1("  value time: %1", _valuetime);
+
+					_lnb lnbSetValue [[_index, 0], _valueSide];
+					_lnb lnbSetValue [[_index, 1], _valueType];
+					_lnb lnbSetValue [[_index, 2], _valueTime];
+
+					//OOP_INFO_1("ADDED ROW: %1", _rowData);
 				};
-
-				pr _rowStr = format ["%1 %2", _shortName, _stateStr];
-				pr _rowData = [_sideStr, _rowStr, _timeDiffStr];
-				pr _index = _lnb lnbAddRow _rowData;
-				_lnb lnbSetData [[_index, 0], _intel];
-
-				// Set values for sorting
-				pr _valueSide = [WEST, EAST, INDEPENDENT] find _side; // Enumerate side
-				pr _valueType = [	"IntelCommanderActionReinforce",
-									"IntelCommanderActionBuild", "IntelCommanderActionAttack",
-									"IntelCommanderActionPatrol", "IntelCommanderActionRetreat",
-									"IntelCommanderActionRecon"] find _className; // Enumerate class name
-				pr _valueTime = _m + _h*60 + _d*24*60 + _month*30*24*60;
-				if (!_futureEvent) then {_valueTime = -_valueTime; };
-
-				OOP_INFO_1("  value time: %1", _valuetime);
-
-				_lnb lnbSetValue [[_index, 0], _valueSide];
-				_lnb lnbSetValue [[_index, 1], _valueType];
-				_lnb lnbSetValue [[_index, 2], _valueTime];
-
-				//OOP_INFO_1("ADDED ROW: %1", _rowData);
 			};
 		} forEach _allIntels;
 	} ENDMETHOD;
@@ -1127,11 +1153,11 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 				// Make sure that's a valid intel piece
 				if (CALLM1(gIntelDatabaseClient, "isIntelAdded", _intel)) then {
 					// Hide all intel on the map, except for this one
-					T_CALLM1("mapShowAllIntel", false);
+					T_CALLM2("mapShowAllIntel", false, true); // Force hide
 					CALLM1(_intel, "showOnMap", true);
 				};
 			} else {
-				T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
+				T_CALLM0("mapShowAllIntel");
 			};
 		};
 
@@ -1457,7 +1483,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
 		// Reset the map view
-		T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
+		T_CALLM0("mapShowAllIntel");
 
 		// Show the buttons of the listbox
 		T_CALLM1("intelPanelShowButtons", true);
@@ -1476,11 +1502,11 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
 			// Reset the map view
-			T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
+			T_CALLM0("mapShowAllIntel");
 		} else {
 			// Something must be selected
 			// So we want to check if drawing of all intel on the map is enabled or not
-			T_CALLM1("mapShowAllIntel", T_GETV("showAllIntel"));
+			T_CALLM0("mapShowAllIntel");
 		};
 	} ENDMETHOD;
 
@@ -1514,24 +1540,95 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		REMOTE_EXEC_STATIC_METHOD("Camp", "newStatic", [getPos player], 2, false);
 	} ENDMETHOD;
 
-	METHOD("onButtonClickShowIntel") {
-		params [P_THISOBJECT];
+	// Common code for all 'checkboxes' in this UI
+	// Checkboxes are buttons with [x] or [ ] at the start of their text
+	// Returns the new state of this 'checkbox'
+	// Because in arma checkbox is only the checkbox itself, and it has no text, WTF
+	METHOD("onButtonClickCheckbox") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 
-		pr _checked = T_GETV("showAllIntel");
-		pr _ctrl = ((finddisplay 12) displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL);
-		if (_checked) then {
-			// Uncheck it
-			//_ctrl ctrlSetTextColor MUIC_COLOR_WHITE;
-			_ctrl ctrlSetText "[ ] Show intel";
-			T_CALLM1("mapShowAllIntel", false);
+		OOP_INFO_1("onButtonClickCheckbox: %1", _this);
+
+		pr _charChecked = (toArray "X")#0;
+		pr _charUnchecked = (toArray " ")#0;
+
+		pr _txt = ctrlText _button;
+		pr _txtArray = toArray _txt;
+		pr _checkedPrev = (_txtArray#1) == _charChecked;
+		OOP_INFO_2("  Current text: %1, array: %2", _txt, _txtArray);
+		OOP_INFO_1("  Currently checked: %1", _checkedPred);
+		if (_checkedPrev) then {
+			_txtArray set [1, _charUnchecked];
 		} else {
-			// Check it
-			//_ctrl ctrlSetTextColor [0.13, 0.7, 0.29, 1];
-			_ctrl ctrlSetText "[X] Show intel";
-			T_CALLM1("mapShowAllIntel", true);
+			_txtArray set [1, _charChecked];
 		};
-		T_SETV("showAllIntel", !_checked);
+		_button ctrlSetText (toString _txtArray);
+
+		// Return the new value
+		!_checkedPrev
 	} ENDMETHOD;
+
+	METHOD("onButtonClickShowIntelInactive") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		OOP_INFO_1("onButtonClickShowIntelInactive: %1", _this);
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelInactive", _checked);
+		T_CALLM0("mapShowAllIntel");
+
+		// If nothing is selected on the map, update the intel panel too
+		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
+			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM0("intelPanelDeselect");
+			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
+		};
+	} ENDMETHOD;
+
+	METHOD("onButtonClickShowIntelActive") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelActive", _checked);
+		T_CALLM0("mapShowAllIntel");
+
+		// If nothing is selected on the map, update the intel panel too
+		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
+			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM0("intelPanelDeselect");
+			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
+		};
+	} ENDMETHOD;
+
+	METHOD("onButtonClickShowIntelEnded") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelEnded", _checked);
+		T_CALLM0("mapShowAllIntel");
+
+		// If nothing is selected on the map, update the intel panel too
+		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
+			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM0("intelPanelDeselect");
+			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
+		};
+	} ENDMETHOD;
+
+	METHOD("onButtonClickShowLocations") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showLocations", _checked);
+
+		pr _allLocMarkers = CALLSM0("MapMarkerLocation", "getAll");
+		{
+			CALLM1(_x, "show", _checked);
+		} forEach _allLocMarkers;
+	} ENDMETHOD;
+
+	METHOD("onButtonClickShowEnemies") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showEnemies", _checked);
+
+	} ENDMETHOD;
+
 
 	METHOD("onButtonClickClearNotifications") {
 		params [P_THISOBJECT];
@@ -1739,6 +1836,38 @@ Gets called from "onMapDraw"
 				_ctrl drawArrow [_posStartWorld, _posEndWorld, [0, 0, 0, 1]]; 
 			};
 		};
+	} ENDMETHOD;
+
+	// Adds some random intel to debug the intel panel
+	// You can use this in the debug console:
+	// call ClientMapUI_fnc_addDummyIntel;
+	STATIC_METHOD("addDummyIntel") {
+		params [P_THISCLASS];
+
+		// Fill dummy data for testing
+		_allIntels = [];
+		pr _i = 0;
+		while {_i < 10} do {
+			pr _intel = NEW("IntelCommanderActionAttack", []);
+			SETV(_intel, "posSrc", [random 10000 ARG random 20000 ARG 3]);
+			SETV(_intel, "posTgt", [random 10000 ARG random 20000 ARG 3]);
+			pr _dateNow = date;
+			pr _minuteNow = _dateNow#4;
+			pr _year = _dateNow#0;
+			pr _dateDeparture = +_dateNow;
+			_dateDeparture set [4, _minuteNow + (random 120)];
+			// Fix the minute overflow by converting twice
+			//_dateDeparture = numberToDate [_year, dateToNumber _dateDeparture];
+			SETV(_intel, "dateDeparture", _dateDeparture);
+			pr _state = selectRandom [INTEL_ACTION_STATE_ACTIVE, INTEL_ACTION_STATE_INACTIVE, INTEL_ACTION_STATE_END];
+			SETV(_intel, "state", _state);
+			_allIntels pushBack _intel;
+			_i = _i + 1;m
+		};
+
+		{
+			CALLM1(gIntelDatabaseClient, "addIntel", _x);
+		} forEach _allIntels;
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -219,7 +219,7 @@ class CMUI_BUTTON_INTEL_INACTIVE : MUI_BUTTON_TXT
     y = safeZoneY + safeZoneH * 0.09074075;
     w = safeZoneW * 0.06041667;
     h = safeZoneH * 0.02037038;
-    style = 192+0;
+    //style = 192+0;
     text = "[ ] Inactive";    
 };
 class CMUI_BUTTON_INTEL_ACTIVE : MUI_BUTTON_TXT 
@@ -229,7 +229,7 @@ class CMUI_BUTTON_INTEL_ACTIVE : MUI_BUTTON_TXT
     y = safeZoneY + safeZoneH * 0.11111112;
     w = safeZoneW * 0.05989584;
     h = safeZoneH * 0.02037038;
-    style = 192+0;
+    //style = 192+0;
     text = "[ ] Active";
 };
 class CMUI_BUTTON_INTEL_ENDED : MUI_BUTTON_TXT 
@@ -239,10 +239,42 @@ class CMUI_BUTTON_INTEL_ENDED : MUI_BUTTON_TXT
     y = safeZoneY + safeZoneH * 0.13240741;
     w = safeZoneW * 0.05989584;
     h = safeZoneH * 0.02037038;
-    style = 192+0;
+    //style = 192+0;
     text = "[ ] Ended";
     borderSize = 0;
-    sizeEx = safeZoneH*0.02;
+};
+
+// Buttons to show/hide stuff on the map
+class CMUI_STATIC_SHOW_ON_MAP : MUI_BG_BLACKSOLID 
+{
+    type = 0;
+    x = safeZoneX + safeZoneW * 0.79010417;
+    y = safeZoneY + safeZoneH * 0.17037038;
+    w = safeZoneW * 0.06979167;
+    h = safeZoneH * 0.02037038;
+	text = "Show on the map:";
+};
+class CMUI_BUTTON_SHOW_ENEMIES : MUI_BUTTON_TXT 
+{
+    type = 1;
+    x = safeZoneX + safeZoneW * 0.79;
+    y = safeZoneY + safeZoneH * 0.21;
+    w = safeZoneW * 0.07;
+    h = safeZoneH * 0.02;
+    style = 0;
+    text = "[X] Enemies <NYI>";
+    borderSize = 0;    
+};
+class CMUI_BUTTON_SHOW_LOCATIONS : MUI_BUTTON_TXT 
+{
+    type = 1;
+    x = safeZoneX + safeZoneW * 0.79010417;
+    y = safeZoneY + safeZoneH * 0.19;
+    w = safeZoneW * 0.07;
+    h = safeZoneH * 0.02;
+    style = 0;
+    text = "[X] Locations";
+    borderSize = 0;
 };
 
 /*
