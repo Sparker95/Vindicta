@@ -46,9 +46,9 @@ while {_subCatID < _catSize} do {
 		pr _isLoadout = [_classOrLoadout] call t_fnc_isLoadout;
 		
 		if (_isLoadout) then {
-			diag_log format ["LOADOUT: %1", _classOrLoadout];
+			//diag_log format ["LOADOUT: %1", _classOrLoadout];
 		} else {
-			diag_log format ["CLASS:   %1", _classOrLoadout];
+			//diag_log format ["CLASS:   %1", _classOrLoadout];
 		};
 
 		// Create a unit from which we will read data

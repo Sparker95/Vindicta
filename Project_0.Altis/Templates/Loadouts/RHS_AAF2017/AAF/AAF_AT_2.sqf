@@ -13,18 +13,17 @@ _RandomGoggles = ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","","","",""]
 this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_AAF_M93_Lizard";
 this addVest "FGN_AAF_M99Vest_Lizard_Rifleman";
-this addBackpack "rhs_sidor";
+this addBackpack "rhs_rpg_empty";
 
 this addWeapon "rhs_weap_akm";
 this addPrimaryWeaponItem "rhs_acc_dtkakm";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-this addWeapon "rhs_weap_igla";
-this addSecondaryWeaponItem "rhs_mag_9k38_rocket";
 
 this addItemToUniform "FirstAidKit";
 this addItemToUniform "rhs_30Rnd_762x39mm";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_762x39mm";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-this addItemToBackpack "rhs_mag_9k38_rocket";
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_OG7V_mag";};
+this addItemToBackpack "rhs_rpg7_PG7VR_mag";
 
 this linkItem "ItemWatch";
