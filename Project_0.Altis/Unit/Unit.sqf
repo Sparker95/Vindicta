@@ -691,13 +691,39 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			_hO addItemCargoGlobal ["FirstAidKit", 5 + round (random 5)];
 			_hO addItemCargoGlobal ["ItemGPS", 1 + round (random 2)];
+			_hO addItemCargoGlobal ["ToolKit", random [1, 2, 5]];
 			_hO addBackpackCargoGlobal ["B_TacticalPack_blk", (round random 2)]; // Backpacks
 
-			// Add some maps and radios for non-civilian units
+			// Customize non-civilian containers
 			if (CALLM0(_data#UNIT_DATA_ID_GARRISON, "getSide") != CIVILIAN) then {
+				// Add some maps and radios for non-civilian units
 				{
 					_hO addItemCargoGlobal [_x, 4 + ( ceil random 10)];
 				} forEach ["ItemMap", "ItemCompass", "ItemRadio" ];
+
+				// Add special items to cargo containers
+				if (_catID == T_CARGO) then {
+					// Add ACE medical items
+					if (isClass (configfile >> "CfgPatches" >> "ace_medical")) then {
+						{
+							pr _itemName = getText (_x >> "name");
+							pr _itemCount = getNumber (_x >> "count");
+							_hO addItemCargoGlobal [_itemName, round (random [0.2*_itemCount, 0.7*_itemCount, 1.2*_itemCount])];
+						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
+					};
+
+					// Add ADV medical items
+					// Defibrilator
+					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
+						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [2, 4, 6]];
+					};
+					// Splint
+					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
+						_hO addItemCargoGlobal ["adv_aceSplint_splint", random [10, 20, 30]];
+					};
+
+					// What else?
+				};
 			};
 
 			// Add vests

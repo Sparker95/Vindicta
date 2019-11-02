@@ -71,71 +71,7 @@
     IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,\
     IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC\
 
-#define IDCS    [IDCS_LEFT,IDCS_RIGHT]
-
-/*
-// Jeroen's InitTypes
-#define INITTYPES\
-        _types = [];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_UNIFORM,["Uniform"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_VEST,["Vest"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_BACKPACK,["Backpack"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_HEADGEAR,["Headgear"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_GOGGLES,["Glasses"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_NVGS,["NVGoggles"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_BINOCULARS,["Binocular","LaserDesignator"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON,["AssaultRifle","MachineGun","SniperRifle","Shotgun","Rifle","SubmachineGun"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON,["Launcher","MissileLauncher","RocketLauncher"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_HANDGUN,["Handgun"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_MAP,["Map"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_GPS,["GPS","UAVTerminal"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_RADIO,["Radio"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_COMPASS,["Compass"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_WATCH,["Watch"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_FACE,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_VOICE,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_INSIGNIA,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMOPTIC,["AccessorySights"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMACC,["AccessoryPointer"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMMUZZLE,["AccessoryMuzzle"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMBIPOD,["AccessoryBipod"]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOTHROW,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,[]];\
-        _types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC,["FirstAidKit","Medikit","MineDetector","Toolkit"]];
-*/
-
-#define INITTYPES\
-		private _types = [];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_UNIFORM,["Uniform"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_VEST,["Vest"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_BACKPACK,["Backpack"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_HEADGEAR,["Headgear"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_GOGGLES,["Glasses"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_NVGS,["NVGoggles"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_BINOCULARS,["Binocular","LaserDesignator"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON,["AssaultRifle","MachineGun","SniperRifle","Shotgun","Rifle","SubmachineGun"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON,["Launcher","MissileLauncher","RocketLauncher"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_HANDGUN,["Handgun"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_MAP,["Map"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_GPS,["GPS","UAVTerminal"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_RADIO,["Radio"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_COMPASS,["Compass"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_WATCH,["Watch"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_FACE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_VOICE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_INSIGNIA,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMOPTIC,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMACC,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMMUZZLE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMBIPOD,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOTHROW,[/*"Grenade","SmokeShell"*/]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,[/*"Mine","MineBounding","MineDirectional"*/]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC,["FirstAidKit","Medikit","MineDetector","Toolkit"]];
-        
+#define IDCS    [IDCS_LEFT,IDCS_RIGHT]        
 
 #define STATS_WEAPONS\
     ["reloadtime","dispersion","maxzeroing","hit","mass","initSpeed"],\
@@ -161,8 +97,17 @@ switch _mode do {
 
     /////////////////////////////////////////////////////////////////////////////////////////// Externaly called
     case "Preload": {
-        if( missionnamespace getVariable ["jna_firstInit",true])exitWith{};
+        // Bail if already preloaded once
+        if( missionnamespace getVariable ["jna_firstInit",false]) exitWith {};
+
+        // Set flag so that we don't preload again
         missionnamespace setVariable ["jna_firstInit",false];
+
+        // Set up hashmap for quick future resolutions of itemType
+        deleteLocation (missionNamespace getVariable ["jna_itemTypeHashmap", locationNull]); // Delete previous one if it existed for some reason
+        pr _hm = createLocation ["Invisible", [0,0,0], 0, 0];
+        missionNamespace setVariable ["jna_itemTypeHashmap", _hm];
+
 
         pr _data = EMPTY_ARRAY;
         INITTYPES;
@@ -713,7 +658,7 @@ switch _mode do {
         _ctrFrameRight = _display displayctrl IDC_RSCDISPLAYARSENAL_FRAMERIGHT;
         _ctrBackgroundRight = _display displayctrl IDC_RSCDISPLAYARSENAL_BACKGROUNDRIGHT;
 
-        {
+        { // foreach [IDCS_RIGHT];
             _idc = _x;
             _active = _idc == _index;
             {
@@ -767,7 +712,7 @@ switch _mode do {
                         case (ctrlenabled (_display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_UNIFORM))): {uniformContainer player};
                         case (ctrlenabled (_display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_VEST))): {vestContainer player};
                         case (ctrlenabled (_display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_BACKPACK))): {backpackContainer player};
-                        default {""};
+                        default {objNull};
                     };
 
                     _items =  if(_idc == IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC)then{

@@ -20,3 +20,4 @@ misc_fnc_polygonCollision = compile preprocessFileLineNumbers "Misc\Math\fn_poly
 misc_fnc_createCampComposition = compile preprocessFileLineNumbers "Misc\fn_createCampComposition.sqf";
 
 misc_fnc_dateToISO8601 = compile preprocessFileLineNumbers "Misc\fn_dateToISO8601.sqf";
+misc_fnc_getVehiclesInBuilding = compile preprocessFileLineNumbers "Misc\fn_getVehiclesInBuilding.sqf";
