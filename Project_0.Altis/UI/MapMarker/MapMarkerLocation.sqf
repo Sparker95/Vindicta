@@ -46,6 +46,7 @@ CLASS(CLASS_NAME, "MapMarker")
 		T_SETV("mouseOver", false);
 		T_SETV("intel", _intel);
 		T_SETV("radius", 0);
+		T_SETV("notification", false);
 
 		// Create background marker
 		// We will colorize it
@@ -129,6 +130,7 @@ CLASS(CLASS_NAME, "MapMarker")
 		params [P_THISOBJECT];
 		pr _selected = T_GETV("selected");
 		pr _mouseOver = T_GETV("mouseOver");
+		pr _shown = T_GETV("shown");
 
 		// Overall state of the button
 		pr _state = ([0, 2] select _selected) + ([0, 1] select _mouseOver);
@@ -144,28 +146,35 @@ CLASS(CLASS_NAME, "MapMarker")
 		pr _size = 1;
 		pr _alpha = 0.5;
 		pr _iconColor = "";
-		switch (_state) do {
-			case 0: { // Idle
-				_alpha = 0.7;
-				_size = 0.7;
-				_iconColor = "ColorWhite";
-			};
-			case 1: { // Mouse is over
-				_alpha = 1.0;
-				_size = 1.0;
-				_iconColor = "ColorWhite";
-			};
-			case 2: { // Selected
-				_alpha = 1.0;
-				_size = 1.0;
-				_iconColor = "ColorBlack";
+		if (_shown) then {
+			switch (_state) do {
+				case 0: { // Idle
+					_alpha = 0.7;
+					_size = 0.7;
+					_iconColor = "ColorWhite";
+				};
+				case 1: { // Mouse is over
+					_alpha = 1.0;
+					_size = 1.0;
+					_iconColor = "ColorWhite";
+				};
+				case 2: { // Selected
+					_alpha = 1.0;
+					_size = 1.0;
+					_iconColor = "ColorBlack";
 
+				};
+				case 3: { // Selected and mouse is over
+					_alpha = 1.0;
+					_size = 1.0;
+					_iconColor = "ColorBlack";
+				};
 			};
-			case 3: { // Selected and mouse is over
-				_alpha = 1.0;
-				_size = 1.0;
-				_iconColor = "ColorBlack";
-			};
+		} else {
+			// Marker is not shown
+			_alpha = 0;
+			_size = 0.7;
+			_iconColor = "ColorWhite";
 		};
 
 		pr _mrkBG = _thisObject + BG_SUFFIX;
@@ -188,12 +197,30 @@ CLASS(CLASS_NAME, "MapMarker")
 		_mrkIcon setMarkerAlphaLocal _alpha;
 		_mrkIcon setMarkerColorLocal _iconColor;
 
+		// Enable/disable the notification
+		if (_shown) then {
+			(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal ([0, 1] select T_GETV("notification"));
+		} else {
+			(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal 0;
+		};
+	} ENDMETHOD;
+
+	// Shows or hides this map marker entirely
+	METHOD("show") {
+		params [P_THISOBJECT, P_BOOL("_show")];
+
+		// Call base class method (it sets the shown variable value)
+		CALL_CLASS_METHOD("MapMarker", _thisObject, "show", [_show]);
+
+		// Update marker properties
+		T_CALLM0("update");
 	} ENDMETHOD;
 
 	METHOD("setNotification") {
 		params ["_thisObject", ["_enable", false, [false]]];
 
-		(_thisObject + NOTIFICATION_SUFFIX) setMarkerAlphaLocal ([0, 1] select _enable);
+		T_SETV("notification", _enable);
+		T_CALLM0("update");
 	} ENDMETHOD;
 
 	METHOD("getIntel") {

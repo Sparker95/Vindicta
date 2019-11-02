@@ -337,7 +337,9 @@ CLASS("IntelLocation", "Intel")
 		CALLM1(_mapMarker, "setType", _type);
 
 		// Enable notification marker (the red circle)
-		CALLM1(_mapMarker, "setNotification", true);
+		// Don't enable notification for JIP
+		pr _enable = ! isRemoteExecutedJIP;
+		CALLM1(_mapMarker, "setNotification", _enable);
 	} ENDMETHOD;
 
 	// 0.1 WIP: dont rely on this

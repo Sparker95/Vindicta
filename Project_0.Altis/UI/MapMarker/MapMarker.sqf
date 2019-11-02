@@ -35,6 +35,10 @@ CLASS(CLASS_NAME, "")
 	// Color
 	VARIABLE("color");
 
+	// Bool, default true, determines if this map marker is shown
+	// Actual show/hide functionality is implementation-specific at derived classes
+	VARIABLE("shown"); // Bool
+
 	/*
 	Method: new
 	Creates a new MapMarker
@@ -48,6 +52,7 @@ CLASS(CLASS_NAME, "")
 
 		T_SETV("eWidthUI", 20);
 		T_SETV("eHeightUI", 20);
+		T_SETV("shown", true);
 
 
 		// Add to the "all" array
@@ -151,6 +156,22 @@ CLASS(CLASS_NAME, "")
 		};
 	} ENDMETHOD;
 
+	/*
+	Method: show
+	Sets the "shown" property of this map marker.
+	Derived classes should call this on overrides.
+
+	params: _show
+
+	_show - bool, default true.
+
+	Returns: nil
+	*/
+	METHOD("show") {
+		params [P_THISOBJECT, ["_show", true]];
+
+		T_SETV("shown", _show);
+	} ENDMETHOD;
 
 	/*
 	Method: onMouseEnter
@@ -251,6 +272,7 @@ CLASS(CLASS_NAME, "")
 			// Check if the cursor position is inside marker
 			_mrkPosUI params ["_mrkPosUIX", "_mrkPosUIY"];
 			[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1]
+			&& GETV(_x, "shown")
 		};
 
 		if (_index == -1) then {
@@ -289,6 +311,7 @@ CLASS(CLASS_NAME, "")
 			// Check if the cursor position is inside marker
 			_mrkPosUI params ["_mrkPosUIX", "_mrkPosUIY"];
 			[_xCursorPosUI, _yCursorPosUI] inArea [[_mrkPosUIX, _mrkPosUIY], _eWidthUI, _eHeightUI, 0, true, -1]
+			&& GETV(_x, "shown")
 		}
 	} ENDMETHOD;
 
@@ -307,7 +330,7 @@ CLASS(CLASS_NAME, "")
 	*/
 	STATIC_METHOD("getAllSelected") {
 		params [P_THISCLASS];
-		GETSV(_thisClass, "allSelected");
+		GETSV(_thisClass, "allSelected") select {GETV(_x, "shown")}; // Return only markers which are shown
 	} ENDMETHOD;
 
 
