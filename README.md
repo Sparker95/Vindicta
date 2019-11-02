@@ -1,4 +1,4 @@
-# Project_0.Altis
+# Vindicta
 
 ## What is it?
 It is a multiplayer Co-Op mission for ARMA III. The goal of this project is to make a guerrilla warfare scenario for ARMA III, hugely influenced by a similar mission by Barbolani: Antistasi (http://www.a3antistasi.enjin.com/).
