@@ -658,7 +658,7 @@ switch _mode do {
         _ctrFrameRight = _display displayctrl IDC_RSCDISPLAYARSENAL_FRAMERIGHT;
         _ctrBackgroundRight = _display displayctrl IDC_RSCDISPLAYARSENAL_BACKGROUNDRIGHT;
 
-        {
+        { // foreach [IDCS_RIGHT];
             _idc = _x;
             _active = _idc == _index;
             {
@@ -712,7 +712,7 @@ switch _mode do {
                         case (ctrlenabled (_display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_UNIFORM))): {uniformContainer player};
                         case (ctrlenabled (_display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_VEST))): {vestContainer player};
                         case (ctrlenabled (_display displayctrl (IDC_RSCDISPLAYARSENAL_LIST + IDC_RSCDISPLAYARSENAL_TAB_BACKPACK))): {backpackContainer player};
-                        default {""};
+                        default {objNull};
                     };
 
                     _items =  if(_idc == IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC)then{
