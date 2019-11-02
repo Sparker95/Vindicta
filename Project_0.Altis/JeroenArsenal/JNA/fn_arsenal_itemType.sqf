@@ -12,80 +12,27 @@
         index or -1 if not found
 */
 
-/*
-// This is Jeroen's code
-#define INITTYPES\
-		_types = [];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON,["AssaultRifle","MachineGun","SniperRifle","Shotgun","Rifle","SubmachineGun"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON,["Launcher","MissileLauncher","RocketLauncher"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_HANDGUN,["Handgun"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_UNIFORM,["Uniform"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_VEST,["Vest"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_BACKPACK,["Backpack"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_HEADGEAR,["Headgear"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_GOGGLES,["Glasses"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_NVGS,["NVGoggles"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_BINOCULARS,["Binocular","LaserDesignator"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_MAP,["Map"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_GPS,["GPS","UAVTerminal"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_RADIO,["Radio"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_COMPASS,["Compass"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_WATCH,["Watch"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_FACE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_VOICE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_INSIGNIA,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMOPTIC,["AccessorySights"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMMUZZLE,["AccessoryMuzzle"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMACC,["AccessoryPointer"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMBIPOD,["AccessoryBipod"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL,["Bullet","Missile","Rocket","Shell","ShotgunShell","SmokeShell","Laser", "vin_build_res_0"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOTHROW,["Grenade","SmokeShell","Flare"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,["Mine","MineBounding","MineDirectional"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC,["FirstAidKit","Medikit","MineDetector","Toolkit"]];
-*/
-
-// This is code copied from arma
-// Note that it doesn't have bipod mentioned here <shrug emoji>
-#define INITTYPES\
-		private _types = [];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_UNIFORM,["Uniform"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_VEST,["Vest"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_BACKPACK,["Backpack"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_HEADGEAR,["Headgear"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_GOGGLES,["Glasses"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_NVGS,["NVGoggles"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_BINOCULARS,["Binocular","LaserDesignator"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_PRIMARYWEAPON,["AssaultRifle","MachineGun","SniperRifle","Shotgun","Rifle","SubmachineGun"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_SECONDARYWEAPON,["Launcher","MissileLauncher","RocketLauncher"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_HANDGUN,["Handgun"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_MAP,["Map"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_GPS,["GPS","UAVTerminal"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_RADIO,["Radio"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_COMPASS,["Compass"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_WATCH,["Watch"]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_FACE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_VOICE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_INSIGNIA,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMOPTIC,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMACC,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMMUZZLE,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_ITEMBIPOD,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL,[]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOTHROW,[/*"Grenade","SmokeShell"*/]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,[/*"Mine","MineBounding","MineDirectional"*/]];\
-		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC,["FirstAidKit","Medikit","MineDetector","Toolkit"]];
-
-
-
 #include "\A3\ui_f\hpp\defineDIKCodes.inc"
 #include "\A3\Ui_f\hpp\defineResinclDesign.inc"
 
 params ["_item"];
+
+// Try to perform lookup in hashmap first
+pr _hm = missionNamespace getVariable ["jna_itemTypeHashmap", locationNull];
+pr _return = _hm getVariable [_item, -1];
+if (_return != -1) exitWith {
+	_return
+};
+
+// Item was not found in the hashmap, perform usual type resolution
 pr ["_types","_return","_data"];
 _return = -1;
 
+// Fix for CBA_miscItem-derived classes
+if (_item isKindOf ["CBA_MiscItem", configFile >> "cfgWeapons"]) exitWith { IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC };
+
+
+// Do the usual class resolution
 INITTYPES
 
 (_item call bis_fnc_itemType) params ["_weaponTypeCategory", "_weaponTypeSpecific"];
@@ -122,6 +69,13 @@ if(_return == -1)then{
 //Assigning item to misc if no category was given
 if(_return == -1)then{
     _return = IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC;
+};
+
+// Add the value to hash map, so that later it's faster to look it up
+if (isNull _hm) then { // Warn if hashmap was not initialized yet
+	diag_log "JNA Warning: item type hash map was not initialized";
+} else {
+	_hm setVariable [_item, _return];
 };
 
 _return;
