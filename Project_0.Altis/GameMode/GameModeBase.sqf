@@ -109,6 +109,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Initialize player database
 			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
 			// todo load it from profile namespace or whatever
+
+			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
+			// todo we can also notify the nearby location about that event, because the building might belong to the location?
+			addMissionEventHandler ["BuildingChanged", { 
+				params ["_previousObject", "_newObject", "_isRuin"];
+				diag_log format ["BuildingChanged EH: %1", _this];
+				if (_isRuin) then {
+					// Iterate all vehicles within the building, destroy them
+					private _vehicles = _previousObject call misc_fnc_getVehiclesInBuilding;
+					{
+						if ((getMass _x) < 1000) then {
+							diag_log format ["Destroying %1", _x];
+							_x setDamage 1;
+						};
+					} forEach _vehicles;
+				};
+			}];
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
