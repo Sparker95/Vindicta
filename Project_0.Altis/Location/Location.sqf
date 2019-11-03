@@ -498,7 +498,7 @@ CLASS("Location", "MessageReceiverEx")
 			case LOCATION_TYPE_OUTPOST: {"Outpost"};
 			case LOCATION_TYPE_CAMP: {"Camp"};
 			case LOCATION_TYPE_BASE: {"Base"};
-			case LOCATION_TYPE_UNKNOWN: {"<Unknown>"};
+			case LOCATION_TYPE_UNKNOWN: {"Unknown"};
 			case LOCATION_TYPE_CITY: {"City"};
 			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
 			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};

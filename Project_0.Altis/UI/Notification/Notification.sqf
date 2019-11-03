@@ -44,7 +44,7 @@ CLASS("Notification", "")
 
 		// Set text of controls
 		pr _ctrl = uiNamespace getVariable "vin_not_icon";
-		if (_icon != "") then {
+		if (_imagePath != "") then {
 			_ctrl ctrlSetText _imagePath;
 		};
 
@@ -127,7 +127,7 @@ CLASS("Notification", "")
 		if (_targetID < 0) then {_targetID = 0};
 
 		pr _posx = safeZoneX;
-		pr _posY = safeZoneY + 0.3*safeZoneH + _targetID*_HEIGHT;
+		pr _posY = safeZoneY + 0.2*safeZoneH + _targetID*_HEIGHT;
 
 		[_posx, _posy]
 	} ENDMETHOD;
@@ -139,7 +139,7 @@ CLASS("Notification", "")
 	Parameters: (string)_category, (string)_text, (string)_hint, (number)_duration (in seconds)
 	*/
 	STATIC_METHOD("createNotification") {
-		params [P_THISCLASS, P_STRING("_imagePath"), P_STRING("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration")];
+		params [P_THISCLASS, P_STRING("_imagePath"), P_STRING("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration"), P_STRING("_sound")];
 
 		// Bail if not initialized
 		if (isNil {GETSV(_thisClass, "initDone")}) exitWith {
@@ -152,7 +152,7 @@ CLASS("Notification", "")
 		// Add to the queue
 		// The notification will be created when all previous notifications has been pushed in
 		pr _queue = GETSV("Notification", "queue");
-		pr _args = [_imagePath, _category, _text, _hint, _duration];
+		pr _args = [_imagePath, _category, _text, _hint, _duration, _sound];
 		_queue pushBack _args;
 	} ENDMETHOD;
 
@@ -177,7 +177,7 @@ CLASS("Notification", "")
 					if (GETV(_not, "state") != _STATE_IDLE) then {
 						// This notification is still moving somewhere
 						pr _ctrl = GETV(_not, "control") select 0;
-						OOP_INFO_2(" Notification %1 position %2", _not, ctrlPosition _ctrl);
+						//OOP_INFO_2(" Notification %1 position %2", _not, ctrlPosition _ctrl);
 						if (ctrlCommitted _ctrl) then {
 							SETV(_not, "state", _STATE_IDLE);
 						};
@@ -201,7 +201,7 @@ CLASS("Notification", "")
 		// Check if we can add more notifications from the queue
 		pr _queue = GETSV(_thisClass, "queue");
 		if ((count _queue) > 0) then {
-			OOP_INFO_0("Queue not empty!");
+			//OOP_INFO_0("Queue not empty!");
 
 			// We can push only one at a time anyway
 			// We can add new notification if the topmost one has reached its destination pos
@@ -209,11 +209,11 @@ CLASS("Notification", "")
 			pr _count = count _objects;
 			if (_count > 0) then {
 
-				OOP_INFO_0("There are existing notifications!");
+				//OOP_INFO_0("There are existing notifications!");
 
 				pr _topmostNot = _objects select ((count _objects) - 1);
 				//[_topmostNot] call OOP_dumpAllVariables;
-				OOP_INFO_2("  Topmost not %1 state: %2", _topmostNot, GETV(_topmostNot, "state") );
+				//OOP_INFO_2("  Topmost not %1 state: %2", _topmostNot, GETV(_topmostNot, "state") );
 				if (GETV(_topmostNot, "state") == _STATE_IDLE && GETV(_topmostNot, "targetPosID") == 1) then {
 					// The topmost notification has freed up space for the next notification, we can add a new notification
 					_canAdd = true;
@@ -231,10 +231,21 @@ CLASS("Notification", "")
 
 			if (_canAdd) then {
 				pr _args = _queue select 0;
+
+				// Play sound if needed
+				pr _sound = _args#5;
+				if (_sound != "") then {
+					OOP_INFO_1("PLAYING SOUND: %1", _sound);
+					playSound _sound;
+				};
+
+				// Create the object
 				OOP_INFO_1("CREATING NOTIFICATION: %1", _args);
 				pr _not = NEW("Notification", _args);
 				CALLM0(_not, "_startMoveIn");
 				_objects pushBack _not;
+
+				// Delete data from the queue
 				_queue deleteAt 0;
 			};
 		};

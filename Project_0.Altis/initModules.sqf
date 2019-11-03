@@ -24,6 +24,9 @@ call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 // Initialize Build menu object templates
 call compile preprocessFileLineNumbers "Templates\BuildUI\init.sqf";
 
+// UI classes and functions
+call compile preprocessFileLineNumbers "UI\initClasses.sqf";
+
 //Initialize misc functions
 call compile preprocessFileLineNumbers "Misc\initFunctions.sqf";
 fnc_onPlayerRespawnServer = compile preprocessFileLineNumbers "fn_onPlayerRespawnServer.sqf";
@@ -82,9 +85,6 @@ call compile preprocessFileLineNumbers "AnimObjects\initClasses.sqf";
 
 // Initialize AI classes
 call compile preprocessFileLineNumbers "AI\initClasses.sqf";
-
-// UI classes and functions
-call compile preprocessFileLineNumbers "UI\initClasses.sqf";
 
 // Initialize suspiciosness monitor
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
