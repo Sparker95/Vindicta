@@ -225,7 +225,7 @@ CLASS("UnitIntel", "")
 
 			diag_log "--- adding event handler";
 
-			/*
+			
 			// Old code which would examing intel when player would double click it
 			player addEventHandler ["InventoryOpened", 
 			{
@@ -247,11 +247,21 @@ CLASS("UnitIntel", "")
 								(_data find _x) == 0
 							};
 
+							pr _deleteItem = false;
+
 							if (_index != -1) then { // If it's the document item, delete it and 'inspect' it
 								// Call code to inspect the intel item
 								CALLSM1("UnitIntel", "inspectIntel", _data);
+								_deleteItem = true;							
+							}; // if (_data == ...)
 
-								// Delete this document item from inventory
+							if (_data == "vin_pills") then {
+								call compile preprocessFileLineNumbers "UI\Notification\trip.sqf";
+								_deleteItem = true;
+							};
+
+							// If item deletion was requested
+							if (_deleteItem) then {
 								[{ // call CBA_fnc_waitAndExecute
 									params ["_IDC", "_data"];
 									//diag_log format ["Inside waitAndExecute: %1", _this];
@@ -261,8 +271,7 @@ CLASS("UnitIntel", "")
 										case 638: {diag_log "Vest"; player removeItemFromVest _data;};
 									};
 								}, [ctrlIDC _control, _data], 0] call CBA_fnc_waitAndExecute; // Can't remove the item right in this frame because it will crash the game
-							
-							}; // if (_data == ...)
+							};
 
 						} ]; // ctrlAddEventHandler
 
@@ -276,7 +285,7 @@ CLASS("UnitIntel", "")
 			// 619 - backpack
 			// 638 - vest
 
-			*/
+			
 
 
 			private _ehid = player addEventHandler ["Take", 

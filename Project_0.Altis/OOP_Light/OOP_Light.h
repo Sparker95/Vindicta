@@ -164,7 +164,8 @@
 #endif
 */
 
-// Namespaces are NYI :/
+// Defines into which namespace this class is going to store variables
+// Not all OOP functionality is supported with namespaces yet!
 #ifndef NAMESPACE
 	#define NAMESPACE missionNameSpace
 #endif
@@ -237,6 +238,7 @@
 #define PARENTS_STR "parents"
 #define OOP_PARENT_STR "oop_parent"
 #define OOP_PUBLIC_STR "oop_public"
+#define NAMESPACE_STR "namespace"
 
 // Other important strings
 #define OOP_ERROR_DEBRIEFING_SECTION_VAR_NAME_STR "oop_missionEndText"
@@ -249,6 +251,7 @@
 // ----------------------------------------------------------------------
 
 #define FORCE_SET_MEM(objNameStr, memNameStr, value) NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
+#define FORCE_SET_MEM_NS(ns, objNameStr, memNameStr, value) ns setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
 #define FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
 	isNil { \
 		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), objNull]; \
@@ -257,11 +260,11 @@
 		NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value] \
 	}
 
-#define FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) missionNamespace setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
+#define FORCE_SET_STATIC_MEM(classNameStr, memNameStr, value) NAMESPACE setVariable [CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr), value]
 #define FORCE_SET_METHOD(classNameStr, methodNameStr, code) missionNamespace setVariable [CLASS_METHOD_NAME_STR(classNameStr, methodNameStr), code]
 #define FORCE_GET_MEM(objNameStr, memNameStr) ( NAMESPACE getVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr) )
 #define FORCE_GET_STATIC_MEM(classNameStr, memNameStr) ( NAMESPACE getVariable CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) )
-#define FORCE_GET_METHOD(classNameStr, methodNameStr) ( NAMESPACE getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
+#define FORCE_GET_METHOD(classNameStr, methodNameStr) ( missionNamespace getVariable CLASS_METHOD_NAME_STR(classNameStr, methodNameStr) )
 
 #ifndef _SQF_VM
 #define FORCE_PUBLIC_MEM(objNameStr, memNameStr) publicVariable OBJECT_MEM_NAME_STR(objNameStr, memNameStr)
@@ -590,7 +593,7 @@
 	#define METHOD(methodNameStr) \
 		_oop_methodList pushBackUnique methodNameStr;  \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
 			private _thisObject = _this select 0; \
 			private _methodNameStr = methodNameStr; \
@@ -608,15 +611,15 @@
 	#define METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisClass = nil; \
 			private _thisObject = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
+			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(OBJECT_PARENT_CLASS_STR(_objOrClass), INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn }) select 0; \
 			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
@@ -626,7 +629,7 @@
 	#define STATIC_METHOD(methodNameStr) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
 			private _thisClass = _this select 0; \
 			private _methodNameStr = methodNameStr; \
@@ -638,15 +641,15 @@
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, INNER_METHOD_NAME_STR(methodNameStr)), compile preprocessFileLineNumbers path]; \
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), { \
 			private _thisObject = nil; \
 			private _thisClass = _this select 0; \
 			private _methodNameStr = methodNameStr; \
 			private _objOrClass = _this select 0; \
 			OOP_FUNC_HEADER_PROFILE_STATIC; \
 			OOP_TRACE_ENTER_FUNCTION; \
-			private _fn = NAMESPACE getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
+			private _fn = missionNamespace getVariable CLASS_METHOD_NAME_STR(_objOrClass, INNER_METHOD_NAME_STR(methodNameStr)); \
 			private _result = ([0] apply { _this call _fn}) select 0; \
 			OOP_TRACE_EXIT_FUNCTION; \
 			OOP_FUNC_FOOTER_PROFILE; \
@@ -656,23 +659,23 @@
 	#define METHOD(methodNameStr) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 	#define ENDMETHOD ]
 
 	#define METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 
 	#define STATIC_METHOD(methodNameStr) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr),
 
 	#define STATIC_METHOD_FILE(methodNameStr, path) \
 		_oop_methodList pushBackUnique methodNameStr; \
 		_oop_newMethodList pushBackUnique methodNameStr; \
-		NAMESPACE setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
+		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 #endif
 
 // ----------------------------------------
@@ -716,6 +719,7 @@ SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
 SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
 SET_SPECIAL_MEM(_oop_classNameStr, STATIC_MEM_LIST_STR, _oop_staticMemList); \
 SET_SPECIAL_MEM(_oop_classNameStr, METHOD_LIST_STR, _oop_methodList); \
+SET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR, NAMESPACE); \
 PROFILER_COUNTER_INIT(_oop_classNameStr); \
 METHOD("new") {} ENDMETHOD; \
 METHOD("delete") {} ENDMETHOD; \

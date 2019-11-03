@@ -7,6 +7,7 @@ class CfgMagazines
 	{
 		mass=0;
 		scope=2;
+		count = 1;
 		displayName="Military documents";
 		descriptionShort = "A few military documents. Pick it up to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Document_01_F.jpg";
@@ -17,6 +18,7 @@ class CfgMagazines
 	{
 		mass=0;
 		scope=2;
+		count = 1;
 		displayName="Military documents";
 		descriptionShort = "Some military documents. Pick it up to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_FilePhotos_F.jpg";
@@ -27,6 +29,7 @@ class CfgMagazines
 	{
 		mass = 0.1;
 		scope=2;
+		count = 1;
 		displayName="Tactical tablet";
 		descriptionShort = "A military tactical tablet. Pick it up to study the intel.";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Tablet_02_F.jpg";
@@ -37,6 +40,7 @@ class CfgMagazines
 	{
 		mass = 0.1;
 		scope=2;
+		count = 1;
 		displayName="Personal tablet";
 		descriptionShort = "A personal tablet. Pick it up to study the intel";
 		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Tablet_01_F.jpg";
@@ -61,5 +65,16 @@ class CfgMagazines
 		hiddenSelections[] = {"Camo"};
 		hiddenSelectionsTextures[] = {"\A3\Props_F_Orange\Humanitarian\Supplies\Data\PaperBox_01_small_brown_CO.paa"};
 		model = "\A3\Props_F_Orange\Humanitarian\Supplies\PaperBox_01_small_closed_F.p3d";
+	};
+
+	class vin_pills: CA_Magazine
+	{
+		count = 1;
+		mass = 0.1;
+		scope = 2;
+		displayName="Strange pills";
+		descriptionShort = "Take it and double-click to use (carefully)";
+		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Antibiotic_F.jpg";
+		model = "\A3\Structures_F_EPA\Items\Medical\Antibiotic_F.p3d";
 	};
 };
