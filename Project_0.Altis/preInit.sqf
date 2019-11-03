@@ -21,4 +21,8 @@ if (hasInterface) then {
 	[_dummyIntel, _serial] call OOP_deserialize;
 	CALLM1(gIntelDatabaseClient, "addIntel", _dummyIntel);
 */
+
+	// Initialize notification system
+	CALLSM0("Notification", "staticInit");
+
 };
