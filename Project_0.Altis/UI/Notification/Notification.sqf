@@ -1,4 +1,3 @@
-#define NAMESPACE uiNamespace
 #define OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR
@@ -18,7 +17,7 @@ Handles operation of stackable notifications.
 #define _STATE_MOVING_NEXT_POS	1
 #define _STATE_IDLE				2
 
-#define _TIME_ANIMATION			1.5
+#define _TIME_ANIMATION			0.1
 // Vertical offset between positions of all notifications
 #define _HEIGHT				0.18
 #define _WIDTH				0.5
@@ -38,11 +37,9 @@ CLASS("Notification", "")
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_imagePath"), P_STRING("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration")];
 
-		OOP_INFO_1("NEW %1", _this);
-
 		pr _group = (findDisplay 46) ctrlCreate ["NOTIFICATION_GROUP", -1];
 
-		OOP_INFO_1("NEW $1", _this);
+		OOP_INFO_1("NEW %1", _this);
 		OOP_INFO_1("  control: %1", _group);
 
 		// Set text of controls
@@ -66,7 +63,7 @@ CLASS("Notification", "")
 		#endif
 
 		// Set variables
-		T_SETV("control", _group);
+		T_SETV("control", [_group]);
 		T_SETV("state", _STATE_IDLE);
 		T_SETV("timeEnd", time + _duration);
 		T_SETV("targetPosID", 0);
@@ -77,7 +74,7 @@ CLASS("Notification", "")
 
 		OOP_INFO_0("DELETE");
 
-		pr _group = T_GETV("control");
+		pr _group = T_GETV("control") select 0;
 		ctrlDelete _group;
 	} ENDMETHOD;
 
@@ -87,8 +84,8 @@ CLASS("Notification", "")
 
 		OOP_INFO_0("START MOVE IN");
 
-		pr _ctrl = T_GETV("control");
-		pr _posxy = CALLSM1("Notification", "_getTargetPosFromID", _targetPosID);
+		pr _ctrl = T_GETV("control") select 0;
+		pr _posxy = CALLSM1("Notification", "_getTargetPosFromID", 0);
 		#ifndef _SQF_VM
 		// Move to start pos instantly
 		_ctrl ctrlSetPositionX ((_posxy#0) - _WIDTH);
@@ -112,14 +109,14 @@ CLASS("Notification", "")
 		OOP_INFO_1("START MOVE TO POS: %1", _targetPosID);
 
 		pr _posxy = CALLSM1("Notification", "_getTargetPosFromID", _targetPosID);
-		pr _ctrl = T_GETV("control");
+		pr _ctrl = T_GETV("control") select 0;
 		#ifndef _SQF_VM
 		_ctrl ctrlSetPositionX (_posxy#0);
 		_ctrl ctrlSetPositionY (_posxy#1);
 		_ctrl ctrlCommit _TIME_ANIMATION;
 		#endif
 		T_SETV("targetPosID", _targetPosID);
-		T_SETV("state", _STATE_MOVING_POS);
+		T_SETV("state", _STATE_MOVING_NEXT_POS);
 	} ENDMETHOD;
 
 	// Returns [x, y] of the position with given ID
@@ -130,7 +127,7 @@ CLASS("Notification", "")
 		if (_targetID < 0) then {_targetID = 0};
 
 		pr _posx = safeZoneX;
-		pr _posY = 0.5 + _targetID*_HEIGHT;
+		pr _posY = safeZoneY + 0.3*safeZoneH + _targetID*_HEIGHT;
 
 		[_posx, _posy]
 	} ENDMETHOD;
@@ -171,6 +168,7 @@ CLASS("Notification", "")
 			while {_i < count _objects} do {
 				pr _not = _objects#_i;
 				if (time > GETV(_not, "timeEnd")) then {	// Is the time over for this notification?
+					OOP_INFO_1("Deleting notification: %1", _not);
 					DELETE(_not);
 					_objects deleteAt _i;
 					_deleted = true;
@@ -178,7 +176,8 @@ CLASS("Notification", "")
 					// Update state of this notification
 					if (GETV(_not, "state") != _STATE_IDLE) then {
 						// This notification is still moving somewhere
-						pr _ctrl = GETV(_not, "control");
+						pr _ctrl = GETV(_not, "control") select 0;
+						OOP_INFO_2(" Notification %1 position %2", _not, ctrlPosition _ctrl);
 						if (ctrlCommitted _ctrl) then {
 							SETV(_not, "state", _STATE_IDLE);
 						};
@@ -186,15 +185,15 @@ CLASS("Notification", "")
 					_i = _i + 1;
 				};
 			};
-		};
 
-		// If we have deleted something, recalculate the target positions, reapply the animations
-		if (_deleted) then {
-			pr _count = count _objects;
-			for "_i" from 0 to (_count -1) do {
-				pr _not = _objects#_i;
-				if ((GETV(_not, "targetPosID")) != (_count - 1 - _i)) then {
-					CALLM1(_not, "_startMoveToPos", _count - 1 - _i);
+			// If we have deleted something, recalculate the target positions, reapply the animations
+			if (_deleted) then {
+				pr _count = count _objects;
+				for "_i" from 0 to (_count -1) do {
+					pr _not = _objects#_i;
+					if ((GETV(_not, "targetPosID")) != (_count - 1 - _i)) then {
+						CALLM1(_not, "_startMoveToPos", _count - 1 - _i);
+					};
 				};
 			};
 		};
@@ -202,20 +201,29 @@ CLASS("Notification", "")
 		// Check if we can add more notifications from the queue
 		pr _queue = GETSV(_thisClass, "queue");
 		if ((count _queue) > 0) then {
+			OOP_INFO_0("Queue not empty!");
+
 			// We can push only one at a time anyway
 			// We can add new notification if the topmost one has reached its destination pos
 			pr _canAdd = false;
 			pr _count = count _objects;
 			if (_count > 0) then {
+
+				OOP_INFO_0("There are existing notifications!");
+
 				pr _topmostNot = _objects select ((count _objects) - 1);
+				//[_topmostNot] call OOP_dumpAllVariables;
+				OOP_INFO_2("  Topmost not %1 state: %2", _topmostNot, GETV(_topmostNot, "state") );
 				if (GETV(_topmostNot, "state") == _STATE_IDLE && GETV(_topmostNot, "targetPosID") == 1) then {
 					// The topmost notification has freed up space for the next notification, we can add a new notification
 					_canAdd = true;
 				} else {
 					// Move all other notifications down by one cell
-					{
-						CALLM1(_x, "_startMoveTopos", _count - _forEachIndex); // Last added notification moves to pos 1
-					} forEach _objects;
+					if (GETV(_topmostNot, "targetPosID") != 1) then {
+						{
+							CALLM1(_x, "_startMoveToPos", _count - _forEachIndex); // Last added notification moves to pos 1
+						} forEach _objects;
+					};
 				};
 			} else {
 				_canAdd = true;
@@ -223,6 +231,7 @@ CLASS("Notification", "")
 
 			if (_canAdd) then {
 				pr _args = _queue select 0;
+				OOP_INFO_1("CREATING NOTIFICATION: %1", _args);
 				pr _not = NEW("Notification", _args);
 				CALLM0(_not, "_startMoveIn");
 				_objects pushBack _not;
@@ -241,18 +250,17 @@ CLASS("Notification", "")
 	STATIC_METHOD("staticInit") {
 		params [P_THISCLASS];
 
-		// Make sure previous objects are deleted
-		pr _objects = GETSV(_thisClass, "objects");
-		if (!isNil "_objects") then {
-			{
-				DELETE(_x);
-			} forEach _objects;
-		};
-
 		// Bail if initialized already
 		if (!isNil {GETSV(_thisClass, "initDone")}) exitWith {
 			OOP_ERROR_0("Notification class already initialized!");
 		};
+
+		// Make sure we clear up previously created notifications, since they stay here on mission restarts
+		pr _allControls = allControls (findDisplay 46);
+		pr _prevControls = _allControls select {(ctrlClassName _x) == "NOTIFICATION_GROUP"};
+		{
+			ctrlDelete _x;
+		} forEach _prevControls;
 
 		// Initialize static variables
 		SETSV(_thisClass, "initDone", true);

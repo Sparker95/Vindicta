@@ -166,6 +166,7 @@
 
 // Defines into which namespace this class is going to store variables
 // Not all OOP functionality is supported with namespaces yet!
+// ! ! ! ! ! Namespaces don't work at all, don't even try to use them, just use mission namespace ! ! ! ! ! !
 #ifndef NAMESPACE
 	#define NAMESPACE missionNameSpace
 #endif
