@@ -150,15 +150,40 @@ location_bt_police =
 	"Land_i_House_Big_01_V3_F"
 ];
 
-location_police_decorations =
+location_decorations_police =
 [
 	[
-		["Land_i_Shop_01_V2_F", "Land_u_Shop_01_V1_F"],
-		[[4.14646,259.002,1.82516,90],[4.67004,216.463,1.82516,0]]
+		["Land_i_House_Small_02_V1_F","Land_u_House_Small_02_V1_F","Land_i_House_Small_02_V3_F","Land_i_House_Small_02_V2_F"],
+		// Array of [_offset, _vectorDirAndUp]
+		[[[2.3125,-3.76367,1.24133],[[0,1,0],[0,0,1]]],[[-4.01563,-0.691406,0.952689],[[0.999999,-0.00148479,0],[0,0,1]]],[[1.54102,3.30469,1.36593],[[-0.000931589,-1,0],[0,0,1]]]]
 	],
 	[
-		["Land_i_Shop_01_V2_F", "Land_u_Shop_01_V1_F"],
-		[[4.14646,259.002,1.82516,90],[4.67004,216.463,1.82516,0]]
+		["Land_u_Shop_01_V1_F"],
+		[[[-0.4375,-2.74609,-0.0292983],[[0.0156359,0.999878,0],[0,0,1]]],[[-0.916016,7.36133,-0.708581],[[-0.0169196,-0.999857,0],[0,0,1]]]]
+	],
+	[
+		["Land_i_Shop_01_V2_F","Land_i_Shop_01_V3_F","Land_i_Shop_01_V1_F"],
+		[[[1.24414,-3.11523,0.059587],[[0,1,0],[0,0,1]]],[[1.15625,7.02734,-1.00797],[[-8.74228e-008,-1,0],[0,0,1]]]]
+	],
+	[
+		["Land_u_House_Big_02_V1_F","Land_i_House_Big_02_V3_F","Land_i_House_Big_02_V1_F","Land_i_House_Big_02_V2_F"],
+		[[[1.64258,5.54883,-0.478913],[[-0.0169196,-0.999857,0],[0,0,1]]],[[3.3125,-4.49414,-0.789048],[[0.012478,0.999922,0],[0,0,1]]]]
+	],
+	[
+		["Land_i_Stone_HouseSmall_V2_F","Land_i_Stone_HouseSmall_V1_F","Land_i_Stone_HouseSmall_V3_F"],
+		[[[0.0566406,-1.37891,0.052608],[[0.012478,0.999922,0],[0,0,1]]],[[0.00585938,5.63672,-0.168258],[[-0.00766302,-0.999971,0],[0,0,1]]]]
+	],
+	[
+		["Land_i_Stone_HouseBig_V3_F","Land_i_Stone_HouseBig_V2_F","Land_i_Stone_HouseBig_V1_F"],
+		[[[0.625,-2.00195,0.0724616],[[0.012478,0.999922,0],[0,0,1]]],[[-2.53711,3.22266,2.22565],[[0.99987,-0.0161541,0],[0,0,1]]]]
+	],
+	[
+		["Land_i_House_Big_01_V3_F","Land_i_House_Big_01_V1_F","Land_i_House_Big_01_V2_F","Land_u_House_Big_01_V1_F"],
+		[[[-4.81445,2.83203,-1.1514],[[0.999867,-0.0163374,0],[0,0,1]]],[[5.1543,0.775391,-0.706075],[[-0.999981,0.00623509,0],[0,0,1]]]]
+	],
+	[
+		["Land_u_House_Small_01_V1_F","Land_i_House_Small_01_V3_F","Land_i_House_Small_01_V1_F","Land_i_House_Small_01_V2_F"],
+		[[[-1.12695,-4.81641,1.56931],[[0.012478,0.999922,0],[0,0,1]]],[[1.53125,5.28711,1.06545],[[-0.01174,-0.999931,0],[0,0,1]]]]
 	]
 ];
 
@@ -213,7 +238,7 @@ _objDir = (direction _o) - (direction _b);
 
 
 /*
-// Code to export texture offsets right from the editor
+// Code to export texture offsets right from the editor, in cylindrical coordinates
 // Must select house and texture objects
 
 _objects = get3DENSelected "object";
@@ -238,6 +263,29 @@ _objDir = (direction _o) - (direction _b);
 _arrayExport pushBack [_distRel, _dirRel, _zRel, round _objDir];
 } forEach _textures;
 
+_arrayExport
+*/
+
+
+
+/*
+// Code to export objects from editor in [_pos, [_vectorDir, _vectorUp]]
+
+_objects = get3DENSelected "object"; 
+_house = _objects select {_x isKindOf "House"} select 0; 
+_textures = _objects select {_x isKindOf "UserTexture1m_F"}; 
+ 
+_arrayExport = []; // dist, posDir, zrel, dir 
+ 
+{ 
+_b = _house;  
+_o = _x;  
+_posModel = _b worldToModel (position _o);
+_vdir = vectorDir _o;
+_vup = vectorUp _o;
+_arrayExport pushBack [_posModel, [_b vectorWorldToModel _vdir, _b vectorWorldToModel _vup]]; 
+} forEach _textures; 
+ 
 _arrayExport
 */
 
