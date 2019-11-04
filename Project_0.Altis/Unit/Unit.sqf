@@ -739,6 +739,12 @@ CLASS(UNIT_CLASS_NAME, "");
 			for "_i" from 0 to _nVests do {
 				_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
 			};
+		} else {
+			if (random 100 <= 5) then {
+				_hO addItemToUniform "vin_pills";
+				_hO addItemToUniform "vin_pills";
+				_hO addItemToUniform "vin_pills";
+			};
 		};
 	} ENDMETHOD;
 

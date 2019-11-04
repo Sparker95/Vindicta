@@ -595,7 +595,7 @@ OOP_new = {
 	
 	private _objNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
 
-	FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, _classNameStr);
+	FORCE_SET_MEM_NS(missionNamespace, _objNameStr, OOP_PARENT_STR, _classNameStr);
 	private _oop_parents = GET_SPECIAL_MEM(_classNameStr, PARENTS_STR);
 	private _oop_i = 0;
 	private _oop_parentCount = count _oop_parents;
@@ -612,7 +612,7 @@ OOP_new = {
 };
 
 // Create new public object from class name and parameters
-OOP_new_public = {
+OOP_new_public = { // todo implement namespace
 	params ["_classNameStr", "_extraParams"];
 
 	CONSTRUCTOR_ASSERT_CLASS(_classNameStr);
@@ -645,7 +645,7 @@ OOP_new_public = {
 };
 
 // Create a copy of an object
-OOP_clone = {
+OOP_clone = { // todo implement namespace
 	params ["_objNameStr"];
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
@@ -673,7 +673,7 @@ OOP_clone = {
 };
 
 // Default copy, this is what you get if you don't overwrite "copy" method of your class
-OOP_clone_default = {
+OOP_clone_default = { // todo implement namespace
 	params ["_thisObject", "_srcObject"];
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
@@ -696,7 +696,7 @@ OOP_clone_default = {
 // Default assignment, this is what you get if you don't overwrite "assign" method of your class
 // It just iterates through all variables and copies their values
 // This method assumes the same classes of the two objects
-OOP_assign_default = {
+OOP_assign_default = { // todo implement namespace
 	params ["_destObject", "_srcObject", ["_copyNil", true], '_attrRequired'];
 
 	private _destClassNameStr = OBJECT_PARENT_CLASS_STR(_destObject);
@@ -737,7 +737,7 @@ OOP_assign_default = {
 };
 
 // Pack all variables into an array
-OOP_serialize = {
+OOP_serialize = { // todo implement namespace
 	params ["_objNameStr"];
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
@@ -758,7 +758,7 @@ OOP_serialize = {
 };
 
 // Unpack all variables from an array into an existing object
-OOP_deserialize = {
+OOP_deserialize = { // todo implement namespace
 	params ["_objNameStr", "_array"];
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
@@ -779,7 +779,7 @@ OOP_deserialize = {
 	};
 };
 
-OOP_deref_var = {
+OOP_deref_var = { // todo implement namespace
 	params ["_objNameStr", "_memName", "_memAttr"];
 	if(ATTR_REFCOUNTED in _memAttr) then {
 		private _memObj = FORCE_GET_MEM(_objNameStr, _memName);
@@ -809,6 +809,7 @@ OOP_delete = {
 	private _oop_parents = GET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR);
 	private _oop_parentCount = count _oop_parents;
 	private _oop_i = _oop_parentCount - 1;
+	private _oop_namespace = GET_SPECIAL_MEM(_oop_classNameStr, NAMESPACE_STR);
 
 	CALL_METHOD(_objNameStr, "delete", []);
 	while {_oop_i > -1} do {
@@ -820,7 +821,7 @@ OOP_delete = {
 	private _oop_memList = GET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR);
 	
 	if (_isPublic) then {
-		{
+		{ // todo implement namespace
 			// If the var is REFCOUNTED then unref it
 			_x params ["_memName", "_memAttr"];
 			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
@@ -832,8 +833,9 @@ OOP_delete = {
 			// If the var is REFCOUNTED then unref it
 			_x params ["_memName", "_memAttr"];
 			[_objNameStr, _memName, _memAttr] call OOP_deref_var;
-			FORCE_SET_MEM(_objNameStr, _memName, nil);
-		} forEach _oop_memList;
+			FORCE_SET_MEM_NS(_oop_namespace, _objNameStr, _memName, nil);
+		} forEach (_oop_memList - [OOP_PARENT_STR]);
+		FORCE_SET_MEM_NS(missionNamespace, _objNameStr, OOP_PARENT_STR, nil);
 	};
 
 	PROFILER_COUNTER_DEC(_oop_classNameStr);

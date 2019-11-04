@@ -189,3 +189,16 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
                  false, //unconscious
                  "", //selection
                  ""]; //memoryPoint
+
+
+// If it's first respawn, show a hint
+if (isNil {vin_bRespawned}) then {
+    vin_bRespawned = true;
+    
+    private _sound = "defaultNotification";
+    private _picture = ""; // Default picture for now
+    private _duration = 10;
+    private _hint = "Check map for more info"; // Override hint!
+    private _args = [_picture, "CONTROLS", "Press [U] to open in-game menu", "It is very important (and nice)", _duration, _sound];
+    CALLSM("Notification", "createNotification", _args);
+};

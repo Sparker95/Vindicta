@@ -616,7 +616,7 @@ CLASS("AICommander", "AI")
 		// Do we have friendly locations nearby?
 		if (count _friendlyLocs > 0) then {
 			if (_weHaveRadioKey) then {
-				T_CALLM1("inspectIntel", _intel);
+				T_CALLM2("inspectIntel", _intel, INTEL_METHOD_RADIO);
 				OOP_INFO_0("  successfull interception");
 			} else {
 				// Todo Mark an unknown radio transmission on the map??
@@ -625,12 +625,16 @@ CLASS("AICommander", "AI")
 		} else {
 			OOP_INFO_0("  no friendly locations with radio nearby...");
 		};
+
+		// TEST delete this!
+		// Uncomment to intercept all enemy intel from everywhere
+		//T_CALLM2("inspectIntel", _intel, INTEL_METHOD_RADIO);
 	} ENDMETHOD;
 
 	// Checks intel in some other cmdr's database
 	// Makes a copy of that intel and takes it to this commander
 	METHOD("inspectIntel") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_NUMBER("_method")];
 
 		OOP_INFO_1("INSPECT INTEL: %1", _intel);
 
@@ -653,6 +657,7 @@ CLASS("AICommander", "AI")
 		} else {
 			// Make a clone for ourselves and add it to our database
 			pr _ourIntel = CLONE(_intel);
+			SETV(_ourIntel, "method", _method); // Set the method of how we have discovered this
 			OOP_INFO_2("  Intel with source %1 NOT found in DB, made a clone: %2", _intel, _ourIntel);
 			SETV(_ourIntel, "source", _intel); // We must mark the external intel item as as source of this intel, for future updates
 			CALLM1(_db, "addIntel", _ourIntel);
@@ -701,7 +706,7 @@ CLASS("AICommander", "AI")
 					if (_radioKey in T_GETV("enemyRadioKeys")) then {
 						"We have this cryptokey already..." remoteExecCall ["systemChat", _clientOwner];
 					} else {
-						"We don't have this cryptokey! I should add it to notes and return it back to base!" remoteExecCall ["systemChat", _clientOwner];
+						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createRadioCryptokey", [_radioKey], _clientOwner, false);
 
 						// Copy stuff into player's notes
 						pr _text = format [_endl + "%1 Found enemy radio cryptokey: %2" + _endl, date call misc_fnc_dateToISO8601, _radioKey];
@@ -725,7 +730,7 @@ CLASS("AICommander", "AI")
 
 				// Add to our db if needed
 				if (_itemSide != _side) then {
-					T_CALLM1("inspectIntel", _intelPersonal);
+					T_CALLM2("inspectIntel", _intelPersonal, INTEL_METHOD_INVENTORY_ITEM);
 				};
 
 				// Process what to show on the remote player's tablet

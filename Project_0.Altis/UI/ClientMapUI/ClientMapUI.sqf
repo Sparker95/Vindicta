@@ -180,18 +180,21 @@ CLASS(CLASS_NAME, "")
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonDown", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			CALLM(gClientMapUI, "onMouseButtonDown", _this);
+			false // Not handled
 		}];
 
 		// Mouse button up
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonUp", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			CALLM(gClientMapUI, "onMouseButtonUp", _this);
+			false // Not handled
 		}];
 
 		// Mouse button click
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonClick", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			CALLM(gClientMapUI, "onMouseButtonClick", _this);
+			false // Not handled
 		}];
 
 
@@ -351,15 +354,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		// forEach _allIntels;
 		{
 			pr _intel = _x;
-			pr _state = GETV(_intel, "state");
-			pr _show = switch (_state) do {
-				case INTEL_ACTION_STATE_INACTIVE: {_showInactive};
-				case INTEL_ACTION_STATE_ACTIVE: {_showActive};
-				case INTEL_ACTION_STATE_END: {_showEnded};
-				default {false};
-			};
 			private _className = GET_OBJECT_CLASS(_x);
 			if (_className != "IntelLocation") then { // Add all non-location intel classes
+				pr _state = GETV(_intel, "state");
+				pr _show = switch (_state) do {
+					case INTEL_ACTION_STATE_INACTIVE: {_showInactive};
+					case INTEL_ACTION_STATE_ACTIVE: {_showActive};
+					case INTEL_ACTION_STATE_END: {_showEnded};
+					default {false};
+				};
+
 				pr _show0 = (_show || _forceShow) && (!_forceHide);
 				CALLM1(_x, "showOnMap", _show0);
 			};
@@ -1855,7 +1859,7 @@ Gets called from "onMapDraw"
 			pr _minuteNow = _dateNow#4;
 			pr _year = _dateNow#0;
 			pr _dateDeparture = +_dateNow;
-			_dateDeparture set [4, _minuteNow + (random 120)];
+			_dateDeparture set [4, _minuteNow - (random 120) + 60];
 			// Fix the minute overflow by converting twice
 			//_dateDeparture = numberToDate [_year, dateToNumber _dateDeparture];
 			SETV(_intel, "dateDeparture", _dateDeparture);

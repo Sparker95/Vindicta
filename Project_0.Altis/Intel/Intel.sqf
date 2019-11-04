@@ -36,7 +36,9 @@ CLASS("Intel", "")
 	VARIABLE_ATTR("location", [ATTR_SERIALIZABLE]); // Location
 
 	/* variable: method
-	Method of how we have got this Intel (from radio, surveilance, etc)*/
+	Method of how we have got this Intel (from radio, surveilance, etc)
+	Not initialized on own intel, only relevant for stolen intel.
+	*/
 	VARIABLE_ATTR("method", [ATTR_SERIALIZABLE]);
 
 	/* variable: source
@@ -252,14 +254,18 @@ CLASS("IntelLocation", "Intel")
 		pr _pos = T_GETV("pos");
 		OOP_INFO_2("Added location intel to client: %1, %2", _loc, _pos);
 
-		pr _type = T_GETV("type");
-		pr _typeStr = switch (_type) do {
-			case LOCATION_TYPE_POLICE_STATION: {"police station"};
-			case LOCATION_TYPE_OBSERVATION_POST: {"observation post"};
-			default {_type};
+		// Add notification
+		if (! isRemoteExecutedJIP && (time > 60) ) then {
+			pr _type = T_GETV("type");
+			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+			pr _text = if (_type == LOCATION_TYPE_UNKNOWN) then {
+				format ["%1 at %2.", _typeStr, mapGridPosition _pos];
+			} else {
+				format ["%1 at %2.", CALLM0(_loc, "getDisplayName"), mapGridPosition _pos];
+			};
+			pr _args = ["LOCATION DISCOVERED", _text, ""];
+			CALLSM("NotificationFactory", "createIntelLocation", _args);
 		};
-
-		systemChat format ["Added location intel: %1 at %2.", _typeStr, mapGridPosition _pos];
 	} ENDMETHOD;
 
 	METHOD("clientUpdate") {
@@ -272,26 +278,28 @@ CLASS("IntelLocation", "Intel")
 		pr _loc = T_GETV("location");
 		pr _pos = T_GETV("pos");
 		pr _type = T_GETV("type");
-		pr _typeStr = switch (_type) do {
-			case LOCATION_TYPE_POLICE_STATION: {"police station"};
-			case LOCATION_TYPE_OBSERVATION_POST: {"observation post"};
-			default {_type};
-		};
-		pr _string = format ["Updated location intel: %1 at %2.", _typeStr, mapGridPosition _pos];
 
 		// Hint
 		// Check what variables were updated
+		pr _needNotify = false;
 		if (! (T_GETV("type") isEqualTo GETV(_intelSrc, "type"))) then {
-			_string = _string + " Updated type.";
+			_needNotify = true;
 		};
 		if (! (T_GETV("side") isEqualTo GETV(_intelSrc, "side"))) then {
-			_string = _string + " Updated side.";
+			_needNotify = true;
 		};
-		if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
+		/*if (! (T_GETV("unitData") isEqualTo GETV(_intelSrc, "unitData"))) then {
 			_string = _string + " Updated unit data.";
-		};
+		};*/
 		
-		systemChat _string;
+		// Add notification
+		if (_needNotify && (! isRemoteExecutedJIP) && (time > 60) ) then {
+			pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+			pr _text = format ["%1 at %2.", CALLM0(_loc, "getDisplayName"), mapGridPosition _pos];
+			pr _args = ["LOCATION INTEL UPDATED", _text, ""];
+			CALLSM("NotificationFactory", "createIntelLocation", _args);
+		};
+
 	} ENDMETHOD;
 
 	STATIC_METHOD("setLocationMarkerProperties") {
@@ -338,7 +346,7 @@ CLASS("IntelLocation", "Intel")
 
 		// Enable notification marker (the red circle)
 		// Don't enable notification for JIP
-		pr _enable = ! isRemoteExecutedJIP;
+		pr _enable = ! isRemoteExecutedJIP && (time > 60);
 		CALLM1(_mapMarker, "setNotification", _enable);
 	} ENDMETHOD;
 
@@ -459,12 +467,52 @@ CLASS("IntelCommanderAction", "Intel")
 
 		//OOP_INFO_0("CLIENT ADD");
 
-		systemChat format ["Added intel: %1", _thisObject];
-
 		T_SETV("shownOnMap", false);
 
-		// Hint
-		hint format ["Added intel: %1", _thisObject];
+		// Create notification
+		if (! isRemoteExecutedJIP) then { // Only if not JIP
+			pr _intel = _thisObject;
+			pr _actionName = CALLM0(_intel, "getShortName");
+			pr _dateDeparture = GETV(_intel, "dateDeparture");
+
+			pr _dateDeparture = GETV(_intel, "dateDeparture");
+			pr _dateNow = date;
+			pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
+			pr _futureEvent = true;
+			if (_numberDiff < 0) then {
+				_numberDiff = -_numberDiff;
+				_futureEvent = false;
+			};
+			pr _dateDiff = numberToDate [/*_dateNow#0*/0, _numberDiff];
+			_dateDiff params ["_y", "_month", "_d", "_h", "_m"];
+			_month = _month - 1; // Because month counting starts with 1
+			_d = _d - 1; // Because day counting starts with 1
+
+			OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
+			
+			// Make a string representation of time difference
+			pr _timeDiffStr = if (_h > 0) then {
+				format ["%1H, %2M", _h, round _m]
+			} else {
+				format ["%1M", round _m]
+			};
+			pr _timeStr = if (_futureEvent) then {
+				format ["Will start in %1", _timeDiffStr];
+			} else {
+				format ["Started %1 ago", _timeDiffStr];
+			};
+
+			pr _method = GETV(_intel, "method");
+			pr _categoryText = if (_method == INTEL_METHOD_INVENTORY_ITEM) then {
+				"INTEL FOUND IN TABLET"
+			} else {
+				"INTEL INTERCEPTED BY RADIO"
+			};
+			pr _text = format ["%1 %2", _actionName, _timeStr];
+			pr _args = [_categoryText, _text, ""];
+			CALLSM("NotificationFactory", "createIntelCommanderAction", _args);
+		};
+
 
 		// Notify ClientMapUI
 		CALLM1(gClientMapUI, "onIntelAdded", _thisObject);
