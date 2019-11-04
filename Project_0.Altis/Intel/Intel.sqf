@@ -36,7 +36,9 @@ CLASS("Intel", "")
 	VARIABLE_ATTR("location", [ATTR_SERIALIZABLE]); // Location
 
 	/* variable: method
-	Method of how we have got this Intel (from radio, surveilance, etc)*/
+	Method of how we have got this Intel (from radio, surveilance, etc)
+	Not initialized on own intel, only relevant for stolen intel.
+	*/
 	VARIABLE_ATTR("method", [ATTR_SERIALIZABLE]);
 
 	/* variable: source
@@ -500,8 +502,14 @@ CLASS("IntelCommanderAction", "Intel")
 				format ["Started %1 ago", _timeDiffStr];
 			};
 
-			pr _text = format ["%1\n%2", _actionName, _timeStr];
-			pr _args = ["INTEL DISCOVERED", _text, ""];
+			pr _method = GETV(_intel, "method");
+			pr _categoryText = if (_method == INTEL_METHOD_INVENTORY_ITEM) then {
+				"INTEL FOUND IN TABLET"
+			} else {
+				"INTEL INTERCEPTED BY RADIO"
+			};
+			pr _text = format ["%1 %2", _actionName, _timeStr];
+			pr _args = [_categoryText, _text, ""];
 			CALLSM("NotificationFactory", "createIntelCommanderAction", _args);
 		};
 

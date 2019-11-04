@@ -37,6 +37,20 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
+	// Gets called when we find a new cryptokey we didn't have yet
+	STATIC_METHOD("createRadioCryptokey") {
+		params [P_THISOBJECT, P_STRING("_key")];
+
+		private _sound = "defaultNotification";
+		private _picture = ""; // Default picture for now
+		private _duration = 25;
+		private _category = "RADIO CRYPTOKEY FOUND";
+		private _text = format ["Activate it at a friendly radio station!\n%1", _key];
+		private _hint = "Check notes in the in-game menu"; // Override hint!
+		private _args = [_picture, _category, _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
 	// Basic UI notification
 	STATIC_METHOD("createBasicUI") {
 		params [P_THISOBJECT, P_NUMBER("_type"), P_STRING("_text"), P_STRING("_hint")];
