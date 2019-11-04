@@ -180,18 +180,21 @@ CLASS(CLASS_NAME, "")
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonDown", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			CALLM(gClientMapUI, "onMouseButtonDown", _this);
+			false // Not handled
 		}];
 
 		// Mouse button up
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonUp", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			CALLM(gClientMapUI, "onMouseButtonUp", _this);
+			false // Not handled
 		}];
 
 		// Mouse button click
 		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonClick", {
 			//params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 			CALLM(gClientMapUI, "onMouseButtonClick", _this);
+			false // Not handled
 		}];
 
 
