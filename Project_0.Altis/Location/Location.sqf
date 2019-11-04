@@ -1067,21 +1067,21 @@ CLASS("Location", "MessageReceiverEx")
 		private _locPos = GET_VAR(_thisObject, "pos");
 		private _no = _locPos nearObjects _radius;
 
-		OOP_INFO_1("PROCESS OBJECTS IN AREA: %1", _this);
-		OOP_INFO_2("	Radius: %1, pos: %2", _radius, _locPos);
-		OOP_INFO_1("	Objects: %1", _no);
+		//OOP_INFO_1("PROCESS OBJECTS IN AREA: %1", _this);
+		//OOP_INFO_2("	Radius: %1, pos: %2", _radius, _locPos);
+		//OOP_INFO_1("	Objects: %1", _no);
 
 		// forEach _nO;
 		{
 			_object = _x;
-			OOP_INFO_1("	Object: %1", _object);
+			//OOP_INFO_1("	Object: %1", _object);
 			if(T_CALLM1("isInBorder", _object)) then {
-				OOP_INFO_0("	In border");
+				//OOP_INFO_0("	In border");
 				if (_object isKindOf _filter) then {
-					OOP_INFO_0("		Is kind of filter");
+					//OOP_INFO_0("		Is kind of filter");
 					T_CALLM1("addObject", _object);
 				} else {
-					OOP_INFO_0("    	Does not match filter");
+					//OOP_INFO_0("    	Does not match filter");
 					pr _type = typeOf _object;
 					if (_addSpecialObjects) then {
 						// Check if this object has capacity defined
@@ -1090,7 +1090,7 @@ CLASS("Location", "MessageReceiverEx")
 						private _index = location_b_capacity findIf {_type in _x#0};
 						private _indexRadio = location_bt_radio find _type;
 						if (_index != -1 || _indexRadio != -1) then {
-							OOP_INFO_0("    	Is a special object");
+							//OOP_INFO_0("    	Is a special object");
 							T_CALLM1("addObject", _object);
 						};
 					};

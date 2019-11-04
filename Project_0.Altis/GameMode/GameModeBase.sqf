@@ -551,6 +551,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					CALLM(_loc, "addChild", [_policeStation]);
 					SETV(_policeStation, "useParentPatrolWaypoints", true);
 					// add special gun shot sensor to police garrisons that will launch investigate->arrest goal ?
+
+					// Decorate the police station building
+					// todo maybe move it to another place?
+					private _type = typeOf _policeStationBuilding;
+					private _index = location_decorations_police findIf {_type in (_x#0)};
+					if (_index != -1) then {
+						private _arrayExport = location_decorations_police#_index#1;
+						{
+							_x params ["_offset", "_vDirAndUp"];
+							private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
+							_texObj setObjectTextureGlobal [0, "z\project_0\addons\ui\pictures\police.jpg"];
+							_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
+							_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
+							_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
+						} forEach _arrayExport;
+					};
 				};
 			};
 
