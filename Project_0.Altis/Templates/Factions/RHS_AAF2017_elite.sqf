@@ -71,7 +71,7 @@ _veh set [T_VEH_SPA, ["rhs_2s1_tv"]]; //TODO - change 2s1 color to "sand"
 _veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; //TODO - change shilka color to "sand"
 
 _veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]];
-_veh set [T_VEH_stat_GMG_high, ["RHS_MK19_TriPod_D"]];
+//_veh set [T_VEH_stat_GMG_high, ["TODO"]];
 _veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]];
 _veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_D"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]];
