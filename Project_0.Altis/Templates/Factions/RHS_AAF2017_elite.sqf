@@ -63,17 +63,17 @@ _veh set [T_VEH_MRAP_unarmed, ["FGN_AAF_Tigr_M", "FGN_AAF_Tigr"]];
 _veh set [T_VEH_MRAP_HMG, ["FGN_AAF_Tigr_STS"]];
 _veh set [T_VEH_MRAP_GMG, ["rhsusf_M1117_D"]]; //TODO - remove us army iff pannels via garage
 
-_veh set [T_VEH_IFV, ["FGN_AAF_BMP3M_ERA"]];
+_veh set [T_VEH_IFV, ["FGN_AAF_BMP3M_ERA", "rhs_bmp1p_vdv"]]; //TODO change BMP-1 color to "sand", add version without ATGM
 _veh set [T_VEH_APC, ["rhsusf_m113d_usarmy_supply", "rhsusf_m113d_usarmy", "rhsusf_m113d_usarmy_MK19", "rhsusf_m113d_usarmy_unarmed", "rhsusf_m113d_usarmy_M240"]]; //TODO - remove US army markings and iff pannels via garage
 _veh set [T_VEH_MBT, ["rhs_t72ba_tv","rhs_t72bb_tv","rhs_t90sm_tv", "rhs_t90am_tv"]]; //TODO - change color to "sand", move T-72 to reserve
 _veh set [T_VEH_MRLS, ["FGN_AAF_BM21"]];
-_veh set [T_VEH_SPA, ["rhs_2s1_tv"]]; //TODO - change 2s1 color to "sand"
+_veh set [T_VEH_SPA, ["rhs_2s1_tv", "rhs_2s3_tv"]]; //TODO - change colors to "sand"
 _veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; //TODO - change shilka color to "sand"
 
 _veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]];
 //_veh set [T_VEH_stat_GMG_high, ["TODO"]];
 _veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]];
-_veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_D"]];
+_veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_D", "rhsgref_ins_g_SPG9M", "rhsgref_ins_g_SPG9"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]];
 _veh set [T_VEH_stat_AT, ["RHS_TOW_TriPod_D"]];
 
@@ -81,7 +81,7 @@ _veh set [T_VEH_stat_mortar_light, ["RHS_M252_D"]];
 _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 
 //TODO remove HIDF markings from UH1 via garage, move UH1 to reserve
-_veh set [T_VEH_heli_light, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf"]];
+_veh set [T_VEH_heli_light, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf", "C_Heli_Light_01_civil_F"]]; //TODO - change recon helo camo to "digital"
 _veh set [T_VEH_heli_heavy, ["FGN_AAF_KA60_dynamicLoadout","rhs_uh1h_hidf_gunship"]];
 _veh set [T_VEH_heli_cargo, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf_unarmed"]];
 _veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]]; //TODO add dynamic loadout variants for more variety
@@ -97,7 +97,7 @@ _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F
 
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 
-//TODO - move Ural to reserve
+
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Ural", "FGN_AAF_Ural_open", "FGN_AAF_Zamak_Open", "FGN_AAF_Zamak"]];
 //_veh set [T_VEH_truck_cargo, ["TODO"]];
 _veh set [T_VEH_truck_ammo, ["FGN_AAF_Zamak_Ammo"]];
