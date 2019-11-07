@@ -15,7 +15,6 @@ source of the stimulus*/
 position of stimulus source*/
 #define STIMULUS_ID_POS				2
 
-
 /* Field: RANGE
 How far it can be sensed*/
 #define STIMULUS_ID_RANGE			3
@@ -29,9 +28,13 @@ NYI
 */
 #define STIMULUS_ID_EXPIRATION_TIME	5
 
+/* Field: SIDES_INCLUDE
+Array of sides which can sense this stimulus. By default an empty array and every side can sense this.*/
+#define STIMULUS_ID_SIDES_INCLUDE	6
+
 // Macro: STIMULUS_NEW()
 //                      0  1          2       3  4     5
-#define STIMULUS_NEW() [0, 0, [0, 0, 0], 666666, 0, time]
+#define STIMULUS_NEW() [0, 0, [0, 0, 0], 666666, 0, time, []]
 
 // Macros for getting values
 // Macro: STIMULUS_GET_TYPE(s)
@@ -48,7 +51,6 @@ NYI
 #define STIMULUS_GET_EXPIRATION_TIME(s) (s select STIMULUS_ID_EXPIRATION_TIME)
 
 
-
 // Macros for setting values
 // Macro: STIMULUS_SET_TYPE(s, val)
 #define STIMULUS_SET_TYPE(s, val) s set [STIMULUS_ID_TYPE, val]
@@ -62,3 +64,5 @@ NYI
 #define STIMULUS_SET_VALUE(s, val) s set [STIMULUS_ID_VALUE, val]
 // Macro: STIMULUS_SET_EXPIRATION_TIME(s, val)
 #define STIMULUS_SET_EXPIRATION_TIME(s, val) s set [STIMULUS_ID_EXPIRATION_TIME, val]
+// Macro: STIMULUS_SET_SIDES_INCLUDE(s, val)
+#define STIMULUS_SET_SIDES_INCLUDE(s, val) s set [STIMULUS_ID_SIDES_INCLUDE, val]

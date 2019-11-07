@@ -34,7 +34,6 @@ Author: Sparker 07.11.2018
 #endif
 
 #define AI_TIMER_SERVICE gTimerServiceMain
-#define STIMULUS_MANAGER gStimulusManager
 
 CLASS("AI_GOAP", "AI")
 

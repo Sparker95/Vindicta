@@ -137,6 +137,9 @@ CALLSM0("UnitIntel", "initPlayer");
 gPlayerMonitor = NEW("PlayerMonitor", [_newUnit]);
 NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this self-deletes, it will unref the player monitor
 
+// Init the Sound Monitor on player
+NEW("SoundMonitor", [_newUnit]);
+
 CALLM(gGameMode, "playerSpawn", _this);
 
 // Action to start building stuff

@@ -37,6 +37,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
 	VARIABLE("sensorObserved");
+	VARIABLE("sensorTargets");
 	
 	// Last time the garrison has any goal except for "GoalGarrisonRelax"
 	VARIABLE("lastBusyTime");
@@ -56,6 +57,8 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 		
+		ASSERT_GLOBAL_OBJECT(gStimulusManagerGarrison);
+
 		// Initialize sensors
 		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorHealth]);
@@ -63,6 +66,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		
 		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		T_SETV("sensorTargets", _sensorTargets);
 		
 		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
@@ -74,6 +78,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorObserved);
 		T_SETV("sensorObserved", _sensorObserved);
+
+		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorSound);
 
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
@@ -148,6 +155,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		_mrk setMarkerColor _color;
 		_mrk setMarkerAlpha 0.5;
 		#endif
+
+		// Register at stimulus manager
+		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
 		
 	} ENDMETHOD;
 	
@@ -158,6 +168,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		deleteMarker (_thisObject + MRK_GOAL);
 		deleteMarker (_thisObject + MRK_ARROW);
 		#endif
+
+		// Unregister from stimulus manager
+		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	} ENDMETHOD;
 	
 	
