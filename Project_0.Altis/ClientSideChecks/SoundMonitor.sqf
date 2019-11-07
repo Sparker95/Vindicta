@@ -146,12 +146,14 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 		params ["_unit", "_weapon", "_muzzle", "_mode", "_ammo", "_magazine", "_projectile", "_vehicle"];
 		
 		pr _hit = getNumber (configFile >> "cfgAmmo" >> _ammo >> "hit");
-
+		
+		/*
 		diag_log "Fired!";
 		diag_log format ["   unit: %1, weapon: %2, muzzle: %3, mode: %4, ammo: %5, magazine: %6", _unit, _weapon, _muzzle, _mode, _ammo, _magazine];
 		diag_log format ["   projectile: %1", _projectile];
 		diag_log format ["   type projectile: %1, velocity: %2", typeof _projectile, vectorMagnitude (velocity _projectile)];
 		diag_log format ["   ammo hit: %1", _hit];
+		*/
 
 		// Todo: find a way to detect explosives being detonated
 		// Todo: add ACE grenade throwing
