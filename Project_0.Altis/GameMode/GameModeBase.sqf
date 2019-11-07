@@ -59,12 +59,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
 			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
 
-			// Message loop for Stimulus Manager
-			gMessageLoopStimulusManager = NEW("MessageLoop", ["Stimulus Manager thread"]);
-
-			// Global Stimulus Manager
-			gStimulusManager = NEW("StimulusManager", []);
-
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);
 
@@ -77,6 +71,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			T_CALLM("initServerOrHC", []);
 		};
 		if(IS_SERVER) then {
+
+			// Global Garrison Stimulus Manager
+			gStimulusManagerGarrison = NEW_PUBLIC("StimulusManager", [gMessageLoopMain]); // Can postMethodAsync stimulus to it to annoy garrisons
 
 			// Create the garrison server
 			gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
@@ -112,6 +109,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
 			// todo we can also notify the nearby location about that event, because the building might belong to the location?
+			#ifndef _SQF_VM
 			addMissionEventHandler ["BuildingChanged", { 
 				params ["_previousObject", "_newObject", "_isRuin"];
 				diag_log format ["BuildingChanged EH: %1", _this];
@@ -126,6 +124,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					} forEach _vehicles;
 				};
 			}];
+			#endif
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);

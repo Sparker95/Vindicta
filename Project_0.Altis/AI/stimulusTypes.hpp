@@ -5,6 +5,10 @@ File: AI\stimulusTypes.hpp
 
 // Not a stimulus (used when the sensor can't be stimulated)
 //#define STIMULUS_TYPE_NONE	0
+
+// Sound such as gunfire and others
+// Value is: [_hitAcc]
+// _hitAcc - amount of hit produces by these gunshots (see SoundMonitor.sqf)
 #define STIMULUS_TYPE_SOUND 1
 
 
@@ -13,7 +17,7 @@ File: AI\stimulusTypes.hpp
 #define STIMULUS_TYPE_UNIT_CIV_NEAR		101
 
 // Information about targets
-// Value is: array of TARGET structure
+// Value is: array of TARGET structures
 #define STIMULUS_TYPE_TARGETS			200
 // Value is: array of target object handles
 #define STIMULUS_TYPE_FORGET_TARGETS	201

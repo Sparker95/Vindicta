@@ -218,7 +218,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		//diag_log format [" - - - - - - Garrison: %1 Known targets: %2", _thisObject, _knownTargets];
 		
 		// Broadcast the stimulus to groups different from source group
-		pr _groupSource = STIMULUS_GET_SOURCE(_stimulus); // The group that sent this stimulus
+		pr _groupSource = STIMULUS_GET_SOURCE(_stimulus); // The group (or other sensor!) that sent this stimulus
 		pr _gar = GETV(_thisObject, "gar");
 		pr _groups = CALLM0(_gar, "getGroups");
 		//ade_dumpCallstack;

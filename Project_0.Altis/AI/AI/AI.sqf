@@ -24,7 +24,6 @@ Author: Sparker 03.03.2019
 
 
 #define AI_TIMER_SERVICE gTimerServiceMain
-#define STIMULUS_MANAGER gStimulusManager
 
 CLASS("AI", "MessageReceiverEx")
 
@@ -49,18 +48,12 @@ CLASS("AI", "MessageReceiverEx")
 
 		// Make sure the required global objects exist
 		ASSERT_GLOBAL_OBJECT(AI_TIMER_SERVICE);
-		ASSERT_GLOBAL_OBJECT(STIMULUS_MANAGER);
 
 		SETV(_thisObject, "agent", _agent);
 		SETV(_thisObject, "sensors", []);
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
 		SETV(_thisObject, "processInterval", 1);
-
-		// Add this AI to the stimulus manager
-		pr _args = ["addSensingAI", [_thisObject]];
-		CALLM(STIMULUS_MANAGER, "postMethodAsync", _args);
-
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -74,10 +67,6 @@ CLASS("AI", "MessageReceiverEx")
 
 		// Stop the AI if it is currently running
 		CALLM(_thisObject, "stop", []);
-
-		// Remove this AI from the stimulus manager
-		pr _args = ["removeSensingAI", [_thisObject]];
-		CALLM(STIMULUS_MANAGER, "postMethodSync", _args);
 
 		// Delete all sensors
 		pr _sensors = GETV(_thisObject, "sensors");
@@ -176,15 +165,16 @@ CLASS("AI", "MessageReceiverEx")
 			pr _sensor = _x;
 			
 			// Update the sensor if it's time to update it
-			pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
-			//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
-			// If timeNextUpdate is 0, we never update this sensor
-			if ((_timeNextUpdate != 0 && TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
-				//OOP_INFO_0("  Calling UPDATE!");
-				//OOP_INFO_1("Updating sensor: %1", _sensor);
-				CALLM(_sensor, "update", []);
-				pr _interval = CALLM(_sensor, "getUpdateInterval", []);
-				SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
+			pr _interval = CALLM(_sensor, "getUpdateInterval", []); // If it returns 0, we never update it
+			if (_interval > 0) then {
+				pr _timeNextUpdate = GETV(_sensor, "timeNextUpdate");
+				//OOP_INFO_2("  Updating sensor: %1, time next update: %2", _sensor, _timeNextUpdate);
+				if ((TIME_NOW > _timeNextUpdate) || _forceUpdate) then {
+					//OOP_INFO_0("  Calling UPDATE!");
+					//OOP_INFO_1("Updating sensor: %1", _sensor);
+					CALLM(_sensor, "update", []);
+					SETV(_sensor, "timeNextUpdate", TIME_NOW + _interval);
+				};
 			};
 		} forEach _sensors;
 	} ENDMETHOD;
