@@ -229,7 +229,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Create vehicles in civilian area for player to steal
 			if(_type == LOCATION_TYPE_CITY) then {
-				private _args = [CIVILIAN, [], "", "tCIVILIAN"];
+				private _args = [CIVILIAN, [], "civilian", "tCIVILIAN"];
 				private _gar = NEW("Garrison", _args);
 				private _maxCars = 3 max (25 min (0.03 * _radius));
 				for "_i" from 0 to _maxCars do {
@@ -302,6 +302,24 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* protected virtual */ METHOD("getLocationOwner") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
 		GETV(_loc, "side")
+	} ENDMETHOD;
+
+	// Returns template name for given side and faction
+	/* protected virtual */ METHOD("getTemplateName") {
+		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
+
+		switch(_faction) do {
+			case "police": { "tPOLICE" };
+			default { // "military"
+				switch(_side) do {
+					case WEST: { "tNATO" };
+					case EAST: { "tCSAT" };
+					case INDEPENDENT: { "tAAF" };
+					case CIVILIAN: { "tCIVILIAN" };
+					default { "tDEFAULT" };
+				}
+			};
+		};
 	} ENDMETHOD;
 
 	/* protected virtual */ METHOD("initGarrison") {
@@ -689,7 +707,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			_gar
 		};
 
-		private _templateName = GET_TEMPLATE_NAME(_side);
+		private _templateName = CALLM2(gGameMode, "getTemplateName", _side, _faction);
 		private _template = [_templateName] call t_fnc_getTemplate;
 
 		private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
@@ -907,7 +925,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			private _loc = _x;
 			private _side = GETV(_loc, "side");
-			private _templateName = GET_TEMPLATE_NAME(_side);
+			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "");
 			private _template = [_templateName] call t_fnc_getTemplate;
 
 			private _targetCInf = CALLM(_loc, "getUnitCapacity", [T_INF ARG [GROUP_TYPE_IDLE]]);
