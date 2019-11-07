@@ -83,7 +83,7 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 				pr _inaccuracy = _distance*0.1; // We randomize the position a little, depending on how far the target is
 				pr _hOpos = getPos _hO;
 				pr _pos = [(_hOpos#0) + (random _inaccuracy) - 0.5*_inaccuracy, (_hOpos#1) + (random _inaccuracy) - 0.5*_inaccuracy, 0];
-				pr _target = TARGET_NEW(_hO, 1.0, _pos, _time);
+				pr _target = TARGET_NEW(_hO, 2.0, _pos, _time);
 
 				OOP_INFO_1("    %1", _target);
 

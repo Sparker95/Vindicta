@@ -125,7 +125,7 @@ CLASS("SoundMonitor", "MessageReceiverEx")
 					STIMULUS_SET_RANGE(_stim, _range);
 					STIMULUS_SET_VALUE(_stim, _value);
 					STIMULUS_SET_SIDES_INCLUDE(_stim, [EAST ARG WEST ARG INDEPENDENT] - [side group _unit]);
-					CALLM1(gStimulusManagerGarrison, "handleStimulus", _stim);
+					CALLM2(gStimulusManagerGarrison, "postMethodAsync", "handleStimulus", [_stim]);
 
 					// Reset the counters
 					_unit _SETV [__HIT_MAX_VAR_NAME, 0];

@@ -74,6 +74,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Global Garrison Stimulus Manager
 			gStimulusManagerGarrison = NEW_PUBLIC("StimulusManager", [gMessageLoopMain]); // Can postMethodAsync stimulus to it to annoy garrisons
+			PUBLIC_VARIABLE "gStimulusManagerGarrison";
 
 			// Create the garrison server
 			gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
