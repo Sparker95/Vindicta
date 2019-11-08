@@ -620,7 +620,7 @@ CLASS("WorldModel", "")
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
 		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
 		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		private _forceMul = 1 + ln (0.02 * _activity + 1);
+		private _forceMul = 1 + ln (0.02 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
 		private _compositeEff = EFF_MUL_SCALAR(_threatEff, _forceMul);
 		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
 		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _activity = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _activity ARG _forceMul ARG _compositeEff ARG _effMax]);
