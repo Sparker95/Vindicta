@@ -88,6 +88,22 @@ _veh set [T_VEH_submarine, "Submarine"];//		= 38; //Submarine
 
 T_NAMES set [T_VEH, _veh];
 
+// Drones
+_drone = [];
+_drone set [T_DRONE_default,	"Default drone"]; //A vacuum cleaner robot
+_drone set [T_DRONE_UGV_unarmed, "Unarmed UGV"];
+_drone set [T_DRONE_UGV_armed, "Armed UGV"];
+_drone set [T_DRONE_plane_attack, "Attack UAV"]; //Attack drone plane, mainly for air-to-ground
+_drone set [T_DRONE_plane_unarmed, "Unarmed UAV"]; //Unarmed drone plane
+_drone set [T_DRONE_heli_attack, "Attack Armed Unmanned Helicopter"]; //Attack helicopter
+_drone set [T_DRONE_quadcopter, "Unmanned quadcopter"];
+_drone set [T_DRONE_designator, "Unmanned Designator"]; //Remote designator
+_drone set [T_DRONE_stat_HMG_low, "Unmanned static HMG"];
+_drone set [T_DRONE_stat_GMG_low, "Unmanned static GMG"];
+_drone set [T_DRONE_stat_AA, "Unmanned static AA"];
+
+T_NAMES set [T_DRONE, _drone];
+
 // Cargo boxes
 private _cargo = [];
 _cargo set [T_CARGO_default, "Unknown cargo box"];
