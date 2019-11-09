@@ -59,6 +59,50 @@ eff_fnc_matchesMask = {
 	_match
 };
 
+// Decreases amounf of units in composition array by _amount
+comp_fnc_decrease = {
+	params ["_comp", "_catID", "_subcatID", "_amount"];
+	pr _a = _comp#_catID;
+	_a set [_subcatID, (_a#_subcatID) - _amount];
+};
+
+// Applies masks for this composition array, modifies existing array
+comp_fnc_applyMasks = {
+	params ["_comp", "_whiteListMasks", "_blackistMsks", "_unitBlackList"];
+	for "_catID" from 0 to ((count _comp) - 1) do {
+		pr _a = _comp#_catID;
+		for "_subcatID" from 0 to ((count _a) - 1) do {
+			pr _eff = (T_efficiency#_catID#_subcatID);
+			pr _allocateThisUnit = true;
+			
+			// Check against unit blacklist
+			if ([_catID, _subcatID] in _unitBlacklist) then {
+				_allocateThisUnit = false;
+			};
+
+			// Check against whitelists masks
+			if (_allocateThisUnit) then {
+				{
+					if (! ([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
+				} forEach _whiteListMasks;
+			};
+
+			// Check against blacklist masks
+			if (_allocateThisUnit) then {
+				{
+					if (([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
+				} forEach _blackistMsks;
+			};
+			
+			// If we are not taking this unit type, set counter of this unit type to zero
+			if (!_allocateThisUnit) then {
+				_a set [_subcatID, 0];
+			};
+		};
+	};
+	_comp
+};
+
 // Allocate units from a given unit composition array,
 // efficiency masks, etc
 fnc_allocateUnits = {
@@ -90,36 +134,20 @@ fnc_allocateUnits = {
 	diag_log format ["Payload blacklist mask: %1", _payloadBlacklistMask];
 	*/
 
-
-	// Select units from composition which we can allocate
+	// Select units we can allocate for payload
 	pr _compPayload = +_comp;
-	for "_catID" from 0 to ((count _comp) - 1) do {
-		pr _a = _compPayload#_catID;
-		for "_subcatID" from 0 to ((count _a) - 1) do {
-			pr _eff = (T_efficiency#_catID#_subcatID);
-			pr _allocateThisUnit = true;
-			
-			// Check against whitelists masks
-			{
-				if (! ([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
-			} forEach _effPayloadWhitelist;
+	[_compPayload, _effPayloadWhitelist, _effPayloadBlacklist, _unitBlacklist] call comp_fnc_applyMasks;
 
-			// Check against blacklist masks
-			if (_allocateThisUnit) then {
-				{
-					if (([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
-				} forEach _effPayloadBlacklist;
-			};
-			
-			// If we are not taking this unit type, set counter of this unit type to zero
-			if (!_allocateThisUnit) then {
-				_a set [_subcatID, 0];
-			};
-		};
-	};
+	// Select units we can allocate for transport
+	pr _compTransport = +_comp;
+	[_compTransport, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call comp_fnc_applyMasks;
 
-	diag_log "";
+	diag_log "- - - - - -";
 	[_compPayload, "Payload composition after masks:"] call fnc_printComp;
+
+	diag_log "- - - - - -";
+	[_compTransport, "Transport composition after masks:"] call fnc_printComp;
+
 };
 
 
@@ -148,9 +176,10 @@ pr _effPayloadWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_
 pr _effPayloadBlacklist = [];
 pr _effTransportWhitelist = [];
 pr _effTransportBlacklist = [];
+//pr _unitBlacklist = [[T_VEH, T_VEH_APC], [T_VEH, T_VEH_IFV]];
 pr _unitBlacklist = [];
 
-["Noclass", _comp, _effPayloadWhitelist, _effPayloadBlacklist, _effTransportWhitelist, _effTransportBlacklist] call fnc_allocateUnits;
+["Noclass", _comp, _effPayloadWhitelist, _effPayloadBlacklist, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call fnc_allocateUnits;
 
 _maskGroundTransport = [[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks;
 [T_efficiency#T_VEH#T_VEH_boat_unarmed, _maskGroundTransport] call eff_fnc_matchesMask;

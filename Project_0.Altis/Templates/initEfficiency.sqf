@@ -39,6 +39,7 @@ T_EFF_ground_mask =							[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0
 T_EFF_air_mask =							[0,		0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0];
 T_EFF_water_mask =							[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0];
 T_EFF_transport_mask =						[0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0,		0];
+T_EFF_infantry_mask =						[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1];
 // Default value if there is no efficiency value on a unit
 T_EFF_default = 							[1,		0,		0,		0,		1,		0,		0,		0,		0,		0,		1,		0,		0,		1];
 
