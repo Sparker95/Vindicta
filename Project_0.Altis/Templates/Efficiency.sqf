@@ -50,7 +50,7 @@ fn_eff_diff_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(-);
 fn_eff_diff = _DEF_EFF_BINARY_OP_EFF_EFF(-);
 fn_eff_mul_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(*);
 fn_eff_mul = _DEF_EFF_BINARY_OP_EFF_EFF(*);
-fn_eff_sum = {  _this#0 + _this#1 + _this#2 + _this#3 + _this#4 + _this#5 + _this#6 + _this#7 };
+fn_eff_sum = {  _this#0 + _this#1 + _this#2 + _this#3 + _this#4 + _this#5 + _this#6 + _this#7 + _this#8 + _this#9 + _this#10 + _this#11 + _this#12 + _this#13 };
 fn_eff_min_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(min);
 fn_eff_min = _DEF_EFF_BINARY_OP_EFF_EFF(min);
 fn_eff_max_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(max);
@@ -106,31 +106,32 @@ fn_eff_simulate_attack = {
 
 #ifdef _SQF_VM
 
-#define EFF_012 	[0, 1, 2, 3, 4, 5, 6, 7]
-#define EFF_012_5 	[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5]
-#define EFF_111 	[1, 1, 1, 1, 1, 1, 1, 1]
-#define EFF_222 	[2, 2, 2, 2, 2, 2, 2, 2]
+#define EFF_012 	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+#define EFF_012_5 	[0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5, 12.5, 13.5]
+#define EFF_111 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+#define EFF_222 	[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+#define EFF_ZERO	(+T_EFF_null)
 
-#define EFF_ATT 	[0, 0, 0, 0, 1, 0, 3, 2]
-#define EFF_DEF 	[4, 2, 8, 0, 4, 0, 4, 0]
+#define EFF_ATT 	[0, 0, 0, 0, 1, 0, 3, 2, 0, 0, 0, 0, 0, 0]
+#define EFF_DEF 	[4, 2, 8, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0]
 
 ["EFF macros", {
-	["EFF_ADD_SCALAR", 			[1, 2, 3, 4, 5, 6, 7, 8] isEqualTo EFF_ADD_SCALAR(EFF_012, 1)] call test_Assert;
-	["EFF_ADD", 				[0, 2, 4, 6, 8, 10, 12, 14] isEqualTo EFF_ADD(EFF_012, EFF_012)] call test_Assert;
-	["EFF_DIFF_SCALAR", 		[-1, 0, 1, 2, 3, 4, 5, 6] isEqualTo EFF_DIFF_SCALAR(EFF_012, 1)] call test_Assert;
-	["EFF_DIFF", 				[0, 0, 0, 0, 0, 0, 0, 0] isEqualTo EFF_DIFF(EFF_012, EFF_012)] call test_Assert;
-	["EFF_MUL_SCALAR", 			[0, 2, 4, 6, 8, 10, 12, 14] isEqualTo EFF_MUL_SCALAR(EFF_012, 2)] call test_Assert;
-	["EFF_MUL", 				[0, 1, 4, 9, 16, 25, 36, 49] isEqualTo EFF_MUL(EFF_012, EFF_012)] call test_Assert;
-	["EFF_MIN_SCALAR", 			[0, 1, 1, 1, 1, 1, 1, 1] isEqualTo EFF_MIN_SCALAR(EFF_012, 1)] call test_Assert;
-	["EFF_MIN", 				[0, 1, 2, 2, 2, 2, 2, 2] isEqualTo EFF_MIN(EFF_012, EFF_222)] call test_Assert;
-	["EFF_MAX_SCALAR", 			[4, 4, 4, 4, 4, 5, 6, 7] isEqualTo EFF_MAX_SCALAR(EFF_012, 4)] call test_Assert;
-	["EFF_MAX", 				[2, 2, 2, 3, 4, 5, 6, 7] isEqualTo EFF_MAX(EFF_012, EFF_222)] call test_Assert;
+	["EFF_ADD_SCALAR", 			[1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14] isEqualTo EFF_ADD_SCALAR(EFF_012, 1)] call test_Assert;
+	["EFF_ADD", 				[0, 2, 4, 6, 8, 10,12,14,16,18,20,22,24,26] isEqualTo EFF_ADD(EFF_012, EFF_012)] call test_Assert;
+	["EFF_DIFF_SCALAR", 		[-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12] isEqualTo EFF_DIFF_SCALAR(EFF_012, 1)] call test_Assert;
+	["EFF_DIFF", 				EFF_ZERO isEqualTo EFF_DIFF(EFF_012, EFF_012)] call test_Assert;
+	["EFF_MUL_SCALAR", 			[0, 2, 4, 6, 8, 10,12,14,16,18,20,22,24,26] isEqualTo EFF_MUL_SCALAR(EFF_012, 2)] call test_Assert;
+	["EFF_MUL", 				[0, 1, 4, 9, 16,25,36,49,64,81,100,121,144,169] isEqualTo EFF_MUL(EFF_012, EFF_012)] call test_Assert;
+	["EFF_MIN_SCALAR", 			[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] isEqualTo EFF_MIN_SCALAR(EFF_012, 1)] call test_Assert;
+	["EFF_MIN", 				[0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] isEqualTo EFF_MIN(EFF_012, EFF_222)] call test_Assert;
+	["EFF_MAX_SCALAR", 			[4, 4, 4, 4, 4, 5, 6, 7, 8, 9, 10,11,12,13] isEqualTo EFF_MAX_SCALAR(EFF_012, 4)] call test_Assert;
+	["EFF_MAX", 				[2, 2, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13] isEqualTo EFF_MAX(EFF_012, EFF_222)] call test_Assert;
 
-	["EFF_CLAMP_SCALAR", 		[2, 2, 2, 3, 4, 5, 5, 5] isEqualTo EFF_CLAMP_SCALAR(EFF_012, 2, 5)] call test_Assert;
-	["EFF_SUM", 				28 isEqualTo EFF_SUM(EFF_012)] call test_Assert;
+	["EFF_CLAMP_SCALAR", 		[2, 2, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5] isEqualTo EFF_CLAMP_SCALAR(EFF_012, 2, 5)] call test_Assert;
+	["EFF_SUM", 				91 isEqualTo EFF_SUM(EFF_012)] call test_Assert;
 
-	["EFF_FLOOR", 				[0, 1, 2, 3, 4, 5, 6, 7] isEqualTo EFF_FLOOR(EFF_012_5)] call test_Assert;
-	["EFF_CEIL",  				{[1, 2, 3, 4, 5, 6, 7, 8] isEqualTo EFF_CEIL(EFF_012_5)}] call test_Assert;
+	["EFF_FLOOR", 				[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13] isEqualTo EFF_FLOOR(EFF_012_5)] call test_Assert;
+	["EFF_CEIL",  				{[1, 2, 3, 4, 5, 6, 7, 8, 9, 10,11,12,13,14] isEqualTo EFF_CEIL(EFF_012_5)}] call test_Assert;
 
 	["EFF_SIMULATE_ATTACK",  	{[3, 2, 5, 0, 2, 0, 2, 0] isEqualTo EFF_SIMULATE_ATTACK(EFF_ATT, EFF_DEF)}] call test_Assert;
 
@@ -147,7 +148,7 @@ fn_eff_simulate_attack = {
 	["EFF_LTE 1", 				{ EFF_LTE(EFF_012, EFF_012) }] call test_Assert;
 	["EFF_LTE 2", 				{ EFF_LTE(EFF_012, EFF_012_5) }] call test_Assert;
 
-	["max(mul(...,...),...)", 	[4, 4, 4, 9, 16, 25, 36, 49] isEqualTo EFF_MAX_SCALAR(EFF_MUL(EFF_012, EFF_012), 4)] call test_Assert;
+	["max(mul(...,...),...)", 	[4, 4, 4, 9, 16, 25, 36, 49,64,81,100,121,144,169] isEqualTo EFF_MAX_SCALAR(EFF_MUL(EFF_012, EFF_012), 4)] call test_Assert;
 	true
 }] call test_AddTest;
 

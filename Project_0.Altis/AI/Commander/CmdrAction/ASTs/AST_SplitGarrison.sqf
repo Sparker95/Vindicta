@@ -132,7 +132,7 @@ ENDCLASS;
 ["AST_SplitGarrison.apply(sim)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
+	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);
 	SETV(_garrison, "efficiency", _eff1);

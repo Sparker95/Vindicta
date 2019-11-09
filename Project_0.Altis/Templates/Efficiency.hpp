@@ -41,6 +41,7 @@
 
 #define EFF_MASK_DEF(e)								EFF_MUL(e, T_EFF_def_mask)
 #define EFF_MASK_ATT(e)								EFF_MUL(e, T_EFF_att_mask)
+#define EFF_MASK_DEF_ATT(e)							EFF_MUL(e, T_EFF_def_att_mask)
 #define EFF_DEF_SUB(e) 								(e call fn_eff_def_sub)
 #define EFF_ATT_SUB(e) 								(e call fn_eff_att_sub)
 

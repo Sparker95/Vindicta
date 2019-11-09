@@ -256,7 +256,9 @@ CLASS("GarrisonModel", "ModelBase")
 	// Flags defined in CmdrAI/common.hpp
 	METHOD("splitSim") {
 		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
-		
+
+		//diag_log format ["Split sim: %1", _this];
+		//diag_log format ["  Eff at start: %1", T_GETV("efficiency")];	
 
 		T_PRVAR(efficiency);
 		// Make sure to hard cap detachment so we don't drop below min eff
@@ -277,6 +279,8 @@ CLASS("GarrisonModel", "ModelBase")
 		SETV(_detachment, "faction", T_GETV("faction"));
 		private _newEfficiency = EFF_DIFF(_efficiency, _effAllocated);
 		T_SETV("efficiency", _newEfficiency);
+
+		//diag_log format [" Eff at end: %1", T_GETV("efficiency")];
 
 		if(ASSIGN_TRANSPORT in _flags) then {
 			private _transportRequired = CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_effAllocated]);
@@ -976,7 +980,7 @@ ENDCLASS;
 ["GarrisonModel.simSplit", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
+	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private _eff2 = EFF_MIN_EFF;
 	private _effr = EFF_DIFF(_eff1, _eff2);
 	SETV(_garrison, "efficiency", _eff1);
@@ -1014,10 +1018,10 @@ Test_unit_args = [tNATO, T_INF, T_INF_default, -1];
 	CALLM(_garrison, "sync", []);
 	CALLM(_splitGarr, "sync", []);
 
-	// diag_log format["%1, %2", GETV(_garrison, "efficiency"), _effr];
-	// diag_log format["%1, %2", GETV(_splitGarr, "efficiency"), _eff2];
+	// diag_log format["garr eff: %1, effr: %2", GETV(_garrison, "efficiency"), _effr];
+	// diag_log format["split garr eff: %1, effr: %2", GETV(_splitGarr, "efficiency"), _eff2];
 
-	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
-	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+	["Orig eff", EFF_MASK_DEF_ATT(GETV(_garrison, "efficiency")) isEqualTo EFF_MASK_DEF_ATT(_effr)] call test_Assert;
+	["Split eff", EFF_MASK_DEF_ATT(GETV(_splitGarr, "efficiency")) isEqualTo EFF_MASK_DEF_ATT(_eff2)] call test_Assert;
 }] call test_AddTest;
 #endif

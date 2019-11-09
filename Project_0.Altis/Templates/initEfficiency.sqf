@@ -22,7 +22,7 @@ T_EFF_transport =	9;		// Amount of transport space provided
 T_EFF_land =	10;			// >0 for land units
 T_EFF_water =	11;			// >0 for water units
 T_EFF_reqCrew = 12;			// Amount of crew required to operate this
-T_EFF_crew =	13;			// >0 if this unit can serve as crew (1 for infantry). The larger the number, the more likely unit will be selected as crew.
+T_EFF_crew =	13;			// >0 if this unit can serve as crew (1 for infantry)
 
 private _eff = [];
 
@@ -30,9 +30,10 @@ private _eff = [];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	land	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 // Empty vector with efficiency				|		|		|		|		|		|		|		|		|		|		|		|		|		|
-T_EFF_null = 								[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0];
-T_EFF_att_mask = 							[0,		0,		0,		0,		1,		1,		1,		1,		0,		0,		1,		0,		0,		0];
-T_EFF_def_mask =							[1,		1,		1,		1,		0,		0,		0,		0,		0,		0,		1,		0,		0,		0];
+T_EFF_null = 								[0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0];
+T_EFF_att_mask = 							[0,		0,		0,		0,		1,		1,		1,		1,		0,		0,		0,		0,		0,		0];
+T_EFF_def_mask =							[1,		1,		1,		1,		0,		0,		0,		0,		0,		0,		0,		0,		0,		0];
+T_EFF_def_att_mask = 						[1,		1,		1,		1,		1,		1,		1,		1,		0,		0,		0,		0,		0,		0];
 // Default value if there is no efficiency value on a unit
 T_EFF_default = 							[1,		0,		0,		0,		1,		0,		0,		0,		0,		0,		1,		0,		0,		1];
 
@@ -47,14 +48,14 @@ _eff_inf set [T_INF_officer,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,	
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	land	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_GL,						[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_rifleman,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		2]];
+_eff_inf set [T_INF_rifleman,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_marksman,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_sniper,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	land	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_spotter,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_exp,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		2]];
-_eff_inf set [T_INF_ammo,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		2]];
+_eff_inf set [T_INF_exp,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_ammo,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_LAT,					[1,		0,		0,		0,		1,		0.9,	0.7,	0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	land	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
@@ -66,14 +67,14 @@ _eff_inf set [T_INF_HMG,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_medic,					[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_engineer,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_crew,					[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		3]];
-_eff_inf set [T_INF_crew_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		3]];
+_eff_inf set [T_INF_crew,					[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_crew_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	land	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_inf set [T_INF_pilot,					[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		3]];
-_eff_inf set [T_INF_pilot_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		3]];
-_eff_inf set [T_INF_survivor,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		2]];
-_eff_inf set [T_INF_unarmed,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		2]];
+_eff_inf set [T_INF_pilot,					[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_pilot_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_survivor,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_unarmed,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	land	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_recon_TL,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
