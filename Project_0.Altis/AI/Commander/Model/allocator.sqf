@@ -12,7 +12,7 @@ call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 #define pr private
 
 // Just prints composition in a pretty way
-fnc_printComp = {
+comp_fnc_print = {
 	params ["_comp0", "_text"];
 	_labels = [	"Units",
 				"Vehicles",
@@ -21,11 +21,11 @@ fnc_printComp = {
 	diag_log _text;
 	{
 		pr _catid = _foreachindex;
-		diag_log format ["%1:", _labels#_foreachindex];
+		diag_log format ["  %1:", _labels#_foreachindex];
 		{
 			pr _subcatid = _foreachindex;
 			if (_x > 0) then {
-				diag_log format ["  %1: %2", T_NAMES#_catid#_subcatid, _x];
+				diag_log format ["    %1: %2", T_NAMES#_catid#_subcatid, _x];
 			};
 		} forEach _x;
 	} forEach _comp0;
@@ -60,10 +60,43 @@ eff_fnc_matchesMask = {
 };
 
 // Decreases amounf of units in composition array by _amount
-comp_fnc_decrease = {
+comp_fnc_addValue = {
 	params ["_comp", "_catID", "_subcatID", "_amount"];
 	pr _a = _comp#_catID;
-	_a set [_subcatID, (_a#_subcatID) - _amount];
+	_a set [_subcatID, (_a#_subcatID) + _amount];
+};
+
+// Creates a new composition array with numbers
+comp_fnc_new = {
+	params [["_value", 0]];
+
+	pr _comp = [];
+
+	{
+		pr _tempArray = [];
+		_tempArray resize _x;
+		_comp pushBack (_tempArray apply {_value});
+	} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+
+	_comp
+};
+
+// Converts a composition array into an efficiency vector
+comp_fnc_getEfficiency = {
+	params ["_comp"];
+	pr _acc = +T_EFF_null; // Accumulator
+	{
+		pr _catID = _forEachIndex;
+		{
+			pr _subCatID = _forEachIndex;
+			pr _value = _x;
+			pr _eff = T_efficiency#_catID#_subcatID;
+			{
+				_acc set [_forEachIndex, (_acc#_forEachIndex) + _value*(_eff#_forEachIndex)];
+			} forEach _eff;
+		} forEach _x;
+	} forEach _comp;
+	_acc
 };
 
 // Applies masks for this composition array, modifies existing array
@@ -82,13 +115,17 @@ comp_fnc_applyMasks = {
 
 			// Check against whitelists masks
 			if (_allocateThisUnit) then {
+				// Result is an OR between results of applying every mask
+				pr _allowTake = false;
 				{
-					if (! ([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
+					_allowTake = _allowTake || ([_eff, _x] call eff_fnc_matchesMask);
 				} forEach _whiteListMasks;
+				_allocateThisUnit = _allowTake;
 			};
 
 			// Check against blacklist masks
 			if (_allocateThisUnit) then {
+				// Any match to a blacklist will forbid taking this unit
 				{
 					if (([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
 				} forEach _blackistMsks;
@@ -107,13 +144,14 @@ comp_fnc_applyMasks = {
 // efficiency masks, etc
 fnc_allocateUnits = {
 	params [P_THISCLASS,
+		P_ARRAY("_effExt"),					// External efficiency requirement we must fullfill
+		P_ARRAY("_constraintFnNames"),		// Array of names of constraint validation functions, all of which receive [_ourEff, _theirEff]
 		P_ARRAY("_comp"),					// Composition array: [[1, 2, 3], [4, 5], [6, 7]]: 1 unit of cat:0,subcat:0, 2x(0, 1), 3x(0, 2), etc
 		P_ARRAY("_effPayloadWhitelist"),	// Array of whitelist masks for payload
 		P_ARRAY("_effPayloadBlacklist"),	// Array of blacklist masks for payload
 		P_ARRAY("_effTransportWhitelist"),	// Array of whitelist masks for transport
 		P_ARRAY("_effTransportBlacklist"),	// Array of blacklist masks for transport
 		P_ARRAY("_unitBlacklist")];			// Array of [_catID, _subcatID] of units we don't want to allocate under any conditions
-	
 	// Make combined whitelist and blacklist masks
 	/*
 	// wrong code, makes no sense, we don't want to combine all whitelists into one
@@ -143,44 +181,146 @@ fnc_allocateUnits = {
 	[_compTransport, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call comp_fnc_applyMasks;
 
 	diag_log "- - - - - -";
-	[_compPayload, "Payload composition after masks:"] call fnc_printComp;
+	[_compPayload, "Payload composition after masks:"] call comp_fnc_print;
 
 	diag_log "- - - - - -";
-	[_compTransport, "Transport composition after masks:"] call fnc_printComp;
+	[_compTransport, "Transport composition after masks:"] call comp_fnc_print;
 
-};
+	pr _allocated = false;
+	pr _failedToAllocate = false;
+	pr _compAllocated = [0] call comp_fnc_new; // Allocated composition
+	pr _nIteration = 0;
+	//pr _effSorted = +T_efficiencySorted; // We are going to modify it
+	pr _effSorted = T_efficiencySorted;
+	pr _nextRandomID = 0; // Random ID generator we are going to use to randomize the results a little
+	while {!_allocated && !_failedToAllocate && (_nIteration < 100)} do { // Should we limit amount of iterations??
+
+		diag_log "";
+		diag_log format ["Iteration: %1", _nIteration];
+
+		// Get allocated efficiency
+		pr _effAllocated = [_compAllocated] call comp_fnc_getEfficiency;
+		diag_log format ["  Allocated eff: %1", _effAllocated];
+		[_compAllocated, "  Allocated composition:"] call comp_fnc_print;
+
+		// Validate against provided constrain functions
+		pr _unsatisfied = []; // Array of unsatisfied criteria
+		for "_i" from 0 to ((count _constraintFnNames) - 1) do {
+			_unsatisfied append ( [_effAllocated, _effExt] call ( missionNamespace getVariable (_constraintFnNames#_i) ) );
+			// todo Break the loop on first unsatisfied constraint?
+		};
+		diag_log format ["  Unsatisfied constraints: %1", _unsatisfied];
+
+		// If there are no unsatisfied constraints, break the loop
+		if ((count _unsatisfied) == 0) then {
+			diag_log "  Allocated enough units!";
+			_allocated = true;
+		} else {
+			pr _constraint = _unsatisfied#0;
+			diag_log format ["  Trying to satisfy constraint: %1", _constraint];
+			// Try to find a unit to satisfy this constraint
+			pr _potentialUnits = _effSorted#_constraint select { // Array of value, catID, subcatID, sorted by value
+				pr _catID = _x#1;
+				pr _subcatID = _x#2;
+				(_compPayload#_catID#_subcatID) > 0 || {(_compTransport#_catID#_subcatID) > 0}
+			};
+
+			pr _found = false;
+			if (count _potentialUnits > 0) then {
+				_nextRandomID = _nextRandomID mod (count _potentialUnits);
+				pr _catID = _potentialUnits#_nextRandomID#1;
+				pr _subcatID = _potentialUnits#_nextRandomID#2;
+				[_compPayload, _catID, _subcatID, -1] call comp_fnc_addValue;		// Substract from both since they might have same units in them
+				[_compTransport, _catID, _subcatID, -1] call comp_fnc_addValue;
+				[_compAllocated, _catID, _subcatID, 1] call comp_fnc_addValue;
+				diag_log format ["  Allocated unit: %1", T_NAMES#_catID#_subcatID];
+				_found = true;
+				_nextRandomID = _nextRandomID + 1;
+			} else {
+
+			};
+			
 
 
-pr _comp = [];
-{
-	pr _tempArray = [];
-	_tempArray resize _x;
-	_comp pushBack (_tempArray apply {0});
-} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+			// Look through all units which we have and which can help satisfy the constraint
+			//pr _found = false;
+			/*
+			for "_i" from 0 to ((count _potentialUnits) - 1) do {
+				pr _catID = _potentialUnits#_i#1;
+				pr _subcatID = _potentialUnits#_i#2;
+				if ((_compPayload#_catID#_subcatID) > 0 || {(_compTransport#_catID#_subcatID) > 0} ) exitWith {
+					// Substract/add value in compositions
+					[_compPayload, _catID, _subcatID, -1] call comp_fnc_addValue;		// Substract from both since they might have same units in them
+					[_compTransport, _catID, _subcatID, -1] call comp_fnc_addValue;
+					[_compAllocated, _catID, _subcatID, 1] call comp_fnc_addValue;
 
-// Lots of every unit type
-for "_catID" from 0 to 3 do {
-	pr _a = _comp#_catID;
-	for "_i" from 0 to ((count _a)-1) do {
-		_a set [_i, 20];
+					// Try to permutate the catid and subcatid to randomize returned value
+					pr _value = _potentialUnits#_i;
+					for "_j" from 0 to ((count _potentialUnits) - 1) do {
+
+					};
+
+					_found = true;
+					diag_log format ["  Allocated unit: %1", T_NAMES#_catID#_subcatID];
+				};
+			};
+			*/
+
+			
+
+			// If we've looked through all the units and couldn't find one to help us safisfy this constraint, raise a failedToAllocate flag
+			_failedToAllocate = !_found;
+
+			_nIteration = _nIteration + 1;
+		};
 	};
+
+	diag_log format ["Allocation finished. Allocated: %1, failed: %2", _allocated, _failedToAllocate];
+
+	if (!_allocated || _failedToAllocate) exitWith {
+		// Could not allocate units!
+		[]
+	};
+
+	diag_log "";
+	[_compAllocated, "  Allocated successfully:"] call comp_fnc_print;
+	_compAllocated
 };
 
-[_comp, "Composition:"] call fnc_printComp;
+
+pr _comp = [100] call comp_fnc_new; // 20 units of each type
+
+[_comp, "Composition:"] call comp_fnc_print;
 
 
 
 // Call unit allocator
 diag_log "Calling allocate units...";
-pr _effPayloadWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks];
+pr _effExt = T_EFF_null;
+
+// Destroy some infantry?
+//_effExt set [T_EFF_soft, 15];
+//_effExt set [T_EFF_medium, 10];
+_effExt set [T_EFF_armor, 5];
+
+//pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"];
+pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"];
+pr _effPayloadWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks, T_EFF_infantry_mask];
 pr _effPayloadBlacklist = [];
-pr _effTransportWhitelist = [];
+pr _effTransportWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks, T_EFF_infantry_mask];
 pr _effTransportBlacklist = [];
 //pr _unitBlacklist = [[T_VEH, T_VEH_APC], [T_VEH, T_VEH_IFV]];
 pr _unitBlacklist = [];
 
-["Noclass", _comp, _effPayloadWhitelist, _effPayloadBlacklist, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call fnc_allocateUnits;
+["Noclass", _effExt, _validationFnNames, _comp, _effPayloadWhitelist, _effPayloadBlacklist, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call fnc_allocateUnits;
 
+/*
 _maskGroundTransport = [[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks;
 [T_efficiency#T_VEH#T_VEH_boat_unarmed, _maskGroundTransport] call eff_fnc_matchesMask;
 
+T_efficiencySorted#T_EFF_aMedium
+*/
+
+T_efficiencySorted#T_EFF_aMedium
+
+//[_comp] call comp_fnc_getEfficiency;

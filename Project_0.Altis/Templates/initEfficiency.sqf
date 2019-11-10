@@ -79,8 +79,8 @@ _eff_inf set [T_INF_crew_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_pilot,					[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 _eff_inf set [T_INF_pilot_heli,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_survivor,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_unarmed,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_survivor,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		0]];
+_eff_inf set [T_INF_unarmed,				[1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		1,		0,		0,		0]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_inf set [T_INF_recon_TL,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
@@ -95,8 +95,8 @@ _eff_inf set [T_INF_recon_JTAC,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		
 _eff_inf set [T_INF_diver_TL,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_inf set [T_INF_diver_rifleman,			[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
-_eff_inf set [T_INF_diver_exp,				[1,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_diver_rifleman,			[0.8,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
+_eff_inf set [T_INF_diver_exp,				[0.8,		0,		0,		0,		1,		0,		0,		0,		1,		0,		1,		0,		0,		1]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff set [T_INF, _eff_inf];
@@ -111,13 +111,13 @@ _eff_veh set [T_VEH_car_armed,				[3,		0,		0,		0,		3,		0,		0,		0,		0,		2,		1,		0
 _eff_veh set [T_VEH_MRAP_unarmed,			[0,		1,		0,		0,		0,		0,		0,		0,		0,		2,		1,		0,		1,		0]];
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_veh set [T_VEH_MRAP_HMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		2,		0]];
-_eff_veh set [T_VEH_MRAP_GMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		2,		0]];
-_eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		1,		0,		0,		7,		1,		0,		3,		0]];
-_eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		1,		0,		0,		7,		1,		0,		3,		0]];
+_eff_veh set [T_VEH_MRAP_HMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		4,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_MRAP_GMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		4,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		1,		0,		0,		7,		1,		0,		6,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		1,		0,		0,		7,		1,		0,		6,		0]]; // temp boost of crew req
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		3,		0]];
+_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		8,		0]]; // temp boost of crew req
 _eff_veh set [T_VEH_MRLS,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPA,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPAA,					[0,		0,		1,		0,		0,		0,		0,		6,		0,		0,		1,		0,		3,		0]];
@@ -199,6 +199,7 @@ _eff_cargo set [T_CARGO_box_medium, 		[0,		0,		0,		0,		0,		0,		0,		0,		0.5,	0,		
 _eff_cargo set [T_CARGO_box_big, 			[0,		0,		0,		0,		0,		0,		0,		0,		0.5,	0,		1,		0,		0,		0]];
 _eff set [T_CARGO, _eff_cargo];
 
+
 // Do post processing to make the numbers float-safe
 // We need to do that to avoid floating point round-off errors when we add or substract the numbers a lot of times
 // So we round these numbers to nearest (1/2)^n, n=5 in this case, should be enough
@@ -213,3 +214,23 @@ for "_cat" from 0 to ((count _eff)-1) do
 };
 
 T_efficiency = +_eff;
+
+
+// Efficiency table sorted by column values
+T_efficiencySorted = [];
+private _nCols = count T_EFF_null;
+
+for "_nCol" from 0 to (_nCols - 1) do {
+	private _a = [];
+	for "_catID" from 0 to ((count T_efficiency) - 1) do {
+		private _subcat = T_efficiency#_catID;
+		for "_subcatID" from 0 to ((count _subcat) - 1) do {
+			private _value = _subcat#_subcatID#_nCol;
+			if (_value > 0) then {
+				_a pushBack [_value, _catID, _subcatID];
+			};
+		};
+	};
+	_a sort false; // Descending
+	T_efficiencySorted pushBack _a;
+};

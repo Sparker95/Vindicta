@@ -9,6 +9,14 @@
     } foreach _a; \
     _res \
 }
+// Operation which performs accumulation int oa destination vector
+#define _DEF_EFF_BINARY_OP_ACC_EFF_EFF(fn) \
+{ \
+	params ["_dest", "_b"]; \
+	{ \
+		_dest set [_forEachIndex, (_dest select _forEachIndex) fn _x]; \
+	} forEach _b; \
+}
 #define _DEF_EFF_BINARY_OP_EFF_SCALAR(fn) \
 { \
     params ['_a', '_b']; \
@@ -44,44 +52,46 @@
 }
 
 // E F F   F U N C T I O N S 
-fn_eff_add_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(+);
-fn_eff_add = _DEF_EFF_BINARY_OP_EFF_EFF(+);
-fn_eff_diff_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(-);
-fn_eff_diff = _DEF_EFF_BINARY_OP_EFF_EFF(-);
-fn_eff_mul_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(*);
-fn_eff_mul = _DEF_EFF_BINARY_OP_EFF_EFF(*);
-fn_eff_sum = {  _this#0 + _this#1 + _this#2 + _this#3 + _this#4 + _this#5 + _this#6 + _this#7 + _this#8 + _this#9 + _this#10 + _this#11 + _this#12 + _this#13 };
-fn_eff_min_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(min);
-fn_eff_min = _DEF_EFF_BINARY_OP_EFF_EFF(min);
-fn_eff_max_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(max);
-fn_eff_max = _DEF_EFF_BINARY_OP_EFF_EFF(max);
-fn_eff_floor = _DEF_EFF_UNARY_OP_EFF(floor);
-fn_eff_ceil = _DEF_EFF_UNARY_OP_EFF(ceil);
+eff_fnc_add_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(+);
+eff_fnc_add = _DEF_EFF_BINARY_OP_EFF_EFF(+);
+eff_fnc_acc_add = _DEF_EFF_BINARY_OP_ACC_EFF_EFF(+);
+eff_fnc_diff_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(-);
+eff_fnc_diff = _DEF_EFF_BINARY_OP_EFF_EFF(-);
+eff_fnc_acc_diff = _DEF_EFF_BINARY_OP_ACC_EFF_EFF(-);
+eff_fnc_mul_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(*);
+eff_fnc_mul = _DEF_EFF_BINARY_OP_EFF_EFF(*);
+eff_fnc_sum = {  _this#0 + _this#1 + _this#2 + _this#3 + _this#4 + _this#5 + _this#6 + _this#7 + _this#8 + _this#9 + _this#10 + _this#11 + _this#12 + _this#13 };
+eff_fnc_min_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(min);
+eff_fnc_min = _DEF_EFF_BINARY_OP_EFF_EFF(min);
+eff_fnc_max_scalar = _DEF_EFF_BINARY_OP_EFF_SCALAR(max);
+eff_fnc_max = _DEF_EFF_BINARY_OP_EFF_EFF(max);
+eff_fnc_floor = _DEF_EFF_UNARY_OP_EFF(floor);
+eff_fnc_ceil = _DEF_EFF_UNARY_OP_EFF(ceil);
 
-fn_eff_gt = _DEF_EFF_BOOL_OP_EFF_EFF(>);
-fn_eff_gte = _DEF_EFF_BOOL_OP_EFF_EFF(>=);
-fn_eff_lt = _DEF_EFF_BOOL_OP_EFF_EFF(<);
-fn_eff_lte = _DEF_EFF_BOOL_OP_EFF_EFF(<=);
+eff_fnc_gt = _DEF_EFF_BOOL_OP_EFF_EFF(>);
+eff_fnc_gte = _DEF_EFF_BOOL_OP_EFF_EFF(>=);
+eff_fnc_lt = _DEF_EFF_BOOL_OP_EFF_EFF(<);
+eff_fnc_lte = _DEF_EFF_BOOL_OP_EFF_EFF(<=);
 
 // S U B   F U N C T I O N S 
-fn_eff_def_sub = { _this select [0, 4] };
-fn_eff_att_sub = { _this select [4, 4] };
-fn_eff_make_from_subs = { _this#0 + _this#1 };
-fn_eff_sub_add_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(+);
-fn_eff_sub_add = _DEF_SUB_BINARY_OP_SUB_SUB(+);
-fn_eff_sub_diff_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(-);
-fn_eff_sub_diff = _DEF_SUB_BINARY_OP_SUB_SUB(-);
-fn_eff_sub_mul_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(*);
-fn_eff_sub_mul = _DEF_SUB_BINARY_OP_SUB_SUB(*);
-fn_eff_sub_sum = { _this#0 + _this#1 + _this#2 + _this#3 };
-fn_eff_sub_min_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(min);
-fn_eff_sub_min = _DEF_SUB_BINARY_OP_SUB_SUB(min);
-fn_eff_sub_max_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(max);
-fn_eff_sub_max = _DEF_SUB_BINARY_OP_SUB_SUB(max);
-fn_eff_sub_floor = _DEF_SUB_UNARY_OP_SUB(floor);
-fn_eff_sub_ceil = _DEF_SUB_UNARY_OP_SUB(ceil);
+eff_fnc_def_sub = { _this select [0, 4] };
+eff_fnc_att_sub = { _this select [4, 4] };
+eff_fnc_make_from_subs = { _this#0 + _this#1 };
+eff_fnc_sub_add_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(+);
+eff_fnc_sub_add = _DEF_SUB_BINARY_OP_SUB_SUB(+);
+eff_fnc_sub_diff_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(-);
+eff_fnc_sub_diff = _DEF_SUB_BINARY_OP_SUB_SUB(-);
+eff_fnc_sub_mul_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(*);
+eff_fnc_sub_mul = _DEF_SUB_BINARY_OP_SUB_SUB(*);
+eff_fnc_sub_sum = { _this#0 + _this#1 + _this#2 + _this#3 };
+eff_fnc_sub_min_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(min);
+eff_fnc_sub_min = _DEF_SUB_BINARY_OP_SUB_SUB(min);
+eff_fnc_sub_max_scalar = _DEF_SUB_BINARY_OP_SUB_SCALAR(max);
+eff_fnc_sub_max = _DEF_SUB_BINARY_OP_SUB_SUB(max);
+eff_fnc_sub_floor = _DEF_SUB_UNARY_OP_SUB(floor);
+eff_fnc_sub_ceil = _DEF_SUB_UNARY_OP_SUB(ceil);
 
-fn_eff_simulate_attack = {
+eff_fnc_simulate_attack = {
     params ['_attackers', '_defenders'];
     private _res = [];
     private _before = 0;
@@ -95,13 +105,66 @@ fn_eff_simulate_attack = {
     } forEach (_attackers select [4, 4]);
 
     // Avoid that divide by 0
-    if(_before == 0) exitWith { EFF_nul };
+    if(_before == 0) exitWith { +T_EFF_null };
 
     // Simulate losses to attack values
     private _lossFactor = _after / _before;
     _res + ((_defenders select [4,4]) apply { floor (_x * _lossFactor) })
 };
 
+// Allocation validation functions
+// They return an array of unsatisfied constraints
+
+// Validate that we can destroy them
+eff_fnc_validateAttack = {
+	params ["_effOur", "_effTheir"];
+	private _ret = [];
+	private _ids = [	[T_EFF_aSoft,	T_EFF_soft],
+						[T_EFF_aMedium,	T_EFF_medium],
+						[T_EFF_aArmor,	T_EFF_armor],
+						[T_EFF_aAir,	T_EFF_air]];
+	{
+		_x params ["_idOur", "_idTheir"];
+		if ((_effOur#_idOur) <= (_effTheir#_idTheir)) then { _ret pushBack _idOur; }; // Need more attack capability
+	} forEach _ids;
+	_ret
+};
+
+// Validates that we can defend against them
+eff_fnc_validateDefense = {
+	params ["_effOur", "_effTheir"];
+	private _ret = [];
+	private _ids = [	[T_EFF_soft,	T_EFF_aSoft],
+						[T_EFF_medium,	T_EFF_aMedium],
+						[T_EFF_armor,	T_EFF_aArmor],
+						[T_EFF_air,		T_EFF_aAir]];
+	{
+		_x params ["_idOur", "_idTheir"];
+		if ((_effOur#_idOur) <= (_effTheir#_idTheir)) then { _ret pushBack _idOur }; // Need more defense capability
+	} forEach _ids;
+	_ret
+};
+
+// Validates that we can transport ourselves
+// Their eff vector can represent an external requirement to allocate some more transport  
+eff_fnc_validateTransport = {
+	params ["_effOur", ["_effTheir", T_EFF_null]];
+	private _valueOur = _effOur#T_EFF_transport;
+	if ((_effOur#T_EFF_reqTransport) < _valueOur ||
+		(_effTheir#T_EFF_reqTransport) <= _valueOur) exitWith { // Try to allocate a bit more transport space
+		[]
+	};
+	[T_EFF_transport] // Need more transport
+};
+
+// Validate that we have enough crew
+eff_fnc_validateCrew = {
+	params ["_effOur", "_effTheir"]; // _effTheir is not needed, but we pass it anyway
+	if ((_effOur#T_EFF_reqCrew) <= (_effOur#T_EFF_crew)) exitWith {
+		[]
+	};
+	[T_EFF_crew] // Need more transport
+};
 
 
 #ifdef _SQF_VM
@@ -149,6 +212,7 @@ fn_eff_simulate_attack = {
 	["EFF_LTE 2", 				{ EFF_LTE(EFF_012, EFF_012_5) }] call test_Assert;
 
 	["max(mul(...,...),...)", 	[4, 4, 4, 9, 16, 25, 36, 49,64,81,100,121,144,169] isEqualTo EFF_MAX_SCALAR(EFF_MUL(EFF_012, EFF_012), 4)] call test_Assert;
+
 	true
 }] call test_AddTest;
 
@@ -175,6 +239,27 @@ fn_eff_simulate_attack = {
 	["EFF_SUB_CEIL",  				{[1, 2, 3, 4] isEqualTo EFF_SUB_CEIL(EFF_SUB_012_5)}] call test_Assert;
 
 	["max(mul(...,...),...)", 		[4, 4, 4, 9] isEqualTo EFF_SUB_MAX_SCALAR(EFF_SUB_MUL(EFF_SUB_012, EFF_SUB_012), 4)] call test_Assert;
+
+	true
+}] call test_AddTest;
+
+["EFF validation", {
+	["validate attack", 			[] isEqualTo ([EFF_111, EFF_ZERO] call eff_fnc_validateAttack)] call test_Assert;
+	["validate defense", 			[0, 1, 2, 3] isEqualTo ([EFF_ZERO, EFF_111] call eff_fnc_validateDefense)] call test_Assert;
+
+	// Validate crew
+	_e0 = +T_EFF_null;
+	_e0 set [T_EFF_crew, 4];
+	_e0 set [T_EFF_reqCrew, 5];
+	["validate crew", 			[T_EFF_crew] isEqualTo ([_e0] call eff_fnc_validateCrew)] call test_Assert;
+
+	// Validate transport
+	_e0 = +T_EFF_null;
+	_e0 set [T_EFF_transport, 4];
+	_e0 set [T_EFF_reqTransport, 5];
+	["validate transport", 			[T_EFF_transport] isEqualTo ([_e0] call eff_fnc_validateTransport)] call test_Assert;
+
+	true
 }] call test_AddTest;
 
 #endif
