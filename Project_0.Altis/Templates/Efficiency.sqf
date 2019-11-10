@@ -154,8 +154,6 @@ eff_fnc_validateDefense = {
 eff_fnc_validateTransport = {
 	params ["_effOur", ["_effTheir", T_EFF_null]];
 	private _transportOur = _effOur#T_EFF_transport;
-	//private _crewOur = _effOur#T_EFF_rew;
-	//private _reqCrewOur = _effOur#T_EFF_reqCrew;
 	if ((_effOur#T_EFF_reqTransport) > _transportOur) exitWith { // Try to allocate a bit more transport space
 		[[T_EFF_transport, (_effOur#T_EFF_reqTransport) - _transportOur]]
 	};

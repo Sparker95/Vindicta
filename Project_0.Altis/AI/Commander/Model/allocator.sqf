@@ -14,20 +14,23 @@ call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 // Just prints composition in a pretty way
 comp_fnc_print = {
 	params ["_comp0", "_text"];
-	_labels = [	"Units",
+	_labels = [	"Infantry",
 				"Vehicles",
 				"Drones",
 				"Cargo"];
 	diag_log _text;
 	{
 		pr _catid = _foreachindex;
-		diag_log format ["  %1:", _labels#_foreachindex];
+		pr _sum = 0;
+		diag_log format ["  %1", _labels#_foreachindex];
 		{
 			pr _subcatid = _foreachindex;
 			if (_x > 0) then {
 				diag_log format ["    %1: %2", T_NAMES#_catid#_subcatid, _x];
+				_sum = _sum + _x;
 			};
 		} forEach _x;
+		diag_log format ["    -- Total: %1", _sum];
 	} forEach _comp0;
 };
 
@@ -193,7 +196,7 @@ fnc_allocateUnits = {
 	pr _compAllocated = [0] call comp_fnc_new;	// Allocated composition
 	pr _nIteration = 0;
 	//pr _effSorted = +T_efficiencySorted;		// We are going to modify it
-	pr _nextRandomID = 0;						// Random ID generator we are going to use to randomize the results a little
+	//pr _nextRandomID = 0;						// Random ID generator we are going to use to randomize the results a little
 	pr _prevConstraint = -1;					// Previous constraint we tried to satisfy
 
 	while {!_allocated && !_failedToAllocate && (_nIteration < 100)} do { // Should we limit amount of iterations??
@@ -226,9 +229,11 @@ fnc_allocateUnits = {
 			//diag_log format ["  Payload constraints satisfied: %1", _payloadSatisfied];
 
 			// Reset the counter
+			/*
 			if (_constraint != _prevConstraint) then {
 				_nextRandomID = 0;
 			};
+			*/
 
 			// Select the array with units sorted by their capability to satisfy constraint
 			pr _constraintTransport = _constraint in T_EFF_constraintsTransport;	// True if we are satisfying a transport constraint
@@ -263,12 +268,22 @@ fnc_allocateUnits = {
 				pr _ID = 0;
 				
 				// If we oversatisfy this constraint, try to find units which satisfy this less, we dont want to use expensive units too much
-				if (	( (!_constraintTransport) /*|| (_constraintTransport && _payloadSatisfied)*/ ) && // Payload constraint, or transport and there are no more payload constraints
+				if (	( (!_constraintTransport) /* || (_constraintTransport && _payloadSatisfied) */ ) && // Payload constraint   // --- , or transport and there are no more payload constraints
 						{ (_potentialUnits#_ID#0 > _constraintValue) && (_count > 1) }) then {
 					while { (_ID < (_count - 1)) } do {
 						if ((_potentialUnits#(_ID+1)#0 < _constraintValue)) exitWith {};
 						_ID = _ID + 1;
 					};
+				} else {
+					// Try to pick a random unit if there are many units with same capability
+					pr _value = _potentialUnits#0#0;
+					pr _index = _potentialUnits findIf {_x#0 != _value};
+					if (_index != -1) then {
+						_ID = floor (random _index);
+					} else {
+						_ID = floor (random _count);
+					};
+					diag_log format ["  Generated random ID: %1", _ID];
 				};
 
 
@@ -287,7 +302,7 @@ fnc_allocateUnits = {
 				[_compAllocated, _catID, _subcatID, 1] call comp_fnc_addValue;
 				diag_log format ["  Allocated unit: %1", T_NAMES#_catID#_subcatID];
 				_found = true;
-				_nextRandomID = _nextRandomID + 1;
+				//_nextRandomID = _nextRandomID + 1;
 			} else {
 				// Can't find any more units!
 				diag_log "  Failed to find a unit!";
@@ -352,9 +367,9 @@ diag_log "Calling allocate units...";
 pr _effExt = +T_EFF_null;		// "External" requirement we must satisfy during this allocation
 
 // Fill in units which we must destroy
-//_effExt set [T_EFF_soft, 20];
-//_effExt set [T_EFF_medium, 2];
-_effExt set [T_EFF_armor, 1];
+_effExt set [T_EFF_soft, 5];
+//_effExt set [T_EFF_medium, 3];
+//_effExt set [T_EFF_armor, 5];
 //_effExt set [T_EFF_air, 2];
 
 pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"]; // "eff_fnc_validateDefense"
