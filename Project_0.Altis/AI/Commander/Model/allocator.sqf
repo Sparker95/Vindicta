@@ -210,7 +210,6 @@ fnc_allocateUnits = {
 		pr _unsatisfied = []; // Array of unsatisfied criteria
 		for "_i" from 0 to ((count _constraintFnNames) - 1) do {
 			_unsatisfied append ( [_effAllocated, _effExt] call ( missionNamespace getVariable (_constraintFnNames#_i) ) );
-			// todo Break the loop on first unsatisfied constraint?
 		};
 		diag_log format ["  Unsatisfied constraints: %1", _unsatisfied];
 
@@ -219,8 +218,13 @@ fnc_allocateUnits = {
 			diag_log "  Allocated enough units!";
 			_allocated = true;
 		} else {
-			pr _constraint = _unsatisfied#0;
+			pr _constraint = _unsatisfied#0#0;
+			pr _constraintValue = _unsatisfied#0#1;
 			
+			// Check if there are no more unsatisfied payload constraints
+			//pr _payloadSatisfied = (_unsatisfied findIf {(_x#0) in T_EFF_constraintsPayload}) == -1;
+			//diag_log format ["  Payload constraints satisfied: %1", _payloadSatisfied];
+
 			// Reset the counter
 			if (_constraint != _prevConstraint) then {
 				_nextRandomID = 0;
@@ -254,14 +258,30 @@ fnc_allocateUnits = {
 			diag_log format ["  Potential units: %1", _potentialUnits];
 
 			pr _found = false;
-			if (count _potentialUnits > 0) then {
+			pr _count = count _potentialUnits;
+			if (_count > 0) then {
+				pr _ID = 0;
+				
+				// If we oversatisfy this constraint, try to find units which satisfy this less, we dont want to use expensive units too much
+				if (	( (!_constraintTransport) /*|| (_constraintTransport && _payloadSatisfied)*/ ) && // Payload constraint, or transport and there are no more payload constraints
+						{ (_potentialUnits#_ID#0 > _constraintValue) && (_count > 1) }) then {
+					while { (_ID < (_count - 1)) } do {
+						if ((_potentialUnits#(_ID+1)#0 < _constraintValue)) exitWith {};
+						_ID = _ID + 1;
+					};
+				};
+
+
+				/*
 				pr _ID = if (_constraintTransport) then {
 					0	// Take the unit which satisfies our constraint most for transport requirement
 				} else {
-					_nextRandomID mod (count _potentialUnits);
-				};
-				pr _catID = _potentialUnits#_nextRandomID#1;
-				pr _subcatID = _potentialUnits#_nextRandomID#2;
+					0
+					//_nextRandomID mod (count _potentialUnits);
+				};*/
+
+				pr _catID = _potentialUnits#_ID#1;
+				pr _subcatID = _potentialUnits#_ID#2;
 				[_compPayload, _catID, _subcatID, -1] call comp_fnc_addValue;		// Substract from both since they might have same units in them
 				[_compTransport, _catID, _subcatID, -1] call comp_fnc_addValue;
 				[_compAllocated, _catID, _subcatID, 1] call comp_fnc_addValue;
@@ -332,9 +352,9 @@ diag_log "Calling allocate units...";
 pr _effExt = +T_EFF_null;		// "External" requirement we must satisfy during this allocation
 
 // Fill in units which we must destroy
-_effExt set [T_EFF_soft, 1];
+//_effExt set [T_EFF_soft, 20];
 //_effExt set [T_EFF_medium, 2];
-//_effExt set [T_EFF_armor, 2];
+_effExt set [T_EFF_armor, 1];
 //_effExt set [T_EFF_air, 2];
 
 pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"]; // "eff_fnc_validateDefense"
@@ -358,6 +378,6 @@ _maskGroundTransport = [[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_
 T_efficiencySorted#T_EFF_aMedium
 */
 
-T_efficiencySorted#T_EFF_aMedium
+//T_efficiencySorted#T_EFF_aMedium
 
 //[_comp] call comp_fnc_getEfficiency;

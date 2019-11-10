@@ -22,7 +22,7 @@ T_EFF_transport =	9;		// Amount of transport space provided
 T_EFF_ground =	10;			// >0 for ground units
 T_EFF_water =	11;			// >0 for water units
 T_EFF_reqCrew = 12;			// Amount of crew required to operate this
-T_EFF_crew =	13;			// >0 if this unit can serve as crew (1 for infantry)
+T_EFF_crew =	13;			// >0 if this unit can serve as crew (around 1 for infantry)
 
 T_EFF_constraintsPayload = [T_EFF_aSoft, T_EFF_aMedium, T_EFF_aArmor, T_EFF_aAir];	// Array of payload constraint types (combat constraints)
 T_EFF_constraintsTransport = [T_EFF_transport, T_EFF_crew];							// Array of transport constraint types
@@ -116,11 +116,11 @@ _eff_veh set [T_VEH_MRAP_unarmed,			[0,		1,		0,		0,		0,		0,		0,		0,		0,		2,		1,	
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
 _eff_veh set [T_VEH_MRAP_HMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		4,		0]]; // temp boost of crew req
 _eff_veh set [T_VEH_MRAP_GMG,				[0,		1,		0,		0,		5,		2,		0,		0,		0,		2,		1,		0,		4,		0]]; // temp boost of crew req
-_eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		0.7,	0,		0,		7,		1,		0,		6,		0]]; // temp boost of crew req
-_eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		0.5,	0,		0,		7,		1,		0,		6,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_IFV,					[0,		0,		1,		0,		10,		4,		0.7,	0,		0,		7,		1,		0,		5,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_APC,					[0,		0,		1,		0,		8,		3,		0.5,	0,		0,		7,		1,		0,		5,		0]]; // temp boost of crew req
 //											soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air	req.tr	transp	ground	water	req.cr	crew
 //											|		|		|		|		|		|		|		|		|		|		|		|		|		|
-_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		8,		0]]; // temp boost of crew req
+_eff_veh set [T_VEH_MBT,					[0,		0,		2,		0,		10,		10,		3,		0,		0,		0,		1,		0,		5,		0]]; // temp boost of crew req
 _eff_veh set [T_VEH_MRLS,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPA,					[0,		0,		1,		0,		0,		0,		0,		0,		0,		0,		1,		0,		2,		0]];
 _eff_veh set [T_VEH_SPAA,					[0,		0,		1,		0,		0,		0,		0,		6,		0,		0,		1,		0,		2,		0]];

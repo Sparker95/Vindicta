@@ -113,7 +113,7 @@ eff_fnc_simulate_attack = {
 };
 
 // Allocation validation functions
-// They return an array of unsatisfied constraints
+// They return an array of unsatisfied constraints in format [[_constraint, _value], [_constraint, _value]]
 
 // Validate that we can destroy them
 eff_fnc_validateAttack = {
@@ -125,7 +125,9 @@ eff_fnc_validateAttack = {
 						[T_EFF_aAir,	T_EFF_air]];
 	{
 		_x params ["_idOur", "_idTheir"];
-		if ((_effOur#_idOur) < (_effTheir#_idTheir)) then { _ret pushBack _idOur; };
+		if ((_effOur#_idOur) < (_effTheir#_idTheir)) then {
+			_ret pushBack [_idOur, (_effTheir#_idTheir) - (_effOur#_idOur)];
+		};
 	} forEach _ids;
 	_ret
 };
@@ -140,7 +142,9 @@ eff_fnc_validateDefense = {
 						[T_EFF_air,		T_EFF_aAir]];
 	{
 		_x params ["_idOur", "_idTheir"];
-		if ((_effOur#_idOur) < (_effTheir#_idTheir)) then { _ret pushBack _idOur };
+		if ((_effOur#_idOur) < (_effTheir#_idTheir)) then {
+			_ret pushBack [_idOur, (_effTheir#_idTheir) - (_effOur#_idOur)]
+		};
 	} forEach _ids;
 	_ret
 };
@@ -149,21 +153,25 @@ eff_fnc_validateDefense = {
 // Their eff vector can represent an external requirement to allocate some more transport  
 eff_fnc_validateTransport = {
 	params ["_effOur", ["_effTheir", T_EFF_null]];
-	private _valueOur = _effOur#T_EFF_transport;
-	if ((_effOur#T_EFF_reqTransport) > _valueOur ||
-		(_effTheir#T_EFF_reqTransport) > _valueOur) exitWith { // Try to allocate a bit more transport space
-		[T_EFF_transport]
+	private _transportOur = _effOur#T_EFF_transport;
+	//private _crewOur = _effOur#T_EFF_rew;
+	//private _reqCrewOur = _effOur#T_EFF_reqCrew;
+	if ((_effOur#T_EFF_reqTransport) > _transportOur) exitWith { // Try to allocate a bit more transport space
+		[[T_EFF_transport, (_effOur#T_EFF_reqTransport) - _transportOur]]
 	};
-	[] // Need more transport
+	if ((_effTheir#T_EFF_reqTransport) > _transportOur) exitWith { // Try to allocate a bit more transport space
+		[[T_EFF_transport, (_effTheir#T_EFF_reqTransport) - _transportOur]]
+	};
+	[]
 };
 
 // Validate that we have enough crew
 eff_fnc_validateCrew = {
 	params ["_effOur", "_effTheir"]; // _effTheir is not needed, but we pass it anyway
-	if ((_effOur#T_EFF_reqCrew) <= (_effOur#T_EFF_crew)) exitWith {
-		[]
+	if ((_effOur#T_EFF_reqCrew) > (_effOur#T_EFF_crew)) exitWith {
+		[[T_EFF_crew, (_effOur#T_EFF_reqCrew) - (_effOur#T_EFF_crew)]] // Need more crew
 	};
-	[T_EFF_crew] // Need more transport
+	[]
 };
 
 
