@@ -125,7 +125,7 @@ eff_fnc_validateAttack = {
 						[T_EFF_aAir,	T_EFF_air]];
 	{
 		_x params ["_idOur", "_idTheir"];
-		if ((_effOur#_idOur) <= (_effTheir#_idTheir)) then { _ret pushBack _idOur; }; // Need more attack capability
+		if ((_effOur#_idOur) < (_effTheir#_idTheir)) then { _ret pushBack _idOur; };
 	} forEach _ids;
 	_ret
 };
@@ -140,7 +140,7 @@ eff_fnc_validateDefense = {
 						[T_EFF_air,		T_EFF_aAir]];
 	{
 		_x params ["_idOur", "_idTheir"];
-		if ((_effOur#_idOur) <= (_effTheir#_idTheir)) then { _ret pushBack _idOur }; // Need more defense capability
+		if ((_effOur#_idOur) < (_effTheir#_idTheir)) then { _ret pushBack _idOur };
 	} forEach _ids;
 	_ret
 };
@@ -150,11 +150,11 @@ eff_fnc_validateDefense = {
 eff_fnc_validateTransport = {
 	params ["_effOur", ["_effTheir", T_EFF_null]];
 	private _valueOur = _effOur#T_EFF_transport;
-	if ((_effOur#T_EFF_reqTransport) < _valueOur ||
-		(_effTheir#T_EFF_reqTransport) <= _valueOur) exitWith { // Try to allocate a bit more transport space
-		[]
+	if ((_effOur#T_EFF_reqTransport) > _valueOur ||
+		(_effTheir#T_EFF_reqTransport) > _valueOur) exitWith { // Try to allocate a bit more transport space
+		[T_EFF_transport]
 	};
-	[T_EFF_transport] // Need more transport
+	[] // Need more transport
 };
 
 // Validate that we have enough crew

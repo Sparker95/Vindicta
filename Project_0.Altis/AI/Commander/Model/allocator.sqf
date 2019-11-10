@@ -101,17 +101,19 @@ comp_fnc_getEfficiency = {
 
 // Applies masks for this composition array, modifies existing array
 comp_fnc_applyMasks = {
-	params ["_comp", "_whiteListMasks", "_blackistMsks", "_unitBlackList"];
+	params ["_comp", "_whiteListMasks", "_blackistMsks", "_unitBlackLists"];
 	for "_catID" from 0 to ((count _comp) - 1) do {
 		pr _a = _comp#_catID;
 		for "_subcatID" from 0 to ((count _a) - 1) do {
 			pr _eff = (T_efficiency#_catID#_subcatID);
 			pr _allocateThisUnit = true;
 			
-			// Check against unit blacklist
-			if ([_catID, _subcatID] in _unitBlacklist) then {
-				_allocateThisUnit = false;
-			};
+			// Check against unit blacklists
+			{
+				if ([_catID, _subcatID] in _x) exitWith {
+					_allocateThisUnit = false;
+				};
+			} forEach _unitBlacklists;
 
 			// Check against whitelists masks
 			if (_allocateThisUnit) then {
@@ -151,7 +153,7 @@ fnc_allocateUnits = {
 		P_ARRAY("_effPayloadBlacklist"),	// Array of blacklist masks for payload
 		P_ARRAY("_effTransportWhitelist"),	// Array of whitelist masks for transport
 		P_ARRAY("_effTransportBlacklist"),	// Array of blacklist masks for transport
-		P_ARRAY("_unitBlacklist")];			// Array of [_catID, _subcatID] of units we don't want to allocate under any conditions
+		P_ARRAY("_unitBlacklists")];			// Arrays of [[_catID, _subcatID], ...] of units we don't want to allocate under any conditions
 	// Make combined whitelist and blacklist masks
 	/*
 	// wrong code, makes no sense, we don't want to combine all whitelists into one
@@ -174,11 +176,11 @@ fnc_allocateUnits = {
 
 	// Select units we can allocate for payload
 	pr _compPayload = +_comp;
-	[_compPayload, _effPayloadWhitelist, _effPayloadBlacklist, _unitBlacklist] call comp_fnc_applyMasks;
+	[_compPayload, _effPayloadWhitelist, _effPayloadBlacklist, _unitBlacklists] call comp_fnc_applyMasks;
 
 	// Select units we can allocate for transport
 	pr _compTransport = +_comp;
-	[_compTransport, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call comp_fnc_applyMasks;
+	[_compTransport, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklists] call comp_fnc_applyMasks;
 
 	diag_log "- - - - - -";
 	[_compPayload, "Payload composition after masks:"] call comp_fnc_print;
@@ -188,11 +190,12 @@ fnc_allocateUnits = {
 
 	pr _allocated = false;
 	pr _failedToAllocate = false;
-	pr _compAllocated = [0] call comp_fnc_new; // Allocated composition
+	pr _compAllocated = [0] call comp_fnc_new;	// Allocated composition
 	pr _nIteration = 0;
-	//pr _effSorted = +T_efficiencySorted; // We are going to modify it
-	pr _effSorted = T_efficiencySorted;
-	pr _nextRandomID = 0; // Random ID generator we are going to use to randomize the results a little
+	//pr _effSorted = +T_efficiencySorted;		// We are going to modify it
+	pr _nextRandomID = 0;						// Random ID generator we are going to use to randomize the results a little
+	pr _prevConstraint = -1;					// Previous constraint we tried to satisfy
+
 	while {!_allocated && !_failedToAllocate && (_nIteration < 100)} do { // Should we limit amount of iterations??
 
 		diag_log "";
@@ -217,6 +220,29 @@ fnc_allocateUnits = {
 			_allocated = true;
 		} else {
 			pr _constraint = _unsatisfied#0;
+			
+			// Reset the counter
+			if (_constraint != _prevConstraint) then {
+				_nextRandomID = 0;
+			};
+
+			// Select the array with units sorted by their capability to satisfy constraint
+			pr _constraintTransport = _constraint in T_EFF_constraintsTransport;	// True if we are satisfying a transport constraint
+			pr _effSorted = T_efficiencySorted;
+			
+			/*
+			// Old code, tried different ways to sort unit allocation order (straight or inverse)
+			if (_constraint in T_EFF_constraintsPayload) then {
+				// For payload (combat) constraints, we sort units by inverse of their capability (first riflemen, then machinegunners)
+				//T_efficiencySortedInv\
+				T_efficiencySorted
+			} else {
+				// For transport constraints, we sort units by their capability (first trucks for infantry, then small cars)
+				_constraintTransport = true;
+				T_efficiencySorted
+			};
+			*/
+
 			diag_log format ["  Trying to satisfy constraint: %1", _constraint];
 			// Try to find a unit to satisfy this constraint
 			pr _potentialUnits = _effSorted#_constraint select { // Array of value, catID, subcatID, sorted by value
@@ -225,9 +251,15 @@ fnc_allocateUnits = {
 				(_compPayload#_catID#_subcatID) > 0 || {(_compTransport#_catID#_subcatID) > 0}
 			};
 
+			diag_log format ["  Potential units: %1", _potentialUnits];
+
 			pr _found = false;
 			if (count _potentialUnits > 0) then {
-				_nextRandomID = _nextRandomID mod (count _potentialUnits);
+				pr _ID = if (_constraintTransport) then {
+					0	// Take the unit which satisfies our constraint most for transport requirement
+				} else {
+					_nextRandomID mod (count _potentialUnits);
+				};
 				pr _catID = _potentialUnits#_nextRandomID#1;
 				pr _subcatID = _potentialUnits#_nextRandomID#2;
 				[_compPayload, _catID, _subcatID, -1] call comp_fnc_addValue;		// Substract from both since they might have same units in them
@@ -237,7 +269,8 @@ fnc_allocateUnits = {
 				_found = true;
 				_nextRandomID = _nextRandomID + 1;
 			} else {
-
+				// Can't find any more units!
+				diag_log "  Failed to find a unit!";
 			};
 			
 
@@ -270,7 +303,7 @@ fnc_allocateUnits = {
 
 			// If we've looked through all the units and couldn't find one to help us safisfy this constraint, raise a failedToAllocate flag
 			_failedToAllocate = !_found;
-
+			_prevConstraint = _constraint;
 			_nIteration = _nIteration + 1;
 		};
 	};
@@ -296,23 +329,27 @@ pr _comp = [100] call comp_fnc_new; // 20 units of each type
 
 // Call unit allocator
 diag_log "Calling allocate units...";
-pr _effExt = T_EFF_null;
+pr _effExt = +T_EFF_null;		// "External" requirement we must satisfy during this allocation
 
-// Destroy some infantry?
-//_effExt set [T_EFF_soft, 15];
-//_effExt set [T_EFF_medium, 10];
-_effExt set [T_EFF_armor, 5];
+// Fill in units which we must destroy
+_effExt set [T_EFF_soft, 1];
+//_effExt set [T_EFF_medium, 2];
+//_effExt set [T_EFF_armor, 2];
+//_effExt set [T_EFF_air, 2];
 
-//pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"];
-pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"];
-pr _effPayloadWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks, T_EFF_infantry_mask];
+pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"]; // "eff_fnc_validateDefense"
+pr _effPayloadWhitelist = [	T_EFF_ground_mask,		// Take any ground units
+							T_EFF_infantry_mask];	// Take any infantry units
 pr _effPayloadBlacklist = [];
-pr _effTransportWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks, T_EFF_infantry_mask];
+pr _effTransportWhitelist = [[[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks, // Take any units which are BOTH ground and can provide transport
+								T_EFF_infantry_mask];												// Take any infantry to satisfy crew requirements
 pr _effTransportBlacklist = [];
-//pr _unitBlacklist = [[T_VEH, T_VEH_APC], [T_VEH, T_VEH_IFV]];
-pr _unitBlacklist = [];
+pr _unitBlacklist = [T_static];	// Do not take static weapons
 
-["Noclass", _effExt, _validationFnNames, _comp, _effPayloadWhitelist, _effPayloadBlacklist, _effTransportWhitelist, _effTransportBlacklist, _unitBlacklist] call fnc_allocateUnits;
+["Noclass", _effExt, _validationFnNames, _comp,
+	_effPayloadWhitelist,_effPayloadBlacklist,
+	_effTransportWhitelist, _effTransportBlacklist,
+	_unitBlacklist] call fnc_allocateUnits;
 
 /*
 _maskGroundTransport = [[T_EFF_transport_mask, T_EFF_ground_mask]] call eff_fnc_combineMasks;
