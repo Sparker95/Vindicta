@@ -903,12 +903,24 @@ CLASS("GarrisonModel", "ModelBase")
 	STATIC_METHOD("allocateUnits") {
 		params [P_THISCLASS,
 				P_ARRAY("_effExt"),					// External efficiency requirement we must fullfill
-				P_ARRAY("_constraintFnNames"),		// Array of names of constraint validation functions, all of which receive [_ourEff, _theirEff]
+				P_ARRAY("_constraintFlags"),		// Array of flags for constraint verification
 				P_ARRAY("_comp"),					// Composition array: [[1, 2, 3], [4, 5], [6, 7]]: 1 unit of cat:0,subcat:0, 2x(0, 1), 3x(0, 2), etc
 				P_ARRAY("_compPayloadWhitelistMask"),	// Whitelist mask for payload or []
 				P_ARRAY("_compPayloadBlacklistMask"),	// Blacklist mask for payload or []
 				P_ARRAY("_compTransportWhitelistMask"),	// Whitelist mask for transport or []
 				P_ARRAY("_compTransportBlacklistMask")];// Blacklist mask for transport or []
+
+		// Assign validation functions according to flags
+		pr _constraintFnNames = [];
+		if (SPLIT_VALIDATE_ATTACK in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateAttack";
+		};
+		if (SPLIT_VALIDATE_TRANSPORT in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateTransport";
+		};
+		if (SPLIT_VALIDATE_CREW in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateCrew";
+		};
 
 		// Composition left after the allocation
 		pr _compRemaining = +_comp;
@@ -1187,13 +1199,13 @@ ENDCLASS;
 		//_effExt set [T_EFF_medium, 3];
 		_effExt set [T_EFF_armor, 3];
 
-		pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"]; // "eff_fnc_validateDefense"
+		pr _validationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW, SPLIT_VALIDATE_TRANSPORT]; // "eff_fnc_validateDefense"
 		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
 		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
 
-		pr _args = [_effExt, _validationFnNames, _comp,
+		pr _args = [_effExt, _validationFlags, _comp,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
 
