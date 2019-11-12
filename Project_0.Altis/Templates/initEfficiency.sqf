@@ -7,8 +7,6 @@ efficiency categories (a- is anti-):
 [soft,	medium,	armor,	air,	a-soft,	a-med,	a-arm,	a-air]
 */
 
-call compile preprocessfilelinenumbers "Templates\Efficiency.sqf";
-
 T_EFF_soft =	0;			// Amount of 'soft' armor	which can be defeated with any weapons
 T_EFF_medium =	1;			// Amount of 'medium' armor	which can be defeated with >=12mm weapons
 T_EFF_armor =	2;			// Amount of 'hard' armor	which can be defeated with >=20mm or AT weapons

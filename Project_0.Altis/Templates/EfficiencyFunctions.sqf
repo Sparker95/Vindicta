@@ -1,5 +1,7 @@
 #include "Efficiency.hpp"
 
+#include "common.hpp"
+
 #define _DEF_EFF_BINARY_OP_EFF_EFF(fn) \
 { \
     params ['_a', '_b']; \
@@ -12,6 +14,7 @@
 // Operation which performs accumulation int oa destination vector
 #define _DEF_EFF_BINARY_OP_ACC_EFF_EFF(fn) \
 { \
+	_CREATE_PROFILE_SCOPE("_DEF_EFF_BINARY_OP_ACC_EFF_EFF"); \
 	params ["_dest", "_b"]; \
 	{ \
 		_dest set [_forEachIndex, (_dest select _forEachIndex) fn _x]; \
@@ -173,6 +176,42 @@ eff_fnc_validateCrew = {
 };
 
 
+// Functions to work with masks and other things
+// Combines an array of vector masks into one (just sums them up and clips to 0...1 range)
+eff_fnc_combineMasks = {
+
+	_CREATE_PROFILE_SCOPE("eff_fnc_combineMasks");
+
+	params ["_masks"];
+	pr _ret = +T_EFF_null;
+	pr _nCols = count (_masks#0);
+	for "_col" from 0 to (_nCols - 1) do 
+	{
+		_num = 0;
+		{
+			_num = _num + _x#_col;
+		} forEach _masks;
+		_num = (_num min 1) max 0;
+		_ret set [_col, _num];
+	};
+	_ret
+};
+
+// Check if given eff. vector matches a mask vector
+// Vector maches the mask when it has non-zero values at all non-zero columns in the mask
+eff_fnc_matchesMask = {
+
+	_CREATE_PROFILE_SCOPE("eff_fnc_matchesMask");
+
+	params ["_eff", "_mask"];
+	pr _match = true;
+	{
+		if (_x>0 && {(_eff#_forEachIndex) == 0}) exitWIth { _match = false };
+	} forEach _mask;
+	_match
+};
+
+
 #ifdef _SQF_VM
 
 #define EFF_012 	[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
@@ -251,19 +290,19 @@ eff_fnc_validateCrew = {
 
 ["EFF validation", {
 	["validate attack", 			[] isEqualTo ([EFF_111, EFF_ZERO] call eff_fnc_validateAttack)] call test_Assert;
-	["validate defense", 			[0, 1, 2, 3] isEqualTo ([EFF_ZERO, EFF_111] call eff_fnc_validateDefense)] call test_Assert;
+	["validate defense", 			[[0,1], [1,1], [2,1], [3,1]] isEqualTo ([EFF_ZERO, EFF_111] call eff_fnc_validateDefense)] call test_Assert;
 
 	// Validate crew
 	_e0 = +T_EFF_null;
 	_e0 set [T_EFF_crew, 4];
 	_e0 set [T_EFF_reqCrew, 5];
-	["validate crew", 			[T_EFF_crew] isEqualTo ([_e0] call eff_fnc_validateCrew)] call test_Assert;
+	["validate crew", 			[[T_EFF_crew, 1]] isEqualTo ([_e0] call eff_fnc_validateCrew)] call test_Assert;
 
 	// Validate transport
 	_e0 = +T_EFF_null;
 	_e0 set [T_EFF_transport, 4];
 	_e0 set [T_EFF_reqTransport, 5];
-	["validate transport", 			[T_EFF_transport] isEqualTo ([_e0] call eff_fnc_validateTransport)] call test_Assert;
+	["validate transport", 			[[T_EFF_transport, 1]] isEqualTo ([_e0] call eff_fnc_validateTransport)] call test_Assert;
 
 	true
 }] call test_AddTest;
