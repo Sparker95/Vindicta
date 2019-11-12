@@ -1,5 +1,13 @@
 #include "..\common.hpp"
 
+#ifdef ASP_ENABLE
+#define _CREATE_PROFILE_SCOPE(scopeName) private _tempScope = createProfileScope scopeName
+#define _DELETE_PROFILE_SCOPE _tempScope = 0
+#else
+#define _CREATE_PROFILE_SCOPE(scopeName)
+#define _DELETE_PROFILE_SCOPE
+#endif
+
 // GarrisonModel_getThread = {
 // 	params ["_garrisonModel"];
 // 	// Can't use normal accessor because it would cause an infinite loop!
@@ -14,12 +22,16 @@
 // 	}
 // };
 
+#define pr private
+
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
 // is a copy that is modified during simulations.
 CLASS("GarrisonModel", "ModelBase")
 	// Strength vector of the garrison.
 	VARIABLE_ATTR("efficiency", []);
+	// Composition of the garrison (see templates\composition)
+	VARIABLE_ATTR("composition", []);
 	// Available transportation (free seats in trucks)
 	VARIABLE_ATTR("transport", []);
 	//// Current order the garrison is following.
@@ -45,6 +57,7 @@ CLASS("GarrisonModel", "ModelBase")
 		T_SETV("action", NULL_OBJECT);
 		// These will get set in sync
 		T_SETV("efficiency", +EFF_ZERO);
+		T_SETV("composition", +T_comp_null);
 		T_SETV("transport", 0);
 		T_SETV("inCombat", false);
 		T_SETV("pos", []);
@@ -117,6 +130,9 @@ CLASS("GarrisonModel", "ModelBase")
 			T_SETV("faction", _actualFaction);
 			
 			T_SETV("efficiency", _newEff);
+
+			pr _comp = CALLM(_actual, "getCompositionNumbers", []); // It does a deep copy itself
+			T_SETV("composition", _comp);
 
 			// Get seats only for trucks as we care about this most
 			private _seats = CALLM(_actual, "getTransportCapacity", [[T_VEH_truck_inf]]);
@@ -882,6 +898,190 @@ CLASS("GarrisonModel", "ModelBase")
 	// 	_goalState == ACTION_STATE_COMPLETED
 	// } ENDMETHOD;
 
+	// Unit allocation algorithm
+	// Allocates units from composition while tryint to satisfy _effExt (external efficiency)
+	STATIC_METHOD("allocateUnits") {
+		params [P_THISCLASS,
+				P_ARRAY("_effExt"),					// External efficiency requirement we must fullfill
+				P_ARRAY("_constraintFnNames"),		// Array of names of constraint validation functions, all of which receive [_ourEff, _theirEff]
+				P_ARRAY("_comp"),					// Composition array: [[1, 2, 3], [4, 5], [6, 7]]: 1 unit of cat:0,subcat:0, 2x(0, 1), 3x(0, 2), etc
+				P_ARRAY("_compPayloadWhitelistMask"),	// Whitelist mask for payload or []
+				P_ARRAY("_compPayloadBlacklistMask"),	// Blacklist mask for payload or []
+				P_ARRAY("_compTransportWhitelistMask"),	// Whitelist mask for transport or []
+				P_ARRAY("_compTransportBlacklistMask")];// Blacklist mask for transport or []
+
+		// Composition left after the allocation
+		pr _compRemaining = +_comp;
+
+		// Select units we can allocate for payload
+		pr _compPayload = +_comp;
+		// Apply masks if they are provided...
+		if (count _compPayloadWhitelistMask > 0) then {
+			[_compPayload, _compPayloadWhitelistMask] call comp_fnc_applyWhitelistMask;
+		};
+		if (count _compPayloadBlacklistMask > 0) then {
+			[_compPayload, _compPayloadBlacklistMask] call comp_fnc_applyBlacklistMask;
+		};
+
+		// Select units we can allocate for transport
+		pr _compTransport = +_comp;
+		if (count _compTransportWhitelistMask > 0) then {
+			[_compTransport, _compTransportWhitelistMask] call comp_fnc_applyWhitelistMask;
+		};
+		if (count _compTransportBlacklistMask > 0) then {
+			[_compTransport, _compTransportBlacklistMask] call comp_fnc_applyBlacklistMask;
+		};
+
+		#ifdef UNIT_ALLOCATOR_DEBUG
+		diag_log "- - - - - -";
+		[_compPayload, "Payload composition after masks:"] call comp_fnc_print;
+
+		diag_log "- - - - - -";
+		[_compTransport, "Transport composition after masks:"] call comp_fnc_print;
+		#endif
+
+		// Initialize variables
+		pr _allocated = false;
+		pr _failedToAllocate = false;
+		pr _compAllocated = [0] call comp_fnc_new;	// Allocated composition
+		pr _effAllocated = +T_EFF_null;				// Allocated efficiency
+		pr _nIteration = 0;
+		pr _effSorted = T_efficiencySorted;
+
+		// Start the allocation iterations
+		while {!_allocated && !_failedToAllocate && (_nIteration < 100)} do { // Should we limit amount of iterations??
+
+			_CREATE_PROFILE_SCOPE("ALLOCATE UNITS - iteration");
+
+
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log "";
+			diag_log format ["Iteration: %1", _nIteration];
+			#endif
+
+			// Get allocated efficiency
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format ["  Allocated eff: %1", _effAllocated];
+			[_compAllocated, "  Allocated composition:"] call comp_fnc_print;
+			#endif
+
+			// Validate against provided constrain functions
+			pr _unsatisfied = []; // Array of unsatisfied criteria
+			for "_i" from 0 to ((count _constraintFnNames) - 1) do {
+				_CREATE_PROFILE_SCOPE("Get unsatisfied constraints");
+				pr _newConstraints = [_effAllocated, _effExt] call ( missionNamespace getVariable (_constraintFnNames#_i) );
+				_unsatisfied append _newConstraints;
+				if (count _newConstraints > 0) exitWith {}; // Bail on occurance of first unsatisfied constraint
+			};
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format ["  Unsatisfied constraints: %1", _unsatisfied];
+			#endif
+
+			// If there are no unsatisfied constraints, break the loop
+			if ((count _unsatisfied) == 0) then {
+				#ifdef UNIT_ALLOCATOR_DEBUG
+				diag_log "  Allocated enough units!";
+				#endif
+				_allocated = true;
+			} else {
+				pr _constraint = _unsatisfied#0#0;
+				pr _constraintValue = _unsatisfied#0#1;
+
+				// Select the array with units sorted by their capability to satisfy constraint
+				pr _constraintTransport = _constraint in T_EFF_constraintsTransport;	// True if we are satisfying a transport constraint
+
+				#ifdef UNIT_ALLOCATOR_DEBUG
+				diag_log format ["  Trying to satisfy constraint: %1", _constraint];
+				#endif
+				// Try to find a unit to satisfy this constraint
+				pr _potentialUnits = if (_constraintTransport) then {
+					_CREATE_PROFILE_SCOPE("Select units");
+					_effSorted#_constraint select { // Array of value, catID, subcatID, sorted by value
+						(_compTransport#(_x#1)#(_x#2)) > 0
+					};
+				} else {
+					_CREATE_PROFILE_SCOPE("Select units");
+					_effSorted#_constraint select { // Array of value, catID, subcatID, sorted by value
+						(_compPayload#(_x#1)#(_x#2)) > 0
+					};
+				};
+
+
+				#ifdef UNIT_ALLOCATOR_DEBUG
+				diag_log format ["  Potential units: %1", _potentialUnits];
+				#endif
+
+				pr _found = false;
+				pr _count = count _potentialUnits;
+				if (_count > 0) then {
+					pr _ID = 0;
+					
+					// If we oversatisfy this constraint, try to find units which satisfy this less, we dont want to use expensive units too much
+					if (	( (!_constraintTransport) /* || (_constraintTransport && _payloadSatisfied) */ ) && // Payload constraint   // --- , or transport and there are no more payload constraints
+							{ (_potentialUnits#_ID#0 > _constraintValue) && (_count > 1) }) then {
+						_CREATE_PROFILE_SCOPE("select smallest ID");
+						while { (_ID < (_count - 1)) } do {
+							if ((_potentialUnits#(_ID+1)#0 < _constraintValue)) exitWith {};
+							_ID = _ID + 1;
+						};
+					} else {
+						// Try to pick a random unit if there are many units with same capability
+						_CREATE_PROFILE_SCOPE("select random ID");
+						pr _value = _potentialUnits#0#0;
+						pr _index = _potentialUnits findIf {_x#0 != _value};
+						if (_index != -1) then {
+							_ID = floor (random _index);
+						} else {
+							_ID = floor (random _count);
+						};
+						#ifdef UNIT_ALLOCATOR_DEBUG
+						diag_log format ["  Generated random ID: %1", _ID];
+						#endif
+					};
+
+					_CREATE_PROFILE_SCOPE("_end of iteration");
+
+					pr _catID = _potentialUnits#_ID#1;
+					pr _subcatID = _potentialUnits#_ID#2;
+					pr _effToAdd = T_efficiency#_catID#_subcatID;
+					[_effAllocated, _effToAdd] call eff_fnc_acc_add;					// Add with accumulation
+					[_compPayload, _catID, _subcatID, -1] call comp_fnc_addValue;		// Substract from both since they might have same units in them
+					[_compTransport, _catID, _subcatID, -1] call comp_fnc_addValue;
+					[_compRemaining, _catID, _subcatID, -1] call comp_fnc_addValue;
+					[_compAllocated, _catID, _subcatID, 1] call comp_fnc_addValue;
+
+					#ifdef UNIT_ALLOCATOR_DEBUG
+					diag_log format ["  Allocated unit: %1", T_NAMES#_catID#_subcatID];
+					#endif
+
+					_found = true;
+					//_nextRandomID = _nextRandomID + 1;
+				} else {
+					// Can't find any more units!
+					diag_log "  Failed to find a unit!";
+				};
+				
+				// If we've looked through all the units and couldn't find one to help us safisfy this constraint, raise a failedToAllocate flag
+				_failedToAllocate = !_found;
+				_nIteration = _nIteration + 1;
+			};
+		};
+
+		diag_log format ["Allocation finished. Iterations: %1, Allocated: %2, failed: %3", _nIteration, _allocated, _failedToAllocate];
+
+		if (!_allocated || _failedToAllocate) exitWith {
+			// Could not allocate units!
+			[]
+		};
+
+		#ifdef UNIT_ALLOCATOR_DEBUG
+		diag_log "";
+		[_compAllocated, "  Allocated successfully:"] call comp_fnc_print;
+		#endif
+
+		[_compAllocated, _compRemaining] // Allocated composition, remaining composition
+	} ENDMETHOD;
+
 	// -------------------- S C O R I N G   T O O L K I T / U T I L S -------------------
 	STATIC_METHOD("transportRequired") {
 		params [P_THISOBJECT, P_ARRAY("_eff")];
@@ -975,6 +1175,41 @@ ENDCLASS;
 	["False before killed", !CALLM(_garrison, "isDead", [])] call test_Assert;
 	CALLM(_garrison, "killed", []);
 	["True after killed", CALLM(_garrison, "isDead", [])] call test_Assert;
+}] call test_AddTest;
+
+["GarrisonModel.UnitAllocator", {
+
+		pr _comp = [30] call comp_fnc_new;
+
+		pr _effExt = +T_EFF_null;		// "External" requirement we must satisfy during this allocation
+		// Fill in units which we must destroy
+		_effExt set [T_EFF_soft, 10];
+		//_effExt set [T_EFF_medium, 3];
+		_effExt set [T_EFF_armor, 3];
+
+		pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"]; // "eff_fnc_validateDefense"
+		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+		pr _transportBlacklistMask = [];
+
+		pr _args = [_effExt, _validationFnNames, _comp,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+
+		pr _result = CALLSM("GarrisonModel", "allocateUnits", _args);
+
+		_result params ["_compAllocated", "_compRemaining"];
+
+		//[_compAllocated, "Allocated composition:"] call comp_fnc_print;
+
+		// Verify that the allocated forces can deal with the threat
+		pr _effAllocated = [_compAllocated] call comp_fnc_getEfficiency;
+		pr _constraintsUnsatisfied = [_effAllocated, _effExt] call eff_fnc_validateAttack;
+
+		["Allocated successfully", (count _effAllocated) > 0] call test_Assert;
+		["Can destroy enemy", (count _constraintsUnsatisfied) == 0] call test_Assert;
+
 }] call test_AddTest;
 
 ["GarrisonModel.simSplit", {

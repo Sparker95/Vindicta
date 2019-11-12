@@ -48,7 +48,10 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
-	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
+	VARIABLE("compositionClassNames");
+
+	// Array with composition: each element at [_cat][_subcat] is an amount of units of this type
+	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE]);
 
 	// Flag which is reset at each process call
 	// It is set by various functions changing state of this garrison
@@ -119,7 +122,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			_tempArray resize _x;
 			_comp pushBack (_tempArray apply {[]});
 		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
-		T_SETV("composition", _comp);
+		T_SETV("compositionClassNames", _comp);
+		
+		T_SETV("compositionNumbers", +T_comp_null);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
@@ -1853,7 +1858,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	Parameters: _garSrc, _comp
 	
 	_garSrc - source <Garrison>
-	_comp - composition array. See "composition" member variable and how it's organized.
+	_comp - composition array. See "compositionClassNames" member variable and how it's organized.
 	
 	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
 	*/
@@ -2139,8 +2144,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV(_varName, T_GETV(_varName)+1);
 
 		// Update composition array
-		pr _comp = T_GETV("composition");
+		pr _comp = T_GETV("compositionClassNames");
 		(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
+
+		pr _compNumbers = T_GETV("compositionNumbers");
+		[_compNumbers, _catID, _subcatID, 1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;	
@@ -2187,9 +2195,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV(_varName, T_GETV(_varName)-1);
 
 		// Update composition array
-		pr _comp = T_GETV("composition");
+		pr _comp = T_GETV("compositionClassNames");
 		pr _array = _comp#_catID#_subCatID;
 		_array deleteAt (_array find ([_className] call t_fnc_classNameToNumber));
+
+		pr _compNumbers = T_GETV("compositionNumbers");
+		[_compNumbers, _catID, _subcatID, -1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -2237,7 +2248,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-	METHOD("getComposition") {
+	METHOD("getCompositionClassNames") {
 		params [P_THISOBJECT];
 		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -2252,7 +2263,20 @@ CLASS("Garrison", "MessageReceiverEx");
 			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 			_comp
 		};
-		pr _return = +T_GETV("composition");
+		pr _return = +T_GETV("compositionClassNames");
+		//__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+	METHOD("getCompositionNumbers") {
+		params [P_THISOBJECT];
+		//__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			[0] call comp_fnc_new;
+		};
+		pr _return = +T_GETV("compositionNumbers");
 		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
