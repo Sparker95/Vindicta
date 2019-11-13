@@ -691,7 +691,9 @@ CLASS("GarrisonModel", "ModelBase")
 			};
 		};
 
+		#ifdef UNIT_ALLOCATOR_DEBUG
 		diag_log format ["Allocation finished. Iterations: %1, Allocated: %2, failed: %3", _nIteration, _allocated, _failedToAllocate];
+		#endif
 
 		if (!_allocated || _failedToAllocate) exitWith {
 			// Could not allocate units!
@@ -892,6 +894,9 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 	SETV(_garrison, "efficiency", _eff1);
 
 	private _splitGarr = CALLM(_garrison, "splitActual", [_compToDetach ARG _effToDetach]);
+
+	["Split successfull", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
+
 	// Sync the Models
 	CALLM(_garrison, "sync", []);
 	CALLM(_splitGarr, "sync", []);

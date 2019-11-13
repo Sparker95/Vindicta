@@ -1989,8 +1989,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_LOCK;
 
 		// Ensure that we have enough resources
-		T_PRVAR(compositionNumbers);
+		pr _compositionNumbers = GETV(_garSrc, "compositionNumbers");
 		if (!([_compositionNumbers, _comp] call comp_fnc_greaterOrEqual)) exitWith {
+			OOP_WARNING_1("Not enough resources to add units from composition: %1", _garSrc);
+			OOP_WARNING_1("  Other garrison's composition: %1", _compositionNumbers);
+			OOP_WARNING_1("  Required         composition: %1", _comp);
 			false
 		};
 
@@ -2825,4 +2828,37 @@ CLASS("Garrison", "MessageReceiverEx");
 
 ENDCLASS;
 
-SETSV("Garrison", "all", []);
+if (isNil { GETSV("Garrison", "all") } ) then {
+	SETSV("Garrison", "all", []);
+};
+
+#ifdef _SQF_VM
+
+
+
+["Garrison.add units", {
+	private _actual = NEW("Garrison", [WEST]);
+	private _Test_group_args = [WEST, 0]; // Side, group type
+	private _subcatID = T_INF_rifleman;
+	private _Test_unit_args = [tNATO, T_INF, _subcatID, -1];
+	private _group = NEW("Group", _Test_group_args);
+	private _eff1 = +T_EFF_null;
+	private _comp1 = +T_comp_null;
+	for "_i" from 0 to 19 do
+	{
+		private _unit = NEW("Unit", _Test_unit_args + [_group]);
+		private _unitEff = CALLM(_unit, "getEfficiency", []);
+		_eff1 = EFF_ADD(_eff1, _unitEff);
+		[_comp1, T_INF, _subcatID, 1] call comp_fnc_addValue;
+	};
+
+	CALLM(_actual, "addGroup", [_group]);
+	
+	diag_log format ["Garrison total eff after adding group: %1", CALLM0(_actual, "getEfficiencyTotal")];
+	diag_log format ["Garrison composition after adding group: %1", CALLM0(_actual, "getCompositionNumbers")];
+	["Efficiency", CALLM0(_actual, "getEfficiencyTotal") isEqualTo _eff1] call test_Assert;
+	["Composition", CALLM0(_actual, "getCompositionNumbers") isEqualTo _comp1] call test_Assert;
+
+}] call test_AddTest;
+
+#endif
