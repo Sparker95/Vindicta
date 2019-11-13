@@ -263,6 +263,16 @@ CLASS("GarrisonModel", "ModelBase")
 		NULL_OBJECT
 	} ENDMETHOD;
 
+	METHOD("getEfficiency") {
+		params [P_THISOBJECT];
+		T_GETV("efficiency")
+	} ENDMETHOD;
+
+	METHOD("getComposition") {
+		params [P_THISOBJECT];
+		T_GETV("composition")
+	} ENDMETHOD;
+
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
 	// Does this make sense? Could the sim/actual split be handled in a single functions
 	// instead? Need the concept of operations that take time, and they only apply to 
@@ -517,6 +527,7 @@ CLASS("GarrisonModel", "ModelBase")
 				P_ARRAY("_effExt"),					// External efficiency requirement we must fullfill
 				P_ARRAY("_constraintFlags"),		// Array of flags for constraint verification
 				P_ARRAY("_comp"),					// Composition array: [[1, 2, 3], [4, 5], [6, 7]]: 1 unit of cat:0,subcat:0, 2x(0, 1), 3x(0, 2), etc
+				P_ARRAY("_eff"),					// Efficiency which corresponds to composition
 				P_ARRAY("_compPayloadWhitelistMask"),	// Whitelist mask for payload or []
 				P_ARRAY("_compPayloadBlacklistMask"),	// Blacklist mask for payload or []
 				P_ARRAY("_compTransportWhitelistMask"),	// Whitelist mask for transport or []
@@ -536,6 +547,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Composition left after the allocation
 		pr _compRemaining = +_comp;
+		pr _effRemaining = +_eff;
 
 		// Select units we can allocate for payload
 		pr _compPayload = +_comp;
@@ -669,6 +681,7 @@ CLASS("GarrisonModel", "ModelBase")
 					pr _subcatID = _potentialUnits#_ID#2;
 					pr _effToAdd = T_efficiency#_catID#_subcatID;
 					[_effAllocated, _effToAdd] call eff_fnc_acc_add;					// Add with accumulation
+					[_effRemaining, _effToAdd] call eff_fnc_acc_diff;					// Substract with accumulation
 					[_compPayload, _catID, _subcatID, -1] call comp_fnc_addValue;		// Substract from both since they might have same units in them
 					[_compTransport, _catID, _subcatID, -1] call comp_fnc_addValue;
 					[_compRemaining, _catID, _subcatID, -1] call comp_fnc_addValue;
@@ -705,7 +718,7 @@ CLASS("GarrisonModel", "ModelBase")
 		[_compAllocated, "  Allocated successfully:"] call comp_fnc_print;
 		#endif
 
-		[_compAllocated, _compRemaining] // Allocated composition, remaining composition
+		[_compAllocated, _effAllocated, _compRemaining, _effRemaining]
 	} ENDMETHOD;
 
 	// -------------------- S C O R I N G   T O O L K I T / U T I L S -------------------
@@ -806,6 +819,7 @@ ENDCLASS;
 ["GarrisonModel.UnitAllocator", {
 
 		pr _comp = [30] call comp_fnc_new;
+		pr _eff = [_comp] call comp_fnc_getEfficiency;
 
 		pr _effExt = +T_EFF_null;		// "External" requirement we must satisfy during this allocation
 		// Fill in units which we must destroy
@@ -819,13 +833,13 @@ ENDCLASS;
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
 
-		pr _args = [_effExt, _validationFlags, _comp,
+		pr _args = [_effExt, _validationFlags, _comp, _eff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
 					_transportWhitelistMask, _transportBlacklistMask];
 
 		pr _result = CALLSM("GarrisonModel", "allocateUnits", _args);
 
-		_result params ["_compAllocated", "_compRemaining"];
+		_result params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
 
 		//[_compAllocated, "Allocated composition:"] call comp_fnc_print;
 
@@ -835,6 +849,12 @@ ENDCLASS;
 
 		["Allocated successfully", (count _effAllocated) > 0] call test_Assert;
 		["Can destroy enemy", (count _constraintsUnsatisfied) == 0] call test_Assert;
+
+		pr _c1 = +_compAllocated;
+		[_c1, _compRemaining] call comp_fnc_addAccumulate;
+		["Compositions match", _c1 isEqualTo _comp] call test_Assert;
+
+		["Efficiencies match", EFF_ADD(_effAllocated, _effRemaining) isEqualTo _eff] call test_Assert;
 
 }] call test_AddTest;
 

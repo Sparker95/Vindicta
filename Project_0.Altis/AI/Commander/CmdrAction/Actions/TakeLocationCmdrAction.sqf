@@ -9,6 +9,9 @@ Sends a detachment from the source garrison to occupy the target location.
 
 Parent: <TakeOrJoinCmdrAction>
 */
+
+#define pr private
+
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtLocId");
 
@@ -94,22 +97,66 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtLocId);
 
+
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
+		private _srcGarrPos = CALLM0(_srcGarr, "getPos");
+		private _srcGarrEff = CALLM0(_srcGarr, "getEfficiency");
+		private _srcGarrComp = CALLM0(_srcGarr, "getComposition");
 		ASSERT_OBJECT(_srcGarr);
+		
+		// Bail if garrison is dead
 		if(CALLM(_srcGarr, "isDead", [])) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
+		private _tgtLocPos = CALLM0(_tgtLoc, "getPos");
 		ASSERT_OBJECT(_tgtLoc);
 		private _side = GETV(_srcGarr, "side");
 		private _toGarr = CALLM(_tgtLoc, "getGarrison", [_side]);
+
+		// Bail if we already own this place
 		if(!IS_NULL_OBJECT(_toGarr)) exitWith {
 			// We never take a location we already have a garrison at, this should be reinforcement instead 
 			// (however we can get here if multiple potential actions are generated targetting the same location
 			// in the same planning cycle, and one gets accepted)
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
+
+		// Set up flags for allocation algorithm
+		private _allocationFlags = [SPLIT_VALIDATE_ATTACK];
+		// If it's too far to travel, also allocate transport
+		// todo add other transport types?
+		if ((_tgtLocPos distance2D _srcGarrPos) > 1500) then {
+			_allocationFlags append [SPLIT_VALIDATE_TRANSPORT, SPLIT_VALIDATE_CREW];	// Also add transport and crew
+		};
+
+		private _enemyEff = CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
+
+		// Bail if the garrison clearly can not destroy the enemy
+		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		// Try to allocate units
+		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+		pr _transportBlacklistMask = [];
+		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+
+		// Bail if we have failed to allocate resources
+		if (count _allocResult == 0) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
+
+		// Ensure that the remaining efficiency after allocation is above minimum level
+
  
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
@@ -119,6 +166,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// What efficiency can we send for the detachment?
 		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
+
 		// Save the calculation of the efficiency for use later.
 		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
 		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
@@ -136,8 +184,8 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
 		private _dist = _srcGarrPos distance _tgtLocPos;
 		// How much to scale the score for transport requirements
-		private _transportationScore = if(_dist < 2000) then {
-			// If we are less than 2000m then we don't need transport so set the transport score to 1
+		private _transportationScore = if(_dist < 1500) then {
+			// If we are less than 1500m then we don't need transport so set the transport score to 1
 			// (we "fullfilled" the transport requirements of not needing transport)
 			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
 			1
@@ -210,6 +258,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
 
 		// How much resources tgt needs
+		// TODO we should use location intel some time!!
 		private _tgtRequiredEff = CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
 		// EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtLoc]), -1), 0);
 

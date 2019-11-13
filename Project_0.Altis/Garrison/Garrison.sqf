@@ -2854,8 +2854,8 @@ if (isNil { GETSV("Garrison", "all") } ) then {
 
 	CALLM(_actual, "addGroup", [_group]);
 	
-	diag_log format ["Garrison total eff after adding group: %1", CALLM0(_actual, "getEfficiencyTotal")];
-	diag_log format ["Garrison composition after adding group: %1", CALLM0(_actual, "getCompositionNumbers")];
+	//diag_log format ["Garrison total eff after adding group: %1", CALLM0(_actual, "getEfficiencyTotal")];
+	//diag_log format ["Garrison composition after adding group: %1", CALLM0(_actual, "getCompositionNumbers")];
 	["Efficiency", CALLM0(_actual, "getEfficiencyTotal") isEqualTo _eff1] call test_Assert;
 	["Composition", CALLM0(_actual, "getCompositionNumbers") isEqualTo _comp1] call test_Assert;
 
