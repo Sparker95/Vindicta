@@ -273,6 +273,10 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("splitSim") {
 		params [P_THISOBJECT, P_ARRAY("_compToDetach"), P_ARRAY("_effToDetach")];
 
+		// Here we just add/substract the composition and efficiency values
+
+		ASSERT_MSG(EFF_SUM(_effToDetach) > 0, "_effToDetach can't be zero");
+
 		T_PRVAR(composition);
 		T_PRVAR(efficiency);
 
@@ -294,381 +298,18 @@ CLASS("GarrisonModel", "ModelBase")
 		_detachment
 	} ENDMETHOD;
 
-	// // ****** W I P - don't use it
-	// // Split garrison.
-	// // Flags defined in CmdrAI/common.hpp
-	// // TODO: cleanup the logging
-	// // TODO: factor into separate functions: build a unit/armor composition, select transport, generate the actual garrison.
-	// METHOD("generateDetachment") {
-	// 	params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
-
-	// 	ASSERT_MSG(count _splitEff == count T_EFF_Null, "_splitEff is not a valid efficiency vector (length is wrong)");
-	// 	ASSERT_MSG(EFF_SUM(_splitEff) > 0, "_splitEff can't be zero");
-	// 	T_PRVAR(actual);
-	// 	ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when actual is not valid");
-
-
-	// 	private _units = CALLM0(_actual, "getUnits") select {! CALLM0(_x, "isStatic")};
-	// 	_units = _units apply {private _eff = CALLM0(_x, "getEfficiency"); [0, _eff, _x]};
-	// 	_allocatedUnits = [];
-	// 	_allocatedGroupsAndUnits = [];
-	// 	_allocatedCrew = [];
-	// 	_allocatedVehicles = [];
-	// 	_allocatedEff = +T_EFF_null;
-
-	// 	// Allocate units per each efficiency category
-	// 	private _j = 0;
-	// 	for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
-	// 		// Exit now if we have allocated enough units
-	// 		if(EFF_GTE(_allocatedEff, _splitEff)) exitWith {};
-
-	// 		// For every unit, set element 0 to efficiency value with index _i
-	// 		{_x set [0, _x#1#_i];} forEach _units;
-
-	// 		// Sort units in this efficiency category
-	// 		_units sort DESCENDING;
-
-	// 		// Add units until there are enough of them
-	// 		private _pickUnitID = 0;
-	// 		while {(_allocatedEff#_i < _splitEff#_i) && (_pickUnitID < count _units)} do {
-	// 			private _unit = _units#_pickUnitID#2;
-	// 			private _group = CALLM0(_unit, "getGroup");
-	// 			private _groupType = if (_group != "") then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
-	// 			// Try not to take troops from vehicle groups
-	// 			private _ignore = (CALLM0(_unit, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC]);
-				
-	// 			if (!_ignore) then {							
-	// 				// If it was a vehicle, and it had crew in its group, add the crew as well
-	// 				if (CALLM0(_unit, "isVehicle")) then {
-	// 					private _groupUnits = if (_group != "") then {CALLM0(_group, "getUnits");} else {[]};
-	// 					// If there are more than one unit in a vehicle's group, then add the whole group
-	// 					if (count _groupUnits > 1) then {
-	// 						_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
-	// 						// Add allocated crew to array
-	// 						{
-	// 							if (CALLM0(_x, "isInfantry")) then {
-	// 								_allocatedCrew pushBack _x;
-	// 							};
-	// 						} forEach (CALLM0(_group, "getUnits"));
-	// 					} else {
-	// 						_allocatedUnits pushBackUnique _unit;
-	// 					};
-	// 					_allocatedVehicles pushBack _unit;
-	// 					OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-	// 				} else {
-	// 					OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-	// 					_allocatedUnits pushBack _unit;
-	// 				};
-	// 				private _unitEff = _units#_pickUnitID#1;
-	// 				// Add to the allocated efficiency vector
-	// 				_allocatedEff = EFF_ADD(_allocatedEff, _unitEff);
-	// 				//OOP_INFO_1("     New efficiency value: %1", _allocatedEff);
-	// 			};
-	// 			_pickUnitID = _pickUnitID + 1;
-	// 		};
-	// 	};
-		
-	// 	OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _allocatedEff);
-
-	// 	if(!EFF_GTE(_allocatedEff, _splitEff) && (FAIL_UNDER_EFF in _flags)) exitWith {
-	// 		OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff ARG _allocatedEff]);
-	// 		[]
-	// 	};
-
-	// 	private _nCrewRequired = CALLSM1("Unit", "getRequiredCrew", _allocatedVehicles);
-	// 	_nCrewRequired params ["_nDrivers", "_nTurrets"];
-	// 	private _nInfAllocated = { CALLM0(_x, "isInfantry") } count _allocatedUnits;
-
-	// 	// Do we need to find crew for vehicles?
-	// 	if ((_nDrivers + _nTurrets) > (_nInfAllocated + count _allocatedCrew)) then {
-	// 		private _nMoreCrewRequired = _nDrivers + _nTurrets - _nInfAllocated - (count _allocatedCrew);
-	// 		OOP_INFO_1("Allocating additional crew: %1 units", _nMoreCrewRequired);
-	// 		private _freeInfUnits = CALLM0(_actual, "getInfantryUnits") select {
-	// 			if (_x in _allocatedUnits) then { false } else {
-	// 				private _group = CALLM0(_x, "getGroup");
-	// 				if (_group == "") then { false } else {
-	// 					if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL, GROUP_TYPE_BUILDING_SENTRY]) then {
-	// 						true
-	// 					} else {false};
-	// 				};
-	// 			};
-	// 		};
-			
-	// 		// Are there enough units left?
-	// 		if (count _freeInfUnits < _nMoreCrewRequired) then {
-	// 			// Not enough infantry here to equip all the vehicles we have allocated
-	// 			// Go check other locations
-	// 			OOP_INFO_0("   Failed to allocate additional crew");
-	// 			breakTo "scopeLocLoop";
-	// 		} else {
-	// 			private _crewToAdd = _freeInfUnits select [0, _nMoreCrewRequired];
-				
-	// 			OOP_INFO_1("   Successfully allocated additional crew: %1", _crewToAdd);
-	// 			// Add the allocated units to the array
-	// 			_allocatedUnits append _crewToAdd;
-	// 		};
-	// 	};
-	// } ENDMETHOD;
-
 	METHOD("splitActual") {
-		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
+		params [P_THISOBJECT, P_ARRAY("_compToDetach"), P_ARRAY("_effToDetach")];
 
-		ASSERT_MSG(EFF_SUM(_splitEff) > 0, "_splitEff can't be zero");
+		ASSERT_MSG(EFF_SUM(_effToDetach) > 0, "_effToDetach can't be zero");
 		T_PRVAR(actual);
+		T_PRVAR(world);
 		ASSERT_MSG(!IS_NULL_OBJECT(_actual), "Calling an Actual GarrisonModel function when Actual is not valid");
 
+		// Make a new garrison
 		private _side = CALLM(_actual, "getSide", []);
 		private _faction = CALLM(_actual, "getFaction", []);
 		private _templateName = CALLM(_actual, "getTemplateName", []);
-		private _units = CALLM0(_actual, "getUnits") select { 
-			// Not interested in statics
-			!CALLM0(_x, "isStatic") and
-			// Don't want crew
-			{
-				private _group = CALLM0(_x, "getGroup");
-				private _groupType = if (!IS_NULL_OBJECT(_group)) then {CALLM0(_group, "getType")} else {GROUP_TYPE_IDLE};
-				// Try not to take troops from vehicle groups
-				!(CALLM0(_x, "isInfantry") && _groupType in [GROUP_TYPE_VEH_NON_STATIC, GROUP_TYPE_VEH_STATIC])
-			} and
-			// Only want infantry or combat vehicles (not transports, we will assign them after)
-			{ 
-				CALLM0(_x, "isInfantry") or
-				{
-					CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-					_catID == T_VEH and
-					{
-						_subcatID in T_VEH_ground_combat
-					}
-				}
-			}
-		} apply {
-			private _eff = CALLM0(_x, "getEfficiency");
-			[0, _eff, _x]
-		};
-
-		_allocatedUnits = [];
-		_allocatedGroupsAndUnits = [];
-		_allocatedCrew = [];
-		_allocatedVehicles = [];
-		_effAllocated = +T_EFF_null;
-
-		private _requiredStrength = EFF_SUB_SUM(EFF_ATT_SUB(_splitEff));
-		private _infStrength = 0;
-		private _vehStrength = 0;
-
-		// Allocate units per each efficiency category
-		for "_i" from T_EFF_ANTI_SOFT to T_EFF_ANTI_AIR do {
-			
-			// Exit now if we have allocated enough units
-			if(count _units == 0 or EFF_GTE(_effAllocated, EFF_MASK_ATT(_splitEff))) exitWith {};
-
-			
-			// Add units until there are enough of them
-			private _pickUnitID = 0;
-			while {(_effAllocated#_i < _splitEff#_i) and count _units > 0} do {
-
-				OOP_INFO_MSG("_requiredStrength=%1, _infStrength=%2, _vehStrength=%3", [_requiredStrength ARG _infStrength ARG _vehStrength]);
-				// For every unit, set element 0 to efficiency value with index _i modified by
-				// biasing hints.
-				{
-					_x params ["_effElem", "_unitEff", "_unit"];
-					private _bias = switch true do {
-						case (OCCUPYING_FORCE_HINT in _flags): { 
-							// Prefer 50% inf force at least
-							if(CALLM0(_unit, "isInfantry") and _infStrength <= _requiredStrength * 0.5) then {
-								10
-							} else {
-								1
-							};
-						};
-						case (COMBAT_FORCE_HINT in _flags): { 
-							// Prefer spec ops units and covert vehicles
-							// TODO: get unit type and bias positive if it is the right class
-							1
-						};
-						case (RECON_FORCE_HINT in _flags): { 
-							// Prefer recon units and fast vehicles
-							// TODO: get unit type and bias positive if it is the right class
-							1
-						};
-						case (SPEC_OPS_FORCE_HINT in _flags): { 
-							// Prefer spec ops units and covert vehicles
-							// TODO: get unit type and bias positive if it is the right class
-							1
-						};
-						case (PATROL_FORCE_HINT in _flags): { 
-							// Prefer spec ops units and covert vehicles
-							// TODO: get unit type and bias positive if it is the right class
-							1
-						};
-						default { 1 };
-					};
-					_x set [0, (_unitEff#_i) * _bias];
-				} forEach _units;
-
-				
-				// Sort units in this efficiency category
-				_units sort DESCENDING;
-
-				OOP_INFO_MSG("%1", [_units]);
-
-				_units#0 params ["_effElem", "_unitEff", "_unit"];
-
-				// No more units can fulfill the efficiency requirements for this element
-				if(_effElem <= 0) exitWith {};
-
-				// If it was a vehicle, and it had crew in its group, add the crew as well
-				if (CALLM0(_unit, "isVehicle")) then {
-					private _group = CALLM0(_unit, "getGroup");
-					private _groupUnits = if (!IS_NULL_OBJECT(_group)) then {CALLM0(_group, "getUnits");} else {[]};
-					// If there are more than one unit in a vehicle's group, then add the whole group
-					if (count _groupUnits > 1) then {
-						_allocatedGroupsAndUnits pushBackUnique [_group, +CALLM0(_group, "getUnits")];
-						// Add allocated crew to array
-						{
-							if (CALLM0(_x, "isInfantry")) then {
-								_allocatedCrew pushBack _x;
-								_units deleteAt (_units find _x);
-							};
-						} forEach (CALLM0(_group, "getUnits"));
-					} else {
-						_allocatedUnits pushBackUnique _unit;
-					};
-					_allocatedVehicles pushBack _unit;
-					OOP_INFO_2("    Added vehicle unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-					_vehStrength = _vehStrength + EFF_SUB_SUM(EFF_ATT_SUB(_unitEff));
-				} else {
-					OOP_INFO_2("    Added infantry unit: %1, %2", _unit, CALLM0(_unit, "getClassName"));
-					_allocatedUnits pushBack _unit;
-					_infStrength = _infStrength + EFF_SUB_SUM(EFF_ATT_SUB(_unitEff));
-				};
-				// Remove the unit from the available list
-				_units deleteAt 0;
-				// Add to the allocated efficiency vector
-				_effAllocated = EFF_ADD(_effAllocated, _unitEff);
-			};
-		};
-		
-		OOP_INFO_3("   Found units: %1, groups: %2, efficiency: %3", _allocatedUnits, _allocatedGroupsAndUnits, _effAllocated);
-
-		if(!EFF_GTE(_effAllocated, _splitEff) && (FAIL_UNDER_EFF in _flags)) exitWith {
-			OOP_WARNING_MSG("   ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff ARG _effAllocated]);
-			NULL_OBJECT
-		};
-
-		// Check if we have allocated enough units
-		//if ([_effAllocated, _splitEff] call t_fnc_canDestroy == T_EFF_CAN_DESTROY_ALL) then {
-		
-		//OOP_INFO_0("   Allocated units can destroy the threat");
-		
-		private _nCrewRequired = CALLSM1("Unit", "getRequiredCrew", _allocatedVehicles);
-		_nCrewRequired params ["_nDrivers", "_nTurrets"];
-		private _nInfAllocated = { CALLM0(_x, "isInfantry") } count _allocatedUnits;
-		
-		// Do we need to find crew for vehicles?
-		if ((_nDrivers + _nTurrets) > (_nInfAllocated + count _allocatedCrew)) then {
-			private _nMoreCrewRequired = _nDrivers + _nTurrets - _nInfAllocated - (count _allocatedCrew);
-			OOP_INFO_1("Allocating additional crew: %1 units", _nMoreCrewRequired);
-			private _freeInfUnits = CALLM0(_actual, "getInfantryUnits") select {
-				if (_x in _allocatedUnits) then { false } else {
-					private _group = CALLM0(_x, "getGroup");
-					if (IS_NULL_OBJECT(_group)) then { false } else {
-						if (CALLM0(_group, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]) then {
-							true
-						} else {false};
-					};
-				};
-			};
-			
-			// Are there enough units left?
-			if (count _freeInfUnits < _nMoreCrewRequired) then {
-				// Not enough infantry here to equip all the vehicles we have allocated
-				// Go check other locations
-				OOP_INFO_0("   Failed to allocate additional crew");
-			} else {
-				private _crewToAdd = _freeInfUnits select [0, _nMoreCrewRequired];
-				
-				OOP_INFO_1("   Successfully allocated additional crew: %1", _crewToAdd);
-				// Add the allocated units to the array
-				_allocatedUnits append _crewToAdd;
-			};
-		};
-
-		private _allocated = true;
-
-		private _extraUnits = [];
-		// Do we need to find transport vehicles?
-		if (ASSIGN_TRANSPORT in _flags) then {
-			private _nCargoSeatsRequired = _nInfAllocated; // - _nDrivers - _nTurrets;
-			private _nCargoSeatsAvailable = CALLSM1("Unit", "getCargoInfantryCapacity", _allocatedVehicles);
-			//ade_dumpcallstack;
-			OOP_INFO_2("   Finding additional transport vehicles for %1 troops. Currently available cargo seats: %2", _nCargoSeatsRequired, _nCargoSeatsAvailable);
-			
-			// If we need more vehicles for transport
-			if (_nCargoSeatsAvailable < _nCargoSeatsRequired) then {
-			
-				OOP_INFO_0("   Currently NOT enough cargo seats");
-				
-				private _nMoreCargoSeatsRequired = _nCargoSeatsRequired - _nCargoSeatsAvailable;
-				// Get all remaining vehicles in this garrison, sort them by their cargo infantry capacity
-				private _availableVehicles = CALLM0(_actual, "getUnits") select {
-					CALLM0(_x, "getMainData") params ["_catID", "_subcatID"];
-					// Don't consider vehicles we have already taken and non-transport vehicles
-					!(_x in _allocatedVehicles) and {_catID == T_VEH and {_subcatID in T_VEH_ground_transport}}
-				}; // select
-				private _availableVehiclesCapacity = _availableVehicles apply {[CALLSM1("Unit", "getCargoInfantryCapacity", [_x]), _x]};
-				_availableVehiclesCapacity sort DESCENDING;
-				
-				OOP_INFO_1("   Available additional vehicles with cargo capacity: %1", _availableVehiclesCapacity);
-				
-				// Add more vehicles while we can
-				private _i = 0;
-				while {(_nMoreCargoSeatsRequired > 0) && (_i < count _availableVehiclesCapacity)} do {
-					_availableVehiclesCapacity#_i params ["_cap", "_veh"];
-					OOP_INFO_2("   Added vehicle: %1, with cargo capacity: %2", _veh, _cap);
-					_allocatedUnits pushBack _veh;
-					_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - _cap;
-					_i = _i + 1;
-				};
-				
-				// IF we have finally found enough vehicles
-				if (_nMoreCargoSeatsRequired <= 0) then {
-					OOP_INFO_0("   Successfully allocated additional vehicles!");
-					// Success
-				} else {
-					if(CHEAT_TRANSPORT in _flags) then {
-						OOP_INFO_MSG("   %1 more seats required and CHEAT_TRANSPORT specified, creating more trucks", [_nMoreCargoSeatsRequired]);
-						// Make trucks until we have enough
-						private _template = CALL_STATIC_METHOD("Unit", "getTemplateForSide", [_side]);
-						while {_nMoreCargoSeatsRequired > 0} do {
-							private _veh = NEW("Unit", [_template ARG T_VEH ARG T_VEH_truck_inf ARG -1 ARG ""]);
-							_extraUnits pushBack _veh;
-							private _cap = CALLSM1("Unit", "getCargoInfantryCapacity", [_veh]);
-							_nMoreCargoSeatsRequired = _nMoreCargoSeatsRequired - _cap;
-							OOP_INFO_2("   Created truck: %1, with cargo capacity: %2", _veh, _cap);
-						};
-					} else {
-						// Not enough vehicles for everyone!
-						// Check other locations then
-						OOP_INFO_0("   Failed to allocate additional vehicles (CHEAT_TRANSPORT not specified)!");
-						_allocated = false;
-					};
-				}; // if (_nMoreCargoSeatsRequired <= 0)
-			} else { // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
-				// We don't need more vehicles, it's fine
-				OOP_INFO_0("   Currently enough cargo seats");
-			}; // if (_nCargoSeatsAvailable < _nCargoSeatsRequired)
-			
-		} else {
-			// No need to find transport vehicles
-			// We are done here!
-			OOP_INFO_0("   No need to find more transport vehicles");
-		}; // (_dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
-		
-		// We couldn't complete allocation so return a failure
-		if(!_allocated and (FAIL_WITHOUT_FULL_TRANSPORT in _flags)) exitWith { NULL_OBJECT };
-
-		// Make a new garrison
 		private _newGarrActual = NEW("Garrison", [_side ARG [] ARG _faction ARG _templateName]);
 		private _pos = CALLM(_actual, "getPos", []);
 		CALLM2(_newGarrActual, "postMethodAsync", "setPos", [_pos]);
@@ -677,29 +318,17 @@ CLASS("GarrisonModel", "ModelBase")
 		// update phase.
 		// private _newGarr = NEW("GarrisonModel", [_world ARG _newGarrActual]);
 
-		// private _location = T_CALLM("getLocation", []);
-		// if(!(_location isEqualType "")) exitWith {
-		// 	// TODO: Garrisons shouldn't need to be assigned to a location to be splittable, it makes 
-		// 	// no sense.
-		// 	FAILURE("Garrison needs to be assigned to location");
-		// 	objNull
-		// };
-
 		// private _locationActual = GETV(_location, "actual");
 		// ASSERT_MSG(_locationActual isEqualType "", "Actual LocationModel required");
 		// CALLM(_newGarrActual, "setLocation", [_locationActual]); // This garrison will spawn here if needed
 		//CALLM(_newGarrActual, "spawn", []);
 
 		// Try to move the units
-		private _args = [_actual, _allocatedUnits, _allocatedGroupsAndUnits];
-		private _moveSuccess = CALLM(_newGarrActual, "postMethodSync", ["addUnitsAndGroups" ARG _args]);
+		private _args = [_actual, _compToDetach];
+		private _moveSuccess = CALLM(_newGarrActual, "postMethodSync", ["addUnitsFromCompositionNumbers" ARG _args]);
 		if (!_moveSuccess) exitWith {
 			OOP_WARNING_MSG("Couldn't move units to new garrison", []);
 			NULL_OBJECT
-		};
-
-		if(count _extraUnits > 0) then {
-			CALLM(_newGarrActual, "postMethodSync", ["addUnits" ARG [_extraUnits]]);
 		};
 
 		// WIP temporary fix to give resources to convoys
@@ -1232,18 +861,20 @@ ENDCLASS;
 }] call test_AddTest;
 
 Test_group_args = [WEST, 0]; // Side, group type
-Test_unit_args = [tNATO, T_INF, T_INF_default, -1];
+Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 
 ["GarrisonModel.actualSplit", {
 	private _actual = NEW("Garrison", [WEST]);
 	private _group = NEW("Group", Test_group_args);
 	private _eff1 = +T_EFF_null;
+	private _comp1 = +T_comp_null;
 	for "_i" from 0 to 19 do
 	{
 		private _unit = NEW("Unit", Test_unit_args + [_group]);
 		//CALLM(_actual, "addUnit", [_unit]);
 		private _unitEff = CALLM(_unit, "getEfficiency", []);
 		_eff1 = EFF_ADD(_eff1, _unitEff);
+		[_comp1, T_INF, T_INF_rifleman, 1] call comp_fnc_addValue;
 	};
 
 	CALLM(_actual, "addGroup", [_group]);
@@ -1251,11 +882,16 @@ Test_unit_args = [tNATO, T_INF, T_INF_default, -1];
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
 	["Initial eff", GETV(_garrison, "efficiency") isEqualTo _eff1] call test_Assert;
-	private _eff2 = EFF_MIN_EFF;
-	private _effr = EFF_DIFF(_eff1, _eff2);
+	["Initial comp", GETV(_garrison, "composition") isEqualTo _comp1] call test_Assert;
+
+	private _compToDetach = [0] call comp_fnc_new;
+	(_compToDetach#T_INF) set [T_INF_rifleman, 3];
+	private _effToDetach = [_compToDetach] call comp_fnc_getEfficiency;
+
+	private _effRemains = EFF_DIFF(_eff1, _effToDetach);
 	SETV(_garrison, "efficiency", _eff1);
 
-	private _splitGarr = CALLM(_garrison, "splitActual", [_eff2]);
+	private _splitGarr = CALLM(_garrison, "splitActual", [_compToDetach ARG _effToDetach]);
 	// Sync the Models
 	CALLM(_garrison, "sync", []);
 	CALLM(_splitGarr, "sync", []);
@@ -1263,7 +899,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_default, -1];
 	// diag_log format["garr eff: %1, effr: %2", GETV(_garrison, "efficiency"), _effr];
 	// diag_log format["split garr eff: %1, effr: %2", GETV(_splitGarr, "efficiency"), _eff2];
 
-	["Orig eff", EFF_MASK_DEF_ATT(GETV(_garrison, "efficiency")) isEqualTo EFF_MASK_DEF_ATT(_effr)] call test_Assert;
-	["Split eff", EFF_MASK_DEF_ATT(GETV(_splitGarr, "efficiency")) isEqualTo EFF_MASK_DEF_ATT(_eff2)] call test_Assert;
+	["Orig eff", EFF_MASK_DEF_ATT(GETV(_garrison, "efficiency")) isEqualTo EFF_MASK_DEF_ATT(_effRemains)] call test_Assert;
+	["Split eff", EFF_MASK_DEF_ATT(GETV(_splitGarr, "efficiency")) isEqualTo EFF_MASK_DEF_ATT(_effToDetach)] call test_Assert;
 }] call test_AddTest;
 #endif

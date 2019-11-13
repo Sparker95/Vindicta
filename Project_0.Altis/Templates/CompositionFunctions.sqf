@@ -227,6 +227,22 @@ comp_fnc_diffAccumulate = {
 	};
 };
 
+// True if all values in _comp0 are greater or equal than those in _comp1
+comp_fnc_greaterOrEqual = {
+	_CREATE_PROFILE_SCOPE("comp_fnc_greaterOrEqual");
+	params ["_comp0", "_comp1"];
+	pr _failed = false;
+	for "_i" from 0 to ((count _comp0) - 1) do {
+		pr _cat0 = _comp0#_i;
+		pr _cat1 = _comp1#_i;
+		for "_j" from 0 to ((count _cat0) - 1) do {
+			if (!((_cat0#_j) >= (_cat1#_j))) exitWIth { _failed = true;};
+		};
+		if (_failed) exitWith {};
+	};
+	!_failed
+};
+
 
 
 #ifdef _SQF_VM
@@ -248,6 +264,10 @@ comp_fnc_diffAccumulate = {
 	_mask_twos_copy = +_mask_twos;
 	[_mask_twos_copy, _mask_ones] call comp_fnc_diffAccumulate;
 	["2 - 1 == 1", _mask_ones isEqualTo _mask_twos_copy] call test_Assert;
+
+	// Comparisons
+	["2 >= 1", [_mask_twos, _mask_ones] call comp_fnc_greaterOrEqual] call test_Assert;
+	["! 1 >= 2", !([_mask_ones, _mask_twos] call comp_fnc_greaterOrEqual)] call test_Assert;
 
 	true
 }] call test_AddTest;

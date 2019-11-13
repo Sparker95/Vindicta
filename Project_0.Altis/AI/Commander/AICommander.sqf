@@ -1492,7 +1492,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		pr _newGarr = NEW("Garrison", [T_GETV("side") ARG _posNew ARG _faction]);
 
 		// Move units
-		pr _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromComposition", [_garSrcRef ARG _comp]);
+		pr _numUnfoundUnits = CALLM2(_newGarr, "postMethodSync", "addUnitsFromCompositionClassNames", [_garSrcRef ARG _comp]);
 
 		// Activate the new garrison
 		// it will register itself here as well

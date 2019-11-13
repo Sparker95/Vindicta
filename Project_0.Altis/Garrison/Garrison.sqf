@@ -1851,9 +1851,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: addUnitsFromComposition
+	Method: addUnitsFromCompositionClassNames
 	Adds units to this garrison from another garrison.
-	Unit arrangement is specified by composition array.
+	Unit arrangement is specified by composition array with class names.
 
 	Parameters: _garSrc, _comp
 	
@@ -1862,7 +1862,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	
 	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
 	*/
-	METHOD("addUnitsFromComposition") {
+	METHOD("addUnitsFromCompositionClassNames") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
 
 		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
@@ -1963,6 +1963,109 @@ CLASS("Garrison", "MessageReceiverEx");
 		_numUnsat
 	} ENDMETHOD;
 	
+	/*
+	Method: addUnitsFromCompositionNumbers
+	Adds units to this garrison from another garrison.
+	Unit arrangement is specified by composition array with numbers.
+
+	Parameters: _garSrc, _comp
+	
+	_garSrc - source <Garrison>
+	_comp - composition array. See "compositionNumbers" member variable and how it's organized.
+	
+	Returns: Bool, true if transfer was successfull.
+	*/
+	METHOD("addUnitsFromCompositionNumbers") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
+
+		OOP_INFO_1("ADD UNITS FROM COMPOSITION NUMBERS: %1", _this);
+
+		// Bail if garSrc is destroyed for some reason
+		if (!IS_OOP_OBJECT(_garSrc)) exitWith {
+			OOP_ERROR_1("Source garrison object is invalid: %1", _garSrc);
+			false
+		};
+
+		__MUTEX_LOCK;
+
+		// Ensure that we have enough resources
+		T_PRVAR(compositionNumbers);
+		if (!([_compositionNumbers, _comp] call comp_fnc_greaterOrEqual)) exitWith {
+			false
+		};
+
+		pr _unitsSrc = +CALLM0(_garSrc, "getUnits"); // Make a deep copy! Don't want to break it.
+
+		// Find units for each category
+		pr _unitsFound = [[], [], [], []];
+		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones", "_unitsFoundCargo"];
+		// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
+		{
+			pr _catID = _x;
+			// forEach _comp#_catID;
+			{
+				pr _nUnitsNeeded = _x;
+				pr _subcatID = _foreachindex;
+				while {_nUnitsNeeded > 0} do {
+					pr _index = _unitsSrc findIf {
+						CALLM0(_x, "getSubcategory") == _subCatID;
+					};
+
+					if (_index == -1) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
+
+					(_unitsFound#_catID) pushBack (_unitsSrc#_index);
+					_unitsSrc deleteAt _index;
+					_nUnitsNeeded = _nUnitsNeeded - 1;
+				};
+			} forEach _comp#_catID;
+		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
+
+		// Reorganize the infantry units we are moving
+		if (count _unitsFoundInf > 0) then {
+			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+			pr _newInfGroups = [_newGroup];
+			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+			// forEach _unitsFoundInf;
+			{
+				// Create a new inf group if the current one is 'full'
+				if (count CALLM0(_newGroup, "getUnits") > 6) then {
+					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+					_newInfGroups pushBack _newGroup;
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+
+				// Add the unit to the group
+				CALLM1(_newGroup, "addUnit", _x);
+			} forEach _unitsFoundInf;
+
+			// Move all the infantry groups
+			{
+				CALLM1(_thisObject, "addGroup", _x);
+			} forEach _newInfGroups;
+		};
+
+		// Move all the vehicle units into one group
+		// Vehicles need to be moved within a group too
+		pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		if (count _vehiclesAndDrones > 0) then {
+			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+			CALLM1(_garSrc, "addGroup", _newVehGroup);
+			{
+				CALLM1(_newVehGroup, "addUnit", _x);
+			} forEach _vehiclesAndDrones;
+
+			// Move the veh group
+			CALLM1(_thisObject, "addGroup", _newVehGroup);
+		};
+
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+
+		__MUTEX_UNLOCK;
+
+		true
+	} ENDMETHOD;
 	
 	/*
 	Method: getRequiredCrew

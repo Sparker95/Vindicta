@@ -1036,6 +1036,16 @@ CLASS(UNIT_CLASS_NAME, "");
 		_data#UNIT_DATA_ID_CAT
 	} ENDMETHOD;
 
+	/*
+	Method: getSubcategory
+	Returns subcategory ID, number
+	*/
+	METHOD("getSubcategory") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		_data#UNIT_DATA_ID_SUBCAT
+	} ENDMETHOD;
+
 	//                     H A N D L E   K I L L E D
 	/*
 	Method: handleKilled
