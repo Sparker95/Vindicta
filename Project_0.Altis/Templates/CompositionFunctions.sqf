@@ -201,18 +201,53 @@ comp_fnc_applyBlacklistMask = {
 	} forEach _compMask;
 };
 
+// Adds two compositions, result stored in comp0
+comp_fnc_addAccumulate = {
+	_CREATE_PROFILE_SCOPE("comp_fnc_addAcc");
+	params ["_comp0", "_comp1"];
+	for "_i" from 0 to ((count _comp0) - 1) do {
+		pr _cat0 = _comp0#_i;
+		pr _cat1 = _comp1#_i;
+		for "_j" from 0 to ((count _cat0) - 1) do {
+			_cat0 set [_j, ((_cat0#_j) + (_cat1#_j))];
+		};
+	};
+};
+
+// Substracts two compositions, result stored in comp0
+comp_fnc_diffAccumulate = {
+	_CREATE_PROFILE_SCOPE("comp_fnc_subAcc");
+	params ["_comp0", "_comp1"];
+	for "_i" from 0 to ((count _comp0) - 1) do {
+		pr _cat0 = _comp0#_i;
+		pr _cat1 = _comp1#_i;
+		for "_j" from 0 to ((count _cat0) - 1) do {
+			_cat0 set [_j, ((_cat0#_j) - (_cat1#_j))];
+		};
+	};
+};
+
+
 
 #ifdef _SQF_VM
 
-["Composition masks", {
+["Composition functions", {
 
 	_mask_ones = [1] call comp_fnc_new;
 	_mask_zeros = [0] call comp_fnc_new;
+	_mask_twos = [2] call comp_fnc_new;
 
 	["1 and 1 == 1", 			_mask_ones isEqualTo ([_mask_ones, _mask_ones] call comp_fnc_maskAndMask) ] call test_Assert;
 	["1 and 0 == 0", 			_mask_zeros isEqualTo ([_mask_ones, _mask_zeros] call comp_fnc_maskAndMask) ] call test_Assert;
 	["1 or 0 == 1", 			_mask_ones isEqualTo ([_mask_ones, _mask_zeros] call comp_fnc_maskOrMask) ] call test_Assert;
 
+	_mask_ones_copy = +_mask_ones;
+	[_mask_ones_copy, _mask_ones] call comp_fnc_addAccumulate;
+	["1 + 1 == 2", _mask_twos isEqualTo _mask_ones_copy] call test_Assert;
+
+	_mask_twos_copy = +_mask_twos;
+	[_mask_twos_copy, _mask_ones] call comp_fnc_diffAccumulate;
+	["2 - 1 == 1", _mask_ones isEqualTo _mask_twos_copy] call test_Assert;
 
 	true
 }] call test_AddTest;

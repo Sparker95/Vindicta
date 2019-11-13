@@ -271,42 +271,25 @@ CLASS("GarrisonModel", "ModelBase")
 	// SPLIT
 	// Flags defined in CmdrAI/common.hpp
 	METHOD("splitSim") {
-		params [P_THISOBJECT, P_ARRAY("_splitEff"), P_ARRAY("_flags")];
+		params [P_THISOBJECT, P_ARRAY("_compToDetach"), P_ARRAY("_effToDetach")];
 
-		//diag_log format ["Split sim: %1", _this];
-		//diag_log format ["  Eff at start: %1", T_GETV("efficiency")];	
-
+		T_PRVAR(composition);
 		T_PRVAR(efficiency);
-		// Make sure to hard cap detachment so we don't drop below min eff
-		private _effAllocated = EFF_DIFF(_efficiency, EFF_MIN_EFF);
-		_effAllocated = EFF_FLOOR_0(_effAllocated);
-		_effAllocated = EFF_MIN(_splitEff, _effAllocated);
-		//_splitEff = _effAllocated; //EFF_MIN(_splitEff, EFF_FLOOR_0(EFF_DIFF(_efficiency, EFF_MIN_EFF)));
 
-		if(!EFF_GTE(_effAllocated, _splitEff) && FAIL_UNDER_EFF in _flags) exitWith {
-			OOP_WARNING_MSG("ABORTING --- Couldn't allocate required efficiency: wanted %1, got %2", [_splitEff ARG _effAllocated]);
-			NULL_OBJECT
-		};
+		[_composition, _compToDetach] call comp_fnc_diffAccumulate;
+		_efficiency = EFF_DIFF(_efficiency, _effToDetach);
+
+		T_SETV("composition", _composition);
+		T_SETV("efficiency", _efficiency);
+		
+		T_PRVAR(world);
 		T_PRVAR(actual);
 		private _detachment = NEW("GarrisonModel", [_world ARG _actual]);
-		SETV(_detachment, "efficiency", _effAllocated);
+		SETV(_detachment, "efficiency", _effToDetach);
+		SETV(_detachment, "composition", _compToDetach);
 		SETV(_detachment, "pos", +T_GETV("pos"));
 		SETV(_detachment, "side", T_GETV("side"));
 		SETV(_detachment, "faction", T_GETV("faction"));
-		private _newEfficiency = EFF_DIFF(_efficiency, _effAllocated);
-		T_SETV("efficiency", _newEfficiency);
-
-		//diag_log format [" Eff at end: %1", T_GETV("efficiency")];
-
-		if(ASSIGN_TRANSPORT in _flags) then {
-			private _transportRequired = CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_effAllocated]);
-			SETV(_detachment, "transport", _transportRequired);
-			T_PRVAR(transport);
-			private _newTransport = 0 max (_transport - _transportRequired);
-			T_SETV("transport", _newTransport);
-		};
-
-		OOP_DEBUG_MSG("Sim split %1%2->%3 to %4%5", [_thisObject ARG _efficiency ARG _newEfficiency ARG _detachment ARG _effAllocated]);
 
 		_detachment
 	} ENDMETHOD;
@@ -1227,13 +1210,25 @@ ENDCLASS;
 ["GarrisonModel.simSplit", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-	private _eff2 = EFF_MIN_EFF;
-	private _effr = EFF_DIFF(_eff1, _eff2);
-	SETV(_garrison, "efficiency", _eff1);
-	private _splitGarr = CALLM(_garrison, "splitSim", [_eff2]);
-	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
-	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+
+	private _comp0 = [10] call comp_fnc_new;
+	private _eff0 = [_comp0] call comp_fnc_getEfficiency;
+
+	private _comp1 = [2] call comp_fnc_new;
+	private _eff1 = [_comp1] call comp_fnc_getEfficiency;
+
+	private _compResult = [10-2] call comp_fnc_new;
+	private _effResult = [_compResult] call comp_fnc_getEfficiency;
+
+	SETV(_garrison, "efficiency", _eff0);
+	SETV(_garrison, "composition", _comp0);
+
+	private _splitGarr = CALLM(_garrison, "splitSim", [_comp1 ARG _eff1]);
+
+	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effResult] call test_Assert;
+	["Orig comp", GETV(_garrison, "composition") isEqualTo _compResult] call test_Assert;
+	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff1] call test_Assert;
+	["Split comp", GETV(_splitGarr, "composition") isEqualTo _comp1] call test_Assert;
 }] call test_AddTest;
 
 Test_group_args = [WEST, 0]; // Side, group type
