@@ -1122,6 +1122,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		//__MUTEX_LOCK;
 		
+		T_GETV("effTotal") # T_EFF_transport
+
+		/*
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
@@ -1150,6 +1153,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		//__MUTEX_UNLOCK;
 
 		_transportCapacity
+		*/
 	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -254,7 +254,7 @@ ENDCLASS;
 #define SRC_POS [0, 0, 0]
 #define TARGET_POS [1, 2, 3]
 
-["TakeLocationCmdrAction", {
+["QRFCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);

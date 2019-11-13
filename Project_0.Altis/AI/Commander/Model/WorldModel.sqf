@@ -613,7 +613,7 @@ CLASS("WorldModel", "")
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		T_PRVAR(threatGrid);
-		if(_threatGrid isEqualTo objNull) exitWith {
+		if(IS_NULL_OBJECT(_threatGrid)) exitWith {
 			EFF_GARRISON_MIN_EFF
 		};
 

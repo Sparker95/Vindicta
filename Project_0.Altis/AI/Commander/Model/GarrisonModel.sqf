@@ -24,6 +24,8 @@
 
 #define pr private
 
+//#define UNIT_ALLOCATOR_DEBUG
+
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Garrison as it currently is. A Sim model
 // is a copy that is modified during simulations.
@@ -96,6 +98,7 @@ CLASS("GarrisonModel", "ModelBase")
 		//SETV(_copy, "id", T_GETV("id"));
 		SETV(_copy, "label", T_GETV("label"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
+		SETV(_copy, "composition", +T_GETV("composition"));
 		SETV(_copy, "transport", +T_GETV("transport"));
 		//SETV_REF(_copy, "order", T_GETV("order"));
 		T_PRVAR(action);
@@ -172,6 +175,7 @@ CLASS("GarrisonModel", "ModelBase")
 
 		T_PRVAR(world);
 		T_SETV("efficiency", +EFF_ZERO);
+		T_SETV("composition", +T_comp_null);
 		T_SETV("transport", 0);
 		T_CALLM("detachFromLocation", []);
 		CALLM(_world, "garrisonKilled", [_thisObject]);
@@ -261,16 +265,6 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(world);
 		if(_locationId != MODEL_HANDLE_INVALID) exitWith { CALLM(_world, "getLocation", [_locationId]) };
 		NULL_OBJECT
-	} ENDMETHOD;
-
-	METHOD("getEfficiency") {
-		params [P_THISOBJECT];
-		T_GETV("efficiency")
-	} ENDMETHOD;
-
-	METHOD("getComposition") {
-		params [P_THISOBJECT];
-		T_GETV("composition")
 	} ENDMETHOD;
 
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
@@ -412,6 +406,10 @@ CLASS("GarrisonModel", "ModelBase")
 		ASSERT_OBJECT_CLASS(_otherGarr, "GarrisonModel");
 
 		T_PRVAR(efficiency);
+		T_PRVAR(composition);
+		private _otherComp = GETV(_otherGarr, "composition");
+		private _newOtherComp = +_otherComp;
+		[_newOtherComp, _composition] call comp_fnc_addAccumulate;
 		private _otherEff = GETV(_otherGarr, "efficiency");
 		private _newOtherEff = EFF_ADD(_efficiency, _otherEff);
 		SETV(_otherGarr, "efficiency", _newOtherEff);
@@ -695,7 +693,9 @@ CLASS("GarrisonModel", "ModelBase")
 					//_nextRandomID = _nextRandomID + 1;
 				} else {
 					// Can't find any more units!
+					#ifdef UNIT_ALLOCATOR_DEBUG
 					diag_log "  Failed to find a unit!";
+					#endif
 				};
 				
 				// If we've looked through all the units and couldn't find one to help us safisfy this constraint, raise a failedToAllocate flag
@@ -724,13 +724,16 @@ CLASS("GarrisonModel", "ModelBase")
 	// -------------------- S C O R I N G   T O O L K I T / U T I L S -------------------
 	STATIC_METHOD("transportRequired") {
 		params [P_THISOBJECT, P_ARRAY("_eff")];
-		_eff#0
+		_eff#T_EFF_reqTransport
 	} ENDMETHOD;
 
+	// _eff - efficiency of this garrison (after a theoretical allocation for instance)
 	METHOD("transportationScore") {
 		params [P_THISOBJECT, P_ARRAY("_eff")];
 		// TODO: non linearity
-		0 max (T_GETV("transport") - CALL_STATIC_METHOD("GarrisonModel", "transportRequired", [_eff]));
+		pr _diff = ((_eff#T_EFF_transport) - (_eff#T_EFF_reqTransport));
+		if (_diff <= 0) exitWith {0};
+		ln (_diff*0.3 + 1) // https://www.desmos.com/calculator/035vk4u9p2
 	} ENDMETHOD;
 
 	// ------------------------- Intel -----------------------------------

@@ -21,6 +21,8 @@
 // Maximum distance for QRF that doesn't need vehicles to transport troops
 #define QRF_NO_TRANSPORT_DISTANCE_MAX	666
 
+#define TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX 1500
+
 // Distance from cluster center to where the troops must dismount while performing ClearArea goal
 #define CLEAR_AREA_DISMOUNT_DISTANCE	400
 
@@ -103,10 +105,10 @@
 // Minimum efficiency of a garrison.
 // Controls lots of commander actions, e.g. reinforcements won't be less than this, or leave less than this at an outpost.
 #define EFF_MIN_EFF					[6, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 6]
-#define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_GARRISON_MIN_EFF		[12,0, 0, 0, 12,0, 0, 0, 0, 0, 0, 0, 0, 12]
 
-#define EFF_FOOT_PATROL_EFF			[12, 0, 0, 0,12,0, 0, 0, 0, 0, 0, 0, 0, 0]
-#define EFF_MOUNTED_PATROL_EFF		[12, 0, 0, 0,12,5, 0, 0, 0, 0, 0, 0, 0, 0]
+#define EFF_FOOT_PATROL_EFF			[12, 0, 0, 0,12,0, 0, 0, 0, 0, 0, 0, 0, 12]
+#define EFF_MOUNTED_PATROL_EFF		[12, 0, 0, 0,12,5, 0, 0, 0, 0, 0, 0, 0, 12]
 
 // Enum: AI.CmdrAI.CMDR_PLANNING_PRIORITY
 // Cmdr planning constants

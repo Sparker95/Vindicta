@@ -50,6 +50,7 @@ diag_log "----------------------------------------------------------------------
 tests_Failed = 0;
 {
 	_x params ["_name", '_code'];
+	diag_log format ["- - Running test: %1 ...", _name];
 	test_Scope = _name;
 	test_Okay = true;
 	//diag_log format ["TESTING %1 ...", _name];
