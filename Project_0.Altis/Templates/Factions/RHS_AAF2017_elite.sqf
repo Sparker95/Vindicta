@@ -71,7 +71,7 @@ _veh set [T_VEH_SPA, ["rhs_2s1_tv", "rhs_2s3_tv"]]; //TODO - change colors to "s
 _veh set [T_VEH_SPAA, ["FGN_AAF_Ural_ZU23", "rhs_zsu234_aa"]]; //TODO - change shilka color to "sand"
 
 _veh set [T_VEH_stat_HMG_high, ["RHS_M2StaticMG_D"]];
-//_veh set [T_VEH_stat_GMG_high, ["TODO"]];
+//_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["RHS_M2StaticMG_MiniTripod_D"]];
 _veh set [T_VEH_stat_GMG_low, ["RHS_MK19_TriPod_D", "rhsgref_ins_g_SPG9M", "rhsgref_ins_g_SPG9"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]];
@@ -88,12 +88,12 @@ _veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]]; //TODO add dynamic loadout 
 
 _veh set [T_VEH_plane_attack, ["FGN_AAF_L159_dynamicLoadout"]];
 _veh set [T_VEH_plane_fighter, ["FGN_AAF_L159_dynamicLoadout"]];
-//_veh set [T_VEH_plane_cargo, ["TODO"]];
-//_veh set [T_VEH_plane_unarmed, ["rhsgred_hidf_cessna_o3a"]];
-//_veh set [T_VEH_plane_VTOL, ["TODO"]];
+//_veh set [T_VEH_plane_cargo, [""]];
+//_veh set [T_VEH_plane_unarmed, [""]];
+//_veh set [T_VEH_plane_VTOL, [""]];
 
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F"]];
-//_veh set [T_VEH_boat_armed, ["B_Boat_Armed_01_minigun_F"]];
+_veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 
