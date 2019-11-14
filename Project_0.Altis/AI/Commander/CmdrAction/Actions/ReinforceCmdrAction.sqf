@@ -9,6 +9,9 @@ Sends a detachment from the source garrison to join the target garrison.
 
 Parent: <TakeOrJoinCmdrAction>
 */
+
+#define pr private
+
 CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtGarrId");
 	
@@ -111,11 +114,14 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		ASSERT_OBJECT(_tgtGarr);
 
 		// Bail if src or dst are dead
-		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtGarr, "isDead", [])) exitWith {
+		if(CALLM(_srcGarr, "isDead", []) or {CALLM(_tgtGarr, "isDead", [])}) exitWith {
+			OOP_DEBUG_0("Src or dst garrison is dead");
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _side = GETV(_srcGarr, "side");
+		private _tgtGarrEff = GETV(_tgtGarr, "efficiency");
+		private _srcGarrEff = GETV(_tgtGarr, "efficiency");
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
@@ -123,36 +129,98 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
 		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
 
-		// What efficiency can we send for the detachment?
-		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
-		// Save the calculation of the efficiency for use later.
-		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
-		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
-		// which are only available now, during scoring/planning).
-		T_SET_AST_VAR("detachmentEffVar", _detachEff);
+		// How much more efficiency we must overcompensate at this place
+		pr _tgtUnderEff = EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtGarr]), -1), 0);
 
-		// We use the sum of the defensive efficiency sub vector for calculations
-		// TODO: is this right? should it be attack sub vector instead?
-		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
+		// Bail if there is no need to reinforce this
+		if (_tgtUnderEff isEqualTo T_EFF_null) exitWith {
+			OOP_DEBUG_0("No need to reinforce dst garrison");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
 
+		pr _allocationFlags = [	SPLIT_VALIDATE_CREW,		// Ensure we can drive our vehicles
+								SPLIT_VALIDATE_CREW_EXT];	// Ensure we provide enough crew to destination
+
+		private _needTransport = false;
+
+		// Calculate if dst needs more crew
+		private _extraCrewRequired = 0;
+		private _crewCurrent = (_tgtGarrEff#T_EFF_crew);
+		if (_crewCurrent <= (_tgtGarrEff#T_EFF_reqCrew)) then {
+			_extraCrewRequired = 1.3 * ((_tgtGarrEff#T_EFF_reqCrew) - _crewCurrent) min 6;
+			_tgtUnderEff set [T_EFF_crew, ceil _extraCrewRequired];
+		};
+
+		// Calculate if dst needs more transport
+		private _extraTransportRequired = 0;
+		if ((_tgtGarrEff#T_EFF_transport) <= (_tgtGarrEff#T_EFF_reqTransport)) then {
+			_extraTransportRequired = 1.3 * ((_tgtGarrEff#T_EFF_reqTransport) - (_tgtGarrEff#T_EFF_transport)) min 3;
+			_tgtUnderEff set [T_EFF_transport, ceil _extraTransportRequired];
+			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT_EXT;	// Ensure we provide enough extra transport
+			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Ensure we can transport ourselves
+			_needTransport = true;
+		};
+
+		// Check if we will need transport or not
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
+		private _dist = _srcGarrPos distance _tgtGarrPos;
+		if (_dist > REINFORCE_NO_TRANSPORT_DISTANCE_MAX) then {
+			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;	// Ensure we can transport ourselves
+			_needTransport = true;
+		};
+
+		private _srcGarrEff = GETV(_srcGarr, "efficiency");
+		private _srcGarrComp = GETV(_srcGarr, "composition");
+
+		// Try to allocate units
+		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+		pr _transportBlacklistMask = [];
+		pr _args = [_tgtUnderEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+
+		// Bail if we have failed to allocate resources
+		if ((count _allocResult) == 0) exitWith {
+			OOP_DEBUG_MSG("Failed to allocate resources", []);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
+
+		// diag_log format ["Allocation results: %1", _allocResult];
+
+		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+
+		// Bail if remaining efficiency is below minimum level for this garrison
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
+			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// we must have enough crew to operate vehicles ...
+			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
+		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
 
 		// How much to scale the score for distance to target
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtGarrPos]);
-		private _dist = _srcGarrPos distance _tgtGarrPos;
 		// How much to scale the score for transport requirements
-		private _transportationScore = if(_dist < 1000) then {
-			// If we are less than 1000m then we don't need transport so set the transport score to 1
+		private _transportationScore = if(!_needTransport) then {
+			// If we are less than XXXm then we don't need transport so set the transport score to 1
 			// (we "fullfilled" the transport requirements of not needing transport)
-			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF]);
 			1
 		} else {
-			// We will cheat transport on top of scoring if we need to
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT]);
-			// Call to the garrison to calculate the transportation score
-			CALLM(_srcGarr, "transportationScore", [_detachEff])
+			// We will force transport on top of scoring if we need to.
+			CALLM1(_srcGarr, "transportationScore", _effRemaining);
 		};
+
+		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated); // A number!
 
 		// Our final resource score combining available efficiency, distance and transportation.
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
@@ -179,13 +247,13 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _srcEff = GETV(_srcGarr, "efficiency");
 		private _tgtEff = GETV(_tgtGarr, "efficiency");
 		
-		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		OOP_DEBUG_MSG("[w %1 a %2] %3 reinforce %4 Score %5 _detachEff = %6 _detachEffStrength = %7 _distCoeff = %8 _transportationScore = %9", [_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtGarr) ARG [_scorePriority ARG _scoreResource] ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
-		private _score = CALLM(_strategy, "getReinforceScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _detachEff]);
+		private _score = CALLM(_strategy, "getReinforceScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtGarr ARG _effAllocated]);
 		T_CALLM("setScore", [_score]);
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Reinforce"", ""src_garrison"": ""%2"", ""tgt_garrison"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
@@ -265,25 +333,39 @@ ENDCLASS;
 
 #ifdef _SQF_VM
 
-#define SRC_POS [0, 0, 0]
-#define TARGET_POS [1, 2, 3]
+#define SRC_POS [1, 2, 0]
+#define TARGET_POS [1000, 2, 3]
 
 ["ReinforceCmdrAction", {
-	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _srcEff = [100,100,100,100,100,100,100,100,100,100,100,100,100,100];
+	private _srcComp = [30] call comp_fnc_new;
+	for "_i" from 0 to (T_INF_SIZE-1) do {
+		(_srcComp#T_INF) set [_i, 100]; // Otherwise crew requirement will fail
+	};
+	private _srcEff = [_srcComp] call comp_fnc_getEfficiency;
 	SETV(_garrison, "efficiency", _srcEff);
+	SETV(_garrison, "composition", _srcComp);
 	SETV(_garrison, "pos", SRC_POS);
+	SETV(_garrison, "side", WEST);
 
 	private _targetGarrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _targetEff = EFF_ZERO;
+	private _targetComp = +T_comp_null;
+	(_targetComp#T_INF) set [T_INF_rifleman, 4];
+	private _targetEff = [_targetComp] call comp_fnc_getEfficiency;
 	SETV(_targetGarrison, "efficiency", _targetEff);
+	SETV(_targetGarrison, "composition", _targetComp);
 	SETV(_targetGarrison, "pos", TARGET_POS);
 
 	private _thisObject = NEW("ReinforceCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetGarrison, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+
+	diag_log format ["Reinforce final score: %1", _finalScore];
+	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	CALLM(_thisObject, "applyToSim", [_world]);
 	true

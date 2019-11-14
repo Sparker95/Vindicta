@@ -128,7 +128,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		};
 
 		// Set up flags for allocation algorithm
-		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT]; // Validate attack capability, allocate a min amount of infantry
+		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
 		#ifndef _SQF_VM
@@ -138,13 +138,13 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		#endif
 		if ( _dist > TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags append [	SPLIT_VALIDATE_TRANSPORT,		// Make sure we can transport ourselves
-										SPLIT_VALIDATE_TRANSPORT_EXT,	// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
-										SPLIT_VALIDATE_CREW];			// Allocate crew, obviously
+										// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
+										SPLIT_VALIDATE_TRANSPORT_EXT];	
 		};
 
 		private _enemyEff = +CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
 		_enemyEff set [T_EFF_transport, EFF_GARRISON_MIN_EFF#T_EFF_transport];
-		_enemyEff set [T_EFF_crew, EFF_GARRISON_MIN_EFF#T_EFF_crew];
+		_enemyEff set [T_EFF_crew, EFF_GARRISON_MIN_EFF#T_EFF_crew];	// Ensure minimal amount of crew (infantry)
 
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
@@ -171,7 +171,13 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
 
 		// Bail if remaining efficiency is below minimum level for this garrison
-		if (!EFF_GTE(_effRemaining, EFF_MIN_EFF)) exitWith {	// Or should we use getDesiredEff instead??
+		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
+			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
+			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
  
@@ -198,7 +204,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			CALLM(_srcGarr, "transportationScore", _effRemaining);
+			CALLM1(_srcGarr, "transportationScore", _effRemaining);
 		};
 
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
@@ -282,6 +288,9 @@ ENDCLASS;
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _srcComp = [30] call comp_fnc_new;
+	for "_i" from 0 to (T_INF_SIZE-1) do {
+		(_srcComp#T_INF) set [_i, 100]; // Otherwise crew requirement will fail
+	};
 	private _srcEff = [_srcComp] call comp_fnc_getEfficiency;
 	SETV(_garrison, "efficiency", _srcEff);
 	SETV(_garrison, "composition", _srcComp);
@@ -301,7 +310,6 @@ ENDCLASS;
 	diag_log format ["Take location final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
-/*
 	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
 	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
 	["Now sim state correct", _nowSimState == CMDR_ACTION_STATE_READY_TO_MOVE] call test_Assert;
@@ -311,7 +319,6 @@ ENDCLASS;
 	private _futureGarrison = CALLM(_futureLocation, "getGarrison", [WEST]);
 	["Location is occupied in future", !IS_NULL_OBJECT(_futureGarrison)] call test_Assert;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
-	*/
 }] call test_AddTest;
 
 #endif

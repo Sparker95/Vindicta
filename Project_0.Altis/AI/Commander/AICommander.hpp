@@ -22,6 +22,7 @@
 #define QRF_NO_TRANSPORT_DISTANCE_MAX	666
 
 #define TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX 1500
+#define REINFORCE_NO_TRANSPORT_DISTANCE_MAX 2000
 
 // Distance from cluster center to where the troops must dismount while performing ClearArea goal
 #define CLEAR_AREA_DISMOUNT_DISTANCE	400

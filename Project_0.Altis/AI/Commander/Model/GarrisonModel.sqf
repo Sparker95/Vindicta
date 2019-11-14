@@ -250,7 +250,9 @@ CLASS("GarrisonModel", "ModelBase")
 	METHOD("isDead") {
 		params [P_THISOBJECT];
 		T_PRVAR(efficiency);
-		_efficiency isEqualTo EFF_ZERO //or {EFF_LTE(_efficiency, EFF_ZERO)}
+		T_PRVAR(locationId);
+		// Garrison is dead if it's empty AND is not at a location
+		(_efficiency isEqualTo EFF_ZERO) && (_locationID == MODEL_HANDLE_INVALID) //or {EFF_LTE(_efficiency, EFF_ZERO)}
 	} ENDMETHOD;
 
 	METHOD("isDepleted") {
