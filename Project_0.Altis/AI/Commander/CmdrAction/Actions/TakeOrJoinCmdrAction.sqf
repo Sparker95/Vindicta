@@ -12,7 +12,6 @@ Parent: <CmdrAction>
 CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	VARIABLE("targetVar");
-	VARIABLE("splitFlagsVar");
 	VARIABLE("detachmentEffVar");	// Efficiency
 	VARIABLE("detachmentCompVar");	// Composition
 	VARIABLE("detachedGarrIdVar");
@@ -50,10 +49,6 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
 		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
-
-		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF]]);
-		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -74,7 +69,6 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		T_PRVAR(srcGarrId);
 		T_PRVAR(detachmentEffVar);
 		T_PRVAR(detachmentCompVar);
-		T_PRVAR(splitFlagsVar);
 		T_PRVAR(targetVar);
 		T_PRVAR(startDateVar);
 		

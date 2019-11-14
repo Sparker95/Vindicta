@@ -128,7 +128,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		};
 
 		// Set up flags for allocation algorithm
-		private _allocationFlags = [SPLIT_VALIDATE_ATTACK];
+		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT]; // Validate attack capability, allocate a min amount of infantry
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
 		#ifndef _SQF_VM
@@ -137,10 +137,14 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		pr _dist = _tgtLocPos distance _srcGarrPos;
 		#endif
 		if ( _dist > TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
-			_allocationFlags append [SPLIT_VALIDATE_TRANSPORT, SPLIT_VALIDATE_CREW];	// Also add transport and crew
+			_allocationFlags append [	SPLIT_VALIDATE_TRANSPORT,		// Make sure we can transport ourselves
+										SPLIT_VALIDATE_TRANSPORT_EXT,	// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
+										SPLIT_VALIDATE_CREW];			// Allocate crew, obviously
 		};
 
-		private _enemyEff = CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
+		private _enemyEff = +CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
+		_enemyEff set [T_EFF_transport, EFF_GARRISON_MIN_EFF#T_EFF_transport];
+		_enemyEff set [T_EFF_crew, EFF_GARRISON_MIN_EFF#T_EFF_crew];
 
 		// Bail if the garrison clearly can not destroy the enemy
 		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
@@ -294,6 +298,7 @@ ENDCLASS;
 	CALLM(_thisObject, "updateScore", [_world ARG _future]);
 
 	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	diag_log format ["Take location final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
 
 /*

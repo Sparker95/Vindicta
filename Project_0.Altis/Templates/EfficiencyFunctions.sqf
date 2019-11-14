@@ -160,8 +160,15 @@ eff_fnc_validateTransport = {
 	if ((_effOur#T_EFF_reqTransport) > _transportOur) exitWith { // Try to allocate a bit more transport space
 		[[T_EFF_transport, (_effOur#T_EFF_reqTransport) - _transportOur]]
 	};
-	if ((_effTheir#T_EFF_reqTransport) > _transportOur) exitWith { // Try to allocate a bit more transport space
-		[[T_EFF_transport, (_effTheir#T_EFF_reqTransport) - _transportOur]]
+	[]
+};
+
+// Validate transport capability VS the external requirement (for logistics)
+eff_fnc_validateTransportExternal = {
+	params ["_effOur", ["_effTheir", T_EFF_null]];
+	private _transportOur = _effOur#T_EFF_transport;
+	if ((_effTheir#T_EFF_transport) > _transportOur) exitWith { // Try to allocate a bit more transport space
+		[[T_EFF_transport, (_effTheir#T_EFF_transport) - _transportOur]]
 	};
 	[]
 };
@@ -171,6 +178,14 @@ eff_fnc_validateCrew = {
 	params ["_effOur", "_effTheir"]; // _effTheir is not needed, but we pass it anyway
 	if ((_effOur#T_EFF_reqCrew) > (_effOur#T_EFF_crew)) exitWith {
 		[[T_EFF_crew, (_effOur#T_EFF_reqCrew) - (_effOur#T_EFF_crew)]] // Need more crew
+	};
+	[]
+};
+
+eff_fnc_validateCrewExternal = {
+	params ["_effOur", "_effTheir"]; // _effTheir is not needed, but we pass it anyway
+	if ((_effTheir#T_EFF_crew) > (_effOur#T_EFF_crew)) exitWith {
+		[[T_EFF_crew, (_effTheir#T_EFF_crew) - (_effOur#T_EFF_crew)]] // Need more crew
 	};
 	[]
 };

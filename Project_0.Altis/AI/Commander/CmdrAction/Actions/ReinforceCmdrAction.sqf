@@ -110,6 +110,7 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _tgtGarr = CALLM(_worldFuture, "getGarrison", [_tgtGarrId]);
 		ASSERT_OBJECT(_tgtGarr);
 
+		// Bail if src or dst are dead
 		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtGarr, "isDead", [])) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};

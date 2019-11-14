@@ -539,8 +539,14 @@ CLASS("GarrisonModel", "ModelBase")
 		if (SPLIT_VALIDATE_TRANSPORT in _constraintFlags) then {
 			_constraintFnNames pushBack "eff_fnc_validateTransport";
 		};
+		if (SPLIT_VALIDATE_TRANSPORT_EXT in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateTransportExternal";
+		};
 		if (SPLIT_VALIDATE_CREW in _constraintFlags) then {
 			_constraintFnNames pushBack "eff_fnc_validateCrew";
+		};
+		if (SPLIT_VALIDATE_CREW_EXT in _constraintFlags) then {
+			_constraintFnNames pushBack "eff_fnc_validateCrewExternal";
 		};
 
 		// Composition left after the allocation
@@ -730,7 +736,6 @@ CLASS("GarrisonModel", "ModelBase")
 	// _eff - efficiency of this garrison (after a theoretical allocation for instance)
 	METHOD("transportationScore") {
 		params [P_THISOBJECT, P_ARRAY("_eff")];
-		// TODO: non linearity
 		pr _diff = ((_eff#T_EFF_transport) - (_eff#T_EFF_reqTransport));
 		if (_diff <= 0) exitWith {0};
 		ln (_diff*0.3 + 1) // https://www.desmos.com/calculator/035vk4u9p2
