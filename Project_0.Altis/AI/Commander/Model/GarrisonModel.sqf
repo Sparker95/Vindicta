@@ -85,6 +85,8 @@ CLASS("GarrisonModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
 
+		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
+
 		T_PRVAR(actual);
 		private _copy = NEW("GarrisonModel", [_targetWorldModel ARG _actual]);
 
@@ -605,6 +607,7 @@ CLASS("GarrisonModel", "ModelBase")
 			#ifdef UNIT_ALLOCATOR_DEBUG
 			diag_log format ["  Allocated eff: %1", _effAllocated];
 			[_compAllocated, "  Allocated composition:"] call comp_fnc_print;
+			diag_log format ["  Remaining eff: %1", _effRemaining];
 			#endif
 
 			// Validate against provided constrain functions

@@ -44,6 +44,9 @@ CLASS("LocationModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 		ASSERT_OBJECT_CLASS(_targetWorldModel, "WorldModel");
+
+		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
+
 		T_PRVAR(actual);
 		private _copy = NEW("LocationModel", [_targetWorldModel ARG _actual]);
 

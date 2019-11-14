@@ -49,7 +49,7 @@ CLASS("ClusterModel", "ModelBase")
 	METHOD("simCopy") {
 		params [P_THISOBJECT, P_STRING("_targetWorldModel")];
 
-		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
+		//ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
 		T_PRVAR(actual);
 		private _copy = NEW("ClusterModel", [_targetWorldModel ARG _actual]);

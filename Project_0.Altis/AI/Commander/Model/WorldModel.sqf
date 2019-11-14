@@ -608,6 +608,15 @@ CLASS("WorldModel", "")
 		EFF_DIFF(_desired, _total)
 	} ENDMETHOD;
 
+	// Returns same multiplier as in getDesiredEff 
+	METHOD("calcActivityMultiplier") {
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
+		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
+		private _forceMul = 1 + ln (0.02 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
+		_forceMul
+	} ENDMETHOD;
+
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];

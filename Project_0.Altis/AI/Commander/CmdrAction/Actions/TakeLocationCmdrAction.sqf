@@ -115,6 +115,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
 		private _tgtLocPos = GETV(_tgtLoc, "pos");
+		private _enemyEff = +CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
 		ASSERT_OBJECT(_tgtLoc);
 		private _side = GETV(_srcGarr, "side");
 		private _toGarr = CALLM(_tgtLoc, "getGarrison", [_side]);
@@ -127,8 +128,14 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
+		// Bail if the garrison clearly can not destroy the enemy
+		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		// Set up flags for allocation algorithm
 		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
+		private _payloadWhitelistMask = T_comp_infantry_mask;	// Take only infantry as an attacking force
 		// If it's too far to travel, also allocate transport
 		// todo add other transport types?
 		#ifndef _SQF_VM
@@ -139,20 +146,14 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		if ( _dist > TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
 			_allocationFlags append [	SPLIT_VALIDATE_TRANSPORT,		// Make sure we can transport ourselves
 										// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
-										SPLIT_VALIDATE_TRANSPORT_EXT];	
+										SPLIT_VALIDATE_TRANSPORT_EXT];
+			pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;	// Take infantry or vehicles as an attacking force
 		};
 
-		private _enemyEff = +CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
 		_enemyEff set [T_EFF_transport, EFF_GARRISON_MIN_EFF#T_EFF_transport];
 		_enemyEff set [T_EFF_crew, EFF_GARRISON_MIN_EFF#T_EFF_crew];	// Ensure minimal amount of crew (infantry)
 
-		// Bail if the garrison clearly can not destroy the enemy
-		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
-			T_CALLM("setScore", [ZERO_SCORE]);
-		};
-
 		// Try to allocate units
-		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
 		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];

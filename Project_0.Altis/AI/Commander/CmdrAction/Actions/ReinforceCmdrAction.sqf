@@ -121,7 +121,8 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 
 		private _side = GETV(_srcGarr, "side");
 		private _tgtGarrEff = GETV(_tgtGarr, "efficiency");
-		private _srcGarrEff = GETV(_tgtGarr, "efficiency");
+		private _srcGarrEff = GETV(_srcGarr, "efficiency");
+		private _srcGarrComp = GETV(_srcGarr, "composition");
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
@@ -157,7 +158,6 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 			_extraTransportRequired = 1.3 * ((_tgtGarrEff#T_EFF_reqTransport) - (_tgtGarrEff#T_EFF_transport)) min 3;
 			_tgtUnderEff set [T_EFF_transport, ceil _extraTransportRequired];
 			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT_EXT;	// Ensure we provide enough extra transport
-			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Ensure we can transport ourselves
 			_needTransport = true;
 		};
 
@@ -166,15 +166,15 @@ CLASS("ReinforceCmdrAction", "TakeOrJoinCmdrAction")
 		private _tgtGarrPos = GETV(_tgtGarr, "pos");
 		private _dist = _srcGarrPos distance _tgtGarrPos;
 		if (_dist > REINFORCE_NO_TRANSPORT_DISTANCE_MAX) then {
-			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;	// Ensure we can transport ourselves
 			_needTransport = true;
 		};
 
-		private _srcGarrEff = GETV(_srcGarr, "efficiency");
-		private _srcGarrComp = GETV(_srcGarr, "composition");
+		if (_needTransport) then {
+			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;	// Ensure we can transport ourselves
+		};
 
 		// Try to allocate units
-		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+		pr _payloadWhitelistMask = if (_needTransport) then { T_comp_ground_or_infantry_mask } else { T_comp_ground_or_infantry_mask };
 		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
