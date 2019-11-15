@@ -1,4 +1,4 @@
-#define ASP_ENABLE
+//#define ASP_ENABLE
 
 #ifdef _SQF_VM
 #undef ASP_ENABLE

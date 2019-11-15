@@ -117,8 +117,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_SPLIT, 			// State change if successful
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_srcGarrIdVar, 						// Garrison to split (constant)
+				_detachmentCompVar,					// Composition
 				_detachmentEffVar, 					// Efficiency
-				_detachmentCompVar, 				// Composition
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 
@@ -494,6 +494,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		//_startDate set [4, _startDate#4 + _delay]; // Now there is no delay AST anyway
 
+		private _startDate = DATE_NOW;
 		T_SET_AST_VAR("startDateVar", _startDate);
 
 		// Uncomment this for more detailed logging
@@ -612,6 +613,10 @@ ENDCLASS;
 	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
 	diag_log format ["Patrol final score: %1", _finalScore];
 	["Score is above zero", _finalScore > 0] call test_Assert;
+
+	// Apply to sim
+	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
+	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
 
 }] call test_addTest;
 

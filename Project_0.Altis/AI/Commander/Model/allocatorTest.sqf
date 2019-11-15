@@ -16,7 +16,7 @@ call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
 //#define UNIT_ALLOCATOR_DEBUG
 //#ifdef UNIT_ALLOCATOR_DEBUG
 
-#define ASP_ENABLE
+//#define ASP_ENABLE
 
 #ifdef _SQF_VM
 #undef ASP_ENABLE

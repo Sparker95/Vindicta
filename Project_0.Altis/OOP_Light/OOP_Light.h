@@ -76,7 +76,7 @@
 #define VM_LOG_FMT(t, args) diag_log format ([t] + args)
 #define OOP_ASSERT
 #define OOP_ASSERT_ACCESS
-//#undef OOP_DEBUG
+#undef OOP_DEBUG
 #undef OOP_INFO
 #define OOP_WARNING
 #define OOP_ERROR

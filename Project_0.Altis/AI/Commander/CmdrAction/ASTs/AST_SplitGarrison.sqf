@@ -81,9 +81,9 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		//private _attackEfficiency = EFF_MASK_ATT(_detachmentEff);
 		// Split can happen instantly so apply it to now and future sim worlds.
 		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
-									CALLM(_srcGarr, "splitSim", [_compToDetach, _effToDetach])
+									CALLM2(_srcGarr, "splitSim", _compToDetach, _effToDetach)
 								} else {
-									CALLM(_srcGarr, "splitActual", [_compToDetach, _effToDetach])
+									CALLM2(_srcGarr, "splitActual", _compToDetach, _effToDetach)
 								};
 
 		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
