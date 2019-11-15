@@ -419,12 +419,16 @@ CLASS("AICommander", "AI")
 	METHOD("createIntelFromLocation") {
 		params ["_thisClass", ["_loc", "", [""]], ["_updateLevel", 0, [0]], ["_accuracyRadius", 0, [0]]];
 		
+		CALLM0(gMessageLoopMain, "lock");
+
 		ASSERT_OBJECT_CLASS(_loc, "Location");
 		
 		// Try to find friendly garrisons there first
 		// Otherwise try to find any garrisons there
+		pr _isFriendly = false;
 		pr _garFriendly = CALLM1(_loc, "getGarrisons", T_GETV("side")) select {_x in T_GETV("garrisons")};
 		pr _gar = if (count _garFriendly != 0) then {
+			_isFriendly = true;
 			_garFriendly#0
 		} else {
 			pr _allGars = CALLM0(_loc, "getGarrisons");
@@ -471,28 +475,34 @@ CLASS("AICommander", "AI")
 			SETV(_value, "side", CLD_SIDE_UNKNOWN);
 		};
 		
-		// Set unit count
-		if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
-			pr _CLD_full = CLD_UNIT_AMOUNT_FULL;
-			if (!IS_NULL_OBJECT(_gar)) then {
-				{
-					_x params ["_catID", "_catSize"];
-					pr _query = [[_catID, 0]];
-					for "_subcatID" from 0 to (_catSize - 1) do {
-						(_query select 0) set [1, _subcatID];
-						pr _amount = CALLM1(_gar, "countUnits", _query);
-						(_CLD_full select _catID) set [_subcatID, _amount];
-					};
-				} forEach [[T_INF, T_INF_SIZE], [T_VEH, T_VEH_SIZE], [T_DRONE, T_DRONE_SIZE]];
+		// Set efficiency
+		if (!_isFriendly) then {
+			// Set these fields if it's enemy location
+			if (_updateLevel >= CLD_UPDATE_LEVEL_UNITS) then {
+				if (!IS_NULL_OBJECT(_gar)) then {
+					pr _comp = CALLM0(_gar, "getCompositionNumbers");
+					pr _eff = CALLM0(_gar, "getEfficiencyTotal");
+					SETV(_value, "unitData", _comp);
+					SETV(_value, "efficiency", _eff);
+				} else {
+					SETV(_value, "unitData", +T_comp_null);
+					SETV(_value, "efficiency", +T_eff_null);
+				};
+			} else {
+				SETV(_value, "unitData", []);
+				SETV(_value, "efficiency", +T_eff_null);
 			};
-			SETV(_value, "unitData", _CLD_full);
 		} else {
-			SETV(_value, "unitData", CLD_UNIT_AMOUNT_UNKNOWN);
+			// For friendly locations it makes no sense
+			SETV(_value, "unitData", +T_comp_null);
+			SETV(_value, "efficiency", +T_eff_null);
 		};
 		
 		// Set ref to location object
 		SETV(_value, "location", _loc);
 		
+		CALLM0(gMessageLoopMain, "unlock");
+
 		_value
 	} ENDMETHOD;
 	
@@ -1667,7 +1677,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 
 		// Sync before update
-		CALLM(_world, "sync", []);
+		CALLM(_world, "sync", [_thisObject]);
 
 		T_PRVAR(side);
 		T_PRVAR(activeActions);
@@ -2101,7 +2111,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_DEBUG_MSG("- - - - - P L A N N I N G (priority %1) - - - - -", [_priority]);
 
 		// Sync before planning
-		CALLM(_world, "sync", []);
+		CALLM(_world, "sync", [_thisObject]);
 		// Update grids etc.
 		CALLM(_world, "update", []);
 

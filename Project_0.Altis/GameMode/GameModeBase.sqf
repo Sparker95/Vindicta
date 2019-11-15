@@ -246,7 +246,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _sideCommander = GETV(_x, "side");
 				if (_sideCommander != WEST) then { // Enemies are smart
 					if (CALLM0(_loc, "isBuilt")) then {
-						private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+						//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+						private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
 						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
 					};
 				} else {
@@ -372,6 +373,25 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Override this to create gameModeData of a location
 	/* protected virtual */	METHOD("initLocationGameModeData") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+	} ENDMETHOD;
+
+	// Game-mode specific functions
+	// Must be here for common interface
+	// Returns an array of cities where we can recruit from
+	/* protected virtual */ METHOD("getRecruitCities") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		[]
+	} ENDMETHOD;
+
+	// Returns how many recruits we can get at a certain place from nearby cities
+	/* protected virtual */ METHOD("getRecruitCount") {
+		params [P_THISOBJECT, P_ARRAY("_cities")];
+		0
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("getRecruitmentRadius") {
+		params [P_THISCLASS];
+		0
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -625,8 +645,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	#define ADD_ARMED_MRAPS
-	#define ADD_TANKS
-	//#define ADD_APCS_IFVS
+	#define ADD_ARMOR
 	#define ADD_STATICS
 	STATIC_METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
@@ -808,8 +827,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		#endif
 
-		// APCs
-		#ifdef ADD_APCS_IFVS
+		// APCs, IFVs, tanks
+		#ifdef ADD_ARMOR
 		{
 			_x params ["_chance", "_min", "_max", "_type"];
 			if(random 1 <= _chance) then {

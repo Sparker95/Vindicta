@@ -121,12 +121,12 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("sync") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
 		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
 		// sync existing locations
-		{ CALLM(_x, "sync", []); } forEach T_GETV("locations");
+		{ CALLM(_x, "sync", [_AICommander]); } forEach T_GETV("locations");
 
 		// sync existing clusters
 		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);

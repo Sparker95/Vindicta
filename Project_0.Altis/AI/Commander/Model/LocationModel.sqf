@@ -1,5 +1,7 @@
 #include "..\common.hpp"
 
+#define pr private
+
 // Model of a Real Location. This can either be the Actual model or the Sim model.
 // The Actual model represents the Real Location as it currently is. A Sim model
 // is a copy that is modified during simulations.
@@ -19,6 +21,8 @@ CLASS("LocationModel", "ModelBase")
 	VARIABLE("staging");
 	// Radius of the location
 	VARIABLE("radius");
+	// Efficiency of enemy forces occupying this place
+	VARIABLE("efficiency");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -29,6 +33,7 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("spawn", false);
 		T_SETV("staging", false);
 		T_SETV("radius", 0);
+		T_SETV("efficiency", +T_EFF_null);
 
 		if(T_CALLM("isActual", [])) then {
 			T_CALLM("sync", []);
@@ -65,11 +70,12 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_copy, "spawn", T_GETV("spawn"));
 		SETV(_copy, "staging", T_GETV("staging"));
 		SETV(_copy, "radius", T_GETV("radius"));
+		SETV(_copy, "efficiency", +T_GETV("efficiency"));
 		_copy
 	} ENDMETHOD;
 	
 	METHOD("sync") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
 		ASSERT_MSG(T_CALLM("isActual", []), "Only sync actual models");
 
@@ -100,6 +106,21 @@ CLASS("LocationModel", "ModelBase")
 
 		private _radius = GETV(_actual, "boundingRadius");
 		T_SETV("radius", _radius);
+
+		// Sync intel about enemy efficiency here
+		OOP_INFO_1("SYNC AICommander: %1", _AICommander);
+		if (!IS_NULL_OBJECT(_AICommander)) then {
+			pr _intel = CALLM1(_AICommander, "getIntelAboutLocation", _actual);
+			OOP_INFO_1("  Intel: %1", _intel);
+			if (IS_NULL_OBJECT(_intel)) then {
+				T_SETV("efficiency", +T_EFF_null);
+			} else {
+				pr _intelEff = GETV(_intel, "efficiency");
+				OOP_INFO_1("  Intel eff: %1", _intelEff);
+				T_SETV("efficiency", +_intelEff);
+			};
+		};
+
 		// if(!(_garrisonActual isEqualTo "")) then {
 		// 	private _garrison = CALLM(_world, "findGarrisonByActual", [_garrisonActual]);
 		// 	T_SETV("garrisonId", GETV(_garrison, "id"));
