@@ -35,7 +35,7 @@ _inf set [T_INF_pilot_heli, ["rhs_pilot_combat_heli"]];
 _inf set [T_INF_survivor, ["rhs_vmf_flora_rifleman"]];
 _inf set [T_INF_unarmed, ["rhs_vmf_flora_rifleman"]];
 
-// Rcon
+// Recon
 _inf set [T_INF_recon_TL, ["rhs_vmf_recon_sergeant"]];
 _inf set [T_INF_recon_rifleman, ["rhs_vmf_recon_rifleman"]];
 _inf set [T_INF_recon_medic, ["rhs_vmf_recon_medic"]];
@@ -72,7 +72,7 @@ _veh set [T_VEH_SPA, ["rhs_2s3_tv"]];
 _veh set [T_VEH_SPAA, ["rhs_zsu234_aa", "rhs_gaz66_zu23_vmf"]];
 
 _veh set [T_VEH_stat_HMG_high, ["rhs_KORD_high_VMF"]];
-_veh set [T_VEH_stat_GMG_high, ["RHS_AGS30_TriPod_VMF"]];
+//_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["rhs_KORD_VMF", "RHS_NSV_TriPod_VMF"]];
 _veh set [T_VEH_stat_GMG_low, ["RHS_AGS30_TriPod_VMF"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_vmf"]];
@@ -87,13 +87,13 @@ _veh set [T_VEH_heli_cargo, ["RHS_Mi8mtv3_Cargo_vvsc"]];
 _veh set [T_VEH_heli_attack, ["RHS_Ka52_vvsc", "RHS_Mi24V_vvsc", "RHS_Mi24P_vvsc", "RHS_Mi24Vt_vvsc"]];
 
 _veh set [T_VEH_plane_attack, ["RHS_Su25SM_vvsc"]];
-_veh set [T_VEH_plane_fighter, ["rhs_mig29s_vvsc", "RHS_T50_vvs_blueonblue", "RHS_T50_vvs_054", "RHS_T50_vvs_052"]];
-_veh set [T_VEH_plane_cargo, ["RHS_TU95MS_vvs_old"]];
-_veh set [T_VEH_plane_unarmed, ["RHS_TU95MS_vvs_old"]];
-//_veh set [T_VEH_plane_VTOL, ["RHS_TU95MS_vvs_old"]];
+_veh set [T_VEH_plane_fighter, ["rhs_mig29s_vvsc"]];
+//_veh set [T_VEH_plane_cargo, [""]];
+//_veh set [T_VEH_plane_unarmed, [""]];
+//_veh set [T_VEH_plane_VTOL, [""]];
 
 _veh set [T_VEH_boat_unarmed, ["rhs_pts_vmf", "B_Boat_Transport_01_F"]];
-//_veh set [T_VEH_boat_armed, ["B_Boat_Armed_01_minigun_F"]];
+//_veh set [T_VEH_boat_armed, [""]];
 
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 

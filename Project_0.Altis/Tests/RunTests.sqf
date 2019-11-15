@@ -29,6 +29,7 @@ except__
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
 	//throw _exception;
+	exit__ 1; // Return non-zero to cause CI to report the error
 };
 
 diag_log "----------------------------------------------------------------------";
@@ -42,6 +43,7 @@ except__
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
 	//throw _exception;
+	exit__ 1; // Return non-zero to cause CI to report the error
 };
 
 diag_log "----------------------------------------------------------------------";
