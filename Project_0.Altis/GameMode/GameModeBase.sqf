@@ -652,7 +652,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		
 		if (_faction == "police") exitWith {
 			
-			private _templateName = "tPolice";
+			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");;
 			private _template = [_templateName] call t_fnc_getTemplate;
 
 			private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
