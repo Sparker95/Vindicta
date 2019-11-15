@@ -24,6 +24,9 @@
 
 #define pr private
 
+// Maximum amount of entries into the unit allocation cache
+#define ALLOCATOR_CACHE_SIZE 5000
+
 //#define UNIT_ALLOCATOR_DEBUG
 
 // Model of a Real Garrison. This can either be the Actual model or the Sim model.
@@ -51,6 +54,13 @@ CLASS("GarrisonModel", "ModelBase")
 	VARIABLE_ATTR("faction", []);
 	// Id of the location the garrison is currently occupying.
 	VARIABLE_ATTR("locationId", [ATTR_GET_ONLY]);
+
+	// Hash map for unit allocation algorithm
+	STATIC_VARIABLE("allocatorCache"); 
+	STATIC_VARIABLE("allocatorCacheAllKeys");	// Array of all keys
+	STATIC_VARIABLE("allocatorCacheCounter");	// Counter for all keys
+	STATIC_VARIABLE("allocatorCacheNMiss");		// Amount of misses in the cache
+	STATIC_VARIABLE("allocatorCacheNHit");		// Amount of hits in the cache
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -535,6 +545,16 @@ CLASS("GarrisonModel", "ModelBase")
 				P_ARRAY("_compTransportWhitelistMask"),	// Whitelist mask for transport or []
 				P_ARRAY("_compTransportBlacklistMask")];// Blacklist mask for transport or []
 
+		// Perform lookup in hash map
+		pr _hashMap = GETSV("GarrisonModel", "allocatorCache");
+		pr _hashMapKey = str _this;	// 200us and more
+		pr _hashmapValue = _hashMap getVariable _hashMapKey;
+		if (!isNil "_hashmapValue") exitWith {
+			SETSV("GarrisonModel", "allocatorCacheNHit", GETSV("GarrisonModel", "allocatorCacheNHit") + 1);	// Increase hit counter
+			_hashmapValue	
+		};
+		SETSV("GarrisonModel", "allocatorCacheNMiss", GETSV("GarrisonModel", "allocatorCacheNMiss") + 1);	// Increase miss counter
+
 		// Assign validation functions according to flags
 		pr _constraintFnNames = [];
 		if (SPLIT_VALIDATE_ATTACK in _constraintFlags) then {
@@ -719,17 +739,62 @@ CLASS("GarrisonModel", "ModelBase")
 		diag_log format ["Allocation finished. Iterations: %1, Allocated: %2, failed: %3", _nIteration, _allocated, _failedToAllocate];
 		#endif
 
-		if (!_allocated || _failedToAllocate) exitWith {
+		pr _result = if (!_allocated || _failedToAllocate) then {
 			// Could not allocate units!
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log "";
+			diag_log "  Failed to allocate units!";
+			#endif
 			[]
+		} else {
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log "";
+			[_compAllocated, "  Allocated successfully:"] call comp_fnc_print;
+			#endif
+			[_compAllocated, _effAllocated, _compRemaining, _effRemaining]
 		};
 
-		#ifdef UNIT_ALLOCATOR_DEBUG
-		diag_log "";
-		[_compAllocated, "  Allocated successfully:"] call comp_fnc_print;
-		#endif
+		// Add result to the cache
+		// Make sure we don't add too many entries
+		CRITICAL_SECTION {	// Multiple allocators might run at once by multiple commanders...
+			pr _allKeys = GETSV("GarrisonModel", "allocatorCacheAllKeys");
+			pr _counter = GETSV("GarrisonModel", "allocatorCacheCounter");
+			pr _existingKey = _allKeys#_counter;
+			if ( count _existingKey > 0 ) then { // It's not a ""
+				// There is an existing entry here, need to delete it from the cache
+				// Because we want to limit the cache size
+				_hashMap setVariable [_existingKey, nil];
+			};
 
-		[_compAllocated, _effAllocated, _compRemaining, _effRemaining]
+			pr _valueInCache = +_result;
+			_allKeys set [_counter, _hashMapKey];
+			_hashMap setVariable [_hashMapKey, _valueInCache];
+			_counter = (_counter + 1) % ALLOCATOR_CACHE_SIZE;
+			SETSV("GarrisonModel", "allocatorCacheCounter", _counter);
+		};
+
+		_result
+	} ENDMETHOD;
+
+	STATIC_METHOD("initUnitAllocatorCache") {
+		params [P_THISCLASS];
+
+		// Bail if already initialized
+		if (!isNil {GETSV(_thisClass, "allocatorCache")}) exitWith {};
+
+		#ifdef _SQF_VM
+		pr _hm = "dummy" createVehicle [1, 2, 3];
+		#else
+		pr _hm = [false] call CBA_fnc_createNamespace;
+		#endif
+		SETSV(_thisClass, "allocatorCache", _hm);
+		SETSV(_thisClass, "allocatorCacheNHit", 0);
+		SETSV(_thisClass, "allocatorCacheNMiss", 0);
+		pr _allkeys = [];
+		_allKeys resize ALLOCATOR_CACHE_SIZE;
+		_allKeys = _allKeys apply {""};
+		SETSV(_thisClass, "allocatorCacheAllKeys", _allKeys);
+		SETSV(_thisClass, "allocatorCacheCounter", 0);
 	} ENDMETHOD;
 
 	// -------------------- S C O R I N G   T O O L K I T / U T I L S -------------------
@@ -774,6 +839,14 @@ CLASS("GarrisonModel", "ModelBase")
 	
 ENDCLASS;
 
+// Initialize the unit allocator hashmap
+#ifndef _SQF_VM
+if (isServer || !hasInterface) then {
+	CALLSM0("GarrisonModel", "initUnitAllocatorCache");
+};
+#else
+CALLSM0("GarrisonModel", "initUnitAllocatorCache");
+#endif
 
 // Unit test
 #ifdef _SQF_VM
