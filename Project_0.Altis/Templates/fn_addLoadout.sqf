@@ -10,3 +10,6 @@ if (!isNil {t_loadouts_hashmap getVariable _tag}) exitWith {
 };
 
 t_loadouts_hashmap setVariable [_tag, _scriptName];
+
+// Try to compile the script as well to report errors
+compile preprocessFileLineNumbers ("Templates\Loadouts\" + _scriptName);
