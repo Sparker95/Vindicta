@@ -9,6 +9,14 @@ if ERRORLEVEL 1 (
     exit /b
 )
 
+rem increase build ID
+set /P _id=<_buildID.txt
+set /a _id=%_id%+1
+echo "New build ID is:"
+echo %_id%
+break>_buildID.txt
+echo %_id% >> _buildID.txt
+
 rem CD into build tool directory
 cd /d "%~dp0buildtool"
 
