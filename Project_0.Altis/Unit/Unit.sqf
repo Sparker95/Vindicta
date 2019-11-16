@@ -1614,8 +1614,17 @@ CLASS(UNIT_CLASS_NAME, "");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
 		if (_enabled) then {
-			pr _emptyArray = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
-			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _emptyArray]; // Limited Arsenal's empty array for items
+			pr _arsenalArray = call jn_fnc_arsenal_getEmptyArray; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
+			
+			// Init default unlimited items in the arsenal
+			// Add uniforms and other things
+			{
+				pr _className = _x;
+				pr _index = [_className] call jn_fnc_arsenal_itemType;
+				(_arsenalArray#_index) pushBack [_className, -1];
+			} forEach (g_UM_civHeadgear + g_UM_civUniforms);
+
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
 				// Object is currently despawned
 			} else {
@@ -1629,7 +1638,7 @@ CLASS(UNIT_CLASS_NAME, "");
 				clearMagazineCargoGlobal _hO;
 				clearBackpackCargoGlobal _hO;
 
-				[_hO] call jn_fnc_arsenal_initPersistent;
+				[_hO, _arsenalArray] call jn_fnc_arsenal_initPersistent;
 			};
 		} else {
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, []]; // This unit doesn't have arsenal any more
@@ -1654,10 +1663,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			// Restore the jna_dataList variable with the arsenal contents
 			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-			_hO setVariable ["jna_dataList", _dataList];
 
 			// Initialize the limited arsenal
-			[_hO] call jn_fnc_arsenal_initPersistent;
+			[_hO, _dataList] call jn_fnc_arsenal_initPersistent;
 		};
 	} ENDMETHOD;
 

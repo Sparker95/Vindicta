@@ -42,6 +42,7 @@ class JN {
 		class arsenal_removeItem {};
 		class arsenal_requestOpen {};
 		class arsenal_requestClose {};
+		class arsenal_getEmptyArray {};
 	};
 	class JNG {
 		file = "JeroenArsenal\JNG";
