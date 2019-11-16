@@ -1198,7 +1198,7 @@ CLASS("Location", "MessageReceiverEx")
 		// Estimate usage radius
 		private _radius = (sizeof typeof _object) + 5;
 
-		_object addAction ["<img size='1.75' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>   Heal Yourself", // title
+		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
 			{
 				player setdamage 0;
 				[player, player] call ACE_medical_fnc_treatmentAdvanced_fullHealLocal;

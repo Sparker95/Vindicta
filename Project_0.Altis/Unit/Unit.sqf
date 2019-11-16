@@ -708,14 +708,14 @@ CLASS(UNIT_CLASS_NAME, "");
 						{
 							pr _itemName = getText (_x >> "name");
 							pr _itemCount = getNumber (_x >> "count");
-							_hO addItemCargoGlobal [_itemName, round (random [0.2*_itemCount, 0.7*_itemCount, 1.2*_itemCount])];
+							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
 						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
 					};
 
 					// Add ADV medical items
 					// Defibrilator
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [2, 4, 6]];
+						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [4, 8, 12]];
 					};
 					// Splint
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {

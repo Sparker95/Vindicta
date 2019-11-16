@@ -15,7 +15,7 @@ unsafeCVL = 1;
 
 // ---- Respawn ----
 respawn = 3;
-respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
+respawnButton = 1; // 0: disabled - 1: enabled. Default: 1
 respawnDelay = 2; // Default: ?
 // respawnOnStart = 1;
 DisabledAI = 1;
