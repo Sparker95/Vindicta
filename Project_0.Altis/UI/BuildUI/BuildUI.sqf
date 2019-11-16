@@ -6,6 +6,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "BuildUI_Macros.h"
 #include "..\..\GlobalAssert.hpp"
+#include "..\defineddikcodes.inc"
 
 #define TIME_FADE_TT 0.84
 
@@ -305,10 +306,10 @@ CLASS("BuildUI", "")
 	METHOD("onKeyHandler") {
 		params [P_THISOBJECT, "_dikCode", "_shiftState", "_ctrlState", "_altState"];
 
-		switch (keyName _dikCode) do {
+		switch (_dikCode) do { // keyname _dikCode is language dependent!!
 			default { false; };
 
-			case """Tab""": { 
+			case DIK_TAB: { 
 				// TODO: Currently we don't handle key up so holding down Tab will directly go from 
 				// select to place to actually dropping the object if you hold it down too long.
 				// Handle KeyUp as well to emulate KeyPress like behaviour for Tab and Backspace.
@@ -317,7 +318,7 @@ CLASS("BuildUI", "")
 				true; // disables default control 
 			};
 
-			case """Q""": { 
+			case DIK_Q: { 
 				playSound ["clicksoft", false];
 				pr _rot = if(_shiftState) then { 90 } else { 15 };
 				T_CALLM1("rotate", _rot);
@@ -325,7 +326,7 @@ CLASS("BuildUI", "")
 				true; // disables default control 
 			};
 
-			case """E""": { 
+			case DIK_E: { 
 				playSound ["clicksoft", false];
 				pr _rot = if(_shiftState) then { -90 } else { -15 };
 				T_CALLM1("rotate", _rot);
@@ -333,32 +334,32 @@ CLASS("BuildUI", "")
 				true; // disables default control 
 			};
 
-			case """UP""": { 
+			case DIK_UP: { 
 				if !(T_GETV("isMovingObjects")) then {
 					playSound ["clicksoft", false];
 					T_CALLM0("openItems"); true; 
 				};
 			};
 
-			case """DOWN""": { 
+			case DIK_DOWN: { 
 				playSound ["clicksoft", false];
 				T_CALLM0("closeItems"); true; 
 			};
 
-			case """LEFT""": { 
+			case DIK_LEFT: { 
 				playSound ["clicksoft", false];
 				T_CALLM1("navLR", -1); 
 				true; 
 			};
 
-			case """RIGHT""": { 
+			case DIK_RIGHT: { 
 				playSound ["clicksoft", false];
 				T_CALLM1("navLR", 1);
 				true; 
 			};
 
 			// close build menu
-			case """Backspace""": {
+			case DIK_BACKSPACE: {
 				playSound ["clicksoft", false];
 				if(T_GETV("isMovingObjects")) then {
 					T_CALLM0("cancelMovingObjects");
@@ -368,7 +369,7 @@ CLASS("BuildUI", "")
 				true; 
 			};
 
-			case """Delete""": { 
+			case DIK_DELETE: { 
 
 				CALLSM0("BuildUI", "delActiveObject");
 				true; // disables default control 

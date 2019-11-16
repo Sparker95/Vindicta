@@ -310,12 +310,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
-			case "police": { "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			case "police": { "tPOLICE" };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
 			default { // "military"
 				switch(_side) do {
 					case WEST: { "tNATO" };
 					case EAST: { "tCSAT" };
-					case INDEPENDENT: {"tRHS_AAF2017_elite"}; // { "tAAF" };
+					case INDEPENDENT: { "tAAF" }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
 					case CIVILIAN: { "tCIVILIAN" };
 					default { "tDEFAULT" };
 				}
