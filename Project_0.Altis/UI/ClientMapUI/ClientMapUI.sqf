@@ -1001,8 +1001,8 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		} else {
 			// Add amount of recruits we can recruit at this place if it's not a city
 			pr _pos = CALLM0(_loc, "getPos");
-			pr _cities = CALLSM1("CivilWarGameMode", "getRecruitCities", _pos);
-			pr _nRecruits = CALLSM1("CivilWarGameMode", "getRecruitCount", _cities);
+			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
 			_lnb lnbAddRow [format ["Recruits available: %1", _nRecruits], "", ""];
 		};
 
@@ -1400,7 +1400,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				if (GETV(_locIntel, "side") == playerSide) then { // We can only perform things on a friendly location
 					T_CALLM1("locSelMenuSetLocation", GETV(_locIntel, "location"));
 					T_CALLM1("locSelMenuEnable", true);
-					pr _radius = CALLSM0("CivilWarGameMode", "getRecruitmentRadius");
+					pr _radius = CALLM0(gGameMode, "getRecruitmentRadius");
 					CALLM1(_locationsUnderCursor#0, "setAccuracyRadius", _radius);
 				};
 			};

@@ -32,6 +32,7 @@ CLASS("CmdrStrategy", "RefCounted")
 	VARIABLE("takeLocRoadBlockPriorityActivityCoeff");
 	VARIABLE("takeLocCityPriority");
 	VARIABLE("takeLocCityPriorityActivityCoeff");
+	VARIABLE("takeLocPlayerCreatedCoeff");
 
 	/*
 	Constructor: new
@@ -47,7 +48,8 @@ CLASS("CmdrStrategy", "RefCounted")
 		T_SETV("takeLocRoadBlockPriority", 0);
 		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
 		T_SETV("takeLocCityPriority", 0);
-		T_SETV("takeLocCityPriorityActivityCoeff", 1);	
+		T_SETV("takeLocCityPriorityActivityCoeff", 1);
+		T_SETV("takeLocPlayerCreatedCoeff", 2);			// Scaling coefficient for locations created dynamicly by player
 	} ENDMETHOD;
 
 	/*
@@ -101,6 +103,11 @@ CLASS("CmdrStrategy", "RefCounted")
 			};
 			case LOCATION_TYPE_CITY: { 
 				_priority = T_GETV("takeLocCityPriority") + T_GETV("takeLocCityPriorityActivityCoeff") * _activity;
+			};
+			case LOCATION_TYPE_CAMP: {
+				// We want these A LOT because only players can build them
+				_priority = 3;
+				_priority*T_GETV("takeLocPlayerCreatedCoeff")
 			};
 			// No other locations taken by default
 			default { _priority = 0 };

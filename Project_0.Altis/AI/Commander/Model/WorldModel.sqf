@@ -121,12 +121,12 @@ CLASS("WorldModel", "")
 	} ENDMETHOD;
 
 	METHOD("sync") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_AICommander")];
 
 		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveGarrisons", []);
 
 		// sync existing locations
-		{ CALLM(_x, "sync", []); } forEach T_GETV("locations");
+		{ CALLM(_x, "sync", [_AICommander]); } forEach T_GETV("locations");
 
 		// sync existing clusters
 		{ CALLM(_x, "sync", []); } forEach T_CALLM("getAliveClusters", []);
@@ -608,19 +608,28 @@ CLASS("WorldModel", "")
 		EFF_DIFF(_desired, _total)
 	} ENDMETHOD;
 
+	// Returns same multiplier as in getDesiredEff 
+	METHOD("calcActivityMultiplier") {
+		params [P_THISOBJECT, P_ARRAY("_pos")];
+		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
+		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
+		private _forceMul = 1 + ln (0.02 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
+		_forceMul
+	} ENDMETHOD;
+
 	// Get desired efficiency of forces at a particular location.
 	METHOD("getDesiredEff") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 
 		T_PRVAR(threatGrid);
-		if(_threatGrid isEqualTo objNull) exitWith {
+		if(IS_NULL_OBJECT(_threatGrid)) exitWith {
 			EFF_GARRISON_MIN_EFF
 		};
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
 		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
 		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		private _forceMul = 1 + ln (0.02 * _activity + 1);
+		private _forceMul = 1 + ln (0.02 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
 		private _compositeEff = EFF_MUL_SCALAR(_threatEff, _forceMul);
 		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
 		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _activity = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _activity ARG _forceMul ARG _compositeEff ARG _effMax]);

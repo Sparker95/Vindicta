@@ -13,8 +13,8 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 
 	// Inputs
 	VARIABLE_ATTR("srcGarrIdVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("detachmentEffVar", [ATTR_PRIVATE]);
-	VARIABLE_ATTR("splitFlagsVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("detachCompVar", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("detachEffVar", [ATTR_PRIVATE]);
 
 	// Outputs
 	VARIABLE_ATTR("detachedGarrIdVar", [ATTR_PRIVATE]);
@@ -29,9 +29,8 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		_successState - <CMDR_ACTION_STATE>, state to return after success
 		_failState - <CMDR_ACTION_STATE>, state to return if the split fails for any reason
 		_srcGarrIdVar - IN <AST_VAR>(Number), <Model.GarrisonModel> Id of the garrison to split
-		_detachmentEffVar - IN <AST_VAR>(Efficiency Vector), efficiency to take from the source garrison to form the new garrison
-		_splitFlagsVar - IN <AST_VAR>(Array of Number), flags that define the rules when splitting the garrison, passed to <Model.GarrisonModel.splitActual>
-			(see Commander.hpp for the definitions)
+		_detachCompVar - IN <AST_VAR>(Composition), composition to detach from this garrison
+		_detachEffVar - IN <AST_VAR>(Efficiency), efficiency that corresponds to the composition
 		_detachedGarrIdVar - OUT <AST_VAR>(Number), <Model.GarrisonModel> Id of the newly formed garrison
 	*/
 	METHOD("new") {
@@ -41,8 +40,8 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 			P_AST_STATE("_successState"),
 			P_AST_STATE("_failState"),
 			P_AST_VAR("_srcGarrIdVar"),
-			P_AST_VAR("_detachmentEffVar"),
-			P_AST_VAR("_splitFlagsVar"),
+			P_AST_VAR("_detachCompVar"),
+			P_AST_VAR("_detachEffVar"),
 			P_AST_VAR("_detachedGarrIdVar")
 		];
 
@@ -52,8 +51,8 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		T_SETV("successState", _successState);
 		T_SETV("failState", _failState);
 		T_SETV("srcGarrIdVar", _srcGarrIdVar);
-		T_SETV("splitFlagsVar", _splitFlagsVar);
-		T_SETV("detachmentEffVar", _detachmentEffVar);
+		T_SETV("detachCompVar", _detachCompVar);
+		T_SETV("detachEffVar", _detachEffVar);
 		T_SETV("detachedGarrIdVar", _detachedGarrIdVar);
 	} ENDMETHOD;
 
@@ -65,23 +64,26 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		private _srcGarrId = T_GET_AST_VAR("srcGarrIdVar");
 		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
 		ASSERT_OBJECT(_srcGarr);
-		//private _detachmentEff = CALLM(_action, "getDetachmentEff", [_world]);
 
-		// Get the previously calculated efficiency
-		private _detachmentEff = T_GET_AST_VAR("detachmentEffVar");
+		// Get composition to detach
+		private _compToDetach = T_GET_AST_VAR("detachCompVar");
+		//diag_log format ["Composition to detach: %1", _compToDetach];
+		private _effToDetach = T_GET_AST_VAR("detachEffVar");
+		//diag_log format ["Eff to detach: %1", _effToDetach];
 
-		ASSERT_MSG(EFF_GTE(_detachmentEff, EFF_ZERO), "Detachment efficiency is zero!");
+		ASSERT_MSG(EFF_GTE(_effToDetach, EFF_ZERO), "Detachment efficiency is zero!");
+		ASSERT_MSG( !(_compToDetach isEqualTo T_comp_null) , "Detachment composition is zero!");
+		ASSERT_MSG(([_compToDetach] call comp_fnc_getEfficiency) isEqualTo _effToDetach, "Detachment efficiency and composition do not match!");
 
 		// Apply split to all sim worlds as it always happens immediately at the start of action
 		// TODO: better evalulation of efficiency requirements (and application to sim especially)
 		// Currently this will only apply changes to attack part of sim efficiency vector.
 		//private _attackEfficiency = EFF_MASK_ATT(_detachmentEff);
 		// Split can happen instantly so apply it to now and future sim worlds.
-		private _splitFlags = T_GET_AST_VAR("splitFlagsVar");
 		private _detachedGarr = if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
-									CALLM(_srcGarr, "splitSim", [_detachmentEff ARG _splitFlags])
+									CALLM2(_srcGarr, "splitSim", _compToDetach, _effToDetach)
 								} else {
-									CALLM(_srcGarr, "splitActual", [EFF_MASK_ATT(_detachmentEff) ARG _splitFlags])
+									CALLM2(_srcGarr, "splitActual", _compToDetach, _effToDetach)
 								};
 
 		if(IS_NULL_OBJECT(_detachedGarr)) exitWith {
@@ -90,19 +92,14 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 		};
 
 		private _finalDetachEff = GETV(_detachedGarr, "efficiency");
+
 		// We want this to be impossible. Sadly it seems it isn't :/
 		ASSERT_MSG(EFF_GTE(_finalDetachEff, EFF_ZERO), "Final detachment efficiency is zero!");
-		//ASSERT_MSG(EFF_GTE(_finalDetachEff, _detachmentEff), "Final detachment efficiency is below requested");
-
-		// This shouldn't be possible and if it does happen then we would need to do something with the resultant understaffed garrison.
-		// if(!EFF_GTE(_finalDetachEff, _detachmentEff)) exitWith {
-		// 	OOP_DEBUG_MSG("[w %1 a %2] Failed to detach from %3", [_world ARG _action ARG _srcGarr]);
-		// 	false
-		// };
 
 		OOP_INFO_MSG("[w %1 a %2] Detached %3 from %4", [_world ARG _action ARG LABEL(_detachedGarr) ARG LABEL(_srcGarr)]);
 
 		T_SET_AST_VAR("detachedGarrIdVar", GETV(_detachedGarr, "id"));
+
 		T_GETV("successState")
 	} ENDMETHOD;
 ENDCLASS;
@@ -120,8 +117,8 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
 		[MAKE_AST_VAR(0)]+
-		[MAKE_AST_VAR(EFF_MIN)]+
-		[MAKE_AST_VAR([])]+
+		[MAKE_AST_VAR([0] call comp_fnc_new)]+
+		[MAKE_AST_VAR(EFF_MIN_EFF)]+
 		[MAKE_AST_VAR(0)]
 	);
 	
@@ -132,10 +129,19 @@ ENDCLASS;
 ["AST_SplitGarrison.apply(sim)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _eff1 = [12, 4, 4, 2, 20, 0, 0, 0];
-	private _eff2 = EFF_MIN_EFF;
-	private _effr = EFF_DIFF(_eff1, _eff2);
+
+	private _comp1 = [10] call comp_fnc_new;				// How much we have at start
+	private _eff1 = [_comp1] call comp_fnc_getEfficiency;
+
+	private _comp2 = [2] call comp_fnc_new;
+	private _eff2 = [_comp2] call comp_fnc_getEfficiency;	// How much to detach
+
+	private _effr = EFF_DIFF(_eff1, _eff2);					// How much is remaining
+	private _compr = +_comp1;
+	[_compr, _comp2] call comp_fnc_diffAccumulate;
+
 	SETV(_garrison, "efficiency", _eff1);
+	SETV(_garrison, "composition", _comp1);
 
 	private _splitGarrIdVar = MAKE_AST_VAR(-1);
 	private _action = NEW("CmdrAction", []);
@@ -145,41 +151,58 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
 		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
+		[MAKE_AST_VAR(_comp2)]+
 		[MAKE_AST_VAR(_eff2)]+
-		[MAKE_AST_VAR([])]+
 		[_splitGarrIdVar]
 	);
 
 	private _endState = CALLM(_thisObject, "apply", [_world]);
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
 	["Split garrison var is valid", GET_AST_VAR(_splitGarrIdVar) != -1] call test_Assert;
+
 	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_splitGarrIdVar)]);
 	["Split garrison is valid", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
+
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
+	["Orig comp", GETV(_garrison, "composition") isEqualTo _compr] call test_Assert;
+
 	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+	["Split comp", GETV(_splitGarr, "composition") isEqualTo _comp2] call test_Assert;
 }] call test_AddTest;
 
+Test_group_args = [WEST, 0]; // Side, group type
+Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 
 ["AST_SplitGarrison.apply(actual)", {
+
 	private _actual = NEW("Garrison", [WEST]);
 	private _group = NEW("Group", Test_group_args);
 	private _eff1 = +T_EFF_null;
+	private _comp1 = +T_comp_null;
 	for "_i" from 0 to 19 do
 	{
 		private _unit = NEW("Unit", Test_unit_args + [_group]);
 		//CALLM(_actual, "addUnit", [_unit]);
 		private _unitEff = CALLM(_unit, "getEfficiency", []);
 		_eff1 = EFF_ADD(_eff1, _unitEff);
+		[_comp1, T_INF, T_INF_rifleman, 1] call comp_fnc_addValue;
 	};
 
 	CALLM(_actual, "addGroup", [_group]);
-	
+
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _garrison = NEW("GarrisonModel", [_world ARG _actual]);
-	["Initial eff", GETV(_garrison, "efficiency") isEqualTo _eff1] call test_Assert;
-	private _eff2 = EFF_MIN_EFF;
-	private _effr = EFF_DIFF(_eff1, _eff2);
+
+	private _comp2 = [0] call comp_fnc_new;
+	(_comp2#T_INF) set [T_INF_rifleman, 2];
+	private _eff2 = [_comp2] call comp_fnc_getEfficiency;	// How much to detach
+
+	private _effr = EFF_DIFF(_eff1, _eff2);					// How much is remaining
+	private _compr = +_comp1;
+	[_compr, _comp2] call comp_fnc_diffAccumulate;
+
 	SETV(_garrison, "efficiency", _eff1);
+	SETV(_garrison, "composition", _comp1);
 
 	private _splitGarrIdVar = MAKE_AST_VAR(-1);
 	private _action = NEW("CmdrAction", []);
@@ -189,13 +212,12 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
 		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
+		[MAKE_AST_VAR(_comp2)]+
 		[MAKE_AST_VAR(_eff2)]+
-		[MAKE_AST_VAR([])]+
 		[_splitGarrIdVar]
 	);
 	
 	private _endState = CALLM(_thisObject, "apply", [_world]);
-	
 
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
 	["Split garrison var is valid", GET_AST_VAR(_splitGarrIdVar) != -1] call test_Assert;
@@ -207,7 +229,9 @@ ENDCLASS;
 	CALLM(_splitGarr, "sync", []);
 
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
+	["Orig comp", GETV(_garrison, "composition") isEqualTo _compr] call test_Assert;
 	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff2] call test_Assert;
+	["Split comp", GETV(_splitGarr, "composition") isEqualTo _comp2] call test_Assert;
 }] call test_AddTest;
 
 #endif

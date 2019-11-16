@@ -54,12 +54,15 @@ while {_i < count _groups} do
 
 
 // Despawn single units
+private _ungroupedUnits = _units select {
+	CALL_METHOD(_x, "getGroup", []) == ""
+};
+
+OOP_INFO_1("Despawning ungrouped units: %1", _ungroupedUnits);
 {
 	private _unit = _x;
-	if (CALL_METHOD(_x, "getGroup", []) == "") then {
-		CALL_METHOD(_unit, "despawn", []);
-	};
-} forEach _units;
+	CALL_METHOD(_unit, "despawn", []);
+} forEach _ungroupedUnits;
 
 // Call onGarrisonDespawned
 pr _AI = T_GETV("AI");

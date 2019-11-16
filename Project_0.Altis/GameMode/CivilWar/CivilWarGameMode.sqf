@@ -381,7 +381,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 
 	// Overrides GameModeBase, we want to despawn missions etc in some locations
-	/* protected override */METHOD("locationDespawned") {
+	/* protected override */ METHOD("locationDespawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 		ASSERT_OBJECT_CLASS(_location, "Location");
 		T_PRVAR(activeCities);
@@ -392,15 +392,15 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
-	STATIC_METHOD("getRecruitmentRadius") {
-		params [P_THISCLASS];
+	METHOD("getRecruitmentRadius") {
+		params [P_THISOBJECT];
 		2000
 	} ENDMETHOD;
 
 	// Returns an array of cities where we can recruit from
-	STATIC_METHOD("getRecruitCities") {
-		params [P_THISCLASS, P_POSITION("_pos")];
-		private _radius = CALLSM0("CivilWarGameMode", "getRecruitmentRadius");
+	METHOD("getRecruitCities") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+		private _radius = T_CALLM0("getRecruitmentRadius");
 
 		// Get nearby cities
 		private _cities = ( CALLSM2("Location", "nearLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
@@ -412,8 +412,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	} ENDMETHOD;
 
 	// Returns how many recruits we can get at a certain place from nearby cities
-	STATIC_METHOD("getRecruitCount") {
-		params [P_THISCLASS, P_ARRAY("_cities")];
+	METHOD("getRecruitCount") {
+		params [P_THISOBJECT, P_ARRAY("_cities")];
 
 		private _sum = 0;
 		{

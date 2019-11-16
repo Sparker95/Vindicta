@@ -9,6 +9,9 @@ Sends a detachment from the source garrison to occupy the target location.
 
 Parent: <TakeOrJoinCmdrAction>
 */
+
+#define pr private
+
 CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 	VARIABLE("tgtLocId");
 
@@ -94,20 +97,93 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtLocId);
 
+
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
+		private _srcGarrPos = GETV(_srcGarr, "pos");
+		private _srcGarrEff = GETV(_srcGarr, "efficiency");
+		private _srcGarrComp = GETV(_srcGarr, "composition");
+
+		//diag_log format [" src garr eff: %1", _srcGarrEff];
+		//diag_log format ["  src garr comp: %1", _srcGarrComp];
+
 		ASSERT_OBJECT(_srcGarr);
+		
+		// Bail if garrison is dead
 		if(CALLM(_srcGarr, "isDead", [])) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
 		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
+		private _tgtLocPos = GETV(_tgtLoc, "pos");
+		private _enemyEff = +CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
+		private _enemyEffFromIntel = GETV(_tgtLoc, "efficiency");
+		OOP_INFO_1(" Enemy efficiency from grid : %1", _enemyEff);
+		OOP_INFO_1(" Enemy efficiency from intel: %1", _enemyEffFromIntel);
+		_enemyEff = EFF_MAX(_enemyEff, _enemyEffFromIntel);	// Maximum eff from grid and intel
+		OOP_INFO_1(" Resulting               eff: %1", _enemyEff);
 		ASSERT_OBJECT(_tgtLoc);
 		private _side = GETV(_srcGarr, "side");
 		private _toGarr = CALLM(_tgtLoc, "getGarrison", [_side]);
+
+		// Bail if we already own this place
 		if(!IS_NULL_OBJECT(_toGarr)) exitWith {
 			// We never take a location we already have a garrison at, this should be reinforcement instead 
 			// (however we can get here if multiple potential actions are generated targetting the same location
 			// in the same planning cycle, and one gets accepted)
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		// Bail if the garrison clearly can not destroy the enemy
+		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		// Set up flags for allocation algorithm
+		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
+		private _payloadWhitelistMask = T_comp_infantry_mask;	// Take only infantry as an attacking force
+		// If it's too far to travel, also allocate transport
+		// todo add other transport types?
+		#ifndef _SQF_VM
+		pr _dist = _tgtLocPos distance2D _srcGarrPos;
+		#else
+		pr _dist = _tgtLocPos distance _srcGarrPos;
+		#endif
+		if ( _dist > TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
+			_allocationFlags append [	SPLIT_VALIDATE_TRANSPORT,		// Make sure we can transport ourselves
+										// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
+										SPLIT_VALIDATE_TRANSPORT_EXT];
+			pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;	// Take infantry or vehicles as an attacking force
+		};
+
+		_enemyEff set [T_EFF_transport, EFF_GARRISON_MIN_EFF#T_EFF_transport];
+		_enemyEff set [T_EFF_crew, EFF_GARRISON_MIN_EFF#T_EFF_crew];	// Ensure minimal amount of crew (infantry)
+
+		// Try to allocate units
+		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+		pr _transportBlacklistMask = [];
+		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+
+		//diag_log format ["Allocated units for take location: %1", _allocResult];
+
+		// Bail if we have failed to allocate resources
+		if ((count _allocResult) == 0) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
+
+		// Bail if remaining efficiency is below minimum level for this garrison
+		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
+			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
+			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
  
@@ -117,38 +193,30 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
 		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
 
-		// What efficiency can we send for the detachment?
-		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
 		// Save the calculation of the efficiency for use later.
 		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
 		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
 		// which are only available now, during scoring/planning).
-		T_SET_AST_VAR("detachmentEffVar", _detachEff);
+		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
+		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
 
-		// We use the sum of the defensive efficiency sub vector for calculations
-		// TODO: is this right? should it be attack sub vector instead?
-		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
-
-		private _srcGarrPos = GETV(_srcGarr, "pos");
-		private _tgtLocPos = GETV(_tgtLoc, "pos");
 
 		// How much to scale the score for distance to target
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
-		private _dist = _srcGarrPos distance _tgtLocPos;
 		// How much to scale the score for transport requirements
-		private _transportationScore = if(_dist < 2000) then {
-			// If we are less than 2000m then we don't need transport so set the transport score to 1
+		private _transportationScore = if(_dist < TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
+			// If we are less than 1500m then we don't need transport so set the transport score to 1
 			// (we "fullfilled" the transport requirements of not needing transport)
-			T_SET_AST_VAR("splitFlagsVar", [FAIL_UNDER_EFF ARG OCCUPYING_FORCE_HINT]);
 			1
 		} else {
 			// We will force transport on top of scoring if we need to.
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG FAIL_UNDER_EFF ARG CHEAT_TRANSPORT ARG OCCUPYING_FORCE_HINT]);
-			// Call to the garrison to calculate the transportation score
-			CALLM(_srcGarr, "transportationScore", [_detachEff])
+			CALLM1(_srcGarr, "transportationScore", _effRemaining);
 		};
 
+		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
+
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
+		
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 		private _scorePriority = CALLM(_strategy, "getLocationDesirability", [_worldNow ARG _tgtLoc ARG _side]);
 
@@ -170,15 +238,14 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("startDateVar", _startDate);
 
 		// Uncomment for some more debug logging
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
-		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		 OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
+		 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
-		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
-		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _detachEff]);
+		private _score = CALLM(_strategy, "getTakeLocationScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtLoc ARG _effAllocated]);
 		T_CALLM("setScore", [_score]);
 
 		#ifdef OOP_INFO
@@ -186,45 +253,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			_side, LABEL(_srcGarr), LABEL(_tgtLoc), _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
-	} ENDMETHOD;
-
-	// Get composition of reinforcements we should send from src to tgt. 
-	// This is the min of what src has spare and what tgt wants.
-	// TODO: factor out logic for working out detachments for various situations
-	/* private */ METHOD("getDetachmentEff") {
-		params [P_THISOBJECT, P_STRING("_worldNow"), P_STRING("_worldFuture")];
-		ASSERT_OBJECT_CLASS(_worldNow, "WorldModel");
-		ASSERT_OBJECT_CLASS(_worldFuture, "WorldModel");
-
-		T_PRVAR(srcGarrId);
-		T_PRVAR(tgtLocId);
-
-		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
-		ASSERT_OBJECT(_srcGarr);
-		private _tgtLoc = CALLM(_worldFuture, "getLocation", [_tgtLocId]);
-		ASSERT_OBJECT(_tgtLoc);
-
-		// Calculate how much efficiency is available for detachment then clamp desired efficiency against it
-
-		// How much resources src can spare.
-		private _srcOverEff = EFF_MAX_SCALAR(CALLM(_worldNow, "getOverDesiredEff", [_srcGarr]), 0);
-
-		// How much resources tgt needs
-		private _tgtRequiredEff = CALLM(_worldNow, "getDesiredEff", [GETV(_tgtLoc, "pos")]);
-		// EFF_MAX_SCALAR(EFF_MUL_SCALAR(CALLM(_worldFuture, "getOverDesiredEff", [_tgtLoc]), -1), 0);
-
-		// Min of those values
-		// TODO: make this a "nice" composition. We don't want to send a bunch of guys to walk or whatever.
-		private _effAvailable = EFF_MAX_SCALAR(EFF_FLOOR(EFF_MIN(_srcOverEff, _tgtRequiredEff)), 0);
-
-		//OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 getDetachmentEff: _tgtRequiredEff = %5, _srcOverEff = %6, _effAvailable = %7", [_worldNow ARG _thisObject ARG _srcGarr ARG _tgtLoc ARG _tgtRequiredEff ARG _srcOverEff ARG _effAvailable]);
-
-		// Only send a reasonable amount at a time
-		// TODO: min compositions should be different for detachments and garrisons holding outposts.
-		if(!EFF_GTE(_effAvailable, EFF_MIN_EFF)) exitWith { EFF_ZERO };
-
-		//if(_effAvailable#0 < MIN_COMP#0 or _effAvailable#1 < MIN_COMP#1) exitWith { [0,0] };
-		_effAvailable
 	} ENDMETHOD;
 
 	/*
@@ -259,24 +287,34 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 #define SRC_POS [0, 0, 0]
-#define TARGET_POS [1, 2, 3]
+#define TARGET_POS [1000, 2, 3]
 
 ["TakeLocationCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _srcEff = [100,100,100,100,100,100,100,100];
+	private _srcComp = [30] call comp_fnc_new;
+	for "_i" from 0 to (T_INF_SIZE-1) do {
+		(_srcComp#T_INF) set [_i, 100]; // Otherwise crew requirement will fail
+	};
+	private _srcEff = [_srcComp] call comp_fnc_getEfficiency;
 	SETV(_garrison, "efficiency", _srcEff);
+	SETV(_garrison, "composition", _srcComp);
 	SETV(_garrison, "pos", SRC_POS);
 	SETV(_garrison, "side", WEST);
 
 	private _targetLocation = NEW("LocationModel", [_world ARG "<undefined>"]);
+	SETV(_targetLocation, "type", LOCATION_TYPE_BASE);
 	SETV(_targetLocation, "pos", TARGET_POS);
 
 	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetLocation, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+
+	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	diag_log format ["Take location final score: %1", _finalScore];
+	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
 	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);

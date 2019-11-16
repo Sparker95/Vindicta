@@ -14,10 +14,10 @@ CLASS("AttackCmdrAction", "CmdrAction")
 	VARIABLE("srcGarrId");
 	// Target (see CmdrAITarget.sqf), an AST_VAR wrapper
 	VARIABLE("targetVar");
-	// Flags to use when splitting off the detachment to perform the attack, an AST_VAR wrapper
-	VARIABLE("splitFlagsVar");
 	// Efficency of the detachment, an AST_VAR wrapper
 	VARIABLE("detachmentEffVar");
+	// Composition of the detachment, an AST_VAR wrapper
+	VARIABLE("detachmentCompVar");
 	// Garrison ID of the detachment performing the attack, an AST_VAR wrapper
 	VARIABLE("detachedGarrIdVar");
 	// Start date for the attack action, an AST_VAR wrapper
@@ -53,6 +53,9 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
 		T_SETV("detachmentEffVar", _detachmentEffVar);
 
+		private _detachmentCompVar = MAKE_AST_VAR(+T_comp_null);
+		T_SETV("detachmentCompVar", _detachmentCompVar);
+
 		// Target could be modified during the action (redirect etc.).
 		private _targetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("targetVar", _targetVar);
@@ -61,9 +64,6 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		private _rtbTargetVar = T_CALLM("createVariable", [[]]);
 		T_SETV("rtbTargetVar", _rtbTargetVar);
 
-		// Flags to use when splitting off the detachment garrison		
-		private _splitFlagsVar = T_CALLM("createVariable", [[ASSIGN_TRANSPORT]]);
-		T_SETV("splitFlagsVar", _splitFlagsVar);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -82,7 +82,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 
 		T_PRVAR(srcGarrId);
 		T_PRVAR(detachmentEffVar);
-		T_PRVAR(splitFlagsVar);
+		T_PRVAR(detachmentCompVar);
 		T_PRVAR(targetVar);
 		T_PRVAR(startDateVar);
 		T_PRVAR(rtbTargetVar);
@@ -104,8 +104,8 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_SPLIT, 			// State change if successful
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_srcGarrIdVar, 						// Garrison to split (constant)
+				_detachmentCompVar,					// COmposition of detachment
 				_detachmentEffVar, 					// Efficiency we want the detachment to have (constant)
-				_splitFlagsVar, 					// Flags for split operation
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);
 

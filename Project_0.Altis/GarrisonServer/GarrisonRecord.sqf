@@ -24,7 +24,7 @@ CLASS("GarrisonRecord", "")
 	// Serialized CmdrActionRecord object
 	VARIABLE_ATTR("cmdrActionRecordSerial", [ATTR_SERIALIZABLE]);
 
-	// Array with composition
+	// Array with composition (like Garrison.compositionClassNames)
 	VARIABLE_ATTR("composition", [ATTR_SERIALIZABLE]);
 
 	// Ref to the map marker object, local on client side
@@ -79,7 +79,7 @@ CLASS("GarrisonRecord", "")
 		pr _AI = GETV(_gar, "AI");
 		T_SETV("pos", CALLM0(_AI, "getPos"));
 		T_SETV("side", GETV(_gar, "side"));
-		T_SETV("composition", GETV(_gar, "composition"));
+		T_SETV("composition", GETV(_gar, "compositionClassNames"));
 		T_SETV("cmdrActionRecordSerial", GETV(_AI, "cmdrActionRecordSerial"));
 		T_SETV("buildResources", CALLM0(_gar, "getBuildResources"));
 		T_SETV("location", GETV(_gar, "location"));

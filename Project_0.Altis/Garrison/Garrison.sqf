@@ -48,7 +48,10 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
-	VARIABLE_ATTR("composition",[ATTR_PRIVATE]);
+	VARIABLE("compositionClassNames");
+
+	// Array with composition: each element at [_cat][_subcat] is an amount of units of this type
+	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE]);
 
 	// Flag which is reset at each process call
 	// It is set by various functions changing state of this garrison
@@ -119,7 +122,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			_tempArray resize _x;
 			_comp pushBack (_tempArray apply {[]});
 		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
-		T_SETV("composition", _comp);
+		T_SETV("compositionClassNames", _comp);
+		
+		T_SETV("compositionNumbers", +T_comp_null);
 
 		// Create AI object
 		// Create an AI brain of this garrison and start it
@@ -172,22 +177,31 @@ CLASS("Garrison", "MessageReceiverEx");
 	Registers with commander and global garrison list
 	Sets "active" variable to true
 
+	!! Must be called from commander thread !!
+
 	Returns: GarrisonModel
 	*/
 	METHOD("activate") {
 		params [P_THISOBJECT];
 
-		// Start AI object
-		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
-
 		// Set 'active' flag
 		T_SETV("active", true);
 
-		// Notify GarrisonServer
-		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		T_CALLM2("postMethodAsync", "_activate", []);
 
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
+	} ENDMETHOD;
+
+	// internal
+	METHOD("_activate") {
+		params [P_THISOBJECT];
+
+		// Start AI object
+		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 	} ENDMETHOD;
 
 	/*
@@ -1117,6 +1131,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		//__MUTEX_LOCK;
 		
+		T_GETV("effTotal") # T_EFF_transport
+
+		/*
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
@@ -1145,6 +1162,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		//__MUTEX_UNLOCK;
 
 		_transportCapacity
+		*/
 	} ENDMETHOD;
 	
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1182,6 +1200,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Check if the unit is already in a garrison
 		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
+		OOP_INFO_1("  unit's garrison: %1", _unitGarrison);
 		if(_unitGarrison != "") then {
 			// Remove unit from its previous garrison
 			CALLM1(_unitGarrison, "removeUnit", _unit);
@@ -1303,6 +1322,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("captureUnit") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+
+		OOP_INFO_1("CAPTURE UNIT: %1", _unit);
 
 		// Warn if used on infantry
 		if (CALLM0(_unit, "isInfantry")) exitWith {
@@ -1700,7 +1721,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Capture all units
-		pr _srcUnits = GETV(_garrison, "units");
+		pr _srcUnits = +GETV(_garrison, "units"); // Make a deep copy because this array will be modified!
+		OOP_INFO_1("Capturing units: %1", _srcUnits);
 		{
 			T_CALLM1("captureUnit", _x);
 		} forEach _srcUnits;
@@ -1846,18 +1868,18 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	/*
-	Method: addUnitsFromComposition
+	Method: addUnitsFromCompositionClassNames
 	Adds units to this garrison from another garrison.
-	Unit arrangement is specified by composition array.
+	Unit arrangement is specified by composition array with class names.
 
 	Parameters: _garSrc, _comp
 	
 	_garSrc - source <Garrison>
-	_comp - composition array. See "composition" member variable and how it's organized.
+	_comp - composition array. See "compositionClassNames" member variable and how it's organized.
 	
 	Returns: Number, amount of unsatisfied matches. 0 if all composition elements were matched.
 	*/
-	METHOD("addUnitsFromComposition") {
+	METHOD("addUnitsFromCompositionClassNames") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
 
 		OOP_INFO_1("ADD UNITS FROM COMPOSITION: %1", _this);
@@ -1958,6 +1980,112 @@ CLASS("Garrison", "MessageReceiverEx");
 		_numUnsat
 	} ENDMETHOD;
 	
+	/*
+	Method: addUnitsFromCompositionNumbers
+	Adds units to this garrison from another garrison.
+	Unit arrangement is specified by composition array with numbers.
+
+	Parameters: _garSrc, _comp
+	
+	_garSrc - source <Garrison>
+	_comp - composition array. See "compositionNumbers" member variable and how it's organized.
+	
+	Returns: Bool, true if transfer was successfull.
+	*/
+	METHOD("addUnitsFromCompositionNumbers") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_garSrc"), P_ARRAY("_comp")];
+
+		OOP_INFO_1("ADD UNITS FROM COMPOSITION NUMBERS: %1", _this);
+
+		// Bail if garSrc is destroyed for some reason
+		if (!IS_OOP_OBJECT(_garSrc)) exitWith {
+			OOP_ERROR_1("Source garrison object is invalid: %1", _garSrc);
+			false
+		};
+
+		__MUTEX_LOCK;
+
+		// Ensure that we have enough resources
+		pr _compositionNumbers = GETV(_garSrc, "compositionNumbers");
+		if (!([_compositionNumbers, _comp] call comp_fnc_greaterOrEqual)) exitWith {
+			OOP_WARNING_1("Not enough resources to add units from composition: %1", _garSrc);
+			OOP_WARNING_1("  Other garrison's composition: %1", _compositionNumbers);
+			OOP_WARNING_1("  Required         composition: %1", _comp);
+			false
+		};
+
+		pr _unitsSrc = +CALLM0(_garSrc, "getUnits"); // Make a deep copy! Don't want to break it.
+
+		// Find units for each category
+		pr _unitsFound = [[], [], [], []];
+		_unitsFound params ["_unitsFoundInf", "_unitsFoundVeh", "_unitsFoundDrones", "_unitsFoundCargo"];
+		// forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
+		{
+			pr _catID = _x;
+			// forEach _comp#_catID;
+			{
+				pr _nUnitsNeeded = _x;
+				pr _subcatID = _foreachindex;
+				while {_nUnitsNeeded > 0} do {
+					pr _index = _unitsSrc findIf {
+						CALLM0(_x, "getSubcategory") == _subCatID;
+					};
+
+					if (_index == -1) exitWith { OOP_ERROR_0("addUnitsFromCompositionNumbers Failed to find a unit?!") }; // WTF it should not happen, we have just verified that
+
+					(_unitsFound#_catID) pushBack (_unitsSrc#_index);
+					_unitsSrc deleteAt _index;
+					_nUnitsNeeded = _nUnitsNeeded - 1;
+				};
+			} forEach _comp#_catID;
+		} forEach [T_INF, T_VEH, T_DRONE, T_CARGO];
+
+		// Reorganize the infantry units we are moving
+		if (count _unitsFoundInf > 0) then {
+			_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+			pr _newInfGroups = [_newGroup];
+			CALLM1(_garSrc, "addGroup", _newGroup); // Add the new group to the src garrison first
+			// forEach _unitsFoundInf;
+			{
+				// Create a new inf group if the current one is 'full'
+				if (count CALLM0(_newGroup, "getUnits") > 6) then {
+					_newGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_IDLE]);
+					_newInfGroups pushBack _newGroup;
+					CALLM1(_garSrc, "addGroup", _newGroup);
+				};
+
+				// Add the unit to the group
+				CALLM1(_newGroup, "addUnit", _x);
+			} forEach _unitsFoundInf;
+
+			// Move all the infantry groups
+			{
+				CALLM1(_thisObject, "addGroup", _x);
+			} forEach _newInfGroups;
+		};
+
+		// Move all the vehicle units into one group
+		// Vehicles need to be moved within a group too
+		pr _vehiclesAndDrones = _unitsFoundVeh + _unitsFoundDrones;
+		OOP_INFO_1("Moving vehicles and drones: %1", _vehiclesAndDrones);
+		if (count _vehiclesAndDrones > 0) then {
+			pr _newVehGroup = NEW("Group", [T_GETV("side") ARG GROUP_TYPE_VEH_NON_STATIC]); // todo we assume we aren't moving statics anywhere right now
+			CALLM1(_garSrc, "addGroup", _newVehGroup);
+			{
+				CALLM1(_newVehGroup, "addUnit", _x);
+			} forEach _vehiclesAndDrones;
+
+			// Move the veh group
+			CALLM1(_thisObject, "addGroup", _newVehGroup);
+		};
+
+		// Delete empty groups in the src garrison
+		CALLM0(_garSrc, "deleteEmptyGroups");
+
+		__MUTEX_UNLOCK;
+
+		true
+	} ENDMETHOD;
 	
 	/*
 	Method: getRequiredCrew
@@ -2139,8 +2267,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV(_varName, T_GETV(_varName)+1);
 
 		// Update composition array
-		pr _comp = T_GETV("composition");
+		pr _comp = T_GETV("compositionClassNames");
 		(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
+
+		pr _compNumbers = T_GETV("compositionNumbers");
+		[_compNumbers, _catID, _subcatID, 1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;	
@@ -2187,9 +2318,12 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV(_varName, T_GETV(_varName)-1);
 
 		// Update composition array
-		pr _comp = T_GETV("composition");
+		pr _comp = T_GETV("compositionClassNames");
 		pr _array = _comp#_catID#_subCatID;
 		_array deleteAt (_array find ([_className] call t_fnc_classNameToNumber));
+
+		pr _compNumbers = T_GETV("compositionNumbers");
+		[_compNumbers, _catID, _subcatID, -1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -2237,7 +2371,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
-	METHOD("getComposition") {
+	METHOD("getCompositionClassNames") {
 		params [P_THISOBJECT];
 		//__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
@@ -2252,7 +2386,20 @@ CLASS("Garrison", "MessageReceiverEx");
 			} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
 			_comp
 		};
-		pr _return = +T_GETV("composition");
+		pr _return = +T_GETV("compositionClassNames");
+		//__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+	METHOD("getCompositionNumbers") {
+		params [P_THISOBJECT];
+		//__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			[0] call comp_fnc_new;
+		};
+		pr _return = +T_GETV("compositionNumbers");
 		//__MUTEX_UNLOCK;
 		_return
 	} ENDMETHOD;
@@ -2698,4 +2845,37 @@ CLASS("Garrison", "MessageReceiverEx");
 
 ENDCLASS;
 
-SETSV("Garrison", "all", []);
+if (isNil { GETSV("Garrison", "all") } ) then {
+	SETSV("Garrison", "all", []);
+};
+
+#ifdef _SQF_VM
+
+
+
+["Garrison.add units", {
+	private _actual = NEW("Garrison", [WEST]);
+	private _Test_group_args = [WEST, 0]; // Side, group type
+	private _subcatID = T_INF_rifleman;
+	private _Test_unit_args = [tNATO, T_INF, _subcatID, -1];
+	private _group = NEW("Group", _Test_group_args);
+	private _eff1 = +T_EFF_null;
+	private _comp1 = +T_comp_null;
+	for "_i" from 0 to 19 do
+	{
+		private _unit = NEW("Unit", _Test_unit_args + [_group]);
+		private _unitEff = CALLM(_unit, "getEfficiency", []);
+		_eff1 = EFF_ADD(_eff1, _unitEff);
+		[_comp1, T_INF, _subcatID, 1] call comp_fnc_addValue;
+	};
+
+	CALLM(_actual, "addGroup", [_group]);
+	
+	//diag_log format ["Garrison total eff after adding group: %1", CALLM0(_actual, "getEfficiencyTotal")];
+	//diag_log format ["Garrison composition after adding group: %1", CALLM0(_actual, "getCompositionNumbers")];
+	["Efficiency", CALLM0(_actual, "getEfficiencyTotal") isEqualTo _eff1] call test_Assert;
+	["Composition", CALLM0(_actual, "getCompositionNumbers") isEqualTo _comp1] call test_Assert;
+
+}] call test_AddTest;
+
+#endif

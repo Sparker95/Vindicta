@@ -2,6 +2,7 @@
 #include "..\OOP_Light\OOP_Light.h"
 #include "ClientMapUI\ClientMapUI_Macros.h"
 #include "UndercoverUI\UndercoverUI_Macros.h"
+#include "defineddikcodes.inc"
 
 diag_log "--- Initializing player UI";
 
@@ -22,7 +23,7 @@ gBuildUI = NEW("BuildUI", []);
 (finddisplay 46) displayAddEventHandler ["KeyDown", {
 	params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
 	//diag_log format ["KeyDown: %1", _this];
-	if (_key == 0x16) then { // U key
+	if (_key == DIK_U) then { // U key
 		if (isNil "gInGameMenu") then {
 			gInGameMenu = NEW("InGameMenu", []);
 			private _code = {gInGameMenu = nil;};

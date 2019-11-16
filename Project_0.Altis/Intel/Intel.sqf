@@ -228,7 +228,6 @@ CLASS("IntelLocation", "Intel")
 	If this variable is equal to [], it means unit amounts are not known
 	*/
 	VARIABLE_ATTR("unitData", [ATTR_SERIALIZABLE]);
-
 	
 	/* variable: accuracyRadius
 	Number, radius in meters that specifies how accurate is the intel.
@@ -236,6 +235,10 @@ CLASS("IntelLocation", "Intel")
 	0 means absolutely accurate coordinates.
 	*/
 	VARIABLE_ATTR("accuracyRadius", [ATTR_SERIALIZABLE]);
+
+	/* variable: efficiency
+	Efficiency vector, only useful for commander */
+	VARIABLE("efficiency");
 
 	/* variable: allMapMarker
 	<MapMarker> associated with this intel*/

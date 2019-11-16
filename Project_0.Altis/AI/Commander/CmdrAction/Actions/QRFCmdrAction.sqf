@@ -9,6 +9,8 @@ to attack the cluster using the garrison.
 
 Parent: <AttackCmdrAction>
 */
+#define pr private
+
 CLASS("QRFCmdrAction", "AttackCmdrAction")
 	// The target cluster model ID
 	VARIABLE("tgtClusterId");
@@ -107,49 +109,112 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		T_PRVAR(tgtClusterId);
 
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
+		private _srcGarrPos = GETV(_srcGarr, "pos");
+		private _srcGarrEff = GETV(_srcGarr, "efficiency");
+		private _srcGarrComp = GETV(_srcGarr, "composition");
+		
 		ASSERT_OBJECT(_srcGarr);
+
 		private _tgtCluster = CALLM(_worldFuture, "getCluster", [_tgtClusterId]);
+		private _enemyEff = +GETV(_tgtCluster, "efficiency");
+
 		ASSERT_OBJECT(_tgtCluster);
+		private _tgtClusterPos = GETV(_tgtCluster, "pos");
 
 		// Source or target being dead means action is invalid, return 0 score
 		if(CALLM(_srcGarr, "isDead", []) or CALLM(_tgtCluster, "isDead", [])) exitWith {
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		private _side = GETV(_srcGarr, "side");
+		// Scale enemy efficiency
+		private _scaleFactor = (CALLM1(_worldNow, "calcActivityMultiplier", _tgtClusterPos)) max 1.3;
+		_enemyEff = EFF_MUL_SCALAR(_enemyEff, _scaleFactor);
+		if ((_enemyEff#T_eff_soft) > 0) then {
+			_enemyEff set [T_EFF_soft, (_enemyEff#T_eff_soft) max 6];	// Set min amount of attack force
+		};
+
+		// Bail if the garrison clearly can not destroy the enemy
+		if ( count ([_srcGarrEff, _enemyEff] call eff_fnc_validateAttack) > 0) exitWith {
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		// Set up flags for allocation algorithm
+		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW]; // Validate attack capability, allocate a min amount of infantry
+		private _needTransport = false;
+		// If it's too far to travel, also allocate transport
+		// todo add other transport types?
+		#ifndef _SQF_VM
+		pr _dist = _tgtClusterPos distance2D _srcGarrPos;
+		#else
+		pr _dist = _tgtClusterPos distance _srcGarrPos;
+		#endif
+		if ( _dist > QRF_NO_TRANSPORT_DISTANCE_MAX) then {
+			_allocationFlags pushBack SPLIT_VALIDATE_TRANSPORT;		// Make sure we can transport ourselves
+			_needTransport = true;
+		};
+
+		// Try to allocate units
+		pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
+		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
+		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+		pr _transportBlacklistMask = [];
+		pr _args = [_enemyEff, _allocationFlags, _srcGarrComp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+		private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+
+		// Bail if we have failed to allocate resources
+		if ((count _allocResult) == 0) exitWith {
+			OOP_DEBUG_MSG("Failed to allocate resources", []);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
+		_allocResult params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
+
+		// Bail if remaining efficiency is below minimum level for this garrison
+		/*
+		// Disabled those for now, probably we want QRFs to be quite aggressive
+		pr _srcDesiredEff = CALLM1(_worldNow, "getDesiredEff", _srcGarrPos);
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateAttack) > 0) exitWith {
+			OOP_DEBUG_2("Remaining attack capability requirement not satisfied: %1 VS %2", _effRemaining, _srcDesiredEff);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+		if (count ([_effRemaining, _srcDesiredEff] call eff_fnc_validateCrew) > 0 ) exitWith {	// We must have enough crew to operate vehicles ...
+			OOP_DEBUG_1("Remaining crew requirement not satisfied: %1", _effRemaining);
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+		*/
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,
 		// specifically efficiency, transport and distance. Score is 0 when full requirements cannot be met, and 
 		// increases with how much over the full requirements the source garrison is (i.e. how much OVER the 
 		// required efficiency it is), with a distance based fall off (further away from target is lower scoring).
+		
 
-		// Calculate our possible efficiency
-		private _detachEff = T_CALLM("getDetachmentEff", [_worldNow ARG _worldFuture]);
+
 		// Save the calculation of the efficiency for use later.
 		// We DON'T want to try and recalculate the detachment against the REAL world state when the action is actually active because
 		// it won't be correctly taking into account our knowledge about other actions (as this is represented in the sim world models 
 		// which are only available now, during scoring/planning).
-		T_SET_AST_VAR("detachmentEffVar", _detachEff);
+		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
+		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
+
 
 		// Take the sum of the attack part of the efficiency vector.
-		private _detachEffStrength = EFF_SUB_SUM(EFF_DEF_SUB(_detachEff));
-
-		private _srcGarrPos = GETV(_srcGarr, "pos");
-		private _tgtClusterPos = GETV(_tgtCluster, "pos");
+		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);
 
 		// We scale up the influence of distance in the case of QRFs as reaction time is most important.
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]) * 2;
-		private _dist = _srcGarrPos distance _tgtClusterPos;
-		private _transportationScore = if(_dist < 1000) then {
+		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtClusterPos ARG 4]);
+		_distCoeff = _distCoeff ^ 1.5; // Make it decrease with distance faster
+		private _transportationScore = if(!_needTransport) then {
 			// If we are less than 1000m then we don't need transport so set the transport score to 1
 			// (we "fullfilled" the transport requirements of not needing transport)
 			1
 		} else {
-			// We will cheat transport on top of scoring if we need to
-			T_SET_AST_VAR("splitFlagsVar", [ASSIGN_TRANSPORT ARG CHEAT_TRANSPORT]);
-			// Call to the garrison to calculate the transportation score
-			CALLM(_srcGarr, "transportationScore", [_detachEff])
+			//CALLM1(_srcGarr, "transportationScore", _effRemaining)
+			// We probably don't care if we have enough transport left in case of QRF?
+			1
 		};
 
 		// Our final resource score combining available efficiency, distance and transportation.
@@ -159,15 +224,16 @@ CLASS("QRFCmdrAction", "AttackCmdrAction")
 		// TODO:OPT cache these scores!
 		private _scorePriority = 1;
 
-		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		// OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _effAllocated = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
 		// 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtCluster) ARG [_scorePriority ARG _scoreResource] 
-		// 	ARG _detachEff ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		// 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it
+		private _side = GETV(_srcGarr, "side");
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		private _baseScore = MAKE_SCORE_VEC(_scorePriority, _scoreResource, 1, 1);
-		private _score = CALLM(_strategy, "getQRFScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtCluster ARG _detachEff]);
+		private _score = CALLM(_strategy, "getQRFScore", [_thisObject ARG _baseScore ARG _worldNow ARG _worldFuture ARG _srcGarr ARG _tgtCluster ARG _effAllocated]);
 		T_CALLM("setScore", [_score]);
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""QRF"", ""src_garrison"": ""%2"", ""tgt_cluster"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
@@ -252,34 +318,43 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 #define SRC_POS [0, 0, 0]
-#define TARGET_POS [1, 2, 3]
+#define TARGET_POS [1000, 2, 3]
 
-["TakeLocationCmdrAction", {
+["QRFCmdrAction", {
 	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	private _srcEff = [100,100,100,100,100,100,100,100];
+	private _srcComp = [30] call comp_fnc_new;
+	for "_i" from 0 to (T_INF_SIZE-1) do {
+		(_srcComp#T_INF) set [_i, 100]; // Otherwise crew requirement will fail
+	};
+	private _srcEff = [_srcComp] call comp_fnc_getEfficiency;
 	SETV(_garrison, "efficiency", _srcEff);
+	SETV(_garrison, "composition", _srcComp);
 	SETV(_garrison, "pos", SRC_POS);
 	SETV(_garrison, "side", WEST);
 
-	private _targetLocation = NEW("LocationModel", [_world ARG "<undefined>"]);
-	SETV(_targetLocation, "pos", TARGET_POS);
+	private _targetCluster = NEW("ClusterModel", [_world ARG []]);
+	private _targetEff = +T_EFF_null;
+	_targetEff set [T_EFF_soft, 10];
+	SETV(_targetCluster, "pos", TARGET_POS);
+	SETV(_targetCluster, "efficiency", _targetEff);
 
-	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetLocation, "id")]);
+	private _thisObject = NEW("QRFCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetCluster, "id")]);
 	
 	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
 	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	diag_log format ["QRF action final score: %1", _finalScore];
+	["Score is above zero", _finalScore > 0] call test_Assert;
 
 	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
 	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
 	["Now sim state correct", _nowSimState == CMDR_ACTION_STATE_READY_TO_MOVE] call test_Assert;
 	["Future sim state correct", _futureSimState == CMDR_ACTION_STATE_END] call test_Assert;
 	
-	private _futureLocation = CALLM(_future, "getLocation", [GETV(_targetLocation, "id")]);
-	private _futureGarrison = CALLM(_futureLocation, "getGarrison", [WEST]);
-	["Location is occupied in future", !IS_NULL_OBJECT(_futureGarrison)] call test_Assert;
-	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
+	private _futureCluster = CALLM(_future, "getCluster", [GETV(_targetCluster, "id")]);
+	["Cluster is destroyed in future", CALLM0(_futureCluster, "isDead")] call test_Assert;
 }] call test_AddTest;
 
 #endif

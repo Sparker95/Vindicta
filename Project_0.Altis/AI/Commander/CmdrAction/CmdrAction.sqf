@@ -536,6 +536,15 @@ CLASS("CmdrAction", "RefCounted")
 	} ENDMETHOD;
 
 	/*
+	Method: (static)getDetachmentStrength
+	Returns number from given efficiency vector which represents how 'strong' the detachment is
+	*/
+	STATIC_METHOD("getDetachmentStrength") {
+		params [P_THISCLASS, P_ARRAY("_eff")];
+		(_eff#T_EFF_soft) + 1.5*(_eff#T_EFF_medium) + 2*(_eff#T_EFF_armor) + 2*(_eff#T_EFF_air)
+	} ENDMETHOD;
+
+	/*
 	Method: (virtual) getRecordSerial
 	Returns a serialized CmdrActionRecord associated with this action.
 	Derived classes should implement this to have proper support for client's UI.
