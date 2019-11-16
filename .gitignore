@@ -4,6 +4,7 @@
 .settings
 node_modules
 _build
+tools/_build
 
 #VSCODE
 .vscode/ipch/*

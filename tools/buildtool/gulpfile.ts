@@ -21,7 +21,7 @@ const presets: Preset[] = require('./_presets.json');
 const paths: FolderStructureInfo = {
     frameworkFolder: resolve(ROOT_DIR, 'Project_0.Altis'),
     missionsFolder: resolve(ROOT_DIR),
-    workDir: resolve(ROOT_DIR, "_build")
+    workDir: resolve("../", "_build")
 };
 
 
@@ -136,6 +136,6 @@ gulp.task('default',
     gulp.series(
         gulp.task('build'),
         gulp.task('pbo'),
-        // gulp.task('zip'),
+        //gulp.task('zip'),
     )
 );
