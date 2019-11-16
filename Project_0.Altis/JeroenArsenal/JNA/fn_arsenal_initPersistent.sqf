@@ -10,10 +10,15 @@ Author: Sparker
 
 if (!isServer) exitWith {};
 
-params [["_object", objNull, [objNull]]];
+params [["_object", objNull, [objNull]], ["_initialValue", []]];
 
 // Bail if a null object is passed (why??)
 if (isNull _object) exitWith {};
+
+// Set initial arsenal item array value
+if (count _initialValue > 0) then {
+	_object setVariable ["jna_datalist", _initialValue];
+};
 
 // Generate a JIP ID
 private _ID = 0;

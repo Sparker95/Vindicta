@@ -231,6 +231,11 @@ CLASS("Location", "MessageReceiverEx")
 			// Init radio object actions
 			CALLSM1("Location", "initRadioObject", _hObject);
 		};
+
+		_index = location_bt_medical find _type;
+		if (_index != -1) then {
+			CALLSM1("Location", "initMedicalObject", _hObject);
+		};
 	} ENDMETHOD;
 
 
@@ -1151,6 +1156,66 @@ CLASS("Location", "MessageReceiverEx")
 
 
 	// Initalization of different objects
+	STATIC_METHOD("initMedicalObject") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		if (!isServer) exitWith {
+			OOP_ERROR_0("initMedicalObject must be called on server!");
+		};
+
+		// Generate a JIP ID
+		private _ID = 0;
+		if(isNil "location_medical_nextID") then {
+			location_medical_nextID = 0;
+			_ID = 0;
+		} else {
+			_ID = location_medical_nextID;
+		};
+		location_medical_nextID = location_medical_nextID + 1;
+
+		private _JIPID = format ["loc_medical_jip_%1", _ID];
+		_object setVariable ["loc_medical_jip", _JIPID];
+
+		// Add an event handler to delete the init from the JIP queue when the object is gone
+		_object addEventHandler ["Deleted", {
+			params ["_entity"];
+			private _JIPID = _entity getVariable "loc_medical_jip";
+			if (isNil "_JIPID") exitWith {
+				OOP_ERROR_1("loc_medical_jip not found for object %1", _entity);
+			};
+			remoteExecCall ["", _JIPID]; // Remove it from the queue
+		}];
+
+		REMOTE_EXEC_CALL_STATIC_METHOD("Location", "initMedicalObjectAction", [_object], 0, _JIPID); // global, JIP
+
+	} ENDMETHOD;
+
+	STATIC_METHOD("initMedicalObjectAction") {
+		params [P_THISCLASS, P_OBJECT("_object")];
+
+		OOP_INFO_1("INIT MEDICAL OBJECT ACTION: %1", _object);
+
+		// Estimate usage radius
+		private _radius = (sizeof typeof _object) + 5;
+
+		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
+			{
+				player setdamage 0;
+				[player, player] call ACE_medical_fnc_treatmentAdvanced_fullHealLocal;
+				player playMove "AinvPknlMstpSlayWrflDnon_medic";
+			}, 
+			0, // Arguments
+			100, // Priority
+			true, // ShowWindow
+			false, //hideOnUse
+			"", //shortcut
+			"true", //condition
+			_radius, //radius
+			false, //unconscious
+			"", //selection
+			""]; //memoryPoint
+	} ENDMETHOD;
+
 	STATIC_METHOD("initRadioObject") {
 		params [P_THISCLASS, P_OBJECT("_object")];
 

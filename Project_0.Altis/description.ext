@@ -2,8 +2,8 @@
 
 
 author="Sparker, Jeroen, Marvis, Sen, Billw";
-OnLoadName = "Project_0";
-OnLoadMission = "Project_0";
+OnLoadName = "Vindicta";
+OnLoadMission = "Vindicta";
 
 allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
@@ -15,7 +15,7 @@ unsafeCVL = 1;
 
 // ---- Respawn ----
 respawn = 3;
-respawnButton = 0; // 0: disabled - 1: enabled. Default: 1
+respawnButton = 1; // 0: disabled - 1: enabled. Default: 1
 respawnDelay = 2; // Default: ?
 // respawnOnStart = 1;
 DisabledAI = 1;
@@ -32,14 +32,12 @@ class CfgTaskEnhancements
     };
 */
 
-/*
 class Header
 {
-gameType = COOP;
-minplayers=1;
-maxplayers=50;
+    gameType = COOP;
+    minplayers=1;
+    maxplayers=50;
 };
-*/
 
 class CfgSounds
 {

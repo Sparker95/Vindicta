@@ -198,6 +198,13 @@ location_bt_radio =
 	"Land_Communication_F"		// Tall tower with antennas on top, often found at military outposts
 ];
 
+// Objects which heal units
+location_bt_medical =
+[
+	"Land_MedicalTent_01_digital_closed_F",
+	"Land_MedicalTent_01_brownhex_closed_F"
+];
+
 /*
 _newdir = direction b + 180;
 (vehicle player) setDir _newDir;

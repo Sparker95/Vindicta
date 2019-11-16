@@ -42,6 +42,7 @@ class JN {
 		class arsenal_removeItem {};
 		class arsenal_requestOpen {};
 		class arsenal_requestClose {};
+		class arsenal_getEmptyArray {};
 	};
 	class JNG {
 		file = "JeroenArsenal\JNG";
@@ -59,6 +60,8 @@ class JN {
 		class garage_updatePoints {};
 	};
 	
+	/*
+	// Sorry had to disable that, it seems to desynchronize and nullify fual amounts sometimes
 	class Fuel {
 		file = "JeroenArsenal\Fuel";
 		class fuel_init {postinit = 1;};
@@ -77,6 +80,7 @@ class JN {
 		class fuel_getCargoCapacity {};
 		class fuel_setCargoCapacity {};
 	};
+	*/
 	
 	class Ammo {
 		file = "JeroenArsenal\Ammo";

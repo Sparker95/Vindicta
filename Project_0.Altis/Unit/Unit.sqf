@@ -708,14 +708,14 @@ CLASS(UNIT_CLASS_NAME, "");
 						{
 							pr _itemName = getText (_x >> "name");
 							pr _itemCount = getNumber (_x >> "count");
-							_hO addItemCargoGlobal [_itemName, round (random [0.2*_itemCount, 0.7*_itemCount, 1.2*_itemCount])];
+							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
 						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
 					};
 
 					// Add ADV medical items
 					// Defibrilator
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
-						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [2, 4, 6]];
+						_hO addItemCargoGlobal ["adv_aceCPR_AED", random [4, 8, 12]];
 					};
 					// Splint
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceSplint")) then {
@@ -1614,8 +1614,17 @@ CLASS(UNIT_CLASS_NAME, "");
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 
 		if (_enabled) then {
-			pr _emptyArray = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
-			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _emptyArray]; // Limited Arsenal's empty array for items
+			pr _arsenalArray = call jn_fnc_arsenal_getEmptyArray; // I can't include defineCommon.inc because it includes files from arma and it makes SQF VM complain
+			
+			// Init default unlimited items in the arsenal
+			// Add uniforms and other things
+			{
+				pr _className = _x;
+				pr _index = [_className] call jn_fnc_arsenal_itemType;
+				(_arsenalArray#_index) pushBack [_className, -1];
+			} forEach (g_UM_civHeadgear + g_UM_civUniforms);
+
+			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
 				// Object is currently despawned
 			} else {
@@ -1629,7 +1638,7 @@ CLASS(UNIT_CLASS_NAME, "");
 				clearMagazineCargoGlobal _hO;
 				clearBackpackCargoGlobal _hO;
 
-				[_hO] call jn_fnc_arsenal_initPersistent;
+				[_hO, _arsenalArray] call jn_fnc_arsenal_initPersistent;
 			};
 		} else {
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, []]; // This unit doesn't have arsenal any more
@@ -1654,10 +1663,9 @@ CLASS(UNIT_CLASS_NAME, "");
 
 			// Restore the jna_dataList variable with the arsenal contents
 			pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
-			_hO setVariable ["jna_dataList", _dataList];
 
 			// Initialize the limited arsenal
-			[_hO] call jn_fnc_arsenal_initPersistent;
+			[_hO, _dataList] call jn_fnc_arsenal_initPersistent;
 		};
 	} ENDMETHOD;
 
