@@ -1612,8 +1612,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		// Create the garrison
 		pr _pos = CALLM0(_loc, "getPos");
 		pr _gar = NEW("Garrison", [T_GETV("side") ARG _pos]);
-		CALLM2(_gar, "postMethodSync", "setLocation", [_loc]);
 		CALLM0(_gar, "activate");
+		CALLM2(_gar, "postMethodAsync", "setLocation", [_loc]);
 
 		// Update intel about the location
 		//T_CALLM1("updateLocationData", _loc);

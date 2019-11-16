@@ -177,22 +177,31 @@ CLASS("Garrison", "MessageReceiverEx");
 	Registers with commander and global garrison list
 	Sets "active" variable to true
 
+	!! Must be called from commander thread !!
+
 	Returns: GarrisonModel
 	*/
 	METHOD("activate") {
 		params [P_THISOBJECT];
 
-		// Start AI object
-		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
-
 		// Set 'active' flag
 		T_SETV("active", true);
 
-		// Notify GarrisonServer
-		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		T_CALLM2("postMethodAsync", "_activate", []);
 
 		pr _return = CALL_STATIC_METHOD("AICommander", "registerGarrison", [_thisObject]);
 		_return
+	} ENDMETHOD;
+
+	// internal
+	METHOD("_activate") {
+		params [P_THISOBJECT];
+
+		// Start AI object
+		CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]); // Let's start the party! \o/
+
+		// Notify GarrisonServer
+		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 	} ENDMETHOD;
 
 	/*
@@ -1191,6 +1200,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Check if the unit is already in a garrison
 		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
+		OOP_INFO_1("  unit's garrison: %1", _unitGarrison);
 		if(_unitGarrison != "") then {
 			// Remove unit from its previous garrison
 			CALLM1(_unitGarrison, "removeUnit", _unit);
@@ -1312,6 +1322,8 @@ CLASS("Garrison", "MessageReceiverEx");
 	*/
 	METHOD("captureUnit") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+
+		OOP_INFO_1("CAPTURE UNIT: %1", _unit);
 
 		// Warn if used on infantry
 		if (CALLM0(_unit, "isInfantry")) exitWith {
@@ -1709,7 +1721,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		// Capture all units
-		pr _srcUnits = GETV(_garrison, "units");
+		pr _srcUnits = +GETV(_garrison, "units"); // Make a deep copy because this array will be modified!
+		OOP_INFO_1("Capturing units: %1", _srcUnits);
 		{
 			T_CALLM1("captureUnit", _x);
 		} forEach _srcUnits;
