@@ -89,9 +89,6 @@ call compile preprocessFileLineNumbers "AI\initClasses.sqf";
 // Initialize suspiciosness monitor
 call compile preprocessFileLineNumbers "Undercover\initClasses.sqf";
 
-// Initialize Camp class
-call compile preprocessFileLineNumbers "Camp\initClasses.sqf";
-
 // Initialize Grid class
 call compile preprocessFileLineNumbers "GridStats\Grid.sqf";
 

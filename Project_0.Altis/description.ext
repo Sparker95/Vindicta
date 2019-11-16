@@ -2,8 +2,8 @@
 
 
 author="Sparker, Jeroen, Marvis, Sen, Billw";
-OnLoadName = "Project_0";
-OnLoadMission = "Project_0";
+OnLoadName = "Vindicta";
+OnLoadMission = "Vindicta";
 
 allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;

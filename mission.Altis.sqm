@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=168;
+		nextID=169;
 	};
 	class Camera
 	{
-		pos[]={20874.506,16.443171,14672.828};
-		dir[]={-0.24629055,-0.72683614,-0.64114046};
-		up[]={-0.26064095,0.68680692,-0.67849702};
-		aside[]={-0.93349683,1.231092e-007,0.35859773};
+		pos[]={20873.746,54.735188,14704.335};
+		dir[]={-0.064171493,-0.69630629,-0.71487927};
+		up[]={-0.062254287,0.71773952,-0.69351965};
+		aside[]={-0.99599975,9.8661985e-008,0.089406669};
 	};
 };
 binarizationWanted=0;
@@ -332,7 +332,7 @@ class DynamicSimulation
 randomSeed=16658724;
 class ScenarioData
 {
-	author="Marvis";
+	saving=0;
 	wreckRemovalMaxTime=3600;
 };
 class CustomAttributes
@@ -440,6 +440,7 @@ class Mission
 {
 	class Intel
 	{
+		briefingName="Vindicta";
 		resistanceWest=0;
 		timeOfChanges=1800.0002;
 		startWeather=0.30000001;
