@@ -268,8 +268,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Ensure that we can recruit at this place
 		pr _pos = CALLM0(_loc, "getPos");
-		pr _cities = CALLSM1("CivilWarGameMode", "getRecruitCities", _pos);
-		pr _nRecruits = CALLSM1("CivilWarGameMode", "getRecruitCount", _cities);
+		pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+		pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
 
 		// Bail if we can't recruit here any more
 		if (_nRecruits < 1) exitWith {
