@@ -32,14 +32,12 @@ class CfgTaskEnhancements
     };
 */
 
-/*
 class Header
 {
-gameType = COOP;
-minplayers=1;
-maxplayers=50;
+    gameType = COOP;
+    minplayers=1;
+    maxplayers=50;
 };
-*/
 
 class CfgSounds
 {
