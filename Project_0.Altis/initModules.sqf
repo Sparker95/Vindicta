@@ -17,6 +17,9 @@ if (isNil "OOP_Light_initialized") then {
 	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
 };
 
+// Initialize StorageInterfaces
+call compile preprocessFileLineNumbers "SaveSystem\initClasses.sqf";
+
 //Initialize templates
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";

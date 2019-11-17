@@ -1021,4 +1021,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	*/
 
+/*
+	METHOD("saveObject") {
+		params ["_object"]
+		CALLM(_object, "preSave");
+		private _serial = SERIALIZE_ATTR(_object, ATTR_SAVE);
+		saver.save(_object, _serial);
+	} ENDMETHOD;
+
+	METHOD("loadObject") {
+		params []
+		CALLM(_object, "postLoad");
+
+	} ENDMETHOD;
+*/
+
 ENDCLASS;

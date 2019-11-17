@@ -764,12 +764,10 @@ OOP_serialize_attr = { // todo implement namespace
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	diag_log format ["Mem list of %1 : %2", _classNameStr, _memList];
 	private _memList = _memList select {
 			//_x params ["_varName", "_attributes"];
 			_attr in (_x#1)
 		};
-	diag_log format ["  after filter: %1",_memList];
 
 	private _array = [];
 	_array pushBack _classNameStr;
@@ -1133,7 +1131,7 @@ ENDCLASS;
 	
 	private _objSerial = SERIALIZE_ATTR(_obj, ATTR_SAVE);
 
-	diag_log format ["Serialized obj: %1", _objSerial];
+	//diag_log format ["Serialized obj: %1", _objSerial];
 
 	SETV(_obj, "var_0", 4);
 	SETV(_obj, "var_1", 5);
