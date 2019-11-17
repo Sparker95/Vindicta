@@ -757,6 +757,32 @@ OOP_serialize = { // todo implement namespace
 	_array
 };
 
+// Same as OOP_serialize, but lets choose an attribute
+OOP_serialize_attr = { // todo implement namespace
+	params ["_objNameStr", "_attr"];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	diag_log format ["Mem list of %1 : %2", _classNameStr, _memList];
+	private _memList = _memList select {
+			//_x params ["_varName", "_attributes"];
+			_attr in (_x#1)
+		};
+	diag_log format ["  after filter: %1",_memList];
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array append [GETV(_objNameStr, _varName)];
+	} forEach _memList;
+
+	_array
+};
+
 // Unpack all variables from an array into an existing object
 OOP_deserialize = { // todo implement namespace
 	params ["_objNameStr", "_array"];
@@ -768,6 +794,32 @@ OOP_deserialize = { // todo implement namespace
 	#endif
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
+
+	private _iVarName = 0;
+
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array select _i;
+		(_memList select _iVarName) params ["_varName"];
+		SET_VAR(_objNameStr, _varName, _value);
+		_iVarName = _iVarName + 1;
+	};
+};
+
+// Same as OOP_deserialize, but lets deserialie variables with specified attribute
+OOP_deserialize_attr = {
+	params ["_objNameStr", "_array", "_attr"];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	#ifdef OOP_ASSERT
+	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
+	#endif
+
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	private _memList = _memList select {
+		//_x params ["_varName", "_attributes"];
+		_attr in (_x#1)
+	};
 
 	private _iVarName = 0;
 
@@ -884,6 +936,8 @@ CLASS("RefCounted", "")
 		};
 	} ENDMETHOD;
 ENDCLASS;
+
+// - - - - - - SQF VM - - - - - -
 
 #ifdef _SQF_VM
 
@@ -1061,5 +1115,36 @@ ENDCLASS;
 // 	private _innerObj = GETV(_obj2, "varOOPObject");
 // 	["non simple object", { [_obj2] call OOP_variableToJson isEqualTo format['{ "_id": "%1" , "oop_parent": "JsonTest1" , "oop_public": "<nil>" , "varBool": true , "varString": "a string" , "varNumber": 667 , "varArray": [0,1,2] , "varObject": "CIV ALPHA 0" , "varOOPObject": { "_id": "%2" , "oop_parent": "JsonTestVarObj" , "oop_public": "<nil>" , "var1": 666 , "var2": "String!" } , "varUnset": "<nil>" }', _obj2, _innerObj] }] call test_Assert;
 // }] call test_AddTest;
+
+
+
+CLASS("serAttrTest", "")
+	VARIABLE_ATTR("var_0", [ATTR_SERIALIZABLE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("var_1", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("var_2", [ATTR_SAVE]);
+ENDCLASS;
+
+["OOP Serialize by attribute", {
+	private _obj = NEW("serAttrTest", []);
+	
+	SETV(_obj, "var_0", 0);
+	SETV(_obj, "var_1", 1);
+	SETV(_obj, "var_2", 2);
+	
+	private _objSerial = SERIALIZE_ATTR(_obj, ATTR_SAVE);
+
+	diag_log format ["Serialized obj: %1", _objSerial];
+
+	SETV(_obj, "var_0", 4);
+	SETV(_obj, "var_1", 5);
+	SETV(_obj, "var_2", 6);
+
+	DESERIALIZE_ATTR(_obj, _objSerial, ATTR_SAVE);
+
+	["test var 0", GETV(_obj, "var_0") == 0] call test_Assert;
+	["test var 1", GETV(_obj, "var_1") == 5] call test_Assert;
+	["test var 2", GETV(_obj, "var_2") == 2] call test_Assert;
+
+}] call test_AddTest;
 
 #endif

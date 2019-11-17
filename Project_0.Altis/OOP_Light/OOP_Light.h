@@ -449,14 +449,19 @@
 // |         A T T R I B U T E S          |
 // ----------------------------------------
 
-#define ATTR_REFCOUNTED 1
-#define ATTR_SERIALIZABLE 2
-#define ATTR_PRIVATE 3
+#define ATTR_REFCOUNTED		1
+#define ATTR_SERIALIZABLE	2
+#define ATTR_PRIVATE		3
+
 // Needs more work to implement this (walking classes to find the first place a member was defined etc.)
 // #define ATTR_PROTECTED 4
 #define ATTR_GET_ONLY 5
 #define ATTR_THREAD_AFFINITY_ID 6
 #define ATTR_THREAD_AFFINITY(getThreadFn) [ATTR_THREAD_AFFINITY_ID, getThreadFn]
+
+// For serialization when saving
+#define ATTR_SAVE			7
+
 #define ATTR_USERBASE 1000
 
 // -----------------------------------------------------
@@ -848,12 +853,15 @@ objNameStr \
 #define SERIALIZED_OBJECT_NAME(array) (array select 1)
 #define SERIALIZED_SET_OBJECT_NAME(array, name) array set [1, name]
 
+#define SERIALIZE_ATTR(objNameStr, attr) ([objNameStr, attr] call OOP_serialize_attr)
+
 // ----------------------------------------
 // |        D E S E R I A L I Z E         |
 // ----------------------------------------
 // Returns ref to the object passed in the array
 // Object must exist before you can DESERIALIZE an array into it!
 #define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
+#define DESERIALIZE_ATTR(objNameStr, array, attr) ([objNameStr, array, attr] call OOP_deserialize_attr)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |
