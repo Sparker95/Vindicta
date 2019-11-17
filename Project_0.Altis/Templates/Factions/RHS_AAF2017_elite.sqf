@@ -81,11 +81,12 @@ _veh set [T_VEH_stat_mortar_light, ["RHS_M252_D"]];
 _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 
 //TODO remove HIDF markings from UH1 via garage, move UH1 to reserve
-_veh set [T_VEH_heli_light, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf", "C_Heli_Light_01_civil_F"]]; //TODO - change recon helo camo to "digital"
-_veh set [T_VEH_heli_heavy, ["FGN_AAF_KA60_dynamicLoadout","rhs_uh1h_hidf_gunship"]];
+_veh set [T_VEH_heli_light, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M",]];
+_veh set [T_VEH_heli_heavy, ["FGN_AAF_KA60_dynamicLoadout","rhs_uh1h_hidf_gunship", "RHS_MELB_AH6M"]];
 _veh set [T_VEH_heli_cargo, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf_unarmed"]];
 _veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]]; //TODO add dynamic loadout variants for more variety
 
+//TODO add dynamic loadout variants for more variety
 _veh set [T_VEH_plane_attack, ["FGN_AAF_L159_dynamicLoadout"]];
 _veh set [T_VEH_plane_fighter, ["FGN_AAF_L159_dynamicLoadout"]];
 //_veh set [T_VEH_plane_cargo, [""]];

@@ -9,7 +9,7 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["B_GEN_Soldier_F"]];					//Default infantry if nothing is found
+_inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["RHS_AAF2017_police_SMG","RHS_AAF2017_police_shotgun","RHS_AAF2017_police_rifle"]];
 _inf set [T_INF_TL, ["RHS_AAF2017_police_SMG","RHS_AAF2017_police_shotgun","RHS_AAF2017_police_rifle"]];
