@@ -43,7 +43,7 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 #endif
 
 CLASS(UNIT_CLASS_NAME, "");
-	VARIABLE_ATTR("data", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
 	//                              N E W

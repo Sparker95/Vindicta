@@ -26,7 +26,7 @@ Author: Sparker
 CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	//Variables
-	VARIABLE("data");
+	VARIABLE_ATTR("data", [ATTR_SAVE]);
 
 	// |                             N E W                                  |
 	/*

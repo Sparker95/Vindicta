@@ -988,4 +988,37 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGameMode;
 	} ENDMETHOD;
 
+	// - - - - - - - SAVING - - - - - - -
+	
+	/*
+	Classes we want to save:
+	
+	- - Base - -
+	MessageReceiver
+	MessageReceiverEx
+
+	- - Containers - - 
+	Location
+	Garrison
+	Group
+	Unit
+
+	- - Commander AI - - 
+	Intel
+	AICommander
+	ModelBase
+	ClusterModel
+	GarrisonModel
+	LocationModel
+	WorldModel
+	CmdrAction - all actions
+	ASTs - all ASTs
+	CmdrStrategy - all strategies
+	Grid
+
+	- - Game Mode - -
+	GameMode, CivilWarGameMode
+
+	*/
+
 ENDCLASS;

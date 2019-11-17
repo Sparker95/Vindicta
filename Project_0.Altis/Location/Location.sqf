@@ -29,35 +29,34 @@ Author: Sparker 28.07.2018
 
 CLASS("Location", "MessageReceiverEx")
 
-	VARIABLE("type");
-	VARIABLE("side");
-	VARIABLE("name");
-
-	VARIABLE("children");					// Children of this location if it has any (e.g. police stations are children of cities)
-	VARIABLE("parent"); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
-	VARIABLE("garrisons");
-	VARIABLE("boundingRadius"); 			// _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
-	VARIABLE("border"); 					// [center, a, b, angle, isRectangle, c]
-	VARIABLE("borderPatrolWaypoints");		// Array for patrol waypoints along the border
-	VARIABLE("useParentPatrolWaypoints");	// If true then use the parents patrol waypoints instead
-	VARIABLE("allowedAreas"); 				// Array with allowed areas
-	VARIABLE("pos"); 						// Position of this location
-	VARIABLE("spawnPosTypes"); 				// Array with spawn positions types
-	VARIABLE("spawned"); 					// Is this location spawned or not
-	VARIABLE("timer"); 						// Timer object which generates messages for this location
-	VARIABLE("capacityInf"); 				// Infantry capacity
-	VARIABLE("capacityCiv"); 				// Civilian capacity
-	VARIABLE("cpModule"); 					// civilian module, might be replaced by custom script
-	VARIABLE("isBuilt"); 					// true if this location has been build (used for roadblocks)
-	VARIABLE("buildObjects"); 				// Array with objects we have built	
-	VARIABLE("gameModeData"); 				// Custom object that the game mode can use to store info about this location
-	VARIABLE("hasPlayers"); 				// Bool, means that there are players at this location, updated at each process call
-	VARIABLE("hasPlayerSides"); 			// Array of sides of players at this location
-	VARIABLE("buildingsOpen"); 				// Handles of buildings which can be entered (have buildingPos)
-	VARIABLE("objects"); 					// Handles of objects which can't be entered and other objects
-	VARIABLE("respawnSides"); 				// Sides for which player respawn is enabled
-	VARIABLE("hasRadio"); 					// Bool, means that this location has a radio
-	VARIABLE("wasOccupied"); 				// Bool, false at start but sets to true when garrisons are attached here
+	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type
+	/* save */ 	VARIABLE_ATTR("side", [ATTR_SAVE]);						// Side, location side
+	/* save */ 	VARIABLE_ATTR("name", [ATTR_SAVE]);						// String, location name
+	/* save */ 	VARIABLE_ATTR("children", [ATTR_SAVE]);					// Children of this location if it has any (e.g. police stations are children of cities)
+	/* save */ 	VARIABLE_ATTR("parent", [ATTR_SAVE]); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
+	/* save */ 	VARIABLE_ATTR("garrisons", [ATTR_SAVE]);				// Array of garrisons registered here
+	/* save */ 	VARIABLE_ATTR("boundingRadius", [ATTR_SAVE]); 			// _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
+	/* save */ 	VARIABLE_ATTR("border", [ATTR_SAVE]); 					// [center, a, b, angle, isRectangle, c]
+	/* save */ 	VARIABLE_ATTR("borderPatrolWaypoints", [ATTR_SAVE]);	// Array for patrol waypoints along the border
+	/* save */ 	VARIABLE_ATTR("useParentPatrolWaypoints", [ATTR_SAVE]);	// If true then use the parents patrol waypoints instead
+	/* save */ 	VARIABLE_ATTR("allowedAreas", [ATTR_SAVE]); 			// Array with allowed areas
+	/* save */ 	VARIABLE_ATTR("pos", [ATTR_SAVE]); 						// Position of this location
+	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
+	/* save */	VARIABLE_ATTR("spawned", [ATTR_SAVE]); 					// Is this location spawned or not
+				VARIABLE("timer"); 										// Timer object which generates messages for this location
+	/* save */	VARIABLE_ATTR("capacityInf", [ATTR_SAVE]); 				// Infantry capacity
+	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
+				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
+	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
+				VARIABLE("buildObjects"); 								// Array with objects we have built	
+	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]); 			// Custom object that the game mode can use to store info about this location
+				VARIABLE("hasPlayers"); 								// Bool, means that there are players at this location, updated at each process call
+				VARIABLE("hasPlayerSides"); 							// Array of sides of players at this location
+	/* save */	VARIABLE_ATTR("buildingsOpen", [ATTR_SAVE]); 			// Handles of buildings which can be entered (have buildingPos)
+	/* save */	VARIABLE_ATTR("objects", [ATTR_SAVE]); 					// Handles of objects which can't be entered and other objects
+	/* save */	VARIABLE_ATTR("respawnSides", [ATTR_SAVE]); 			// Sides for which player respawn is enabled
+	/* save */	VARIABLE_ATTR("hasRadio", [ATTR_SAVE]); 				// Bool, means that this location has a radio
+	/* save */	VARIABLE_ATTR("wasOccupied", [ATTR_SAVE]); 				// Bool, false at start but sets to true when garrisons are attached here
 
 	STATIC_VARIABLE("all");
 

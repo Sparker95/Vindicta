@@ -20,45 +20,44 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
 
-	VARIABLE_ATTR("templateName", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("templateName", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
-	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
+				VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
+	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
+				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("name", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("location", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units
+	/* save */	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units that can move
+				VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
+				VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
+	/* save */	VARIABLE_ATTR("active",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Set to true after calling activate method
+	/* save */	VARIABLE_ATTR("faction",	[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
 
-	VARIABLE_ATTR("side", 		[ATTR_PRIVATE]);
-	VARIABLE_ATTR("units", 		[ATTR_PRIVATE]);
-	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("name", 		[ATTR_PRIVATE]);
-	VARIABLE_ATTR("location", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
-	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
-	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
-	VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
-	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
-	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
-
-	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Counters of subcategories
-	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
-	VARIABLE("compositionClassNames");
+	/* save */	VARIABLE_ATTR("compositionClassNames", [ATTR_SAVE]);
 
 	// Array with composition: each element at [_cat][_subcat] is an amount of units of this type
-	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Flag which is reset at each process call
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
-	VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
-	VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
+				VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -2849,9 +2848,10 @@ if (isNil { GETSV("Garrison", "all") } ) then {
 	SETSV("Garrison", "all", []);
 };
 
+
+// - - - - - - SQF VM - - - - - - -
+
 #ifdef _SQF_VM
-
-
 
 ["Garrison.add units", {
 	private _actual = NEW("Garrison", [WEST]);
