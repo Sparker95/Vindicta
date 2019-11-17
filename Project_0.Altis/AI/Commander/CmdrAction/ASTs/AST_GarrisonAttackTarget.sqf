@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_GarrisonAttackTarget
@@ -7,7 +7,6 @@ Order a garrison to attack a target.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
-	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("garrDeadState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("timeOutState", [ATTR_PRIVATE]);
@@ -36,7 +35,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 		_moveRadiusVar - IN <AST_VAR>(Number), radius around target at which to stop moving and start attacking
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, 
+		params [P_THISOBJECT,
 			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
 			P_AST_STATE("_successState"),
@@ -46,9 +45,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 			P_AST_VAR("_targetVar"),
 			P_AST_VAR("_moveRadiusVar")
 		];
-		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
 
-		T_SETV("action", _action);
 		T_SETV("fromStates", _fromStates);
 
 		T_SETV("successState", _successState);
@@ -242,9 +239,9 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TIMEOUT]+
-		[T_CALLM1("createVariable", 0)]+
-		[T_CALLM1("createVariable", [TARGET_TYPE_GARRISON, 0])]+
-		[T_CALLM1("createVariable", 200)]
+		[CALLM1(_action, "createVariable", 0)]+
+		[CALLM1(_action, "createVariable", [TARGET_TYPE_GARRISON, 0])]+
+		[CALLM1(_action, "createVariable", 200)]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);

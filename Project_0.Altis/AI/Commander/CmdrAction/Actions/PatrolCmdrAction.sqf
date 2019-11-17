@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction
@@ -132,6 +132,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Select next waypoint for the patrol assigning it to targetVar
 		private _nextWaypointAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_NEXT_WAYPOINT],
 				CMDR_ACTION_STATE_READY_TO_MOVE,	// State change when waypoints remain
 				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when no waypoints remain
@@ -156,6 +157,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Select an RTB target after the attack, or when the current one is destroyed or otherwise not valid
 		private _newRtbTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],
 				CMDR_ACTION_STATE_RTB, 				// RTB after we selected a target
 				_srcGarrIdVar, 						// Originating garrison (default we return to)
@@ -450,8 +452,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
-		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
+		SET_AST_VAR(_thisObject, T_GETV("detachmentEffVar"), _effAllocated);
+		SET_AST_VAR(_thisObject, T_GETV("detachmentCompVar"), _compAllocated);
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,

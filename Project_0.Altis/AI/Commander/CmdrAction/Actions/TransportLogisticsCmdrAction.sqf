@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 // W       W   IIIII   PPPPP
 // W       W     I     P    P
@@ -147,6 +147,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
 		private _newTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
 				_srcGarrIdVar, 						// Originating garrison (default we return to)

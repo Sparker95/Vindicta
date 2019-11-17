@@ -93,19 +93,14 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 // Function: SET_AST_VAR
 // Set value of AST var of certain cmd action
 #define SET_AST_VAR(action, index, value) (GETV(action, "variables") set [index, value])
+
 // Function: GET_AST_VAR
 // Get value of AST var of certain cmdr action
 #define GET_AST_VAR(action, index) (GETV(action, "variables") select index)
-// Function: T_GET_AST_VAR
-// Get the value from an AST_VAR that is a member variable of _thisObject.
-#define T_GET_AST_VAR(index) (T_GETV("variables") select index)
-// Function: T_SET_AST_VAR
-// Write a value to an AST_VAR that is a member variable of _thisObject.
-#define T_SET_AST_VAR(index, value) (T_GETV("variables") set [index, value])
 
 // Function: P_AST_VAR
 // Function variable definition for an AST_VAR
-#define P_AST_VAR(paramNameStr) P_ARRAY(paramNameStr)
+#define P_AST_VAR(paramNameStr) P_NUMBER(paramNameStr)
 // Function: P_AST_STATE
 // Function variable definition for a CMDR_ACTION_STATE
 #define P_AST_STATE(paramNameStr) P_NUMBER(paramNameStr)

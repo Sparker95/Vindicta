@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.AttackCmdrAction
@@ -143,6 +143,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
 		// Select an RTB target after the attack, or when the current one is destroyed or otherwise not valid
 		private _newRtbTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],
 				CMDR_ACTION_STATE_RTB, 				// RTB after we selected a target
 				_srcGarrIdVar, 						// Originating garrison (default we return to)

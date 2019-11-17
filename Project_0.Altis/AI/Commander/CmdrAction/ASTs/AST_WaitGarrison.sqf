@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_WaitGarrison
@@ -36,9 +36,7 @@ CLASS("AST_WaitGarrison", "ActionStateTransition")
 			P_AST_VAR("_waitUntilDateVar"),
 			P_AST_VAR("_garrIdVar")
 		];
-		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
-
-		T_SETV("action", _action);
+		
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("failGarrisonDead", _failGarrisonDead);

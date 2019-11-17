@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.TakeOrJoinCmdrAction
@@ -108,7 +108,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				_splitGarrIdVar];					// Garrison to wait (checks it is still alive)
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);	
 
-		GET_AST_VAR(_targetVar) params ["_targetType", "_target"];
+		T_GET_AST_VAR("targetVar") params ["_targetType", "_target"];
 
 		private _moveAST = if(_targetType == TARGET_TYPE_GARRISON) then {
 			// If we are merging to a garrison we will just move there and merge
@@ -147,6 +147,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
 		private _newTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
 				_srcGarrIdVar, 						// Originating garrison (default we return to)

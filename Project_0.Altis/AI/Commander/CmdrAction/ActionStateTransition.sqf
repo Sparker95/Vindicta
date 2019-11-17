@@ -37,13 +37,17 @@ CLASS("ActionStateTransition", "")
 	VARIABLE("priority");
 	// State(s) this transition is valid from
 	VARIABLE("fromStates");
+	// CmdrAction to which this AST belongs
+	VARIABLE("action");
 
 	/*
 	Method: new
 	Base constructor for ASTs. See implementing classes (AST_*) for concrete constuctor definitions.
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_OOP_OBJECT("_action")];
+		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
+		T_SETV("action", _action);
 		T_SETV("priority", CMDR_ACTION_PRIOR_LOW);
 		T_SETV("fromStates", []);
 	} ENDMETHOD;
@@ -192,84 +196,88 @@ CLASS("ActionStateTransition", "")
 	/* virtual */ METHOD("cancel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 	} ENDMETHOD;
+
 ENDCLASS;
 
 // Unit test
 #ifdef _SQF_VM
 
-AST_test = NEW("ActionStateTransition", []);
-
 #define CMDR_ACTION_STATE_TEST_1 2
 #define CMDR_ACTION_STATE_TEST_2 3
 
-// Dummy test classes
-CLASS("TestASTBase", "ActionStateTransition")
-	VARIABLE("successState");
+["AST Dummy test classes", {
+	CmdrAction_test = NEW("CmdrAction", []);
+	AST_test = NEW("ActionStateTransition", [CmdrAction_test]);
 
-	METHOD("new") {
-		params [P_THISOBJECT];
-		T_SETV("successState", CMDR_ACTION_STATE_END);
-	} ENDMETHOD;
+	// Dummy test classes
+	CLASS("TestASTBase", "ActionStateTransition")
+		VARIABLE("successState");
 
-	/* virtual */ METHOD("isAvailable") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		true
-	} ENDMETHOD;
+		METHOD("new") {
+			params [P_THISOBJECT];
+			T_SETV("successState", CMDR_ACTION_STATE_END);
+		} ENDMETHOD;
 
-	/* virtual */ METHOD("apply") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		T_GETV("successState")
-	} ENDMETHOD;
-ENDCLASS;
+		/* virtual */ METHOD("isAvailable") { 
+			params [P_THISOBJECT, P_STRING("_world")];
+			true
+		} ENDMETHOD;
 
-CLASS("TestAST_Start_1", "TestASTBase")
-	METHOD("new") {
-		params [P_THISOBJECT];
-		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-		T_SETV("successState", CMDR_ACTION_STATE_TEST_1);
-		//T_SETV("toStates", [CMDR_ACTION_STATE_TEST_1]);
-	} ENDMETHOD;
-ENDCLASS;
+		/* virtual */ METHOD("apply") { 
+			params [P_THISOBJECT, P_STRING("_world")];
+			T_GETV("successState")
+		} ENDMETHOD;
+	ENDCLASS;
 
-TestAST_Start_1 = NEW("TestAST_Start_1", []);
+	CLASS("TestAST_Start_1", "TestASTBase")
+		METHOD("new") {
+			params [P_THISOBJECT];
+			T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
+			T_SETV("successState", CMDR_ACTION_STATE_TEST_1);
+			//T_SETV("toStates", [CMDR_ACTION_STATE_TEST_1]);
+		} ENDMETHOD;
+	ENDCLASS;
 
-CLASS("TestAST_1_2", "TestASTBase")
-	METHOD("new") {
-		params [P_THISOBJECT];
-		T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
-		T_SETV("successState", CMDR_ACTION_STATE_TEST_2);
-	} ENDMETHOD;
-ENDCLASS;
-TestAST_1_2 = NEW("TestAST_1_2", []);
+	TestAST_Start_1 = NEW("TestAST_Start_1", [CmdrAction_test]);
 
-CLASS("TestAST_2_End", "TestASTBase")
-	METHOD("new") {
-		params [P_THISOBJECT];
-		T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_2]);
-		T_SETV("successState", CMDR_ACTION_STATE_END);
-	} ENDMETHOD;
-ENDCLASS;
-TestAST_2_End = NEW("TestAST_2_End", []);
+	CLASS("TestAST_1_2", "TestASTBase")
+		METHOD("new") {
+			params [P_THISOBJECT];
+			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
+			T_SETV("successState", CMDR_ACTION_STATE_TEST_2);
+		} ENDMETHOD;
+	ENDCLASS;
+	TestAST_1_2 = NEW("TestAST_1_2", [CmdrAction_test]);
 
-CLASS("TestAST_1_End", "TestASTBase")
-	METHOD("new") {
-		params [P_THISOBJECT];
-		T_SETV("priority", CMDR_ACTION_PRIOR_HIGH);
-		T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
-		T_SETV("successState", CMDR_ACTION_STATE_END);
-	} ENDMETHOD;
-ENDCLASS;
-TestAST_1_End = NEW("TestAST_1_End", []);
+	CLASS("TestAST_2_End", "TestASTBase")
+		METHOD("new") {
+			params [P_THISOBJECT];
+			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_2]);
+			T_SETV("successState", CMDR_ACTION_STATE_END);
+		} ENDMETHOD;
+	ENDCLASS;
+	TestAST_2_End = NEW("TestAST_2_End", [CmdrAction_test]);
+
+	CLASS("TestAST_1_End", "TestASTBase")
+		METHOD("new") {
+			params [P_THISOBJECT];
+			T_SETV("priority", CMDR_ACTION_PRIOR_HIGH);
+			T_SETV("fromStates", [CMDR_ACTION_STATE_TEST_1]);
+			T_SETV("successState", CMDR_ACTION_STATE_END);
+		} ENDMETHOD;
+	ENDCLASS;
+	TestAST_1_End = NEW("TestAST_1_End", [CmdrAction_test]);
+}] call test_AddTest;
 
 ["ActionStateTransition.new", {
-	private _obj = NEW("ActionStateTransition", []);
+	private _obj = NEW("ActionStateTransition", [CmdrAction_test]);
 	private _class = OBJECT_PARENT_CLASS_STR(_obj);
 	["Object exists", !(isNil "_class")] call test_Assert;
 	["Priority is correct", GETV(_obj, "priority") == CMDR_ACTION_PRIOR_LOW] call test_Assert;
 }] call test_AddTest;
 
 ["ActionStateTransition.delete", {
-	private _obj = NEW("ActionStateTransition", []);
+	private _obj = NEW("ActionStateTransition", [CmdrAction_test]);
 	DELETE(_obj);
 	isNil { OBJECT_PARENT_CLASS_STR(_obj) }
 }] call test_AddTest;
