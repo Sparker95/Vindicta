@@ -144,8 +144,8 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
-		[MAKE_AST_VAR(0)]+
-		[MAKE_AST_VAR([TARGET_TYPE_GARRISON, 0])]
+		[T_CALLM1("createVariable", 0)]+
+		[T_CALLM1("createVariable", [TARGET_TYPE_GARRISON, 0])]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -161,8 +161,8 @@ AST_MergeOrJoinTarget_test_fn = {
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-		[MAKE_AST_VAR(_target)]
+		[T_CALLM1("createVariable", GETV(_garrison, "id"))]+
+		[T_CALLM1("createVariable", _target)]
 	);
 	CALLM(_thisObject, "apply", [_world])
 };

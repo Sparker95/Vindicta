@@ -116,10 +116,10 @@ ENDCLASS;
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
-		[MAKE_AST_VAR(0)]+
-		[MAKE_AST_VAR([0] call comp_fnc_new)]+
-		[MAKE_AST_VAR(EFF_MIN_EFF)]+
-		[MAKE_AST_VAR(0)]
+		[T_CALLM1("createVariable", 0)]+
+		[T_CALLM1("createVariable", [0] call comp_fnc_new)]+
+		[T_CALLM1("createVariable", EFF_MIN_EFF)]+
+		[T_CALLM1("createVariable", 0)]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -143,16 +143,16 @@ ENDCLASS;
 	SETV(_garrison, "efficiency", _eff1);
 	SETV(_garrison, "composition", _comp1);
 
-	private _splitGarrIdVar = MAKE_AST_VAR(-1);
+	private _splitGarrIdVar = T_CALLM1("createVariable", -1);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_SplitGarrison", 
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-		[MAKE_AST_VAR(_comp2)]+
-		[MAKE_AST_VAR(_eff2)]+
+		[T_CALLM1("createVariable", GETV(_garrison, "id"))]+
+		[T_CALLM1("createVariable", _comp2)]+
+		[T_CALLM1("createVariable", _eff2)]+
 		[_splitGarrIdVar]
 	);
 
@@ -204,16 +204,16 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 	SETV(_garrison, "efficiency", _eff1);
 	SETV(_garrison, "composition", _comp1);
 
-	private _splitGarrIdVar = MAKE_AST_VAR(-1);
+	private _splitGarrIdVar = T_CALLM1("createVariable", -1);
 	private _action = NEW("CmdrAction", []);
 	private _thisObject = NEW("AST_SplitGarrison", 
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-		[MAKE_AST_VAR(_comp2)]+
-		[MAKE_AST_VAR(_eff2)]+
+		[T_CALLM1("createVariable", GETV(_garrison, "id"))]+
+		[T_CALLM1("createVariable", _comp2)]+
+		[T_CALLM1("createVariable", _eff2)]+
 		[_splitGarrIdVar]
 	);
 	

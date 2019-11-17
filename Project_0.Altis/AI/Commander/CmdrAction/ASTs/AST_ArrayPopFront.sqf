@@ -70,7 +70,7 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 ["AST_ArrayPopFront.new", {
-	private _ast = NEW("AST_ArrayPopFront", [[0] ARG 1 ARG 2 ARG 3 ARG MAKE_AST_VAR([])]);
+	private _ast = NEW("AST_ArrayPopFront", [[0] ARG 1 ARG 2 ARG 3 ARG T_CALLM1("createVariable", [])]);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_ast);
 	["Object exists", !(isNil "_class")] call test_Assert;
@@ -78,8 +78,8 @@ ENDCLASS;
 
 ["AST_ArrayPopFront.apply", {
 	private _array = [0, 1];
-	private _arrayVar = MAKE_AST_VAR(_array);
-	private _resultVar = MAKE_AST_VAR(-1);
+	private _arrayVar = T_CALLM1("createVariable", _array);
+	private _resultVar = T_CALLM1("createVariable", -1);
 	private _ast = NEW("AST_ArrayPopFront", [[0] ARG 1 ARG 2 ARG 3 ARG _arrayVar ARG _resultVar]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _notEmptyState = CALLM(_ast, "apply", [_world]);

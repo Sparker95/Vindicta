@@ -337,9 +337,33 @@ CLASS("CmdrAction", "RefCounted")
 	/* protected */ METHOD("createVariable") {
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
 		T_PRVAR(variables);
-		private _var = MAKE_AST_VAR(_initialValue);
-		_variables pushBack _var;
-		_var
+		private _index = _variables pushBack _initialValue;
+		_index
+	} ENDMETHOD;
+
+	// Push the values of all registered variables.
+	/* private */ METHOD("pushVariables") {
+		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
+		
+		// Make a deep copy of all the variables and push them into the stack
+		private _variablesCopy = +_variables;
+		_variablesStack pushBack _variablesCopy;
+	} ENDMETHOD;
+
+	// Pop the values of all registered variables.
+	/* private */ METHOD("popVariables") {
+		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
+		private _stackSize = count _variablesStack;
+		
+		ASSERT_MSG(_stackSize > 0, "Variables stack is empty");
+
+		// Restore our whole variables array from the top stack element
+		private _prevVariables = _variablesStack deleteAt (_stackSize - 1);
+		T_SETV("variables", _prevVariables);
 	} ENDMETHOD;
 	
 	// Returns (after creating if necessary) the ASTs of this action.
@@ -387,34 +411,6 @@ CLASS("CmdrAction", "RefCounted")
 		T_CALLM("popVariables", []);
 		// We don't update to the new state, this is just a simulation, but return it for information purposes
 		_state
-	} ENDMETHOD;
-
-	// Push the values of all registered variables.
-	/* private */ METHOD("pushVariables") {
-		params [P_THISOBJECT];
-		T_PRVAR(variables);
-		T_PRVAR(variablesStack);
-		
-		// Copy the variable contents and push onto stack. This will NOT deepcopy arrays. They should never be modified, only replaced.
-		//_variablesStack pushBack (_variables apply { MAKE_AST_VAR(GET_AST_VAR(_x)) });
-		//_variablesStack pushBack +_variables;
-		_variablesStack pushBack (_variables apply { +_x });
-	} ENDMETHOD;
-
-	// Pop the values of all registered variables.
-	/* private */ METHOD("popVariables") {
-		params [P_THISOBJECT];
-		T_PRVAR(variables);
-		T_PRVAR(variablesStack);
-		
-		ASSERT_MSG(count _variablesStack > 0, "Variables stack is empty");
-
-		// pop the copy of the variables
-		private _copy = _variablesStack deleteAt (count _variablesStack - 1);
-		// copy the values back into the variable array
-		{
-			SET_AST_VAR(_variables select _forEachIndex, GET_AST_VAR(_x));
-		} forEach _copy;
 	} ENDMETHOD;
 
 	/*
@@ -568,15 +564,26 @@ ENDCLASS;
 // Test AST Variables
 
 ["AST_VAR", {
-	private _var = MAKE_AST_VAR(-1);
-	private _var2 = _var;
 
-	["AST_VAR is an array length 1", count _var == 1] call test_Assert;
-	["AST_VAR content correct", _var#0 == -1] call test_Assert;
-	["GET_AST_VAR", GET_AST_VAR(_var) == -1] call test_Assert;
-	SET_AST_VAR(_var, 1);
-	["SET_AST_VAR", GET_AST_VAR(_var) == 1] call test_Assert;
-	["AST_VAR share value works", GET_AST_VAR(_var2) == 1] call test_Assert;
+	CLASS("ActionASTVarTest", "CmdrAction")
+
+		METHOD("testVars") {
+			params [P_THISOBJECT];
+
+			private _var = T_CALLM1("createVariable", -1);
+			private _var2 = _var;
+
+			["GET_AST_VAR", T_GET_AST_VAR(_var) == -1] call test_Assert;
+			T_SET_AST_VAR(_var, 1);
+			["SET_AST_VAR", T_GET_AST_VAR(_var) == 1] call test_Assert;
+			["AST_VAR share value works", T_GET_AST_VAR(_var2) == 1] call test_Assert;
+		} ENDMETHOD;
+
+	ENDCLASS;
+
+	private _testObj = NEW("ActionASTVarTest", []);
+	CALLM0(_testObj, "testVars");
+
 }] call test_AddTest;
 
 #define CMDR_ACTION_STATE_KILLED CMDR_ACTION_STATE_CUSTOM+1
@@ -677,16 +684,16 @@ ENDCLASS;
 	private _thisObject = NEW("CmdrAction", []);
 	private _var = CALLM(_thisObject, "createVariable", [0]);
 	private _var2 = CALLM(_thisObject, "createVariable", [["test"]]);
-	["Var is of correct form", _var isEqualTo [0]] call test_Assert;
-	["Var2 is of correct form", _var2 isEqualTo [["test"]]] call test_Assert;
+	["Var is of correct form", _var isEqualTo 0] call test_Assert;
+	["Var2 is of correct form", _var2 isEqualTo 1] call test_Assert;
 	CALLM(_thisObject, "pushVariables", []);
-	SET_AST_VAR(_var, 1);
-	GET_AST_VAR(_var2) set [0, "check"];
-	["Var is changed before popVariables", _var isEqualTo [1]] call test_Assert;
-	["Var2 is changed before popVariables", _var2 isEqualTo [["check"]]] call test_Assert;
+	SET_AST_VAR(_thisObject, _var, 1);
+	SET_AST_VAR(_thisObject, _var2, 2);
+	["Var is changed before popVariables", T_GET_AST_VAR(_var) == 1] call test_Assert;
+	["Var2 is changed before popVariables", T_GET_AST_VAR(_var2) == 2] call test_Assert;
 	CALLM(_thisObject, "popVariables", []);
-	["Var is restored after popVariables", _var isEqualTo [0]] call test_Assert;
-	["Var2 is restored after popVariables", _var2 isEqualTo [["test"]]] call test_Assert;
+	["Var is restored after popVariables", T_GET_AST_VAR(_var) == 0] call test_Assert;
+	["Var2 is restored after popVariables", T_GET_AST_VAR(_var2) == 1] call test_Assert;
 }] call test_AddTest;
 
 ["CmdrAction.getFinalScore", {
@@ -718,7 +725,7 @@ ENDCLASS;
 	private _finalState = CALLM(_thisObject, "applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
 	["applyToSim modified variables internally correctly", _finalState == CMDR_ACTION_STATE_END] call test_Assert;
-	["applyToSim reverted action variables correctly", GET_AST_VAR(_testVar) isEqualTo "original"] call test_Assert;
+	["applyToSim reverted action variables correctly", GET_AST_VAR(_thisObject, _testVar) isEqualTo "original"] call test_Assert;
 }] call test_AddTest;
 
 #endif

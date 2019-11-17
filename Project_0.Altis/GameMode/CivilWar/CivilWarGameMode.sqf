@@ -99,7 +99,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			} else {
 				CIVILIAN
 			};
-		}
+		};
 	} ENDMETHOD;
 
 	/* protected virtual */ /* METHOD("preInitAll") {

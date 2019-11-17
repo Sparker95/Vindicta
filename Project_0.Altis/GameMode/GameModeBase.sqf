@@ -506,11 +506,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// First generate location modules for any cities/towns etc that don't have them manually placed
 		T_CALLM("createMissingCityLocations", []);
 
+		// Debug flag, will limit generation or locations to a small area
+		#define __SMALL_MAP
+
 		private _allRoadBlocks = [];
 		private _locationsForRoadblocks = [];
 		{
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
+
+			#ifdef __SMALL_MAP
+			_locSectorPos params ["_posX", "_posY"];
+			if (_posX > 20000 && _posY > 16000) then {
+			#endif
+
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
@@ -615,6 +624,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					_locationsForRoadblocks pushBack [_locSectorPos, _side];
 				};
 			};
+
+			#ifdef __SMALL_MAP
+			};
+			#endif
 		} forEach (entities "Project_0_LocationSector");
 
 		/*

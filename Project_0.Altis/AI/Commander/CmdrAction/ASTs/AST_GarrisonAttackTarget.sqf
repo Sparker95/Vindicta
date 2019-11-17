@@ -242,9 +242,9 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TIMEOUT]+
-		[MAKE_AST_VAR(0)]+
-		[MAKE_AST_VAR([TARGET_TYPE_GARRISON, 0])]+
-		[MAKE_AST_VAR(200)]
+		[T_CALLM1("createVariable", 0)]+
+		[T_CALLM1("createVariable", [TARGET_TYPE_GARRISON, 0])]+
+		[T_CALLM1("createVariable", 200)]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -260,9 +260,9 @@ ENDCLASS;
 // 		[CMDR_ACTION_STATE_END]+
 // 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 // 		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
-// 		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-// 		[MAKE_AST_VAR(_target)]+
-// 		[MAKE_AST_VAR(200)]
+// 		[T_CALLM1("createVariable", GETV(_garrison, "id"))]+
+// 		[T_CALLM1("createVariable", _target)]+
+// 		[T_CALLM1("createVariable", 200)]
 // 	);
 // 	CALLM(_thisObject, "apply", [_world])
 // };

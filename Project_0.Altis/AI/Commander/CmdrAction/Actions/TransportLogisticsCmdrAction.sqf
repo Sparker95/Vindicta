@@ -55,16 +55,16 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 		T_SETV("tgtGarrId", _tgtGarrId);
 
 		// Start date for this action, default to immediate
-		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
 		T_SETV("startDateVar", _startDateVar);
 
 		// This is set in updateScore.
-		private _transportAmountVar = MAKE_AST_VAR(0);
+		private _transportAmountVar = T_CALLM1("createVariable", 0);
 		T_SETV("transportAmountVar", _transportAmountVar);
 
 		// Desired escort efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
-		private _escortEffVar = MAKE_AST_VAR(EFF_ZERO);
+		private _escortEffVar = T_CALLM1("createVariable", EFF_ZERO);
 		T_SETV("escortEffVar", _escortEffVar);
 
 		// Flags to use when splitting off the escort garrison.
@@ -91,7 +91,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 		
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
-		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+		private _srcGarrIdVar = T_CALLM1("createVariable", _srcGarrId);
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
@@ -133,7 +133,7 @@ CLASS("TransportLogisticsCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
 				_splitGarrIdVar, 					// Id of garrison to move
 				_targetVar, 						// Target to move to (initially the target garrison)
-				MAKE_AST_VAR(200)]; 				// Radius to move within
+				T_CALLM1("createVariable", 200)]; 				// Radius to move within
 		private _moveAST = NEW("AST_MoveGarrison", _moveAST_Args);
 
 		private _mergeAST_Args = [

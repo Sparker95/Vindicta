@@ -36,14 +36,14 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		T_SETV("srcGarrId", _srcGarrId);
 
 		// Start date for this action, default to immediate
-		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
 		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
-		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
+		private _detachmentEffVar = T_CALLM1("createVariable", EFF_ZERO);
 		T_SETV("detachmentEffVar", _detachmentEffVar);
-		private _detachmentCompVar = MAKE_AST_VAR(+T_comp_null);
+		private _detachmentCompVar = T_CALLM1("createVariable", +T_comp_null);
 		T_SETV("detachmentCompVar", _detachmentCompVar);
 
 		// Target can be modified during the action, if the initial target dies, so we want it to save/restore.
@@ -74,7 +74,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 		
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
-		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+		private _srcGarrIdVar = T_CALLM1("createVariable", _srcGarrId);
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
@@ -120,7 +120,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 					CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
 					_splitGarrIdVar, 					// Id of garrison to move
 					_targetVar, 						// Target to move to (initially the target garrison)
-					MAKE_AST_VAR(200)]; 				// Radius to move within
+					T_CALLM1("createVariable", 200)]; 				// Radius to move within
 			NEW("AST_MoveGarrison", _moveAST_Args)
 		} else {
 			// If we are occupying a location we will attack and clear the area then occupy it (attack includes move)
@@ -132,7 +132,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 					CMDR_ACTION_STATE_MOVED,			// If we timeout then occupy the location
 					_splitGarrIdVar, 					// Id of the garrison doing the attacking
 					_targetVar, 						// Target to attack (cluster or garrison supported)
-					MAKE_AST_VAR(500)];					// Move radius
+					T_CALLM1("createVariable", 500)];					// Move radius
 			NEW("AST_GarrisonAttackTarget", _attackAST_Args)
 		};
 

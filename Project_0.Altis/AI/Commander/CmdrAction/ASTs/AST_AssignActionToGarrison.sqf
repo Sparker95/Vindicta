@@ -64,7 +64,7 @@ ENDCLASS;
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
-		[MAKE_AST_VAR(0)]
+		[T_CALLM1("createVariable", 0)]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -80,7 +80,7 @@ ENDCLASS;
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]
+		[T_CALLM1("createVariable", GETV(_garrison, "id"))]
 	);
 
 	private _endState = CALLM(_thisObject, "apply", [_world]);
