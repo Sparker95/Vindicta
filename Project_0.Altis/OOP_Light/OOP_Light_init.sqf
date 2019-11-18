@@ -1035,18 +1035,24 @@ CLASS("mi_a", "")
 	METHOD("new") {
 		diag_log "NEW mi_A";
 	} ENDMETHOD;
+
+	METHOD("getValue") {"A"} ENDMETHOD;
 ENDCLASS;
 
 CLASS("mi_b", "mi_a")
 	METHOD("new") {
 		diag_log "NEW mi_B";
 	} ENDMETHOD;
+
+	METHOD("getValue") {"B"} ENDMETHOD; // override
 ENDCLASS;
 
 CLASS("mi_c", "")
 	METHOD("new") {
 		diag_log "NEW mi_C";
 	} ENDMETHOD;
+
+	METHOD("getAnotherValue") {"anotherValue"} ENDMETHOD;
 ENDCLASS;
 
 CLASS("mi_d", ["mi_b" ARG "mi_c"])
@@ -1056,10 +1062,24 @@ CLASS("mi_d", ["mi_b" ARG "mi_c"])
 ENDCLASS;
 
 ["OOP Multiple Inheritence", {
-	NEW("mi_d", []);
+	private _thisObject = NEW("mi_d", []);
+
 
 	private _parents = GET_SPECIAL_MEM("mi_d", PARENTS_STR);
-	diag_log format ["Class mi_D parents: %1", _parents];
+	//diag_log format ["Class mi_D parents: %1", _parents];
+
+	["Proper inheritence classes", _parents isEqualTo ["mi_a","mi_b","mi_c"]] call test_Assert;
+
+	//diag_log format ["getValue method: %1", FORCE_GET_METHOD("mi_d", "getValue")];
+
+	private _value = CALLM0(_thisObject, "getValue");
+	private _anotherValue = CALLM0(_thisObject, "getAnotherValue");
+
+	//diag_log format ["Value: %1, Another value: %2", _value, _anotherValue];
+
+	["Test 1", CALLM0(_thisObject, "getValue") == "B"] call test_Assert;
+	["Test 2", CALLM0(_thisObject, "getAnotherValue") == "anotherValue"] call test_Assert;
+
 	true
 }] call test_AddTest;
 

@@ -718,13 +718,14 @@ if (count _parentClassNames > 0) then { \
 			_oop_parents pushBackUnique _baseClassNameStr; \
 			{ _oop_memList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR); \
 			{ _oop_staticMemList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR); \
-			{ _oop_methodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
+			private _oop_addedMethodList = []; \
+			{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
 			private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
 			{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
 				FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
 				_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
 				if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
-			} forEach (_oop_methodList - ["new", "delete", "copy"]); \
+			} forEach (_oop_addedMethodList - ["new", "delete", "copy"]); \
 		}; \
 	} forEach _parentClassNames; \
 }; \
@@ -777,7 +778,7 @@ objNameStr \
 
 #define NEW_PUBLIC_EXISTING(classNameStr, objNameStr) [] call { \
 FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
-FORCE_SET_MEM(objNameStr, OOP_PUBLIC_STR, 1) \
+FORCE_SET_MEM(objNameStr, OOP_PUBLIC_STR, 1); \
 PUBLIC_VAR(objNameStr, OOP_PUBLIC_STR); \
 PUBLIC_VAR(objNameStr, OOP_PARENT_STR); \
 objNameStr \

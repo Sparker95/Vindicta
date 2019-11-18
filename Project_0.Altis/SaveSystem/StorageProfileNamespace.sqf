@@ -1,7 +1,7 @@
 #include "common.hpp"
 
 /*
-Class: StorageInterfaceProfileNamespace
+Class: StorageProfileNamespace
 
 Performs saving data into profile namespace
 */
@@ -22,9 +22,9 @@ Performs saving data into profile namespace
 #define pr private
 
 // Class name is too long to type every time...
-#define __CLASS_NAME "StorageInterfaceProfileNamespace"
+#define __CLASS_NAME "StorageProfileNamespace"
 
-CLASS(__CLASS_NAME, "StorageInterface")
+CLASS(__CLASS_NAME, "Storage")
 
 	VARIABLE("bOpen");			// Bool, true if open
 	VARIABLE("currentRecord");	// String, current record name
@@ -133,6 +133,10 @@ ENDCLASS;
 
 // Same test can be used for any derived class actually
 [ "StorageInterfaceProfileNamespace", {
+
+	// memo
+	throw "Add tests for saveObject and loadObject!";
+
 	pr _obj = NEW(__CLASS_NAME, []);
 
 	// Check it's not open yet

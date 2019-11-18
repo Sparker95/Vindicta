@@ -1,2 +1,2 @@
-call compile preprocessFileLineNumbers "SaveSystem\StorageInterface.sqf";
-call compile preprocessFileLineNumbers "SaveSystem\StorageInterfaceProfileNamespace.sqf";
+call compile preprocessFileLineNumbers "SaveSystem\Storage.sqf";
+call compile preprocessFileLineNumbers "SaveSystem\StorageProfileNamespace.sqf";
