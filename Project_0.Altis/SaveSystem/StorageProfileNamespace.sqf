@@ -265,6 +265,11 @@ ENDCLASS;
 	["Check save0", GETV(_testStorable, "save0") == 1] call test_Assert;
 	["Check save1", GETV(_testStorable, "save1") == 2] call test_Assert;
 
+	// Try to save/load variables
+	CALLM2(_storage, "save", "testVar", 666);
+	pr _return = CALLM1(_storage, "load", "testVar");
+	["Save & load varaible", _return == 666] call test_Assert;
+
 }] call test_AddTest;
 
 #endif
