@@ -96,7 +96,7 @@ _veh set [T_VEH_plane_fighter, ["FGN_AAF_L159_dynamicLoadout"]];
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F"]];
 _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 
-_veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
+_veh set [T_VEH_personal, ["rhsusf_mrzr4_d"]];
 
 
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Ural", "FGN_AAF_Ural_open", "FGN_AAF_Zamak_Open", "FGN_AAF_Zamak"]];
@@ -139,7 +139,7 @@ _group set [T_GROUP_inf_rifle_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_
 _group set [T_GROUP_inf_assault_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_LMG], [T_INF, T_INF_epx], [T_INF, T_INF_engineer], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_epx], [T_INF, T_INF_engineer]]]];
 _group set [T_GROUP_inf_weapons_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_INF, T_INF_MG], [T_INF, T_INF_ammo], [T_INF, T_INF_MG], [T_INF, T_INF_ammo],[T_INF, T_INF_AT], [T_INF, T_INF_ammo] ]]];
 _group set [T_GROUP_inf_fire_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
-_group set [T_GROUP_inf_sentry,			[[[T_INF, T_INF_TL], [T_INF, T_INF_GL]]]];
+_group set [T_GROUP_inf_sentry,			[[[T_INF, T_INF_TL], [T_INF, T_INF_rifleman]]]];
 _group set [T_GROUP_inf_sniper_team,	[[[T_INF, T_INF_sniper], [T_INF, T_INF_spotter]]]];
 
 _group set [T_GROUP_inf_recon_patrol,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_LAT]]]];
