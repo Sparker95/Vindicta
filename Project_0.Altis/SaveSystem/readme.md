@@ -44,32 +44,30 @@ void preSave() { //    - call before saving
 }
 
 // Actual method which saves this object
-// Each class which needs saving will implement this on its own,
-// But will have a similar algorithm
-void save(storageInterface* saver) {
+// Each class which needs saving will inherit this method
+private void save(storageInterface* saver) {
     // Before serialization we might do some setup
-    this.preSave();
+    this.preSave(saver);
     
     serializedObj = this.serialize(ATTR_SAVE);  // Serialize all vars marked for saving into an array
     
     saver.saveVariable( this,               // A unique string, our reference
                         serializedObj);     // Data to save
 
-    // Save objects which we own as well:
+    // Clear up all the extra variables we have made for serialization
+    this.postSave(saver);
+}
+
+void postSave() {    // call after saving
+    // Do our stuff
+    // Save other objects we own as well
+    // ...
     forEach this.compositions do { // Let's imagine that Composition is some other class
         _x.save(saver);
     }
     forEach this.vehicles do {
         _x.save(saver);
     }
-
-    // Clear up all the extra variables we have made for serialization
-    this.postSave();
-}
-
-void postSave() {    // call after saving
-    // Do our stuff
-    // ...
 
     // Call parent class postSave
     parent::postSave();
@@ -79,30 +77,34 @@ void postSave() {    // call after saving
 Loading methods:
 
 ```
-//
-void load(storageInterface* loader) { 
+// Method which does loading
+// Classes which need loading will inherit this method
+private void load(storageInterface* loader) { 
     // By now the object is 'created' but its constructors have not run
     // It is just 'preallocated space', its variables are not defined
     
+    // Run pre-load code
+    this.preLoad();
+
     // Get serialized array
     serializedObj = storageInterface.loadVariable(this);
 
     // Deserialize into this object ref
     deserialize(this, serializedObj);
 
+    // Run our post-load code
+    this.postLoad();
+}
+
+void postLoad() {
     // Load objects which we own
-        forEach this.compositions do { // Let's imagine that Composition is some other class
+    forEach this.compositions do { // Let's imagine that Composition is some other class
         _x.load(loader);
     }
     forEach this.vehicles do {
         _x.load(loader);
     }
 
-    // Run our post-load code
-    this.postLoad();
-}
-
-void postLoad() {
     // Call parent class's method
     parent::postLoad();
 

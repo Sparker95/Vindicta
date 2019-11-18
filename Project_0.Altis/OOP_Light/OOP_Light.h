@@ -695,9 +695,9 @@
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#define CLASS(classNameStr, baseClassNameStr) \
+#define CLASS(classNameStr, baseClassNames) \
 call { \
-diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
+diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNames]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -705,21 +705,28 @@ private _oop_staticMemList = []; \
 private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
-if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
-		private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
-		FAILURE(_msg); \
-	}; \
-	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
-	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
-	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \
-	_oop_methodList = +GET_SPECIAL_MEM(baseClassNameStr, METHOD_LIST_STR); \
-	private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
-	{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
-	FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
-	_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
-	if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
-	} forEach (_oop_methodList - ["new", "delete", "copy"]); \
+private _parentClassNames = if(baseClassNames isEqualType "") then {[baseClassNames]} else {baseClassNames}; \
+if (count _parentClassNames > 0) then { \
+	{ \
+		private _baseClassNameStr = _x; \
+		if (_baseClassNameStr != "") then { \
+			if (!([_baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+				private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
+				FAILURE(_msg); \
+			}; \
+			{_oop_parents pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, PARENTS_STR); \
+			_oop_parents pushBackUnique _baseClassNameStr; \
+			{ _oop_memList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR); \
+			{ _oop_staticMemList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR); \
+			{ _oop_methodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
+			private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
+			{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
+				FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
+				_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
+				if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
+			} forEach (_oop_methodList - ["new", "delete", "copy"]); \
+		}; \
+	} forEach _parentClassNames; \
 }; \
 SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
 SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
@@ -765,6 +772,14 @@ SET_SPECIAL_MEM(_oop_classNameStr, SERIAL_MEM_LIST_STR, _serialVariables); \
 
 #define NEW_EXISTING(classNameStr, objNameStr) [] call { \
 FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
+objNameStr \
+}
+
+#define NEW_PUBLIC_EXISTING(classNameStr, objNameStr) [] call { \
+FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
+FORCE_SET_MEM(objNameStr, OOP_PUBLIC_STR, 1) \
+PUBLIC_VAR(objNameStr, OOP_PUBLIC_STR); \
+PUBLIC_VAR(objNameStr, OOP_PARENT_STR); \
 objNameStr \
 }
 

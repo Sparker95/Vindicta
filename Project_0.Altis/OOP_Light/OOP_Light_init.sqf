@@ -1029,6 +1029,40 @@ CLASS("AttrTestNotDerived1", "")
 	} ENDMETHOD;
 ENDCLASS;
 
+// Multiple inheritence tests
+
+CLASS("mi_a", "")
+	METHOD("new") {
+		diag_log "NEW mi_A";
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("mi_b", "mi_a")
+	METHOD("new") {
+		diag_log "NEW mi_B";
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("mi_c", "")
+	METHOD("new") {
+		diag_log "NEW mi_C";
+	} ENDMETHOD;
+ENDCLASS;
+
+CLASS("mi_d", ["mi_b" ARG "mi_c"])
+	METHOD("new") {
+		diag_log "NEW mi_D";
+	} ENDMETHOD;
+ENDCLASS;
+
+["OOP Multiple Inheritence", {
+	NEW("mi_d", []);
+
+	private _parents = GET_SPECIAL_MEM("mi_d", PARENTS_STR);
+	diag_log format ["Class mi_D parents: %1", _parents];
+	true
+}] call test_AddTest;
+
 ["OOP variable attributes", {
 	private _base = NEW("AttrTestBase1", []);
 
