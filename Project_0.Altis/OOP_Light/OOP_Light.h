@@ -1088,3 +1088,4 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define IS_NULL_OBJECT(object) (!(object isEqualType "") or {object isEqualTo ""})
 // Value to assign to an object handle to indicate it is deliberately invalid.
 #define NULL_OBJECT objNull
+#define OOP_OBJECT_TYPE ""

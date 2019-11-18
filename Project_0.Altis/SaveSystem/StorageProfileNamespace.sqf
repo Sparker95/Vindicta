@@ -115,6 +115,20 @@ CLASS(__CLASS_NAME, "Storage")
 		__PNS getVariable __NS_VAR_NAME(T_GETV("currentRecord"), _varName)
 	} ENDMETHOD;
 
+	// Erases variable (loadVariable must return nil afterwards)
+	/* virtual */ METHOD("eraseVariable") {
+		params [P_THISOBJECT, P_STRING("_varName")];
+
+		#ifdef OOP_ASSERT
+		// Bail if not open
+		if (!T_GETV("bOpen")) exitWith {
+			OOP_ERROR_0("Not open!");
+		};
+		#endif
+
+		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentRecord"), _varName), nil];
+	} ENDMETHOD;
+
 	// Must returns true if a record with given record name already exists
 	/* override */ METHOD("recordExists") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
@@ -133,9 +147,6 @@ ENDCLASS;
 
 // Same test can be used for any derived class actually
 [ "StorageInterfaceProfileNamespace", {
-
-	// memo
-	throw "Add tests for saveObject and loadObject!";
 
 	pr _obj = NEW(__CLASS_NAME, []);
 
@@ -180,6 +191,12 @@ ENDCLASS;
 	["Test var 0", CALLM1(_obj2, "loadVariable", _varName0) == 11] call test_Assert;
 	["Test var 1", CALLM1(_obj2, "loadVariable", _varName1) == 22] call test_Assert;
 
+	// Try to erase variables
+	CALLM1(_obj2, "eraseVariable", _varName0);
+	["Erase var 0", isNil {CALLM1(_obj2, "loadVariable", _varName0)}] call test_Assert;
+	CALLM2(_obj2, "saveVariable", _varName0, 11);	// Revert it back
+
+
 	// Try to delete the objects
 	DELETE(_obj);
 	DELETE(_obj2);
@@ -208,6 +225,45 @@ ENDCLASS;
 	pr _allRecords = CALLM0(_obj1, "getAllRecords");
 	["Proper amount of records", count _allRecords == 3] call test_Assert;
 	//diag_log format ["All records: %1", _allRecords];
+
+
+
+	// Try to save/load objects
+	CLASS("StorableTest", "Storable")
+		VARIABLE("noSave0");
+		VARIABLE_ATTR("save0", [ATTR_SAVE]);
+		VARIABLE_ATTR("save1", [ATTR_SAVE]);
+		VARIABLE("noSave1");
+
+		METHOD("new") {
+			params [P_THISOBJECT];
+		} ENDMETHOD;
+
+	ENDCLASS;
+
+	pr _testStorable = NEW("StorableTest", []);
+
+	SETV(_testStorable, "noSave0", 0);
+	SETV(_testStorable, "save0", 1);
+	SETV(_testStorable, "save1", 2);
+	SETV(_testStorable, "noSave1", 3);
+
+	pr _storage = NEW(__CLASS_NAME, []);
+	CALLM1(_storage, "open", "testRecord0");
+
+	pr _saveSuccess = CALLM1(_storage, "save", _testStorable);
+
+	["Save successful", _saveSuccess] call test_Assert;
+
+	DELETE(_testStorable);
+
+	pr _result = CALLM1(_storage, "load", _testStorable);
+
+	["Load successful", !IS_NULL_OBJECT(_result)] call test_Assert;
+	["Check noSave0", isNil {GETV(_testStorable, "noSave0")}] call test_Assert;
+	["Check noSave1", isNil {GETV(_testStorable, "noSave1")}] call test_Assert;
+	["Check save0", GETV(_testStorable, "save0") == 1] call test_Assert;
+	["Check save1", GETV(_testStorable, "save1") == 2] call test_Assert;
 
 }] call test_AddTest;
 

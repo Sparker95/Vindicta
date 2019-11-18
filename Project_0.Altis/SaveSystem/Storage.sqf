@@ -19,44 +19,125 @@ CLASS("Storage", "")
 		};
 	} ENDMETHOD;
 
-	// Saves an object
-	// Variables marked with attribute ATTR_SAVE will be saved
-	// Object must be of "Storable" class
-	/* public */ METHOD("saveObject") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_objRef")];
-		
-		ASSERT_OBJECT_CLASS(_objRef, "Storable");
+	/*
+	Method: save
+	Saves OOP object, or saves a basic type variable
 
-		CALLM1(_objRef, "preSerialize", _thisObject);
-		
-		pr _serial = SERIALIZE_ATTR(_objRef, ATTR_SAVE);
-		
-		T_CALLM2("saveVariable", _objRef, _serial);
-		
-		CALLM1(_objRef, "postSerialize", _thisObject);
+	Examples:
+
+	// Save a variable
+	CALLM2(_storage, "save", "myVar", 123);
+
+	// Save some object
+	_obj = NEW("MyVehicle", []);
+	CALLM1(_storage, "save", _obj);
+
+	Returns: true if value was saved successfully
+	*/
+	METHOD("save") {
+		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
+		// Check if we are saving an object or a basic type
+		if (_valueOrRef isEqualType OOP_OBJECT_TYPE && {IS_OOP_OBJECT(_valueOrRef)}) then {
+
+			ASSERT_OBJECT_CLASS(_valueOrRef, "Storable");		// Assert object class
+
+			if (!CALLM1(_valueOrRef, "preSerialize", _thisObject)) exitWith {	// Preserialize
+				OOP_ERROR_1("preSerialize failed for %1", _valueOrRef);
+				false
+			};
+
+			pr _serial = CALLM0(_valueOrRef, "serialize");		// Serialize
+			if (isNil "_serial") exitWith {
+				OOP_ERROR_1("serialize failed for %1", _valueOrRef);
+				false
+			};
+
+			if(!CALLM1(_valueOrRef, "postSerialize", _thisObject)) exitWith {	// Postserialize
+				OOP_ERROR_1("postSerialize failed for %1", _valueOrRef);
+				false
+			};
+
+			// All is good so far
+
+			T_CALLM2("saveVariable", _valueOrRef, _serial);		// Save serialized object
+
+			pr _className = GET_OBJECT_CLASS(_valueOrRef);		// Save parent class name
+			pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
+			T_CALLM2("saveVariable",							//
+					_valueOrRef + "_" + OOP_PARENT_STR,	
+					_className);	
+			T_CALLM2("saveVariable",							// Save 'public' value
+					_valueOrRef + "_" + OOP_PUBLIC_STR,			// If it is public, it will be restored
+					_isPublic);									// as a public object
+
+			true
+		} else {
+			// It's a basic type, save it just as it is
+			T_CALLM2("saveVariable", _valueOrRef, _value);
+			true
+		};
 	} ENDMETHOD;
 
-	// Loads an object with given ref into mission namespace
-	/* public */ METHOD("loadObject") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_objRef"), P_BOOL("_public")];
+	// Loads a basic type with given ref
+	/*
+	Method: load
+	Loads a variable with given name
+	Or loads an OOP object with given ref
 
-		CALLM1(_objRef, "preDeserialize", _thisObject);
+	Returns:
+	object ref or NULL_OBJECT on failure, if an OOP object ref is passed
+	value, if general variable name is passed
+	*/
+	METHOD("load") {
+		params [P_THISOBJECT, P_DYNAMIC("_ref")];
 
-		pr _serial = T_CALLM1("loadVariable", _objRef);
+		// Check if it was a saved OOP object
+		pr _className = T_CALLM1("loadVariable", _ref + "_" + OOP_PARENT_STR);
+		if (!isNil "_className") then {
+			// We are loading an object
+			pr _isPublic = T_CALLM1("loadVariable", _ref + "_" +  OOP_PUBLIC_STR);
+			pr _serial = T_CALLM1("loadVariable", _ref);	// Variable with name = ref is the serialized object
 
-		// Bail if this object ref was not found
-		if (isNil _serial) exitWith {false};
+			if (isNil "_serial") exitWith {
+				OOP_ERROR_1("serialized data not found for object %1", _ref);
+			};
 
-		// Initialize object with this ref
-		pr _className = SERIALIZED_CLASS_NAME(_serial);
-		ASSERT_OBJECT_CLASS(_objRef, "Storable");
-		if (_public) then {
-			NEW_PUBLIC_EXISTING(_className, _objRef);
+			if (isNil "_isPublic") exitWith {
+				OOP_ERROR_1("public attribute not found for object %1", _ref);
+				NULL_OBJECT
+			};
+
+			private _refLoaded = NULL_OBJECT;						// Ref of loaded object
+			if (_isPublic) then {									// Reconstruct object parent class
+				_refLoaded = NEW_PUBLIC_EXISTING(_className, _ref);	// Create a public object if it was public
+			} else {
+				_refLoaded = NEW_EXISTING(_className, _ref);		// Or create a local object
+			};
+
+			if (!CALLM1(_refLoaded, "preDeserialize", _thisObject)) exitWith {	// Predeserialize
+				OOP_ERROR_1("preDeserialize failed for %1", _refLoaded);
+				OOP_ERROR_1("  value: %1", _serial);
+				NULL_OBJECT
+			};
+
+			if (!CALLM1(_refLoaded, "deserialize", _serial)) exitWith {			// Deserialize
+				OOP_ERROR_1("deserialize failed for %1", _refLoaded);
+				OOP_ERROR_1("  value: %1", _serial);
+				NULL_OBJECT
+			};
+
+			if(!CALLM1(_refLoaded, "postDeserialize", _thisObject)) exitWith {	// PostDeserialize
+				OOP_ERROR_1("postDeserialize failed for %1", _refLoaded);
+				OOP_ERROR_1("  value: %1", _serial);
+				NULL_OBJECT
+			};
+
+			_refLoaded
 		} else {
-			NEW_EXISTING(_className, _objRef);
+			// We are loading a variable
+			// Just load it and return value
+			T_CALLM1("loadVariable", _ref)
 		};
-
-		CALLM1(_objRef, "postDeserialize", _thisObject);
 
 	} ENDMETHOD;
 
@@ -81,16 +162,20 @@ CLASS("Storage", "")
 		false
 	} ENDMETHOD;
 
-	// Saves variable, returns true on success
+	// Saves variable
 	/* virtual */ METHOD("saveVariable") {
 		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
-		true
 	} ENDMETHOD;
 
 	// Loads variable, returns the value it has read
 	/* virtual */ METHOD("loadVariable") {
 		params [P_THISOBJECT, P_STRING("_varName")];
 		0
+	} ENDMETHOD;
+
+	// Erases variable (loadVariable must return nil afterwards)
+	/* virtual */ METHOD("eraseVariable") {
+		params [P_THISOBJECT, P_STRING("_varName")];
 	} ENDMETHOD;
 
 	// Must returns true if a record with given record name already exists
