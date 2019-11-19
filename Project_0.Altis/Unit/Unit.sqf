@@ -1105,7 +1105,7 @@ CLASS(UNIT_CLASS_NAME, "");
 	*/
 	STATIC_METHOD("getUnitFromObjectHandle") {
 		params [ ["_thisClass", "", [""]], ["_objectHandle", objNull, [objNull]] ];
-		_objectHandle getVariable [UNIT_VAR_NAME_STR, ""]
+		GET_UNIT_FROM_OBJECT_HANDLE(_objectHandle);
 	} ENDMETHOD;
 
 	/*

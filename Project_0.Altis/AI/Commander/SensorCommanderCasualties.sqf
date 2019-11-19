@@ -39,13 +39,14 @@ CLASS("SensorCommanderCasualties", "SensorStimulatable")
 		{ // for each casualties
 			_x params ["_catID", "_subcatID", "_hOKiller", "_pos"];
 			if (!isNull _hOKiller) then {
+				pr _unitKiller = GET_UNIT_FROM_OBJECT_HANDLE(_hOKiller);
 				pr _eff = T_efficiency select _catID select _subcatID;
 				private _killerFound = false;
 				{ // for each target clusters
 					pr _TC = _x;
 					pr _targets = _TC select TARGET_CLUSTER_ID_CLUSTER select CLUSTER_ID_OBJECTS; // Array with TARGET_COMMANDER structures
 					// If the target was found in this cluster
-					pr _index = _targets findIf {_hOKiller isEqualTo (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE)};
+					pr _index = _targets findIf {_unitKiller isEqualTo (_x select TARGET_COMMANDER_ID_UNIT)};
 					if ( _index != -1 ) exitWith {
 						// The damage caused by this cluster gets increased by _eff
 						pr _dmg = _TC select TARGET_CLUSTER_ID_CAUSED_DAMAGE;

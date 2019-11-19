@@ -47,8 +47,8 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			pr _t = time;
 			while {_i < count _knownTargets} do {
 				pr _target = _knownTargets select _i;
-				if ( ((_t - (_target select TARGET_ID_TIME)) > TARGET_MAX_AGE) || 
-						(!alive (_target select TARGET_ID_OBJECT_HANDLE)) ) then {
+				if ( ((_t - (_target select TARGET_ID_TIME)) > TARGET_MAX_AGE) // || 
+						/* (!alive (_target select TARGET_ID_UNIT) */ )   then { // todo need to solve how to make us forget destroyed targets
 					_knownTargets deleteAt _i;
 					_targetsToForget pushBack _target;
 				} else {
@@ -64,7 +64,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			pr _stim = STIMULUS_NEW();
 			STIMULUS_SET_SOURCE(_stim, GETV(_thisObject, "gar"));
 			STIMULUS_SET_TYPE(_stim, STIMULUS_TYPE_FORGET_TARGETS);
-			STIMULUS_SET_VALUE(_stim, _targetsToForget apply {_x select TARGET_ID_OBJECT_HANDLE});
+			STIMULUS_SET_VALUE(_stim, _targetsToForget apply {_x select TARGET_ID_UNIT});
 			
 			// Broadcast this stimulus to all groups in this garrison
 			pr _gar = GETV(_thisObject, "gar");
@@ -114,19 +114,21 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			CALLM2(_commanderAI, "postMethodAsync", "handleStimulus", [_stim]);
 		};
 		
-		// Check if we can see any of the assigned targetsAggregate
+		// Check if we can see any of the assigned targets
 		pr _assignedTargetsRadius = GETV(_AI, "assignedTargetsRadius");
-		if (_assignedTargetsRadius != 0) then {
+		if (_assignedTargetsRadius != 0 && _knownTargets > 0) then {
+			/*
 			pr _assignedTargetsPos = GETV(_AI, "assignedTargetsPos");
 			pr _targetsInRadius = _knownTargets select {
-				pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
+				pr _hO = _x select TARGET_ID_UNIT;
 				(_hO distance2D _assignedTargetsPos) < _assignedTargetsRadius
-			};	
+			};
 			SETV(_AI, "assignedTargets", _targetsInRadius);
 			SETV(_AI, "awareOfAssignedTargets", count _targetsInRadius > 0);
+			*/
+			SETV(_AI, "awareOfAssignedTargets", true);
 		} else {
 			SETV(_AI, "awareOfAssignedTargets", false);
-			SETV(_AI, "assignedTargets", []);
 		};
 		
 		// Update the array of buildings with targets
@@ -190,9 +192,9 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		pr _knownTargets = GETV(_AI, "targets");
 		{ // forEach (STIMULUS_GET_VALUE(_stimulus));
 			// Check if the target is already known
-			pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
-			if (alive _hO) then {
-				pr _index = _knownTargets findIf {(_x select TARGET_ID_OBJECT_HANDLE) isEqualTo _hO};
+			pr _unit = _x select TARGET_ID_UNIT;
+			//if (alive _hO) then {
+				pr _index = _knownTargets findIf {(_x select TARGET_ID_UNIT) isEqualTo _unit};
 				if (_index == -1) then {
 					// Didn't find an existing entry
 					
@@ -212,7 +214,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 						_targetExisting set [TARGET_ID_KNOWS_ABOUT, TARGET_ID_KNOWS_ABOUT];
 					};
 				};
-			};
+			//};
 		} forEach (STIMULUS_GET_VALUE(_stimulus));
 		
 		//diag_log format [" - - - - - - Garrison: %1 Known targets: %2", _thisObject, _knownTargets];

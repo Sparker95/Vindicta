@@ -25,8 +25,6 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("targets");
 	// Array of buildings occupied by enemies known by this garrison
 	VARIABLE("buildingsWithTargets");
-	// Array of targets known by this AI which are within the radius from the assignedTargetsPos, updated by sensorGarrisonTargets
-	VARIABLE("assignedTargets");
 	// Position of the assigned targets (the center of the cluster typically)
 	VARIABLE("assignedTargetsPos");
 	// Radius where to search for assigned targets
@@ -105,7 +103,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("worldState", _ws);
 		T_SETV("targets", []);
 		T_SETV("buildingsWithTargets", []);
-		T_SETV("assignedTargets", []);
 		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
 		T_SETV("assignedTargetsRadius", 0);
 		T_SETV("awareOfAssignedTargets", false);

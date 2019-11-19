@@ -135,7 +135,12 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {
 						// Add 1 to age since its lowest value is -1};
-						_observedTargets = _observedTargets apply {TARGET_NEW(_x select 1, _hG knowsAbout (_x select 1),  _x select 4, time-(_x select 5)+1)};
+						_observedTargets = _observedTargets apply {
+							pr _hO = _x select 1;
+							pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
+							pr _eff = GET_UNIT_EFFICIENCY_FROM_OBJECT_HANDLE(_hO);
+							TARGET_NEW(_unit, _hG knowsAbout _hO,  _x select 4, time-(_x select 5)+1, +_eff)
+						};
 					
 						#ifdef PRINT_SPOTTED_TARGETS
 							OOP_INFO_2("[SensorGroupTargets::Update] Info: GroupHandle: %1, targets: %2", _hg, _observedTargets);
@@ -247,9 +252,14 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				pr _hG = GETV(_thisObject, "hG");
 				{ // foreach _data
 					// _x is a target structure
-					pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
-					if (alive _hO) then {
-						_hG reveal [_hO, _x select TARGET_ID_KNOWS_ABOUT];
+					pr _unit = _x select TARGET_ID_UNIT;
+					CRITICAL_SECTION {
+						if (IS_OOP_OBJECT(_unit)) then {
+							pr _hO = CALLM0(_unit, "getObjectHandle");
+							if (alive _hO) then {
+								_hG reveal [_hO, _x select TARGET_ID_KNOWS_ABOUT];
+							};
+						};
 					};
 				} forEach _data;
 			};
@@ -265,7 +275,12 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				pr _hG = GETV(_thisObject, "hG");
 				//pr _thisSide = side _hG;
 				{ // foreach _data
-					_hG forgetTarget _x;
+					CRITICAL_SECTION {
+						if (IS_OOP_OBJECT(_x)) then {
+							pr _hO = CALLM0(_x, "getObjectHandle");
+							_hG forgetTarget _hO;
+						};
+					};
 				} forEach _data;
 			};
 		};

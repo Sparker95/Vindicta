@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "..\..\Unit\Unit.hpp"
 
 /*
 Sensor for a commander to receive spotted enemies from its garrisons and relay them to other garrisons.
@@ -24,10 +23,6 @@ Author: Sparker 21.12.2018
 #endif
 
 //#define DEBUG_TARGETS
-
-// Makes commander forget destroyed targets
-// It might make sense to keep in memory destroyed targets
-#define KEEP_DESTROYED_TARGETS
 
 CLASS("SensorCommanderTargets", "SensorStimulatable")
 
@@ -79,13 +74,10 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _t = time;
 			
 			_deletedTargets append (
+				// Currently cmdr does not forget destroyed targets
+				// We can't call any methods on enemy units because we do not own them
 				_knownTargets select {
 					((_t - (_x select TARGET_COMMANDER_ID_TIME)) > TARGET_MAX_AGE)
-					#ifdef KEEP_DESTROYED_TARGETS
-					|| (! alive (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE) )
-					#else
-					|| ( isNull (_x select TARGET_COMMANDER_ID_OBJECT_HANDLE) )
-					#endif
 				}
 			);
 			
@@ -111,7 +103,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _eff = +T_EFF_null; // Empty efficiency vector
 			pr _clusterTargets = _x select CLUSTER_ID_OBJECTS;
 			{
-				_hO = _x select TARGET_ID_OBJECT_HANDLE;
+				_hO = _x select TARGET_ID_UNIT;
 				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
 				_eff = EFF_ADD(_eff, _objEff);
 			} forEach _clusterTargets;
@@ -130,9 +122,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _row = [];
 			_row resize (count _targetClusters);
 			
-			pr _newObjects = (_newClusters select _newClusterID select CLUSTER_ID_OBJECTS) apply {_x select TARGET_ID_OBJECT_HANDLE};
+			pr _newObjects = (_newClusters select _newClusterID select CLUSTER_ID_OBJECTS) apply {_x select TARGET_ID_UNIT};
 			for "_oldClusterID" from 0 to (count _targetClusters - 1) do {
-				pr _oldObjects = (_targetClusters select _oldClusterID select TARGET_CLUSTER_ID_CLUSTER select CLUSTER_ID_OBJECTS) apply {_x select TARGET_ID_OBJECT_HANDLE};
+				pr _oldObjects = (_targetClusters select _oldClusterID select TARGET_CLUSTER_ID_CLUSTER select CLUSTER_ID_OBJECTS) apply {_x select TARGET_ID_UNIT};
 				pr _a = count ( _oldObjects arrayIntersect _newObjects ); // Count ammount of the same elements
 				_row set [_oldClusterID, _a];
 			};
@@ -160,7 +152,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _observedBy = [];
 			pr _clusterTargets = _x select CLUSTER_ID_OBJECTS;
 			{
-				_hO = _x select TARGET_COMMANDER_ID_OBJECT_HANDLE;
+				_unit = _x select TARGET_COMMANDER_ID_UNIT;
 				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
 				_eff = EFF_ADD(_eff, _objEff);
 				
@@ -424,15 +416,22 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		//pr _newTargets = T_GETV("newTargets");
 		{ // forEach (STIMULUS_GET_VALUE(_stimulus));
 			// Check if the target is already known
-			pr _hO = _x select TARGET_ID_OBJECT_HANDLE;
+			pr _unit = _x select TARGET_ID_UNIT;
+			/*
 			#ifdef KEEP_DESTROYED_TARGETS
 			if (alive _hO) then {
 			#endif
-				pr _index = _knownTargets findIf {(_x select TARGET_ID_OBJECT_HANDLE) isEqualTo _hO};
+			*/
+				pr _index = _knownTargets findIf {(_x select TARGET_ID_UNIT) isEqualTo _unit};
 				if (_index == -1) then {
 					// Didn't find an existing entry
 					// Add a new target record
-					pr _newCommanderTarget = TARGET_COMMANDER_NEW(_hO, _x select TARGET_ID_KNOWS_ABOUT, _x select TARGET_ID_POS, _x select TARGET_ID_TIME, [_sourceGarrison]);
+					pr _newCommanderTarget = TARGET_COMMANDER_NEW(_unit,
+												_x select TARGET_ID_KNOWS_ABOUT,
+												_x select TARGET_ID_POS,
+												_x select TARGET_ID_TIME,
+												_x select TARGET_ID_EFFICIENCY,
+												[_sourceGarrison]);
 					
 					#ifdef DEBUG_TARGETS
 					OOP_INFO_1("Added new target: %1", _newCommanderTarget);
@@ -463,9 +462,11 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 						(_targetExisting select TARGET_COMMANDER_ID_OBSERVED_BY) pushBackUnique _sourceGarrison;
 					};
 				};
+			/*
 			#ifdef KEEP_DESTROYED_TARGETS
 			};
 			#endif
+			*/
 		} forEach (STIMULUS_GET_VALUE(_stimulus));
 		
 	} ENDMETHOD;
