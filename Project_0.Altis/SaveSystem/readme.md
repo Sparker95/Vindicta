@@ -9,8 +9,8 @@ MessageReceiverEx   +
 - - Containers - - 
 Location +
 Garrison
-Group
-Unit
+Group +
+Unit +
 
 - - Commander AI - - 
 Intel

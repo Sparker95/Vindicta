@@ -10,13 +10,51 @@ Base class for derived classes which perform saving and loading of variables els
 
 CLASS("Storage", "")
 
+	VARIABLE("savedObjects");	// Hash maps of objects saved and loaded during this save/load session
+	VARIABLE("loadedObjects");	// Maps are reset ad each open/close call
+
+	METHOD("new") {
+		params [P_THISOBJECT];
+		#ifndef _SQF_VM
+		T_SETV("savedObjects", locationNull);
+		T_SETV("loadedObjects", locationNull);
+		#else
+		T_SETV("savedObjects", objNull);
+		T_SETV("loadedObjects", objNull);
+		#endif
+	} ENDMETHOD;
+
 	METHOD("delete") {
 		params [P_THISOBJECT];
+
+		T_CALLM0("_clearObjectMaps");
 
 		// Close if some record is still open
 		if (T_CALLM0("isOpen")) then {
 			T_CALLM0("close");
 		};
+	} ENDMETHOD;
+
+	// Clears hashmaps of object references
+	/* private */ METHOD("_clearObjectMaps") {
+		params [P_THISOBJECT];
+
+		#ifndef _SQF_VM
+		if (! isNull T_GETV("savedObjects")) then {
+			deleteLocation T_GETV("savedObjects");
+			deleteLocation T_GETV("loadedObjects");
+		};
+		T_SETV("savedObjects", locationNull);
+		T_SETV("loadedObjects", locationNull);
+		#else
+		if (!isNull T_GETV("savedObjects")) then {
+			deleteVehicle T_GETV("savedObjects");
+			deleteVehicle T_GETV("loadedObjects");
+		};
+		T_SETV("savedObjects", objNull);
+		T_SETV("loadedObjects", objNull);
+		#endif
+
 	} ENDMETHOD;
 
 	/*
@@ -38,6 +76,13 @@ CLASS("Storage", "")
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
 		// Check if we are saving an object or a basic type
 		if (_valueOrRef isEqualType OOP_OBJECT_TYPE && {IS_OOP_OBJECT(_valueOrRef)}) then {
+
+			// Check if this object has been saved before
+			pr _savedObjectsMap = T_GETV("savedObjects");
+			if (_savedObjectsMap getVariable [_valueOrRef, false]) exitWith {
+				OOP_WARNING_1("Object was saved before: %1", _valueOrRef);
+				true
+			};
 
 			ASSERT_OBJECT_CLASS(_valueOrRef, "Storable");		// Assert object class
 
@@ -66,6 +111,9 @@ CLASS("Storage", "")
 			T_CALLM2("saveVariable", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
 			T_CALLM2("saveVariable", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublic); // as a public object
 
+			// Add object ref to the map
+			_savedObjectsMap setVariable [_valueOrRef, true];
+
 			true
 		} else {
 			// It's a basic type, save it just as it is
@@ -91,6 +139,14 @@ CLASS("Storage", "")
 		pr _className = T_CALLM1("loadVariable", _ref + "_" + OOP_PARENT_STR);
 		if (!isNil "_className") then {
 			// We are loading an object
+
+			// Check if this object has been saved before
+			pr _loadedObjectsMap = T_GETV("loadedObjects");
+			if (_loadedObjectsMap getVariable [_ref, false]) exitWith {
+				OOP_WARNING_1("Object was loaded before: %1", _valueOrRef);
+				_ref
+			};
+
 			pr _isPublic = T_CALLM1("loadVariable", _ref + "_" +  OOP_PUBLIC_STR);
 			pr _serial = T_CALLM1("loadVariable", _ref);	// Variable with name = ref is the serialized object
 
@@ -128,6 +184,9 @@ CLASS("Storage", "")
 				NULL_OBJECT
 			};
 
+			// Add object ref to the map
+			_loadedObjectsMap setVariable [_ref, true];
+
 			_refLoaded
 		} else {
 			// We are loading a variable
@@ -143,13 +202,30 @@ CLASS("Storage", "")
 	// analogue is opening a file with given name
 	// It should also prohibit opening same record twice
 	// Returns nothing
+	// ! ! ! Must be called by inherited classes ! ! !
 	/* virtual */ METHOD("open") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
+
+		// Set up hashmaps
+		T_CALLM0("_clearObjectMaps");
+		#ifndef _SQF_VM
+		pr _hashmapSave = createLocation ["empty", [0,0,0], 0, 0];
+		pr _hashmapLoad = createLocation ["empty", [0,0,0], 0, 0];
+		#else
+		pr _hashmapSave = "Dummy" createVehicle [0, 0, 0];
+		pr _hashmapLoad = "Dummy" createVehicle [0, 0, 0];
+		#endif
+		T_SETV("savedObjects", _hashMapSave);
+		T_SETV("loadedObjects", _hashMapLoad);
 	} ENDMETHOD;
 
 	// Must close the file or whatever
+	// ! ! ! Must be called by inherited classes ! ! !
 	/* virtual */ METHOD("close") {
 		params [P_THISOBJECT];
+
+		// Clear hashmaps
+		T_CALLM0("_clearObjectMaps");
 	} ENDMETHOD;
 
 	// Must return true if the object is ready to save/load data

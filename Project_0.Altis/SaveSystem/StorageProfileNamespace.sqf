@@ -37,6 +37,8 @@ CLASS(__CLASS_NAME, "Storage")
 	/* override */ METHOD("open") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
+		CALL_CLASS_METHOD("Storage", _thisObject, "open", [_recordName]);
+
 		_recordName = toLower _recordName;
 
 		// Bail if trying to open a prohibited name
@@ -67,6 +69,8 @@ CLASS(__CLASS_NAME, "Storage")
 	// Must close the file or whatever
 	/* override */ METHOD("close") {
 		params [P_THISOBJECT];
+
+		CALL_CLASS_METHOD("Storage", _thisObject, "close", []);
 
 		// Bail if not open
 		if (!T_GETV("bOpen")) exitWith {};
@@ -264,6 +268,12 @@ ENDCLASS;
 	["Check noSave1", isNil {GETV(_testStorable, "noSave1")}] call test_Assert;
 	["Check save0", GETV(_testStorable, "save0") == 1] call test_Assert;
 	["Check save1", GETV(_testStorable, "save1") == 2] call test_Assert;
+
+	// Try to load same object twice
+	SETV(_testStorable, "save0", 111); // Try to set a variable
+	pr _result = CALLM1(_storage, "load", _testStorable);
+	["Second load successful", !IS_NULL_OBJECT(_result)] call test_Assert;
+	["Object was not loaded twice", GETV(_testStorable, "save0") == 111] call test_Assert;
 
 	// Try to save/load variables
 	CALLM2(_storage, "save", "testVar", 666);
