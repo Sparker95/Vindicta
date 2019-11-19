@@ -46,7 +46,7 @@ CLASS("Storage", "")
 				false
 			};
 
-			pr _serial = CALLM0(_valueOrRef, "serialize");		// Serialize
+			pr _serial = CALLM0(_valueOrRef, "serializeForStorage");		// Serialize
 			if (isNil "_serial") exitWith {
 				OOP_ERROR_1("serialize failed for %1", _valueOrRef);
 				false
@@ -116,7 +116,7 @@ CLASS("Storage", "")
 				NULL_OBJECT
 			};
 
-			if (!CALLM1(_refLoaded, "deserialize", _serial)) exitWith {			// Deserialize
+			if (!CALLM1(_refLoaded, "deserializeFromStorage", _serial)) exitWith {			// Deserialize
 				OOP_ERROR_1("deserialize failed for %1", _refLoaded);
 				OOP_ERROR_1("  value: %1", _serial);
 				NULL_OBJECT

@@ -18,7 +18,7 @@ CLASS("Storable", "")
 
 	// Returns an array which must be a deep copy
 	// Must return nil on failure
-	/* virtual */ METHOD("serialize") {
+	/* virtual */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
 		SERIALIZE_ATTR(_thisObject, ATTR_SAVE);
 	} ENDMETHOD;
@@ -35,7 +35,7 @@ CLASS("Storable", "")
 		true
 	} ENDMETHOD;
 
-	/* virtual */ METHOD("deserialize") {
+	/* virtual */ METHOD("deserializeFromStorage") {
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ATTR(_thisObject, _serial, ATTR_SAVE);
 		true
