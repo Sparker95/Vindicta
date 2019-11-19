@@ -63,12 +63,8 @@ CLASS("Storage", "")
 
 			pr _className = GET_OBJECT_CLASS(_valueOrRef);		// Save parent class name
 			pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
-			T_CALLM2("saveVariable",							//
-					_valueOrRef + "_" + OOP_PARENT_STR,	
-					_className);	
-			T_CALLM2("saveVariable",							// Save 'public' value
-					_valueOrRef + "_" + OOP_PUBLIC_STR,			// If it is public, it will be restored
-					_isPublic);									// as a public object
+			T_CALLM2("saveVariable", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
+			T_CALLM2("saveVariable", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublic); // as a public object
 
 			true
 		} else {

@@ -139,6 +139,10 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 							pr _hO = _x select 1;
 							pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
 							pr _eff = GET_UNIT_EFFICIENCY_FROM_OBJECT_HANDLE(_hO);
+							if (IS_NULL_OBJECT(_unit)) then {
+								_unit = format ["unknown %1", _hO];
+								_eff = +(T_efficiency#T_INF#T_INF_rifleman);
+							};
 							TARGET_NEW(_unit, _hG knowsAbout _hO,  _x select 4, time-(_x select 5)+1, +_eff)
 						};
 					

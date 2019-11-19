@@ -153,7 +153,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _clusterTargets = _x select CLUSTER_ID_OBJECTS;
 			{
 				_unit = _x select TARGET_COMMANDER_ID_UNIT;
-				_objEff = _hO getVariable [UNIT_EFFICIENCY_VAR_NAME_STR, T_EFF_default];
+				_objEff = _x select TARGET_COMMANDER_ID_EFFICIENCY;
 				_eff = EFF_ADD(_eff, _objEff);
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
