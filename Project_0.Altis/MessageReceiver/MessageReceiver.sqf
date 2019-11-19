@@ -40,9 +40,9 @@ MsgRcvr_fnc_setMsgDone = {
 	};
 };
 
-CLASS("MessageReceiver", "")
+CLASS("MessageReceiver", "Storable")
 
-	VARIABLE("owner");
+	VARIABLE_ATTR("owner", [ATTR_SAVE]);
 
 	/*
 	Method: new
@@ -513,6 +513,20 @@ CLASS("MessageReceiver", "")
 		params [ ["_thisObject", "", [""]], ["_newOwner", 0, [0]] ];
 		diag_log format ["[MessageReceiver:transferOwnership] Error: method transferOwnership is not implemented for %1!", _thisObject];
 		false
+	} ENDMETHOD;
+
+	// Storage methods
+
+	METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Must broadcast public variables
+		SETV(_thisObject, "owner", CLIENT_OWNER); // Now we own this obviously
+		if (IS_PUBLIC(_thisObject)) then {
+			PUBLIC_VAR(_thisObject, "owner");
+		};
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -3,8 +3,8 @@
 Classes we want to save:
 
 - - Base - -
-MessageReceiver
-MessageReceiverEx
+MessageReceiver     +
+MessageReceiverEx   +
 
 - - Containers - - 
 Location
@@ -27,6 +27,7 @@ Grid
 
 - - Game Mode - -
 GameMode, CivilWarGameMode
+GameModeData of locations
 
 Saving methods of objects:
 

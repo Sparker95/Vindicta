@@ -15,9 +15,9 @@ Author: Sparker, Billw (reference count improvements)
 
 #define pr private
 
-CLASS("MessageReceiverEx", "MessageReceiver")
+CLASS("MessageReceiverEx", ["MessageReceiver" ARG "Storable"])
 
-	VARIABLE("refCount");
+	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params ["_thisObject"];

@@ -13,6 +13,10 @@ CLASS("Storable", "")
 	// Must return true on success
 	/* virtual */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Call method of all base classes
+		//CALL_CLASS_METHOD(... , _thisObject, "preSerialize", [_storage]);
+
 		true
 	} ENDMETHOD;
 
@@ -26,12 +30,20 @@ CLASS("Storable", "")
 	// Must return true on success
 	/* virtual */ METHOD("postSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Call method of all base classes
+		//CALL_CLASS_METHOD(... , _thisObject, "postSerialize", [_storage]);
+		
 		true
 	} ENDMETHOD;
 
 	// These methods must return true on success
 	/* virtual */ METHOD("preDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		//CALL_CLASS_METHOD(... , _thisObject, "preDeserialize", [_storage]);
+
 		true
 	} ENDMETHOD;
 
@@ -43,6 +55,10 @@ CLASS("Storable", "")
 
 	/* virtual */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		//CALL_CLASS_METHOD(... , _thisObject, "postDeserialize", [_storage]);
+
 		true
 	} ENDMETHOD;
 
