@@ -2842,6 +2842,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("templateName")
 	} ENDMETHOD;
 
+	// - - - - - STORAGE - - - - -
+
+	/* virtual */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
 
 if (isNil { GETSV("Garrison", "all") } ) then {

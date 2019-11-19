@@ -7,7 +7,7 @@ MessageReceiver     +
 MessageReceiverEx   +
 
 - - Containers - - 
-Location
+Location +
 Garrison
 Group
 Unit

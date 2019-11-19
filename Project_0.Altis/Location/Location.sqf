@@ -1371,6 +1371,18 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		true
 	} ENDMETHOD;
 
+	/* virtual */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		pr _all = GETSV("Location", "all");
+		CALLM2(_storage, "save", "Location_all", +_all);
+	} ENDMETHOD;
+
+	/* virtual */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		pr _all = CALLM1(_storage, "load", "Location_all");
+		SETSV("Location", "all", +_all);
+	} ENDMETHOD;
+
 ENDCLASS;
 
 if (isNil {GETSV("Location", "all")}) then {
@@ -1389,7 +1401,9 @@ call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
 	pr _storage = NEW("StorageProfileNamespace", []);
 	CALLM1(_storage, "open", "testRecordLocation");
 	CALLM1(_storage, "save", _loc);
+	CALLSM1("Location", "saveStaticVariables", _storage);
 	DELETE(_loc);
+	CALLSM1("Location", "loadStaticVariables", _storage);
 	CALLM1(_storage, "load", _loc);
 
 	true

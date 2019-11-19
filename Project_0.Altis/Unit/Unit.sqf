@@ -42,7 +42,7 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 };
 #endif
 
-CLASS(UNIT_CLASS_NAME, "");
+CLASS(UNIT_CLASS_NAME, "Storable");
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -1686,6 +1686,9 @@ CLASS(UNIT_CLASS_NAME, "");
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _dataList];
 		};
 	} ENDMETHOD;
+
+	// - - - - STORAGE - - - - -
+
 
 ENDCLASS;
 

@@ -62,5 +62,12 @@ CLASS("Storable", "")
 		true
 	} ENDMETHOD;
 
+	/* virtual */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+	} ENDMETHOD;
+
+	/* virtual */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+	} ENDMETHOD;
 
 ENDCLASS;
