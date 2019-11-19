@@ -42,7 +42,7 @@ if (isNil "Unit_aceCargoUnloaded_EH" && isServer) then { // Only server needs th
 };
 #endif
 
-CLASS(UNIT_CLASS_NAME, "Storable");
+CLASS(UNIT_CLASS_NAME, "Storable")
 	VARIABLE_ATTR("data", [ATTR_PRIVATE ARG ATTR_SAVE]);
 	STATIC_VARIABLE("all");
 
@@ -1689,10 +1689,55 @@ CLASS(UNIT_CLASS_NAME, "Storable");
 
 	// - - - - STORAGE - - - - -
 
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		pr _data = +T_GETV("data");
+		_data set [UNIT_DATA_ID_OBJECT_HANDLE, 0];
+		_data set [UNIT_DATA_ID_OWNER, 0];
+		_data set [UNIT_DATA_ID_MUTEX, 0];
+		_data set [UNIT_DATA_ID_AI, 0];
+
+		if(T_CALLM0("isSpawned")) then {
+			// Set the pos, vector dir and up, location
+			pr _objectHandle = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+			pr _posATL = getPosATL _objectHandle;
+			pr _dirAndUp = [vectorDir _objectHandle, vectorUp _objectHandle];
+			pr _gar = _data#UNIT_DATA_ID_GARRISON;
+			pr _loc = if (_gar != "") then {CALLM0(_gar, "getLocation")} else {""};
+			_data set [UNIT_DATA_ID_POS_ATL, _posATL];
+			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
+			_data set [UNIT_DATA_ID_LOCATION, _loc];
+		};
+		_data 
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		_serial set [UNIT_DATA_ID_OWNER, 2]; // Server
+		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
+		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
+		_serial set [UNIT_DATA_ID_AI, ""];
+		T_SETV("data", _serial);
+		true
+	} ENDMETHOD;
+
+	/* virtual */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		pr _all = GETSV("Unit", "all");
+		CALLM2(_storage, "save", "Location_all", +_all);
+	} ENDMETHOD;
+
+	/* virtual */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		pr _all = CALLM1(_storage, "load", "Location_all");
+		SETSV("Unit", "all", +_all);
+	} ENDMETHOD;
 
 ENDCLASS;
 
-SET_STATIC_MEM("Unit", "all", []);
+if (isNil {GETSV("Unit", "all")} ) then {
+	SET_STATIC_MEM("Unit", "all", []);
+};
 
 #ifdef _SQF_VM
 
@@ -1704,6 +1749,22 @@ Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
 	private _obj = NEW("Unit", Test_unit_args + [_group]);
 	private _class = OBJECT_PARENT_CLASS_STR(_obj);
 	!(isNil "_class")
+}] call test_AddTest;
+
+["Unit.save and load", {
+	private _group = NEW("Group", Test_group_args);
+	private _unit = NEW("Unit", Test_unit_args + [_group]);
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordUnit");
+	CALLM1(_storage, "save", _unit);
+	CALLSM1("Unit", "saveStaticVariables", _storage);
+	DELETE(_unit);
+	CALLSM1("Location", "loadStaticVariables", _storage);
+	CALLM1(_storage, "load", _unit);
+
+	["Object loaded", CALLM0(_unit, "getCategory") == T_INF ] call test_Assert;
+
+	true
 }] call test_AddTest;
 
 #endif

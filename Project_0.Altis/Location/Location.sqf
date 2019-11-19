@@ -1271,12 +1271,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// - - - - - - S T O R A G E - - - - - -
 
-	/* virtual */ METHOD("preSerialize") {
+	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
-		// Call method of all base classes
-		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "preSerialize", [_storage]);
-
 		// Save objects which we own
 		pr _gmData = T_GETV("gameModeData");
 		if (!IS_NULL_OBJECT(_gmData)) then {
@@ -1298,7 +1295,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 
 	// Must return true on success
-	/* virtual */ METHOD("postSerialize") {
+	/* override */ METHOD("postSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -1312,7 +1309,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	// These methods must return true on success
 	
-	/* virtual */ METHOD("postDeserialize") {
+	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
@@ -1371,13 +1368,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		true
 	} ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD("saveStaticVariables") {
+	/* override */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = GETSV("Location", "all");
 		CALLM2(_storage, "save", "Location_all", +_all);
 	} ENDMETHOD;
 
-	/* virtual */ STATIC_METHOD("loadStaticVariables") {
+	/* override */ STATIC_METHOD("loadStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = CALLM1(_storage, "load", "Location_all");
 		SETSV("Location", "all", +_all);
@@ -1396,8 +1393,9 @@ call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
 
 // Tests
 #ifdef _SQF_VM
-["Location save and load", {
+["Location.save and load", {
 	pr _loc = NEW("Location", [[0 ARG 1 ARG 2]]);
+	CALLM1(_loc, "setName", "testLocationName");
 	pr _storage = NEW("StorageProfileNamespace", []);
 	CALLM1(_storage, "open", "testRecordLocation");
 	CALLM1(_storage, "save", _loc);
@@ -1405,6 +1403,8 @@ call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
 	DELETE(_loc);
 	CALLSM1("Location", "loadStaticVariables", _storage);
 	CALLM1(_storage, "load", _loc);
+
+	["Object loaded", GETV(_loc, "name") == "testLocationName"] call test_Assert;
 
 	true
 }] call test_AddTest;

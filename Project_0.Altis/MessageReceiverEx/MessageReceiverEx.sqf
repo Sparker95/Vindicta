@@ -15,7 +15,7 @@ Author: Sparker, Billw (reference count improvements)
 
 #define pr private
 
-CLASS("MessageReceiverEx", ["MessageReceiver" ARG "Storable"])
+CLASS("MessageReceiverEx", ["MessageReceiver"])
 
 	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
@@ -176,5 +176,16 @@ CLASS("MessageReceiverEx", ["MessageReceiver" ARG "Storable"])
         
         nil
     } ENDMETHOD;
+
+	// - - - - - STORAGE - - - - - -
+	
+	/* virtual */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiver", _thisObject, "postDeserialize", [_storage]);
+
+		true
+	} ENDMETHOD;
 
 ENDCLASS;
