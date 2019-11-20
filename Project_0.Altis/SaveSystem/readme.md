@@ -8,12 +8,13 @@ MessageReceiverEx   +
 
 - - Containers - - 
 Location +
-Garrison
+Garrison +
 Group +
 Unit +
 
 - - Commander AI - - 
 Intel
+IntelDatabase
 AICommander
 ModelBase
 ClusterModel

@@ -22,6 +22,7 @@ CLASS("Storable", "")
 
 	// Returns an array, does not have to be a deep copy
 	// Must return nil on failure
+	// By default it serializes variables with ATTR_SAVE attribute
 	/* virtual */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
 		SERIALIZE_ATTR(_thisObject, ATTR_SAVE);
@@ -47,6 +48,8 @@ CLASS("Storable", "")
 		true
 	} ENDMETHOD;
 
+	// Must deserialize from an array into this object
+	// By default it deserializes variables with ATTR_SAVE attribute
 	/* virtual */ METHOD("deserializeFromStorage") {
 		params [P_THISOBJECT, P_ARRAY("_serial")];
 		DESERIALIZE_ATTR(_thisObject, _serial, ATTR_SAVE);

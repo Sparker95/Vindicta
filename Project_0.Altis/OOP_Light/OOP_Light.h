@@ -869,7 +869,11 @@ objNameStr \
 #define SERIALIZED_OBJECT_NAME(array) (array select 1)
 #define SERIALIZED_SET_OBJECT_NAME(array, name) array set [1, name]
 
+// Serialize all variables which have a specified attributes
 #define SERIALIZE_ATTR(objNameStr, attr) ([objNameStr, attr] call OOP_serialize_attr)
+
+// Serialize all variables regardless of their attributes
+#define SERIALIZE_ALL(objNameStr) ([objNameStr, attr, true] call OOP_serialize_attr)
 
 // ----------------------------------------
 // |        D E S E R I A L I Z E         |
@@ -878,6 +882,7 @@ objNameStr \
 // Object must exist before you can DESERIALIZE an array into it!
 #define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
 #define DESERIALIZE_ATTR(objNameStr, array, attr) ([objNameStr, array, attr] call OOP_deserialize_attr)
+#define DESERIALIZE_ALL(objNameStr, array) ([objNameStr, array, attr, true] call OOP_deserialize_attr)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |

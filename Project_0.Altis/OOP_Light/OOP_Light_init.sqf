@@ -759,15 +759,17 @@ OOP_serialize = { // todo implement namespace
 
 // Same as OOP_serialize, but lets choose an attribute
 OOP_serialize_attr = { // todo implement namespace
-	params ["_objNameStr", "_attr"];
+	params ["_objNameStr", "_attr", ["_serializeAllVariables", false]];
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	private _memList = _memList select {
+	if (!_serializeAllVariables) then {
+		_memList = _memList select {
 			//_x params ["_varName", "_attributes"];
 			_attr in (_x#1)
 		};
+	};
 
 	private _array = [];
 	_array pushBack _classNameStr;
@@ -805,7 +807,7 @@ OOP_deserialize = { // todo implement namespace
 
 // Same as OOP_deserialize, but lets deserialie variables with specified attribute
 OOP_deserialize_attr = {
-	params ["_objNameStr", "_array", "_attr"];
+	params ["_objNameStr", "_array", "_attr", ["_deserializeAllVariables", false]];
 
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
 
@@ -814,9 +816,11 @@ OOP_deserialize_attr = {
 	#endif
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	private _memList = _memList select {
-		//_x params ["_varName", "_attributes"];
-		_attr in (_x#1)
+	if(!_deserializeAllVariables) then {
+		_memList = _memList select {
+			//_x params ["_varName", "_attributes"];
+			_attr in (_x#1)
+		};
 	};
 
 	private _iVarName = 0;

@@ -17,7 +17,7 @@ Author: Sparker 05.05.2019
 	Class: Intel
 	Intel base class. It stores variables that describe intel. It is a base class for more intel types.
 */
-CLASS("Intel", "")
+CLASS("Intel", "Storable")
 
 	/* variable: dateCreated 
 	Date when this intel was created initially in format returned by date command*/
@@ -190,6 +190,24 @@ CLASS("Intel", "")
 
 	METHOD("updateDatabaseIndex") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_db"), P_OOP_OBJECT("_itemSrc")];
+	} ENDMETHOD;
+
+	// - - - - - STORAGE - - - - - -
+
+	/*
+	Intel objects are very basic.
+	So we just serialize/deserialize all their variables for saving.
+	*/
+
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -772,3 +790,23 @@ CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 		"Recon"
 	} ENDMETHOD;
 ENDCLASS;
+
+// - - - - TESTS - - - - 
+#ifdef _SQF_VM
+
+["Intel.save and load", {
+	private _intel = NEW("Intel", []);
+	SETV(_intel, "source", "123123");
+
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordIntel");
+	CALLM1(_storage, "save", _intel);
+	DELETE(_intel);
+	CALLM1(_storage, "load", _intel);
+
+	["Object loaded", GETV(_intel, "source") == "123123" ] call test_Assert;
+
+	true
+}] call test_AddTest;
+
+#endif
