@@ -7,23 +7,23 @@
 Class: AI.CmdrAI.Model.WorldModel
 Models either the real world state, or a derivation of it that can be used for simulation.
 */
-CLASS("WorldModel", "")
+CLASS("WorldModel", "Storable")
 
-	VARIABLE("type");
-	VARIABLE("garrisons");
-	VARIABLE("locations");
-	VARIABLE("clusters");
+	VARIABLE_ATTR("type", [ATTR_SAVE]);
+	VARIABLE_ATTR("garrisons", [ATTR_SAVE]);
+	VARIABLE_ATTR("locations", [ATTR_SAVE]);
+	VARIABLE_ATTR("clusters", [ATTR_SAVE]);
 
 	VARIABLE("gridMutex");
 
 	// Threat is historic enemy forces in the area
-	VARIABLE("rawThreatGrid");
+	VARIABLE_ATTR("rawThreatGrid", [ATTR_SAVE]);
 	// This is the rawThreatGrid with post processing applied
-	VARIABLE("threatGrid");
+	VARIABLE_ATTR("threatGrid", [ATTR_SAVE]);
 	// Activity to general rating of enemy activity in an area, including damage dealt to us, intel reports about them etc.
-	VARIABLE("rawActivityGrid");
+	VARIABLE_ATTR("rawActivityGrid", [ATTR_SAVE]);
 	// This is the rawActivityGrid with post processing applied
-	VARIABLE("activityGrid");
+	VARIABLE_ATTR("activityGrid", [ATTR_SAVE]);
 
 	VARIABLE("lastGridUpdate");
 
@@ -742,6 +742,47 @@ CLASS("WorldModel", "")
 		//_reinforceRequiredScoreCache set [_garrId, _score];
 		_score
 	} ENDMETHOD;
+
+
+	// - - - - - - - STORAGE - - - - - - - - -
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save our models
+		{
+			CALLM1(_storage, "save", _x);
+		} forEach T_GETV("garrisons");
+		{
+			CALLM1(_storage, "save", _x);
+		} forEach T_GETV("locations");
+		{
+			CALLM1(_storage, "save", _x);
+		} forEach T_GETV("clusters");
+
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Load our models
+		{
+			CALLM1(_storage, "load", _x);
+		} forEach T_GETV("garrisons");
+		{
+			CALLM1(_storage, "load", _x);
+		} forEach T_GETV("locations");
+		{
+			CALLM1(_storage, "load", _x);
+		} forEach T_GETV("clusters");
+
+		// Set up other variables
+		T_SETV("gridMutex", MUTEX_NEW());
+		T_SETV("lastGridUpdate", TIME_NOW);
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
 
 // Unit test
@@ -870,6 +911,26 @@ ENDCLASS;
 	["Dist test none", count CALLM(_world, "getNearestLocations", [_center ARG 1]) == 0] call test_Assert;
 	["Dist test some", count CALLM(_world, "getNearestLocations", [_center ARG 501]) == 1] call test_Assert;
 	["Dist test all", count CALLM(_world, "getNearestLocations", [_center ARG 1001]) == 2] call test_Assert;
+}] call test_AddTest;
+
+["WorldModel.save and load", {
+
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "actualGarrison"]);
+	private _location = NEW("LocationModel", [_world ARG "actualLocation"]);
+
+	private _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordWorldModel");
+	CALLM1(_storage, "save", _world);
+
+	DELETE(_world);
+
+	CALLM1(_storage, "load", _world);
+
+	["Garrison model loaded", GETV(_garrison, "actual") == "actualGarrison"] call test_Assert;
+	["Location model loaded", GETV(_location, "actual") == "actualLocation"] call test_Assert;
+
+
 }] call test_AddTest;
 
 #endif

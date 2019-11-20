@@ -10,7 +10,7 @@ is a copy that can be simulated.
 
 Parent: <RefCounted>
 */
-CLASS("ModelBase", "RefCounted")
+CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 	// Variable: id
 	// Unique Id of this Model, it is identical between Actual and Sim Models 
 	// that represent the same Real Object.
@@ -115,4 +115,19 @@ CLASS("ModelBase", "RefCounted")
 		// TODO: What else does update even do? Actual simulation at some point, but for 
 		// now the Action applyImmediate will be all we use.
 	} ENDMETHOD;
+
+	// - - - - - STORAGE - - - - -
+
+	// Serialize all variables of this and all parent and derived classes
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
+	} ENDMETHOD;
+
 ENDCLASS;

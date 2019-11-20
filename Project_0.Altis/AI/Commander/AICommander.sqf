@@ -20,20 +20,20 @@ Sparker 12.11.2018 (initial file)
 
 CLASS("AICommander", "AI")
 
-	VARIABLE("side");
-	VARIABLE("msgLoop");
-	VARIABLE("intelDB"); // Intel database
+	/* save */	VARIABLE_ATTR("side", [ATTR_SAVE]);
+				VARIABLE("msgLoop");
+	/* save */	VARIABLE_ATTR("intelDB", [ATTR_SAVE]); // Intel database
 
 	// Friendly garrisons we can access
-	VARIABLE("garrisons");
+	/* save */	VARIABLE_ATTR("garrisons", [ATTR_SAVE]);
 
 	// Used by SensorCommanderTargets
-	VARIABLE("targets"); // Array of targets known by this Commander
-	VARIABLE("targetClusters"); // Array with target clusters
-	VARIABLE("nextClusterID"); // A unique cluster ID generator
+	/* save */	VARIABLE_ATTR("targets", [ATTR_SAVE]);			// Array of targets known by this Commander
+	/* save */	VARIABLE_ATTR("targetClusters", [ATTR_SAVE]);	// Array with target clusters
+	/* save */	VARIABLE_ATTR("nextClusterID", [ATTR_SAVE]);	// A unique cluster ID generator
 	
-	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
-	VARIABLE("worldModel");
+	/* save */	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("worldModel", [ATTR_SAVE]);
 
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
@@ -46,13 +46,13 @@ CLASS("AICommander", "AI")
 	#endif
 
 	// Radio
-	VARIABLE("radioKeyGrid"); 	// Grid object which stores our own radio keys
-	VARIABLE("enemyRadioKeys");	// Enemy radio keys we have found
-	VARIABLE("enemyRadioKeysAddedBy"); // List of player names who have added the radio keys
+	/* save */	VARIABLE_ATTR("radioKeyGrid", [ATTR_SAVE]); 	// Grid object which stores our own radio keys
+	/* save */	VARIABLE_ATTR("enemyRadioKeys", [ATTR_SAVE]);	// Enemy radio keys we have found
+	/* save */	VARIABLE_ATTR("enemyRadioKeysAddedBy", [ATTR_SAVE]); // List of player names who have added the radio keys
 
 	// Ported from CmdrAI
-	VARIABLE("activeActions");
-	VARIABLE("planningCycle");
+	/* save */	VARIABLE_ATTR("activeActions", [ATTR_SAVE]);
+				VARIABLE("planningCycle");
 
 	METHOD("new") {
 		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
@@ -215,6 +215,12 @@ CLASS("AICommander", "AI")
 		params [P_THISOBJECT];
 		
 		T_GETV("msgLoop");
+	} ENDMETHOD;
+
+	// Sets message loop
+	METHOD("setMessageLoop") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_msgLoop")];
+		T_SETV("msgLoop", _msgLoop);
 	} ENDMETHOD;
 
 	/*
@@ -2350,6 +2356,40 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		pr _args = [+GETV(_AI, "enemyRadiokeys"), +GETV(_AI, "enemyRadiokeysAddedBy")];
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
+	} ENDMETHOD;
+
+	// - - - - - - - STORAGE - - - - - - -
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Save our garrisons
+		{
+			pr _gar = _x;
+			CALLM1(_storage, "save", _gar);
+		} forEach T_GETV("garrisons");
+
+		true
+	} ENDMETHOD;
+
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
+
+		// Load our garrisons
+		{
+			pr _gar = _x;
+			CALLM1(_storage, "load", _gar);
+		} forEach T_GETV("garrisons");
+
+		// Load the intel database
+		pr _db = T_GETV("intelDB");
+		CALLM1(_storage, "load", _db);
+
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;
