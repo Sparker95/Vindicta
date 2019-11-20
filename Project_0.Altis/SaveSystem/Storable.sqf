@@ -20,7 +20,7 @@ CLASS("Storable", "")
 		true
 	} ENDMETHOD;
 
-	// Returns an array which must be a deep copy
+	// Returns an array, does not have to be a deep copy
 	// Must return nil on failure
 	/* virtual */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
@@ -64,10 +64,12 @@ CLASS("Storable", "")
 
 	/* virtual */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		OOP_ERROR_1("saveStaticVariables is not implemented for %1", _thisClass);
 	} ENDMETHOD;
 
 	/* virtual */ STATIC_METHOD("loadStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		OOP_ERROR_1("saveStaticVariables is not implemented for %1", _thisClass);
 	} ENDMETHOD;
 
 ENDCLASS;

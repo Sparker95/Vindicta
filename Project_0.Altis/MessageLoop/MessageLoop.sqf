@@ -245,9 +245,15 @@ CLASS("MessageLoop", "");
 			{
 				pr _objs = _x select __PC_ID_OBJECTS;
 				pr _index = _objs findIf {_x select 0 == _object};
-				//if (_index != -1) then {
+				#ifdef _SQF_VM
+				if (_index != -1) then {
+				#endif
+					diag_log format ["index: %1", _index];
 					_objs deleteAt _index;
 					//true // No need to search any more
+				#ifdef _SQF_VM
+				};
+				#endif
 				//} else {
 				//	false // Need to search other categories, this object is not here
 				//};

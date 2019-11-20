@@ -15,7 +15,11 @@ Returns a new Mutex*/
 
 /*Macro: MUTEX_LOCK(mutex)
 Locks the mutex*/
+#ifndef _SQF_VM
 #define MUTEX_LOCK(mutex) waitUntil { (mutex pushBackUnique 0) == 0;}
+#else
+#define MUTEX_LOCK(mutex) (mutex pushBackUnique 0)
+#endif
 
 /*Macro: MUTEX_UNLOCK(mutex)
 Unlocks the mutex*/

@@ -1724,12 +1724,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	/* virtual */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
 		pr _all = GETSV("Unit", "all");
-		CALLM2(_storage, "save", "Location_all", +_all);
+		CALLM2(_storage, "save", "Unit_all", +_all);
 	} ENDMETHOD;
 
 	/* virtual */ STATIC_METHOD("loadStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
-		pr _all = CALLM1(_storage, "load", "Location_all");
+		pr _all = CALLM1(_storage, "load", "Unit_all");
 		SETSV("Unit", "all", +_all);
 	} ENDMETHOD;
 
@@ -1759,7 +1759,7 @@ Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
 	CALLM1(_storage, "save", _unit);
 	CALLSM1("Unit", "saveStaticVariables", _storage);
 	DELETE(_unit);
-	CALLSM1("Location", "loadStaticVariables", _storage);
+	CALLSM1("Unit", "loadStaticVariables", _storage);
 	CALLM1(_storage, "load", _unit);
 
 	["Object loaded", CALLM0(_unit, "getCategory") == T_INF ] call test_Assert;

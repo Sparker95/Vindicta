@@ -80,7 +80,7 @@ CLASS("Storage", "")
 			// Check if this object has been saved before
 			pr _savedObjectsMap = T_GETV("savedObjects");
 			if (_savedObjectsMap getVariable [_valueOrRef, false]) exitWith {
-				OOP_WARNING_1("Object was saved before: %1", _valueOrRef);
+				OOP_INFO_1("Object was saved before: %1", _valueOrRef);
 				true
 			};
 
@@ -104,7 +104,7 @@ CLASS("Storage", "")
 
 			// All is good so far
 
-			T_CALLM2("saveVariable", _valueOrRef, _serial);		// Save serialized object
+			T_CALLM2("saveVariable", _valueOrRef, +_serial);	// Save serialized object
 
 			pr _className = GET_OBJECT_CLASS(_valueOrRef);		// Save parent class name
 			pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
@@ -143,7 +143,7 @@ CLASS("Storage", "")
 			// Check if this object has been saved before
 			pr _loadedObjectsMap = T_GETV("loadedObjects");
 			if (_loadedObjectsMap getVariable [_ref, false]) exitWith {
-				OOP_WARNING_1("Object was loaded before: %1", _valueOrRef);
+				OOP_INFO_1("Object was loaded before: %1", _ref);
 				_ref
 			};
 

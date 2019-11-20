@@ -111,7 +111,16 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			// Remove from our array of objects
 			pr _objects = T_GETV("objects");
 			pr _index = _objects find _x;
+
+			#ifdef _SQF_VM
+			if (_index != -1) then {
+			#endif
+
 			_objects deleteAt _index;
+
+			#ifdef _SQF_VM
+			};
+			#endif
 
 			// Unref if we have ever referenced it
 			if (_index != -1) then {
@@ -174,7 +183,12 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Make sure we don't send an update event about it any more
 		pr _outdatedObjects = T_GETV("outdatedObjects");
-		_outdatedObjects deleteAt (_outdatedObjects find _gar);
+		pr _index = (_outdatedObjects find _gar);
+		#ifdef _SQF_VM
+		if (_index != -1) then { _outdatedObjects deleteAt _index; };
+		#else
+		_outdatedObjects deleteAt _index;
+		#endif
 	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

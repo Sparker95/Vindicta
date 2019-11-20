@@ -47,7 +47,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
-	/* save */	VARIABLE_ATTR("compositionClassNames", [ATTR_SAVE]);
+				VARIABLE_ATTR("compositionClassNames", []); // Must be restored after game is loaded!!
 
 	// Array with composition: each element at [_cat][_subcat] is an amount of units of this type
 	/* save */	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -131,12 +131,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		SETV(_thisObject, "AI", _AI);
 
 		// Create a timer to call process method
-		pr _msg = MESSAGE_NEW();
-		MESSAGE_SET_DESTINATION(_msg, _thisObject);
-		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
-		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
-		pr _timer = NEW("Timer", _args);
-		T_SETV("timer", _timer);
+		T_CALLM0("initTimer");
 
 		// Set position if it was specified
 		if (count _pos > 0) then {
@@ -166,6 +161,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_MSG(IS_GARRISON_DESTROYED(_thisObject), "Garrison should be destroyed before it is deleted");
 	} ENDMETHOD;
 	
+	METHOD("initTimer") {
+		params [P_THISOBJECT];
+
+		pr _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
+		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain];
+		pr _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                          A C T I V A T E                           |
 	// ----------------------------------------------------------------------
@@ -302,14 +308,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		DELETE(T_GETV("AI"));
 		T_SETV("AI", nil);
 
-		T_SETV("effMobile", []);
-		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
-		T_SETV("effTotal", []);
-
 		if(_unregisterFromCmdr) then {
 			// Unregister with the owning commander, do it last because it will cause an unref
 			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		};
+
+		T_SETV("effMobile", []);
+		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
+		T_SETV("effTotal", []);
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonDestroyed", _thisObject);
@@ -2844,13 +2850,98 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	// - - - - - STORAGE - - - - -
 
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save all units
+		{
+			private _unit = _x;
+			CALLM1(_storage, "save", _unit);
+		} forEach T_GETV("units");
+
+		// Save our groups
+		{
+			pr _group = _x;
+			//diag_log format ["Saving group: %1", _group];
+			CALLM1(_storage, "save", _group);
+		} forEach T_GETV("groups");
+
+		true
+	} ENDMETHOD;
+
 	/* virtual */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
+		// Restore variables which were not saved
+
+		// Restore all our units
+		// We don't care that groups will try to restore them as well
+		// Storage class will not load same object twice anyway
+		{
+			private _unit = _x;
+			//diag_log format ["Loading unit: %1", _unit];
+			CALLM1(_storage, "load", _unit);
+		} forEach T_GETV("units");
+
+		// Restore groups
+		{
+			pr _group = _x;
+			//diag_log format ["Loading group: %1", _group];
+			CALLM1(_storage, "load", _group);
+		} forEach T_GETV("groups");
+
+		// Restore AI object
+		pr _AI = NEW("AIGarrison", [_thisObject]);
+		T_SETV("AI", _AI);
+		T_SETV("spawned", false);
+
+		// Restore timer
+		T_CALLM0("initTimer");
+
+		// Restore mutex
+		pr _mutex = MUTEX_RECURSIVE_NEW();
+		T_SETV("mutex", _mutex);
+
+		// Other variables...
+		T_SETV("outdated", true);
+		T_SETV("regAtServer", false);
+
+		// Restore composition class names
+		// Since we convert class names to numbers...
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {[]});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+		{
+			pr _className = CALLM0(_x, "getClassName");
+			pr _catID = CALLM0(_x, "getCategory");
+			pr _subCatID = CALLM0(_x, "getSubcategory");
+			(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
+		} forEach T_GETV("units");
+
+		// Register at garrison server if active
+		if (T_GETV("active")) then {
+			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		};
+
 		true
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		pr _all = GETSV("Garrison", "all");
+		CALLM2(_storage, "save", "Garrison_all", +_all);
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		pr _all = CALLM1(_storage, "load", "Garrison_all");
+		SETSV("Garrison", "all", +_all);
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -2887,6 +2978,46 @@ if (isNil { GETSV("Garrison", "all") } ) then {
 	["Efficiency", CALLM0(_actual, "getEfficiencyTotal") isEqualTo _eff1] call test_Assert;
 	["Composition", CALLM0(_actual, "getCompositionNumbers") isEqualTo _comp1] call test_Assert;
 
+	true
+}] call test_AddTest;
+
+["Garrison.save and load", {
+	private _gar = NEW("Garrison", [WEST ARG [] ARG "military" ARG "tNATO"]);
+	["Garrison is OK 0", CALLM0(_gar, "getSide") == WEST] call test_Assert;
+	private _Test_group_args = [WEST, 0]; // Side, group type
+	private _subcatID = T_INF_rifleman;
+	private _Test_unit_args = [tNATO, T_INF, _subcatID, -1];
+	private _groups = [];
+	private _units = [];
+	for "_nGroups" from 0 to 2 do {
+		private _group = NEW("Group", _Test_group_args);
+		for "_i" from 0 to 4 do
+		{
+			private _unit = NEW("Unit", _Test_unit_args + [_group]);
+			_units pushBack _unit;
+		};
+		CALLM(_gar, "addGroup", [_group]);
+		_groups pushBack _group;
+	};
+
+	["Garrison is OK 1", CALLM0(_gar, "getSide") == WEST] call test_Assert;
+
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordGarrison");
+	CALLM1(_storage, "save", _gar);
+	CALLSM1("Garrison", "saveStaticVariables", _storage);
+
+	{DELETE(_x);} forEach _units;
+	{DELETE(_x);} forEach _groups;
+	CALLM0(_gar, "destroy");
+
+	CALLM1(_storage, "load", _gar);
+	CALLSM1("Garrison", "loadStaticVariables", _storage);
+
+	["Garrison loaded", CALLM0(_gar, "getSide") == WEST] call test_Assert;
+	["Groups are loaded", CALLM0(_groups#0, "getSide") == WEST] call test_Assert;
+	["Units are loaded", CALLM0(_units#0, "getCategory") == T_INF] call test_Assert;
+	true
 }] call test_AddTest;
 
 #endif
