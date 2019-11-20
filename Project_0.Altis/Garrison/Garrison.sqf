@@ -23,7 +23,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	/* save */	VARIABLE_ATTR("templateName", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
-				VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
+	/* save */	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
 	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -2866,6 +2866,9 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_storage, "save", _group);
 		} forEach T_GETV("groups");
 
+		// Save AI
+		CALLM1(_storage, "save", T_GETV("AI"));
+
 		true
 	} ENDMETHOD;
 
@@ -2877,7 +2880,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Restore variables which were not saved
 
-		// Restore all our units
+		// Load all our units
 		// We don't care that groups will try to restore them as well
 		// Storage class will not load same object twice anyway
 		{
@@ -2886,16 +2889,21 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_storage, "load", _unit);
 		} forEach T_GETV("units");
 
-		// Restore groups
+		// Load groups
 		{
 			pr _group = _x;
 			//diag_log format ["Loading group: %1", _group];
 			CALLM1(_storage, "load", _group);
 		} forEach T_GETV("groups");
 
-		// Restore AI object
-		pr _AI = NEW("AIGarrison", [_thisObject]);
-		T_SETV("AI", _AI);
+		// Load AI object
+		pr _AI = T_GETV("AI");
+		CALLM1(_storage, "load", _AI);
+		if(T_GETV("active")) then {
+			// Start AI object
+			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
+		};
+
 		T_SETV("spawned", false);
 
 		// Restore timer

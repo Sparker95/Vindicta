@@ -9,6 +9,7 @@ MessageReceiverEx   +
 - - Containers - - 
 Location +
 Garrison +
+AIGarrison
 Group +
 Unit +
 
