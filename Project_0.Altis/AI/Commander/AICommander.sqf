@@ -2362,11 +2362,24 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
+		// Save intel database
+		pr _db = T_GETV("intelDB");
+		CALLM1(_storage, "save", _db);
+
+		// Save strategy
+		pr _strategy = T_GETV("cmdrStrategy");
+		CALLM1(_storage, "save", _strategy);
+
+		// Save world model
+		pr _model = T_GETV("worldModel");
+		CALLM1(_storage, "save", _model);
+
 		// Save our garrisons
 		{
 			pr _gar = _x;
 			CALLM1(_storage, "save", _gar);
 		} forEach T_GETV("garrisons");
+
 
 		true
 	} ENDMETHOD;
@@ -2384,10 +2397,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
+		// Load world model
+		pr _model = T_GETV("worldModel");
+		CALLM1(_storage, "load", _model);
+
+		// Load strategy
+		pr _strategy = T_GETV("cmdrStrategy");
+		CALLM1(_storage, "load", _strategy);
+
 		// Load the intel database
 		pr _db = T_GETV("intelDB");
 		CALLM1(_storage, "load", _db);
 
+		// Message loop must be set externally
+		T_SETV("msgLoop", NULL_OBJECT);
 
 		true
 	} ENDMETHOD;
