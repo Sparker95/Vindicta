@@ -24,7 +24,7 @@ e.g. An action for a garrison to attack an outpost could be parameterized by the
 
 Parent: <RefCounted>
 */
-CLASS("CmdrAction", "RefCounted")
+CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 	// The priority of this action in relation to other actions of the same or different type.
 	VARIABLE_ATTR("scorePriority", [ATTR_PRIVATE]);
@@ -553,6 +553,57 @@ CLASS("CmdrAction", "RefCounted")
 
 		// Return [] by default
 		[]
+	} ENDMETHOD;
+
+
+
+	// - - - - - STORAGE - - - - - -
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save our intel clone
+		private _intelClone = T_GETV("intelClone");
+		if(!IS_NULL_OBJECT(_intelClone)) then {
+			CALLM1(_storage, "save", _intelClone);
+		};
+
+		// Save transitions
+		{
+			private _transition = _x;
+			CALLM1(_storage, "save", _transition);
+		} forEach T_GETV("transitions");
+
+		true
+	} ENDMETHOD;
+
+	// Save all varaibles
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Load intel clone
+		private _intelClone = T_GETV("intelClone");
+		if(!IS_NULL_OBJECT(_intelClone)) then {
+			CALLM1(_storage, "load", _intelClone);
+		};
+		
+		// Load transitions
+		{
+			private _transition = _x;
+			CALLM1(_storage, "load", _transition);
+		} forEach T_GETV("transitions");
+
+		true
 	} ENDMETHOD;
 	
 ENDCLASS;

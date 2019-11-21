@@ -327,4 +327,48 @@ ENDCLASS;
 	// ["Initial state is correct", GETV(_obj, "state") == CMDR_ACTION_STATE_START] call test_Assert;
 }] call test_AddTest;
 
+["TakeLocationCmdrAction.save and load", {
+	private _realworld = NEW("WorldModel", [WORLD_TYPE_REAL]);
+	private _world = CALLM(_realworld, "simCopy", [WORLD_TYPE_SIM_NOW]);
+	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
+	private _srcComp = [30] call comp_fnc_new;
+	for "_i" from 0 to (T_INF_SIZE-1) do {
+		(_srcComp#T_INF) set [_i, 100]; // Otherwise crew requirement will fail
+	};
+	private _srcEff = [_srcComp] call comp_fnc_getEfficiency;
+	SETV(_garrison, "efficiency", _srcEff);
+	SETV(_garrison, "composition", _srcComp);
+	SETV(_garrison, "pos", SRC_POS);
+	SETV(_garrison, "side", WEST);
+
+	private _targetLocation = NEW("LocationModel", [_world ARG "<undefined>"]);
+	SETV(_targetLocation, "type", LOCATION_TYPE_BASE);
+	SETV(_targetLocation, "pos", TARGET_POS);
+
+	private _thisObject = NEW("TakeLocationCmdrAction", [GETV(_garrison, "id") ARG GETV(_targetLocation, "id")]);
+	
+	// Try to save and load...
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordTakeLocationCmdrAction");
+	CALLM1(_storage, "save", _thisObject);
+	DELETE(_thisObject);
+	CALLM1(_storage, "load", _thisObject);
+
+	private _future = CALLM(_world, "simCopy", [WORLD_TYPE_SIM_FUTURE]);
+	CALLM(_thisObject, "updateScore", [_world ARG _future]);
+
+	private _finalScore = CALLM(_thisObject, "getFinalScore", []);
+	diag_log format ["Take location final score: %1", _finalScore];
+	["Score is above zero", _finalScore > 0] call test_Assert;
+
+	private _nowSimState = CALLM(_thisObject, "applyToSim", [_world]);
+	private _futureSimState = CALLM(_thisObject, "applyToSim", [_future]);
+	["Now sim state correct", _nowSimState == CMDR_ACTION_STATE_READY_TO_MOVE] call test_Assert;
+	["Future sim state correct", _futureSimState == CMDR_ACTION_STATE_END] call test_Assert;
+	
+	private _futureLocation = CALLM(_future, "getLocation", [GETV(_targetLocation, "id")]);
+	private _futureGarrison = CALLM(_futureLocation, "getGarrison", [WEST]);
+	["Location is occupied in future", !IS_NULL_OBJECT(_futureGarrison)] call test_Assert;
+}] call test_AddTest;
+
 #endif

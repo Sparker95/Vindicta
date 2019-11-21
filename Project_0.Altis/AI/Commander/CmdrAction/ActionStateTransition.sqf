@@ -30,7 +30,7 @@ behaviour is ongoing, then an appropriate state once it is complete (or failed).
 <AST_GarrisonAttackTarget> for an example of this. The <CmdrAction> will stay in the same state
 after calling an AST apply function if that function does returns <CMDR_ACTION_STATE_NONE>.
 */
-CLASS("ActionStateTransition", "")
+CLASS("ActionStateTransition", "Storable")
 
 	// If more than one Action Transition is available then 
 	// priority is used to decide which one to perform.
@@ -195,6 +195,20 @@ CLASS("ActionStateTransition", "")
 	*/
 	/* virtual */ METHOD("cancel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+	} ENDMETHOD;
+
+	// - - - - - STORAGE - - - - - -
+
+	// Save all varaibles
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
 	} ENDMETHOD;
 
 ENDCLASS;
