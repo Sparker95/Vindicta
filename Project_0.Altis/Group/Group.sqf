@@ -1225,6 +1225,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		pr _data = T_GETV("data");
 		{
 			pr _unit = _x;
+			diag_log format ["Saving unit: %1", _unit];
 			CALLM1(_storage, "save", _x);
 		} forEach (_data#GROUP_DATA_ID_UNITS);
 

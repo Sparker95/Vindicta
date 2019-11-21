@@ -10,6 +10,7 @@ Performs saving data into profile namespace
 #define __PNS profileNamespace
 
 // Unique tag in profile namespace we will be using
+// For other missions use your own tag to not confuse our records
 #define __NAMESPACE_TAG "vin_save_"
 // One record is reserved to store data to organize other records
 #define __RECORD_MASTER_RECORD "masterRecord"
@@ -18,6 +19,9 @@ Performs saving data into profile namespace
 
 // Namespace variable name formatting
 #define __NS_VAR_NAME(recordName, varName) (toLower (__NAMESPACE_TAG + recordName + varName))
+
+// Prefix of all variables in the profile namespace
+#define __NS_VAR_PREFIX(recordName) (toLower (__NAMESPACE_TAG + recordName))
 
 #define pr private
 
@@ -143,6 +147,37 @@ CLASS(__CLASS_NAME, "Storage")
 	/* override */ METHOD("getAllRecords") {
 		params [P_THISOBJECT];
 		__PNS getVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_RECORD_OPEN), []];
+	} ENDMETHOD;
+
+	/* override */ METHOD("eraseRecord") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
+
+		pr _allRecords = +T_CALLM0("getAllRecords");
+
+		_recordName = toLower _recordName;
+
+		// Bail if there is no such record
+		if (!(_recordName in _allRecords)) exitWith {
+			true
+		};
+
+		// Iterate all variables and delete those which are from this record
+		pr _prefix = __NS_VAR_PREFIX(_recordName);
+		{
+			if(_prefix in _x) then {
+				profileNamespace setVariable [_x, nil];
+			};
+		} forEach (allVariables profileNamespace);
+
+		// Remove it from the array of all records
+		_allRecords deleteAt (_allRecords find _recordName);
+		__PNS setVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_RECORD_OPEN), _allRecords];
+
+
+		// Save profile namespace
+		saveProfileNamespace;
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

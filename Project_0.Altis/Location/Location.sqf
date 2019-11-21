@@ -42,7 +42,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */ 	VARIABLE_ATTR("allowedAreas", [ATTR_SAVE]); 			// Array with allowed areas
 	/* save */ 	VARIABLE_ATTR("pos", [ATTR_SAVE]); 						// Position of this location
 	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
-	/* save */	VARIABLE_ATTR("spawned", [ATTR_SAVE]); 					// Is this location spawned or not
+				VARIABLE("spawned"); 									// Is this location spawned or not
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
 				VARIABLE("capacityInf"); 							// Infantry capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
@@ -98,7 +98,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
 		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
-		T_SETV("gameModeData", NULL_OBJECT);
+		SET_VAR_PUBLIC(_thisObject, "gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
 		T_SETV("hasPlayerSides", []);
 
@@ -126,6 +126,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray pushBack _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
+
+		// Register at game mode so that it gets saved
+		if (!isNil {gGameMode}) then {
+			CALLM1(gGameMode, "registerLocation", _thisObject);
+		};
 
 		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
@@ -1324,11 +1329,13 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("hasRadio", false);
 		T_SETV("capacityInf", 0);
 		T_SETV("timer", NULL_OBJECT);
+		T_SETV("spawned", false);
 
 		// Load objects which we own
 		pr _gmData = T_GETV("gameModeData");
 		if (!IS_NULL_OBJECT(_gmData)) then {
 			CALLM1(_storage, "load", T_GETV("gameModeData"));
+			PUBLIC_VAR(_thisObject, "gameModeData");
 		};
 
 		// Rebuild the objects which have been constructed here
@@ -1353,6 +1360,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Restore timer
 		T_CALLM0("initTimer");
+
+		// Enable player respawn
+		{
+			pr _side = _x;
+			T_CALLM2("enablePlayerRespawn", _side, true);
+		} forEach T_GETV("respawnSides");
 
 		// Broadcast public variables
 		PUBLIC_VAR(_thisObject, "name");

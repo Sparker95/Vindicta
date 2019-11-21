@@ -1692,10 +1692,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	/* override */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
 		pr _data = +T_GETV("data");
-		_data set [UNIT_DATA_ID_OBJECT_HANDLE, 0];
-		_data set [UNIT_DATA_ID_OWNER, 0];
-		_data set [UNIT_DATA_ID_MUTEX, 0];
-		_data set [UNIT_DATA_ID_AI, 0];
 
 		if(T_CALLM0("isSpawned")) then {
 			// Set the pos, vector dir and up, location
@@ -1708,6 +1704,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_data set [UNIT_DATA_ID_VECTOR_DIR_UP, _dirAndUp];
 			_data set [UNIT_DATA_ID_LOCATION, _loc];
 		};
+
+		_data set [UNIT_DATA_ID_OBJECT_HANDLE, 0];
+		_data set [UNIT_DATA_ID_OWNER, 0];
+		_data set [UNIT_DATA_ID_MUTEX, 0];
+		_data set [UNIT_DATA_ID_AI, 0];
 		_data 
 	} ENDMETHOD;
 

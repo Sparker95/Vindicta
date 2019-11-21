@@ -209,8 +209,8 @@ CLASS("Storage", "")
 		// Set up hashmaps
 		T_CALLM0("_clearObjectMaps");
 		#ifndef _SQF_VM
-		pr _hashmapSave = createLocation ["empty", [0,0,0], 0, 0];
-		pr _hashmapLoad = createLocation ["empty", [0,0,0], 0, 0];
+		pr _hashmapSave = createLocation ["invisible", [0,0,0], 0, 0];
+		pr _hashmapLoad = createLocation ["invisible", [0,0,0], 0, 0];
 		#else
 		pr _hashmapSave = "Dummy" createVehicle [0, 0, 0];
 		pr _hashmapLoad = "Dummy" createVehicle [0, 0, 0];
@@ -254,6 +254,12 @@ CLASS("Storage", "")
 	/* virtual */ METHOD("recordExists") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
 		false
+	} ENDMETHOD;
+
+	// Must erase all variables of this record. Must return true on success.
+	/* virtual */ METHOD("eraseRecord") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
+		true
 	} ENDMETHOD;
 
 	// Must return array of all record names which exist in this storage

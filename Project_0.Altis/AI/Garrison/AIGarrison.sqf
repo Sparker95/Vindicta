@@ -568,7 +568,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("updateRadioKey") {
 		params [P_THISOBJECT];
 		pr _side = CALLM0(T_GETV("agent"), "getSide"); // Garrison's side
-		pr _AICommander = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		pr _AICommander = CALLSM1("AICommander", "getAICommander", _side);
 		if (!IS_NULL_OBJECT(_AICommander)) then {
 			pr _pos = T_CALLM0("getPos");
 			pr _key = CALLM1(_AICommander, "getRadioKey", _pos);

@@ -579,7 +579,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("location", _location);
 		
 		// Tell commander to update its location data
-		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+		pr _AI = CALLSM1("AICommander", "getAICommander", T_GETV("side"));
 		if (!IS_NULL_OBJECT(_AI)) then {
 			if (_currentLoc != "") then {
 				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
@@ -619,7 +619,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			T_SETV("location", "");
 
 			// Notify commander
-			pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+			pr _AI = CALLSM1("AICommander", "getAICommander", T_GETV("side"));
 			if (!IS_NULL_OBJECT(_AI)) then {
 				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
@@ -2862,7 +2862,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Save our groups
 		{
 			pr _group = _x;
-			//diag_log format ["Saving group: %1", _group];
+			diag_log format ["Saving group: %1", _group];
 			CALLM1(_storage, "save", _group);
 		} forEach T_GETV("groups");
 

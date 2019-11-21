@@ -305,5 +305,5 @@ while {true} do {
 	};
 
 	// Give time to other threads in the SQF scheduler
-	sleep 0.001;
+	uisleep 0.001;
 };

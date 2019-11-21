@@ -16,7 +16,7 @@ Author: Sparker 06.05.2019
 
 #define pr private
 
-CLASS("IntelDatabase", "Storable")
+CLASS("IntelDatabase", "Storable");
 
 				VARIABLE("items");							// Hash map for refs of items added here
 				VARIABLE("linkedItems");					// A hash map of linked items
@@ -590,3 +590,5 @@ ENDCLASS;
 
 	true
 }] call test_AddTest;
+
+#endif

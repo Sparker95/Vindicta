@@ -29,7 +29,7 @@ CLASS("SensorGarrisonCasualties", "SensorGarrisonStimulatable")
 		if (count _destroyedUnits == 0) exitWith {};
 		
 		pr _side = CALLM0(_gar, "getSide");
-		pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		pr _commanderAI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		
 		// Send stimulus with data about destroyed units to commander
 		pr _stim = STIMULUS_NEW();

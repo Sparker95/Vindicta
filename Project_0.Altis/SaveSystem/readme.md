@@ -23,12 +23,13 @@ ClusterModel +
 GarrisonModel +
 LocationModel +
 WorldModel +
-CmdrAction - all actions
-ASTs - all ASTs
-CmdrStrategy - all strategies
+CmdrAction - all actions +
+ASTs - all ASTs +
+CmdrStrategy - all strategies +
 Grid +
 
 - - Game Mode - -
-GameMode
+GameMode +
 CivilWarGameMode
-GameModeData of locations
+GameModeData of locations +
+PlayerDatabase

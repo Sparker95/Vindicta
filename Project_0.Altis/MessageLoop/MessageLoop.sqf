@@ -22,22 +22,22 @@ Author: Sparker
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
-CLASS("MessageLoop", "");
+CLASS("MessageLoop", "Storable");
 
 	//Array with messages
-	VARIABLE("msgQueue");
+	/* save */	VARIABLE_ATTR("msgQueue", [ATTR_SAVE]);	// We are saving all the messages in the message queue
 	//Handle to the script which does message processing
-	VARIABLE("scriptHandle");
+				VARIABLE("scriptHandle");
 	//Mutex for accessing the message queue
-	VARIABLE("mutex");
+				VARIABLE("mutex");
 	//Debug name to help read debug printouts
-	VARIABLE("name");
+	/* save */	VARIABLE_ATTR("name", [ATTR_SAVE]);
 	// Process categories
-	VARIABLE("processCategories");
+				VARIABLE("processCategories");
 	// Desired process time fractions calculated from priorities of categories
-	VARIABLE("updateFrequencyFractions");
+				VARIABLE("updateFrequencyFractions");
 	// Amount of messages this message loop will process before switching to process categories
-	VARIABLE("nMessagesInSeries");
+				VARIABLE("nMessagesInSeries");
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -273,6 +273,23 @@ CLASS("MessageLoop", "");
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
+
+
+
+
+	// STORAGE
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+		T_SETV("scriptHandle", _scriptHandle);
+		T_SETV("mutex", MUTEX_NEW());
+		T_SETV("processCategories", []);
+		T_SETV("updateFrequencyFractions", []);
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;
