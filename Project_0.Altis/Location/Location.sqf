@@ -162,7 +162,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
 			private _cpModule = [+T_GETV("pos"),T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
-			T_SETV("cpModule",_cpModule);
+			if(!isNull _cpModule) then {
+				T_SETV("cpModule",_cpModule);
+			} else {
+				T_SETV("cpModule", objNull);
+			};
 		};
 
 	} ENDMETHOD;

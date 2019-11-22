@@ -10,6 +10,13 @@ OOP_Light_initialized = true;
  * TODO: refactor the many assert functions for better performance.
 */
 
+// Initialize the global session ID value
+// Session ID is needed to avoid number overflow errors when generating unique IDs for new objects
+// Session ID is incremented on every game save
+if(isNil {OOP_GVAR(sessionID)} ) then {
+	OOP_GVAR(sessionID) = 0;
+};
+
 // Prints an error message with supplied text, file and line number
 OOP_error = {
 	params["_file", "_line", "_text"];
@@ -800,7 +807,11 @@ OOP_deserialize = { // todo implement namespace
 	for "_i" from 2 to ((count _array) - 1) do {
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
-		SET_VAR(_objNameStr, _varName, _value);
+		if (!(isNil "_value")) then {
+			SET_VAR(_objNameStr, _varName, _value);
+		} else {
+			SET_VAR(_objNameStr, _varName, nil);
+		};
 		_iVarName = _iVarName + 1;
 	};
 };
@@ -828,7 +839,11 @@ OOP_deserialize_attr = {
 	for "_i" from 2 to ((count _array) - 1) do {
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
-		SET_VAR(_objNameStr, _varName, _value);
+		if(!(isNil "_value")) then {
+			SET_VAR(_objNameStr, _varName, _value);
+		} else {
+			SET_VAR(_objNameStr, _varName, nil);
+		};
 		_iVarName = _iVarName + 1;
 	};
 };
@@ -895,6 +910,16 @@ OOP_delete = {
 	PROFILER_COUNTER_DEC(_oop_classNameStr);
 };
 
+// set/get session counter
+OOP_setSessionCounter = {
+	params [["_value", 0, [0]]];
+	OOP_GVAR(sessionID) = _value;
+};
+
+OOP_getSessionCounter = {
+	OOP_GVAR(sessionID)
+};
+
 // Base class for intrusive ref counting.
 // Use the REF and UNREF macros with objects of classes 
 // derived from this one.
@@ -904,7 +929,7 @@ OOP_delete = {
 // these members to get automated de-refing of replaced value, and refing of
 // new value. See RefCountedTest.sqf for example.
 CLASS("RefCounted", "")
-	VARIABLE("refCount");
+	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];

@@ -38,9 +38,9 @@ Author: Sparker 07.11.2018
 CLASS("AI_GOAP", "AI")
 
 	/* Variable: currentAction */
-	/* save */	VARIABLE_ATTR("currentAction", [ATTR_SAVE]); // The current action
+				VARIABLE("currentAction"); // The current action
 	/* Variable: currentGoal*/
-	/* save */	VARIABLE_ATTR("currentGoal", [ATTR_SAVE]); // The current goal
+				VARIABLE("currentGoal"); // The current goal
 	/* save */	VARIABLE_ATTR("currentGoalSource", [ATTR_SAVE]); // The source of the current goal (who gave us this goal)
 	/* save */	VARIABLE_ATTR("currentGoalParameters", [ATTR_SAVE]); // The parameter of the current goal
 	//VARIABLE("currentGoalState"); // State of the action
@@ -1092,7 +1092,8 @@ CLASS("AI_GOAP", "AI")
 		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
 
 		// Restore variables
-		// ... no need for that since they all are restored automatically
+		SETV(_thisObject, "currentAction", "");
+		SETV(_thisObject, "currentGoal", "");
 
 		true
 	} ENDMETHOD;

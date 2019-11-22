@@ -759,6 +759,14 @@ CLASS("WorldModel", "Storable")
 			CALLM1(_storage, "save", _x);
 		} forEach T_GETV("clusters");
 
+		// Save grids
+		{
+			private _grid = T_GETV(_x);
+			if(!IS_NULL_OBJECT(_grid)) then {
+				CALLM1(_storage, "save", _grid);
+			};
+		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid"];
+
 		true
 	} ENDMETHOD;
 
@@ -775,6 +783,14 @@ CLASS("WorldModel", "Storable")
 		{
 			CALLM1(_storage, "load", _x);
 		} forEach T_GETV("clusters");
+
+		// Load grids
+		{
+			private _grid = T_GETV(_x);
+			if(!IS_NULL_OBJECT(_grid)) then {
+				CALLM1(_storage, "load", _grid);
+			};
+		} forEach ["rawThreatGrid", "threatGrid", "rawActivityGrid", "activityGrid"];
 
 		// Set up other variables
 		T_SETV("gridMutex", MUTEX_NEW());

@@ -95,7 +95,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM0(_thisObject, "updateComposition");
 		
 		// Set process interval
-		CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
+		// Makes no sense any more since it's processed in thread's process categories
+		//CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 		
 		// Commander action record serial
 		T_SETV("cmdrActionRecordSerial", []);
@@ -116,24 +117,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_CALLM0("updateRadioKey");
 
 		#ifdef DEBUG_GOAL_MARKERS
-		// Main marker
-		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
-		pr _name = _thisObject + MRK_GOAL;
-		pr _mrk = createmarker [_name, _pos];
-		_mrk setMarkerType "n_unknown";
-		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 1;
-		_mrk setMarkerText "new...";
-		// Arrow marker (todo)
-		
-		// Arrow marker
-		pr _name = _thisObject + MRK_ARROW;
-		pr _mrk = createMarker [_name, [0, 0, 0]];
-		_mrk setMarkerShape "RECTANGLE";
-		_mrk setMarkerBrush "SolidFull";
-		_mrk setMarkerSize [10, 10];
-		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 0.5;
+		T_CALLM0("_initDebugMarkers");
 		#endif
 
 		// Register at stimulus manager
@@ -153,6 +137,40 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	} ENDMETHOD;
 	
+	METHOD("_initDebugMarkers") {
+		params [P_THISOBJECT];
+
+		pr _agent = T_GETV("agent");
+
+		// Location
+		pr _loc = CALLM0(_agent, "getLocation");
+		// Position
+		pr _pos = if (_loc != "") then {
+			CALLM0(_loc, "getPos");
+		} else {
+			[0, 0, 0];
+		};
+
+		// Main marker
+		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
+		pr _name = _thisObject + MRK_GOAL;
+		pr _mrk = createmarker [_name, _pos];
+		_mrk setMarkerType "n_unknown";
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText "new...";
+		// Arrow marker (todo)
+		
+		// Arrow marker
+		pr _name = _thisObject + MRK_ARROW;
+		pr _mrk = createMarker [_name, [0, 0, 0]];
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [10, 10];
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0.5;
+	} ENDMETHOD;
+
 	METHOD("_initSensors") {
 		params [P_THISOBJECT];
 
@@ -618,6 +636,11 @@ CLASS("AIGarrison", "AI_GOAP")
 
 		// Restore other variables
 		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1);
+
+		// Restore debug markers
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_initDebugMarkers");
+		#endif
 
 		true
 	} ENDMETHOD;

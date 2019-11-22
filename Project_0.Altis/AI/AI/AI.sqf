@@ -54,6 +54,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
 		SETV(_thisObject, "processInterval", 1);
+		SETV(_thisObject, "worldFacts", []);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------

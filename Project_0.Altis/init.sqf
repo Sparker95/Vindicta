@@ -8,6 +8,15 @@
 // No saving
 enableSaving [ false, false ]; // Saving disabled without autosave.
 
+// Disables initialization of game mode
+// Used for testing of saving/loading features
+#define GAME_MODE_NOINIT
+
+// Disables the main sequence initialization completely
+// Use it in case we want to not start the actual mission but to test some other code
+//#define DISABLE_MISSION_INIT 
+
+
 // If a client, wait for the server to finish its initialization
 if (!IS_SERVER) then {
 	private _str = format ["Waiting for server init, time: %1", diag_tickTime];
@@ -22,7 +31,6 @@ if (!IS_SERVER) then {
 };
 #endif
 
-//#define DISABLE_MISSION_INIT // Keep it here in case we want to not start the actual mission but to test some other code
 #ifdef DISABLE_MISSION_INIT
 if(true) exitWith { 
 	0 spawn {
@@ -52,19 +60,21 @@ if(IS_SERVER) then {
 };
 
 CRITICAL_SECTION {
-	gGameMode = NEW(gGameModeName, []);
+	#ifndef GAME_MODE_NOINIT
+		gGameMode = NEW(gGameModeName, []);
 
-	systemChat format["Initializing game mode %1", GETV(gGameMode, "name")];
-	CALLM(gGameMode, "init", []);
-	systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
+		systemChat format["Initializing game mode %1", GETV(gGameMode, "name")];
+		CALLM(gGameMode, "init", []);
+		systemChat format["Initialized game mode %1", GETV(gGameMode, "name")];
 
-	// If we're a server, broadcast to everyone that initialization has been completed, so that clients can initialize as well
-	if (IS_SERVER) then {
-		serverInitDone = 1;
-		PUBLIC_VARIABLE "serverInitDone";
-	} else {
-		
-	};
+		// If we're a server, broadcast to everyone that initialization has been completed, so that clients can initialize as well
+		if (IS_SERVER) then {
+			serverInitDone = 1;
+			PUBLIC_VARIABLE "serverInitDone";
+		} else {
+			
+		};
+	#endif
 
 	// Notify server that we have initialized everything and our systems are ready to interact with server
 	if (HAS_INTERFACE) then {

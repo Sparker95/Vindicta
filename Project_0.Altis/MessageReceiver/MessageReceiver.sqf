@@ -531,4 +531,17 @@ CLASS("MessageReceiver", "Storable")
 		true
 	} ENDMETHOD;
 
+	/* override */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+
+		pr _value = +g_rqArray;
+		CALLM2(_storage, "save", "MessageReceiver_rqArray", _value);
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+
+		g_rqArray = CALLM1(_storage, "load", "MessageReceiver_rqArray");
+	} ENDMETHOD;
+
 ENDCLASS;

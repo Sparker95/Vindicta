@@ -204,13 +204,14 @@
 #define STATIC_SEPARATOR "_stm_"
 #define METHOD_SEPARATOR "_fnc_"
 #define INNER_PREFIX "inner_"
+#define GLOBAL_SEPARATOR "global_"
 
 // ----------------------------------------------------------------------
 // |          I N T E R N A L   N A M E   F O R M A T T I N G           |
 // ----------------------------------------------------------------------
 
 //Name of a specific instance of object
-#define OBJECT_NAME_STR(classNameStr, objIDInt)  (format ["%1%2%3%4_%5", OOP_PREFIX, classNameStr, OBJECT_SEPARATOR, CLIENT_OWNER, objIDInt])
+#define OBJECT_NAME_STR(classNameStr, objIDInt)  (format ["o_%1_c%2_s%3_n%4", classNameStr, CLIENT_OWNER, OOP_GVAR(sessionID), objIDInt])
 
 //String name of a static member
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
@@ -229,6 +230,9 @@
 
 //String name of an inner method
 #define INNER_METHOD_NAME_STR(methodNameStr) (INNER_PREFIX + methodNameStr)
+
+//Macro for global OOP variables
+#define OOP_GVAR(var) o_##var
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"

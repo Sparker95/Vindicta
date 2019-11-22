@@ -77,6 +77,8 @@ CLASS("Storage", "")
 		// Check if we are saving an object or a basic type
 		if (_valueOrRef isEqualType OOP_OBJECT_TYPE && {IS_OOP_OBJECT(_valueOrRef)}) then {
 
+			OOP_INFO_1("Saving object: %1", _valueOrRef);
+
 			// Check if this object has been saved before
 			pr _savedObjectsMap = T_GETV("savedObjects");
 			if (_savedObjectsMap getVariable [_valueOrRef, false]) exitWith {
@@ -139,6 +141,8 @@ CLASS("Storage", "")
 		pr _className = T_CALLM1("loadVariable", _ref + "_" + OOP_PARENT_STR);
 		if (!isNil "_className") then {
 			// We are loading an object
+
+			OOP_INFO_1("Loading object: %1", _ref);
 
 			// Check if this object has been saved before
 			pr _loadedObjectsMap = T_GETV("loadedObjects");

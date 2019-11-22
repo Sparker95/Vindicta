@@ -16,12 +16,14 @@ Sparker 12.11.2018 (initial file)
 #define ACTION_SCORE_CUTOFF 0.001
 #define REINF_MAX_DIST 4000
 
+#define PROCESS_INTERVAL 10
+
 #define pr private
 
 CLASS("AICommander", "AI")
 
 	/* save */	VARIABLE_ATTR("side", [ATTR_SAVE]);
-				VARIABLE("msgLoop");
+	/* save */	VARIABLE_ATTR("msgLoop", [ATTR_SAVE]); // Message loops are restored on load as well
 	/* save */	VARIABLE_ATTR("intelDB", [ATTR_SAVE]); // Intel database
 
 	// Friendly garrisons we can access
@@ -127,6 +129,9 @@ CLASS("AICommander", "AI")
 		T_SETV("enemyRadioKeys", []);
 		T_SETV("enemyRadioKeysAddedBy", []);
 		T_CALLM0("initRadioKeys"); // Will set the radioKeyGrid variable
+
+		// Set process interval
+		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
 
 	} ENDMETHOD;
 	
@@ -2381,6 +2386,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			CALLM1(_storage, "save", _gar);
 		} forEach T_GETV("garrisons");
 
+		// Save our actions
+		{
+			pr _action = _x;
+			diag_log format ["Saving action: %1", _action];
+			CALLM1(_storage, "save", _action);
+		} forEach T_GETV("actions");
+
+		// Save radio key grid
+		pr _radioKeyGrid = T_GETV("radioKeyGrid");
+		CALLM1(_storage, "save", _radioKeyGrid);
 
 		true
 	} ENDMETHOD;
@@ -2392,14 +2407,51 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Call method of all base classes
 		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
 
+		// Initialize variables
+		#ifdef DEBUG_CLUSTERS
+		T_SETV("nextMarkerID", 0);
+		T_SETV("clusterMarkers", []);
+		#endif
+
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "none");
+		T_SETV("stateStart", 0);
+		[_thisObject, T_GETV("side")] spawn {
+			params ["_thisObject", "_side"];
+			private _pos = switch (_side) do {
+				case WEST: { [0, -1000, 0 ] };
+				case EAST: { [0, -1500, 0 ] };
+				case INDEPENDENT: { [0, -500, 0 ] };
+			};
+			private _mrk = createmarker [_thisObject + "_label", _pos];
+			_mrk setMarkerType "mil_objective";
+			_mrk setMarkerColor (switch (_side) do {
+				case WEST: {"ColorWEST"};
+				case EAST: {"ColorEAST"};
+				case INDEPENDENT: {"ColorGUER"};
+				default {"ColorCIV"};
+			});
+			_mrk setMarkerAlpha 1;
+			while{true} do {
+				sleep 5;
+				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), TIME_NOW - T_GETV("stateStart")]);
+			};
+		};
+		#endif
+		
+		T_SETV("planningCycle", 0);
+
+		// Set process interval
+		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
+
 		// Load our garrisons
 		{
 			pr _gar = _x;
+			diag_log format ["Loading garrison: %1", _gar];
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
 		// Load world model
-
 		pr _model = T_GETV("worldModel");
 		CALLM1(_storage, "load", _model);
 
@@ -2407,12 +2459,20 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _strategy = T_GETV("cmdrStrategy");
 		CALLM1(_storage, "load", _strategy);
 
+		// Load actions
+		{
+			pr _action = _x;
+			diag_log format ["Loading action: %1", _action];
+			CALLM1(_storage, "load", _action);
+		} forEach T_GETV("actions");
+
 		// Load the intel database
 		pr _db = T_GETV("intelDB");
 		CALLM1(_storage, "load", _db);
 
-		// Message loop must be set externally
-		T_SETV("msgLoop", NULL_OBJECT);
+		// Load radio key grid
+		pr _radioKeyGrid = T_GETV("radioKeyGrid");
+		CALLM1(_storage, "load", _radioKeyGrid);
 
 		true
 	} ENDMETHOD;

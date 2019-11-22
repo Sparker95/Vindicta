@@ -1,5 +1,14 @@
 #include "common.hpp"
 
+// Default resolution of our timer service
+#define TIMER_SERVICE_RESOLUTION 0.45
+
+// Debug flag, will limit generation or locations to a small area
+#define __SMALL_MAP
+
+
+#define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
+
 // Base class for Game Modes. A Game Mode is a set of customizations to 
 // scenario initialization and ongoing gameplay mechanics.
 CLASS("GameModeBase", "MessageReceiverEx")
@@ -70,27 +79,20 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Global flags
 		gFlagAllCommanders = true; //false;
 		// Main timer service
-		gTimerServiceMain = NEW("TimerService", [0.45]); // timer resolution
+		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
+
+		// Create and init message loops
+		T_CALLM0("_createMessageLoops");	// Creates message loops
+		T_CALLM0("_setupMessageLoops");		// Sets their properties
 
 		T_CALLM("preInitAll", []);
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
-			// Main message loop for garrisons
-			gMessageLoopMain = NEW("MessageLoop", ["Main thread" ARG 16]);
-			T_SETV("messageLoopMain", gMessageLoopMain);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
-
 			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
-
-			// Message loop for group AI
-			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
-			T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
-			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
 
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);
@@ -126,13 +128,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Call our first process event immediately, to help things "settle" before we show them to the player.
 			T_CALLM("process", []);
-
-			// Add message loop for game mode
-			gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
-			T_SETV("messageLoopGameMode", gMessageLoopGameMode);
-			// Add processing for the game mode on the server once we initialized everything else
-			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
-			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 
 			// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
 			// Probably it's because we currently have this executed inside isNil {} block
@@ -195,9 +190,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#ifndef RELEASE_BUILD
 			[] call pr0_fnc_initDebugMenu;
 			#endif
-
-			// Message loop for client side checks: undercover, location visibility, etc
-			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
 
 			// Create PlayerDatabaseClient
 			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
@@ -292,6 +284,63 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			} forEach gCommanders;
 		} forEach GET_STATIC_VAR("Location", "all");
+	} ENDMETHOD;
+
+	// Creates message loops
+	METHOD("_createMessageLoops") {
+		params [P_THISOBJECT];
+
+		if(IS_SERVER || IS_HEADLESSCLIENT) then {
+			// Main message loop for garrisons
+			gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
+			T_SETV("messageLoopMain", gMessageLoopMain);
+
+			// Message loop for group AI
+			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
+			T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
+		};
+
+		if(IS_SERVER) then {
+			gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
+			T_SETV("messageLoopGameMode", gMessageLoopGameMode);
+
+			gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
+			T_SETV("messageLoopCommanderInd", gMessageLoopCommanderInd);
+
+			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
+			T_SETV("messageLoopCommanderWest", gMessageLoopCommanderWest);
+
+			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
+			T_SETV("messageLoopCommanderEast", gMessageLoopCommanderEast);
+		};
+
+		if(HAS_INTERFACE) then {
+			// Message loop for client side checks: undercover, location visibility, etc
+			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+		};
+
+
+	} ENDMETHOD;
+
+	// Initializes properties of message loops, which should be created by now
+	METHOD("_setupMessageLoops") {
+		params [P_THISOBJECT];
+
+		if (!IS_NULL_OBJECT(T_GETV("messageLoopMain"))) then {
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
+			CALLM1(gMessageLoopMain, "setMaxMessagesInSeries", MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES);
+		};
+
+		if (!IS_NULL_OBJECT(T_GETV("messageLoopGroupAI"))) then {
+			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
+		};
+
+		if(!IS_NULL_OBJECT("messageLoopGameMode")) then {
+			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
+			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
+		};
+
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -448,11 +497,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach gSpecialGarrisons;
 
 		// Message loops for commander AI
-		gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
-		T_SETV("messageLoopCommanderInd", gMessageLoopCommanderInd);
 
-		// Commander AIs
-		gCommanders = [];
 
 		// Independent
 		gCommanderInd = NEW("Commander", []); // all commanders are equal
@@ -460,12 +505,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderInd", gAICommanderInd);
 		PUBLIC_VARIABLE "gAICommanderInd";
-		gCommanders pushBack gAICommanderInd;
-
-		gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
-		T_SETV("messageLoopCommanderWest", gMessageLoopCommanderWest);
-		gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
-		T_SETV("messageLoopCommanderEast", gMessageLoopCommanderEast);
 
 		// West
 		gCommanderWest = NEW("Commander", []);
@@ -473,7 +512,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderWest", gAICommanderWest);
 		PUBLIC_VARIABLE "gAICommanderWest";
-		gCommanders pushBack gAICommanderWest;
 
 		// East
 		gCommanderEast = NEW("Commander", []);
@@ -481,19 +519,17 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
-		gCommanders pushBack gAICommanderEast;
 	} ENDMETHOD;
 
 	METHOD("startCommanders") {
-		params [P_THISOBJECT];
-		0 spawn {
+		_this spawn {
+			params [P_THISOBJECT];
 			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
-			sleep 40;
+			sleep 10;
 			{
 				// We postMethodAsync them, because we don't want to start processing right after mission start
-				CALLM2(_x, "postMethodAsync", "setProcessInterval", [10]);
-				CALLM2(_x, "postMethodAsync", "start", []);
-			} forEach gCommanders;
+				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 		};
 	} ENDMETHOD;
 
@@ -543,9 +579,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// First generate location modules for any cities/towns etc that don't have them manually placed
 		T_CALLM("createMissingCityLocations", []);
-
-		// Debug flag, will limit generation or locations to a small area
-		//#define __SMALL_MAP
 
 		private _allRoadBlocks = [];
 		private _locationsForRoadblocks = [];
@@ -1056,6 +1089,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Disable all timers??
 
+		// Save static variables of classes
+		CALLSM1("Garrison", "saveStaticVariables", _storage);
+		CALLSM1("Location", "saveStaticVariables", _storage);
+		CALLSM1("Unit", "saveStaticVariables", _storage);
+		CALLSM1("MessageReceiver", "saveStaticVariables", _storage);
+
 		// Lock all message loops in specific order
 		private _msgLoops = [
 								"messageLoopGameMode",
@@ -1140,6 +1179,16 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
+		// Create timer service
+		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
+
+
+		// Restore static variables of classes
+		CALLSM1("Garrison", "loadStaticVariables", _storage);
+		CALLSM1("Location", "loadStaticVariables", _storage);
+		CALLSM1("Unit", "loadStaticVariables", _storage);
+		CALLSM1("MessageReceiver", "loadStaticVariables", _storage);
+
 		// Restore some variables
 		T_SETV("lastSpawn", TIME_NOW);
 
@@ -1168,7 +1217,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");
 		gMessageLoopCommanderEast = T_GETV("messageLoopCommanderWest");
 
+		// FInish message loop setup
+		T_CALLM0("_setupMessageLoops");
+
 		// Create other global objects
+
+		// Initialize player database
+		gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
+
+		// Garrison stimulus manager
+		gStimulusManagerGarrison = NEW_PUBLIC("StimulusManager", [gMessageLoopMain]); // Can postMethodAsync stimulus to it to annoy garrisons
+		PUBLIC_VARIABLE "gStimulusManagerGarrison";
+
 		// Garbage Collector
 		gGarbageCollector = NEW("GarbageCollector", []);
 
@@ -1178,6 +1238,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Create the garrison server
 		gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
 		PUBLIC_VARIABLE "gGarrisonServer";
+
+		// Location unit array provider
+		gLUAP = NEW("LocationUnitArrayProvider", []);
+
+		// Main message loop manager
+		gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+		// Load locations
+		{
+			private _loc = _x;
+			diag_log format ["Loading location: %1", _loc];
+			CALLM1(_storage, "load", _loc);
+		} forEach T_GETV("locations");
 
 		// Load commanders
 		{
@@ -1194,20 +1267,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = T_GETV("AICommanderEast");
 		PUBLIC_VARIABLE("gAICommanderEast");
 
-		// Load locations
-		{
-			private _loc = _x;
-			diag_log format ["Loading location: %1", _loc];
-			CALLM1(_storage, "load", _loc);
-		} forEach T_GETV("locations");
-
-
 		// Unlock all message loops
 		{
 			private _msgLoop = T_GETV(_x);
 			diag_log format ["Unlocking message loop: %1", _x];
 			CALLM0(_msgLoop, "unlock");
 		} forEach _msgLoops;
+
+		// Start commanders
+		T_CALLM0("startCommanders");
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];

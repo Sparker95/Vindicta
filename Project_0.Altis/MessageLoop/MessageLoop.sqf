@@ -22,6 +22,8 @@ Author: Sparker
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
+#define N_MESSAGES_IN_SERIES_DEFAULT 9000
+
 CLASS("MessageLoop", "Storable");
 
 	//Array with messages
@@ -51,7 +53,7 @@ CLASS("MessageLoop", "Storable");
 	Constructor
 	*/
 	METHOD("new") {
-		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", 9000, [0]] ];
+		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
 			T_SETV("name", _thisObject);
@@ -101,6 +103,17 @@ CLASS("MessageLoop", "Storable");
 	METHOD("setName") {
 		params [P_THISOBJECT, ["_name", "", [""]]];
 		T_SETV("name", _name);
+	} ENDMETHOD;
+
+	/*
+	Method: setMaxMessagesInSeries
+	Sets maximum amount of messages this message loop is allowed to process in series,
+	before switching to processing its process categories.
+	When thread is created, its default value is N_MESSAGES_IN_SERIES_DEFAULT.
+	*/
+	METHOD("setMaxMessagesInSeries") {
+		params [ P_THISOBJECT, ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
+		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 	} ENDMETHOD;
 
 	/*
@@ -288,6 +301,7 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("mutex", MUTEX_NEW());
 		T_SETV("processCategories", []);
 		T_SETV("updateFrequencyFractions", []);
+		T_SETV("nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT);
 
 		true
 	} ENDMETHOD;

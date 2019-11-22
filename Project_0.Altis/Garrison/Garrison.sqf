@@ -2867,7 +2867,10 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach T_GETV("groups");
 
 		// Save AI
-		CALLM1(_storage, "save", T_GETV("AI"));
+		pr _AI = T_GETV("AI");
+		if(!IS_NULL_OBJECT(_AI)) then {
+			CALLM1(_storage, "save", _AI);
+		};
 
 		true
 	} ENDMETHOD;
@@ -2896,14 +2899,6 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(_storage, "load", _group);
 		} forEach T_GETV("groups");
 
-		// Load AI object
-		pr _AI = T_GETV("AI");
-		CALLM1(_storage, "load", _AI);
-		if(T_GETV("active")) then {
-			// Start AI object
-			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
-		};
-
 		T_SETV("spawned", false);
 
 		// Restore timer
@@ -2931,6 +2926,15 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _subCatID = CALLM0(_x, "getSubcategory");
 			(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
 		} forEach T_GETV("units");
+		T_SETV("compositionClassNames", _comp);
+
+		// Load AI object
+		pr _AI = T_GETV("AI");
+		CALLM1(_storage, "load", _AI);
+		if(T_GETV("active")) then {
+			// Start AI object
+			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
+		};
 
 		// Register at garrison server if active
 		if (T_GETV("active")) then {
