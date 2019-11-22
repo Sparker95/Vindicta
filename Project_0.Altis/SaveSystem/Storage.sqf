@@ -74,6 +74,9 @@ CLASS("Storage", "")
 	*/
 	METHOD("save") {
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
+
+		//diag_log format ["Save: %1", _this];
+
 		// Check if we are saving an object or a basic type
 		if (_valueOrRef isEqualType OOP_OBJECT_TYPE && {IS_OOP_OBJECT(_valueOrRef)}) then {
 
@@ -106,7 +109,10 @@ CLASS("Storage", "")
 
 			// All is good so far
 
-			T_CALLM2("saveVariable", _valueOrRef, +_serial);	// Save serialized object
+			toFixed 7;
+			pr _serialStr = str _serial;
+			toFixed -1;
+			T_CALLM2("saveVariable", _valueOrRef, _serialStr);	// Save serialized object converted into string
 
 			pr _className = GET_OBJECT_CLASS(_valueOrRef);		// Save parent class name
 			pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
@@ -152,7 +158,12 @@ CLASS("Storage", "")
 			};
 
 			pr _isPublic = T_CALLM1("loadVariable", _ref + "_" +  OOP_PUBLIC_STR);
-			pr _serial = T_CALLM1("loadVariable", _ref);	// Variable with name = ref is the serialized object
+			pr _serialStr = T_CALLM1("loadVariable", _ref);	// Variable with name = ref is the serialized object
+			//#ifdef _SQF_VM
+			pr _serial = call compile _serialStr;
+			//#else
+			//pr _serial = parseSimpleArray _serialStr;  // Fuck this, it does not understand SIDE values
+			//#endif
 
 			if (isNil "_serial") exitWith {
 				OOP_ERROR_1("serialized data not found for object %1", _ref);

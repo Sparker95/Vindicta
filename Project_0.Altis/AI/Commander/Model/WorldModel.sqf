@@ -52,10 +52,10 @@ CLASS("WorldModel", "Storable")
 			T_SETV("lastGridUpdate", TIME_NOW);
 			T_SETV("gridMutex", MUTEX_NEW());
 		} else {
-			T_SETV("rawThreatGrid", objNull);
-			T_SETV("threatGrid", objNull);
-			T_SETV("rawActivityGrid", objNull);
-			T_SETV("activityGrid", objNull);
+			T_SETV("rawThreatGrid", NULL_OBJECT);
+			T_SETV("threatGrid", NULL_OBJECT);
+			T_SETV("rawActivityGrid", NULL_OBJECT);
+			T_SETV("activityGrid", NULL_OBJECT);
 		};
 
 		//T_SETV("reinforceRequiredScoreCache", []);
