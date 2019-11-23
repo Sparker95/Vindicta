@@ -95,17 +95,27 @@ CLASS("Storage", "")
 	// Modifies existing array by converting some data types into strings
 	METHOD("_preStringifyArray") {
 		params [P_THISOBJECT, P_ARRAY("_array")];
+		private _success = true;
 		{
 			if (!isNil "_x") then {
 				if (_x isEqualType []) then {
-					T_CALLM1("_preStringifyArray", _x);
+					_success = _success && T_CALLM1("_preStringifyArray", _x);
 				};
 				// Convert side to string
 				if (_x isEqualType WEST) then {
 					_array set [_forEachIndex, T_CALLM1("_sideToString", _x)];
 				};
+				// Check if it's even one of the correct data types
+				// And warn if it's not
+				#ifndef _SQF_VM
+				if (!(_x isEqualTypeAny [0, "", false, [], WEST])) then {
+					_success = false;
+					OOP_ERROR_1("Data type %1 is not supported for saving and will not be loaded!", typeName _x);
+				};
+				#endif
 			};
 		} forEach _array;
+		_success
 	} ENDMETHOD;
 
 	// Called after converting a string into array
@@ -188,7 +198,15 @@ CLASS("Storage", "")
 			// All is good so far
 
 			// Convert some data types into strings
-			T_CALLM1("_preStringifyArray", _serial);
+			private _preStringifySuccess = T_CALLM1("_preStringifyArray", _serial);
+
+			if (!_preStringifySuccess) then {
+				OOP_ERROR_1("OOP Object contains incompatible data types: %1", _valueOrRef);
+				OOP_ERROR_0("Serialized object value dump:");
+				{
+					OOP_ERROR_2("  %1: %2", _forEachIndex, _x);
+				} forEach _serial;
+			};
 
 			// Convert array to string
 			toFixed 7;

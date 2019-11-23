@@ -2941,19 +2941,19 @@ CLASS("Garrison", "MessageReceiverEx");
 			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
 		};
 
+		// Push to 'all' static variable
+		GETSV("Garrison", "all") pushBack _thisObject;
+
 		true
 	} ENDMETHOD;
 
 	/* override */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
-		pr _all = GETSV("Garrison", "all");
-		CALLM2(_storage, "save", "Garrison_all", +_all);
 	} ENDMETHOD;
 
 	/* override */ STATIC_METHOD("loadStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
-		pr _all = CALLM1(_storage, "load", "Garrison_all");
-		SETSV("Garrison", "all", +_all);
+		SETSV("Garrison", "all", []);
 	} ENDMETHOD;
 
 ENDCLASS;

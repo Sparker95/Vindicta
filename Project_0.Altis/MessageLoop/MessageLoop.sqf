@@ -261,7 +261,7 @@ CLASS("MessageLoop", "Storable");
 				#ifdef _SQF_VM
 				if (_index != -1) then {
 				#endif
-					diag_log format ["index: %1", _index];
+					//diag_log format ["index: %1", _index];
 					_objs deleteAt _index;
 					//true // No need to search any more
 				#ifdef _SQF_VM

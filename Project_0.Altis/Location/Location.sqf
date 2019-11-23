@@ -1300,6 +1300,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 		T_SETV("savedObjects", _savedObjects);
 
+		// Save all garrisons attached here
+		{
+			pr _gar = _x;
+			CALLM1(_storage, "save", _gar);
+		} forEach T_GETV("garrisons");
+
 		true
 	} ENDMETHOD;
 
@@ -1342,6 +1348,12 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			PUBLIC_VAR(_thisObject, "gameModeData");
 		};
 
+		// Load garrisons
+		{
+			pr _gar = _x;
+			CALLM1(_storage, "load", _gar);
+		} forEach T_GETV("garrisons");
+
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
 			_x params ["_type", "_posWorld", "_vDir", "_vUp"];
@@ -1382,19 +1394,20 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		PUBLIC_VAR(_thisObject, "type");
 		PUBLIC_VAR(_thisObject, "wasOccupied");
 
+		//Push the new object into the array with all locations
+		GETSV("Location", "all") pushBackUnique _thisObject;
+		PUBLIC_STATIC_VAR("Location", "all");
+
 		true
 	} ENDMETHOD;
 
 	/* override */ STATIC_METHOD("saveStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
-		pr _all = GETSV("Location", "all");
-		CALLM2(_storage, "save", "Location_all", +_all);
 	} ENDMETHOD;
 
 	/* override */ STATIC_METHOD("loadStaticVariables") {
 		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
-		pr _all = CALLM1(_storage, "load", "Location_all");
-		SETSV("Location", "all", +_all);
+		SETSV("Location", "all", []);
 	} ENDMETHOD;
 
 ENDCLASS;

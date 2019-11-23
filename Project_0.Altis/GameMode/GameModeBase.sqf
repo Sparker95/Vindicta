@@ -245,7 +245,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
 
 					CALLM1(_gar, "setLocation", _loc);
-					CALLM1(_loc, "registerGarrison", _gar);
+					// CALLM1(_loc, "registerGarrison", _gar); // I think it's not needed? setLocation should register it as well
 					CALLM0(_gar, "activate");
 				};
 			};
@@ -255,23 +255,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Create vehicles in civilian area for player to steal
 			if(_type == LOCATION_TYPE_CITY) then {
-				private _args = [CIVILIAN, [], "civilian", "tCIVILIAN"];
-				private _gar = NEW("Garrison", _args);
-				private _maxCars = 3 max (25 min (0.03 * _radius));
-				for "_i" from 0 to _maxCars do {
-					private _newUnit = NEW("Unit", [tCIVILIAN ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
-					CALLM(_gar, "addUnit", [_newUnit]);
-				};
-				CALLM1(_gar, "setLocation", _loc);
-				CALLM1(_loc, "registerGarrison", _gar);
+				T_CALLM1("populateCity", _loc);
 				// CALLM0(_gar, "activate");
 			};
 
 			// Send intel to commanders
+			private _playerSide = T_CALLM0("getPlayerSide");
 			{
 				private _sideCommander = GETV(_x, "side");
-				if (_sideCommander != WEST) then { // Enemies are smart
+				if (_sideCommander != _playerSide) then { // Enemies are smart
 					if (CALLM0(_loc, "isBuilt")) then {
+						// This part determines commander's knowledge about enemy locations at game init
+						// Only relevant for One AI vs Another AI Commander game mode I think
 						//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
 						private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
 						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
@@ -284,6 +279,24 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			} forEach gCommanders;
 		} forEach GET_STATIC_VAR("Location", "all");
+	} ENDMETHOD;
+
+	// Creates a civilian garrison at a city location
+	METHOD("populateCity") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+
+		private _templateName = T_CALLM2("getTemplateName", CIVILIAN, "");
+		private _template = [_templateName] call t_fnc_getTemplate;
+		private _args = [CIVILIAN, [], "civilian", _templateName];
+		private _gar = NEW("Garrison", _args);
+		private _radius = GETV(_loc, "boundingRadius");
+		private _maxCars = 3 max (25 min (0.03 * _radius));
+		for "_i" from 0 to _maxCars do {
+			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
+			CALLM(_gar, "addUnit", [_newUnit]);
+		};
+		CALLM1(_gar, "setLocation", _loc);
+		CALLM1(_loc, "registerGarrison", _gar);
 	} ENDMETHOD;
 
 	// Creates message loops
@@ -736,7 +749,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		
 		if (_faction == "police") exitWith {
 			
-			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");;
+			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");
 			private _template = [_templateName] call t_fnc_getTemplate;
 
 			private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
