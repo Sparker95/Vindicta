@@ -24,7 +24,7 @@ private _timers = GET_VAR(_thisObject, "timers");
 while {true} do {
 	private _res = GET_VAR(_thisObject, "resolution");
 	//diag_log format ["[TimerService::threadFunc] Info: sleeping for %1 seconds", _res];
-	sleep _res;
+	uisleep _res;
 	// Lock the mutex
 	MUTEX_LOCK(_mutex);
 	{ // forEach _timers

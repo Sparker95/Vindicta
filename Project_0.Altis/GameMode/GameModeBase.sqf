@@ -196,8 +196,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Hide the allowed area markers
 			#ifdef RELEASE_BUILD
-			private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
-			{_x setMarkerAlpha 0;} forEach _allowedAreas;
+			CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
 			#endif
 
 			T_CALLM("initClientOnly", []);
@@ -1123,6 +1122,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM0(_msgLoop, "lock");
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
+		// Start loading screen
+		startLoadingScreen ["Saving mission"];
+
 		// Save message loops
 		{
 			private _msgLoop = T_GETV(_x);
@@ -1173,7 +1175,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED SAVING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
-		
+
+		// End loading screen
+		endLoadingScreen;
+
 		true
 	} ENDMETHOD;
 
@@ -1185,6 +1190,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			OOP_ERROR_0("Game mode must be loaded on server only!");
 		};
 
+		// Delete editor's special objects
+		CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
+		CALLSM0("Location", "deleteEditorObjects");
+
+		// Start loading screen
+		startLoadingScreen ["Loading the mission"];
+
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
@@ -1194,7 +1206,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
-
 
 		// Restore static variables of classes
 		CALLSM1("Garrison", "loadStaticVariables", _storage);
@@ -1293,6 +1304,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
+
+		// End loading screen
+		endLoadingScreen;
 
 		true
 	} ENDMETHOD;

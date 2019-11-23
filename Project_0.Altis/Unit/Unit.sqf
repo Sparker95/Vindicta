@@ -1672,6 +1672,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	METHOD("limitedArsenalOnDespawn") {
 		params [P_THISOBJECT];
 
+		T_CALLM0("limitedArsenalSyncToUnit");
+	} ENDMETHOD;
+
+	// This method must synchronize Unit OOP object's data fields to match those of the 'real' unit
+	METHOD("limitedArsenalSyncToUnit") {
+		params [P_THISOBJECT];
+
 		pr _data = T_GETV("data");
 		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
 		if (count _dataList > 0) then {
@@ -1691,6 +1698,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 	/* override */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
+
+		pr _spawned = T_CALLM0("isSpawned");
+
+		if (_spawned) then {
+			T_CALLM0("limitedArsenalSyncToUnit");
+		};
+
 		pr _data = +T_GETV("data");
 
 		if(T_CALLM0("isSpawned")) then {

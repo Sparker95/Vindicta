@@ -107,12 +107,7 @@ CLASS("AICommander", "AI")
 		#endif
 		
 		// Create sensors
-		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorLocation);
-		pr _sensorTargets = NEW("SensorCommanderTargets", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorTargets);
-		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		T_CALLM0("initSensors");
 		
 		T_SETV_REF("cmdrStrategy", gCmdrStrategyDefault);
 		
@@ -135,6 +130,16 @@ CLASS("AICommander", "AI")
 
 	} ENDMETHOD;
 	
+	METHOD("_initSensors") {
+		params [P_THISOBJECT];
+
+		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorLocation);
+		pr _sensorTargets = NEW("SensorCommanderTargets", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorTargets);
+		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+	} ENDMETHOD;
 
 /*
 88888888ba   88888888ba     ,ad8888ba,      ,ad8888ba,   88888888888  ad88888ba    ad88888ba   
@@ -2412,6 +2417,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_SETV("nextMarkerID", 0);
 		T_SETV("clusterMarkers", []);
 		#endif
+
+		// Restore sensors
+		T_CALLM0("_initSensors");
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "none");

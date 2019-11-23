@@ -1278,6 +1278,28 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 
 
+	STATIC_METHOD("deleteEditorAllowedAreaMarkers") {
+		params [P_THISCLASS];
+		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
+		{_x setMarkerAlpha 0;} forEach _allowedAreas;
+	} ENDMETHOD;
+
+	// Deletes special objects placed in the editor 
+	STATIC_METHOD("deleteEditorObjects") {
+		params [P_THISCLASS];
+		{
+			{
+				deleteVehicle _x;
+			} forEach (entities _x);
+		} forEach [	"B_Truck_01_transport_F",
+					"B_Mortar_01_F",
+					"B_HMG_01_F",
+					"B_HMG_01_high_F",
+					"B_Slingload_01_Cargo_F",
+					"Sign_Arrow_Large_F",
+					"Sign_Arrow_Large_Blue_F"];
+	} ENDMETHOD;
+
 	// - - - - - - S T O R A G E - - - - - -
 
 	/* override */ METHOD("preSerialize") {
@@ -1290,7 +1312,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 
 		// Convert our objects to an array
-		pr _savedObjects = T_GETV("objects") apply {
+		pr _savedObjects = ( T_GETV("objects") + T_GETV("buildingsOpen") ) apply {
 			[
 				typeOf _x,
 				getPosWorld _x,
