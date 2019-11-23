@@ -9,7 +9,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
-#include "..\GlobalAssert.hpp"
+#include "..\defineCommon.inc"
 
 // Class: Group
 /*

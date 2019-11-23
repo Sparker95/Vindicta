@@ -6,7 +6,7 @@
 #include "..\Location\Location.hpp"
 #include "InventoryItems.hpp"
 #include "PersonalInventory.hpp"
-#include "..\GlobalAssert.hpp"
+#include "..\defineCommon.inc"
 
 /*
 A class with static functions that initialized variables on objects that can have intel.

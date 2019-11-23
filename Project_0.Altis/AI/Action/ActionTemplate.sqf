@@ -2,7 +2,7 @@
 #include "..\..\Message\Message.hpp"
 #include "..\Action\Action.hpp"
 #include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\Stimulus\Stimulus.hpp"
 #include "..\WorldFact\WorldFact.hpp"
 #include "..\stimulusTypes.hpp"

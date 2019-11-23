@@ -1,7 +1,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\stimulusTypes.hpp"
 
 /*

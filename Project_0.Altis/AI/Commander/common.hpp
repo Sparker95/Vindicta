@@ -8,7 +8,7 @@
 #include "..\..\Message\Message.hpp"
 #include "..\..\Location\Location.hpp"
 #include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\..\Cluster\Cluster.hpp"
 #include "..\..\Templates\Efficiency.hpp"
 #include "..\Action\Action.hpp"

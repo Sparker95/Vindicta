@@ -5,7 +5,7 @@
 #define OFSTREAM_FILE "buildUI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "BuildUI_Macros.h"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\defineddikcodes.inc"
 
 #define TIME_FADE_TT 0.84

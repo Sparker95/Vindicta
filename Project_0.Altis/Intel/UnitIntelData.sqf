@@ -7,7 +7,7 @@
 #include "..\Location\Location.hpp"
 #include "InventoryItems.hpp"
 #include "PersonalInventory.hpp"
-#include "..\GlobalAssert.hpp"
+#include "..\defineCommon.inc"
 
 /*
 Class UnitIntelData
