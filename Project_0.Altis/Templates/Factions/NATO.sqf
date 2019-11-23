@@ -82,7 +82,7 @@ _veh set [T_VEH_heli_attack, ["B_Heli_Attack_01_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_attack, ["B_Plane_CAS_01_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_fighter , ["B_Plane_Fighter_01_F"]];
 //_veh set [T_VEH_plane_cargo, [" "]];
-//_veh set [T_VEH_plane_unarmed , [" "]];
+//_veh set [T_VEH_plane_unarmed, [" "]];
 //_veh set [T_VEH_plane_VTOL, [" "]];
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F"]];
 _veh set [T_VEH_boat_armed, ["B_Boat_Armed_01_minigun_F"]];
