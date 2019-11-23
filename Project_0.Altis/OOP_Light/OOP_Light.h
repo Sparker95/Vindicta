@@ -259,9 +259,9 @@
 #define FORCE_SET_MEM_NS(ns, objNameStr, memNameStr, value) ns setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
 #define FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
 	isNil { \
-		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), objNull]; \
-		if (_oldVal isEqualType "") then { UNREF(_oldVal); }; \
-		if ((value) isEqualType "") then { REF((value)); }; \
+		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), NULL_OBJECT]; \
+		if (!IS_NULL_OBJECT(_oldVal)) then { UNREF(_oldVal); }; \
+		if (!IS_NULL_OBJECT(value)) then { REF((value)); }; \
 		NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value] \
 	}
 

@@ -808,9 +808,9 @@ OOP_deserialize = { // todo implement namespace
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
 		if (!(isNil "_value")) then {
-			SET_VAR(_objNameStr, _varName, _value);
+			FORCE_SET_MEM(_objNameStr, _varName, _value);
 		} else {
-			SET_VAR(_objNameStr, _varName, nil);
+			FORCE_SET_MEM(_objNameStr, _varName, nil);
 		};
 		_iVarName = _iVarName + 1;
 	};
@@ -840,9 +840,9 @@ OOP_deserialize_attr = {
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
 		if(!(isNil "_value")) then {
-			SET_VAR(_objNameStr, _varName, _value);
+			FORCE_SET_MEM(_objNameStr, _varName, _value);
 		} else {
-			SET_VAR(_objNameStr, _varName, nil);
+			FORCE_SET_MEM(_objNameStr, _varName, nil);
 		};
 		_iVarName = _iVarName + 1;
 	};

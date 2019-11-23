@@ -2391,7 +2391,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			pr _action = _x;
 			diag_log format ["Saving action: %1", _action];
 			CALLM1(_storage, "save", _action);
-		} forEach T_GETV("actions");
+		} forEach T_GETV("activeActions");
 
 		// Save radio key grid
 		pr _radioKeyGrid = T_GETV("radioKeyGrid");
@@ -2464,7 +2464,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			pr _action = _x;
 			diag_log format ["Loading action: %1", _action];
 			CALLM1(_storage, "load", _action);
-		} forEach T_GETV("actions");
+		} forEach T_GETV("activeActions");
 
 		// Load the intel database
 		pr _db = T_GETV("intelDB");

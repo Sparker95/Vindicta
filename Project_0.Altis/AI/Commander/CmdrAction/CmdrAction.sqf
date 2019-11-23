@@ -588,7 +588,7 @@ CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 		true
 	} ENDMETHOD;
 
-	/* override */ METHOD("postSerialize") {
+	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
 		// Load intel clone
