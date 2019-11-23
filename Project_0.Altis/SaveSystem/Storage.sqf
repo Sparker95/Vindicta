@@ -8,10 +8,26 @@ Base class for derived classes which perform saving and loading of variables els
 
 #define pr private
 
+// Side macros
+#define SIDE_ARRAY [east, west, independent, civilian, sideUnknown, sideEnemy, sideFriendly, sideLogic, sideEmpty]
+#define SIDE_TO_NUMBER(side) (SIDE_ARRAY find side)
+#define NUMBER_TO_SIDE(number) (SIDE_ARRAY select number)
+
+// Length of special prefix
+#define SPECIAL_PREFIX_LENGTH 4
+
+// Special prefix common for all special strings
+#define SPECIAL_PREFIX "$@&_"
+
+// Character used for sides
+#define SPECIAL_PREFIX_SIDE_CHAR "S"
+
 CLASS("Storage", "")
 
 	VARIABLE("savedObjects");	// Hash maps of objects saved and loaded during this save/load session
 	VARIABLE("loadedObjects");	// Maps are reset ad each open/close call
+
+	VARIABLE("sideTags");		// Variable needed for converting sides into strings and back
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -22,6 +38,11 @@ CLASS("Storage", "")
 		T_SETV("savedObjects", objNull);
 		T_SETV("loadedObjects", objNull);
 		#endif
+
+		pr _sideTags = SIDE_ARRAY apply {
+			SPECIAL_PREFIX + SPECIAL_PREFIX_SIDE_CHAR + (str _x)
+		};
+		T_SETV("sideTags", _sideTags);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -55,6 +76,62 @@ CLASS("Storage", "")
 		T_SETV("loadedObjects", objNull);
 		#endif
 
+	} ENDMETHOD;
+
+	// Converts string to side or side to string
+	// Fuck arma with its inability to stringify and return back strings
+	METHOD("_sideToString") {
+		params [P_THISOBJECT, P_SIDE("_side")];
+		T_GETV("sideTags") select SIDE_TO_NUMBER(_side)
+	} ENDMETHOD;
+
+	METHOD("_stringToSide") {
+		params [P_THISOBJECT, P_STRING("_string")];
+		private _ID = T_GETV("sideTags") find _string;
+		NUMBER_TO_SIDE(_ID)
+	} ENDMETHOD;
+
+	// Called before converting an array into string
+	// Modifies existing array by converting some data types into strings
+	METHOD("_preStringifyArray") {
+		params [P_THISOBJECT, P_ARRAY("_array")];
+		{
+			if (!isNil "_x") then {
+				if (_x isEqualType []) then {
+					T_CALLM1("_preStringifyArray", _x);
+				};
+				// Convert side to string
+				if (_x isEqualType WEST) then {
+					_array set [_forEachIndex, T_CALLM1("_sideToString", _x)];
+				};
+			};
+		} forEach _array;
+	} ENDMETHOD;
+
+	// Called after converting a string into array
+	// Modifies existing array by converting some special strings into special data types
+	METHOD("_postParseArray") {
+		params [P_THISOBJECT, P_ARRAY("_array")];
+		{
+			if (!isNil "_x") then {
+				if (_x isEqualType []) then {
+					T_CALLM1("_postParseArray", _x);
+				};
+				// Check if it's a special string
+				if (_x isEqualType "") then {
+					private _prefix = _x select [0, SPECIAL_PREFIX_LENGTH];
+					//diag_log format ["Prefix: %1", _prefix];
+					if (_prefix == SPECIAL_PREFIX) then {
+						private _prefixChar = _x select [SPECIAL_PREFIX_LENGTH, 1];
+						//diag_log format ["Prefix char: %1", _prefixChar];
+						// Check if it's a one of side values
+						if (_prefixChar == SPECIAL_PREFIX_SIDE_CHAR) then {
+							_array set [_forEachIndex, T_CALLM1("_stringToSide", _x)];
+						};
+					};
+				};
+			};
+		} forEach _array;
 	} ENDMETHOD;
 
 	/*
@@ -101,6 +178,7 @@ CLASS("Storage", "")
 				OOP_ERROR_1("serialize failed for %1", _valueOrRef);
 				false
 			};
+			_serial = +_serial;		// We want a deep copy!
 
 			if(!CALLM1(_valueOrRef, "postSerialize", _thisObject)) exitWith {	// Postserialize
 				OOP_ERROR_1("postSerialize failed for %1", _valueOrRef);
@@ -109,23 +187,36 @@ CLASS("Storage", "")
 
 			// All is good so far
 
+			// Convert some data types into strings
+			T_CALLM1("_preStringifyArray", _serial);
+
+			// Convert array to string
 			toFixed 7;
 			pr _serialStr = str _serial;
 			toFixed -1;
-			T_CALLM2("saveVariable", _valueOrRef, _serialStr);	// Save serialized object converted into string
+			T_CALLM2("saveString", _valueOrRef, _serialStr);	// Save serialized object converted into string
 
 			pr _className = GET_OBJECT_CLASS(_valueOrRef);		// Save parent class name
 			pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
-			T_CALLM2("saveVariable", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
-			T_CALLM2("saveVariable", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublic); // as a public object
+			T_CALLM2("saveString", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
+			T_CALLM2("saveString", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublic); // as a public object
 
 			// Add object ref to the map
 			_savedObjectsMap setVariable [_valueOrRef, true];
 
 			true
 		} else {
-			// It's a basic type, save it just as it is
-			T_CALLM2("saveVariable", _valueOrRef, _value);
+			// Check if it's one of the allowed types
+			// ... maybe later ...
+
+			// It's a basic type, convert it to string and save it
+			pr _array = [_value];							// Much easier to convert it to the array
+			_array = +_array;								// Then use our usual array conversion code
+			T_CALLM1("_preStringifyArray", _array);			// So that it can write values back
+			toFixed 7;
+			pr _valueStr = str _array;
+			toFixed -1;
+			T_CALLM2("saveString", _valueOrRef, _valueStr);
 			true
 		};
 	} ENDMETHOD;
@@ -144,7 +235,7 @@ CLASS("Storage", "")
 		params [P_THISOBJECT, P_DYNAMIC("_ref")];
 
 		// Check if it was a saved OOP object
-		pr _className = T_CALLM1("loadVariable", _ref + "_" + OOP_PARENT_STR);
+		pr _className = T_CALLM1("loadString", _ref + "_" + OOP_PARENT_STR);
 		if (!isNil "_className") then {
 			// We are loading an object
 
@@ -157,13 +248,16 @@ CLASS("Storage", "")
 				_ref
 			};
 
-			pr _isPublic = T_CALLM1("loadVariable", _ref + "_" +  OOP_PUBLIC_STR);
-			pr _serialStr = T_CALLM1("loadVariable", _ref);	// Variable with name = ref is the serialized object
-			//#ifdef _SQF_VM
+			pr _isPublic = T_CALLM1("loadString", _ref + "_" +  OOP_PUBLIC_STR);
+			pr _serialStr = T_CALLM1("loadString", _ref);	// Variable with name = ref is the serialized object
+			#ifdef _SQF_VM
 			pr _serial = call compile _serialStr;
-			//#else
-			//pr _serial = parseSimpleArray _serialStr;  // Fuck this, it does not understand SIDE values
-			//#endif
+			#else
+			pr _serial = parseSimpleArray _serialStr;  // Fuck this, it does not understand SIDE values
+			#endif
+
+			// Convert some special strings into proper data types
+			T_CALLM1("_postParseArray", _serial);
 
 			if (isNil "_serial") exitWith {
 				OOP_ERROR_1("serialized data not found for object %1", _ref);
@@ -205,8 +299,15 @@ CLASS("Storage", "")
 			_refLoaded
 		} else {
 			// We are loading a variable
-			// Just load it and return value
-			T_CALLM1("loadVariable", _ref)
+			// Parse it back and and return value
+			pr _string = T_CALLM1("loadString", _ref);
+			#ifdef _SQF_VM
+			pr _array = call compile _string;
+			#else
+			pr _array = parseSimpleArray _string;  // Fuck this, it does not understand SIDE values
+			#endif
+			T_CALLM1("_postParseArray", _array);	// Again run our conversion code to convert special values
+			_array select 0
 		};
 
 	} ENDMETHOD;
@@ -250,18 +351,18 @@ CLASS("Storage", "")
 	} ENDMETHOD;
 
 	// Saves variable
-	/* virtual */ METHOD("saveVariable") {
+	/* virtual */ METHOD("saveString") {
 		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
 	} ENDMETHOD;
 
 	// Loads variable, returns the value it has read
-	/* virtual */ METHOD("loadVariable") {
+	/* virtual */ METHOD("loadString") {
 		params [P_THISOBJECT, P_STRING("_varName")];
 		0
 	} ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
-	/* virtual */ METHOD("eraseVariable") {
+	/* virtual */ METHOD("eraseString") {
 		params [P_THISOBJECT, P_STRING("_varName")];
 	} ENDMETHOD;
 

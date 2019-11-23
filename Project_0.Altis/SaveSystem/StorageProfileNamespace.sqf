@@ -98,7 +98,7 @@ CLASS(__CLASS_NAME, "Storage")
 	} ENDMETHOD;
 
 	// Saves variable, returns true on success
-	/* override */ METHOD("saveVariable") {
+	/* override */ METHOD("saveString") {
 		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
 		
 		//diag_log format ["Save variable: %1", _this];
@@ -114,7 +114,7 @@ CLASS(__CLASS_NAME, "Storage")
 	} ENDMETHOD;
 
 	// Loads variable, returns the value it has read
-	/* override */ METHOD("loadVariable") {
+	/* override */ METHOD("loadString") {
 		params [P_THISOBJECT, P_STRING("_varName")];
 
 		#ifdef OOP_ASSERT
@@ -128,7 +128,7 @@ CLASS(__CLASS_NAME, "Storage")
 	} ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
-	/* virtual */ METHOD("eraseVariable") {
+	/* virtual */ METHOD("eraseString") {
 		params [P_THISOBJECT, P_STRING("_varName")];
 
 		#ifdef OOP_ASSERT
@@ -229,15 +229,15 @@ ENDCLASS;
 	pr _value = "abcd_efgh";
 	pr _varName0 = "testVar0";
 	pr _varName1 = "testVar1";
-	CALLM2(_obj2, "saveVariable", _varName0, 11);
-	CALLM2(_obj2, "saveVariable", _varName1, 22);
-	["Test var 0", CALLM1(_obj2, "loadVariable", _varName0) == 11] call test_Assert;
-	["Test var 1", CALLM1(_obj2, "loadVariable", _varName1) == 22] call test_Assert;
+	CALLM2(_obj2, "saveString", _varName0, 11);
+	CALLM2(_obj2, "saveString", _varName1, 22);
+	["Test var 0", CALLM1(_obj2, "loadString", _varName0) == 11] call test_Assert;
+	["Test var 1", CALLM1(_obj2, "loadString", _varName1) == 22] call test_Assert;
 
 	// Try to erase variables
-	CALLM1(_obj2, "eraseVariable", _varName0);
-	["Erase var 0", isNil {CALLM1(_obj2, "loadVariable", _varName0)}] call test_Assert;
-	CALLM2(_obj2, "saveVariable", _varName0, 11);	// Revert it back
+	CALLM1(_obj2, "eraseString", _varName0);
+	["Erase var 0", isNil {CALLM1(_obj2, "loadString", _varName0)}] call test_Assert;
+	CALLM2(_obj2, "saveString", _varName0, 11);	// Revert it back
 
 
 	// Try to delete the objects
@@ -255,8 +255,8 @@ ENDCLASS;
 	pr _value = "abcd_efgh";
 	pr _varName0 = "testVar0";
 	pr _varName1 = "testVar1";
-	["Test var 0", CALLM1(_obj2, "loadVariable", _varName0) == 11] call test_Assert;
-	["Test var 1", CALLM1(_obj2, "loadVariable", _varName1) == 22] call test_Assert;
+	["Test var 0", CALLM1(_obj2, "loadString", _varName0) == 11] call test_Assert;
+	["Test var 1", CALLM1(_obj2, "loadString", _varName1) == 22] call test_Assert;
 
 	// Add more records
 	pr _obj1 = NEW(__CLASS_NAME, []);
