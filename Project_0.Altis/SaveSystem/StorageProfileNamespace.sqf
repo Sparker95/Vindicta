@@ -11,18 +11,22 @@ Performs saving data into profile namespace
 
 // Unique tag in profile namespace we will be using
 // For other missions use your own tag to not confuse our records
-#define __NAMESPACE_TAG "vin_save_"
+#define __NAMESPACE_TAG "vin_"
 // One record is reserved to store data to organize other records
 #define __RECORD_MASTER_RECORD "masterRecord"
 #define __VAR_ALL_RECORDS "__allRecords_"
-#define __VAR_RECORD_OPEN "__recordOpen_"
-
-// Namespace variable name formatting
-#define __NS_VAR_NAME(recordName, varName) (toLower (__NAMESPACE_TAG + recordName + varName))
 
 // Prefix of all variables in the profile namespace
-#define __NS_VAR_PREFIX(recordName) (toLower (__NAMESPACE_TAG + recordName))
+#define __NS_VAR_PREFIX(prefix) (toLower (__NAMESPACE_TAG + prefix))
 
+// Namespace variable name formatting
+#define __NS_VAR_NAME(prefix, varName) ( __NS_VAR_PREFIX(prefix) + "_" + (toLower varName) )
+
+// Struct of each value in the record table
+#define RECORD_ID_NAME		0
+#define RECORD_ID_PREFIX	1
+
+// Our favourite define
 #define pr private
 
 // Class name is too long to type every time...
@@ -32,10 +36,13 @@ CLASS(__CLASS_NAME, "Storage")
 
 	VARIABLE("bOpen");			// Bool, true if open
 	VARIABLE("currentRecord");	// String, current record name
+	VARIABLE("currentPrefix");	// String, a unique prefix for all variables of this record
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("bOpen", false);
+		T_SETV("currentPrefix", "_error_prefix_");
+		T_SETV("currentRecord", "_error_record_");
 	} ENDMETHOD;
 
 	/* override */ METHOD("open") {
@@ -59,15 +66,21 @@ CLASS(__CLASS_NAME, "Storage")
 		if (_alreadyOpen) exitWith {};
 		*/
 
-		// Add to the array of all records
-		pr _allRecords = T_CALLM0("getAllRecords");
-		_allRecords pushBackUnique _recordName;
-		__PNS setVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_RECORD_OPEN), _allRecords];
-
-		// Set record lock
-		__PNS setVariable [__NS_VAR_NAME(_recordName, __VAR_RECORD_OPEN), true];
+		// CHeck if this record already exists
+		pr _entry = T_CALLM1("_findRecordTableEntry", _recordName);
+		if(count _entry > 0) then {
+			// Read prefix
+			pr _prefix = _entry#RECORD_ID_PREFIX;
+			T_SETV("currentPrefix", _prefix);
+		} else {
+			// Add to the record table
+			pr _recordTable = T_CALLM0("_loadRecordTable");
+			pr _prefix = T_CALLM0("_generateUniquePrefix");
+			_recordTable pushBack [_recordName, _prefix];
+			T_CALLM1("_saveRecordTable", _recordTable);
+			T_SETV("currentPrefix", _prefix);
+		};
 		
-		saveProfileNamespace;
 		T_SETV("bOpen", true);
 		T_SETV("currentRecord", _recordName);
 	} ENDMETHOD;
@@ -83,12 +96,8 @@ CLASS(__CLASS_NAME, "Storage")
 
 		pr _recordName = T_GETV("currentRecord");
 
-		// Reset record lock
-		__PNS setVariable [__NS_VAR_NAME(_recordName, __VAR_RECORD_OPEN), false];
-
 		saveProfileNamespace;	// Commit all the data we wrote
 		T_SETV("bOpen", false);
-		T_SETV("currentRecord", nil);
 	} ENDMETHOD;
 
 	// Must return true if the object is ready to save/load data
@@ -110,7 +119,7 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 		#endif
 
-		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentRecord"), _varName), _value];
+		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentPrefix"), _varName), _value];
 	} ENDMETHOD;
 
 	// Loads variable, returns the value it has read
@@ -124,7 +133,7 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 		#endif
 
-		__PNS getVariable __NS_VAR_NAME(T_GETV("currentRecord"), _varName)
+		__PNS getVariable __NS_VAR_NAME(T_GETV("currentPrefix"), _varName)
 	} ENDMETHOD;
 
 	// Erases variable (loadVariable must return nil afterwards)
@@ -138,50 +147,105 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 		#endif
 
-		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentRecord"), _varName), nil];
+		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentPrefix"), _varName), nil];
 	} ENDMETHOD;
 
 	// Must returns true if a record with given record name already exists
 	/* override */ METHOD("recordExists") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
-		(toLower _recordName) in T_CALLM0("getAllRecords")
+		_recordName = toLower _recordName;
+		pr _entry = T_CALLM1("_findRecordTableEntry", _recordName);
+		count _entry > 0 // True if a valid array was returned
 	} ENDMETHOD;
 
 	// Must return array of all record names which exist in this storage
 	/* override */ METHOD("getAllRecords") {
 		params [P_THISOBJECT];
-		__PNS getVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_RECORD_OPEN), []];
+		pr _recordTable = T_CALLM0("_loadRecordTable");
+		_recordTable apply {_x#RECORD_ID_NAME};
 	} ENDMETHOD;
 
 	/* override */ METHOD("eraseRecord") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
-		pr _allRecords = +T_CALLM0("getAllRecords");
-
 		_recordName = toLower _recordName;
 
+		pr _entry = T_CALLM1("_findRecordTableEntry", _recordName);
+
 		// Bail if there is no such record
-		if (!(_recordName in _allRecords)) exitWith {
+		if (count _entry == 0) exitWith {
 			true
 		};
 
+		pr _prefix = _entry#RECORD_ID_PREFIX;
+
 		// Iterate all variables and delete those which are from this record
-		pr _prefix = __NS_VAR_PREFIX(_recordName);
+		pr _prefix = __NS_VAR_PREFIX(_prefix);
+		pr _len = count _prefix;
 		{
-			if(_prefix in _x) then {
+			if(_prefix isEqualTo (_x select [0, _len])) then {
 				profileNamespace setVariable [_x, nil];
 			};
 		} forEach (allVariables profileNamespace);
 
 		// Remove it from the array of all records
-		_allRecords deleteAt (_allRecords find _recordName);
-		__PNS setVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_RECORD_OPEN), _allRecords];
-
+		pr _recordTable = T_CALLM0("_loadRecordTable");
+		pr _index = _recordTable findIf {_x#RECORD_ID_NAME == (toLower _recordName)};
+		_recordTable deleteAt _index;
+		T_CALLM1("_saveRecordTable", _recordTable);
 
 		// Save profile namespace
 		saveProfileNamespace;
 
 		true
+	} ENDMETHOD;
+
+	// Generates a unique prefix for a new record
+	METHOD("_generateUniquePrefix") {
+		params [P_THISOBJECT];
+		pr _recordTable = T_CALLM0("_loadRecordTable");
+		pr _allPrefixes = _recordTable apply {_x#RECORD_ID_PREFIX};
+		pr _newPrefix = "";
+		pr _alphabet = toArray "abcdefghijklmnopqrstuvwxyz";
+		while { (_newPrefix in _allPrefixes) || (_newPrefix == "") } do {
+			_newPrefix = "";
+			_count = 0;
+			while {_count < 4} do {
+				_char = toString [selectRandom _alphabet];
+				_newPrefix = _newPrefix + _char;
+				_count = _count + 1;
+			};
+		};
+		_newPrefix
+	} ENDMETHOD;
+
+	// Must return an array of structs associated with all records
+	METHOD("_loadRecordTable") {
+		params [P_THISOBJECT];
+		__PNS getVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_ALL_RECORDS), []];
+	} ENDMETHOD;
+
+	// Saves the record table
+	METHOD("_saveRecordTable") {
+		params [P_THISOBJECT, P_ARRAY("_array")];
+		__PNS setVariable [__NS_VAR_NAME(__RECORD_MASTER_RECORD, __VAR_ALL_RECORDS), _array];
+		saveProfileNamespace;
+	} ENDMETHOD;
+
+	// Returns entry into the record table with given record name
+	METHOD("_findRecordTableEntry") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
+		diag_log format ["find record by name: %1", _recordName];
+		pr _recordTable = T_CALLM0("_loadRecordTable");
+		_recordName = toLower _recordName;
+		pr _index = _recordTable findIf {_x#RECORD_ID_NAME == (toLower _recordName)};
+		if (_index != -1) then {
+			diag_log format ["found: %1", (_recordTable#_index)];
+			pr _array = (_recordTable#_index);
+			+_array
+		} else {
+			[]
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

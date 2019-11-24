@@ -107,7 +107,7 @@ CLASS("AICommander", "AI")
 		#endif
 		
 		// Create sensors
-		T_CALLM0("initSensors");
+		T_CALLM0("_initSensors");
 		
 		T_SETV_REF("cmdrStrategy", gCmdrStrategyDefault);
 		

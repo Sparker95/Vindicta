@@ -80,12 +80,12 @@ CLASS("Storage", "")
 
 	// Converts string to side or side to string
 	// Fuck arma with its inability to stringify and return back strings
-	METHOD("_sideToString") {
+	/* private */ METHOD("_sideToString") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 		T_GETV("sideTags") select SIDE_TO_NUMBER(_side)
 	} ENDMETHOD;
 
-	METHOD("_stringToSide") {
+	/* private */ METHOD("_stringToSide") {
 		params [P_THISOBJECT, P_STRING("_string")];
 		private _ID = T_GETV("sideTags") find _string;
 		NUMBER_TO_SIDE(_ID)
@@ -93,7 +93,7 @@ CLASS("Storage", "")
 
 	// Called before converting an array into string
 	// Modifies existing array by converting some data types into strings
-	METHOD("_preStringifyArray") {
+	/* private */ METHOD("_preStringifyArray") {
 		params [P_THISOBJECT, P_ARRAY("_array")];
 		private _success = true;
 		{
@@ -120,7 +120,7 @@ CLASS("Storage", "")
 
 	// Called after converting a string into array
 	// Modifies existing array by converting some special strings into special data types
-	METHOD("_postParseArray") {
+	/* private */ METHOD("_postParseArray") {
 		params [P_THISOBJECT, P_ARRAY("_array")];
 		{
 			if (!isNil "_x") then {
@@ -144,6 +144,12 @@ CLASS("Storage", "")
 		} forEach _array;
 	} ENDMETHOD;
 
+
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// SAVE and LOAD methods
+	// These are public methods which must be used to save/load data
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
 	/*
 	Method: save
 	Saves OOP object, or saves a basic type variable
@@ -159,7 +165,7 @@ CLASS("Storage", "")
 
 	Returns: true if value was saved successfully
 	*/
-	METHOD("save") {
+	/* public */	METHOD("save") {
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
 
 		//diag_log format ["Save: %1", _this];
@@ -249,7 +255,7 @@ CLASS("Storage", "")
 	object ref or NULL_OBJECT on failure, if an OOP object ref is passed
 	value, if general variable name is passed
 	*/
-	METHOD("load") {
+	/* public */	METHOD("load") {
 		params [P_THISOBJECT, P_DYNAMIC("_ref")];
 
 		// Check if it was a saved OOP object
@@ -330,7 +336,20 @@ CLASS("Storage", "")
 
 	} ENDMETHOD;
 
-	// Virtual methods which must be overriden
+
+
+
+
+
+
+	// - - - - - - - VIRTUAL METHODS - - - - - - - - - -
+	// These methods are storage-platform dependant and inherited class must override them
+	// to perform read/write operations with the underlying storage.
+
+
+
+
+
 
 	// Must initialize saving with the provided record name
 	// analogue is opening a file with given name
@@ -362,11 +381,15 @@ CLASS("Storage", "")
 		T_CALLM0("_clearObjectMaps");
 	} ENDMETHOD;
 
-	// Must return true if the object is ready to save/load data
-	/* virtual */ METHOD("isOpen") {
-		params [P_THISOBJECT];
-		false
-	} ENDMETHOD;
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+	// Methods below do not need hierarchical calling. They just must be implemented.
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+	/*
+	saveString, loadString and eraseString need to save/load/erase a string associated with the currently open record.
+	The implementation of the association with the currently open record is up to the inherited class.
+	It can be a file, some table in database, or prefix in profileNamespace, or whatever.
+	*/
 
 	// Saves variable
 	/* virtual */ METHOD("saveString") {
@@ -383,6 +406,18 @@ CLASS("Storage", "")
 	/* virtual */ METHOD("eraseString") {
 		params [P_THISOBJECT, P_STRING("_varName")];
 	} ENDMETHOD;
+
+	// Must return true if the object is ready to save/load data
+	/* virtual */ METHOD("isOpen") {
+		params [P_THISOBJECT];
+		false
+	} ENDMETHOD;
+
+	
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// Rerord manipulation methods
+	// They must work regardless of currently open record 
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Must returns true if a record with given record name already exists
 	/* virtual */ METHOD("recordExists") {
