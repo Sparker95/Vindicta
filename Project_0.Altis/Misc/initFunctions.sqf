@@ -21,3 +21,7 @@ misc_fnc_createCampComposition = compile preprocessFileLineNumbers "Misc\fn_crea
 
 misc_fnc_dateToISO8601 = compile preprocessFileLineNumbers "Misc\fn_dateToISO8601.sqf";
 misc_fnc_getVehiclesInBuilding = compile preprocessFileLineNumbers "Misc\fn_getVehiclesInBuilding.sqf";
+
+
+misc_fnc_getVehiclesInBuilding = compile preprocessFileLineNumbers "Misc\fn_getVersion.sqf";
+misc_fnc_getVehiclesInBuilding = compile preprocessFileLineNumbers "Misc\fn_getSaveVersion.sqf";

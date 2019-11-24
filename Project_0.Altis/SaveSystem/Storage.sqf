@@ -251,12 +251,18 @@ CLASS("Storage", "")
 	Loads a variable with given name
 	Or loads an OOP object with given ref
 
+	Parameters: _ref, _createNewObject
+
+	_ref - string, variable name to load, or object ref to load
+	_createNewObject - bool, default false, if true it will create a new object with a unique ref,
+						if false it will load the object into the same ref as it was saved into
+
 	Returns:
 	object ref or NULL_OBJECT on failure, if an OOP object ref is passed
 	value, if general variable name is passed
 	*/
 	/* public */	METHOD("load") {
-		params [P_THISOBJECT, P_DYNAMIC("_ref")];
+		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject")];
 
 		// Check if it was a saved OOP object
 		pr _className = T_CALLM1("loadString", _ref + "_" + OOP_PARENT_STR);
@@ -267,7 +273,7 @@ CLASS("Storage", "")
 
 			// Check if this object has been saved before
 			pr _loadedObjectsMap = T_GETV("loadedObjects");
-			if (_loadedObjectsMap getVariable [_ref, false]) exitWith {
+			if (_loadedObjectsMap getVariable [_ref, false] && !_createNewObject) exitWith {
 				OOP_INFO_1("Object was loaded before: %1", _ref);
 				_ref
 			};
@@ -292,11 +298,23 @@ CLASS("Storage", "")
 				NULL_OBJECT
 			};
 
-			private _refLoaded = NULL_OBJECT;						// Ref of loaded object
-			if (_isPublic) then {									// Reconstruct object parent class
-				_refLoaded = NEW_PUBLIC_EXISTING(_className, _ref);	// Create a public object if it was public
+			private _refLoaded = NULL_OBJECT;							// Ref of loaded object
+			if (_createNewObject) then {
+				// Create a new object with a new unique ref
+				if (_isPublic) then {
+					_refLoaded = NEW_PUBLIC(_className, []);
+				} else {
+					_refLoaded = NEW(_className, []);
+				};
+				diag_log format ["Created new object: %1", _refLoaded];
 			} else {
-				_refLoaded = NEW_EXISTING(_className, _ref);		// Or create a local object
+				// Recreate object with the same ref
+				if (_isPublic) then {									// Reconstruct object parent class
+					_refLoaded = NEW_PUBLIC_EXISTING(_className, _ref);	// Create a public object if it was public
+				} else {
+					_refLoaded = NEW_EXISTING(_className, _ref);		// Or create a local object
+				};
+				diag_log format ["Created existing object: %1", _refLoaded];
 			};
 
 			if (!CALLM1(_refLoaded, "preDeserialize", _thisObject)) exitWith {	// Predeserialize

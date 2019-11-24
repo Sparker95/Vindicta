@@ -40,6 +40,8 @@ CLASS("MessageLoop", "Storable");
 				VARIABLE("updateFrequencyFractions");
 	// Amount of messages this message loop will process before switching to process categories
 				VARIABLE("nMessagesInSeries");
+	// Sleep interval
+				VARIABLE_ATTR("sleepInterval", [ATTR_SAVE]);
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -49,11 +51,13 @@ CLASS("MessageLoop", "Storable");
 	parameters: _name
 
 	_name - String, optional, name of the message loop used for debug
+	_nMessagesInSeries - number
+	_sleepInterval - number
 
 	Constructor
 	*/
 	METHOD("new") {
-		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
+		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
 			T_SETV("name", _thisObject);
@@ -66,6 +70,7 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("processCategories", []);
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
+		T_SETV("sleepInterval", _sleepInterval);
 	} ENDMETHOD;
 
 	/*

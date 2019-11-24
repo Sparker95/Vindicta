@@ -235,7 +235,7 @@ CLASS(__CLASS_NAME, "Storage")
 	// Returns entry into the record table with given record name
 	METHOD("_findRecordTableEntry") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
-		diag_log format ["find record by name: %1", _recordName];
+		//diag_log format ["find record by name: %1", _recordName];
 		pr _recordTable = T_CALLM0("_loadRecordTable");
 		_recordName = toLower _recordName;
 		pr _index = _recordTable findIf {_x#RECORD_ID_NAME == (toLower _recordName)};
@@ -382,6 +382,20 @@ ENDCLASS;
 	CALLM2(_storage, "save", "testVar", 666);
 	pr _return = CALLM1(_storage, "load", "testVar");
 	["Save & load varaible", _return == 666] call test_Assert;
+
+	// Try to save/load into a new object ref instead of the ref provided from loading
+	CALLM0(_storage, "close"); // Must close or it will not let us load same object twice
+	CALLM1(_storage, "open", "testRecord0");
+
+	pr _newStorable0 = CALLM2(_storage, "load", _testStorable, true);
+
+	CALLM0(_storage, "close"); // Must close or it will not let us load same object twice
+	CALLM1(_storage, "open", "testRecord0");
+
+	pr _newStorable1 = CALLM2(_storage, "load", _testStorable, true);
+	diag_log format ["newStorable0: %1, newStorable1: %2", _newStorable0, _newStorable1];
+	["Refs are different", _newStorable0 != _newStorable1] call test_Assert;
+	//["New object loaded properly", GETV(_newStorable, "save0") isEqualTo GETV(_testStorable, "save0")] test_Assert;
 
 }] call test_AddTest;
 

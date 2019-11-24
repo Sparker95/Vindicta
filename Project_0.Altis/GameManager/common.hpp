@@ -1,3 +1,5 @@
+#include "GameManager.hpp"
+
 #define OOP_INFO
 #define OOP_ERROR
 #define OOP_WARNING

@@ -18,6 +18,7 @@ diag_log format ["[Template] Initializing template from file: %1", _filePath];
 private _errorCount = [_t] call t_fnc_validateTemplate;
 if (_errorCount > 0) exitWith {
 	_t = []; // Break it completely so that whole scenario fails horribly and we can see the errors in RPT
+	missionNamespace setVariable [_tName, _t];
 	diag_log format ["[Template] ERROR: %1", _filePath];
 };
 
