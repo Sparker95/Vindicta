@@ -84,5 +84,5 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 ENDCLASS;
 
 if (isNil {GETSV("InGameMenuTabNotes", "text")}) then {
-	SETSV("InGameMenuTabNotes", "text", "Here I will write notes... (Use Shift+Enter for a new line)");
+	SETSV("InGameMenuTabNotes", "text", "Here I will write notes... (Use Shift+Enter for a new line, Ctrl+C and Ctrl+V for copying text)");
 };

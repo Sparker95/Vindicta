@@ -20,6 +20,7 @@ gClientMapUI = NEW("ClientMapUI", []);
 gInGameUI = NEW("InGameUI", []);
 gBuildUI = NEW("BuildUI", []);
 
+// In Game Menu event handler
 (finddisplay 46) displayAddEventHandler ["KeyDown", {
 	params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
 	//diag_log format ["KeyDown: %1", _this];

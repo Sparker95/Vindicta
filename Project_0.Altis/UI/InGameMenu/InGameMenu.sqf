@@ -6,21 +6,34 @@
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 
+#define pr private
+
 CLASS("InGameMenu", "DialogBase")
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		T_CALLM2("addTab", "DialogTabBase", "Mission");
-		T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
-		T_CALLM2("addTab", "DialogTabBase", "Admin");
-		T_CALLM2("addTab", "InGameMenuTabNotes", "Notes");
-		
+		pr _gameModeInitialized = CALLM0(gGameManager, "isGameModeInitialized");
+		if (!_gameModeInitialized) then {
+
+			T_CALLM2("addTab", "InGameMenuTabGameModeInit", "Create");
+
+			pr _text = format ["Mission Startup Menu  v%1", call misc_fnc_getVersion];
+			T_CALLM1("setHeadlineText", _text);
+			T_CALLM1("setHintText", "Load a previous saved game or create a new campaign");
+		} else {
+			//T_CALLM2("addTab", "DialogTabBase", "Mission");
+			T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
+			//T_CALLM2("addTab", "DialogTabBase", "Admin");
+			T_CALLM2("addTab", "InGameMenuTabNotes", "Notes");
+
+			pr _text = format ["Mission Menu  v%1", call misc_fnc_getVersion];
+			T_CALLM1("setHeadlineText", _text);
+			T_CALLM1("setHintText", "Vindicta pre-alpha version");
+		};
+
 		T_CALLM1("enableMultiTab", true);
 		T_CALLM2("setContentSize", 0.7, 0.9);
-
-		T_CALLM1("setHeadlineText", "Mission Menu");
-		T_CALLM1("setHintText", "Vindicta pre-alpha version");
 
 	} ENDMETHOD;
 

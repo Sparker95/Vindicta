@@ -36,7 +36,7 @@ diag_log "----------------------------------------------------------------------
 diag_log "|                  I N I T I A L I Z I N G   M A I N                 |";
 diag_log "----------------------------------------------------------------------";
 {
-	call compile preprocessFileLineNumbers "init.sqf";
+	call compile preprocessFileLineNumbers "initForSQFVM.sqf";
 }
 except__
 {

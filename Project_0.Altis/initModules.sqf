@@ -110,6 +110,9 @@ call compile preprocessFileLineNumbers "ClientSideChecks\initClasses.sqf";
 // Initialize GameModes
 call compile preprocessFileLineNumbers "GameMode\initClasses.sqf";
 
+// Initialize GameManager classes
+call compile preprocessFileLineNumbers "GameManager\initClasses.sqf";
+
 // Initialize PlayerDatabases
 call compile preprocessFileLineNumbers "DoubleKeyHashmap\DoubleKeyHashmap.sqf";
 call compile preprocessFileLineNumbers "PlayerDatabase\PlayerDatabaseServer.sqf";

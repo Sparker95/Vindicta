@@ -133,8 +133,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Probably it's because we currently have this executed inside isNil {} block
 			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
 
-			// Initialize player database
-			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
 			// todo load it from profile namespace or whatever
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
@@ -182,17 +180,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
-			0 spawn {
-				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
-				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
-			};
 
 			#ifndef RELEASE_BUILD
 			[] call pr0_fnc_initDebugMenu;
 			#endif
-
-			// Create PlayerDatabaseClient
-			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
 
 			// Hide the allowed area markers
 			#ifdef RELEASE_BUILD
@@ -1245,9 +1236,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM0("_setupMessageLoops");
 
 		// Create other global objects
-
-		// Initialize player database
-		gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
 
 		// Garrison stimulus manager
 		gStimulusManagerGarrison = NEW_PUBLIC("StimulusManager", [gMessageLoopMain]); // Can postMethodAsync stimulus to it to annoy garrisons

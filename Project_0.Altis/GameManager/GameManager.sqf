@@ -12,23 +12,86 @@ It also handles some client requests about saving/loading the game, and initial 
 
 #define pr private
 
+// GameManager states
+#define STATE_STARTUP				0
+#define STATE_GAME_MODE_INITIALIZED	1
+
 CLASS("GameManager", "MessageReceiverEx")
+
+	VARIABLE("gameModeInitialized");	// State of the game for this machine
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 
+		T_SETV("gameModeInitialized", false);
+
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
+	} ENDMETHOD;
+
+	// This method is called at preinit
+	METHOD("init") {
+		params [P_THISOBJECT];
 
 		// Create various objects not related to a particular mission
 
+		if(IS_SERVER || IS_HEADLESSCLIENT) then {
+		};
+
+		if(IS_SERVER) then {
+			// Initialize player database
+			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
+		};
+
+		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
+		};
+
+		if (IS_HEADLESSCLIENT) then {
+		};
+
+		if(HAS_INTERFACE) then {
+			// Lots of client-side UI initialization is here
+
+			// Create GarrisonDatabaseClient
+			gGarrisonDBClient = NEW("GarrisonDatabaseClient", []);
+
+			// Create IntelDatabaseClient
+			gIntelDatabaseClient = NEW("IntelDatabaseClient", [playerSide]);
+
+			// Create PlayerDatabaseClient
+			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
+
+			// Initialize notification system
+			CALLSM0("Notification", "staticInit");
+
+			// Main UI initialization sequence
+			// But we must wait until UI exists on client
+			0 spawn {
+				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
+				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+			};
+
+
+			/*
+			// Code to add some dummy intel for UI tests
+				private _serial = ["IntelCommanderActionAttack","o_intelcommanderactionattack_n_0_12",[2035,6,24,12,6],nil,[21281.7,7212.84,0],nil,nil,"o_IntelCommanderActionAttack_N_0_10",playerSide,[17430,13161,0],[21082,7324,0],"o_Garrison_N_0_27",[21281.7,7212.84,0],nil,nil,[2035,6,24,12,8.93733],[0,0,0,0,0,0,0,0],"o_Garrison_N_0_9","Reinforce garrison","o_Garrison_N_0_10",nil,nil];
+				private _dummyIntel = ["IntelCommanderActionAttack", []] call OOP_new;
+				[_dummyIntel, _serial] call OOP_deserialize;
+				CALLM1(gIntelDatabaseClient, "addIntel", _dummyIntel);
+			*/
+		};
 	} ENDMETHOD;
 
-	METHOD("getMessageLoop") {
-		gMessageLoopGameManager
+	// - - - - - Getters for game state - - - - -
+
+	METHOD("isGameModeInitialized") {
+		params [P_THISOBJECT];
+		T_GETV("gameModeInitialized")
 	} ENDMETHOD;
 
-	METHOD("getAllSaves") {
+	// - - - - - Saved game management - - - - -
+
+	METHOD("getAllSavedGames") {
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
@@ -101,6 +164,55 @@ CLASS("GameManager", "MessageReceiverEx")
 	METHOD("saveGame") {
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 
+	} ENDMETHOD;
+
+
+	// - - - - Game Mode Initialization - - - -
+
+	// Initializes a new game mode on server (does NOT load a saved game, but creates a new one!)
+	// todo: initialization parameters
+	METHOD("initGameModeServer") {
+		params [P_THISOBJECT, P_STRING("_className")];
+		OOP_INFO_1("Initializing game mode on server: %1", _className);
+		gGameMode = NEW(_className, []);
+		CALLM0(gGameMode, "init");
+		OOP_INFO_0("Finished initializing game mode");
+
+		// Add data to the JIP queue so that clients can also initialize
+		// Execute everywhere but not on server
+		REMOTE_EXEC_CALL_STATIC_METHOD("GameMode", "staticInitGameModeClient", [_className], -2, "GameManager_initGameModeClient");
+
+		// Set flag
+		T_SETV("gameModeInitialized", true);
+	} ENDMETHOD;
+
+	// Must be run on client to initialize the game mode
+	METHOD("initGameModeClient") {
+		params [P_THISOBJECT, P_STRING("_className")];
+		OOP_INFO_1("Initializing game mode on client: %1", _className);
+		gGameModeClient = NEW(_className, []);
+		CALLM0(gGameModeClient, "init");
+		OOP_INFO_0("Finished initializing game mode");
+
+		// Set flag
+		T_SETV("gameModeInitialized", true);
+	} ENDMETHOD;
+
+	METHOD("staticInitGameModeClient") {
+		params [P_THISCLASS, P_STRING("_className")];
+		pr _instance = CALLSM0("GameManager", "getInstance");
+		CALLM2(_instance, "postMethodAsync", "initGameModeClient", _className);
+	} ENDMETHOD;
+
+
+	// - - - - Misc methods - - - -
+
+	METHOD("getMessageLoop") {
+		gMessageLoopGameManager
+	} ENDMETHOD;
+
+	STATIC_METHOD("getInstance") {
+		gGameManager
 	} ENDMETHOD;
 
 ENDCLASS;
