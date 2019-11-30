@@ -160,6 +160,18 @@ class TAB_GMINIT
 			};
 			
 		};
+		class TAB_GMINIT_BUTTON_START : MUI_BUTTON_TXT 
+		{
+			type = 1;
+			idc = -1;
+			x = 0.29000015;
+			y = 0.84000037;
+			w = 0.14000006;
+			h = 0.04000012;
+			text = "Start";
+			borderSize = 0;
+			
+		};
 		
 	};
 	

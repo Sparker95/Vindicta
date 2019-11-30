@@ -172,10 +172,22 @@ CLASS("GameManager", "MessageReceiverEx")
 	// Initializes a new game mode on server (does NOT load a saved game, but creates a new one!)
 	// todo: initialization parameters
 	METHOD("initGameModeServer") {
-		params [P_THISOBJECT, P_STRING("_className")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_className"), P_ARRAY("_gameModeParameters")];
+
+		if (!isServer) exitWith {};
+
+		OOP_INFO_1("INIT GAME MODE SERVER: %1", _this);
+
+		// Bail if already initialized
+		if (T_CALLM0("isGameModeInitialized")) exitWith {
+
+		};
+
 		OOP_INFO_1("Initializing game mode on server: %1", _className);
-		gGameMode = NEW(_className, []);
-		CALLM0(gGameMode, "init");
+		gGameMode = NEW(_className, _gameModeParameters);
+		CRITICAL_SECTION {
+			CALLM0(gGameMode, "init");
+		};
 		OOP_INFO_0("Finished initializing game mode");
 
 		// Add data to the JIP queue so that clients can also initialize

@@ -25,7 +25,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.22000022;
 			w = 0.38000013;
 			h = 0.04000007;
-			text = "Enemy force percentage:";
+			text = "Initial enemy force %:";
 			style = ST_LEFT;
 		};
 		class STATIC_MILITARY_FACTION : MUI_BASE_ABS 
@@ -104,6 +104,19 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			w = 0.27000013;
 			h = 0.0400001;
 			text = "Standard";
+		};
+
+		class TAB_GMINIT_BUTTON_START : MUI_BUTTON_TXT_ABS 
+		{
+			type = 1;
+			idc = -1;
+			x = 0.29000015;
+			y = 0.84000037;
+			w = 0.14000006;
+			h = 0.04000012;
+			text = "Start";
+			borderSize = 0;
+			
 		};
 		
 	};

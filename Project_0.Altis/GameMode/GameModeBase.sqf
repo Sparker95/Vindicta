@@ -38,8 +38,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Locations
 	VARIABLE_ATTR("locations", [ATTR_SAVE]);
 
+	// Template names
+	VARIABLE_ATTR("tNameMilWest", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNameMilInd", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNameMilEast", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNamePolice", [ATTR_SAVE]);
+
+	// Other values
+	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
+
 	METHOD("new") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
+								P_NUMBER("_enemyForcePercent")];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
 
@@ -61,6 +71,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("AICommanderWest", NULL_OBJECT);
 		T_SETV("AICommanderEast", NULL_OBJECT);
 
+		// Default template names
+		T_SETV("tNameMilWest", "tNATO");
+		T_SETV("tNameMilInd", "tAAF");
+		T_SETV("tNameMilEast", "tCSAT");
+		T_SETV("tNamePolice", "tPOLICE");
+
+		// Apply values from arguments
+		T_SETV("enemyForceMultiplier", 1);
+		if (_tNameEnemy != "") then {
+			T_SETV("tNameMilInd", _tNameEnemy);
+		};
+		if (_tNamePolice != "tNamePolice") then {
+			T_SETV("tNamePolice", _tNamePolice);
+		};
+		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
+
 		T_SETV("locations", []);
 	} ENDMETHOD;
 
@@ -72,7 +98,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Called in init.sqf. Do NOT override this, implement the various specialized virtual functions
 	// below it instead.
 	METHOD("init") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_ARRAY("_extraParams")];
 
 		PROFILE_SCOPE_START(GameModeInit);
 
@@ -396,14 +422,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
-			case "police": { "tPOLICE" };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			case "police":				{ T_GETV("tNamePolice") };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			
 			default { // "military"
 				switch(_side) do {
-					case WEST: { "tNATO" };
-					case EAST: { "tCSAT" };
-					case INDEPENDENT: { "tAAF" }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
-					case CIVILIAN: { "tCIVILIAN" };
-					default { "tDEFAULT" };
+					case WEST:			{ T_GETV("tNameMilWest") };
+					case EAST:			{ T_GETV("tNameMilEast") };
+					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
+					case CIVILIAN:		{ "tCIVILIAN" };
+					default				{ "tDEFAULT" };
 				}
 			};
 		};

@@ -64,13 +64,14 @@ CLASS("MessageLoop", "Storable");
 		} else {
 			T_SETV("name", _name);
 		};
-		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		T_SETV("scriptHandle", _scriptHandle);
 		T_SETV("mutex", MUTEX_NEW());
 		T_SETV("processCategories", []);
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 		T_SETV("sleepInterval", _sleepInterval);
+		
+		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+		T_SETV("scriptHandle", _scriptHandle);
 	} ENDMETHOD;
 
 	/*
