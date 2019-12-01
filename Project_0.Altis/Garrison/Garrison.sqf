@@ -35,6 +35,7 @@ CLASS("Garrison", "MessageReceiverEx");
 				VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
 				VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
 	/* save */	VARIABLE_ATTR("active",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Set to true after calling activate method
+	/* save */	VARIABLE_ATTR("autoSpawn",	[ATTR_PRIVATE ARG ATTR_SAVE]); // If true, it will be updating its own spawn state even if inactive
 	/* save */	VARIABLE_ATTR("faction",	[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
 
 	/* save */	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE ARG ATTR_SAVE]);
@@ -100,6 +101,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("countCargo", 0);
 		T_SETV("location", "");
 		T_SETV("active", false);
+		T_SETV("autoSpawn", false);
 		T_SETV("faction", _faction);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
@@ -207,6 +209,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+
+		// Enable automatic spawning
+		T_CALLM1("enableAutoSpawn", true);
 	} ENDMETHOD;
 
 	/*
@@ -453,9 +458,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			WARN_GARRISON_DESTROYED;
 		};
 
+		// Update spawn state
+		IF(T_GETV("autoSpawn")) then {
+			T_CALLM("updateSpawnState", []);
+		};
+
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
-			T_CALLM("updateSpawnState", []);
 
 			//OOP_INFO_0("  ACTIVE");
 
@@ -599,6 +608,19 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		__MUTEX_UNLOCK;
 		
+	} ENDMETHOD;
+
+	/*
+	Method: enableAutoSpawn
+	Enables auto spawning of this garrison.
+	It will make it update its spawn state when inactive.
+	Useful for some 'ambient' garrisons such as city garrisons.
+
+	Parameters: _enable - bool
+	*/
+	METHOD("enableAutoSpawn") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+		T_SETV("autoSpawn", _enable);
 	} ENDMETHOD;
 	
 	METHOD("detachFromLocation") {
