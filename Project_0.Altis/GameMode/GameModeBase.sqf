@@ -141,6 +141,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
 			PUBLIC_VARIABLE "gGarrisonServer";
 
+			T_CALLM0("_createSpecialGarrisons");
 			T_CALLM("initCommanders", []);
 			#ifndef _SQF_VM
 			T_CALLM("initLocations", []);
@@ -321,31 +322,45 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
 			// Main message loop for garrisons
-			gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
-			T_SETV("messageLoopMain", gMessageLoopMain);
+			if (isNil "gMessageLoopMain") then {
+				gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
+				T_SETV("messageLoopMain", gMessageLoopMain);
+			};
 
 			// Message loop for group AI
-			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
-			T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
+			if (isNil "gMessageLoopGroupAI") then {
+				gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
+				T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
+			};
 		};
 
 		if(IS_SERVER) then {
-			gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
-			T_SETV("messageLoopGameMode", gMessageLoopGameMode);
+			if (isNil "gMessageLoopGameMode") then {
+				gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
+				T_SETV("messageLoopGameMode", gMessageLoopGameMode);
+			};
 
-			gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
-			T_SETV("messageLoopCommanderInd", gMessageLoopCommanderInd);
+			if (isNil "gMessageLoopCommanderInd") then {
+				gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
+				T_SETV("messageLoopCommanderInd", gMessageLoopCommanderInd);
+			};
 
-			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
-			T_SETV("messageLoopCommanderWest", gMessageLoopCommanderWest);
+			if (isNil "gMessageLoopCommanderWest") then {
+				gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
+				T_SETV("messageLoopCommanderWest", gMessageLoopCommanderWest);
+			};
 
-			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
-			T_SETV("messageLoopCommanderEast", gMessageLoopCommanderEast);
+			if (isNil "gMessageLoopCommanderEast") then {
+				gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
+				T_SETV("messageLoopCommanderEast", gMessageLoopCommanderEast);
+			};
 		};
 
 		if(HAS_INTERFACE) then {
 			// Message loop for client side checks: undercover, location visibility, etc
-			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+			if (isNil "gMsgLoopPlayerChecks") then {
+				gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+			};
 		};
 
 
@@ -513,22 +528,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* private */ METHOD("initCommanders") {
 		params [P_THISOBJECT];
 
-		// Garrison objects to track players and player owned vehicles
-		gGarrisonPlayersWest = NEW("Garrison", [WEST]);
-		gGarrisonPlayersEast = NEW("Garrison", [EAST]);
-		gGarrisonPlayersInd = NEW("Garrison", [INDEPENDENT]);
-		gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
-		gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
-		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
-
-		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
-		{
-			CALLM2(_x, "postMethodAsync", "spawn", []);
-		} forEach gSpecialGarrisons;
-
-		// Message loops for commander AI
-
-
 		// Independent
 		gCommanderInd = NEW("Commander", []); // all commanders are equal
 		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
@@ -549,6 +548,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
+	} ENDMETHOD;
+
+	METHOD("_createSpecialGarrisons") {
+		params [P_THISOBJECT];
+
+		// Garrison objects to track players and player owned vehicles
+		gGarrisonPlayersWest = NEW("Garrison", [WEST]);
+		gGarrisonPlayersEast = NEW("Garrison", [EAST]);
+		gGarrisonPlayersInd = NEW("Garrison", [INDEPENDENT]);
+		gGarrisonPlayersCiv = NEW("Garrison", [CIVILIAN]);
+		gGarrisonAmbient = NEW("Garrison", [CIVILIAN]);
+		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
+
+		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
+		{
+			CALLM2(_x, "postMethodAsync", "spawn", []);
+		} forEach gSpecialGarrisons;
 	} ENDMETHOD;
 
 	METHOD("startCommanders") {
@@ -1259,11 +1275,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");
 		gMessageLoopCommanderEast = T_GETV("messageLoopCommanderWest");
 
-		// Setup client-side message loop
-		if(HAS_INTERFACE) then {
-			// Message loop for client side checks: undercover, location visibility, etc
-			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
-		};
+		// Create message loops we have not created yet
+		// It will not create message loops which we have loaded before
+		T_CALLM0("_createMessageLoops");
 
 		// Finish message loop setup
 		T_CALLM0("_setupMessageLoops");
@@ -1289,6 +1303,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Main message loop manager
 		gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+		// Special garrisons
+		T_CALLM0("_createSpecialGarrisons");
 
 		// Load locations
 		{

@@ -20,7 +20,7 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 // Bail if game mode was not initialized yet
 if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-
+    CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
 };
 
 params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
@@ -205,6 +205,6 @@ if (isNil {vin_bRespawned}) then {
     private _picture = ""; // Default picture for now
     private _duration = 10;
     private _hint = "Check map for more info"; // Override hint!
-    private _args = [_picture, "CONTROLS", "Press [U] to open in-game menu", "It is very important (and nice)", _duration, _sound];
+    private _args = [_picture, "CONTROLS", "Press [U] to open the in-game menu", "It is very important (and nice)", _duration, _sound];
     CALLSM("Notification", "createNotification", _args);
 };
