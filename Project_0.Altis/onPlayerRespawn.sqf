@@ -20,7 +20,10 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 // Bail if game mode was not initialized yet
 if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-    CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+    0 spawn {
+		waitUntil {!isNull (findDisplay 46)};
+    	CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+	};
 };
 
 params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];

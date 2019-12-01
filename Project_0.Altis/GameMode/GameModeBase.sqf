@@ -248,6 +248,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Create initial garrisons
 		{
+			OOP_INFO_2("Populating location: %1, type: %2", _x, CALLM0(_x, "getType"));
+
 			private _loc = _x;
 			private _side = T_CALLM("getLocationOwner", [_loc]);
 			CALLM(_loc, "setSide", [_side]);
@@ -279,22 +281,26 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Send intel to commanders
 			private _playerSide = T_CALLM0("getPlayerSide");
 			{
-				private _sideCommander = GETV(_x, "side");
-				if (_sideCommander != _playerSide) then { // Enemies are smart
-					if (CALLM0(_loc, "isBuilt")) then {
-						// This part determines commander's knowledge about enemy locations at game init
-						// Only relevant for One AI vs Another AI Commander game mode I think
-						//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-						private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
-						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
-					};
-				} else {
-					// If it's player side, let it only know about cities
-					if (_type == LOCATION_TYPE_CITY) then {
-						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+				if (!IS_NULL_OBJECT(_x)) then {
+					private _sideCommander = GETV(_x, "side");
+					if (_sideCommander != _playerSide) then { // Enemies are smart
+						if (CALLM0(_loc, "isBuilt")) then {
+							// This part determines commander's knowledge about enemy locations at game init
+							// Only relevant for One AI vs Another AI Commander game mode I think
+							//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+							private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
+							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+						};
+					} else {
+						// If it's player side, let it only know about cities
+						if (_type == LOCATION_TYPE_CITY) then {
+							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+						};
 					};
 				};
-			} forEach gCommanders;
+			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
 		} forEach GET_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 
