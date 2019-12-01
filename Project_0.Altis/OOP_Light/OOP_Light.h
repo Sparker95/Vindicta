@@ -204,13 +204,14 @@
 #define STATIC_SEPARATOR "_stm_"
 #define METHOD_SEPARATOR "_fnc_"
 #define INNER_PREFIX "inner_"
+#define GLOBAL_SEPARATOR "global_"
 
 // ----------------------------------------------------------------------
 // |          I N T E R N A L   N A M E   F O R M A T T I N G           |
 // ----------------------------------------------------------------------
 
 //Name of a specific instance of object
-#define OBJECT_NAME_STR(classNameStr, objIDInt)  (format ["%1%2%3%4_%5", OOP_PREFIX, classNameStr, OBJECT_SEPARATOR, CLIENT_OWNER, objIDInt])
+#define OBJECT_NAME_STR(classNameStr, objIDInt)  (format ["o_%1_c%2_s%3_n%4", classNameStr, CLIENT_OWNER, OOP_GVAR(sessionID), objIDInt])
 
 //String name of a static member
 #define CLASS_STATIC_MEM_NAME_STR(classNameStr, memNameStr) ((OOP_PREFIX) + (classNameStr) + STATIC_SEPARATOR + (memNameStr))
@@ -229,6 +230,9 @@
 
 //String name of an inner method
 #define INNER_METHOD_NAME_STR(methodNameStr) (INNER_PREFIX + methodNameStr)
+
+//Macro for global OOP variables
+#define OOP_GVAR(var) o_##var
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"
@@ -255,9 +259,9 @@
 #define FORCE_SET_MEM_NS(ns, objNameStr, memNameStr, value) ns setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value]
 #define FORCE_SET_MEM_REF(objNameStr, memNameStr, value) \
 	isNil { \
-		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), objNull]; \
-		if (_oldVal isEqualType "") then { UNREF(_oldVal); }; \
-		if ((value) isEqualType "") then { REF((value)); }; \
+		private _oldVal = NAMESPACE getVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), NULL_OBJECT]; \
+		if (!IS_NULL_OBJECT(_oldVal)) then { UNREF(_oldVal); }; \
+		if (!IS_NULL_OBJECT(value)) then { REF((value)); }; \
 		NAMESPACE setVariable [OBJECT_MEM_NAME_STR(objNameStr, memNameStr), value] \
 	}
 
@@ -449,14 +453,19 @@
 // |         A T T R I B U T E S          |
 // ----------------------------------------
 
-#define ATTR_REFCOUNTED 1
-#define ATTR_SERIALIZABLE 2
-#define ATTR_PRIVATE 3
+#define ATTR_REFCOUNTED		1
+#define ATTR_SERIALIZABLE	2
+#define ATTR_PRIVATE		3
+
 // Needs more work to implement this (walking classes to find the first place a member was defined etc.)
 // #define ATTR_PROTECTED 4
 #define ATTR_GET_ONLY 5
 #define ATTR_THREAD_AFFINITY_ID 6
 #define ATTR_THREAD_AFFINITY(getThreadFn) [ATTR_THREAD_AFFINITY_ID, getThreadFn]
+
+// For serialization when saving
+#define ATTR_SAVE			7
+
 #define ATTR_USERBASE 1000
 
 // -----------------------------------------------------
@@ -690,9 +699,9 @@
  * The methods of base class are copied to the methods of the derived class, except for "new" and "delete", because they will be called through the hierarchy anyway.
  */
 
-#define CLASS(classNameStr, baseClassNameStr) \
+#define CLASS(classNameStr, baseClassNames) \
 call { \
-diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNameStr]; \
+diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNames]; \
 private _oop_classNameStr = classNameStr; \
 SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
 private _oop_memList = []; \
@@ -700,21 +709,29 @@ private _oop_staticMemList = []; \
 private _oop_parents = []; \
 private _oop_methodList = []; \
 private _oop_newMethodList = []; \
-if (baseClassNameStr != "") then { \
-	if (!([baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
-		private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
-		FAILURE(_msg); \
-	}; \
-	_oop_parents = +GET_SPECIAL_MEM(baseClassNameStr, PARENTS_STR); _oop_parents pushBackUnique baseClassNameStr; \
-	_oop_memList = +GET_SPECIAL_MEM(baseClassNameStr, MEM_LIST_STR); \
-	_oop_staticMemList = +GET_SPECIAL_MEM(baseClassNameStr, STATIC_MEM_LIST_STR); \
-	_oop_methodList = +GET_SPECIAL_MEM(baseClassNameStr, METHOD_LIST_STR); \
-	private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
-	{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
-	FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
-	_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
-	if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
-	} forEach (_oop_methodList - ["new", "delete", "copy"]); \
+private _parentClassNames = if(baseClassNames isEqualType "") then {[baseClassNames]} else {baseClassNames}; \
+if (count _parentClassNames > 0) then { \
+	{ \
+		private _baseClassNameStr = _x; \
+		if (_baseClassNameStr != "") then { \
+			if (!([_baseClassNameStr, __FILE__, __LINE__] call OOP_assert_class)) then { \
+				private _msg = format ["Invalid base class for %1: %2", classNameStr, baseClassNameStr]; \
+				FAILURE(_msg); \
+			}; \
+			{_oop_parents pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, PARENTS_STR); \
+			_oop_parents pushBackUnique _baseClassNameStr; \
+			{ _oop_memList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, MEM_LIST_STR); \
+			{ _oop_staticMemList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, STATIC_MEM_LIST_STR); \
+			private _oop_addedMethodList = []; \
+			{ _oop_methodList pushBackUnique _x; _oop_addedMethodList pushBackUnique _x; } forEach GET_SPECIAL_MEM(_baseClassNameStr, METHOD_LIST_STR); \
+			private _oop_topParent = _oop_parents select ((count _oop_parents) - 1); \
+			{ private _oop_methodCode = FORCE_GET_METHOD(_oop_topParent, _x); \
+				FORCE_SET_METHOD(classNameStr, _x, _oop_methodCode); \
+				_oop_methodCode = FORCE_GET_METHOD(_oop_topParent, INNER_METHOD_NAME_STR(_x)); \
+				if (!isNil "_oop_methodCode") then { FORCE_SET_METHOD(classNameStr, INNER_METHOD_NAME_STR(_x), _oop_methodCode); }; \
+			} forEach (_oop_addedMethodList - ["new", "delete", "copy"]); \
+		}; \
+	} forEach _parentClassNames; \
 }; \
 SET_SPECIAL_MEM(_oop_classNameStr, PARENTS_STR, _oop_parents); \
 SET_SPECIAL_MEM(_oop_classNameStr, MEM_LIST_STR, _oop_memList); \
@@ -760,6 +777,14 @@ SET_SPECIAL_MEM(_oop_classNameStr, SERIAL_MEM_LIST_STR, _serialVariables); \
 
 #define NEW_EXISTING(classNameStr, objNameStr) [] call { \
 FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
+objNameStr \
+}
+
+#define NEW_PUBLIC_EXISTING(classNameStr, objNameStr) [] call { \
+FORCE_SET_MEM(objNameStr, OOP_PARENT_STR, classNameStr); \
+FORCE_SET_MEM(objNameStr, OOP_PUBLIC_STR, 1); \
+PUBLIC_VAR(objNameStr, OOP_PUBLIC_STR); \
+PUBLIC_VAR(objNameStr, OOP_PARENT_STR); \
 objNameStr \
 }
 
@@ -848,12 +873,20 @@ objNameStr \
 #define SERIALIZED_OBJECT_NAME(array) (array select 1)
 #define SERIALIZED_SET_OBJECT_NAME(array, name) array set [1, name]
 
+// Serialize all variables which have a specified attributes
+#define SERIALIZE_ATTR(objNameStr, attr) ([objNameStr, attr] call OOP_serialize_attr)
+
+// Serialize all variables regardless of their attributes
+#define SERIALIZE_ALL(objNameStr) ([objNameStr, 0, true] call OOP_serialize_attr)
+
 // ----------------------------------------
 // |        D E S E R I A L I Z E         |
 // ----------------------------------------
 // Returns ref to the object passed in the array
 // Object must exist before you can DESERIALIZE an array into it!
 #define DESERIALIZE(objNameStr, array) ([objNameStr, array] call OOP_deserialize)
+#define DESERIALIZE_ATTR(objNameStr, array, attr) ([objNameStr, array, attr] call OOP_deserialize_attr)
+#define DESERIALIZE_ALL(objNameStr, array) ([objNameStr, array, 0, true] call OOP_deserialize_attr)
 
 // ---------------------------------------------
 // |         R E F   C O U N T I N G           |
@@ -1061,6 +1094,7 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 #define DESCENDING false
 // Is the object handle valid?
 //#define NOT_NULL_OBJECT(object) ((object isEqualType "") and {!(object isEqualTo "")})
-#define IS_NULL_OBJECT(object) (!(object isEqualType "") or {object isEqualTo ""})
+#define IS_NULL_OBJECT(object) (object isEqualTo "")
 // Value to assign to an object handle to indicate it is deliberately invalid.
-#define NULL_OBJECT objNull
+#define NULL_OBJECT ""
+#define OOP_OBJECT_TYPE ""

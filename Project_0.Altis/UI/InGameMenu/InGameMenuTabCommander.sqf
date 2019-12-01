@@ -175,7 +175,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		pr _locType = _ctrlLocType lbData _row;
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
 		pr _hBuildResSrc = if (_playerBuildRes >= _buildResCost) then {player} else {_cursorObject};
-		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, getPosWorld player, _locType, _locName, _hBuildResSrc];
 		CALLM2(_AI, "postMethodAsync", "clientCreateLocation", _args);
 
@@ -224,7 +224,7 @@ CLASS("InGameMenuTabCommander", "DialogTabBase")
 		// Server might run extra checks
 		// Source object where build resources will be deleted from, player or vehicle he's looking at
 		pr _hBuildResSrc = if (_playerBuildRes >= _buildResCost) then {player} else {_cursorObject};
-		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+		pr _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		pr _args = [clientOwner, _currentLoc, _hBuildResSrc];
 		CALLM2(_AI, "postMethodAsync", "clientClaimLocation", _args);
 

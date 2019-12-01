@@ -24,7 +24,7 @@ e.g. An action for a garrison to attack an outpost could be parameterized by the
 
 Parent: <RefCounted>
 */
-CLASS("CmdrAction", "RefCounted")
+CLASS("CmdrAction", ["RefCounted" ARG "Storable"])
 
 	// The priority of this action in relation to other actions of the same or different type.
 	VARIABLE_ATTR("scorePriority", [ATTR_PRIVATE]);
@@ -41,7 +41,7 @@ CLASS("CmdrAction", "RefCounted")
 	// Registered AST_VARs. AST_VARs should be registered when they can be modified by any of the 
 	// ASTs, so that they can be saved and restored during simulation (don't want simulation 
 	// to effect real world actions).
-	VARIABLE_ATTR("variables", [ATTR_PRIVATE]);
+	VARIABLE("variables");
 	// AST_VARs saved during simulation, to be restored afterwards.
 	VARIABLE_ATTR("variablesStack", [ATTR_PRIVATE]);
 	// Garrisons associated with this action, so we can automatically unassign this action from them 
@@ -337,9 +337,33 @@ CLASS("CmdrAction", "RefCounted")
 	/* protected */ METHOD("createVariable") {
 		params [P_THISOBJECT, P_DYNAMIC("_initialValue")];
 		T_PRVAR(variables);
-		private _var = MAKE_AST_VAR(_initialValue);
-		_variables pushBack _var;
-		_var
+		private _index = _variables pushBack _initialValue;
+		_index
+	} ENDMETHOD;
+
+	// Push the values of all registered variables.
+	/* private */ METHOD("pushVariables") {
+		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
+		
+		// Make a deep copy of all the variables and push them into the stack
+		private _variablesCopy = +_variables;
+		_variablesStack pushBack _variablesCopy;
+	} ENDMETHOD;
+
+	// Pop the values of all registered variables.
+	/* private */ METHOD("popVariables") {
+		params [P_THISOBJECT];
+		T_PRVAR(variables);
+		T_PRVAR(variablesStack);
+		private _stackSize = count _variablesStack;
+		
+		ASSERT_MSG(_stackSize > 0, "Variables stack is empty");
+
+		// Restore our whole variables array from the top stack element
+		private _prevVariables = _variablesStack deleteAt (_stackSize - 1);
+		T_SETV("variables", _prevVariables);
 	} ENDMETHOD;
 	
 	// Returns (after creating if necessary) the ASTs of this action.
@@ -387,34 +411,6 @@ CLASS("CmdrAction", "RefCounted")
 		T_CALLM("popVariables", []);
 		// We don't update to the new state, this is just a simulation, but return it for information purposes
 		_state
-	} ENDMETHOD;
-
-	// Push the values of all registered variables.
-	/* private */ METHOD("pushVariables") {
-		params [P_THISOBJECT];
-		T_PRVAR(variables);
-		T_PRVAR(variablesStack);
-		
-		// Copy the variable contents and push onto stack. This will NOT deepcopy arrays. They should never be modified, only replaced.
-		//_variablesStack pushBack (_variables apply { MAKE_AST_VAR(GET_AST_VAR(_x)) });
-		//_variablesStack pushBack +_variables;
-		_variablesStack pushBack (_variables apply { +_x });
-	} ENDMETHOD;
-
-	// Pop the values of all registered variables.
-	/* private */ METHOD("popVariables") {
-		params [P_THISOBJECT];
-		T_PRVAR(variables);
-		T_PRVAR(variablesStack);
-		
-		ASSERT_MSG(count _variablesStack > 0, "Variables stack is empty");
-
-		// pop the copy of the variables
-		private _copy = _variablesStack deleteAt (count _variablesStack - 1);
-		// copy the values back into the variable array
-		{
-			SET_AST_VAR(_variables select _forEachIndex, GET_AST_VAR(_x));
-		} forEach _copy;
 	} ENDMETHOD;
 
 	/*
@@ -558,6 +554,57 @@ CLASS("CmdrAction", "RefCounted")
 		// Return [] by default
 		[]
 	} ENDMETHOD;
+
+
+
+	// - - - - - STORAGE - - - - - -
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save our intel clone
+		private _intelClone = T_GETV("intelClone");
+		if(!IS_NULL_OBJECT(_intelClone)) then {
+			CALLM1(_storage, "save", _intelClone);
+		};
+
+		// Save transitions
+		{
+			private _transition = _x;
+			CALLM1(_storage, "save", _transition);
+		} forEach T_GETV("transitions");
+
+		true
+	} ENDMETHOD;
+
+	// Save all varaibles
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Load intel clone
+		private _intelClone = T_GETV("intelClone");
+		if(!IS_NULL_OBJECT(_intelClone)) then {
+			CALLM1(_storage, "load", _intelClone);
+		};
+		
+		// Load transitions
+		{
+			private _transition = _x;
+			CALLM1(_storage, "load", _transition);
+		} forEach T_GETV("transitions");
+
+		true
+	} ENDMETHOD;
 	
 ENDCLASS;
 
@@ -568,78 +615,92 @@ ENDCLASS;
 // Test AST Variables
 
 ["AST_VAR", {
-	private _var = MAKE_AST_VAR(-1);
-	private _var2 = _var;
 
-	["AST_VAR is an array length 1", count _var == 1] call test_Assert;
-	["AST_VAR content correct", _var#0 == -1] call test_Assert;
-	["GET_AST_VAR", GET_AST_VAR(_var) == -1] call test_Assert;
-	SET_AST_VAR(_var, 1);
-	["SET_AST_VAR", GET_AST_VAR(_var) == 1] call test_Assert;
-	["AST_VAR share value works", GET_AST_VAR(_var2) == 1] call test_Assert;
+	CLASS("ActionASTVarTest", "CmdrAction")
+
+		METHOD("testVars") {
+			params [P_THISOBJECT];
+
+			private _var = T_CALLM1("createVariable", -1);
+			private _var2 = _var;
+
+			["GET_AST_VAR", GET_AST_VAR(_thisObject, _var) == -1] call test_Assert;
+			SET_AST_VAR(_thisObject, _var, 1);
+			["SET_AST_VAR", GET_AST_VAR(_thisObject, _var) == 1] call test_Assert;
+			["AST_VAR share value works", GET_AST_VAR(_thisObject, _var2) == 1] call test_Assert;
+		} ENDMETHOD;
+
+	ENDCLASS;
+
+	private _testObj = NEW("ActionASTVarTest", []);
+	CALLM0(_testObj, "testVars");
+
 }] call test_AddTest;
 
 #define CMDR_ACTION_STATE_KILLED CMDR_ACTION_STATE_CUSTOM+1
 #define CMDR_ACTION_STATE_FAILED CMDR_ACTION_STATE_CUSTOM+2
 
 // Dummy test classes
-CLASS("AST_KillGarrisonSetVar", "ActionStateTransition")
-	VARIABLE("garrisonId");
-	VARIABLE("var");
-	VARIABLE("newVal");
 
-	METHOD("new") {
-		params [P_THISOBJECT, P_NUMBER("_garrisonId"), P_AST_VAR("_var"), P_DYNAMIC("_newVal")];
-		T_SETV("garrisonId", _garrisonId);
-		T_SETV("var", _var);
-		T_SETV("newVal", _newVal);
-		T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
-	} ENDMETHOD;
+["CmdrAction Dummy test classes", {
+	CLASS("AST_KillGarrisonSetVar", "ActionStateTransition")
+		VARIABLE("garrisonId");
+		VARIABLE("var");
+		VARIABLE("newVal");
 
-	/* virtual */ METHOD("isAvailable") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		T_PRVAR(garrisonId);
-		private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
-		!(isNil "_garrison")
-	} ENDMETHOD;
+		METHOD("new") {
+			params [P_THISOBJECT, P_OOP_OBJECT("_action"), P_NUMBER("_garrisonId"), P_AST_VAR("_var"), P_DYNAMIC("_newVal")];
+			T_SETV("garrisonId", _garrisonId);
+			T_SETV("var", _var);
+			T_SETV("newVal", _newVal);
+			T_SETV("fromStates", [CMDR_ACTION_STATE_START]);
+		} ENDMETHOD;
 
-	/* virtual */ METHOD("apply") { 
-		params [P_THISOBJECT, P_STRING("_world")];
+		/* virtual */ METHOD("isAvailable") { 
+			params [P_THISOBJECT, P_STRING("_world")];
+			T_PRVAR(garrisonId);
+			private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
+			!(isNil "_garrison")
+		} ENDMETHOD;
 
-		// Kill the garrison - this should be preserved after applySim
-		T_PRVAR(garrisonId);
-		private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
-		CALLM(_garrison, "killed", []);
+		/* virtual */ METHOD("apply") { 
+			params [P_THISOBJECT, P_STRING("_world")];
 
-		// Apply the change to the AST var - this should be reverted after applySim
-		T_PRVAR(newVal);
-		T_SET_AST_VAR("var", _newVal);
+			// Kill the garrison - this should be preserved after applySim
+			T_PRVAR(garrisonId);
+			private _garrison = CALLM(_world, "getGarrison", [_garrisonId]);
+			CALLM(_garrison, "killed", []);
 
-		CMDR_ACTION_STATE_KILLED
-	} ENDMETHOD;
-ENDCLASS;
+			// Apply the change to the AST var - this should be reverted after applySim
+			T_PRVAR(newVal);
+			SET_AST_VAR(T_GETV("action"), T_GETV("var"), _newVal);
 
-CLASS("AST_TestVariable", "ActionStateTransition")
-	VARIABLE("var");
-	VARIABLE("compareVal");
+			CMDR_ACTION_STATE_KILLED
+		} ENDMETHOD;
+	ENDCLASS;
 
-	METHOD("new") {
-		params [P_THISOBJECT, P_AST_VAR("_var"), P_DYNAMIC("_compareVal")];
-		T_SETV("fromStates", [CMDR_ACTION_STATE_KILLED]);
-		T_SETV("var", _var);
-		T_SETV("compareVal", _compareVal);
-	} ENDMETHOD;
+	CLASS("AST_TestVariable", "ActionStateTransition")
+		VARIABLE("var");
+		VARIABLE("compareVal");
 
-	/* virtual */ METHOD("apply") { 
-		params [P_THISOBJECT, P_STRING("_world")];
-		T_PRVAR(compareVal);
-		if(T_GET_AST_VAR("var") isEqualTo _compareVal) then {
-			CMDR_ACTION_STATE_END
-		} else {
-			CMDR_ACTION_STATE_FAILED
-		}
-	} ENDMETHOD;
-ENDCLASS;
+		METHOD("new") {
+			params [P_THISOBJECT, P_OOP_OBJECT("_action"), P_AST_VAR("_var"), P_DYNAMIC("_compareVal")];
+			T_SETV("fromStates", [CMDR_ACTION_STATE_KILLED]);
+			T_SETV("var", _var);
+			T_SETV("compareVal", _compareVal);
+		} ENDMETHOD;
+
+		/* virtual */ METHOD("apply") { 
+			params [P_THISOBJECT, P_STRING("_world")];
+			T_PRVAR(compareVal);
+			if(GET_AST_VAR(T_GETV("action"), T_GETV("var")) isEqualTo _compareVal) then {
+				CMDR_ACTION_STATE_END
+			} else {
+				CMDR_ACTION_STATE_FAILED
+			}
+		} ENDMETHOD;
+	ENDCLASS;
+}] call test_AddTest;
 
 ["CmdrAction.new", {
 	private _obj = NEW("CmdrAction", []);
@@ -675,18 +736,28 @@ ENDCLASS;
 
 ["CmdrAction.createVariable, pushVariables, popVariables", {
 	private _thisObject = NEW("CmdrAction", []);
+
 	private _var = CALLM(_thisObject, "createVariable", [0]);
 	private _var2 = CALLM(_thisObject, "createVariable", [["test"]]);
-	["Var is of correct form", _var isEqualTo [0]] call test_Assert;
-	["Var2 is of correct form", _var2 isEqualTo [["test"]]] call test_Assert;
+
+	["Var is of correct form", _var isEqualTo 0] call test_Assert;
+	["Var2 is of correct form", _var2 isEqualTo 1] call test_Assert;
+
 	CALLM(_thisObject, "pushVariables", []);
-	SET_AST_VAR(_var, 1);
-	GET_AST_VAR(_var2) set [0, "check"];
-	["Var is changed before popVariables", _var isEqualTo [1]] call test_Assert;
-	["Var2 is changed before popVariables", _var2 isEqualTo [["check"]]] call test_Assert;
+
+	SET_AST_VAR(_thisObject, _var, 1);
+	SET_AST_VAR(_thisObject, _var2, 2);
+
+	["Var is changed before popVariables", GET_AST_VAR(_thisObject, _var) == 1] call test_Assert;
+	["Var2 is changed before popVariables", GET_AST_VAR(_thisObject, _var2) == 2] call test_Assert;
+
 	CALLM(_thisObject, "popVariables", []);
-	["Var is restored after popVariables", _var isEqualTo [0]] call test_Assert;
-	["Var2 is restored after popVariables", _var2 isEqualTo [["test"]]] call test_Assert;
+
+	//diag_log format [" Get var 0 after pop: %1", GET_AST_VAR(_thisObject, _var)];
+	//diag_log format [" Get var 1 after pop: %1", GET_AST_VAR(_thisObject, _var2)];
+
+	["Var is restored after popVariables", GET_AST_VAR(_thisObject, _var) isEqualTo 0] call test_Assert;
+	["Var2 is restored after popVariables", GET_AST_VAR(_thisObject, _var2) isEqualTo ["test"] ] call test_Assert;
 }] call test_AddTest;
 
 ["CmdrAction.getFinalScore", {
@@ -696,17 +767,20 @@ ENDCLASS;
 
 ["CmdrAction.applyToSim", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+	private _action = NEW("CmdrAction", []);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _thisObject = NEW("CmdrAction", []);
 	private _testVar = CALLM(_thisObject, "createVariable", ["original"]);
 	private _asts = [
-		NEW("AST_KillGarrisonSetVar", 
+		NEW("AST_KillGarrisonSetVar",
+			[_action] +
 			[GETV(_garrison, "id")]+
-			[_testVar]+
+			[_testVar] +
 			["modified"]
 		),
 		NEW("AST_TestVariable", 
-			[_testVar]+
+			[_action] +
+			[_testVar] +
 			["modified"]
 		)
 	];
@@ -718,7 +792,7 @@ ENDCLASS;
 	private _finalState = CALLM(_thisObject, "applyToSim", [_world]);
 	["applyToSim applied state to sim correctly", CALLM(_garrison, "isDead", [])] call test_Assert;
 	["applyToSim modified variables internally correctly", _finalState == CMDR_ACTION_STATE_END] call test_Assert;
-	["applyToSim reverted action variables correctly", GET_AST_VAR(_testVar) isEqualTo "original"] call test_Assert;
+	["applyToSim reverted action variables correctly", GET_AST_VAR(_thisObject, _testVar) isEqualTo "original"] call test_Assert;
 }] call test_AddTest;
 
 #endif

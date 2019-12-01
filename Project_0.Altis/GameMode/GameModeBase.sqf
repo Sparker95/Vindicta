@@ -1,20 +1,60 @@
 #include "common.hpp"
 
+// Default resolution of our timer service
+#define TIMER_SERVICE_RESOLUTION 0.45
+
+// Debug flag, will limit generation or locations to a small area
+#ifndef RELEASE_BUILD
+//#define __SMALL_MAP
+#endif
+
+
+#define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
+
 // Base class for Game Modes. A Game Mode is a set of customizations to 
 // scenario initialization and ongoing gameplay mechanics.
 CLASS("GameModeBase", "MessageReceiverEx")
-	VARIABLE("name");
+
+	VARIABLE_ATTR("name", [ATTR_SAVE]);
 	// If we want to spawn in enemy reinforcements automatically at bases
-	VARIABLE("spawningEnabled");
+	VARIABLE_ATTR("spawningEnabled", [ATTR_SAVE]);
 	// How often we should spawn in reinforcements for the enemy
-	VARIABLE("spawningInterval");
+	VARIABLE_ATTR("spawningInterval", [ATTR_SAVE]);
 	// When we last spawned in reinforcements for the enemy
 	VARIABLE("lastSpawn");
 
+	// Message loops
+	// Must keep references to them to help with saving
+	VARIABLE_ATTR("messageLoopMain", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopGroupAI", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopGameMode", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopCommanderInd", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopCommanderWest", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopCommanderEast", [ATTR_SAVE]);
+
+	// Commanders AI objects
+	VARIABLE_ATTR("AICommanderInd", [ATTR_SAVE]);
+	VARIABLE_ATTR("AICommanderWest", [ATTR_SAVE]);
+	VARIABLE_ATTR("AICommanderEast", [ATTR_SAVE]);
+
+	// Locations
+	VARIABLE_ATTR("locations", [ATTR_SAVE]);
+
+	// Template names
+	VARIABLE_ATTR("tNameMilWest", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNameMilInd", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNameMilEast", [ATTR_SAVE]);
+	VARIABLE_ATTR("tNamePolice", [ATTR_SAVE]);
+
+	// Other values
+	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
+
 	METHOD("new") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
+								P_NUMBER("_enemyForcePercent")];
 		T_SETV("name", "unnamed");
 		T_SETV("spawningEnabled", false);
+
 		#ifdef RELEASE_BUILD
 		T_SETV("spawningInterval", 3600);
 		#else
@@ -22,6 +62,34 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("spawningInterval", 120);
 		#endif
 		T_SETV("lastSpawn", TIME_NOW);
+
+		T_SETV("messageLoopMain", NULL_OBJECT);
+		T_SETV("messageLoopGroupAI", NULL_OBJECT);
+		T_SETV("messageLoopGameMode", NULL_OBJECT);
+		T_SETV("messageLoopCommanderInd", NULL_OBJECT);
+		T_SETV("messageLoopCommanderWest", NULL_OBJECT);
+		T_SETV("messageLoopCommanderEast", NULL_OBJECT);
+		T_SETV("AICommanderInd", NULL_OBJECT);
+		T_SETV("AICommanderWest", NULL_OBJECT);
+		T_SETV("AICommanderEast", NULL_OBJECT);
+
+		// Default template names
+		T_SETV("tNameMilWest", "tNATO");
+		T_SETV("tNameMilInd", "tAAF");
+		T_SETV("tNameMilEast", "tCSAT");
+		T_SETV("tNamePolice", "tPOLICE");
+
+		// Apply values from arguments
+		T_SETV("enemyForceMultiplier", 1);
+		if (_tNameEnemy != "") then {
+			T_SETV("tNameMilInd", _tNameEnemy);
+		};
+		if (_tNamePolice != "tNamePolice") then {
+			T_SETV("tNamePolice", _tNamePolice);
+		};
+		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
+
+		T_SETV("locations", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -32,32 +100,27 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Called in init.sqf. Do NOT override this, implement the various specialized virtual functions
 	// below it instead.
 	METHOD("init") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_ARRAY("_extraParams")];
 
 		PROFILE_SCOPE_START(GameModeInit);
 
 		// Global flags
 		gFlagAllCommanders = true; //false;
 		// Main timer service
-		gTimerServiceMain = NEW("TimerService", [0.45]); // timer resolution
+		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
+
+		// Create and init message loops
+		T_CALLM0("_createMessageLoops");	// Creates message loops
+		T_CALLM0("_setupMessageLoops");		// Sets their properties
 
 		T_CALLM("preInitAll", []);
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
-			// Main message loop for garrisons
-			gMessageLoopMain = NEW("MessageLoop", ["Main thread" ARG 16]);
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
-			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
-
 			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
 			gDebugPrinter = NEW("DebugPrinter", _args);
-
-			// Message loop for group AI
-			gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
-			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
 
 			// Location unit array provider
 			gLUAP = NEW("LocationUnitArrayProvider", []);
@@ -80,6 +143,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
 			PUBLIC_VARIABLE "gGarrisonServer";
 
+			T_CALLM0("_createSpecialGarrisons");
 			T_CALLM("initCommanders", []);
 			#ifndef _SQF_VM
 			T_CALLM("initLocations", []);
@@ -94,18 +158,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Call our first process event immediately, to help things "settle" before we show them to the player.
 			T_CALLM("process", []);
 
-			// Add message loop for game mode
-			gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
-			// Add processing for the game mode on the server once we initialized everything else
-			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
-			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
+			// Init dynamic simulation
+			T_CALLM0("initDynamicSimulation");
 
-			// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
-			// Probably it's because we currently have this executed inside isNil {} block
-			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
-
-			// Initialize player database
-			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
 			// todo load it from profile namespace or whatever
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
@@ -153,26 +208,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
-			0 spawn {
-				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
-				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
-			};
 
 			#ifndef RELEASE_BUILD
 			[] call pr0_fnc_initDebugMenu;
 			#endif
 
-			// Message loop for client side checks: undercover, location visibility, etc
-			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
-
-			// Create PlayerDatabaseClient
-			gPlayerDatabaseClient = NEW("PlayerDatabaseClient", []);
-
 			// Hide the allowed area markers
-			#ifdef RELEASE_BUILD
-			private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
-			{_x setMarkerAlpha 0;} forEach _allowedAreas;
-			#endif
+			//#ifdef RELEASE_BUILD
+			CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
+			//#endif
 
 			T_CALLM("initClientOnly", []);
 		};
@@ -205,12 +249,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Create initial garrisons
 		{
+			OOP_INFO_2("Populating location: %1, type: %2", _x, CALLM0(_x, "getType"));
+
 			private _loc = _x;
 			private _side = T_CALLM("getLocationOwner", [_loc]);
 			CALLM(_loc, "setSide", [_side]);
 			OOP_DEBUG_MSG("init loc %1 to side %2", [_loc ARG _side]);
 
-			private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+			private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 			if(!IS_NULL_OBJECT(_cmdr)) then {
 				CALLM(_cmdr, "registerLocation", [_loc]);
 
@@ -219,7 +265,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_DEBUG_MSG("Creating garrison %1 for location %2 (%3)", [_gar ARG _loc ARG _side]);
 
 					CALLM1(_gar, "setLocation", _loc);
-					CALLM1(_loc, "registerGarrison", _gar);
+					// CALLM1(_loc, "registerGarrison", _gar); // I think it's not needed? setLocation should register it as well
 					CALLM0(_gar, "activate");
 				};
 			};
@@ -229,35 +275,124 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Create vehicles in civilian area for player to steal
 			if(_type == LOCATION_TYPE_CITY) then {
-				private _args = [CIVILIAN, [], "civilian", "tCIVILIAN"];
-				private _gar = NEW("Garrison", _args);
-				private _maxCars = 3 max (25 min (0.03 * _radius));
-				for "_i" from 0 to _maxCars do {
-					private _newUnit = NEW("Unit", [tCIVILIAN ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
-					CALLM(_gar, "addUnit", [_newUnit]);
-				};
-				CALLM1(_gar, "setLocation", _loc);
-				CALLM1(_loc, "registerGarrison", _gar);
+				T_CALLM1("populateCity", _loc);
 				// CALLM0(_gar, "activate");
 			};
 
 			// Send intel to commanders
+			private _playerSide = T_CALLM0("getPlayerSide");
 			{
-				private _sideCommander = GETV(_x, "side");
-				if (_sideCommander != WEST) then { // Enemies are smart
-					if (CALLM0(_loc, "isBuilt")) then {
-						//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
-						private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
-						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
-					};
-				} else {
-					// If it's player side, let it only know about cities
-					if (_type == LOCATION_TYPE_CITY) then {
-						CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+				if (!IS_NULL_OBJECT(_x)) then {
+					private _sideCommander = GETV(_x, "side");
+					if (_sideCommander != _playerSide) then { // Enemies are smart
+						if (CALLM0(_loc, "isBuilt")) then {
+							// This part determines commander's knowledge about enemy locations at game init
+							// Only relevant for One AI vs Another AI Commander game mode I think
+							//private _updateLevel = [CLD_UPDATE_LEVEL_TYPE, CLD_UPDATE_LEVEL_UNITS] select (_sideCommander == _side);
+							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+							private _updateLevel = CLD_UPDATE_LEVEL_UNITS;
+							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG _updateLevel ARG sideUnknown ARG false]);
+						};
+					} else {
+						// If it's player side, let it only know about cities
+						if (_type == LOCATION_TYPE_CITY) then {
+							OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+							CALLM2(_x, "postMethodAsync", "updateLocationData", [_loc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+						};
 					};
 				};
-			} forEach gCommanders;
+			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
 		} forEach GET_STATIC_VAR("Location", "all");
+	} ENDMETHOD;
+
+	// Creates a civilian garrison at a city location
+	METHOD("populateCity") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+
+		private _templateName = T_CALLM2("getTemplateName", CIVILIAN, "");
+		private _template = [_templateName] call t_fnc_getTemplate;
+		private _args = [CIVILIAN, [], "civilian", _templateName];
+		private _gar = NEW("Garrison", _args);
+		private _radius = GETV(_loc, "boundingRadius");
+		private _maxCars = 3 max (25 min (0.03 * _radius));
+		for "_i" from 0 to _maxCars do {
+			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
+			CALLM(_gar, "addUnit", [_newUnit]);
+		};
+		CALLM1(_gar, "setLocation", _loc);
+		CALLM1(_loc, "registerGarrison", _gar);
+		CALLM1(_gar, "enableAutoSpawn", true);
+	} ENDMETHOD;
+
+	// Creates message loops
+	METHOD("_createMessageLoops") {
+		params [P_THISOBJECT];
+
+		if(IS_SERVER || IS_HEADLESSCLIENT) then {
+			// Main message loop for garrisons
+			if (isNil "gMessageLoopMain") then {
+				gMessageLoopMain = NEW("MessageLoop", ["Main thread"]);
+				T_SETV("messageLoopMain", gMessageLoopMain);
+			};
+
+			// Message loop for group AI
+			if (isNil "gMessageLoopGroupAI") then {
+				gMessageLoopGroupAI = NEW("MessageLoop", ["Group AI thread"]);
+				T_SETV("messageLoopGroupAI", gMessageLoopGroupAI);
+			};
+		};
+
+		if(IS_SERVER) then {
+			if (isNil "gMessageLoopGameMode") then {
+				gMessageLoopGameMode = NEW("MessageLoop", ["Game mode thread"]);
+				T_SETV("messageLoopGameMode", gMessageLoopGameMode);
+			};
+
+			if (isNil "gMessageLoopCommanderInd") then {
+				gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
+				T_SETV("messageLoopCommanderInd", gMessageLoopCommanderInd);
+			};
+
+			if (isNil "gMessageLoopCommanderWest") then {
+				gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
+				T_SETV("messageLoopCommanderWest", gMessageLoopCommanderWest);
+			};
+
+			if (isNil "gMessageLoopCommanderEast") then {
+				gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
+				T_SETV("messageLoopCommanderEast", gMessageLoopCommanderEast);
+			};
+		};
+
+		if(HAS_INTERFACE) then {
+			// Message loop for client side checks: undercover, location visibility, etc
+			if (isNil "gMsgLoopPlayerChecks") then {
+				gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+			};
+		};
+
+
+	} ENDMETHOD;
+
+	// Initializes properties of message loops, which should be created by now
+	METHOD("_setupMessageLoops") {
+		params [P_THISOBJECT];
+
+		if (!IS_NULL_OBJECT(T_GETV("messageLoopMain"))) then {
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonSpawned"		ARG 20 ARG 3  ARG 15]); // Tag, priority, min interval, max interval
+			CALLM(gMessageLoopMain, "addProcessCategory", ["AIGarrisonDespawned"	ARG 10 ARG 10 ARG 30]);
+			CALLM1(gMessageLoopMain, "setMaxMessagesInSeries", MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES);
+		};
+
+		if (!IS_NULL_OBJECT(T_GETV("messageLoopGroupAI"))) then {
+			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
+		};
+
+		if(!IS_NULL_OBJECT(T_GETV("messageLoopGameMode"))) then {
+			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
+			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
+		};
+
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -310,14 +445,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_SIDE("_side"), P_STRING("_faction")];
 
 		switch(_faction) do {
-			case "police": { "tPOLICE" };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			case "police":				{ T_GETV("tNamePolice") };  //{ "tRHS_AAF2017_police" }; // { "tPOLICE" };
+			
 			default { // "military"
 				switch(_side) do {
-					case WEST: { "tNATO" };
-					case EAST: { "tCSAT" };
-					case INDEPENDENT: { "tAAF" }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
-					case CIVILIAN: { "tCIVILIAN" };
-					default { "tDEFAULT" };
+					case WEST:			{ T_GETV("tNameMilWest") };
+					case EAST:			{ T_GETV("tNameMilEast") };
+					case INDEPENDENT:	{ T_GETV("tNameMilInd") }; //{"tRHS_AAF2017_elite"}; // { "tAAF" };
+					case CIVILIAN:		{ "tCIVILIAN" };
+					default				{ "tDEFAULT" };
 				}
 			};
 		};
@@ -332,19 +468,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		switch (_type) do {
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
-				private _cInf = (CALLM0(_loc, "getCapacityInf") min 45) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
+				private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
+				T_CALLM("createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
-				private _cInf = (CALLM0(_loc, "getCapacityInf") min 16) max 6;
+				private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+				T_CALLM("createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
 			};
 			default { NULL_OBJECT };
 		};
@@ -400,6 +536,31 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* private */ METHOD("initCommanders") {
 		params [P_THISOBJECT];
 
+		// Independent
+		gCommanderInd = NEW("Commander", []); // all commanders are equal
+		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
+		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
+		T_SETV("AICommanderInd", gAICommanderInd);
+		PUBLIC_VARIABLE "gAICommanderInd";
+
+		// West
+		gCommanderWest = NEW("Commander", []);
+		private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
+		gAICommanderWest = NEW_PUBLIC("AICommander", _args);
+		T_SETV("AICommanderWest", gAICommanderWest);
+		PUBLIC_VARIABLE "gAICommanderWest";
+
+		// East
+		gCommanderEast = NEW("Commander", []);
+		private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
+		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
+		T_SETV("AICommanderEast", gAICommanderEast);
+		PUBLIC_VARIABLE "gAICommanderEast";
+	} ENDMETHOD;
+
+	METHOD("_createSpecialGarrisons") {
+		params [P_THISOBJECT];
+
 		// Garrison objects to track players and player owned vehicles
 		gGarrisonPlayersWest = NEW("Garrison", [WEST]);
 		gGarrisonPlayersEast = NEW("Garrison", [EAST]);
@@ -412,50 +573,17 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
-
-		// Message loops for commander AI
-		gMessageLoopCommanderInd = NEW("MessageLoop", ["IND Commander Thread"]);
-
-		// Commander AIs
-		gCommanders = [];
-
-		// Independent
-		gCommanderInd = NEW("Commander", []); // all commanders are equal
-		private _args = [gCommanderInd, INDEPENDENT, gMessageLoopCommanderInd];
-		gAICommanderInd = NEW_PUBLIC("AICommander", _args);
-		PUBLIC_VARIABLE "gAICommanderInd";
-		gCommanders pushBack gAICommanderInd;
-
-		if(gFlagAllCommanders) then { // but some are more equal
-			gMessageLoopCommanderWest = NEW("MessageLoop", ["WEST Commander Thread"]);
-			gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
-
-			// West
-			gCommanderWest = NEW("Commander", []);
-			private _args = [gCommanderWest, WEST, gMessageLoopCommanderWest];
-			gAICommanderWest = NEW_PUBLIC("AICommander", _args);
-			PUBLIC_VARIABLE "gAICommanderWest";
-			gCommanders pushBack gAICommanderWest;
-
-			// East
-			gCommanderEast = NEW("Commander", []);
-			private _args = [gCommanderEast, EAST, gMessageLoopCommanderEast];
-			gAICommanderEast = NEW_PUBLIC("AICommander", _args);
-			PUBLIC_VARIABLE "gAICommanderEast";
-			gCommanders pushBack gAICommanderEast;
-		};
 	} ENDMETHOD;
 
 	METHOD("startCommanders") {
-		params [P_THISOBJECT];
-		0 spawn {
+		_this spawn {
+			params [P_THISOBJECT];
 			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
-			sleep 40;
+			sleep 10;
 			{
 				// We postMethodAsync them, because we don't want to start processing right after mission start
-				CALLM2(_x, "postMethodAsync", "setProcessInterval", [10]);
-				CALLM2(_x, "postMethodAsync", "start", []);
-			} forEach gCommanders;
+				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
 		};
 	} ENDMETHOD;
 
@@ -511,6 +639,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
+
+			#ifdef __SMALL_MAP
+			_locSectorPos params ["_posX", "_posY"];
+			if (_posX > 20000 && _posY > 16000) then {
+			#endif
+
 			private _locSectorDir = getDir _locSector;
 			private _locName = _locSector getVariable ["Name", ""];
 			private _locType = _locSector getVariable ["Type", ""];
@@ -615,6 +749,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					_locationsForRoadblocks pushBack [_locSectorPos, _side];
 				};
 			};
+
+			#ifdef __SMALL_MAP
+			};
+			#endif
 		} forEach (entities "Project_0_LocationSector");
 
 		/*
@@ -647,12 +785,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_ARMED_MRAPS
 	#define ADD_ARMOR
 	#define ADD_STATICS
-	STATIC_METHOD("createGarrison") {
+	METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-		
+
 		if (_faction == "police") exitWith {
 			
-			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");;
+			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");
 			private _template = [_templateName] call t_fnc_getTemplate;
 
 			private _args = [_side, [], _faction, _templateName]; // [P_THISOBJECT, P_SIDE("_side"), P_ARRAY("_pos"), P_STRING("_faction"), P_STRING("_templateName")];
@@ -886,7 +1024,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		_gar
 	} ENDMETHOD;
 
-
 	// Create SideStats
 	/* private */ METHOD("initSideStats") {
 		params [P_THISOBJECT];
@@ -903,30 +1040,30 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		call compile preprocessFileLineNumbers "Init\initMissionEH.sqf";
 	} ENDMETHOD;
 
-	/* private */ METHOD("fn") {
-		params [P_THISOBJECT];
-
-	} ENDMETHOD;
-
 	// Initialize dynamic simulation
 	METHOD("initDynamicSimulation") {
 		#ifndef _SQF_VM
 		params [P_THISOBJECT];
 
-		// Enables or disables the whole Arma_3_Dynamic_Simulation system
-		enableDynamicSimulationSystem true;
+		// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
+		// Probably it's because we currently have this executed inside isNil {} block
 
-		// Infantry units.
-		"Group" setDynamicSimulationDistance 40000; // We don't dynamicly disable units with this thing
-		// Vehicles with crew.
-		"Vehicle" setDynamicSimulationDistance 40000; // We don't want to dynamicly disable vehicles with crew
-		//  All vehicles without crew.
-		"EmptyVehicle" setDynamicSimulationDistance 1500;
-		// Static objects. Anything from a small tin can to a building.
-		"Prop" setDynamicSimulationDistance 50;
+		0 spawn {
+			// Enables or disables the whole Arma_3_Dynamic_Simulation system
+			enableDynamicSimulationSystem true;
 
-		// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
-		"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
+			// Infantry units.
+			"Group" setDynamicSimulationDistance 40000; // We don't dynamicly disable units with this thing
+			// Vehicles with crew.
+			"Vehicle" setDynamicSimulationDistance 40000; // We don't want to dynamicly disable vehicles with crew
+			//  All vehicles without crew.
+			"EmptyVehicle" setDynamicSimulationDistance 1500;
+			// Static objects. Anything from a small tin can to a building.
+			"Prop" setDynamicSimulationDistance 50;
+
+			// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
+			"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
+		};
 		#endif
 	} ENDMETHOD;
 
@@ -984,8 +1121,248 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach (GET_STATIC_VAR("Location", "all") select { GETV(_x, "type") in [LOCATION_TYPE_BASE] });
 	} ENDMETHOD;
 
+	// Registers location here
+	// All locations must be registered at game mode so that it can save/load them
+	METHOD("registerLocation") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
+		T_GETV("locations") pushBackUnique _loc;
+	} ENDMETHOD;
+
 	METHOD("getMessageLoop") {
 		gMessageLoopGameMode;
+	} ENDMETHOD;
+
+
+
+
+	// STORAGE
+
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" SAVING GAME MODE: %1", _thisObject];
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
+
+		// Start loading screen??
+
+		// Disable all timers??
+
+		// Save static variables of classes
+		CALLSM1("Garrison", "saveStaticVariables", _storage);
+		CALLSM1("Location", "saveStaticVariables", _storage);
+		CALLSM1("Unit", "saveStaticVariables", _storage);
+		CALLSM1("MessageReceiver", "saveStaticVariables", _storage);
+
+		// Lock all message loops in specific order
+		private _msgLoops = [
+								"messageLoopGameMode",
+								"messageLoopCommanderEast",
+								"messageLoopCommanderWest",
+								"messageLoopCommanderInd",
+								"messageLoopMain",
+								"messageLoopGroupAI"
+							];
+		{
+			private _msgLoop = T_GETV(_x);
+			diag_log format ["Locking message loop: %1", _x];
+			CALLM0(_msgLoop, "lock");
+		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
+
+		// Start loading screen
+		startLoadingScreen ["Saving mission"];
+
+		// Save message loops
+		{
+			private _msgLoop = T_GETV(_x);
+			diag_log format ["Saving message loop: %1", _x];
+			CALLM1(_storage, "save", _msgLoop);
+		} forEach _msgLoops;
+
+		// Save commanders
+		// They will also save their garrisons
+		{
+			private _ai = T_GETV(_x);
+			diag_log format ["Saving Commander AI: %1", _x];
+			CALLM1(_storage, "save", _ai);
+		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+
+		// Save locations
+		{
+			private _loc = _x;
+			diag_log format ["Saving location: %1", _loc];
+			CALLM1(_storage, "save", _loc);
+		} forEach T_GETV("locations");
+
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
+
+		private _msgLoops = [
+								"messageLoopGameMode",
+								"messageLoopCommanderEast",
+								"messageLoopCommanderWest",
+								"messageLoopCommanderInd",
+								"messageLoopMain",
+								"messageLoopGroupAI"
+							];
+
+		// Unlock all message loops
+		{
+			private _msgLoop = T_GETV(_x);
+			diag_log format ["Unlocking message loop: %1", _x];
+			CALLM0(_msgLoop, "unlock");
+		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]);
+
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" FINISHED SAVING GAME MODE: %1", _thisObject];
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
+
+		// End loading screen
+		endLoadingScreen;
+
+		true
+	} ENDMETHOD;
+
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		if(!isServer) exitWith { // What the fuck?
+			OOP_ERROR_0("Game mode must be loaded on server only!");
+		};
+
+		// Delete editor's special objects
+		CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
+		CALLSM0("Location", "deleteEditorObjects");
+
+		// Start loading screen
+		startLoadingScreen ["Loading the mission"];
+
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" LOADING GAME MODE: %1", _thisObject];
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Create timer service
+		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution
+
+		// Restore static variables of classes
+		CALLSM1("Garrison", "loadStaticVariables", _storage);
+		CALLSM1("Location", "loadStaticVariables", _storage);
+		CALLSM1("Unit", "loadStaticVariables", _storage);
+		CALLSM1("MessageReceiver", "loadStaticVariables", _storage);
+
+		// Restore some variables
+		T_SETV("lastSpawn", TIME_NOW);
+
+		private _msgLoops = [
+						"messageLoopGameMode",
+						"messageLoopCommanderEast",
+						"messageLoopCommanderWest",
+						"messageLoopCommanderInd",
+						"messageLoopMain",
+						"messageLoopGroupAI"
+					];
+
+		// Load message loops
+		{
+			private _msgLoop = T_GETV(_x);
+			diag_log format ["Loading message loop: %1", _x];
+			CALLM1(_storage, "load", _msgLoop);
+			CALLM0(_msgLoop, "lock"); // We lock the message loops during the game load process
+		} forEach	_msgLoops;
+
+		// Set global variables
+		gMessageLoopMain = T_GETV("messageLoopMain");
+		gMessageLoopGroupAI = T_GETV("messageLoopGroupAI");
+		gMessageLoopGameMode = T_GETV("messageLoopGameMode");
+		gMessageLoopCommanderInd = T_GETV("messageLoopCommanderInd");
+		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");
+		gMessageLoopCommanderEast = T_GETV("messageLoopCommanderWest");
+
+		// Create message loops we have not created yet
+		// It will not create message loops which we have loaded before
+		T_CALLM0("_createMessageLoops");
+
+		// Finish message loop setup
+		T_CALLM0("_setupMessageLoops");
+
+		// Create other global objects
+
+		// Garrison stimulus manager
+		gStimulusManagerGarrison = NEW_PUBLIC("StimulusManager", [gMessageLoopMain]); // Can postMethodAsync stimulus to it to annoy garrisons
+		PUBLIC_VARIABLE "gStimulusManagerGarrison";
+
+		// Garbage Collector
+		gGarbageCollector = NEW("GarbageCollector", []);
+
+		// Personal Inventory
+		gPersonalInventory = NEW("PersonalInventory", []);
+
+		// Create the garrison server
+		gGarrisonServer = NEW_PUBLIC("GarrisonServer", []);
+		PUBLIC_VARIABLE "gGarrisonServer";
+
+		// Location unit array provider
+		gLUAP = NEW("LocationUnitArrayProvider", []);
+
+		// Main message loop manager
+		gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+		// Special garrisons
+		T_CALLM0("_createSpecialGarrisons");
+
+		// Load locations
+		{
+			private _loc = _x;
+			diag_log format ["Loading location: %1", _loc];
+			CALLM1(_storage, "load", _loc);
+		} forEach T_GETV("locations");
+
+		// Load commanders
+		{
+			private _ai = T_GETV(_x);
+			diag_log format ["Loading Commander AI: %1", _x];
+			CALLM1(_storage, "load", _ai);
+		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+
+		// Set global variables
+		gAICommanderInd = T_GETV("AICommanderInd");
+		PUBLIC_VARIABLE("gAICommanderInd");
+		gAICommanderWest = T_GETV("AICommanderWest");
+		PUBLIC_VARIABLE("gAICommanderWest");
+		gAICommanderEast = T_GETV("AICommanderEast");
+		PUBLIC_VARIABLE("gAICommanderEast");
+
+		// Unlock all message loops
+		{
+			private _msgLoop = T_GETV(_x);
+			diag_log format ["Unlocking message loop: %1", _x];
+			CALLM0(_msgLoop, "unlock");
+		} forEach _msgLoops;
+
+		// Start commanders
+		T_CALLM0("startCommanders");
+
+		// Init dynamic simulation
+		T_CALLM0("initDynamicSimulation");
+
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
+		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];
+		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];
+
+		// End loading screen
+		endLoadingScreen;
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

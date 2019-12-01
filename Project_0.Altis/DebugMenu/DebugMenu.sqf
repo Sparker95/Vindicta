@@ -125,7 +125,7 @@ pr0_fnc_toggleMarkers = {
 ["Add", "Add friendly inf to this location", {
 	private _loc = CALLSM1("Location", "getLocationAtPos", getpos player);
 	if (!IS_NULL_OBJECT(_loc)) then {
-		private _AI = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+		private _AI = CALLSM1("AICommander", "getAICommander", playerSide);
 		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc]);
 	};
 }] call pr0_fnc_addDebugMenuItem;

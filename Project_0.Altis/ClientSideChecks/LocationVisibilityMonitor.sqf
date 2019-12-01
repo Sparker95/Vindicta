@@ -47,7 +47,7 @@ CLASS("LocationVisibilityMonitor", "MessageReceiver") ;
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
 
-		pr _AICommander = CALLSM1("AICommander", "getCommanderAIOfSide", side group _unit);
+		pr _AICommander = CALLSM1("AICommander", "getAICommander", side group _unit);
 		T_SETV("AICommander", _AICommander);
 	} ENDMETHOD;
 

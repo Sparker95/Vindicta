@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_ArrayPopFront
@@ -29,6 +29,7 @@ CLASS("AST_ArrayPopFront", "ActionStateTransition")
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
+			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
 			P_AST_STATE("_notEmptyState"),
 			P_AST_STATE("_emptyBeforeState"),
@@ -70,7 +71,9 @@ ENDCLASS;
 #ifdef _SQF_VM
 
 ["AST_ArrayPopFront.new", {
-	private _ast = NEW("AST_ArrayPopFront", [[0] ARG 1 ARG 2 ARG 3 ARG MAKE_AST_VAR([])]);
+	private _action = NEW("CmdrAction", []);
+	private _args = [_action ARG [0] ARG 1 ARG 2 ARG 3 ARG CALLM1(_action, "createVariable", [])];
+	private _ast = NEW("AST_ArrayPopFront", _args);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_ast);
 	["Object exists", !(isNil "_class")] call test_Assert;
@@ -78,25 +81,26 @@ ENDCLASS;
 
 ["AST_ArrayPopFront.apply", {
 	private _array = [0, 1];
-	private _arrayVar = MAKE_AST_VAR(_array);
-	private _resultVar = MAKE_AST_VAR(-1);
-	private _ast = NEW("AST_ArrayPopFront", [[0] ARG 1 ARG 2 ARG 3 ARG _arrayVar ARG _resultVar]);
+	private _action = NEW("CmdrAction", []);
+	private _arrayVar = CALLM1(_action, "createVariable", _array);
+	private _resultVar = CALLM1(_action, "createVariable", -1);
+	private _ast = NEW("AST_ArrayPopFront", [_action ARG [0] ARG 1 ARG 2 ARG 3 ARG _arrayVar ARG _resultVar]);
 	private _world = NEW("WorldModel", [WORLD_TYPE_REAL]);
 	private _notEmptyState = CALLM(_ast, "apply", [_world]);
 	["Not empty state", _notEmptyState == 1] call test_Assert;
-	private _array = GET_AST_VAR(_arrayVar);
+	private _array = GET_AST_VAR(_action, _arrayVar);
 	["Not empty state array", _array isEqualTo [1]] call test_Assert;
-	["Not empty state result", GET_AST_VAR(_resultVar) isEqualTo 0] call test_Assert;
+	["Not empty state result", GET_AST_VAR(_action, _resultVar) isEqualTo 0] call test_Assert;
 	private _emptyAfterState = CALLM(_ast, "apply", [_world]);
 	["Empty after state", _emptyAfterState == 3] call test_Assert;
-	private _array = GET_AST_VAR(_arrayVar);
+	private _array = GET_AST_VAR(_action, _arrayVar);
 	["Empty after state array", _array isEqualTo []] call test_Assert;
-	["Empty after state result", GET_AST_VAR(_resultVar) isEqualTo 1] call test_Assert;
+	["Empty after state result", GET_AST_VAR(_action, _resultVar) isEqualTo 1] call test_Assert;
 	private _emptyBeforeState = CALLM(_ast, "apply", [_world]);
 	["Empty before state", _emptyBeforeState == 2] call test_Assert;
-	private _array = GET_AST_VAR(_arrayVar);
+	private _array = GET_AST_VAR(_action, _arrayVar);
 	["Empty before state array", _array isEqualTo []] call test_Assert;
-	["Empty before state result", GET_AST_VAR(_resultVar) isEqualTo 1] call test_Assert;
+	["Empty before state result", GET_AST_VAR(_action, _resultVar) isEqualTo 1] call test_Assert;
 }] call test_AddTest;
 
 #endif

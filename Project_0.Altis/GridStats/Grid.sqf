@@ -16,7 +16,7 @@ Authors: Sparker(initial author), Sen(code porting)
 
 #define pr private
 
-CLASS("Grid", "");
+CLASS("Grid", "Storable");
 	
 	// EH ID of mission event handler
 	STATIC_VARIABLE("mapSingleClickEH");
@@ -824,6 +824,20 @@ CLASS("Grid", "");
 		_thisObject
 	} ENDMETHOD;
 	
+	// - - - - - STORAGE - - - - - -
+
+	// This is perfectly storable, we just serialize everything
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
 
 

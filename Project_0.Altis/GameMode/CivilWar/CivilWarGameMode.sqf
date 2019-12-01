@@ -27,13 +27,13 @@ reactions of the enemy.
 */
 CLASS("CivilWarGameMode", "GameModeBase")
 	// Gameplay phase: progresses forward from 1 to 5 only
-	VARIABLE("phase");
+	VARIABLE_ATTR("phase", [ATTR_SAVE]);
 	// So we can get delta T in the update function
-	VARIABLE("lastUpdateTime");
+	VARIABLE_ATTR("lastUpdateTime", [ATTR_SAVE]);
 	// Player spawn points we calculate for each city spawn point
-	VARIABLE("spawnPoints");
+	VARIABLE_ATTR("spawnPoints", [ATTR_SAVE]);
 	// All "active" cities. These are ones that have police stations, and where missions will be generated.
-	VARIABLE("activeCities");
+	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -56,7 +56,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		switch (_type) do {
 			case LOCATION_TYPE_CITY : {
 				private _cityData = NEW_PUBLIC("CivilWarCityData", [_loc]); // City data is public!
-				SET_VAR_PUBLIC(_x, "gameModeData", _cityData);
+				SETV(_loc, "gameModeData", _cityData);
 			};
 			case LOCATION_TYPE_POLICE_STATION : {
 				private _data = NEW("CivilWarPoliceStationData", [_loc]);
@@ -68,6 +68,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				SETV(_loc, "gameModeData", _data);
 			};
 		};
+		
+		PUBLIC_VAR(_loc, "gameModeData");
 
 		// Update respawn rules
 		if (_type != LOCATION_TYPE_CITY) then { // Cities will search for other nearby locations which will slow down everything probably, let's not use that
@@ -99,7 +101,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			} else {
 				CIVILIAN
 			};
-		}
+		};
 	} ENDMETHOD;
 
 	/* protected virtual */ /* METHOD("preInitAll") {
@@ -190,7 +192,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Call to server to get the info
 			[[getPos player, clientOwner], {
 				params ["_playerPos", "_clientOwner"];
-				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
+				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 				private _activity = CALLM(_enemyCmdr, "getActivity", [_playerPos ARG 500]);
 				// Callback to client with the result
 				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];				
@@ -423,6 +425,18 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		_sum
 	} ENDMETHOD;
+
+
+	// STORAGE
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("GameModeBase", _thisObject, "postDeserialize", [_storage]);
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
 
 /*
@@ -431,13 +445,13 @@ City data specific to this game mode.
 */
 CLASS("CivilWarCityData", "CivilWarLocationData")
 	// City state (stable, agitated, in revolt, suppressed, liberated)
-	VARIABLE("state");
+	VARIABLE_ATTR("state", [ATTR_SAVE]);
 	// Stability value based on local player activity
-	VARIABLE("instability");
+	VARIABLE_ATTR("instability", [ATTR_SAVE]);
 	// Ambient missions, active while location is spawned
 	VARIABLE("ambientMissions");
 	// Amount of available recruits
-	VARIABLE("nRecruits");
+	VARIABLE_ATTR("nRecruits", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -494,7 +508,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		// If City is stable or agitated then instability is a factor
 		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
-			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [ENEMY_SIDE]);
+			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
 
 			// For now we will just have instability directly related to activity (activity fades over time just
@@ -597,6 +611,21 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		} forEach [WEST, EAST, INDEPENDENT];
 	} ENDMETHOD;
 
+
+
+	// STORAGE
+
+	METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("CivilWarLocationData", _thisObject, "postDeserialize", [_storage]);
+
+		T_SETV("ambientMissions", []);
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
 
 /*
@@ -647,7 +676,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				// This function returns 2D vector for some reason
 				if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
+				private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
 				T_SETV_REF("reinfGarrison", _newGarrison);
 
 				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
@@ -662,5 +691,20 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 
 	/* public virtual override*/ METHOD("getPlayerSide") {
 		FRIENDLY_SIDE // from common.hpp
+	} ENDMETHOD;
+
+
+
+	// STORAGE
+
+	METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("CivilWarLocationData", _thisObject, "postDeserialize", [_storage]);
+
+		T_SETV_REF("reinfGarrison", NULL_OBJECT);
+
+		true
 	} ENDMETHOD;
 ENDCLASS;

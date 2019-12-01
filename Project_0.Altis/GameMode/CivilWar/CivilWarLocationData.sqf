@@ -10,7 +10,7 @@ Game mode data for general locations
 CLASS("CivilWarLocationData", "LocationGameModeData")
 
 	// Setting it to true will force enable respawn of players here regardless of other rules
-	VARIABLE("forceEnablePlayerRespawn");
+	VARIABLE_ATTR("forceEnablePlayerRespawn", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -49,4 +49,16 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		params [P_THISOBJECT, P_BOOL("_enable")];
 		T_SETV("forceEnablePlayerRespawn", _enable);
 	} ENDMETHOD;
+
+
+	// STORAGE
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("LocationGameModeData", _thisObject, "postDeserialize", [_storage]);
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;

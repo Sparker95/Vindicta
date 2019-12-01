@@ -16,12 +16,13 @@ Author: Sparker 06.05.2019
 
 #define pr private
 
-CLASS("IntelDatabase", "")
+CLASS("IntelDatabase", "Storable");
 
-	VARIABLE("items");
-	VARIABLE("linkedItems"); // A hash map of linked items
-	VARIABLE("side");
-	VARIABLE("variables"); // A hash map for variable
+				VARIABLE("items");							// Hash map for refs of items added here
+				VARIABLE("linkedItems");					// A hash map of linked items
+	/* save */	VARIABLE_ATTR("side", [ATTR_SAVE]);			// Side
+				VARIABLE("variables");						// A hash map for variable
+	/* save */	VARIABLE_ATTR("savedItems", [ATTR_SAVE]);	// Array with all items we have. Only for saving.
 
 	/*
 	Method: new
@@ -34,17 +35,27 @@ CLASS("IntelDatabase", "")
 		params [P_THISOBJECT, P_SIDE("_side")];
 
 		OOP_INFO_1("NEW, side: %1", _side);
-
 		T_SETV("side", _side);
+
+		T_CALLM0("_initHashmaps");
+	} ENDMETHOD;
+
+	// Initializes hashmaps
+	/* private */ METHOD("_initHashmaps") {
+		params [P_THISOBJECT];
+				
 		#ifndef _SQF_VM
 		pr _namespaceLinked = [false] call CBA_fnc_createNamespace;
-		T_SETV("linkedItems", _namespaceLinked);
 		pr _namespaceItems = [false] call CBA_fnc_createNamespace;
-		T_SETV("items", _namespaceItems);
 		pr _namespaceVariables = [false] call  CBA_fnc_createNamespace;
-		T_SETV("variables", _namespaceVariables);
+		#else
+		pr _namespaceLinked = "Dummy" createVehicle [0, 0, 0];
+		pr _namespaceItems = "Dummy" createVehicle [0, 0, 0];
+		pr _namespaceVariables = "Dummy" createVehicle [0, 0, 0];
 		#endif
-
+		T_SETV("linkedItems", _namespaceLinked);
+		T_SETV("items", _namespaceItems);
+		T_SETV("variables", _namespaceVariables);
 	} ENDMETHOD;
 
 	/*
@@ -254,6 +265,7 @@ CLASS("IntelDatabase", "")
 
 	Returns: Array of <Intel> objects
 	*/
+	/*
 	METHOD("queryIntel") {
 		pr _array = [];
 		CRITICAL_SECTION {
@@ -278,6 +290,7 @@ CLASS("IntelDatabase", "")
 		};
 		_array
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: findFirstIntel
@@ -291,6 +304,7 @@ CLASS("IntelDatabase", "")
 
 	Returns: <Intel> object or "" if such object was not found
 	*/
+	/*
 	METHOD("findFirstIntel") {
 		pr _return = "";
 		CRITICAL_SECTION {
@@ -313,6 +327,7 @@ CLASS("IntelDatabase", "")
 		};
 		_return
 	} ENDMETHOD;
+	*/
 
 	/*
 	Method: isIntelAdded
@@ -374,7 +389,10 @@ CLASS("IntelDatabase", "")
 	*/
 	METHOD("getAllIntel") {
 		params [P_THISOBJECT];
-		allVariables T_GETV("items")
+		pr _items = T_GETV("items");
+		// If we nil a variable in hashmap, allvariables hashmap still returns this variable name!
+		// So we must select variables which are not nil
+		(allVariables _items) select { !isNil {_items getVariable _x} }
 	} ENDMETHOD;
 
 	/*
@@ -499,4 +517,78 @@ CLASS("IntelDatabase", "")
 		_refsArray
 	} ENDMETHOD;
 
+	// - - - - STORAGE - - - - -
+
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save all intel objects we have
+		pr _allIntel = T_CALLM0("getAllIntel");
+		{
+			pr _intel = _x;
+			CALLM1(_storage, "save", _intel);
+		} forEach _allIntel;
+
+		T_SETV("savedItems", +_allIntel);
+
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		T_SETV("savedItems", nil);	// Erase the temporary variable
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Reinitialize all our hashmaps
+		T_CALLM0("_initHashmaps");
+
+		// Load all intel and readd it
+		pr _allIntel = T_GETV("savedItems");
+		{
+			pr _intel = _x;
+			CALLM1(_storage, "load", _intel);
+			T_CALLM1("addIntel", _intel);
+		} forEach _allIntel;
+
+		T_SETV("savedItems", nil);	// Erase the temporary variable
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
+
+// - - - TESTS - - - 
+#ifdef _SQF_VM
+
+["IntelDatabase.save and load", {
+	private _db = NEW("IntelDatabase", [EAST]);
+	pr _createdIntel = [];
+
+	for "_i" from 0 to 3 do {
+		private _intel = NEW("Intel", []);
+		SETV(_intel, "method", _i);
+		CALLM1(_db, "addIntel", _intel);
+		_createdIntel pushBack _intel;
+	};
+
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordInteldb");
+	CALLM1(_storage, "save", _db);
+	DELETE(_db);
+	{
+		DELETE(_x);
+	} forEach _createdIntel;
+	CALLM1(_storage, "load", _db);
+
+	["Object loaded", GETV(_db, "side") == EAST ] call test_Assert;
+
+	["Database intel loaded", GETV(_createdIntel#1, "method") == 1] call test_Assert;
+
+	true
+}] call test_AddTest;
+
+#endif

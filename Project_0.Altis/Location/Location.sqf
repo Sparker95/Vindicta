@@ -27,46 +27,39 @@ Author: Sparker 28.07.2018
 
 #define pr private
 
-CLASS("Location", "MessageReceiverEx")
+CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
-	VARIABLE("type");
-	VARIABLE("side");
-	VARIABLE("name");
+	/* save */ 	VARIABLE_ATTR("type", [ATTR_SAVE]);						// String, location type
+	/* save */ 	VARIABLE_ATTR("side", [ATTR_SAVE]);						// Side, location side
+	/* save */ 	VARIABLE_ATTR("name", [ATTR_SAVE]);						// String, location name
+	/* save */ 	VARIABLE_ATTR("children", [ATTR_SAVE]);					// Children of this location if it has any (e.g. police stations are children of cities)
+	/* save */ 	VARIABLE_ATTR("parent", [ATTR_SAVE]); 					// Parent of the Location if it has one (e.g. parent of police station is its containing city location)
+	/* save */ 	VARIABLE_ATTR("garrisons", [ATTR_SAVE]);				// Array of garrisons registered here
+	/* save */ 	VARIABLE_ATTR("boundingRadius", [ATTR_SAVE]); 			// _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
+	/* save */ 	VARIABLE_ATTR("border", [ATTR_SAVE]); 					// [center, a, b, angle, isRectangle, c]
+	/* save */ 	VARIABLE_ATTR("borderPatrolWaypoints", [ATTR_SAVE]);	// Array for patrol waypoints along the border
+	/* save */ 	VARIABLE_ATTR("useParentPatrolWaypoints", [ATTR_SAVE]);	// If true then use the parents patrol waypoints instead
+	/* save */ 	VARIABLE_ATTR("allowedAreas", [ATTR_SAVE]); 			// Array with allowed areas
+	/* save */ 	VARIABLE_ATTR("pos", [ATTR_SAVE]); 						// Position of this location
+	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
+				VARIABLE("spawned"); 									// Is this location spawned or not
+				VARIABLE("timer"); 										// Timer object which generates messages for this location
+				VARIABLE("capacityInf"); 							// Infantry capacity
+	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
+				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
+	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
+				VARIABLE("buildObjects"); 								// Array with objects we have built	
+	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
+				VARIABLE("hasPlayers"); 								// Bool, means that there are players at this location, updated at each process call
+				VARIABLE("hasPlayerSides"); 							// Array of sides of players at this location
+				VARIABLE("buildingsOpen"); 							// Handles of buildings which can be entered (have buildingPos)
+				VARIABLE("objects"); 							// Handles of objects which can't be entered and other objects
+	/* save */	VARIABLE_ATTR("respawnSides", [ATTR_SAVE]); 			// Sides for which player respawn is enabled
+				VARIABLE_ATTR("hasRadio", [ATTR_SAVE]); 				// Bool, means that this location has a radio
+	/* save */	VARIABLE_ATTR("wasOccupied", [ATTR_SAVE]); 				// Bool, false at start but sets to true when garrisons are attached here
 
-	VARIABLE("children"); // Children of this location if it has any (e.g. police stations are children of cities)
-	VARIABLE("parent"); // Parent of the Location if it has one (e.g. parent of police station is its containing city location)
-
-	VARIABLE("garrisons");
-
-	VARIABLE("boundingRadius"); // _radius for a circle border, sqrt(a^2 + b^2) for a rectangular border
-	VARIABLE("border"); // [center, a, b, angle, isRectangle, c]
-	VARIABLE("borderPatrolWaypoints"); // Array for patrol waypoints along the border
-	VARIABLE("useParentPatrolWaypoints"); // If true then use the parents patrol waypoints instead
-	VARIABLE("allowedAreas"); // Array with allowed areas
-	VARIABLE("pos"); // Position of this location
-	VARIABLE("spawnPosTypes"); // Array with spawn positions types
-	VARIABLE("spawned"); // Is this location spawned or not
-	VARIABLE("timer"); // Timer object which generates messages for this location
-	VARIABLE("capacityInf"); // Infantry capacity
-	VARIABLE("capacityCiv"); // Civilian capacity
-	VARIABLE("cpModule"); // civilian module, might be replaced by custom script
-
-	VARIABLE("isBuilt"); // true if this location has been build (used for roadblocks)
-	VARIABLE("buildObjects"); // Array with objects we have built
-	
-	VARIABLE("gameModeData"); // Custom object that the game mode can use to store info about this location
-
-	VARIABLE("hasPlayers"); // Bool, means that there are players at this location, updated at each process call
-	VARIABLE("hasPlayerSides"); // Array of sides of players at this location
-
-	VARIABLE("buildingsOpen"); // Handles of buildings which can be entered (have buildingPos)
-	VARIABLE("objects"); // Handles of objects which can't be entered and other objects
-
-	VARIABLE("respawnSides"); // Sides for which player respawn is enabled
-
-	VARIABLE("hasRadio"); // Bool, means that this location has a radio
-
-	VARIABLE("wasOccupied"); // Bool, false at start but sets to true when garrisons are attached here
+	// Variables which are set up only for saving process
+	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);		// Array of [className, posWorld, vectorDir, vectorUp] of objects
 
 	STATIC_VARIABLE("all");
 
@@ -105,7 +98,7 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
 		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
-		T_SETV("gameModeData", NULL_OBJECT);
+		SET_VAR_PUBLIC(_thisObject, "gameModeData", NULL_OBJECT);
 		T_SETV("hasPlayers", false);
 		T_SETV("hasPlayerSides", []);
 
@@ -126,13 +119,18 @@ CLASS("Location", "MessageReceiverEx")
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);
 		
-		T_SETV("timer", "");
+		T_SETV("timer", NULL_OBJECT);
 
 
 		//Push the new object into the array with all locations
 		private _allArray = GET_STATIC_VAR("Location", "all");
 		_allArray pushBack _thisObject;
 		PUBLIC_STATIC_VAR("Location", "all");
+
+		// Register at game mode so that it gets saved
+		if (!isNil {gGameMode}) then {
+			CALLM1(gGameMode, "registerLocation", _thisObject);
+		};
 
 		UPDATE_DEBUG_MARKER;
 	} ENDMETHOD;
@@ -164,7 +162,11 @@ CLASS("Location", "MessageReceiverEx")
 		T_SETV("capacityCiv", _capacityCiv);
 		if(T_GETV("type") isEqualTo LOCATION_TYPE_CITY && _capacityCiv > 0)then{
 			private _cpModule = [+T_GETV("pos"),T_GETV("border"), _capacityCiv] call CivPresence_fnc_init;
-			T_SETV("cpModule",_cpModule);
+			if(!isNull _cpModule) then {
+				T_SETV("cpModule",_cpModule);
+			} else {
+				T_SETV("cpModule", objNull);
+			};
 		};
 
 	} ENDMETHOD;
@@ -196,7 +198,7 @@ CLASS("Location", "MessageReceiverEx")
 	Arguments: _hObject
 	*/
 	METHOD("addObject") {
-		params [P_THISOBJECT, P_OBJECT("_hObject")];
+		params [P_THISOBJECT, P_OBJECT("_hObject"), P_BOOL_DEFAULT_TRUE("_addSpawnPos")];
 
 		//OOP_INFO_1("ADD OBJECT: %1", _hObject);
 
@@ -205,7 +207,9 @@ CLASS("Location", "MessageReceiverEx")
 
 		if (_countBP > 0) then {
 			T_GETV("buildingsOpen") pushBackUnique _hObject;
-			T_CALLM1("addSpawnPosFromBuilding", _hObject);
+			if (_addSpawnPos) then {
+				T_CALLM1("addSpawnPosFromBuilding", _hObject);
+			};
 		} else {
 			T_GETV("objects") pushBackUnique _hObject;
 		};
@@ -288,23 +292,12 @@ CLASS("Location", "MessageReceiverEx")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
-		T_SETV("name", nil);
-		T_SETV("garrisonCiv", nil);
-		T_SETV("garrisonMilAA", nil);
-		T_SETV("garrisonMilMain", nil);
-		T_SETV("boundingRadius", nil);
-		T_SETV("border", nil);
-		T_SETV("borderPatrolWaypoints", nil);
-		T_SETV("pos", nil);
-		T_SETV("spawnPosTypes", nil);
-		T_SETV("capacityInf", nil);
-		T_SETV("capacityCiv", nil);
-		T_SETV("cpModule", nil);
-
 		// Remove the timer
 		private _timer = GET_VAR(_thisObject, "timer");
-		DELETE(_timer);
-		T_SETV("timer", nil);
+		if (!IS_NULL_OBJECT(_timer)) then {
+			DELETE(_timer);
+			T_SETV("timer", nil);
+		};
 
 		//Remove this unit from array with all units
 		private _allArray = GET_STATIC_VAR("Location", "all");
@@ -711,22 +704,9 @@ CLASS("Location", "MessageReceiverEx")
 
 		// Create a timer object if the type of the location is a city or a roadblock
 		//if (_type in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) then {
+		
+			T_CALLM0("initTimer");
 			
-			// Delete previous timer if we had it
-			pr _timer = T_GETV("timer");
-			if (_timer != "") then {
-				DELETE(_timer);
-			};
-
-			// Create timer object
-			private _msg = MESSAGE_NEW();
-			_msg set [MESSAGE_ID_DESTINATION, _thisObject];
-			_msg set [MESSAGE_ID_SOURCE, ""];
-			_msg set [MESSAGE_ID_DATA, 0];
-			_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
-			private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
-			private _timer = NEW("Timer", _args);
-			SET_VAR(_thisObject, "timer", _timer);
 		//};
 
 		if (_type == LOCATION_TYPE_ROADBLOCK) then {
@@ -736,6 +716,26 @@ CLASS("Location", "MessageReceiverEx")
 		T_CALLM("updateWaypoints", []);
 
 		UPDATE_DEBUG_MARKER;
+	} ENDMETHOD;
+
+	METHOD("initTimer") {
+		params [P_THISOBJECT];
+		
+		// Delete previous timer if we had it
+		pr _timer = T_GETV("timer");
+		if (!IS_NULL_OBJECT(_timer)) then {
+			DELETE(_timer);
+		};
+
+		// Create timer object
+		private _msg = MESSAGE_NEW();
+		_msg set [MESSAGE_ID_DESTINATION, _thisObject];
+		_msg set [MESSAGE_ID_SOURCE, ""];
+		_msg set [MESSAGE_ID_DATA, 0];
+		_msg set [MESSAGE_ID_TYPE, LOCATION_MESSAGE_PROCESS];
+		private _args = [_thisObject, 1, _msg, gTimerServiceMain]; //["_messageReceiver", "", [""]], ["_interval", 1, [1]], ["_message", [], [[]]], ["_timerService", "", [""]]
+		private _timer = NEW("Timer", _args);
+		SET_VAR(_thisObject, "timer", _timer);
 	} ENDMETHOD;
 
 	// /*
@@ -1277,6 +1277,162 @@ CLASS("Location", "MessageReceiverEx")
 			""]; //memoryPoint
 	} ENDMETHOD;
 
+
+	STATIC_METHOD("deleteEditorAllowedAreaMarkers") {
+		params [P_THISCLASS];
+		private _allowedAreas = (allMapMarkers select {(tolower _x) find "allowedarea" == 0});
+		{_x setMarkerAlpha 0;} forEach _allowedAreas;
+	} ENDMETHOD;
+
+	// Deletes special objects placed in the editor 
+	STATIC_METHOD("deleteEditorObjects") {
+		params [P_THISCLASS];
+		{
+			{
+				deleteVehicle _x;
+			} forEach (entities _x);
+		} forEach [	"B_Truck_01_transport_F",
+					"B_Mortar_01_F",
+					"B_HMG_01_F",
+					"B_HMG_01_high_F",
+					"B_Slingload_01_Cargo_F",
+					"Sign_Arrow_Large_F",
+					"Sign_Arrow_Large_Blue_F"];
+	} ENDMETHOD;
+
+	// - - - - - - S T O R A G E - - - - - -
+
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save objects which we own
+		pr _gmData = T_GETV("gameModeData");
+		if (!IS_NULL_OBJECT(_gmData)) then {
+			CALLM1(_storage, "save", T_GETV("gameModeData"));
+		};
+
+		// Convert our objects to an array
+		pr _savedObjects = ( T_GETV("objects") + T_GETV("buildingsOpen") ) apply {
+			[
+				typeOf _x,
+				getPosWorld _x,
+				vectorDir _x,
+				vectorUp _x
+			]
+		};
+		T_SETV("savedObjects", _savedObjects);
+
+		// Save all garrisons attached here
+		{
+			pr _gar = _x;
+			CALLM1(_storage, "save", _gar);
+		} forEach T_GETV("garrisons");
+
+		true
+	} ENDMETHOD;
+
+	// Must return true on success
+	/* override */ METHOD("postSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postSerialize", [_storage]);
+
+		// Erase temporary variables
+		T_SETV("savedObjects", []);
+
+		true
+	} ENDMETHOD;
+
+	// These methods must return true on success
+	
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Set default values of variables whic hwere not saved
+		T_SETV("buildObjects", []);
+		T_SETV("hasPlayers", false);
+		T_SETV("hasPlayerSides", []);
+		T_SETV("objects", []);
+		T_SETV("buildingsOpen", []);
+		T_SETV("hasRadio", false);
+		T_SETV("capacityInf", 0);
+		T_SETV("timer", NULL_OBJECT);
+		T_SETV("spawned", false);
+
+		// Load objects which we own
+		pr _gmData = T_GETV("gameModeData");
+		if (!IS_NULL_OBJECT(_gmData)) then {
+			CALLM1(_storage, "load", T_GETV("gameModeData"));
+			PUBLIC_VAR(_thisObject, "gameModeData");
+		};
+
+		// Load garrisons
+		{
+			pr _gar = _x;
+			CALLM1(_storage, "load", _gar);
+		} forEach T_GETV("garrisons");
+
+		// Rebuild the objects which have been constructed here
+		{ // forEach T_GETV("savedObjects");
+			_x params ["_type", "_posWorld", "_vDir", "_vUp"];
+			// Check if there is such an object here already
+			pr _objs = nearestObjects [_posWorld, [_type], 0.01, true];
+			pr _hO = objNull;
+			if (count _objs == 0) then {
+				_hO = _type createVehicle [0, 0, 0];
+				_hO setPosWorld _posWorld;
+				_hO setVectorDirAndUp [_vDir, _vUp];
+			} else {
+				_hO = _objs#0;
+			};
+			T_CALLM2("addObject", _hO, false); // Don't add spawn position, it's saved separately
+		} forEach T_GETV("savedObjects");
+		T_SETV("savedObjects", []);
+
+		// Restore civ presense module
+		T_CALLM1("setCapacityCiv", T_GETV("capacityCiv"));
+
+		// Restore timer
+		T_CALLM0("initTimer");
+
+		// Enable player respawn
+		{
+			pr _side = _x;
+			T_CALLM2("enablePlayerRespawn", _side, true);
+		} forEach T_GETV("respawnSides");
+
+		// Broadcast public variables
+		PUBLIC_VAR(_thisObject, "name");
+		PUBLIC_VAR(_thisObject, "garrisons");
+		PUBLIC_VAR(_thisObject, "boundingRadius");
+		PUBLIC_VAR(_thisObject, "border");
+		PUBLIC_VAR(_thisObject, "pos");
+		PUBLIC_VAR(_thisObject, "isBuilt");
+		PUBLIC_VAR(_thisObject, "allowedAreas");
+		PUBLIC_VAR(_thisObject, "type");
+		PUBLIC_VAR(_thisObject, "wasOccupied");
+		PUBLIC_VAR(_thisObject, "parent");
+
+		//Push the new object into the array with all locations
+		GETSV("Location", "all") pushBackUnique _thisObject;
+		PUBLIC_STATIC_VAR("Location", "all");
+
+		true
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		SETSV("Location", "all", []);
+	} ENDMETHOD;
+
 ENDCLASS;
 
 if (isNil {GETSV("Location", "all")}) then {
@@ -1285,3 +1441,24 @@ if (isNil {GETSV("Location", "all")}) then {
 
 // Initialize arrays with building types
 call compile preprocessFileLineNumbers "Location\initBuildingTypes.sqf";
+
+
+
+// Tests
+#ifdef _SQF_VM
+["Location.save and load", {
+	pr _loc = NEW("Location", [[0 ARG 1 ARG 2]]);
+	CALLM1(_loc, "setName", "testLocationName");
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordLocation");
+	CALLM1(_storage, "save", _loc);
+	CALLSM1("Location", "saveStaticVariables", _storage);
+	DELETE(_loc);
+	CALLSM1("Location", "loadStaticVariables", _storage);
+	CALLM1(_storage, "load", _loc);
+
+	["Object loaded", GETV(_loc, "name") == "testLocationName"] call test_Assert;
+
+	true
+}] call test_AddTest;
+#endif

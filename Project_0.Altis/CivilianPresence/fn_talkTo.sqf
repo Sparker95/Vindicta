@@ -67,7 +67,7 @@ if(selectRandom[true,false])then{
 
 			if (_updateLevel != -666) then {
 				diag_log format ["    adding to database"];
-				private _commander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+				private _commander = CALLSM1("AICommander", "getAICommander", playerSide);
 				CALLM2(_commander, "postMethodAsync", "updateLocationData", [_x ARG _updateLevel ARG sideUnknown ARG false ARG false ARG _accuracyRadius]);
 			};
 		} forEach _locsNear;

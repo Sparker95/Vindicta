@@ -6,7 +6,7 @@
 #include "..\Location\Location.hpp"
 #include "InventoryItems.hpp"
 #include "PersonalInventory.hpp"
-#include "..\GlobalAssert.hpp"
+#include "..\defineCommon.inc"
 
 /*
 A class with static functions that initialized variables on objects that can have intel.
@@ -331,7 +331,7 @@ CLASS("UnitIntel", "")
 		_classAndID params ["_baseClass", "_ID"];
 
 		// Tell to commander! He must know about it :D !
-		pr _playerCommander = CALLSM1("AICommander", "getCommanderAIOfSide", playerSide);
+		pr _playerCommander = CALLSM1("AICommander", "getAICommander", playerSide);
 		//CALLM2(_playerCommander, "postMethodAsync", "getRandomIntelFromEnemy", [clientOwner]);
 		CALLM2(_playerCommander, "postMethodAsync", "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner]);
 		//REMOTE_EXEC_CALL_METHOD(_playerCommander, "getIntelFromInventoryItem", [_baseClass ARG _ID ARG clientOwner], 2);

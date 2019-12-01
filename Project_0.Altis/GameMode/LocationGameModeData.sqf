@@ -7,7 +7,7 @@ Base class of objects assigned as Location.gameModeData
 
 CLASS("LocationGameModeData", "MessageReceiverEx")
 
-	VARIABLE("location");
+	VARIABLE_ATTR("location", [ATTR_SAVE]);
 
 	// 
 	METHOD("new") {
@@ -23,6 +23,18 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 
 	METHOD("getMessageLoop") {
 		gMessageLoopGameMode
+	} ENDMETHOD;
+
+
+
+	// STORAGE
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

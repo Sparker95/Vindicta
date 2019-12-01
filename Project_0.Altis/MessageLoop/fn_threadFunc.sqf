@@ -46,6 +46,7 @@ private _msgQueue = GET_VAR(_thisObject, "msgQueue");
 private _mutex = GET_VAR(_thisObject, "mutex");
 private _processCategories = GET_VAR(_thisObject, "processCategories");
 private _fractionsRequired = GET_VAR(_thisObject, "updateFrequencyFractions");
+private _sleepInterval = GET_VAR(_thisObject, "sleepInterval");
 //private _objects = GET_VAR(_thisObject, "objects");
 
 
@@ -305,5 +306,5 @@ while {true} do {
 	};
 
 	// Give time to other threads in the SQF scheduler
-	sleep 0.001;
+	uisleep _sleepInterval;
 };

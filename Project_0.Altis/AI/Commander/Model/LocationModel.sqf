@@ -28,7 +28,7 @@ CLASS("LocationModel", "ModelBase")
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
 		T_SETV("pos", []);
 		T_SETV("type", "");
-		T_SETV("side", objNull);
+		T_SETV("side", NULL_OBJECT);
 		T_SETV("garrisonIds", []);
 		T_SETV("spawn", false);
 		T_SETV("staging", false);

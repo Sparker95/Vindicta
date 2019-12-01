@@ -619,21 +619,21 @@ Methods for the action listbox appears when we click on something to send some g
 
 		switch (_action) do {
 			case "move" : {
-				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateMoveAction", _args);
 				systemChat "Giving a MOVE order to garrison";
 			};
 			case "attack" : {
-				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateAttackAction", _args);
 				systemChat "Giving an ATTACK order to garrison";
 			};
 			case "reinforce" : {
-				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _args = [T_GETV("garActionGarRef"), T_GETV("garActionTargetType"), T_GETV("garActionTarget")];
 				CALLM2(_AI, "postMethodAsync", "clientCreateReinforceAction", _args);
@@ -790,7 +790,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 				};
 			};
 			case "cancelOrder" : {
-				pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
 				pr _garRef = CALLM0(_garRecord, "getGarrison");
 				pr _args = [_garRef];
@@ -1698,7 +1698,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		if (_loc == "") exitWith {};
 
 		// Post method to commander thread to add a group
-		private _AI = CALLSM1("AICommander", "getCommanderAIOfSide", WEST);
+		private _AI = CALLSM1("AICommander", "getAICommander", WEST);
 		CALLM2(_AI, "postMethodAsync", "addGroupToLocation", [_loc ARG 5]);
 
 		(_mapDisplay displayCtrl IDC_BPANEL_HINTS) ctrlSetText "A friendly group has been added to the location!";

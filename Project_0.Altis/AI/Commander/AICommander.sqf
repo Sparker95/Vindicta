@@ -16,24 +16,26 @@ Sparker 12.11.2018 (initial file)
 #define ACTION_SCORE_CUTOFF 0.001
 #define REINF_MAX_DIST 4000
 
+#define PROCESS_INTERVAL 10
+
 #define pr private
 
 CLASS("AICommander", "AI")
 
-	VARIABLE("side");
-	VARIABLE("msgLoop");
-	VARIABLE("intelDB"); // Intel database
+	/* save */	VARIABLE_ATTR("side", [ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("msgLoop", [ATTR_SAVE]); // Message loops are restored on load as well
+	/* save */	VARIABLE_ATTR("intelDB", [ATTR_SAVE]); // Intel database
 
 	// Friendly garrisons we can access
-	VARIABLE("garrisons");
+	/* save */	VARIABLE_ATTR("garrisons", [ATTR_SAVE]);
 
 	// Used by SensorCommanderTargets
-	VARIABLE("targets"); // Array of targets known by this Commander
-	VARIABLE("targetClusters"); // Array with target clusters
-	VARIABLE("nextClusterID"); // A unique cluster ID generator
+	/* save */	VARIABLE_ATTR("targets", [ATTR_SAVE]);			// Array of targets known by this Commander
+	/* save */	VARIABLE_ATTR("targetClusters", [ATTR_SAVE]);	// Array with target clusters
+	/* save */	VARIABLE_ATTR("nextClusterID", [ATTR_SAVE]);	// A unique cluster ID generator
 	
-	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED]);
-	VARIABLE("worldModel");
+	/* save */	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("worldModel", [ATTR_SAVE]);
 
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
@@ -46,13 +48,13 @@ CLASS("AICommander", "AI")
 	#endif
 
 	// Radio
-	VARIABLE("radioKeyGrid"); 	// Grid object which stores our own radio keys
-	VARIABLE("enemyRadioKeys");	// Enemy radio keys we have found
-	VARIABLE("enemyRadioKeysAddedBy"); // List of player names who have added the radio keys
+	/* save */	VARIABLE_ATTR("radioKeyGrid", [ATTR_SAVE]); 	// Grid object which stores our own radio keys
+	/* save */	VARIABLE_ATTR("enemyRadioKeys", [ATTR_SAVE]);	// Enemy radio keys we have found
+	/* save */	VARIABLE_ATTR("enemyRadioKeysAddedBy", [ATTR_SAVE]); // List of player names who have added the radio keys
 
 	// Ported from CmdrAI
-	VARIABLE("activeActions");
-	VARIABLE("planningCycle");
+	/* save */	VARIABLE_ATTR("activeActions", [ATTR_SAVE]);
+				VARIABLE("planningCycle");
 
 	METHOD("new") {
 		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
@@ -105,12 +107,7 @@ CLASS("AICommander", "AI")
 		#endif
 		
 		// Create sensors
-		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorLocation);
-		pr _sensorTargets = NEW("SensorCommanderTargets", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorTargets);
-		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		T_CALLM0("_initSensors");
 		
 		T_SETV_REF("cmdrStrategy", gCmdrStrategyDefault);
 		
@@ -128,8 +125,21 @@ CLASS("AICommander", "AI")
 		T_SETV("enemyRadioKeysAddedBy", []);
 		T_CALLM0("initRadioKeys"); // Will set the radioKeyGrid variable
 
+		// Set process interval
+		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
+
 	} ENDMETHOD;
 	
+	METHOD("_initSensors") {
+		params [P_THISOBJECT];
+
+		pr _sensorLocation = NEW("SensorCommanderLocation", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorLocation);
+		pr _sensorTargets = NEW("SensorCommanderTargets", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorTargets);
+		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+	} ENDMETHOD;
 
 /*
 88888888ba   88888888ba     ,ad8888ba,      ,ad8888ba,   88888888888  ad88888ba    ad88888ba   
@@ -217,6 +227,12 @@ CLASS("AICommander", "AI")
 		T_GETV("msgLoop");
 	} ENDMETHOD;
 
+	// Sets message loop
+	METHOD("setMessageLoop") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_msgLoop")];
+		T_SETV("msgLoop", _msgLoop);
+	} ENDMETHOD;
+
 	/*
 	Method: (static)getCommanderAIOfSide
 	Returns AICommander object that commands given side
@@ -227,7 +243,7 @@ CLASS("AICommander", "AI")
 	
 	Returns: <AICommander>
 	*/
-	STATIC_METHOD("getCommanderAIOfSide") {
+	STATIC_METHOD("getAICommander") {
 		params [P_THISCLASS, P_SIDE("_side")];
 		private _cmdr = NULL_OBJECT;
 		switch (_side) do {
@@ -241,7 +257,7 @@ CLASS("AICommander", "AI")
 				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
 			};
 			default {
-				OOP_ERROR_1("AICommander of side %1 does not exist", _side);
+				OOP_WARNING_1("AICommander of side %1 does not exist", _side);
 			};
 		};
 		_cmdr
@@ -259,7 +275,7 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD("getCmdrStrategy") {
 		params [P_THISCLASS, P_SIDE("_side")];
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			ASSERT_THREAD;
 			GETV(_thisObject, "cmdrStrategy")
@@ -294,7 +310,7 @@ CLASS("AICommander", "AI")
 	*/
 	STATIC_METHOD("setCmdrStrategyForSide") {
 		params [P_THISCLASS, P_SIDE("_side"), P_OOP_OBJECT("_strategy")];
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "setCmdrStrategy", [_strategy]);
 		} else {
@@ -311,6 +327,7 @@ CLASS("AICommander", "AI")
 		params [["_thisObject", "", [""]], ["_loc", "", [""]], ["_updateLevel", CLD_UPDATE_LEVEL_UNITS, [0]], ["_side", CIVILIAN], ["_showNotification", true], ["_updateIfFound", true], ["_accuracyRadius", 0]];
 		
 		OOP_INFO_1("UPDATE LOCATION DATA: %1", _this);
+		OOP_INFO_1("  Location type: %1", CALLM0(_loc, "getType"));
 	
 		// Check if we have intel about such location already
 		pr _intelResult = T_CALLM1("getIntelAboutLocation", _loc);
@@ -572,7 +589,7 @@ CLASS("AICommander", "AI")
 		SETV(_itemClone, "source", _item); // Link it with the source
 
 		pr _playerSide = CALLM0(gGameMode, "getPlayerSide");
-		pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _playerSide);
+		pr _ai = CALLSM1("AICommander", "getAICommander", _playerSide);
 		CALLM2(_ai, "postMethodAsync", "stealIntel", [_item ARG _itemClone]);
 	} ENDMETHOD;
 
@@ -595,10 +612,10 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_intel"), P_POSITION("_pos")];
 
 		pr _thisSide = GETV(_intel, "side");
-		pr _thisAI = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		pr _thisAI = CALLSM1("AICommander", "getAICommander", _side);
 		pr _radioKey = CALLM1(_thisAI, "getRadioKey", _pos); // Enemies must have the radio key to intercept this data
 		{
-			pr _ai = CALLSM1("AICommander", "getCommanderAIOfSide", _x);
+			pr _ai = CALLSM1("AICommander", "getAICommander", _x);
 			CALLM2(_ai, "postMethodAsync", "_interceptIntelAt", [_intel ARG _pos ARG _radioKey]);
 		} forEach ([WEST, EAST, INDEPENDENT] - [_thisSide]);
 	} ENDMETHOD;
@@ -1053,7 +1070,7 @@ CLASS("AICommander", "AI")
 	STATIC_METHOD("addActivity") {
 		params [P_THISCLASS, P_SIDE("_side"), P_POSITION("_pos"), P_NUMBER("_activity")];
 
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_addActivity", [_pos ARG _activity]);
 		};
@@ -1109,7 +1126,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM("_registerGarrison", [_gar]);
@@ -1133,7 +1150,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_gar")];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			CALLM2(_thisObject, "postMethodAsync", "_registerGarrison", [_gar]);
@@ -1177,7 +1194,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_gar"), ["_destroy", false, [false]]];
 		ASSERT_OBJECT_CLASS(_gar, "Garrison");
 		private _side = CALLM(_gar, "getSide", []);
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
 			T_CALLM2("postMethodAsync", "_unregisterGarrison", [_gar ARG _destroy]);
 		} else {
@@ -1222,7 +1239,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_OOP_OBJECT("_intel")];
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		T_PRVAR(intelDB);
 		private _intelClone = CALLM(_intelDB, "addIntelClone", [_intel]);
@@ -1240,12 +1257,12 @@ CLASS("AICommander", "AI")
 
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		// Notify enemy commanders that this intel has been destroyed
 		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		{
 			pr _enemySide = _x;
-			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
+			private _AI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
 			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
@@ -1272,12 +1289,12 @@ CLASS("AICommander", "AI")
 
 		ASSERT_OBJECT_CLASS(_intel, "IntelCommanderAction");
 		private _side = GETV(_intel, "side");
-		private _thisObject = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		// Notify enemy commanders that this intel has been destroyed
 		private _enemySides = [WEST, EAST, INDEPENDENT] - [_side];
 		{
 			pr _enemySide = _x;
-			private _AI = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_enemySide]);
+			private _AI = CALL_STATIC_METHOD("AICommander", "getAICommander", [_enemySide]);
 			private _db = GETV(_AI, "intelDB");
 			// Check if this DB has an intel which has _intel as source
 			if (CALLM1(_db, "isIntelAddedFromSource", _intel)) then {
@@ -2295,7 +2312,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Check if it's one of enemy radio keys
 		pr _keyFoundInEnemy = false;
 		{
-			pr _enemyAI = CALLSM1("AICommander", "getCommanderAIOfSide", _x);
+			pr _enemyAI = CALLSM1("AICommander", "getAICommander", _x);
 			pr _radioKeyGrid = GETV(_enemyAI, "radioKeyGrid");
 			pr _valueFound = CALLM1(_radioKeyGrid, "findValue", _key);
 			if (_valueFound) exitWith {
@@ -2330,7 +2347,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		OOP_INFO_1("STATIC CLIENT ADD RADIO KEY: %1", _this);
 
-		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		pr _AI = CALLSM1("AICommander", "getAICommander", _side);
 
 		if (IS_NULL_OBJECT(_AI)) exitWith {	};
 
@@ -2344,12 +2361,129 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		OOP_INFO_1("STATIC CLIENT REQUEST RADIO KEYS: %1", _this);
 
-		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		pr _AI = CALLSM1("AICommander", "getAICommander", _side);
 
 		if (IS_NULL_OBJECT(_AI)) exitWith {	};
 
 		pr _args = [+GETV(_AI, "enemyRadiokeys"), +GETV(_AI, "enemyRadiokeysAddedBy")];
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
+	} ENDMETHOD;
+
+	// - - - - - - - STORAGE - - - - - - -
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Save intel database
+		pr _db = T_GETV("intelDB");
+		CALLM1(_storage, "save", _db);
+
+		// Save strategy
+		pr _strategy = T_GETV("cmdrStrategy");
+		CALLM1(_storage, "save", _strategy);
+
+		// Save world model
+		pr _model = T_GETV("worldModel");
+		CALLM1(_storage, "save", _model);
+
+		// Save our garrisons
+		{
+			pr _gar = _x;
+			diag_log format ["Saving garrison: %1", _gar];
+			CALLM1(_storage, "save", _gar);
+		} forEach T_GETV("garrisons");
+
+		// Save our actions
+		{
+			pr _action = _x;
+			diag_log format ["Saving action: %1", _action];
+			CALLM1(_storage, "save", _action);
+		} forEach T_GETV("activeActions");
+
+		// Save radio key grid
+		pr _radioKeyGrid = T_GETV("radioKeyGrid");
+		CALLM1(_storage, "save", _radioKeyGrid);
+
+		true
+	} ENDMETHOD;
+
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
+
+		// Initialize variables
+		#ifdef DEBUG_CLUSTERS
+		T_SETV("nextMarkerID", 0);
+		T_SETV("clusterMarkers", []);
+		#endif
+
+		// Restore sensors
+		T_CALLM0("_initSensors");
+
+		#ifdef DEBUG_COMMANDER
+		T_SETV("state", "none");
+		T_SETV("stateStart", 0);
+		[_thisObject, T_GETV("side")] spawn {
+			params ["_thisObject", "_side"];
+			private _pos = switch (_side) do {
+				case WEST: { [0, -1000, 0 ] };
+				case EAST: { [0, -1500, 0 ] };
+				case INDEPENDENT: { [0, -500, 0 ] };
+			};
+			private _mrk = createmarker [_thisObject + "_label", _pos];
+			_mrk setMarkerType "mil_objective";
+			_mrk setMarkerColor (switch (_side) do {
+				case WEST: {"ColorWEST"};
+				case EAST: {"ColorEAST"};
+				case INDEPENDENT: {"ColorGUER"};
+				default {"ColorCIV"};
+			});
+			_mrk setMarkerAlpha 1;
+			while{true} do {
+				sleep 5;
+				_mrk setMarkerText (format ["Cmdr %1: %2 (%3s)", _thisObject, T_GETV("state"), TIME_NOW - T_GETV("stateStart")]);
+			};
+		};
+		#endif
+		
+		T_SETV("planningCycle", 0);
+
+		// Set process interval
+		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
+
+		// Load our garrisons
+		{
+			pr _gar = _x;
+			diag_log format ["Loading garrison: %1", _gar];
+			CALLM1(_storage, "load", _gar);
+		} forEach T_GETV("garrisons");
+
+		// Load world model
+		pr _model = T_GETV("worldModel");
+		CALLM1(_storage, "load", _model);
+
+		// Load strategy
+		pr _strategy = T_GETV("cmdrStrategy");
+		CALLM1(_storage, "load", _strategy);
+
+		// Load actions
+		{
+			pr _action = _x;
+			diag_log format ["Loading action: %1", _action];
+			CALLM1(_storage, "load", _action);
+		} forEach T_GETV("activeActions");
+
+		// Load the intel database
+		pr _db = T_GETV("intelDB");
+		CALLM1(_storage, "load", _db);
+
+		// Load radio key grid
+		pr _radioKeyGrid = T_GETV("radioKeyGrid");
+		CALLM1(_storage, "load", _radioKeyGrid);
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

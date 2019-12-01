@@ -160,7 +160,7 @@ _module setVariable ["#modulesUnit",_spawnPoints];
 if(count _waypoints == 0||count _spawnPoints ==0)then{
 	diag_log format ["ERROR [CivPresence_fnc_init] module doesnt have spawn or waypoints pos:%1",_pos];
 	_module call CBA_fnc_deleteNamespace;
-	_module = nil;
+	_module = objNull;
 };
 
 _module;

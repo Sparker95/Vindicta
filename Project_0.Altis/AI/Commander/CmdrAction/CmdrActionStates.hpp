@@ -90,25 +90,17 @@ CMDR_ACTION_STATE_FINISHED_WAYPOINTS - When there are no more waypoints in a rou
 // They also allow the CmdrAction state to be pushed/popped during simulation so that real world actions 
 // are not effected.
 
-// Function: MAKE_AST_VAR
-// Make a new AST_VAR
-#define MAKE_AST_VAR(value) [value]
-// Function: GET_AST_VAR
-// Get the value from an AST_VAR
-#define GET_AST_VAR(wrapper) (if((wrapper select 0) isEqualType {}) then { call (wrapper select 0) } else { (wrapper select 0) })
 // Function: SET_AST_VAR
-// Write a value to an AST_VAR
-#define SET_AST_VAR(wrapper, value) (wrapper set [0, value])
-// Function: T_GET_AST_VAR
-// Get the value from an AST_VAR that is a member variable of _thisObject.
-#define T_GET_AST_VAR(property) (T_GETV(property) select 0)
-// Function: T_SET_AST_VAR
-// Write a value to an AST_VAR that is a member variable of _thisObject.
-#define T_SET_AST_VAR(property, value) (T_GETV(property) set [0, value])
+// Set value of AST var of certain cmd action
+#define SET_AST_VAR(action, index, value) (GETV(action, "variables") set [index, value])
+
+// Function: GET_AST_VAR
+// Get value of AST var of certain cmdr action
+#define GET_AST_VAR(action, index) (GETV(action, "variables") select index)
 
 // Function: P_AST_VAR
 // Function variable definition for an AST_VAR
-#define P_AST_VAR(paramNameStr) P_ARRAY(paramNameStr)
+#define P_AST_VAR(paramNameStr) P_NUMBER(paramNameStr)
 // Function: P_AST_STATE
 // Function variable definition for a CMDR_ACTION_STATE
 #define P_AST_STATE(paramNameStr) P_NUMBER(paramNameStr)

@@ -311,7 +311,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		private _gar = T_GETV("gar");
 
 		private _side = CALLM(_gar, "getSide", []);
-		private _cmdr = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+		private _cmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 
 		private _threatCostFn = {
 			params ["_base_cost", "_current", "_next", "_startRoute", "_goalRoute", "_callbackArgs"];

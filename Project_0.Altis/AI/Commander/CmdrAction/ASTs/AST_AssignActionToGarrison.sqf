@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_AssignActionToGarrison
@@ -11,7 +11,6 @@ doing something else.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
-	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 
 	// Inputs
@@ -34,8 +33,6 @@ CLASS("AST_AssignActionToGarrison", "ActionStateTransition");
 			P_AST_STATE("_successState"),
 			P_AST_VAR("_garrIdVar")
 		];
-		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
-		T_SETV("action", _action);
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("garrIdVar", _garrIdVar);
@@ -64,7 +61,7 @@ ENDCLASS;
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
-		[MAKE_AST_VAR(0)]
+		[CALLM1(_action, "createVariable", 0)]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -76,11 +73,13 @@ ENDCLASS;
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
 	private _action = NEW("CmdrAction", []);
+	private _IDASTVar = CALLM1(_action, "createVariable", GETV(_garrison, "id"));
+	//diag_log format ["ID AST VAR: %1", _IDASTVar];
 	private _thisObject = NEW("AST_AssignActionToGarrison", 
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]
+		[_IDASTVar]
 	);
 
 	private _endState = CALLM(_thisObject, "apply", [_world]);

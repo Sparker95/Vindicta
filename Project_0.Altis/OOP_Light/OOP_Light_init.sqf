@@ -10,6 +10,13 @@ OOP_Light_initialized = true;
  * TODO: refactor the many assert functions for better performance.
 */
 
+// Initialize the global session ID value
+// Session ID is needed to avoid number overflow errors when generating unique IDs for new objects
+// Session ID is incremented on every game save
+if(isNil {OOP_GVAR(sessionID)} ) then {
+	OOP_GVAR(sessionID) = 0;
+};
+
 // Prints an error message with supplied text, file and line number
 OOP_error = {
 	params["_file", "_line", "_text"];
@@ -757,6 +764,32 @@ OOP_serialize = { // todo implement namespace
 	_array
 };
 
+// Same as OOP_serialize, but lets choose an attribute
+OOP_serialize_attr = { // todo implement namespace
+	params ["_objNameStr", "_attr", ["_serializeAllVariables", false]];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	if (!_serializeAllVariables) then {
+		_memList = _memList select {
+			//_x params ["_varName", "_attributes"];
+			_attr in (_x#1)
+		};
+	};
+
+	private _array = [];
+	_array pushBack _classNameStr;
+	_array pushBack _objNameStr;
+
+	{
+		_x params ["_varName"];
+		_array append [GETV(_objNameStr, _varName)];
+	} forEach _memList;
+
+	_array
+};
+
 // Unpack all variables from an array into an existing object
 OOP_deserialize = { // todo implement namespace
 	params ["_objNameStr", "_array"];
@@ -774,7 +807,43 @@ OOP_deserialize = { // todo implement namespace
 	for "_i" from 2 to ((count _array) - 1) do {
 		private _value = _array select _i;
 		(_memList select _iVarName) params ["_varName"];
-		SET_VAR(_objNameStr, _varName, _value);
+		if (!(isNil "_value")) then {
+			FORCE_SET_MEM(_objNameStr, _varName, _value);
+		} else {
+			FORCE_SET_MEM(_objNameStr, _varName, nil);
+		};
+		_iVarName = _iVarName + 1;
+	};
+};
+
+// Same as OOP_deserialize, but lets deserialie variables with specified attribute
+OOP_deserialize_attr = {
+	params ["_objNameStr", "_array", "_attr", ["_deserializeAllVariables", false]];
+
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_objNameStr);
+
+	#ifdef OOP_ASSERT
+	if (! ([_objNameStr, __FILE__, __LINE__] call OOP_assert_object)) exitWith {};
+	#endif
+
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	if(!_deserializeAllVariables) then {
+		_memList = _memList select {
+			//_x params ["_varName", "_attributes"];
+			_attr in (_x#1)
+		};
+	};
+
+	private _iVarName = 0;
+
+	for "_i" from 2 to ((count _array) - 1) do {
+		private _value = _array select _i;
+		(_memList select _iVarName) params ["_varName"];
+		if(!(isNil "_value")) then {
+			FORCE_SET_MEM(_objNameStr, _varName, _value);
+		} else {
+			FORCE_SET_MEM(_objNameStr, _varName, nil);
+		};
 		_iVarName = _iVarName + 1;
 	};
 };
@@ -841,6 +910,16 @@ OOP_delete = {
 	PROFILER_COUNTER_DEC(_oop_classNameStr);
 };
 
+// set/get session counter
+OOP_setSessionCounter = {
+	params [["_value", 0, [0]]];
+	OOP_GVAR(sessionID) = _value;
+};
+
+OOP_getSessionCounter = {
+	OOP_GVAR(sessionID)
+};
+
 // Base class for intrusive ref counting.
 // Use the REF and UNREF macros with objects of classes 
 // derived from this one.
@@ -850,7 +929,7 @@ OOP_delete = {
 // these members to get automated de-refing of replaced value, and refing of
 // new value. See RefCountedTest.sqf for example.
 CLASS("RefCounted", "")
-	VARIABLE("refCount");
+	VARIABLE_ATTR("refCount", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -884,6 +963,8 @@ CLASS("RefCounted", "")
 		};
 	} ENDMETHOD;
 ENDCLASS;
+
+// - - - - - - SQF VM - - - - - -
 
 #ifdef _SQF_VM
 
@@ -977,6 +1058,60 @@ CLASS("AttrTestNotDerived1", "")
 	} ENDMETHOD;
 ENDCLASS;
 
+// Multiple inheritence tests
+
+CLASS("mi_a", "")
+	METHOD("new") {
+		diag_log "NEW mi_A";
+	} ENDMETHOD;
+
+	METHOD("getValue") {"A"} ENDMETHOD;
+ENDCLASS;
+
+CLASS("mi_b", "mi_a")
+	METHOD("new") {
+		diag_log "NEW mi_B";
+	} ENDMETHOD;
+
+	METHOD("getValue") {"B"} ENDMETHOD; // override
+ENDCLASS;
+
+CLASS("mi_c", "")
+	METHOD("new") {
+		diag_log "NEW mi_C";
+	} ENDMETHOD;
+
+	METHOD("getAnotherValue") {"anotherValue"} ENDMETHOD;
+ENDCLASS;
+
+CLASS("mi_d", ["mi_b" ARG "mi_c"])
+	METHOD("new") {
+		diag_log "NEW mi_D";
+	} ENDMETHOD;
+ENDCLASS;
+
+["OOP Multiple Inheritence", {
+	private _thisObject = NEW("mi_d", []);
+
+
+	private _parents = GET_SPECIAL_MEM("mi_d", PARENTS_STR);
+	//diag_log format ["Class mi_D parents: %1", _parents];
+
+	["Proper inheritence classes", _parents isEqualTo ["mi_a","mi_b","mi_c"]] call test_Assert;
+
+	//diag_log format ["getValue method: %1", FORCE_GET_METHOD("mi_d", "getValue")];
+
+	private _value = CALLM0(_thisObject, "getValue");
+	private _anotherValue = CALLM0(_thisObject, "getAnotherValue");
+
+	//diag_log format ["Value: %1, Another value: %2", _value, _anotherValue];
+
+	["Test 1", CALLM0(_thisObject, "getValue") == "B"] call test_Assert;
+	["Test 2", CALLM0(_thisObject, "getAnotherValue") == "anotherValue"] call test_Assert;
+
+	true
+}] call test_AddTest;
+
 ["OOP variable attributes", {
 	private _base = NEW("AttrTestBase1", []);
 
@@ -1061,5 +1196,36 @@ ENDCLASS;
 // 	private _innerObj = GETV(_obj2, "varOOPObject");
 // 	["non simple object", { [_obj2] call OOP_variableToJson isEqualTo format['{ "_id": "%1" , "oop_parent": "JsonTest1" , "oop_public": "<nil>" , "varBool": true , "varString": "a string" , "varNumber": 667 , "varArray": [0,1,2] , "varObject": "CIV ALPHA 0" , "varOOPObject": { "_id": "%2" , "oop_parent": "JsonTestVarObj" , "oop_public": "<nil>" , "var1": 666 , "var2": "String!" } , "varUnset": "<nil>" }', _obj2, _innerObj] }] call test_Assert;
 // }] call test_AddTest;
+
+
+
+CLASS("serAttrTest", "")
+	VARIABLE_ATTR("var_0", [ATTR_SERIALIZABLE ARG ATTR_SAVE]);
+	VARIABLE_ATTR("var_1", [ATTR_SERIALIZABLE]);
+	VARIABLE_ATTR("var_2", [ATTR_SAVE]);
+ENDCLASS;
+
+["OOP Serialize by attribute", {
+	private _obj = NEW("serAttrTest", []);
+	
+	SETV(_obj, "var_0", 0);
+	SETV(_obj, "var_1", 1);
+	SETV(_obj, "var_2", 2);
+	
+	private _objSerial = SERIALIZE_ATTR(_obj, ATTR_SAVE);
+
+	//diag_log format ["Serialized obj: %1", _objSerial];
+
+	SETV(_obj, "var_0", 4);
+	SETV(_obj, "var_1", 5);
+	SETV(_obj, "var_2", 6);
+
+	DESERIALIZE_ATTR(_obj, _objSerial, ATTR_SAVE);
+
+	["test var 0", GETV(_obj, "var_0") == 0] call test_Assert;
+	["test var 1", GETV(_obj, "var_1") == 5] call test_Assert;
+	["test var 2", GETV(_obj, "var_2") == 2] call test_Assert;
+
+}] call test_AddTest;
 
 #endif

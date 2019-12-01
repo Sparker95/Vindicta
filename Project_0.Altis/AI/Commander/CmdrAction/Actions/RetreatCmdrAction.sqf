@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Unused, not necessarily fully implemented, not tested.
@@ -25,7 +25,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		T_SETV("targetVar", _targetVar);
 
 		// Start date for this action, default to immediate
-		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
 		T_SETV("startDateVar", _startDateVar);
 	} ENDMETHOD;
 
@@ -49,7 +49,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
-		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+		private _srcGarrIdVar = T_CALLM1("createVariable", _srcGarrId);
 
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
@@ -67,7 +67,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 				_srcGarrIdVar];						// Garrison to wait (checks it is still alive)
 		private _waitAST = NEW("AST_WaitGarrison", _waitAST_Args);	
 
-		GET_AST_VAR(_targetVar) params ["_targetType", "_target"];
+		T_GET_AST_VAR(_targetVar) params ["_targetType", "_target"];
 
 		private _moveAST = if(_targetType == TARGET_TYPE_GARRISON) then {
 			// If we are merging to a garrison we will just move there and merge
@@ -79,7 +79,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 					CMDR_ACTION_STATE_TARGET_DEAD, 		// State change when target is dead
 					_srcGarrIdVar, 						// Id of garrison to move
 					_targetVar, 						// Target to move to (initially the target garrison)
-					MAKE_AST_VAR(200)]; 				// Radius to move within
+					T_CALLM1("createVariable", 200)]; 				// Radius to move within
 			NEW("AST_MoveGarrison", _moveAST_Args)
 		} else {
 			// If we are occupying a location we will attack and clear the area then occupy it (attack includes move)
@@ -91,7 +91,7 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 					CMDR_ACTION_STATE_MOVED,			// If we timeout then occupy the location
 					_srcGarrIdVar, 						// Id of the garrison doing the attacking
 					_targetVar, 						// Target to attack (cluster or garrison supported)
-					MAKE_AST_VAR(500)];					// Move radius
+					T_CALLM1("createVariable", 500)];					// Move radius
 			NEW("AST_GarrisonAttackTarget", _attackAST_Args)
 		};
 
@@ -106,9 +106,10 @@ CLASS("RetreatCmdrAction", "CmdrAction")
 		private _mergeAST = NEW("AST_MergeOrJoinTarget", _mergeAST_Args);
 
 		private _newTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_TARGET_DEAD], 	// We select a new target when the old one is dead
 				CMDR_ACTION_STATE_READY_TO_MOVE, 	// State change when successful
-				MAKE_AST_VAR(MODEL_HANDLE_INVALID), // No src garrison as we are retreating
+				T_CALLM1("createVariable", MODEL_HANDLE_INVALID), // No src garrison as we are retreating
 				_srcGarrIdVar, 						// Id of the garrison we are moving (for context)
 				_targetVar]; 						// New target
 		private _newTargetAST = NEW("AST_SelectFallbackTarget", _newTargetAST_Args);

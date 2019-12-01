@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.MoveCmdrAction
@@ -38,7 +38,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 		T_PRVAR(target);
 
 		// Assign the action we are performing to the garrison (so it is marked as busy for other actions)
-		private _garrIdVar = MAKE_AST_VAR(_garrId);
+		private _garrIdVar = T_CALLM1("createVariable", _garrId);
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
 				[CMDR_ACTION_STATE_START], 			// Do this at start
@@ -47,7 +47,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
 		// Add the move action
-		private _targetVar = MAKE_AST_VAR(_target);
+		private _targetVar = T_CALLM1("createVariable", _target);
 		private _moveAST_Args = [
 				_thisObject, 						// This action (for debugging context)
 				[CMDR_ACTION_STATE_READY_TO_MOVE],	// 		
@@ -56,7 +56,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change when target is dead
 				_garrIdVar, 						// Id of garrison to move
 				_targetVar, 						// Target to move to (various target types are supported by this AST)
-				MAKE_AST_VAR(150)]; 				// Radius to move within !!! todo improve this,  
+				T_CALLM1("createVariable", 150)]; 				// Radius to move within !!! todo improve this,  
 		private _moveAST = NEW("AST_MoveGarrison", _moveAST_Args);
 
 		// Add the merge action

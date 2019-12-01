@@ -5,7 +5,7 @@
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Message\Message.hpp"
 #include "..\..\MessageTypes.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\Stimulus\Stimulus.hpp"
 
 /*
@@ -62,7 +62,7 @@ CLASS("StimulusManager", "MessageReceiverEx")
 	METHOD("handleStimulus") {
 		params [["_thisObject", "", [""]], ["_stimulus", [], [[]]]];
 		
-		diag_log format ["[StimulusManager:handleStimulus] stimulus: %1", _stimulus];
+		OOP_INFO_1("Handle stimulus: %1", _stimulus);
 		
 		pr _AIs = GETV(_thisObject, "sensingAIs");
 		pr _type = _stimulus select STIMULUS_ID_TYPE;

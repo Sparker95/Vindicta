@@ -33,7 +33,7 @@ T_SpawnPlayerVariants = [
 		_this linkItem "ItemWatch";
 
 		comment "Set identity";
-		[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
+		//[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
 	},
 	{
 		comment "Exported from Arsenal by william.woodbury";
@@ -65,7 +65,7 @@ T_SpawnPlayerVariants = [
 		_this linkItem "ItemWatch";
 
 		comment "Set identity";
-		[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
+		//[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
 	},
 	{
 		comment "Exported from Arsenal by william.woodbury";
@@ -97,7 +97,7 @@ T_SpawnPlayerVariants = [
 		_this linkItem "ItemWatch";
 
 		comment "Set identity";
-		[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
+		//[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
 	},
 	{
 		comment "Exported from Arsenal by william.woodbury";
@@ -129,7 +129,7 @@ T_SpawnPlayerVariants = [
 		_this linkItem "ItemWatch";
 
 		comment "Set identity";
-		[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
+		//[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
 	},
 	{
 		comment "Exported from Arsenal by william.woodbury";
@@ -161,6 +161,6 @@ T_SpawnPlayerVariants = [
 		_this linkItem "ItemWatch";
 
 		comment "Set identity";
-		[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
+		//[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
 	}
 ];

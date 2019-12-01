@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_SelectFallbackTarget
@@ -28,6 +28,7 @@ CLASS("AST_SelectFallbackTarget", "ActionStateTransition")
 	*/
 	METHOD("new") {
 		params [P_THISOBJECT, 
+			P_OOP_OBJECT("_action"),
 			P_ARRAY("_fromStates"),
 			P_AST_STATE("_successState"),
 			P_AST_VAR("_srcGarrIdVar"),

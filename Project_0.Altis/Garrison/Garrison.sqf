@@ -20,45 +20,45 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	STATIC_VARIABLE("all");
 
-	VARIABLE_ATTR("templateName", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("templateName", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
-	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY]); // The AI brain of this garrison
+	/* save */	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
+	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
+				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("name", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("location", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units
+	/* save */	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE ARG ATTR_SAVE]); // Efficiency vector of all units that can move
+				VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
+				VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
+	/* save */	VARIABLE_ATTR("active",		[ATTR_PRIVATE ARG ATTR_SAVE]); // Set to true after calling activate method
+	/* save */	VARIABLE_ATTR("autoSpawn",	[ATTR_PRIVATE ARG ATTR_SAVE]); // If true, it will be updating its own spawn state even if inactive
+	/* save */	VARIABLE_ATTR("faction",	[ATTR_PRIVATE ARG ATTR_SAVE]); // Template used for loadouts of the garrison
 
-	VARIABLE_ATTR("side", 		[ATTR_PRIVATE]);
-	VARIABLE_ATTR("units", 		[ATTR_PRIVATE]);
-	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("name", 		[ATTR_PRIVATE]);
-	VARIABLE_ATTR("location", 	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("effTotal", 	[ATTR_PRIVATE]); // Efficiency vector of all units
-	VARIABLE_ATTR("effMobile", 	[ATTR_PRIVATE]); // Efficiency vector of all units that can move
-	VARIABLE_ATTR("timer", 		[ATTR_PRIVATE]); // Timer that will be sending PROCESS messages here
-	VARIABLE_ATTR("mutex", 		[ATTR_PRIVATE]); // Mutex used to lock the object
-	VARIABLE_ATTR("active",		[ATTR_PRIVATE]); // Set to true after calling activate method
-	VARIABLE_ATTR("faction",	[ATTR_PRIVATE]); // Template used for loadouts of the garrison
-
-	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("buildResources", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Counters of subcategories
-	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE]);
-	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("countInf",	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("countVeh",	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("countDrone",	[ATTR_PRIVATE ARG ATTR_SAVE]);
+	/* save */	VARIABLE_ATTR("countCargo", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Array with composition: each element at [_cat][_subcat] index is an array of nubmers 
 	// associated with unit's class names, converted from class names with t_fnc_classNameToNubmer
-	VARIABLE("compositionClassNames");
+				VARIABLE_ATTR("compositionClassNames", []); // Must be restored after game is loaded!!
 
 	// Array with composition: each element at [_cat][_subcat] is an amount of units of this type
-	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE]);
+	/* save */	VARIABLE_ATTR("compositionNumbers", [ATTR_PRIVATE ARG ATTR_SAVE]);
 
 	// Flag which is reset at each process call
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
-	VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
-	VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
+				VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -101,6 +101,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("countCargo", 0);
 		T_SETV("location", "");
 		T_SETV("active", false);
+		T_SETV("autoSpawn", false);
 		T_SETV("faction", _faction);
 		T_SETV("buildResources", -1);
 		T_SETV("outdated", true);
@@ -132,12 +133,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		SETV(_thisObject, "AI", _AI);
 
 		// Create a timer to call process method
-		pr _msg = MESSAGE_NEW();
-		MESSAGE_SET_DESTINATION(_msg, _thisObject);
-		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
-		pr _args = [_thisObject, 1, _msg, gTimerServiceMain];
-		pr _timer = NEW("Timer", _args);
-		T_SETV("timer", _timer);
+		T_CALLM0("initTimer");
 
 		// Set position if it was specified
 		if (count _pos > 0) then {
@@ -167,6 +163,17 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_MSG(IS_GARRISON_DESTROYED(_thisObject), "Garrison should be destroyed before it is deleted");
 	} ENDMETHOD;
 	
+	METHOD("initTimer") {
+		params [P_THISOBJECT];
+
+		pr _msg = MESSAGE_NEW();
+		MESSAGE_SET_DESTINATION(_msg, _thisObject);
+		MESSAGE_SET_TYPE(_msg, GARRISON_MESSAGE_PROCESS);
+		pr _args = [_thisObject, 2.5, _msg, gTimerServiceMain];
+		pr _timer = NEW("Timer", _args);
+		T_SETV("timer", _timer);
+	} ENDMETHOD;
+
 	// ----------------------------------------------------------------------
 	// |                          A C T I V A T E                           |
 	// ----------------------------------------------------------------------
@@ -202,6 +209,9 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+
+		// Enable automatic spawning
+		T_CALLM1("enableAutoSpawn", true);
 	} ENDMETHOD;
 
 	/*
@@ -303,14 +313,14 @@ CLASS("Garrison", "MessageReceiverEx");
 		DELETE(T_GETV("AI"));
 		T_SETV("AI", nil);
 
-		T_SETV("effMobile", []);
-		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
-		T_SETV("effTotal", []);
-
 		if(_unregisterFromCmdr) then {
 			// Unregister with the owning commander, do it last because it will cause an unref
 			CALL_STATIC_METHOD("AICommander", "unregisterGarrison", [_thisObject]);
 		};
+
+		T_SETV("effMobile", []);
+		// effTotal will serve as our DESTROYED marker. Set to [] means Garrison is destroyed and should not be used or referenced.
+		T_SETV("effTotal", []);
 
 		// Notify GarrisonServer
 		CALLM1(gGarrisonServer, "onGarrisonDestroyed", _thisObject);
@@ -448,9 +458,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			WARN_GARRISON_DESTROYED;
 		};
 
+		// Update spawn state
+		IF(T_GETV("autoSpawn")) then {
+			T_CALLM("updateSpawnState", []);
+		};
+
 		// Check spawn state if active
 		if (T_GETV("active")) then { 
-			T_CALLM("updateSpawnState", []);
 
 			//OOP_INFO_0("  ACTIVE");
 
@@ -574,7 +588,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("location", _location);
 		
 		// Tell commander to update its location data
-		pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+		pr _AI = CALLSM1("AICommander", "getAICommander", T_GETV("side"));
 		if (!IS_NULL_OBJECT(_AI)) then {
 			if (_currentLoc != "") then {
 				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
@@ -595,6 +609,19 @@ CLASS("Garrison", "MessageReceiverEx");
 		__MUTEX_UNLOCK;
 		
 	} ENDMETHOD;
+
+	/*
+	Method: enableAutoSpawn
+	Enables auto spawning of this garrison.
+	It will make it update its spawn state when inactive.
+	Useful for some 'ambient' garrisons such as city garrisons.
+
+	Parameters: _enable - bool
+	*/
+	METHOD("enableAutoSpawn") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+		T_SETV("autoSpawn", _enable);
+	} ENDMETHOD;
 	
 	METHOD("detachFromLocation") {
 		params [P_THISOBJECT];
@@ -614,7 +641,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			T_SETV("location", "");
 
 			// Notify commander
-			pr _AI = CALLSM1("AICommander", "getCommanderAIOfSide", T_GETV("side"));
+			pr _AI = CALLSM1("AICommander", "getAICommander", T_GETV("side"));
 			if (!IS_NULL_OBJECT(_AI)) then {
 				pr _args0 = [_currentLoc, CLD_UPDATE_LEVEL_UNITS, civilian, true, true, 0];
 				CALLM2(_AI, "postMethodAsync", "updateLocationData", _args0);
@@ -2843,15 +2870,124 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_GETV("templateName")
 	} ENDMETHOD;
 
+	// - - - - - STORAGE - - - - -
+
+	/* override */ METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save all units
+		{
+			private _unit = _x;
+			CALLM1(_storage, "save", _unit);
+		} forEach T_GETV("units");
+
+		// Save our groups
+		{
+			pr _group = _x;
+			diag_log format ["Saving group: %1", _group];
+			CALLM1(_storage, "save", _group);
+		} forEach T_GETV("groups");
+
+		// Save AI
+		pr _AI = T_GETV("AI");
+		if(!IS_NULL_OBJECT(_AI)) then {
+			CALLM1(_storage, "save", _AI);
+		};
+
+		true
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Restore variables which were not saved
+
+		// Load all our units
+		// We don't care that groups will try to restore them as well
+		// Storage class will not load same object twice anyway
+		{
+			private _unit = _x;
+			//diag_log format ["Loading unit: %1", _unit];
+			CALLM1(_storage, "load", _unit);
+		} forEach T_GETV("units");
+
+		// Load groups
+		{
+			pr _group = _x;
+			//diag_log format ["Loading group: %1", _group];
+			CALLM1(_storage, "load", _group);
+		} forEach T_GETV("groups");
+
+		T_SETV("spawned", false);
+
+		// Restore timer
+		T_CALLM0("initTimer");
+
+		// Restore mutex
+		pr _mutex = MUTEX_RECURSIVE_NEW();
+		T_SETV("mutex", _mutex);
+
+		// Other variables...
+		T_SETV("outdated", true);
+		T_SETV("regAtServer", false);
+
+		// Restore composition class names
+		// Since we convert class names to numbers...
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {[]});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+		{
+			pr _className = CALLM0(_x, "getClassName");
+			pr _catID = CALLM0(_x, "getCategory");
+			pr _subCatID = CALLM0(_x, "getSubcategory");
+			(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
+		} forEach T_GETV("units");
+		T_SETV("compositionClassNames", _comp);
+
+		// Load AI object
+		pr _AI = T_GETV("AI");
+		CALLM1(_storage, "load", _AI);
+		if(T_GETV("active")) then {
+			// Start AI object
+			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
+		};
+
+		// Register at garrison server if active
+		if (T_GETV("active")) then {
+			CALLM1(gGarrisonServer, "onGarrisonCreated", _thisObject);
+		};
+
+		// Push to 'all' static variable
+		GETSV("Garrison", "all") pushBack _thisObject;
+
+		true
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("saveStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+	} ENDMETHOD;
+
+	/* override */ STATIC_METHOD("loadStaticVariables") {
+		params [P_THISCLASS, P_OOP_OBJECT("_storage")];
+		SETSV("Garrison", "all", []);
+	} ENDMETHOD;
+
 ENDCLASS;
 
 if (isNil { GETSV("Garrison", "all") } ) then {
 	SETSV("Garrison", "all", []);
 };
 
+
+// - - - - - - SQF VM - - - - - - -
+
 #ifdef _SQF_VM
-
-
 
 ["Garrison.add units", {
 	private _actual = NEW("Garrison", [WEST]);
@@ -2876,6 +3012,46 @@ if (isNil { GETSV("Garrison", "all") } ) then {
 	["Efficiency", CALLM0(_actual, "getEfficiencyTotal") isEqualTo _eff1] call test_Assert;
 	["Composition", CALLM0(_actual, "getCompositionNumbers") isEqualTo _comp1] call test_Assert;
 
+	true
+}] call test_AddTest;
+
+["Garrison.save and load", {
+	private _gar = NEW("Garrison", [WEST ARG [] ARG "military" ARG "tNATO"]);
+	["Garrison is OK 0", CALLM0(_gar, "getSide") == WEST] call test_Assert;
+	private _Test_group_args = [WEST, 0]; // Side, group type
+	private _subcatID = T_INF_rifleman;
+	private _Test_unit_args = [tNATO, T_INF, _subcatID, -1];
+	private _groups = [];
+	private _units = [];
+	for "_nGroups" from 0 to 2 do {
+		private _group = NEW("Group", _Test_group_args);
+		for "_i" from 0 to 4 do
+		{
+			private _unit = NEW("Unit", _Test_unit_args + [_group]);
+			_units pushBack _unit;
+		};
+		CALLM(_gar, "addGroup", [_group]);
+		_groups pushBack _group;
+	};
+
+	["Garrison is OK 1", CALLM0(_gar, "getSide") == WEST] call test_Assert;
+
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordGarrison");
+	CALLM1(_storage, "save", _gar);
+	CALLSM1("Garrison", "saveStaticVariables", _storage);
+
+	{DELETE(_x);} forEach _units;
+	{DELETE(_x);} forEach _groups;
+	CALLM0(_gar, "destroy");
+
+	CALLM1(_storage, "load", _gar);
+	CALLSM1("Garrison", "loadStaticVariables", _storage);
+
+	["Garrison loaded", CALLM0(_gar, "getSide") == WEST] call test_Assert;
+	["Groups are loaded", CALLM0(_groups#0, "getSide") == WEST] call test_Assert;
+	["Units are loaded", CALLM0(_units#0, "getCategory") == T_INF] call test_Assert;
+	true
 }] call test_AddTest;
 
 #endif

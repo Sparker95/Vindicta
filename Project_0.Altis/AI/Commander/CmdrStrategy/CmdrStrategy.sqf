@@ -13,7 +13,7 @@ and override `getLocationDesirability` (or modify the `takeLoc*` member values).
 
 Paremt: <RefCounted>
 */
-CLASS("CmdrStrategy", "RefCounted")
+CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	// takeLoc*Priority are the base priorities the commander will apply when deciding
 	// whether to occupy a location. If it is non zero then the commander will always
 	// desire the location to a certain degree. This value has real no units, but as it 
@@ -245,6 +245,19 @@ CLASS("CmdrStrategy", "RefCounted")
 			P_ARRAY("_detachEff")];
 		_defaultScore
 	} ENDMETHOD;
+
+	// Save all varaibles
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
 
 // Default strategy object, applied when no custom one is specified.

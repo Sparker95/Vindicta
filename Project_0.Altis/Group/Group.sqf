@@ -9,7 +9,7 @@
 #include "..\Mutex\Mutex.hpp"
 #include "..\Message\Message.hpp"
 #include "..\MessageTypes.hpp"
-#include "..\GlobalAssert.hpp"
+#include "..\defineCommon.inc"
 
 // Class: Group
 /*
@@ -26,7 +26,7 @@ Author: Sparker
 CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 	//Variables
-	VARIABLE("data");
+	VARIABLE_ATTR("data", [ATTR_SAVE]);
 
 	// |                             N E W                                  |
 	/*
@@ -1215,4 +1215,96 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		[_nDrivers, _nTurrets, _nCargo]
 	} ENDMETHOD;
 
+
+
+	// - - - - - - - STORAGE - - - - - - - -
+	METHOD("preSerialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		
+		// Save units which we own
+		pr _data = T_GETV("data");
+		{
+			pr _unit = _x;
+			diag_log format ["Saving unit: %1", _unit];
+			CALLM1(_storage, "save", _x);
+		} forEach (_data#GROUP_DATA_ID_UNITS);
+
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		
+		pr _data = +T_GETV("data");
+		_data set [GROUP_DATA_ID_GROUP_HANDLE, 0];
+		_data set [GROUP_DATA_ID_MUTEX, 0];
+		_data set [GROUP_DATA_ID_AI, 0];
+		_data set [GROUP_DATA_ID_SPAWNED, 0];
+
+		_data
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		
+		_serial set [GROUP_DATA_ID_GROUP_HANDLE, grpNull];
+		_serial set [GROUP_DATA_ID_MUTEX, MUTEX_NEW()];
+		_serial set [GROUP_DATA_ID_AI, ""];
+		_serial set [GROUP_DATA_ID_SPAWNED, false];
+
+		T_SETV("data", _serial);
+
+		true
+	} ENDMETHOD;
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Load all units which we own
+		pr _data = T_GETV("data");
+		{
+			pr _unit = _x;
+			CALLM1(_storage, "load", _unit);
+		} forEach (_data#GROUP_DATA_ID_UNITS);
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;
+
+
+// Tests
+#ifdef _SQF_VM
+
+["Group.save and load", {
+
+	_Test_group_args = [WEST, 0]; // Side, group type
+	_Test_unit_args = [tNATO, T_INF, T_INF_LMG, -1];
+
+	private _group = NEW("Group", _Test_group_args);
+	private _units = [];
+	for "_i" from 0 to 3 do {
+		pr _unit = NEW("Unit", _Test_unit_args + [_group]);
+		_units pushBack _unit;
+	};
+
+	pr _storage = NEW("StorageProfileNamespace", []);
+	CALLM1(_storage, "open", "testRecordGroup");
+	CALLM1(_storage, "save", _group);
+	{
+		DELETE(_x);
+	} forEach CALLM0(_group, "getUnits");
+	DELETE(_group);
+	CALLM1(_storage, "load", _group);
+
+	["Object loaded", CALLM0(_group, "getSide") == WEST] call test_Assert;
+	["Group's unit loaded", CALLM0(_units#1, "getCategory") == T_INF] call test_Assert;
+
+	true
+}] call test_AddTest;
+
+
+#endif

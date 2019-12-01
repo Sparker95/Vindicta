@@ -78,17 +78,26 @@ CLASS("SensorGarrisonSound", "SensorGarrisonStimulatable")
 			OOP_INFO_0("  Sending targets:");
 			pr _targets = _soundSources apply {
 				_x params ["_hO", "_time"];
+				pr _unit = GET_UNIT_FROM_OBJECT_HANDLE(_hO);
+				pr _ret = 0;
+				CRITICAL_SECTION {
+					_ret = if (IS_OOP_OBJECT(_unit)) then {
+						pr _distance = (getPos _hO) distance2D _garPos;
+						pr _inaccuracy = _distance*0.1; // We randomize the position a little, depending on how far the target is
+						pr _hOpos = getPos _hO;
+						pr _pos = [(_hOpos#0) + (random _inaccuracy) - 0.5*_inaccuracy, (_hOpos#1) + (random _inaccuracy) - 0.5*_inaccuracy, 0];
+						pr _eff = GET_UNIT_EFFICIENCY_FROM_OBJECT_HANDLE(_hO);
+						pr _target = TARGET_NEW(_unit, 2.0, _pos, _time, +_eff);
 
-				pr _distance = (getPos _hO) distance2D _garPos;
-				pr _inaccuracy = _distance*0.1; // We randomize the position a little, depending on how far the target is
-				pr _hOpos = getPos _hO;
-				pr _pos = [(_hOpos#0) + (random _inaccuracy) - 0.5*_inaccuracy, (_hOpos#1) + (random _inaccuracy) - 0.5*_inaccuracy, 0];
-				pr _target = TARGET_NEW(_hO, 2.0, _pos, _time);
+						OOP_INFO_1("    %1", _target);
 
-				OOP_INFO_1("    %1", _target);
-
-				// Return stimulus
-				_target
+						// Return stimulus
+						_target
+					} else {
+						TARGET_NEW(format ["unknown %1", _hO], 2.0, _pos, _time, +(T_efficiency#T_INF#T_INF_rifleman));
+					};
+				};
+				_ret
 			};
 
 			// Send targets to target sensor

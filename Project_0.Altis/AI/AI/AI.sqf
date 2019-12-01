@@ -8,7 +8,7 @@
 #include "..\..\CriticalSection\CriticalSection.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\Action\Action.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "AI.hpp"
@@ -29,13 +29,13 @@ CLASS("AI", "MessageReceiverEx")
 
 	/* Variable: agent
 	Holds a reference to the unit/group/whatever that owns this AI object*/
-	VARIABLE("agent"); // Pointer to the unit which holds this AI object
+	/* save */	VARIABLE_ATTR("agent", [ATTR_SAVE]);		// Pointer to the unit which holds this AI object
 	/* Variable: currentAction */
-	VARIABLE("worldFacts"); // Array with world facts
-	VARIABLE("timer"); // The timer of this object
-	VARIABLE("processInterval"); // The update interval for the timer, in seconds
-	VARIABLE("sensorStimulusTypes"); // Array with stimulus types of the sensors of this AI object
-	VARIABLE("sensors"); // Array with sensors
+	/* save */	VARIABLE_ATTR("worldFacts", [ATTR_SAVE]);	// Array with world facts
+				VARIABLE("timer");							// The timer of this object
+				VARIABLE("processInterval");				// The update interval for the timer, in seconds
+				VARIABLE("sensorStimulusTypes");			// Array with stimulus types of the sensors of this AI object
+				VARIABLE("sensors");						// Array with sensors
 
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -54,6 +54,7 @@ CLASS("AI", "MessageReceiverEx")
 		SETV(_thisObject, "sensorStimulusTypes", []);
 		SETV(_thisObject, "timer", "");
 		SETV(_thisObject, "processInterval", 1);
+		SETV(_thisObject, "worldFacts", []);
 	} ENDMETHOD;
 
 	// ----------------------------------------------------------------------
@@ -352,6 +353,28 @@ CLASS("AI", "MessageReceiverEx")
 		if (_timer != "") then {
 			CALLM(_timer, "setInterval", [_interval]);
 		};
+	} ENDMETHOD;
+
+	// - - - - STORAGE - - - - -
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		//diag_log "AI postDeserialize";
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Set reasonable default values
+		T_SETV("timer", "");
+		T_SETV("processInterval", 1);
+		T_SETV("sensorStimulusTypes", []);
+		T_SETV("sensors", []);
+
+		// It's up to the inherited class's postDeserialize to restore these variables ^
+		// By reinitializing sensors and doing other things
+
+		true
 	} ENDMETHOD;
 	
 ENDCLASS;

@@ -8,7 +8,7 @@
 #include "..\..\CriticalSection\CriticalSection.hpp"
 #include "..\..\MessageTypes.hpp"
 #include "..\Action\Action.hpp"
-#include "..\..\GlobalAssert.hpp"
+#include "..\..\defineCommon.inc"
 #include "..\goalRelevance.hpp"
 #include "..\Stimulus\Stimulus.hpp"
 #include "AI.hpp"
@@ -38,14 +38,14 @@ Author: Sparker 07.11.2018
 CLASS("AI_GOAP", "AI")
 
 	/* Variable: currentAction */
-	VARIABLE("currentAction"); // The current action
+				VARIABLE("currentAction"); // The current action
 	/* Variable: currentGoal*/
-	VARIABLE("currentGoal"); // The current goal
-	VARIABLE("currentGoalSource"); // The source of the current goal (who gave us this goal)
-	VARIABLE("currentGoalParameters"); // The parameter of the current goal
+				VARIABLE("currentGoal"); // The current goal
+	/* save */	VARIABLE_ATTR("currentGoalSource", [ATTR_SAVE]); // The source of the current goal (who gave us this goal)
+	/* save */	VARIABLE_ATTR("currentGoalParameters", [ATTR_SAVE]); // The parameter of the current goal
 	//VARIABLE("currentGoalState"); // State of the action
-	VARIABLE("goalsExternal"); // Goal suggested to this Agent by another agent
-	VARIABLE("worldState"); // The world state relative to this Agent
+	/* save */	VARIABLE_ATTR("goalsExternal", [ATTR_SAVE]); // Goal suggested to this Agent by another agent
+	/* save */	VARIABLE_ATTR("worldState", [ATTR_SAVE]); // The world state relative to this Agent
 	
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
@@ -1082,4 +1082,20 @@ CLASS("AI_GOAP", "AI")
 	} ENDMETHOD;
 	
 	
+	// - - - - - - STORAGE - - - - -
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		//diag_log "AI_GOAP postDeserialize";
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
+
+		// Restore variables
+		SETV(_thisObject, "currentAction", "");
+		SETV(_thisObject, "currentGoal", "");
+
+		true
+	} ENDMETHOD;
+
 ENDCLASS;

@@ -28,7 +28,7 @@ except__
 {
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
-	//throw _exception;
+	throw _exception;
 	exit__ 1; // Return non-zero to cause CI to report the error
 };
 
@@ -36,7 +36,7 @@ diag_log "----------------------------------------------------------------------
 diag_log "|                  I N I T I A L I Z I N G   M A I N                 |";
 diag_log "----------------------------------------------------------------------";
 {
-	call compile preprocessFileLineNumbers "init.sqf";
+	call compile preprocessFileLineNumbers "initForSQFVM.sqf";
 }
 except__
 {

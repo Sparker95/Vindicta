@@ -336,7 +336,7 @@ CLASS("GarrisonSplitDialog", "")
 		// Send message to the server
 		OOP_INFO_2("Sending split reqest to server: %1", _garRef, _comp);
 		pr _garRef = CALLM0(_garRecord, "getGarrison");
-		pr _AI = CALLSM("AICommander", "getCommanderAIOfSide", [playerSide]);
+		pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 		// Although it's on another machine, messageReceiver class will route the message for us		
 		pr _args = [_garRef, _comp,  clientOwner];
 		CALLM2(_AI, "postMethodAsync", "splitGarrisonFromComposition", _args);

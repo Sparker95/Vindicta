@@ -80,7 +80,7 @@ CLASS("SensorGarrisonIsObserved", "SensorGarrison")
 				//systemChat format ["Location %1 is observed by side: %2, time: %3", _loc, _x, time];
 				
 				// Report to the AICommander of the side that observes this location
-				private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_s]);
+				private _AICommander = CALL_STATIC_METHOD("AICommander", "getAICommander", [_s]);
 				if (!IS_NULL_OBJECT(_AICommander) && _loc != "") then {
 				
 					//OOP_INFO_1("Reporting to AICommander: %1", _AICommander);

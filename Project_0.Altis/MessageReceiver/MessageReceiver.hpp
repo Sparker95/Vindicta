@@ -16,7 +16,7 @@ MessageReceiver_getThread = {
 #ifdef OOP_ASSERT
 #define ASSERT_THREAD(objNameStr) \
 try { \
-	private _properThread = (isNil "_thisScript") or {(([objNameStr] call MessageReceiver_getThread) isEqualTo _thisScript)}; \
+	private _properThread = (isNil "_thisScript") or {(([objNameStr] call MessageReceiver_getThread) isEqualTo _thisScript)} or {!canSuspend}; \
 	private _msg = format ["method is called in wrong thread. File: %1, line: %2", __FILE__, __LINE__]; \
 	ASSERT_MSG(_properThread, _msg); \
 } catch { \

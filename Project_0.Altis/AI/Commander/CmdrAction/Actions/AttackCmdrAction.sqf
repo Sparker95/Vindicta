@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.AttackCmdrAction
@@ -45,15 +45,15 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		T_SETV("srcGarrId", _srcGarrId);
 
 		// Start date for this action, default to immediate
-		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
 		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
-		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
+		private _detachmentEffVar = T_CALLM1("createVariable", EFF_ZERO);
 		T_SETV("detachmentEffVar", _detachmentEffVar);
 
-		private _detachmentCompVar = MAKE_AST_VAR(+T_comp_null);
+		private _detachmentCompVar = T_CALLM1("createVariable", +T_comp_null);
 		T_SETV("detachmentCompVar", _detachmentCompVar);
 
 		// Target could be modified during the action (redirect etc.).
@@ -89,7 +89,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
-		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+		private _srcGarrIdVar = T_CALLM1("createVariable", _srcGarrId);
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
@@ -126,7 +126,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// If we timeout then RTB
 				_splitGarrIdVar, 					// Id of the garrison doing the attacking
 				_targetVar, 						// Target to attack (cluster or garrison supported)
-				MAKE_AST_VAR(200)];					// Move radius
+				T_CALLM1("createVariable", 200)];					// Move radius
 		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
 
 		// private _rtbMoveAST_Args = [
@@ -137,12 +137,13 @@ CLASS("AttackCmdrAction", "CmdrAction")
 		// 		CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when target is dead, we RTB
 		// 		_splitGarrIdVar, 					// Id of garrison to move
 		// 		_targetVar, 						// Target to move to (initially the target cluster)
-		// 		MAKE_AST_VAR(200)]; 				// Radius to move within
+		// 		T_CALLM1("createVariable", 200)]; 				// Radius to move within
 		// private _rtbMoveAST = NEW("AST_MoveGarrison", _rtbMoveAST_Args);
 
 		// TODO: write AST to select a new combat target that is already engaged so we can act as backup
 		// Select an RTB target after the attack, or when the current one is destroyed or otherwise not valid
 		private _newRtbTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],
 				CMDR_ACTION_STATE_RTB, 				// RTB after we selected a target
 				_srcGarrIdVar, 						// Originating garrison (default we return to)
@@ -159,7 +160,7 @@ CLASS("AttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when target is dead. We will select another RTB target
 				_splitGarrIdVar, 					// Id of garrison to move
 				_rtbTargetVar, 						// Target to move to (initially the target cluster)
-				MAKE_AST_VAR(200)]; 				// Radius to move within
+				T_CALLM1("createVariable", 200)]; 				// Radius to move within
 		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
 
 		// Merge back to the source garrison (or whatever RTB target was chosen instead)

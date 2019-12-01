@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.PatrolCmdrAction
@@ -56,14 +56,14 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 #endif
 
 		// Start date for this action, default to immediate
-		private _startDateVar = MAKE_AST_VAR(DATE_NOW);
+		private _startDateVar = T_CALLM1("createVariable", DATE_NOW);
 		T_SETV("startDateVar", _startDateVar);
 
 		// Desired detachment efficiency changes when updateScore is called. This shouldn't happen once the action
 		// has been started, but this constructor is called before that point.
-		private _detachmentEffVar = MAKE_AST_VAR(EFF_ZERO);
+		private _detachmentEffVar = T_CALLM1("createVariable", EFF_ZERO);
 		T_SETV("detachmentEffVar", _detachmentEffVar);
-		private _detachmentCompVar = MAKE_AST_VAR(+T_comp_null);
+		private _detachmentCompVar = T_CALLM1("createVariable", +T_comp_null);
 		T_SETV("detachmentCompVar", _detachmentCompVar);
 
 		// Target is the next waypoint or the RTB target
@@ -102,7 +102,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Call MAKE_AST_VAR directly because we don't won't the CmdrAction to automatically push and pop this value 
 		// (it is a constant for this action so it doesn't need to be saved and restored)
-		private _srcGarrIdVar = MAKE_AST_VAR(_srcGarrId);
+		private _srcGarrIdVar = T_CALLM1("createVariable", _srcGarrId);
 
 		// Split garrison Id is set by the split AST, so we want it to be saved and restored when simulation is run
 		// (so the real value isn't affected by simulation runs, see CmdrAction.applyToSim for details).
@@ -132,6 +132,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 
 		// Select next waypoint for the patrol assigning it to targetVar
 		private _nextWaypointAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_NEXT_WAYPOINT],
 				CMDR_ACTION_STATE_READY_TO_MOVE,	// State change when waypoints remain
 				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when no waypoints remain
@@ -149,13 +150,14 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_NEXT_WAYPOINT,	// State change when target is we go to next waypoint
 				_splitGarrIdVar, 					// Id of garrison to move
 				_targetVar, 						// Target to move to (next waypoint)
-				MAKE_AST_VAR(100)]; 				// Radius to move within
+				T_CALLM1("createVariable", 100)]; 				// Radius to move within
 		// We use attack instead of just move so that garrison will march around a bit at each waypoint. 
 		// TODO: Come up with a better AST for patrol move
 		private _moveWaypointsAST = NEW("AST_GarrisonAttackTarget", _moveWaypointsAST_Args);
 
 		// Select an RTB target after the attack, or when the current one is destroyed or otherwise not valid
 		private _newRtbTargetAST_Args = [
+				_thisObject,
 				[CMDR_ACTION_STATE_RTB_SELECT_TARGET],
 				CMDR_ACTION_STATE_RTB, 				// RTB after we selected a target
 				_srcGarrIdVar, 						// Originating garrison (default we return to)
@@ -172,7 +174,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_RTB_SELECT_TARGET,// State change when target is dead. We will select another RTB target
 				_splitGarrIdVar, 					// Id of garrison to move
 				_targetVar, 						// Target to move to (initially the target cluster)
-				MAKE_AST_VAR(200)]; 				// Radius to move within
+				T_CALLM1("createVariable", 200)]; 				// Radius to move within
 		private _rtbAST = NEW("AST_MoveGarrison", _rtbAST_Args);
 
 		// Merge back to the source garrison (or whatever RTB target was chosen instead)
@@ -450,8 +452,8 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
-		T_SET_AST_VAR("detachmentEffVar", _effAllocated);
-		T_SET_AST_VAR("detachmentCompVar", _compAllocated);
+		SET_AST_VAR(_thisObject, T_GETV("detachmentEffVar"), _effAllocated);
+		SET_AST_VAR(_thisObject, T_GETV("detachmentCompVar"), _compAllocated);
 
 		// CALCULATE THE RESOURCE SCORE
 		// In this case it is how well the source garrison can meet the resource requirements of this action,

@@ -10,7 +10,7 @@
 #include "..\AI\Garrison\AIGarrison.hpp"
 #include "..\Templates\Efficiency.hpp"
 #include "..\Message\Message.hpp"
-#include "..\GlobalAssert.hpp"
+#include "..\defineCommon.inc"
 #include "..\MessageReceiver\MessageReceiver.hpp"
 #include "..\Mutex\Mutex.hpp"
 #include "..\MutexRecursive\MutexRecursive.hpp"

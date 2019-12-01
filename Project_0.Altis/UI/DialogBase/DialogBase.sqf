@@ -130,6 +130,13 @@ CLASS("DialogBase", "")
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, nil];
 	} ENDMETHOD;
 
+	// Deletes this dialog on next frame
+	// Sometimes deleting the dialog from an event handler can crash arma
+	METHOD("deleteOnNextFrame") {
+		params [P_THISOBJECT];
+		_thisObject spawn {DELETE(_this)}; // todo replace with CBA
+	} ENDMETHOD;
+
 	// = = = = = = = = = = = = = = = = = = = = =
 	// Singleton class template
 	STATIC_METHOD("newInstance") {

@@ -51,6 +51,19 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
+	// System notification
+	STATIC_METHOD("createSystem") {
+		params [P_THISOBJECT, P_STRING("_text")];
+
+		private _sound = "defaultNotification";
+		private _picture = ""; // Default picture for now
+		private _duration = 15;
+		private _category = "SYSTEM";
+		private _hint = ""; // Override hint!
+		private _args = [_picture, _category, _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
 	// Basic UI notification
 	STATIC_METHOD("createBasicUI") {
 		params [P_THISOBJECT, P_NUMBER("_type"), P_STRING("_text"), P_STRING("_hint")];

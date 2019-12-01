@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.Actions.MoveCmdrAction
@@ -38,7 +38,7 @@ CLASS("DirectAttackCmdrAction", "CmdrAction")
 		T_PRVAR(target);
 
 		// Assign the action we are performing to the garrison (so it is marked as busy for other actions)
-		private _garrIdVar = MAKE_AST_VAR(_garrId);
+		private _garrIdVar = T_CALLM1("createVariable", _garrId);
 		private _assignAST_Args = [
 				_thisObject, 						// This action, gets assigned to the garrison
 				[CMDR_ACTION_STATE_START], 			// Do this at start
@@ -47,7 +47,7 @@ CLASS("DirectAttackCmdrAction", "CmdrAction")
 		private _assignAST = NEW("AST_AssignActionToGarrison", _assignAST_Args);
 
 		// Assign an attack action
-		private _targetVar = MAKE_AST_VAR(_target);
+		private _targetVar = T_CALLM1("createVariable", _target);
 		private _attackAST_Args = [
 				_thisObject,
 				[CMDR_ACTION_STATE_READY_TO_MOVE], 	// Once we are split and assigned the action we can go
@@ -56,7 +56,7 @@ CLASS("DirectAttackCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END,				// If we timeout then RTB
 				_garrIdVar, 						// Id of the garrison doing the attacking
 				_targetVar, 						// Target to attack (cluster or garrison supported)
-				MAKE_AST_VAR(250)];					// Move radius
+				T_CALLM1("createVariable", 250)];					// Move radius
 		private _attackAST = NEW("AST_GarrisonAttackTarget", _attackAST_Args);
 
 		[_assignAST, _attackAST]

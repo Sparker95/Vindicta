@@ -22,17 +22,15 @@ Class: AI.AIGarrison
 CLASS("AIGarrison", "AI_GOAP")
 
 	// Array of targets known by this garrison
-	VARIABLE("targets");
+	/* save */	VARIABLE_ATTR("targets", [ATTR_SAVE]);
 	// Array of buildings occupied by enemies known by this garrison
-	VARIABLE("buildingsWithTargets");
-	// Array of targets known by this AI which are within the radius from the assignedTargetsPos, updated by sensorGarrisonTargets
-	VARIABLE("assignedTargets");
+				VARIABLE("buildingsWithTargets");
 	// Position of the assigned targets (the center of the cluster typically)
-	VARIABLE("assignedTargetsPos");
+	/* save */	VARIABLE_ATTR("assignedTargetsPos", [ATTR_SAVE]);
 	// Radius where to search for assigned targets
-	VARIABLE("assignedTargetsRadius");
+	/* save */	VARIABLE_ATTR("assignedTargetsRadius", [ATTR_SAVE]);
 	// Bool, set to true if garrison is aware of any targets in the 'assigned targets' area
-	VARIABLE("awareOfAssignedTargets");
+	/* save */	VARIABLE_ATTR("awareOfAssignedTargets", [ATTR_SAVE]);
 
 	VARIABLE("sensorHealth");
 	VARIABLE("sensorState");
@@ -43,16 +41,16 @@ CLASS("AIGarrison", "AI_GOAP")
 	VARIABLE("lastBusyTime");
 
 	// A serialized CmdrActionRecord, to be read by GarrisonServer when it needs to
-	VARIABLE("cmdrActionRecordSerial");
+	/* save */	VARIABLE_ATTR("cmdrActionRecordSerial", [ATTR_SAVE]);
 
 	// Variables below serve for player to get intel from this garrison about various things
 	// Through picking up tablet items or interrogations or whatever
-	VARIABLE("intelGeneral"); // Array with intel item refs known by this garrison
-	VARIABLE("intelPersonal"); // Ref to intel about cmdr action inwhich this garrison ai is involved
-	VARIABLE("knownFriendlyLocations"); // Array with locations about which this garrison knows
+	/* save */	VARIABLE_ATTR("intelGeneral", [ATTR_SAVE]); // Array with intel item refs known by this garrison
+	/* save */	VARIABLE_ATTR("intelPersonal", [ATTR_SAVE]); // Ref to intel about cmdr action inwhich this garrison ai is involved
+	/* save */	VARIABLE_ATTR("knownFriendlyLocations", [ATTR_SAVE]); // Array with locations about which this garrison knows
 
 	// Radio key, string, used for player to intercept intel
-	VARIABLE("radioKey");
+	/* save */	VARIABLE_ATTR("radioKey", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
@@ -60,27 +58,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		ASSERT_GLOBAL_OBJECT(gStimulusManagerGarrison);
 
 		// Initialize sensors
-		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorHealth]);
-		T_SETV("sensorHealth", _sensorHealth); // Keep reference to this sensor in case we want to update it
-		
-		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorTargets]);
-		T_SETV("sensorTargets", _sensorTargets);
-		
-		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
-		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
-		
-		pr _sensorState = NEW("SensorGarrisonState", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorState);
-		T_SETV("sensorState", _sensorState);
-		
-		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorObserved);
-		T_SETV("sensorObserved", _sensorObserved);
-
-		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorSound);
+		T_CALLM0("_initSensors");
 
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
@@ -105,7 +83,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_SETV("worldState", _ws);
 		T_SETV("targets", []);
 		T_SETV("buildingsWithTargets", []);
-		T_SETV("assignedTargets", []);
 		T_SETV("assignedTargetsPos", [0 ARG 0 ARG 0]);
 		T_SETV("assignedTargetsRadius", 0);
 		T_SETV("awareOfAssignedTargets", false);
@@ -115,7 +92,8 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM0(_thisObject, "updateComposition");
 		
 		// Set process interval
-		CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
+		// Makes no sense any more since it's processed in thread's process categories
+		//CALLM1(_thisObject, "setProcessInterval", AI_GARRISON_PROCESS_INTERVAL_DESPAWNED);
 		
 		// Commander action record serial
 		T_SETV("cmdrActionRecordSerial", []);
@@ -136,24 +114,7 @@ CLASS("AIGarrison", "AI_GOAP")
 		T_CALLM0("updateRadioKey");
 
 		#ifdef DEBUG_GOAL_MARKERS
-		// Main marker
-		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
-		pr _name = _thisObject + MRK_GOAL;
-		pr _mrk = createmarker [_name, _pos];
-		_mrk setMarkerType "n_unknown";
-		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 1;
-		_mrk setMarkerText "new...";
-		// Arrow marker (todo)
-		
-		// Arrow marker
-		pr _name = _thisObject + MRK_ARROW;
-		pr _mrk = createMarker [_name, [0, 0, 0]];
-		_mrk setMarkerShape "RECTANGLE";
-		_mrk setMarkerBrush "SolidFull";
-		_mrk setMarkerSize [10, 10];
-		_mrk setMarkerColor _color;
-		_mrk setMarkerAlpha 0.5;
+		T_CALLM0("_initDebugMarkers");
 		#endif
 
 		// Register at stimulus manager
@@ -173,6 +134,65 @@ CLASS("AIGarrison", "AI_GOAP")
 		CALLM1(gStimulusManagerGarrison, "removeSensingAI", _thisObject);
 	} ENDMETHOD;
 	
+	METHOD("_initDebugMarkers") {
+		params [P_THISOBJECT];
+
+		pr _agent = T_GETV("agent");
+
+		// Location
+		pr _loc = CALLM0(_agent, "getLocation");
+		// Position
+		pr _pos = if (_loc != "") then {
+			CALLM0(_loc, "getPos");
+		} else {
+			[0, 0, 0];
+		};
+
+		// Main marker
+		pr _color = [CALLM0(_agent, "getSide"), true] call BIS_fnc_sideColor;
+		pr _name = _thisObject + MRK_GOAL;
+		pr _mrk = createmarker [_name, _pos];
+		_mrk setMarkerType "n_unknown";
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText "new...";
+		// Arrow marker (todo)
+		
+		// Arrow marker
+		pr _name = _thisObject + MRK_ARROW;
+		pr _mrk = createMarker [_name, [0, 0, 0]];
+		_mrk setMarkerShape "RECTANGLE";
+		_mrk setMarkerBrush "SolidFull";
+		_mrk setMarkerSize [10, 10];
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0.5;
+	} ENDMETHOD;
+
+	METHOD("_initSensors") {
+		params [P_THISOBJECT];
+
+		pr _sensorHealth = NEW("SensorGarrisonHealth", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorHealth]);
+		T_SETV("sensorHealth", _sensorHealth); // Keep reference to this sensor in case we want to update it
+		
+		pr _sensorTargets = NEW("SensorGarrisonTargets", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorTargets]);
+		T_SETV("sensorTargets", _sensorTargets);
+		
+		pr _sensorCasualties = NEW("SensorGarrisonCasualties", [_thisObject]);
+		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+		
+		pr _sensorState = NEW("SensorGarrisonState", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorState);
+		T_SETV("sensorState", _sensorState);
+		
+		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorObserved);
+		T_SETV("sensorObserved", _sensorObserved);
+
+		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorSound);
+	} ENDMETHOD;
 	
 	METHOD("process") {
 		params ["_thisObject", ["_accelerate", false]];
@@ -566,7 +586,7 @@ CLASS("AIGarrison", "AI_GOAP")
 	METHOD("updateRadioKey") {
 		params [P_THISOBJECT];
 		pr _side = CALLM0(T_GETV("agent"), "getSide"); // Garrison's side
-		pr _AICommander = CALLSM1("AICommander", "getCommanderAIOfSide", _side);
+		pr _AICommander = CALLSM1("AICommander", "getAICommander", _side);
 		if (!IS_NULL_OBJECT(_AICommander)) then {
 			pr _pos = T_CALLM0("getPos");
 			pr _key = CALLM1(_AICommander, "getRadioKey", _pos);
@@ -599,6 +619,33 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _serial = SERIALIZE(_temp);
 		DELETE(_temp);
 		_serial
+	} ENDMETHOD;
+
+	// - - - - - - STORAGE - - - - - -
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		//diag_log "AIGarrison postDeserialize";
+
+		// Call method of all base classes
+		CALL_CLASS_METHOD("AI_GOAP", _thisObject, "postDeserialize", [_storage]);
+
+		// Restore sensors
+		T_CALLM0("_initSensors");
+
+		// Restore other variables
+		T_SETV("lastBusyTime", time-AI_GARRISON_IDLE_TIME_THRESHOLD-1);
+
+		// Restore debug markers
+		#ifdef DEBUG_GOAL_MARKERS
+		T_CALLM0("_initDebugMarkers");
+		#endif
+
+		// Register at stimulus manager
+		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

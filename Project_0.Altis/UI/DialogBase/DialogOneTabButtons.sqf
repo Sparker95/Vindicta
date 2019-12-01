@@ -86,6 +86,15 @@ CLASS("DialogOneTabButtons", "DialogBase")
 		CALLM1(_tab, "findControl", _tag)
 	} ENDMETHOD;
 
+	// Adds code which will be executed when button with given ID is pushed
+	METHOD("addButtonClickHandler") {
+		params [P_THISOBJECT, P_NUMBER("_ID"), P_CODE("_code")];
+		pr _ctrl = T_CALLM1("getButtonControl", _ID);
+		if (! (isNull _ctrl)) then {
+			_ctrl ctrlAddEventHandler ["buttonClick", _code];
+		};
+	} ENDMETHOD;
+
 ENDCLASS;
 
 CLASS("TabTextWithButtons", "DialogTabBase")

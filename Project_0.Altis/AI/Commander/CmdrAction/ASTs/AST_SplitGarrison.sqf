@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_SplitGarrison
@@ -45,8 +45,6 @@ CLASS("AST_SplitGarrison", "ActionStateTransition")
 			P_AST_VAR("_detachedGarrIdVar")
 		];
 
-		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
-		T_SETV("action", _action);
 		T_SETV("fromStates", _fromStates);
 		T_SETV("successState", _successState);
 		T_SETV("failState", _failState);
@@ -116,10 +114,10 @@ ENDCLASS;
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
-		[MAKE_AST_VAR(0)]+
-		[MAKE_AST_VAR([0] call comp_fnc_new)]+
-		[MAKE_AST_VAR(EFF_MIN_EFF)]+
-		[MAKE_AST_VAR(0)]
+		[CALLM1(_action, "createVariable", 0)]+
+		[CALLM1(_action, "createVariable", [0] call comp_fnc_new)]+
+		[CALLM1(_action, "createVariable", EFF_MIN_EFF)]+
+		[CALLM1(_action, "createVariable", 0)]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -143,24 +141,24 @@ ENDCLASS;
 	SETV(_garrison, "efficiency", _eff1);
 	SETV(_garrison, "composition", _comp1);
 
-	private _splitGarrIdVar = MAKE_AST_VAR(-1);
 	private _action = NEW("CmdrAction", []);
+	private _splitGarrIdVar = CALLM1(_action, "createVariable", -1);
 	private _thisObject = NEW("AST_SplitGarrison", 
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-		[MAKE_AST_VAR(_comp2)]+
-		[MAKE_AST_VAR(_eff2)]+
+		[CALLM1(_action, "createVariable", GETV(_garrison, "id"))]+
+		[CALLM1(_action, "createVariable", _comp2)]+
+		[CALLM1(_action, "createVariable", _eff2)]+
 		[_splitGarrIdVar]
 	);
 
 	private _endState = CALLM(_thisObject, "apply", [_world]);
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
-	["Split garrison var is valid", GET_AST_VAR(_splitGarrIdVar) != -1] call test_Assert;
+	["Split garrison var is valid", GET_AST_VAR(_action, _splitGarrIdVar) != -1] call test_Assert;
 
-	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_splitGarrIdVar)]);
+	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_action, _splitGarrIdVar)]);
 	["Split garrison is valid", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
 
 	["Orig eff", GETV(_garrison, "efficiency") isEqualTo _effr] call test_Assert;
@@ -204,24 +202,24 @@ Test_unit_args = [tNATO, T_INF, T_INF_rifleman, -1];
 	SETV(_garrison, "efficiency", _eff1);
 	SETV(_garrison, "composition", _comp1);
 
-	private _splitGarrIdVar = MAKE_AST_VAR(-1);
 	private _action = NEW("CmdrAction", []);
+	private _splitGarrIdVar = CALLM1(_action, "createVariable", -1);
 	private _thisObject = NEW("AST_SplitGarrison", 
 		[_action]+
 		[[CMDR_ACTION_STATE_START]]+
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-		[MAKE_AST_VAR(_comp2)]+
-		[MAKE_AST_VAR(_eff2)]+
+		[CALLM1(_action, "createVariable", GETV(_garrison, "id"))]+
+		[CALLM1(_action, "createVariable", _comp2)]+
+		[CALLM1(_action, "createVariable", _eff2)]+
 		[_splitGarrIdVar]
 	);
 	
 	private _endState = CALLM(_thisObject, "apply", [_world]);
 
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_END] call test_Assert;
-	["Split garrison var is valid", GET_AST_VAR(_splitGarrIdVar) != -1] call test_Assert;
-	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_splitGarrIdVar)]);
+	["Split garrison var is valid", GET_AST_VAR(_action, _splitGarrIdVar) != -1] call test_Assert;
+	private _splitGarr = CALLM(_world, "getGarrison", [GET_AST_VAR(_action, _splitGarrIdVar)]);
 	["Split garrison is valid", !IS_NULL_OBJECT(_splitGarr)] call test_Assert;
 
 	// Sync the Models

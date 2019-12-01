@@ -13,7 +13,7 @@
 // 	// Can't use normal accessor because it would cause an infinite loop!
 // 	private _side = FORCE_GET_MEM(_garrisonModel, "side");
 // 	if(!isNil "_side") then {
-// 		private _AICommander = CALL_STATIC_METHOD("AICommander", "getCommanderAIOfSide", [_side]);
+// 		private _AICommander = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 // 		if(!IS_NULL_OBJECT(_AICommander)) then {
 // 			GETV(CALLM(_AICommander, "getMessageLoop", []), "scriptHandle")
 // 		} else {

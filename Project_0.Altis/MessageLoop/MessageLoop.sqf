@@ -22,22 +22,26 @@ Author: Sparker
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
-CLASS("MessageLoop", "");
+#define N_MESSAGES_IN_SERIES_DEFAULT 9000
+
+CLASS("MessageLoop", "Storable");
 
 	//Array with messages
-	VARIABLE("msgQueue");
+	/* save */	VARIABLE_ATTR("msgQueue", [ATTR_SAVE]);	// We are saving all the messages in the message queue
 	//Handle to the script which does message processing
-	VARIABLE("scriptHandle");
+				VARIABLE("scriptHandle");
 	//Mutex for accessing the message queue
-	VARIABLE("mutex");
+				VARIABLE("mutex");
 	//Debug name to help read debug printouts
-	VARIABLE("name");
+	/* save */	VARIABLE_ATTR("name", [ATTR_SAVE]);
 	// Process categories
-	VARIABLE("processCategories");
+				VARIABLE("processCategories");
 	// Desired process time fractions calculated from priorities of categories
-	VARIABLE("updateFrequencyFractions");
+				VARIABLE("updateFrequencyFractions");
 	// Amount of messages this message loop will process before switching to process categories
-	VARIABLE("nMessagesInSeries");
+				VARIABLE("nMessagesInSeries");
+	// Sleep interval
+				VARIABLE_ATTR("sleepInterval", [ATTR_SAVE]);
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -47,23 +51,27 @@ CLASS("MessageLoop", "");
 	parameters: _name
 
 	_name - String, optional, name of the message loop used for debug
+	_nMessagesInSeries - number
+	_sleepInterval - number
 
 	Constructor
 	*/
 	METHOD("new") {
-		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", 9000, [0]] ];
+		params [ P_THISOBJECT, ["_name", "", [""]], ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]], ["_sleepInterval", 0.001, [0]] ];
 		T_SETV("msgQueue", []);
 		if (_name == "") then {
 			T_SETV("name", _thisObject);
 		} else {
 			T_SETV("name", _name);
 		};
-		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
-		T_SETV("scriptHandle", _scriptHandle);
 		T_SETV("mutex", MUTEX_NEW());
 		T_SETV("processCategories", []);
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
+		T_SETV("sleepInterval", _sleepInterval);
+		
+		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+		T_SETV("scriptHandle", _scriptHandle);
 	} ENDMETHOD;
 
 	/*
@@ -101,6 +109,17 @@ CLASS("MessageLoop", "");
 	METHOD("setName") {
 		params [P_THISOBJECT, ["_name", "", [""]]];
 		T_SETV("name", _name);
+	} ENDMETHOD;
+
+	/*
+	Method: setMaxMessagesInSeries
+	Sets maximum amount of messages this message loop is allowed to process in series,
+	before switching to processing its process categories.
+	When thread is created, its default value is N_MESSAGES_IN_SERIES_DEFAULT.
+	*/
+	METHOD("setMaxMessagesInSeries") {
+		params [ P_THISOBJECT, ["_nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT, [0]] ];
+		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 	} ENDMETHOD;
 
 	/*
@@ -245,9 +264,15 @@ CLASS("MessageLoop", "");
 			{
 				pr _objs = _x select __PC_ID_OBJECTS;
 				pr _index = _objs findIf {_x select 0 == _object};
-				//if (_index != -1) then {
+				#ifdef _SQF_VM
+				if (_index != -1) then {
+				#endif
+					//diag_log format ["index: %1", _index];
 					_objs deleteAt _index;
 					//true // No need to search any more
+				#ifdef _SQF_VM
+				};
+				#endif
 				//} else {
 				//	false // Need to search other categories, this object is not here
 				//};
@@ -267,6 +292,24 @@ CLASS("MessageLoop", "");
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
 		MUTEX_UNLOCK(_mutex);
+	} ENDMETHOD;
+
+
+
+
+	// STORAGE
+
+	/* override */ METHOD("postDeserialize") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
+		T_SETV("scriptHandle", _scriptHandle);
+		T_SETV("mutex", MUTEX_NEW());
+		T_SETV("processCategories", []);
+		T_SETV("updateFrequencyFractions", []);
+		T_SETV("nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT);
+
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

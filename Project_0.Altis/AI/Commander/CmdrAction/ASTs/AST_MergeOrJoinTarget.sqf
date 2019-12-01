@@ -1,4 +1,4 @@
-#include "..\..\common.hpp"
+#include "common.hpp"
 
 /*
 Class: AI.CmdrAI.CmdrAction.ASTs.AST_MergeOrJoinTarget
@@ -8,7 +8,6 @@ just directly merges/joins.
 Parent: <ActionStateTransition>
 */
 CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
-	VARIABLE_ATTR("action", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("fromGarrDeadState", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("targetDeadState", [ATTR_PRIVATE]);
@@ -40,9 +39,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 			P_AST_VAR("_fromGarrIdVar"),
 			P_AST_VAR("_targetVar")
 		];
-		ASSERT_OBJECT_CLASS(_action, "CmdrAction");
-
-		T_SETV("action", _action);
+		
 		T_SETV("fromStates", _fromStates);
 
 		T_SETV("successState", _successState);
@@ -144,8 +141,8 @@ ENDCLASS;
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
-		[MAKE_AST_VAR(0)]+
-		[MAKE_AST_VAR([TARGET_TYPE_GARRISON, 0])]
+		[CALLM1(_action, "createVariable", 0)]+
+		[CALLM1(_action, "createVariable", [TARGET_TYPE_GARRISON, 0])]
 	);
 	
 	private _class = OBJECT_PARENT_CLASS_STR(_thisObject);
@@ -161,8 +158,8 @@ AST_MergeOrJoinTarget_test_fn = {
 		[CMDR_ACTION_STATE_END]+
 		[CMDR_ACTION_STATE_FAILED_GARRISON_DEAD]+
 		[CMDR_ACTION_STATE_FAILED_TARGET_DEAD]+
-		[MAKE_AST_VAR(GETV(_garrison, "id"))]+
-		[MAKE_AST_VAR(_target)]
+		[CALLM1(_action, "createVariable", GETV(_garrison, "id"))]+
+		[CALLM1(_action, "createVariable", _target)]
 	);
 	CALLM(_thisObject, "apply", [_world])
 };
