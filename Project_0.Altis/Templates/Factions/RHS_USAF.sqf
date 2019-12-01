@@ -42,7 +42,7 @@ _inf set [T_INF_recon_medic, ["rhsusf_socom_marsoc_sarc"]];
 _inf set [T_INF_recon_exp, ["rhsusf_socom_marsoc_cso_breacher","rhsusf_socom_marsoc_cso_eod", "rhsusf_socom_marsoc_cso_mechanic"]];
 //_inf set [T_INF_recon_LAT, [""]];
 _inf set [T_INF_recon_marksman, ["rhsusf_socom_marsoc_sniper", "rhsusf_socom_marsoc_sniper_m107", "rhsusf_socom_marsoc_marksman"]];
-_inf set [T_INF_recon_spotter, ["rhsusf_socom_marsoc_cso_mk17_light", "rhsusf_socom_marsoc_cso_light", "rhsusf_socom_marsoc_spotter"]];
+//_inf set [T_INF_recon_spotter, ["rhsusf_socom_marsoc_cso_mk17_light", "rhsusf_socom_marsoc_cso_light", "rhsusf_socom_marsoc_spotter"]]; // There is no T_INF_recon_spotter
 _inf set [T_INF_recon_JTAC, ["rhsusf_socom_marsoc_jtac", "rhsusf_socom_marsoc_jfo"]];
 
 

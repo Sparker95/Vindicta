@@ -41,7 +41,7 @@ _inf set [T_INF_recon_rifleman, ["rhs_vmf_recon_rifleman", "rhs_vmf_recon_riflem
 _inf set [T_INF_recon_medic, ["rhs_vmf_recon_medic"]];
 _inf set [T_INF_recon_exp, ["rhs_vmf_recon_grenadier", "rhs_vmf_recon_grenadier_scout"]];
 _inf set [T_INF_recon_LAT, ["rhs_vmf_recon_rifleman_lat"]];
-_inf set [T_INF_recon_LMG, ["rhs_vmf_recon_arifleman", "rhs_vmf_recon_arifleman_scout"]];
+//_inf set [T_INF_recon_LMG, ["rhs_vmf_recon_arifleman", "rhs_vmf_recon_arifleman_scout"]]; // There is no T_INF_recon_LMG right now
 _inf set [T_INF_recon_marksman, ["rhs_vmf_recon_marksman", "rhs_vmf_recon_marksman_vss"]];
 _inf set [T_INF_recon_JTAC, ["rhs_vmf_recon_rifleman_scout", "rhs_vmf_recon_rifleman_scout_akm"]];
 
@@ -59,11 +59,11 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhs_uaz_MSV_01"]];
 
 _veh set [T_VEH_car_unarmed, ["rhs_uaz_open_MSV_01", "RHS_UAZ_MSV_01"]];
-_veh set [T_VEH_car_armed, ["rhsgref_nat_uaz_spg9", "rhsgref_nat_uaz_dshkm" "rhsgref_nat_uaz_ags"]];
+_veh set [T_VEH_car_armed, ["rhsgref_nat_uaz_spg9", "rhsgref_nat_uaz_dshkm", "rhsgref_nat_uaz_ags"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhs_tigr_msv", "rhs_tigr_m_msv", "rhsgref_BRDM2UM_msv"]];
 _veh set [T_VEH_MRAP_HMG, ["rhs_tigr_sts_msv", "rhsgref_BRDM2_msv", "rhsgref_BRDM2_HQ_msv"]];
-_veh set [T_VEH_MRAP_GMG, ["rhs_tigr_sts_msv" "rhsgref_BRDM2_ATGM_msv"]];
+_veh set [T_VEH_MRAP_GMG, ["rhs_tigr_sts_msv", "rhsgref_BRDM2_ATGM_msv"]];
 
 _veh set [T_VEH_IFV, ["rhs_bmp2_tv", "rhs_bmp2k_tv", "rhs_bmp3_msv", "rhs_bmp3_late_msv"]];
 _veh set [T_VEH_APC, ["rhs_btr80_msv", "rhs_btr80a_msv"]];
