@@ -5,6 +5,11 @@
 // No saving
 enableSaving [ false, false ]; // Saving disabled without autosave.
 
+// Show hint if game mode was not initialized
+if(!CALLM0(gGameManager, "isGameModeInitialized")) then {
+	CALLSM1("NotificationFactory", "createSystem", "Press [U] to initialize the game mode or load a previous saved game");
+};
+
 if (true) exitWith {}; // Bail to avoid legacy code
 
 

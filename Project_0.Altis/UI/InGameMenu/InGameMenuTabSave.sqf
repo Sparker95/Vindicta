@@ -6,6 +6,8 @@
 #define OFSTREAM_FILE "UI.rpt"
 #include "..\..\OOP_Light\OOP_Light.h"
 
+#include "..\..\GameManager\GameManager.hpp"
+
 #define __CLASS_NAME "InGameMenuTabSave"
 
 #define pr private
@@ -37,7 +39,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		// Add event handlers
 		T_CALLM3("controlAddEventHandler", "TAB_SAVE_BUTTON_NEW", "buttonClick", "onButtonNewSave");
 		T_CALLM3("controlAddEventHandler", "TAB_SAVE_BUTTON_OVERWRITE", "buttonClick", "onButtonOverwriteSavedGame");
-		T_CALLM3("controlAddEventHandler", "TAB_SAVE_BUTTON_LOAD", "buttonClick", "onButtonLoadSave");
+		T_CALLM3("controlAddEventHandler", "TAB_SAVE_BUTTON_LOAD", "buttonClick", "onButtonLoadSavedGame");
 		T_CALLM3("controlAddEventHandler", "TAB_SAVE_BUTTON_DELETE", "buttonClick", "onButtonDeleteSavedGame");
 		T_CALLM3("controlAddEventHandler", "TAB_SAVE_LISTNBOX_SAVES", "LBSelChanged", "onListboxSelChanged");
 
@@ -211,19 +213,40 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		NEW("DialogConfirmAction", _args);
 	} ENDMETHOD;
 
+	METHOD("_loadSavedGame") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
 
+		OOP_INFO_1("Sending request to load saved game: %1", _recordName);
+		pr _args = [clientOwner, _recordName];
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientLoadSavedGame", _args);
+	} ENDMETHOD;
 
-	METHOD("onButtonLoadSave") {
+	METHOD("onButtonLoadSavedGame") {
 		params [P_THISOBJECT];
 
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 		if (_index == -1) exitWith {};
 
 		pr _selRecordData = T_GETV("recordData") select _index;
-		pr _recordName = _selRecordData#0;
+		_selRecordData params ["_recordName", "_header", "_errors"];
+
+		// Check if versions match
+		if (INCOMPATIBLE_SAVE_VERSION in _errors) exitWith {
+			pr _dialogObj = T_CALLM0("getDialogObject");
+			pr _text = format ["Error: version is incompatible: save: %1, current: %2", GETV(_header,"saveVersion"), call misc_fnc_getSaveVersion];
+			CALLM1(_dialogObj, "setHintText", "Error: saved game version is incompatible");
+		};
+
+		// Show a confirmation dialog
 		pr _args = [format ["Load this saved game?\n%1", _recordName],
-			[111], {systemChat "You clicked yes"},
-			[222], {systemChat "You clicked no"}];
+			[_recordName],
+			{
+				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
+				if (!IS_NULL_OBJECT(_instance)) then {
+					CALLM1(_instance, "_loadSavedGame", _this#0);
+				};
+			},
+			[], {}];
 		NEW("DialogConfirmAction", _args);
 	} ENDMETHOD;
 

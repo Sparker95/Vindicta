@@ -1259,7 +1259,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");
 		gMessageLoopCommanderEast = T_GETV("messageLoopCommanderWest");
 
-		// FInish message loop setup
+		// Setup client-side message loop
+		if(HAS_INTERFACE) then {
+			// Message loop for client side checks: undercover, location visibility, etc
+			gMsgLoopPlayerChecks = NEW("MessageLoop", ["Player checks"]);
+		};
+
+		// Finish message loop setup
 		T_CALLM0("_setupMessageLoops");
 
 		// Create other global objects
