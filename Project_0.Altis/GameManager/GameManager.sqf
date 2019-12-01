@@ -454,6 +454,8 @@ CLASS("GameManager", "MessageReceiverEx")
 		pr _text = "Game is being initialized. It can take up to several minutes.";
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
 
+		uisleep 0.05; // Let it send the messages
+
 		// Setup variables
 		T_SETV("saveID", 0);
 		T_SETV("campaignName", _campaignName);

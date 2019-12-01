@@ -5,7 +5,7 @@
 
 // Debug flag, will limit generation or locations to a small area
 #ifndef RELEASE_BUILD
-#define __SMALL_MAP
+//#define __SMALL_MAP
 #endif
 
 
