@@ -4,7 +4,9 @@
 #define TIMER_SERVICE_RESOLUTION 0.45
 
 // Debug flag, will limit generation or locations to a small area
+#ifndef RELEASE_BUILD
 #define __SMALL_MAP
+#endif
 
 
 #define MESSAGE_LOOP_MAIN_MAX_MESSAGES_IN_SERIES 16
