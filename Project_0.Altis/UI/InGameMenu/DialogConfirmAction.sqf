@@ -38,7 +38,7 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 
 		OOP_INFO_1("Button was clicked: %1", _ID);
 
-		[_thisObject] call OOP_dumpAllVariables;
+		//[_thisObject] call OOP_dumpAllVariables;
 
 		if (_ID == 0) then { // Yes
 			T_GETV("argsYes") call T_GETV("codeYes");

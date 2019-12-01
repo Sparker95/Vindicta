@@ -324,7 +324,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Add data to the JIP queue so that clients can also initialize
 						// Execute everywhere but not on server
-						REMOTE_EXEC_CALL_STATIC_METHOD("GameMode", "staticInitGameModeClient", [T_GETV("gameModeClassName")], -2, "GameManager_initGameModeClient");
+						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], -2, "GameManager_initGameModeClient");
 
 						// Set flag
 						T_SETV("gameModeInitialized", true);
@@ -474,7 +474,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 		// Add data to the JIP queue so that clients can also initialize
 		// Execute everywhere but not on server
-		REMOTE_EXEC_CALL_STATIC_METHOD("GameMode", "staticInitGameModeClient", [_className], -2, "GameManager_initGameModeClient");
+		REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [_className], -2, "GameManager_initGameModeClient");
 
 		// Set flag
 		T_SETV("gameModeInitialized", true);
@@ -484,8 +484,8 @@ CLASS("GameManager", "MessageReceiverEx")
 	METHOD("initGameModeClient") {
 		params [P_THISOBJECT, P_STRING("_className")];
 		OOP_INFO_1("Initializing game mode on client: %1", _className);
-		gGameModeClient = NEW(_className, []);
-		CALLM0(gGameModeClient, "init");
+		gGameMode = NEW(_className, []);
+		CALLM0(gGameMode, "init");
 		OOP_INFO_0("Finished initializing game mode");
 
 		// Set flag
@@ -495,7 +495,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	METHOD("staticInitGameModeClient") {
 		params [P_THISCLASS, P_STRING("_className")];
 		pr _instance = CALLSM0("GameManager", "getInstance");
-		CALLM2(_instance, "postMethodAsync", "initGameModeClient", _className);
+		CALLM2(_instance, "postMethodAsync", "initGameModeClient", [_className]);
 	} ENDMETHOD;
 
 

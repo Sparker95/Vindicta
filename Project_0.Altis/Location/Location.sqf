@@ -1415,6 +1415,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		PUBLIC_VAR(_thisObject, "allowedAreas");
 		PUBLIC_VAR(_thisObject, "type");
 		PUBLIC_VAR(_thisObject, "wasOccupied");
+		PUBLIC_VAR(_thisObject, "parent");
 
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;

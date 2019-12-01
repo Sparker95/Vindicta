@@ -386,7 +386,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM(gMessageLoopGroupAI, "addProcessCategory", ["AIGroupLow" ARG 10 ARG 2]); // Tag, priority, min interval
 		};
 
-		if(!IS_NULL_OBJECT("messageLoopGameMode")) then {
+		if(!IS_NULL_OBJECT(T_GETV("messageLoopGameMode"))) then {
 			CALLM(gMessageLoopGameMode, "addProcessCategory", ["GameModeProcess" ARG 10 ARG 60 ARG 120]);
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
