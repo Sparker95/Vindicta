@@ -38,20 +38,6 @@ CLASS("InGameMenuTabNotes", "DialogTabBase")
 		SETSV("InGameMenuTabNotes", "instance", nil);
 	} ENDMETHOD;
 
-	/*
-	STATIC_METHOD("showServerResponse") {
-		params [P_THISCLASS, P_STRING("_text")];
-		// If this tab is already closed, just throw text into system chat
-		if (isNil "gTabCommander") then {
-			systemChat _text;
-		} else {
-			pr _thisObject = gTabCommander;
-			pr _dialogObj = T_CALLM0("getDialogObject");
-			CALLM1(_dialogObj, "setHintText", _text);
-		};
-	} ENDMETHOD;
-	*/
-
 	// Called before this tab is deleted but when controls still exist
 	// Override for custom functionality
 	/* virtual */ METHOD("beforeDelete") {

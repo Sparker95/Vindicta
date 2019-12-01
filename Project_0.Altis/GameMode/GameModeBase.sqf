@@ -212,9 +212,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif
 
 			// Hide the allowed area markers
-			#ifdef RELEASE_BUILD
+			//#ifdef RELEASE_BUILD
 			CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
-			#endif
+			//#endif
 
 			T_CALLM("initClientOnly", []);
 		};

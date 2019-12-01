@@ -12,8 +12,6 @@
 
 CLASS(__CLASS_NAME, "DialogTabBase")
 
-	STATIC_VARIABLE("instance");
-
 	METHOD("new") {
 		params [P_THISOBJECT];
 		SETSV(__CLASS_NAME, "instance", _thisObject);
@@ -108,19 +106,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Send data to server's GameManager
 		pr _gameModeParams = [_enemyTemplateName, _policeTemplateName, _enemyForcePercent];
-		pr _args = [clientOwner, _gameModeClassName, _gameModeParams];
-		CALLM2(gGameManagerServer, "postMethodAsync", "initGameModeServer", _args);
+		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName];
+		CALLM2(gGameManagerServer, "postMethodAsync", "initCampaignServer", _args);
 
-	} ENDMETHOD;
-
-	STATIC_METHOD("showServerResponse") {
-		params [P_THISCLASS, P_STRING("_text")];
-		pr _instance = GETSV(__CLASS_NAME, "instance");
-		if (!isNil "_instance") then {
-			pr _thisObject = _instance;
-			pr _dialogObj = T_CALLM0("getDialogObject");
-			CALLM1(_dialogObj, "setHintText", _text);
-		};
 	} ENDMETHOD;
 
 ENDCLASS;

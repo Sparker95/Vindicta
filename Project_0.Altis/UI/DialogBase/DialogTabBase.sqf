@@ -23,6 +23,9 @@ CLASS("DialogTabBase", "")
 
 	VARIABLE("dialogObj");
 
+	STATIC_VARIABLE("instance");	// Derived classes must manage this variable
+									// If they need "getInstance" to work
+
 	// Private, don't call this on your own
 	METHOD("new") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_dialogObj")];
@@ -160,6 +163,30 @@ CLASS("DialogTabBase", "")
 	// The main control of the tab (group) is resized separately, no need to resize it
 	/* virtual */ METHOD("resize") {
 		params [P_THISOBJECT, P_NUMBER("_width"), P_NUMBER("_height")];
+	} ENDMETHOD;
+
+	// Method for showing various responses from the server
+	// By default it outputs the text to the hint bar at the bottom
+	/* virtual */ STATIC_METHOD("showServerResponse") {
+		params [P_THISCLASS, P_STRING("_text")];
+		pr _instance = CALLSM0(_thisClass, "getInstance");
+		if (!isNil "_instance") then {
+			if (!IS_NULL_OBJECT(_instance)) then {
+				pr _thisObject = _instance;
+				pr _dialogObj = CALLM0(_thisObject, "getDialogObject");
+				CALLM1(_dialogObj, "setHintText", _text);
+			};
+		};
+	} ENDMETHOD;
+
+	// Typically there is only one instance of each tab on the screen
+	// So there is a method to get the OOP object handle
+	// By default it reads the "instance" static variable of the current class
+	/* virtual */ STATIC_METHOD("getInstance") {
+		params [P_THISCLASS];
+		pr _instance = GETSV(_thisClass, "instance");
+		if (isNil "_instance") exitWith {NULL_OBJECT};
+		_instance
 	} ENDMETHOD;
 
 ENDCLASS;

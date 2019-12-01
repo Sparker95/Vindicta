@@ -222,8 +222,10 @@ CLASS("Storage", "")
 
 			pr _className = GET_OBJECT_CLASS(_valueOrRef);		// Save parent class name
 			pr _isPublic = IS_PUBLIC(_valueOrRef);				// bool
+			pr _isPublicStr = ["0", "1"] select _isPublic;
+			//diag_log format ["%1 is public: %2 %3", _valueOrRef, _isPublic, _isPublicStr];
 			T_CALLM2("saveString", _valueOrRef + "_" + OOP_PARENT_STR, _className);	
-			T_CALLM2("saveString", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublic); // as a public object
+			T_CALLM2("saveString", _valueOrRef + "_" + OOP_PUBLIC_STR, _isPublicStr);
 
 			// Add object ref to the map
 			_savedObjectsMap setVariable [_valueOrRef, true];
@@ -278,7 +280,9 @@ CLASS("Storage", "")
 				_ref
 			};
 
-			pr _isPublic = T_CALLM1("loadString", _ref + "_" +  OOP_PUBLIC_STR);
+			pr _isPublicStr = T_CALLM1("loadString", _ref + "_" + OOP_PUBLIC_STR);
+			pr _isPublic = _isPublicStr == "1";
+			//diag_log format ["load %1 is public %2 %3", _ref, _isPublicStr, _isPublic];
 			pr _serialStr = T_CALLM1("loadString", _ref);	// Variable with name = ref is the serialized object
 			#ifdef _SQF_VM
 			pr _serial = call compile _serialStr;
@@ -411,7 +415,7 @@ CLASS("Storage", "")
 
 	// Saves variable
 	/* virtual */ METHOD("saveString") {
-		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
+		params [P_THISOBJECT, P_STRING("_varName"), P_STRING("_value")];
 	} ENDMETHOD;
 
 	// Loads variable, returns the value it has read

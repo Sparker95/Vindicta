@@ -16,6 +16,9 @@ Performs saving data into profile namespace
 #define __RECORD_MASTER_RECORD "masterRecord"
 #define __VAR_ALL_RECORDS "__allRecords_"
 
+// Variable within each record which stores all variables
+#define __VAR_ALL_VARIABLES "__allVariables"
+
 // Prefix of all variables in the profile namespace
 #define __NS_VAR_PREFIX(prefix) (toLower (__NAMESPACE_TAG + prefix))
 
@@ -37,12 +40,14 @@ CLASS(__CLASS_NAME, "Storage")
 	VARIABLE("bOpen");			// Bool, true if open
 	VARIABLE("currentRecord");	// String, current record name
 	VARIABLE("currentPrefix");	// String, a unique prefix for all variables of this record
+	VARIABLE("allVariables");	// All variables in this record
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("bOpen", false);
 		T_SETV("currentPrefix", "_error_prefix_");
 		T_SETV("currentRecord", "_error_record_");
+		T_SETV("allVariables", []);
 	} ENDMETHOD;
 
 	/* override */ METHOD("open") {
@@ -72,6 +77,18 @@ CLASS(__CLASS_NAME, "Storage")
 			// Read prefix
 			pr _prefix = _entry#RECORD_ID_PREFIX;
 			T_SETV("currentPrefix", _prefix);
+
+			T_SETV("bOpen", true);
+			T_SETV("currentRecord", _recordName);
+
+			// Read all variables
+			pr _allVariablesStr = T_CALLM1("_loadString", __VAR_ALL_VARIABLES);
+			#ifndef _SQF_VM
+			pr _allVariables = parseSimpleArray _allVariablesStr;
+			#else
+			pr _allVariables = call compile _allVariablesStr;
+			#endif
+			T_SETV("allVariables", _allVariables);
 		} else {
 			// Add to the record table
 			pr _recordTable = T_CALLM0("_loadRecordTable");
@@ -79,10 +96,15 @@ CLASS(__CLASS_NAME, "Storage")
 			_recordTable pushBack [_recordName, _prefix];
 			T_CALLM1("_saveRecordTable", _recordTable);
 			T_SETV("currentPrefix", _prefix);
+			T_SETV("allVariables", []);
+
+			T_SETV("bOpen", true);
+			T_SETV("currentRecord", _recordName);
+
+			T_CALLM2("_saveString", __VAR_ALL_VARIABLES, "[]");
 		};
 		
-		T_SETV("bOpen", true);
-		T_SETV("currentRecord", _recordName);
+		
 	} ENDMETHOD;
 
 	// Must close the file or whatever
@@ -94,7 +116,9 @@ CLASS(__CLASS_NAME, "Storage")
 		// Bail if not open
 		if (!T_GETV("bOpen")) exitWith {};
 
-		pr _recordName = T_GETV("currentRecord");
+		// Save 'allVariables' variable
+		pr _allVariablesStr = str T_GETV("allVariables");
+		T_CALLM2("_saveString", __VAR_ALL_VARIABLES, _allVariablesStr);
 
 		saveProfileNamespace;	// Commit all the data we wrote
 		T_SETV("bOpen", false);
@@ -108,9 +132,9 @@ CLASS(__CLASS_NAME, "Storage")
 
 	// Saves variable, returns true on success
 	/* override */ METHOD("saveString") {
-		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
-		
-		//diag_log format ["Save variable: %1", _this];
+		//diag_log format ["Save string: %1", _this];
+
+		params [P_THISOBJECT, P_STRING("_varName"), P_STRING("_value")];
 		
 		#ifdef OOP_ASSERT
 		// Bail if not open
@@ -119,6 +143,14 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 		#endif
 
+		T_CALLM2("_saveString", _varName, _value);
+
+		// Add to the array of all variables
+		T_GETV("allVariables") pushBackUnique _varName;
+	} ENDMETHOD;
+
+	/* private */ METHOD("_saveString") {
+		params [P_THISOBJECT, P_STRING("_varName"), P_DYNAMIC("_value")];
 		__PNS setVariable [__NS_VAR_NAME(T_GETV("currentPrefix"), _varName), _value];
 	} ENDMETHOD;
 
@@ -133,6 +165,11 @@ CLASS(__CLASS_NAME, "Storage")
 		};
 		#endif
 
+		T_CALLM1("_loadString", _varName);
+	} ENDMETHOD;
+
+	/* private */ METHOD("_loadString") {
+		params [P_THISOBJECT, P_STRING("_varName")];
 		__PNS getVariable __NS_VAR_NAME(T_GETV("currentPrefix"), _varName)
 	} ENDMETHOD;
 
@@ -168,25 +205,32 @@ CLASS(__CLASS_NAME, "Storage")
 	/* override */ METHOD("eraseRecord") {
 		params [P_THISOBJECT, P_STRING("_recordName")];
 
+		OOP_INFO_1("ERASE RECORD: %1", _recordName);
+
 		_recordName = toLower _recordName;
 
 		pr _entry = T_CALLM1("_findRecordTableEntry", _recordName);
 
 		// Bail if there is no such record
 		if (count _entry == 0) exitWith {
+			OOP_INFO_0("  Record not found");
 			true
 		};
 
 		pr _prefix = _entry#RECORD_ID_PREFIX;
 
-		// Iterate all variables and delete those which are from this record
-		pr _prefix = __NS_VAR_PREFIX(_prefix);
-		pr _len = count _prefix;
+		// Read all variables of this record and erase them
+		pr _allVariablesStr = __PNS getVariable [__NS_VAR_NAME(_prefix, __VAR_ALL_VARIABLES), []];
+		#ifndef _SQF_VM
+		pr _allVariables = parseSimpleArray _allVariablesStr;
+		#else
+		pr _allVariables = call compile _allVariablesStr;
+		#endif
+		OOP_INFO_1("Erasing %1 variables", count _allVariables);
 		{
-			if(_prefix isEqualTo (_x select [0, _len])) then {
-				profileNamespace setVariable [_x, nil];
-			};
-		} forEach (allVariables profileNamespace);
+			__PNS setVariable [__NS_VAR_NAME(_prefix, _x), nil];
+		} forEach _allVariables;
+		__PNS setVariable [__NS_VAR_NAME(_prefix, __VAR_ALL_VARIABLES), nil];
 
 		// Remove it from the array of all records
 		pr _recordTable = T_CALLM0("_loadRecordTable");
@@ -293,15 +337,15 @@ ENDCLASS;
 	pr _value = "abcd_efgh";
 	pr _varName0 = "testVar0";
 	pr _varName1 = "testVar1";
-	CALLM2(_obj2, "saveString", _varName0, 11);
-	CALLM2(_obj2, "saveString", _varName1, 22);
-	["Test var 0", CALLM1(_obj2, "loadString", _varName0) == 11] call test_Assert;
-	["Test var 1", CALLM1(_obj2, "loadString", _varName1) == 22] call test_Assert;
+	CALLM2(_obj2, "saveString", _varName0, "11");
+	CALLM2(_obj2, "saveString", _varName1, "22");
+	["Test var 0", CALLM1(_obj2, "loadString", _varName0) == "11"] call test_Assert;
+	["Test var 1", CALLM1(_obj2, "loadString", _varName1) == "22"] call test_Assert;
 
 	// Try to erase variables
 	CALLM1(_obj2, "eraseString", _varName0);
 	["Erase var 0", isNil {CALLM1(_obj2, "loadString", _varName0)}] call test_Assert;
-	CALLM2(_obj2, "saveString", _varName0, 11);	// Revert it back
+	CALLM2(_obj2, "saveString", _varName0, "11");	// Revert it back
 
 
 	// Try to delete the objects
@@ -319,8 +363,8 @@ ENDCLASS;
 	pr _value = "abcd_efgh";
 	pr _varName0 = "testVar0";
 	pr _varName1 = "testVar1";
-	["Test var 0", CALLM1(_obj2, "loadString", _varName0) == 11] call test_Assert;
-	["Test var 1", CALLM1(_obj2, "loadString", _varName1) == 22] call test_Assert;
+	["Test var 0", CALLM1(_obj2, "loadString", _varName0) == "11"] call test_Assert;
+	["Test var 1", CALLM1(_obj2, "loadString", _varName1) == "22"] call test_Assert;
 
 	// Add more records
 	pr _obj1 = NEW(__CLASS_NAME, []);

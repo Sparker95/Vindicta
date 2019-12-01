@@ -8,7 +8,7 @@ Runs in its own thread, because all other threads are saved and loaded.
 It also handles some client requests about saving/loading the game, and initial mission initialization.
 */
 
-#define __STORAGE_CLASS "StorageProfileNamespace"
+#define __STORAGE_CLASS __STORAGE_CLASS
 
 #define pr private
 
@@ -20,10 +20,21 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	VARIABLE("gameModeInitialized");	// State of the game for this machine
 
+	VARIABLE("campaignName");		// Campaign name
+	VARIABLE("saveID");				// saveID property of SaveGameHeader
+	VARIABLE("campaignStartDate");	// In-game date when the campaign was started
+	VARIABLE("templates");			// Array of templates currently used
+	VARIABLE("gameModeClassName");	// 
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 
 		T_SETV("gameModeInitialized", false);
+		T_SETV("saveID", 0);
+		T_SETV("campaignName", "_noname_");
+		T_SETV("templates", []);
+		T_SETV("campaignStartDate", date);
+		T_SETV("gameModeClassName", "_noname_");
 
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
@@ -41,6 +52,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		if(IS_SERVER) then {
 			// Initialize player database
 			gPlayerDatabaseServer = NEW("PlayerDatabaseServer", []);
+
 		};
 
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
@@ -91,8 +103,11 @@ CLASS("GameManager", "MessageReceiverEx")
 
 	// - - - - - Saved game management - - - - -
 
-	METHOD("getAllSavedGames") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
+	// Reads all headers of saved games from storage
+	// Returns an array of [record name(string), header(ref)]
+	// !!! Note: headers must be deleted from RAM afterwards !!!
+	METHOD("readAllSavedGameHeaders") {
+		params [P_THISOBJECT];
 		pr _storage = NEW(__STORAGE_CLASS, []);
 
 		pr _allRecords = CALLM0(_storage, "getAllRecords");
@@ -100,7 +115,7 @@ CLASS("GameManager", "MessageReceiverEx")
 		OOP_INFO_1("All records: %1", _allRecords);
 
 		// Read headers of all records
-		pr _allHeaders = [];
+		pr _allRecordNamesAndHeaders = [];
 		{
 			pr _recordName = _x;
 			CALLM1(_storage, "open", _recordName);
@@ -109,7 +124,7 @@ CLASS("GameManager", "MessageReceiverEx")
 				pr _headerRef = CALLM1(_storage, "load", "header");
 				if (!isNil "_headerRef") then {
 					pr _newHeader = CALLM2(_storage, "load", _headerRef, true); // Create a new object
-					_allHeaders pushBack _newHeader;
+					_allRecordNamesAndHeaders pushBack [_recordName, _newHeader];
 				} else {
 					OOP_ERROR_1("Save game header not found for %1", _recordName);
 				};
@@ -119,23 +134,35 @@ CLASS("GameManager", "MessageReceiverEx")
 			CALLM0(_storage, "close");
 		} forEach _allRecords;
 
+		DELETE(_storage);
+
+		// Return
+		_allRecordNamesAndHeaders
+	} ENDMETHOD;
+
+	// Checks all headers if they can be loaded
+	// Parameters: _recordNamesAndHeaders - see readAllSavedGameHeaders output
+	// Returns an array of [record name(string), header(ref), errors(array)]
+	METHOD("checkAllHeadersForLoading") {
+		params [P_THISOBJECT, P_ARRAY("_recordNamesAndHeaders")];
 		// Process all headers and check if these files can be loaded
-		pr _response = []; // Array with server's response
-		OOP_INFO_1("Checking %1 headers:", count _allRecords);
-		pr _saveVersion = call mist_fnc_getSaveVersion;
+		pr _return = []; // Array with server's response
+		OOP_INFO_1("Checking %1 headers:", count _recordNamesAndHeaders);
+		pr _saveVersion = call misc_fnc_getSaveVersion;
 		{
-			OOP_INFO_1("  checking header: %1", _x);
+			_x params ["_recordName", "_header"];
+			OOP_INFO_2("  checking header: %1 of record: %2", _header, _recordName);
 
 			pr _errors = [];
 
-			if (GETV(_x, "saveVersion") != _saveVersion) then {
+			if (GETV(_header, "saveVersion") != _saveVersion) then {
 				_errors pushBack [INCOMPATIBLE_SAVE_VERSION];
-				OOP_INFO_2("  incompatible save version: %1, current: %2", GETV(_x, "saveVersion"), _saveVersion);
+				OOP_INFO_2("  incompatible save version: %1, current: %2", GETV(_header, "saveVersion"), _saveVersion);
 				// No point checking further
 			} else {
-				if ((toLower GETV(_x, "worldName")) != (tolower worldName)) then {
+				if ((toLower GETV(_header, "worldName")) != (tolower worldName)) then {
 					_errors pushBack INCOMPATIBLE_WORLD_NAME;
-					OOP_INFO_2("  incompatible world name: %1, current: %2", GETV(_x, "worldName"), worldName);
+					OOP_INFO_2("  incompatible world name: %1, current: %2", GETV(_header, "worldName"), worldName);
 				};
 
 				// Check templates
@@ -144,51 +171,196 @@ CLASS("GameManager", "MessageReceiverEx")
 						_errors pushBack INCOMPATIBLE_FACTION_TEMPLATES;
 						OOP_ERROR_1("  incompatible template: %1", _x);
 					};
-				} forEach GETV(_x, "templates");
+				} forEach GETV(_header, "templates");
 			};
 
-			_response pushBack [SERIALIZE_ALL(_x), _errors];
-		} forEach _allHeaders;
+			_return pushBack [_recordName, _header, _errors];
+		} forEach _recordNamesAndHeaders;
 
-		// Send data back to client
-		OOP_INFO_0("Response:");
+		_return
+	} ENDMETHOD;
+
+	// Called by client when he needs to get data on all the saved games
+	METHOD("clientRequestAllSavedGames") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
+
+		// Read headers of all records
+		pr _recordNamesAndHeaders = T_CALLM0("readAllSavedGameHeaders");
+
+		// Check all headers for loadability
+		pr _checkResult = T_CALLM1("checkAllHeadersForLoading", _recordNamesAndHeaders);
+
+		pr _dataForClient = _checkResult apply {
+			_x params ["_recordName", "_header", "_errors"];
+			[_recordName, SERIALIZE_ALL(_header), _errors]
+		};
+
+		// Send data to client
+		pr _args = [_dataForClient];
+		REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabSave", "staticReceiveRecordData", _args, _clientOwner, false);
+
+		// Cleanup
 		{
-			OOP_INFO_1("  %1", _x);
-		} forEach _response;
+			// We are deleting the local copies of saved game headers from RAM
+			_x params ["_recordName", "_header"];
+			DELETE(_header);
+		} forEach _recordNamesAndHeaders;
+	} ENDMETHOD;
 
-		// Clearup
-		{ DELETE(_x); } forEach _allHeaders;
-		DELETE(_storage);
+	METHOD("clientSaveGame") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
+		T_CALLM0("saveGame");
+		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
 	} ENDMETHOD;
 
 	METHOD("saveGame") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
+		params [P_THISOBJECT];
 
+		// Bail if we are not server
+		if (!isServer) exitWith {
+			OOP_ERROR_0("saveGame must be executed only on server!");
+		};
+
+		// Bail if game mode is not initialized (although the button should be disabled, right?)
+		if(!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {};
+
+		diag_log "[GameManager] - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+		diag_log "[GameManager]			GAME SAVE STARTED";
+		OOP_INFO_0("GAME SAVE STARTED");
+
+		pr _storage = NEW(__STORAGE_CLASS, []);
+
+		// Create save game header
+		pr _header = NEW("SaveGameHeader", []);
+		CALLM0(_header, "initNew");
+		SETV(_header, "campaignName", T_GETV("campaignName"));
+		SETV(_header, "saveID", T_GETV("saveID"));
+		SETV(_header, "gameModeClassName", T_GETV("gameModeClassName"));
+		SETV(_header, "campaignStartDate", T_GETV("campaignStartDate"));
+		SETV(_header, "templates", []); // todo NYI
+
+		// Generate a unique record name
+		pr _recordNameBase = format ["%1 #%2 %3",
+					T_GETV("campaignName"),
+					T_GETV("saveID"),
+					date call misc_fnc_dateToISO8601];
+		pr _recordNameFinal = _recordNameBase;
+		pr _i = 1;
+		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
+			_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
+			_i = _i + 1;
+		};
+		diag_log format ["[GameManager] Opening record: %1", _recordNameFinal];
+		CALLM1(_storage, "open", _recordNameFinal);
+
+		if (CALLM0(_storage, "isOpen")) then {
+			// Send notification to everyone
+			pr _text = "Game state save is in progress...";
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+
+
+			
+			diag_log format ["[GameManager] Saving game mode: %1", gGameMode];
+			CALLM1(_storage, "save", gGameMode);
+			CALLM2(_storage, "save", "gameMode", gGameMode);	// Ref to game mode object
+			
+			diag_log format ["[GameManager] Saving save game header..."];
+			[_header] call OOP_dumpAllVariables;
+			OOP_INFO_0("Saving header...");
+			CALLM1(_storage, "save", _header);
+			CALLM2(_storage, "save", "header", _header);		// Ref to header object
+
+			diag_log format ["[GameManager] Finished saving!"];
+			OOP_INFO_0("Done!");
+
+			CALLM0(_storage, "close");
+
+			// Increase our save ID
+			T_SETV("saveID", T_GETV("saveID") + 1);
+
+			// Send notification to everyone
+			pr _text = "Game state has been saved!";
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+		} else {
+			OOP_ERROR_1("Cant open storage record: %1", _recordNameFinal);
+		};
+
+		OOP_INFO_0("GAME SAVE ENDED");
+		diag_log "[GameManager] GAME SAVE ENDED";
+		diag_log "[GameManager] - - - - - - - - - - - - - - - - - - - - - - - - - - -";
+
+		DELETE(_header);
+		DELETE(_storage);
+
+	} ENDMETHOD;
+
+	METHOD("clientDeleteSavedGame") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
+		T_CALLM1("deleteSavedGame", _recordName);
+		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
+	} ENDMETHOD;
+
+	METHOD("deleteSavedGame") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
+		
+		OOP_INFO_1("DELETE SAVED GAME: %1", _recordName);
+
+		pr _storage = NEW(__STORAGE_CLASS, []);
+		CALLM1(_storage, "eraseRecord", _recordName);
+		DELETE(_storage);
+	} ENDMETHOD;
+
+	METHOD("clientOverwriteSavedGame") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_recordName")];
+
+		OOP_INFO_1("CLIENT OVERWRITE SAVED GAME: %1", _recordName);
+
+		T_CALLM1("deleteSavedGame", _recordName);
+		T_CALLM0("saveGame");
+		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
 	} ENDMETHOD;
 
 
 	// - - - - Game Mode Initialization - - - -
 
-	// Initializes a new game mode on server (does NOT load a saved game, but creates a new one!)
+	// Initializes a new campaign and a new game mode on server (does NOT load a saved game, but creates a new one!)
 	// todo: initialization parameters
-	METHOD("initGameModeServer") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_className"), P_ARRAY("_gameModeParameters")];
+	METHOD("initCampaignServer") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_className"),
+				P_ARRAY("_gameModeParameters"), P_STRING("_campaignName")];
 
 		if (!isServer) exitWith {};
 
-		OOP_INFO_1("INIT GAME MODE SERVER: %1", _this);
+		OOP_INFO_1("INIT CAMPAIGN SERVER: %1", _this);
 
 		// Bail if already initialized
 		if (T_CALLM0("isGameModeInitialized")) exitWith {
-
+			OOP_ERROR_0("Game mode is already initialized!");
 		};
 
 		OOP_INFO_1("Initializing game mode on server: %1", _className);
+
+		// Send notifications...
+		pr _text = "Game is being initialized. It can take up to several minutes.";
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
+
+		// Setup variables
+		T_SETV("saveID", 0);
+		T_SETV("campaignName", _campaignName);
+		T_SETV("templates", []); // todo NYI, need to get that from game mode
+		T_SETV("campaignStartDate", date);
+		T_SETV("gameModeClassName", _className);
+
+		// Run the initialization
 		gGameMode = NEW(_className, _gameModeParameters);
 		CRITICAL_SECTION {
 			CALLM0(gGameMode, "init");
 		};
 		OOP_INFO_0("Finished initializing game mode");
+
+		// Send notifications...
+		pr _text = "Game mode initialization is complete. You should respawn now.";
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
 
 		// Add data to the JIP queue so that clients can also initialize
 		// Execute everywhere but not on server

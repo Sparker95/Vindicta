@@ -31,13 +31,27 @@ CLASS("SaveGameHeader", "Storable")
 		T_SETV("saveVersion", call misc_fnc_getSaveVersion);
 		T_SETV("missionVersion", call misc_fnc_getVersion);
 		T_SETV("campaignName", "_noname_");		// Must be set externally
-		T_SETV("saveID", 0);
+		T_SETV("saveID", 0);					// Must be set externally
 		T_SETV("worldName", worldName);
 		T_SETV("gameModeClassName", "_noname_");// Must be set externally
 		T_SETV("OOPSessionCounter", call OOP_getSessionCounter);
 		T_SETV("date", date);
 		T_SETV("campaignStartDate", date);		// Must be set externally
 		T_SETV("templates", []);				// Must be set externally
+	} ENDMETHOD;
+
+	// STORAGE
+	
+	// Save all varaibles
+	/* override */ METHOD("serializeForStorage") {
+		params [P_THISOBJECT];
+		SERIALIZE_ALL(_thisObject);
+	} ENDMETHOD;
+
+	/* override */ METHOD("deserializeFromStorage") {
+		params [P_THISOBJECT, P_ARRAY("_serial")];
+		DESERIALIZE_ALL(_thisObject, _serial);
+		true
 	} ENDMETHOD;
 
 ENDCLASS;

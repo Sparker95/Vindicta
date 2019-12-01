@@ -17,6 +17,7 @@ CLASS("InGameMenu", "DialogBase")
 		if (!_gameModeInitialized) then {
 
 			T_CALLM2("addTab", "InGameMenuTabGameModeInit", "Create");
+			T_CALLM2("addTab", "InGameMenuTabSave", "Save / Load");
 
 			pr _text = format ["Mission Startup Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
@@ -26,6 +27,7 @@ CLASS("InGameMenu", "DialogBase")
 			T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
 			//T_CALLM2("addTab", "DialogTabBase", "Admin");
 			T_CALLM2("addTab", "InGameMenuTabNotes", "Notes");
+			T_CALLM2("addTab", "InGameMenuTabSave", "Save / Load");
 
 			pr _text = format ["Mission Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
