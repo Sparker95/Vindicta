@@ -156,9 +156,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Call our first process event immediately, to help things "settle" before we show them to the player.
 			T_CALLM("process", []);
 
-			// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
-			// Probably it's because we currently have this executed inside isNil {} block
-			_thisObject spawn { CALLM(_this, "initDynamicSimulation", []); };
+			// Init dynamic simulation
+			T_CALLM0("initDynamicSimulation");
 
 			// todo load it from profile namespace or whatever
 
@@ -1043,20 +1042,25 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		#ifndef _SQF_VM
 		params [P_THISOBJECT];
 
-		// Enables or disables the whole Arma_3_Dynamic_Simulation system
-		enableDynamicSimulationSystem true;
+		// Don't remove spawn{}! For some reason without spawning it doesn't apply the values.
+		// Probably it's because we currently have this executed inside isNil {} block
 
-		// Infantry units.
-		"Group" setDynamicSimulationDistance 40000; // We don't dynamicly disable units with this thing
-		// Vehicles with crew.
-		"Vehicle" setDynamicSimulationDistance 40000; // We don't want to dynamicly disable vehicles with crew
-		//  All vehicles without crew.
-		"EmptyVehicle" setDynamicSimulationDistance 1500;
-		// Static objects. Anything from a small tin can to a building.
-		"Prop" setDynamicSimulationDistance 50;
+		0 spawn {
+			// Enables or disables the whole Arma_3_Dynamic_Simulation system
+			enableDynamicSimulationSystem true;
 
-		// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
-		"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
+			// Infantry units.
+			"Group" setDynamicSimulationDistance 40000; // We don't dynamicly disable units with this thing
+			// Vehicles with crew.
+			"Vehicle" setDynamicSimulationDistance 40000; // We don't want to dynamicly disable vehicles with crew
+			//  All vehicles without crew.
+			"EmptyVehicle" setDynamicSimulationDistance 1500;
+			// Static objects. Anything from a small tin can to a building.
+			"Prop" setDynamicSimulationDistance 50;
+
+			// Sets activation distance multiplier of Arma_3_Dynamic_Simulation for the given class
+			"IsMoving" setDynamicSimulationDistanceCoef 2.0; // Multiplies the entity activation distance by set value if the entity is moving.
+		};
 		#endif
 	} ENDMETHOD;
 
@@ -1344,6 +1348,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Start commanders
 		T_CALLM0("startCommanders");
+
+		// Init dynamic simulation
+		T_CALLM0("initDynamicSimulation");
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" FINISHED LOADING GAME MODE: %1", _thisObject];

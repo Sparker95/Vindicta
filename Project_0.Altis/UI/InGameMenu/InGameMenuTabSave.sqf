@@ -224,6 +224,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	METHOD("onButtonLoadSavedGame") {
 		params [P_THISOBJECT];
 
+		OOP_INFO_0("ON BUTTON LOAD SAVED GAME");
+
 		pr _index = T_CALLM0("getSelectedSavedGameIndex");
 		if (_index == -1) exitWith {};
 
@@ -231,10 +233,11 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		_selRecordData params ["_recordName", "_header", "_errors"];
 
 		// Check if versions match
+		OOP_INFO_1(" checking record data: %1", _selRecordData);
 		if (INCOMPATIBLE_SAVE_VERSION in _errors) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
 			pr _text = format ["Error: version is incompatible: save: %1, current: %2", GETV(_header,"saveVersion"), call misc_fnc_getSaveVersion];
-			CALLM1(_dialogObj, "setHintText", "Error: saved game version is incompatible");
+			CALLM1(_dialogObj, "setHintText", _text);
 		};
 
 		// Show a confirmation dialog

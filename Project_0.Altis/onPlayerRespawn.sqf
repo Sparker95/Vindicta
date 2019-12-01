@@ -18,20 +18,16 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 #define pr private
 
+params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
+
 // Bail if game mode was not initialized yet
 if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
     0 spawn {
 		waitUntil {!isNull (findDisplay 46)};
-    	CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+    	CALLSM1("NotificationFactory", "createSystem", "Wait until game mode finishes its initialization...");
 	};
+    _newUnit setDamage 1;
 };
-
-params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
-
-// Make sure server initialization is done
-diag_log format ["---- onPlayerRespawn: waiting server init, time: %1", diag_tickTime];
-
-diag_log format ["---- onPlayerRespawn: server init done, time: %1", diag_tickTime];
 
 diag_log format ["------- onPlayerRespawn %1", _this];
 

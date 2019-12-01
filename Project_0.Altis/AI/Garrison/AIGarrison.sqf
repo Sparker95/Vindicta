@@ -60,9 +60,6 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Initialize sensors
 		T_CALLM0("_initSensors");
 
-		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
-		CALLM1(_thisObject, "addSensor", _sensorSound);
-
 		// Initialize the world state
 		pr _ws = [WSP_GAR_COUNT] call ws_new; // todo WorldState size must depend on the agent
 		[_ws, WSP_GAR_AWARE_OF_ENEMY, false] call ws_setPropertyValue;
@@ -192,6 +189,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		pr _sensorObserved = NEW("SensorGarrisonIsObserved", [_thisObject]);
 		CALLM1(_thisObject, "addSensor", _sensorObserved);
 		T_SETV("sensorObserved", _sensorObserved);
+
+		pr _sensorSound = NEW("SensorGarrisonSound", [_thisObject]);
+		CALLM1(_thisObject, "addSensor", _sensorSound);
 	} ENDMETHOD;
 	
 	METHOD("process") {
@@ -641,6 +641,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		#ifdef DEBUG_GOAL_MARKERS
 		T_CALLM0("_initDebugMarkers");
 		#endif
+
+		// Register at stimulus manager
+		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
 
 		true
 	} ENDMETHOD;

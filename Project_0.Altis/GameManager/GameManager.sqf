@@ -156,7 +156,7 @@ CLASS("GameManager", "MessageReceiverEx")
 			pr _errors = [];
 
 			if (GETV(_header, "saveVersion") != _saveVersion) then {
-				_errors pushBack [INCOMPATIBLE_SAVE_VERSION];
+				_errors pushBack INCOMPATIBLE_SAVE_VERSION;
 				OOP_INFO_2("  incompatible save version: %1, current: %2", GETV(_header, "saveVersion"), _saveVersion);
 				// No point checking further
 			} else {
