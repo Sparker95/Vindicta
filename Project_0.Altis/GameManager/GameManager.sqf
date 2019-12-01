@@ -8,7 +8,7 @@ Runs in its own thread, because all other threads are saved and loaded.
 It also handles some client requests about saving/loading the game, and initial mission initialization.
 */
 
-#define __STORAGE_CLASS __STORAGE_CLASS
+#define __STORAGE_CLASS "StorageProfileNamespace"
 
 #define pr private
 

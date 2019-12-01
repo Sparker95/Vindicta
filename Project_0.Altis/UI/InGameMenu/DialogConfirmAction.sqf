@@ -24,7 +24,7 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 		T_CALLM2("setContentSize", 0.7, 0.3); // Height will be determined by text height anyway
 		T_CALLM1("setHeadlineText", "Confirm action");
 		T_CALLM1("setHintText", "");
-		T_CALLM1("createButtons", ["Yes", "No"]);
+		T_CALLM1("createButtons", ["Yes" ARG "No"]);
 		T_CALLM1("setText", _text);
 
 		T_SETV("argsYes", _argsYes);
@@ -38,13 +38,15 @@ CLASS("DialogConfirmAction", "DialogOneTabButtons")
 
 		OOP_INFO_1("Button was clicked: %1", _ID);
 
+		[_thisObject] call OOP_dumpAllVariables;
+
 		if (_ID == 0) then { // Yes
 			T_GETV("argsYes") call T_GETV("codeYes");
 		} else { // No
 			T_GETV("argsNo") call T_GETV("codeNo");
 		};
 
-		DELETE(_thisObject);
+		T_CALLM0("deleteOnNextFrame");
 	} ENDMETHOD;
 
 ENDCLASS;

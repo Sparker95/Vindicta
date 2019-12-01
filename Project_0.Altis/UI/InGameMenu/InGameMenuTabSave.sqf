@@ -156,14 +156,38 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 	// - - - - Button and listbox event handlers - - - -
 
+	METHOD("_saveGame") {
+		params [P_THISOBJECT];
+
+		// Send request to server
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientSaveGame", [clientOwner]);
+	} ENDMETHOD;
+
 	METHOD("onButtonNewSave") {
 		params [P_THISOBJECT];
 
 		// Bail if game mode is not initialized (although the button should be disabled, right?)
 		if(!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {};
 
-		// Send request to server
-		CALLM2(gGameManagerServer, "postMethodAsync", "clientSaveGame", [clientOwner]);
+		// Show a confirmation dialog
+		pr _args = [format ["Create a new game save?\n"],
+			[],
+			{
+				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
+				if (!IS_NULL_OBJECT(_instance)) then {
+					CALLM0(_instance, "_saveGame");
+				};
+			},
+			[], {}];
+		NEW("DialogConfirmAction", _args);
+	} ENDMETHOD;
+
+	METHOD("_overwriteSavedGame") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
+
+		OOP_INFO_1("Sending request to overwrite saved game: %1", _recordName);
+		pr _args = [clientOwner, _recordName];
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientOverwriteSavedGame", _args);
 	} ENDMETHOD;
 
 	METHOD("onButtonOverwriteSavedGame") {
@@ -173,17 +197,43 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		pr _selRecordData = T_GETV("recordData") select _index;
 		_selRecordData params ["_recordName", "_header", "_errors"];
-		OOP_INFO_1("Sending request to overwrite saved game: %1", _recordName);
-		pr _args = [clientOwner, _recordName];
-		CALLM2(gGameManagerServer, "postMethodAsync", "clientOverwriteSavedGame", _args);
+		
+		// Show a confirmation dialog
+		pr _args = [format ["Overwrite this saved game?\n%1", _recordName],
+			[_recordName],
+			{
+				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
+				if (!IS_NULL_OBJECT(_instance)) then {
+					CALLM1(_instance, "_overwriteSavedGame", _this#0);
+				};
+			},
+			[], {}];
+		NEW("DialogConfirmAction", _args);
 	} ENDMETHOD;
+
+
 
 	METHOD("onButtonLoadSave") {
 		params [P_THISOBJECT];
-		pr _args = ["Load this saved game?",
-			111, {systemChat "You clicked yes"},
-			222, {systemChat "You clicked no"}];
+
+		pr _index = T_CALLM0("getSelectedSavedGameIndex");
+		if (_index == -1) exitWith {};
+
+		pr _selRecordData = T_GETV("recordData") select _index;
+		pr _recordName = _selRecordData#0;
+		pr _args = [format ["Load this saved game?\n%1", _recordName],
+			[111], {systemChat "You clicked yes"},
+			[222], {systemChat "You clicked no"}];
 		NEW("DialogConfirmAction", _args);
+	} ENDMETHOD;
+
+
+
+	METHOD("_deleteSavedGame") {
+		params [P_THISOBJECT, P_STRING("_recordName")];
+		OOP_INFO_1("Sending request to delete saved game: %1", _recordName);
+		pr _args = [clientOwner, _recordName];
+		CALLM2(gGameManagerServer, "postMethodAsync", "clientDeleteSavedGame", _args);
 	} ENDMETHOD;
 
 	METHOD("onButtonDeleteSavedGame") {
@@ -193,10 +243,22 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		pr _selRecordData = T_GETV("recordData") select _index;
 		_selRecordData params ["_recordName", "_header", "_errors"];
-		OOP_INFO_1("Sending request to delete saved game: %1", _recordName);
-		pr _args = [clientOwner, _recordName];
-		CALLM2(gGameManagerServer, "postMethodAsync", "clientDeleteSavedGame", _args);
+
+		// Show a confirmation dialog
+		pr _args = [format ["Delete this saved game?\n%1", _recordName],
+			[_recordName],
+			{
+				pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
+				if (!IS_NULL_OBJECT(_instance)) then {
+					CALLM1(_instance, "_deleteSavedGame", _this#0);
+				};
+			},
+			[], {}];
+		NEW("DialogConfirmAction", _args);
+
 	} ENDMETHOD;
+
+
 
 	METHOD("onListboxSelChanged") {
 		params [P_THISOBJECT];

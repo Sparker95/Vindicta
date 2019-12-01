@@ -4,4 +4,4 @@ call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabNotes.sqf";
 call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabGameModeInit.sqf";
 call compile preprocessFileLineNumbers "UI\InGameMenu\InGameMenuTabSave.sqf";
 
-//call compile preprocessFileLineNumbers "UI\InGameMenu\DialogConfirmAction.sqf";
+call compile preprocessFileLineNumbers "UI\InGameMenu\DialogConfirmAction.sqf";
