@@ -676,7 +676,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				// This function returns 2D vector for some reason
 				if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				private _newGarrison = CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
+				private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
 				T_SETV_REF("reinfGarrison", _newGarrison);
 
 				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);

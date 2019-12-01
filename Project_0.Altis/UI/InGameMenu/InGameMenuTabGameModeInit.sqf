@@ -104,6 +104,20 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _enemyTemplateName = LB_CUR_SEL_DATA(_cbEnemyFaction);
 		pr _policeTemplateName = LB_CUR_SEL_DATA(_cbPoliceFaction);
 
+		// Verify templates
+		// todo really we must check that on server
+		pr _templatesGood = true;
+		{
+			if (([_x] call t_fnc_getTemplate) isEqualTo []) then {
+				_templatesGood = false;
+			};
+		} forEach [_enemyTemplateName, _policeTemplateName];
+
+		// Bail if incompatible template was selected
+		if (!_templatesGood) exitWith {
+			CALLM1(_dialogObj, "setHintText", "You must select factions which have the addons loaded");
+		};
+
 		// Send data to server's GameManager
 		pr _gameModeParams = [_enemyTemplateName, _policeTemplateName, _enemyForcePercent];
 		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName];

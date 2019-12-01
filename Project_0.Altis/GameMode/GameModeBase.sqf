@@ -466,19 +466,19 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		switch (_type) do {
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
-				private _cInf = (CALLM0(_loc, "getCapacityInf") min 45) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
+				private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
+				T_CALLM("createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
-				private _cInf = (CALLM0(_loc, "getCapacityInf") min 16) max 6;
+				private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				CALL_STATIC_METHOD("GameModeBase", "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+				T_CALLM("createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
 			};
 			default { NULL_OBJECT };
 		};
@@ -783,9 +783,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_ARMED_MRAPS
 	#define ADD_ARMOR
 	#define ADD_STATICS
-	STATIC_METHOD("createGarrison") {
+	METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-		
+
 		if (_faction == "police") exitWith {
 			
 			private _templateName = CALLM2(gGameMode, "getTemplateName", _side, "police");
