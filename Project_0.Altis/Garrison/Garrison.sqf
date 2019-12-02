@@ -2854,7 +2854,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _gars = GETSV("Garrison", "all");
 		pr _garsToCheck = _gars select {
 			if (CALLM0(_x, "isAlive")) then {
-				CALLM0(_x, "getPos") distance2D _pos < 1500 // todo arbitrary number for now
+				pr _pos = CALLM0(_x, "getPos");
+				((_pos distance2D _pos) < 1500) && // todo arbitrary number for now
+				((_pos distance2D [0, 0, 0]) > 1) // Ignore garrisons with default pos at [0, 0, 0]
 			} else {
 				false
 			};
