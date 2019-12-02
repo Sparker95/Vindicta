@@ -3,13 +3,16 @@
 *.sqdev
 .settings
 node_modules
-_build
-tools/_build
 
 #VSCODE
 .vscode/ipch/*
 .vscode/settings.json
 Project_0.Altis/.vscode/ipch/*
+
+#BUILD
+_build
+tools/_build
+tools/_buildID.txt
 
 #TEMP
 temp
