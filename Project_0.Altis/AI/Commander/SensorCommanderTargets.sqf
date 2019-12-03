@@ -11,7 +11,7 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 6
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 1200
+#define TARGET_MAX_AGE (60*60)
 
 // ---- Debugging defines ----
 
