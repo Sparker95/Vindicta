@@ -101,7 +101,7 @@ switch _mode do {
         if( missionnamespace getVariable ["jna_firstInit",false]) exitWith {};
 
         // Set flag so that we don't preload again
-        missionnamespace setVariable ["jna_firstInit",false];
+        missionnamespace setVariable ["jna_firstInit", true];
 
         // Set up hashmap for quick future resolutions of itemType
         deleteLocation (missionNamespace getVariable ["jna_itemTypeHashmap", locationNull]); // Delete previous one if it existed for some reason
