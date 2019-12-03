@@ -10,7 +10,7 @@ params ["_t", ["_returnString", false]];
 pr _catID = T_INF;
 pr _catSize = T_INF_SIZE;
 pr _classDefault = _t#_catID#0#0;
-pr _subCatID = 0;
+pr _subCatID = T_INF_DEFAULT + 1; // We don't want to process the default loadout/unit!
 pr _group = createGroup WEST;
 
 // Weapons and magazines for corresponding weapons

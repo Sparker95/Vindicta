@@ -804,7 +804,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			for "_i" from 1 to _patrolGroups do {
 				private _patrolGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
 				for "_i" from 0 to 1 do {
-					private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+					private _variants = [T_INF_SL, T_INF_officer, T_INF_officer];
 					NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
 				};
 				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
@@ -819,7 +819,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 			private _remainder = 1 max (_cInf * 0.25);
 			for "_i" from 1 to _remainder do {
-				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+				private _variants = [T_INF_SL, T_INF_officer, T_INF_officer];
 				NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
 			};
 			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
