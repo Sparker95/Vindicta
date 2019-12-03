@@ -54,7 +54,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["Arma 3 NATO",		"tNATO"],
 			["RHS AAF 2017",	"tRHS_AAF2017_elite"],
 			["RHS AFRF", 		"tRHS_AFRF"],
-			["RHS USAF", 		"tRHS_USAF"]
+			["RHS USAF", 		"tRHS_USAF"],
+			["Test: must error", "test_error"]
 		];
 		{
 			_x params ["_text", "_lbData"];
@@ -126,12 +127,13 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Bail if incompatible template was selected
 		if (!_templatesGood) exitWith {
-			CALLM1(_dialogObj, "setHintText", "You must select factions which have the addons loaded");
+			CALLM1(_dialogObj, "setHintText", "You must select factions which are loaded");
 		};
 
 		// Send data to server's GameManager
 		pr _gameModeParams = [_enemyTemplateName, _policeTemplateName, _enemyForcePercent];
-		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName];
+		pr _templatesVerify = [_enemyTemplateName, _policeTemplateName];
+		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName, _templatesVerify];
 		CALLM2(gGameManagerServer, "postMethodAsync", "initCampaignServer", _args);
 
 	} ENDMETHOD;

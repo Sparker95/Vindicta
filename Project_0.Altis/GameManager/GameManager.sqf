@@ -444,7 +444,8 @@ CLASS("GameManager", "MessageReceiverEx")
 	// todo: initialization parameters
 	METHOD("initCampaignServer") {
 		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_STRING("_className"),
-				P_ARRAY("_gameModeParameters"), P_STRING("_campaignName")];
+				P_ARRAY("_gameModeParameters"), P_STRING("_campaignName"),
+				P_ARRAY("_templatesVerify")];
 
 		if (!isServer) exitWith {};
 
@@ -453,6 +454,20 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Bail if already initialized
 		if (T_CALLM0("isGameModeInitialized")) exitWith {
 			OOP_ERROR_0("Game mode is already initialized!");
+		};
+
+		// Verify templates
+		pr _templatesGood = true;
+		pr _failedTemplates = [];
+		{
+			if (([_x] call t_fnc_getTemplate) isEqualTo []) then {
+				_templatesGood = false;
+				_failedTemplates pushBack _x;
+			};
+		} forEach _templatesVerify;
+		if (!_templatesGood) exitWith {
+			pr _text = format ["Error: factions are not loaded on server: %1", _failedTemplates];
+			REMOTE_EXEC_CALL_STATIC_METHOD("InGameMenuTabGameModeinit", "showServerResponse", [_text], _clientOwner, false);
 		};
 
 		OOP_INFO_1("Initializing game mode on server: %1", _className);
