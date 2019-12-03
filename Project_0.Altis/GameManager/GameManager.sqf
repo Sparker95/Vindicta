@@ -324,7 +324,7 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						// Add data to the JIP queue so that clients can also initialize
 						// Execute everywhere but not on server
-						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], -2, "GameManager_initGameModeClient");
+						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], 0, "GameManager_initGameModeClient");
 
 						// Set flag
 						T_SETV("gameModeInitialized", true);
@@ -474,24 +474,35 @@ CLASS("GameManager", "MessageReceiverEx")
 		pr _text = "Game mode initialization is complete. You should respawn now.";
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
 
-		// Add data to the JIP queue so that clients can also initialize
-		// Execute everywhere but not on server
-		REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [_className], -2, "GameManager_initGameModeClient");
-
 		// Set flag
 		T_SETV("gameModeInitialized", true);
+
+		// Add data to the JIP queue so that clients can also initialize
+		REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [_className], 0, "GameManager_initGameModeClient");
 	} ENDMETHOD;
 
 	// Must be run on client to initialize the game mode
 	METHOD("initGameModeClient") {
 		params [P_THISOBJECT, P_STRING("_className")];
-		OOP_INFO_1("Initializing game mode on client: %1", _className);
-		gGameMode = NEW(_className, []);
-		CALLM0(gGameMode, "init");
-		OOP_INFO_0("Finished initializing game mode");
 
-		// Set flag
-		T_SETV("gameModeInitialized", true);
+		if (!T_GETV("gameModeInitialized")) then {
+			OOP_INFO_1("Initializing game mode on client: %1", _className);
+			gGameMode = NEW(_className, []);
+			CALLM0(gGameMode, "init");
+			OOP_INFO_0("Finished initializing game mode");
+
+			// Set flag
+			T_SETV("gameModeInitialized", true);
+		};
+
+		// Tell server that we are done
+		if (HAS_INTERFACE) then {
+			0 spawn {
+				waitUntil {count (getPlayerUID player) > 1}; // Sometimes it might be ""
+				private _uid = profileNamespace getVariable ["p0_uid", getPlayerUID player]; // Alternative UID for testing purposes
+				[_uid, profileName, clientOwner, playerSide] remoteExecCall ["fnc_onPlayerInitializedServer", 2];
+			};
+		};
 	} ENDMETHOD;
 
 	METHOD("staticInitGameModeClient") {

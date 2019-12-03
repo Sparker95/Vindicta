@@ -56,7 +56,7 @@ CLASS("DirectReinforceCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_END, 				// State change when target is dead
 				_garrIdVar, 						// Id of garrison to move
 				_targetVar, 						// Target to move to (various target types are supported by this AST)
-				T_CALLM1("createVariable", 150)]; 				// Radius to move within !!! todo improve this,  
+				T_CALLM1("createVariable", 200)]; 				// Radius to move within !!! todo improve this,  
 		private _moveAST = NEW("AST_MoveGarrison", _moveAST_Args);
 
 		// Add the merge action

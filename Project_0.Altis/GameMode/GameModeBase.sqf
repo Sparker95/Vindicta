@@ -274,7 +274,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _radius = GETV(_loc, "boundingRadius");
 
 			// Create vehicles in civilian area for player to steal
-			if(_type == LOCATION_TYPE_CITY) then {
+			if(_type == LOCATION_TYPE_CITY && (_side isEqualTo CIVILIAN)) then {
 				T_CALLM1("populateCity", _loc);
 				// CALLM0(_gar, "activate");
 			};

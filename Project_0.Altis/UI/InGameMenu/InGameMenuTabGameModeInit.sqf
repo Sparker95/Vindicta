@@ -30,10 +30,21 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _cbPoliceFaction = T_CALLM1("findControl", "TAB_GMINIT_COMBO_POLICE_FACTION");
 
 		// Add game mode names
-		_cbGameMode lbAdd "Civil War";
-		_cbGameMode lbSetData [0, "CivilWarGameMode"];
-		//_cbGameMode lbAdd "Red VS Green";
-		//_cbGameMode lbSetData [1, "RedVsGreenGameMode"];
+		pr _gameModes = [["Civil War", "CivilWarGameMode"]];
+
+		// Add more game modes for debug builds
+		#ifndef RELEASE_BUILD
+		_gameModes append [
+			["Red VS Green", "RedVsGreenGameMode"],
+			["Expand", "ExpandGameMode"],
+			["Almost Empty", "AlmostEmptyGameMode"]
+		];
+		#endif
+		{
+			_cbGameMode lbAdd _x#0;
+			_cbGameMode lbSetData [_forEachIndex, _x#1];
+		} forEach _gameModes;
+
 		_cbGameMode lbSetCurSel 0;
 
 		// Add enemy factions
