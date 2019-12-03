@@ -322,6 +322,13 @@ CLASS("GameManager", "MessageReceiverEx")
 						gGameMode = _gameModeRef;
 						PUBLIC_VARIABLE "gGameMode";
 
+						// Restore date
+						pr _date = GETV(_header, "date");
+						[_date] remoteExec ["setDate"];
+
+						// todo
+						// restore weather, smth else?
+
 						// Add data to the JIP queue so that clients can also initialize
 						// Execute everywhere but not on server
 						REMOTE_EXEC_CALL_STATIC_METHOD("GameManager", "staticInitGameModeClient", [T_GETV("gameModeClassName")], 0, "GameManager_initGameModeClient");
