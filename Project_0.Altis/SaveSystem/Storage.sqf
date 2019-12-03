@@ -22,6 +22,11 @@ Base class for derived classes which perform saving and loading of variables els
 // Character used for sides
 #define SPECIAL_PREFIX_SIDE_CHAR "S"
 
+// If defined, it will broadcast saving progress to everyone's UI
+#ifndef _SQF_VM
+#define BROADCAST_PROGRESS
+#endif
+
 CLASS("Storage", "")
 
 	VARIABLE("savedObjects");	// Hash maps of objects saved and loaded during this save/load session
@@ -168,7 +173,10 @@ CLASS("Storage", "")
 	/* public */	METHOD("save") {
 		params [P_THISOBJECT, P_DYNAMIC("_valueOrRef"), P_DYNAMIC("_value")];
 
+		#ifdef BROADCAST_PROGRESS
 		//diag_log format ["Save: %1", _this];
+		[format ["[Storage] Saving %1", _valueOrRef]] remoteExec ["systemChat"];
+		#endif
 
 		// Check if we are saving an object or a basic type
 		if (_valueOrRef isEqualType OOP_OBJECT_TYPE && {IS_OOP_OBJECT(_valueOrRef)}) then {
@@ -265,6 +273,11 @@ CLASS("Storage", "")
 	*/
 	/* public */	METHOD("load") {
 		params [P_THISOBJECT, P_DYNAMIC("_ref"), P_BOOL("_createNewObject")];
+
+		#ifdef BROADCAST_PROGRESS
+		//diag_log format ["Save: %1", _this];
+		[format ["[Storage] Loading %1", _ref]] remoteExec ["systemChat"];
+		#endif
 
 		// Check if it was a saved OOP object
 		pr _className = T_CALLM1("loadString", _ref + "_" + OOP_PARENT_STR);
