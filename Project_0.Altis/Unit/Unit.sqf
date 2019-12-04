@@ -652,9 +652,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 
 			// Add weapons and magazines
-			pr _arr = [[T_INV_primary, _nGuns], [T_INV_secondary, 0.2*_nGuns], [T_INV_handgun, 0.1*_nGuns]]; // [_subcatID, num. attempts]
+			pr _arr = [[T_INV_primary, _nGuns, 15], [T_INV_secondary, 0.2*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
 			{
-				_x params ["_subcatID", "_n"];
+				_x params ["_subcatID", "_n", "_nMagsPerGun"];
 				if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
 
 					// Randomize _n
@@ -666,7 +666,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						_weaponAndMag params ["_weaponClassName", "_magazines"];
 						_hO addItemCargoGlobal [_weaponClassName, round (1 + random 1) ];
 						if (count _magazines > 0) then {
-							_hO addMagazineCargoGlobal [selectRandom _magazines, 5];
+							_hO addMagazineCargoGlobal [selectRandom _magazines, _nMagsPerGun];
 						};
 					};
 				};

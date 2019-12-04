@@ -78,8 +78,6 @@ switch (T_GETV("spawned")) do {
 			OOP_INFO_1("  Set interval: %1", _interval);
 			#endif
 			CALLM1(_timer, "setInterval", _interval); // Despawn conditions can be evaluated with even lower frequency
-			
-			T_SETV("spawned", true);
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawnMin;
@@ -99,8 +97,6 @@ switch (T_GETV("spawned")) do {
 			OOP_INFO_0("  Despawning...");
 			
 			CALLM0(_thisObject, "despawn");
-			
-			T_SETV("spawned", false);
 		};
 	}; // case 1
 }; // switch spawn state

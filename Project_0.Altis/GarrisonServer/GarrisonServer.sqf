@@ -397,6 +397,12 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			OOP_ERROR_1("attachUnit: garrison %1 is not valid!", _gar);
 		};
 
+		// Ensure garrison is spawned (why??)
+		if (!CALLM0(_gar, "isSpawned")) then {
+			OOP_ERROR_0("Client added unit to a despawned garrison");
+			CALLM0(_gar, "spawn");
+		};
+
 		// We are good to go
 		CALLM1(_gar, "captureUnit", _unit);
 

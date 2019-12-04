@@ -1,18 +1,20 @@
 #include "common.hpp"
 
-#define N_LOCATIONS_OCCUPIED 3
+#define N_LOCATIONS_OCCUPIED 6
 
 #define pr private
 
 CLASS("AlmostEmptyGameMode", "GameModeBase")
 
 	VARIABLE("nLocationsInitialized");
+	VARIABLE("locSideCounter");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 		T_SETV("name", "expand");
 		T_SETV("spawningEnabled", false);
 		T_SETV("nLocationsInitialized", 0);
+		T_SETV("locSideCounter", 0);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -38,7 +40,11 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 		T_SETV("nLocationsInitialized", _counter + 1);
 
 		if(GETV(_loc, "type") == LOCATION_TYPE_OUTPOST) then {
-			WEST
+			private _counter = T_GETV("locSideCounter");
+			private _side = [WEST, EAST, INDEPENDENT] select _counter;
+			_counter = (_counter + 1) % 3;
+			T_SETV("locSideCounter", _counter);
+			_side
 		} else {
 			CIVILIAN
 		};
