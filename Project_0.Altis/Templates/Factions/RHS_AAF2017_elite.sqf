@@ -156,15 +156,4 @@ _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tRHS_AAF2017_elite"];
 
-_inv = []; /* Exported with t_fnc_processTemplateItems for template tRHS_AAF2017_elite
-Primary weapons
-Primary weapon items
-Secondary weapons
-Secondary weapon items
-Handguns
-Handgun items
-General items */
-
-_array set [T_INV, _inv];
-
 _array // End template

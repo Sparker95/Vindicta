@@ -328,7 +328,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Create a unit
 		pr _subcatid = selectRandom [T_INF_rifleman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_medic];
-		pr _template = ["tGuerilla"] call t_fnc_getTemplate;
+		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
 		// ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
 		pr _args = [_template, T_INF, _subcatID, -1, _group];
 		pr _unit = NEW("Unit", _args);
