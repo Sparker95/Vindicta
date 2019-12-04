@@ -54,8 +54,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["Arma 3 NATO",		"tNATO"],
 			["RHS AAF 2017",	"tRHS_AAF2017_elite"],
 			["RHS AFRF", 		"tRHS_AFRF"],
-			["RHS USAF", 		"tRHS_USAF"],
-			["Test: must error", "test_error"]
+			["RHS USAF", 		"tRHS_USAF"]//,
+			//["Test: must error", "test_error"]
 		];
 		{
 			_x params ["_text", "_lbData"];
