@@ -16,8 +16,8 @@ OOP_INFO_1("  this side: %1", T_GETV("side"));
 if(T_CALLM("isDestroyed", [])) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 };
-pr _dstSpawnMin = 1400; // Temporary, spawn distance
-pr _dstSpawnMax = 1600; // Temporary, spawn distance
+pr _dstSpawnMin = 1000; // Temporary, spawn distance
+pr _dstSpawnMax = 1200; // Temporary, spawn distance
 
 pr _side = T_GETV("side");
 pr _loc = T_GETV("location");
