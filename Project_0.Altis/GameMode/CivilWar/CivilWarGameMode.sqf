@@ -109,7 +109,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
 				if (random 100 < 50) then {
-					selectRandom [ENEMY_SIDE, WEST]
+					//selectRandom [ENEMY_SIDE, WEST]
+					ENEMY_SIDE
 				} else {
 					CIVILIAN
 				};
