@@ -55,6 +55,7 @@ CLASS("AICommander", "AI")
 	// Ported from CmdrAI
 	/* save */	VARIABLE_ATTR("activeActions", [ATTR_SAVE]);
 				VARIABLE("planningCycle");
+				VARIABLE("planningEnabled");	// Bool, if true, when active commander will perform AI planning
 
 	METHOD("new") {
 		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
@@ -64,7 +65,7 @@ CLASS("AICommander", "AI")
 		ASSERT_OBJECT_CLASS(_msgLoop, "MessageLoop");
 		T_SETV("side", _side);
 		T_SETV("msgLoop", _msgLoop);
-		
+		T_SETV("planningEnabled", false);
 		T_SETV("garrisons", []);
 		
 		T_SETV("targets", []);
@@ -190,14 +191,18 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "action update");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+
 		T_CALLM("update", [_worldModel]);
 
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
+		
 		#ifndef CMDR_AI_NO_PLAN
-		T_CALLM("plan", [_worldModel]);
+		if(T_GETV("planningEnabled")) then {
+			T_CALLM("plan", [_worldModel]);
+		};
 		#endif
 
 		// C L E A N U P
@@ -1682,6 +1687,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			T_CALLM("_plan", [_world ARG _priority]);
 		};
 	} ENDMETHOD;
+
+	/*
+	Method: enablePlanning
+	nalbes planning on a commander AI which is started.
+	*/
+	METHOD("enablePlanning") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+		T_SETV("planningEnabled", _enable);
+	} ENDMETHOD;
 	
 	/*
 	Method: update
@@ -2412,6 +2426,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("AI", _thisObject, "postDeserialize", [_storage]);
+
+		// GameMode must re-enable it
+		T_SETV("planningEnabled", false);
 
 		// Initialize variables
 		#ifdef DEBUG_CLUSTERS

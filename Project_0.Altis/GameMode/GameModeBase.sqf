@@ -530,6 +530,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		0
 	} ENDMETHOD;
 
+	// Not all game modes need all commanders
+	// By default all commanders are started and perform planning
+	// This can be overriden in this method
+	/* virtual */ METHOD("startCommanders") {
+		_this spawn {
+			params [P_THISOBJECT];
+			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
+			sleep 10;
+			{
+				CALLM1(T_GETV(_x), "enablePlanning", true);
+				// We postMethodAsync them, because we don't want to start processing right after mission start
+				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+		};
+	} ENDMETHOD;
+
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
 	// -------------------------------------------------------------------------
@@ -573,18 +589,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
-	} ENDMETHOD;
-
-	METHOD("startCommanders") {
-		_this spawn {
-			params [P_THISOBJECT];
-			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
-			sleep 10;
-			{
-				// We postMethodAsync them, because we don't want to start processing right after mission start
-				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
-			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
-		};
 	} ENDMETHOD;
 
 	fnc_getLocName = {

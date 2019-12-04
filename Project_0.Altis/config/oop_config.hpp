@@ -27,7 +27,7 @@
 //#define CMDR_AI_TESTING
 
 // Disables planning for cmdr ai, in case we want to test something
-#define CMDR_AI_NO_PLAN
+//#define CMDR_AI_NO_PLAN
 
 // Profiling
 //#define OOP_PROFILE
@@ -35,7 +35,7 @@
 #define OOP_PROFILE_MIN_T 0.002
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
-#define OOP_ASSERT
+//#define OOP_ASSERT
 
 
 // ========= Release config ============

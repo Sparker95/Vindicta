@@ -49,6 +49,21 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	} ENDMETHOD;
 
+	/* virtual */ METHOD("startCommanders") {
+		_this spawn {
+			params [P_THISOBJECT];
+			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
+			sleep 10;
+			CALLM1(T_GETV("AICommanderInd"), "enablePlanning", true);
+			CALLM1(T_GETV("AICommanderWest"), "enablePlanning", false);
+			CALLM1(T_GETV("AICommanderEast"), "enablePlanning", false);
+			{
+				// We postMethodAsync them, because we don't want to start processing right after mission start
+				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+		};
+	} ENDMETHOD;
+
 	// Creates gameModeData of a location
 	/* protected override */	METHOD("initLocationGameModeData") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
@@ -94,7 +109,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
 				if (random 100 < 50) then {
-					ENEMY_SIDE
+					selectRandom [ENEMY_SIDE, WEST]
 				} else {
 					CIVILIAN
 				};

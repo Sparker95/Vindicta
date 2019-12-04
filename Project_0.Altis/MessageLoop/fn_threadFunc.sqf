@@ -22,7 +22,7 @@ It checks for messages in the loop and calls handleMessages of objects.
 #define PROCESS_CATEGORIES_DEBUG
 
 // Will log every message
-//#define PROFILE_MESSAGE_JSON
+#define PROFILE_MESSAGE_JSON
 
 // Performs monitoring of thread func prformance
 #define THREAD_FUNC_DEBUG
