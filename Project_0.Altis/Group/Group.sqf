@@ -250,7 +250,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		// Remove the unit from this group
-		_units deleteAt (_units find _unit);
+		pr _index = _units find _unit;
+		if (_index == -1) then {
+			OOP_ERROR_1("remoteUnit: Unit not found in group: %1", _unit);
+			OOP_ERROR_1("  group units: %1", _units);
+		};
+		_units deleteAt _index;
 		CALLM1(_unit, "setGroup", "");
 
 		// Select a new leader if the removed unit is the current leader
