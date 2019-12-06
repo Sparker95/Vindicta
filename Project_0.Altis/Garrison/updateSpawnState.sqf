@@ -50,7 +50,7 @@ OOP_INFO_1("  distance to garrisons: %1", _dstMin);
 #endif
 
 // Double check unit distances as well
-if(_dstMin >= _dstSpawnMax) then {
+if(_dstMin >= _dstSpawnMin) then {
 	// TODO we should use BIS getNearest functions here maybe? It might be faster.
 	pr _unitDist = CALL_METHOD(gLUAP, "getUnitArray", [_side]) apply {_x distance _thisPos};
 	_dstMin = if (count _unitDist > 0) then {selectMin _unitDist} else {_speedMax*10};
