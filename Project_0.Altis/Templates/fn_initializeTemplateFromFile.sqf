@@ -33,8 +33,10 @@ diag_log format ["[Template] File %1 seems correct!", _filePath];
 // Process inventory items
 #ifndef _SQF_VM
 if (isServer) then {
-	private _templateItems = [_t] call t_fnc_processTemplateItems;
+	private _result = [_t] call t_fnc_processTemplateItems;
+	_result params ["_templateItems", "_loadoutWeapons"];
 	_t set [T_INV, _templateItems];
+	_t set [T_LOADOUT_WEAPONS, _loadoutWeapons];
 };
 #endif
 

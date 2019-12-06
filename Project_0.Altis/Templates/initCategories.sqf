@@ -14,7 +14,7 @@ OR it could be done through a get-function
 Author: Sparker 08.2017
 */
 
-T_SIZE = 7; //Number of categories in template
+T_SIZE = 8; //Number of categories in template
 T_WEIGHTS_OFFSET = T_SIZE; //Number of categories in template
 
 // = = = = = = = = = = I N F A N T R Y = = = = = = = = = = 
@@ -358,6 +358,7 @@ T_NAME = 5;
 
 
 // = = = = = = = = = = I N V E N T O R Y = = = = = = = = = = 
+// All inventory items sorted by categories
 T_INV = 6;
 
 // Subcategories
@@ -370,3 +371,10 @@ T_INV_handgun_items		= 5;
 T_INV_items				= 6;	// Array of item class names
 T_INV_vests				= 7;
 T_INV_backpacks			= 8;
+
+// = = = = = = = = = = L O A D O U T   W E A P O N S = = = = = = = = = =
+// Unit loadout weapons
+// Array
+// Each element is: [_primaryWeapons, _secondaryWeapons]
+// Each element's ID corresponds to infantry unit subcategory ID
+T_LOADOUT_WEAPONS = 7;
