@@ -1652,6 +1652,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 	} ENDMETHOD;
 
+	METHOD("limitedArsenalEnabled") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		count _dataList > 0
+	} ENDMETHOD;
+
 	METHOD("limitedArsenalOnSpawn") {
 		params [P_THISOBJECT];
 
@@ -1691,6 +1698,23 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				OOP_ERROR_2("Limited Arsenal was not initialized for unit: %1: %2", _thisObject, _dataList);
 			};
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _dataList];
+		};
+	} ENDMETHOD;
+
+	// Gets JNA data list depending on the spawn state of the unit
+	METHOD("limitedArsenalGetDataList") {
+		params [P_THISOBJECT];
+		pr _data = T_GETV("data");
+
+		// Bail if arsenal is not enabled at this unit
+		pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+		if (count _dataList == 0) exitWith { [] };
+
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) then {
+			_hO getVariable "jna_dataList";
+		} else {
+			_dataList
 		};
 	} ENDMETHOD;
 

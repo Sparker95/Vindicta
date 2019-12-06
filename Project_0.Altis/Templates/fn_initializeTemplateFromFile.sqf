@@ -41,6 +41,7 @@ if (isServer) then {
 #endif
 
 missionNamespace setVariable [_tName, _t];
+t_validTemplates pushBack _tName;
 
 // Return the array
 _t

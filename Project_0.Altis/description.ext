@@ -97,6 +97,7 @@ class CfgFunctions {
 #include "UI\InGameMenu\InGameMenu.h"
 #include "UI\TacticalTablet\TacticalTablet.h"
 #include "UI\RadioKeyDialog\RadioKeyDialog.h"
+#include "UI\RecruitDialog\RecruitDialog.h"
 #include "UI\LoadingScreen\LoadingScreen.h"
 #include "UI\Notification\Notification.h"
 

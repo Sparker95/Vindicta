@@ -43,6 +43,8 @@ class JN {
 		class arsenal_requestOpen {};
 		class arsenal_requestClose {};
 		class arsenal_getEmptyArray {};
+		class arsenal_getPrimaryWeapons {};
+		class arsenal_getSecondaryWeapons {};
 	};
 	class JNG {
 		file = "JeroenArsenal\JNG";

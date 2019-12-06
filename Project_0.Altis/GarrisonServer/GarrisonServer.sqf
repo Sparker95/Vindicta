@@ -291,8 +291,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		};
 
 		// Remove recruits from any city
-		pr _gmdata = GETV(_cities#0, "gameModeData");
-		CALLM1(_gmdata, "removeRecruits", 1);
+		if (count _cities > 0) then {
+			pr _gmdata = GETV(_cities#0, "gameModeData");
+			CALLM1(_gmdata, "removeRecruits", 1);
+		};
 
 		// Find an existing garrison here or create one
 		pr _gars = CALLM1(_loc, "getGarrisons", _side);
@@ -346,6 +348,34 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _text = format ["We have recruited one %1", _name];
 		_text remoteExecCall ["systemChat", _clientOwner];
 
+	} ENDMETHOD;
+
+	METHOD("clientRequestRecruitWeaponsAtLocation") {
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
+
+		OOP_INFO_1("REQUEST RECRUIT WEAPONS AT LOCATION: %1", _this);
+
+		// Find an existing garrison here or create one
+		pr _gars = CALLM1(_loc, "getGarrisons", _side);
+		if ((count _gars) == 0) exitWith {
+			pr _args = [[], []];
+			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveWeapons", _args, _clientOwner, false);
+		};
+		
+		// Find units which have arsenal
+		pr _gar = _gars#0;
+		pr _arsenalUnits = CALLM0(_gar, "getUnits") select { CALLM0(_x, "limitedArsenalEnabled") };
+		pr _unitsAndWeapons = [];
+		{
+			pr _unit = _x;
+			pr _dataList = CALLM0(_unit, "limitedArsenalGetDataList");
+			pr _primary = _dataList call jn_fnc_arsenal_getPrimaryWeapons;
+			pr _secondary = _dataList call jn_fnc_arsenal_getSecondaryWeapons;
+			_unitsAndWeapons pushBack [_unit, +_primary, +_secondary];
+		} forEach _arsenalUnits;
+		pr _args = [_unitsAndWeapons, call t_fnc_getAllValidTemplateNames];
+		OOP_INFO_1("  sending daga: %1", _args);
+		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveWeaponData", _args, _clientOwner, false);
 	} ENDMETHOD;
 
 	// Called from AttachToGarrisonDialog
