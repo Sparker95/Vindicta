@@ -373,9 +373,15 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			pr _secondary = _dataList call jn_fnc_arsenal_getSecondaryWeapons;
 			_unitsAndWeapons pushBack [_unit, +_primary, +_secondary];
 		} forEach _arsenalUnits;
-		pr _args = [_unitsAndWeapons, call t_fnc_getAllValidTemplateNames];
+
+		// Find the amount of recruits available
+		pr _pos = CALLM0(_loc, "getPos");
+		pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+		pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+
+		pr _args = [_unitsAndWeapons, call t_fnc_getAllValidTemplateNames, _nRecruits];
 		OOP_INFO_1("  sending daga: %1", _args);
-		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveWeaponData", _args, _clientOwner, false);
+		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, false);
 	} ENDMETHOD;
 
 	// Called from AttachToGarrisonDialog

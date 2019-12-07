@@ -12,15 +12,34 @@
 
 CLASS(__CLASS_NAME, "DialogTabBase")
 
+	// Array with available primary and secondary weapons for each subcategory
+	VARIABLE("availableWeaponsPrimary");
+	VARIABLE("availableWeaponsSecondary");
+
 	METHOD("new") {
 		params [P_THISOBJECT];
+
+		SETSV(__CLASS_NAME, "instance", _thisObject);
+
+		pr _array = []; _array resize T_INF_SIZE;
+		_array = _array apply {[]};
+		T_SETV("availableWeaponsPrimary", +_array);
+		T_SETV("availableWeaponsSecondary", +_array);
 
 		// Create controls
 		pr _displayParent = T_CALLM0("getDisplay");
 		pr _group = _displayParent ctrlCreate ["RecruitTab", -1];
 		T_CALLM1("setControl", _group);
 
-		SETSV(__CLASS_NAME, "instance", _thisObject);
+		// Set text...
+		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_STATIC_N_RECRUITS");
+		_ctrl ctrlSetText "Data is loading...";
+		// Disable the button
+		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
+		_ctrl ctrlEnable false;
+
+		// Add event handlers
+		T_CALLM3("controlAddEventHandler", "TAB_RECRUIT_LISTBOX", "LBSelChanged", "onListboxSelChanged");
 
 		// Send request to server to return data to us
 		pr _dialogObj = T_CALLM0("getDialogObject");
@@ -34,12 +53,61 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		SETSV(__CLASS_NAME, "instance", nil);
 	} ENDMETHOD;
 
-	METHOD("_receiveWeaponData") {
-		params [P_THISOBJECT, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates")];
+	METHOD("onListboxSelChanged") {
+		params [P_THISOBJECT];
+
+		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
+		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
+		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+
+		// Clear listboxes
+		lnbClear _lnbPrimary;
+		lnbClear _lnbSecondary;
+
+		// Fill listboxes with available weapons
+		pr _id = lnbCurSelRow _lnbMain;
+
+		OOP_INFO_1("LISTBOX SEL CHANGED: %1", _id);
+
+		if (_id == -1) exitWith {}; // Bail if wrong row is selected
+		pr _subcatid = _lnbMain lnbValue [_id, 0];
+
+		OOP_INFO_1("  subcatid: %1", _subcatid);
+
+		pr _primary =  T_GETV("availableWeaponsPrimary") select _subcatid;
+		pr _secondary = T_GETV("availableWeaponsSecondary") select _subcatid;
+
+		diag_log format ["  primary: %1, secondary: %2", _primary, _secondary];
+		//diag_log _lnbPrimary;
+		//diag_log _lnbSecondary;
+
+		{
+			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
+			_lnbPrimary lnbAddRow [_name];
+		} forEach _primary;
+		{
+			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
+			_lnbSecondary lnbAddRow [_name];
+		} forEach _secondary;
+
+		_lnbPrimary lnbSetCurSelRow 0;
+		_lnbSecondary lnbSetCurSelRow 0;
+	} ENDMETHOD;
+
+	METHOD("_receiveData") {
+		params [P_THISOBJECT, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
+
+		// Set text...
+		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_STATIC_N_RECRUITS");
+		_ctrl ctrlSetText (format ["Recruits available: %1", _nRecruits]);
+		// Enable the button
+		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
+		_ctrl ctrlEnable true;
 
 		// We must use only templates valid both here and at the server
 		// Because we are going to check available weapons in the local templates
 		pr _templates = _validTemplates arrayIntersect (call t_fnc_getAllValidTemplateNames);
+		_templates = _templates - ["tPOLICE"]; // We don't want to arm people with police guns
 
 		// Combine all weapon data from all the available templates
 		// todo improve this, it must be done only at startup
@@ -64,7 +132,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Make a list of unit types for soldiers for which we have weapons
 		pr _subcatsAvailable = []; // Array of subcat IDs of available soldiers
-		for "_subcatID" from 0 to (T_INF_size-1) do {
+		for "_subcatID" from 0 to (T_INF_engineer-1) do {
 			(_allWeaponData select _subcatID) params ["_primaryThisSubcatid", "_secondaryThisSubcatid"];
 			// Search arsenals of all the provided cargo crates
 			{
@@ -73,7 +141,13 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 				_secondary = _secondary apply {_x#0};
 				pr _primary0 = _primary arrayIntersect _primaryThisSubcatID;
 				pr _secondary0 = _secondary arrayIntersect _secondaryThisSubcatID;
-				//diag_log format ["%1 primary from all templates: %2, we have: %3, secondary from all templates: %4, we have: %5", _subcatid, _primaryThisSubcatid, _primary, _secondaryThisSubcatID, _secondary];
+
+				(T_GETV("availableWeaponsPrimary") select _subcatID) append _primary0;
+				(T_GETV("availableWeaponsSecondary") select _subcatID) append _secondary0;
+
+				//_subcatsAvailable pushBack _subcatID;
+
+				diag_log format ["%1 primary from all templates: %2, we have: %3, secondary from all templates: %4, we have: %5", _subcatid, _primaryThisSubcatid, _primary, _secondaryThisSubcatID, _secondary];
 				if ( ((count (_primary0)) > 0) && ( (count (_secondary0) > 0) || (count _secondaryThisSubcatID) == 0) ) then {
 					_subcatsAvailable pushBack _subcatID;
 					diag_log format ["%1: found weapons that fit: %2 %3", _subcatID, _primary0, _secondary0];
@@ -85,10 +159,20 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		{
 			diag_log format ["  %1: %2", _x, T_NAMES select T_INF select _x];
 		} forEach _subcatsAvailable;
+
+		// Fill the listbox
+		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
+		{
+			pr _subcatID = _x;
+			pr _i = _foreachindex;
+			_ctrl lnbAddRow [T_NAMES select T_INF select _subcatID];
+			_ctrl lnbSetValue [[_i, 0], _subcatID];
+		} forEach _subcatsAvailable;
+
 	} ENDMETHOD;
 
-	STATIC_METHOD("receiveWeaponData") {
-		params [P_THISCLASS, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates")];
+	STATIC_METHOD("receiveData") {
+		params [P_THISCLASS, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
 		OOP_INFO_0("RECEIVE WEAPON DATA:");
 		{
@@ -101,7 +185,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		pr _instance = CALLSM0(__CLASS_NAME, "getInstance");
 		if (!IS_NULL_OBJECT(_instance)) then {
-			CALLM2(_instance, "_receiveWeaponData", _unitsAndWeapons, _validTemplates);
+			CALLM3(_instance, "_receiveData", _unitsAndWeapons, _validTemplates, _nRecruits);
 		};
 	} ENDMETHOD;
 
