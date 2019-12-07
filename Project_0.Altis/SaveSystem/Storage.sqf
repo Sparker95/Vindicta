@@ -34,6 +34,8 @@ CLASS("Storage", "")
 
 	VARIABLE("sideTags");		// Variable needed for converting sides into strings and back
 
+	VARIABLE("saveDataOutgoing");	// Bool, set to true when any data has been saved
+
 	METHOD("new") {
 		params [P_THISOBJECT];
 		#ifndef _SQF_VM
@@ -48,6 +50,7 @@ CLASS("Storage", "")
 			SPECIAL_PREFIX + SPECIAL_PREFIX_SIDE_CHAR + (str _x)
 		};
 		T_SETV("sideTags", _sideTags);
+		T_SETV("saveDataOutgoing", false);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -177,6 +180,9 @@ CLASS("Storage", "")
 		//diag_log format ["Save: %1", _this];
 		[format ["[Storage] Saving %1", _valueOrRef]] remoteExec ["systemChat"];
 		#endif
+
+		// Set flag
+		T_SETV("saveDataOutgoing", true);
 
 		// Check if we are saving an object or a basic type
 		if (_valueOrRef isEqualType OOP_OBJECT_TYPE && {IS_OOP_OBJECT(_valueOrRef)}) then {
