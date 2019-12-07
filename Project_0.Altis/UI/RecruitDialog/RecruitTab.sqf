@@ -61,6 +61,30 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		{
 			diag_log format [" ID: %1, data: %2", _foreachindex, _x];
 		} forEach _allWeaponData;
+
+		// Make a list of unit types for soldiers for which we have weapons
+		pr _subcatsAvailable = []; // Array of subcat IDs of available soldiers
+		for "_subcatID" from 0 to (T_INF_size-1) do {
+			(_allWeaponData select _subcatID) params ["_primaryThisSubcatid", "_secondaryThisSubcatid"];
+			// Search arsenals of all the provided cargo crates
+			{
+				_x params ["_arsenalUnit", "_primary", "_secondary"];
+				_primary = _primary apply {_x#0};	// todo this must be done outside of this loop actually
+				_secondary = _secondary apply {_x#0};
+				pr _primary0 = _primary arrayIntersect _primaryThisSubcatID;
+				pr _secondary0 = _secondary arrayIntersect _secondaryThisSubcatID;
+				//diag_log format ["%1 primary from all templates: %2, we have: %3, secondary from all templates: %4, we have: %5", _subcatid, _primaryThisSubcatid, _primary, _secondaryThisSubcatID, _secondary];
+				if ( ((count (_primary0)) > 0) && ( (count (_secondary0) > 0) || (count _secondaryThisSubcatID) == 0) ) then {
+					_subcatsAvailable pushBack _subcatID;
+					diag_log format ["%1: found weapons that fit: %2 %3", _subcatID, _primary0, _secondary0];
+				};
+			} forEach _unitsAndWeapons;
+		};
+
+		diag_log "We can recruit these soldier types:";
+		{
+			diag_log format ["  %1: %2", _x, T_NAMES select T_INF select _x];
+		} forEach _subcatsAvailable;
 	} ENDMETHOD;
 
 	STATIC_METHOD("receiveWeaponData") {
@@ -70,7 +94,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		{
 			OOP_INFO_1("  Unit: %1", _x#0);
 			OOP_INFO_1("  Primary weapons: %1", _x#1);
-			OOP_INFO_1("  Secondary weapons: %1", _x#1);
+			OOP_INFO_1("  Secondary weapons: %1", _x#2);
 		} forEach _unitsAndWeapons;
 		OOP_INFO_1("  Valid templates: %1", _validTemplates);
 		

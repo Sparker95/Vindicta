@@ -25,7 +25,7 @@ call compile preprocessFileLineNumbers "UI\TacticalTablet\TacticalTablet.sqf";
 
 call compile preprocessFileLineNumbers "UI\AttachToGarrisonDialog\AttachToGarrisonDialog.sqf";
 
-call compile preprocessFileLineNumbers "UI\RecruitDialog\RecruitDialog.sqf";
+call compile preprocessFileLineNumbers "UI\RecruitDialog\initClasses.sqf";
 
 call compile preprocessFileLineNumbers "UI\Notification\Notification.sqf";
 call compile preprocessFileLineNumbers "UI\NotificationFactory\NotificationFactory.sqf";

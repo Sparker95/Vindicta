@@ -1712,9 +1712,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) then {
-			_hO getVariable "jna_dataList";
-		} else {
 			_dataList
+		} else {
+			_hO getVariable "jna_dataList";
 		};
 	} ENDMETHOD;
 
