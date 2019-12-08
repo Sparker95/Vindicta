@@ -6,9 +6,11 @@
 enableSaving [ false, false ]; // Saving disabled without autosave.
 
 if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-	0 spawn {
-		waitUntil {!isNull (findDisplay 46)};
-    	CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+	if (HAS_INTERFACE) then {
+		0 spawn {
+			waitUntil {!isNull (findDisplay 46)};
+			CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+		};
 	};
 };
 

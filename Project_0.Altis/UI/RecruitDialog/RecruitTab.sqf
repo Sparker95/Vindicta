@@ -40,6 +40,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Add event handlers
 		T_CALLM3("controlAddEventHandler", "TAB_RECRUIT_LISTBOX", "LBSelChanged", "onListboxSelChanged");
+		T_CALLM3("controlAddEventHandler", "TTAB_RECRUIT_BUTTON_RECRUIT", "buttonClick", "onButtonRecruit");
 
 		// Send request to server to return data to us
 		pr _dialogObj = T_CALLM0("getDialogObject");
@@ -84,14 +85,49 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		{
 			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
 			_lnbPrimary lnbAddRow [_name];
+			_lnbPrimary lnbSetData [ [_foreachindex, 0], _x];
 		} forEach _primary;
 		{
 			pr _name = getText (configfile >> "CfgWeapons" >> _x >> "displayName");
 			_lnbSecondary lnbAddRow [_name];
+			_lnbSecondary lnbSetData [ [_foreachindex, 0], _x];
 		} forEach _secondary;
 
 		_lnbPrimary lnbSetCurSelRow 0;
 		_lnbSecondary lnbSetCurSelRow 0;
+	} ENDMETHOD;
+
+	METHOD("onButtonRecruit") {
+		params [P_THISOBJECT];
+		
+		pr _dialog = T_CALLM0("getDialogObject");
+
+		// Get selected loadout
+		pr _lnbMain = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
+		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
+		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+
+		// Bail if nothing is selected
+		pr _id = lnbCurSelRow _lnbMain;
+		if (_id == -1) exitWith {
+			CALLM1(_dialog, "setHintText", "You must select a loadout first");
+		};
+
+		pr _subcatid = _lnbMain lnbValue [_id, 0];
+		pr _rowPrimary = lnbCurSelRow _lnbPrimary;
+		pr _rowSecondary = lnbCurSelRow _lnbSecondary;
+		pr _weaponPrimary = "";
+		pr _weaponSecondary = "";
+
+		if (_rowPrimary != -1) then {
+			_weaponPrimary = lnbData [_rowPrimary, 0];
+		};
+		if (_rowSecondary != -1) then {
+			_weaponSecondary = lnbData [_rowSecondary, 0];
+		};
+
+		pr _args = [_subcatID, _weaponPrimary, _weaponSecondary];
+		OOP_INFO_1("ON BUTTON RECRUIT: sending data to server: %1", _args);
 	} ENDMETHOD;
 
 	METHOD("_receiveData") {
