@@ -154,6 +154,12 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	METHOD("_receiveData") {
 		params [P_THISOBJECT, P_ARRAY("_unitsAndWeapons"), P_ARRAY("_validTemplates"), P_NUMBER("_nRecruits")];
 
+		// Reset the arrays with weapons
+		pr _array = []; _array resize T_INF_SIZE;
+		_array = _array apply {[]};
+		T_SETV("availableWeaponsPrimary", +_array);
+		T_SETV("availableWeaponsSecondary", +_array);
+
 		// Set text...
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_STATIC_N_RECRUITS");
 		_ctrl ctrlSetText (format ["Recruits available: %1", _nRecruits]);

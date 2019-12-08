@@ -914,6 +914,24 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			_hO addWeapon _primary;
 			for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
 			_hO addPrimaryWeaponItem _mag;
+
+			pr _muzzles = getArray(configFile >> "cfgWeapons" >> _primary >> "muzzles");
+			if (count _muzzles > 1) then {
+				_hO selectWeapon (_muzzles select 0);
+
+				// Also give mags for GL
+				pr _muzzle = _muzzles select 1;
+				if (_muzzle != "this") then {
+					pr _muzzleMags = getArray (configfile >> "CfgWeapons" >> _primary >> _muzzle >> "magazines");
+					if (count _muzzleMags > 0) then {
+						pr _mag = _muzzleMags select 0;
+						for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
+						_hO addPrimaryWeaponItem _mag;
+					};
+				};
+			} else {
+				_hO selectWeapon _primary;
+			};
 		};
 
 		// Process backpack
