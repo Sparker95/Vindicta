@@ -81,7 +81,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _primary =  T_GETV("availableWeaponsPrimary") select _subcatid;
 		pr _secondary = T_GETV("availableWeaponsSecondary") select _subcatid;
 
-		diag_log format ["  primary: %1, secondary: %2", _primary, _secondary];
+		//diag_log format ["  primary: %1, secondary: %2", _primary, _secondary];
 		//diag_log _lnbPrimary;
 		//diag_log _lnbSecondary;
 
@@ -188,10 +188,12 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			} forEach _weaponsThisTemplate;
 		} forEach _templates;
 
+		/*
 		diag_log "All weapon data:";
 		{
 			diag_log format [" ID: %1, data: %2", _foreachindex, _x];
 		} forEach _allWeaponData;
+		*/
 
 		// Make a list of unit types for soldiers for which we have weapons
 		pr _subcatsAvailable = []; // Array of subcat IDs of available soldiers
@@ -211,20 +213,22 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 				//_subcatsAvailable pushBack _subcatID;
 
-				diag_log format ["%1 primary from all templates: %2, we have: %3, secondary from all templates: %4, we have: %5", _subcatid, _primaryThisSubcatid, _primary, _secondaryThisSubcatID, _secondary];
+				//diag_log format ["%1 primary from all templates: %2, we have: %3, secondary from all templates: %4, we have: %5", _subcatid, _primaryThisSubcatid, _primary, _secondaryThisSubcatID, _secondary];
 				if ( ((count (_primary0)) > 0) && ( (count (_secondary0) > 0) || (count _secondaryThisSubcatID) == 0) ) then {
 					_subcatsAvailable pushBack _subcatID;
 					_arsenalUnits pushBack [_subcatID, _arsenalUnit];
-					diag_log format ["%1: found weapons that fit: %2 %3", _subcatID, _primary0, _secondary0];
+					//diag_log format ["%1: found weapons that fit: %2 %3", _subcatID, _primary0, _secondary0];
 				};
 			} forEach _unitsAndWeapons;
 		};
 		T_SETV("arsenalUnits", _arsenalUnits);
 
+		/*
 		diag_log "We can recruit these soldier types:";
 		{
 			diag_log format ["  %1: %2", _x, T_NAMES select T_INF select _x];
 		} forEach _subcatsAvailable;
+		*/
 
 		// Fill the listbox
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
