@@ -278,7 +278,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 	// Recruits a unit at this location from one of nearby cities
 	METHOD("recruitUnitAtLocation") {
-		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
+		params [P_THISOBJECT, P_NUMBER("_clientOwner"), P_OOP_OBJECT("_loc"), P_SIDE("_side"), P_NUMBER("_subcatID"), P_ARRAY("_weapons"), P_OOP_OBJECT("_arsenalUnit")];
+
+		OOP_INFO_1("RECRUIT UNIT AT LOCATION: %1", _this);
 
 		// Ensure that we can recruit at this place
 		pr _pos = CALLM0(_loc, "getPos");
@@ -287,7 +289,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 
 		// Bail if we can't recruit here any more
 		if (_nRecruits < 1) exitWith {
-			"Not enough recruits in this area any more!" remoteExecCall ["systemChat", _clientOwner];
+			pr _text = "Not enough recruits here!";
+			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "showServerResponse", [_text], _clientOwner, false);
 		};
 
 		// Remove recruits from any city
@@ -315,7 +318,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
 		pr _nInf = CALLM0(_gar, "countInfantryUnits");
 		if (_nInf >= _capInf) exitWith {
-			"Infantry capacity of this location has been reached!" remoteExecCall ["systemChat", _clientOwner];
+			pr _text = "Infantry capacity has been reached!";
+			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "showServerResponse", [_text], _clientOwner, false);
 		};
 
 
@@ -329,10 +333,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 
 		// Create a unit
-		pr _subcatid = selectRandom [T_INF_rifleman, T_INF_marksman, T_INF_LMG, T_INF_LAT, T_INF_medic];
 		pr _template = ["tGuerrilla"] call t_fnc_getTemplate;
 		// ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
-		pr _args = [_template, T_INF, _subcatID, -1, _group];
+		pr _args = [_template, T_INF, _subcatID, -1, _group, objNull, _weapons];
 		pr _unit = NEW("Unit", _args);
 
 		// Add its new group to the garrison
@@ -343,11 +346,16 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 			CALLM1(_groupToJoin, "addGroup", _group);
 		};
 
+		// Remove weapons from the arsenal
+		// todo
+
 		// Send msg back
 		pr _name = T_NAMES#T_INF#_subcatID;
 		pr _text = format ["We have recruited one %1", _name];
-		_text remoteExecCall ["systemChat", _clientOwner];
+		REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "showServerResponse", [_text], _clientOwner, false);
 
+		// Send weapon data again, to re-enable client's buttons
+		T_CALLM3("clientRequestRecruitWeaponsAtLocation", _clientOwner, _loc, _side);
 	} ENDMETHOD;
 
 	METHOD("clientRequestRecruitWeaponsAtLocation") {

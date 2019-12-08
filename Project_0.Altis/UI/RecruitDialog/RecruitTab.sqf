@@ -12,6 +12,8 @@
 
 CLASS(__CLASS_NAME, "DialogTabBase")
 
+	VARIABLE("arsenalUnits");
+
 	// Array with available primary and secondary weapons for each subcategory
 	VARIABLE("availableWeaponsPrimary");
 	VARIABLE("availableWeaponsSecondary");
@@ -25,6 +27,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		_array = _array apply {[]};
 		T_SETV("availableWeaponsPrimary", +_array);
 		T_SETV("availableWeaponsSecondary", +_array);
+		T_SETV("arsenalUnits", []);
 
 		// Create controls
 		pr _displayParent = T_CALLM0("getDisplay");
@@ -40,7 +43,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Add event handlers
 		T_CALLM3("controlAddEventHandler", "TAB_RECRUIT_LISTBOX", "LBSelChanged", "onListboxSelChanged");
-		T_CALLM3("controlAddEventHandler", "TTAB_RECRUIT_BUTTON_RECRUIT", "buttonClick", "onButtonRecruit");
+		T_CALLM3("controlAddEventHandler", "TAB_RECRUIT_BUTTON_RECRUIT", "buttonClick", "onButtonRecruit");
 
 		// Send request to server to return data to us
 		pr _dialogObj = T_CALLM0("getDialogObject");
@@ -100,6 +103,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 	METHOD("onButtonRecruit") {
 		params [P_THISOBJECT];
 		
+		OOP_INFO_0("ON BUTTON RECRUIT");
+
 		pr _dialog = T_CALLM0("getDialogObject");
 
 		// Get selected loadout
@@ -120,14 +125,30 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _weaponSecondary = "";
 
 		if (_rowPrimary != -1) then {
-			_weaponPrimary = lnbData [_rowPrimary, 0];
+			_weaponPrimary = _lnbPrimary lnbData [_rowPrimary, 0];
 		};
 		if (_rowSecondary != -1) then {
-			_weaponSecondary = lnbData [_rowSecondary, 0];
+			_weaponSecondary = _lnbSecondary lnbData [_rowSecondary, 0];
 		};
 
-		pr _args = [_subcatID, _weaponPrimary, _weaponSecondary];
+		// Find the arsenal unit from which we will be taking the weapons
+		pr _arsenalUnits = T_GETV("arsenalUnits");
+		pr _index = _arsenalUnits findIf {_x#0 == _subcatID};
+		pr _arsenalUnit = NULL_OBJECT;
+		if (_index != -1) then {_arsenalUnit = _arsenalUnits#_index#1};
+
+		pr _dialogObj = T_CALLM0("getDialogObject");
+		pr _loc = GETV(_dialogObj, "location");
+		pr _weapons = [_weaponPrimary, _weaponSecondary];
+		pr _args = [clientOwner, _loc, playerSide, _subcatID, _weapons, _arsenalUnit];
 		OOP_INFO_1("ON BUTTON RECRUIT: sending data to server: %1", _args);
+		CALLM2(gGarrisonServer, "postMethodAsync", "recruitUnitAtLocation", _args);
+
+		CALLM1(_dialogObj, "setHintText", "Recruiting soldier...");
+
+		// Disable the button
+		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_BUTTON_RECRUIT");
+		_ctrl ctrlEnable false;
 	} ENDMETHOD;
 
 	METHOD("_receiveData") {
@@ -168,6 +189,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Make a list of unit types for soldiers for which we have weapons
 		pr _subcatsAvailable = []; // Array of subcat IDs of available soldiers
+		pr _arsenalUnits = [];
 		for "_subcatID" from 0 to (T_INF_engineer-1) do {
 			(_allWeaponData select _subcatID) params ["_primaryThisSubcatid", "_secondaryThisSubcatid"];
 			// Search arsenals of all the provided cargo crates
@@ -186,10 +208,12 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 				diag_log format ["%1 primary from all templates: %2, we have: %3, secondary from all templates: %4, we have: %5", _subcatid, _primaryThisSubcatid, _primary, _secondaryThisSubcatID, _secondary];
 				if ( ((count (_primary0)) > 0) && ( (count (_secondary0) > 0) || (count _secondaryThisSubcatID) == 0) ) then {
 					_subcatsAvailable pushBack _subcatID;
+					_arsenalUnits pushBack [_subcatID, _arsenalUnit];
 					diag_log format ["%1: found weapons that fit: %2 %3", _subcatID, _primary0, _secondary0];
 				};
 			} forEach _unitsAndWeapons;
 		};
+		T_SETV("arsenalUnits", _arsenalUnits);
 
 		diag_log "We can recruit these soldier types:";
 		{
@@ -198,6 +222,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Fill the listbox
 		pr _ctrl = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX");
+		lnbClear _ctrl;
 		{
 			pr _subcatID = _x;
 			pr _i = _foreachindex;

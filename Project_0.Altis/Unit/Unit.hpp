@@ -18,13 +18,19 @@
 #define UNIT_DATA_ID_VECTOR_DIR_UP	13
 #define UNIT_DATA_ID_LOCATION		14
 
-#define UNIT_DATA_SIZE				15
+#define UNIT_DATA_ID_WEAPONS		15
 
-//								 0, 1,  2,       3,  4, 5,  6,  7,  8,  9, 10, 11, 12,		13,				    14
-#define UNIT_DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", [], "", "", 0,  [], [0,0,0], [[0,0,0], [0,0,0]], ""]
+#define UNIT_DATA_SIZE				16
+
+//								 0, 1,  2,       3,  4, 5,  6,  7,  8,  9, 10, 11, 12,		13,				    14, 15
+#define UNIT_DATA_DEFAULT		[0, 0, "", objNull, "", 2, "", [], "", "", 0,  [], [0,0,0], [[0,0,0], [0,0,0]], "", []]
 
 //Class name of Unit class, in case I need to rename it everywhere
 #define UNIT_CLASS_NAME "Unit"
+
+// Structure of unit's weapons
+#define UNIT_WEAPONS_ID_PRIMARY		0
+#define UNIT_WEAPONS_ID_SECONDARY	1
 
 // String names of public variables set on units
 #define UNIT_VAR_NAME_STR "__u"

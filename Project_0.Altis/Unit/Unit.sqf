@@ -57,10 +57,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	_classID - ID of the class in the template array, or -1 to pick a random class name. Ignored if _hO is not null.
 	_group - the group object the unit will be added to. Vehicles can be added without a group.
 	_hO - object handle. If null, new unit wwill be created in despawned state. Otherwise new <Unit> object will be attached to this object handle.
+	_weapons - array with weapons to give to this unit, for format check Unit.hpp. Can be an empty array, then unit will have standard weapons from the config or loadout.
 	*/
 
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull]];
+		params [["_thisObject", "", [""]], ["_template", [], [[]]], ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_classID", 0, [0]], ["_group", "", [""]], ["_hO", objNull], ["_weapons", []]];
 
 		OOP_INFO_0("NEW UNIT");
 
@@ -119,6 +120,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_data set [UNIT_DATA_ID_GROUP, ""];
 		_data set [UNIT_DATA_ID_LOADOUT, _loadout];
+		_data set [UNIT_DATA_ID_WEAPONS, _weapons];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
 		};
@@ -139,6 +141,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			CALLM0(_thisObject, "initObjectVariables");
 			CALLM0(_thisObject, "initObjectEventHandlers");
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
+			CALLM0(_thisObject, "applyInfantryWeapons");
 		};
 	} ENDMETHOD;
 
@@ -329,6 +332,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					pr _AI = CALLM1(_thisObject, "createAI", "AIUnitInfantry");
 
 					pr _groupType = CALLM0(_group, "getType");
+
+					// Give weapons to the unit (if he has special weapons)
+					CALLM0(_thisObject, "applyInfantryWeapons");
 				};
 				case T_VEH: {
 
@@ -873,6 +879,79 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		params [["_thisObject", "", [""]], ["_group", "", [""]] ];
 		private _data = GET_VAR(_thisObject, "data");
 		_data set [UNIT_DATA_ID_GROUP, _group];
+	} ENDMETHOD;
+
+	/*
+	Method: applyWeapons
+	Gives weapons to the unit from the weapons array of this unit
+	*/
+	METHOD("applyInfantryWeapons") {
+		params [P_THISOBJECT];
+		pr _data = GET_VAR(_thisObject, "data");
+
+		// Bail if unit does not have special weapons
+		pr _weapons = _data select UNIT_DATA_ID_WEAPONS;
+		if (count _weapons == 0) exitWith {};
+
+		// Bail if unit is not spawned
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {};
+
+		// Remove all weapons
+		removeAllWeapons this;
+
+		// Remove all items from vest
+		pr _vest = vest _hO;
+		if (_vest == "") then { _vest = "V_Chestrig_oli"; }; // Default vest
+		removeVest _hO;
+		_hO addVest _vest;
+			
+		// Add main gun
+		pr _primary = _weapons#UNIT_WEAPONS_ID_PRIMARY;
+		if (_primary != "") then {
+			pr _primaryMags = getArray (configfile >> "CfgWeapons" >> _primary >> "magazines");
+			pr _mag = _primaryMags select 0;
+			_hO addWeapon _primary;
+			for "_i" from 0 to 8 do { _hO addItemToVest _mag; };
+			_hO addPrimaryWeaponItem _mag;
+		};
+
+		// Process backpack
+		// Soldiers without a secondary weapon keep their backpack
+		pr _backpack = backpack _hO;
+
+		// Add secondary weapon
+		pr _secondary = _weapons#UNIT_WEAPONS_ID_SECONDARY;
+		if (_secondary != "") then {
+
+			// Soldiers with secondary weapon get backpack emptied
+			// Or are given a default backpack
+			if (_backpack == "") then { _backpack = "B_Kitbag_rgr"; }; // Default backpack
+			removeBackpack _hO;
+			_hO addBackpack _backpack;
+
+			pr _secondaryMags = getArray (configfile >> "CfgWeapons" >> _secondary >> "magazines");
+			pr _mag = _secondaryMags select 0;
+			_hO addWeapon _secondary;
+			for "_i" from 0 to 4 do { _hO addItemToBackpack _mag; };
+			_hO addSecondaryWeaponItem _mag;
+		};
+
+		// Force select primary weapon
+		// https://community.bistudio.com/wiki/selectWeapon  notes by MaestrO.fr and Dr_Eyeball
+		if ( (primaryWeapon _hO) != "") then
+		{			
+			pr _type = primaryWeapon _hO;
+			// check for multiple muzzles (eg: GL)
+			pr _muzzles = getArray(configFile >> "cfgWeapons" >> _type >> "muzzles");
+			
+			if (count _muzzles > 1) then {
+				_hO selectWeapon (_muzzles select 0);
+			} else {
+				_hO selectWeapon _type;
+			};
+		};
+
 	} ENDMETHOD;
 
 
