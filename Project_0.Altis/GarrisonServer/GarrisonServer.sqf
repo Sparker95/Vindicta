@@ -347,7 +347,18 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		};
 
 		// Remove weapons from the arsenal
-		// todo
+		if (!IS_NULL_OBJECT(_arsenalUnit)) then {
+			if (IS_OOP_OBJECT(_arsenalUnit)) then {
+				pr _primary = _weapons select UNIT_WEAPONS_ID_PRIMARY;
+				pr _secondary = _weapons select UNIT_WEAPONS_ID_SECONDARY;
+				if (_primary != "") then {
+					CALLM2(_arsenalUnit, "limitedArsenalRemoveItem", _primary, 1);
+				};
+				if (_secondary != "") then {
+					CALLM2(_arsenalUnit, "limitedArsenalRemoveItem", _secondary, 1);
+				};
+			};
+		};
 
 		// Send msg back
 		pr _name = T_NAMES#T_INF#_subcatID;

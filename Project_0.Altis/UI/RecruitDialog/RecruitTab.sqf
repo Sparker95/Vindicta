@@ -235,6 +235,13 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			_ctrl lnbAddRow [T_NAMES select T_INF select _subcatID];
 			_ctrl lnbSetValue [[_i, 0], _subcatID];
 		} forEach _subcatsAvailable;
+		_ctrl lnbSetCurSelRow -1;
+
+		// Clear other listboxes
+		pr _lnbPrimary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_PRIMARY");
+		lnbClear _lnbPrimary;
+		pr _lnbSecondary = T_CALLM1("findControl", "TAB_RECRUIT_LISTBOX_SECONDARY");
+		lnbClear _lnbSecondary;
 
 	} ENDMETHOD;
 

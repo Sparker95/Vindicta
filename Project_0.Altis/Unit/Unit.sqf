@@ -1815,6 +1815,26 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 	} ENDMETHOD;
 
+	// Removes items from the arsenal
+	METHOD("limitedArsenalRemoveItem") {
+		params [P_THISOBJECT, P_STRING("_item"), P_NUMBER("_amount")];
+		pr _index = _item call jn_fnc_arsenal_itemType;
+		pr _data = T_GETV("data");
+		pr _hO = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) then {
+			// It's despawned
+			// Remove it from the array
+			pr _dataList = _data select UNIT_DATA_ID_LIMITED_ARSENAL;
+			_dataList set [_index, [_dataList select _index, [_item, _amount]] call jn_fnc_common_array_remove];
+		} else {
+			// It's spawned
+			// Use general arsenal code
+			CRITICAL_SECTION { // Because our code runs scheduled
+				[_hO, _index, _item, 1] call jn_fnc_arsenal_removeItem;
+			};
+		};
+	} ENDMETHOD;
+
 	// - - - - STORAGE - - - - -
 
 	/* override */ METHOD("serializeForStorage") {
