@@ -853,7 +853,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			if (_AI != "") then {
 				// Switch off their brain
 				// We must safely delete the AI object because it might be currently used in its own thread
-				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", _AI);
+				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
+				_data set [GROUP_DATA_ID_AI, ""];
 			};
 
 			// Despawn everything
