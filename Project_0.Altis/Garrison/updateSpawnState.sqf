@@ -28,7 +28,7 @@ pr _thisPos = if (_loc == "") then {
 };
 
 // Check garrison distances first, this should be quick
-pr _speedMax = 200;
+pr _speedMax = 60;
 
 // Get distances to all garrisons of other sides
 pr _garrisonDist = if(_side != CIVILIAN) then {
@@ -81,7 +81,7 @@ switch (T_GETV("spawned")) do {
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawnMin;
-			pr _interval = (_dstToThreshold / _speedMax) max 3;
+			pr _interval = (_dstToThreshold / _speedMax) max 5;
 			//pr _interval = 2; // todo override this some day later
 			//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "name"), _dstMin];
 
