@@ -660,6 +660,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 	} ENDMETHOD;
 
 	METHOD("update") {
+		/*
 		params [P_THISOBJECT, P_OOP_OBJECT("_policeStation"), P_NUMBER("_cityState")];
 		ASSERT_OBJECT_CLASS(_policeStation, "Location");
 
@@ -703,6 +704,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
 			};
 		};
+		*/
 	} ENDMETHOD;
 
 	/* public virtual override*/ METHOD("getPlayerSide") {
