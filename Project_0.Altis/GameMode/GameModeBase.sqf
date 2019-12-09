@@ -116,7 +116,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
+			// Main message loop manager
 			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+			// Group message loop manager
+			gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
@@ -1320,6 +1324,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Main message loop manager
 		gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+		// Group message loop manager
+		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 		// Special garrisons
 		T_CALLM0("_createSpecialGarrisons");

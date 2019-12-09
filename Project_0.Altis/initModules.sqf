@@ -62,8 +62,9 @@ call compile preprocessFileLineNumbers "Group\Group.sqf";
 // Initialize Garrison class
 call compile preprocessFileLineNumbers "Garrison\Garrison.sqf";
 
-// Initialize MessageLoopMainManager class
+// Initialize MessageLoopManagers classes
 call compile preprocessFileLineNumbers "MessageLoopManagers\MessageLoopMainManager.sqf";
+call compile preprocessFileLineNumbers "MessageLoopManagers\MessageLoopGroupManager.sqf";
 
 // Initialize Location class
 call compile preprocessFileLineNumbers "Location\Location.sqf";
