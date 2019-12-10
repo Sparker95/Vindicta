@@ -53,7 +53,7 @@ OOP_INFO_1("  distance to garrisons: %1", _dstMin);
 if(_dstMin >= _dstSpawnMin) then {
 	// TODO we should use BIS getNearest functions here maybe? It might be faster.
 	pr _unitDist = CALL_METHOD(gLUAP, "getUnitArray", [_side]) apply {_x distance _thisPos};
-	_dstMin = if (count _unitDist > 0) then {selectMin _unitDist} else {_speedMax*10};
+	_dstMin = if (count _unitDist > 0) then {selectMin _unitDist} else {666666};
 	#ifdef DEBUG
 	OOP_INFO_1("  distance to units: %1", _dstMin);
 	#endif

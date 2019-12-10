@@ -142,6 +142,15 @@ while {_subCatID < _catSize} do {
 	_subCatID = _subCatID + 1;
 };
 
+// Post-process loadout weapons of some unit types
+// We want these unit types to also be able to use rifleman's main weapon
+pr _riflemanWeapons = _loadoutWeapons#T_INF_rifleman#0;
+(_loadoutWeapons#T_INF_LAT#0) append _riflemanWeapons;
+(_loadoutWeapons#T_INF_AT#0) append _riflemanWeapons;
+(_loadoutWeapons#T_INF_AA#0) append _riflemanWeapons;
+(_loadoutWeapons#T_INF_medic#0) append _riflemanWeapons;
+(_loadoutWeapons#T_INF_engineer#0) append _riflemanWeapons;
+
 diag_log format ["Primary weapons:", _primaryWeapons];
 diag_log format ["  %1", _primaryWeapons];
 diag_log format ["  %1", _primaryWeaponMagazines];
