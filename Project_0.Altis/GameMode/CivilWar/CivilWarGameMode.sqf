@@ -49,6 +49,21 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 	} ENDMETHOD;
 
+	/* virtual */ METHOD("startCommanders") {
+		_this spawn {
+			params [P_THISOBJECT];
+			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
+			sleep 10;
+			CALLM1(T_GETV("AICommanderInd"), "enablePlanning", true);
+			CALLM1(T_GETV("AICommanderWest"), "enablePlanning", false);
+			CALLM1(T_GETV("AICommanderEast"), "enablePlanning", false);
+			{
+				// We postMethodAsync them, because we don't want to start processing right after mission start
+				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+		};
+	} ENDMETHOD;
+
 	// Creates gameModeData of a location
 	/* protected override */	METHOD("initLocationGameModeData") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
@@ -94,6 +109,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
 				if (random 100 < 50) then {
+					//selectRandom [ENEMY_SIDE, WEST]
 					ENEMY_SIDE
 				} else {
 					CIVILIAN
@@ -658,11 +674,9 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			// If we have no or weakened garrison then we spawn a new one to reinforce/
 			// TODO: make this a bit better, maybe have them come from nearest town held by the same side.
 			// We need some way to reinforce police generally probably?
-			private _garrisons = CALLM0(_policeStation, "getGarrisons");
-			if (count _garrisons == 0 or { 
-				private _garr = _garrisons#0;
-				CALLM(_garr, "countInfantryUnits", []) <= 4
-			}) then {
+			private _garrisons = CALLM1(_policeStation, "getGarrisons", ENEMY_SIDE);
+			// We only want to reinforce police stations still under our control
+			if (  (count _garrisons > 0) and  { CALLM(_garrisons select 0, "countInfantryUnits", []) <= 4 } ) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };

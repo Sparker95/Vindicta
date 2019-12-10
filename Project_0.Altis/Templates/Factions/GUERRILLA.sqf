@@ -1,5 +1,5 @@
 /*
-NATO templates for ARMA III
+Guerrilla templates for ARMA III
 */
 
 _array = [];
@@ -9,46 +9,47 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT,  ["B_Soldier_F"]];					//Default infantry if nothing is found
-
-_inf set [T_INF_default, ["B_Soldier_F"]];
-_inf set [T_INF_SL, ["B_Soldier_SL_F"]];
-_inf set [T_INF_TL, ["B_Soldier_TL_F"]];
+_inf set [T_INF_DEFAULT,  ["B_G_Soldier_F"]];					//Default infantry if nothing is found
+// TODO lots of stuff is replaced with rifleman class
+// In fact we don't need proper loadouts for them, because guerrillas takes weapons from arsenal
+_inf set [T_INF_default, ["B_G_Soldier_F"]];
+_inf set [T_INF_SL, ["B_G_Soldier_SL_F"]];
+_inf set [T_INF_TL, ["B_G_Soldier_TL_F"]];
 _inf set [T_INF_officer, ["B_officer_F"]];
-_inf set [T_INF_GL, ["B_Soldier_GL_F"]];
-_inf set [T_INF_rifleman, ["B_Soldier_F"]];
-_inf set [T_INF_marksman, ["B_soldier_M_F"]];
-_inf set [T_INF_sniper, ["B_Sharpshooter_F"]];
-_inf set [T_INF_spotter, ["B_Soldier_lite_F"]];
-_inf set [T_INF_exp, ["B_soldier_exp_F"]];
-_inf set [T_INF_ammo, ["B_Soldier_A_F"]];
-_inf set [T_INF_LAT, ["B_soldier_LAT2_F"]];
-_inf set [T_INF_AT, ["B_soldier_LAT_F"]];
-_inf set [T_INF_AA, ["B_soldier_AA_F"]];
-_inf set [T_INF_LMG, ["B_soldier_AR_F"]];
-_inf set [T_INF_HMG, ["B_HeavyGunner_F"]];
-_inf set [T_INF_medic, ["B_medic_F"]];
-_inf set [T_INF_engineer, ["B_engineer_F"]];
-_inf set [T_INF_crew, ["B_crew_F"]];
-_inf set [T_INF_crew_heli, ["B_helicrew_F"]];
-_inf set [T_INF_pilot, ["B_Fighter_Pilot_F"]];
-_inf set [T_INF_pilot_heli, ["B_Helipilot_F"]];
-_inf set [T_INF_survivor, ["B_Survivor_F"]];
-_inf set [T_INF_unarmed, ["B_Soldier_unarmed_F"]];
+_inf set [T_INF_GL, ["B_G_Soldier_GL_F"]];
+_inf set [T_INF_rifleman, ["B_G_Soldier_F"]];
+_inf set [T_INF_marksman, ["B_G_Sharpshooter_F"]];
+_inf set [T_INF_sniper, ["B_G_Soldier_F"]];
+_inf set [T_INF_spotter, ["B_G_Soldier_F"]];
+_inf set [T_INF_exp, ["B_G_Soldier_F"]];
+_inf set [T_INF_ammo, ["B_G_Soldier_A_F"]];
+_inf set [T_INF_LAT, ["B_G_soldier_LAT_F"]];
+_inf set [T_INF_AT, ["B_G_soldier_LAT_F"]];
+_inf set [T_INF_AA, ["B_G_Soldier_F"]];
+_inf set [T_INF_LMG, ["B_G_soldier_AR_F"]];
+_inf set [T_INF_HMG, ["B_G_soldier_AR_F"]];
+_inf set [T_INF_medic, ["B_G_medic_F"]];
+_inf set [T_INF_engineer, ["B_G_engineer_F"]];
+_inf set [T_INF_crew, ["B_G_Soldier_F"]];
+_inf set [T_INF_crew_heli, ["B_G_Soldier_F"]];
+_inf set [T_INF_pilot, ["B_G_Soldier_F"]];
+_inf set [T_INF_pilot_heli, ["B_G_Soldier_F"]];
+_inf set [T_INF_survivor, ["B_G_Soldier_unarmed_F"]];
+_inf set [T_INF_unarmed, ["B_G_Soldier_unarmed_F"]];
 
 //Recon
-_inf set [T_INF_recon_TL, ["B_recon_TL_F"]];
-_inf set [T_INF_recon_rifleman, ["B_recon_F"]];
-_inf set [T_INF_recon_medic, ["B_recon_medic_F"]];
-_inf set [T_INF_recon_exp, ["B_recon_exp_F"]];
-_inf set [T_INF_recon_LAT, ["B_recon_LAT_F"]];
-_inf set [T_INF_recon_marksman, ["B_recon_M_F"]];
-_inf set [T_INF_recon_JTAC, ["B_recon_JTAC_F"]];
+_inf set [T_INF_recon_TL, ["B_G_Soldier_F"]];
+_inf set [T_INF_recon_rifleman, ["B_G_Soldier_F"]];
+_inf set [T_INF_recon_medic, ["B_G_Soldier_F"]];
+_inf set [T_INF_recon_exp, ["B_G_Soldier_F"]];
+_inf set [T_INF_recon_LAT, ["B_G_Soldier_F"]];
+_inf set [T_INF_recon_marksman, ["B_G_Soldier_F"]];
+_inf set [T_INF_recon_JTAC, ["B_G_Soldier_F"]];
 
 //Divers
-_inf set [T_INF_diver_TL, ["B_diver_TL_F"]];
-_inf set [T_INF_diver_rifleman, ["B_diver_F"]];
-_inf set [T_INF_diver_exp, ["B_diver_exp_F"]];
+_inf set [T_INF_diver_TL, ["B_G_Soldier_F"]];
+_inf set [T_INF_diver_rifleman, ["B_G_Soldier_F"]];
+_inf set [T_INF_diver_exp, ["B_G_Soldier_F"]];
 
 //==== Vehicles ====
 
@@ -82,7 +83,7 @@ _veh set [T_VEH_heli_attack, ["B_Heli_Attack_01_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_attack, ["B_Plane_CAS_01_dynamicLoadout_F"]];
 _veh set [T_VEH_plane_fighter , ["B_Plane_Fighter_01_F"]];
 //_veh set [T_VEH_plane_cargo, [" "]];
-//_veh set [T_VEH_plane_unarmed, [" "]];
+//_veh set [T_VEH_plane_unarmed , [" "]];
 //_veh set [T_VEH_plane_VTOL, [" "]];
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F"]];
 _veh set [T_VEH_boat_armed, ["B_Boat_Armed_01_minigun_F"]];
@@ -122,7 +123,7 @@ _group set [T_GROUP_DEFAULT, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> 
 
 _group set [T_GROUP_inf_AA_team, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfTeam_AA"]];
 _group set [T_GROUP_inf_AT_team, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfTeam_AT"]];
-_group set [T_GROUP_inf_rifle_squad, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfSquad"]];
+_group set [T_GROUP_inf_rifle_squad, [configfile >> "CfgGroups" >> "West" >> "Guerilla" >> "Infantry" >> "IRG_InfSquad"]];
 _group set [T_GROUP_inf_assault_squad, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfAssault"]];
 _group set [T_GROUP_inf_weapons_squad, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfSquad_Weapons"]];
 _group set [T_GROUP_inf_fire_team, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfTeam"]];
@@ -130,7 +131,7 @@ _group set [T_GROUP_inf_recon_patrol, [configfile >> "CfgGroups" >> "West" >> "B
 _group set [T_GROUP_inf_recon_sentry, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_ReconSentry"]];
 _group set [T_GROUP_inf_recon_squad, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_ReconSquad"]];
 _group set [T_GROUP_inf_recon_team, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_ReconTeam"]];
-_group set [T_GROUP_inf_sentry, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_InfSentry"]];
+_group set [T_GROUP_inf_sentry, [configfile >> "CfgGroups" >> "West" >> "Guerilla" >> "Infantry" >> "IRG_InfSentry"]];
 _group set [T_GROUP_inf_sniper_team, [configfile >> "CfgGroups" >> "West" >> "BLU_F" >> "Infantry" >> "BUS_SniperTeam"]];
 
 
@@ -140,7 +141,10 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tNATO"];
+_array set [T_NAME, "tGuerrilla"];
+
+_inv = [];
+_array set [T_INV, _inv];
 
 
 _array // End template

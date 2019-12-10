@@ -44,6 +44,8 @@ CLASS("AI", "MessageReceiverEx")
 	METHOD("new") {
 		params [["_thisObject", "", [""]], ["_agent", "", [""]]];
 
+		OOP_INFO_1("NEW %1", _this);
+
 		PROFILER_COUNTER_INC("AI");
 
 		// Make sure the required global objects exist
@@ -63,6 +65,8 @@ CLASS("AI", "MessageReceiverEx")
 
 	METHOD("delete") {
 		params [["_thisObject", "", [""]]];
+
+		OOP_INFO_0("DELETE");
 
 		PROFILER_COUNTER_DEC("AI");
 

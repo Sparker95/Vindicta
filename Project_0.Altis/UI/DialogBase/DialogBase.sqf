@@ -311,7 +311,7 @@ CLASS("DialogBase", "")
 
 	// Returns new tab ID
 	METHOD("addTab") {
-		params [P_THISOBJECT, P_STRING("_tabClass"), P_STRING("_tabText"), P_ARRAY("_tabParameters")];
+		params [P_THISOBJECT, P_STRING("_tabClass"), P_STRING("_tabText")];
 
 		pr _display = T_CALLM0("getDisplay");
 

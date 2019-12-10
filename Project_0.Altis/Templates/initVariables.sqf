@@ -6,6 +6,9 @@ t_classnames_hashmap = [false] call CBA_fnc_createNamespace;
 t_classnames_array = [];
 #endif
 
+// Array with all valid template names
+t_validTemplates = [];
+
 call compile preprocessFileLineNumbers "Templates\initCategories.sqf";
 call compile preprocessFileLineNumbers "Templates\initCategoriesNames.sqf";
 call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";

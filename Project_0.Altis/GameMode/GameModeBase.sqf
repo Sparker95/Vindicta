@@ -116,7 +116,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_CALLM("preInitAll", []);
 
 		if(IS_SERVER || IS_HEADLESSCLIENT) then {
+			// Main message loop manager
 			gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+			// Group message loop manager
+			gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 			// Global debug printer for tests
 			private _args = ["TestDebugPrinter", gMessageLoopMain];
@@ -274,7 +278,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _radius = GETV(_loc, "boundingRadius");
 
 			// Create vehicles in civilian area for player to steal
-			if(_type == LOCATION_TYPE_CITY) then {
+			if(_type == LOCATION_TYPE_CITY && (_side isEqualTo CIVILIAN)) then {
 				T_CALLM1("populateCity", _loc);
 				// CALLM0(_gar, "activate");
 			};
@@ -530,6 +534,22 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		0
 	} ENDMETHOD;
 
+	// Not all game modes need all commanders
+	// By default all commanders are started and perform planning
+	// This can be overriden in this method
+	/* virtual */ METHOD("startCommanders") {
+		_this spawn {
+			params [P_THISOBJECT];
+			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
+			sleep 10;
+			{
+				CALLM1(T_GETV(_x), "enablePlanning", true);
+				// We postMethodAsync them, because we don't want to start processing right after mission start
+				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+		};
+	} ENDMETHOD;
+
 	// -------------------------------------------------------------------------
 	// |                        S E R V E R   O N L Y                          |
 	// -------------------------------------------------------------------------
@@ -573,18 +593,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
-	} ENDMETHOD;
-
-	METHOD("startCommanders") {
-		_this spawn {
-			params [P_THISOBJECT];
-			// Add some delay so that we don't start processing instantly, because we might want to synchronize intel with players
-			sleep 10;
-			{
-				// We postMethodAsync them, because we don't want to start processing right after mission start
-				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
-			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
-		};
 	} ENDMETHOD;
 
 	fnc_getLocName = {
@@ -804,7 +812,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			for "_i" from 1 to _patrolGroups do {
 				private _patrolGroup = NEW("Group", [_side ARG GROUP_TYPE_PATROL]);
 				for "_i" from 0 to 1 do {
-					private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+					private _variants = [T_INF_SL, T_INF_officer, T_INF_officer];
 					NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _patrolGroup]);
 				};
 				OOP_INFO_MSG("%1: Created police patrol group %2", [_gar ARG _patrolGroup]);
@@ -819,7 +827,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _sentryGroup = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
 			private _remainder = 1 max (_cInf * 0.25);
 			for "_i" from 1 to _remainder do {
-				private _variants = [T_INF_SL, T_INF_officer, T_INF_DEFAULT];
+				private _variants = [T_INF_SL, T_INF_officer, T_INF_officer];
 				NEW("Unit", [_template ARG 0 ARG selectrandom _variants ARG -1 ARG _sentryGroup]);
 			};
 			OOP_INFO_MSG("%1: Created police sentry group %2", [_gar ARG _sentryGroup]);
@@ -1316,6 +1324,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Main message loop manager
 		gMessageLoopMainManager = NEW("MessageLoopMainManager", []);
+
+		// Group message loop manager
+		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 		// Special garrisons
 		T_CALLM0("_createSpecialGarrisons");

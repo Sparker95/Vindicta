@@ -265,21 +265,21 @@ fnc_debugv2_overwrite = {
 };
 
 
+if (hasInterface) then {
+	[] spawn {
 
-[] spawn {
+		waitUntil {!isNull findDisplay 46}; 
 
-	waitUntil {!isNull findDisplay 46}; 
-
-	(findDisplay 46) displayAddEventHandler ["KeyDown", {
-		params ["_display", "_key", "_shift", "_ctrl", "_alt"];
-		
-		if(_key == 1)then{
-			0 spawn {
-				waitUntil {!isNull (findDisplay 49)};
-				isNil {call fnc_debugv2_overwrite;}; // Wrap it into isNil to make it do the job in one frame
+		(findDisplay 46) displayAddEventHandler ["KeyDown", {
+			params ["_display", "_key", "_shift", "_ctrl", "_alt"];
+			
+			if(_key == 1)then{
+				0 spawn {
+					waitUntil {!isNull (findDisplay 49)};
+					isNil {call fnc_debugv2_overwrite;}; // Wrap it into isNil to make it do the job in one frame
+				};
 			};
-		};
-	}];
+		}];
 
+	};
 };
-

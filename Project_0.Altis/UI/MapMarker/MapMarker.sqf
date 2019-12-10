@@ -347,85 +347,87 @@ MapMarker_EH_Draw = {
 };
 
 #ifndef _SQF_VM
-0 spawn {
-	waitUntil {! isNull (findDisplay 12)};
+if (hasInterface) then {
+	0 spawn {
+		waitUntil {! isNull (findDisplay 12)};
 
-	// Add a Draw event handler to draw markers
-	// It will call onDraw of every MapMarker object
-	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
+		// Add a Draw event handler to draw markers
+		// It will call onDraw of every MapMarker object
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["Draw", {call MapMarker_EH_Draw}]; // Because of this sh1t: https://feedback.bistudio.com/T123355
 
-	// ==== Add event handlers ====
-	/*
-	// These are moved into ClientMapUI now, which makes more sense.
-	// Mouse button down
-	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonDown", {
-		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+		// ==== Add event handlers ====
+		/*
+		// These are moved into ClientMapUI now, which makes more sense.
+		// Mouse button down
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonDown", {
+			params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
 
-		 pr _args = [_displayorcontrol, _xPos, _yPos];
-		 pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _args = [_displayorcontrol, _xPos, _yPos];
+			pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
 
-		 // Call event handler
-		 if (_marker != "") then {
-		 	CALLM4(_marker, "onMouseButtonDown", _button, _shift, _ctrl, _alt);
-		 } else {
-		 	[missionNamespace, "MapMarker_MouseButtonDown_none", [_button, _shift, _ctrl, _alt]] call BIS_fnc_callScriptedEventHandler;
-		 };
-	}];
-
-	// Mouse button up
-	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonUp", {
-		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
-		 diag_log format ["Map MouseButtonDown: %1 %2", [_xPos, _yPos], _displayorcontrol ctrlMapScreenToWorld [_xPos, _yPos]];
-
-		 pr _args = [_displayorcontrol, _xPos, _yPos];
-		 pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
-		 diag_log format ["Marker under cursor: %1", _marker];
-
-		 // Call event handler
-		 if (_marker != "") then {
-		 	CALLM4(_marker, "onMouseButtonUp", _button, _shift, _ctrl, _alt);
-		 };
-	}];
-
-	// Mouse button click
-	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonClick", {
-		 params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
-
-		 pr _args = [_displayorcontrol, _xPos, _yPos];
-		 pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
-
-		 // Call event handler
-		 if (_marker != "") then {
-		 	CALLM3(_marker, "onMouseButtonClick", _shift, _ctrl, _alt);
-		 } else {
-		 	[missionNamespace, "MapMarker_MouseButtonClick_none", [_button, _shift, _ctrl, _alt]] call BIS_fnc_callScriptedEventHandler;
-		 };
-	}];
-
-	// Mouse moving
-	((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {
-		params ["_control", "_xPos", "_yPos", "_mouseOver"];
-
-		pr _args = [_control, _xPos, _yPos];
-		pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
-		pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
-
-		// Did something change?
-		if (_markerPrev != _markerCurrent) then {
-			// Did we leave any marker?
-			if (_markerPrev != "") then {
-				CALLM0(_markerPrev, "onMouseLeave");
+			// Call event handler
+			if (_marker != "") then {
+				CALLM4(_marker, "onMouseButtonDown", _button, _shift, _ctrl, _alt);
+			} else {
+				[missionNamespace, "MapMarker_MouseButtonDown_none", [_button, _shift, _ctrl, _alt]] call BIS_fnc_callScriptedEventHandler;
 			};
+		}];
 
-			// Did we enter a new marker?
-			if (_markerCurrent != "") then {
-				CALLM0(_markerCurrent, "onMouseEnter");
+		// Mouse button up
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonUp", {
+			params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+			diag_log format ["Map MouseButtonDown: %1 %2", [_xPos, _yPos], _displayorcontrol ctrlMapScreenToWorld [_xPos, _yPos]];
+
+			pr _args = [_displayorcontrol, _xPos, _yPos];
+			pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			diag_log format ["Marker under cursor: %1", _marker];
+
+			// Call event handler
+			if (_marker != "") then {
+				CALLM4(_marker, "onMouseButtonUp", _button, _shift, _ctrl, _alt);
 			};
+		}];
 
-			// Update the variable
-			SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
-		};
-	}];
-	*/
+		// Mouse button click
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseButtonClick", {
+			params ["_displayorcontrol", "_button", "_xPos", "_yPos", "_shift", "_ctrl", "_alt"];
+
+			pr _args = [_displayorcontrol, _xPos, _yPos];
+			pr _marker = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+
+			// Call event handler
+			if (_marker != "") then {
+				CALLM3(_marker, "onMouseButtonClick", _shift, _ctrl, _alt);
+			} else {
+				[missionNamespace, "MapMarker_MouseButtonClick_none", [_button, _shift, _ctrl, _alt]] call BIS_fnc_callScriptedEventHandler;
+			};
+		}];
+
+		// Mouse moving
+		((findDisplay 12) displayCtrl IDC_MAP) ctrlAddEventHandler ["MouseMoving", {
+			params ["_control", "_xPos", "_yPos", "_mouseOver"];
+
+			pr _args = [_control, _xPos, _yPos];
+			pr _markerCurrent = CALL_STATIC_METHOD(CLASS_NAME, "getMarkerUnderCursor", _args);
+			pr _markerPrev = GET_STATIC_VAR(CLASS_NAME, "markerUnderCursor");
+
+			// Did something change?
+			if (_markerPrev != _markerCurrent) then {
+				// Did we leave any marker?
+				if (_markerPrev != "") then {
+					CALLM0(_markerPrev, "onMouseLeave");
+				};
+
+				// Did we enter a new marker?
+				if (_markerCurrent != "") then {
+					CALLM0(_markerCurrent, "onMouseEnter");
+				};
+
+				// Update the variable
+				SET_STATIC_VAR(CLASS_NAME, "markerUnderCursor", _markerCurrent)
+			};
+		}];
+		*/
+	};
 };
 #endif

@@ -5,6 +5,7 @@
 
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Group\Group.hpp"
+#include "..\Unit\Unit.hpp"
 #include "..\MessageTypes.hpp"
 #include "..\AI\Garrison\garrisonWorldStateProperties.hpp"
 #include "..\AI\Garrison\AIGarrison.hpp"

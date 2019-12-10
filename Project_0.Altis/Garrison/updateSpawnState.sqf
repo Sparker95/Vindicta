@@ -16,8 +16,8 @@ OOP_INFO_1("  this side: %1", T_GETV("side"));
 if(T_CALLM("isDestroyed", [])) exitWith {
 	OOP_WARNING_MSG("Attempted to call function on destroyed garrison %1", [_thisObject]);
 };
-pr _dstSpawnMin = 1400; // Temporary, spawn distance
-pr _dstSpawnMax = 1600; // Temporary, spawn distance
+pr _dstSpawnMin = 1000; // Temporary, spawn distance
+pr _dstSpawnMax = 1200; // Temporary, spawn distance
 
 pr _side = T_GETV("side");
 pr _loc = T_GETV("location");
@@ -28,7 +28,7 @@ pr _thisPos = if (_loc == "") then {
 };
 
 // Check garrison distances first, this should be quick
-pr _speedMax = 200;
+pr _speedMax = 60;
 
 // Get distances to all garrisons of other sides
 pr _garrisonDist = if(_side != CIVILIAN) then {
@@ -50,10 +50,10 @@ OOP_INFO_1("  distance to garrisons: %1", _dstMin);
 #endif
 
 // Double check unit distances as well
-if(_dstMin >= _dstSpawnMax) then {
+if(_dstMin >= _dstSpawnMin) then {
 	// TODO we should use BIS getNearest functions here maybe? It might be faster.
 	pr _unitDist = CALL_METHOD(gLUAP, "getUnitArray", [_side]) apply {_x distance _thisPos};
-	_dstMin = if (count _unitDist > 0) then {selectMin _unitDist} else {_speedMax*10};
+	_dstMin = if (count _unitDist > 0) then {selectMin _unitDist} else {666666};
 	#ifdef DEBUG
 	OOP_INFO_1("  distance to units: %1", _dstMin);
 	#endif
@@ -78,12 +78,10 @@ switch (T_GETV("spawned")) do {
 			OOP_INFO_1("  Set interval: %1", _interval);
 			#endif
 			CALLM1(_timer, "setInterval", _interval); // Despawn conditions can be evaluated with even lower frequency
-			
-			T_SETV("spawned", true);
 		} else {
 			// Set timer interval
 			pr _dstToThreshold = _dstMin - _dstSpawnMin;
-			pr _interval = (_dstToThreshold / _speedMax) max 3;
+			pr _interval = (_dstToThreshold / _speedMax) max 5;
 			//pr _interval = 2; // todo override this some day later
 			//diag_log format ["[Location] Info: interval was set to %1 for %2, distance: %3:", _interval, GET_VAR(_thisObject, "name"), _dstMin];
 
@@ -99,8 +97,6 @@ switch (T_GETV("spawned")) do {
 			OOP_INFO_0("  Despawning...");
 			
 			CALLM0(_thisObject, "despawn");
-			
-			T_SETV("spawned", false);
 		};
 	}; // case 1
 }; // switch spawn state

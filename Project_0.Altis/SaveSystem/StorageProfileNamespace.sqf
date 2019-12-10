@@ -120,7 +120,12 @@ CLASS(__CLASS_NAME, "Storage")
 		pr _allVariablesStr = str T_GETV("allVariables");
 		T_CALLM2("_saveString", __VAR_ALL_VARIABLES, _allVariablesStr);
 
-		saveProfileNamespace;	// Commit all the data we wrote
+		// Commit all the data we wrote
+		// Only do that if we have saved anything during this session
+		if (T_GETV("saveDataOutgoing")) then {
+			saveProfileNamespace;
+		};
+
 		T_SETV("bOpen", false);
 	} ENDMETHOD;
 

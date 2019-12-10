@@ -5,7 +5,7 @@
 ["Templates\Factions\NATO.sqf"]					call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CSAT.sqf"]					call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\AAF.sqf"]					call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\GUERILLA.sqf"]				call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\GUERRILLA.sqf"]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\POLICE.sqf"]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\CIVILIAN.sqf"]				call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AAF2017_elite.sqf"]	call t_fnc_initializeTemplateFromFile;

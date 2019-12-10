@@ -250,7 +250,12 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		};
 
 		// Remove the unit from this group
-		_units deleteAt (_units find _unit);
+		pr _index = _units find _unit;
+		if (_index == -1) then {
+			OOP_ERROR_1("remoteUnit: Unit not found in group: %1", _unit);
+			OOP_ERROR_1("  group units: %1", _units);
+		};
+		_units deleteAt _index;
 		CALLM1(_unit, "setGroup", "");
 
 		// Select a new leader if the removed unit is the current leader
@@ -848,10 +853,8 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			if (_AI != "") then {
 				// Switch off their brain
 				// We must safely delete the AI object because it might be currently used in its own thread
-				pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
-				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
+				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
 				_data set [GROUP_DATA_ID_AI, ""];
-				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
 			};
 
 			// Despawn everything

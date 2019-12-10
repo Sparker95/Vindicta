@@ -25,10 +25,8 @@ gBuildUI = NEW("BuildUI", []);
 	params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
 	//diag_log format ["KeyDown: %1", _this];
 	if (_key == DIK_U) then { // U key
-		if (isNil "gInGameMenu") then {
+		if (isNil "gInGameMenu" || {!IS_OOP_OBJECT(gInGameMenu)}) then {
 			gInGameMenu = NEW("InGameMenu", []);
-			private _code = {gInGameMenu = nil;};
-			CALLM1(gInGameMenu, "onDelete", _code);
 		};
 		true
 	} else {

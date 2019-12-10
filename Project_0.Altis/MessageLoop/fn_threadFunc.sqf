@@ -16,28 +16,32 @@ It checks for messages in the loop and calls handleMessages of objects.
 
 #define pr private
 
-//#ifndef RELEASE_BUILD
+// DEBUG FLAGS
+
+// Will print some raw and filtered values of the measured process functions execution time
+#define PROCESS_CATEGORIES_DEBUG
+
+// Will log every message
+#define PROFILE_MESSAGE_JSON
+
+// Performs monitoring of thread func prformance
 #define THREAD_FUNC_DEBUG
-//#endif
 
 #ifdef THREAD_FUNC_DEBUG
 private _nextTickTime = time + 5;
 private _nextProcessLogTime = time + 5;
 #endif
 
-// Will print some raw and filtered values of the measured process functions execution time
-#define PROCESS_CATEGORIES_DEBUG
-
 #ifdef PROCESS_CATEGORIES_DEBUG
 private _execTimeArray = [];
 private _execTimeFilteredArray = [];
 #endif
 
-// Will log every message
-//#define PROFILE_MESSAGE_JSON
-
+// Disable flags for release build by force
 #ifdef RELEASE_BUILD
 #undef PROFILE_MESSAGE_JSON
+#undef THREAD_FUNC_DEBUG
+#undef PROCESS_CATEGORIES_DEBUG
 #endif
 
 params [ P_THISOBJECT ];

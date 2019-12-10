@@ -855,6 +855,51 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	// |                         G E T   D R O N E   U N I T S
+	/*
+	Method: getVehicleUnits
+	Returns all drone units.
+
+	Returns: Array of units.
+	*/
+	METHOD("getDroneUnits") {
+		params [P_THISOBJECT];
+		//__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			//__MUTEX_UNLOCK;
+			[]
+		};
+		private _unitList = T_GETV("units");
+		private _return = _unitList select {CALLM0(_x, "isDrone")};
+		//__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+	// |                         G E T   C A R G O   U N I T S
+	/*
+	Method: getCargoUnits
+	Returns all cargo units.
+
+	Returns: Array of units.
+	*/
+	METHOD("getCargoUnits") {
+		params [P_THISOBJECT];
+		//__MUTEX_LOCK;
+		// Call this INSIDE the lock so we don't have race conditions
+		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
+			WARN_GARRISON_DESTROYED;
+			//__MUTEX_UNLOCK;
+			[]
+		};
+		private _unitList = T_GETV("units");
+		private _return = _unitList select {CALLM0(_x, "isCargo")};
+		//__MUTEX_UNLOCK;
+		_return
+	} ENDMETHOD;
+
+
 	/*
 	Method: getBuildResources
 
@@ -957,28 +1002,6 @@ CLASS("Garrison", "MessageReceiverEx");
 		};
 
 		T_CALLM0("updateBuildResources");
-	} ENDMETHOD;
-
-	// |                         G E T   D R O N E   U N I T S
-	/*
-	Method: getVehicleUnits
-	Returns all drone units.
-
-	Returns: Array of units.
-	*/
-	METHOD("getDroneUnits") {
-		params [P_THISOBJECT];
-		//__MUTEX_LOCK;
-		// Call this INSIDE the lock so we don't have race conditions
-		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
-			WARN_GARRISON_DESTROYED;
-			//__MUTEX_UNLOCK;
-			[]
-		};
-		private _unitList = T_GETV("units");
-		private _return = _unitList select {CALLM0(_x, "isDrone")};
-		//__MUTEX_UNLOCK;
-		_return
 	} ENDMETHOD;
 
 	// 						G E T   A I
