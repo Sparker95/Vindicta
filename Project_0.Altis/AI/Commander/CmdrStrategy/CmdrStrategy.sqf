@@ -106,8 +106,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			};
 			case LOCATION_TYPE_CAMP: {
 				// We want these A LOT because only players can build them
-				_priority = 3;
-				_priority*T_GETV("takeLocPlayerCreatedCoeff")
+				_priority = 3 * T_GETV("takeLocPlayerCreatedCoeff")
 			};
 			// No other locations taken by default
 			default { _priority = 0 };
