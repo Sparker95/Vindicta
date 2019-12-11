@@ -34,6 +34,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("spawnPoints", [ATTR_SAVE]);
 	// All "active" cities. These are ones that have police stations, and where missions will be generated.
 	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
+	// Amount of casualties during the campaign, used in getCampaignProgess method
+	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -409,6 +411,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 	} ENDMETHOD;
 
+	/* override */ METHOD("unitDestroyed") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+		pr _casualties = T_GETV("casualties");
+		_casualties = _casualties + 1;
+		T_SETV("casualties", _casualties);
+	} ENDMETHOD;
+
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
 	METHOD("getRecruitmentRadius") {
 		params [P_THISOBJECT];
@@ -440,6 +449,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		} forEach _cities;
 
 		_sum
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("getCampaignProgress") {
+		params [P_THISOBJECT];
+		pr _casualties = T_GETV("casualties");
+		// https://www.desmos.com/calculator/t3ci9okkwk
+		pr _x = _casualties*0.01;
+		_x/( sqrt(1 + _x^2) )
 	} ENDMETHOD;
 
 

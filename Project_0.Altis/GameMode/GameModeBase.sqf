@@ -90,6 +90,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
 
 		T_SETV("locations", []);
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -510,6 +511,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	} ENDMETHOD;
 
+	// Override this to perform actions when a unit is killed
+	/* protected virtual */METHOD("unitDestroyed") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+	} ENDMETHOD;
+
 	// Override this to create gameModeData of a location
 	/* protected virtual */	METHOD("initLocationGameModeData") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
@@ -532,6 +538,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* protected virtual */ METHOD("getRecruitmentRadius") {
 		params [P_THISCLASS];
 		0
+	} ENDMETHOD;
+
+	// Must return a value 0...1 to drive some AICommander logic
+	/* protected virtual */ METHOD("getCampaignProgress") {
+		1
 	} ENDMETHOD;
 
 	// Not all game modes need all commanders

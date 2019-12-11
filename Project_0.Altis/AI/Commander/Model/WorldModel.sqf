@@ -608,12 +608,19 @@ CLASS("WorldModel", "Storable")
 		EFF_DIFF(_desired, _total)
 	} ENDMETHOD;
 
+
+	// Force multiplier common for many functions
+	// https://www.desmos.com/calculator/pxsl3sglkw
+	// Other valuable formulas:
+	// https://www.desmos.com/calculator/csjhfdmntd - exponential response
+	// https://www.desmos.com/calculator/ezdykpdcqx - log response
+	#define __FORCE_MUL(act) (1 + ln (0.1 * act + 1) + exp (act/10 - 1))
+
 	// Returns same multiplier as in getDesiredEff 
 	METHOD("calcActivityMultiplier") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
-		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		private _forceMul = 1 + ln (0.25 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
+		private _forceMul = __FORCE_MUL(_activity); // 
 		_forceMul
 	} ENDMETHOD;
 
@@ -628,8 +635,7 @@ CLASS("WorldModel", "Storable")
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
 		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
-		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		private _forceMul = 1 + ln (0.25 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
+		private _forceMul = __FORCE_MUL(_activity);
 		private _compositeEff = EFF_MUL_SCALAR(_threatEff, _forceMul);
 		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
 		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _activity = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _activity ARG _forceMul ARG _compositeEff ARG _effMax]);

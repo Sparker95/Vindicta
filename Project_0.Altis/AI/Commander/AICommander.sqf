@@ -37,6 +37,9 @@ CLASS("AICommander", "AI")
 	/* save */	VARIABLE_ATTR("cmdrStrategy", [ATTR_REFCOUNTED ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("worldModel", [ATTR_SAVE]);
 
+	// External reinforcements
+	/* save */ VARIABLE_ATTR("datePrevExtReinf", [ATTR_SAVE]);
+
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
@@ -129,6 +132,7 @@ CLASS("AICommander", "AI")
 		// Set process interval
 		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
 
+		T_SETV("datePrevExtReinf", date);
 	} ENDMETHOD;
 	
 	METHOD("_initSensors") {
@@ -2040,6 +2044,86 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		#endif
 
 		_actions
+	} ENDMETHOD;
+
+	/*
+	Method: updateExternalReinforcement
+	Should be called on each process. Updates external reinforcements.
+	*/
+	METHOD("updateExternalReinforcement") {
+		params [P_THISOBJECT];
+
+		// Bail if it's not time to consider reinforcement yet...
+		if ( ( (dateToNumber date) - (dateToNumber T_GETV("datePrevExtReinf")) ) < (dateToNumber CMDR_EXT_REINF_INTERVAL) ) exitWith {
+		};
+
+		OOP_INFO_0("UPDATE EXTERNAL REINFORCEMENT");
+
+		// Pick an airfield we own
+		pr _side = T_GETV("side");
+		pr _model = T_GETV("worldModel");
+		pr _reinfLocations = CALLM(_model, "getLocations", []) select {
+			pr _garModel = CALLM(_x, "getGarrison", [_side]);
+
+			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT) &&
+			{!IS_NULL_OBJECT(_garModel)} &&
+			{pr _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")} &&
+			{pr _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < 80} // todo find a better limit?
+		};
+
+		// Bail if we can't bring reinforcements anywhere
+		if (count _reinfLocations == 0) exitWith {
+			OOP_INFO_0("  Can't bring reinforcements anywhere: no suitable owned locations found!");
+		};
+
+		// Get all desired locations
+		pr _strategy = T_GETV("strategy");
+		pr _locations = CALLM0(_model, "getLocations");
+		pr _desiredLocations = [];
+		{
+			pr _locModel = _x;
+			if (!IS_NULL_OBJECT(_locModel)) then { // Sanity check
+				pr _actual = GETV(_locModel, "actual");
+				pr _desirability = CALLM3(_strategy, "getLocationDesirability", _model, _actual, _side);
+				if (_desirability > 0) then {
+					_desiredLocations pushBack _actual;
+				};
+			};
+		} forEach _locations;
+
+		OOP_INFO_1("  All desired locations: %1", _desiredLocations);
+
+		// Sum up all the required efficiency
+		pr _effRequiredAll = +T_EFF_null;
+		{
+			pr _pos = CALLM0(_x, "getPos");
+			pr _effDesiredHere = CALLM1(_model, "getDesiredEff", _pos);
+			[_effRequiredAll, _effDesiredHere] call eff_fnc_acc_add;
+		} foreach _desiredLocations;
+
+		// Sum up efficiency of all garrisons
+		pr _effAll = +T_EFF_null;
+		{
+			if (!CALLM0(_x, "isDestroyed")) then {
+				[_effAll, CALLM0(_x, "getEfficiencyTotal")] call eff_fnc_acc_add;
+			};
+		} forEach T_GETV("garrisons");
+
+		OOP_INFO_1("  All required eff: %1", _effRequiredAll);
+		OOP_INFO_1("  All current  eff: %1", _effAll);
+
+		// Amount of infantry and transport we want to have
+		pr _infMoreRequired = (_effRequiredAll select T_EFF_crew) - (_effAll select T_EFF_crew);
+		pr _transportMoreRequired = (_effAll select T_EFF_transport) - (_effAll select T_EFF_reqTransport);
+
+		OOP_INFO_2("  More inf required: %1, more transport required: %2", _infMoreRequired, _transportMoreRequired);
+
+		// Amount of armor we want to have overall
+		pr _armorAll = (_effAll#T_EFF_medium) + (_effAll#T_EFF_armor);
+		pr _armorRequiredAll = (count _desiredLocations) * 2;
+
+
+		T_SETV("datePrevExtReinf", date);
 	} ENDMETHOD;
 
 	/*

@@ -133,6 +133,12 @@
 #define CMDR_PLANNING_RATIO_LOW 11
 
 
+// Frequency of reinforcements, etc
+
+// How ofter commander will consider to import external reinforcements
+#define CMDR_EXT_REINF_INTERVAL [0, 0, 0, 0, 1]
+
+
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \
 	ASSERT_MSG(actual isEqualType [], __STRINGIFY(actual) + " is invalid type. It should be an array."); \
