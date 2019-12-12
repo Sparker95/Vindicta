@@ -290,7 +290,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
 				PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
 				// Set enemy commander strategy
-				private _strategy = NEW("Phase3CmdrStrategy", []);
+				private _strategy = NEW("Phase1CmdrStrategy", []);
 				CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
 				T_SETV("phase", 1);
 			};
