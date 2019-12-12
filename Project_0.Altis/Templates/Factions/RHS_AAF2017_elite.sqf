@@ -131,13 +131,13 @@ _cargo = +(tDefault select T_CARGO);
 //==== Groups ====
 _group = [];
 _group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
+_group set [T_GROUP_DEFAULT, [[[T_INF, T_INF_TL], [T_INF, T_INF_rifleman]]]];
 
 _group set [T_GROUP_inf_AA_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_AA], [T_INF, T_INF_AA], [T_INF, T_INF_ammo]]]];
 _group set [T_GROUP_inf_AT_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_rifleman], [T_INF, T_INF_AT], [T_INF, T_INF_ammo]]]];
 _group set [T_GROUP_inf_rifle_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_GL], [T_INF, T_INF_LAT], [T_INF, T_INF_marksman], [T_INF, T_INF_medic], [T_INF, T_INF_rifleman]]]];
-_group set [T_GROUP_inf_assault_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_LMG], [T_INF, T_INF_epx], [T_INF, T_INF_engineer], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_epx], [T_INF, T_INF_engineer]]]];
-_group set [T_GROUP_inf_weapons_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_INF, T_INF_MG], [T_INF, T_INF_ammo], [T_INF, T_INF_MG], [T_INF, T_INF_ammo],[T_INF, T_INF_AT], [T_INF, T_INF_ammo] ]]];
+_group set [T_GROUP_inf_assault_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_LMG], [T_INF, T_INF_exp], [T_INF, T_INF_engineer], [T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_exp], [T_INF, T_INF_engineer]]]];
+_group set [T_GROUP_inf_weapons_squad,	[[[T_INF, T_INF_SL], [T_INF, T_INF_TL], [T_INF, T_INF_HMG], [T_INF, T_INF_ammo], [T_INF, T_INF_HMG], [T_INF, T_INF_ammo],[T_INF, T_INF_AT], [T_INF, T_INF_ammo] ]]];
 _group set [T_GROUP_inf_fire_team,		[[[T_INF, T_INF_TL], [T_INF, T_INF_LMG], [T_INF, T_INF_rifleman], [T_INF, T_INF_GL]]]];
 _group set [T_GROUP_inf_sentry,			[[[T_INF, T_INF_TL], [T_INF, T_INF_rifleman]]]];
 _group set [T_GROUP_inf_sniper_team,	[[[T_INF, T_INF_sniper], [T_INF, T_INF_spotter]]]];

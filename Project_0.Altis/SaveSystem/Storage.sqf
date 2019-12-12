@@ -22,6 +22,12 @@ Base class for derived classes which perform saving and loading of variables els
 // Character used for sides
 #define SPECIAL_PREFIX_SIDE_CHAR "S"
 
+// Character used for object handles
+#define SPECIAL_PREFIX_OBJECT_HANDLE_CHAR "O"
+
+// Tag for objNull
+#define TAG_OBJECT_NULL (SPECIAL_PREFIX + SPECIAL_PREFIX_OBJECT_HANDLE_CHAR)
+
 // If defined, it will broadcast saving progress to everyone's UI
 #ifndef _SQF_VM
 #define BROADCAST_PROGRESS
@@ -113,12 +119,16 @@ CLASS("Storage", "")
 				if (_x isEqualType WEST) then {
 					_array set [_forEachIndex, T_CALLM1("_sideToString", _x)];
 				};
+				// Convert object handle to objNull
+				if (_x isEqualType objNull) then {
+					_array set [_forEachIndex, TAG_OBJECT_NULL];
+				};
 				// Check if it's even one of the correct data types
 				// And warn if it's not
 				#ifndef _SQF_VM
 				if (!(_x isEqualTypeAny [0, "", false, [], WEST])) then {
 					_success = false;
-					OOP_ERROR_1("Data type %1 is not supported for saving and will not be loaded!", typeName _x);
+					OOP_ERROR_2("Data type %1, value: %2 is not supported for saving and will not be loaded properly!", typeName _x, _x);
 				};
 				#endif
 			};
@@ -145,6 +155,9 @@ CLASS("Storage", "")
 						// Check if it's a one of side values
 						if (_prefixChar == SPECIAL_PREFIX_SIDE_CHAR) then {
 							_array set [_forEachIndex, T_CALLM1("_stringToSide", _x)];
+						};
+						if (_prefixChar == SPECIAL_PREFIX_OBJECT_HANDLE_CHAR) then {
+							_array set [_forEachIndex, objNull];
 						};
 					};
 				};

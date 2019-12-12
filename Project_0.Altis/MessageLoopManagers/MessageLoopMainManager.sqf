@@ -36,13 +36,20 @@ CLASS("MessageLoopMainManager", "MessageReceiverEx");
 			OOP_INFO_2("EH_killed: %1 %2", _unit, GETV(_unit, "data") );
 
 			// Since this code is run in the main thread, we can just call the methods directly
-			
+
 			// Post a message to the garrison of the unit
 			pr _data = GETV(_unit, "data");
 			pr _garrison = _data select UNIT_DATA_ID_GARRISON;
 			if (_garrison != "") then {	// Sanity check	
 				CALLM1(_garrison, "handleUnitKilled", _unit);
 				
+				// Notify game mode that a unit was destroyed
+				pr _catID = CALLM0(_unit, "getCategory");
+				pr _subcatID = CALLM0(_unit, "getSubcategory");
+				pr _side = CALLM0(_garrison, "getSide");
+				pr _faction = CALLM0(_garrison, "getFaction");
+				CALLM4(gGameMode, "unitDestroyed", _catID, _subcatID, _side, _faction);
+
 				// Send stimulus to garrison's casualties sensor
 				pr _garAI = CALLM0(_garrison, "getAI");
 				if (_garAI != "") then {

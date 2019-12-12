@@ -138,6 +138,15 @@
 // How ofter commander will consider to import external reinforcements
 #define CMDR_EXT_REINF_INTERVAL [0, 0, 0, 0, 1]
 
+// Max amount of simultaneous actions
+#define CMDR_MAX_TAKE_OUTPOST_ACTIONS 10
+#define CMDR_MAX_REINFORCE_ACTIONS 4
+//#define CMDR_MAX_ATTACK_ACTIONS 100 QRFs are unlimited
+#define CMDR_MAX_PATROL_ACTIONS 6
+
+// Max amount of units at airfields
+#define CMDR_MAX_INF_AIRFIELD 80
+#define CMDR_MAX_VEH_AIRFIELD 20
 
 #ifdef OOP_ASSERT
 #define ASSERT_CLUSTER_ACTUAL_OR_NULL(actual)  \

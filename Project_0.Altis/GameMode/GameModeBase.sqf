@@ -471,6 +471,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		OOP_INFO_MSG("%1 %2", [_loc ARG _side]);
 
 		switch (_type) do {
+			case LOCATION_TYPE_AIRPORT;
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
 				private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
@@ -513,7 +514,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Override this to perform actions when a unit is killed
 	/* protected virtual */METHOD("unitDestroyed") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_unit")];
+		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
 	} ENDMETHOD;
 
 	// Override this to create gameModeData of a location
@@ -752,7 +753,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						{
 							_x params ["_offset", "_vDirAndUp"];
 							private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
-							_texObj setObjectTextureGlobal [0, "z\project_0\addons\ui\pictures\police.jpg"];
+							_texObj setObjectTextureGlobal [0, "z\project_0\addons\ui\pictures\policeSign.paa"];
 							_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
 							_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
 							_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));

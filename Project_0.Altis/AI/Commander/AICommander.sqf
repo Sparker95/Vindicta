@@ -132,7 +132,7 @@ CLASS("AICommander", "AI")
 		// Set process interval
 		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
 
-		T_SETV("datePrevExtReinf", date);
+		T_SETV("datePrevExtReinf", DATE_NOW);
 	} ENDMETHOD;
 	
 	METHOD("_initSensors") {
@@ -208,6 +208,9 @@ CLASS("AICommander", "AI")
 			T_CALLM("plan", [_worldModel]);
 		};
 		#endif
+
+		// Consider bringing more units into the map
+		T_CALLM0("updateExternalReinforcement");
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -1787,7 +1790,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			} forEach _tgtClusters;
 		} forEach _srcGarrisons;
 
-		//OOP_INFO_MSG("Considering %1 QRF actions from %2 garrisons to %3 clusters", [count _actions ARG count _srcGarrisons ARG count _tgtClusters]);
+		OOP_INFO_MSG("Considering %1 QRF actions from %2 garrisons to %3 clusters", [count _actions ARG count _srcGarrisons ARG count _tgtClusters]);
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""QRF"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_clusters"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtClusters];
 		OOP_INFO_MSG(_str, []);
@@ -1815,7 +1818,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Limit amount of concurrent actions
 		T_PRVAR(activeActions);
 		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
-		if (_count > 2) exitWith {[]};
+		if (_count >= CMDR_MAX_REINFORCE_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
@@ -1902,7 +1905,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Limit amount of concurrent actions
 		T_PRVAR(activeActions);
 		pr _count = {GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction"} count _activeActions;
-		if (_count > 2) exitWith {[]};
+		if (_count >= CMDR_MAX_TAKE_OUTPOST_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
@@ -1982,7 +1985,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		T_PRVAR(activeActions);
 		pr _count = {GET_OBJECT_CLASS(_x) == "PatrolCmdrAction"} count _activeActions;
 		//OOP_INFO_1("  Existing patrol actions: %1", _count);
-		if (_count > 6) exitWith {[]};
+		if (_count > CMDR_MAX_PATROL_ACTIONS) exitWith {[]};
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military" ARG "police"]]) select { 
@@ -1995,7 +1998,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				private _loc = CALLM(_potentialSrcGarr, "getLocation", []);
 				!IS_NULL_OBJECT(_loc) and 
 				{
-					GETV(_loc, "type") in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_BASE]
+					GETV(_loc, "type") in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_BASE, LOCATION_TYPE_AIRPORT]
 				}
 			} and 
 			// Must not be source of another inprogress patrol mission
@@ -2068,7 +2071,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT) &&
 			{!IS_NULL_OBJECT(_garModel)} &&
 			{pr _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")} &&
-			{pr _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < 80} // todo find a better limit?
+			{pr _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < CMDR_MAX_INF_AIRFIELD} // todo find a better limit?
 		};
 
 		// Bail if we can't bring reinforcements anywhere
@@ -2077,14 +2080,14 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 
 		// Get all desired locations
-		pr _strategy = T_GETV("strategy");
+		pr _strategy = T_GETV("cmdrStrategy");
 		pr _locations = CALLM0(_model, "getLocations");
 		pr _desiredLocations = [];
 		{
 			pr _locModel = _x;
 			if (!IS_NULL_OBJECT(_locModel)) then { // Sanity check
 				pr _actual = GETV(_locModel, "actual");
-				pr _desirability = CALLM3(_strategy, "getLocationDesirability", _model, _actual, _side);
+				pr _desirability = CALLM3(_strategy, "getLocationDesirability", _model, _locModel, _side);
 				if (_desirability > 0) then {
 					_desiredLocations pushBack _actual;
 				};
@@ -2097,9 +2100,18 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _effRequiredAll = +T_EFF_null;
 		{
 			pr _pos = CALLM0(_x, "getPos");
-			pr _effDesiredHere = CALLM1(_model, "getDesiredEff", _pos);
+			pr _effDesiredHere = +CALLM1(_model, "getDesiredEff", _pos);
+
 			[_effRequiredAll, _effDesiredHere] call eff_fnc_acc_add;
 		} foreach _desiredLocations;
+
+		// Make some reasonable limits to the desired amount of units
+		pr _maxInfOnMap = (count _desiredLocations) * 40 + 100;
+		OOP_INFO_1("  max inf on map: %1", _maxInfOnMap);
+		if ((_effRequiredAll#T_EFF_crew) > _maxInfOnMap) then {
+			OOP_INFO_1("  limited the maximum amount of desired infantry! Calculated: %1", _effRequiredAll#T_EFF_crew);
+			_effRequiredAll set [T_EFF_crew, _maxInfOnMap];
+		};
 
 		// Sum up efficiency of all garrisons
 		pr _effAll = +T_EFF_null;
@@ -2114,14 +2126,177 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Amount of infantry and transport we want to have
 		pr _infMoreRequired = (_effRequiredAll select T_EFF_crew) - (_effAll select T_EFF_crew);
-		pr _transportMoreRequired = (_effAll select T_EFF_transport) - (_effAll select T_EFF_reqTransport);
+		pr _transportMoreRequired = (_effAll select T_EFF_reqTransport) - (_effAll select T_EFF_transport);
 
 		OOP_INFO_2("  More inf required: %1, more transport required: %2", _infMoreRequired, _transportMoreRequired);
 
 		// Amount of armor we want to have overall
 		pr _armorAll = (_effAll#T_EFF_medium) + (_effAll#T_EFF_armor);
-		pr _armorRequiredAll = (count _desiredLocations) * 2;
+		pr _armorRequiredAll = 0;
+		pr _progress = CALLM0(gGameMode, "getCampaignProgress"); // 0..1
+		OOP_INFO_1("  Campaign progess: %1", _progress);
+		{
+			pr _type = CALLM0(_x, "getType");
+			pr _add = 0;
+			if (_type == LOCATION_TYPE_AIRPORT) then { _add = 6+10*_progress;};
+			if (_type == LOCATION_TYPE_OUTPOST) then { _add = 1+3*_progress;};
+			if (_type == LOCATION_TYPE_BASE) then { _add = 4+5*_progress;};
+			if (_type == LOCATION_TYPE_CITY) then { _add = 1 + 1*_progress;};
+			_armorRequiredAll = _armorRequiredAll + _add;
+		} forEach _desiredLocations;
 
+		pr _armorMoreRequired = _armorRequiredAll - _armorAll;
+
+		OOP_INFO_1("  All armor (MRAPs and Armor) we have: %1", _armorAll);
+		OOP_INFO_1("  Desired amount of all armor: %1", _armorRequiredAll);
+		OOP_INFO_1("  More armor required: %1", _armorMoreRequired);
+
+		// Max amount of vehicles at airfields
+		pr _nVehMax = if (_progress < 0.5) then {
+			round 0.5*CMDR_MAX_VEH_AIRFIELD
+		} else {
+			CMDR_MAX_VEH_AIRFIELD
+		};
+
+		// Try to spawn more units at the selected locations
+		pr _templateName = CALLM2(gGameMode, "getTemplateName", T_GETV("side"), "military");
+		pr _t = [_templateName] call t_fnc_getTemplate;
+		if (_infMoreRequired > 0) then {
+			OOP_INFO_0("  Trying to add more infantry...");
+			{
+				pr _locModel = _x;
+				pr _loc = GETV(_locModel, "actual");
+				OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
+				pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
+				if (!IS_NULL_OBJECT(_garModel)) then {
+					pr _gar = GETV(_garModel, "actual");
+					pr _nInf = CALLM0(_gar, "countInfantryUnits");
+					pr _nInfMax = CMDR_MAX_INF_AIRFIELD;	// Max inf at airfields
+					if (_nInf < _nInfMax) then {
+						pr _nInfToAdd = _nInfMax - _nInf;
+						OOP_INFO_2("  Adding %1 infantry to location %2", _nInfToAdd, CALLM0(_loc, "getDisplayName"));
+
+						while {_nInfToAdd > 0} do {
+							// Select a random group type
+							pr _subcatID = selectRandom [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
+							pr _countInfInGroup = count (_t#T_GROUP#_subcatID#0); // Amount of units
+
+							// Create a group
+							pr _group = NEW("Group", [_side ARG GROUP_TYPE_IDLE]);
+							CALLM2(_group, "createUnitsFromTemplate", _t, _subcatID);
+							CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
+
+							// Decrease the counter
+							_nInfToAdd = _nInfToAdd - _countInfInGroup;
+
+							OOP_INFO_1("   Added group: %1", _group);
+						};
+					} else {
+						OOP_INFO_1("   Max infantry at location %1 has been reached, cant add more infantry!", CALLM0(_loc, "getDisplayName"));
+					};
+				};
+			} forEach _reinfLocations;
+		};
+
+		// Try to spawn more transport
+		if (_transportMoreRequired > 0) then {
+			OOP_INFO_1("  Trying to add more transport: %1", _transportMoreRequired);
+			pr _transportTypes = [];
+			
+			// If campaign progress is big enough, give them more armored transport
+			// If it's low, just give trucks
+			if (_progress > 0.3) then {
+				_transportTypes = [T_VEH_IFV, T_VEH_APC];
+			} else {
+				_transportTypes = [T_VEH_truck_inf];
+			};
+
+			if (_transportMoreRequired > 0) then {
+				{
+					pr _locModel = _x;
+					pr _loc = GETV(_locModel, "actual");
+					OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
+					pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
+					if (!IS_NULL_OBJECT(_garModel)) then {
+						pr _gar = GETV(_garModel, "actual");
+						pr _query = +T_PL_tracked_wheeled; // All tracked and wheeled vehicles
+						pr _nVeh = CALLM1(_gar, "countUnits", _query);
+						OOP_INFO_2("    Amount of veh at this place: %1 / %2", _nVeh, _nVehMax);
+						if (_nVeh < _nVehMax) then {
+							pr _nVehToAdd = (_nVeh - _nVehMax) min 5; // Don't give more than a few trucks/APCs at a time, we might also want to add more transport
+							OOP_INFO_2("  Adding %1 transport capability to location %2", _transportMoreRequired, CALLM0(_loc, "getDisplayName"));
+
+							while {_transportMoreRequired > 0} do {
+								pr _subcatID = selectRandom _transportTypes;
+								pr _args = [_t, T_VEH, _subcatID];
+								pr _vehUnit = NEW("Unit", _args);
+
+								CALLM2(_gar, "postMethodAsync", "addUnit", [_vehUnit]);
+
+								// Decrease the counter
+								_transportMoreRequired = _transportMoreRequired - (T_efficiency#T_VEH#_subcatID#T_EFF_transport);
+
+								OOP_INFO_2("   Added vehicle unit: %1 %2", _vehUnit, T_NAMES#T_VEH#_subcatID);
+							};
+						} else {
+							OOP_INFO_1("   Max vehicle count at location %1 has been reached, cant add more vehicles!", CALLM0(_loc, "getDisplayName"));
+						};
+					};
+				} forEach _reinfLocations;
+			};
+		};
+
+		// Try to spawn more armor
+		if (_armorMoreRequired > 0) then {
+			OOP_INFO_0("  Trying to add more armor");
+			pr _armorTypes = [];
+			
+			// Armor types depend on progress
+			if (_progress < 0.3) then {
+				// Only MRAPs at game start
+				_armorTypes = [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG];
+			} else {
+				if (_progress < 0.6) then {
+					// APCs, IFVs, tanks...
+					_armorTypes = [T_VEH_IFV, T_VEH_APC, T_VEH_MBT];
+				} else {
+					// Lots of tanks, some artillery
+					// Although artillery isn't necessary armored in some templates
+					_armorTypes = [T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MBT, T_VEH_MBT, T_VEH_MBT, T_VEH_SPA, T_VEH_MRLS];
+				};
+			};
+
+			{
+				pr _locModel = _x;
+				pr _loc = GETV(_locModel, "actual");
+				OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
+				pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
+				if (!IS_NULL_OBJECT(_garModel)) then {
+					pr _gar = GETV(_garModel, "actual");
+					pr _query = +T_PL_tracked_wheeled; // All tracked and wheeled vehicles
+					pr _nVeh = CALLM1(_gar, "countUnits", _query);
+					if (_nVeh < _nVehMax) then {
+						pr _nVehToAdd = _nVehMax - _nVeh;
+						OOP_INFO_2("  Adding %1 armor vehicles to location %2", _nVehToAdd, CALLM0(_loc, "getDisplayName"));
+
+						while {_nVehToAdd > 0} do {
+							pr _subcatID = selectRandom _armorTypes;
+							pr _args = [_t, T_VEH, _subcatID];
+							pr _vehUnit = NEW("Unit", _args);
+
+							CALLM2(_gar, "postMethodAsync", "addUnit", [_vehUnit]);
+
+							// Decrease the counter
+							_nVehToAdd = _nVehToAdd - 1;
+
+							OOP_INFO_2("   Added vehicle unit: %1 %2", _vehUnit, T_NAMES#T_VEH#_subcatID);
+						};
+					} else {
+						OOP_INFO_1("   Max vehicle count at location %1 has been reached, cant add more armor!", CALLM0(_loc, "getDisplayName"));
+					};
+				};
+			} forEach _reinfLocations;
+		};
 
 		T_SETV("datePrevExtReinf", date);
 	} ENDMETHOD;

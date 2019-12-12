@@ -44,7 +44,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("spawnPosTypes", [ATTR_SAVE]); 			// Array with spawn positions types
 				VARIABLE("spawned"); 									// Is this location spawned or not
 				VARIABLE("timer"); 										// Timer object which generates messages for this location
-				VARIABLE("capacityInf"); 							// Infantry capacity
+				VARIABLE("capacityInf"); 								// Infantry capacity
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
@@ -501,6 +501,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			case LOCATION_TYPE_OBSERVATION_POST: {"Observation post"};
 			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
 			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
+			case LOCATION_TYPE_AIRPORT: {"Airport"};
 			default {"ERROR LOC TYPE"};
 		};
 	} ENDMETHOD;

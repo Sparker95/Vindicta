@@ -26,6 +26,8 @@ CLASS("Phase2CmdrStrategy", "PassiveCmdrStrategy")
 	/* override */ METHOD("getLocationDesirability") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
 
+		ASSERT_OBJECT_CLASS(_loc, "LocationModel");
+
 		private _locPos = GETV(_loc, "pos");
 		switch(GETV(_loc, "type")) do {
 			// Occupy city when it is revolting or suppressed

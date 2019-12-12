@@ -128,26 +128,7 @@ _drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
 _cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
-_group = [];
-_group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_MANEUVER"]];
-_group set [T_GROUP_inf_AA_team, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_section_AA"]];
-_group set [T_GROUP_inf_AT_team, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_section_AT"]];
-_group set [T_GROUP_inf_rifle_squad, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_squad"]];
-_group set [T_GROUP_inf_assault_squad, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_squad_2mg"]];
-_group set [T_GROUP_inf_weapons_squad, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_squad_mg_sniper"]];
-_group set [T_GROUP_inf_fire_team, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_fireteam"]];
-_group set [T_GROUP_inf_sentry, [configfile >> "CfgGroups" >> "East" >> "rhs_faction_msv" >> "rhs_group_rus_msv_infantry_emr" >> "rhs_group_rus_msv_infantry_emr_MANEUVER"]];
-_group set [T_GROUP_inf_sniper_team,	[[[T_INF, T_INF_sniper], [T_INF, T_INF_spotter]]]];
-
-_group set [T_GROUP_inf_recon_patrol, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_fireteam"]];
-_group set [T_GROUP_inf_recon_sentry, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_MANEUVER"]];
-_group set [T_GROUP_inf_recon_squad, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_squad"]];
-_group set [T_GROUP_inf_recon_team, [configFile >> "CfgGroups" >> "East" >> "rhs_faction_vmf" >> "rhs_group_rus_vmf_infantry_recon" >> "rhs_group_rus_vmf_infantry_recon_fireteam"]];
-
-
-
-
+_group = +(tDefault select T_GROUP);
 
 //==== Set arrays ====
 _array set [T_INF, _inf];
