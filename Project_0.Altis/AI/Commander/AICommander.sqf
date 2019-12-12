@@ -2284,7 +2284,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 							pr _args = [_t, T_VEH, _subcatID];
 							pr _vehUnit = NEW("Unit", _args);
 
-							CALLM2(_gar, "postMethodAsync", "addUnit", [_vehUnit]);
+							// It's better to add vehicles with a group, so that AIs can use them instantly
+							pr _group = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
+							CALLM1(_group, "addUnit", _vehUnit);
+
+							CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
 
 							// Decrease the counter
 							_nVehToAdd = _nVehToAdd - 1;

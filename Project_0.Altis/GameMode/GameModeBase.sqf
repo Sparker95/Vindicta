@@ -475,7 +475,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
 				private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
-				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]) min 10;
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
@@ -803,7 +803,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	#define ADD_ARMED_MRAPS
-	#define ADD_ARMOR
+	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
@@ -913,6 +913,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			[  0.5,   0,  3,           T_VEH_MRAP_HMG],
 			[  0.5,   0,  3,           T_VEH_MRAP_GMG],
 			[  0.3,   0,  2,           T_VEH_APC],
+			[  0.3,   0,  2,           T_VEH_IFV],
 			[  0.1,   0,  1,           T_VEH_MBT]
 		];
 
@@ -985,7 +986,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		#endif
 
-		// APCs, IFVs, tanks
+		// APCs, IFVs, tanks, MRAPs
 		#ifdef ADD_ARMOR
 		{
 			_x params ["_chance", "_min", "_max", "_type"];
