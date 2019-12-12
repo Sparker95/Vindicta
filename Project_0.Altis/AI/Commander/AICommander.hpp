@@ -136,7 +136,7 @@
 // Frequency of reinforcements, etc
 
 // How ofter commander will consider to import external reinforcements
-#define CMDR_EXT_REINF_INTERVAL [0, 0, 0, 0, 1]
+#define CMDR_EXT_REINF_INTERVAL [0, 0, 0, 0, 45]
 
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 10
