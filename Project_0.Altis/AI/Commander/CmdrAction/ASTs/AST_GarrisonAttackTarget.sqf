@@ -117,7 +117,11 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 					//_moveRadius = _moveRadius + _clearRadius; // todo find a better way to specify where to dismount?
 					// Start clear order
 					OOP_INFO_MSG("[w %1] %2 clearing area at %3: started", [_world ARG _garr ARG _targetPos]);
+					#ifdef RELEASE_BUILD
 					private _timeToClear = 80 * sqrt (_clearRadius + 100); // Seconds
+					#else
+					private _timeToClear = 60; // Seconds
+					#endif
 					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG _timeToClear]);
 					T_SETV("clearing", true);
 				} else {

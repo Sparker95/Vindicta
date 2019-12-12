@@ -90,6 +90,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
 
 		T_SETV("locations", []);
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -470,10 +471,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		OOP_INFO_MSG("%1 %2", [_loc ARG _side]);
 
 		switch (_type) do {
+			case LOCATION_TYPE_AIRPORT;
 			case LOCATION_TYPE_BASE;
 			case LOCATION_TYPE_OUTPOST: {
 				private _cInf = (T_GETV("enemyForceMultiplier") * (CALLM0(_loc, "getCapacityInf") min 45)) max 6; // We must return some sane infantry, because airfields and bases can have too much infantry
-				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]) min 10;
 				private _cHMGGMG = CALLM(_loc, "getUnitCapacity", [T_PL_HMG_GMG_high ARG GROUP_TYPE_ALL]);
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
@@ -510,6 +512,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
 	} ENDMETHOD;
 
+	// Override this to perform actions when a unit is killed
+	/* protected virtual */METHOD("unitDestroyed") {
+		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
+	} ENDMETHOD;
+
 	// Override this to create gameModeData of a location
 	/* protected virtual */	METHOD("initLocationGameModeData") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_loc")];
@@ -532,6 +539,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* protected virtual */ METHOD("getRecruitmentRadius") {
 		params [P_THISCLASS];
 		0
+	} ENDMETHOD;
+
+	// Must return a value 0...1 to drive some AICommander logic
+	/* protected virtual */ METHOD("getCampaignProgress") {
+		1
 	} ENDMETHOD;
 
 	// Not all game modes need all commanders
@@ -741,7 +753,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						{
 							_x params ["_offset", "_vDirAndUp"];
 							private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
-							_texObj setObjectTextureGlobal [0, "z\project_0\addons\ui\pictures\police.jpg"];
+							_texObj setObjectTextureGlobal [0, "z\project_0\addons\ui\pictures\policeSign.paa"];
 							_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
 							_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
 							_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
@@ -791,7 +803,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	#define ADD_ARMED_MRAPS
-	#define ADD_ARMOR
+	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
@@ -901,6 +913,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			[  0.5,   0,  3,           T_VEH_MRAP_HMG],
 			[  0.5,   0,  3,           T_VEH_MRAP_GMG],
 			[  0.3,   0,  2,           T_VEH_APC],
+			[  0.3,   0,  2,           T_VEH_IFV],
 			[  0.1,   0,  1,           T_VEH_MBT]
 		];
 
@@ -973,7 +986,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		#endif
 
-		// APCs, IFVs, tanks
+		// APCs, IFVs, tanks, MRAPs
 		#ifdef ADD_ARMOR
 		{
 			_x params ["_chance", "_min", "_max", "_type"];

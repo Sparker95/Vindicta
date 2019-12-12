@@ -118,24 +118,7 @@ _drone set [T_DRONE_stat_GMG_low, ["I_GMG_01_A_F"]];
 _cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
-_group = [];
-_group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
-
-_group set [T_GROUP_default, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
-_group set [T_GROUP_inf_AA_team, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfTeam_AA"]];
-_group set [T_GROUP_inf_AT_team, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfTeam_AT"]];
-_group set [T_GROUP_inf_rifle_squad, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
-_group set [T_GROUP_inf_assault_squad, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad_Weapons"]];
-_group set [T_GROUP_inf_weapons_squad, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad_Weapons"]];
-_group set [T_GROUP_inf_fire_team, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfTeam"]];
-_group set [T_GROUP_inf_recon_patrol, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
-_group set [T_GROUP_inf_recon_sentry, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSentry"]];
-_group set [T_GROUP_inf_recon_squad, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSquad"]];
-_group set [T_GROUP_inf_recon_team, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfTeam"]];
-_group set [T_GROUP_inf_sentry, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_InfSentry"]];
-_group set [T_GROUP_inf_sniper_team, [configfile >> "CfgGroups" >> "Indep" >> "IND_F" >> "Infantry" >> "HAF_SniperTeam"]];
-
+_group = +(tDefault select T_GROUP);
 
 //==== Set arrays ====
 _array set [T_INF, _inf];

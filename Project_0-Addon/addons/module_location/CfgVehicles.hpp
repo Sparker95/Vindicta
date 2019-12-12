@@ -58,12 +58,13 @@ class CfgVehicles {
 				defaultValue = "city";
 				class Values
 				{
+					// ! ! ! MUST MATCH TO VALUES IN Location.hpp ! ! !
 					class City {name = "City"; value = "city";};
 					class Base {name = "Base"; value = "base";};
 					class Outpost {name = "Outpost"; value = "outpost";};
 					class Roadblock {name = "Roadblock"; value = "roadblock";};
-					class ObservationPost {name = "Observation Post"; value = "obsPost";};
-					// class Airfield	{name = "Airfield"; value = "airfield";};
+					//class ObservationPost {name = "Observation Post"; value = "obsPost";};
+					class Airport	{name = "Airport"; value = "airport";};
 					// class Seaport	{name = "Seaport"; value = "seaport";};
 					// class Camp	{name = "Camp"; value = "camp";};
 				};

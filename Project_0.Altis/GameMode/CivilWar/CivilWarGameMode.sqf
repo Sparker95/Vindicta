@@ -34,6 +34,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	VARIABLE_ATTR("spawnPoints", [ATTR_SAVE]);
 	// All "active" cities. These are ones that have police stations, and where missions will be generated.
 	VARIABLE_ATTR("activeCities", [ATTR_SAVE]);
+	// Amount of casualties during the campaign, used in getCampaignProgess method
+	VARIABLE_ATTR("casualties", [ATTR_SAVE]);
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -42,6 +44,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("lastUpdateTime", TIME_NOW);
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
+		T_SETV("casualties", 0);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -104,7 +107,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		OOP_DEBUG_MSG("%1", [_loc]);
 		private _type = GETV(_loc, "type");
 		// Initial setup has AAF holding all bases and police stations
-		if(_type == LOCATION_TYPE_BASE or _type == LOCATION_TYPE_POLICE_STATION) then {
+		if(_type in [LOCATION_TYPE_BASE, LOCATION_TYPE_POLICE_STATION, LOCATION_TYPE_AIRPORT]) then {
 			ENEMY_SIDE
 		} else {
 			if (_type == LOCATION_TYPE_OUTPOST) then {
@@ -200,7 +203,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			// Call to server to add the activity
 			[[getPos player], {
 				params ["_playerPos"];
-				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 50]);
+				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 10]);
 			}] remoteExec ["call", 0];
 		}] call pr0_fnc_addDebugMenuItem;
 
@@ -212,7 +215,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				private _activity = CALLM(_enemyCmdr, "getActivity", [_playerPos ARG 500]);
 				// Callback to client with the result
 				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];				
-			}] remoteExec ["call", 0];
+			}] remoteExec ["spawn", 0];
 		}] call pr0_fnc_addDebugMenuItem;
 
 	} ENDMETHOD;
@@ -287,7 +290,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
 				PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
 				// Set enemy commander strategy
-				private _strategy = NEW("Phase1CmdrStrategy", []);
+				private _strategy = NEW("Phase3CmdrStrategy", []);
 				CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
 				T_SETV("phase", 1);
 			};
@@ -409,6 +412,32 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 	} ENDMETHOD;
 
+	// Gets called in the main thread!
+	/* override */ METHOD("unitDestroyed") {
+		params [P_THISOBJECT, P_NUMBER("_catID"), P_NUMBER("_subcatID"), P_SIDE("_side"), P_STRING("_faction")];
+		pr _valueToAdd = 0;
+		if (_catID == T_INF) then {
+			if (_side == ENEMY_SIDE) then {
+				if (_faction == "police") then {	// We less care for police killed
+					_valueToAdd = 0.3;
+				} else {
+					_valueToAdd = 1;
+				};
+			} else {
+				_valueToAdd = 0.1;
+			};
+		} else {
+			if (_side == ENEMY_SIDE) then {
+				_valueToAdd = 0.1;	// Destroyed vehicles contribute less to casualties
+			} else {
+				_valueToAdd = 0;
+			};
+		};
+		pr _casualties = T_GETV("casualties");
+		_casualties = _casualties + _valueToAdd;
+		T_SETV("casualties", _casualties);
+	} ENDMETHOD;
+
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
 	METHOD("getRecruitmentRadius") {
 		params [P_THISOBJECT];
@@ -440,6 +469,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		} forEach _cities;
 
 		_sum
+	} ENDMETHOD;
+
+	/* protected virtual */ METHOD("getCampaignProgress") {
+		params [P_THISOBJECT];
+		pr _casualties = T_GETV("casualties") max 0;
+		// https://www.desmos.com/calculator/t3ci9okkwk
+		pr _x = _casualties*0.01;
+		_x/( sqrt(1 + _x^2) )
 	} ENDMETHOD;
 
 

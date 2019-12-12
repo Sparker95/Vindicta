@@ -203,7 +203,9 @@ CLASS("WorldModel", "Storable")
 	METHOD("addDamage") {
 		params [P_THISOBJECT, P_POSITION("_pos"), P_ARRAY("_effDamage")];
 		T_PRVAR(rawActivityGrid);
-		CALLM(_rawActivityGrid, "addValue", [_pos ARG DAMAGE_SCALE*EFF_SUM(_effDamage)]);
+		// We just sum up all the fields for now, with some scaling
+		private _value = (_effDamage#T_EFF_soft) + 1.3*(_effDamage#T_EFF_medium) + 2*(_effDamage#T_EFF_armor) + 3*(_effDamage#T_EFF_air);
+		CALLM(_rawActivityGrid, "addValue", [_pos ARG DAMAGE_SCALE*_value]);
 	} ENDMETHOD;
 
 	METHOD("addActivity") {
@@ -608,12 +610,19 @@ CLASS("WorldModel", "Storable")
 		EFF_DIFF(_desired, _total)
 	} ENDMETHOD;
 
+
+	// Force multiplier common for many functions
+	// https://www.desmos.com/calculator/pxsl3sglkw
+	// Other valuable formulas:
+	// https://www.desmos.com/calculator/csjhfdmntd - exponential response
+	// https://www.desmos.com/calculator/ezdykpdcqx - log response
+	#define __FORCE_MUL(act) (ln (0.15 * act + 1) + 1.13 + 1.07^(act - 40))
+
 	// Returns same multiplier as in getDesiredEff 
 	METHOD("calcActivityMultiplier") {
 		params [P_THISOBJECT, P_ARRAY("_pos")];
 		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
-		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		private _forceMul = 1 + ln (0.02 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
+		private _forceMul = __FORCE_MUL(_activity); // 
 		_forceMul
 	} ENDMETHOD;
 
@@ -628,8 +637,7 @@ CLASS("WorldModel", "Storable")
 
 		private _threatEff = CALLM(_threatGrid, "getValue", [_pos]);
 		private _activity = T_CALLM("getActivity", [_pos ARG 750]);
-		// Efficiency formula to give exponentiating response (https://www.desmos.com/calculator/csjhfdmntd)
-		private _forceMul = 1 + ln (0.02 * _activity + 1); // https://www.desmos.com/calculator/ezdykpdcqx
+		private _forceMul = __FORCE_MUL(_activity);
 		private _compositeEff = EFF_MUL_SCALAR(_threatEff, _forceMul);
 		private _effMax = EFF_MAX(_threatEff, EFF_GARRISON_MIN_EFF);
 		//OOP_DEBUG_MSG("_threatEff = %1, _damageEff = %2, _activity = %3, _forceMul = %4, _compositeEff = %5, _effMax = %6", [_threatEff ARG _damageEff ARG _activity ARG _forceMul ARG _compositeEff ARG _effMax]);

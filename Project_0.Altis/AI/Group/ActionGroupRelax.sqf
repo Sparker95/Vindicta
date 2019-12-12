@@ -30,13 +30,39 @@ CLASS("ActionGroupRelax", "ActionGroup")
 		
 		// Find some random position at the location and go there
 		pr _group = GETV(T_GETV("AI"), "agent");
+		pr _type = CALLM0(_group, "getType");
 		pr _gar = CALLM0(_group, "getGarrison");
 		pr _loc = CALLM0(_gar, "getLocation");
-		pr _pos = if (!IS_NULL_OBJECT(_loc)) then {
-			CALLM0(_loc, "getRandomPos");
-		} else {
-			pr _lp = getPos leader _hG;
-			[(_lp select 0) - 30 + random 60, (_lp select 1) - 30 + random 60, 0];
+		pr _useDefaultRandomPos = true;
+		pr _pos = [];
+		pr _radius = 10;
+		if (_type == GROUP_TYPE_VEH_NON_STATIC) then {
+			// Crew of vehicle groups stays aroudn their vehicle
+			pr _vehUnits = CALLM0(_group, "getUnits") select {
+				CALLM0(_x, "isVehicle")
+			};
+			if (count _vehUnits > 0) then {
+				pr _vehUnit = selectRandom _vehUnits;
+				pr _hO = CALLM0(_vehUnit, "getObjectHandle");
+				_pos = getPos _hO;
+				_radius = 10 + random 10;
+				if (! (_pos isEqualTo [0, 0, 0])) then { // Better to be safe here, we don't want to be in the sea
+					_useDefaultRandomPos = false;
+				};
+			};
+		};
+
+		// Standard code for default random position
+		if (_useDefaultRandomPos) then {
+			// Non-vehicle group infantry units just walk around the location randomly
+			if (!IS_NULL_OBJECT(_loc)) then {
+				_pos = CALLM0(_loc, "getRandomPos");
+				_radius = (100 max GETV(_loc, "boundingRadius")) * 1.25
+			} else {
+				pr _lp = getPos leader _hG;
+				_pos = [(_lp select 0) - 30 + random 60, (_lp select 1) - 30 + random 60, 0];
+				_radius = 200 + random 150 ;
+			};
 		};
 		
 		// Delete all waypoints
@@ -48,11 +74,6 @@ CLASS("ActionGroupRelax", "ActionGroup")
 			// Give waipoints to the group
 			pr _i = 0;
 			pr _waypoints = []; // Array with waypoint IDs
-			pr _radius = if(!IS_NULL_OBJECT(_loc)) then {
-				(100 max GETV(_loc, "boundingRadius")) * 1.25
-			} else { 
-				200 + random 150 
-			};
 			pr _angleStart = random 360;
 			while {_i < 5} do {
 				pr _wp = _hG addWaypoint [_pos getPos [_radius, _angleStart + _i*2*360/5], 0];

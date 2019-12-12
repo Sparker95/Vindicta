@@ -67,7 +67,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 		T_SETV("detachmentCompVar", _detachmentCompVar);
 
 		// Target is the next waypoint or the RTB target
-		private _targetVar = T_CALLM("createVariable", [_routeTargets]);
+		private _targetVar = T_CALLM("createVariable", [_routeTargets select 0]);
 		T_SETV("targetVar", _targetVar);
 
 		// Waypoints on the route
@@ -150,7 +150,7 @@ CLASS("PatrolCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_NEXT_WAYPOINT,	// State change when target is we go to next waypoint
 				_splitGarrIdVar, 					// Id of garrison to move
 				_targetVar, 						// Target to move to (next waypoint)
-				T_CALLM1("createVariable", 100)]; 				// Radius to move within
+				T_CALLM1("createVariable", 100)]; 	// Radius to move within
 		// We use attack instead of just move so that garrison will march around a bit at each waypoint. 
 		// TODO: Come up with a better AST for patrol move
 		private _moveWaypointsAST = NEW("AST_GarrisonAttackTarget", _moveWaypointsAST_Args);

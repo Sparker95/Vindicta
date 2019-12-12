@@ -66,6 +66,9 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	*/
 	/* virtual */ METHOD("getLocationDesirability") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_loc"), P_SIDE("_side")];
+
+		ASSERT_OBJECT_CLASS(_loc, "LocationModel");
+
 		private _locPos = GETV(_loc, "pos");
 		private _activity = log (0.09 * CALLM(_worldNow, "getActivity", [_locPos ARG 2000]) + 1);
 
@@ -74,6 +77,10 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			case LOCATION_TYPE_OUTPOST: {
 				// We want these a bit, but more if there is activity in the area
 				_priority = T_GETV("takeLocOutpostPriority") + T_GETV("takeLocOutpostPriorityActivityCoeff") * _activity;
+			};
+			case LOCATION_TYPE_AIRPORT: {
+				// We want them a lot since we use them to bring reinforcements
+				_priority = 4*T_GETV("takeLocBasePriority") + T_GETV("takeLocBasePriorityActivityCoeff") * _activity;
 			};
 			case LOCATION_TYPE_BASE: { 
 				// We want these a normal amount but are willing to go further to capture them.
@@ -106,8 +113,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			};
 			case LOCATION_TYPE_CAMP: {
 				// We want these A LOT because only players can build them
-				_priority = 3;
-				_priority*T_GETV("takeLocPlayerCreatedCoeff")
+				_priority = 3 * T_GETV("takeLocPlayerCreatedCoeff")
 			};
 			// No other locations taken by default
 			default { _priority = 0 };

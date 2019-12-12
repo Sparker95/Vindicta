@@ -135,25 +135,6 @@ _vehWeights set [T_VEH_default, [
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
 
-// //==== Groups ====
-// _group = [];
-// _group set [T_GROUP_SIZE-1, nil];
-// _group set [T_GROUP_DEFAULT, [configfile >> "CfgGroups" >> "East" >> "BLU_F" >> "Infantry" >> "Bus_InfSquad"]];
-
-// _group set [T_GROUP_inf_AA_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfTeam_AA"]];
-// _group set [T_GROUP_inf_AT_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfTeam_AT"]];
-// _group set [T_GROUP_inf_rifle_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSquad"]];
-// _group set [T_GROUP_inf_assault_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfAssault"]];
-// _group set [T_GROUP_inf_weapons_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSquad_Weapons"]];
-// _group set [T_GROUP_inf_fire_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfTeam"]];
-// _group set [T_GROUP_inf_recon_patrol, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OI_reconPatrol"]];
-// _group set [T_GROUP_inf_recon_sentry, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OI_reconSentry"]];
-// _group set [T_GROUP_inf_recon_squad, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_ReconSquad"]];
-// _group set [T_GROUP_inf_recon_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OI_reconTeam"]];
-// _group set [T_GROUP_inf_sentry, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OIA_InfSentry"]];
-// _group set [T_GROUP_inf_sniper_team, [configfile >> "CfgGroups" >> "East" >> "OPF_F" >> "Infantry" >> "OI_SniperTeam"]];
-
-
 //==== Set arrays ====
 _array = [];
 

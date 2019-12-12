@@ -127,24 +127,7 @@ _drone set [T_DRONE_quadcopter, ["B_UAV_01_F"]];
 _cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
-_group = [];
-_group set [T_GROUP_SIZE-1, nil];
-_group set [T_GROUP_DEFAULT, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team"]];
-_group set [T_GROUP_inf_AA_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_AA"]];
-_group set [T_GROUP_inf_AT_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_heavy_AT"]];
-_group set [T_GROUP_inf_rifle_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_squad"]];
-_group set [T_GROUP_inf_assault_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team_MG"]];
-_group set [T_GROUP_inf_weapons_squad, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_weaponsquad"]];
-_group set [T_GROUP_inf_fire_team, [configFile >> "CfgGroups" >> "West" >> "rhs_faction_usarmy_wd" >> "rhs_group_nato_usarmy_wd_infantry" >> "rhs_group_nato_usarmy_wd_infantry_team"]];
-_group set [T_GROUP_inf_sentry,			[[[T_INF, T_INF_TL], [T_INF, T_INF_rifleman]]]];
-_group set [T_GROUP_inf_sniper_team,	[[[T_INF, T_INF_sniper], [T_INF, T_INF_spotter], [T_INF, T_INF_rifleman]]]];
-
-_group set [T_GROUP_inf_recon_patrol,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_spotter]]]];
-_group set [T_GROUP_inf_recon_sentry,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman] ]]];
-_group set [T_GROUP_inf_recon_squad,	[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_marksman], [T_INF, T_INF_recon_medic], [T_INF, T_INF_recon_rifleman],  [T_INF, T_INF_recon_JTAC], [T_INF, T_INF_recon_exp]]]];
-_group set [T_GROUP_inf_recon_team,		[[[T_INF, T_INF_recon_TL], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_medic], [T_INF, T_INF_recon_rifleman], [T_INF, T_INF_recon_exp] ]]];
-
-
+_group = +(tDefault select T_GROUP);
 
 //==== Set arrays ====
 _array set [T_INF, _inf];
