@@ -612,7 +612,7 @@ CLASS("WorldModel", "Storable")
 
 
 	// Force multiplier common for many functions
-	// https://www.desmos.com/calculator/pxsl3sglkw
+	// https://www.desmos.com/calculator/2mfk9ka5pi
 	// Other valuable formulas:
 	// https://www.desmos.com/calculator/csjhfdmntd - exponential response
 	// https://www.desmos.com/calculator/ezdykpdcqx - log response
