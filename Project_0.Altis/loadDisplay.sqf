@@ -1,4 +1,6 @@
-diag_log [">>> testLoadDisplay %1", _this];
+if (!hasInterface) exitWith {};
+
+//diag_log [">>> testLoadDisplay %1", _this];
 
 params ["_display"];
 
@@ -53,6 +55,7 @@ params ["_display"];
 
 _display ctrlCreate ["LoadingScreenGroup", -1];
 
+// Author list
 private _ctrl = _display displayCtrl 12366;
 private _names = ["Sparker", "BillW", "Jeroen Not", "Marvis", "Sen", "Dusty", "Sebastian"];
 private _text = "By ";
@@ -64,7 +67,13 @@ private _text = "By ";
 } forEach (_names call BIS_fnc_arrayShuffle);
 _ctrl ctrlSetText _text;
 
+// Special msg for Marvis
  if (profileName == "Marvis") then {
 	private _ctrl = _display displayCtrl 6654;
 	_ctrl ctrlSetText "Marvis, make a nice loading screen for us some day plz :3";
  };
+
+ // Game title and version
+ private _ctrl = _display displayCtrl 6644;
+ private _versionStr = call misc_fnc_getVersion;
+ private _text = format ["Vindicta v%1", _versionStr];

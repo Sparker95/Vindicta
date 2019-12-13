@@ -180,7 +180,7 @@ minPlayerDistance = 1500; // meters. Default: 0
 // Test adding stuff to standard displays
 class Extended_DisplayLoad_EventHandlers {
     class RscDisplayLoading {
-        Mission_customLoadingScreen = "_this call compile preprocessFileLineNumbers 'loadDisplay.sqf';";
+        Mission_customLoadingScreen = "if (hasInterface) then {_this call compile preprocessFileLineNumbers 'loadDisplay.sqf';};";
     };
     /*
     class RscDisplayLoadCustom {
