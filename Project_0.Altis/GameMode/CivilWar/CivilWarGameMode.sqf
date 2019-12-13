@@ -282,13 +282,16 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		T_PRVAR(activeCities);
 
+		pr _prog = T_CALLM0("getCampaignProgress");
+
 		switch(T_GETV("phase")) do {
 			case 0: {
 				systemChat "Moving to phase 1";
 				// Scenario just initialized so do setup
 				// Disable camp creation
-				SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
-				PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+				//SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
+				//PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+				
 				// Set enemy commander strategy
 				private _strategy = NEW("Phase1CmdrStrategy", []);
 				CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
@@ -304,12 +307,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			*/
 			case 1: {
 				// If player managed to push city to revolt then move to next phase
-				if( (_activeCities findIf { GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }) != -1 ) then {
+				//if( (_activeCities findIf { GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }) != -1 ) then {
+				if (_prog > 0.3) then {
 					"MOVING TO PHASE 2\nEnemy commander will respond to unrest." remoteExec ["hint"];
 
 					// Enable camp creation
-					SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
-					PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+					//SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
+					//PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
 
 					// Set enemy commander strategy
 					private _strategy = NEW("Phase2CmdrStrategy", []);
@@ -329,10 +333,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			*/
 			case 2: {
 				// If player managed to push city to revolt then move to next phase
+				/*
 				if( _activeCities findIf {
 					CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
 					{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
 				then {
+				*/
+				if (_prog > 0.6) then {
 					"MOVING TO PHASE 3\nEnemy commander will be aggressive." remoteExec ["hint"];
 
 					// Set enemy commander strategy
