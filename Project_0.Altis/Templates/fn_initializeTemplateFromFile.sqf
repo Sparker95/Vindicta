@@ -1,3 +1,9 @@
+#ifdef _SQF_VM
+#define IS_SERVER true
+#else
+#define IS_SERVER isServer
+#endif
+
 params [["_filePath", "", [""]]];
 
 // Call compile the file as usual...
@@ -40,8 +46,10 @@ if (isServer) then {
 };
 #endif
 
-missionNamespace setVariable [_tName, _t];
-t_validTemplates pushBack _tName;
+if (IS_SERVER) then {
+	missionNamespace setVariable [_tName, _t, true];
+	t_validTemplates pushBack _tName; // It will be publicVariable'd later
+};
 
 // Return the array
 _t

@@ -335,6 +335,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 					// Give weapons to the unit (if he has special weapons)
 					CALLM0(_thisObject, "applyInfantryWeapons");
+
+					// Set unit skill
+					_objectHandle setSkill 1.0; // todo improve this
 				};
 				case T_VEH: {
 
