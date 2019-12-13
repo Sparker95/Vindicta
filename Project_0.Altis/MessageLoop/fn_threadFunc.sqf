@@ -38,11 +38,13 @@ private _execTimeFilteredArray = [];
 #endif
 
 // Disable flags for release build by force
+
 #ifdef RELEASE_BUILD
 #undef PROFILE_MESSAGE_JSON
 #undef THREAD_FUNC_DEBUG
 #undef PROCESS_CATEGORIES_DEBUG
 #endif
+
 
 params [ P_THISOBJECT ];
 
@@ -74,6 +76,8 @@ while {true} do {
 	};
 	#endif
 
+	private _loadingScreenStarted = false;
+
 	//Do we have anything in the queue?
 
 	if ( (count _msgQueue) > 0 ) then {
@@ -83,7 +87,17 @@ while {true} do {
 
 		private _countMessages = 0;
 		private _countMessagesMax = T_GETV("nMessagesInSeries");
-		while {(count _msgQueue) > 0 && _countMessages < _countMessagesMax} do {
+
+		// Start loading screen if we have no interface and there are too messages
+		#ifndef _SQF_VM
+		if ( (!HAS_INTERFACE) && ( (count _msgQueue) > _countMessagesMax)) then {
+			startLoadingScreen ["Msg loop"];
+			_loadingScreenStarted = true;
+			OOP_INFO_2("Start loading screen: %1, message queue is too big: %2", T_GETV("name"), count _msgQueue);
+		};
+		#endif
+
+		while { (count _msgQueue) > 0 && _countMessages < _countMessagesMax } do {
 			//Get a message from the front of the queue
 			pr _msg = 0;
 			CRITICAL_SECTION {
@@ -195,6 +209,16 @@ while {true} do {
 			pr _intervalMax = _cat#__PD_ID_UPDATE_INTERVAL_MAX;
 			pr _intervalAveragePerObject = _countObjects * _cat#__PC_ID_UPDATE_INTERVAL_AVERAGE;
 			pr _categoryAboveMaxInterval = _intervalAveragePerObject > _intervalMax;
+
+			// Start loading screen if we are processing above max interval
+			#ifndef _SQF_VM
+			if ( (!HAS_INTERFACE) && _categoryAboveMaxInterval) then {
+				startLoadingScreen ["Msg loop"];
+				_loadingScreenStarted = true;
+				OOP_DEBUG_4("Start loading screen: %1, process category %2 is above max threshold: %3 > %4", T_GETV("name"), _cat select __PC_ID_TAG, _intervalAveragePerObject, _intervalMax);
+			};
+			#endif
+
 			if ( ( (_fractionsCurrent#_i <= _fractionsRequired#_i)											// Process next object from this category if current update frequency fraction is below required level
 																	|| _categoryAboveMaxInterval )	// ... OR if current update interval is beyond the required maximum set interval
 				&& (_countObjects > 0)																		// ... but don't process anything if there are no objects in this category
@@ -307,6 +331,11 @@ while {true} do {
 
 		// Unlock the mutex
 		MUTEX_UNLOCK(_mutex);
+	};
+
+	// End loading screen if it was ever started
+	if (_loadingScreenStarted) then {
+		endLoadingScreen;
 	};
 
 	// Give time to other threads in the SQF scheduler

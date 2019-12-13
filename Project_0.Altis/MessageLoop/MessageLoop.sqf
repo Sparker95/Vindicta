@@ -22,7 +22,7 @@ Author: Sparker
 
 MessageLoop_fnc_threadFunc = compile preprocessFileLineNumbers "MessageLoop\fn_threadFunc.sqf";
 
-#define N_MESSAGES_IN_SERIES_DEFAULT 9000
+#define N_MESSAGES_IN_SERIES_DEFAULT 128
 
 CLASS("MessageLoop", "Storable");
 

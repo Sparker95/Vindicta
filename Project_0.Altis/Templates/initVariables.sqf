@@ -22,9 +22,9 @@ call compile preprocessFileLineNumbers "Templates\initComposition.sqf";
 call compile preprocessFileLineNumbers "Templates\initPlayerSpawnTemplates.sqf";
 call compile preprocessFileLineNumbers "Templates\initLoadouts.sqf";
 
-#ifndef _SQF_VM
 if (IS_SERVER) then {
 	call compile preprocessFileLineNumbers "Templates\initFactions.sqf";
+	#ifndef _SQF_VM
 	publicVariable "t_validTemplates";
+	#endif
 };
-#endif
