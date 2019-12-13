@@ -1,3 +1,9 @@
+#ifdef _SQF_VM
+#define IS_SERVER true
+#else
+#define IS_SERVER isServer
+#endif
+
 diag_log "[Templates] initVariables";
 
 #ifndef _SQF_VM
@@ -15,4 +21,10 @@ call compile preprocessFileLineNumbers "Templates\initEfficiency.sqf";
 call compile preprocessFileLineNumbers "Templates\initComposition.sqf";
 call compile preprocessFileLineNumbers "Templates\initPlayerSpawnTemplates.sqf";
 call compile preprocessFileLineNumbers "Templates\initLoadouts.sqf";
-call compile preprocessFileLineNumbers "Templates\initFactions.sqf";
+
+#ifndef _SQF_VM
+if (IS_SERVER) then {
+	call compile preprocessFileLineNumbers "Templates\initFactions.sqf";
+	publicVariable "t_validTemplates";
+};
+#endif
