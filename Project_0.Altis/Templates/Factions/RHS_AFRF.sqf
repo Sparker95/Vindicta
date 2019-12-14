@@ -96,7 +96,7 @@ _veh set [T_VEH_plane_fighter, ["rhs_mig29s_vvsc","rhs_mig29sm_vvsc"]];
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F"]];
 //_veh set [T_VEH_boat_armed, [""]];
 
-_veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
+_veh set [T_VEH_personal, ["O_G_Quadbike_01_F"]];
 
 _veh set [T_VEH_truck_inf, ["RHS_Ural_MSV_01", "RHS_Ural_Open_MSV_01", "rhs_kamaz5350_msv", "rhs_kamaz5350_open_msv"]];
 _veh set [T_VEH_truck_cargo, ["RHS_Ural_Flat_MSV_01", "RHS_Ural_Open_Flat_MSV_01", "rhs_kamaz5350_flatbed_msv", "rhs_kamaz5350_flatbed_cover_msv"]];

@@ -1,5 +1,5 @@
 /*
-Altis Armed Forces 2017 elite troops Template
+custom Altis Armed Forces 2017 elite templates for ARMA III (RHS,AAF2017)
 */
 
 _array = [];
@@ -96,7 +96,7 @@ _veh set [T_VEH_plane_fighter, ["FGN_AAF_L159_dynamicLoadout"]];
 _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F"]];
 _veh set [T_VEH_boat_armed, ["rhsusf_mkvsoc"]];
 
-_veh set [T_VEH_personal, ["rhsusf_mrzr4_d"]];
+_veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 
 
 _veh set [T_VEH_truck_inf, ["FGN_AAF_Ural", "FGN_AAF_Ural_open", "FGN_AAF_Zamak_Open", "FGN_AAF_Zamak"]];

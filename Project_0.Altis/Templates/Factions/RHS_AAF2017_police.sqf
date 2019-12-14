@@ -1,5 +1,5 @@
 /*
-POLICE templates for ARMA III
+custom Altian Police templates for ARMA III (RHS,AAF2017)
 */
 
 _array = [];

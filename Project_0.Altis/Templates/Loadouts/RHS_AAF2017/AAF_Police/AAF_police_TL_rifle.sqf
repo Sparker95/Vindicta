@@ -16,7 +16,9 @@ this forceAddUniform "FGN_AAF_M93_Police";
 this addWeapon "rhs_weap_ak103_1";
 this addPrimaryWeaponItem "rhs_acc_dtk";
 this addPrimaryWeaponItem "rhs_acc_ekp8_02";
+this addPrimaryWeaponItem "rhs_30Rnd_762x39mm_polymer";
 this addWeapon "rhs_weap_makarov_pm";
+this addHandgunItem "rhs_mag_9x18_8_57N181S";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 3 do {this addItemToUniform "rhs_mag_9x18_8_57N181S";};

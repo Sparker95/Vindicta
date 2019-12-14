@@ -15,6 +15,7 @@ this forceAddUniform "FGN_AAF_M93_Police";
 
 this addWeapon "rhs_weap_pp2000";
 this addPrimaryWeaponItem "rhsusf_acc_mrds";
+this addPrimaryWeaponItem "rhs_mag_9x19mm_7n21_20";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_9x19mm_7n21_20";};

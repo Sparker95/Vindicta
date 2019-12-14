@@ -109,7 +109,7 @@ _drone set [T_DRONE_plane_attack, ["I_UAV_02_dynamicLoadout_F"]];
 //_drone set [T_DRONE_plane_unarmed, ["I_UAV_02_dynamicLoadout_F"]];
 //_drone set [T_DRONE_heli_attack, ["I_UAV_02_dynamicLoadout_F"]];
 _drone set [T_DRONE_quadcopter, ["I_UAV_01_F"]];
-_drone set [T_DRONE_designator, ["ACE_I_SpottingScope"]];
+//_drone set [T_DRONE_designator, [""]];
 _drone set [T_DRONE_stat_HMG_low, ["I_HMG_01_A_F"]];
 _drone set [T_DRONE_stat_GMG_low, ["I_GMG_01_A_F"]];
 //_drone set [T_DRONE_stat_AA, [""]];

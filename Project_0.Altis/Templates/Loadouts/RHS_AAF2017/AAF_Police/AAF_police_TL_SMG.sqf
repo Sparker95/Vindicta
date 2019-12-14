@@ -15,6 +15,7 @@ this forceAddUniform "FGN_AAF_M93_Police";
 
 this addWeapon "rhs_weap_pp2000";
 this addPrimaryWeaponItem "rhsusf_acc_mrds";
+this addPrimaryWeaponItem "rhs_mag_9x19mm_7n21_20";
 this addWeapon "rhs_weap_makarov_pm";
 this addHandgunItem "rhs_mag_9x18_8_57N181S";
 
