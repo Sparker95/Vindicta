@@ -75,5 +75,8 @@ _ctrl ctrlSetText _text;
 
  // Game title and version
  private _ctrl = _display displayCtrl 6644;
- private _versionStr = call misc_fnc_getVersion;
- private _text = format ["Vindicta v%1", _versionStr];
+ private _versionStr = 0 call misc_fnc_getVersion;
+ if (! isNil "_version") then {
+	private _text = format ["Vindicta v%1", _versionStr];
+	_ctrl ctrlSetText _text;
+ };
