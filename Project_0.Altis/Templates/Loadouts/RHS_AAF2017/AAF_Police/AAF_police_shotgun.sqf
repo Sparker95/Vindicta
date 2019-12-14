@@ -20,5 +20,4 @@ this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 5 do {this addItemToVest "rhsusf_5Rnd_00Buck";};
 for "_i" from 1 to 5 do {this addItemToVest "rhsusf_5Rnd_Slug";};
 this addItemToVest "rhs_mag_m7a3_cs";
-
 this linkItem "ItemWatch";

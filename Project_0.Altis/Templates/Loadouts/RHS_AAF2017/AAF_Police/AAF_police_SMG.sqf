@@ -20,5 +20,4 @@ this addPrimaryWeaponItem "rhs_mag_9x19mm_7n21_20";
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_mag_9x19mm_7n21_20";};
 this addItemToVest "rhs_mag_m7a3_cs";
-
 this linkItem "ItemWatch";

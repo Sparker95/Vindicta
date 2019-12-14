@@ -20,19 +20,19 @@ this addPrimaryWeaponItem "rhsusf_acc_M8541_low";
 this addPrimaryWeaponItem "rhsusf_5Rnd_762x51_m118_special_Mag";
 this addPrimaryWeaponItem "rhsusf_acc_harris_swivel";
 this addWeapon "rhsusf_weap_glock17g4";
+this addHandgunItem "rhsusf_acc_omega9k";
 this addHandgunItem "acc_flashlight_pistol";
+this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhssaf_zrak_rd7j";
 
+comment "Add items to containers";
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 3 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhsusf_mag_17Rnd_9x19_JHP";};
 for "_i" from 1 to 10 do {this addItemToVest "rhsusf_5Rnd_762x51_m118_special_Mag";};
 for "_i" from 1 to 5 do {this addItemToVest "rhsusf_5Rnd_762x51_m993_Mag";};
 this addItemToVest "rhs_grenade_anm8_mag";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_mk3a2";};
 this addItemToVest "I_IR_Grenade";
-this addHeadgear "FGN_AAF_Boonie_Type07";
-this addGoggles "rhs_scarf";
-
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-this linkItem "rhsusf_ANPVS_14";
+this linkItem "NVGoggles_OPFOR";
