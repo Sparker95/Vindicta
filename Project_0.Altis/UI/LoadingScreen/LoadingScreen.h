@@ -48,7 +48,7 @@ class LoadingScreenGroup : MUI_GROUP
 		class Control763464495_copy1
 		{
 			type = 0;
-			idc = -1;
+			idc = 6644;
 			x = safeZoneW * 0.05;
 			y = safeZoneH * 0;
 			w = safeZoneW * 0.9;
