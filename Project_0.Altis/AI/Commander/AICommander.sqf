@@ -2228,7 +2228,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 							while {_transportMoreRequired > 0} do {
 								pr _subcatID = selectRandom _transportTypes;
-								pr _args = [_t, T_VEH, _subcatID];
+								pr _args = [_t, T_VEH, _subcatID, -1]; // Select a random class ID
 								pr _vehUnit = NEW("Unit", _args);
 
 								CALLM2(_gar, "postMethodAsync", "addUnit", [_vehUnit]);
