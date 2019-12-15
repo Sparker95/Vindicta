@@ -18,6 +18,7 @@
 // suspicion values for various actions
 #define SUSPICIOUS 0.5								// Suspiciousness at which unit passes "suspicious" threshold
 #define OVERT 1.0									// Suspiciousness at which unit is overt
+#define SUSP_MIL_LOCATION 0.4						// Suspiciousness for being at a military location
 #define SUSP_CROUCH 0.1								// Suspiciousness gained crouching
 #define SUSP_PRONE 0.2								// Suspiciousness gained prone
 #define SUSP_SPEEDMAX 0.2							// Max suspiciousness gained for movement speed

@@ -78,7 +78,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupRelax", 0, [], _AI];
+						_args = ["GoalGroupPatrol", 0, [], _AI]; // They will patrol next to their vehicles
 					};
 					
 					case GROUP_TYPE_PATROL: {

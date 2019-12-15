@@ -486,10 +486,12 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("gameModeClassName", _className);
 
 		// Run the initialization
-		gGameMode = NEW(_className, _gameModeParameters);
+		gGameMode = NEW_PUBLIC(_className, _gameModeParameters);
 		CRITICAL_SECTION {
 			CALLM0(gGameMode, "init");
 		};
+		gGameModeServer = gGameMode;
+		PUBLIC_VARIABLE "gGameModeServer";
 		OOP_INFO_0("Finished initializing game mode");
 
 		// Send notifications...

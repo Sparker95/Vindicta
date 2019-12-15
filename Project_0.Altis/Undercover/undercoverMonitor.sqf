@@ -18,7 +18,7 @@
 #define sINCAPACITATED 4
 
 #ifndef RELEASE_BUILD
-//#define DEBUG_UNDERCOVER_MONITOR
+#define DEBUG_UNDERCOVER_MONITOR
 #endif
 
 /*
@@ -327,8 +327,11 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		if (_loc != "") then { 	
 							if ( CALLM(_loc, "isInAllowedArea", [_pos]) ) then { // Will always return true for city or roadblock, regardless of actual allowed area marker area
 								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
-							} else { 
-								_suspicionArr pushBack [SUSPICIOUS, "In military area"];
+							} else {
+								// Suspiciousness for being in a military area depends on the campaign progress
+								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
+								pr _multiplier = 1+2*_progress;
+								_suspicionArr pushBack [_multiplier*SUSP_MIL_LOCATION, "In military area"];
 								_hintKeys pushBack HK_MILAREA;
 							};
 				 		};
