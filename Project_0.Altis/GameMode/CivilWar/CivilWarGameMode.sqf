@@ -765,6 +765,9 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
 
+		// Broadcast public variables
+		PUBLIC_VAR(_thisObject, "casualties");
+
 		true
 	} ENDMETHOD;
 ENDCLASS;
