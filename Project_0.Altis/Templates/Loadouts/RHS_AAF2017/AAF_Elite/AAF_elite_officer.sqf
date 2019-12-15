@@ -7,19 +7,21 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-this forceAddUniform "FGN_AAF_M10_Type07_Summer";
-this addItemToUniform "FirstAidKit";
-this addVest "FGN_AAF_CIRAS_Crew";
-for "_i" from 1 to 3 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
-this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";
-this addHeadgear "FGN_AAF_Beret";
 _RandomGoggles = ["G_Aviator","",""] call BIS_fnc_selectRandom;
 this addGoggles _RandomGoggles;
+this forceAddUniform "FGN_AAF_M10_Type07_Summer";
+this addVest "FGN_AAF_CIRAS_Crew";
+this addHeadgear "FGN_AAF_Beret";
 
-this addWeapon "rhs_weap_m21s";
+this addWeapon "rhs_weap_m21s_fold";
 this addPrimaryWeaponItem "rhs_acc_2dpZenit";
+this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 this addWeapon "rhsusf_weap_glock17g4";
+this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 
+this addItemToUniform "FirstAidKit";
+for "_i" from 1 to 2 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
+this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";

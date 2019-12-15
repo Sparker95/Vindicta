@@ -14,14 +14,14 @@ this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_Empty";
 
-this addWeapon "rhs_weap_savz61";
-this addPrimaryWeaponItem "rhsgref_20rnd_765x17_vz61";
+this addWeapon "rhs_weap_m21s_fold";
+this addPrimaryWeaponItem "rhsgref_30rnd_556x45_m21";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 6 do {this addItemToVest "rhsgref_20rnd_765x17_vz61";};
 this addItemToVest "rhs_grenade_anm8_mag";
-
+for "_i" from 1 to 2 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
+

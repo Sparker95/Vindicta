@@ -21,7 +21,6 @@ this addItemToUniform "rhs_grenade_mki_mag";
 this addItemToUniform "rhs_mag_nspn_green";
 this addItemToUniform "rhs_mag_762x25_8";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_762x25_8";};
-
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
 this linkItem "ItemWatch";
