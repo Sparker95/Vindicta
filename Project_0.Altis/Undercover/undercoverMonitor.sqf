@@ -330,7 +330,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
-								pr _multiplier = 1+1.5*_progress;
+								pr _multiplier = 1+2*_progress;
 								_suspicionArr pushBack [_multiplier*SUSP_MIL_LOCATION, "In military area"];
 								_hintKeys pushBack HK_MILAREA;
 							};
