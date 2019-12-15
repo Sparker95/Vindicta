@@ -2281,12 +2281,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 						while {_nVehToAdd > 0} do {
 							pr _subcatID = selectRandom _armorTypes;
-							pr _args = [_t, T_VEH, _subcatID];
-							pr _vehUnit = NEW("Unit", _args);
-
 							// It's better to add vehicles with a group, so that AIs can use them instantly
 							pr _group = NEW("Group", [_side ARG GROUP_TYPE_VEH_NON_STATIC]);
+							pr _args = [_t, T_VEH, _subcatID, -1, _group]; // Select a random class ID
+							pr _vehUnit = NEW("Unit", _args);
+
 							CALLM1(_group, "addUnit", _vehUnit);
+							CALLM1(_vehUnit, "createDefaultCrew", _t);
 
 							CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
 

@@ -27,9 +27,35 @@ CLASS("ActionUnitInfantryRegroup", "ActionUnit")
 		pr _AI = T_GETV("AI");
 		if (GETV(_AI, "new")) then {
 
-			// Instantly move the unit into its required formation position
-			pr _pos = getPos (leader group _hO);
-			_hO setPos _pos;
+			// If leader of a group, teleport all units to the first waypoint position or to the leader
+			pr _hG = group _hO;
+			pr _forceAllUnitsToLeader = false;
+			if (_hO isEqualTo (leader _hG)) then {
+				pr _wps = waypoints _hG;
+				if ((count _wps) > 0) then {
+					pr _wp0 = _wps#0;
+					pr _pos0 = waypointPosition _wp0;
+					if (! (_pos0 isEqualTo [0, 0, 0])) then {
+						{
+							_x setPos [_pos0#0 + random 10, _pos0#1 + random 10, 0];
+						} forEach (units _hG);
+					} else {
+						_forceAllUnitsToLeader = true;
+					};
+				} else {
+					_forceAllUnitsToLeader = true;
+				};
+
+				if (_forceAllUnitsToLeader) then {
+					{
+						// Instantly move the unit into its required formation position
+						pr _pos = getPos (leader group _hO);
+						_x setPos _pos;
+					} forEach (units _hG);
+				};
+			};
+
+
 
 			SETV(_AI, "new", false);
 		};
