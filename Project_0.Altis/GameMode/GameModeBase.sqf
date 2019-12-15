@@ -543,7 +543,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Must return a value 0...1 to drive some AICommander logic
 	/* protected virtual */ METHOD("getCampaignProgress") {
-		1
+		0.5
 	} ENDMETHOD;
 
 	// Not all game modes need all commanders
