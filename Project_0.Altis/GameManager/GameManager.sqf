@@ -321,6 +321,8 @@ CLASS("GameManager", "MessageReceiverEx")
 						CALLM1(_storage, "load", _gameModeRef);
 						gGameMode = _gameModeRef;
 						PUBLIC_VARIABLE "gGameMode";
+						gGameModeServer = gGameMode;
+						PUBLIC_VARIABLE "gGameModeServer";
 
 						// Restore date
 						pr _date = GETV(_header, "date");
