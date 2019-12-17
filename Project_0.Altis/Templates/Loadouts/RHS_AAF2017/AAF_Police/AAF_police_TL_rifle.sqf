@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = ["FGN_AAF_PatrolCap_Police","FGN_AAF_Beret_Police","H_Cap_police"] call BIS_fnc_selectRandom;
+_RandomHeadgear = selectRandom ["FGN_AAF_PatrolCap_Police","FGN_AAF_Beret_Police","H_Cap_police"];
 this addHeadgear _RandomHeadgear;
 this forceAddUniform "FGN_AAF_M93_Police";
 this addVest "FGN_AAF_M99Vest_Police_Rifleman_Radio";

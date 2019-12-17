@@ -7,11 +7,11 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomVest = ["FGN_AAF_CIRAS_TL","FGN_AAF_CIRAS_TL_CamB"] call BIS_fnc_selectRandom;
+_RandomVest = selectRandom ["FGN_AAF_CIRAS_TL","FGN_AAF_CIRAS_TL_CamB"];
 this addVest _RandomVest;
-_RandomHeadgear = ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut","rhsusf_opscore_mar_ut_pelt"] call BIS_fnc_selectRandom;
+_RandomHeadgear = selectRandom ["FGN_AAF_Boonie_Type07","rhsusf_opscore_mar_ut","rhsusf_opscore_mar_ut_pelt"];
 this addHeadgear _RandomHeadgear;
-_RandomGoggles = ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""] call BIS_fnc_selectRandom;
+_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""];
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhs_uniform_gorka_1_a";
 this addBackpack "FGN_AAF_Bergen_SL_Type07";

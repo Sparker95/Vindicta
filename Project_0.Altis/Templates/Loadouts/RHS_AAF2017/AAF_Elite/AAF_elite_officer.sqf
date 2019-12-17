@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomGoggles = ["G_Aviator","",""] call BIS_fnc_selectRandom;
+_RandomGoggles = selectRandom ["G_Aviator",""];
 this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_Crew";

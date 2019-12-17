@@ -7,7 +7,7 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = ["rhs_zsh7a","rhs_zsh7a_alt"] call BIS_fnc_selectRandom;
+_RandomHeadgear = selectRandom ["rhs_zsh7a","rhs_zsh7a_alt"];
 this addHeadgear _RandomHeadgear;
 this forceAddUniform "U_I_pilotCoveralls";
 

@@ -7,9 +7,9 @@ removeBackpack this;
 removeHeadgear this;
 removeGoggles this;
 
-_RandomHeadgear = ["rhs_tsh4","rhs_tsh4_bala","rhs_tsh4_ess","rhs_tsh4_ess_bala"] call BIS_fnc_selectRandom;
+_RandomHeadgear = selectRandom ["rhs_tsh4","rhs_tsh4_bala","rhs_tsh4_ess","rhs_tsh4_ess_bala"];
 this addHeadgear _RandomHeadgear;
-_RandomGoggles = ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhsusf_shemagh2_od","rhsusf_shemagh_od","","",""] call BIS_fnc_selectRandom;
+_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhsusf_shemagh2_od","rhsusf_shemagh_od","","",""];
 this addGoggles _RandomGoggles;
 this forceAddUniform "FGN_AAF_M10_Type07_Summer";
 this addVest "FGN_AAF_CIRAS_Empty";
