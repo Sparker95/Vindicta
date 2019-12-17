@@ -101,7 +101,6 @@ _cargo = +(tDefault select T_CARGO);
 
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
-_group set [T_GROUP_SIZE-1, nil];
 _group set [T_GROUP_DEFAULT, [[[T_INF, T_INF_officer], [T_INF, T_INF_TL]]]];
 
 
