@@ -8,8 +8,8 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 
 //==== Infantry ====
 _inf = [];
-_inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT,  ["B_Soldier_F"]];					//Default infantry if nothing is found
+_inf resize T_INF_SIZE; 								//Make an array full of same class name
+_inf = _inf apply {["B_Soldier_F"]};
 
 
 //Recon

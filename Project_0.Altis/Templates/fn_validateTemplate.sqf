@@ -6,8 +6,44 @@ params ["_t"];
 
 private _errorCount = 0;
 
+// Iterate all array elements, find nil-values
+
+_validateArray = {
+	params ["_array", ["_path", []], "_warnOrError"];
+	private _errors = 0;
+	{
+		private _path0 = _path + [_forEachIndex];
+		if (!isNil "_x") then {
+			if (_x isEqualType []) then {
+				//diag_log format ["Validating: %1", _path0];
+				_errors = _errors + ([_x, _path0, _warnOrError] call _validateArray);
+			};
+		} else {
+			if (_warnOrError) then {
+				diag_log format ["validateTemplate: error: value is nil, path: %1", _path0];
+				_errors = _errors + 1;
+			} else {
+				diag_log format ["validateTemplate: warning: value is nil, path: %1", _path0];
+			};
+		};
+	} forEach _array;
+	_errors
+};
+
+// Some categories are validates strict (nils will cause total failure)
+private _categoriesToValidateStrict = [T_GROUP, T_NAME];
+{
+	_errorCount = _errorCount + ( [[_t select _x], [_x], true] call _validateArray);
+} forEach _categoriesToValidateStrict;
+
+// Other categories are validated non-strict, nils will result in a warning
+private _categoriesToValidateEasy = [T_INF, T_VEH, T_DRONE];
+{
+	_errorCount = _errorCount + ( [[_t select _x], [_x], false] call _validateArray);
+} forEach _categoriesToValidateEasy;
+
 #ifdef _SQF_VM
-if (true) exitWith {0}; // Return no errors with SQF VM, since we can't check anything from VM anyway
+if (true) exitWith {_errorCount}; // Return no errors with SQF VM, since we can't check anything from VM anyway
 #endif
 
 // Validate infantry and vehicles
