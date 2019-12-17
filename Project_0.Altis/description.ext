@@ -175,7 +175,7 @@ wreckRemovalMinTime = 1800; // seconds. Default: 10
 wreckRemovalMaxTime = 7200; // seconds. Default: 36000 (10 hours)
 
 // The minimum distance between corpse or wreck and nearest player before the corpse or wreck is allowed to be removed by the garbage collector.
-minPlayerDistance = 1500; // meters. Default: 0
+minPlayerDistance = 100; // meters. Default: 0
 
 // Test adding stuff to standard displays
 class Extended_DisplayLoad_EventHandlers {

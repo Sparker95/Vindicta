@@ -93,6 +93,13 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Camo2,CamoNet_OPFOR_big_F, 30)
 		};
 
+		class Lighting {
+			displayName = "Lighting";
+			// Lights
+			__BUILD_OBJECT_CLASS(Light0,Land_TentLamp_01_standing_F, 10)
+			__BUILD_OBJECT_CLASS(Light1,Land_LampShabby_F, 20)
+		};
+
 		class Special {
 			displayName = "Special";
 			class RadioShack : BuildObjectBase {

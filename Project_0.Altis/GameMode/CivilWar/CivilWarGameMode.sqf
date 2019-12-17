@@ -45,6 +45,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
+		PUBLIC_VAR(_thisObject, "casualties");
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -443,6 +444,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		pr _casualties = T_GETV("casualties");
 		_casualties = _casualties + _valueToAdd;
 		T_SETV("casualties", _casualties);
+		PUBLIC_VAR(_thisObject, "casualties");
 	} ENDMETHOD;
 
 	// Returns the the distance in meters, how far we can recruit units from a location which we own
@@ -762,6 +764,9 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 		CALL_CLASS_METHOD("CivilWarLocationData", _thisObject, "postDeserialize", [_storage]);
 
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
+
+		// Broadcast public variables
+		PUBLIC_VAR(_thisObject, "casualties");
 
 		true
 	} ENDMETHOD;

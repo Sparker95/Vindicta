@@ -543,7 +543,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	// Must return a value 0...1 to drive some AICommander logic
 	/* protected virtual */ METHOD("getCampaignProgress") {
-		1
+		0.5
 	} ENDMETHOD;
 
 	// Not all game modes need all commanders
@@ -803,7 +803,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
 	#define ADD_ARMED_MRAPS
-	//#define ADD_ARMOR
+	#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];

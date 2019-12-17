@@ -321,6 +321,8 @@ CLASS("GameManager", "MessageReceiverEx")
 						CALLM1(_storage, "load", _gameModeRef);
 						gGameMode = _gameModeRef;
 						PUBLIC_VARIABLE "gGameMode";
+						gGameModeServer = gGameMode;
+						PUBLIC_VARIABLE "gGameModeServer";
 
 						// Restore date
 						pr _date = GETV(_header, "date");
@@ -486,10 +488,12 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("gameModeClassName", _className);
 
 		// Run the initialization
-		gGameMode = NEW(_className, _gameModeParameters);
+		gGameMode = NEW_PUBLIC(_className, _gameModeParameters);
 		CRITICAL_SECTION {
 			CALLM0(gGameMode, "init");
 		};
+		gGameModeServer = gGameMode;
+		PUBLIC_VARIABLE "gGameModeServer";
 		OOP_INFO_0("Finished initializing game mode");
 
 		// Send notifications...
