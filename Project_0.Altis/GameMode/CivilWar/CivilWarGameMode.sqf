@@ -45,7 +45,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
-		PUBLIC_VAR(_thisObject, "casualties");
+		if (IS_SERVER) then {	// Makes no sense for client
+			PUBLIC_VAR(_thisObject, "casualties");
+		};
 	} ENDMETHOD;
 
 	METHOD("delete") {
