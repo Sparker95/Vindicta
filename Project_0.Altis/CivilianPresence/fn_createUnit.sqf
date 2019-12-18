@@ -1,3 +1,5 @@
+#include "CivilianPresence.hpp"
+
 params [["_module",objNull,[objNull]],["_pos",[],[[]]]];
 
 //randomize position
@@ -19,13 +21,26 @@ if (count _seenBy > 0) exitWith {objNull};
 
 private _class = format["CivilianPresence_%1",selectRandom (_module getVariable ["#unitTypes",[]])];
 
-private _unit = if (_module getVariable ["#useAgents",true]) then
+// Some units are suspicious and must be created as units, not agents
+private _suspicious = (random 10 < 3);
+
+private _unit = objNull;
+
+if (!(_module getVariable ["#useAgents",true]) || _suspicious) then
 {
-	createAgent [_class, _pos, [], 0, "NONE"];
+	private _group = createGroup [west, true];
+	_unit = _group createUnit [_class, _pos, [], 0, "NONE"];
+	[_unit] joinSilent _group;
+	_unit setCaptive true;
+	if (_suspicious) then {
+		_unit setVariable ["bSuspicious", true, true]; // So that sensorGroupTargets can recognize it
+	};
+	_unit setVariable ["#isAgent", false];
 }
 else
 {
-	(createGroup civilian) createUnit [_class, _pos, [], 0, "NONE"];
+	_unit = createAgent [_class, _pos, [], 0, "NONE"];
+	_unit setVariable ["#isAgent", true];
 };
 
 //make backlink to the core module
