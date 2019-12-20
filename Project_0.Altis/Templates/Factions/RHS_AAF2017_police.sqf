@@ -13,6 +13,7 @@ _inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is 
 
 _inf set [T_INF_officer, ["RHS_AAF2017_police_TL_SMG","RHS_AAF2017_police_TL_rifle" ]];
 _inf set [T_INF_rifleman, ["RHS_AAF2017_police_SMG","RHS_AAF2017_police_shotgun","RHS_AAF2017_police_rifle"]];
+_inf set [T_INF_SL, ["RHS_AAF2017_police_TL_SMG"]];
 /*
 _inf set [T_INF_TL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_SL, ["B_GEN_Soldier_F"]];
