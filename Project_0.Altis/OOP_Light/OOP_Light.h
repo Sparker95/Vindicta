@@ -703,7 +703,7 @@
 	private _nfound = true; \
 	for "_i" from 0 to (_c-1) do { \
 		private _num = _this select _i; \
-		if (_num < 4) exitWith { \
+		if (_num < 999999) exitWith { \
 			_this set [_i, _num + 1]; \
 			_nfound = false; \
 		}; \
