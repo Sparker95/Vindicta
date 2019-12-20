@@ -47,94 +47,96 @@ while {_subCatID < _catSize} do {
 	pr _classArray = _t#_catID#_subCatID;
 	pr _primaryWeaponsThisSubcat = [];		// Primary and secondary weapons of this subcategory
 	pr _secondaryWeaponsThisSubcat = [];
-	{
-		pr _classOrLoadout = _x;
-		pr _isLoadout = [_classOrLoadout] call t_fnc_isLoadout;
-		
-		if (_isLoadout) then {
-			//diag_log format ["LOADOUT: %1", _classOrLoadout];
-		} else {
-			//diag_log format ["CLASS:   %1", _classOrLoadout];
-		};
-
-		// Create a unit from which we will read data
-		pr _hO = objNull;
-		pr _unitClassName = _classDefault;
-
-		if (!_isLoadout) then {
-			_unitClassName = _classOrLoadout;
-		};
-
-		_hO = _group createUnit [_unitClassName, [0, 0, 0], [], 100, "CAN_COLLIDE"];
-
-		if (_isLoadout) then {
-			[_hO, _classOrLoadout] call t_fnc_setUnitLoadout;
-		};
-
-		// Process primary weapon
-		pr _weap = primaryWeapon _hO;
-		if (_weap != "") then {
-			_weap = _weap call bis_fnc_baseWeapon;
-			if (! (_weap in _primaryWeapons)) then {
-				pr _items = primaryWeaponItems _hO;
-				pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
-				_primaryWeapons pushBack _weap;
-				_primaryWeaponMagazines pushBack _mags;
-				{ if (_x != "") then {_primaryWeaponItems pushBackUnique _x} } forEach _items;
+	if (!isNil "_classArray") then {
+		{ // foreach classarray
+			pr _classOrLoadout = _x;
+			pr _isLoadout = [_classOrLoadout] call t_fnc_isLoadout;
+			
+			if (_isLoadout) then {
+				//diag_log format ["LOADOUT: %1", _classOrLoadout];
+			} else {
+				//diag_log format ["CLASS:   %1", _classOrLoadout];
 			};
-			_primaryWeaponsThisSubcat pushBackunique _weap;
-		};
 
-		// Process secondary weapon
-		pr _weap = secondaryWeapon _hO;
-		if (_weap != "") then {
-			_weap = _weap call bis_fnc_baseWeapon;
-			if (! (_weap in _secondaryWeapons)) then {
-				pr _items = secondaryWeaponItems _hO;
-				pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
-				_secondaryWeapons pushBack _weap;
-				_secondaryWeaponMagazines pushBack _mags;
-				{ if (_x != "") then {_secondaryWeaponItems pushBackUnique _x} } forEach _items;
+			// Create a unit from which we will read data
+			pr _hO = objNull;
+			pr _unitClassName = _classDefault;
+
+			if (!_isLoadout) then {
+				_unitClassName = _classOrLoadout;
 			};
-			_secondaryWeaponsThisSubcat pushBackUnique _weap;
-		};
 
-		// Process handgun weapon
-		pr _weap = handgunWeapon _hO;
-		if (_weap != "") then {
-			_weap = _weap call bis_fnc_baseWeapon;
-			if (! (_weap in _handgunWeapons)) then {
-				pr _items = handgunItems _hO;
-				pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
-				_handgunWeapons pushBack _weap;
-				_handgunWeaponMagazines pushBack _mags;
-				{ if (_x != "") then {_handgunWeaponItems pushBackUnique _x} } forEach _items;
+			_hO = _group createUnit [_unitClassName, [0, 0, 0], [], 100, "CAN_COLLIDE"];
+
+			if (_isLoadout) then {
+				[_hO, _classOrLoadout] call t_fnc_setUnitLoadout;
 			};
-		};
 
-		// Process items, except for map, watch, etc
-		{
-			_items pushBackUnique _x;
-		} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
-
-		// Process vest
-		pr _vest = vest _hO;
-		if (_vest != "") then {
-			_vests pushBackUnique _vest;
-		};
-
-		// Process backpack
-		pr _backpack = backpack _hO;
-		if (_backpack != "") then {
-			pr _backpackBase = _backpack call bis_fnc_basicbackpack;
-			if (_backpackBase != "") then {
-				_backpacks pushBackUnique _backpackBase;
+			// Process primary weapon
+			pr _weap = primaryWeapon _hO;
+			if (_weap != "") then {
+				_weap = _weap call bis_fnc_baseWeapon;
+				if (! (_weap in _primaryWeapons)) then {
+					pr _items = primaryWeaponItems _hO;
+					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					_primaryWeapons pushBack _weap;
+					_primaryWeaponMagazines pushBack _mags;
+					{ if (_x != "") then {_primaryWeaponItems pushBackUnique _x} } forEach _items;
+				};
+				_primaryWeaponsThisSubcat pushBackunique _weap;
 			};
-		};
 
-		// Delete the unit
-		deleteVehicle _hO;
-	} forEach _classArray;
+			// Process secondary weapon
+			pr _weap = secondaryWeapon _hO;
+			if (_weap != "") then {
+				_weap = _weap call bis_fnc_baseWeapon;
+				if (! (_weap in _secondaryWeapons)) then {
+					pr _items = secondaryWeaponItems _hO;
+					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					_secondaryWeapons pushBack _weap;
+					_secondaryWeaponMagazines pushBack _mags;
+					{ if (_x != "") then {_secondaryWeaponItems pushBackUnique _x} } forEach _items;
+				};
+				_secondaryWeaponsThisSubcat pushBackUnique _weap;
+			};
+
+			// Process handgun weapon
+			pr _weap = handgunWeapon _hO;
+			if (_weap != "") then {
+				_weap = _weap call bis_fnc_baseWeapon;
+				if (! (_weap in _handgunWeapons)) then {
+					pr _items = handgunItems _hO;
+					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					_handgunWeapons pushBack _weap;
+					_handgunWeaponMagazines pushBack _mags;
+					{ if (_x != "") then {_handgunWeaponItems pushBackUnique _x} } forEach _items;
+				};
+			};
+
+			// Process items, except for map, watch, etc
+			{
+				_items pushBackUnique _x;
+			} forEach ((assignedItems _hO) - ["ItemMap", "ItemWatch", "ItemCompass", "ItemRadio"]);
+
+			// Process vest
+			pr _vest = vest _hO;
+			if (_vest != "") then {
+				_vests pushBackUnique _vest;
+			};
+
+			// Process backpack
+			pr _backpack = backpack _hO;
+			if (_backpack != "") then {
+				pr _backpackBase = _backpack call bis_fnc_basicbackpack;
+				if (_backpackBase != "") then {
+					_backpacks pushBackUnique _backpackBase;
+				};
+			};
+
+			// Delete the unit
+			deleteVehicle _hO;
+		} forEach _classArray;
+	}; // if !isNil "_classArray"
 
 	pr _loadoutWeaponsThis = [_primaryWeaponsThisSubcat, _secondaryWeaponsThisSubcat];
 	_loadoutWeapons set [_subCatID, _loadoutWeaponsThis];

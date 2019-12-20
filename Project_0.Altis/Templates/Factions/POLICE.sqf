@@ -7,13 +7,14 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
+_inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["B_GEN_Soldier_F"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_SL, ["B_Captain_Dwarden_F"]];
 _inf set [T_INF_TL, ["B_Captain_Dwarden_F"]];
 _inf set [T_INF_officer, ["B_GEN_Commander_F"]];
+/*
 _inf set [T_INF_GL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_rifleman, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_marksman, ["B_GEN_Soldier_F"]];
@@ -34,6 +35,7 @@ _inf set [T_INF_pilot, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_pilot_heli, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_survivor, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
+*/
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
