@@ -721,6 +721,73 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 						} forEach ("true" configClasses (configfile >> "CfgVehicles" >> "ACE_medicalSupplyCrate_advanced" >> "TransportItems"));
 					};
 
+					// Add ACE misc items
+					if (isClass (configfile >> "CfgPatches" >> "ace_common")) then {
+						// Array with item class name, count
+						// Exported from the ACE_Box_Misc
+						// Then modified a bit
+						pr _classNames = [
+											//["ACE_muzzle_mzls_H",2],
+											//["ACE_muzzle_mzls_B",2],
+											//["ACE_muzzle_mzls_L",2],
+											//["ACE_muzzle_mzls_smg_01",2],
+											//["ACE_muzzle_mzls_smg_02",2],
+											//["ACE_muzzle_mzls_338",5],
+											//["ACE_muzzle_mzls_93mmg",5],
+											//["ACE_HuntIR_monitor",5],
+											//["ACE_acc_pointer_green",4],
+											["ACE_UAVBattery",6],
+											["ACE_wirecutter",4],
+											["ACE_MapTools",12],
+											["ACE_microDAGR",3],
+											["ACE_MX2A",6],
+											//["ACE_NVG_Gen1",6],
+											//["ACE_NVG_Gen2",6],
+											//["ACE_NVG_Gen4",6],
+											//["ACE_NVG_Wide",6],
+											//["ACE_optic_Hamr_2D",2],
+											//["ACE_optic_Hamr_PIP",2],
+											//["ACE_optic_Arco_2D",2],
+											//["ACE_optic_Arco_PIP",2],
+											//["ACE_optic_MRCO_2D",2],
+											//["ACE_optic_SOS_2D",2],
+											//["ACE_optic_SOS_PIP",2],
+											//["ACE_optic_LRPS_2D",2],
+											//["ACE_optic_LRPS_PIP",2],
+											["ACE_Altimeter",3],
+											["ACE_Sandbag_empty",10],
+											["ACE_SpottingScope",1],
+											//["ACE_SpraypaintBlack",5],
+											//["ACE_SpraypaintRed",5],
+											//["ACE_SpraypaintBlue",5],
+											//["ACE_SpraypaintGreen",5],
+											["ACE_EntrenchingTool",8],
+											["ACE_Tripod",1],
+											//["ACE_Vector",6],
+											//["ACE_Yardage450",4],
+											//["ACE_IR_Strobe_Item",12],
+											["ACE_CableTie",12],
+											//["ACE_Chemlight_Shield",12],
+											["ACE_DAGR",3],
+											["ACE_Clacker",12],
+											["ACE_M26_Clacker",6],
+											["ACE_DefusalKit",4],
+											//["ACE_Deadmanswitch",6],
+											//["ACE_Cellphone",10],
+											//["ACE_Flashlight_MX991",12],
+											//["ACE_Flashlight_KSF1",12],
+											//["ACE_Flashlight_XL50",12],
+											["ACE_EarPlugs",20],
+											//["ACE_Kestrel4500",6],
+											["ACE_ATragMX",6],
+											["ACE_RangeCard",6]
+										];
+						{
+							_x params ["_itemName", "_itemCount"];
+							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+						} forEach _classNames;
+					};
+
 					// Add ADV medical items
 					// Defibrilator
 					if (isClass (configfile >> "CfgPatches" >> "adv_aceCPR")) then {
