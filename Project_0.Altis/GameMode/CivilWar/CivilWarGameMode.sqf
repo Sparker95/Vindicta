@@ -737,16 +737,20 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				private _spawnInPos = [_locPos, 1000, 4000, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
 				// This function returns 2D vector for some reason
 				if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
-				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
-				T_SETV_REF("reinfGarrison", _newGarrison);
 
-				CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
-				CALLM(_newGarrison, "activateOutOfThread", []);
-				private _AI = CALLM(_newGarrison, "getAI", []);
-				// Send the garrison to join the police station location
-				private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
-				CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
+				// Ensure that the found position is far enough from the location which is being reinforced
+				if (_spawnInPos distance2D _locPos > 900) then {
+					// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+					private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
+					T_SETV_REF("reinfGarrison", _newGarrison);
+
+					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);
+					CALLM(_newGarrison, "activateOutOfThread", []);
+					private _AI = CALLM(_newGarrison, "getAI", []);
+					// Send the garrison to join the police station location
+					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
+					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
+				};
 			};
 		};
 	} ENDMETHOD;
