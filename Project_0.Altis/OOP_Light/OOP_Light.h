@@ -688,6 +688,38 @@
 		missionNamespace setVariable [CLASS_METHOD_NAME_STR(_oop_classNameStr, methodNameStr), compile preprocessFileLineNumbers path]
 #endif
 
+// --------------------------------------------------------
+// |              C L A S S   C O U N T E R               |
+// --------------------------------------------------------
+// Every object has a unique ID, and a specific class counter implementation might be different
+
+
+// Initial value when class is initialized
+#define OOP_ID_COUNTER_NEW [0]
+// Increases the value and returns a new value
+#define OOP_ID_COUNTER_PLUS_ONE(value) (value call { \
+	private _this = +_this; \
+	private _c = count _this; \
+	private _nfound = true; \
+	for "_i" from 0 to (_c-1) do { \
+		private _num = _this select _i; \
+		if (_num < 4) exitWith { \
+			_this set [_i, _num + 1]; \
+			_nfound = false; \
+		}; \
+		_this set [_i, 0]; \
+	}; \
+	if (_nfound) then {	_this pushBack 1; }; \
+	_this \
+})
+
+/*
+// Plain numeric counters
+#define OOP_ID_COUNTER_NEW 0
+// Increases the value and returns a new value
+#define OOP_ID_COUNTER_PLUS_ONE(value) (value + 1)
+*/
+
 // ----------------------------------------
 // |              C L A S S               |
 // ----------------------------------------
@@ -703,7 +735,7 @@
 call { \
 diag_log TEXT_ format ["CLASS %1 <- %2", classNameStr, baseClassNames]; \
 private _oop_classNameStr = classNameStr; \
-SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, 0); \
+SET_SPECIAL_MEM(_oop_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); \
 private _oop_memList = []; \
 private _oop_staticMemList = []; \
 private _oop_parents = []; \
