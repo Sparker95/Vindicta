@@ -595,9 +595,10 @@ OOP_new = {
 	_oop_nul = isNil {
 		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
 		if (isNil "_oop_nextID") then { 
-			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, 0);	_oop_nextID = 0;
+			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW);	_oop_nextID = OOP_ID_COUNTER_NEW;
 		};
-		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID+1);
+		_oop_nextID = OOP_ID_COUNTER_PLUS_ONE(_oop_nextID);
+		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
 	};
 	
 	private _objNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
@@ -628,9 +629,10 @@ OOP_new_public = { // todo implement namespace
 	_oop_nul = isNil {
 		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
 		if (isNil "_oop_nextID") then { 
-			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, 0); _oop_nextID = 0;
+			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); _oop_nextID = OOP_ID_COUNTER_NEW;
 		};
-		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID+1);
+		_oop_nextID = OOP_ID_COUNTER_PLUS_ONE(_oop_nextID);
+		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
 	};
 	private _objNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);
 	FORCE_SET_MEM(_objNameStr, OOP_PARENT_STR, _classNameStr);
@@ -663,9 +665,10 @@ OOP_clone = { // todo implement namespace
 	_oop_nul = isNil {
 		_oop_nextID = GET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR);
 		if (isNil "_oop_nextID") then { 
-			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, 0); _oop_nextID = 0;
+			SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, OOP_ID_COUNTER_NEW); _oop_nextID = OOP_ID_COUNTER_NEW;
 		};
-		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID+1);
+		_oop_nextID = OOP_ID_COUNTER_PLUS_ONE(_oop_nextID);
+		SET_SPECIAL_MEM(_classNameStr, NEXT_ID_STR, _oop_nextID);
 	};
 
 	private _newObjNameStr = OBJECT_NAME_STR(_classNameStr, _oop_nextID);

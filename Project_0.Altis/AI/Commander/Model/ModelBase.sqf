@@ -39,6 +39,8 @@ CLASS("ModelBase", ["RefCounted" ARG "Storable"])
 		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_DYNAMIC("_actual")];
 		ASSERT_OBJECT_CLASS(_world, "WorldModel");
 
+		//OOP_INFO_0("NEW");
+
 		T_SETV("id", MODEL_HANDLE_INVALID);
 		T_SETV("world", _world);
 		T_SETV("actual", _actual);
