@@ -57,7 +57,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 		#endif
 		
 		pr _side = side _hG;
-		pr _otherSides = [WEST, EAST, INDEPENDENT] - [_side];
+		pr _otherSides = [WEST, EAST, INDEPENDENT, CIVILIAN] - [_side];
 		pr _allPlayers = allPlayers;
 		
 		if (({alive _x} count (units _hG)) > 0) then {
@@ -74,6 +74,13 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 				((side group (_x select 1)) != _side) && ((_x select 5) <= TARGET_AGE_TO_REVEAL)
 			};
 			
+			#ifdef DEBUG_SENSOR_GROUP_TARGETS
+			OOP_INFO_0("Observed targets:");
+			{
+				OOP_INFO_2(" %1: %2", _foreachindex, _x);
+			} forEach _currentlyObservedObjects;
+			#endif
+
 			// Loop through potential targets and find players(also in vehicles) to send data to their UndercoverMonitor
 			pr _exposedVehicleCrew = [];
 			{

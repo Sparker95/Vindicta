@@ -721,7 +721,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM1(_loc, "setCapacityCiv", _locCapacityCiv); // capacityCiv is calculated based on civ density (see above)
 
 			// Create police stations in cities
-			if (_locType == LOCATION_TYPE_CITY and _locCapacityCiv >= 10) then {
+			if (_locType == LOCATION_TYPE_CITY and (random 10 < 4) /*(_locCapacityCiv >= 10)*/) then {
 				// TODO: Add some visual/designs to this
 				private _posPolice = +GETV(_loc, "pos");
 				_posPolice = _posPolice vectorAdd [-200 + random 400, -200 + random 400, 0];

@@ -45,7 +45,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("phase", 0);
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
-		PUBLIC_VAR(_thisObject, "casualties");
+		if (IS_SERVER) then {	// Makes no sense for client
+			PUBLIC_VAR(_thisObject, "casualties");
+		};
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -533,7 +535,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _pos = CALLM0(_city, "getPos");
 		private _radius = GETV(_city, "boundingRadius");
 
-		_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city ARG [CITY_STATE_STABLE]]));
+		//_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city ARG [CITY_STATE_STABLE]])); // CivPresence civilians are being arrested too
 		_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED]]));
 		_ambientMissions pushBack (NEW("SaboteurCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED ARG CITY_STATE_IN_REVOLT]]));
 	} ENDMETHOD;

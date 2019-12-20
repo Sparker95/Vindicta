@@ -130,7 +130,7 @@ CLASS("GarrisonRecord", "")
 					// Print an error? CmdrActionRecord already prints an error
 				} else {
 					pr _color = "colorRed"; // [T_GETV("side"), true] call BIS_fnc_sideColor;
-					[_posStart, _posEnd, _color, 15, _mrkLine] call misc_fnc_mapDrawLineLocal;
+					[_posStart, _posEnd, _color, 10, _mrkLine] call misc_fnc_mapDrawLineLocal;
 					_mrkLine setMarkerBrushLocal "SolidFull";
 					_mrkLine setMarkerAlphaLocal 1.0;
 
@@ -138,7 +138,7 @@ CLASS("GarrisonRecord", "")
 					createMarkerLocal [_mrkEnd, _posEnd];
 					_mrkEnd setMarkerShapeLocal "ICON";
 					//_mrkEnd setMarkerPosLocal ([100, 100, 0]);
-					_mrkEnd setMarkerTypeLocal "mil_circle";
+					_mrkEnd setMarkerTypeLocal "mil_dot";
 					//_mrkEnd setMarkerTextLocal _actionText;
 					_mrkEnd setMarkerColorLocal "colorRed";
 					_mrkEnd setMarkerAlphaLocal 1.0;

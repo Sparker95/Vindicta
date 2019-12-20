@@ -319,8 +319,6 @@ CLASS("GameManager", "MessageReceiverEx")
 
 						pr _gameModeRef = CALLM1(_storage, "load", "gameMode");
 						CALLM1(_storage, "load", _gameModeRef);
-						gGameMode = _gameModeRef;
-						PUBLIC_VARIABLE "gGameMode";
 						gGameModeServer = gGameMode;
 						PUBLIC_VARIABLE "gGameModeServer";
 
