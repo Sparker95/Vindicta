@@ -740,7 +740,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 											["ACE_wirecutter",4],
 											["ACE_MapTools",12],
 											["ACE_microDAGR",3],
-											["ACE_MX2A",6],
+											//["ACE_MX2A",6], // Thermal imager
 											//["ACE_NVG_Gen1",6],
 											//["ACE_NVG_Gen2",6],
 											//["ACE_NVG_Gen4",6],
