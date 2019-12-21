@@ -687,6 +687,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		T_SETV("ambientMissions", []);
 
+		// Broadcast public variables
+		PUBLIC_VAR(_thisObject, "casualties");
+
 		true
 	} ENDMETHOD;
 
@@ -770,9 +773,6 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 		CALL_CLASS_METHOD("CivilWarLocationData", _thisObject, "postDeserialize", [_storage]);
 
 		T_SETV_REF("reinfGarrison", NULL_OBJECT);
-
-		// Broadcast public variables
-		PUBLIC_VAR(_thisObject, "casualties");
 
 		true
 	} ENDMETHOD;
