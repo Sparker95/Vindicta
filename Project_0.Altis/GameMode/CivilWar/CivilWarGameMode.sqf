@@ -498,6 +498,9 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Call method of all base classes
 		CALL_CLASS_METHOD("GameModeBase", _thisObject, "postDeserialize", [_storage]);
 
+		// Broadcast public variables
+		PUBLIC_VAR(_thisObject, "casualties");
+
 		true
 	} ENDMETHOD;
 
@@ -686,9 +689,6 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		CALL_CLASS_METHOD("CivilWarLocationData", _thisObject, "postDeserialize", [_storage]);
 
 		T_SETV("ambientMissions", []);
-
-		// Broadcast public variables
-		PUBLIC_VAR(_thisObject, "casualties");
 
 		true
 	} ENDMETHOD;
