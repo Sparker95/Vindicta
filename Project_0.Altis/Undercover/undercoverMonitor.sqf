@@ -883,4 +883,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		
 	} ENDMETHOD;
 
+	// Boosts suspicion for this interval
+	STATIC_METHOD("boostSuspicion") {
+		params [P_THISCLASS, P_OBJECT("_unit"), P_NUMBER("_value")];
+		pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
+		if (_thisObject != "") then {
+			pr _boost = T_GETV("suspicionBoost");
+			T_SETV("suspicionBoost", _boost + _value);
+		};
+	} ENDMETHOD;
+
 ENDCLASS;

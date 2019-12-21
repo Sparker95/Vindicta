@@ -8,5 +8,6 @@ class CivPresence {
 		class createUnit {};
 		class talkTo {};//temp just a demo
 		class talkToServer {}; // ...
+		class initUnitDialogVariables {};
 	};
 };

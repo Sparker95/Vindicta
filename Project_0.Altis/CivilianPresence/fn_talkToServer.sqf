@@ -5,7 +5,7 @@ if (isNull _civ) exitWith {};
 private _lookedAtBy = _civ getVariable ["CP_lookedAtBy",[]];
 
 if (_start) then {
-	_lookedAtBy pushBackUnique _whoIsTalking;
+	_lookedAtBy pushBack _whoIsTalking;
 } else {
 	_lookedAtBy deleteAt (_lookedAtBy find _whoIsTalking);
 };

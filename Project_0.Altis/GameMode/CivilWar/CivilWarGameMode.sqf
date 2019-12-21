@@ -762,6 +762,9 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 		FRIENDLY_SIDE // from common.hpp
 	} ENDMETHOD;
 
+	/* public virtual */ METHOD("getEnemySide") {
+		ENEMY_SIDE
+	} ENDMETHOD;
 
 
 	// STORAGE
