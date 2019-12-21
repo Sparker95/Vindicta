@@ -67,7 +67,7 @@ private _structuredSentence = if(_unit isequalto player)then{
 	parseText format ["<t align = 'right' shadow = '2' size = '1'><t color = '#FFA300'>%1",_sentence];
 }else{
 
-	private _color = [side _unit,false] call BIS_fnc_sideColor;
+	private _color = [1, 1, 1, 1]; //[side _unit,false] call BIS_fnc_sideColor; // Some colors don't look readable...
 	private _colorHTML = _color call BIS_fnc_colorRGBtoHTML;
 	private _colorTextHTML = ["#FFFFFF","#898989"] select (_target != player);
 	

@@ -119,11 +119,36 @@ pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
     && {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 };
 
+_newUnit addAction ["Talk", // title
+                 "[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
+                 0, // Arguments
+                 9000, // Priority
+                 true, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "call pr0_fnc_talkCond", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint
 
 _newUnit addAction ["Ask civilian for intel", // title
                  "[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
-                 9000, // Priority
+                 8999, // Priority
+                 true, // ShowWindow
+                 false, //hideOnUse
+                 "", //shortcut
+                 "call pr0_fnc_talkCond", //condition
+                 2, //radius
+                 false, //unconscious
+                 "", //selection
+                 ""]; //memoryPoint
+
+_newUnit addAction ["Agitate civilian", // title
+                 "[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
+                 0, // Arguments
+                 8998, // Priority
                  true, // ShowWindow
                  false, //hideOnUse
                  "", //shortcut

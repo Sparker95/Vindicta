@@ -12,6 +12,9 @@
 // Macro to sleep depending on text length
 #define __SLEEP(txt) sleep (SLEEP_TIME_COEFF * (count txt))
 
+// Macro to boost suspicion on each sentence
+#define __BOOST_SUSP CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.2 + (random 0.1))
+
 params [["_civ",objNull,[objNull]], ["_mode", "", [""]]];
 
 if(isnull _civ)exitWith{};
@@ -21,14 +24,21 @@ if(isnull _civ)exitWith{};
 // Must call it on the server
 [_civ, player, true] remoteExecCall ["CivPresence_fnc_talkToServer", 2];
 
-// Mark him as he is talking now
-_civ setVariable [CP_VAR_IS_TALKING, true, true]; // Broadcast that to everyone
-
 switch (_mode) do {
+	case "talk": {
+		pr _text = "Hi, can I talk to you?";
+		[player, _text, _civ] call  Dialog_fnc_hud_createSentence;
+		sleep 5;
+	};
+
 	case "intel": {
+		// Mark him as he is talking now
+		_civ setVariable [CP_VAR_IS_TALKING, true, true]; // Broadcast that to everyone
+
 		pr _locs = _civ getVariable [CP_VAR_KNOWN_LOCATIONS, []];
 		pr _text = "Hello! Do you know any military places in the area?";
 		[player, _text, _civ] call  Dialog_fnc_hud_createSentence;
+		__BOOST_SUSP;
 		
 		__SLEEP(_text);
 		if (__CHECK_EXIT_COND) exitWith {};
@@ -36,13 +46,15 @@ switch (_mode) do {
 		if (count _locs == 0) then {
 			_text = "No, I am sure there are none within several kilometers";
 			[_civ, _text,player] call  Dialog_fnc_hud_createSentence;
+			__BOOST_SUSP;
 			__SLEEP(_text);
 			if (__CHECK_EXIT_COND) exitWith {};
 
 			[player,"All right, thank you, bye", _civ] call  Dialog_fnc_hud_createSentence;
 		} else {
-			_text = "Yeah, I know a some places like that...";
+			_text = "Yeah, I know some places like that...";
 			[_civ, _text,player] call  Dialog_fnc_hud_createSentence;
+			__BOOST_SUSP;
 			__SLEEP(_text);
 			if (__CHECK_EXIT_COND) exitWith {};
 
@@ -93,6 +105,7 @@ switch (_mode) do {
 
 				pr _text = format ["%1 %2 %3, %4", _intro, _typeString, _posString, _distanceString];
 				[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
+				__BOOST_SUSP;
 
 				// Also reveal the location to player's side
 				private _updateLevel = -666;
@@ -136,6 +149,7 @@ switch (_mode) do {
 				"It might be dangerous to talk about such things in the street, I must go now!"
 			];
 			[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
+			__BOOST_SUSP;
 			__SLEEP(_text);
 			if (__CHECK_EXIT_COND) exitWith {};
 
@@ -147,10 +161,57 @@ switch (_mode) do {
 				"Very good, thanks, bye"
 			];
 			[player,_text, _civ] call  Dialog_fnc_hud_createSentence;
+			__BOOST_SUSP;
 		};
 	};
 
 	case "agitate": {
+		// Mark him as he is talking now
+		_civ setVariable [CP_VAR_IS_TALKING, true, true]; // Broadcast that to everyone
+
+		// Player suggests to join the rebels
+		pr _text = selectRandom [
+			"Hey man, consider joining the rebellion, we need you",
+			"You know there's a rebel movement, right? Would you like to join?",
+			"The rebel movement needs people like you",
+			"Join the rebels if you want to liberate this place"
+		];
+		[player,_text, _civ] call  Dialog_fnc_hud_createSentence;
+		__BOOST_SUSP;
+
+		__SLEEP(_text);
+		if (__CHECK_EXIT_COND) exitWith {};
+
+		if (!(_civ getVariable [CP_VAR_AGITATED, false])) then { // If not agitated yet
+
+			pr _text = selectRandom [
+				"Allright, I will think about it",
+				"Yeah, I'm tired of these nazis, I'll consider joining",
+				"Thanks, I'll keep it in mind",
+				"I will join some time later, thanks",
+				"I have nothing to lose any more... sure..."
+			];
+			[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
+			__BOOST_SUSP;
+
+			__SLEEP(_text);
+			if (__CHECK_EXIT_COND) exitWith {};
+
+			// Now unit is agitated and suspicious
+			_civ setVariable [CP_VAR_AGITATED, true, true];
+			_civ setVariable ["bSuspicious", true, true];
+			// Also increase activity in the city
+			CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getPos player ARG (7+random(7))]);
+			} else {
+				pr _text = selectRandom [
+					"Sure, I know about that already",
+					"I already know about it, thanks",
+					"I have already heard about it, yes",
+					"Yes, I know it already"
+				];
+				[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
+				__BOOST_SUSP;
+		};
 
 	};
 };
@@ -158,7 +219,9 @@ switch (_mode) do {
 
 //remove player from list so unit can walk again
 // Must call it on the server
-[_civ, player, false] remoteExecCall ["CivPresence_fnc_talkToServer", 2];
+//if (_civ getVariable CP_VAR_IS_TALKING) then {
+	[_civ, player, false] remoteExecCall ["CivPresence_fnc_talkToServer", 2];
+//};
 
 // Unit is not talking any more
 _civ setVariable [CP_VAR_IS_TALKING, false, true]; // Broadcast that to everyone

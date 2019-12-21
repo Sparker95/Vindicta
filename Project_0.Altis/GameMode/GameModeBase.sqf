@@ -1093,6 +1093,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		WEST
 	} ENDMETHOD;
 
+	/* public virtual */ METHOD("getEnemySide") {
+		independent
+	} ENDMETHOD;
+
 	METHOD("doSpawning") {
 		params [P_THISOBJECT];
 
