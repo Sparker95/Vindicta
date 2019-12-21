@@ -60,7 +60,7 @@ switch (_mode) do {
 				pr _typeString = CALLSM1("Location", "getTypeString", _type);
 				pr _bearingString = _bearings select _bearingID;
 				pr _distanceString = if(_distance < 400) then {
-					["very close", "within 400 meters", "right over here", "five-minute walk from here"]
+					selectRandom ["very close", "within 400 meters", "right over here", "five-minute walk from here"]
 				} else {
 					if (_distance < 1000) then {
 						selectRandom ["not far away", "within a kilometer", "within a mile", "10-minute walk from here"];
@@ -78,7 +78,20 @@ switch (_mode) do {
 											"Long time ago there was a",
 											"Not sure about the coordinates, there is a"];
 
-				pr _text = format ["%1 %2 to the %3, %4", _intro, _typeString, _bearingString, _distanceString];
+				pr _posString = if (_type == LOCATION_TYPE_POLICE_STATION) then {
+					pr _locCities = CALLSM1("Location", "getLocationsAtPos", _locPos) select {
+						CALLM0(_x, "getType") == LOCATION_TYPE_CITY
+					};
+					if (count _locCities > 0) then {
+						format ["at %1", CALLM0(_locCities select 0, "getName")];
+					} else {
+						format ["to the %1", _bearingString];
+					};
+				} else {
+					format ["to the %1", _bearingString];
+				};
+
+				pr _text = format ["%1 %2 %3, %4", _intro, _typeString, _posString, _distanceString];
 				[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
 
 				// Also reveal the location to player's side
@@ -98,6 +111,7 @@ switch (_mode) do {
 					case LOCATION_TYPE_CAMP: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
 					case LOCATION_TYPE_BASE: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
 					case LOCATION_TYPE_OUTPOST: {_updateLevel = CLD_UPDATE_LEVEL_TYPE_UNKNOWN; _accuracyRadius = 50+_dist*_distCoeff; };
+					case LOCATION_TYPE_AIRPORT: {_updateLevel = CLD_UPDATE_LEVEL_SIDE; _accuracyRadius = 50+_dist*_distCoeff; };
 				};
 
 				if (_updateLevel != -666) then {
