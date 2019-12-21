@@ -46,6 +46,9 @@ else
 //make backlink to the core module
 _unit setVariable ["#core",_module];
 
+// Initialize variables
+[_unit] call CivPresence_fnc_initUnitDialogVariables;
+
 _unit setBehaviour "CARELESS";
 _unit spawn (_module getVariable ["#onCreated",{}]);
 _unit execFSM "CivilianPresence\FSM\behavior.fsm";

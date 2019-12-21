@@ -116,11 +116,12 @@ NEW("UndercoverMonitor", [_newUnit]);
 pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
     private _civ = cursorObject;
     (!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
+    && {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 };
 
 
-_newUnit addAction ["Talk to civilian", // title
-                 "cursorObject spawn CivPresence_fnc_talkTo", // Script
+_newUnit addAction ["Ask civilian for intel", // title
+                 "[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  9000, // Priority
                  true, // ShowWindow
@@ -144,6 +145,7 @@ NEW("SoundMonitor", [_newUnit]);
 
 CALLM(gGameMode, "playerSpawn", _this);
 
+
 // Action to start building stuff
 _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from location"], // title
                  {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
@@ -158,6 +160,7 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
                  "", //selection
                  ""]; //memoryPoint
 
+
 // Action to start building stuff
 _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from inventory"], // title
                  {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
@@ -171,6 +174,7 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
                  false, //unconscious
                  "", //selection
                  ""]; //memoryPoint
+
 
 // Action to attach units to garrison
 pr0_fnc_attachUnitCond = {
