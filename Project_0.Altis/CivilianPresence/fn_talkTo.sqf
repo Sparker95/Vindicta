@@ -1,4 +1,4 @@
-#include "..\CivilianPresence\CivilianPresence.hpp"
+#include "..\CivilianPresence\common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 
 #define pr private

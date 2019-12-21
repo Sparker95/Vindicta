@@ -1,4 +1,4 @@
-#include "CivilianPresence.hpp"
+#include "common.hpp"
 
 //Slowly starts to spawn in civilians in the area
 

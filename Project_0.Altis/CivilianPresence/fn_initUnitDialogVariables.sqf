@@ -1,4 +1,4 @@
-#include "CivilianPresence.hpp"
+#include "common.hpp"
 #include "..\OOP_Light\OOP_Light.h"
 
 // Initializes stuff unit knows about, willing to talk about, and other variables related to dialogs
