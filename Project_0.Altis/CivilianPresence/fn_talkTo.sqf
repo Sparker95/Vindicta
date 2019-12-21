@@ -4,7 +4,7 @@
 #define pr private
 
 // Bail-out confition, if someone dies or whatever
-#define __CHECK_EXIT_COND ((!alive _civ) || (!alive player))
+#define __CHECK_EXIT_COND ((!alive _civ) || (!alive player) || ( (player distance _civ) > 10))
 
 // Each character adds this amount of time of sleep between sentences
 #define SLEEP_TIME_COEFF 0.0625
