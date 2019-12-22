@@ -11,7 +11,8 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 6
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE (60*60)
+// Note that it must be below 60
+#define TARGET_MAX_AGE_MINUTES 3
 
 // ---- Debugging defines ----
 
@@ -71,13 +72,13 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		// Delete old and destroyed targets
 		pr _AI = GETV(_thisObject, "AI");
 		if (count _knownTargets > 0) then {
-			pr _t = time;
-			
+			pr _dateNumber = dateToNumber date;
+			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0,TARGET_MAX_AGE_MINUTES];
 			_deletedTargets append (
 				// Currently cmdr does not forget destroyed targets
 				// We can't call any methods on enemy units because we do not own them
 				_knownTargets select {
-					((_t - (_x select TARGET_COMMANDER_ID_TIME)) > TARGET_MAX_AGE)
+					((_dateNumber - (_x select TARGET_COMMANDER_ID_DATE_NUMBER)) > _dateNumberThreshold)
 				}
 			);
 			
@@ -161,7 +162,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 				_objEff = _x select TARGET_COMMANDER_ID_EFFICIENCY;
 				_eff = EFF_ADD(_eff, _objEff);
 
-				_time = _x select TARGET_COMMANDER_ID_TIME;
+				_time = _x select TARGET_COMMANDER_ID_DATE_NUMBER;
 				if (_time > _maxTime) then { _maxTime = _time; };
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
@@ -439,7 +440,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _newCommanderTarget = TARGET_COMMANDER_NEW(_unit,
 												_x select TARGET_ID_KNOWS_ABOUT,
 												_x select TARGET_ID_POS,
-												_x select TARGET_ID_TIME,
+												_x select TARGET_ID_DATE_NUMBER,
 												_x select TARGET_ID_EFFICIENCY,
 												[_sourceGarrison]);
 					
@@ -461,13 +462,13 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _targetExisting = _knownTargets select _index;
 					
 					// Check time the target was previously spotted
-					pr _timeNew = _x select TARGET_ID_TIME;
-					pr _timePrev = _targetExisting select TARGET_ID_TIME;
+					pr _timeNew = _x select TARGET_ID_DATE_NUMBER;
+					pr _timePrev = _targetExisting select TARGET_ID_DATE_NUMBER;
 					// Is the new report newer than the old record?
 					if (_timeNew > _timePrev) then {
 						// Update the old record
 						_targetExisting set [TARGET_COMMANDER_ID_POS, _x select TARGET_ID_POS];
-						_targetExisting set [TARGET_COMMANDER_ID_TIME, _timeNew];
+						_targetExisting set [TARGET_COMMANDER_ID_DATE_NUMBER, _timeNew];
 						_targetExisting set [TARGET_COMMANDER_ID_KNOWS_ABOUT, _x select TARGET_ID_KNOWS_ABOUT];
 						(_targetExisting select TARGET_COMMANDER_ID_OBSERVED_BY) pushBackUnique _sourceGarrison;
 					};

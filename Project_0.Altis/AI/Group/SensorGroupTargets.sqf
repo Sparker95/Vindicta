@@ -141,6 +141,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 					};
 					// Have we spotted anyone??
 					if (count _observedTargets > 0) then {
+						pr _dateNumber = dateToNumber date;
 						// Add 1 to age since its lowest value is -1};
 						_observedTargets = _observedTargets apply {
 							pr _hO = _x select 1;
@@ -150,7 +151,7 @@ CLASS("SensorGroupTargets", "SensorGroupStimulatable")
 								_unit = format ["unknown %1", _hO];
 								_eff = +(T_efficiency#T_INF#T_INF_rifleman);
 							};
-							TARGET_NEW(_unit, _hG knowsAbout _hO,  _x select 4, time-(_x select 5)+1, +_eff)
+							TARGET_NEW(_unit, _hG knowsAbout _hO,  _x select 4, _dateNumber, +_eff)
 						};
 					
 						#ifdef PRINT_SPOTTED_TARGETS

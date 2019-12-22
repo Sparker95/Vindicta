@@ -11,7 +11,8 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 5
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE 120
+// note that it must be lower than 60 !
+#define TARGET_MAX_AGE_MINUTES 2
 
 // ---- Debugging defines ----
 
@@ -44,10 +45,11 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 		pr _targetsToForget = [];
 		if (count _knownTargets > 0) then {
 			pr _i = 0;
-			pr _t = time;
+			pr _dateNumber = dateToNumber date;
+			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0,TARGET_MAX_AGE_MINUTES];
 			while {_i < count _knownTargets} do {
 				pr _target = _knownTargets select _i;
-				if ( ((_t - (_target select TARGET_ID_TIME)) > TARGET_MAX_AGE) // || 
+				if ( ((_dateNumber - (_target select TARGET_ID_DATE_NUMBER)) > _dateNumberThreshold) // || 
 						/* (!alive (_target select TARGET_ID_UNIT) */ )   then { // todo need to solve how to make us forget destroyed targets
 					_knownTargets deleteAt _i;
 					_targetsToForget pushBack _target;
@@ -205,12 +207,12 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 					pr _targetExisting = _knownTargets select _index;
 					
 					// Check time the target was previously spotted
-					pr _timeNew = _x select TARGET_ID_TIME;
-					pr _timePrev = _targetExisting select TARGET_ID_TIME;
+					pr _dateNumberNew = _x select TARGET_ID_DATE_NUMBER;
+					pr _dateNumberPrev = _targetExisting select TARGET_ID_DATE_NUMBER;
 					// Is the new report newer than the old record?
-					if (_timeNew > _timePrev) then {
+					if (_dateNumberNew > _dateNumberPrev) then {
 						_targetExisting set [TARGET_ID_POS, _x select TARGET_ID_POS];
-						_targetExisting set [TARGET_ID_TIME, _timeNew];
+						_targetExisting set [TARGET_ID_DATE_NUMBER, _dateNumberNew];
 						_targetExisting set [TARGET_ID_KNOWS_ABOUT, TARGET_ID_KNOWS_ABOUT];
 					};
 				};
