@@ -154,7 +154,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			// Calculate max spotted time of each cluster
 			// Check who targets in this cluster are observed by
 			pr _eff = +T_EFF_null; // Empty efficiency vector
-			pr _maxTime = 0;
+			pr _maxDateNumber = 0;
 			pr _observedBy = [];
 			pr _clusterTargets = _x select CLUSTER_ID_OBJECTS;
 			{
@@ -162,8 +162,8 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 				_objEff = _x select TARGET_COMMANDER_ID_EFFICIENCY;
 				_eff = EFF_ADD(_eff, _objEff);
 
-				_time = _x select TARGET_COMMANDER_ID_DATE_NUMBER;
-				if (_time > _maxTime) then { _maxTime = _time; };
+				_dateNumber = _x select TARGET_COMMANDER_ID_DATE_NUMBER;
+				if (_dateNumber > _maxDateNumber) then { _maxDateNumber = _dateNumber; };
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
 			} forEach _clusterTargets;
@@ -174,7 +174,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			_newTC set [TARGET_CLUSTER_ID_EFFICIENCY, _eff];
 			_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, +T_EFF_null]; // Not used any more
 			_newTC set [TARGET_CLUSTER_ID_OBSERVED_BY, _observedBy];
-			_newTC set [TARGET_CLUSTER_ID_MAX_TIME, _maxTime];
+			_newTC set [TARGET_CLUSTER_ID_MAX_DATE_NUMBER, _maxDateNumber];
 			
 			// Check affinity of this new cluster, propagate damage from old clusters to new clusters
 			pr _affinityRow = _affinity select _newTargetClusterIndex; // This row in affinity matrix shows affinity of this new target cluster with every old target cluster

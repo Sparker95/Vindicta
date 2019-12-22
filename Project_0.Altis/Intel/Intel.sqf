@@ -802,6 +802,10 @@ CLASS("IntelCluster", "Intel")
 	Efficiency vector, only useful for commander */
 	VARIABLE_ATTR("efficiency", [ATTR_SERIALIZABLE]);
 
+	/* variable: dateNumberLastSpotted
+	(dateToNumber date) when any unit from this cluster was seen last time */
+	VARIABLE_ATTR("dateNumberLastSpotted", [ATTR_SERIALIZABLE]);
+
 	/* variable: pos1
 	Bottom-left pos of the cluster*/
 	VARIABLE_ATTR("pos1", [ATTR_SERIALIZABLE]);
@@ -890,6 +894,14 @@ CLASS("IntelCluster", "Intel")
 		if ((_eff#T_EFF_medium > 0) || (_eff#T_EFF_armor > 0)) then {_text = _text + "Armor "};
 		if (_eff#T_EFF_air > 0) then {_text = _text + "Air "};
 		if (_eff#T_EFF_water > 0) then {_text = _text + "Water "};
+
+		pr _dateNumberLastSpotted = T_GETV("dateNumberLastSpotted");
+		pr _dateNumberDiff = (dateToNumber date) - _dateNumberLastSpotted;
+		pr _dateDiff = numberToDate [date#0, _dateNumberDiff];
+		pr _minutes = (_dateDiff#4) + 60*(_dateDiff#3);
+
+		// Add age text
+		_text = _text + (format [", %1 min. ago", _minutes]);
 
 		// Set center marker properties
 		_mrkName setMarkerPosLocal _pos;
