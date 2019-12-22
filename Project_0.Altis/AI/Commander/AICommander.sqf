@@ -933,22 +933,21 @@ CLASS("AICommander", "AI")
 		_nextID
 	} ENDMETHOD;
 		
-	// // /*
-	// // Method: onTargetClusterCreated
-	// // Gets called on creation of a totally new target cluster
+	/*
+	Method: onTargetClusterCreated
+	Gets called on creation of a totally new target cluster
+	Parameters: _tc
 	
-	// // Parameters: _tc
+	_ID - the new target cluster ID (must already exist in the cluster array)
 	
-	// // _ID - the new target cluster ID (must already exist in the cluster array)
-	
-	// // Returns: nil
-	// // */
-	// METHOD("onTargetClusterCreated") {
-	// 	params ["_thisObject", "_ID"];
-	// 	OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
-	// 	T_PRVAR(worldModel);
-	// 	NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
-	// } ENDMETHOD;
+	Returns: nil
+	*/
+	METHOD("onTargetClusterCreated") {
+		params ["_thisObject", "_ID"];
+		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
+		//T_PRVAR(worldModel);
+		//NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
+	} ENDMETHOD;
 
 	/*
 	Method: onTargetClusterSplitted

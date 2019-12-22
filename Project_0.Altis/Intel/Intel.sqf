@@ -791,6 +791,122 @@ CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 	} ENDMETHOD;
 ENDCLASS;
 
+
+/*
+Class: Intel.IntelCluster
+Intel about cluster with spotted enemies
+*/
+CLASS("IntelCluster", "Intel")
+
+	/* variable: efficiency
+	Efficiency vector, only useful for commander */
+	VARIABLE_ATTR("efficiency", [ATTR_SERIALIZABLE]);
+
+	/* variable: pos1
+	Bottom-left pos of the cluster*/
+	VARIABLE_ATTR("pos1", [ATTR_SERIALIZABLE]);
+
+	/* variable: pos2
+	Top-right pos of the cluster*/
+	VARIABLE_ATTR("pos2", [ATTR_SERIALIZABLE]);
+
+	METHOD("clientAdd") {
+		params [P_THISOBJECT];
+
+		// Create map marker
+		pr _mrkName = _thisObject + "_mrk";
+		pr _mrkAreaName = _thisObject + "_mrkArea";
+
+		// Create center marker
+		createMarkerLocal [_mrkName, [0, 0, 0]];
+		_mrkName setMarkerShapeLocal "ICON";
+		_mrkName setMarkerColorLocal "colorRed";
+		_mrkName setMarkerAlphaLocal 1.0;
+		_mrkName setMarkerTypeLocal "Warning";
+
+		// Create area marker
+		createMarkerLocal [_mrkAreaName, [0, 0, 0]];
+		_mrkName setMarkerSizeLocal [50, 50];
+		_mrkName setMarkerShapeLocal "ELLIPSE";
+		_mrkName setMarkerBrushLocal "SolidBorder";
+		_mrkName setMarkerColorLocal "colorRed";
+		_mrkName setMarkerAlphaLocal 0.3;
+
+		CALLSM1("IntelCluster", "setMarkerProperties", _thisObject);
+
+	} ENDMETHOD;
+
+	/*
+	Method: clientUpdate
+	Gets called on client when this intel item is updated. It should update data in UI, map, other systems.
+	!! You don't need to copy member variables here manually !! They will be copied automatically by database methods.
+	Just update necessary data of map markers and other things if you need.
+
+	Parameters: _intelSrc
+
+	_intelSrc - the the <Intel> item where values will be copied from
+
+	Returns: nil
+	*/
+	// 
+	// _intelSrc - the source <Intel> item where values will be retrieved from
+	METHOD("clientUpdate") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
+
+		CALLSM1("IntelCluster", "setMarkerProperties", _intelSrc);
+	} ENDMETHOD;
+
+	/*
+	Method: clientRemove
+	Gets called on client before this intel item is deleted.
+	It should unregister itself from UI, map, other systems.
+
+	Returns: nil
+	*/
+	METHOD("clientRemove") {
+		params [P_THISOBJECT];
+
+		// Delete area and central marker
+		pr _mrkName = _thisObject + "_mrk";
+		pr _mrkAreaName = _thisObject + "_mrkArea";
+		deleteMarkerLocal _mrkName;
+
+	} ENDMETHOD;
+
+	STATIC_METHOD("setMarkerProperties") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+
+		pr _mrkName = _intel + "_mrk";
+		pr _mrkAreaName = _intel + "_mrkArea";
+
+		// Get center position from border positions
+		pr _pos1 = GETV(_intel, "pos1");
+		pr _pos2 = GETV(_intel, "pos2");
+		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
+
+		pr _eff = GETV(_intel, "efficiency");
+		pr _text = "Enemy ";
+		if (_eff#T_EFF_crew > 0) then {_text = _text + "Infantry "};
+		if ((_eff#T_EFF_medium > 0) || (_eff#T_EFF_armor > 0)) then {_text = _text + "Armor "};
+		if (_eff#T_EFF_air > 0) then {_text = _text + "Air "};
+		if (_eff#T_EFF_water > 0) then {_text = _text + "Water "};
+
+		// Set center marker properties
+		_mrkName setMarkerPosLocal _pos;
+		_mrkName setMarkerTextLocal _text;
+		
+		// Get width and height of marker
+		pr _a = 0.5*(_pos2#0 - _pos1#0);
+		pr _b = 0.5*(_pos2#1 - _pos1#1);
+
+		// Set area marker properties
+		_mrkAreaName setMarkerPosLocal _pos;
+		_mrkAreaName setMarkerSizeLocal [_a min 30, _b min 30];
+
+	} ENDMETHOD;
+
+ENDCLASS;
+
 // - - - - TESTS - - - - 
 #ifdef _SQF_VM
 
