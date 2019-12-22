@@ -110,6 +110,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			_clustersEfficiency pushBack _eff;
 		} forEach _newClusters;
 		*/
+
+		// Calculate max time of each cluster
+
 		
 		// Calculate affinity of clusters
 		// Affinity shows how many units from every previous cluster are in every new cluster
@@ -147,14 +150,19 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _newTargetClusterIndex = _forEachIndex;
 			
 			// Calculate the efficiency vector of each cluster
+			// Calculate max spotted time of each cluster
 			// Check who targets in this cluster are observed by
 			pr _eff = +T_EFF_null; // Empty efficiency vector
+			pr _maxTime = 0;
 			pr _observedBy = [];
 			pr _clusterTargets = _x select CLUSTER_ID_OBJECTS;
 			{
 				_unit = _x select TARGET_COMMANDER_ID_UNIT;
 				_objEff = _x select TARGET_COMMANDER_ID_EFFICIENCY;
 				_eff = EFF_ADD(_eff, _objEff);
+
+				_time = _x select TARGET_COMMANDER_ID_TIME;
+				if (_time > _maxTime) then { _maxTime = _time; };
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
 			} forEach _clusterTargets;
@@ -163,8 +171,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			_newTC set [TARGET_CLUSTER_ID_ID, -1]; // Set invalid ID first
 			_newTC set [TARGET_CLUSTER_ID_CLUSTER, _x];
 			_newTC set [TARGET_CLUSTER_ID_EFFICIENCY, _eff];
-			_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, +T_EFF_null];
+			_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, +T_EFF_null]; // Not used any more
 			_newTC set [TARGET_CLUSTER_ID_OBSERVED_BY, _observedBy];
+			_newTC set [TARGET_CLUSTER_ID_MAX_TIME, _maxTime];
 			
 			// Check affinity of this new cluster, propagate damage from old clusters to new clusters
 			pr _affinityRow = _affinity select _newTargetClusterIndex; // This row in affinity matrix shows affinity of this new target cluster with every old target cluster
@@ -274,6 +283,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 							_newTC set [TARGET_CLUSTER_ID_ID, _ID];
 							
 							OOP_INFO_1("New target cluster inherits from old cluster with ID: %1", _ID);
+							CALLM1(_AI, "onTargetClusterUpdated", _newTC);
 						};
 						_i = _i + 1;
 					};

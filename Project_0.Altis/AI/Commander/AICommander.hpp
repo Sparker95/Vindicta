@@ -13,7 +13,10 @@
 // Array with garrisons that observe this target cluster
 #define TARGET_CLUSTER_ID_OBSERVED_BY	4
 
-#define TARGET_CLUSTER_NEW() [nil, nil, nil, nil, nil]
+// Max time of all observed targets (max time when they were last spotted)
+#define TARGET_CLUSTER_ID_MAX_TIME 5
+
+#define TARGET_CLUSTER_NEW() [nil, nil, nil, nil, nil, nil]
 
 // Minimum distance for enemy clusters before they are merged into one cluster
 #define TARGETS_CLUSTER_DISTANCE_MIN	500

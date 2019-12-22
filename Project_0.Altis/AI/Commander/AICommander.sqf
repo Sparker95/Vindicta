@@ -1022,6 +1022,15 @@ CLASS("AICommander", "AI")
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
 		
 	} ENDMETHOD;
+
+	/*
+	Method: onTargetClusterUpdated
+	Gets called on update of a target cluster.
+	*/
+	METHOD("onTargetClusterUpdated") {
+		params [P_THISOBJECT, "_tc"];
+		
+	} ENDMETHOD;
 	
 	/*
 	Method: getTargetCluster
