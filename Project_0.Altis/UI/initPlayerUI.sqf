@@ -33,3 +33,6 @@ gBuildUI = NEW("BuildUI", []);
 		false
 	};
 }];
+
+// Update player markers
+[ui_fnc_updatePlayerMarkers, 0, 1] call CBA_fnc_waitAndExecute;
