@@ -210,7 +210,9 @@ CLASS("AICommander", "AI")
 		#endif
 
 		// Consider bringing more units into the map
-		T_CALLM0("updateExternalReinforcement");
+		if(T_GETV("planningEnabled")) then {
+			T_CALLM0("updateExternalReinforcement");
+		};
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -2145,7 +2147,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT];
 
 		// Bail if it's not time to consider reinforcement yet...
-		if ( ( (dateToNumber date) - (dateToNumber T_GETV("datePrevExtReinf")) ) < (dateToNumber CMDR_EXT_REINF_INTERVAL) ) exitWith {
+		pr _datePrevReinf = T_GETV("datePrevExtReinf");
+		pr _dateNextReinf = +_datePrevReinf;
+		_dateNextReinf set [4, _dateNextReinf#4 + CMDR_EXT_REINF_INTERVAL_MINUTES];
+		if ( (dateToNumber date) < (dateToNumber _dateNextReinf) ) exitWith {
 		};
 
 		OOP_INFO_0("UPDATE EXTERNAL REINFORCEMENT");
