@@ -77,4 +77,17 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
+	STATIC_METHOD("createSpottedTargets") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+
+		private _sound = "defaultNotification";
+		private _picture = ""; // Default picture for now
+		private _duration = 30;
+		private _category = "ENEMY SPOTTED";
+		private _text = format ["Friendly forces have detected enemies at %1", mapGridPosition _pos];
+		private _hint = "Check map for more info"; // Override hint!
+		private _args = [_picture, _category, _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
 ENDCLASS;

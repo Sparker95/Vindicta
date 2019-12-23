@@ -943,8 +943,19 @@ CLASS("AICommander", "AI")
 	Returns: nil
 	*/
 	METHOD("onTargetClusterCreated") {
-		params ["_thisObject", "_ID"];
-		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
+		params ["_thisObject", "_tcNew"];
+		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _tcNew#TARGET_CLUSTER_ID_ID);
+
+		// Create intel for the new cluster, add it to intel db
+		pr _intel = _tcNew select TARGET_CLUSTER_ID_INTEL;
+		if (IS_NULL_OBJECT(_intel)) then {
+			_intel = NEW("IntelCluster", []);
+			CALLSM2("AICommander", "setIntelClusterProperties", _intel, _tcNew);
+			pr _inteldb = T_GETV("intelDB");
+			CALLM1(_inteldb, "addIntel", _intel);
+			_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
+		};
+
 		//T_PRVAR(worldModel);
 		//NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
 	} ENDMETHOD;
@@ -975,6 +986,26 @@ CLASS("AICommander", "AI")
 		T_PRVAR(worldModel);
 		// Retarget in the model
 		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _newClusterID]]);
+
+		// Delete intel assigned to old target cluster
+		pr _inteldb = T_GETV("intelDB");
+		pr _intel = _tcOld select TARGET_CLUSTER_ID_INTEL;
+		if (!IS_NULL_OBJECT(_intel)) then {
+			CALLM1(_inteldb, "removeIntel", _intel);
+			DELETE(_intel);
+			_tcOld set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
+		};
+
+		// Create intel for new target clusters
+		{
+			pr _intel = _x select TARGET_CLUSTER_ID_INTEL;
+			if (IS_NULL_OBJECT(_intel)) then {
+				_intel = NEW("IntelCluster", []);
+				CALLSM2("AICommander", "setIntelClusterProperties", _intel, _x);
+				CALLM1(_inteldb, "addIntel", _intel);
+				_x set [TARGET_CLUSTER_ID_INTEL, _intel];
+			};
+		} forEach _tcsNew;
 	} ENDMETHOD;	
 
 	/*
@@ -1003,6 +1034,25 @@ CLASS("AICommander", "AI")
 			CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _IDnew]]);
 		} forEach _IDsOld;
 
+		// Delete intel at old clusters
+		pr _inteldb = T_GETV("intelDB");
+		{
+			pr _intel = _x select TARGET_CLUSTER_ID_INTEL;
+			if (!IS_NULL_OBJECT(_intel)) then {
+				CALLM1(_inteldb, "removeIntel", _intel);
+				DELETE(_intel);
+				_x set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
+			};
+		} forEach _tcsOld;
+
+		// Create intel for the new cluster
+		pr _intel = NEW("IntelCluster", []);
+		if (IS_NULL_OBJECT(_intel)) then {
+			CALLSM2("AICommander", "setIntelClusterProperties", _intel, _tcNew);
+			CALLM1(_inteldb, "addIntel", _intel);
+			_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
+		};
+
 	} ENDMETHOD;
 	
 	/*
@@ -1021,6 +1071,14 @@ CLASS("AICommander", "AI")
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
 		
+		// Delete intel
+		pr _intel = _tc select TARGET_CLUSTER_ID_INTEL;
+		if(!IS_NULL_OBJECT(_intel)) then {
+			pr _inteldb = T_GETV("intelDB");
+			CALLM1(_inteldb, "removeIntel", _intel);
+			DELETE(_intel);
+			_tc set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
+		};
 	} ENDMETHOD;
 
 	/*
@@ -1030,6 +1088,18 @@ CLASS("AICommander", "AI")
 	METHOD("onTargetClusterUpdated") {
 		params [P_THISOBJECT, "_tc"];
 		
+		OOP_INFO_1("ON TARGET CLUSTER UPDATED: ID: %1", _tc select TARGET_CLUSTER_ID_ID);
+
+		// Update intel
+		pr _intel = _tc select TARGET_CLUSTER_ID_INTEL;
+		if (!IS_NULL_OBJECT(_intel)) then {
+			pr _inteldb = T_GETV("intelDB");
+			pr _intelNew = NEW("IntelCluster", []);
+			CALLSM2("AICommander", "setIntelClusterProperties", _intelNew, _tc);
+			OOP_INFO_2("  updating cluster intel %1 from %2", _intel, _intelNew);
+			CALLM2(_inteldb, "updateIntel", _intel, _intelNew);
+			DELETE(_intelNew);
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -1054,6 +1124,16 @@ CLASS("AICommander", "AI")
 		} forEach _targetClusters;
 		
 		_ret
+	} ENDMETHOD;
+
+	// Sets properties of IntelCluster from an actual TARGET_CLUSTER
+	STATIC_METHOD("setIntelClusterProperties") {
+		PARAMS[P_THISCLASS, P_OOP_OBJECT("_intel"), P_DYNAMIC("_targetCluster")];
+
+		SETV(_intel, "efficiency", +(_targetCluster#TARGET_CLUSTER_ID_EFFICIENCY));
+		SETV(_intel, "dateNumberLastSpotted", _targetCluster#TARGET_CLUSTER_ID_MAX_DATE_NUMBER);
+		SETV(_intel, "pos1", [_targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_X1 ARG _targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_Y1]);
+		SETV(_intel, "pos2", [_targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_X2 ARG _targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_Y2]);
 	} ENDMETHOD;
 	
 	/*

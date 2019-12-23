@@ -67,7 +67,7 @@ CLASS("Intel", "Storable")
 	METHOD("new") {
 		params ["_thisObject"];
 
-		//OOP_INFO_0("NEW");
+		OOP_INFO_0("NEW");
 	} ENDMETHOD;
 
 	/*
@@ -77,6 +77,7 @@ CLASS("Intel", "Storable")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
+		OOP_INFO_0("DELETE");
 	} ENDMETHOD;
 	
 
@@ -826,18 +827,24 @@ CLASS("IntelCluster", "Intel")
 		_mrkName setMarkerShapeLocal "ICON";
 		_mrkName setMarkerColorLocal "colorRed";
 		_mrkName setMarkerAlphaLocal 1.0;
-		_mrkName setMarkerTypeLocal "Warning";
+		_mrkName setMarkerTypeLocal "mil_warning";
 
 		// Create area marker
 		createMarkerLocal [_mrkAreaName, [0, 0, 0]];
-		_mrkName setMarkerSizeLocal [50, 50];
-		_mrkName setMarkerShapeLocal "ELLIPSE";
-		_mrkName setMarkerBrushLocal "SolidBorder";
-		_mrkName setMarkerColorLocal "colorRed";
-		_mrkName setMarkerAlphaLocal 0.3;
+		_mrkAreaName setMarkerSizeLocal [50, 50];
+		_mrkAreaName setMarkerShapeLocal "ELLIPSE";
+		_mrkAreaName setMarkerBrushLocal "SolidBorder";
+		_mrkAreaName setMarkerColorLocal "colorRed";
+		_mrkAreaName setMarkerAlphaLocal 0.3;
 
-		CALLSM1("IntelCluster", "setMarkerProperties", _thisObject);
+		T_CALLM1("setMarkerProperties", _thisObject);
 
+		// Create notification
+		// Get center position from border positions
+		pr _pos1 = GETV(_thisObject, "pos1");
+		pr _pos2 = GETV(_thisObject, "pos2");
+		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
+		CALLSM1("NotificationFactory", "createSpottedTargets", _pos);
 	} ENDMETHOD;
 
 	/*
@@ -857,7 +864,7 @@ CLASS("IntelCluster", "Intel")
 	METHOD("clientUpdate") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
 
-		CALLSM1("IntelCluster", "setMarkerProperties", _intelSrc);
+		T_CALLM1("setMarkerProperties", _intelSrc);
 	} ENDMETHOD;
 
 	/*
@@ -874,28 +881,30 @@ CLASS("IntelCluster", "Intel")
 		pr _mrkName = _thisObject + "_mrk";
 		pr _mrkAreaName = _thisObject + "_mrkArea";
 		deleteMarkerLocal _mrkName;
+		deleteMarkerLocal _mrkAreaName;
 
 	} ENDMETHOD;
 
-	STATIC_METHOD("setMarkerProperties") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel")];
+	// _intelSrc - the intel object where to take values from
+	METHOD("setMarkerProperties") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
 
-		pr _mrkName = _intel + "_mrk";
-		pr _mrkAreaName = _intel + "_mrkArea";
+		pr _mrkName = _thisObject + "_mrk";
+		pr _mrkAreaName = _thisObject + "_mrkArea";
 
 		// Get center position from border positions
-		pr _pos1 = GETV(_intel, "pos1");
-		pr _pos2 = GETV(_intel, "pos2");
+		pr _pos1 = GETV(_intelSrc, "pos1");
+		pr _pos2 = GETV(_intelSrc, "pos2");
 		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
 
-		pr _eff = GETV(_intel, "efficiency");
-		pr _text = "Enemy ";
+		pr _eff = GETV(_intelSrc, "efficiency");
+		pr _text = "  Enemy ";
 		if (_eff#T_EFF_crew > 0) then {_text = _text + "Infantry "};
 		if ((_eff#T_EFF_medium > 0) || (_eff#T_EFF_armor > 0)) then {_text = _text + "Armor "};
 		if (_eff#T_EFF_air > 0) then {_text = _text + "Air "};
 		if (_eff#T_EFF_water > 0) then {_text = _text + "Water "};
 
-		pr _dateNumberLastSpotted = T_GETV("dateNumberLastSpotted");
+		pr _dateNumberLastSpotted = GETV(_intelSrc, "dateNumberLastSpotted");
 		pr _dateNumberDiff = (dateToNumber date) - _dateNumberLastSpotted;
 		pr _dateDiff = numberToDate [date#0, _dateNumberDiff];
 		pr _minutes = (_dateDiff#4) + 60*(_dateDiff#3);
@@ -913,7 +922,7 @@ CLASS("IntelCluster", "Intel")
 
 		// Set area marker properties
 		_mrkAreaName setMarkerPosLocal _pos;
-		_mrkAreaName setMarkerSizeLocal [_a min 30, _b min 30];
+		_mrkAreaName setMarkerSizeLocal [_a + 50, _b + 50];
 
 	} ENDMETHOD;
 

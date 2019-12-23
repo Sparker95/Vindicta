@@ -39,7 +39,7 @@
 #define TARGET_COMMANDER_ID_UNIT			0 
 #define TARGET_COMMANDER_ID_KNOWS_ABOUT		1
 #define TARGET_COMMANDER_ID_POS				2
-#define TARGET_COMMANDER_ID_DATE_NUMBER			3
+#define TARGET_COMMANDER_ID_DATE_NUMBER		3
 #define TARGET_COMMANDER_ID_EFFICIENCY		4
 #define TARGET_COMMANDER_ID_OBSERVED_BY		5
 #define TARGET_COMMANDER_NEW(hO, knows, pos, time, eff, observedBy) [hO, knows, pos, time, eff, observedBy]

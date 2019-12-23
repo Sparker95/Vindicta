@@ -12,7 +12,7 @@ Author: Sparker 21.12.2018
 
 // Maximum age of target before it is deleted
 // Note that it must be below 60
-#define TARGET_MAX_AGE_MINUTES 3
+#define TARGET_MAX_AGE_MINUTES 50
 
 // ---- Debugging defines ----
 
@@ -282,6 +282,8 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 						if (_affinityRow select _i > 0) exitWith { // Found the old cluster this cluster is connected with
 							pr _ID = _targetClusters select _i select TARGET_CLUSTER_ID_ID; // Copy the ID fron old one to the new cluster
 							_newTC set [TARGET_CLUSTER_ID_ID, _ID];
+							pr _intel = _targetClusters select _i select TARGET_CLUSTER_ID_INTEL; // Copy intel from old cluster to new cluster
+							_newTC set [TARGET_CLUSTER_ID_INTEL, _intel];
 							
 							OOP_INFO_1("New target cluster inherits from old cluster with ID: %1", _ID);
 							CALLM1(_AI, "onTargetClusterUpdated", _newTC);
