@@ -11,7 +11,8 @@ Author: Sparker 21.12.2018
 #define UPDATE_INTERVAL 6
 
 // Maximum age of target before it is deleted
-#define TARGET_MAX_AGE (60*60)
+// Note that it must be below 60
+#define TARGET_MAX_AGE_MINUTES 50
 
 // ---- Debugging defines ----
 
@@ -71,13 +72,13 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 		// Delete old and destroyed targets
 		pr _AI = GETV(_thisObject, "AI");
 		if (count _knownTargets > 0) then {
-			pr _t = time;
-			
+			pr _dateNumber = dateToNumber date;
+			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0,TARGET_MAX_AGE_MINUTES];
 			_deletedTargets append (
 				// Currently cmdr does not forget destroyed targets
 				// We can't call any methods on enemy units because we do not own them
 				_knownTargets select {
-					((_t - (_x select TARGET_COMMANDER_ID_TIME)) > TARGET_MAX_AGE)
+					((_dateNumber - (_x select TARGET_COMMANDER_ID_DATE_NUMBER)) > _dateNumberThreshold)
 				}
 			);
 			
@@ -110,6 +111,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			_clustersEfficiency pushBack _eff;
 		} forEach _newClusters;
 		*/
+
+		// Calculate max time of each cluster
+
 		
 		// Calculate affinity of clusters
 		// Affinity shows how many units from every previous cluster are in every new cluster
@@ -147,14 +151,19 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			pr _newTargetClusterIndex = _forEachIndex;
 			
 			// Calculate the efficiency vector of each cluster
+			// Calculate max spotted time of each cluster
 			// Check who targets in this cluster are observed by
 			pr _eff = +T_EFF_null; // Empty efficiency vector
+			pr _maxDateNumber = 0;
 			pr _observedBy = [];
 			pr _clusterTargets = _x select CLUSTER_ID_OBJECTS;
 			{
 				_unit = _x select TARGET_COMMANDER_ID_UNIT;
 				_objEff = _x select TARGET_COMMANDER_ID_EFFICIENCY;
 				_eff = EFF_ADD(_eff, _objEff);
+
+				_dateNumber = _x select TARGET_COMMANDER_ID_DATE_NUMBER;
+				if (_dateNumber > _maxDateNumber) then { _maxDateNumber = _dateNumber; };
 				
 				{_observedBy pushBackUnique _x} forEach (_x select TARGET_COMMANDER_ID_OBSERVED_BY);
 			} forEach _clusterTargets;
@@ -163,8 +172,9 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 			_newTC set [TARGET_CLUSTER_ID_ID, -1]; // Set invalid ID first
 			_newTC set [TARGET_CLUSTER_ID_CLUSTER, _x];
 			_newTC set [TARGET_CLUSTER_ID_EFFICIENCY, _eff];
-			_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, +T_EFF_null];
+			_newTC set [TARGET_CLUSTER_ID_CAUSED_DAMAGE, +T_EFF_null]; // Not used any more
 			_newTC set [TARGET_CLUSTER_ID_OBSERVED_BY, _observedBy];
+			_newTC set [TARGET_CLUSTER_ID_MAX_DATE_NUMBER, _maxDateNumber];
 			
 			// Check affinity of this new cluster, propagate damage from old clusters to new clusters
 			pr _affinityRow = _affinity select _newTargetClusterIndex; // This row in affinity matrix shows affinity of this new target cluster with every old target cluster
@@ -264,7 +274,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					_newTC set [TARGET_CLUSTER_ID_ID, _ID];
 					//ade_dumpcallstack;
 					// We don't register it here, the commander does it
-					//CALLM1(_AI, "onTargetClusterCreated", _newTC);
+					CALLM1(_AI, "onTargetClusterCreated", _newTC);
 				} else {
 					// It inherits from one old cluster, need to find what it inherits from
 					pr _i = 0;
@@ -272,8 +282,11 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 						if (_affinityRow select _i > 0) exitWith { // Found the old cluster this cluster is connected with
 							pr _ID = _targetClusters select _i select TARGET_CLUSTER_ID_ID; // Copy the ID fron old one to the new cluster
 							_newTC set [TARGET_CLUSTER_ID_ID, _ID];
+							pr _intel = _targetClusters select _i select TARGET_CLUSTER_ID_INTEL; // Copy intel from old cluster to new cluster
+							_newTC set [TARGET_CLUSTER_ID_INTEL, _intel];
 							
 							OOP_INFO_1("New target cluster inherits from old cluster with ID: %1", _ID);
+							CALLM1(_AI, "onTargetClusterUpdated", _newTC);
 						};
 						_i = _i + 1;
 					};
@@ -429,7 +442,7 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _newCommanderTarget = TARGET_COMMANDER_NEW(_unit,
 												_x select TARGET_ID_KNOWS_ABOUT,
 												_x select TARGET_ID_POS,
-												_x select TARGET_ID_TIME,
+												_x select TARGET_ID_DATE_NUMBER,
 												_x select TARGET_ID_EFFICIENCY,
 												[_sourceGarrison]);
 					
@@ -451,13 +464,13 @@ CLASS("SensorCommanderTargets", "SensorStimulatable")
 					pr _targetExisting = _knownTargets select _index;
 					
 					// Check time the target was previously spotted
-					pr _timeNew = _x select TARGET_ID_TIME;
-					pr _timePrev = _targetExisting select TARGET_ID_TIME;
+					pr _timeNew = _x select TARGET_ID_DATE_NUMBER;
+					pr _timePrev = _targetExisting select TARGET_ID_DATE_NUMBER;
 					// Is the new report newer than the old record?
 					if (_timeNew > _timePrev) then {
 						// Update the old record
 						_targetExisting set [TARGET_COMMANDER_ID_POS, _x select TARGET_ID_POS];
-						_targetExisting set [TARGET_COMMANDER_ID_TIME, _timeNew];
+						_targetExisting set [TARGET_COMMANDER_ID_DATE_NUMBER, _timeNew];
 						_targetExisting set [TARGET_COMMANDER_ID_KNOWS_ABOUT, _x select TARGET_ID_KNOWS_ABOUT];
 						(_targetExisting select TARGET_COMMANDER_ID_OBSERVED_BY) pushBackUnique _sourceGarrison;
 					};

@@ -13,7 +13,13 @@
 // Array with garrisons that observe this target cluster
 #define TARGET_CLUSTER_ID_OBSERVED_BY	4
 
-#define TARGET_CLUSTER_NEW() [nil, nil, nil, nil, nil]
+// Max time of all observed targets (max time when they were last spotted)
+#define TARGET_CLUSTER_ID_MAX_DATE_NUMBER 5
+
+// Intel object associated with this cluster
+#define TARGET_CLUSTER_ID_INTEL 6
+
+#define TARGET_CLUSTER_NEW() [nil, nil, nil, nil, nil, nil, ""]
 
 // Minimum distance for enemy clusters before they are merged into one cluster
 #define TARGETS_CLUSTER_DISTANCE_MIN	500
@@ -33,7 +39,7 @@
 #define TARGET_COMMANDER_ID_UNIT			0 
 #define TARGET_COMMANDER_ID_KNOWS_ABOUT		1
 #define TARGET_COMMANDER_ID_POS				2
-#define TARGET_COMMANDER_ID_TIME			3
+#define TARGET_COMMANDER_ID_DATE_NUMBER		3
 #define TARGET_COMMANDER_ID_EFFICIENCY		4
 #define TARGET_COMMANDER_ID_OBSERVED_BY		5
 #define TARGET_COMMANDER_NEW(hO, knows, pos, time, eff, observedBy) [hO, knows, pos, time, eff, observedBy]
@@ -136,7 +142,7 @@
 // Frequency of reinforcements, etc
 
 // How ofter commander will consider to import external reinforcements
-#define CMDR_EXT_REINF_INTERVAL [0, 0, 0, 0, 45]
+#define CMDR_EXT_REINF_INTERVAL_MINUTES 45
 
 // Max amount of simultaneous actions
 #define CMDR_MAX_TAKE_OUTPOST_ACTIONS 10

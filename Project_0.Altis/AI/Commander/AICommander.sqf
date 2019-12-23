@@ -210,7 +210,9 @@ CLASS("AICommander", "AI")
 		#endif
 
 		// Consider bringing more units into the map
-		T_CALLM0("updateExternalReinforcement");
+		if(T_GETV("planningEnabled")) then {
+			T_CALLM0("updateExternalReinforcement");
+		};
 
 		// C L E A N U P
 		#ifdef DEBUG_COMMANDER
@@ -933,22 +935,32 @@ CLASS("AICommander", "AI")
 		_nextID
 	} ENDMETHOD;
 		
-	// // /*
-	// // Method: onTargetClusterCreated
-	// // Gets called on creation of a totally new target cluster
+	/*
+	Method: onTargetClusterCreated
+	Gets called on creation of a totally new target cluster
+	Parameters: _tc
 	
-	// // Parameters: _tc
+	_ID - the new target cluster ID (must already exist in the cluster array)
 	
-	// // _ID - the new target cluster ID (must already exist in the cluster array)
-	
-	// // Returns: nil
-	// // */
-	// METHOD("onTargetClusterCreated") {
-	// 	params ["_thisObject", "_ID"];
-	// 	OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _ID);
-	// 	T_PRVAR(worldModel);
-	// 	NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
-	// } ENDMETHOD;
+	Returns: nil
+	*/
+	METHOD("onTargetClusterCreated") {
+		params ["_thisObject", "_tcNew"];
+		OOP_INFO_1("TARGET CLUSTER CREATED, ID: %1", _tcNew#TARGET_CLUSTER_ID_ID);
+
+		// Create intel for the new cluster, add it to intel db
+		pr _intel = _tcNew select TARGET_CLUSTER_ID_INTEL;
+		if (IS_NULL_OBJECT(_intel)) then {
+			_intel = NEW("IntelCluster", []);
+			CALLSM2("AICommander", "setIntelClusterProperties", _intel, _tcNew);
+			pr _inteldb = T_GETV("intelDB");
+			CALLM1(_inteldb, "addIntel", _intel);
+			_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
+		};
+
+		//T_PRVAR(worldModel);
+		//NEW("ClusterModel", [_worldModel ARG [_thisObject ARG _ID]]);
+	} ENDMETHOD;
 
 	/*
 	Method: onTargetClusterSplitted
@@ -976,6 +988,26 @@ CLASS("AICommander", "AI")
 		T_PRVAR(worldModel);
 		// Retarget in the model
 		CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _newClusterID]]);
+
+		// Delete intel assigned to old target cluster
+		pr _inteldb = T_GETV("intelDB");
+		pr _intel = _tcOld select TARGET_CLUSTER_ID_INTEL;
+		if (!IS_NULL_OBJECT(_intel)) then {
+			CALLM1(_inteldb, "removeIntel", _intel);
+			DELETE(_intel);
+			_tcOld set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
+		};
+
+		// Create intel for new target clusters
+		{
+			pr _intel = _x select TARGET_CLUSTER_ID_INTEL;
+			if (IS_NULL_OBJECT(_intel)) then {
+				_intel = NEW("IntelCluster", []);
+				CALLSM2("AICommander", "setIntelClusterProperties", _intel, _x);
+				CALLM1(_inteldb, "addIntel", _intel);
+				_x set [TARGET_CLUSTER_ID_INTEL, _intel];
+			};
+		} forEach _tcsNew;
 	} ENDMETHOD;	
 
 	/*
@@ -1004,6 +1036,25 @@ CLASS("AICommander", "AI")
 			CALLM(_worldModel, "retargetClusterByActual", [[_thisObject ARG _IDOld] ARG [_thisObject ARG _IDnew]]);
 		} forEach _IDsOld;
 
+		// Delete intel at old clusters
+		pr _inteldb = T_GETV("intelDB");
+		{
+			pr _intel = _x select TARGET_CLUSTER_ID_INTEL;
+			if (!IS_NULL_OBJECT(_intel)) then {
+				CALLM1(_inteldb, "removeIntel", _intel);
+				DELETE(_intel);
+				_x set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
+			};
+		} forEach _tcsOld;
+
+		// Create intel for the new cluster
+		pr _intel = NEW("IntelCluster", []);
+		if (IS_NULL_OBJECT(_intel)) then {
+			CALLSM2("AICommander", "setIntelClusterProperties", _intel, _tcNew);
+			CALLM1(_inteldb, "addIntel", _intel);
+			_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
+		};
+
 	} ENDMETHOD;
 	
 	/*
@@ -1022,6 +1073,35 @@ CLASS("AICommander", "AI")
 		pr _ID = _tc select TARGET_CLUSTER_ID_ID;
 		OOP_INFO_1("TARGET CLUSTER DELETED, ID: %1", _ID);
 		
+		// Delete intel
+		pr _intel = _tc select TARGET_CLUSTER_ID_INTEL;
+		if(!IS_NULL_OBJECT(_intel)) then {
+			pr _inteldb = T_GETV("intelDB");
+			CALLM1(_inteldb, "removeIntel", _intel);
+			DELETE(_intel);
+			_tc set [TARGET_CLUSTER_ID_INTEL, NULL_OBJECT];
+		};
+	} ENDMETHOD;
+
+	/*
+	Method: onTargetClusterUpdated
+	Gets called on update of a target cluster.
+	*/
+	METHOD("onTargetClusterUpdated") {
+		params [P_THISOBJECT, "_tc"];
+		
+		OOP_INFO_1("ON TARGET CLUSTER UPDATED: ID: %1", _tc select TARGET_CLUSTER_ID_ID);
+
+		// Update intel
+		pr _intel = _tc select TARGET_CLUSTER_ID_INTEL;
+		if (!IS_NULL_OBJECT(_intel)) then {
+			pr _inteldb = T_GETV("intelDB");
+			pr _intelNew = NEW("IntelCluster", []);
+			CALLSM2("AICommander", "setIntelClusterProperties", _intelNew, _tc);
+			OOP_INFO_2("  updating cluster intel %1 from %2", _intel, _intelNew);
+			CALLM2(_inteldb, "updateIntel", _intel, _intelNew);
+			DELETE(_intelNew);
+		};
 	} ENDMETHOD;
 	
 	/*
@@ -1046,6 +1126,16 @@ CLASS("AICommander", "AI")
 		} forEach _targetClusters;
 		
 		_ret
+	} ENDMETHOD;
+
+	// Sets properties of IntelCluster from an actual TARGET_CLUSTER
+	STATIC_METHOD("setIntelClusterProperties") {
+		PARAMS[P_THISCLASS, P_OOP_OBJECT("_intel"), P_DYNAMIC("_targetCluster")];
+
+		SETV(_intel, "efficiency", +(_targetCluster#TARGET_CLUSTER_ID_EFFICIENCY));
+		SETV(_intel, "dateNumberLastSpotted", _targetCluster#TARGET_CLUSTER_ID_MAX_DATE_NUMBER);
+		SETV(_intel, "pos1", [_targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_X1 ARG _targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_Y1]);
+		SETV(_intel, "pos2", [_targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_X2 ARG _targetCluster#TARGET_CLUSTER_ID_CLUSTER#CLUSTER_ID_Y2]);
 	} ENDMETHOD;
 	
 	/*
@@ -2057,7 +2147,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		params [P_THISOBJECT];
 
 		// Bail if it's not time to consider reinforcement yet...
-		if ( ( (dateToNumber date) - (dateToNumber T_GETV("datePrevExtReinf")) ) < (dateToNumber CMDR_EXT_REINF_INTERVAL) ) exitWith {
+		pr _datePrevReinf = T_GETV("datePrevExtReinf");
+		pr _dateNextReinf = +_datePrevReinf;
+		_dateNextReinf set [4, _dateNextReinf#4 + CMDR_EXT_REINF_INTERVAL_MINUTES];
+		if ( (dateToNumber date) < (dateToNumber _dateNextReinf) ) exitWith {
 		};
 
 		OOP_INFO_0("UPDATE EXTERNAL REINFORCEMENT");

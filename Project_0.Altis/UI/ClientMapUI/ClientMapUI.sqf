@@ -355,7 +355,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 		{
 			pr _intel = _x;
 			private _className = GET_OBJECT_CLASS(_x);
-			if (_className != "IntelLocation") then { // Add all non-location intel classes
+			if (!(_className in ["IntelLocation", "IntelCluster"])) then { // Add all non-location intel classes
 				pr _state = GETV(_intel, "state");
 				pr _show = switch (_state) do {
 					case INTEL_ACTION_STATE_INACTIVE: {_showInactive};
@@ -1065,7 +1065,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		{
 			pr _intel = _x;
 			pr _className = GET_OBJECT_CLASS(_intel);
-			if (_className != "IntelLocation") then { // Add all non-location intel classes
+			if (!(_className in ["IntelLocation", "IntelCluster"])) then { // Add all non-location intel classes
 				pr _shortName = CALLM0(_intel, "getShortName");
 
 				// Check if we need to show intel with this state

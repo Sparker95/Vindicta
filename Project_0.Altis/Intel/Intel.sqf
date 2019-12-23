@@ -67,7 +67,7 @@ CLASS("Intel", "Storable")
 	METHOD("new") {
 		params ["_thisObject"];
 
-		//OOP_INFO_0("NEW");
+		OOP_INFO_0("NEW");
 	} ENDMETHOD;
 
 	/*
@@ -77,6 +77,7 @@ CLASS("Intel", "Storable")
 	METHOD("delete") {
 		params [P_THISOBJECT];
 
+		OOP_INFO_0("DELETE");
 	} ENDMETHOD;
 	
 
@@ -789,6 +790,142 @@ CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
 	METHOD("getShortName") {
 		"Recon"
 	} ENDMETHOD;
+ENDCLASS;
+
+
+/*
+Class: Intel.IntelCluster
+Intel about cluster with spotted enemies
+*/
+CLASS("IntelCluster", "Intel")
+
+	/* variable: efficiency
+	Efficiency vector, only useful for commander */
+	VARIABLE_ATTR("efficiency", [ATTR_SERIALIZABLE]);
+
+	/* variable: dateNumberLastSpotted
+	(dateToNumber date) when any unit from this cluster was seen last time */
+	VARIABLE_ATTR("dateNumberLastSpotted", [ATTR_SERIALIZABLE]);
+
+	/* variable: pos1
+	Bottom-left pos of the cluster*/
+	VARIABLE_ATTR("pos1", [ATTR_SERIALIZABLE]);
+
+	/* variable: pos2
+	Top-right pos of the cluster*/
+	VARIABLE_ATTR("pos2", [ATTR_SERIALIZABLE]);
+
+	METHOD("clientAdd") {
+		params [P_THISOBJECT];
+
+		// Create map marker
+		pr _mrkName = _thisObject + "_mrk";
+		pr _mrkAreaName = _thisObject + "_mrkArea";
+
+		// Create center marker
+		createMarkerLocal [_mrkName, [0, 0, 0]];
+		_mrkName setMarkerShapeLocal "ICON";
+		_mrkName setMarkerColorLocal "colorRed";
+		_mrkName setMarkerAlphaLocal 1.0;
+		_mrkName setMarkerTypeLocal "mil_warning";
+
+		// Create area marker
+		createMarkerLocal [_mrkAreaName, [0, 0, 0]];
+		_mrkAreaName setMarkerSizeLocal [50, 50];
+		_mrkAreaName setMarkerShapeLocal "ELLIPSE";
+		_mrkAreaName setMarkerBrushLocal "SolidBorder";
+		_mrkAreaName setMarkerColorLocal "colorRed";
+		_mrkAreaName setMarkerAlphaLocal 0.3;
+
+		T_CALLM1("setMarkerProperties", _thisObject);
+
+		// Create notification
+		// Get center position from border positions
+		pr _pos1 = GETV(_thisObject, "pos1");
+		pr _pos2 = GETV(_thisObject, "pos2");
+		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
+		CALLSM1("NotificationFactory", "createSpottedTargets", _pos);
+	} ENDMETHOD;
+
+	/*
+	Method: clientUpdate
+	Gets called on client when this intel item is updated. It should update data in UI, map, other systems.
+	!! You don't need to copy member variables here manually !! They will be copied automatically by database methods.
+	Just update necessary data of map markers and other things if you need.
+
+	Parameters: _intelSrc
+
+	_intelSrc - the the <Intel> item where values will be copied from
+
+	Returns: nil
+	*/
+	// 
+	// _intelSrc - the source <Intel> item where values will be retrieved from
+	METHOD("clientUpdate") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
+
+		T_CALLM1("setMarkerProperties", _intelSrc);
+	} ENDMETHOD;
+
+	/*
+	Method: clientRemove
+	Gets called on client before this intel item is deleted.
+	It should unregister itself from UI, map, other systems.
+
+	Returns: nil
+	*/
+	METHOD("clientRemove") {
+		params [P_THISOBJECT];
+
+		// Delete area and central marker
+		pr _mrkName = _thisObject + "_mrk";
+		pr _mrkAreaName = _thisObject + "_mrkArea";
+		deleteMarkerLocal _mrkName;
+		deleteMarkerLocal _mrkAreaName;
+
+	} ENDMETHOD;
+
+	// _intelSrc - the intel object where to take values from
+	METHOD("setMarkerProperties") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_intelSrc")];
+
+		pr _mrkName = _thisObject + "_mrk";
+		pr _mrkAreaName = _thisObject + "_mrkArea";
+
+		// Get center position from border positions
+		pr _pos1 = GETV(_intelSrc, "pos1");
+		pr _pos2 = GETV(_intelSrc, "pos2");
+		pr _pos = [0.5*(_pos1#0 + _pos2#0), 0.5*(_pos1#1 + _pos2#1), 0];
+
+		pr _eff = GETV(_intelSrc, "efficiency");
+		pr _text = "  Enemy ";
+		if (_eff#T_EFF_crew > 0) then {_text = _text + "Infantry "};
+		if ((_eff#T_EFF_medium > 0) || (_eff#T_EFF_armor > 0)) then {_text = _text + "Armor "};
+		if (_eff#T_EFF_air > 0) then {_text = _text + "Air "};
+		if (_eff#T_EFF_water > 0) then {_text = _text + "Water "};
+
+		pr _dateNumberLastSpotted = GETV(_intelSrc, "dateNumberLastSpotted");
+		pr _dateNumberDiff = (dateToNumber date) - _dateNumberLastSpotted;
+		pr _dateDiff = numberToDate [date#0, _dateNumberDiff];
+		pr _minutes = (_dateDiff#4) + 60*(_dateDiff#3);
+
+		// Add age text
+		_text = _text + (format [", %1 min. ago", _minutes]);
+
+		// Set center marker properties
+		_mrkName setMarkerPosLocal _pos;
+		_mrkName setMarkerTextLocal _text;
+		
+		// Get width and height of marker
+		pr _a = 0.5*(_pos2#0 - _pos1#0);
+		pr _b = 0.5*(_pos2#1 - _pos1#1);
+
+		// Set area marker properties
+		_mrkAreaName setMarkerPosLocal _pos;
+		_mrkAreaName setMarkerSizeLocal [_a + 50, _b + 50];
+
+	} ENDMETHOD;
+
 ENDCLASS;
 
 // - - - - TESTS - - - - 
