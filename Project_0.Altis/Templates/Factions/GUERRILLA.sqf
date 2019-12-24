@@ -7,8 +7,8 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
-_inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
+_inf = [];
+_inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT,  ["B_G_Soldier_F"]];					//Default infantry if nothing is found
 // TODO lots of stuff is replaced with rifleman class
 // In fact we don't need proper loadouts for them, because guerrillas takes weapons from arsenal
