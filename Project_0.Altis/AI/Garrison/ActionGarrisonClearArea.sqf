@@ -26,7 +26,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
 		if (isNil "_radius") then {_radius = 100;};
 		pr _durationMinutes = CALLSM2("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS);
-		if (isNil "_durationMinutes") then {_duration = 30*60;};
+		if (isNil "_durationMinutes") then {_durationMinutes = 30*60;};
 		_durationMinutes = ceil (_durationMinutes / 60); // Convert from seconds to minutes
 		T_SETV("pos", _pos);
 		T_SETV("radius", _radius);
@@ -84,19 +84,22 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 			if (_state == ACTION_STATE_INACTIVE) then {
 				// Set last combat date
 				T_SETV("lastCombatDateNumber", dateToNumber date);
-				T_SETV("state", ACTION_STATE_ACTIVE);
+				_state = ACTION_STATE_ACTIVE;
 			};
 
 			pr _lastCombatDateNumber = T_GETV("lastCombatDateNumber");
 			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0, T_GETV("durationMinutes")];
 			if (( (dateToNumber date) - _lastCombatDateNumber) > _dateNumberThreshold ) then {
 				T_SETV("state", ACTION_STATE_COMPLETED);
-				ACTION_STATE_COMPLETED
+				_state = ACTION_STATE_COMPLETED;
 			} else {
 				pr _timeLeft = numberToDate [date#0, _lastCombatDateNumber + _dateNumberThreshold - (dateToNumber date)];
 				OOP_INFO_1("Clearing area, time left: %1", _timeLeft);
-				ACTION_STATE_ACTIVE
+				_state = ACTION_STATE_ACTIVE;
 			};
+
+			T_SETV("state", _state);
+			_state
 		};
 
 		pr _state = CALLM0(_thisObject, "activateIfInactive");
