@@ -14,8 +14,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 
 	VARIABLE("pos");
 	VARIABLE("radius");
-	VARIABLE("lastCombatTime");
-	VARIABLE("duration");
+	VARIABLE("lastCombatDateNumber");
+	VARIABLE("durationMinutes");
 
 	// ------------ N E W ------------
 	
@@ -25,11 +25,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		pr _pos = CALLSM2("Action", "getParameterValue", _parameters, TAG_POS);
 		pr _radius = CALLSM2("Action", "getParameterValue", _parameters, TAG_CLEAR_RADIUS);
 		if (isNil "_radius") then {_radius = 100;};
-		pr _duration = CALLSM2("Action", "getParameterValue", _parameters, TAG_DURATION);
-		if (isNil "_duration") then {_duration = 60*30;};
+		pr _durationMinutes = CALLSM2("Action", "getParameterValue", _parameters, TAG_DURATION_SECONDS);
+		if (isNil "_durationMinutes") then {_duration = 30*60;};
+		_durationMinutes = ceil (_durationMinutes / 60); // Convert from seconds to minutes
 		T_SETV("pos", _pos);
 		T_SETV("radius", _radius);
-		T_SETV("duration", _duration);
+		T_SETV("durationMinutes", _durationMinutes);
+		T_SETV("lastCombatDateNumber", dateToNumber date);
 		
 	} ENDMETHOD;
 	
@@ -57,8 +59,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 			CALLM2(_groupAI, "postMethodAsync", "addExternalGoal", _args);
 		} forEach _groups;
 		
-		// Set last combat time
-		T_SETV("lastCombatTime", time);
+		// Set last combat date
+		T_SETV("lastCombatDateNumber", dateToNumber date);
 		
 		// Set state
 		T_SETV("state", ACTION_STATE_ACTIVE);
@@ -76,12 +78,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 
 		// Succeed after timeout if not spawned.
 		if (!CALLM0(_gar, "isSpawned")) exitWith {
-			pr _lastCombatTime = T_GETV("lastCombatTime");
-			if(isNil "_lastCombatTime") exitWith {
-				T_SETV("lastCombatTime", time);
-				ACTION_STATE_ACTIVE
-			};
-			if ((time - _lastCombatTime) > T_GETV("duration") ) then {
+			pr _lastCombatDateNumber = T_GETV("lastCombatDateNumber");
+			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0, T_GETV("durationMinutes")];
+			if (( (dateToNumber date) - _lastCombatDateNumber) > _dateNumberThreshold ) then {
 				T_SETV("state", ACTION_STATE_COMPLETED);
 				ACTION_STATE_COMPLETED
 			} else {
@@ -98,11 +97,13 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 			pr _awareOfEnemy = [_ws, WSP_GAR_AWARE_OF_ENEMY] call ws_getPropertyValue;
 			
 			if (_awareOfEnemy) then {
-				T_SETV("lastCombatTime", time); // Reset the timer
+				T_SETV("lastCombatDateNumber", dateToNumber date); // Reset the timer
 
 				T_CALLM0("attackEnemyBuildings"); // Attack buildings occupied by enemies
 			} else {
-				if ((time - T_GETV("lastCombatTime")) > T_GETV("duration") ) then {
+				pr _lastCombatDateNumber = T_GETV("lastCombatDateNumber");
+				pr _dateNumberThreshold = dateToNumber [date#0,1,1,0, T_GETV("durationMinutes")];
+				if (( (dateToNumber date) - _lastCombatDateNumber) > _dateNumberThreshold ) then {
 					_state = ACTION_STATE_COMPLETED;
 				};
 			};
