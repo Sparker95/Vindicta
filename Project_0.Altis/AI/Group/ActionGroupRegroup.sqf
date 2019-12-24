@@ -11,13 +11,20 @@ The whole group regroups around squad leader, units dismount their vehicles.
 
 CLASS("ActionGroupRegroup", "ActionGroup")
 	
+	VARIABLE("combatMode");
+
 	// ------------ N E W ------------
-	/*
 	METHOD("new") {
-		params [["_thisObject", "", [""]], ["_AI", "", [""]] ];
+		params [["_thisObject", "", [""]], ["_AI", "", [""]], ["_parameters", [], [[]]] ];
+		
+		pr _combatMode = CALLSM3("Action", "getParameterValue", _parameters, "combatMode", false);
+		if (isNil "_combatMode") then {
+			_combatMode = "GREEN";
+		};
+
+		T_SETV("combatMode", _combatMode);
 
 	} ENDMETHOD;
-	*/	
 
 	// logic to run when the goal is activated
 	METHOD("activate") {
@@ -41,6 +48,12 @@ CLASS("ActionGroupRegroup", "ActionGroup")
 			CALLM4(_unitAI, "addExternalGoal", "GoalUnitInfantryRegroup", 0, [], _AI);
 		} forEach _inf;
 		
+		// Set group combat mode
+		pr _hG = T_GETV("hG");
+		pr _combatMode = T_GETV("combatMode");
+		_hG setCombatMode _combatMode; // Hold fire, disengage.
+		OOP_INFO_1("Setting combat mode: %1", _combatMode);
+
 		// Return ACTIVE state
 		ACTION_STATE_ACTIVE
 		

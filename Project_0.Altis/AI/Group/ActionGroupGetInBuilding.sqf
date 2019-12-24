@@ -83,6 +83,10 @@ CLASS("ActionGroupGetInBuilding", "ActionGroup")
 			};
 		} forEach _units;
 
+		// Set group combat mode
+		pr _hG = T_GETV("hG");
+		_hG setCombatMode "GREEN"; // Hold fire, disengage. We don't want them to chase enemies right now, we want them to get into houses.
+
 		// Return ACTIVE state
 		T_SETV("state", ACTION_STATE_ACTIVE);
 		ACTION_STATE_ACTIVE

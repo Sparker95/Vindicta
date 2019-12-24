@@ -69,7 +69,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					};
 					
 					case GROUP_TYPE_PATROL: {
-						_args = ["GoalGroupRegroup", 0, [], _AI];
+						_args = ["GoalGroupRegroup", 0, [["combatMode", "RED"]], _AI];
 					};
 				};
 				
