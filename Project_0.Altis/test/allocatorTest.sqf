@@ -1,4 +1,6 @@
-#include "..\common.hpp"
+#include "..\AI\Commander\AICommander.hpp"
+
+#include "..\OOP_Light\OOP_Light.h"
 
 // Development of the new unit allocator algorithm
 
@@ -7,9 +9,23 @@
 call compile preprocessFileLineNumbers "Tests\initTests.sqf";
 #endif
 
+//call compile preprocessFileLineNumbers "initModules.sqf";
+
+if (isNil "OOP_Light_initialized") then {
+	OOP_Light_initialized = true;
+	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
+};
+
 //Initialize templates
 call compile preprocessFileLineNumbers "Templates\initFunctions.sqf";
 call compile preprocessFileLineNumbers "Templates\initVariables.sqf";
+
+// Initialize GarrisonModel (because it has the allocation algorithm)
+call compile preprocessFileLineNumbers "SaveSystem\Storable.sqf";
+call compile preprocessFileLineNumbers "AI\Commander\Model\WorldModel.sqf";
+call compile preprocessFileLineNumbers "AI\Commander\Model\ModelBase.sqf";
+call compile preprocessFileLineNumbers "AI\Commander\Model\GarrisonModel.sqf";
+
 
 #define pr private
 
@@ -47,6 +63,8 @@ allocatorTest = {
 	(_comp#T_VEH) set [T_VEH_truck_inf, 10];
 	*/
 
+	pr _srcGarrEff = [_comp] call comp_fnc_getEfficiency;
+
 	#ifdef UNIT_ALLOCATOR_DEBUG
 	[_comp, "Composition:"] call comp_fnc_print;
 	#endif
@@ -63,25 +81,27 @@ allocatorTest = {
 	pr _effExt = +T_EFF_null;		// "External" requirement we must satisfy during this allocation
 
 	// Fill in units which we must destroy
-	_effExt set [T_EFF_soft, 10];
+	_effExt set [T_EFF_soft, 5];
 	//_effExt set [T_EFF_medium, 3];
-	_effExt set [T_EFF_armor, 3];
+	_effExt set [T_EFF_armor, 1];
 	//_effExt set [T_EFF_air, 2];
 
-	pr _validationFnNames = ["eff_fnc_validateAttack", "eff_fnc_validateTransport", "eff_fnc_validateCrew"]; // "eff_fnc_validateDefense"
+	pr _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_TRANSPORT, SPLIT_VALIDATE_CREW]; // "eff_fnc_validateDefense"
 
 	pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;
 
 	pr _payloadBlacklistMask = T_comp_static_mask;	// Don't take static weapons under any conditions
 
-	pr _transportWhitelistMask = T_comp_ground_and_transport_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
+	pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 
 	pr _transportBlacklistMask = [];
 
-	["Noclass", _effExt, _validationFnNames, _comp,
-		_payloadWhitelistMask, _payloadBlacklistMask,
-		_transportWhitelistMask, _transportBlacklistMask,
-		_unitBlacklist] call GarrisonModel_fnc_allocateUnits;
+	pr _args = [_effExt, _allocationFlags, _comp, _srcGarrEff,
+					_payloadWhitelistMask, _payloadBlacklistMask,
+					_transportWhitelistMask, _transportBlacklistMask];
+	private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
+
+
 };
 
 0 call allocatorTest;
