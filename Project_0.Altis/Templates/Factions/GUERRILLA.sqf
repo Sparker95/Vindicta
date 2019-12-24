@@ -15,7 +15,7 @@ _inf set [T_INF_DEFAULT,  ["B_G_Soldier_F"]];					//Default infantry if nothing 
 _inf set [T_INF_default, ["B_G_Soldier_F"]];
 _inf set [T_INF_SL, ["B_G_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["B_G_Soldier_TL_F"]];
-_inf set [T_INF_officer, ["B_officer_F"]];
+_inf set [T_INF_officer, ["B_G_officer_F"]];
 _inf set [T_INF_GL, ["B_G_Soldier_GL_F"]];
 _inf set [T_INF_rifleman, ["B_G_Soldier_F"]];
 _inf set [T_INF_marksman, ["B_G_Sharpshooter_F"]];
