@@ -1017,6 +1017,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			if (_backpack == "") then { _backpack = "B_Kitbag_rgr"; }; // Default backpack
 			removeBackpack _hO;
 			_hO addBackpack _backpack;
+			clearAllItemsFromBackpack _hO; // In case the backpack has items from config
 
 			pr _secondaryMags = getArray (configfile >> "CfgWeapons" >> _secondary >> "magazines");
 			pr _mag = _secondaryMags select 0;
