@@ -78,12 +78,23 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 
 		// Succeed after timeout if not spawned.
 		if (!CALLM0(_gar, "isSpawned")) exitWith {
+
+			pr _state = T_GETV("state");
+
+			if (_state == ACTION_STATE_INACTIVE) then {
+				// Set last combat date
+				T_SETV("lastCombatDateNumber", dateToNumber date);
+				T_SETV("state", ACTION_STATE_ACTIVE);
+			};
+
 			pr _lastCombatDateNumber = T_GETV("lastCombatDateNumber");
 			pr _dateNumberThreshold = dateToNumber [date#0,1,1,0, T_GETV("durationMinutes")];
 			if (( (dateToNumber date) - _lastCombatDateNumber) > _dateNumberThreshold ) then {
 				T_SETV("state", ACTION_STATE_COMPLETED);
 				ACTION_STATE_COMPLETED
 			} else {
+				pr _timeLeft = numberToDate [date#0, _lastCombatDateNumber + _dateNumberThreshold - (dateToNumber date)];
+				OOP_INFO_1("Clearing area, time left: %1", _timeLeft);
 				ACTION_STATE_ACTIVE
 			};
 		};
@@ -105,6 +116,9 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 				pr _dateNumberThreshold = dateToNumber [date#0,1,1,0, T_GETV("durationMinutes")];
 				if (( (dateToNumber date) - _lastCombatDateNumber) > _dateNumberThreshold ) then {
 					_state = ACTION_STATE_COMPLETED;
+				} else {
+					pr _timeLeft = numberToDate [date#0, _lastCombatDateNumber + _dateNumberThreshold - (dateToNumber date)];
+					OOP_INFO_1("Clearing area, time left: %1", _timeLeft);
 				};
 			};
 		};
