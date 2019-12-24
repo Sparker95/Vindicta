@@ -156,7 +156,7 @@ eff_fnc_validateDefense = {
 // Their eff vector can represent an external requirement to allocate some more transport  
 eff_fnc_validateTransport = {
 	params ["_effOur", ["_effTheir", T_EFF_null]];
-	private _transportOur = _effOur#T_EFF_transport;
+	private _transportOur = _effOur#T_EFF_transport; // + (_effOur#T_EFF_reqCrew); would make sense if armor didnt require additional crew
 	if ((_effOur#T_EFF_reqTransport) > _transportOur) exitWith { // Try to allocate a bit more transport space
 		[[T_EFF_transport, (_effOur#T_EFF_reqTransport) - _transportOur]]
 	};

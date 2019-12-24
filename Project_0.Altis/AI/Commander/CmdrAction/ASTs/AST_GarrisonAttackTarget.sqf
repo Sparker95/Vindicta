@@ -120,7 +120,7 @@ CLASS("AST_GarrisonAttackTarget", "ActionStateTransition")
 					#ifdef RELEASE_BUILD
 					private _timeToClear = 80 * sqrt (_clearRadius + 100); // Seconds
 					#else
-					private _timeToClear = 60; // Seconds
+					private _timeToClear = 120; // Seconds
 					#endif
 					CALLM(_garr, "clearAreaActual", [_targetPos ARG _moveRadius ARG _clearRadius ARG _timeToClear]);
 					T_SETV("clearing", true);

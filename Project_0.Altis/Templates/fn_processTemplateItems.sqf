@@ -72,6 +72,9 @@ while {_subCatID < _catSize} do {
 				[_hO, _classOrLoadout] call t_fnc_setUnitLoadout;
 			};
 
+			
+			pr _unitMags = magazines _hO;
+
 			// Process primary weapon
 			pr _weap = primaryWeapon _hO;
 			if (_weap != "") then {
@@ -80,7 +83,7 @@ while {_subCatID < _catSize} do {
 					pr _items = primaryWeaponItems _hO;
 					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
 					_primaryWeapons pushBack _weap;
-					_primaryWeaponMagazines pushBack _mags;
+					_primaryWeaponMagazines pushBack (_mags arrayIntersect _unitMags); // We need mags compatible with unit's weapon, but only those which are compatible with the weapon 
 					{ if (_x != "") then {_primaryWeaponItems pushBackUnique _x} } forEach _items;
 				};
 				_primaryWeaponsThisSubcat pushBackunique _weap;
@@ -94,7 +97,7 @@ while {_subCatID < _catSize} do {
 					pr _items = secondaryWeaponItems _hO;
 					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
 					_secondaryWeapons pushBack _weap;
-					_secondaryWeaponMagazines pushBack _mags;
+					_secondaryWeaponMagazines pushBack (_mags arrayIntersect _unitMags);
 					{ if (_x != "") then {_secondaryWeaponItems pushBackUnique _x} } forEach _items;
 				};
 				_secondaryWeaponsThisSubcat pushBackUnique _weap;
@@ -108,7 +111,7 @@ while {_subCatID < _catSize} do {
 					pr _items = handgunItems _hO;
 					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
 					_handgunWeapons pushBack _weap;
-					_handgunWeaponMagazines pushBack _mags;
+					_handgunWeaponMagazines pushBack (_mags arrayIntersect _unitMags);
 					{ if (_x != "") then {_handgunWeaponItems pushBackUnique _x} } forEach _items;
 				};
 			};

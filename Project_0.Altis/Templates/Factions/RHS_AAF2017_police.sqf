@@ -7,8 +7,8 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = []; _inf resize T_INF_size;
-_inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
+_inf = [];
+_inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
 
 _inf set [T_INF_officer, ["RHS_AAF2017_police_TL_SMG","RHS_AAF2017_police_TL_rifle" ]];

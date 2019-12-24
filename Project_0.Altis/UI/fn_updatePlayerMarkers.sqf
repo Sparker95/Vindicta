@@ -8,6 +8,7 @@ Must be run locally.
 pr _allPlayersPrev = if (isNil "gUIAllPlayersPrev") then { [] } else {gUIAllPlayersPrev};
 pr _allPlayerVehiclesPrev = if (isNil "gUIAllPlayerVehiclesPrev") then {[]} else {gUIAllPlayerVehiclesPrev};
 pr _allPlayers = (allPlayers select {(side group _x) == playerSide}) /*allUnits*/ - (entities "HeadlessClient_F");
+//pr _allPlayers = allUnits - (entities "HeadlessClient_F");
 pr _allPlayerVehicles = [];
 pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 
@@ -40,8 +41,8 @@ pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 
 // Create markers for all players
 {
-	pr _mrk = _x getVariable ["ui_mapMarker", ""];
-	if (_mrk == "") then {
+	pr _mrk = _x getVariable ["ui_mapMarker", "_none_"];
+	if ((markerShape _mrk) == "") then {
 		_mrk = format ["ui_mapMarker_%1", _nextID];
 		_nextID = _nextID + 1;
 		createMarkerLocal [_mrk, getPosASL _x];
@@ -85,7 +86,7 @@ pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 // Create markers for all vehicles with players
 {
 	pr _mrk = _x getVariable ["ui_mapMarker", ""];
-	if (_mrk == "") then {
+	if ((markerShape _mrk) == "") then {
 		_mrk = format ["ui_mapMarker_%1", _nextID];
 		_nextID = _nextID + 1;
 		createMarkerLocal [_mrk, getPosASL _x];

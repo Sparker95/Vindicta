@@ -24,6 +24,6 @@ TAG_... - parameters passed to actions
 
 #define TAG_MERGE "a_merge"
 
-#define TAG_DURATION "g_duration"
+#define TAG_DURATION_SECONDS "g_duration"
 
 #define TAG_MAX_SPEED_KMH "g_maxSpeedKmh"

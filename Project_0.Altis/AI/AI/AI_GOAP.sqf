@@ -317,6 +317,14 @@ CLASS("AI_GOAP", "AI")
 		{
 			pr _goalState = _x select 4;
 			
+			// Sanity check if goal state is nil because action didn't return it...
+			if (isNil "_goalState") then {
+				_goalState = ACTION_STATE_INACTIVE;
+				_x set [4, _goalState];
+				OOP_ERROR_1("Goal state is nil: %1", _x);
+				DUMP_CALLSTACK;
+			};
+
 			// Don't return completed goals
 			if (_goalState != ACTION_STATE_COMPLETED) then {
 				pr _goalClassName = _x select 0;

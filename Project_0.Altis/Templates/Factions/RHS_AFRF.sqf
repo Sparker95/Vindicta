@@ -7,8 +7,8 @@ _array = [];
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
-_inf = +(tDefault select T_INF);
-_inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
+_inf = [];
+_inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT, ["rhs_msv_emr_rifleman"]];
 
 _inf set [T_INF_SL, ["rhs_msv_emr_sergeant"]];

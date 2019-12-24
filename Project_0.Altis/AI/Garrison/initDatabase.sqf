@@ -166,7 +166,7 @@ Initializes costs, effects and preconditions of actions, relevance values of goa
 // Clear Area
 ["ActionGarrisonClearArea", _s,		[	]]		call AI_misc_fnc_setActionPreconditions; // These are procedural, just must set them anyway
 ["ActionGarrisonClearArea", _s,		[	[WSP_GAR_CLEARING_AREA,	TAG_POS, true]]]	call AI_misc_fnc_setActionEffects;
-["ActionGarrisonClearArea", 			[TAG_CLEAR_RADIUS, TAG_DURATION]] call AI_misc_fnc_setActionParametersFromGoal;
+["ActionGarrisonClearArea", 			[TAG_CLEAR_RADIUS, TAG_DURATION_SECONDS]] call AI_misc_fnc_setActionParametersFromGoal;
 
 // Join Location
 ["ActionGarrisonJoinLocation", _s, [ ]] call AI_misc_fnc_setActionPreconditions; // These are procedural
