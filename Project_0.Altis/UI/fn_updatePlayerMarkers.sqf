@@ -7,7 +7,7 @@ Must be run locally.
 
 pr _allPlayersPrev = if (isNil "gUIAllPlayersPrev") then { [] } else {gUIAllPlayersPrev};
 pr _allPlayerVehiclesPrev = if (isNil "gUIAllPlayerVehiclesPrev") then {[]} else {gUIAllPlayerVehiclesPrev};
-pr _allPlayers = allPlayers /*allUnits*/ - (entities "HeadlessClient_F");
+pr _allPlayers = (allPlayers select {(side group _x) == playerSide}) /*allUnits*/ - (entities "HeadlessClient_F");
 pr _allPlayerVehicles = [];
 pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 
