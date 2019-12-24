@@ -18,7 +18,7 @@
 #define sINCAPACITATED 4
 
 #ifndef RELEASE_BUILD
-//#define DEBUG_UNDERCOVER_MONITOR
+#define DEBUG_UNDERCOVER_MONITOR
 #endif
 
 /*
@@ -595,6 +595,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 				pr _suspicion = T_GETV("suspicion");
 				// compromise other players in vehicle
+				/*
 				if (_bInVeh && _suspicion >= 1) then {
 					if (count crew vehicle _unit > 1) then {
 						{
@@ -604,6 +605,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						} forEach crew vehicle _unit;		
 					};
 				};
+				*/
 
 				// set new camouflage coeffcient 
 				pr _camoCoeff =  T_GETV("camoCoeff"); // initial unit-based value
