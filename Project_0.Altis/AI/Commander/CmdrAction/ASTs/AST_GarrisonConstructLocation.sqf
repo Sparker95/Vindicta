@@ -8,12 +8,18 @@ Position of the garrison is irrelevant.
 Parent: <ActionStateTransition>
 */
 
+#define pr private
+
 CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 
 	// Inputs
 	VARIABLE_ATTR("garrIdVar", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("locPos", [ATTR_PRIVATE]);
 	VARIABLE_ATTR("locType", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("buildRes", [ATTR_PRIVATE]);
+
+	VARIABLE_ATTR("successState", [ATTR_PRIVATE]);
+	VARIABLE_ATTR("failGarrisonDead", [ATTR_PRIVATE]);
 
 	/*
 			P_OOP_OBJECT("_action"), - action
@@ -47,4 +53,55 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 		T_SETV("buildRes", _buildRes);
 	} ENDMETHOD;
 
+	METHOD("apply") {
+
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		private _garrId = T_GET_AST_VAR("garrIdVar");
+
+		ASSERT_MSG(_garrId isEqualType 0, "garrID must be a number");
+		pr _garr = CALLM(_world, "getGarrison", [_garrId]);
+		ASSERT_OBJECT(_garr);
+
+		// If the garrison is dead then return the appropriate state
+		if(CALLM(_garr, "isDead", [])) exitWith {
+			T_GETV("failGarrisonDead")
+		};
+
+		switch (GETV(_world, "type")) do {
+			case WORLD_TYPE_SIM_NOW: {
+				// Location creation doesn't happen instantly
+			};
+
+			case WORLD_TYPE_SIM_FUTURE: {
+				// In the future we have a new location
+				// This garrison is also attached ot the new location
+				private _newLocModel = NEW("LocationModel", [_world, NULL_OBJECT]);
+				SETV(_newLocModel, "type", T_GETV("locType"));
+				SETV(_newLocModel, "pos", T_GETV("locPos"));
+				CALLM1(_garr, "joinLocationSim", _newLocModel);
+			};
+
+			case WORLD_TYPE_REAL: {
+				// Create an actual location
+				private _newLoc = NEW("Location", [T_GETV("locPos")]);
+				CALLM1(_newLoc, "setType", T_GETV("locType"));
+				CALLM2(_newLoc, "setBorder", "circle", 100);
+				pr _name = str (GETV(_newLoc, "id"));
+				CALLM1(_newLoc, "setName", _name);
+				CALLM1(_garr, "joinLocationActual", _newLoc);
+				pr _actual = GETV(_garr, "actual");
+				CALLM2(_actual, "postMethodAsync", "removeBuildResources", [T_GETV("buildRes")]);
+			};
+		};
+
+		T_GETV("successState")
+	} ENDMETHOD;
+
 ENDCLASS;
+
+#ifdef _SQF_VM
+
+
+
+#endif

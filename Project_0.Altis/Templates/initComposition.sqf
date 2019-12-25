@@ -20,7 +20,7 @@ T_comp_static_mask = [1] call comp_fnc_new;
 
 // Precalculate popular combinations of masks to save time during planning
 
-diag_log T_comp_infantry_mask;
+//diag_log T_comp_infantry_mask;
 
 T_comp_ground_or_infantry_mask = [T_comp_ground_mask, T_comp_infantry_mask] call comp_fnc_maskOrMask;
 
