@@ -40,6 +40,9 @@ CLASS("AICommander", "AI")
 	// External reinforcements
 	/* save */ VARIABLE_ATTR("datePrevExtReinf", [ATTR_SAVE]);
 
+	// Potential positions for new locations
+	/* save */ VARIABLE_ATTR("newRoadblockPositions", [ATTR_SAVE]);
+
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
@@ -133,6 +136,9 @@ CLASS("AICommander", "AI")
 		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);
 
 		T_SETV("datePrevExtReinf", DATE_NOW);
+
+		// Roadblock positions
+		T_SETV("newRoadblockPositions", []);
 	} ENDMETHOD;
 	
 	METHOD("_initSensors") {

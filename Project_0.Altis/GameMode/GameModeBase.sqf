@@ -765,7 +765,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
 				_allRoadBlocks pushBack [_locSectorPos, _locSectorDir];
 			} else {
-				if(_locType in [LOCATION_TYPE_BASE, LOCATION_TYPE_CITY]) then {
+				if(_locType in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_CITY]) then {
 					_locationsForRoadblocks pushBack [_locSectorPos, _side];
 				};
 			};
@@ -775,13 +775,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif
 		} forEach (entities "Project_0_LocationSector");
 
-		/*
 		{
 			_x params ["_pos", "_side"];
 			// TODO: improve this later
 			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_pos]) select {
 				private _newRoadBlock = _x;
-				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 400 } == NOT_FOUND
+				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 500 } == NOT_FOUND
 			};
 
 			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
@@ -797,7 +796,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
 			} forEach _roadBlocks;
 		} forEach _locationsForRoadblocks;
-		*/
 	} ENDMETHOD;
 
 	#define ADD_TRUCKS

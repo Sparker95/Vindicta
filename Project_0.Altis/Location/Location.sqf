@@ -613,7 +613,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		private _roadblocksPosDir = [];
 		// Get near roads and sort them far to near.
-		private _roads_remaining = (_pos nearRoads 1000) apply { [position _x distance _pos, _x] };
+		private _roads_remaining = ((_pos nearRoads 1500) select {_x distance _pos > 300}) apply { [position _x distance _pos, _x] };
 		_roads_remaining sort DESCENDING;
 		private _itr = 0;
 		while {count _roads_remaining > 0 and _itr < 4} do {
@@ -622,56 +622,22 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			_roadscon sort DESCENDING;
 			if (count _roadscon > 0) then {
 				private _roadcon = _roadscon#0#1; 
-				private _dir = _roadcon getDir _road;
-
-				//private _offs = [7, -7];
-				//{
-					//_grupo = createGroup _lado;
-					//_grupos pushBack _grupo;
-				
+				private _dir = _roadcon getDir _road;				
 					private _roadblock_pos = getPos _road; //[getPos _road, _x, _dir] call BIS_Fnc_relPos;
-// #ifdef DEBUG_LOCATION_MARKERS
-// 					private _mrk = createMarker [format ["roadblock_%1_%2", _thisObject, _itr], _roadblock_pos];
-// 					_mrk setMarkerType "mil_triangle";
-// 					_mrk setMarkerDir _dir;
-// 					_mrk setMarkerColor "ColorWhite";
-// 					_mrk setMarkerPos _roadblock_pos;
-// 					_mrk setMarkerAlpha 1;
-// 					_mrk setMarkerText _mrk;
-// #endif
+#ifdef DEBUG_LOCATION_MARKERS
+					private _mrk = createMarker [format ["roadblock_%1_%2", _pos apply {round _x}, _itr], _roadblock_pos];
+					_mrk setMarkerType "mil_triangle";
+					_mrk setMarkerDir _dir;
+					_mrk setMarkerColor "ColorWhite";
+					_mrk setMarkerPos _roadblock_pos;
+					_mrk setMarkerAlpha 1;
+					_mrk setMarkerText "<Future roadblock>";
+#endif
 					_roadblocksPosDir pushBack [_roadblock_pos, _dir];
-					//_bunker = (selectRandom ["Land_BagBunker_Small_F", "Land_BagFence_Round_F"]) createVehicle _pos;
-					// _bunker createVehicle _pos;
-					//_vehiculos pushBack _bunker;
-					//_bunker setDir _dirveh;
-					//_pos = getPosATL _bunker;
-					//_tipoVeh =
-					//	if (_lado == malos) then {
-					//		selectRandom [staticATmalos, NATOMG]
-					//	} else {
-					//		selectRandom [staticATmuyMalos, CSATMG]
-					//	};
-					//_veh = _tipoVeh createVehicle _pos;
-					//_vehiculos pushBack _veh;
-					//_veh setPos _pos;
-					//_veh setDir _dirVeh + 180;
-					//_tipoUnit =
-					//	if (_lado == malos) then {
-					//		staticCrewmalos
-					//	} else {
-					//		staticCrewMuyMalos
-					//	};
-					//_unit = _grupo createUnit[_tipoUnit, _pos, [], 0, "NONE"];
-					//[_unit, _marcador] call A3A_fnc_NATOinit;
-					//[_veh] call A3A_fnc_AIVEHinit;
-					//_unit moveInGunner _veh;
-					//_soldados pushBack _unit;
-
-				//} forEach _offs;
 			};
 			_roads_remaining = _roads_remaining select {
 				((getPos _road) vectorDiff _pos) vectorCos ((getPos (_x select 1)) vectorDiff _pos) < 0.3 and 
-				getPos _road distance getPos (_x select 1) > 400
+				getPos _road distance getPos (_x select 1) > 300
 			};
 			_itr = _itr + 1;
 		};
