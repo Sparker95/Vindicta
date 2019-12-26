@@ -49,7 +49,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 
 		OOP_INFO_2("Vehicle groups: %1, free units: %2", _vehGroups, _freeUnits);
 		
-		// Try to add drivers to all groups
+		// Try to add drivers and turret operators to all groups
 		{ // foreach _vehGroups
 			pr _group = _x;
 			CALLM0(_group, "getRequiredCrew") params ["_nDrivers", "_nTurrets"];
@@ -71,7 +71,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					if (isNil "_receivingGroup") then {
 						pr _args = [CALLM0(_group, "getSide"), GROUP_TYPE_IDLE];
 						_receivingGroup = NEW("Group", _args);
-						CALLM0(_receivingGroup, "spawnAtLocation");
+						//CALLM0(_receivingGroup, "spawnAtLocation");
 						CALLM1(_gar, "addGroup", _receivingGroup);
 						_freeGroups pushBack _receivingGroup;
 					};
@@ -109,6 +109,8 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 					CALLM1(_group, "addUnit", _freeUnits deleteAt 0);
 					_nTurretOperatorsRequired = _nTurretOperatorsRequired - 1;
 				};
+			} else {
+				
 			};
 		} forEach _vehGroups;
 
