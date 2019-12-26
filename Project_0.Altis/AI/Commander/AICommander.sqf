@@ -2618,10 +2618,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		};
 		#else
 		// We will plan the shit ouf of this world model
-		private _generators = [	//"generateAttackActions",
-								//"generateReinforceActions",
-								//"generatePatrolActions",
-								//"generateTakeOutpostActions",
+		private _generators = [	"generateAttackActions",
+								"generateReinforceActions",
+								"generatePatrolActions",
+								"generateTakeOutpostActions",
 								"generateConstructRoadblockActions"];
 		#endif
 

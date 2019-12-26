@@ -677,9 +677,10 @@ CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 
 	//  
 	METHOD("getShortName") {
+		params [P_THISOBJECT];
 		pr _type = T_GETV("type");
-		pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-		format ["%1 Construction", _typeStr];
+		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+		format ["Make RB", _typeStr]; // Temp, since we only deploy roadblocks now anyway
 	} ENDMETHOD;
 ENDCLASS;
 

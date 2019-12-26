@@ -616,7 +616,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		// Get near roads and sort them far to near, taking width into account
 		private _roads_remaining = ((_pos nearRoads 1500) select {
 			pr _roadPos = getPosASL _x;
-			(_roadPos distance _pos > 400) //&&								// Pos is far enough
+			(_roadPos distance _pos > 400) &&			// Pos is far enough
+			((count (_x nearRoads 20)) < 3) &&	// Not too many roads because it might mean a crossroad
+			(count (roadsConnectedTo _x) == 2)			// Connected to two roads, we don't need end road elements
 			// Let's not create roadblocks inside other locations
 			//{count (CALLSM1("Location", "getLocationsAt", _roadPos)) == 0}	// There are no locations here
 		}) apply {

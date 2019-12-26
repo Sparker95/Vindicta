@@ -50,6 +50,16 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		#endif
 	} ENDMETHOD;
 
+	METHOD("delete") {
+		params [P_THISOBJECT];
+	
+		// Clear our debug markers
+		#ifdef DEBUG_CMDRAI
+		deleteMarker (_thisObject + "_line");
+		deleteMarker (_thisObject + "_label");
+		#endif
+	} ENDMETHOD;
+
 	METHOD("createTransitions") {
 		params [P_THISOBJECT];
 
@@ -324,6 +334,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
 			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+
+			// Set state
+			if (T_GETV("state") == CMDR_ACTION_STATE_READY_TO_MOVE) then {
+				T_CALLM1("setIntelState", INTEL_ACTION_STATE_ACTIVE);
+			};
 
 			// Send intel to the garrison doing this action
 			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
