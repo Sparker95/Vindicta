@@ -292,6 +292,7 @@ CLASS("VirtualRoute", "")
 		pr _dist = _currSpeed_ms * _dt;
 
 		// Update position
+		if (_pos isEqualType objNull) then {_pos = getPos _pos}; // WTF why does it complain that _pos is object, not array??
 		_pos = _pos vectorAdd (vectorNormalized (_nextPos vectorDiff _pos) vectorMultiply _dist);
 		T_SETV("pos", _pos);
 
