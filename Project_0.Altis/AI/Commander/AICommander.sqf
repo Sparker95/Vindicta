@@ -1006,12 +1006,13 @@ CLASS("AICommander", "AI")
 
 		// Create intel for new target clusters
 		{
-			pr _intel = _x select TARGET_CLUSTER_ID_INTEL;
+			_x params ["_affinity", "_tcNew"];
+			pr _intel = _tcNew select TARGET_CLUSTER_ID_INTEL;
 			if (IS_NULL_OBJECT(_intel)) then {
 				_intel = NEW("IntelCluster", []);
-				CALLSM2("AICommander", "setIntelClusterProperties", _intel, _x);
+				CALLSM2("AICommander", "setIntelClusterProperties", _intel, _tcNew);
 				CALLM1(_inteldb, "addIntel", _intel);
-				_x set [TARGET_CLUSTER_ID_INTEL, _intel];
+				_tcNew set [TARGET_CLUSTER_ID_INTEL, _intel];
 			};
 		} forEach _tcsNew;
 	} ENDMETHOD;	
@@ -1020,9 +1021,10 @@ CLASS("AICommander", "AI")
 	Method: onTargetClusterMerged
 	Gets called when old clusters get merged into a new one
 	
-	Parameters: _tc
+	Parameters: _tcsOld, _tcNew
 	
-	_tc - the new target cluster
+	_tcsOld - array with old target clusters
+	_tcNew - the new target cluster
 	
 	Returns: nil
 	*/
@@ -2041,7 +2043,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				private _tgtPos = GETV(_x, "pos");
 				private _tgtType = GETV(_x, "type");
 				private _dist = _srcPos distance _tgtPos;
-				if((_tgtType == LOCATION_TYPE_ROADBLOCK and _dist < 3000) or (_tgtType != LOCATION_TYPE_ROADBLOCK and _dist < 10000)) then {
+				if(_dist < 10000) then {
 					private _params = [_srcId, _tgtId];
 					_actions pushBack (NEW("TakeLocationCmdrAction", _params));
 				};
@@ -2139,6 +2141,78 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Patrol"", ""potential_action_count"": %2, ""src_garrisons"": %3}}", _side, count _actions, count _srcGarrisons];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
+		_actions
+	} ENDMETHOD;
+
+	METHOD("generateConstructRoadblockActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
+
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "ConstructLocationCmdrAction"} count _activeActions;
+		//OOP_INFO_1("  Existing patrol actions: %1", _count);
+		if (_count > CMDR_MAX_CONSTRUCT_ACTIONS) exitWith {[]};
+
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
+			private _potentialSrcGarr = _x;
+			// Must be not already busy 
+			!CALLM(_potentialSrcGarr, "isBusy", []) and 
+			// Must be at a location
+			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			// Must not be source of another inprogress take location mission
+			{ 
+				T_PRVAR(activeActions);
+				_activeActions findIf {
+					GET_OBJECT_CLASS(_x) == "ConstructLocationCmdrAction" and
+					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
+				} == NOT_FOUND
+			} and
+			// Must have minimum efficiency available
+			{
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
+				// Must have at least a minimum available eff
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			}
+		};
+
+		// Take potential location positions from the future
+		// In the future there must be no location around these places
+		pr _potentialPositions = T_GETV("newRoadblockPositions");
+		_potentialPositions = _potentialPositions select {
+			pr _locs = CALLM4(_worldFuture, "getNearestLocations", _x, 200, [], []);
+			count _locs == 0 // There are no locations nearby in the future
+		};
+
+		private _strategy = T_GETV("cmdrStrategy");
+		private _actions = [];
+		private _side = T_GETV("side");
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcPos = GETV(_x, "pos");
+			{
+				private _locPos = _x;
+				private _locType = LOCATION_TYPE_ROADBLOCK;
+				// Check strategy
+				// We only want to create those where it makes sense to create them
+				// We check desireability first to limit the amount of potential actions early in our evaluations
+				if (CALLM4(_strategy, "getConstructLocationDesirability", _worldNow, _locPos, _locType, _side) > 0) then {
+					private _dist = _srcPos distance _locPos;
+					if(_dist < 2200) then { // Only consider deploying roadblocks within some distance
+						private _params = [_srcId, _locPos, _locType];
+						_actions pushBack (NEW("ConstructLocationCmdrAction", _params));
+					};
+				};
+			} forEach _potentialPositions;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 ConstructLocation roadblock actions from %2 garrisons to %3 positions", [count _actions ARG count _srcGarrisons ARG count _potentialPositions]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""ConstructLocation"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_positions"": %4}}", _side, count _actions, count _srcGarrisons, count _potentialPositions];
 		OOP_INFO_MSG(_str, []);
 		#endif
 
@@ -2539,12 +2613,16 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				["generateReinforceActions", "generatePatrolActions"]
 			};
 			case CMDR_PLANNING_PRIORITY_LOW: {
-				["generateTakeOutpostActions"]
+				["generateTakeOutpostActions", "generateConstructRoadblockActions"]
 			};
 		};
 		#else
 		// We will plan the shit ouf of this world model
-		private _generators = ["generateAttackActions", "generateReinforceActions", "generatePatrolActions", "generateTakeOutpostActions"];
+		private _generators = [	//"generateAttackActions",
+								//"generateReinforceActions",
+								//"generatePatrolActions",
+								//"generateTakeOutpostActions",
+								"generateConstructRoadblockActions"];
 		#endif
 
 		T_CALLM("selectActions", [_generators ARG _maxNewActions ARG _world ARG _simWorldNow ARG _simWorldFuture]);
@@ -2586,6 +2664,27 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_activeActions deleteAt (_activeActions find _action);
 		};
 	} ENDMETHOD;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2746,7 +2845,49 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		REMOTE_EXEC_CALL_STATIC_METHOD("RadioKeyTab", "staticServerShowKeys", _args, _clientOwner, false);
 	} ENDMETHOD;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// = = = = = = = = = = = = = = Roadblocks and dynamic locations = = = = = = = = = = = = = =
+
+	// Adds a position for commander to consider create a roadblock at
+	METHOD("addRoadblockPosition") {
+		params [P_THISOBJECT, P_POSITION("_pos")];
+
+		T_GETV("newRoadblockPositions") pushBack (+_pos);
+	} ENDMETHOD;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	// - - - - - - - STORAGE - - - - - - -
+
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 

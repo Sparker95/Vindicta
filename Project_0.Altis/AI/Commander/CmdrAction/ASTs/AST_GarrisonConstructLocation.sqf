@@ -76,7 +76,7 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 			case WORLD_TYPE_SIM_FUTURE: {
 				// In the future we have a new location
 				// This garrison is also attached ot the new location
-				private _newLocModel = NEW("LocationModel", [_world, NULL_OBJECT]);
+				private _newLocModel = NEW("LocationModel", [_world ARG NULL_OBJECT]);
 				SETV(_newLocModel, "type", T_GETV("locType"));
 				SETV(_newLocModel, "pos", T_GETV("locPos"));
 				CALLM1(_garr, "joinLocationSim", _newLocModel);
@@ -87,9 +87,13 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 				private _newLoc = NEW("Location", [T_GETV("locPos")]);
 				CALLM1(_newLoc, "setType", T_GETV("locType"));
 				CALLM2(_newLoc, "setBorder", "circle", 100);
-				pr _name = str (GETV(_newLoc, "id"));
+				pr _name = mapGridPosition T_GETV("locPos");
 				CALLM1(_newLoc, "setName", _name);
-				CALLM1(_garr, "joinLocationActual", _newLoc);
+
+				// Register the location with the model
+				private _newLocModel = NEW("LocationModel", [_world ARG _newLoc]);
+
+				CALLM1(_garr, "joinLocationActual", _newLocModel);
 				pr _actual = GETV(_garr, "actual");
 				CALLM2(_actual, "postMethodAsync", "removeBuildResources", [T_GETV("buildRes")]);
 			};

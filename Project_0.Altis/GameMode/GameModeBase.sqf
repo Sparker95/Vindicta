@@ -654,9 +654,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// First generate location modules for any cities/towns etc that don't have them manually placed
 		T_CALLM("createMissingCityLocations", []);
 
-		private _allRoadBlocks = [];
+		// Array of positions
+		// These positions have very high priority if map maker has placed them. We will not delete them.
+		private _predefinedRoadblockPositions = [];
+
+		// Locations which will be processed for potential roadblock positions around them
 		private _locationsForRoadblocks = [];
-		{
+
+		{ // forEach (entities "Project_0_LocationSector");
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
 
@@ -763,7 +768,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 
 			if(_locType == LOCATION_TYPE_ROADBLOCK) then {
-				_allRoadBlocks pushBack [_locSectorPos, _locSectorDir];
+				_predefinedRoadblockPositions pushBack _locSectorPos;
 			} else {
 				if(_locType in [LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_CITY]) then {
 					_locationsForRoadblocks pushBack [_locSectorPos, _side];
@@ -775,14 +780,18 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#endif
 		} forEach (entities "Project_0_LocationSector");
 
-		{
+		// Process locations for roadblocks
+		private _roadblockPositionsAroundLocations = [];
+		{ // forEach _locationsForRoadblocks;
 			_x params ["_pos", "_side"];
 			// TODO: improve this later
-			private _roadBlocks = CALL_STATIC_METHOD("Location", "findRoadblocks", [_pos]) select {
-				private _newRoadBlock = _x;
-				_allRoadBlocks findIf { _x#0 distance _newRoadBlock#0 < 500 } == NOT_FOUND
-			};
+			private _positionsAroundLocation = CALL_STATIC_METHOD("Location", "findRoadblocks", [_pos]);
+			_roadblockPositionsAroundLocations append _positionsAroundLocation;
+			OOP_INFO_2("Roadblock positions around %1 : %2", _pos, _positionsAroundLocation);
+			// Iterate all positions and remove those which are very close to each other
+			private _i = 0;
 
+			/*
 			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
 			{	
 				_x params ["_roadblockPos", "_roadblockDir"];
@@ -795,7 +804,59 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				// Do setType last cos it will update the debug marker for us
 				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
 			} forEach _roadBlocks;
+			*/
+
 		} forEach _locationsForRoadblocks;
+
+		// Iterate created positions
+		// Delete those which are too close to our _predefinedRoadblockPositions
+		// Or too close to other positions
+		private _i = 0;
+		while {_i < (count _roadblockPositionsAroundLocations)} do {
+			private _newPos = _roadblockPositionsAroundLocations select _i;
+
+			// Check if this position is far enough from other positions
+			OOP_INFO_1("Checking roadblock position: %1", _newPos);
+			private _id0 = _roadblockPositionsAroundLocations findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700)};
+			private _id1 = _predefinedRoadblockPositions findIf { !(_x isEqualTo _newPos) && (_x distance _newPos < 700) };
+			if ( (_id0 == NOT_FOUND) && (_id1 == NOT_FOUND) ) then {
+				_i = _i + 1;
+				OOP_INFO_0("  OK");
+			} else {
+				// Too close, delete it
+				_roadblockPositionsAroundLocations deleteAt _i;
+				OOP_INFO_0("  Too close to something else, deleting");
+			};
+		};
+
+		// Final array of roadblock positions
+		private _roadblockPositionsFinal = _roadblockPositionsAroundLocations + _predefinedRoadblockPositions;
+		
+		// Iterate all final positions
+		private _commanders = [];
+		{
+			if (!IS_NULL_OBJECT(T_GETV(_x))) then {_commanders pushBack T_GETV(_x)};
+		} forEach ["AICommanderWest", "AICommanderEast", "AICommanderInd"];
+		
+		{ // foreach _roadblockPositionsFinal			
+			private _pos = _x;
+
+			// Reveal positions to commanders
+			{
+				CALLM1(_x, "addRoadblockPosition", _pos);
+			} forEach _commanders;
+
+			// Create markers for debug
+			#ifndef RELEASE_BUILD
+			private _mrk = createMarker [format ["roadblock_%1", _pos apply {round _x}], _pos];
+			_mrk setMarkerType "mil_triangle";
+			_mrk setMarkerColor "ColorWhite";
+			_mrk setMarkerPos _pos;
+			_mrk setMarkerAlpha 1;
+			_mrk setMarkerText "<Future roadblock>";
+			#endif;
+		} forEach _roadblockPositionsFinal;
+
 	} ENDMETHOD;
 
 	#define ADD_TRUCKS

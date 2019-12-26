@@ -21,6 +21,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 	VARIABLE("startDateVar");
 	VARIABLE("buildRes");
 
+	#ifdef DEBUG_CMDRAI
+	VARIABLE("debugColor");
+	VARIABLE("debugSymbol");
+	#endif
+
 	METHOD("new") {
 		params [P_THISOBJECT, P_NUMBER("_srcGarrID"), P_POSITION("_locPos"), P_DYNAMIC("_locType")];
 
@@ -38,6 +43,11 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		
 		private _startDateVar = T_CALLM1("createVariable", DATE_NOW); // Default to immediate, overriden at updateScore
 		T_SETV("startDateVar", _startDateVar);
+
+		#ifdef DEBUG_CMDRAI
+		T_SETV("debugColor", "ColorBrown");
+		T_SETV("debugSymbol", "loc_Ruin")
+		#endif
 	} ENDMETHOD;
 
 	METHOD("createTransitions") {
@@ -100,7 +110,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 				[CMDR_ACTION_STATE_MOVED],			// From states
 				CMDR_ACTION_STATE_END,				// Success state
 				CMDR_ACTION_STATE_END,				// Fail state
-				_srcGarrIdVar,						// Garrison which will *build* the location
+				_splitGarrIdVar,						// Garrison which will *build* the location
 				T_GETV("locPos"),					// Location position
 				T_GETV("locType"),					// Location type
 				T_GETV("buildRes")					// Amount of build resources to consume
@@ -124,8 +134,8 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
 		private _srcGarrComp = GETV(_srcGarr, "composition");
 
-		diag_log format [" src garr eff: %1", _srcGarrEff];
-		diag_log format ["  src garr comp: %1", _srcGarrComp];
+		//diag_log format [" src garr eff: %1", _srcGarrEff];
+		//diag_log format ["  src garr comp: %1", _srcGarrComp];
 
 		ASSERT_OBJECT(_srcGarr);
 
@@ -204,7 +214,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 
 		// How much to scale the score for distance to target
-		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
+		private _distCoeff = 1; //CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]); // We don't care how far is it really, it's close enough anyway
 		// How much to scale the score for transport requirements
 		private _transportationScore = CALLM1(_srcGarr, "transportationScore", _effRemaining); // We always need transport when constructing something
 
@@ -238,7 +248,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 
 		// Uncomment for some more debug logging
 		 OOP_DEBUG_MSG("[w %1 a %2] %3 construct %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
-		 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG [_tgtLocType ARG _tgtLotPos] ARG [_scorePriority ARG _scoreResource] 
+		 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG [_tgtLocType ARG _tgtLocPos] ARG [_scorePriority ARG _scoreResource] 
 		 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
 
 		// APPLY STRATEGY
@@ -249,10 +259,138 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		T_CALLM("setScore", [_score]);
 
 		#ifdef OOP_INFO
-		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""TakeOutpost"", ""src_garrison"": ""%2"", ""tgt_location"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
-			_side, LABEL(_srcGarr), LABEL(_tgtLoc), _score#0, _score#1, _score#2, _score#3];
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""TakeOutpost"", ""src_garrison"": ""%2"", ""location_pos"": ""%3"", ""score_priority"": %4, ""score_resource"": %5, ""score_strategy"": %6, ""score_completeness"": %7}}", 
+			_side, LABEL(_srcGarr), _tgtLocPos, _score#0, _score#1, _score#2, _score#3];
 		OOP_INFO_MSG(_str, []);
 		#endif
+	} ENDMETHOD;
+
+	/* protected override */ METHOD("updateIntel") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		ASSERT_MSG(CALLM(_world, "isReal", []), "Can only updateIntel from real world, this shouldn't be possible as updateIntel should ONLY be called by CmdrAction");
+
+		T_PRVAR(intelClone);
+		private _intelNotCreated = IS_NULL_OBJECT(_intelClone);
+		if(_intelNotCreated) then
+		{
+			// Create new intel object and fill in the constant values
+			private _intel = NEW("IntelCommanderActionConstructLocation", []);
+
+			T_PRVAR(srcGarrId);
+			private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+			ASSERT_OBJECT(_srcGarr);
+
+			CALLM(_intel, "create", []);
+
+			SETV(_intel, "type", T_GETV("locType"));
+			SETV(_intel, "side", GETV(_srcGarr, "side"));
+			SETV(_intel, "srcGarrison", GETV(_srcGarr, "actual"));
+			SETV(_intel, "posSrc", GETV(_srcGarr, "pos"));
+			SETV(_intel, "posTgt", T_GETV("locPos"));
+			SETV(_intel, "dateDeparture", T_GET_AST_VAR("startDateVar")); // Sparker added this, I think it's allright??
+
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intel]);
+
+			// If we just created this intel then register it now 
+			private _intelClone = CALL_STATIC_METHOD("AICommander", "registerIntelCommanderAction", [_intel]);
+			T_SETV("intelClone", _intelClone);
+
+			// Send the intel to some places that should "know" about it
+			T_CALLM("addIntelAt", [_world ARG GETV(_srcGarr, "pos")]);
+			T_CALLM("addIntelAt", [_world ARG T_GETV("locPos")]);
+
+			// Reveal it to player side
+			if (random 100 < 80) then {
+				CALLSM1("AICommander", "revealIntelToPlayerSide", _intel);
+			};
+		} else {
+			T_CALLM("updateIntelFromDetachment", [_world ARG _intelClone]);
+			CALLM(_intelClone, "updateInDb", []);
+		};
+	} ENDMETHOD;
+
+	METHOD("updateIntelFromDetachment") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_OOP_OBJECT("_intel")];
+
+		ASSERT_OBJECT_CLASS(_world, "WorldModel");
+		//ASSERT_OBJECT_CLASS(_intel, "IntelCommanderActionAttack");
+		
+		// Update progress of the detachment
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		if(_detachedGarrId != MODEL_HANDLE_INVALID) then {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			SETV(_intel, "garrison", GETV(_detachedGarr, "actual"));
+			SETV(_intel, "pos", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "posCurrent", GETV(_detachedGarr, "pos"));
+			SETV(_intel, "strength", GETV(_detachedGarr, "efficiency"));
+
+			// Send intel to the garrison doing this action
+			T_CALLM1("setPersonalGarrisonIntel", _detachedGarr);
+		};
+	} ENDMETHOD;
+
+
+	// Debug drawing
+
+	/* protected override */ METHOD("debugDraw") {
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		T_PRVAR(srcGarrId);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		ASSERT_OBJECT(_srcGarr);
+		private _srcGarrPos = GETV(_srcGarr, "pos");
+
+		private _locPos = T_GETV("locPos");
+		private _locType = T_GETV("locType");
+
+		T_PRVAR(debugColor);
+		T_PRVAR(debugSymbol);
+
+		[_srcGarrPos, _locPos, _debugColor, 8, _thisObject + "_line"] call misc_fnc_mapDrawLine;
+
+		private _centerPos = _srcGarrPos vectorAdd ((_locPos vectorDiff _srcGarrPos) apply { _x * 0.25 });
+		private _mrk = _thisObject + "_label";
+		createmarker [_mrk, _centerPos];
+		_mrk setMarkerType _debugSymbol;
+		_mrk setMarkerColor _debugColor;
+		_mrk setMarkerPos _centerPos;
+		_mrk setMarkerAlpha 1;
+		_mrk setMarkerText T_CALLM("getLabel", [_world]);
+	} ENDMETHOD;
+
+	/* protected override */ METHOD("getLabel") {
+		params [P_THISOBJECT, P_STRING("_world")];
+
+		T_PRVAR(srcGarrId);
+		T_PRVAR(state);
+		private _srcGarr = CALLM(_world, "getGarrison", [_srcGarrId]);
+		private _srcEff = GETV(_srcGarr, "efficiency");
+
+		private _startDate = T_GET_AST_VAR("startDateVar");
+		private _timeToStart = if(_startDate isEqualTo []) then {
+			" (unknown)"
+		} else {
+			private _numDiff = (dateToNumber _startDate - dateToNumber DATE_NOW);
+			if(_numDiff > 0) then {
+				private _dateDiff = numberToDate [0, _numDiff];
+				private _mins = _dateDiff#4 + _dateDiff#3*60;
+
+				format [" (start in %1 mins)", _mins]
+			} else {
+				" (started)"
+			};
+		};
+
+		private _targetName = "New Roadblock";
+		private _detachedGarrId = T_GET_AST_VAR("detachedGarrIdVar");
+		if(_detachedGarrId == MODEL_HANDLE_INVALID) then {
+			format ["%1 %2%3 -> %4%5", _thisObject, LABEL(_srcGarr), _srcEff, _targetName, _timeToStart]
+		} else {
+			private _detachedGarr = CALLM(_world, "getGarrison", [_detachedGarrId]);
+			private _detachedEff = GETV(_detachedGarr, "efficiency");
+			format ["%1 %2%3 -> %4%5 -> %6%7", _thisObject, LABEL(_srcGarr), _srcEff, LABEL(_detachedGarr), _detachedEff, _targetName, _timeToStart]
+		};
 	} ENDMETHOD;
 
 ENDCLASS;

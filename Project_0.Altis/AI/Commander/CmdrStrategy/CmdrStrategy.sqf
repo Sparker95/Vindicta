@@ -138,7 +138,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_POSITION("_locPos"), P_DYNAMIC("_locType"), P_SIDE("_side")];
 
 		private _rawActivity = CALLM(_worldNow, "getActivity", [_locPos ARG 3500]);
-		OOP_DEBUG_1(" WorldNow activity: %1", _rawActivity);
+		//OOP_DEBUG_1(" WorldNow activity: %1", _rawActivity);
 		private _activity = log (0.09 * _rawActivity + 1);
 
 		private _priority = 1;

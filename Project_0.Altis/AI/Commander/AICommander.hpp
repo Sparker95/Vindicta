@@ -145,10 +145,11 @@
 #define CMDR_EXT_REINF_INTERVAL_MINUTES 45
 
 // Max amount of simultaneous actions
-#define CMDR_MAX_TAKE_OUTPOST_ACTIONS 10
-#define CMDR_MAX_REINFORCE_ACTIONS 4
+#define CMDR_MAX_TAKE_OUTPOST_ACTIONS 3
+#define CMDR_MAX_REINFORCE_ACTIONS 3
 //#define CMDR_MAX_ATTACK_ACTIONS 100 QRFs are unlimited
 #define CMDR_MAX_PATROL_ACTIONS 6
+#define CMDR_MAX_CONSTRUCT_ACTIONS 3
 
 // Max amount of units at airfields
 #define CMDR_MAX_INF_AIRFIELD 80
