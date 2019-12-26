@@ -1676,7 +1676,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Create a little composition at this place
-		[_posWorld] call misc_fnc_createCampComposition;
+		// We don't want to create this composition for roadblocks though
+		if (_locType in [LOCATION_TYPE_OUTPOST, LOCATION_TYPE_CAMP]) then {
+			[_posWorld] call misc_fnc_createCampComposition;
+		};
 
 		// Create the location
 		pr _loc = NEW_PUBLIC("Location", [_pos]);
