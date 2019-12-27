@@ -690,6 +690,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		T_SETV("ambientMissions", []);
 
+		// Broadcast public variables
+		PUBLIC_VAR(_thisObject, "nRecruits");
+
 		true
 	} ENDMETHOD;
 

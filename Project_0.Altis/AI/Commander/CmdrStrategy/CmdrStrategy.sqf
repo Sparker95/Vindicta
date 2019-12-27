@@ -122,6 +122,53 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	} ENDMETHOD;
 
 	/*
+	Method: (virtual) getConstructLocationDesirability
+	Return a value indicating the commanders desire to construct a location.
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, the current world model (only resource requirements of new and planned actions are applied).
+		_locPos - <Model.LocationModel>, location being evaluated.
+		_locType - location type
+		_side - Side, side of the commander being evaluated.
+	
+	Returns: Number, the relative desireability of the location as compared to other locations. This value has no 
+	specific meaning or units.
+	*/
+	/* virtual */ METHOD("getConstructLocationDesirability") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_POSITION("_locPos"), P_DYNAMIC("_locType"), P_SIDE("_side")];
+
+		private _rawActivity = CALLM(_worldNow, "getActivity", [_locPos ARG 3500]);
+		//OOP_DEBUG_1(" WorldNow activity: %1", _rawActivity);
+		private _activity = log (0.09 * _rawActivity + 1);
+
+		private _priority = 1;
+		switch(_locType) do {
+			// outposts are kind of harder to construct
+			case LOCATION_TYPE_OUTPOST: {
+				if (_rawActivity > 20) then {
+					_priority = 1;
+				};
+			};
+
+			// Roadblock shuld be constructed very fast, so we construct them first of all
+			case LOCATION_TYPE_ROADBLOCK: {
+				if (_rawActivity > 3) then {
+					_priority = 4;
+				};
+			};
+
+			// No other locations can be constructed
+			default { _priority = 0 };
+		};
+
+		if (_rawActivity > 1) then {
+			_activity*_priority
+		} else {
+			0
+		};
+	} ENDMETHOD;
+
+	/*
 	Method: (virtual) getQRFScore
 	Return a value indicating the commanders desire to send a QRF in response to the specified cluster,
 	from the specified garrison.
@@ -248,6 +295,18 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			P_OOP_OBJECT("_worldFuture"),
 			P_OOP_OBJECT("_srcGarr"),
 			P_OOP_OBJECT("_tgtLoc"),
+			P_ARRAY("_detachEff")];
+		_defaultScore
+	} ENDMETHOD;
+
+	/* virtual */ METHOD("getConstructLocationScore") {
+		params [P_THISOBJECT,
+			P_OOP_OBJECT("_action"), 
+			P_ARRAY("_defaultScore"),
+			P_OOP_OBJECT("_worldNow"),
+			P_OOP_OBJECT("_worldFuture"),
+			P_OOP_OBJECT("_srcGarr"),
+			P_POSITION("_tgtLocPos"),
 			P_ARRAY("_detachEff")];
 		_defaultScore
 	} ENDMETHOD;

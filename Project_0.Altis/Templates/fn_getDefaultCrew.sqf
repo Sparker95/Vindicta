@@ -12,23 +12,31 @@ call //Check what kind of crew is needed for this vehicle
 	if(_subcatID in T_VEH_need_crew) exitWith { //Some armored vehicle needs crewmen
 		//_crewClass = [_template, T_INF, T_INF_crew, 0] call t_fnc_select;
 		for "_j" from 0 to (_np + _ncp + _nt - 1) do {
-			_types pushBack [T_INF, T_INF_crew, 0];
+			//_types pushBack [T_INF, T_INF_crew, 0];
+			// Temp fix until cmdr can allocate proper crew men
+			_types pushBack [T_INF, T_INF_rifleman, 0];
 		};
 	};
 	if(_subcatID in T_VEH_need_heli_crew) exitWith { //Helicopter crew is needed. Pilot and copilot get pilot_heli classes, gunners get crew_heli classes.
 		//_crewClass = [_template, T_INF, T_INF_pilot_heli, 0] call t_fnc_select;
 		for "_j" from 0 to (_np + _ncp  - 1) do {
-			_types pushBack [T_INF, T_INF_pilot_heli, 0];
+			//_types pushBack [T_INF, T_INF_pilot_heli, 0];
+			// Temp fix until cmdr can allocate proper crew men
+			_types pushBack [T_INF, T_INF_rifleman, 0];
 		};
 		//_crewClass = [_template, T_INF, T_INF_crew_heli, 0] call t_fnc_select;
 		for "_j" from 0 to (_nt  - 1) do {
-			_types pushBack [T_INF, T_INF_crew_heli, 0];
+			//_types pushBack [T_INF, T_INF_crew_heli, 0];
+			// Temp fix until cmdr can allocate proper crew men
+			_types pushBack [T_INF, T_INF_rifleman, 0];
 		};
 	};
 	if(_subcatID in T_VEH_need_plane_crew) exitWith { //Plane pilots are needed
 		//_crewClass = [_template, T_INF, T_INF_pilot, 0] call t_fnc_select;
 		for "_j" from 0 to (_np + _ncp + _nt - 1) do {
-			_types pushBack [T_INF, T_INF_pilot, 0];
+			//_types pushBack [T_INF, T_INF_pilot, 0];
+			// Temp fix until cmdr can allocate proper crew men
+			_types pushBack [T_INF, T_INF_rifleman, 0];
 		};
 	};
 	if(_subcatID in T_VEH_static) exitWith { //Static vehicles will have riflemen assigned

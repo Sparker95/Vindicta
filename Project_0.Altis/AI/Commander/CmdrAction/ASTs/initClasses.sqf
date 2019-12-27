@@ -7,3 +7,4 @@ call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ASTs\AST_MoveGar
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ASTs\AST_SelectFallbackTarget.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ASTs\AST_SplitGarrison.sqf";
 call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ASTs\AST_WaitGarrison.sqf";
+call compile preprocessFileLineNumbers "AI\Commander\CmdrAction\ASTs\AST_GarrisonConstructLocation.sqf";

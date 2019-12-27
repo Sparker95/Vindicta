@@ -152,7 +152,7 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 			_allocationFlags append [	SPLIT_VALIDATE_TRANSPORT,		// Make sure we can transport ourselves
 										// Also allocate a minimum amount of transport as an external requirement, not only for ourselves but for the future
 										SPLIT_VALIDATE_TRANSPORT_EXT];
-			pr _payloadWhitelistMask = T_comp_ground_or_infantry_mask;	// Take infantry or vehicles as an attacking force
+			_payloadWhitelistMask = T_comp_ground_or_infantry_mask;	// Take infantry or vehicles as an attacking force
 		};
 
 		_enemyEff set [T_EFF_transport, EFF_GARRISON_MIN_EFF#T_EFF_transport];

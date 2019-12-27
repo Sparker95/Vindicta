@@ -372,7 +372,7 @@ CLASS("IntelLocation", "Intel")
 		CALLM1(_mapMarker, "setNotification", _enable);
 	} ENDMETHOD;
 
-	// 0.1 WIP: dont rely on this
+	//  
 	METHOD("getShortName") {
 		"IntelLocation"
 	} ENDMETHOD;
@@ -554,7 +554,7 @@ CLASS("IntelCommanderAction", "Intel")
 		T_CALLM1("showOnMap", false);
 	} ENDMETHOD;
 
-	// 0.1 WIP: dont rely on this
+	//  
 	METHOD("getShortName") {
 		"Action"
 	} ENDMETHOD;
@@ -652,26 +652,35 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 	*/
 	VARIABLE_ATTR("tgtGarrison", [ATTR_SERIALIZABLE]);
 
-	// 0.1 WIP: dont rely on this
+	//  
 	METHOD("getShortName") {
 		"Reinforce"
 	} ENDMETHOD;
 ENDCLASS;
 
 /*
-	Class: Intel.IntelCommanderActionBuild
+	Class: Intel.IntelCommanderActionConstructLocation
 	Intel about action to build something.
 */
-CLASS("IntelCommanderActionBuild", "IntelCommanderAction")
+CLASS("IntelCommanderActionConstructLocation", "IntelCommanderAction")
 	/* 
 		variable: type
-		The type of object that will be built. Format is unknown now!
+		The type of location that will be built. See location types.
 	*/
 	VARIABLE_ATTR("type", [ATTR_SERIALIZABLE]);
 
-	// 0.1 WIP: dont rely on this
+	/* 
+		variable: srcGarrison
+		The source garrison that sent the reinforcements. Probably players have no use to this.
+	*/
+	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+
+	//  
 	METHOD("getShortName") {
-		"Build"
+		params [P_THISOBJECT];
+		pr _type = T_GETV("type");
+		// pr _typeStr = CALLSM1("Location", "getTypeString", _type);
+		"Make RB" // Temp, since we only deploy roadblocks now anyway
 	} ENDMETHOD;
 ENDCLASS;
 
@@ -695,7 +704,7 @@ CLASS("IntelCommanderActionAttack", "IntelCommanderAction")
 	VARIABLE_ATTR("tgtLocation", [ATTR_SERIALIZABLE]);
 	VARIABLE_ATTR("tgtClusterId", [ATTR_SERIALIZABLE]);
 
-	// 0.1 WIP: dont rely on this
+	//  
 	METHOD("getShortName") {
 		"Attack"
 	} ENDMETHOD;
@@ -786,7 +795,7 @@ Class: Intel.IntelCommanderActionRecon
 The commander is planning something so he sends some recon squads!
 */
 CLASS("IntelCommanderActionRecon", "IntelCommanderAction")
-	// 0.1 WIP: dont rely on this
+	//  
 	METHOD("getShortName") {
 		"Recon"
 	} ENDMETHOD;

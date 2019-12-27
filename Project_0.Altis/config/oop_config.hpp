@@ -25,7 +25,7 @@
 //#define RELEASE_BUILD
 
 // Accelerates virtual route speed
-// Increases planning frequency
+// Increases planning frequency, plans all action types on each iteration
 //#define CMDR_AI_TESTING
 
 // Disables planning for cmdr ai, in case we want to test something

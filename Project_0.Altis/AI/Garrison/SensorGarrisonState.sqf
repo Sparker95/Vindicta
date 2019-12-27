@@ -107,10 +107,15 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		pr _enoughHumansToTurretAllVehicles = _nInfGarrison > (_nDriversAll + _nTurretsAll);
 		[_worldState, WSP_GAR_ENOUGH_HUMANS_TO_TURRET_ALL_VEHICLES, _enoughHumansToTurretAllVehicles] call ws_setPropertyValue;
 
-		// Check if there are anough seats for all humans
+		// Check if there are enough seats for all humans
 		pr _nSeatsAll = _nCargoAll + _nTurretsAll + _nDriversALl;
 		pr _enoughVehicles = _nInfGarrison <= _nSeatsAll;
 		[_worldState, WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, _enoughVehicles] call ws_setPropertyValue;
+
+		// Check if all vehicle groups are merged or not
+		pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC]);
+		pr _merged = (count _vehGroups) <= 1;
+		[_worldState, WSP_GAR_VEHICLE_GROUPS_MERGED, _merged] call ws_setPropertyValue;
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 		
