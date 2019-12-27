@@ -247,6 +247,7 @@ CLASS("VirtualRoute", "")
 		T_PRVAR(last_t);
 		// Time since last update
 		pr _dt = time - _last_t;
+		_dt = _dt min 30; // We want to limit the max amount of distance we can travel, otherwise it will appear that AIs teleport
 		T_SETV("last_t", time);
 
 		// How far to the next node?
