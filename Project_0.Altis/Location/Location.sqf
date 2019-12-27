@@ -48,7 +48,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("capacityCiv", [ATTR_SAVE]); 				// Civilian capacity
 				VARIABLE("cpModule"); 									// civilian module, might be replaced by custom script
 	/* save */	VARIABLE_ATTR("isBuilt", [ATTR_SAVE]); 					// true if this location has been build (used for roadblocks)
-				VARIABLE("buildObjects"); 								// Array with objects we have built	
 	/* save */	VARIABLE_ATTR("gameModeData", [ATTR_SAVE]);				// Custom object that the game mode can use to store info about this location
 				VARIABLE("hasPlayers"); 								// Bool, means that there are players at this location, updated at each process call
 				VARIABLE("hasPlayerSides"); 							// Array of sides of players at this location
@@ -94,7 +93,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("capacityCiv", 0);
 		T_SETV("cpModule",objnull);
 		SET_VAR_PUBLIC(_thisObject, "isBuilt", true); // Location is built at start, except for roadblocks, it's changed in setType function
-		T_SETV("buildObjects", []);
 		T_SETV("children", []);
 		T_SETV("parent", NULL_OBJECT);
 		SET_VAR_PUBLIC(_thisObject, "parent", NULL_OBJECT);
@@ -1330,7 +1328,6 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
 
 		// Set default values of variables whic hwere not saved
-		T_SETV("buildObjects", []);
 		T_SETV("hasPlayers", false);
 		T_SETV("hasPlayerSides", []);
 		T_SETV("objects", []);
@@ -1363,6 +1360,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_hO = _type createVehicle [0, 0, 0];
 				_hO setPosWorld _posWorld;
 				_hO setVectorDirAndUp [_vDir, _vUp];
+				_hO enableDynamicSimulation true;
 			} else {
 				_hO = _objs#0;
 			};

@@ -167,6 +167,13 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 			T_CALLM("setScore", [ZERO_SCORE]);
 		};
 
+		// Bail if in the future there will be a location already
+		private _locs = CALLM4(_worldFuture, "getNearestLocations", _tgtLocPos, 200, [], []);
+		if (count _locs > 0) exitWith {
+			OOP_DEBUG_0("There is already a location at this place in the future");
+			T_CALLM("setScore", [ZERO_SCORE]);
+		};
+
 		// Set up flags for allocation algorithm
 		private _allocationFlags = [SPLIT_VALIDATE_ATTACK, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_CREW, SPLIT_VALIDATE_CREW_EXT, SPLIT_VALIDATE_TRANSPORT];
 		private _payloadWhitelistMask = T_comp_ground_or_infantry_mask;	// Take only inf or ground vehicles as an attacking force

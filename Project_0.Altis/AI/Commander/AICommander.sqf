@@ -43,6 +43,9 @@ CLASS("AICommander", "AI")
 	// Potential positions for new locations
 	/* save */ VARIABLE_ATTR("newRoadblockPositions", [ATTR_SAVE]);
 
+	// Will enable intel interception all the time
+	VARIABLE("cheatIntelInterception");
+
 	#ifdef DEBUG_CLUSTERS
 	VARIABLE("nextMarkerID");
 	VARIABLE("clusterMarkers");
@@ -139,6 +142,9 @@ CLASS("AICommander", "AI")
 
 		// Roadblock positions
 		T_SETV("newRoadblockPositions", []);
+
+		//
+		T_SETV("cheatIntelInterception", false);
 	} ENDMETHOD;
 	
 	METHOD("_initSensors") {
@@ -645,6 +651,11 @@ CLASS("AICommander", "AI")
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_POSITION("_pos"), P_STRING("_radioKey")];
 
 		OOP_INFO_1("INTERCEPT INTEL AT: %1", _this);
+
+		if (T_GETV("cheatIntelInterception")) exitWith {
+			T_CALLM2("inspectIntel", _intel, INTEL_METHOD_RADIO);
+			OOP_INFO_0("  cheated intel inter interception");
+		};
 
 		// Check if we have the radio key
 		pr _ourKnownEnemyKeys = T_GETV("enemyRadioKeys");
@@ -2166,7 +2177,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			!CALLM(_potentialSrcGarr, "isBusy", []) and 
 			// Must be at a location
 			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
-			// Must not be source of another inprogress take location mission
+			// Must not be source of another mission
 			{ 
 				T_PRVAR(activeActions);
 				_activeActions findIf {
@@ -2525,6 +2536,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			};
 
 			_scoresAndActions sort DESCENDING;
+
+			OOP_DEBUG_MSG("Scores of all actions:", []);
+			for "_i" from 0 to ((count _scoresAndActions) - 1) do {
+				private _scoreAndAction = _scoresAndActions select _i;
+				OOP_DEBUG_MSG(" %1", [_scoreAndAction]);
+			};
 
 			// _newActions = [_newActions, [], { CALLM(_x, "getFinalScore", []) }, "DECEND"] call BIS_fnc_sortBy;
 
@@ -3006,6 +3023,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Load radio key grid
 		pr _radioKeyGrid = T_GETV("radioKeyGrid");
 		CALLM1(_storage, "load", _radioKeyGrid);
+
+		//
+		T_SETV("cheatIntelInterception", false);
 
 		true
 	} ENDMETHOD;

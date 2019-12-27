@@ -31,11 +31,14 @@ CLASS("GoalGarrisonRelax", "Goal")
 
 		// If groups are merged, split them
 		// Split them anyway every time, because we currently don't update the world state property value periodically anyway
+		// :// It seems to break something, let's disable it for now :(
 		//if ([_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, true] call ws_propertyExistsAndEquals) then {
+			/*
 			pr _parameters = [[TAG_MERGE, false]];
 			pr _args = [_AI, _parameters];
 			pr _actionSplit = NEW("ActionGarrisonMergeVehicleGroups", _args);
 			CALLM1(_actionSerial, "addSubactionToBack", _actionSplit);
+			*/
 		//};
 
 		// Add final relaxa(ct)ion

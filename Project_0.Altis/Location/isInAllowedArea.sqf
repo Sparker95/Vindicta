@@ -16,7 +16,16 @@ Returns: nil
 
 params [ ["_thisObject", "", [""]], ["_pos", objNull, [objNull, []]]];
 
-if(T_GETV("type") in [LOCATION_TYPE_CITY, LOCATION_TYPE_ROADBLOCK]) exitWith { true };
+pr _type = T_GETV("type");
+
+// We can be at city obviously
+if (_type == LOCATION_TYPE_CITY) exitWith { true };
+
+// We can only be on road if at the roadblock
+// Or not far away from it
+if (_type == LOCATION_TYPE_ROADBLOCK) exitWith {
+	(isOnRoad _pos) || (count (_pos nearRoads 8) > 0)
+};
 
 pr _areas = T_GETV("allowedAreas");
 

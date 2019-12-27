@@ -130,6 +130,20 @@ pr0_fnc_toggleMarkers = {
 	};
 }] call pr0_fnc_addDebugMenuItem;
 
+["Commander", "Enable Radio Intel Interception Cheat", {
+	[[], {
+		// {
+		// 	_x call OOP_dumpAsJson;
+		// } forEach CALLSM0("Location", "getAll");
+		systemChat "Radio intel will be always intercepted now, regardless of cryptokeys or actual owned antennas.";
+		{
+			if (!isNil "_x") then {
+				SETV(_x, "cheatIntelInterception", true);
+			};
+		} forEach [gAICommanderEast, gAICommanderInd, gAICommanderWest];
+	} ] remoteExec ["call", 2];
+}] call pr0_fnc_addDebugMenuItem;
+
 #else
 
 pr0_fnc_addDebugMenuItem = {};

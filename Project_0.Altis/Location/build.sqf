@@ -92,14 +92,13 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	// Build it!	
 	pr _roadDir = [_road] call misc_fnc_getRoadDirection;
 	pr _objects = [_roadPos, _roadDir, _objects] call BIS_fnc_ObjectsMapper;
-	T_SETV("buildObjects", _objects);
-
-	// Disable simulation for the objects we are not spawned
-	if (!T_GETV("spawned")) then {
-		{
-			_x enableSimulationGlobal false;
-		} forEach _objects;
-	};
+	
+	// Add all the objects to the location
+	// Enable their dynamic simulation
+	{
+		T_CALLM1("addObject", _x);
+		_x enableDynamicSimulation true;
+	} forEach _objects;
 
 	// The End!
 	SET_VAR_PUBLIC(_thisObject, "isBuilt", true);

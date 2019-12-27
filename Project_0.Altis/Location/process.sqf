@@ -24,11 +24,6 @@ switch (T_GETV("spawned")) do {
 
 			CALLM0(_thisObject, "spawn");
 
-			// Enable simulation for the build objects
-			{
-				_x enableSimulationGlobal true;
-			} forEach T_GETV("buildObjects");
-
 			// Set timer interval
 			CALLM1(_timer, "setInterval", 7);
 			
@@ -47,11 +42,6 @@ switch (T_GETV("spawned")) do {
 			OOP_INFO_0("Despawning...");
 			
 			CALLM0(_thisObject, "despawn");
-			
-			// Disable simulation for the built objects
-			{
-				_x enableSimulationGlobal false;
-			} forEach T_GETV("buildObjects");
 
 			T_SETV("spawned", false);
 			T_SETV("hasPlayers", false);
