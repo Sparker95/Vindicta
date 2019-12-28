@@ -55,10 +55,11 @@ params ["_display"];
 
 _display ctrlCreate ["LoadingScreenGroup", -1];
 
-// Author list
-private _ctrl = _display displayCtrl 12366;
+/*
+//Author list
+private _ctrl = _display displayCtrl 64599;
 private _names = ["Sparker", "BillW", "Jeroen Not", "Marvis", "Sen", "Dusty", "Sebastian"];
-private _text = "By ";
+private _text = "A mission created by ";
 {
 	_text = _text + _x;
 	if (_foreachindex < ((count _names) - 1)) then {
@@ -67,16 +68,22 @@ private _text = "By ";
 } forEach (_names call BIS_fnc_arrayShuffle);
 _ctrl ctrlSetText _text;
 
+/*
 // Special msg for Marvis
  if (profileName == "Marvis") then {
 	private _ctrl = _display displayCtrl 6654;
 	_ctrl ctrlSetText "Marvis, make a nice loading screen for us some day plz :3";
- };
+ }; 
+ */
 
- // Game title and version
- private _ctrl = _display displayCtrl 6644;
+
+ // version number
+ private _ctrl = _display displayCtrl 64599;
  private _versionStr = 0 call misc_fnc_getVersion;
  if (! isNil "_version") then {
-	private _text = format ["Vindicta v%1", _versionStr];
+	private _text = format ["v%1", _versionStr];
 	_ctrl ctrlSetText _text;
- };
+ }; 
+ 
+
+ 
