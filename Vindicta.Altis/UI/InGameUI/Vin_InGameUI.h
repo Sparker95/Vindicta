@@ -1,6 +1,8 @@
 #include "InGameUI_Macros.h"
 #include "..\Resources\UIProfileColors.h"
 
+#define TEXTSIZE_MED safeZoneH*0.017
+
 #define __ROW_H 0.025
 
 class Vin_InGameUI
@@ -18,12 +20,13 @@ class Vin_InGameUI
 		class VIN_ResourceText : MUI_BASE
 		{
 			IDC = IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES; 
-			x = safeZoneX + safeZoneW * 0.256; 
+			x = safeZoneX + safeZoneW * 0.659; 
 			y = safeZoneY + safeZoneH * 0.023; 
 			w = safeZoneW * 0.094; 
-			h = safeZoneH * 0.020; 
+			h = safeZoneH * 0.020;  
 			text = "9 999 999 999"; 
 			font = "PuristaMedium";
+			sizeEx = TEXTSIZE_MED;
 			style = ST_LEFT;
 			colorText[] = MUIC_WHITE;
 		};
@@ -31,12 +34,13 @@ class Vin_InGameUI
 		class VIN_LocationText : MUI_BASE
 		{
 			IDC = IDC_INGAME_STATIC_LOCATION_NAME; 
-			x = safeZoneX + safeZoneW * 0.350; 
+			x = safeZoneX + safeZoneW * 0.221; 
 			y = safeZoneY + safeZoneH * 0.023; 
 			w = safeZoneW * 0.149; 
-			h = safeZoneH * 0.020;  
+			h = safeZoneH * 0.020;    
 			text = "Camp Really F**king Long  Name"; 
 			font = "PuristaMedium";
+			sizeEx = TEXTSIZE_MED;
 			style = ST_LEFT;
 			colorText[] = MUIC_WHITE;
 		};
@@ -44,13 +48,14 @@ class Vin_InGameUI
 		class VIN_UndercoverHint : MUI_BASE 
 		{
 			IDC = IDC_U_SUSPICION_TEXT; 
-			x = safeZoneX + safeZoneW * 0.515; 
+			x = safeZoneX + safeZoneW * 0.378; 
 			y = safeZoneY + safeZoneH * 0.023; 
 			w = safeZoneW * 0.242; 
-			h = safeZoneH * 0.020; 
+			h = safeZoneH * 0.020;  
 			text = "UNDERCOVER"; 
 			font = "PuristaMedium";
-			style = ST_LEFT;
+			sizeEx = TEXTSIZE_MED;
+			style = ST_CENTER;
 			colorText[] = MUIC_WHITE;
 		};
 
@@ -59,10 +64,10 @@ class Vin_InGameUI
 
 			type = 8;
 			IDC = IDC_U_SUSPICION_STATUSBAR; 
-			x = safeZoneX + safeZoneW * 0.515; 
-			y = safeZoneY + safeZoneH * 0.016; 
+			x = safeZoneX + safeZoneW * 0.432; 
+			y = safeZoneY + safeZoneH * 0.018; 
 			w = safeZoneW * 0.134; 
-			h = safeZoneH * 0.002;
+			h = safeZoneH * 0.002; 
 			style = 0;
 			colorBar[] = {1,1,1,1};
 			colorFrame[] = {0.2,0.2,0.2,0.2};
@@ -73,11 +78,11 @@ class Vin_InGameUI
 
 		class VIN_ResourceDescr : MUI_BASE
 		{
-			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.256; 
+			IDC = IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR; 
+			x = safeZoneX + safeZoneW * 0.659; 
 			y = safeZoneY + safeZoneH * 0.011; 
 			w = safeZoneW * 0.094; 
-			h = safeZoneH * 0.012; 
+			h = safeZoneH * 0.012;  
 			text = "CONSTRUCTION RESOURCES";
 			sizeEx = safeZoneH*0.012;
 			font = "PuristaSemibold"; 
@@ -87,10 +92,10 @@ class Vin_InGameUI
 
 		class VIN_LocationDescr : MUI_BASE
 		{
-			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.350; 
+			IDC = IDC_INGAME_STATIC_LOCATION_NAME_DESCR; 
+			x = safeZoneX + safeZoneW * 0.221; 
 			y = safeZoneY + safeZoneH * 0.011; 
-			w = safeZoneW * 0.134; 
+			w = safeZoneW * 0.149; 
 			h = safeZoneH * 0.012; 
 			text = "LOCATION"; 
 			sizeEx = safeZoneH*0.012;

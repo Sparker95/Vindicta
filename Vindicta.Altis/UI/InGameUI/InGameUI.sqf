@@ -55,7 +55,7 @@ CLASS("InGameUI", "")
 		if (_value < 0) then {
 			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText "";
 		} else {
-			pr _text = format ["Construction resources: %1", _value];
+			pr _text = format ["%1", _value];
 			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText _text;
 		};
 	} ENDMETHOD;
@@ -82,8 +82,8 @@ CLASS("InGameUI", "")
 			_ctrl ctrlShow _enable;
 		} forEach [	IDC_INGAME_STATIC_LOCATION_NAME,
 					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES,
-					IDC_U_SUSPICION_STATUSBAR,
-					IDC_U_SUSPICION_TEXT]
+					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR,
+					IDC_INGAME_STATIC_LOCATION_NAME_DESCR]
 	} ENDMETHOD;
 
 ENDCLASS;
