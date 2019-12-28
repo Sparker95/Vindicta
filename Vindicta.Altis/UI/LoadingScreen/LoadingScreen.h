@@ -22,8 +22,7 @@ class LoadingScreenGroup : MUI_GROUP
 			w = safeZoneW * 1; 
 			h = safeZoneH * 1; 
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
-			text = "UI\Images\Screenshot.paa"; 
-
+			text = "\z\vindicta\addons\ui\Pictures\Screenshot.paa";
 		};
 
 		class LS_Logo : RSCPICTURE {
@@ -34,7 +33,7 @@ class LoadingScreenGroup : MUI_GROUP
 			w = safeZoneW * 0.204; 
 			h = safeZoneH * 0.090; 
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
-			text = "UI\Images\VindictaLogo.paa"; 
+			text = "\z\vindicta\addons\ui\Pictures\VindictaLogo.paa";
 			colorText[] = MUIC_MISSION;
 		};
 
