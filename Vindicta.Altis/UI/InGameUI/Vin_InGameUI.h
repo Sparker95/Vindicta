@@ -1,4 +1,5 @@
 #include "InGameUI_Macros.h"
+#include "..\Resources\UIProfileColors.h"
 
 #define __ROW_H 0.025
 
@@ -32,8 +33,8 @@ class Vin_InGameUI
 			IDC = IDC_INGAME_STATIC_LOCATION_NAME; 
 			x = safeZoneX + safeZoneW * 0.350; 
 			y = safeZoneY + safeZoneH * 0.023; 
-			w = safeZoneW * 0.134; 
-			h = safeZoneH * 0.020; 
+			w = safeZoneW * 0.149; 
+			h = safeZoneH * 0.020;  
 			text = "Camp Really F**king Long  Name"; 
 			font = "PuristaMedium";
 			style = ST_LEFT;
@@ -78,7 +79,8 @@ class Vin_InGameUI
 			w = safeZoneW * 0.094; 
 			h = safeZoneH * 0.012; 
 			text = "CONSTRUCTION RESOURCES";
-			font = "PuristaMedium"; 
+			sizeEx = safeZoneH*0.012;
+			font = "PuristaSemibold"; 
 			style = ST_LEFT;
 			colorText[] = MUIC_WHITE;
 		};
@@ -91,7 +93,8 @@ class Vin_InGameUI
 			w = safeZoneW * 0.134; 
 			h = safeZoneH * 0.012; 
 			text = "LOCATION"; 
-			font = "PuristaMedium";
+			sizeEx = safeZoneH*0.012;
+			font = "PuristaSemibold";
 			style = ST_LEFT;
 			colorText[] = MUIC_WHITE;
 		};

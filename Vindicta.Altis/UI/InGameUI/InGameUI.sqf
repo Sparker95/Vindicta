@@ -60,6 +60,7 @@ CLASS("InGameUI", "")
 		};
 	} ENDMETHOD;
 
+/*
 	METHOD("setLocationCapacityInf") {
 		params [P_THISOBJECT, P_NUMBER("_capacity")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
@@ -70,6 +71,7 @@ CLASS("InGameUI", "")
 			(_display displayCtrl IDC_INGAME_STATIC_MAX_INF) ctrlSetText _text;
 		};
 	} ENDMETHOD;
+*/
 
 	METHOD("enableLocationPanel") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
@@ -80,8 +82,8 @@ CLASS("InGameUI", "")
 			_ctrl ctrlShow _enable;
 		} forEach [IDC_INGAME_STATIC_LOCATION_NAME,
 					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES,
-					IDC_INGAME_STATIC_MAX_INF,
-					IDC_INGAME_STATIC_LOCATION_BACKGROUND]
+					IDC_U_SUSPICION_STATUSBAR,
+					IDC_U_SUSPICION_TEXT]
 	} ENDMETHOD;
 
 ENDCLASS;
