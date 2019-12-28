@@ -36,9 +36,12 @@ Comments after each macro refer to default presets in in-game OPTIONS/GAME/COLOR
 #define MUIC_WHITE {1,1,1,1}
 #define MUIC_GREY {0.3,0.3,0.3,0.9}
 #define MUIC_TXT_DISABLED {0.5,0.5,0.5,1.0}
+#define MUIC_MISSION {0.94, 0.24, 0.16, 1.0}
+
 
 // Mission UI Control classes base colors, for SQF
 #define MUIC_COLOR_TRANSPARENT [0,0,0,0]
 #define MUIC_COLOR_BLACK [0,0,0,1]
 #define MUIC_COLOR_BLACKTRANSP [0,0,0,0.7]
 #define MUIC_COLOR_WHITE [1,1,1,1]
+#define MUIC_COLOR_MISSION [0.94, 0.24, 0.16, 1.0]
