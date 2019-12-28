@@ -29,7 +29,7 @@ class LoadingScreenGroup : MUI_GROUP
 		class LS_Logo : RSCPICTURE {
 
 			IDC = -1; 
-			x = safeZoneW * 0.792; 
+			x = safeZoneW * 0.780; 
 			y = safeZoneH * 0.835; 
 			w = safeZoneW * 0.204; 
 			h = safeZoneH * 0.090; 
