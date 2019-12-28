@@ -2,7 +2,7 @@
 
 cd /d "%~dp0"
 REM use CALL command to call multiple .bat files!
-set missionFolder=Project_0.Altis
+set missionFolder=Vindicta.Altis
 
 call initClassesAI.bat %missionFolder% AI\Garrison\
 echo Generated garrison classes!

@@ -4,7 +4,7 @@ REM this use a dev.cfg config at root of arma to set the resolution and width of
 
 @echo off
 
-title Project_0.Client.dev Restarter
+title Vindicta.Client.dev Restarter
 cls
 
 E:
@@ -15,7 +15,7 @@ echo Killing Arma3_x64.exe
 taskkill /F /IM Arma3_x64.exe /T
 
 echo(%time%) start arma
-start Arma3_x64.exe -name=dev -window -cfg=dev.cfg -mod="E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@CBA_A3;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@ace;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@Intercept Minimal Dev;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\@Arma-ofstream;" -world=empty -noSplash -skipIntro -exThreads=7 -enableHT -hugePages -noPause "C:\Users\sentepu\Documents\Arma 3 - Other Profiles\dev\mpmissions\Project_0\Project_0.Altis\mission.sqm"
+start Arma3_x64.exe -name=dev -window -cfg=dev.cfg -mod="E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@CBA_A3;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@ace;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@Intercept Minimal Dev;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\@Arma-ofstream;" -world=empty -noSplash -skipIntro -exThreads=7 -enableHT -hugePages -noPause "C:\Users\sentepu\Documents\Arma 3 - Other Profiles\dev\mpmissions\Vindicta\Vindicta.Altis\mission.sqm"
 
 Echo Waiting for server kill
 

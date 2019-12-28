@@ -18,7 +18,7 @@
                 "--disable-macro-warnings"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Project_0.Altis"
+                "cwd": "${workspaceRoot}/Vindicta.Altis"
             },
             "group": "build",
             "presentation": {
@@ -46,7 +46,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Project_0.Altis"
+                        "${workspaceRoot}/Vindicta.Altis"
                     ],
                     "pattern": [
                         {
@@ -75,7 +75,7 @@
                 "${file}"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Project_0.Altis"
+                "cwd": "${workspaceRoot}/Vindicta.Altis"
             },
             "group": "build",
             "presentation": {
@@ -103,7 +103,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Project_0.Altis"
+                        "${workspaceRoot}/Vindicta.Altis"
                     ],
                     "pattern": [
                         {
@@ -132,7 +132,7 @@
                 "--disable-macro-warnings"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Project_0.Altis"
+                "cwd": "${workspaceRoot}/Vindicta.Altis"
             },
             "group": "build",
             "presentation": {
@@ -160,7 +160,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Project_0.Altis"
+                        "${workspaceRoot}/Vindicta.Altis"
                     ],
                     "pattern": [
                         {
@@ -189,7 +189,7 @@
                 "${file}"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Project_0.Altis"
+                "cwd": "${workspaceRoot}/Vindicta.Altis"
             },
             "group": "build",
             "presentation": {
@@ -217,7 +217,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Project_0.Altis"
+                        "${workspaceRoot}/Vindicta.Altis"
                     ],
                     "pattern": [
                         {
@@ -266,7 +266,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Project_0.Altis"
+                        "${workspaceRoot}/Vindicta.Altis"
                     ],
                     "pattern": [
                         {
@@ -292,10 +292,10 @@
                 "--load",
                 ".",
                 "-i",
-                "${workspaceRoot}\\Project_0.Altis\\Tests\\RunTests.sqf"
+                "${workspaceRoot}\\Vindicta.Altis\\Tests\\RunTests.sqf"
             ],
             "options": {
-                "cwd": "${workspaceRoot}/Project_0.Altis"
+                "cwd": "${workspaceRoot}/Vindicta.Altis"
             },
             "group": {
                 "kind": "test",
@@ -326,7 +326,7 @@
                     "owner": "sqf",
                     "fileLocation": [
                         "relative",
-                        "${workspaceRoot}/Project_0.Altis"
+                        "${workspaceRoot}/Vindicta.Altis"
                     ],
                     "pattern": [
                         {

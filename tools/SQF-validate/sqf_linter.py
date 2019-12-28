@@ -48,7 +48,7 @@ def main():
     parser.add_argument('-m','--module', help='only search specified module addon folder', required=False, default=".")
     args = parser.parse_args()
 
-    for root, dirnames, filenames in os.walk('../Project_0.Altis' + '/' + args.module):
+    for root, dirnames, filenames in os.walk('../Vindicta.Altis' + '/' + args.module):
         for filename in fnmatch.filter(filenames, '*.sqf'):
             sqf_list.append(os.path.join(root, filename))
 

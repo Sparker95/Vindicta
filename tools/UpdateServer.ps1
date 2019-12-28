@@ -1,14 +1,14 @@
 $pbo_output_path = C:\server\mpmissions
 while($true) {
-    $releases = Invoke-WebRequest "https://api.github.com/repos/Sparker95/Project_0/releases" | ConvertFrom-Json
+    $releases = Invoke-WebRequest "https://api.github.com/repos/Sparker95/Vindicta/releases" | ConvertFrom-Json
     #$releases
-    # $releases = Invoke-WebRequest "https://api.github.com/repos/Sparker95/Project_0/releases"
+    # $releases = Invoke-WebRequest "https://api.github.com/repos/Sparker95/Vindicta/releases"
     $latest_release = $releases.Get(0)
     $latest_release_name = $latest_release.name
     $latest_release_file_sanitized = $latest_release_name.Split([IO.Path]::GetInvalidFileNameChars()) -join '_'
-    $latest_release_file_name = "Project_0_$latest_release_file_sanitized.zip"
+    $latest_release_file_name = "Vindicta_$latest_release_file_sanitized.zip"
     if(-Not (Test-Path $latest_release_file_name)) {
-        Write-Host "Updating Project_0 to $latest_release_name"
+        Write-Host "Updating Vindicta to $latest_release_name"
         Invoke-WebRequest $releases.Get(0).zipball_url -OutFile $latest_release_file_name
         $latest_release_dir = $latest_release_file_name + ".dir"
         New-Item -Path $latest_release_dir -ItemType Directory

@@ -7,7 +7,7 @@ node_modules
 #VSCODE
 .vscode/ipch/*
 .vscode/settings.json
-Project_0.Altis/.vscode/ipch/*
+Vindicta.Altis/.vscode/ipch/*
 
 #BUILD
 _build
@@ -19,17 +19,17 @@ temp
 temp/*
 temp.sqf
 ~tempMissionSP.Altis
-~Project_0.Altis
+~Vindicta.Altis
 
 #BACKUPS
 mission.sqm.backup.at*
 
 #MISSION
-Project_0.Altis/out/linecount.txt
-Project_0.Altis/out/linecount.json
-Project_0.Altis/mission.sqm
+Vindicta.Altis/out/linecount.txt
+Vindicta.Altis/out/linecount.json
+Vindicta.Altis/mission.sqm
 
 #ADDON
 
-#Project_0-Addon/release
-Project_0-Addon/addons/*.pbo
+#Vindicta-Addon/release
+Vindicta-Addon/addons/*.pbo

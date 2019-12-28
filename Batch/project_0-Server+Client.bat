@@ -5,7 +5,7 @@ REM You need PBO manager for this one
 @echo off
 set PBOManager="C:\Program Files\PBO Manager v.1.4 beta\PBOConsole.exe"
 
-title Project_0 MP Restarter
+title Vindicta MP Restarter
 cls
 
 E:
@@ -21,9 +21,9 @@ taskkill /F /IM arma3_x64.exe /T
 timeout /t 2
 
 echo PBO the mod
-%PBOManager% -pack "C:\Users\sen\Documents\Arma 3 - Other Profiles\dev\mpmissions\Project_0.Stratis\Project_0.Altis" "E:\Program Files (x86)\Steam\steamapps\common\Arma 3\MPMissions\Project_0.Altis.pbo"
+%PBOManager% -pack "C:\Users\sen\Documents\Arma 3 - Other Profiles\dev\mpmissions\Vindicta.Stratis\Vindicta.Altis" "E:\Program Files (x86)\Steam\steamapps\common\Arma 3\MPMissions\Vindicta.Altis.pbo"
 
-echo (%time%) Project_0 Server Starting
+echo (%time%) Vindicta Server Starting
 start arma3server_x64.exe -name=server -server -mod="E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@CBA_A3;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@ace;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\!Workshop\@Intercept Minimal Dev;E:\Program Files (x86)\Steam\steamapps\common\Arma 3\@Arma-ofstream;" -config=server.cfg -cfg=config.cfg -profiles="C:\Users\sen\Documents\Arma 3 - Other Profiles\serverDev" -nosound -nosplash
 
 timeout /t 2
