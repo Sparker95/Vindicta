@@ -7,7 +7,7 @@ The project template comes with it's own implementation of tools used within the
 
 In order to compile the addon you need to setup a P drive, i didnt test it but you might not even need to unpack Arma.
 See the [ACE3 documentation](https://ace3mod.com/wiki/development/setting-up-the-development-environment.html) on setting up the development environment.
-Note: in step 4 where you make the symbolic links you use "project_0" instead if "ace"
+Note: in step 4 where you make the symbolic links you use "vindicta" instead if "ace"
 
 ### Adding new components
 

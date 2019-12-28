@@ -2,18 +2,18 @@ class CfgVehicles {
 	class Logic;
 	class Module_F: Logic{};
 
-	class Project_0_LocationSector: Module_F
+	class Vindicta_LocationSector: Module_F
 	{
 		scope = 2; 
         vehicleClass = "Modules";
 		displayName = "Location Sector";
-		category = "Project_0";
+		category = "Vindicta";
 		canSetArea = 1;
 		canSetAreaHeight = 0;
 		canSetAreaShape = 1;
 
 		// Example for futur modules ?
-		// function = "Project_0_fnc_createLocation";
+		// function = "Vindicta_fnc_createLocation";
 
 		class Combo;
 		class Units;
@@ -23,18 +23,18 @@ class CfgVehicles {
 		{
 			class Units: Units
 			{
-				property = "Project_0_LocationSector";
+				property = "Vindicta_LocationSector";
 			};
 			class Name: Edit
 			{
 				displayName = "Name";
 				tooltip = "Name of the location";
-				property = "Project_0_LocationSector_name";
+				property = "Vindicta_LocationSector_name";
 				control = "Edit";
 			};
 			class Side: Combo
   			{
-				property = "Project_0_LocationSector_side";
+				property = "Vindicta_LocationSector_side";
 				displayName = "Side"; 
 				tooltip = "Side of the location (city, base, outpost ...)";
 				typeName = "STRING";
@@ -50,7 +50,7 @@ class CfgVehicles {
 			};
 			class Type: Combo
   			{
-				property = "Project_0_LocationSector_type";
+				property = "Vindicta_LocationSector_type";
 				displayName = "Type";
 				tooltip = "Type of the location (city, base, outpost ...)"; 
 				typeName = "STRING"; 
@@ -73,7 +73,7 @@ class CfgVehicles {
 			{
 				displayName = "Capacity Infantry";
 				tooltip = "Capacity Infantry of the location";
-				property = "Project_0_LocationSector_CapacityInfantry";
+				property = "Vindicta_LocationSector_CapacityInfantry";
 				control = "Edit";
 				typeName = "NUMBER";
 				value = 5;
@@ -83,7 +83,7 @@ class CfgVehicles {
 			{
 				displayName = "$STR_a3_to_basicCivilianPresence25";
 				tooltip = "$STR_a3_to_basicCivilianPresence26";
-				property = "Project_0_LocationSector_CivPresUnitCount";
+				property = "Vindicta_LocationSector_CivPresUnitCount";
 				control = "Edit";
 				typeName = "NUMBER";
 				value = 5;
@@ -92,12 +92,12 @@ class CfgVehicles {
 		};
 	};
 
-	class Project_0_LocationWaypoint: Module_F
+	class Vindicta_LocationWaypoint: Module_F
 	{
 		scope = 2;
         vehicleClass = "Modules";
 		displayName = "Location Waypoint";
-		category = "Project_0";
+		category = "Vindicta";
 
 		class Units;
 		class AttributesBase;
@@ -105,7 +105,7 @@ class CfgVehicles {
 		{
 			class Units: Units
 			{
-				property = "Project_0_LocationWaypoint";
+				property = "Vindicta_LocationWaypoint";
 			};
 		};
 	};

@@ -1,6 +1,6 @@
 #define COMPONENT items
 #define COMPONENT_BEAUTIFIED Items
-#include "\z\project_0\addons\main\script_mod.hpp"
+#include "\z\vindicta\addons\main\script_mod.hpp"
 
 // #define DEBUG_MODE_FULL
 // #define DISABLE_COMPILE_CACHE
@@ -15,4 +15,4 @@
     #define DEBUG_SETTINGS DEBUG_SETTINGS_ITEMS
 #endif
 
-#include "\z\project_0\addons\main\script_macros.hpp"
+#include "\z\vindicta\addons\main\script_macros.hpp"

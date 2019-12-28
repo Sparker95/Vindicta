@@ -1,1 +1,1 @@
-#include "\z\project_0\addons\items\script_component.hpp"
+#include "\z\vindicta\addons\items\script_component.hpp"

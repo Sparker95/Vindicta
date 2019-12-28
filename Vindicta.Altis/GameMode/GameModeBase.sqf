@@ -616,7 +616,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	METHOD("createMissingCityLocations") {
 		params [P_THISOBJECT];
 
-		// private _existingCityLocations = (entities "Project_0_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
+		// private _existingCityLocations = (entities "Vindicta_LocationSector") select { (_x getVariable ["Type", ""]) == LOCATION_TYPE_CITY } apply { getPos _x };
 		// private _moduleGroup = createGroup sideLogic;
 		// {
 		// 	private _pos = getPos _x;
@@ -628,7 +628,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// 		OOP_INFO_MSG("Creating missing City Location for %1 at %2, size %3m x %4m", [_name ARG _pos ARG _sizeX ARG _sizeY]);
 				
 		// 		// TODO: calculate civ presence by area
-		// 		"Project_0_LocationSector" createUnit [ _pos, _moduleGroup,
+		// 		"Vindicta_LocationSector" createUnit [ _pos, _moduleGroup,
 		// 			(format ["this setVariable ['Name', '%1'];", text _x]) +
 		// 			        "this setVariable ['Type', 'city'];" +
 		// 			        "this setVariable ['Side', 'civilian'];" +
@@ -661,7 +661,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Locations which will be processed for potential roadblock positions around them
 		private _locationsForRoadblocks = [];
 
-		{ // forEach (entities "Project_0_LocationSector");
+		{ // forEach (entities "Vindicta_LocationSector");
 			private _locSector = _x;
 			private _locSectorPos = getPos _locSector;
 
@@ -758,7 +758,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						{
 							_x params ["_offset", "_vDirAndUp"];
 							private _texObj = createSimpleObject ["UserTexture1m_F", [0, 0, 0], false];
-							_texObj setObjectTextureGlobal [0, "z\project_0\addons\ui\pictures\policeSign.paa"];
+							_texObj setObjectTextureGlobal [0, "z\vindicta\addons\ui\pictures\policeSign.paa"];
 							_texObj setPosWorld (_policeStationBuilding modelToWorldWorld _offset);
 							_texObj setVectorDir (_policeStationBuilding vectorModelToWorld (_vDirAndUp#0));
 							_texObj setVectorUp (_policeStationBuilding vectorModelToWorld (_vDirAndUp#1));
@@ -778,7 +778,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			#ifdef __SMALL_MAP
 			};
 			#endif
-		} forEach (entities "Project_0_LocationSector");
+		} forEach (entities "Vindicta_LocationSector");
 
 		// Process locations for roadblocks
 		private _roadblockPositionsAroundLocations = [];

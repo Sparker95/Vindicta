@@ -6,7 +6,7 @@ import subprocess
 
 ######## GLOBALS #########
 MAINPREFIX = "z"
-PREFIX = "project_0_"
+PREFIX = "vindicta_"
 ##########################
 
 def mod_time(path):

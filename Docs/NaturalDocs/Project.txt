@@ -8,7 +8,7 @@
 # Project Information
 # ------------------------------------------------------------------------
 
-Title: Project_0
+Title: Vindicta
 Subtitle: functions, methods, classes
 
 Timestamp: dd month year

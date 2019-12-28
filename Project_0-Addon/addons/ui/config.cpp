@@ -6,7 +6,7 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"project_0_main"};
+        requiredAddons[] = {"vindicta_main"};
         author = "";
         authors[] = {""};
         VERSION_CONFIG;
@@ -14,7 +14,7 @@ class CfgPatches {
 };
 
 class CfgMarkerClasses {
-	class Project_0 {
+	class Vindicta {
 		displayName = "Vindicta";
 	};
 };
@@ -27,7 +27,7 @@ class CfgMarkers {
 		size = 32;
 		shadow = false;
 		scope = 0;
-		markerClass = "Project_0";
+		markerClass = "Vindicta";
 		
 		icon = QPATHTOF(markers\notification_top_right.paa);
 		name = "no name";
@@ -56,7 +56,7 @@ class CfgMarkers {
 		size = 32;
 		shadow = false;
 		scope = 0;
-		markerClass = "Project_0";		
+		markerClass = "Vindicta";		
 		icon = QPATHTOF(markers\MapIcons.paa);
 		name = "no name";
 	};

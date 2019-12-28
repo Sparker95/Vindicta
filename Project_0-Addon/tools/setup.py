@@ -13,7 +13,7 @@ import winreg
 
 ######## GLOBALS #########
 MAINDIR = "z"
-PROJECTDIR = "project_0"
+PROJECTDIR = "vindicta"
 ##########################
 
 def main():

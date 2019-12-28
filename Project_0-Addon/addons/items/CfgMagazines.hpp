@@ -1,4 +1,4 @@
-#include "\z\project_0\addons\main\classFactory.hpp"
+#include "\z\vindicta\addons\main\classFactory.hpp"
 
 class CfgMagazines
 {

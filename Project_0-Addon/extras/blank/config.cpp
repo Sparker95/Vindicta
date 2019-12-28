@@ -6,7 +6,7 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"project_0_main"};
+        requiredAddons[] = {"vindicta_main"};
         author = "";
         authors[] = {""};
         VERSION_CONFIG;

@@ -31,5 +31,5 @@ Vindicta.Altis/mission.sqm
 
 #ADDON
 
-#Project_0-Addon/release
-Project_0-Addon/addons/*.pbo
+#Vindicta-Addon/release
+Vindicta-Addon/addons/*.pbo

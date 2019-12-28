@@ -1,7 +1,7 @@
 // COMPONENT should be defined in the script_component.hpp and included BEFORE this hpp
 
 #define MAINPREFIX z
-#define PREFIX project_0
+#define PREFIX vindicta
 
 #include "script_version.hpp"
 
@@ -14,7 +14,7 @@
 #define REQUIRED_VERSION 1.56
 
 #ifdef COMPONENT_BEAUTIFIED
-    #define COMPONENT_NAME QUOTE(project_0 - COMPONENT_BEAUTIFIED)
+    #define COMPONENT_NAME QUOTE(vindicta - COMPONENT_BEAUTIFIED)
 #else
-    #define COMPONENT_NAME QUOTE(project_0 - COMPONENT)
+    #define COMPONENT_NAME QUOTE(vindicta - COMPONENT)
 #endif

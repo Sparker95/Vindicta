@@ -86,7 +86,7 @@ CLASS(CLASS_NAME, "MapMarker")
 			pr _pos = T_GETV("pos");
 			_control drawIcon
 			[
-				"\z\project_0\addons\ui\markers\MI_marker_selected.paa",
+				"\z\vindicta\addons\ui\markers\MI_marker_selected.paa",
 				[0.9, 0.0, 0.0, 1], //Color
 				_pos, // Pos
 				41, // Width

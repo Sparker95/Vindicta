@@ -336,7 +336,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
      		if(((getPos _x) distance _pos) < 100) exitWith {
           		_return =  _x getVariable ["Name", ""];
      		};
-		} forEach entities "Project_0_LocationSector";
+		} forEach entities "Vindicta_LocationSector";
 
 		_return
 	} ENDMETHOD;

@@ -1,2 +1,2 @@
-sqflint -d ./Project_0.Stratis -o ./sqflint_output.txt
+sqflint -d ./Vindicta.Stratis -o ./sqflint_output.txt
 pause

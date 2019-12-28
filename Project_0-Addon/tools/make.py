@@ -57,7 +57,7 @@ if sys.platform == "win32":
     import winreg
 
 ######## GLOBALS #########
-project = "@project_0"
+project = "vindicta"
 project_version = "3.0.0"
 arma3tools_path = ""
 work_drive = ""
@@ -66,13 +66,13 @@ make_root = ""
 release_dir = ""
 module_root_parent = ""
 optionals_root = ""
-key_name = "project_0"
+key_name = "vindicta"
 key = ""
 dssignfile = ""
-prefix = "project_0"
-pbo_name_prefix = "project_0_"
+prefix = "vindicta"
+pbo_name_prefix = "vindicta_"
 signature_blacklist = []
-importantFiles = ["mod.cpp", "README.md", "AUTHORS.txt", "LICENSE", "logo_project_0_ca.paa"]
+importantFiles = ["mod.cpp", "README.md", "AUTHORS.txt", "LICENSE", "logo_vindicta.paa"]
 versionFiles = ["README.md", "mod.cpp"]
 
 ciBuild = False # Used for CI builds
