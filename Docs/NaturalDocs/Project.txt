@@ -39,7 +39,7 @@ Timestamp: dd month year
 # Source Code
 # ------------------------------------------------------------------------
 
-Source Folder: ..\..\Project_0.Altis
+Source Folder: ..\..\Vindicta.Altis
    Name: SourceName
 
 

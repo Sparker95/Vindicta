@@ -19,7 +19,7 @@ const presets: Preset[] = require('./_presets.json');
  * Mission folders configuration
 */
 const paths: FolderStructureInfo = {
-    frameworkFolder: resolve(ROOT_DIR, 'Project_0.Altis'),
+    frameworkFolder: resolve(ROOT_DIR, 'Vindicta.Altis'),
     missionsFolder: resolve(ROOT_DIR),
     workDir: resolve("../", "_build")
 };

@@ -50,7 +50,7 @@ test_DumpCallstack = {
 	diag_log "    CALLSTACK:";
 	{
 			_x params ["_namespace", "_scope", "_callstack", "_line", "_col", "_file", "_err"];
-			private _trimpos = (_file find "Project_0.Altis") + count "Project_0.Altis" + 1;
+			private _trimpos = (_file find "Vindicta.Altis") + count "Vindicta.Altis" + 1;
 			private _relFile = _file select [_trimpos];
 			diag_log format ["    (%4/%5) %3 line %1", _line, _col, _relFile, _forEachIndex+1, count _cs, _ex, _namespace, _scope, _callstack, _err];
 	} forEach _cs;
