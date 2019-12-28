@@ -46,7 +46,7 @@ class LoadingScreenGroup : MUI_GROUP
 			y = safeZoneH * 0.893; 
 			w = safeZoneW * 0.485; 
 			h = safeZoneH * 0.032; 
-			text = "Version#"; 
+			text = "A guerilla warfare mission"; 
 			style = 0;
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorText[] = MUIC_WHITE;

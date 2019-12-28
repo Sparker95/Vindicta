@@ -80,7 +80,7 @@ _ctrl ctrlSetText _text;
  // version number
  private _ctrl = _display displayCtrl 64599;
  private _versionStr = 0 call misc_fnc_getVersion;
- if (! isNil "_version") then {
+ if (! isNil "_versionStr") then {
 	private _text = format ["v%1", _versionStr];
 	_ctrl ctrlSetText _text;
  }; 
