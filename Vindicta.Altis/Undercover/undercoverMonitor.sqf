@@ -8,7 +8,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\UI\UndercoverUI\UndercoverUI_Macros.h"
+#include "..\UI\InGameUI\InGameUI_Macros.h"
 
 #define pr private
 #define sUNDERCOVER 0

@@ -80,7 +80,7 @@ CLASS("InGameUI", "")
 		{
 			pr _ctrl = _display displayCtrl _x;
 			_ctrl ctrlShow _enable;
-		} forEach [IDC_INGAME_STATIC_LOCATION_NAME,
+		} forEach [	IDC_INGAME_STATIC_LOCATION_NAME,
 					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES,
 					IDC_U_SUSPICION_STATUSBAR,
 					IDC_U_SUSPICION_TEXT]
