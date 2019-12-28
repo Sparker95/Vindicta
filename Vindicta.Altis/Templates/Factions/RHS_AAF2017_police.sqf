@@ -84,6 +84,7 @@ _veh set [T_VEH_submarine, ["B_SDV_01_F"]];
 */
 
 //==== Drones ====
+_drone = []; _drone resize T_DRONE_SIZE;
 /*
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];

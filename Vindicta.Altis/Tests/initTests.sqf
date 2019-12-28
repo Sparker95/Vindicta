@@ -6,7 +6,9 @@ test_Assert = {
 		_resultOrCode
 	};
 	if !(_result) then {
+		diag_log format [" ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~"];
 		diag_log format ["  ------<<< TEST !FAILED! >>>------  [%1] %2", test_Scope, _test];
+		diag_log format [" ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~"];
 		asserts_Failed = asserts_Failed + 1;
 		test_Okay = false;
 	} else {
@@ -32,7 +34,9 @@ test_Assert_Throws = {
 	if(_passed) then {
 		asserts_Passed = asserts_Passed + 1;
 	} else {
+		diag_log format [" ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~"];
 		diag_log format ["  ------<<< TEST !FAILED! >>>------  [%1] %2", test_Scope, _test];
+		diag_log format [" ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~"];
 		asserts_Failed = asserts_Failed + 1;
 		test_Okay = false;
 	};

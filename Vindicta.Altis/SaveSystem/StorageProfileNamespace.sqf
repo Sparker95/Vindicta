@@ -323,7 +323,8 @@ ENDCLASS;
 
 	// Check if it's in all records
 	pr _allRecords = CALLM0(_obj, "getAllRecords");
-	["Record found in all records", _recordName in _allRecords] call test_Assert;
+	diag_log format ["All records: %1", _allRecords];
+	["Record found in all records", (tolower _recordName) in _allRecords] call test_Assert;
 
 	// Try to open same record, should fail because it's already open
 	pr _obj2 = NEW(__CLASS_NAME, []);
