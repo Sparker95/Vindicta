@@ -10,7 +10,7 @@ _cfg = missionConfigFile >> "ClientMapUI";
 _idd = 12;
 [_cfg, _idd] call ui_fnc_createControlsFromConfig;
 
-//g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register UndercoverUI layer
+g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register UndercoverUI layer, needed for debug UI
 //uiNamespace setVariable ["undercoverUI_display", displayNull];			
 //g_rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];	
 
