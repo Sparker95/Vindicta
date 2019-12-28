@@ -1,7 +1,8 @@
 #include "InGameUI_Macros.h"
 #include "..\Resources\UIProfileColors.h"
 
-#define TEXTSIZE_MED safeZoneH*0.017
+#define TEXTSIZE_MED safeZoneH*0.018
+#define TEXTSIZE_SMALL safeZoneH*0.014
 
 #define __ROW_H 0.025
 
@@ -53,7 +54,7 @@ class Vin_InGameUI
 			w = safeZoneW * 0.242; 
 			h = safeZoneH * 0.020;  
 			text = "UNDERCOVER"; 
-			font = "PuristaMedium";
+			font = "PuristaSemibold";
 			sizeEx = TEXTSIZE_MED;
 			style = ST_CENTER;
 			colorText[] = MUIC_WHITE;
@@ -84,7 +85,7 @@ class Vin_InGameUI
 			w = safeZoneW * 0.094; 
 			h = safeZoneH * 0.012;  
 			text = "CONSTRUCTION RESOURCES";
-			sizeEx = safeZoneH*0.012;
+			sizeEx = TEXTSIZE_SMALL;
 			font = "PuristaSemibold"; 
 			style = ST_LEFT;
 			colorText[] = MUIC_WHITE;
@@ -98,7 +99,7 @@ class Vin_InGameUI
 			w = safeZoneW * 0.149; 
 			h = safeZoneH * 0.012; 
 			text = "LOCATION"; 
-			sizeEx = safeZoneH*0.012;
+			sizeEx = TEXTSIZE_SMALL;
 			font = "PuristaSemibold";
 			style = ST_LEFT;
 			colorText[] = MUIC_WHITE;
