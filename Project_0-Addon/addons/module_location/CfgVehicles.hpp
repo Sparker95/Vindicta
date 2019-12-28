@@ -7,7 +7,7 @@ class CfgVehicles {
 		scope = 2; 
         vehicleClass = "Modules";
 		displayName = "Location Sector";
-		category = "Vindicta";
+		category = "vindicta";
 		canSetArea = 1;
 		canSetAreaHeight = 0;
 		canSetAreaShape = 1;

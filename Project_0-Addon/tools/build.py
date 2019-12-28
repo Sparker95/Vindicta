@@ -32,7 +32,7 @@ def check_for_obsolete_pbos(addonspath, file):
 def main():
     print("""
   ####################
-  # PROJECT_03 Debug Build #
+  # VINDICTA3 Debug Build #
   ####################
 """)
 

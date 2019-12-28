@@ -27,13 +27,13 @@ pr0_fnc_addDebugMenuItem = {
 
 pr0_fnc_initDebugMenu = {
 	// [
-	// 	"Project 0",
+	// 	"Vindicta",
 	// 	"Open Menu",
 	// 	["player", [], -100, "_this call pr0_fnc_debug_menu"],
 	// 	[DIK_6, false, false, false]
 	// ] call CBA_fnc_registerKeybindToFleximenu;
 	[
-		"Project 0",
+		"Vindicta",
 		"Open_Menu",
 		"Open Menu",
 		["player", [], -100, "_this call pr0_fnc_debug_menu"],

@@ -6,7 +6,7 @@
   @Description : 
   @Return : ARRAY - Array of road nodes
 
-  Modified for Project 0 by billw.
+  Modified for Vindicta by billw.
 **/
 
 #ifndef RELEASE_BUILD

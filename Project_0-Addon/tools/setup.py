@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #######################
-#  PROJECT_0 Setup Script  #
+#  VINDICTA Setup Script  #
 #######################
 
 import os
@@ -20,19 +20,19 @@ def main():
     FULLDIR = "{}\\{}".format(MAINDIR,PROJECTDIR)
     print("""
   ######################################
-  # PROJECT_0 Development Environment Setup #
+  # VINDICTA Development Environment Setup #
   ######################################
 
-  This script will create your PROJECT_0 dev environment for you.
+  This script will create your VINDICTA dev environment for you.
 
   Before you run this, you should already have:
     - A properly setup ACE3 Development Environment
 
   If you have not done those things yet, please abort this script in the next step and do so first.
 
-  This script will create two hard links on your system, both pointing to your PROJECT_0 project folder:
-    [Arma 3 installation directory]\\{} => PROJECT_0 project folder
-    P:\\{}                              => PROJECT_0 project folder
+  This script will create two hard links on your system, both pointing to your VINDICTA project folder:
+    [Arma 3 installation directory]\\{} => VINDICTA project folder
+    P:\\{}                              => VINDICTA project folder
     """.format(FULLDIR,FULLDIR))
     print("\n")
 

@@ -1,12 +1,12 @@
-name = "Vindicta addon";
+name = "Vindicta Addon";
 picture = "logo_vindicta.paa";
 actionName = "GitHub";
 action = "https://github.com/Jeroen-Notenbomer/Vindicta-Addon";
-description = "Addon to be used together with the vindicta mission";
+description = "Addon to be used with the Vindicta mission";
 logo = "logo_vindicta.paa";
 logoOver = "logo_vindicta.paa";
 tooltip = "Vindicta";
-tooltipOwned = "Vindicta Owned";
-overview = "Addon to be used together with the vindicta mission";
-author = "Team Vindicta";
+tooltipOwned = "";
+overview = "Addon to be used with the Vindicta mission";
+author = "Vindicta Team";
 overviewPicture = "logo_vindicta.paa";

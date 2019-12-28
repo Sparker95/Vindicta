@@ -1,14 +1,12 @@
 class CfgFactionClasses {
     class NO_CATEGORY;
-    class PROJECT_0: NO_CATEGORY {
-        displayName = "PROJECT_0";
-        priority = 2;
-        side = 7;
+    class vindicta: NO_CATEGORY {
+        displayName = "Vindicta";
     };
 };
 
 class CfgVehicleClasses {
-    class PROJECT_0_Vehicles {
-        displayName = "PROJECT_0 Vehicles";
+    class VINDICTA_Vehicles {
+        displayName = "Vindicta Vehicles";
     };
 };

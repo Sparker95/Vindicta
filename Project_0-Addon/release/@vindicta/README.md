@@ -1,4 +1,4 @@
-# PROJECT_0 AddOn
+# VINDICTA AddOn
 
 This AddOn was created using the Ace 3 [AddOn Proejct Template](https://github.com/acemod/arma-project-template).
 The project template comes with it's own implementation of tools used within the ACE project, such as build and release scripts, SQF validation scripts and more.
