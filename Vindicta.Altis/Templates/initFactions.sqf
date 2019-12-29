@@ -12,3 +12,5 @@
 ["Templates\Factions\RHS_AAF2017_police.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_AFRF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_USAF.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LDF.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LDF_ranger.sqf"]	call t_fnc_initializeTemplateFromFile;

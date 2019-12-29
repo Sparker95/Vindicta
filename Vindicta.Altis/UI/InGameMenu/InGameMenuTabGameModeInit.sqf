@@ -49,12 +49,13 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Add enemy factions
 		pr _data = [
-			["Arma 3 AAF",		"tAAF"],
-			["Arma 3 CSAT", 	"tCSAT"],
-			["Arma 3 NATO",		"tNATO"],
-			["RHS AAF 2017",	"tRHS_AAF2017_elite"],
-			["RHS AFRF", 		"tRHS_AFRF"],
-			["RHS USAF", 		"tRHS_USAF"]//,
+			["Arma 3 - AAF",		"tAAF"],
+			["Arma 3 - CSAT", 	"tCSAT"],
+			["Arma 3 - NATO",		"tNATO"],
+			["RHS, AAF2017 - Altis Armed Forces",	"tRHS_AAF2017_elite"],
+			["RHS - Russian Armed Forces", 		"tRHS_AFRF"],
+			["RHS - US Army", 		"tRHS_USAF"],
+			["RHS - Livonian Defence Forces", 		"tRHS_LDF"]//,
 			//["Test: must error", "test_error"]
 		];
 		{
@@ -66,8 +67,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Add police factions
 		pr _data = [
-			["Arma 3 Police", "tPolice"],
-			["RHS AAF 2017 Police", "tRHS_AAF2017_police"]
+			["Arma 3 - Police", "tPolice"],
+			["RHS, AAF2017 - Altian Police", "tRHS_AAF2017_police"],
+			["RHS - Livonian Forest Rangers ", "tRHS_LDF_ranger"]
 		];
 		{
 			_x params ["_text", "_lbData"];
