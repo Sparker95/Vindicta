@@ -19,7 +19,7 @@ private _seenBy = allPlayers select {_x distance _pos < 50 || {(_x distance _pos
 //terminate if any player can see the position
 if (count _seenBy > 0) exitWith {objNull};
 
-private _class = format["CivilianPresence_%1",selectRandom (_module getVariable ["#unitTypes",[]])];
+private _class = format["vin_cp%1",selectRandom (_module getVariable ["#unitTypes",[]])];
 
 // Some units are suspicious and must be created as units, not agents
 private _suspicious = (random 10 < 3);
