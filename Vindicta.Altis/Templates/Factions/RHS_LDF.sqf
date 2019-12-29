@@ -55,7 +55,7 @@ _inf set [T_INF_recon_JTAC, ["RHS_LDF_recon_JTAC"]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
-_veh set [T_VEH_DEFAULT, [""]];
+_veh set [T_VEH_DEFAULT, ["rhsgref_cdf_reg_uaz"]];
 
 _veh set [T_VEH_car_unarmed, ["rhsgref_cdf_reg_uaz", "rhsgref_cdf_reg_uaz_open"]];
 _veh set [T_VEH_car_armed, ["rhsgref_cdf_reg_uaz_ags", "rhsgref_cdf_reg_uaz_dshkm", "rhsgref_cdf_reg_uaz_spg9"]];
