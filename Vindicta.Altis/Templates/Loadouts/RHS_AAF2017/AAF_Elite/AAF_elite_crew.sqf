@@ -9,7 +9,7 @@ removeGoggles this;
 
 _RandomHeadgear = selectRandom ["rhs_tsh4","rhs_tsh4_bala","rhs_tsh4_ess","rhs_tsh4_ess_bala"];
 this addHeadgear _RandomHeadgear;
-_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhsusf_shemagh2_od","rhsusf_shemagh_od","","",""];
+_RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","","",""];
 this addGoggles _RandomGoggles;
 this forceAddUniform "U_Tank_green_F";
 this addVest "FGN_AAF_CIRAS_Crew";
