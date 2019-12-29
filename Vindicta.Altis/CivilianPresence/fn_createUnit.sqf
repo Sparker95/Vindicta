@@ -50,7 +50,7 @@ _unit setVariable ["#core",_module];
 [_unit] call CivPresence_fnc_initUnitDialogVariables;
 
 _unit setBehaviour "CARELESS";
-_unit spawn (_module getVariable ["#onCreated",{}]);
+//_unit spawn (_module getVariable ["#onCreated",{}]); // onCreated is not set anywhere?
 _unit execFSM "CivilianPresence\FSM\behavior.fsm";
 
 _unit

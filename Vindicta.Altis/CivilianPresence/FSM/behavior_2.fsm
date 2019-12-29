@@ -1,0 +1,404 @@
+/*%FSM<COMPILE "C:\Program Files (x86)\Steam\steamapps\common\Arma 3 Tools\FSMEditor\scriptedFSM.cfg, behavior_2">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"init",0,250,-19.804291,-524.493408,70.195709,-474.493500,0.000000,"init"};
+item1[] = {"Select_Destination",2,250,287.142151,-98.238617,377.142151,-48.238617,0.000000,"Select" \n "Destination" \n "To Walk To"};
+item2[] = {"Select_Destination_1",2,250,-266.239441,122.055542,-135.811462,180.796753,0.000000,"Select Destination," \n "Start Running" \n "Away"};
+item3[] = {"Start_Talking",2,250,-27.511108,120.598106,62.488907,170.598114,0.000000,"Start" \n "Talking"};
+item4[] = {"Must_talk_",4,218,-27.150604,-1.106964,62.849396,48.893036,10.000000,"Must talk?"};
+item5[] = {"Priority_High__",-1,250,-66.983154,-585.414795,119.137238,-546.352661,0.000000,"Priority" \n "High -----------> Low"};
+item6[] = {"In_Panic_",4,218,-249.713287,-100.395523,-159.713287,-50.395523,20.000000,"In" \n "Panic?"};
+item7[] = {"True",8,218,286.349976,-226.088852,376.349976,-176.088852,0.000000,"True"};
+item8[] = {"Arrived_",4,218,282.433777,221.942413,372.433777,271.942413,0.000000,"Arrived?"};
+item9[] = {"Timeout__Got_stuck",4,218,447.840393,98.903900,575.296448,166.963135,0.000000,"Timeout?" \n "Got stuck?"};
+item10[] = {"",7,210,158.568237,-79.409760,166.568237,-71.409760,0.000000,""};
+item11[] = {"Start",2,250,-25.038147,-338.017639,64.961868,-288.017639,0.000000,"Start"};
+item12[] = {"Panic_Timeout_",4,218,-264.662750,281.958679,-146.514130,353.751160,0.000000,"Panic" \n "Timeout?"};
+item13[] = {"Not_Talking_Any",4,218,-46.077393,227.670593,83.875610,308.543274,0.000000,"Not" \n "Talking" \n "Any More?"};
+item14[] = {"Wait_For_A_While",2,250,289.602783,297.768188,379.602783,347.768188,0.000000,"Wait" \n "For A While"};
+item15[] = {"Done_Waiting_",4,218,276.890564,380.398010,390.499146,448.558472,0.000000,"Done" \n "Waiting?"};
+item16[] = {"",7,210,157.391968,319.297241,165.391968,327.297241,0.000000,""};
+item17[] = {"Check_Fof_Panic",-1,250,91.573761,-158.970490,185.513184,-91.729614,0.000000,"Check" \n "Fof Panic" \n "From Many" \n "States"};
+item18[] = {"",7,210,630.120667,-232.779282,638.120667,-224.779312,0.000000,""};
+item19[] = {"",7,210,631.365784,129.474304,639.365784,137.474304,0.000000,""};
+item20[] = {"",7,210,632.038757,337.791565,640.038757,345.791565,0.000000,""};
+item21[] = {"",7,210,312.326050,565.126221,320.326050,573.126221,0.000000,""};
+item22[] = {"Start_Walking_To",2,250,284.672729,108.565666,374.672729,158.565674,0.000000,"Start Walking" \n "To Selected" \n "Destination"};
+item23[] = {"True",8,218,287.063599,6.807739,377.063599,56.807739,0.000000,"True"};
+item24[] = {"True",8,218,-22.669556,-433.110931,67.330444,-383.110962,0.000000,"True"};
+version=1;
+class LayoutItems
+{
+	class Item5
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+	class Item17
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+};
+link0[] = {0,24};
+link1[] = {1,23};
+link2[] = {2,12};
+link3[] = {3,6};
+link4[] = {3,13};
+link5[] = {4,3};
+link6[] = {6,2};
+link7[] = {7,1};
+link8[] = {8,14};
+link9[] = {9,19};
+link10[] = {10,6};
+link11[] = {11,4};
+link12[] = {11,6};
+link13[] = {11,7};
+link14[] = {12,21};
+link15[] = {13,21};
+link16[] = {14,15};
+link17[] = {14,16};
+link18[] = {15,21};
+link19[] = {16,10};
+link20[] = {18,11};
+link21[] = {19,18};
+link22[] = {20,19};
+link23[] = {21,20};
+link24[] = {22,4};
+link25[] = {22,8};
+link26[] = {22,9};
+link27[] = {22,10};
+link28[] = {23,22};
+link29[] = {24,11};
+globals[] = {0.000000,0,0,0,0,640,480,1,27,6316128,1,-738.231384,1481.107056,692.253906,-773.169128,1884,1244,1};
+window[] = {2,-1,-1,-1,-1,1237,208,2128,208,3,1902};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "behavior_2";
+        class States
+        {
+                /*%FSM<STATE "init">*/
+                class init
+                {
+                        name = "init";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"// Set in createUnit" \n
+                         "_isAgent = _this getVariable [""#isAgent"", false];" \n
+                         "" \n
+                         "// Set some variables" \n
+                         "_unit = _this;" \n
+                         "_currentDestination = [0, 0, 0];" \n
+                         "" \n
+                         "// Code to make a unit walk somewhere" \n
+                         "_fnc_startMovingToDestination = " \n
+                         "{" \n
+                         "	params [""_mode""];" \n
+                         "" \n
+                         "	private _destination = _currentDestination;" \n
+                         "" \n
+                         "	if (_isAgent) then {" \n
+                         "		_unit setDestination [_destination,""LEADER PLANNED"",true];" \n
+                         "	} else {" \n
+                         "		(group _unit) move _destination;" \n
+                         "	};" \n
+                         "" \n
+                         "	_unit setVariable [""#destination"",_destination];" \n
+                         "" \n
+                         "	if (_mode == ""panic"") then {" \n
+                         "		_this forceWalk false;" \n
+                         "		_this setUnitPosWeak ""UP"";" \n
+                         "		_this playAction ""Panic"";" \n
+                         "	} else {" \n
+                         "		_this forcespeed -1; // Default speed" \n
+                         "		_this forceWalk true;" \n
+                         "		_this setUnitPosWeak ""UP"";" \n
+                         "		_this playAction ""Default"";" \n
+                         "	};" \n
+                         "" \n
+                         "};" \n
+                         "" \n
+                         "// Code which resets the current destination the bot has in 'mind'" \n
+                         "_fnc_resetDestination =" \n
+                         "{" \n
+                         "	_currentDestination = [0, 0, 0];" \n
+                         "};" \n
+                         "" \n
+                         "// Sets the current destination, doesn't make unit move anywhere" \n
+                         "_fnc_setDestination =" \n
+                         "{" \n
+                         "	params [""_destination""];" \n
+                         "	private _destination = if (_destination isEqualType []) then {" \n
+                         "		_destination" \n
+                         "	} else {" \n
+                         "		selectRandom (_destination getVariable [""#positions"",[getPos _safespot]]);" \n
+                         "	};" \n
+                         "	_currentDestination = _destination;" \n
+                         "	_unit setVariable [""#safespot"", _destination];" \n
+                         "};" \n
+                         "" \n
+                         "// Reset current destination" \n
+                         "call _fnc_resetDestination;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 24;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Select_Destination">*/
+                class Select_Destination
+                {
+                        name = "Select_Destination";
+                        itemno = 1;
+                        init = /*%FSM<STATEINIT""">*/"//make unit walk" \n
+                         "_this forcespeed -1;//resetting to default" \n
+                         "_this forceWalk true;" \n
+                         "_this setUnitPosWeak ""UP"";" \n
+                         "if (_usePanicMode) then {_this playAction ""Default""};" \n
+                         "" \n
+                         "// Select a new destination or use the previous one we had" \n
+                         "if (_currentDestination isEqualTo [0, 0, 0]) then {" \n
+                         "	// 0 - nearest point?" \n
+                         "	// 1 - random" \n
+                         "	private _safespot = [_this,1] call bis_fnc_cp_getSafespot;" \n
+                         "	[_safeSpot] call _fnc_setDestination;" \n
+                         "} else {" \n
+                         "	// We already have a destination, don't select a new one" \n
+                         "	[_currentDestination] call _fnc_setDestination;" \n
+                         "};"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 23;
+                                        priority = 0.000000;
+                                        to="Start_Walking_To";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"True"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Select_Destination_1">*/
+                class Select_Destination_1
+                {
+                        name = "Select_Destination_1";
+                        itemno = 2;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Panic_Timeout_">*/
+                                class Panic_Timeout_
+                                {
+                                        itemno = 12;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Start_Talking">*/
+                class Start_Talking
+                {
+                        name = "Start_Talking";
+                        itemno = 3;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "In_Panic_">*/
+                                class In_Panic_
+                                {
+                                        itemno = 6;
+                                        priority = 20.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Not_Talking_Any">*/
+                                class Not_Talking_Any
+                                {
+                                        itemno = 13;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Start">*/
+                class Start
+                {
+                        name = "Start";
+                        itemno = 11;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "In_Panic_">*/
+                                class In_Panic_
+                                {
+                                        itemno = 6;
+                                        priority = 20.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Must_talk_">*/
+                                class Must_talk_
+                                {
+                                        itemno = 4;
+                                        priority = 10.000000;
+                                        to="Start_Talking";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 7;
+                                        priority = 0.000000;
+                                        to="Select_Destination";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Wait_For_A_While">*/
+                class Wait_For_A_While
+                {
+                        name = "Wait_For_A_While";
+                        itemno = 14;
+                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "In_Panic_">*/
+                                class In_Panic_
+                                {
+                                        itemno = 6;
+                                        priority = 20.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Done_Waiting_">*/
+                                class Done_Waiting_
+                                {
+                                        itemno = 15;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Start_Walking_To">*/
+                class Start_Walking_To
+                {
+                        name = "Start_Walking_To";
+                        itemno = 22;
+                        init = /*%FSM<STATEINIT""">*/"// Walk there normally, not in panic" \n
+                         "[""normal""] call _fnc_startMovingToDestination;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "In_Panic_">*/
+                                class In_Panic_
+                                {
+                                        itemno = 6;
+                                        priority = 20.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Must_talk_">*/
+                                class Must_talk_
+                                {
+                                        itemno = 4;
+                                        priority = 10.000000;
+                                        to="Start_Talking";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Timeout__Got_stuck">*/
+                                class Timeout__Got_stuck
+                                {
+                                        itemno = 9;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Arrived_">*/
+                                class Arrived_
+                                {
+                                        itemno = 8;
+                                        priority = 0.000000;
+                                        to="Wait_For_A_While";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="init";
+        finalStates[] =
+        {
+        };
+};
+/*%FSM</COMPILE>*/

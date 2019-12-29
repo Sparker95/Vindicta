@@ -29,27 +29,28 @@ _module spawn{
 		_units = _units select {!isNull _x && {alive _x}};
 		(_active && _maxUnits > 0) || (!_active && count _units > 0)
 	}do{
-		if (_active) then{
-			//spawn in units when module is active and total number is not reached.
-			if (count _units < _maxUnits) then{
-				private _unit = _module call CivPresence_fnc_createUnit;
-				_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, 1, true]; // Set a variable on the created unit
-				if (!isNull _unit) then {_units pushBack _unit};
+		// Let's do it unscheduled
+		isNil {
+			if (_active) then{
+				//spawn in units when module is active and total number is not reached.
+				if (count _units < _maxUnits) then{
+					private _unit = _module call CivPresence_fnc_createUnit;
+					_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, 1, true]; // Set a variable on the created unit
+					if (!isNull _unit) then {_units pushBack _unit};
+				};
+			}else{
+				//slowly removes units that are not in view of players
+				private _unit = selectRandom _units;
+				private _deleted = ["deleteUnit",[_module,_unit]] call bis_fnc_moduleCivilianPresence;
+				if (_deleted) then
+				{
+					_units = _units - [_unit];
+				};
 			};
-		}else{
-			//slowly removes units that are not in view of players
-			private _unit = selectRandom _units;
-			private _deleted = ["deleteUnit",[_module,_unit]] call bis_fnc_moduleCivilianPresence;
-
-			if (_deleted) then
-			{
-				_units = _units - [_unit];
-			};
+			//compact & store units array
+			_units = _units select {!isNull _x && {alive _x}};
+			_module setVariable ["#units",_units];
 		};
-
-		//compact & store units array
-		_units = _units select {!isNull _x && {alive _x}};
-		_module setVariable ["#units",_units];
 
 		sleep 1;
 	};
