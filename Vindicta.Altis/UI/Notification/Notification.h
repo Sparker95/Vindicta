@@ -1,4 +1,5 @@
 #include "..\Resources\UIProfileColors.h"
+#define __WIDTH 0.5
 
 class NOTIFICATION_GROUP : MUI_GROUP_ABS
 {
@@ -10,6 +11,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 	style = 0;
 	text = "";
 	colorText[] = {0.5412,0.5255,0.051,1};
+	font = "RobotoCondensed";
 	sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 
 	class Controls
@@ -27,6 +29,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			text = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
 			colorBackground[] = {0, 0, 0, 0};
 			colorText[] = {1, 1, 1, 1};
+			font = "RobotoCondensed";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			onLoad = "uiNamespace setVariable ['vin_not_icon', _this#0]";
 		};
