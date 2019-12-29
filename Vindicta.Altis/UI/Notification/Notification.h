@@ -16,6 +16,44 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 
 	class Controls
 	{
+		class NOTIFICATION_BG : RscPicture {
+
+			IDC = -1; 
+			x = 0; 
+			y = 0; 
+			w = 0.5;
+			h = 0.158; 
+			text = "UI\Images\gradient_LtoR.paa";
+
+			colorText[] = {0, 0, 0, 0.75};
+
+		};
+
+		class NOTIFICATION_HINTBG : RscPicture {
+
+			IDC = -1; 
+			x = 0; 
+			y = 0.123; 
+			w = 0.5;
+			h = 0.035; 
+			text = "UI\Images\gradient_LtoR.paa";
+
+			colorText[] = {0, 0, 0, 1};
+
+		};
+
+		class NOTIFICATION_CATEGORYBG : RscPicture {
+
+			IDC = -1; 
+			x = 0.029; 
+			y = 0; 
+			w = 0.470; 
+			h = 0.035; 
+			text = "UI\Images\gradient_LtoR.paa";
+
+			colorText[] = MUIC_MISSION;
+
+		};
 
 		class NOTIFICATION_ICON
 		{
@@ -29,62 +67,72 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			text = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
 			colorBackground[] = {0, 0, 0, 0};
 			colorText[] = {1, 1, 1, 1};
-			font = "RobotoCondensed";
+			font = "RobotoCondensedLight";
 			sizeEx = (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1);
 			onLoad = "uiNamespace setVariable ['vin_not_icon', _this#0]";
 		};
+
 		class NOTIFICATION_CATEGORY : MUI_HEADLINE_ABS
 		{
 			type = 0;
 			idc = -1;
 			x = 0.029; 
 			y = 0; 
-			w = 0.407; 
+			w = 0.470;
 			h = 0.035;  
 
-			colorBackground[] = MUIC_MISSION;
+			colorText[] = {1, 1, 1, 1};
+			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0;
 			text = "INTEL";
+			font = "PuristaSemibold";
 			sizeEx = 0.035;
 			onLoad = "uiNamespace setVariable ['vin_not_category', _this#0]"; // Dont delete this!
 		};
+
 		class NOTIFICATION_TEXT : MUI_BASE_ABS
 		{
 			type = 0;
 			idc = -1;
 			x = 0; 
 			y = 0.041; 
-			w = 0.436; 
+			w = 0.5; 
 			h = 0.081;  
 
-			colorBackground[] = {0, 0, 0, 0.65};
+			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0+16+512;
 			text = "Enemy radio cryptokey was found!";
-			font = "RobotoCondensed";
+			font = "RobotoCondensedLight";
 			sizeEx = 0.035;
+			shadow = 1;
 			lineSpacing = 1;
 			onLoad = "uiNamespace setVariable ['vin_not_text', _this#0]";  // Dont delete this!
 		};
+
+
 		class NOTIFICATION_HINT : MUI_BASE_ABS
 		{
 			type = 0;
 			idc = -1;
 			x = 0; 
 			y = 0.123; 
-			w = 0.436; 
+			w = 0.5; 
 			h = 0.035; 
 
-			colorBackground[] = {0, 0, 0, 1};
+			colorBackground[] = {0, 0, 0, 0};
 
-			style = 0+2;
+			style = ST_LEFT;
 			text = "Cryptokeys are stored in your notes tab";
 			colorText[] = {1,1,1,1};
-			font = "RobotoCondensed";
+			shadow = 1;
+			font = "RobotoCondensedLight";
 			sizeEx = 0.035;
 			onLoad = "uiNamespace setVariable ['vin_not_hint', _this#0]";  // Dont delete this!
 		};
+
+
 		
 	};
 	
