@@ -4,7 +4,7 @@
 It is a multiplayer Co-Op mission for ARMA III. The goal of this project is to make a guerrilla warfare scenario for ARMA III, hugely influenced by a similar mission by Barbolani: Antistasi (http://www.a3antistasi.enjin.com/).
 
 ## How do I run it??
-It's not on steam yet, but you can try to play it already. Grab the .pbo file from the Releases bar above. Also you will to load some mods. Instructions are here: https://github.com/Sparker95/Project_0/wiki/Setup-mission
+It's not on steam yet, but you can try to play it already. Grab the .pbo file from the Releases bar above. Also you will to load some mods. Instructions are here: https://github.com/Sparker95/Vindicta/wiki/Setup-mission
 
 ## Key features
 * Multi-level AI (commander, garrison, group, unit level) which can plan ahead and execute different tasks (attacks on spotted targets/locations, sending reinforcements, dispatching patrols, managing its logistics)

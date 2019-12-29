@@ -132,9 +132,9 @@ def main():
     args = parser.parse_args()
 
     # Allow running from root directory as well as from inside the tools directory
-    rootDir = "../Project_0.Altis"
-    if (os.path.exists("Project_0.Altis")):
-        rootDir = "Project_0.Altis"
+    rootDir = "../Vindicta.Altis"
+    if (os.path.exists("Vindicta.Altis")):
+        rootDir = "Vindicta.Altis"
 
     for root, dirnames, filenames in os.walk(rootDir + '/' + args.module):
       for filename in fnmatch.filter(filenames, '*.cpp'):

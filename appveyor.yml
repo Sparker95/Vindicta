@@ -4,6 +4,6 @@ clone_folder: c:\dev
 build: off
 test_script:
 - cmd: >-
-    cd c:\dev\Project_0.Altis
+    cd c:\dev\Vindicta.Altis
 
-    ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i c:\dev\Project_0.Altis\Tests\RunTests.sqf
+    ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i c:\dev\Vindicta.Altis\Tests\RunTests.sqf

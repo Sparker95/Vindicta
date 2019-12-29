@@ -1,6 +1,6 @@
 [
     {
-        "sourceFolder": "Project_0.Altis",
+        "sourceFolder": "Vindicta.Altis",
         "missionName": "Vindicta-dev",
         "map": "Altis",
         "configFiles": [
@@ -8,7 +8,7 @@
         ]
     },
     {
-        "sourceFolder": "Project_0.Altis",
+        "sourceFolder": "Vindicta.Altis",
         "missionName": "Vindicta-release",
         "map": "Altis",
         "configFiles": [

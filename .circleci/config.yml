@@ -20,7 +20,7 @@ jobs:
   #     - checkout
   #     - run:
   #         name: Lint sqf code
-  #         command: sqflint -d Project_0.Altis || true
+  #         command: sqflint -d Vindicta.Altis || true
 
   # armake:
   #   docker:
