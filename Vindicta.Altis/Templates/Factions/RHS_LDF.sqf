@@ -24,7 +24,7 @@ _inf set [T_INF_ammo, ["RHS_LDF_MG_2", "RHS_LDF_AT_2"]];
 _inf set [T_INF_LAT, ["RHS_LDF_LAT"]];
 _inf set [T_INF_AT, ["RHS_LDF_AT"]];
 _inf set [T_INF_AA, ["RHS_LDF_AA"]];
-//_inf set [T_INF_LMG, [""]];
+_inf set [T_INF_LMG, ["RHS_LDF_MG"]];
 _inf set [T_INF_HMG, ["RHS_LDF_MG"]];
 _inf set [T_INF_medic, ["RHS_LDF_medic"]];
 _inf set [T_INF_engineer, ["RHS_LDF_engineer"]];
