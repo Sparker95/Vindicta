@@ -153,25 +153,10 @@ CLASS(CLASS_NAME, "")
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
 
-		// location panel
-		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseEnter", { CALLM(gClientMapUI, "onMouseEnter", _this); }];
-		(_mapDisplay displayCtrl IDC_LOCP_TAB1) ctrlAddEventHandler ["MouseExit", { CALLM(gClientMapUI, "onMouseExit", _this); }];
-
-		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseEnter", { CALLM(gClientMapUI, "onMouseEnter", _this); }];
-		(_mapDisplay displayCtrl IDC_LOCP_TAB2) ctrlAddEventHandler ["MouseExit", { CALLM(gClientMapUI, "onMouseExit", _this); }];
-
-		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseEnter", { CALLM(gClientMapUI, "onMouseEnter",_this); }];
-		(_mapDisplay displayCtrl IDC_LOCP_TAB3) ctrlAddEventHandler ["MouseExit", { CALLM(gClientMapUI, "onMouseExit", _this); }];
-
-
 		// = = = = = = Initialize default text = = = = = =
 
 		// init headline text and color
-		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetText format ["%1", (toUpper worldName)];
-		(_mapDisplay displayCtrl IDC_LOCP_HEADLINE) ctrlSetBackgroundColor MUIC_COLOR_BLACK;
-
-		// set some properties that didn't work right in control classes
-		(_mapDisplay displayCtrl IDC_LOCP_TABCAT) ctrlSetFont "PuristaSemiBold";
+		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
 
 
 		//  = = = = = = = = Add event handlers to the map = = = = = = = = 
@@ -504,10 +489,6 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 					case IDC_BPANEL_BUTTON_2: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON2"); };
 					case IDC_BPANEL_BUTTON_3: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON3"); };
 
-					// location panel
-					case IDC_LOCP_TAB1: { T_CALLM1("setHintText", localize "STR_CMUI_TAB1"); };
-					case IDC_LOCP_TAB2: { T_CALLM1("setHintText", localize "STR_CMUI_TAB2"); };
-					case IDC_LOCP_TAB3: { T_CALLM1("setHintText", localize "STR_CMUI_TAB3"); };
 				};
 			} else { // hints to display if this control is disabled
 				switch (_idc) do {
@@ -516,10 +497,6 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 					case IDC_BPANEL_BUTTON_2: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON2_DISABLED"); };
 					case IDC_BPANEL_BUTTON_3: { T_CALLM1("setHintText", localize "STR_CMUI_BUTTON3_DISABLED"); };
 
-					// location panel
-					case IDC_LOCP_TAB1: { T_CALLM1("setHintText", localize "STR_CMUI_TAB1"); };
-					case IDC_LOCP_TAB2: { T_CALLM1("setHintText", localize "STR_CMUI_TAB2"); };
-					case IDC_LOCP_TAB3: { T_CALLM1("setHintText", localize "STR_CMUI_TAB3"); };
 				};
 			};
 		};
@@ -988,7 +965,6 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		// Apply new text for GUI elements
 		private _mapDisplay = findDisplay 12;
-		//(_mapDisplay displayCtrl IDC_LOCP_DETAILTXT) ctrlSetText "";
 		_lnb lnbSetCurSelRow -1;
 		_lnb lnbAddRow [ "Type:", _typeText];
 		_lnb lnbAddRow [ "Side:", _sideText];
@@ -1198,11 +1174,6 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					IDC_LOCP_LISTNBOX_BUTTONS_0,
 					IDC_LOCP_LISTNBOX_BUTTONS_1,
 					IDC_LOCP_LISTNBOX_BUTTONS_2];
-
-		// Hide panel behind it or whatever it is
-		{
-			((findDisplay 12) displayCtrl _x) ctrlShow !_show;
-		} forEach [IDC_LOCP_TABCAT];
 		
 	} ENDMETHOD;
 

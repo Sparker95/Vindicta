@@ -118,7 +118,7 @@ class MUI_BG_TRANSPARENT_MULTILINE_CENTER : MUI_BG_TRANSPARENT_MULTILINE_LEFT
 
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_CENTER);
 
-class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, but grey
+class MUI_HEADLINE : MUI_BG_BLACKSOLID
 {
 	type = CT_STATIC;
 
@@ -128,18 +128,12 @@ class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, bu
 	h = safeZoneH * 0.026;
 
 	sizeEx = MUI_TXT_SIZE_M;
-	colorBackground[] = {0.0666, 0.0666, 0.0666, 1.0}; // A slight delightfully-devilish shade of grey
-
-	/*
-	sizeEx = MUI_TXT_SIZE_S;
-	style = 192+2;
+	colorText[] = MUIC_BLACK; 
+	colorBackground[] = MUIC_MISSION; 
+	style = ST_LEFT;
 	text = "";
 	font = "PuristaMedium";
-	
-	colorBackground[] = {0.702,0.102,0.102,1};	// variable, selected outpost color
-	colorText[] = MUIC_WHITE;
 	shadow = 1;
-	*/
 };
 
 __MUI_CLASS_ABS(MUI_HEADLINE);
