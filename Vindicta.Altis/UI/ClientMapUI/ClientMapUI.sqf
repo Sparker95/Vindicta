@@ -123,8 +123,8 @@ CLASS(CLASS_NAME, "")
 		params ["_mapIsOpened", "_mapIsForced"]; if !(visibleMap) then { CALLM0(gClientMapUI, "onMapOpen"); }; }];
 		
 		//listbox events
-		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBSelChanged", { CALLM(gClientMapUI, "intelPanelOnSelChanged", _this); }];
-		(_mapDisplay displayCtrl IDC_LOCP_LISTNBOX) ctrlAddEventHandler ["LBDblClick", { CALLM(gClientMapUI, "intelPanelOnDblClick", _this); }];
+		([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl) ctrlAddEventHandler ["LBSelChanged", { CALLM(gClientMapUI, "intelPanelOnSelChanged", _this); }];
+		([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl) ctrlAddEventHandler ["LBDblClick", { CALLM(gClientMapUI, "intelPanelOnDblClick", _this); }];
 
 		// = = = = = = Add event handlers = = = = = =
 
@@ -140,9 +140,9 @@ CLASS(CLASS_NAME, "")
 		// bottom panel
 		// MouseEnter / MouseExit event handlers
 		{
-			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseEnter", {CALLM(gClientMapUI, "onMouseEnter", _this); }];
-			(_mapDisplay displayCtrl _x) ctrlAddEventHandler ["MouseExit", {CALLM(gClientMapUI, "onMouseExit", _this); }];
-		} forEach [IDC_BPANEL_BUTTON_1, IDC_BPANEL_BUTTON_2, IDC_BPANEL_BUTTON_3, IDC_BPANEL_BUTTON_SHOW_INTEL, IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS];
+			([_mapDisplay, _x] call ui_fnc_findControl) ctrlAddEventHandler ["MouseEnter", {CALLM(gClientMapUI, "onMouseEnter", _this); }];
+			([_mapDisplay, _x] call ui_fnc_findControl) ctrlAddEventHandler ["MouseExit", {CALLM(gClientMapUI, "onMouseExit", _this); }];
+		} forEach ["CMUI_BUTTON_NOTIF", "CMUI_BUTTON_INTELP", "CMUI_BUTTON_LOC", "CMUI_BUTTON_PLAYERS", "CMUI_INTEL_ENDED", "CMUI_INTEL_INACTIVE", "CMUI_INTEL_ACTIVE"];
 
 		// Button clicks
 		([_mapDisplay, "CMUI_BUTTON_INTEL_INACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
@@ -151,7 +151,7 @@ CLASS(CLASS_NAME, "")
 		([_mapDisplay, "CMUI_BUTTON_SHOW_LOCATIONS"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
-		(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_CLEAR_NOTIFICATIONS) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
 
 		// = = = = = = Initialize default text = = = = = =
 
@@ -451,7 +451,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 	// Sets hint text at the bottom of the screen
 	METHOD("setHintText") {
 		params [P_THISOBJECT, P_STRING("_text")];
-		((finddisplay 12) displayCtrl IDC_BPANEL_HINTS) ctrlSetText _text; // (localize "STR_CMUI_BUTTON1");
+		([_mapDisplay, "CMUI_HINTS"] call ui_fnc_findControl) ctrlSetText _text; // (localize "STR_CMUI_BUTTON1");
 	} ENDMETHOD;
 
 	// Updates the hint text based on the current context
@@ -919,7 +919,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			OOP_INFO_0("Garrison record is destroyed");
 		};
 
-		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
 		_lnb lnbSetColumnsPos [0, 0.2];
 
@@ -948,7 +948,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			OOP_INFO_0("Intel doesn't exist");
 		};
 
-		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
 		_lnb lnbSetColumnsPos [0, 0.2];
 
@@ -1013,13 +1013,13 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 	METHOD("intelPanelClear") {
 		params [P_THISOBJECT];
-		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		lnbClear _lnb;
 	} ENDMETHOD;
 
 	METHOD("intelPanelDeselect") {
 		params [P_THISOBJECT];
-		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetCurSelRow -1;
 	} ENDMETHOD;
 
@@ -1028,7 +1028,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
-		pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetColumnsPos [0, 0.2, 0.7];
 		if (_clear) then { T_CALLM0("intelPanelClear"); };		
 

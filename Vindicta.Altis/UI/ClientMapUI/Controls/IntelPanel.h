@@ -1,11 +1,23 @@
 #include "..\..\Resources\UIProfileColors.h"
+#include "..\ClientMapUI_Macros.h"
+
+class CMUI_INTEL_LISTBOX_BG : MUI_BASE {
+
+	IDC = -1;
+	x = safeZoneX + safeZoneW * 0.839; 
+	y = safeZoneY + safeZoneH * 0.101; 
+	w = safeZoneW * 0.154; 
+	h = safeZoneH * 0.353; 
+	colorBackground[] = MUIC_BLACK; 
+
+};
 
 class CMUI_INTEL_LISTBOX : MUI_LISTNBOX {
 
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.845; 
-	y = safeZoneY + safeZoneH * 0.069; 
-	w = safeZoneW * 0.148; 
+	x = safeZoneX + safeZoneW * 0.839; 
+	y = safeZoneY + safeZoneH * 0.101; 
+	w = safeZoneW * 0.154; 
 	h = safeZoneH * 0.353; 
 	colorBackground[] = MUIC_BLACK; 
 
@@ -14,9 +26,9 @@ class CMUI_INTEL_LISTBOX : MUI_LISTNBOX {
 class CMUI_INTEL_HEADLINE : MUI_HEADLINE {
 
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.845; 
+	x = safeZoneX + safeZoneW * 0.839; 
 	y = safeZoneY + safeZoneH * 0.043; 
-	w = safeZoneW * 0.148; 
+	w = safeZoneW * 0.154; 
 	text = "INTEL"; 
 	colorText[] = MUIC_BLACK; 
 	colorBackground[] = MUIC_MISSION; 
@@ -40,9 +52,9 @@ class CMUI_INTEL_MINIMIZE : RSCPICTURE {
 class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT {
 
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.845; 
-	y = safeZoneY + safeZoneH * 0.426; 
-	w = safeZoneW * 0.148; 
+	x = safeZoneX + safeZoneW * 0.839; 
+	y = safeZoneY + safeZoneH * 0.458; 
+	w = safeZoneW * 0.154; 
 	h = safeZoneH * 0.028; 
 	text = "show active"; 
 
@@ -51,9 +63,9 @@ class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT {
 class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT {
 
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.845; 
-	y = safeZoneY + safeZoneH * 0.456; 
-	w = safeZoneW * 0.148; 
+	x = safeZoneX + safeZoneW * 0.839; 
+	y = safeZoneY + safeZoneH * 0.488; 
+	w = safeZoneW * 0.154; 
 	h = safeZoneH * 0.028; 
 	text = "show inactive"; 
 
@@ -62,9 +74,9 @@ class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT {
 class CMUI_INTEL_ENDED : MUI_BUTTON_TXT {
 
 	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.845; 
-	y = safeZoneY + safeZoneH * 0.487; 
-	w = safeZoneW * 0.148; 
+	x = safeZoneX + safeZoneW * 0.839; 
+	y = safeZoneY + safeZoneH * 0.518; 
+	w = safeZoneW * 0.154; 
 	h = safeZoneH * 0.028; 
 	text = "show ended"; 
 
@@ -123,6 +135,16 @@ class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT {
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
 	text = "show players"; 
+
+};
+
+class CMUI_INTEL_BTNGRP : MUI_GROUP {
+
+	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
+	x = safeZoneX + safeZoneW * 0.839; 
+	y = safeZoneY + safeZoneH * 0.069; 
+	w = safeZoneW * 0.154; 
+	h = safeZoneH * 0.028; 
 
 };
 
