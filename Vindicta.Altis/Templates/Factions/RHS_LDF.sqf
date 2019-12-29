@@ -37,7 +37,7 @@ _inf set [T_INF_pilot_heli, ["RHS_LDF_helipilot"]];
 
 // Recon
 _inf set [T_INF_recon_TL, ["RHS_LDF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["RHS_LDF_recon_LMG"]];
+_inf set [T_INF_recon_rifleman, ["RHS_LDF_recon_LAT"]];
 _inf set [T_INF_recon_medic, ["RHS_LDF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["RHS_LDF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["RHS_LDF_recon_LAT"]];
