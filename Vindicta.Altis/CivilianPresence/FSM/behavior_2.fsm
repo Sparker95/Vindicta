@@ -2,30 +2,62 @@
 /*%FSM<HEAD>*/
 /*
 item0[] = {"init",0,250,-19.804291,-524.493408,70.195709,-474.493500,0.000000,"init"};
-item1[] = {"Select_Destination",2,250,287.142151,-98.238617,377.142151,-48.238617,0.000000,"Select" \n "Destination" \n "To Walk To"};
-item2[] = {"Select_Destination_1",2,250,-266.239441,122.055542,-135.811462,180.796753,0.000000,"Select Destination," \n "Start Running" \n "Away"};
-item3[] = {"Start_Talking",2,250,-27.511108,120.598106,62.488907,170.598114,0.000000,"Start" \n "Talking"};
-item4[] = {"Must_talk_",4,218,-27.150604,-1.106964,62.849396,48.893036,10.000000,"Must talk?"};
-item5[] = {"Priority_High__",-1,250,-66.983154,-585.414795,119.137238,-546.352661,0.000000,"Priority" \n "High -----------> Low"};
-item6[] = {"In_Panic_",4,218,-249.713287,-100.395523,-159.713287,-50.395523,20.000000,"In" \n "Panic?"};
-item7[] = {"True",8,218,286.349976,-226.088852,376.349976,-176.088852,0.000000,"True"};
-item8[] = {"Arrived_",4,218,282.433777,221.942413,372.433777,271.942413,0.000000,"Arrived?"};
-item9[] = {"Timeout__Got_stuck",4,218,447.840393,98.903900,575.296448,166.963135,0.000000,"Timeout?" \n "Got stuck?"};
-item10[] = {"",7,210,158.568237,-79.409760,166.568237,-71.409760,0.000000,""};
+item1[] = {"Select_Destination",2,250,413.746399,-75.862701,503.746399,-25.862701,0.000000,"Select" \n "Destination" \n "To Walk To"};
+item2[] = {"Select_Destination_1",2,250,-779.649231,-146.465210,-649.221008,-87.723999,0.000000,"Select Destination," \n "Start Running" \n "Away"};
+item3[] = {"Start_Talking",2,250,37.382874,151.831146,127.382889,201.831146,0.000000,"Start" \n "Talking"};
+item4[] = {"Must_talk_",4,218,37.317963,-51.819244,127.317963,-1.819244,10.000000,"Must talk?"};
+item5[] = {"Priority_High__",-1,250,-538.574158,-596.105896,628.740356,-535.661743,0.000000,"Priority" \n "High -----------> Low"};
+item6[] = {"In_Panic_",4,218,-595.527405,-172.140579,-464.330139,-90.227066,20.000000,"In" \n "Panic?"};
+item7[] = {"True",8,218,412.954102,-167.307968,502.954102,-117.307968,0.000000,"True"};
+item8[] = {"Arrived_",4,218,417.723694,153.823456,507.723694,203.823456,0.000000,"Arrived?"};
+item9[] = {"Timeout__Got_stuck",4,218,542.065247,217.791595,669.521301,285.850830,0.000000,"Timeout?" \n "Got stuck?"};
+item10[] = {"",7,210,284.414673,-101.664177,292.414673,-93.664185,0.000000,""};
 item11[] = {"Start",2,250,-25.038147,-338.017639,64.961868,-288.017639,0.000000,"Start"};
-item12[] = {"Panic_Timeout_",4,218,-264.662750,281.958679,-146.514130,353.751160,0.000000,"Panic" \n "Timeout?"};
-item13[] = {"Not_Talking_Any",4,218,-46.077393,227.670593,83.875610,308.543274,0.000000,"Not" \n "Talking" \n "Any More?"};
-item14[] = {"Wait_For_A_While",2,250,289.602783,297.768188,379.602783,347.768188,0.000000,"Wait" \n "For A While"};
-item15[] = {"Done_Waiting_",4,218,276.890564,380.398010,390.499146,448.558472,0.000000,"Done" \n "Waiting?"};
-item16[] = {"",7,210,157.391968,319.297241,165.391968,327.297241,0.000000,""};
-item17[] = {"Check_Fof_Panic",-1,250,91.573761,-158.970490,185.513184,-91.729614,0.000000,"Check" \n "Fof Panic" \n "From Many" \n "States"};
-item18[] = {"",7,210,630.120667,-232.779282,638.120667,-224.779312,0.000000,""};
-item19[] = {"",7,210,631.365784,129.474304,639.365784,137.474304,0.000000,""};
-item20[] = {"",7,210,632.038757,337.791565,640.038757,345.791565,0.000000,""};
-item21[] = {"",7,210,312.326050,565.126221,320.326050,573.126221,0.000000,""};
-item22[] = {"Start_Walking_To",2,250,284.672729,108.565666,374.672729,158.565674,0.000000,"Start Walking" \n "To Selected" \n "Destination"};
-item23[] = {"True",8,218,287.063599,6.807739,377.063599,56.807739,0.000000,"True"};
+item12[] = {"Panic_Timeout_",4,218,-565.816528,-338.081451,-447.667786,-266.288971,0.000000,"Panic" \n "Timeout?"};
+item13[] = {"Not_Talking_Any",4,218,18.369141,260.609802,148.322144,341.482483,0.000000,"Not" \n "Talking" \n "Any More?"};
+item14[] = {"Wait_For_A_While",2,250,418.633911,229.278320,508.633911,279.278320,0.000000,"Wait" \n "For A While"};
+item15[] = {"Done_Waiting_",4,218,410.192444,297.886719,523.801025,366.047180,0.000000,"Done" \n "Waiting?"};
+item16[] = {"",7,210,282.967224,249.920105,290.967224,257.920105,0.000000,""};
+item17[] = {"Check_Fof_Panic",-1,250,135.966095,-182.530273,335.572449,-127.626007,0.000000,"Check Fof Panic" \n "From Many States"};
+item18[] = {"",7,210,764.635193,-317.905762,772.635193,-309.905792,0.000000,""};
+item19[] = {"",7,210,765.400696,494.281799,773.400696,502.281799,0.000000,""};
+item20[] = {"",7,210,765.121033,561.373108,773.121033,569.373108,0.000000,""};
+item21[] = {"",7,210,81.526337,561.296448,89.526337,569.296448,0.000000,""};
+item22[] = {"Start_Walking_To",2,250,414.688354,77.431519,504.688354,127.431519,0.000000,"Start Walking" \n "To Selected" \n "Destination"};
+item23[] = {"True",8,218,416.094727,1.273071,506.094727,51.273071,0.000000,"True"};
 item24[] = {"True",8,218,-22.669556,-433.110931,67.330444,-383.110962,0.000000,"True"};
+item25[] = {"Stop_And_Sit_Down",2,4346,-426.371460,-23.936615,-280.924316,32.852814,0.000000,"Stop And" \n "Sit Down Scared"};
+item26[] = {"Someone_Is_Aiming",4,218,-427.199585,-104.885651,-279.489197,-36.780426,15.000000,"Someone" \n "Is Aiming" \n "At Me?"};
+item27[] = {"Noone_Is_Aiming",4,218,-524.483459,150.692566,-397.554474,216.838013,3.000000,"Noone Is" \n "Aiming Any" \n "More?"};
+item28[] = {"Say_Something_Check",2,250,-368.477295,163.020691,-221.139771,214.914734,0.000000,"Say Something" \n "Check if we can escape"};
+item29[] = {"",7,210,-115.083191,-120.439537,-107.083183,-112.439537,0.000000,""};
+item30[] = {"True",8,218,-287.220978,82.215820,-242.080200,116.862297,0.000000,"True"};
+item31[] = {"",7,210,198.364685,148.417664,206.364700,156.417664,0.000000,""};
+item32[] = {"Reset_Destinatio",2,250,562.189148,315.678833,652.189148,365.678833,0.000000,"Reset" \n "Destination"};
+item33[] = {"True",8,218,563.101318,402.179199,653.101318,452.179199,0.000000,"True"};
+item34[] = {"True",8,218,-276.169800,-329.574951,-186.169800,-279.574951,0.000000,"True"};
+item35[] = {"Reset_Destinatio_1",2,250,-407.754517,-328.250366,-317.754700,-278.250366,0.000000,"Reset" \n "Destination"};
+item36[] = {"Highest_Priority",-1,250,-509.645386,-223.229004,-416.619934,-177.996460,0.000000,"Highest" \n "Priority!"};
+item37[] = {"Dead_or_deleted",4,218,-908.821655,378.328339,-687.597656,477.394775,100.000000,"Dead or deleted?"};
+item38[] = {"END",1,250,-846.292542,526.496643,-756.292542,576.496643,0.000000,"END"};
+item39[] = {"",7,210,-801.676270,67.196259,-793.676270,75.196259,0.000000,""};
+item40[] = {"",7,210,219.654785,266.500580,227.654785,274.500580,0.000000,""};
+item41[] = {"",7,210,220.457520,425.700714,228.457520,433.700745,0.000000,""};
+item42[] = {"Stop_The_Animati",2,250,-515.810852,65.158569,-447.150604,96.300415,0.000000,"Stop The" \n "Animation"};
+item43[] = {"True",8,218,-576.972107,65.869507,-526.673523,91.056152,0.000000,"True"};
+item44[] = {"Wait",2,250,-427.229492,39.587280,-322.144409,88.078796,0.000000,"Wait"};
+item45[] = {"True",8,218,-286.801086,40.919739,-242.405457,77.100220,0.000000,"True"};
+item46[] = {"Start_Panic_When",-1,250,-737.428833,182.704529,-651.901245,254.268433,0.000000,"Start Panic" \n "When We Are" \n "Done Sitting" \n "Here"};
+item47[] = {"Check_If_We_Are",-1,250,144.756104,19.543915,210.350037,63.946014,0.000000,"Check" \n "If We Are" \n "Aimed At"};
+item48[] = {"",7,210,283.738342,96.498077,291.738342,104.498077,0.000000,""};
+item49[] = {"",7,210,348.228821,-30.890472,356.228821,-22.890472,0.000000,""};
+item50[] = {"",7,210,349.025024,50.319763,357.025024,58.319763,0.000000,""};
+item51[] = {"",7,210,348.173645,145.788452,356.173645,153.788452,0.000000,""};
+item52[] = {"",7,210,348.209106,342.126770,356.209106,350.126770,0.000000,""};
+item53[] = {"",7,210,155.931213,81.364014,163.931213,89.364014,0.000000,""};
+item54[] = {"Timeout_",4,218,-422.449585,100.769257,-332.449646,150.769257,0.000000,"Timeout?"};
+item55[] = {"Wait_1",2,250,-625.697083,69.657623,-589.918335,89.662872,0.000000,"Wait"};
+item56[] = {"Timeout_",4,218,-703.231750,69.086914,-636.881470,111.011383,0.000000,"Timeout?"};
 version=1;
 class LayoutItems
 {
@@ -47,39 +79,107 @@ class LayoutItems
 			lStyle=1;
 		};
 	};
+	class Item36
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+	class Item46
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
+	class Item47
+	{
+		class ItemInfo
+		{
+			FontFace="Arial";
+			FontHeight=10;
+			lStyle=1;
+		};
+	};
 };
 link0[] = {0,24};
 link1[] = {1,23};
 link2[] = {2,12};
-link3[] = {3,6};
+link3[] = {2,39};
 link4[] = {3,13};
-link5[] = {4,3};
-link6[] = {6,2};
-link7[] = {7,1};
-link8[] = {8,14};
-link9[] = {9,19};
-link10[] = {10,6};
-link11[] = {11,4};
-link12[] = {11,6};
-link13[] = {11,7};
-link14[] = {12,21};
-link15[] = {13,21};
-link16[] = {14,15};
-link17[] = {14,16};
-link18[] = {15,21};
-link19[] = {16,10};
-link20[] = {18,11};
-link21[] = {19,18};
-link22[] = {20,19};
-link23[] = {21,20};
-link24[] = {22,4};
-link25[] = {22,8};
-link26[] = {22,9};
-link27[] = {22,10};
-link28[] = {23,22};
-link29[] = {24,11};
-globals[] = {0.000000,0,0,0,0,640,480,1,27,6316128,1,-738.231384,1481.107056,692.253906,-773.169128,1884,1244,1};
-window[] = {2,-1,-1,-1,-1,1237,208,2128,208,3,1902};
+link5[] = {3,29};
+link6[] = {3,31};
+link7[] = {3,40};
+link8[] = {4,3};
+link9[] = {6,2};
+link10[] = {7,1};
+link11[] = {8,14};
+link12[] = {9,32};
+link13[] = {10,29};
+link14[] = {11,4};
+link15[] = {11,6};
+link16[] = {11,7};
+link17[] = {11,26};
+link18[] = {11,39};
+link19[] = {12,35};
+link20[] = {13,21};
+link21[] = {14,15};
+link22[] = {14,16};
+link23[] = {14,31};
+link24[] = {14,50};
+link25[] = {14,52};
+link26[] = {15,32};
+link27[] = {16,48};
+link28[] = {18,11};
+link29[] = {19,18};
+link30[] = {20,19};
+link31[] = {21,20};
+link32[] = {22,8};
+link33[] = {22,9};
+link34[] = {22,31};
+link35[] = {22,48};
+link36[] = {22,50};
+link37[] = {22,51};
+link38[] = {23,22};
+link39[] = {24,11};
+link40[] = {25,29};
+link41[] = {25,39};
+link42[] = {25,45};
+link43[] = {26,25};
+link44[] = {27,42};
+link45[] = {28,27};
+link46[] = {28,30};
+link47[] = {29,6};
+link48[] = {30,44};
+link49[] = {31,53};
+link50[] = {32,33};
+link51[] = {33,19};
+link52[] = {34,11};
+link53[] = {35,34};
+link54[] = {37,38};
+link55[] = {39,37};
+link56[] = {40,41};
+link57[] = {41,37};
+link58[] = {42,43};
+link59[] = {43,55};
+link60[] = {44,54};
+link61[] = {45,44};
+link62[] = {48,10};
+link63[] = {49,4};
+link64[] = {50,49};
+link65[] = {51,52};
+link66[] = {52,41};
+link67[] = {53,26};
+link68[] = {54,28};
+link69[] = {55,56};
+link70[] = {56,2};
+globals[] = {0.000000,0,0,0,0,640,480,1,63,6316128,1,-971.752075,253.340210,527.419312,-422.714630,1604,1244,1};
+window[] = {2,-1,-1,-1,-1,1237,208,2128,208,3,1622};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -114,14 +214,15 @@ class FSM
                          "	_unit setVariable [""#destination"",_destination];" \n
                          "" \n
                          "	if (_mode == ""panic"") then {" \n
-                         "		_this forceWalk false;" \n
-                         "		_this setUnitPosWeak ""UP"";" \n
-                         "		_this playAction ""Panic"";" \n
+                         "		_unit forceWalk false;" \n
+                         "		_unit setUnitPosWeak ""UP"";" \n
+                         "		_unit switchAction ""Panic"";" \n
+                         "		_unit forceSpeed -1;" \n
                          "	} else {" \n
-                         "		_this forcespeed -1; // Default speed" \n
-                         "		_this forceWalk true;" \n
-                         "		_this setUnitPosWeak ""UP"";" \n
-                         "		_this playAction ""Default"";" \n
+                         "		_unit forcespeed -1; // Default speed" \n
+                         "		_unit forceWalk true;" \n
+                         "		_unit setUnitPosWeak ""UP"";" \n
+                         "		_unit switchAction ""Default"";" \n
                          "	};" \n
                          "" \n
                          "};" \n
@@ -136,17 +237,21 @@ class FSM
                          "_fnc_setDestination =" \n
                          "{" \n
                          "	params [""_destination""];" \n
-                         "	private _destination = if (_destination isEqualType []) then {" \n
+                         "	private _destinationPos = if (_destination isEqualType []) then {" \n
+                         "		_unit setVariable [""#safespot"", objNull];" \n
                          "		_destination" \n
                          "	} else {" \n
-                         "		selectRandom (_destination getVariable [""#positions"",[getPos _safespot]]);" \n
+                         "		_unit setVariable [""#safespot"", _destination];" \n
+                         "		selectRandom (_destination getVariable [""#positions"",[getPos _destination]]);" \n
                          "	};" \n
-                         "	_currentDestination = _destination;" \n
-                         "	_unit setVariable [""#safespot"", _destination];" \n
+                         "	_currentDestination = _destinationPos;" \n
                          "};" \n
                          "" \n
                          "// Reset current destination" \n
-                         "call _fnc_resetDestination;"/*%FSM</STATEINIT""">*/;
+                         "0 call _fnc_resetDestination;" \n
+                         "" \n
+                         "// Set state variable" \n
+                         "_unit setVariable [""#state"", ""idle"", true];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -173,7 +278,7 @@ class FSM
                          "_this forcespeed -1;//resetting to default" \n
                          "_this forceWalk true;" \n
                          "_this setUnitPosWeak ""UP"";" \n
-                         "if (_usePanicMode) then {_this playAction ""Default""};" \n
+                         "_this playAction ""Default"";" \n
                          "" \n
                          "// Select a new destination or use the previous one we had" \n
                          "if (_currentDestination isEqualTo [0, 0, 0]) then {" \n
@@ -207,18 +312,43 @@ class FSM
                 {
                         name = "Select_Destination_1";
                         itemno = 2;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"// Select new spot where to run to" \n
+                         "private _safespot = [_this,1] call bis_fnc_cp_getSafespot;" \n
+                         "[_safeSpot] call _fnc_setDestination;" \n
+                         "" \n
+                         "// Start running there in panic" \n
+                         "[""panic""] call _fnc_startMovingToDestination;" \n
+                         "" \n
+                         "// Set state variable" \n
+                         "_unit setVariable [""#state"", ""panic"", true];" \n
+                         "" \n
+                         "// Set panic timeout" \n
+                         "_timeout = time + 60 + random 30;" \n
+                         "" \n
+                         "// Reset danger flag" \n
+                         "_unit setVariable [""#newDanger"", false];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Dead_or_deleted">*/
+                                class Dead_or_deleted
+                                {
+                                        itemno = 37;
+                                        priority = 100.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Panic_Timeout_">*/
                                 class Panic_Timeout_
                                 {
                                         itemno = 12;
                                         priority = 0.000000;
-                                        to="Start";
+                                        to="Reset_Destinatio_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _timeout"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -230,10 +360,28 @@ class FSM
                 {
                         name = "Start_Talking";
                         itemno = 3;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"// Stop" \n
+                         "_this forcespeed 0;" \n
+                         "" \n
+                         "private _whoIsLooking = (_this getVariable [""#interactWith"",[objNull]])#0;" \n
+                         "_this doWatch _whoIsLooking; //start staring competition" \n
+                         "" \n
+                         "// Set state variable" \n
+                         "_unit setVariable [""#state"", ""talk"", true];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Dead_or_deleted">*/
+                                class Dead_or_deleted
+                                {
+                                        itemno = 37;
+                                        priority = 100.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "In_Panic_">*/
                                 class In_Panic_
                                 {
@@ -241,7 +389,19 @@ class FSM
                                         priority = 20.000000;
                                         to="Select_Destination_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"// This flag is set by danger.fsm in our addon" \n
+                                         "_unit getVariable [""#newDanger"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Someone_Is_Aiming">*/
+                                class Someone_Is_Aiming
+                                {
+                                        itemno = 26;
+                                        priority = 15.000000;
+                                        to="Stop_And_Sit_Down";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#aimedAt"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -252,7 +412,7 @@ class FSM
                                         priority = 0.000000;
                                         to="Start";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count(_unit getVariable [""#interactWith"",[]]) == 0"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -264,10 +424,25 @@ class FSM
                 {
                         name = "Start";
                         itemno = 11;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"// Set state variable" \n
+                         "_unit setVariable [""#state"", ""idle"", true];" \n
+                         "" \n
+                         "// Debug" \n
+                         "diag_log format [""[behavior] Started for unit: %1, idle state"", _unit];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Dead_or_deleted">*/
+                                class Dead_or_deleted
+                                {
+                                        itemno = 37;
+                                        priority = 100.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "In_Panic_">*/
                                 class In_Panic_
                                 {
@@ -275,7 +450,19 @@ class FSM
                                         priority = 20.000000;
                                         to="Select_Destination_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"// This flag is set by danger.fsm in our addon" \n
+                                         "_unit getVariable [""#newDanger"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Someone_Is_Aiming">*/
+                                class Someone_Is_Aiming
+                                {
+                                        itemno = 26;
+                                        priority = 15.000000;
+                                        to="Stop_And_Sit_Down";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#aimedAt"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -286,7 +473,7 @@ class FSM
                                         priority = 10.000000;
                                         to="Start_Talking";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count(_unit getVariable [""#interactWith"",[]]) > 0"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -309,10 +496,21 @@ class FSM
                 {
                         name = "Wait_For_A_While";
                         itemno = 14;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        init = /*%FSM<STATEINIT""">*/"_timeout = time + 30 + random 10;"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Dead_or_deleted">*/
+                                class Dead_or_deleted
+                                {
+                                        itemno = 37;
+                                        priority = 100.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "In_Panic_">*/
                                 class In_Panic_
                                 {
@@ -320,7 +518,30 @@ class FSM
                                         priority = 20.000000;
                                         to="Select_Destination_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"// This flag is set by danger.fsm in our addon" \n
+                                         "_unit getVariable [""#newDanger"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Someone_Is_Aiming">*/
+                                class Someone_Is_Aiming
+                                {
+                                        itemno = 26;
+                                        priority = 15.000000;
+                                        to="Stop_And_Sit_Down";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#aimedAt"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Must_talk_">*/
+                                class Must_talk_
+                                {
+                                        itemno = 4;
+                                        priority = 10.000000;
+                                        to="Start_Talking";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count(_unit getVariable [""#interactWith"",[]]) > 0"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -329,9 +550,9 @@ class FSM
                                 {
                                         itemno = 15;
                                         priority = 0.000000;
-                                        to="Start";
+                                        to="Reset_Destinatio";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _timeout"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -344,10 +565,30 @@ class FSM
                         name = "Start_Walking_To";
                         itemno = 22;
                         init = /*%FSM<STATEINIT""">*/"// Walk there normally, not in panic" \n
-                         "[""normal""] call _fnc_startMovingToDestination;"/*%FSM</STATEINIT""">*/;
+                         "[""normal""] call _fnc_startMovingToDestination;" \n
+                         "" \n
+                         "// Estimate timeout if he gets stuck" \n
+                         "private _distance = _unit distance2D _currentDestination;" \n
+                         "private _estTime = _distance/0.4;" \n
+                         "" \n
+                         "_timeout = time + _estTime;" \n
+                         "" \n
+                         "// Set state variable" \n
+                         "_unit setVariable [""#state"", ""idle"", true];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Dead_or_deleted">*/
+                                class Dead_or_deleted
+                                {
+                                        itemno = 37;
+                                        priority = 100.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "In_Panic_">*/
                                 class In_Panic_
                                 {
@@ -355,7 +596,19 @@ class FSM
                                         priority = 20.000000;
                                         to="Select_Destination_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"// This flag is set by danger.fsm in our addon" \n
+                                         "_unit getVariable [""#newDanger"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Someone_Is_Aiming">*/
+                                class Someone_Is_Aiming
+                                {
+                                        itemno = 26;
+                                        priority = 15.000000;
+                                        to="Stop_And_Sit_Down";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#aimedAt"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -366,7 +619,7 @@ class FSM
                                         priority = 10.000000;
                                         to="Start_Talking";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"false"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"count(_unit getVariable [""#interactWith"",[]]) > 0"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -375,9 +628,9 @@ class FSM
                                 {
                                         itemno = 9;
                                         priority = 0.000000;
-                                        to="Start";
+                                        to="Reset_Destinatio";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _timeout"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -388,7 +641,240 @@ class FSM
                                         priority = 0.000000;
                                         to="Wait_For_A_While";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(_unit distance2D _currentDestination) < 10"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Stop_And_Sit_Down">*/
+                class Stop_And_Sit_Down
+                {
+                        name = "Stop_And_Sit_Down";
+                        itemno = 25;
+                        init = /*%FSM<STATEINIT""">*/"// Stop" \n
+                         "_this forcespeed 0;" \n
+                         "" \n
+                         "// Select animation" \n
+                         "_anim = selectRandom [" \n
+                         """ApanPknlMstpSnonWnonDnon_G01""," \n
+                         """ApanPknlMstpSnonWnonDnon_G02""," \n
+                         """ApanPknlMstpSnonWnonDnon_G03""" \n
+                         "];" \n
+                         "" \n
+                         "// Too lazy to loop the animation," \n
+                         "// Just add it to the queue many times" \n
+                         "for ""_i"" from 0 to 20 do {" \n
+                         "	_unit playMove _anim;" \n
+                         "};" \n
+                         "" \n
+                         "// Set state variable" \n
+                         "_unit setVariable [""#state"", ""surrender"", true];" \n
+                         "" \n
+                         "// Say something" \n
+                         "[_unit] call civPresence_fnc_saySurrenderPhrase;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Dead_or_deleted">*/
+                                class Dead_or_deleted
+                                {
+                                        itemno = 37;
+                                        priority = 100.000000;
+                                        to="END";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "In_Panic_">*/
+                                class In_Panic_
+                                {
+                                        itemno = 6;
+                                        priority = 20.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"// This flag is set by danger.fsm in our addon" \n
+                                         "_unit getVariable [""#newDanger"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 45;
+                                        priority = 0.000000;
+                                        to="Wait";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"True"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Say_Something_Check">*/
+                class Say_Something_Check
+                {
+                        name = "Say_Something_Check";
+                        itemno = 28;
+                        init = /*%FSM<STATEINIT""">*/"[_unit] call civPresence_fnc_saySurrenderPhrase;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Noone_Is_Aiming">*/
+                                class Noone_Is_Aiming
+                                {
+                                        itemno = 27;
+                                        priority = 3.000000;
+                                        to="Stop_The_Animati";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"(!(_unit getVariable [""#aimedAt"", false]))"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 30;
+                                        priority = 0.000000;
+                                        to="Wait";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/""/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Reset_Destinatio">*/
+                class Reset_Destinatio
+                {
+                        name = "Reset_Destinatio";
+                        itemno = 32;
+                        init = /*%FSM<STATEINIT""">*/"0 call _fnc_resetDestination;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 33;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"True"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Reset_Destinatio_1">*/
+                class Reset_Destinatio_1
+                {
+                        name = "Reset_Destinatio_1";
+                        itemno = 35;
+                        init = /*%FSM<STATEINIT""">*/"// Reset destination" \n
+                         "0 call _fnc_resetDestination;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 34;
+                                        priority = 0.000000;
+                                        to="Start";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"True"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "END">*/
+                class END
+                {
+                        name = "END";
+                        itemno = 38;
+                        init = /*%FSM<STATEINIT""">*/"// Set state variable" \n
+                         "_unit setVariable [""#state"", ""dead"", true];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Stop_The_Animati">*/
+                class Stop_The_Animati
+                {
+                        name = "Stop_The_Animati";
+                        itemno = 42;
+                        init = /*%FSM<STATEINIT""">*/"// Stand up" \n
+                         "_unit playMoveNow ""ApanPknlMstpSnonWnonDnon_ApanPercMstpSnonWnonDnon"";"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "True">*/
+                                class True
+                                {
+                                        itemno = 43;
+                                        priority = 0.000000;
+                                        to="Wait_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Wait">*/
+                class Wait
+                {
+                        name = "Wait";
+                        itemno = 44;
+                        init = /*%FSM<STATEINIT""">*/"// Reset variable" \n
+                         "// If it's still set after the timeout, means someone is still aiming at us" \n
+                         "_unit setVariable [""#aimedAt"", false];" \n
+                         "_timeout = time + 3 + (random 3);"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Timeout_">*/
+                                class Timeout_
+                                {
+                                        itemno = 54;
+                                        priority = 0.000000;
+                                        to="Say_Something_Check";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _timeout"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Wait_1">*/
+                class Wait_1
+                {
+                        name = "Wait_1";
+                        itemno = 55;
+                        init = /*%FSM<STATEINIT""">*/"_timeout = time + 1.3; // Wait till we stand up"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Timeout_">*/
+                                class Timeout_
+                                {
+                                        itemno = 56;
+                                        priority = 0.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _timeout"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -399,6 +885,7 @@ class FSM
         initState="init";
         finalStates[] =
         {
+                "END",
         };
 };
 /*%FSM</COMPILE>*/

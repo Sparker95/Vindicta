@@ -2,7 +2,7 @@ params [["_civ", objNull, [objNull]], ["_whoIsTalking", objNull, [objNull]], ["_
 
 if (isNull _civ) exitWith {};
 
-private _lookedAtBy = _civ getVariable ["CP_lookedAtBy",[]];
+private _lookedAtBy = _civ getVariable ["#interactWith",[]];
 
 if (_start) then {
 	_lookedAtBy pushBack _whoIsTalking;
@@ -10,4 +10,4 @@ if (_start) then {
 	_lookedAtBy deleteAt (_lookedAtBy find _whoIsTalking);
 };
 
-_civ setVariable ["CP_lookedAtBy", _lookedAtBy];
+_civ setVariable ["#interactWith", _lookedAtBy];

@@ -19,7 +19,7 @@ private _seenBy = allPlayers select {_x distance _pos < 50 || {(_x distance _pos
 //terminate if any player can see the position
 if (count _seenBy > 0) exitWith {objNull};
 
-private _class = format["vin_cp%1",selectRandom (_module getVariable ["#unitTypes",[]])];
+private _class = format["vin_cp_%1",selectRandom (_module getVariable ["#unitTypes",[]])];
 
 // Some units are suspicious and must be created as units, not agents
 private _suspicious = (random 10 < 3);
@@ -36,6 +36,14 @@ if (!(_module getVariable ["#useAgents",true]) || _suspicious) then
 		_unit setVariable ["bSuspicious", true, true]; // So that sensorGroupTargets can recognize it
 	};
 	_unit setVariable ["#isAgent", false];
+
+	// For some reason danger.fsm does not trigger for dangers of the same side... we can do it with event handlers instead
+	_unit addEventHandler ["FiredNear", {
+		params ["_unit"]; _unit setVariable ["#newDanger", true];
+	}];
+	_unit addEventHandler ["Hit", {
+		params ["_unit"]; _unit setVariable ["#newDanger", true];
+	}];
 }
 else
 {
@@ -51,6 +59,6 @@ _unit setVariable ["#core",_module];
 
 _unit setBehaviour "CARELESS";
 //_unit spawn (_module getVariable ["#onCreated",{}]); // onCreated is not set anywhere?
-_unit execFSM "CivilianPresence\FSM\behavior.fsm";
+_unit execFSM "CivilianPresence\FSM\behavior_2.fsm";
 
 _unit

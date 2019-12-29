@@ -6,8 +6,15 @@ class CivPresence {
 		class spawn {};
 		class despawn {};
 		class createUnit {};
-		class talkTo {};//temp just a demo
-		class talkToServer {}; // ...
+
+		class talkTo {};
+		class talkToServer {};
+
+		class aimAtCivilian {};
+		class aimAtCivilianServer {};
 		class initUnitDialogVariables {};
+		class getUnitState {};
+
+		class saySurrenderPhrase {};
 	};
 };

@@ -1,58 +1,13 @@
 /*%FSM<COMPILE "scriptedFSM.cfg, Danger">*/
 /*%FSM<HEAD>*/
 /*
-item0[] = {"DEFINE_ENUM_BEG",-1,250,-1051.466064,-757.424683,-711.467346,-587.423950,0.000000,"DEFINE_ENUM_BEG(DangerCause)" \n "  DCEnemyDetected, // the first enemy detected" \n "  DCFire, // fire visible" \n "  DCHit, // vehicle hit" \n "  DCEnemyNear, // enemy very close to me" \n "  DCExplosion, // explosion detected" \n "  DCDeadBodyGroup, // dead soldier from my group found" \n "  DCDeadBody, // other dead soldier found" \n "  DCScream // hit soldier screaming" \n "DEFINE_ENUM_END(DangerCause)" \n ""};
-item1[] = {"Danger_Timeout",4,218,-797.355286,-78.653381,-707.355286,-28.653381,0.000000,"Danger" \n "Timeout"};
-item2[] = {"End",1,250,-797.443848,222.041992,-707.443848,272.041992,0.000000,"End"};
-item3[] = {"Reacting_on_danger",0,250,-875.101746,-389.225342,-735.101501,-339.225342,0.000000,"Reacting on danger!"};
-item4[] = {"",7,210,-615.266724,-331.495758,-607.266724,-323.495758,0.000000,""};
-item5[] = {"Next__cause",4,218,-656.085754,31.298279,-566.085754,81.298279,1.000000,"Next  cause"};
-item6[] = {"Always",8,218,-793.038940,109.750847,-703.038940,159.750854,0.000000,"Always"};
-item7[] = {"Danger_Near",4,218,-868.098267,-245.922516,-778.097656,-195.922516,1.000000,"Danger" \n "Near"};
-item8[] = {"Danger_Far",4,218,-755.863953,-244.613495,-665.863647,-194.613495,2.000000,"Danger" \n "Far"};
-item9[] = {"No_Danger",4,218,-987.810730,-245.361053,-897.810364,-195.361053,3.000000,"No" \n "Danger"};
-item10[] = {"No_Danger",2,250,-989.459534,-12.791870,-899.459778,37.208130,0.000000,"No Danger"};
-item11[] = {"Danger_Near",2,250,-866.996582,-154.659393,-776.996704,-104.659393,0.000000,"Danger" \n "Near"};
-item12[] = {"Danger_Far",2,250,-723.317810,-155.720093,-633.317810,-105.720093,0.000000,"Danger" \n "Far"};
-item13[] = {"This_thing_doesn",-1,250,-1119.839600,-556.206116,-636.793701,-463.619690,0.000000,"This thing doesn't do anything smart" \n "It just selects the danger with highest priority" \n "Then it sets the danger state variable on the unit according to the distance to danger" \n "There is also a timeout when it has selected some danger"};
-version=1;
-class LayoutItems
-{
-	class Item0
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
-	class Item13
-	{
-		class ItemInfo
-		{
-			FontFace="Arial";
-			FontHeight=10;
-			lStyle=1;
-		};
-	};
-};
-link0[] = {1,10};
-link1[] = {3,7};
-link2[] = {3,8};
-link3[] = {3,9};
-link4[] = {4,3};
-link5[] = {5,4};
-link6[] = {6,2};
-link7[] = {7,11};
-link8[] = {8,12};
-link9[] = {9,10};
-link10[] = {10,5};
-link11[] = {10,6};
-link12[] = {11,1};
-link13[] = {12,1};
-globals[] = {0.000000,0,0,0,0,640,480,1,223,6316128,1,-1132.411743,-356.755554,222.774902,-553.505310,1243,1244,1};
-window[] = {2,-1,-1,-1,-1,962,182,1218,182,3,1261};
+item0[] = {"End",1,250,-924.350647,-372.112976,-834.350647,-322.112976,0.000000,"End"};
+item1[] = {"Reacting_on_danger",0,250,-959.226196,-534.662598,-786.392944,-463.768890,0.000000,"Reacting on danger!" \n "Just set flag on unit" \n "and GTFO"};
+item2[] = {"Always",8,218,-923.925415,-445.601440,-833.925415,-395.601440,0.000000,"Always"};
+link0[] = {1,2};
+link1[] = {2,0};
+globals[] = {0.000000,0,0,0,0,640,480,1,223,6316128,1,-1060.067993,-635.377563,-254.715363,-550.356262,442,282,1};
+window[] = {0,-1,-1,-1,-1,772,321,1286,318,1,460};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -63,8 +18,8 @@ class FSM
                 class End
                 {
                         name = "End";
-                        itemno = 2;
-                        init = /*%FSM<STATEINIT""">*/""/*%FSM</STATEINIT""">*/;
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"// Bye!"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -75,180 +30,25 @@ class FSM
                 class Reacting_on_danger
                 {
                         name = "Reacting_on_danger";
-                        itemno = 3;
-                        init = /*%FSM<STATEINIT""">*/"//_this globalChat format[""side: (@T %1 %2)"",time,side _this];" \n
+                        itemno = 1;
+                        init = /*%FSM<STATEINIT""">*/"// The behaviour FSM will read it and set it back to false" \n
+                         "_this setVariable [""#newDanger"", true];" \n
                          "" \n
-                         "/*" \n
-                         "comment ""0  DCEnemyDetected"";" \n
-                         "comment ""1  DCFire"";" \n
-                         "comment ""2  DCHit"";" \n
-                         "comment ""3  DCEnemyNear"";" \n
-                         "comment ""4  DCExplosion"";" \n
-                         "comment ""5  DCDeadBodyGroup"";" \n
-                         "comment ""6  DCDeadBody"";" \n
-                         "comment ""7  DCScream"";" \n
-                         "comment ""8  DCCanFire"";" \n
-                         "comment ""9  DCBulletClose"";" \n
-                         "*/" \n
+                         "diag_log format [""[danger] called for %1"", _this];" \n
                          "" \n
-                         "// Retrieve the highest priority event from the _queue" \n
-                         "private [""_priors"",""_priorCur""];" \n
-                         "" \n
-                         "_priors = [3, 4, 5, 1, 4, 1, 1, 2, 4, 1];" \n
-                         "" \n
-                         "diag_log format [""[danger] %1 queue: %2"", _this, _queue];" \n
-                         "" \n
-                         "if (_dangerCause>0) then {_priorCur = _priors select _dangerCause}" \n
-                         "else {_priorCur=-1};" \n
-                         "" \n
-                         "// Select danger cause with max priority" \n
-                         "private _idMax = -1;" \n
-                         "{" \n
-                         "  diag_log format [""[danger] %1 analyzing danger: %2"", _this, _x];" \n
-                         "  if ((_priors select (_x select 0)) > _priorCur) then {" \n
-                         "   _idMax = _forEachIndex;" \n
-                         "  }" \n
-                         "} forEach _queue;" \n
-                         "" \n
-                         "diag_log format [""[danger] idMax: %1"", _idMax];" \n
-                         "" \n
-                         "if (_idMax != -1) then {" \n
-                         " private _cause = _queue select _idMax;" \n
-                         " _dangerCause = _cause;" \n
-                         " _dangerPos = _x select 1;" \n
-                         " _dangerUntil = _x select 2;" \n
-                         " _dangerCausedBy = _x select 3;" \n
-                         " _dangerDistance = _this distance2D _dangerPos;" \n
-                         " _priorCur = _priors select _cause;" \n
-                         " diag_log format [""[danger] %1 selected max danger: %2, distance: %3"", _this, _dangerCause, _dangerDistance];" \n
-                         "} else {" \n
-                         " // There is no danger in the queue" \n
-                         " _dangerCause = -1;" \n
-                         " _dangerDistance = 9001;" \n
-                         "};" \n
-                         "" \n
-                         "_queue = [];" \n
-                         ""/*%FSM</STATEINIT""">*/;
+                         "// Empty the queue" \n
+                         "_queue = [];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
-                                /*%FSM<LINK "No_Danger">*/
-                                class No_Danger
-                                {
-                                        itemno = 9;
-                                        priority = 3.000000;
-                                        to="No_Danger";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"// If there is no danger, distance is over 9000" \n
-                                         "_dangerDistance > 9000"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "Danger_Far">*/
-                                class Danger_Far
-                                {
-                                        itemno = 8;
-                                        priority = 2.000000;
-                                        to="Danger_Far";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_dangerDistance > 100"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                                /*%FSM<LINK "Danger_Near">*/
-                                class Danger_Near
-                                {
-                                        itemno = 7;
-                                        priority = 1.000000;
-                                        to="Danger_Near";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"_dangerDistance <= 100"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "No_Danger">*/
-                class No_Danger
-                {
-                        name = "No_Danger";
-                        itemno = 10;
-                        init = /*%FSM<STATEINIT""">*/"_this setVariable [""dangerState"", 0];" \n
-                         "diag_log format [""[danger] %1 no danger"", _this];"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Next__cause">*/
-                                class Next__cause
-                                {
-                                        itemno = 5;
-                                        priority = 1.000000;
-                                        to="Reacting_on_danger";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"count _queue>0"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Always">*/
                                 class Always
                                 {
-                                        itemno = 6;
+                                        itemno = 2;
                                         priority = 0.000000;
                                         to="End";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Danger_Near">*/
-                class Danger_Near
-                {
-                        name = "Danger_Near";
-                        itemno = 11;
-                        init = /*%FSM<STATEINIT""">*/"_this setVariable [""dangerState"", 1];" \n
-                         "_timeDangerDone = time + 40 + random 20;" \n
-                         "diag_log format [""[danger] %1 danger near"", _this];" \n
-                         ""/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Danger_Timeout">*/
-                                class Danger_Timeout
-                                {
-                                        itemno = 1;
-                                        priority = 0.000000;
-                                        to="No_Danger";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"time > _timeDangerDone"/*%FSM</CONDITION""">*/;
-                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
-                                };
-                                /*%FSM</LINK>*/
-                        };
-                };
-                /*%FSM</STATE>*/
-                /*%FSM<STATE "Danger_Far">*/
-                class Danger_Far
-                {
-                        name = "Danger_Far";
-                        itemno = 12;
-                        init = /*%FSM<STATEINIT""">*/"_this setVariable [""dangerState"", 2];" \n
-                         "_timeDangerDone = time + 20 + random 10;" \n
-                         "diag_log format [""[danger] %1 danger far, distance: %3"", _this];"/*%FSM</STATEINIT""">*/;
-                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
-                        class Links
-                        {
-                                /*%FSM<LINK "Danger_Timeout">*/
-                                class Danger_Timeout
-                                {
-                                        itemno = 1;
-                                        priority = 0.000000;
-                                        to="No_Danger";
-                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
-                                        condition=/*%FSM<CONDITION""">*/"time > _timeDangerDone"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/

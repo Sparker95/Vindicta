@@ -1,7 +1,7 @@
 // Macro to easily make more unit classes for civilian presence module
 #define __CP_CLASS(baseClass) class baseClass; \
 class vin_cp_##baseClass: baseClass \
-{ fsmDanger = "\z\vindicta\addons\civilian_presence\danger.fsm"; };
+{ fsmDanger = "z\vindicta\addons\civilian_presence\danger.fsm"; };
 
 class CfgVehicles {
 

@@ -35,7 +35,7 @@ _module spawn{
 				//spawn in units when module is active and total number is not reached.
 				if (count _units < _maxUnits) then{
 					private _unit = _module call CivPresence_fnc_createUnit;
-					_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, 1, true]; // Set a variable on the created unit
+					_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, true, true]; // Set a variable on the created unit
 					if (!isNull _unit) then {_units pushBack _unit};
 				};
 			}else{
