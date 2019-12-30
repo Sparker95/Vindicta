@@ -29,6 +29,7 @@ class Vin_InGameUI
 			font = "PuristaMedium";
 			sizeEx = TEXTSIZE_MED;
 			style = ST_LEFT;
+			shadow = 1;
 			colorText[] = MUIC_WHITE;
 		};
 
@@ -43,6 +44,7 @@ class Vin_InGameUI
 			font = "PuristaMedium";
 			sizeEx = TEXTSIZE_MED;
 			style = ST_LEFT;
+			shadow = 1;
 			colorText[] = MUIC_WHITE;
 		};
 
@@ -57,6 +59,7 @@ class Vin_InGameUI
 			font = "PuristaSemibold";
 			sizeEx = TEXTSIZE_MED;
 			style = ST_CENTER;
+			shadow = 1;
 			colorText[] = MUIC_WHITE;
 		};
 
@@ -88,6 +91,7 @@ class Vin_InGameUI
 			sizeEx = TEXTSIZE_SMALL;
 			font = "PuristaSemibold"; 
 			style = ST_LEFT;
+			shadow = 1;
 			colorText[] = MUIC_WHITE;
 		};
 
@@ -102,6 +106,7 @@ class Vin_InGameUI
 			sizeEx = TEXTSIZE_SMALL;
 			font = "PuristaSemibold";
 			style = ST_LEFT;
+			shadow = 1;
 			colorText[] = MUIC_WHITE;
 		};
 			
