@@ -1,3 +1,5 @@
+#include "..\config\global_config.hpp"
+
 call compile preprocessFileLineNumbers "AI\Action\Action.sqf";
 
 call compile preprocessFileLineNumbers "AI\ActionComposite\ActionComposite.sqf";
@@ -40,6 +42,16 @@ call compile preprocessFileLineNumbers "AI\Group\initClasses.sqf";
 call compile preprocessFileLineNumbers "AI\Unit\initClasses.sqf";
 
 // Virtual Route
+// We only want to initialize it if game mode is enabled
+// Because it takes much time 
 #ifndef _SQF_VM
+#define __INIT_VR
+#endif
+
+#ifdef GAME_MODE_DISABLE
+#undef __INIT_VR
+#endif
+
+#ifdef __INIT_VR
 call compile preprocessFileLineNumbers "AI\VirtualRoute\init.sqf";
 #endif

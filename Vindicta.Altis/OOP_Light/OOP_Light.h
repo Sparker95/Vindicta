@@ -62,7 +62,7 @@
 // |               C O N F I G   E N T R Y   P O I N T                  |
 // ----------------------------------------------------------------------
 
-#include "..\config\oop_config.hpp"
+#include "..\config\global_config.hpp"
 
 #ifdef _SQF_VM
 // ___ SQF-VM ___

@@ -39,6 +39,9 @@
 // Various runtime OOP assertions (class existence, member variable existence, etc)
 //#define OOP_ASSERT
 
+// This is an interesting flag
+// It disables GameMode init, GameManager init, for faster loading and testing
+#define GAME_MODE_DISABLE
 
 // ========= Release config ============
 /*
