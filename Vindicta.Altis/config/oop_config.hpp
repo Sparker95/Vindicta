@@ -22,7 +22,7 @@
 //#undef OFSTREAM_FILE
 
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
-#define RELEASE_BUILD
+//#define RELEASE_BUILD
 
 // Accelerates virtual route speed
 // Increases planning frequency, plans all action types on each iteration
@@ -37,7 +37,7 @@
 #define OOP_PROFILE_MIN_T 0.002
 
 // Various runtime OOP assertions (class existence, member variable existence, etc)
-#define OOP_ASSERT
+//#define OOP_ASSERT
 
 
 // ========= Release config ============

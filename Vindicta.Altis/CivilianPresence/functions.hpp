@@ -6,6 +6,7 @@ class CivPresence {
 		class spawn {};
 		class despawn {};
 		class createUnit {};
+		class isUnitCreatedByCP {};
 
 		class talkTo {};
 		class talkToServer {};
@@ -16,5 +17,8 @@ class CivPresence {
 		class getUnitState {};
 
 		class saySurrenderPhrase {};
+
+		class arrestUnit {};
+		class addUntieActionLocal {};
 	};
 };

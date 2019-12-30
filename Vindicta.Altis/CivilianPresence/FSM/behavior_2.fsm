@@ -3,17 +3,17 @@
 /*
 item0[] = {"init",0,250,-19.804291,-524.493408,70.195709,-474.493500,0.000000,"init"};
 item1[] = {"Select_Destination",2,250,413.746399,-75.862701,503.746399,-25.862701,0.000000,"Select" \n "Destination" \n "To Walk To"};
-item2[] = {"Select_Destination_1",2,250,-779.649231,-146.465210,-649.221008,-87.723999,0.000000,"Select Destination," \n "Start Running" \n "Away"};
+item2[] = {"Select_Destination_1",2,250,-794.584534,-184.870422,-664.156311,-126.129211,0.000000,"Select Destination," \n "Start Running" \n "Away"};
 item3[] = {"Start_Talking",2,250,37.382874,151.831146,127.382889,201.831146,0.000000,"Start" \n "Talking"};
 item4[] = {"Must_talk_",4,218,37.317963,-51.819244,127.317963,-1.819244,10.000000,"Must talk?"};
-item5[] = {"Priority_High__",-1,250,-538.574158,-596.105896,628.740356,-535.661743,0.000000,"Priority" \n "High -----------> Low"};
-item6[] = {"In_Panic_",4,218,-595.527405,-172.140579,-464.330139,-90.227066,20.000000,"In" \n "Panic?"};
+item5[] = {"Priority_High__",-1,250,-546.894958,-831.861145,620.419556,-771.416992,0.000000,"Priority" \n "High -----------> Low"};
+item6[] = {"In_Panic_",4,218,-569.619995,-167.282913,-438.422729,-85.369400,20.000000,"In" \n "Panic?"};
 item7[] = {"True",8,218,412.954102,-167.307968,502.954102,-117.307968,0.000000,"True"};
 item8[] = {"Arrived_",4,218,417.723694,153.823456,507.723694,203.823456,0.000000,"Arrived?"};
 item9[] = {"Timeout__Got_stuck",4,218,542.065247,217.791595,669.521301,285.850830,0.000000,"Timeout?" \n "Got stuck?"};
 item10[] = {"",7,210,284.414673,-101.664177,292.414673,-93.664185,0.000000,""};
 item11[] = {"Start",2,250,-25.038147,-338.017639,64.961868,-288.017639,0.000000,"Start"};
-item12[] = {"Panic_Timeout_",4,218,-565.816528,-338.081451,-447.667786,-266.288971,0.000000,"Panic" \n "Timeout?"};
+item12[] = {"Panic_Timeout_",4,218,-739.679810,-356.615112,-621.531067,-284.822632,0.000000,"Panic" \n "Timeout?"};
 item13[] = {"Not_Talking_Any",4,218,18.369141,260.609802,148.322144,341.482483,0.000000,"Not" \n "Talking" \n "Any More?"};
 item14[] = {"Wait_For_A_While",2,250,418.633911,229.278320,508.633911,279.278320,0.000000,"Wait" \n "For A While"};
 item15[] = {"Done_Waiting_",4,218,410.192444,297.886719,523.801025,366.047180,0.000000,"Done" \n "Waiting?"};
@@ -26,7 +26,7 @@ item21[] = {"",7,210,81.526337,561.296448,89.526337,569.296448,0.000000,""};
 item22[] = {"Start_Walking_To",2,250,414.688354,77.431519,504.688354,127.431519,0.000000,"Start Walking" \n "To Selected" \n "Destination"};
 item23[] = {"True",8,218,416.094727,1.273071,506.094727,51.273071,0.000000,"True"};
 item24[] = {"True",8,218,-22.669556,-433.110931,67.330444,-383.110962,0.000000,"True"};
-item25[] = {"Stop_And_Sit_Down",2,4346,-426.371460,-23.936615,-280.924316,32.852814,0.000000,"Stop And" \n "Sit Down Scared"};
+item25[] = {"Stop_And_Sit_Down",2,250,-426.371460,-23.936615,-280.924316,32.852814,0.000000,"Stop And" \n "Sit Down Scared"};
 item26[] = {"Someone_Is_Aiming",4,218,-427.199585,-104.885651,-279.489197,-36.780426,15.000000,"Someone" \n "Is Aiming" \n "At Me?"};
 item27[] = {"Noone_Is_Aiming",4,218,-524.483459,150.692566,-397.554474,216.838013,3.000000,"Noone Is" \n "Aiming Any" \n "More?"};
 item28[] = {"Say_Something_Check",2,250,-368.477295,163.020691,-221.139771,214.914734,0.000000,"Say Something" \n "Check if we can escape"};
@@ -35,19 +35,19 @@ item30[] = {"True",8,218,-287.220978,82.215820,-242.080200,116.862297,0.000000,"
 item31[] = {"",7,210,198.364685,148.417664,206.364700,156.417664,0.000000,""};
 item32[] = {"Reset_Destinatio",2,250,562.189148,315.678833,652.189148,365.678833,0.000000,"Reset" \n "Destination"};
 item33[] = {"True",8,218,563.101318,402.179199,653.101318,452.179199,0.000000,"True"};
-item34[] = {"True",8,218,-276.169800,-329.574951,-186.169800,-279.574951,0.000000,"True"};
-item35[] = {"Reset_Destinatio_1",2,250,-407.754517,-328.250366,-317.754700,-278.250366,0.000000,"Reset" \n "Destination"};
-item36[] = {"Highest_Priority",-1,250,-509.645386,-223.229004,-416.619934,-177.996460,0.000000,"Highest" \n "Priority!"};
+item34[] = {"True",8,218,-590.904663,-346.489410,-500.904602,-296.489410,0.000000,"True"};
+item35[] = {"Reset_Destinatio_1",2,250,-629.384583,-420.458221,-539.384766,-370.458221,0.000000,"Reset" \n "Destination"};
+item36[] = {"Highest_Priority",-1,250,-244.802612,-666.175720,-151.777161,-620.943115,0.000000,"Highest" \n "Priority!"};
 item37[] = {"Dead_or_deleted",4,218,-908.821655,378.328339,-687.597656,477.394775,100.000000,"Dead or deleted?"};
 item38[] = {"END",1,250,-846.292542,526.496643,-756.292542,576.496643,0.000000,"END"};
 item39[] = {"",7,210,-801.676270,67.196259,-793.676270,75.196259,0.000000,""};
 item40[] = {"",7,210,219.654785,266.500580,227.654785,274.500580,0.000000,""};
 item41[] = {"",7,210,220.457520,425.700714,228.457520,433.700745,0.000000,""};
-item42[] = {"Stop_The_Animati",2,250,-515.810852,65.158569,-447.150604,96.300415,0.000000,"Stop The" \n "Animation"};
-item43[] = {"True",8,218,-576.972107,65.869507,-526.673523,91.056152,0.000000,"True"};
+item42[] = {"Stop_The_Animati",2,250,-581.583557,123.946587,-512.923401,155.088440,0.000000,"Stop The" \n "Animation"};
+item43[] = {"True",8,218,-642.744812,124.657532,-592.446228,149.844177,0.000000,"True"};
 item44[] = {"Wait",2,250,-427.229492,39.587280,-322.144409,88.078796,0.000000,"Wait"};
 item45[] = {"True",8,218,-286.801086,40.919739,-242.405457,77.100220,0.000000,"True"};
-item46[] = {"Start_Panic_When",-1,250,-737.428833,182.704529,-651.901245,254.268433,0.000000,"Start Panic" \n "When We Are" \n "Done Sitting" \n "Here"};
+item46[] = {"Start_Panic_When",-1,250,-685.889160,165.867981,-600.361572,237.431885,0.000000,"Start Panic" \n "When We Are" \n "Done Sitting" \n "Here"};
 item47[] = {"Check_If_We_Are",-1,250,144.756104,19.543915,210.350037,63.946014,0.000000,"Check" \n "If We Are" \n "Aimed At"};
 item48[] = {"",7,210,283.738342,96.498077,291.738342,104.498077,0.000000,""};
 item49[] = {"",7,210,348.228821,-30.890472,356.228821,-22.890472,0.000000,""};
@@ -56,8 +56,21 @@ item51[] = {"",7,210,348.173645,145.788452,356.173645,153.788452,0.000000,""};
 item52[] = {"",7,210,348.209106,342.126770,356.209106,350.126770,0.000000,""};
 item53[] = {"",7,210,155.931213,81.364014,163.931213,89.364014,0.000000,""};
 item54[] = {"Timeout_",4,218,-422.449585,100.769257,-332.449646,150.769257,0.000000,"Timeout?"};
-item55[] = {"Wait_1",2,250,-625.697083,69.657623,-589.918335,89.662872,0.000000,"Wait"};
-item56[] = {"Timeout_",4,218,-703.231750,69.086914,-636.881470,111.011383,0.000000,"Timeout?"};
+item55[] = {"Wait_1",2,250,-691.469788,128.445648,-655.691101,148.450897,0.000000,"Wait"};
+item56[] = {"Timeout_",4,218,-769.004456,127.874939,-702.654236,169.799408,0.000000,"Timeout?"};
+item57[] = {"Arrested_",4,218,-242.847778,-614.891602,-152.847809,-564.891663,100.000000,"Arrested?"};
+item58[] = {"Play_Animation",2,250,-344.562012,-586.805115,-254.562012,-536.805237,0.000000,"Play" \n "Animation"};
+item59[] = {"Not_Arrested_Any",4,218,-467.572205,-587.160583,-364.214905,-514.189575,0.000000,"Not Arrested" \n "Any More?"};
+item60[] = {"Stand_up",2,250,-346.157593,-523.158997,-256.157593,-473.158966,0.000000,"Stand up"};
+item61[] = {"Wait",4,218,-346.189331,-434.431641,-256.189331,-384.431732,0.000000,"Wait"};
+item62[] = {"",7,210,-110.846191,98.112061,-102.846184,106.112061,0.000000,""};
+item63[] = {"",7,210,-113.660522,705.181152,-105.660507,713.181152,0.000000,""};
+item64[] = {"",7,210,879.761414,717.926514,887.761414,725.926514,0.000000,""};
+item65[] = {"",7,210,861.102356,-586.792786,869.102356,-578.792847,0.000000,""};
+item66[] = {"",7,210,398.628235,-586.881104,406.628235,-578.881104,0.000000,""};
+item67[] = {"",7,210,872.119263,35.985168,880.119263,43.985168,0.000000,""};
+item68[] = {"",7,210,-822.166870,-507.340607,-814.166870,-499.340576,0.000000,""};
+item69[] = {"",7,210,-418.242432,-661.046326,-410.242432,-653.046326,0.000000,""};
 version=1;
 class LayoutItems
 {
@@ -111,74 +124,93 @@ link0[] = {0,24};
 link1[] = {1,23};
 link2[] = {2,12};
 link3[] = {2,39};
-link4[] = {3,13};
-link5[] = {3,29};
-link6[] = {3,31};
-link7[] = {3,40};
-link8[] = {4,3};
-link9[] = {6,2};
-link10[] = {7,1};
-link11[] = {8,14};
-link12[] = {9,32};
-link13[] = {10,29};
-link14[] = {11,4};
-link15[] = {11,6};
-link16[] = {11,7};
-link17[] = {11,26};
-link18[] = {11,39};
-link19[] = {12,35};
-link20[] = {13,21};
-link21[] = {14,15};
-link22[] = {14,16};
-link23[] = {14,31};
-link24[] = {14,50};
-link25[] = {14,52};
-link26[] = {15,32};
-link27[] = {16,48};
-link28[] = {18,11};
-link29[] = {19,18};
-link30[] = {20,19};
-link31[] = {21,20};
-link32[] = {22,8};
-link33[] = {22,9};
-link34[] = {22,31};
-link35[] = {22,48};
-link36[] = {22,50};
-link37[] = {22,51};
-link38[] = {23,22};
-link39[] = {24,11};
-link40[] = {25,29};
-link41[] = {25,39};
-link42[] = {25,45};
-link43[] = {26,25};
-link44[] = {27,42};
-link45[] = {28,27};
-link46[] = {28,30};
-link47[] = {29,6};
-link48[] = {30,44};
-link49[] = {31,53};
-link50[] = {32,33};
-link51[] = {33,19};
-link52[] = {34,11};
-link53[] = {35,34};
-link54[] = {37,38};
-link55[] = {39,37};
-link56[] = {40,41};
-link57[] = {41,37};
-link58[] = {42,43};
-link59[] = {43,55};
-link60[] = {44,54};
-link61[] = {45,44};
-link62[] = {48,10};
-link63[] = {49,4};
-link64[] = {50,49};
-link65[] = {51,52};
-link66[] = {52,41};
-link67[] = {53,26};
-link68[] = {54,28};
-link69[] = {55,56};
-link70[] = {56,2};
-globals[] = {0.000000,0,0,0,0,640,480,1,63,6316128,1,-971.752075,253.340210,527.419312,-422.714630,1604,1244,1};
+link4[] = {2,68};
+link5[] = {3,13};
+link6[] = {3,29};
+link7[] = {3,31};
+link8[] = {3,40};
+link9[] = {3,62};
+link10[] = {4,3};
+link11[] = {6,2};
+link12[] = {7,1};
+link13[] = {8,14};
+link14[] = {9,32};
+link15[] = {10,29};
+link16[] = {11,4};
+link17[] = {11,6};
+link18[] = {11,7};
+link19[] = {11,26};
+link20[] = {11,39};
+link21[] = {11,57};
+link22[] = {12,35};
+link23[] = {13,21};
+link24[] = {14,15};
+link25[] = {14,16};
+link26[] = {14,31};
+link27[] = {14,50};
+link28[] = {14,52};
+link29[] = {14,67};
+link30[] = {15,32};
+link31[] = {16,48};
+link32[] = {18,11};
+link33[] = {19,18};
+link34[] = {20,19};
+link35[] = {21,20};
+link36[] = {22,8};
+link37[] = {22,9};
+link38[] = {22,31};
+link39[] = {22,48};
+link40[] = {22,50};
+link41[] = {22,51};
+link42[] = {22,67};
+link43[] = {23,22};
+link44[] = {24,11};
+link45[] = {25,29};
+link46[] = {25,39};
+link47[] = {25,45};
+link48[] = {26,25};
+link49[] = {27,42};
+link50[] = {28,27};
+link51[] = {28,30};
+link52[] = {29,6};
+link53[] = {30,44};
+link54[] = {31,53};
+link55[] = {32,33};
+link56[] = {33,19};
+link57[] = {34,11};
+link58[] = {35,34};
+link59[] = {37,38};
+link60[] = {39,37};
+link61[] = {40,41};
+link62[] = {41,37};
+link63[] = {42,43};
+link64[] = {43,55};
+link65[] = {44,54};
+link66[] = {44,62};
+link67[] = {45,44};
+link68[] = {48,10};
+link69[] = {49,4};
+link70[] = {50,49};
+link71[] = {51,52};
+link72[] = {52,41};
+link73[] = {53,26};
+link74[] = {54,28};
+link75[] = {55,56};
+link76[] = {56,2};
+link77[] = {57,58};
+link78[] = {58,59};
+link79[] = {59,60};
+link80[] = {60,61};
+link81[] = {61,2};
+link82[] = {62,63};
+link83[] = {63,64};
+link84[] = {64,67};
+link85[] = {65,66};
+link86[] = {66,57};
+link87[] = {67,65};
+link88[] = {68,69};
+link89[] = {69,57};
+globals[] = {0.000000,0,0,0,0,640,480,1,77,6316128,1,-1126.823120,1278.958496,734.242676,-1131.588257,1604,1244,1};
 window[] = {2,-1,-1,-1,-1,1237,208,2128,208,3,1622};
 *//*%FSM</HEAD>*/
 class FSM
@@ -341,6 +373,17 @@ class FSM
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
+                                /*%FSM<LINK "Arrested_">*/
+                                class Arrested_
+                                {
+                                        itemno = 57;
+                                        priority = 100.000000;
+                                        to="Play_Animation";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#arrested"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Panic_Timeout_">*/
                                 class Panic_Timeout_
                                 {
@@ -379,6 +422,17 @@ class FSM
                                         to="END";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Arrested_">*/
+                                class Arrested_
+                                {
+                                        itemno = 57;
+                                        priority = 100.000000;
+                                        to="Play_Animation";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#arrested"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -428,7 +482,7 @@ class FSM
                          "_unit setVariable [""#state"", ""idle"", true];" \n
                          "" \n
                          "// Debug" \n
-                         "diag_log format [""[behavior] Started for unit: %1, idle state"", _unit];"/*%FSM</STATEINIT""">*/;
+                         "//diag_log format [""[behavior] Started for unit: %1, idle state"", _unit];"/*%FSM</STATEINIT""">*/;
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
@@ -440,6 +494,17 @@ class FSM
                                         to="END";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Arrested_">*/
+                                class Arrested_
+                                {
+                                        itemno = 57;
+                                        priority = 100.000000;
+                                        to="Play_Animation";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#arrested"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -508,6 +573,17 @@ class FSM
                                         to="END";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Arrested_">*/
+                                class Arrested_
+                                {
+                                        itemno = 57;
+                                        priority = 100.000000;
+                                        to="Play_Animation";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#arrested"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -586,6 +662,17 @@ class FSM
                                         to="END";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
                                         condition=/*%FSM<CONDITION""">*/"!(alive _unit)"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                                /*%FSM<LINK "Arrested_">*/
+                                class Arrested_
+                                {
+                                        itemno = 57;
+                                        priority = 100.000000;
+                                        to="Play_Animation";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#arrested"", false];"/*%FSM</CONDITION""">*/;
                                         action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
                                 };
                                 /*%FSM</LINK>*/
@@ -844,6 +931,17 @@ class FSM
                         precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
                         class Links
                         {
+                                /*%FSM<LINK "Arrested_">*/
+                                class Arrested_
+                                {
+                                        itemno = 57;
+                                        priority = 100.000000;
+                                        to="Play_Animation";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"_unit getVariable [""#arrested"", false];"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
                                 /*%FSM<LINK "Timeout_">*/
                                 class Timeout_
                                 {
@@ -871,6 +969,61 @@ class FSM
                                 class Timeout_
                                 {
                                         itemno = 56;
+                                        priority = 0.000000;
+                                        to="Select_Destination_1";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"time > _timeout"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Play_Animation">*/
+                class Play_Animation
+                {
+                        name = "Play_Animation";
+                        itemno = 58;
+                        init = /*%FSM<STATEINIT""">*/"// Stop" \n
+                         "_this forcespeed 0;" \n
+                         "" \n
+                         "// Set animation" \n
+                         "_unit playMoveNow ""acts_aidlpsitmstpssurwnondnon01""; // sitting down and tied up" \n
+                         "" \n
+                         "// Set state variable" \n
+                         "_unit setVariable [""#state"", ""arrested"", true];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Not_Arrested_Any">*/
+                                class Not_Arrested_Any
+                                {
+                                        itemno = 59;
+                                        priority = 0.000000;
+                                        to="Stand_up";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"!(_unit getVariable [""#arrested"", false]);"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Stand_up">*/
+                class Stand_up
+                {
+                        name = "Stand_up";
+                        itemno = 60;
+                        init = /*%FSM<STATEINIT""">*/"_unit playMoveNow ""acts_aidlpsitmstpssurwnondnon_out"";" \n
+                         "" \n
+                         "_timeout = time + 2;"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Wait">*/
+                                class Wait
+                                {
+                                        itemno = 61;
                                         priority = 0.000000;
                                         to="Select_Destination_1";
                                         precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;

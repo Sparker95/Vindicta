@@ -220,23 +220,29 @@ CLASS("ActionUnitArrest", "Action")
 								_captor playMove _animation;
 								_animationDone = true;
 
+								// WTF why do we have waitUntil here @Sen ?? :O
 								waitUntil {animationState _captor == _animation};
 								waitUntil {animationState _captor != _animation};
 								
-								_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
+								// If it's a civilian presence target...
+								if ([_target] call CivPresence_fnc_isUnitCreatedByCP) then {
+									[_target, true] call CivPresence_fnc_arrestUnit;
+								} else {
+									_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
 
-								if (!isPlayer _target) then {
-									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
-									_target disableAI "MOVE"; // Disable AI Movement
-									_target disableAI "AUTOTARGET"; // Disable AI Autotarget
-									_target disableAI "ANIM"; // Disable AI Behavioural Scripts
-									_target allowFleeing 0; // Disable AI Fleeing
-									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
-								};
+									if (!isPlayer _target) then {
+										// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
+										_target disableAI "MOVE"; // Disable AI Movement
+										_target disableAI "AUTOTARGET"; // Disable AI Autotarget
+										_target disableAI "ANIM"; // Disable AI Behavioural Scripts
+										_target allowFleeing 0; // Disable AI Fleeing
+										_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
+									};
 								
-								_target setVariable ["timeArrested", time+10];
+									_target setVariable ["timeArrested", time+10];
 
-								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
+									REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
+								};	
 							};
 
 							_animationDone
