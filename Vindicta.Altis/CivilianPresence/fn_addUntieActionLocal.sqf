@@ -38,7 +38,7 @@ params ["_unit"];
 		[_target, _text, player] call  Dialog_fnc_hud_createSentence;
 
 		// Unarrest him
-		[_target, false] call CivPresence_fnc_arrestUnit;
+		[_target, false] remoteExecCall ["CivPresence_fnc_arrestUnit", 2, false];
 
 		// Add activity here
 		CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getPos player ARG (10 + random 8)]);

@@ -6,8 +6,8 @@ item1[] = {"Reacting_on_danger",0,250,-959.226196,-534.662598,-786.392944,-463.7
 item2[] = {"Always",8,218,-923.925415,-445.601440,-833.925415,-395.601440,0.000000,"Always"};
 link0[] = {1,2};
 link1[] = {2,0};
-globals[] = {0.000000,0,0,0,0,640,480,1,223,6316128,1,-1060.067993,-635.377563,-254.715363,-550.356262,442,282,1};
-window[] = {0,-1,-1,-1,-1,772,321,1286,318,1,460};
+globals[] = {0.000000,0,0,0,0,640,480,1,223,6316128,1,-1223.905151,-471.540527,39.118774,-714.457397,1242,1244,1};
+window[] = {2,-1,-1,-1,-1,662,208,1173,208,3,1260};
 *//*%FSM</HEAD>*/
 class FSM
 {
@@ -34,7 +34,7 @@ class FSM
                         init = /*%FSM<STATEINIT""">*/"// The behaviour FSM will read it and set it back to false" \n
                          "_this setVariable [""#newDanger"", true];" \n
                          "" \n
-                         "diag_log format [""[danger] called for %1"", _this];" \n
+                         "//diag_log format [""[danger] called for %1"", _this];" \n
                          "" \n
                          "// Empty the queue" \n
                          "_queue = [];"/*%FSM</STATEINIT""">*/;
