@@ -20,9 +20,13 @@ params ["_unit"];
 			"Tell your friends that rebels helped you today!"
 		];
 		[player, _text, _target] call  Dialog_fnc_hud_createSentence;
+
 	}, // Code start
 	
-	{}, // Code progress
+	{
+		// Boost player's suspicion
+		CALLSM2("undercoverMonitor", "boostSuspicion", player, 1.0);
+	}, // Code progress
 
 	{ 	// Code completed
 		params ["_target", "_caller", "_actionId", "_arguments"];
