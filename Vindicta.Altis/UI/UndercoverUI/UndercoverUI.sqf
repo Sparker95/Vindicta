@@ -3,7 +3,7 @@
 #define OOP_ERROR
 #include "..\..\OOP_Light\OOP_Light.h"
 #include "..\..\Undercover\undercoverMonitor.hpp"
-#include "UndercoverUI_Macros.h"
+#include "..\InGameUI\InGameUI_Macros.h"
 
 /*
 Class: UndercoverUI
@@ -61,13 +61,13 @@ CLASS(CLASS_NAME, "")
 			pr _colorMult = linearConversion [0, 1, _suspicion, 0.35, 0.88, true];
 			pr _color = [1.8* _colorMult, 1.8 * (1 - _colorMult), 0, 1];	
 			
-			if ( displayNull != (uinamespace getVariable "undercoverUI_display") ) then {
-				((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlSetText format ["%1", _textUI];
-	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) progressSetPosition _suspicion;
-	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlsettextcolor _color;
+			if ( displayNull != (uinamespace getVariable "p0_InGameUI_display") ) then {
+				((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlSetText format ["%1", _textUI];
+	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) progressSetPosition _suspicion;
+	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlsettextcolor _color;
 
-	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlCommit 0;
-	  			((uinamespace getVariable "undercoverUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;
+	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlCommit 0;
+	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;
 	  		}; 
 		
 	} ENDMETHOD;

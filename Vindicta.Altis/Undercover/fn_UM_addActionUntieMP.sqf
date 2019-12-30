@@ -7,7 +7,7 @@
 #include "..\MessageTypes.hpp"
 #include "UndercoverMonitor.hpp"
 #include "..\modCompatBools.sqf"
-#include "..\UI\UndercoverUI\UndercoverUI_Macros.h"
+#include "..\UI\InGameUI\InGameUI_Macros.h"
 
 /* 
 	Add untie action to an arrested unit. Only visible to other players, but not the player this action is attached to.
