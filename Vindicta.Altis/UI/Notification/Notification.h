@@ -25,7 +25,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			h = 0.158; 
 			text = "UI\Images\gradient_LtoR.paa";
 
-			colorText[] = {0, 0, 0, 0.75};
+			colorText[] = {0, 0, 0, 0.9};
 
 		};
 
