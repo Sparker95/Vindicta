@@ -521,11 +521,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("getDisplayName") {
 		params [P_THISOBJECT];
-
 		pr _name = T_GETV("name");
-		pr _type = T_GETV("type");
-		pr _typeStr = CALLSM1("Location", "getTypeString", _type);
-		format ["%1 %2", _typeStr, _name];
+		_name
 	} ENDMETHOD;
 	
 	/*
