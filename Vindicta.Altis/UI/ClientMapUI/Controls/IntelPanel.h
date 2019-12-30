@@ -8,7 +8,9 @@ class CMUI_INTEL_LISTBOX_BG : MUI_BASE {
 	y = safeZoneY + safeZoneH * 0.098; 
 	w = safeZoneW * 0.203; 
 	h = safeZoneH * 0.353;  
-	colorBackground[] = MUIC_BLACK; 
+	colorBackground[] = MUIC_BLACK;
+	colorText[] = MUIC_TRANSPARENT;
+    text = ""; 
 
 };
 
@@ -53,9 +55,9 @@ class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.790; 
-	y = safeZoneY + safeZoneH * 0.455; 
+	y = safeZoneY + safeZoneH * 0.454; 
 	w = safeZoneW * 0.203; 
-	h = safeZoneH * 0.028;
+	h = safeZoneH * 0.029;
 	text = "show active"; 
 
 };
@@ -64,9 +66,9 @@ class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.790; 
-	y = safeZoneY + safeZoneH * 0.485; 
+	y = safeZoneY + safeZoneH * 0.485;  
 	w = safeZoneW * 0.203; 
-	h = safeZoneH * 0.028; 
+	h = safeZoneH * 0.029; 
 	text = "show inactive"; 
 
 };
@@ -75,9 +77,9 @@ class CMUI_INTEL_ENDED : MUI_BUTTON_TXT {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.790; 
-	y = safeZoneY + safeZoneH * 0.516; 
+	y = safeZoneY + safeZoneH * 0.515; 
 	w = safeZoneW * 0.203; 
-	h = safeZoneH * 0.028; 
+	h = safeZoneH * 0.029; 
 	text = "show ended"; 
 
 };
