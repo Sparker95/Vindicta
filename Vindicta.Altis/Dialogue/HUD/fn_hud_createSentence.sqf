@@ -45,8 +45,8 @@ if(_lipTimer_new >_lipTimer)then{
 		params["_unit","_target"];
 		_unit setRandomLip true;
 		waitUntil{
-			_unit lookAt _target;
-			sleep 0.1;
+			if (!isNull _target) then { _unit lookAt _target; };
+			sleep 0.3;
 			( time > _unit getvariable ["setrandomlip_timer",0])
 		};
 		_unit setRandomLip false;

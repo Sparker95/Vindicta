@@ -9,6 +9,7 @@
 #include "..\AI\stimulusTypes.hpp"
 #include "..\AI\Commander\LocationData.hpp"
 #include "PlayerMonitor.hpp"
+#include "..\CivilianPresence\CivilianPresence.hpp"
 
 /*
 Class: PlayerMonitor
@@ -65,7 +66,7 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		MESSAGE_SET_DESTINATION(_msg, _thisObject);
 		MESSAGE_SET_TYPE(_msg, "process");
 		MESSAGE_SET_DATA(_msg, []);
-		pr _updateInterval = 3.5;
+		pr _updateInterval = 1.2;
 		pr _args = [_thisObject, _updateInterval, _msg, gTimerServiceMain];
 		pr _timer = NEW("Timer", _args);
 		T_SETV("timer", _timer);
@@ -166,6 +167,18 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			pr _newPos = getPos _unit;
 			REMOTE_EXEC_CALL_STATIC_METHOD("Location", "processLocationsNearPos", [_newPos], 2, false);
 			REMOTE_EXEC_CALL_STATIC_METHOD("Garrison", "updateSpawnStateOfGarrisonsNearPos", [_newPos], 2, false);
+		};
+
+		// Check if we are aiming a weapon at any civilian
+		pr _co = cursorTarget;
+		if (vehicle _unit isEqualTo _unit) then {										// If we are on foot
+			if (_co getVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, false]) then {	// If target is a civilian created by civ presence
+				if (!(weaponLowered _unit) && {currentWeapon _unit != ""}) then {			// If we have a gun and it's not lowered
+					if ((_co distance _unit) < 10) then {									// If civilian is close to us
+						[_co, _unit] call CivPresence_fnc_aimAtCivilian;
+					};
+				};
+			};
 		};
 
 		OOP_INFO_1("NEAR LOCATIONS: %1", T_GETV("nearLocations"));

@@ -26,7 +26,7 @@ if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
 		waitUntil {!isNull (findDisplay 46)};
     	CALLSM1("NotificationFactory", "createSystem", "Wait until game mode finishes its initialization...");
 	};
-    _newUnit setDamage 1;
+    //_newUnit setDamage 1;
 };
 
 diag_log format ["------- onPlayerRespawn %1", _this];

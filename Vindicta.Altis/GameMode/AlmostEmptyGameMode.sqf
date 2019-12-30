@@ -31,7 +31,8 @@ CLASS("AlmostEmptyGameMode", "GameModeBase")
 
 		// Disable city garrisons
 		if (_type isEqualTo LOCATION_TYPE_CITY) exitWith {
-			sideEmpty
+			//sideEmpty
+			CIVILIAN
 		};
 
 		private _counter = T_GETV("nLocationsInitialized");

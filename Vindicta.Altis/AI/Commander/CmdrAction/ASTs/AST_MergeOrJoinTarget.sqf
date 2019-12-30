@@ -167,6 +167,7 @@ AST_MergeOrJoinTarget_test_fn = {
 ["AST_MergeOrJoinTarget.apply(sim, garrison=dead)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
+	#define TARGEt_POS [1, 2, 3]
 	private _endState = [_world, _garrison, [TARGET_TYPE_POSITION, TARGET_POS]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_GARRISON_DEAD] call test_Assert;
 }] call test_AddTest;

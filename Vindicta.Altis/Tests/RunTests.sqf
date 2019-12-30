@@ -29,7 +29,7 @@ except__
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
 	throw _exception;
-	exit__ 1; // Return non-zero to cause CI to report the error
+	exitcode__ 1; // Return non-zero to cause CI to report the error
 };
 
 diag_log "----------------------------------------------------------------------";
@@ -43,7 +43,7 @@ except__
 	diag_log format ["  EXCEPTION OCCURRED: %1", _exception];
 	[_callstack, _exception] call test_DumpCallstack;
 	//throw _exception;
-	exit__ 1; // Return non-zero to cause CI to report the error
+	exitcode__ 1; // Return non-zero to cause CI to report the error
 };
 
 diag_log "----------------------------------------------------------------------";
@@ -100,4 +100,4 @@ diag_log bar;
 diag_log format["%1 out of %2 TESTS PASSED", count allTests - tests_Failed, count allTests];
 diag_log format["%1 ASSERTS PASSED, %2 FAILED", asserts_Passed, asserts_Failed];
 
-exit__ tests_Failed;
+exitcode__ tests_Failed;

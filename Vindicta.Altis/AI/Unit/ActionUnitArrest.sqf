@@ -95,6 +95,8 @@ CLASS("ActionUnitArrest", "Action")
 					!(IS_TARGET_ARRESTED_UNCONSCIOUS_DEAD) &&
 					random 4 <= 2
 				) then {
+					/*
+					// Must rework it :/
 					[[_target], {
 						params ["_target"];
 						if (!hasInterface) exitWith {};
@@ -105,6 +107,9 @@ CLASS("ActionUnitArrest", "Action")
 						_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
 
 					}] remoteExec ["spawn", _target, false];
+					*/
+
+					CALLSM1("ActionUnitArrest", "performArrest", _target);
 
 					_target setVariable ["timeArrested", time+10];
 
@@ -220,23 +225,11 @@ CLASS("ActionUnitArrest", "Action")
 								_captor playMove _animation;
 								_animationDone = true;
 
+								// WTF why do we have waitUntil here @Sen ?? :O
 								waitUntil {animationState _captor == _animation};
 								waitUntil {animationState _captor != _animation};
 								
-								_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
-
-								if (!isPlayer _target) then {
-									// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
-									_target disableAI "MOVE"; // Disable AI Movement
-									_target disableAI "AUTOTARGET"; // Disable AI Autotarget
-									_target disableAI "ANIM"; // Disable AI Behavioural Scripts
-									_target allowFleeing 0; // Disable AI Fleeing
-									_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
-								};
-								
-								_target setVariable ["timeArrested", time+10];
-
-								REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);	
+								CALLSM1("ActionUnitArrest", "performArrest", _target);
 							};
 
 							_animationDone
@@ -281,6 +274,32 @@ CLASS("ActionUnitArrest", "Action")
 		// Return the current state
 		T_SETV("state", _state);
 		_state
+	} ENDMETHOD;
+
+	// Performs the actual arrest of target
+	STATIC_METHOD("performArrest") {
+		params [P_THISCLASS, P_OBJECT("_target")];
+
+		// If it's a civilian presence target...
+		if ([_target] call CivPresence_fnc_isUnitCreatedByCP) then {
+			[_target, true] call CivPresence_fnc_arrestUnit;
+		} else {
+			// Otherwise it's a player
+			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
+
+			if (!isPlayer _target) then {
+				// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
+				_target disableAI "MOVE"; // Disable AI Movement
+				_target disableAI "AUTOTARGET"; // Disable AI Autotarget
+				_target disableAI "ANIM"; // Disable AI Behavioural Scripts
+				_target allowFleeing 0; // Disable AI Fleeing
+				_target setBehaviour "Careless"; // Set Behaviour to Careless because, you know, ARMA AI.
+			};
+		
+			_target setVariable ["timeArrested", time+10];
+
+			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
+		};
 	} ENDMETHOD;
 	
 	// logic to run when the action is satisfied
