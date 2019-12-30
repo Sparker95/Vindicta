@@ -22,7 +22,7 @@
 //#undef OFSTREAM_FILE
 
 // Define a macro for this build config, use this to toggle specific behaviour elsewhere
-//#define RELEASE_BUILD
+#define RELEASE_BUILD
 
 // Accelerates virtual route speed
 // Increases planning frequency, plans all action types on each iteration
