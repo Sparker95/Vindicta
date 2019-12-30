@@ -20,8 +20,8 @@ if(isnull _frame)then{
 	_frame = _display ctrlCreate ["RscEdit", -1];
 	_display setvariable ["Dialog_compas_frame" ,_frame];
 };
-_frame ctrlsetBackgroundColor [.5,.5,.5,.5];
-_frame ctrlSetPosition [0,FLOAT_POS_Y,1,0.1];
+_frame ctrlsetBackgroundColor [0, 0, 0, 0.6];
+_frame ctrlSetPosition [0, FLOAT_POS_Y, 1, 0.1];
 _frame ctrlSetFade 1;
 _frame ctrlCommit 0;
 

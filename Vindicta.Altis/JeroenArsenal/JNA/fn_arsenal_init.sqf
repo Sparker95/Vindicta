@@ -49,7 +49,7 @@ if(hasInterface)then{
 
     //add arsenal button
     _id = _object addaction [
-		(format ["<img image='%1' size='2' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL] + format["<t size='1.4'>   %1</t>", STR_ACTION_TEXT_ARSENAL]),
+		(format ["<img image='%1' size='1' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL] + format["<t size='1'>   %1</t>", STR_ACTION_TEXT_ARSENAL]),
         {
             pr _object = _this select 0;
 
@@ -118,7 +118,7 @@ if(hasInterface)then{
 
     //add vehicle/box filling button
     _id = _object addaction [
-		(format ["<img image='%1' size='2' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_CONTAINER] + format["<t size='1.4'>   %1</t>", STR_ACTION_TEXT_ARSENAL_CONTAINER]),
+		(format ["<img image='%1' size='1' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_CONTAINER] + format["<t size='1'>   %1</t>", STR_ACTION_TEXT_ARSENAL_CONTAINER]),
         {
 			pr _object = _this select 0;
 			
@@ -206,7 +206,7 @@ if(hasInterface)then{
 	
 	//add Action to unload object
     _id = _object addaction [
-		(format ["<img image='%1' size='2' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_UNLOAD] + format["<t size='1.4'>   %1</t>", STR_ACTION_TEXT_ARSENAL_UNLOAD]),
+		(format ["<img image='%1' size='1' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_UNLOAD] + format["<t size='1'>   %1</t>", STR_ACTION_TEXT_ARSENAL_UNLOAD]),
         {
 			pr _object = _this select 0;
 			
