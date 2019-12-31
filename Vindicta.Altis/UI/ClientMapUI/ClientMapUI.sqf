@@ -112,6 +112,7 @@ CLASS(CLASS_NAME, "")
 		T_SETV("showIntelEnded", false);
 		T_SETV("showLocations", true);
 		T_SETV("showEnemies", true);
+		T_SETV("showIntelPanel", true);
 		T_SETV("intelPanelSortInverse", false);
 		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
@@ -152,6 +153,7 @@ CLASS(CLASS_NAME, "")
 		([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_PLAYERS"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowPlayers", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_INTELP"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelPanel", _this); }];
 		
 
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
@@ -1599,6 +1601,45 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
+	} ENDMETHOD;
+
+	// shows or hides intel panel controls
+	METHOD("onButtonClickShowIntelPanel") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		OOP_INFO_1("onButtonClickShowIntelPanel: %1", _this);
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+		T_SETV("showIntelPanel", _checked);
+		
+		// show/hide intel panel
+
+		if (_checked) then {
+
+			{
+				([(finddisplay 12), _x] call ui_fnc_findControl) ctrlShow false;
+			} forEach [	"CMUI_INTEL_HEADLINE", 
+						"CMUI_INTEL_LISTBOX", 
+						"CMUI_INTEL_LISTBOX_BG", 
+						"CMUI_INTEL_ACTIVE",
+						"CMUI_INTEL_INACTIVE",
+						"CMUI_INTEL_ENDED",
+						"CMUI_INTEL_BTNGRP"
+						];
+
+		} else {
+
+			{
+				([(finddisplay 12), _x] call ui_fnc_findControl) ctrlShow true;
+			} forEach [	"CMUI_INTEL_HEADLINE", 
+						"CMUI_INTEL_LISTBOX", 
+						"CMUI_INTEL_LISTBOX_BG", 
+						"CMUI_INTEL_ACTIVE",
+						"CMUI_INTEL_INACTIVE",
+						"CMUI_INTEL_ENDED",
+						"CMUI_INTEL_BTNGRP"
+						];
+
+		};
+
 	} ENDMETHOD;
 
 	METHOD("onButtonClickShowLocations") {

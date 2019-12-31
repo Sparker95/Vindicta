@@ -233,7 +233,7 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	h = safezoneh * 0.02;
 	colorText[] = MUIC_WHITE; //  text color of the unchecked checkbox
 	colorTextSelect[] = {0.13, 0.7, 0.29, 1}; // text color of the checked checkbox
-	color[] = {0,0,1,1}; // unknown
+	color[] = {0, 0, 0,1}; // unknown
 
 	colorBackground[] = {1,0,0,1}; // background color when checkbox is not in focus (doesn't matter if checked or not)
 	colorSelectedBg[] = {0,1,0,1}; // background color when checkbox is in focus (doesn't matter if checked or not)  !! doesn't seem to work !!
@@ -241,42 +241,13 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	onMouseEnter = "(_this select 0) ctrlSetBackgroundColor [1,1,1,1]; (_this select 0) ctrlSetTextColor [0,0,0,1];";
 	onMouseExit = "(_this select 0) ctrlSetBackgroundColor [0,0,0,0]; (_this select 0) ctrlSetTextColor [1,1,1,1];";
 
-	colorSelect[] = {0, 0, 1, 0}; // unknown
-	colorTextDisable[] =
-	{
-		0.4,
-		0.4,
-		0.4,
-		1
-	};
-	colorDisable[] =
-	{
-		0.4,
-		0.4,
-		0.4,
-		1
-	};
-	tooltipColorText[] =
-	{
-		1,
-		1,
-		1,
-		1
-	};
-	tooltipColorBox[] =
-	{
-		1,
-		1,
-		1,
-		1
-	};
-	tooltipColorShade[] =
-	{
-		0,
-		0,
-		0,
-		0.65
-	};
+	colorSelect[] = {0, 0, 0, 0}; // unknown
+	colorTextDisable[] = {0, 0, 0, 1};
+	colorDisable[] = {0, 0, 0, 1};
+	tooltipColorText[] = {1, 1, 1, 1};
+	tooltipColorBox[] = {1, 1, 1, 1};
+	tooltipColorShade[] = {0, 0, 0, 0.65};
+
 	font = "RobotoCondensed";
 	sizeEx = MUI_TXT_SIZE_M;
 	rows = 1;

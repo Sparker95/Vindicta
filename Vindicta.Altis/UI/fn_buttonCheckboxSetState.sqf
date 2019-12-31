@@ -24,8 +24,8 @@ if (_checked) then {
 	_colorText = [0, 0, 0, 1];
 } else {
 	if (_mouseOver) then {
-		_colorBackground = [0.2, 0.2, 0.2, 1];
-		_colorText = [1, 1, 1, 1];
+		_colorBackground = [1, 1, 1, 1];
+		_colorText = [0, 0, 0, 1];
 	} else {
 		_colorBackground = [0, 0, 0, 1];
 		_colorText = [1, 1, 1, 1];
