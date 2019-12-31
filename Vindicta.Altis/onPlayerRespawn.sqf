@@ -119,7 +119,7 @@ pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
     && {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 };
 
-_newUnit addAction ["Talk", // title
+_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '##FFFFFF'/>") + ("<t size='1' color = '##FFFFFF'> Talk</t>")), // title
                  "[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  9000, // Priority
@@ -132,7 +132,7 @@ _newUnit addAction ["Talk", // title
                  "", //selection
                  ""]; //memoryPoint
 
-_newUnit addAction ["Ask civilian for intel", // title
+_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
                  "[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  8999, // Priority
@@ -145,7 +145,7 @@ _newUnit addAction ["Ask civilian for intel", // title
                  "", //selection
                  ""]; //memoryPoint
 
-_newUnit addAction ["Agitate civilian", // title
+_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '##FFFFFF'/>") + ("<t size='1' color = '##FFFFFF'> Recruit</t>")), // title
                  "[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  8998, // Priority
@@ -172,7 +172,7 @@ CALLM(gGameMode, "playerSpawn", _this);
 
 
 // Action to start building stuff
-_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from location"], // title
+_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
                  {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
                  0, // Arguments
                  0, // Priority
@@ -187,7 +187,7 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
 
 
 // Action to start building stuff
-_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Build from inventory"], // title
+_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from inventory"], // title
                  {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
                  0, // Arguments
                  -1, // Priority
