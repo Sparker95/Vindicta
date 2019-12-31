@@ -139,17 +139,22 @@ CLASS(CLASS_NAME, "")
 
 		// bottom panel
 		// MouseEnter / MouseExit event handlers
+		/*
 		{
 			([_mapDisplay, _x] call ui_fnc_findControl) ctrlAddEventHandler ["MouseEnter", {CALLM(gClientMapUI, "onMouseEnter", _this); }];
 			([_mapDisplay, _x] call ui_fnc_findControl) ctrlAddEventHandler ["MouseExit", {CALLM(gClientMapUI, "onMouseExit", _this); }];
 		} forEach ["CMUI_BUTTON_NOTIF", "CMUI_BUTTON_INTELP", "CMUI_BUTTON_LOC", "CMUI_BUTTON_PLAYERS", "CMUI_INTEL_ENDED", "CMUI_INTEL_INACTIVE", "CMUI_INTEL_ACTIVE"];
+		*/
 
 		// Button clicks
-		([_mapDisplay, "CMUI_BUTTON_INTEL_INACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_INTEL_ACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_INTEL_ENDED"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_SHOW_LOCATIONS"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
+		([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
+		([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
+		([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
+		([_mapDisplay, "CMUI_BUTTON_PLAYERS"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowPlayers", _this); }];
+		
+
+		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
 
@@ -240,21 +245,27 @@ CLASS(CLASS_NAME, "")
 		__LOC_SELECT_BUTTON_CLICK_EH("LSELECTED_BUTTON_DISBAND", "disband");
 
 		// = = = = = = = = = = = = = = = Create the listbox buttons = = = = = = = = = = = = = = =
-		pr _ctrlGroup = _mapDisplay displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP; 
-		pr _btns = [_mapDisplay, "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.25, 0.75], true] call ui_fnc_createButtonsInGroup;
-		_btns#0 ctrlSetText "Side";
-		_btns#1 ctrlSetText "Type";
-		_btns#2 ctrlSetText "Time";
+		pr _ctrlGroup = (finddisplay 12) displayCtrl IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
+		if (isNull _ctrlGroup) then {
+			OOP_ERROR_0("Listbox button group was not found!");
+		} else {
+			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.25, 0.75], true] call ui_fnc_createButtonsInGroup;
+			_btns#0 ctrlSetText "Side";
+			_btns#1 ctrlSetText "Type";
+			_btns#2 ctrlSetText "Time";
 
-		_btns#0 ctrlAddEventHandler ["ButtonClick", {
-			CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "side");
-		}];
-		_btns#1 ctrlAddEventHandler ["ButtonClick", {
-			CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "type");
-		}];
-		_btns#2 ctrlAddEventHandler ["ButtonClick", {
-			CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "time");
-		}];
+			_btns#0 ctrlAddEventHandler ["ButtonClick", {
+				CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "side");
+			}];
+			_btns#1 ctrlAddEventHandler ["ButtonClick", {
+				CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "type");
+			}];
+			_btns#2 ctrlAddEventHandler ["ButtonClick", {
+				CALLM1(gClientMapUI, "intelPanelOnSortButtonClick", "time");
+			}];
+		};
+
+		
 
 
 		// Mouse moving
@@ -501,7 +512,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 			};
 		};
 
-		T_CALLM1("setHintText", "... Hints are displayed here ...");
+		//T_CALLM1("setHintText", "... Hints are displayed here ...");
 
 	} ENDMETHOD;
 
@@ -1627,31 +1638,6 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// Reset the map UI to default state
 		T_CALLM0("onMouseClickElsewhere");
-
-		// Check if current player position is valid position to create a Camp
-		// todo refactor that
-		pr _isPosAllowed = call {
-			pr _allLocations = GETSV("Location", "all");
-			_isPosAllowed = true;
-			pr _pos = getPosWorld player;
-
-			{
-				pr _locPos = CALLM0(_x, "getPos");
-				pr _type = CALLM0(_x, "getType");
-				pr _dist = _pos distance _locPos;
-				if (_dist < 500) exitWith {_isPosAllowed = false;};
-				// if (_dist < 3000 && _type == "camp") exitWith {_isPosAllowed = false;};
-			} forEach _allLocations;
-
-			_isPosAllowed
-		};
-
-		// disable or enable create Camp button
-		if (_isPosAllowed) then { 
-			(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlEnable true;
-		} else { 
-			(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_2) ctrlEnable false;
-		};
 	} ENDMETHOD;
 
 	// Not used now

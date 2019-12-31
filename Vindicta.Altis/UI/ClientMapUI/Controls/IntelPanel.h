@@ -51,36 +51,36 @@ class CMUI_INTEL_MINIMIZE : RSCPICTURE {
 
 };
 
-class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT {
+class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.790; 
 	y = safeZoneY + safeZoneH * 0.454; 
 	w = safeZoneW * 0.203; 
 	h = safeZoneH * 0.029;
-	text = "show active"; 
+	text = "SHOW ACTIVE ACTIONS"; 
 
 };
 
-class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT {
+class CMUI_INTEL_INACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.790; 
 	y = safeZoneY + safeZoneH * 0.485;  
 	w = safeZoneW * 0.203; 
 	h = safeZoneH * 0.029; 
-	text = "show inactive"; 
+	text = "SHOW INACTIVE ACTIONS"; 
 
 };
 
-class CMUI_INTEL_ENDED : MUI_BUTTON_TXT {
+class CMUI_INTEL_ENDED : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.790; 
 	y = safeZoneY + safeZoneH * 0.515; 
 	w = safeZoneW * 0.203; 
 	h = safeZoneH * 0.029; 
-	text = "show ended"; 
+	text = "SHOW ENDED ACTIONS"; 
 
 };
 
@@ -95,14 +95,14 @@ class CMUI_BUTTON_NOTIF : MUI_BUTTON_TXT {
 
 };
 
-class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT {
+class CMUI_BUTTON_INTELP : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.459; 
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
-	text = "show intel panel"; 
+	text = "SHOW INTEL PANEL"; 
 
 };
 
@@ -113,30 +113,30 @@ class CMUI_HINTS : MUI_BG_TRANSPARENT {
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.631; 
 	h = safeZoneH * 0.022; 
-	text = "hints hints hints"; 
+	text = ""; // Don't really need hints any more I think? 
 	colorBackground[] = MUIC_TRANSPARENT; 
 
 };
 
-class CMUI_BUTTON_LOC : MUI_BUTTON_TXT {
+class CMUI_BUTTON_LOC : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.338; 
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
-	text = "show locations"; 
+	text = "SHOW LOCATIONS"; 
 
 };
 
-class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT {
+class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.218; 
 	y = safeZoneY + safeZoneH * 0.002; 
 	w = safeZoneW * 0.118; 
 	h = safeZoneH * 0.028; 
-	text = "show players"; 
+	text = "SHOW PLAYERS"; 
 
 };
 

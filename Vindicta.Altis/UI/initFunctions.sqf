@@ -4,3 +4,7 @@ fnc_UIUndercoverDebug = compile preprocessFileLineNumbers "UI\UndercoverUIDebug\
 ui_fnc_findControl = compile preprocessFileLineNumbers "UI\fn_findControl.sqf";
 
 ui_fnc_updatePlayerMarkers = compile preprocessFileLineNumbers "UI\fn_updatePlayerMarkers.sqf";
+
+ui_fnc_buttonCheckboxEvent = compile preprocessFileLineNumbers "UI\fn_buttonCheckboxEvent.sqf";
+ui_fnc_buttonCheckboxInit = compile preprocessFileLineNumbers "UI\fn_buttonCheckboxInit.sqf";
+ui_fnc_buttonCheckboxSetState = compile preprocessFileLineNumbers "UI\fn_buttonCheckboxSetState.sqf";

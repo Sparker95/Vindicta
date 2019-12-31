@@ -182,6 +182,39 @@ class MUI_BUTTON_TXT : RscButton
 
 __MUI_CLASS_ABS(MUI_BUTTON_TXT);
 
+// Dummy button with no visuals
+class MUI_BUTTON_DUMMY : MUI_BUTTON_TXT
+{
+	// Disable all colors
+	colorBackground[] = {0,0,0,0};
+	colorBackgroundActive[] = {0,0,0,0};
+	colorBackgroundDisabled[] = {0,0,0,0};
+	colorBorder[] = {0,0,0,0};
+	colorDisabled[] = {0,0,0,0};
+	colorFocused[] = {0,0,0,0};
+	colorShadow[] = {0,0,0,0};
+};
+
+
+// Checkbox-like button with custom event handlers to toggle its colors
+class MUI_BUTTON_TXT_CHECKBOX_LIKE : MUI_BG_BLACKSOLID
+{
+	sizeEx = MUI_TXT_SIZE_M;
+	style = 192+2;
+	font = "PuristaLight";
+	text = "";
+
+	colorBackground[] = MUIC_BLACK;
+	colorBackgroundActive[] = MUIC_BLACK;
+	colorBackgroundDisabled[] = MUIC_BLACK;
+
+	onLoad = "[_this select 0] call ui_fnc_buttonCheckboxInit;";
+	//onUnload = "'ui.rpt' ofstream_write (format ['Unload %1', _this]);";
+};
+
+__MUI_CLASS_ABS(MUI_BUTTON_TXT_CHECKBOX_LIKE);
+
+// Button for tabs?
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	type = CT_BUTTON;
