@@ -41,6 +41,6 @@ _ctrlButton ctrlAddEventHandler ["MouseEnter", {
 _ctrlButton ctrlAddEventHandler ["MouseExit", {
 	[_this select 0, 'exit'] call ui_fnc_buttonCheckboxEvent;
 }];
-_ctrlButton ctrlAddEventHandler ["MouseButtonClick", {
+_ctrlButton ctrlAddEventHandler ["ButtonDown", {
 	[_this select 0, 'buttonClick'] call ui_fnc_buttonCheckboxEvent;
 }];
