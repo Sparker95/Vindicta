@@ -15,7 +15,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.0700001;
 			w = 0.38000013;
 			h = 0.04000007;
-			text = "Game Mode:";
+			text = "GAME MODE:";
 			style = 0;
 		};
 		class STATIC_ENEMY_FORCE_PERCENTAGE : MUI_BASE_ABS 
@@ -25,7 +25,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.22000022;
 			w = 0.38000013;
 			h = 0.04000007;
-			text = "Initial enemy force %:";
+			text = "INITIAL ENEMY %:";
 			style = ST_LEFT;
 		};
 		class STATIC_MILITARY_FACTION : MUI_BASE_ABS 
@@ -35,7 +35,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.12000019;
 			w = 0.38000007;
 			h = 0.04000007;
-			text = "Military faction:";
+			text = "MILITARY FACTION:";
 			style = ST_LEFT;
 		};
 		class STATIC_CAMPAIGN_NAME : MUI_BASE_ABS 
@@ -45,7 +45,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.0200001;
 			w = 0.38000013;
 			h = 0.04000007;
-			text = "Campaign Name:";
+			text = "CAMPAIGN NAME:";
 			style = ST_LEFT;
 		};
 		class STATIC_POLICE_FACTION : MUI_BASE_ABS 
@@ -55,7 +55,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.17000022;
 			w = 0.38000007;
 			h = 0.04000007;
-			text = "Police faction:";
+			text = "POLICE FACTION:";
 			style = ST_LEFT;
 		};
 		class TAB_GMINIT_EDIT_ENEMY_PERCENTAGE : MUI_EDIT_ABS 
@@ -75,7 +75,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.02000018;
 			w = 0.27000009;
 			h = 0.04000005;
-			text = "No Name";
+			text = "ENTER NAME";
 			style = 0;
 		};
 		class TAB_GMINIT_COMBO_GAME_MODE : MUI_COMBOBOX_ABS 
@@ -85,7 +85,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.07000031;
 			w = 0.27000013;
 			h = 0.0400001;
-			text = "Civil War";			
+			text = "CIVIL WAR";			
 		};
 		class TAB_GMINIT_COMBO_ENEMY_FACTION : MUI_COMBOBOX_ABS 
 		{
@@ -103,7 +103,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.17000036;
 			w = 0.27000013;
 			h = 0.0400001;
-			text = "Standard";
+			text = "STANDARD";
 		};
 
 		class TAB_GMINIT_BUTTON_START : MUI_BUTTON_TXT_ABS 
@@ -114,7 +114,7 @@ class TAB_GMINIT : MUI_GROUP_ABS
 			y = 0.84000037;
 			w = 0.14000006;
 			h = 0.04000012;
-			text = "Start";
+			text = "START";
 			borderSize = 0;
 			
 		};

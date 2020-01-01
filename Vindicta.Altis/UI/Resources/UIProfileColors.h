@@ -1,10 +1,5 @@
 /*
 Macros for user-defined GUI colors
-
-Returns: [R,G,B,A]
-Example return: [0.2,0.2,0.2,1]
-
-Comments after each macro refer to default presets in in-game OPTIONS/GAME/COLORS
 */
 
 //MENU
@@ -29,19 +24,20 @@ Comments after each macro refer to default presets in in-game OPTIONS/GAME/COLOR
 #define SUI_COLOR_BG 		["Subtitles","Background"] call BIS_fnc_displayColorGet				// White (Default): fully transparent
 #define SUI_COLOR_TEXT 		["Subtitles","Text"] call BIS_fnc_displayColorGet					// White (Default): solid white
 
-// Mission UI Control classes base colors
-#define MUIC_TRANSPARENT {0,0,0,0}
-#define MUIC_BLACK {0,0,0,1}
-#define MUIC_BLACKTRANSP {0,0,0,0.5}
-#define MUIC_WHITE {1,1,1,1}
-#define MUIC_GREY {0.3,0.3,0.3,0.9}
-#define MUIC_TXT_DISABLED {0.5,0.5,0.5,1.0}
-#define MUIC_MISSION {1, 0.682, 0, 1.0}
 
+// Base colors for control classes
+#define MUIC_TRANSPARENT {0, 0, 0, 0}
+#define MUIC_BLACK {0, 0, 0, 1}
+#define MUIC_BLACKTRANSP {0, 0, 0, 0.75}
+#define MUIC_WHITE {1, 1, 1, 1}
+#define MUIC_TXT_DISABLED {0, 0, 0, 0}
+#define MUIC_MISSION {1, 0.682, 0, 1}
+#define MUIC_LOGO {0.7, 0, 0, 1}
 
-// Mission UI Control classes base colors, for SQF
-#define MUIC_COLOR_TRANSPARENT [0,0,0,0]
-#define MUIC_COLOR_BLACK [0,0,0,1]
-#define MUIC_COLOR_BLACKTRANSP [0,0,0,0.7]
-#define MUIC_COLOR_WHITE [1,1,1,1]
-#define MUIC_COLOR_MISSION [1, 0.682, 0, 1.0]
+// Base colors for SQF
+#define MUIC_COLOR_TRANSPARENT [0, 0, 0, 0]
+#define MUIC_COLOR_BLACK [0, 0, 0, 1]
+#define MUIC_COLOR_BLACKTRANSP [0, 0, 0, 0.75]
+#define MUIC_COLOR_WHITE [1, 1, 1, 1]
+#define MUIC_COLOR_DISABLED [0, 0, 0, 0]
+#define MUIC_COLOR_MISSION [1, 0.682, 0, 1]

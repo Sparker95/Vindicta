@@ -20,7 +20,7 @@ CLASS("NotificationFactory", "")
 		private _sound = "defaultNotification";
 		private _picture = ""; // Default picture for now
 		private _duration = 8;
-		private _hint = "Check map for more info"; // Override hint!
+		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, _category, _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
@@ -32,7 +32,7 @@ CLASS("NotificationFactory", "")
 		private _sound = "defaultNotification";
 		private _picture = ""; // Default picture for now
 		private _duration = 10;
-		private _hint = "Check map for more info"; // Override hint!
+		private _hint = "Check your map for more info"; // Override hint!
 		private _args = [_picture, _category, _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;

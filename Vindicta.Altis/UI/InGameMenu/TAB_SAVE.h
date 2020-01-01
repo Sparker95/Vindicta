@@ -72,7 +72,7 @@ class TAB_SAVE : MUI_GROUP
 			w = 0.68000002;
 			h = 0.04;
 			style = 0;
-			text = "Previously saved games:";			
+			text = "PREVIOUSLY SAVED GAMES:";			
 		};
 		class TAB_SAVE_STATIC_SAVE_DATA : MUI_BG_TRANSPARENT_MULTILINE_LEFT_ABS
 		{
