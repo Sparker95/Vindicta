@@ -19,10 +19,10 @@ private _seenBy = allPlayers select {_x distance _pos < 50 || {(_x distance _pos
 //terminate if any player can see the position
 if (count _seenBy > 0) exitWith {objNull};
 
-private _class = format["CivilianPresence_%1",selectRandom (_module getVariable ["#unitTypes",[]])];
+private _class = format["vin_cp_%1",selectRandom (_module getVariable ["#unitTypes",[]])];
 
 // Some units are suspicious and must be created as units, not agents
-private _suspicious = (random 10 < 3);
+private _suspicious = (random 10 < 5);
 
 private _unit = objNull;
 
@@ -36,6 +36,14 @@ if (!(_module getVariable ["#useAgents",true]) || _suspicious) then
 		_unit setVariable ["bSuspicious", true, true]; // So that sensorGroupTargets can recognize it
 	};
 	_unit setVariable ["#isAgent", false];
+
+	// For some reason danger.fsm does not trigger for dangers of the same side... we can do it with event handlers instead
+	_unit addEventHandler ["FiredNear", {
+		params ["_unit"]; _unit setVariable ["#newDanger", true];
+	}];
+	_unit addEventHandler ["Hit", {
+		params ["_unit"]; _unit setVariable ["#newDanger", true];
+	}];
 }
 else
 {
@@ -50,7 +58,23 @@ _unit setVariable ["#core",_module];
 [_unit] call CivPresence_fnc_initUnitDialogVariables;
 
 _unit setBehaviour "CARELESS";
-_unit spawn (_module getVariable ["#onCreated",{}]);
-_unit execFSM "CivilianPresence\FSM\behavior.fsm";
+//_unit spawn (_module getVariable ["#onCreated",{}]); // onCreated is not set anywhere?
+_unit execFSM "CivilianPresence\FSM\behavior_2.fsm";
+
+// Set special variable on unit
+_unit setVariable [CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME, true, true]; // Set a variable on the created unit
+
+// Add 'untie' action to unit
+private _JIPID = if (isNil "gCPUntieID") then { 0 } else {gCPUntieID};
+private _JIPString = format ["CP_untie_%1", _JIPID];
+_unit setVariable ["CP_untieJIPID", _JIPString];
+[_unit] remoteExecCall ["CivPresence_fnc_addUntieActionLocal", 0, _JIPString];
+_unit addEventHandler ["Deleted", {
+	params ["_entity"];
+	private _jipstring = _entity getVariable ["CP_untieJIPID", ""];
+	if (_jipstring != "") then { remoteExecCall ["", _jipstring]; };
+}];
+gCPUntieID = _JIPID + 1;
+
 
 _unit

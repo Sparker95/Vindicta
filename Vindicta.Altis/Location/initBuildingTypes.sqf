@@ -124,6 +124,7 @@ location_bp_cargo_medium =
 // Buildings which can be used as police stations
 location_bt_police = 
 [
+	// Altis
 	"Land_i_Shop_01_V2_F",
 	"Land_i_Shop_01_V3_F",
 	"Land_u_Shop_01_V1_F",
@@ -147,7 +148,11 @@ location_bt_police =
 	"Land_i_House_Big_01_V1_F",
 	"Land_i_House_Big_01_V2_F",
 	"Land_u_House_Big_01_V1_F",
-	"Land_i_House_Big_01_V3_F"
+	"Land_i_House_Big_01_V3_F",
+
+	//Livonia
+	"Land_PoliceStation_01_F",
+	"Land_House_2B04_F"
 ];
 
 location_decorations_police =

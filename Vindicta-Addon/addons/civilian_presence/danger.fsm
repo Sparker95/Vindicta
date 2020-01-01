@@ -1,0 +1,65 @@
+/*%FSM<COMPILE "scriptedFSM.cfg, Danger">*/
+/*%FSM<HEAD>*/
+/*
+item0[] = {"End",1,250,-924.350647,-372.112976,-834.350647,-322.112976,0.000000,"End"};
+item1[] = {"Reacting_on_danger",0,250,-959.226196,-534.662598,-786.392944,-463.768890,0.000000,"Reacting on danger!" \n "Just set flag on unit" \n "and GTFO"};
+item2[] = {"Always",8,218,-923.925415,-445.601440,-833.925415,-395.601440,0.000000,"Always"};
+link0[] = {1,2};
+link1[] = {2,0};
+globals[] = {0.000000,0,0,0,0,640,480,1,223,6316128,1,-1223.905151,-471.540527,39.118774,-714.457397,1242,1244,1};
+window[] = {2,-1,-1,-1,-1,662,208,1173,208,3,1260};
+*//*%FSM</HEAD>*/
+class FSM
+{
+        fsmName = "Danger";
+        class States
+        {
+                /*%FSM<STATE "End">*/
+                class End
+                {
+                        name = "End";
+                        itemno = 0;
+                        init = /*%FSM<STATEINIT""">*/"// Bye!"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                        };
+                };
+                /*%FSM</STATE>*/
+                /*%FSM<STATE "Reacting_on_danger">*/
+                class Reacting_on_danger
+                {
+                        name = "Reacting_on_danger";
+                        itemno = 1;
+                        init = /*%FSM<STATEINIT""">*/"// The behaviour FSM will read it and set it back to false" \n
+                         "_this setVariable [""#newDanger"", true];" \n
+                         "" \n
+                         "//diag_log format [""[danger] called for %1"", _this];" \n
+                         "" \n
+                         "// Empty the queue" \n
+                         "_queue = [];"/*%FSM</STATEINIT""">*/;
+                        precondition = /*%FSM<STATEPRECONDITION""">*/""/*%FSM</STATEPRECONDITION""">*/;
+                        class Links
+                        {
+                                /*%FSM<LINK "Always">*/
+                                class Always
+                                {
+                                        itemno = 2;
+                                        priority = 0.000000;
+                                        to="End";
+                                        precondition = /*%FSM<CONDPRECONDITION""">*/""/*%FSM</CONDPRECONDITION""">*/;
+                                        condition=/*%FSM<CONDITION""">*/"true"/*%FSM</CONDITION""">*/;
+                                        action=/*%FSM<ACTION""">*/""/*%FSM</ACTION""">*/;
+                                };
+                                /*%FSM</LINK>*/
+                        };
+                };
+                /*%FSM</STATE>*/
+        };
+        initState="Reacting_on_danger";
+        finalStates[] =
+        {
+                "End",
+        };
+};
+/*%FSM</COMPILE>*/

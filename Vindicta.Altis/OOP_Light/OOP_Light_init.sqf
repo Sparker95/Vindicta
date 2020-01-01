@@ -1115,6 +1115,7 @@ ENDCLASS;
 	true
 }] call test_AddTest;
 
+/*
 ["OOP variable attributes", {
 	private _base = NEW("AttrTestBase1", []);
 
@@ -1151,6 +1152,7 @@ ENDCLASS;
 	] call test_Assert_Throws;
 
 }] call test_AddTest;
+*/
 
 CLASS("JsonTestVarObj", "")
 	VARIABLE("var1");

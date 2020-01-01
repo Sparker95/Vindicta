@@ -45,8 +45,8 @@ if(_lipTimer_new >_lipTimer)then{
 		params["_unit","_target"];
 		_unit setRandomLip true;
 		waitUntil{
-			_unit lookAt _target;
-			sleep 0.1;
+			if (!isNull _target) then { _unit lookAt _target; };
+			sleep 0.3;
 			( time > _unit getvariable ["setrandomlip_timer",0])
 		};
 		_unit setRandomLip false;
@@ -64,7 +64,7 @@ private _name = name _unit;
 private _icon = controlNull;
 private _structuredSentence = if(_unit isequalto player)then{
 	//return
-	parseText format ["<t align = 'right' shadow = '2' size = '1'><t color = '#FFA300'>%1",_sentence];
+	parseText format ["<t font='RobotoCondensed' align = 'right' size = '1.05'><t color = '#FFA300'>%1",_sentence];
 }else{
 
 	private _color = [1, 1, 1, 1]; //[side _unit,false] call BIS_fnc_sideColor; // Some colors don't look readable...
@@ -77,14 +77,14 @@ private _structuredSentence = if(_unit isequalto player)then{
 	//_icon ctrlSetTextColor _color;
 	_icon ctrlSetPosition [666,0,FLOAT_ICON_WITDH,0.2];//spawn it out of site 
 	_icon ctrlCommit 0;
-	_icon ctrlSetStructuredText parseText format ["<t align = 'center' shadow = '2' size = '1'><t color = '#FFFFFF'><img image='%2'/><t color = '%1'><br/>%3:</t>",_colorHTML,STRING_ICON_UP_ARROW,_name];
+	_icon ctrlSetStructuredText parseText format ["<t font='RobotoCondensed' align = 'center' size = '1.05'><t color = '#FFFFFF'><img image='%2'/><t color = '%1'><br/>%3:</t>",_colorHTML,STRING_ICON_UP_ARROW,_name];
 	
 	//return 
-	parseText format ["<t align = 'left' shadow = '2' size = '1'><t color = '%1'>%2:</t> <t color = '%3'>%4",_colorHTML,_name,_colorTextHTML,_sentence];
+	parseText format ["<t font='RobotoCondensed' align = 'left' size = '1.05'><t color = '%1'>%2:</t> <t color = '%3'>%4",_colorHTML,_name,_colorTextHTML,_sentence];
 };
 
 private _text = _display ctrlCreate ["rscstructuredtext", -1];
-_text ctrlsetBackgroundColor [.5,.5,.5,.5];
+_text ctrlsetBackgroundColor [0, 0, 0, 0.6];
 //_text ctrlSetTextColor _color;
 _text ctrlSetPosition [666,0,1,0.05];//spawn it out of site 
 _text ctrlCommit 0;

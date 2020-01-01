@@ -31,7 +31,7 @@ if (_errorCount > 0) exitWith {
 
 	// If it's run in SQF VM, return an error code to the validation script
 	#ifdef _SQF_VM
-	exit__ _errorCount;
+	exitcode__ _errorCount;
 	#endif
 };
 

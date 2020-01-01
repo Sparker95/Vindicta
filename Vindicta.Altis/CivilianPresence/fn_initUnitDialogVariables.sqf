@@ -28,7 +28,7 @@ _locsCivKnows = _locsNear select {
 	{_dist < 800} // If it's very close, civilians will surely tell about it
 };
 
-diag_log format ["Locs known to civ: %1", _locsCivKnows];
+//diag_log format ["Locs known to civ: %1", _locsCivKnows];
 
 _unit setVariable [CP_VAR_KNOWN_LOCATIONS, _locsCivKnows, true]; // Broadcast that to everyone
 

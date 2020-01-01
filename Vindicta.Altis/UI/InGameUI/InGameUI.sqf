@@ -55,11 +55,12 @@ CLASS("InGameUI", "")
 		if (_value < 0) then {
 			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText "";
 		} else {
-			pr _text = format ["Construction resources: %1", _value];
+			pr _text = format ["%1", _value];
 			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText _text;
 		};
 	} ENDMETHOD;
 
+/*
 	METHOD("setLocationCapacityInf") {
 		params [P_THISOBJECT, P_NUMBER("_capacity")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
@@ -70,6 +71,7 @@ CLASS("InGameUI", "")
 			(_display displayCtrl IDC_INGAME_STATIC_MAX_INF) ctrlSetText _text;
 		};
 	} ENDMETHOD;
+*/
 
 	METHOD("enableLocationPanel") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
@@ -78,10 +80,10 @@ CLASS("InGameUI", "")
 		{
 			pr _ctrl = _display displayCtrl _x;
 			_ctrl ctrlShow _enable;
-		} forEach [IDC_INGAME_STATIC_LOCATION_NAME,
+		} forEach [	IDC_INGAME_STATIC_LOCATION_NAME,
 					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES,
-					IDC_INGAME_STATIC_MAX_INF,
-					IDC_INGAME_STATIC_LOCATION_BACKGROUND]
+					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR,
+					IDC_INGAME_STATIC_LOCATION_NAME_DESCR]
 	} ENDMETHOD;
 
 ENDCLASS;

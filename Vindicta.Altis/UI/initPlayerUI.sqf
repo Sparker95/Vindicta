@@ -1,7 +1,7 @@
 // Add controls to the map
 #include "..\OOP_Light\OOP_Light.h"
 #include "ClientMapUI\ClientMapUI_Macros.h"
-#include "UndercoverUI\UndercoverUI_Macros.h"
+#include "InGameUI\InGameUI_Macros.h"
 #include "defineddikcodes.inc"
 
 diag_log "--- Initializing player UI";
@@ -24,9 +24,9 @@ private _array = [];
 uiNamespace setVariable ["__mapControls", _array];
 
 
-g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register UndercoverUI layer
-uiNamespace setVariable ["undercoverUI_display", displayNull];			
-g_rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];	
+g_rscLayerUndercover = ["rscLayerUndercover"] call BIS_fnc_rscLayer;	// register UndercoverUI layer, needed for debug UI
+//uiNamespace setVariable ["undercoverUI_display", displayNull];			
+//g_rscLayerUndercover cutRsc ["UndercoverUI", "PLAIN", -1, false];	
 
 // Init abstract classes representing the UI
 CALLSM0("PlayerListUI", "new");

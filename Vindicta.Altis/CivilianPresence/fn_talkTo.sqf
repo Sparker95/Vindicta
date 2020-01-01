@@ -26,7 +26,13 @@ if(isnull _civ)exitWith{};
 
 switch (_mode) do {
 	case "talk": {
-		pr _text = "Hi, can I talk to you?";
+		pr _text = selectRandom [
+			"Hey, can I talk to you for a moment?",
+			"Hi! Can I talk to you?",
+			"Hey, do you have a second?",
+			"Hey! Got a minute?",
+			"Hey, I'd like to talk to you."];
+
 		[player, _text, _civ] call  Dialog_fnc_hud_createSentence;
 		sleep 5;
 	};
@@ -36,7 +42,13 @@ switch (_mode) do {
 		_civ setVariable [CP_VAR_IS_TALKING, true, true]; // Broadcast that to everyone
 
 		pr _locs = _civ getVariable [CP_VAR_KNOWN_LOCATIONS, []];
-		pr _text = "Hello! Do you know any military places in the area?";
+		pr _text = selectRandom [
+			"Do you know any military outposts in the area?",
+			"Do you know of any military places around here?",
+			"Hey, are there any ... you know ... military places near here?",
+			"Have you seen any military activity around here?",
+			"Do you know any military locations around here?"];
+
 		[player, _text, _civ] call  Dialog_fnc_hud_createSentence;
 		__BOOST_SUSP;
 		
@@ -44,7 +56,7 @@ switch (_mode) do {
 		if (__CHECK_EXIT_COND) exitWith {};
 
 		if (count _locs == 0) then {
-			_text = "No, I am sure there are none within several kilometers";
+			_text = "No, there aren't any within kilometers of this place.";
 			[_civ, _text,player] call  Dialog_fnc_hud_createSentence;
 			__BOOST_SUSP;
 			__SLEEP(_text);
@@ -52,7 +64,7 @@ switch (_mode) do {
 
 			[player,"All right, thank you, bye", _civ] call  Dialog_fnc_hud_createSentence;
 		} else {
-			_text = "Yeah, I know some places like that...";
+			_text = "Yeah, I know of a few places like that ...";
 			[_civ, _text,player] call  Dialog_fnc_hud_createSentence;
 			__BOOST_SUSP;
 			__SLEEP(_text);
@@ -65,29 +77,29 @@ switch (_mode) do {
 				pr _locPos = CALLM0(_loc, "getPos");
 				pr _bearing = player getDir _locPos;
 				pr _distance = player distance2D _locPos;
-				pr _bearings = ["North", "North-East", "East", "South-East", "South", "South-West", "West", "North-West"];
+				pr _bearings = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 				pr _bearingID = (round (_bearing/45)) % 8;
 
 				// Strings
 				pr _typeString = CALLSM1("Location", "getTypeString", _type);
 				pr _bearingString = _bearings select _bearingID;
 				pr _distanceString = if(_distance < 400) then {
-					selectRandom ["very close", "within 400 meters", "right over here", "five-minute walk from here"]
+					selectRandom ["quite close.", "within 400 meters.", "right over here.", "five-minute walk from here."]
 				} else {
 					if (_distance < 1000) then {
-						selectRandom ["not far away", "within a kilometer", "within a mile", "10-minute walk from here"];
+						selectRandom ["not too far away from here.", "within a kilometer.", "10 minute walk from here.", "not far from here at all."];
 					} else {
-						selectRandom ["very far", "far away", "more than a mile from here", "more than a kilometer from here"];
+						selectRandom ["very far away.", "pretty far away.", "more than a kilometer from here.", "quite a bit away from here."];
 					};
 				};
 				pr _intro = selectRandom [	"There is a ",
 											"I know about a",
 											"I think there is a",
 											"Some time ago I saw a",
-											"Friend told me about a",
+											"A friend told me about a",
 											"People are nervous about a",
 											"People are talking about a",
-											"Long time ago there was a",
+											"A long time ago there was a",
 											"Not sure about the coordinates, there is a"];
 
 				pr _posString = if (_type == LOCATION_TYPE_POLICE_STATION) then {
@@ -142,11 +154,11 @@ switch (_mode) do {
 
 			// Civilian: I must go
 			pr _text = selectRandom [
-				"That's all I know",
-				"Can't tell you more, I must go now",
-				"Sorry man, cops might be onto us, I must leave",
+				"That's all I can tell you.",
+				"I don't know any more than that. I need to go.",
+				"Have to be careful out here. I'm going to leave now.",
 				"We might be watched, I must go now!",
-				"It might be dangerous to talk about such things in the street, I must go now!"
+				"It's dangerous to talk about this out in the open, I have to go!"
 			];
 			[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
 			__BOOST_SUSP;
@@ -155,10 +167,11 @@ switch (_mode) do {
 
 			// Player: ok, bye
 			pr _text = selectRandom [
-				"No problem, bye",
-				"Thanks for the help, bye",
-				"Yes, I understand, bye",
-				"Very good, thanks, bye"
+				"No problem. See you!",
+				"Thanks for helping us. See you around!",
+				"Yes, I understand. See you!",
+				"Perfect, thanks.",
+				"That's okay. See you!"
 			];
 			[player,_text, _civ] call  Dialog_fnc_hud_createSentence;
 			__BOOST_SUSP;
@@ -171,10 +184,10 @@ switch (_mode) do {
 
 		// Player suggests to join the rebels
 		pr _text = selectRandom [
-			"Hey man, consider joining the rebellion, we need you",
-			"You know there's a rebel movement, right? Would you like to join?",
-			"The rebel movement needs people like you",
-			"Join the rebels if you want to liberate this place"
+			"Hey, consider joining the resistance. We need you.",
+			"You know there's a resistance movement, right? Would you like to join us?",
+			"Our group needs people like you.",
+			"Join us if you want to liberate this place."
 		];
 		[player,_text, _civ] call  Dialog_fnc_hud_createSentence;
 		__BOOST_SUSP;
@@ -185,12 +198,16 @@ switch (_mode) do {
 		if (!(_civ getVariable [CP_VAR_AGITATED, false])) then { // If not agitated yet
 
 			pr _text = selectRandom [
-				"Allright, I will think about it",
-				"Yeah, I'm tired of these nazis, I'll consider joining",
-				"Thanks, I'll keep it in mind",
-				"I will join some time later, thanks",
-				"I have nothing to lose any more... sure..."
-			];
+				"Alright, I'm going to think about it.",
+				"Yeah, I'm tired of those thugs, I'll consider joining.",
+				"Thanks, I'll keep it in mind.",
+				"I might join some time later, thanks.",
+				"It's not like I have anything left to lose ... sure ...",
+				"I thought you'd never ask. I'm in.",
+				"You son of a bitch, I'm in!",
+				"Those bastards destroyed my village and arrested all my friends. Yes, I will join you.",
+				"I'm going to find you as soon as I can. Yes, I'm in.",
+				"You know what, I will join."];
 			[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
 			__BOOST_SUSP;
 
@@ -204,10 +221,11 @@ switch (_mode) do {
 			CALLSM("AICommander", "addActivity", [CALLM0(gGameMode, "getEnemySide") ARG getPos player ARG (7+random(7))]);
 			} else {
 				pr _text = selectRandom [
-					"Sure, I know about that already",
-					"I already know about it, thanks",
-					"I have already heard about it, yes",
-					"Yes, I know it already"
+					"Thanks, I know about that already.",
+					"I already know about it, thanks.",
+					"I have already heard about it, yes.",
+					"Yes, I know.",
+					"Shhh ... I know ..."
 				];
 				[_civ,_text,player] call  Dialog_fnc_hud_createSentence;
 				__BOOST_SUSP;

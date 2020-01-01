@@ -15,7 +15,8 @@
                 ".",
                 "-i",
                 "${file}",
-                "--disable-macro-warnings"
+                "--disable-macro-warnings",
+                "--lint-private-var-usage"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Vindicta.Altis"
@@ -292,7 +293,8 @@
                 "--load",
                 ".",
                 "-i",
-                "${workspaceRoot}\\Vindicta.Altis\\Tests\\RunTests.sqf"
+                "${workspaceRoot}\\Vindicta.Altis\\Tests\\RunTests.sqf",
+                "--lint-private-var-usage"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Vindicta.Altis"

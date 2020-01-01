@@ -138,7 +138,6 @@ class RscTitles {
         duration = 2;
     };
 
-#include "UI\UndercoverUI\UndercoverUI.h"
 #include "UI\Resources\UndercoverUIDebug\UndercoverUIDebug.h"
 #include "UI\BuildUI\BuildUI.h"
 #include "UI\InGameUI\Vin_InGameUI.h"
