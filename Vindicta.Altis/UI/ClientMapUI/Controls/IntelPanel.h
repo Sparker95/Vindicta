@@ -37,20 +37,6 @@ class CMUI_INTEL_HEADLINE : MUI_HEADLINE {
 
 };
 
-class CMUI_INTEL_MINIMIZE : RSCPICTURE {
-
-	IDC = -1; 
-	x = safeZoneX + safeZoneW * 0.981; 
-	y = safeZoneY + safeZoneH * 0.045; 
-	w = safeZoneW * 0.010; 
-	h = safeZoneH * 0.018; 
-	style = ST_KEEP_ASPECT_RATIO + ST_PICTURE; 
-	text = "a3\ui_f\data\GUI\Rsc\RscDisplayArcadeMap\icon_sidebar_show_down.paa"; 
-	colorText[] = MUIC_BLACK; 
-	colorBackground[] = MUIC_TRANSPARENT; 
-
-};
-
 class CMUI_INTEL_ACTIVE : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 	IDC = -1; 

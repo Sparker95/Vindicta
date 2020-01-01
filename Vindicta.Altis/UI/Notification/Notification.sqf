@@ -52,7 +52,7 @@ CLASS("Notification", "")
 		_ctrl ctrlSetText _category;
 
 		pr _ctrl = uiNamespace getVariable "vin_not_text";
-		_ctrl ctrlSetText (toUpper _text);
+		_ctrl ctrlSetText _text;
 
 		pr _ctrl = uiNamespace getVariable "vin_not_hint";
 		_ctrl ctrlSetText _hint;

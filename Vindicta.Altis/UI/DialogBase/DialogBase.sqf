@@ -88,8 +88,7 @@ CLASS("DialogBase", "")
 				CALLM(_thisObject, _methodName, _this);
 			}];
 		} forEach	[
-						[IDC_DIALOG_BASE_BUTTON_CLOSE, "onButtonClose"],
-						[IDC_DIALOG_BASE_BUTTON_QUESTION, "onButtonQuestion"]
+						[IDC_DIALOG_BASE_BUTTON_CLOSE, "onButtonClose"]
 					];
 
 		uiNamespace setVariable [_thisObject+__DISPLAY_SUFFIX, _display];
@@ -197,7 +196,7 @@ CLASS("DialogBase", "")
 	METHOD("setHeadlineText") {
 		params [P_THISOBJECT, P_STRING("_text")];
 		pr _ctrl = T_CALLM0("getDisplay") displayCtrl IDC_DIALOG_BASE_STATIC_HEADLINE;
-		_ctrl ctrlSetText _text;
+		_ctrl ctrlSetText toUpper(_text);
 	} ENDMETHOD;
 
 	METHOD("setHintText") {
@@ -233,7 +232,7 @@ CLASS("DialogBase", "")
 		pr _ox = 0.5 - 0.5*_fullw;
 		pr _oy = 0.5 - 0.5*_fullh;
 
-		// Background position
+		// Background
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_BACKGROUND;
 		_ctrl ctrlSetPosition [0 + _ox, 0 + _oy, _fullw, _fullh];
 		_ctrl ctrlCommit 0;
@@ -242,17 +241,17 @@ CLASS("DialogBase", "")
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_HEADLINE;
 		_ctrl ctrlSetPosition [0 + _ox, 0 + _oy, _fullw, DIALOG_BASE_STATIC_HEADLINE_H];
 		_ctrl ctrlCommit 0;
-
+		
 		// Top-right buttons
 		pr _bclosex = _fullw - DIALOG_BASE_BUTTON_CLOSE_W;
 		pr _bquestx = _fullw - 2*DIALOG_BASE_BUTTON_CLOSE_W;
-		// Close btn
+		// Close X button
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_BUTTON_CLOSE;
 		_ctrl ctrlSetPosition [_ox + _bclosex, _oy + 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
 		_ctrl ctrlCommit 0;
-		// Question btn
+		// Question '?' button
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_BUTTON_QUESTION;
-		_ctrl ctrlSetPosition [_ox + _bquestx, _oy+ 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
+		_ctrl ctrlSetPosition [_ox + _bquestx, _oy + 0, DIALOG_BASE_BUTTON_CLOSE_W, DIALOG_BASE_STATIC_HEADLINE_H];
 		_ctrl ctrlCommit 0;
 
 		// Hint bar
@@ -264,7 +263,7 @@ CLASS("DialogBase", "")
 		};
 		pr _hinty = _fullh - DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_HINTS;
-		_ctrl ctrlSetPosition [_ox + _hintx, _oy + _hinty, _hintw, DIALOG_BASE_STATIC_HINTS_H];
+		_ctrl ctrlSetPosition [_ox + _hintx - 0.005, _oy + _hinty, _hintw + 0.005, DIALOG_BASE_STATIC_HINTS_H];
 		_ctrl ctrlCommit 0;
 
 		// Group of tab buttons and its BG
@@ -272,6 +271,7 @@ CLASS("DialogBase", "")
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_GROUP_TAB_BUTTONS;
 		_ctrl ctrlSetPosition [_ox + 0, _oy + DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
 		_ctrl ctrlCommit 0;
+		
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_TAB_BUTTONS_BACKGROUND;
 		_ctrl ctrlSetPosition [_ox + 0, _oy + DIALOG_BASE_STATIC_HEADLINE_H, DIALOG_BASE_GROUP_TAB_BUTTONS_W, _tbgrouph];
 		_ctrl ctrlCommit 0;

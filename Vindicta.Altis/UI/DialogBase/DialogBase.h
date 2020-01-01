@@ -42,25 +42,43 @@ class MUI_DIALOG_BASE
 	};
 	class Controls
 	{
-		class BUTTON_QUESTION : MUI_BUTTON_TXT_ABS
-		{
-			idc = IDC_DIALOG_BASE_BUTTON_QUESTION;
-			x = 0.90;
-			y = 0.00;
-			w = 0.05;
-			h = 0.04;
-			text = "?";
-		};
-		class BUTTON_CLOSE : MUI_BUTTON_TXT_ABS
+
+		class BUTTON_CLOSE : RscButton
 		{
 			idc = IDC_DIALOG_BASE_BUTTON_CLOSE;
 			x = 0.95;
 			y = 0.00;
 			w = 0.05;
 			h = 0.04;
-			text = "X";
-			colorBackground[] = {0.6,0,0,1}; // Red
+			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
+			text = "a3\3DEN\Data\ControlsGroups\Tutorial\close_ca.paa";
+			colorText[] = MUIC_BLACK;
+			colorBackground[] = MUIC_TRANSPARENT;
+			colorFocused[] = MUIC_TRANSPARENT;
+			colorBackgroundActive[] = MUIC_TRANSPARENT;
+			onMouseEnter = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text black
+			onMouseExit = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text white
+			shadow = 0;
 		};
+
+		class BUTTON_QUESTION : RscButton
+		{
+			idc = IDC_DIALOG_BASE_BUTTON_QUESTION;
+			x = 0.95;
+			y = 0.00;
+			w = 0.05;
+			h = 0.04;
+			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
+			text = "a3\ui_f\data\IGUI\Cfg\simpleTasks\types\unknown_ca.paa";
+			colorText[] = MUIC_BLACK;
+			colorBackground[] = MUIC_TRANSPARENT;
+			colorFocused[] = MUIC_TRANSPARENT;
+			colorBackgroundActive[] = MUIC_TRANSPARENT;
+			onMouseEnter = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text black
+			onMouseExit = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text white
+			shadow = 0;
+		};
+
 		class GROUP_TAB_BUTTONS : MUI_GROUP_ABS 
 		{
 			idc = IDC_DIALOG_BASE_GROUP_TAB_BUTTONS;
@@ -77,8 +95,12 @@ class MUI_DIALOG_BASE
 			y = 0.96;
 			w = 0.78;
 			h = 0.04;
-			text = "Hint";			
+			text = "Hint";
+			font = "RobotoCondensedLight";
+			sizeEx = 0.036;
+			style = ST_LEFT;			
 		};
+
 		// Button example
 		/*
 		class BUTTON_TAB_0 : Map_UI_button 
