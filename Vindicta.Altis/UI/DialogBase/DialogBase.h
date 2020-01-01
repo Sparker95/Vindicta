@@ -56,6 +56,8 @@ class MUI_DIALOG_BASE
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorFocused[] = MUIC_TRANSPARENT;
 			colorBackgroundActive[] = MUIC_TRANSPARENT;
+			onMouseEnter = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text black
+			onMouseExit = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text white
 			shadow = 0;
 		};
 
@@ -72,6 +74,8 @@ class MUI_DIALOG_BASE
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorFocused[] = MUIC_TRANSPARENT;
 			colorBackgroundActive[] = MUIC_TRANSPARENT;
+			onMouseEnter = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text black
+			onMouseExit = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text white
 			shadow = 0;
 		};
 
