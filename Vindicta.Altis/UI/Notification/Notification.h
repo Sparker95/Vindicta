@@ -21,40 +21,40 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			IDC = -1; 
 			x = 0; 
 			y = 0; 
-			w = 0.5;
+			w = 0.427; 
 			h = 0.158; 
 			//text = "UI\Images\gradient_LtoR.paa";
 
 			//colorText[] = {0, 0, 0, 0.9};
-			colorBackground[] = {0, 0, 0, 0.75};
+			colorBackground[] = {0, 0, 0, 0.6};
 
 		};
 
-		class NOTIFICATION_HINTBG : MUI_BASE {
+		class NOTIFICATION_HINTBG : RscPicture {
 
 			IDC = -1; 
 			x = 0; 
 			y = 0.123; 
-			w = 0.5;
+			w = 0.427; 
 			h = 0.035; 
-			//text = "UI\Images\gradient_LtoR.paa";
+			text = "UI\Images\gradient_LtoR.paa";
 
-			//colorText[] = {0, 0, 0, 1};
-			colorBackground[] = MUIC_BLACKTRANSP;
+			colorText[] = {0, 0, 0, 1};
+			//colorBackground[] = MUIC_BLACKTRANSP;
 
 		};
 
-		class NOTIFICATION_CATEGORYBG : MUI_BASE {
+		class NOTIFICATION_CATEGORYBG : RscPicture {
 
 			IDC = -1; 
-			x = 0.029; 
+			x = 0; 
 			y = 0; 
-			w = 0.470; 
+			w = 0.427; 
 			h = 0.035; 
-			//text = "UI\Images\gradient_LtoR.paa";
+			text = "UI\Images\gradient_LtoR.paa";
 
-			//colorText[] = MUIC_MISSION;
-			colorBackground[] = MUIC_MISSION;
+			colorText[] = MUIC_MISSION;
+			//colorBackground[] = MUIC_MISSION;
 
 		};
 
@@ -64,7 +64,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0; 
 			y = 0; 
-			w = 0.026; 
+			w = 0.026;  
 			h = 0.035;
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
 			text = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
@@ -81,7 +81,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0.029; 
 			y = 0; 
-			w = 0.470;
+			w = 0.397;
 			h = 0.035;  
 
 			colorText[] = MUIC_BLACK;
@@ -100,7 +100,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0; 
 			y = 0.041; 
-			w = 0.5; 
+			w = 0.41;  
 			h = 0.081;  
 
 			colorBackground[] = {0, 0, 0, 0};
@@ -120,7 +120,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0; 
 			y = 0.123; 
-			w = 0.5; 
+			w = 0.427; 
 			h = 0.035; 
 
 			colorBackground[] = {0, 0, 0, 0};
