@@ -15,7 +15,6 @@ class ClientMapUI
 	class Controls
 	{
 		#include "Controls\IntelPanel.h"
-		//#include "Controls\PlayerList.h"
 	};
 };
 

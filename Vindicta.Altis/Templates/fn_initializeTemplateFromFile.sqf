@@ -1,3 +1,5 @@
+#include "..\config\global_config.hpp"
+
 #ifdef _SQF_VM
 #define IS_SERVER true
 #else
@@ -43,6 +45,15 @@ diag_log format ["[Template] File %1 seems correct!", _filePath];
 
 // Process inventory items
 #ifndef _SQF_VM
+#define __PROCESS_ITEMS
+#endif
+
+// To speed things up when game mode is disabled, we don't process items
+#ifdef GAME_MODE_DISABLE
+#undef __PROCESS_ITEMS
+#endif
+
+#ifdef __PROCESS_ITEMS
 if (isServer) then {
 	private _result = [_t] call t_fnc_processTemplateItems;
 	_result params ["_templateItems", "_loadoutWeapons"];

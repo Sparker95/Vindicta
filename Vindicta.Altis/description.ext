@@ -101,6 +101,9 @@ class CfgFunctions {
 #include "UI\LoadingScreen\LoadingScreen.h"
 #include "UI\Notification\Notification.h"
 
+// Just include plain control classes for the intel panel
+#include "UI\ClientMapUI\Controls\IntelPanel.h"
+
 //#include "\A3\ui_f\hpp\defineCommonGrids.inc"
 //#include "\A3\ui_f\hpp\defineCommonColors.inc"
 

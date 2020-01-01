@@ -4,7 +4,7 @@
         "missionName": "Vindicta-dev",
         "map": "Altis",
         "configFiles": [
-            "configs/dev/oop_config.hpp"
+            "configs/dev/global_config.hpp"
         ]
     },
     {
@@ -12,7 +12,7 @@
         "missionName": "Vindicta-release",
         "map": "Altis",
         "configFiles": [
-            "configs/release/oop_config.hpp"
+            "configs/release/global_config.hpp"
         ]
     }
 ]

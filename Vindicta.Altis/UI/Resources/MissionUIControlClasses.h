@@ -118,7 +118,7 @@ class MUI_BG_TRANSPARENT_MULTILINE_CENTER : MUI_BG_TRANSPARENT_MULTILINE_LEFT
 
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_CENTER);
 
-class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, but grey
+class MUI_HEADLINE : MUI_BG_BLACKSOLID
 {
 	type = CT_STATIC;
 
@@ -128,18 +128,12 @@ class MUI_HEADLINE : MUI_BG_BLACKSOLID // I've made it like basic background, bu
 	h = safeZoneH * 0.026;
 
 	sizeEx = MUI_TXT_SIZE_M;
-	colorBackground[] = {0.0666, 0.0666, 0.0666, 1.0}; // A slight delightfully-devilish shade of grey
-
-	/*
-	sizeEx = MUI_TXT_SIZE_S;
-	style = 192+2;
+	colorText[] = MUIC_BLACK; 
+	colorBackground[] = MUIC_MISSION; 
+	style = ST_LEFT;
 	text = "";
 	font = "PuristaMedium";
-	
-	colorBackground[] = {0.702,0.102,0.102,1};	// variable, selected outpost color
-	colorText[] = MUIC_WHITE;
 	shadow = 1;
-	*/
 };
 
 __MUI_CLASS_ABS(MUI_HEADLINE);
@@ -188,6 +182,39 @@ class MUI_BUTTON_TXT : RscButton
 
 __MUI_CLASS_ABS(MUI_BUTTON_TXT);
 
+// Dummy button with no visuals
+class MUI_BUTTON_DUMMY : MUI_BUTTON_TXT
+{
+	// Disable all colors
+	colorBackground[] = {0,0,0,0};
+	colorBackgroundActive[] = {0,0,0,0};
+	colorBackgroundDisabled[] = {0,0,0,0};
+	colorBorder[] = {0,0,0,0};
+	colorDisabled[] = {0,0,0,0};
+	colorFocused[] = {0,0,0,0};
+	colorShadow[] = {0,0,0,0};
+};
+
+
+// Checkbox-like button with custom event handlers to toggle its colors
+class MUI_BUTTON_TXT_CHECKBOX_LIKE : MUI_BG_BLACKSOLID
+{
+	sizeEx = MUI_TXT_SIZE_M;
+	style = 192+2;
+	font = "PuristaLight";
+	text = "";
+
+	colorBackground[] = MUIC_BLACK;
+	colorBackgroundActive[] = MUIC_BLACK;
+	colorBackgroundDisabled[] = MUIC_BLACK;
+
+	onLoad = "[_this select 0] call ui_fnc_buttonCheckboxInit;";
+	//onUnload = "'ui.rpt' ofstream_write (format ['Unload %1', _this]);";
+};
+
+__MUI_CLASS_ABS(MUI_BUTTON_TXT_CHECKBOX_LIKE);
+
+// Button for tabs?
 class MUI_BUTTON_TAB : MUI_BUTTON_TXT
 {
 	type = CT_BUTTON;
@@ -206,7 +233,7 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	h = safezoneh * 0.02;
 	colorText[] = MUIC_WHITE; //  text color of the unchecked checkbox
 	colorTextSelect[] = {0.13, 0.7, 0.29, 1}; // text color of the checked checkbox
-	color[] = {0,0,1,1}; // unknown
+	color[] = {0, 0, 0,1}; // unknown
 
 	colorBackground[] = {1,0,0,1}; // background color when checkbox is not in focus (doesn't matter if checked or not)
 	colorSelectedBg[] = {0,1,0,1}; // background color when checkbox is in focus (doesn't matter if checked or not)  !! doesn't seem to work !!
@@ -214,42 +241,13 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	onMouseEnter = "(_this select 0) ctrlSetBackgroundColor [1,1,1,1]; (_this select 0) ctrlSetTextColor [0,0,0,1];";
 	onMouseExit = "(_this select 0) ctrlSetBackgroundColor [0,0,0,0]; (_this select 0) ctrlSetTextColor [1,1,1,1];";
 
-	colorSelect[] = {0, 0, 1, 0}; // unknown
-	colorTextDisable[] =
-	{
-		0.4,
-		0.4,
-		0.4,
-		1
-	};
-	colorDisable[] =
-	{
-		0.4,
-		0.4,
-		0.4,
-		1
-	};
-	tooltipColorText[] =
-	{
-		1,
-		1,
-		1,
-		1
-	};
-	tooltipColorBox[] =
-	{
-		1,
-		1,
-		1,
-		1
-	};
-	tooltipColorShade[] =
-	{
-		0,
-		0,
-		0,
-		0.65
-	};
+	colorSelect[] = {0, 0, 0, 0}; // unknown
+	colorTextDisable[] = {0, 0, 0, 1};
+	colorDisable[] = {0, 0, 0, 1};
+	tooltipColorText[] = {1, 1, 1, 1};
+	tooltipColorBox[] = {1, 1, 1, 1};
+	tooltipColorShade[] = {0, 0, 0, 0.65};
+
 	font = "RobotoCondensed";
 	sizeEx = MUI_TXT_SIZE_M;
 	rows = 1;

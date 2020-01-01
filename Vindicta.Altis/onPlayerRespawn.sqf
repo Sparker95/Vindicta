@@ -20,6 +20,11 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
 
+// Bail instantly if game mode init is disabled
+#ifdef GAME_MODE_DISABLE
+if (true) exitWith {};
+#endif
+
 // Bail if game mode was not initialized yet
 if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
     0 spawn {
