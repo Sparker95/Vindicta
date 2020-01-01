@@ -14,6 +14,8 @@ params ["_ctrlButton", "_checked", "_mouseOver"];
 _ctrlButton _setv ["_checked", _checked];
 _ctrlButton _setv ["_mouseOver", _mouseOver];
 
+OOP_INFO_3("BUTTON CHECKBOX SET STATE: %1, checked: %2, mouseOver: %3", ctrlClassName _ctrlButton, _checked, _mouseOver);
+
 private _ctrlStatic = _ctrlButton getVariable "_static";
 
 private _colorBackground = 0;
@@ -24,8 +26,8 @@ if (_checked) then {
 	_colorText = [0, 0, 0, 1];
 } else {
 	if (_mouseOver) then {
-		_colorBackground = [1, 1, 1, 1];
-		_colorText = [0, 0, 0, 1];
+		_colorBackground = [0.2, 0.2, 0.2, 1];
+		_colorText = [1, 1, 1, 1];
 	} else {
 		_colorBackground = [0, 0, 0, 1];
 		_colorText = [1, 1, 1, 1];

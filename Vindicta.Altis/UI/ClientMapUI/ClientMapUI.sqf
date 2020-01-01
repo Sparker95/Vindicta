@@ -107,9 +107,9 @@ CLASS(CLASS_NAME, "")
 		T_SETV("locSelMenuEnabled", false);
 		T_SETV("locationCurrent", "");
 
-		T_SETV("showIntelInactive", false);
-		T_SETV("showIntelActive", false);
-		T_SETV("showIntelEnded", false);
+		T_SETV("showIntelInactive", true);
+		T_SETV("showIntelActive", true);
+		T_SETV("showIntelEnded", true);
 		T_SETV("showLocations", true);
 		T_SETV("showEnemies", true);
 		T_SETV("showIntelPanel", true);
@@ -147,14 +147,39 @@ CLASS(CLASS_NAME, "")
 		} forEach ["CMUI_BUTTON_NOTIF", "CMUI_BUTTON_INTELP", "CMUI_BUTTON_LOC", "CMUI_BUTTON_PLAYERS", "CMUI_INTEL_ENDED", "CMUI_INTEL_INACTIVE", "CMUI_INTEL_ACTIVE"];
 		*/
 
-		// Button clicks
-		([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
-		([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_PLAYERS"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowPlayers", _this); }];
-		([_mapDisplay, "CMUI_BUTTON_INTELP"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntelPanel", _this); }];
+		// Checkbox button clicks
+		/* ! ! ! ! !  ! ! ! ! ! ! ! ! !
+		We use a fucked up trick to make a nicely looking checkbox button.
+		It constists of two controls: static background to manage appearence,
+		and transparent foreground button to intercept events.
+		The event handlers must be attached to the button obviously.
+		Use function ui_fnc_findCheckboxButton to find the button control from given
+		static control.
+		 ! ! ! ! !  ! ! ! ! ! ! ! ! ! */
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
+		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
+		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
+		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_PLAYERS"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowPlayers", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
 		
+		_ctrl = ([_mapDisplay, "CMUI_BUTTON_INTELP"] call ui_fnc_findCheckboxButton);
+		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelPanel", _this); }];
+		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+
 
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
@@ -464,12 +489,15 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=HINT%20TEXT
 	// Sets hint text at the bottom of the screen
 	METHOD("setHintText") {
 		params [P_THISOBJECT, P_STRING("_text")];
+		private _mapDisplay = findDisplay 12;
 		([_mapDisplay, "CMUI_HINTS"] call ui_fnc_findControl) ctrlSetText _text; // (localize "STR_CMUI_BUTTON1");
 	} ENDMETHOD;
 
 	// Updates the hint text based on the current context
 	METHOD("updateHintTextFromContext") {
 		params [P_THISOBJECT];
+
+		private _mapDisplay = findDisplay 12;
 
 		//pr _markersUnderCursor = 	CALL_STATIC_METHOD("MapMarkerLocation", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]) +
 		//							CALL_STATIC_METHOD("MapMarkerGarrison", "getMarkersUnderCursor", [_displayorcontrol ARG _xPos ARG _yPos]);
@@ -925,6 +953,8 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	METHOD("intelPanelUpdateFromGarrisonRecord") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), ["_clear", true]];
 
+		private _mapDisplay = findDisplay 12;
+
 		OOP_INFO_1("intelPanelUpdateFromGarrisonRecord: %1", _garRecord);
 
 		// Bail if garrison record is destroyed
@@ -953,6 +983,8 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 	METHOD("intelPanelUpdateFromLocationIntel") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), ["_clear", true], ["_showComposition", true]];
+
+		private _mapDisplay = findDisplay 12;
 
 		OOP_INFO_1("intelPanelUpdateFromLocationIntel: %1", _intel);
 
@@ -1026,12 +1058,14 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 	METHOD("intelPanelClear") {
 		params [P_THISOBJECT];
+		private _mapDisplay = findDisplay 12;
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		lnbClear _lnb;
 	} ENDMETHOD;
 
 	METHOD("intelPanelDeselect") {
 		params [P_THISOBJECT];
+		private _mapDisplay = findDisplay 12;
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetCurSelRow -1;
 	} ENDMETHOD;
@@ -1039,6 +1073,8 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	METHOD("intelPanelUpdateFromIntel") {
 		params [P_THISOBJECT, ["_clear", true]];
 		
+		private _mapDisplay = findDisplay 12;
+
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
@@ -1177,8 +1213,15 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	} ENDMETHOD;
 
 	// Hides or shows the sort-by-... buttons
+	/*
 	METHOD("intelPanelShowButtons") {
 		params [P_THISOBJECT, P_BOOL("_show")];
+
+		_show = _show && (
+			T_GETV("showIntelActive") ||
+			T_GETV("showIntelInactive") ||
+			T_GETV("showIntelEnded")
+		);
 
 		// Show buttons
 		{
@@ -1189,12 +1232,13 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					IDC_LOCP_LISTNBOX_BUTTONS_2];
 		
 	} ENDMETHOD;
+	*/
 
 	METHOD("intelPanelSortIntel") {
 		params [P_THISOBJECT, P_STRING("_category"), P_BOOL("_inverse")];
 		pr _col = ["side", "type", "time"] find _category;
 		if (_col != -1) then {
-			pr _lnb =(findDisplay 12) displayCtrl IDC_LOCP_LISTNBOX;
+			pr _lnb = [(findDisplay 12), "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl;
 			pr _row = lnbCurSelRow _lnb;
 			if (_row != -1) then {
 				// Try to select the proper row after sorting again
@@ -1215,6 +1259,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	METHOD("intelPanelOnSortButtonClick") {
 		params [P_THISOBJECT, P_STRING("_button")];
 		pr _inverse = !T_GETV("intelPanelSortInverse");
+		OOP_INFO_1("INTEL PANEL ON SORT BUTTON CLICK: %1", _button);
 		T_CALLM2("intelPanelSortIntel", _button, _inverse); // _button - "side", "type", "time"
 		T_SETV("intelPanelSortInverse", _inverse);
 		T_SETV("intelPanelSortCategory", _button);
@@ -1400,19 +1445,19 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
 				T_CALLM3("intelPanelUpdateFromLocationIntel", _intel, true, false); // clear
 				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, false); // don't clear
-				T_CALLM1("intelPanelShowButtons", false);
+				//T_CALLM1("intelPanelShowButtons", false);
 			} else {
 				// If one garrison was clicked, update the panel from its record
 				if (count _garrisonsUnderCursor == 1) then {
 					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
 					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, true); // clear
-					T_CALLM1("intelPanelShowButtons", false);
+					//T_CALLM1("intelPanelShowButtons", false);
 				} else {
 					// If one location was clicked, update panel from the location intel
 					if (count _locationsUnderCursor == 1) then {
 						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
 						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, true); // clear
-						T_CALLM1("intelPanelShowButtons", false);
+						//T_CALLM1("intelPanelShowButtons", false);
 					};
 				};
 			};
@@ -1478,7 +1523,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		T_CALLM0("mapShowAllIntel");
 
 		// Show the buttons of the listbox
-		T_CALLM1("intelPanelShowButtons", true);
+		//T_CALLM1("intelPanelShowButtons", true);
 	} ENDMETHOD;
 
 	METHOD("onIntelAdded") {
@@ -1541,20 +1586,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		OOP_INFO_1("onButtonClickCheckbox: %1", _this);
 
-		pr _charChecked = (toArray "X")#0;
-		pr _charUnchecked = (toArray " ")#0;
-
-		pr _txt = ctrlText _button;
-		pr _txtArray = toArray _txt;
-		pr _checkedPrev = (_txtArray#1) == _charChecked;
-		OOP_INFO_2("  Current text: %1, array: %2", _txt, _txtArray);
-		OOP_INFO_1("  Currently checked: %1", _checkedPred);
-		if (_checkedPrev) then {
-			_txtArray set [1, _charUnchecked];
-		} else {
-			_txtArray set [1, _charChecked];
-		};
-		_button ctrlSetText (toString _txtArray);
+		private _checkedPrev = [_button] call ui_fnc_buttonCheckboxGetCheck;
 
 		// Return the new value
 		!_checkedPrev
@@ -1608,38 +1640,22 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		OOP_INFO_1("onButtonClickShowIntelPanel: %1", _this);
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+
 		T_SETV("showIntelPanel", _checked);
 		
-		// show/hide intel panel
-
-		if (_checked) then {
-
-			{
-				([(finddisplay 12), _x] call ui_fnc_findControl) ctrlShow false;
-			} forEach [	"CMUI_INTEL_HEADLINE", 
-						"CMUI_INTEL_LISTBOX", 
-						"CMUI_INTEL_LISTBOX_BG", 
-						"CMUI_INTEL_ACTIVE",
-						"CMUI_INTEL_INACTIVE",
-						"CMUI_INTEL_ENDED",
-						"CMUI_INTEL_BTNGRP"
-						];
-
-		} else {
-
-			{
-				([(finddisplay 12), _x] call ui_fnc_findControl) ctrlShow true;
-			} forEach [	"CMUI_INTEL_HEADLINE", 
-						"CMUI_INTEL_LISTBOX", 
-						"CMUI_INTEL_LISTBOX_BG", 
-						"CMUI_INTEL_ACTIVE",
-						"CMUI_INTEL_INACTIVE",
-						"CMUI_INTEL_ENDED",
-						"CMUI_INTEL_BTNGRP"
-						];
-
-		};
-
+		// All the class names of controls we will hide/show
+		private _controlNames = [	"CMUI_INTEL_HEADLINE", 
+									"CMUI_INTEL_LISTBOX", 
+									"CMUI_INTEL_LISTBOX_BG", 
+									"CMUI_INTEL_ACTIVE",
+									"CMUI_INTEL_INACTIVE",
+									"CMUI_INTEL_ENDED",
+									"CMUI_INTEL_BTNGRP"
+								];
+		
+		{
+			([(finddisplay 12), _x] call ui_fnc_findControl) ctrlShow _checked;
+		} forEach _controlNames;
 	} ENDMETHOD;
 
 	METHOD("onButtonClickShowLocations") {
@@ -1653,13 +1669,21 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		} forEach _allLocMarkers;
 	} ENDMETHOD;
 
+	METHOD("onButtonClickShowPlayers") {
+		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
+		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
+
+		[_checked] call ui_fnc_enablePlayerMarkers;
+	} ENDMETHOD;
+
+	/*
 	METHOD("onButtonClickShowEnemies") {
 		params [P_THISOBJECT, ["_button", controlNull, [controlNull]]];
 		pr _checked = T_CALLM1("onButtonClickCheckbox", _button);
 		T_SETV("showEnemies", _checked);
 
 	} ENDMETHOD;
-
+	*/
 
 	METHOD("onButtonClickClearNotifications") {
 		params [P_THISOBJECT];
@@ -1684,6 +1708,8 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	// Not used now
 	STATIC_METHOD("onButtonDownAddFriendlyGroup") {
 		params ["_thisClass", "_control"];
+
+		private _mapDisplay = findDisplay 12;
 
 		/*
 		pr _mapDisplay = findDisplay 12;
@@ -1717,7 +1743,9 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 	*/
 	METHOD("onMouseEnter") {
 		params [P_THISOBJECT, "_ctrl"];
+
 		pr _mapDisplay = findDisplay 12;
+		
 		pr _idc = ctrlIDC _ctrl;
 		T_SETV("currentControlIDC", _idc);
 		T_CALLM0("updateHintTextFromContext");

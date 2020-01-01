@@ -1,6 +1,7 @@
 /*
 Updates player markers for all players.
 Must be run locally.
+It auto-adds itself to be executed periodically.
 */
 
 #define pr private
@@ -11,6 +12,10 @@ pr _allPlayers = (allPlayers select {(side group _x) == playerSide}) /*allUnits*
 //pr _allPlayers = allUnits - (entities "HeadlessClient_F");
 pr _allPlayerVehicles = [];
 pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
+
+// Alpha for enabled markers
+// If markers are disabled, we just set their alpha to 0
+pr _alphaEnabled = [0, 1] select gUIEnablePlayerMarkers;
 
 // Delete markers for previous players which have been killed
 {
@@ -71,7 +76,7 @@ pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 	if ((vehicle _x) isEqualTo _x) then {
 		// Unit is on foot
 		// Update pos, enable marker
-		_mrk setMarkerAlphaLocal 1;
+		_mrk setMarkerAlphaLocal _alphaEnabled;
 		_mrk setMarkerPosLocal (getPosASL _x);
 	} else {
 		// Unit is in vehicle
@@ -111,7 +116,7 @@ pr _nextID = if (isNil "gUINextMapMarkerID") then {0} else {gUINextMapMarkerID};
 	};
 
 	// Set marker text and alpha
-	_mrk setMarkerAlphaLocal 1;
+	_mrk setMarkerAlphaLocal _alphaEnabled;
 	pr _crewNames = ( ((crew _x) select {alive _x}) arrayIntersect _allPlayers ) apply {name _x};
 	pr _text = "";
 	{ _text = _text + _x + ",  " } forEach _crewNames;

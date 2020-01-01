@@ -31,8 +31,9 @@ OOP_INFO_2("Created dummy button: %1 %2", _ctrlButton, _buttonClassName);
 // test
 _ctrlButton ctrlSetBackgroundColor [1, 0, 0, 0.4];
 
-// Link it to the static control under it
+// Link the controls together
 _ctrlButton _setv ["_static", _ctrlStatic];
+_ctrlStatic _setv ["_button", _ctrlButton];
 
 // Add event handlers
 _ctrlButton ctrlAddEventHandler ["MouseEnter", {
