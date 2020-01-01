@@ -10,7 +10,7 @@ class CfgMagazines
 		count = 1;
 		displayName="Military documents";
 		descriptionShort = "A few military documents. Pick it up to study the intel.";
-		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Document_01_F.jpg";
+		picture = QPATHTOF(icons\inv_ic_mildocs1.paa);
 		model = "\A3\Structures_F_EPC\Items\Documents\Document_01_F.p3d";
 	};
 
@@ -21,7 +21,7 @@ class CfgMagazines
 		count = 1;
 		displayName="Military documents";
 		descriptionShort = "Some military documents. Pick it up to study the intel.";
-		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_FilePhotos_F.jpg";
+		picture = QPATHTOF(icons\inv_ic_mildocs2.paa);
 		model = "\A3\Structures_F\Items\Documents\FilePhotos_F.p3d";
 	};
 
@@ -32,7 +32,7 @@ class CfgMagazines
 		count = 1;
 		displayName="Tactical tablet";
 		descriptionShort = "A military tactical tablet. Pick it up to study the intel.";
-		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Tablet_02_F.jpg";
+		picture = QPATHTOF(icons\inv_ic_tabletTactical.paa);
 		model = "\A3\Props_F_Exp_A\Military\Equipment\Tablet_02_F.p3d";
 	};
 
@@ -43,7 +43,7 @@ class CfgMagazines
 		count = 1;
 		displayName="Personal tablet";
 		descriptionShort = "A personal tablet. Pick it up to study the intel";
-		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Tablet_01_F.jpg";
+		picture = QPATHTOF(icons\inv_ic_tabletWhite.paa);
 		model = "\A3\Structures_F_Heli\Items\Electronics\Tablet_01_F.p3d";
 	};
 	
@@ -61,7 +61,7 @@ class CfgMagazines
 		scope=2;
 		displayName="Construction resources (x10)";
 		descriptionShort = "Resources to build different things";
-		picture = "\A3\EditorPreviews_F_Orange\Data\CfgVehicles\Land_PaperBox_01_small_closed_brown_F.jpg";
+		picture = QPATHTOF(icons\inv_ic_construction.paa);
 		hiddenSelections[] = {"Camo"};
 		hiddenSelectionsTextures[] = {"\A3\Props_F_Orange\Humanitarian\Supplies\Data\PaperBox_01_small_brown_CO.paa"};
 		model = "\A3\Props_F_Orange\Humanitarian\Supplies\PaperBox_01_small_closed_F.p3d";
@@ -73,8 +73,8 @@ class CfgMagazines
 		mass = 0.1;
 		scope = 2;
 		displayName="Strange pills";
-		descriptionShort = "Take it and double-click to use (carefully)";
-		picture = "\A3\EditorPreviews_F\Data\CfgVehicles\Land_Antibiotic_F.jpg";
+		descriptionShort = "!! Don't use it if you can't tolerate flashing images !! Double-click to use. Carefully.";
+		picture = QPATHTOF(icons\inv_ic_pills.paa);
 		model = "\A3\Structures_F_EPA\Items\Medical\Antibiotic_F.p3d";
 	};
 };
