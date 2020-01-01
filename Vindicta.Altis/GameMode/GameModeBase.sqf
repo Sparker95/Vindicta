@@ -911,7 +911,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Patrol vehicles
 			for "_i" from 1 to (2 max _cVehGround) do {
 				// Add a car in front of police station
-				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_personal ARG -1 ARG ""]);
+				private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_car_unarmed ARG -1 ARG ""]);
 				if(canSuspend) then {
 					CALLM2(_gar, "postMethodSync", "addUnit", [_newUnit]);
 				} else {
