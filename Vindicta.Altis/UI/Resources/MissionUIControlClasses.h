@@ -2,14 +2,7 @@
 #include "defineCommonGrids.hpp"
 #include "UIProfileColors.h"
 
-/*
-#define MUI_TXT_SIZE_XS "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.48"
-#define MUI_TXT_SIZE_S "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.52"
-#define MUI_TXT_SIZE_M "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.65"
-#define MUI_TXT_SIZE_L "4.32 * (1 / (getResolution select 3)) * pixelGrid * 0.7"
-*/
 
-// Sorry Marvis I had to tweak these a bit. Sparker.
 #define MUI_TXT_SIZE_M safeZoneH*0.020
 // For safezone UIs
 #define MUI_TXT_SIZE_M_SZ MUI_TXT_SIZE_M

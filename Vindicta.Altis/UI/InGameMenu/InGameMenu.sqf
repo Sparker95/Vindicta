@@ -18,6 +18,7 @@ CLASS("InGameMenu", "DialogBase")
 
 			T_CALLM2("addTab", "InGameMenuTabGameModeInit", "Create");
 			T_CALLM2("addTab", "InGameMenuTabSave", "Save / Load");
+			T_CALLM2("addTab", "InGameMenuTabTutorial", "Tutorial");
 
 			pr _text = format ["Mission Startup Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
