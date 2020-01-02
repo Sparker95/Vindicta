@@ -6,6 +6,8 @@ import * as gulpZip from "gulp-zip";
 import * as vinylPaths from "vinyl-paths";
 import * as del from "del";
 
+var fs = require('fs');
+
 import { resolve } from "path";
 
 import { MissionPaths } from "./src";
@@ -15,15 +17,27 @@ const ROOT_DIR = resolve('../..');
 
 const presets: Preset[] = require('./_presets.json');
 
+
 /**
  * Mission folders configuration
 */
 const paths: FolderStructureInfo = {
     frameworkFolder: resolve(ROOT_DIR, 'Vindicta.Altis'),
     missionsFolder: resolve(ROOT_DIR),
-    workDir: resolve("../", "_build")
+    workDir: resolve("../", "_build"),
+    configDir: resolve(ROOT_DIR, "configs")
 };
 
+// Resolve our mission's version
+console.log('Reading version...');
+var strMajor = fs.readFileSync(resolve(paths.configDir, "majorVersion.hpp"), 'utf8');
+var strMinor = fs.readFileSync(resolve(paths.configDir, "minorVersion.hpp"), 'utf8');
+var strBuild = fs.readFileSync(resolve(paths.configDir, "buildVersion.hpp"), 'utf8'); // Damn windows is adding a new line there...
+var intBuild = parseInt(strBuild, 10);
+strBuild = intBuild.toString();
+var strVersion = strMajor + "." + strMinor + "." + strBuild;
+console.log('Building mission version:');
+console.log(strVersion);
 
 /**
  * Create gulp tasks
@@ -33,8 +47,9 @@ let taskNamesPbo: string[] = [];
 let taskNamesZip: string[] = [];
 
 for (let preset of presets) {
-    const mission = new MissionPaths(preset, paths);
+    const mission = new MissionPaths(preset, paths, strVersion);
     const taskName = [preset.missionName, preset.map].join('.');
+    const strVersion1 = "1.2.3";
 
     taskNames.push('mission_' + taskName);
 

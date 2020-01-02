@@ -2,8 +2,16 @@
 returns version string
 */
 
-private _array =
-#include "..\config\version.hpp"
+private _major =
+#include "..\config\majorVersion.hpp"
 ;
-private _build = 0; // todo
-format ["%1.%2.%3", _array#0, _array#1, _build];
+
+private _minor =
+#include "..\config\minorVersion.hpp"
+;
+
+private _build =
+#include "..\config\buildVersion.hpp"
+;
+
+format ["%1.%2.%3", _major, _minor, _build];
