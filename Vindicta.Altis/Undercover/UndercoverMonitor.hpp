@@ -28,7 +28,7 @@
 
 // suspicion values for looking into inventory
 #define SUSP_INV_CIV 0.2							// Looking into civilian vehicle or own inventory
-#define SUSP_INV_MIL 0.6							// Looking into military inventory
+#define SUSP_INV_MIL 0.4							// Looking into military inventory
 #define SUSP_INV_TAKE_PUT_BOOST	0.2					// A boost added to susp level each time we take/put something
 
 /*
