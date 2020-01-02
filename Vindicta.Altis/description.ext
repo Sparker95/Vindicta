@@ -101,6 +101,7 @@ class CfgFunctions {
 #include "UI\LoadingScreen\LoadingScreen.h"
 #include "UI\Notification\Notification.h"
 #include "UI\DebugUI\DebugUI.h"
+#include "UI\DebugUI\DebugTreeUI.h"
 
 // Just include plain control classes for the intel panel
 #include "UI\ClientMapUI\Controls\IntelPanel.h"

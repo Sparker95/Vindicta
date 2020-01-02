@@ -26,9 +26,9 @@ class DebugUI
 			colorBackground[] = {0, 0, 0, 0.7};
 		};
 
-		class DEBUG_LISTBOX1 : MUI_LISTNBOX {
+		class DEBUG_LISTBOX1 : RscEdit  {
 
-			IDC = -1; 
+			IDC = 645; 
 			x = safeZoneX + safeZoneW * 0.626; 
 			y = safeZoneY + safeZoneH * 0.325; 
 			w = safeZoneW * 0.174; 
