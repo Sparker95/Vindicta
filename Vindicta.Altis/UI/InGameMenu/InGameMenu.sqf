@@ -22,7 +22,7 @@ CLASS("InGameMenu", "DialogBase")
 
 			pr _text = format ["Mission Startup Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", "Load a previous saved game or create a new campaign");
+			T_CALLM1("setHintText", "Load a previously saved game or create a new campaign.");
 		} else {
 			//T_CALLM2("addTab", "DialogTabBase", "Mission");
 			T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
@@ -32,7 +32,7 @@ CLASS("InGameMenu", "DialogBase")
 
 			pr _text = format ["Mission Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", "Vindicta pre-alpha version");
+			T_CALLM1("setHintText", "VINDCTA pre-alpha version");
 		};
 
 		T_CALLM1("enableMultiTab", true);

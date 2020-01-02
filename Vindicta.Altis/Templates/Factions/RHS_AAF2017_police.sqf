@@ -40,8 +40,8 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["FGN_AAF_Police_Offroad"]];
+_veh set [T_VEH_car_unarmed, ["FGN_AAF_Police_Offroad"]];
 /*
 _veh set [T_VEH_car_unarmed, ["B_MRAP_01_F"]];
 _veh set [T_VEH_car_armed, ["B_MRAP_01_hmg_F"]];

@@ -113,9 +113,13 @@ CLASS("SensorGarrisonState", "SensorGarrison")
 		[_worldState, WSP_GAR_ENOUGH_VEHICLES_FOR_ALL_HUMANS, _enoughVehicles] call ws_setPropertyValue;
 
 		// Check if all vehicle groups are merged or not
+		/*
+		// It's not what it looks like!
+		// We must keep this world state property at 'false' 
 		pr _vehGroups = CALLM1(_gar, "findGroupsByType", [GROUP_TYPE_VEH_NON_STATIC]);
 		pr _merged = (count _vehGroups) <= 1;
 		[_worldState, WSP_GAR_VEHICLE_GROUPS_MERGED, _merged] call ws_setPropertyValue;
+		*/
 
 		//OOP_INFO_3("Infantry amount: %1, all infantry seats: %2, driver seats: %3", _nInfGarrison, _nSeatsAll, _nDriversAll);
 		

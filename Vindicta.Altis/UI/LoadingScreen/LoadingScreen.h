@@ -34,7 +34,7 @@ class LoadingScreenGroup : MUI_GROUP
 			h = safeZoneH * 0.090; 
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
 			text = "\z\vindicta\addons\ui\Pictures\VindictaLogo.paa";
-			colorText[] = MUIC_MISSION;
+			colorText[] = MUIC_LOGO;
 		};
 
 

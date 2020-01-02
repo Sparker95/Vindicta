@@ -16,16 +16,17 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 
 	class Controls
 	{
-		class NOTIFICATION_BG : RscPicture {
+		class NOTIFICATION_BG : MUI_BASE {
 
 			IDC = -1; 
 			x = 0; 
 			y = 0; 
-			w = 0.5;
+			w = 0.427; 
 			h = 0.158; 
-			text = "UI\Images\gradient_LtoR.paa";
+			//text = "UI\Images\gradient_LtoR.paa";
 
-			colorText[] = {0, 0, 0, 0.9};
+			//colorText[] = {0, 0, 0, 0.9};
+			colorBackground[] = {0, 0, 0, 0.6};
 
 		};
 
@@ -34,24 +35,26 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			IDC = -1; 
 			x = 0; 
 			y = 0.123; 
-			w = 0.5;
+			w = 0.427; 
 			h = 0.035; 
 			text = "UI\Images\gradient_LtoR.paa";
 
 			colorText[] = {0, 0, 0, 1};
+			//colorBackground[] = MUIC_BLACKTRANSP;
 
 		};
 
 		class NOTIFICATION_CATEGORYBG : RscPicture {
 
 			IDC = -1; 
-			x = 0.029; 
+			x = 0; 
 			y = 0; 
-			w = 0.470; 
+			w = 0.427; 
 			h = 0.035; 
 			text = "UI\Images\gradient_LtoR.paa";
 
 			colorText[] = MUIC_MISSION;
+			//colorBackground[] = MUIC_MISSION;
 
 		};
 
@@ -61,7 +64,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0; 
 			y = 0; 
-			w = 0.026; 
+			w = 0.026;  
 			h = 0.035;
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
 			text = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\notification_ca.paa";
@@ -78,10 +81,10 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0.029; 
 			y = 0; 
-			w = 0.470;
+			w = 0.397;
 			h = 0.035;  
 
-			colorText[] = {1, 1, 1, 1};
+			colorText[] = MUIC_BLACK;
 			colorBackground[] = {0, 0, 0, 0};
 
 			style = 0;
@@ -97,7 +100,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0; 
 			y = 0.041; 
-			w = 0.5; 
+			w = 0.41;  
 			h = 0.081;  
 
 			colorBackground[] = {0, 0, 0, 0};
@@ -106,7 +109,6 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			text = "Enemy radio cryptokey was found!";
 			font = "RobotoCondensedLight";
 			sizeEx = 0.035;
-			shadow = 1;
 			lineSpacing = 1;
 			onLoad = "uiNamespace setVariable ['vin_not_text', _this#0]";  // Dont delete this!
 		};
@@ -118,7 +120,7 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			idc = -1;
 			x = 0; 
 			y = 0.123; 
-			w = 0.5; 
+			w = 0.427; 
 			h = 0.035; 
 
 			colorBackground[] = {0, 0, 0, 0};
@@ -126,7 +128,6 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			style = ST_LEFT;
 			text = "Cryptokeys are stored in your notes tab";
 			colorText[] = {1,1,1,1};
-			shadow = 1;
 			font = "RobotoCondensedLight";
 			sizeEx = 0.035;
 			onLoad = "uiNamespace setVariable ['vin_not_hint', _this#0]";  // Dont delete this!

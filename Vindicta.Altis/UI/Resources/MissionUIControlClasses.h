@@ -2,12 +2,13 @@
 #include "defineCommonGrids.hpp"
 #include "UIProfileColors.h"
 
+#define MUI_TXT_SIZE_M safeZoneH*0.018
 
-#define MUI_TXT_SIZE_M safeZoneH*0.020
 // For safezone UIs
 #define MUI_TXT_SIZE_M_SZ MUI_TXT_SIZE_M
+
 // For absolute units UIs
-#define MUI_TXT_SIZE_M_ABS 0.04
+#define MUI_TXT_SIZE_M_ABS 0.035
 
 #ifndef HG_MissionUIControlClassesh
 #define HG_MissionUIControlClassesh 1
@@ -16,7 +17,7 @@
 // Macro to duplicate existing classes for absolute units
 #define __MUI_CLASS_ABS(class0) class class0##_ABS : class0 { sizeEx = MUI_TXT_SIZE_M_ABS; }
 
-// #-0
+
 class MUI_BASE
 {
 	idc = -1;
@@ -64,16 +65,16 @@ class MUI_BASE
 	tileH = 0;
 	tileW = 0;
 };
-
 __MUI_CLASS_ABS(MUI_BASE);
+
 
 class MUI_BG_BLACKSOLID : MUI_BASE 
 {
 	type = CT_STATIC;
 	colorBackground[] = MUIC_BLACK;
 };
-
 __MUI_CLASS_ABS(MUI_BG_BLACKSOLID);
+
 
 class MUI_BG_BLACKTRANSPARENT : MUI_BASE 
 {
@@ -82,17 +83,16 @@ class MUI_BG_BLACKTRANSPARENT : MUI_BASE
 	sizeEx = MUI_TXT_SIZE_M;
 	colorBackground[] = MUIC_BLACKTRANSP;
 };
-
 __MUI_CLASS_ABS(MUI_BG_BLACKTRANSPARENT);
+
 
 class MUI_BG_TRANSPARENT : MUI_BASE
 {
 	type = CT_STATIC;
 	sizeEx = MUI_TXT_SIZE_M;
-	//colorBackground[] = MUIC_TRANSPARENT;
 };
-
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT);
+
 
 class MUI_BG_TRANSPARENT_MULTILINE_LEFT : MUI_BASE
 {
@@ -101,15 +101,15 @@ class MUI_BG_TRANSPARENT_MULTILINE_LEFT : MUI_BASE
 	style = 16+0+0x200; // multi line, no rect, left alighnemt
 	lineSpacing = 1; // must set it for multi line to work
 };
-
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_LEFT);
+
 
 class MUI_BG_TRANSPARENT_MULTILINE_CENTER : MUI_BG_TRANSPARENT_MULTILINE_LEFT
 {
 	style = ST_CENTER + 16+0+0x200;
 };
-
 __MUI_CLASS_ABS(MUI_BG_TRANSPARENT_MULTILINE_CENTER);
+
 
 class MUI_HEADLINE : MUI_BG_BLACKSOLID
 {
@@ -126,10 +126,10 @@ class MUI_HEADLINE : MUI_BG_BLACKSOLID
 	style = ST_LEFT;
 	text = "";
 	font = "PuristaMedium";
-	shadow = 1;
+	shadow = 0;
 };
-
 __MUI_CLASS_ABS(MUI_HEADLINE);
+
 
 class MUI_BUTTON_TXT : RscButton
 {
@@ -147,11 +147,11 @@ class MUI_BUTTON_TXT : RscButton
 	colorBackgroundDisabled[] = MUIC_BLACK;
 	colorBorder[] = MUIC_TRANSPARENT;
 	colorDisabled[] = MUIC_TXT_DISABLED;
-	colorFocused[] = MUIC_BLACK;				// same as colorBackground to disable blinking
+	colorFocused[] = MUIC_BLACK; // same as colorBackground to disable blinking
 	colorShadow[] = MUIC_TRANSPARENT;
 
-	offsetPressedX = 0; //0.1*MUI_TXT_SIZE_M;
-	offsetPressedY = 0; //0.1*MUI_TXT_SIZE_M;
+	offsetPressedX = 0;
+	offsetPressedY = 0;
 	offsetX = 0;
 	offsetY = 0;
 
@@ -172,8 +172,8 @@ class MUI_BUTTON_TXT : RscButton
 	onMouseEnter = "_this#0 ctrlSetTextColor [0, 0, 0, 1];"; // Set text black
 	onMouseExit = "_this#0 ctrlSetTextColor [1, 1, 1, 1];"; // Set text white
 };
-
 __MUI_CLASS_ABS(MUI_BUTTON_TXT);
+
 
 // Dummy button with no visuals
 class MUI_BUTTON_DUMMY : MUI_BUTTON_TXT
@@ -204,17 +204,8 @@ class MUI_BUTTON_TXT_CHECKBOX_LIKE : MUI_BG_BLACKSOLID
 	onLoad = "[_this select 0] call ui_fnc_buttonCheckboxInit;";
 	//onUnload = "'ui.rpt' ofstream_write (format ['Unload %1', _this]);";
 };
-
 __MUI_CLASS_ABS(MUI_BUTTON_TXT_CHECKBOX_LIKE);
 
-// Button for tabs?
-class MUI_BUTTON_TAB : MUI_BUTTON_TXT
-{
-	type = CT_BUTTON;
-	style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
-};
-
-__MUI_CLASS_ABS(MUI_BUTTON_TAB);
 
 // Button with text that behaves like it's a checkbox
 // This control type is trash, don't use it
@@ -259,8 +250,8 @@ class MUI_BUTTON_TXT_CHECKBOX : RscTextCheckBox
 	soundEscape[] = {"\A3\ui_f\data\sound\RscButton\soundEscape",0.09,1};
 	soundPush[] = {"\A3\ui_f\data\sound\RscButton\soundPush",0.09,1};
 };
-
 __MUI_CLASS_ABS(MUI_BUTTON_TXT_CHECKBOX);
+
 
 // RscListNBox
 class MUI_LISTNBOX : MUI_BASE 
@@ -299,19 +290,6 @@ class MUI_LISTNBOX : MUI_BASE
 	show = 1;
 	period = 0;
 
-	/*
-	// Doesn't work, probably be
-	class ListScrollBar
-	{
-	arrowEmpty = "#(argb,8,8,3)color(1,1,1,1)";
-	arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
-	border = "#(argb,8,8,3)color(1,1,1,1)";
-	color[] = MUIC_WHITE;
-	colorActive[] = MUIC_WHITE;
-	colorDisabled[] = MUIC_WHITE;
-	thumb = "#(argb,8,8,3)color(1,1,1,1)";		
-	};
-	*/
 	class ListScrollBar
 	{
 		width = 0; // width of ListScrollBar
@@ -326,8 +304,8 @@ class MUI_LISTNBOX : MUI_BASE
 		color[] = {1,1,1,1}; // Scrollbar color
 	};
 };
-
 __MUI_CLASS_ABS(MUI_LISTNBOX);
+
 
 // Use it for the left/right button of listnboxes
 class MUI_LISTNBOX_BUTTON : MUI_BUTTON_TXT
@@ -336,8 +314,8 @@ class MUI_LISTNBOX_BUTTON : MUI_BUTTON_TXT
 	height = 1.0 * GUI_GRID_H;
 	text = "X";
 };
-
 __MUI_CLASS_ABS(MUI_LISTNBOX_BUTTON);
+
 
 class MUI_STRUCT_TXT : RscStructuredText
 {
@@ -351,8 +329,8 @@ class MUI_STRUCT_TXT : RscStructuredText
 		shadow = 1;
 	};
 };
-
 __MUI_CLASS_ABS(MUI_STRUCT_TXT);
+
 
 class MUI_ST_FRAME : MUI_BASE
 {
@@ -363,8 +341,8 @@ class MUI_ST_FRAME : MUI_BASE
 	text = "";
 	font = "PuristaLight";
 };
-
 __MUI_CLASS_ABS(MUI_ST_FRAME);
+
 
 class MUI_EDIT : MUI_BASE
 {
@@ -388,8 +366,8 @@ class MUI_EDIT : MUI_BASE
 
 	lineSpacing = 1;
 };
-
 __MUI_CLASS_ABS(MUI_EDIT);
+
 
 class MUI_GROUP : MUI_BASE
 {
@@ -417,8 +395,8 @@ class MUI_GROUP : MUI_BASE
 	h = 1;
 	shadow = 0;
 };
-
 __MUI_CLASS_ABS(MUI_GROUP);
+
 
 class MUI_COMBOBOX : RscCombo
 {
@@ -456,25 +434,10 @@ class MUI_COMBOBOX : RscCombo
 		arrowFull = "#(argb,8,8,3)color(1,1,1,1)";
 		border = "#(argb,8,8,3)color(1,1,1,1)";
 		shadow = 0;
-
-		/*
-		width = 0; // width of ComboScrollBar
-		height = 0; // height of ComboScrollBar
-		scrollSpeed = 0.01; // scrollSpeed of ComboScrollBar
-
-		color[] = {1,1,1,0.6};
-		colorActive[] = {1,1,1,1};
-		colorDisabled[] = {1,1,1,0.3};
-
-		arrowEmpty = "\A3\ui_f\data\gui\cfg\scrollbar\arrowEmpty_ca.paa"; // Arrow
-		arrowFull = "\A3\ui_f\data\gui\cfg\scrollbar\arrowFull_ca.paa"; // Arrow when clicked on
-		border = "\A3\ui_f\data\gui\cfg\scrollbar\border_ca.paa"; // Slider background (stretched vertically)
-		thumb = "\A3\ui_f\data\gui\cfg\scrollbar\thumb_ca.paa"; // Dragging element (stretched vertically)
-		*/
 	};
 };
-
 __MUI_CLASS_ABS(MUI_COMBOBOX)
+
 
 #endif
 
