@@ -577,10 +577,16 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						}; // do once when state changed
 
 						if (activeACE) then { 
-							if !(_unit getVariable ["ACE_isUnconscious", false]) then { T_CALLM("setState", [sUNDERCOVER]); };
+							if !(_unit getVariable ["ACE_isUnconscious", false]) then { 
+								T_CALLM("setState", [sUNDERCOVER]); 
+								OOP_INFO_0("ACE_isUnconscious is false, leaving state sINCAPACITATED");
+							};
 						};
 
-						if (lifeState _unit == "HEALTHY") then { T_CALLM("setState", [sUNDERCOVER]); };
+						/*if (lifeState _unit == "HEALTHY") then { 
+							T_CALLM("setState", [sUNDERCOVER]);
+							OOP_INFO_0("lifeState _unit == 'HEALTHY', leaving state sINCAPACITATED");
+						};*/
 
 					}; // state "INCAPACITATED" end
 

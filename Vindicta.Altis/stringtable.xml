@@ -127,7 +127,7 @@
 		</Container>
 		<Container name="Hints">
 			<Key ID="STR_UM_HINT_WEAPON">
-				<Original>WEAPON</Original>
+				<Original>OVERT: WEAPON</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_DOWNED">
 				<Original>INCAPACITATED</Original>
@@ -136,13 +136,13 @@
 				<Original>SURRENDERED</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_HOSTILITY">
-				<Original>WEAPON DISCHARGED!</Original>
+				<Original>OVERT: WEAPON DISCHARGED!</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEAR">
 				<Original>SUSPICIOUS OUTFIT</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_MILVEH">
-				<Original>MILITARY VEHICLE</Original>
+				<Original>OVERT: MILITARY VEHICLE</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_SUSPGEARVEH">
 				<Original>SUSPICIOUS OUTFIT VISIBLE</Original>
@@ -191,7 +191,7 @@
 				<Original>Cannot create a camp within 500m of any existing location.</Original>
 			</Key>
 			<Key ID="STR_CMUI_BUTTON3">
-				<Original>Open the mission menu. Closes the map.</Original>
+				<Original>Opens the mission menu. Closes the map.</Original>
 			</Key>
 			<Key ID="STR_CMUI_BUTTON3_DISABLED">
 				<Original>Cannot open the mission menu right now.</Original>
