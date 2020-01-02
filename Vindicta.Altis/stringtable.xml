@@ -27,11 +27,11 @@
 				<German>Arsenal</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_OPEN">
-				<Original>Load into vehicle</Original>
+				<Original>Load content into vehicle/crate</Original>
 				<German>In Fahrzeug laden</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
-				<Original>Unload from vehicle</Original>
+				<Original>Fill from vehicle/crate</Original>
 				<German>Fahrzeug entladen</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
