@@ -18,8 +18,8 @@ class TAB_TUTORIAL : MUI_GROUP
 			y = 0.036; 
 			w = 0.416; 
 			h = 0.552;
-			colorBackground[] = MUIC_TRANSPARENT;
-			text = "INSERT IMAGE PATH HERE";
+			text = "UI\Images\tut_image_default.paa";
+			style = ST_PICTURE; 
 
 		};
 
@@ -87,7 +87,7 @@ class TAB_TUTORIAL : MUI_GROUP
 			y = 0.036; 
 			w = 0.239; 
 			h = 0.552; 
-			sizeEx = 0.027;
+			sizeEx = 0.032;
 
 		};
 
