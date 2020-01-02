@@ -14,7 +14,8 @@ class DebugTreeUI
 			w = safeZoneW * 0.321; 
 			h = safeZoneH * 0.028; 
 			colorBackground[] = {0, 0, 0, 0.7};
-			sizeEx = safeZoneW * 0.024;
+			sizeEx = safeZoneW * 0.022;
+			text = "DEBUG_TREE1_REFBOX";
 
 		};
 
@@ -26,7 +27,8 @@ class DebugTreeUI
 			w = safeZoneW * 0.321; 
 			h = safeZoneH * 0.028; 
 			colorBackground[] = {0, 0, 0, 0.7};
-			sizeEx = safeZoneW * 0.024;
+			sizeEx = safeZoneW * 0.022;
+			text = "DEBUG_TREE2_REFBOX";
 
 		};
 
@@ -38,7 +40,8 @@ class DebugTreeUI
 			w = safeZoneW * 0.321; 
 			h = safeZoneH * 0.028; 
 			colorBackground[] = {0, 0, 0, 0.7};
-			sizeEx = safeZoneW * 0.024;
+			sizeEx = safeZoneW * 0.022;
+			text = "DEBUG_TREE3_REFBOX";
 
 		};
 
@@ -61,7 +64,7 @@ class DebugTreeUI
 			x = safeZoneX + safeZoneW * 0.339; 
 			y = safeZoneY + safeZoneH * 0.102; 
 			w = safeZoneW * 0.321; 
-			h = safeZoneH * 0.738; 
+			h = safeZoneH * 0.599;  
 			style = TR_SHOWROOT;
 		};
 
@@ -72,7 +75,7 @@ class DebugTreeUI
 			x = safeZoneX + safeZoneW * 0.664; 
 			y = safeZoneY + safeZoneH * 0.102; 
 			w = safeZoneW * 0.321; 
-			h = safeZoneH * 0.738;  
+			h = safeZoneH * 0.599; 
 			style = TR_SHOWROOT;
 		};
 
@@ -84,8 +87,8 @@ class DebugTreeUI
 			w = safeZoneW * 0.157; 
 			h = safeZoneH * 0.041; 
 			colorBackground[] = {0, 0, 0, 0.7};
-			sizeEx = safeZoneW * 0.024;
-
+			sizeEx = safeZoneW * 0.022;
+			text = "DEBUG_EDITBOX_1";
 		};
 
 		class DEBUG_EDITBOX_2 : MUI_EDIT {
@@ -96,8 +99,8 @@ class DebugTreeUI
 			w = safeZoneW * 0.157; 
 			h = safeZoneH * 0.041; 
 			colorBackground[] = {0, 0, 0, 0.7};
-			sizeEx = safeZoneW * 0.024;
-
+			sizeEx = safeZoneW * 0.022;
+			text = "DEBUG_EDITBOX_2";
 		};
 
 		class DEBUG_BUTTON_1 : MUI_BUTTON_TXT {
@@ -107,6 +110,7 @@ class DebugTreeUI
 			y = safeZoneY + safeZoneH * 0.905; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_1"; 
 
 		};
 
@@ -117,6 +121,7 @@ class DebugTreeUI
 			y = safeZoneY + safeZoneH * 0.905; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_2"; 
 
 		};
 
@@ -127,6 +132,7 @@ class DebugTreeUI
 			y = safeZoneY + safeZoneH * 0.905; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_3"; 
 
 		};
 
@@ -137,46 +143,75 @@ class DebugTreeUI
 			y = safeZoneY + safeZoneH * 0.905; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_4"; 
 
 		};
 
 		class DEBUG_BUTTON_5 : MUI_BUTTON_TXT {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.501; 
-			y = safeZoneY + safeZoneH * 0.905; 
+			x = safeZoneX + safeZoneW * 0.014; 
+			y = safeZoneY + safeZoneH * 0.949; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_5"; 
 
 		};
 
 		class DEBUG_BUTTON_6 : MUI_BUTTON_TXT {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.623; 
-			y = safeZoneY + safeZoneH * 0.905; 
+			x = safeZoneX + safeZoneW * 0.136; 
+			y = safeZoneY + safeZoneH * 0.949; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_6"; 
 
 		};
 
 		class DEBUG_BUTTON_7 : MUI_BUTTON_TXT {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.744; 
-			y = safeZoneY + safeZoneH * 0.905; 
+			x = safeZoneX + safeZoneW * 0.258; 
+			y = safeZoneY + safeZoneH * 0.949; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_7"; 
 
 		};
 
 		class DEBUG_BUTTON_8 : MUI_BUTTON_TXT {
 
 			IDC = -1; 
-			x = safeZoneX + safeZoneW * 0.866; 
-			y = safeZoneY + safeZoneH * 0.905; 
+			x = safeZoneX + safeZoneW * 0.379; 
+			y = safeZoneY + safeZoneH * 0.949; 
 			w = safeZoneW * 0.118; 
 			h = safeZoneH * 0.041; 
+			text = "DEBUG_BUTTON_8"; 
+
+		};
+
+		// Large edit window/console
+		class DEBUG_CONSOLE : MUI_EDIT {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.504; 
+			y = safeZoneY + safeZoneH * 0.711; 
+			w = safeZoneW * 0.480; 
+			h = safeZoneH * 0.279; 
+			colorBackground[] = {0, 0, 0, 0.7};
+			sizeEx = safeZoneW * 0.015;
+			text = "class DEBUG_CONSOLE"; 
+		};
+
+		class DEBUG_BUTTON_EXEC : MUI_BUTTON_TXT {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.381; 
+			y = safeZoneY + safeZoneH * 0.711; 
+			w = safeZoneW * 0.118; 
+			h = safeZoneH * 0.041; 
+			text = "EXECUTE"; 
 
 		};
 
