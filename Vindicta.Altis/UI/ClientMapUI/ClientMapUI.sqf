@@ -72,6 +72,7 @@ CLASS(CLASS_NAME, "")
 	// Bools, show things on map
 	VARIABLE("showLocations");
 	VARIABLE("showEnemies");
+	VARIABLE("showIntelPanel");
 	// todo players?
 
 	// Int, IDC of the control under the cursor, or -1

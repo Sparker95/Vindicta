@@ -35,9 +35,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrison")
 		CALLM1(_gar, "mergeVehicleGroups", _merge);
 		
 		// Set world state
+		// Let's not set it, we need to see if bots work well since now
+		/*
 		pr _AI = T_GETV("AI");
 		pr _ws = GETV(_AI, "worldState");
 		[_ws, WSP_GAR_VEHICLE_GROUPS_MERGED, _merge] call ws_setPropertyValue;
+		*/
 
 		// Set state
 		SETV(_thisObject, "state", ACTION_STATE_COMPLETED);
