@@ -14,9 +14,9 @@ class TAB_TUTORIAL : MUI_GROUP
 		{
 
 			IDC = -1;
-			x = 0.020;
-			y = 0.036;
-			w = 0.659;
+			x = 0.020; 
+			y = 0.036; 
+			w = 0.416; 
 			h = 0.552;
 			colorBackground[] = MUIC_TRANSPARENT;
 			text = "INSERT IMAGE PATH HERE";
@@ -34,6 +34,7 @@ class TAB_TUTORIAL : MUI_GROUP
 			colorBackground[] = MUIC_TRANSPARENT;
 			font = "RobotoCondensedLight";
 			sizeEx = 0.036;
+			style = ST_LEFT + 16+0+0x200;
 			text = "Int, ullamet ipis dolorat iistore prepre poraerc hicidenda aut ullabor aectam fugit apellatem aut odi tem. Molorumquia cus ad moluptur, et aut liquidem que eiunt fugit utemporrunt atibusdaecta prate dere poribus aut ullesed ut que cus nobis mil ipidi";
 
 		};
@@ -42,13 +43,13 @@ class TAB_TUTORIAL : MUI_GROUP
 		{
 
 			IDC = -1;
-			x = 0.020;
-			y = 0.621;
-			w = 0.659;
-			h = 0.040;
+			x = 0.020; 
+			y = 0.605; 
+			w = 0.659; 
+			h = 0.040; 
 			colorBackground[] = MUIC_TRANSPARENT;
 			font = "PuristaSemibold";
-			sizeEx = MUI_TXT_SIZE_M_ABS;
+			sizeEx = 0.045;
 			text = "Headline";
 			style = ST_LEFT;
 
@@ -75,6 +76,18 @@ class TAB_TUTORIAL : MUI_GROUP
 			w = 0.151;
 			h = 0.044;
 			text = "PREVIOUS";
+
+		};
+
+		class TAB_TUT_LISTBOX : MUI_LISTNBOX_ABS 
+		{
+
+			IDC = -1; 
+			x = 0.439; 
+			y = 0.036; 
+			w = 0.239; 
+			h = 0.552; 
+			sizeEx = 0.027;
 
 		};
 
