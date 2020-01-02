@@ -1173,7 +1173,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		_object addAction ["<img size='1.5' image='\A3\ui_f\data\IGUI\Cfg\Actions\heal_ca.paa'/>  Heal Yourself", // title
 			{
 				player setdamage 0;
-				[player] call ace_medical_treatment_fnc_fullHealLocal
+				[player] call ace_medical_treatment_fnc_fullHealLocal;
 				player playMove "AinvPknlMstpSlayWrflDnon_medic";
 			}, 
 			0, // Arguments
