@@ -6,14 +6,50 @@ class DebugTreeUI
 
 	class Controls {
 
+		class DEBUG_TREE1_REFBOX : MUI_EDIT {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.014; 
+			y = safeZoneY + safeZoneH * 0.073; 
+			w = safeZoneW * 0.321; 
+			h = safeZoneH * 0.028; 
+			colorBackground[] = {0, 0, 0, 0.7};
+			sizeEx = safeZoneW * 0.024;
+
+		};
+
+		class DEBUG_TREE2_REFBOX : MUI_EDIT {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.339; 
+			y = safeZoneY + safeZoneH * 0.073; 
+			w = safeZoneW * 0.321; 
+			h = safeZoneH * 0.028; 
+			colorBackground[] = {0, 0, 0, 0.7};
+			sizeEx = safeZoneW * 0.024;
+
+		};
+
+		class DEBUG_TREE3_REFBOX : MUI_EDIT {
+
+			IDC = -1; 
+			x = safeZoneX + safeZoneW * 0.664; 
+			y = safeZoneY + safeZoneH * 0.073; 
+			w = safeZoneW * 0.321; 
+			h = safeZoneH * 0.028; 
+			colorBackground[] = {0, 0, 0, 0.7};
+			sizeEx = safeZoneW * 0.024;
+
+		};
+
 		class DEBUG_TREE_1 {
 
 			IDC = -1; 
 			type = 12;
 			x = safeZoneX + safeZoneW * 0.014; 
-			y = safeZoneY + safeZoneH * 0.073; 
+			y = safeZoneY + safeZoneH * 0.102; 
 			w = safeZoneW * 0.321; 
-			h = safeZoneH * 0.767; 
+			h = safeZoneH * 0.738;  
 			style = TR_SHOWROOT;
 
 		};
@@ -23,9 +59,9 @@ class DebugTreeUI
 			IDC = -1; 
 			type = 12;
 			x = safeZoneX + safeZoneW * 0.339; 
-			y = safeZoneY + safeZoneH * 0.073; 
+			y = safeZoneY + safeZoneH * 0.102; 
 			w = safeZoneW * 0.321; 
-			h = safeZoneH * 0.767; 
+			h = safeZoneH * 0.738; 
 			style = TR_SHOWROOT;
 		};
 
@@ -34,9 +70,9 @@ class DebugTreeUI
 			IDC = -1; 
 			type = 12;
 			x = safeZoneX + safeZoneW * 0.664; 
-			y = safeZoneY + safeZoneH * 0.073; 
+			y = safeZoneY + safeZoneH * 0.102; 
 			w = safeZoneW * 0.321; 
-			h = safeZoneH * 0.767; 
+			h = safeZoneH * 0.738;  
 			style = TR_SHOWROOT;
 		};
 
