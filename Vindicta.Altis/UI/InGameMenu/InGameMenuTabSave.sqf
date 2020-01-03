@@ -43,23 +43,40 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		T_CALLM3("controlAddEventHandler", "TAB_SAVE_BUTTON_DELETE", "buttonClick", "onButtonDeleteSavedGame");
 		T_CALLM3("controlAddEventHandler", "TAB_SAVE_LISTNBOX_SAVES", "LBSelChanged", "onListboxSelChanged");
 
+		// Check user's permissions
+		// todo integrate our own permissions thing... which is not done yet
+		// instead check if player is admin
+		pr _isAdmin = call misc_fnc_isAdminLocal;
+
 		// Enable/disable some buttons permanently
-		// Setup tooltips for disabled buttons
-		if(CALLM0(gGameManager, "isGameModeInitialized")) then {
-			//_bnNewSave			ctrlEnable true;
-			//_bnOverwriteSave	ctrlEnable true;
-			_bnLoadSave			ctrlEnable false;
-			
-			pr _tooltipText = "Game can be loaded only after a mission restart";
-			_bnLoadSave ctrlSetTooltip _tooltipText;
+		if (!_isAdmin) then {
+			{
+				_x ctrlEnable false;
+				_x ctrlSetTooltip "Only for admins";
+			} forEach [
+				_bnNewSave,
+				_bnOverwriteSave,
+				_bnLoadSave,
+				_bnDeleteSave
+			];
 		} else {
-			_bnNewSave			ctrlEnable false;
-			_bnOverwriteSave	ctrlEnable false;
-			//_bnLoad				ctrlEnable true;
-			
-			pr _tooltipText = "There is nothing to save yet";
-			_bnOverwriteSave ctrlSetTooltip _tooltipText;
-			_bnNewSave ctrlSetTooltip _tooltipText;
+			// Setup tooltips for disabled buttons
+			if(CALLM0(gGameManager, "isGameModeInitialized")) then {
+				//_bnNewSave			ctrlEnable true;
+				//_bnOverwriteSave	ctrlEnable true;
+				_bnLoadSave			ctrlEnable false;
+				
+				pr _tooltipText = "Game can be loaded only after a mission restart";
+				_bnLoadSave ctrlSetTooltip _tooltipText;
+			} else {
+				_bnNewSave			ctrlEnable false;
+				_bnOverwriteSave	ctrlEnable false;
+				//_bnLoad				ctrlEnable true;
+				
+				pr _tooltipText = "There is nothing to save yet";
+				_bnOverwriteSave ctrlSetTooltip _tooltipText;
+				_bnNewSave ctrlSetTooltip _tooltipText;
+			};
 		};
 
 		SETSV(__CLASS_NAME, "instance", _thisObject);

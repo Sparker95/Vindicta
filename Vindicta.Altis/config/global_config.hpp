@@ -43,6 +43,10 @@
 // It disables GameMode init, GameManager init, for faster loading and testing
 //#define GAME_MODE_DISABLE
 
+// Defined only in this file
+// Means that we are in the editor
+#define EDITOR_PREVIEW
+
 // ========= Release config ============
 /*
 // Undefine debug and info logging, leave warning and error logging.
