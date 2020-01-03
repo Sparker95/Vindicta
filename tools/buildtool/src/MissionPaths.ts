@@ -9,9 +9,12 @@ export class MissionPaths {
 
     private folderStructure: FolderStructureInfo;
 
-    constructor(preset: Preset, folderStructure: FolderStructureInfo) {
+    private version: string;
+
+    constructor(preset: Preset, folderStructure: FolderStructureInfo, version: string) {
         this.preset = preset;
         this.folderStructure = folderStructure;
+        this.version = version;
     }
 
     public getMap(): string {
@@ -23,7 +26,9 @@ export class MissionPaths {
     }
 
     public getFullName(): string {
-        return [this.getName(), this.getMap()].join('.');
+        //console.log('getFullName: ');
+        //console.log(this.version);
+        return [this.getName() + '-' + this.version, this.getMap()].join('.');
     }
 
     public getWorkDir(): string {

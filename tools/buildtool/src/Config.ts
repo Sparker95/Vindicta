@@ -54,4 +54,9 @@ export interface FolderStructureInfo {
      * Directory containing built missions 
      */
     readonly workDir: string;
+
+    /*
+    Directory with configuration files
+    */
+   readonly configDir: string;
 }
