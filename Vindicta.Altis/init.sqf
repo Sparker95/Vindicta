@@ -2,9 +2,6 @@
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
 
-// No saving
-enableSaving [ false, false ]; // Saving disabled without autosave.
-
 // Bail if game mode init is disabled
 #ifdef GAME_MODE_DISABLE
 if (true) exitWith {
