@@ -96,7 +96,7 @@ CLASS("SensorGarrisonTargets", "SensorGarrisonStimulatable")
 			pr _loc = CALLM0(_gar, "getLocation");
 			if (_loc != "") then {
 				pr _pos = CALLM0(_loc, "getPos");
-				//playSound3D ["A3\Sounds_F\sfx\Alarm_OPFOR.wss", objNull, false, (AGLTOASL _pos) vectorAdd [0, 0, 5], 0.9, 1, 800];
+				playSound3D ["A3\Sounds_F\sfx\Alarm_OPFOR.wss", objNull, false, (AGLTOASL _pos) vectorAdd [0, 0, 5], 0.9, 1, 800];
 			};			
 			
 		} else {
