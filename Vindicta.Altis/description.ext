@@ -1,5 +1,6 @@
 #include "OOP_light\OOP_Light.h"
 
+#include "config\global_config.hpp"
 
 author="Sparker, Jeroen, Marvis, Sen, Billw";
 OnLoadName = "Vindicta";
@@ -7,7 +8,16 @@ OnLoadMission = "Vindicta";
 
 allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
-enableDebugConsole = 2;
+
+// Enable debug console
+#ifdef EDITOR_PREVIEW
+enableDebugConsole = 2; // Everyone
+#else
+enableDebugConsole = 1; // Only admin or SP
+#endif
+
+// Disables saving
+saving = 0;
 
 // Enables createVehicleLocal
 // todo: we might want to redo out build UI to work with CreateSimpleObject local

@@ -21,8 +21,7 @@ CLASS("InGameMenu", "DialogBase")
 		if (!_gameModeInitialized) then {
 
 			T_CALLM2("addTab", "InGameMenuTabGameModeInit", "Create");
-			T_CALLM2("addTab", "InGameMenuTabSave", "Save / Load");
-			T_CALLM2("addTab", "InGameMenuTabTutorial", "Tutorial");
+			T_CALLM2("addTab", "InGameMenuTabSave", "Savegames");
 
 			pr _text = format ["Mission Startup Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
@@ -37,7 +36,7 @@ CLASS("InGameMenu", "DialogBase")
 
 			pr _text = format ["Mission Menu  v%1", call misc_fnc_getVersion];
 			T_CALLM1("setHeadlineText", _text);
-			T_CALLM1("setHintText", "VINDCTA pre-alpha version");
+			T_CALLM1("setHintText", "VINDICTA pre-alpha version.");
 		};
 
 		T_CALLM1("enableMultiTab", true);

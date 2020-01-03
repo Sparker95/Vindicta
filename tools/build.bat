@@ -9,14 +9,6 @@ if ERRORLEVEL 1 (
     exit /b
 )
 
-rem increase build ID
-set /P _id=<_buildID.txt
-set /a _id=%_id%+1
-echo "New build ID is:"
-echo %_id%
-break>_buildID.txt
-echo %_id% >> _buildID.txt
-
 rem CD into build tool directory
 cd /d "%~dp0buildtool"
 
@@ -24,3 +16,13 @@ rem Clean first, never want to do iterative build, it makes no sense
 call npx gulp clean
 rem Build missions
 call npx gulp
+
+rem Increase build ID
+cd %~dp0
+set /P _id=<..\configs\buildVersion.hpp
+echo "This build ID is:"
+echo %_id%
+set /a _id=%_id%+1
+break>..\configs\buildVersion.hpp
+echo %_id%>>..\configs\buildVersion.hpp
+rem pause

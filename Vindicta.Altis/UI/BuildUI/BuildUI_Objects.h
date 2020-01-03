@@ -100,6 +100,15 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Light1,Land_LampShabby_F, 20)
 		};
 
+		class Defense {
+			displayName = "Defense";
+			// brown h-barriers
+			__BUILD_OBJECT_CLASS(Defense0,Land_HBarrier_Big_F, 20)
+			__BUILD_OBJECT_CLASS(Defense1,Land_HBarrier_3_F, 20)
+			__BUILD_OBJECT_CLASS(Defense2,Land_HBarrierWall6_F, 30)
+			__BUILD_OBJECT_CLASS(Defense3,Land_HBarrierTower_F, 40)
+		};
+
 		class Special {
 			displayName = "Special";
 			class RadioShack : BuildObjectBase {

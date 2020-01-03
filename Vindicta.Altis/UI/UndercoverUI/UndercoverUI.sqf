@@ -57,14 +57,14 @@ CLASS(CLASS_NAME, "")
 				if (_suspicion >= 1) then { _textUI = format ["%1", localize "STR_UM_OVERT"]; };
 			};
 
-			// clamp color, purely for visual reasons
+			// clamp color, for visual reasons
 			pr _colorMult = linearConversion [0, 1, _suspicion, 0.35, 0.88, true];
 			pr _color = [1.8* _colorMult, 1.8 * (1 - _colorMult), 0, 1];	
 			
 			if ( displayNull != (uinamespace getVariable "p0_InGameUI_display") ) then {
 				((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlSetText format ["%1", _textUI];
 	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) progressSetPosition _suspicion;
-	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlsettextcolor _color;
+	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlSetTextcolor _color;
 
 	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_TEXT) ctrlCommit 0;
 	  			((uinamespace getVariable "p0_InGameUI_display") displayCtrl IDC_U_SUSPICION_STATUSBAR) ctrlCommit 1;

@@ -144,9 +144,9 @@ class MUI_BUTTON_TXT : RscButton
 
 	colorBackground[] = MUIC_BLACK;
 	colorBackgroundActive[] = MUIC_WHITE;
-	colorBackgroundDisabled[] = MUIC_BLACK;
+	colorBackgroundDisabled[] = MUIC_TXT_DISABLED;
 	colorBorder[] = MUIC_TRANSPARENT;
-	colorDisabled[] = MUIC_TXT_DISABLED;
+	colorDisabled[] = MUIC_WHITE;
 	colorFocused[] = MUIC_BLACK; // same as colorBackground to disable blinking
 	colorShadow[] = MUIC_TRANSPARENT;
 
