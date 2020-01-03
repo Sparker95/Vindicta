@@ -17,7 +17,7 @@ class TAB_TUTORIAL : MUI_GROUP
 			x = 0.020; 
 			y = 0.036; 
 			w = 0.416; 
-			h = 0.552;
+			h = 0.277;
 			text = "UI\Images\tut_image_default.paa";
 			style = ST_PICTURE; 
 
@@ -27,10 +27,10 @@ class TAB_TUTORIAL : MUI_GROUP
 		{
 
 			IDC = -1;
-			x = 0.020;
-			y = 0.661;
-			w = 0.659;
-			h = 0.158; 
+			x = 0.020; 
+			y = 0.402; 
+			w = 0.659; 
+			h = 0.471;  
 			colorBackground[] = MUIC_TRANSPARENT;
 			font = "RobotoCondensedLight";
 			sizeEx = 0.036;
@@ -44,38 +44,14 @@ class TAB_TUTORIAL : MUI_GROUP
 
 			IDC = -1;
 			x = 0.020; 
-			y = 0.605; 
-			w = 0.659; 
-			h = 0.040; 
+			y = 0.335; 
+			w = 0.416; 
+			h = 0.040;  
 			colorBackground[] = MUIC_TRANSPARENT;
 			font = "PuristaSemibold";
 			sizeEx = 0.045;
 			text = "Headline";
 			style = ST_LEFT;
-
-		};
-
-		class TAB_TUT_BUTTON_NEXT : MUI_BUTTON_TXT_ABS 
-		{
-
-			IDC = -1;
-			x = 0.527;
-			y = 0.838;
-			w = 0.151;
-			h = 0.044;
-			text = "NEXT";
-
-		};
-
-		class TAB_TUT_BUTTON_PREV : MUI_BUTTON_TXT_ABS  
-		{
-
-			IDC = -1;
-			x = 0.020;
-			y = 0.838;
-			w = 0.151;
-			h = 0.044;
-			text = "PREVIOUS";
 
 		};
 
@@ -86,7 +62,7 @@ class TAB_TUTORIAL : MUI_GROUP
 			x = 0.439; 
 			y = 0.036; 
 			w = 0.239; 
-			h = 0.552; 
+			h = 0.277;  
 			sizeEx = 0.032;
 
 		};
