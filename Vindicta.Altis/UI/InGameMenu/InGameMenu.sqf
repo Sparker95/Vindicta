@@ -13,7 +13,11 @@ CLASS("InGameMenu", "DialogBase")
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		pr _gameModeInitialized = CALLM0(gGameManager, "isGameModeInitialized");
+		pr _gameModeInitialized = if(isNil "gGameManager") then {
+			false
+		} else {
+			CALLM0(gGameManager, "isGameModeInitialized");
+		};
 		if (!_gameModeInitialized) then {
 
 			T_CALLM2("addTab", "InGameMenuTabGameModeInit", "Create");
