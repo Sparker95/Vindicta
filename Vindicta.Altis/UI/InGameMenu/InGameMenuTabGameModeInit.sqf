@@ -78,6 +78,14 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		} forEach _data;
 		_cbPoliceFaction lbSetCurSel 0;
 
+		// Enable/disable controls depending on user's permissions
+		pr _bnStart = T_CALLM1("findControl", "TAB_GMINIT_BUTTON_START");
+		pr _isAdmin = call misc_fnc_isAdminLocal;
+		if (!_isAdmin) then {
+			_bnStart ctrlEnable false;
+			_bnStart ctrlSetTooltip "Only for admins";
+		};
+
 	} ENDMETHOD;
 
 	METHOD("delete") {
