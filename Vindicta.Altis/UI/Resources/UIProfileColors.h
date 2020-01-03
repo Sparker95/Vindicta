@@ -30,7 +30,7 @@ Macros for user-defined GUI colors
 #define MUIC_BLACK {0, 0, 0, 1}
 #define MUIC_BLACKTRANSP {0, 0, 0, 0.75}
 #define MUIC_WHITE {1, 1, 1, 1}
-#define MUIC_TXT_DISABLED {0, 0, 0, 0}
+#define MUIC_TXT_DISABLED {0.3, 0.3, 0.3, 1}
 #define MUIC_MISSION {1, 0.682, 0, 1}
 #define MUIC_LOGO {0.7, 0, 0, 1}
 
@@ -39,5 +39,5 @@ Macros for user-defined GUI colors
 #define MUIC_COLOR_BLACK [0, 0, 0, 1]
 #define MUIC_COLOR_BLACKTRANSP [0, 0, 0, 0.75]
 #define MUIC_COLOR_WHITE [1, 1, 1, 1]
-#define MUIC_COLOR_DISABLED [0, 0, 0, 0]
+#define MUIC_COLOR_DISABLED [0.3, 0.3, 0.3, 1]
 #define MUIC_COLOR_MISSION [1, 0.682, 0, 1]

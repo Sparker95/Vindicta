@@ -108,6 +108,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		_unit setVariable [UNDERCOVER_WANTED, false, true];					// GLOBAL: if true player unit is hostile and "setCaptive false"
 		_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];				// GLOBAL: true if player is suspicious (suspicion variable >= SUSPICIOUS #define)													
 
+
 		CALLM0(_thisObject, "calcGearSuspicion");							// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
@@ -577,10 +578,16 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						}; // do once when state changed
 
 						if (activeACE) then { 
-							if !(_unit getVariable ["ACE_isUnconscious", false]) then { T_CALLM("setState", [sUNDERCOVER]); };
+							if !(_unit getVariable ["ACE_isUnconscious", false]) then { 
+								T_CALLM("setState", [sUNDERCOVER]); 
+								OOP_INFO_0("ACE_isUnconscious is false, leaving state sINCAPACITATED");
+							};
 						};
 
-						if (lifeState _unit == "HEALTHY") then { T_CALLM("setState", [sUNDERCOVER]); };
+						/*if (lifeState _unit == "HEALTHY") then { 
+							T_CALLM("setState", [sUNDERCOVER]);
+							OOP_INFO_0("lifeState _unit == 'HEALTHY', leaving state sINCAPACITATED");
+						};*/
 
 					}; // state "INCAPACITATED" end
 

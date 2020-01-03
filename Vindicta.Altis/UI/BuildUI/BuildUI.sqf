@@ -253,7 +253,7 @@ CLASS("BuildUI", "")
 				(_display displayCtrl IDC_TOOLTIP1) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>TAB:</t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> BUILD/PICK UP/DROP OBJECTS</t>", _color];
 				(_display displayCtrl IDC_TOOLTIP2) ctrlsetStructuredText parseText format ["<t color='%1' align='center' valign='bottom'>BACKSPACE: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> CLOSE MENU</t> <t color='%1' align='center' valign='bottom'>  |  ARROW KEYS: </t> <t color='%1' align='center' valign='bottom' font='RobotoCondensedLight'> NAVIGATE MENU</t>", _color];
 
-				(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
+				//(_display displayCtrl IDC_ITEXTBG) ctrlSetBackgroundColor [0,0,0,0];
 				{
 					(_display displayCtrl _x) ctrlShow false;
 					(_display displayCtrl _x) ctrlCommit 0;
