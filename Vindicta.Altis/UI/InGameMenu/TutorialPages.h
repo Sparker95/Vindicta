@@ -28,7 +28,7 @@ class TutorialPages
 	class TutPage1 : TutBasePage
 	{
 		textHeadline = "Staying Undercover";
-		text = "When you are starting out, you should use the undercover system to your advantage, until you have found better weapons, equipment and vehicles. Watch the meter at the top of your screen: If it's full and red then you are overt, and enemy forces will shoot on sight. The text below the meter informs you about reasons why the meter is filling up.";
+		text = "When you are starting out, you should use the undercover system to your advantage until you have found better weapons, equipment, and vehicles. Watch the meter at the top of your screen: If it's full and red then you are overt. Enemy forces will shoot on sight while you are overt. The text below the meter informs you about reasons why the meter is filling up. Some of the factors that determine your 'suspiciousness':\n • Clothing, like headwear, uniform, vest, night vision goggles\n • Openly carrying a weapon immediately makes you overt\n • Fast movement draws attention and suspicioun\n • In vehicles, only your headwear counts, and enemies will only spot your equipment as you get closer\n\nOnce spotted, you can go back to being undercover by escaping a ~1km area or by killing all enemies who have recently spotted you.";
 		imagePath = "UI\Images\tut_undercover.paa";
 
 	};
@@ -36,7 +36,7 @@ class TutorialPages
 	class TutPage2 : TutBasePage
 	{
 		textHeadline = "Intel: Locations";
-		text = "Your first objective should be to find a police station. You can talk to civilians to gain intel about the location of nearby police stations and military outposts and bases. Loot enemies to find tactical tablets. Double click them to in your inventory to gain intel.";
+		text = "Your first objective should be to find a police station. You can talk to civilians to gain intel about the location of nearby police stations and military outposts and bases. Alternatively, you can simply drive around until you find a police station.\n\nYou can also loot enemies to find tactical tablets, which you can read in your inventory by double clicking them with your left mouse button. ";
 		imagePath = "UI\Images\tut_policeStations.paa";
 
 	};
@@ -44,7 +44,7 @@ class TutorialPages
 	class TutPage3 : TutBasePage
 	{
 		textHeadline = "Intel: Activities";
-		text = "Intel does not always inform you about locations. Some intel instead informs you about orders received by enemy squads. Gaining this type of intel is the key to finding out about patrols and supply convoys, which you can then attack.";
+		text = "Intel does not always inform you about locations. Some intel instead informs you about orders received by enemy squads. Gaining this type of intel is the key to finding out about patrols and supply convoys, which you can then attack. Look at the map UIs intel panel to show and select currently known intel. Most intel is represented on the map with a start point and a destination. For example, if you select a patrol on the map interface, the start time will tell you the time the patrol is going to leave, and the destination informs you about where the patrol is headed.";
 		imagePath = "UI\Images\tut_civis.paa";
 
 	};
@@ -66,8 +66,8 @@ class TutorialPages
 
 	class TutPage6 : TutBasePage
 	{
-		textHeadline = "Camps: Building";
-		text = "Construction resources are required to create new camps, outposts, roadblocks, or to construct new objects at their location. They can be found in ammo boxes found at police stations, outposts, and bases.";
+		textHeadline = "Camps: Build Menu";
+		text = "Construction resources are required to create new camps, outposts, roadblocks, or to construct new objects at their location. They can be found in ammo boxes found at police stations, outposts, and bases. The build menu is accessible at camps. It has a user interface that explains all the available controls. There are two ways to open the build menu:\n\n• From your inventory: Uses build resources from your inventory to construct objects. Build resources must be either in your uniform, vest, or backpack.\n• From location: Uses build resources deposited at the location you are building at. They must be inside an arsenal or crate that is 'attached' to the garrison (=location).";
 		imagePath = "UI\Images\tut_construction.paa";
 
 	};
@@ -75,7 +75,7 @@ class TutorialPages
 	class TutPage7 : TutBasePage
 	{
 		textHeadline = "Camps: Limited Arsenal";
-		text = "The limited Arsenal is an alteration of the Arma 3 arsenal. It has only a limited inventory for each item, and is the main interface to manage gathered weapons in the mission. All the cargo boxes you can create through the build menu have the limited arsenal enabled. Enemy cargo boxes use only the plain Arma 3 inventory.";
+		text = "The limited Arsenal is an alteration of the Arma 3 arsenal. It has only a limited inventory for each item, and is the main interface to manage gathered weapons in the mission. All the cargo boxes you can create through the build menu have the limited arsenal enabled. Enemy cargo boxes use only the plain Arma 3 inventory. You can use the action on an arsenal constructed through the build menu to load items from a plain inventory crate into the Arsenal. This will load items into the Arsenal box's plain Arma 3 'Inventory'. Once you have done that, open the Arsenal itself and press the appropriate button at the bottom of the Arsenal interface.";
 		imagePath = "UI\Images\tut_image_default.paa";
 
 	};
