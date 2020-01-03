@@ -89,28 +89,28 @@ ENDCLASS;
 // Done
 CLASS("MoveCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD("getText") {
-		"Move"
+		"MOVE"
 	} ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("TakeLocationCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD("getText") {
-		"Capture"
+		"CAPTURE"
 	} ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("AttackCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD("getText") {
-		"Attack"
+		"ATTACK"
 	} ENDMETHOD;
 ENDCLASS;
 
 // Done
 CLASS("ReinforceCmdrActionRecord", "DirectedCmdrActionRecord")
 	STATIC_METHOD("getText") {
-		"Reinforce"
+		"REINFORCE"
 	} ENDMETHOD;
 ENDCLASS;
 

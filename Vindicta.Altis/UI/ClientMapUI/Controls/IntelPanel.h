@@ -22,6 +22,7 @@ class CMUI_INTEL_LISTBOX : MUI_LISTNBOX {
 	w = safeZoneW * 0.203; 
 	h = safeZoneH * 0.353; 
 	colorBackground[] = MUIC_BLACK; 
+	font = "PuristaSemibold";
 
 };
 
