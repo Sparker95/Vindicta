@@ -21,3 +21,17 @@ if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
 		};
 	};
 };
+
+// Code which adds all objects to be edited by zeus
+if (isServer) then {  
+    [] spawn { 
+        sleep 5;  
+        while {true} do {  
+            {  
+                _x addCuratorEditableObjects [allUnits, true];  
+                _x addCuratorEditableObjects [vehicles, true];  
+                sleep 10;  
+            } forEach allCurators;   
+        };  
+    };   
+};
