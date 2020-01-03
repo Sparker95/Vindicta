@@ -13,7 +13,7 @@ if (true) exitWith {
 #endif
 
 // Typical initialization
-if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
+if (!CALLM0(gGameManager, "isGameModeInitialized")) then {
 	if (HAS_INTERFACE) then {
 		0 spawn {
 			waitUntil {!isNull (findDisplay 46)};
