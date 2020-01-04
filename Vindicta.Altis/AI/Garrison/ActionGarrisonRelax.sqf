@@ -37,7 +37,20 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 
 		// Order to some groups to occupy buildings
 		pr _i = 0;
-		while {(count _groupsInf > 0) && (count _buildings > 0)} do {
+		pr _nGroupsPatrolReserve = 0;
+		// We absolutely want at least some bots inside police stations
+		if (_loc != "") then { // If garrison is at location...
+			if (CALLM0(_loc, "getType") == LOCATION_TYPE_POLICE_STATION) then {
+				// First of all assign groups to guard the police station
+				// If there are more groups, they will be on patrol
+				_nGroupsPatrolReserve = 0;
+			} else {
+				// For non-police stations, we must reserve at least 1...2 groups to perform patrol
+				// Otherwise they all will stay in houses
+				_nGroupsPatrolReserve = (1 + ceil (random 1)); // Reserve some groups for patrol
+			};
+		};
+		while {(count _groupsInf > _nGroupsPatrolReserve) && (count _buildings > 0)} do {
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
 			pr _goalParameters = [["building", _buildings#0#1]];
