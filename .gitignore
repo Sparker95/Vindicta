@@ -13,7 +13,7 @@ Vindicta.Altis/.vscode/ipch/*
 _build
 tools/_build
 tools/_buildID.txt
-configs\buildVersion.hpp
+configs/buildVersion.hpp
 
 
 #TEMP
