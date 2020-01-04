@@ -159,7 +159,7 @@ CLASS(CLASS_NAME, "")
 		 ! ! ! ! !  ! ! ! ! ! ! ! ! ! */
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
@@ -167,7 +167,7 @@ CLASS(CLASS_NAME, "")
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
@@ -965,7 +965,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		if (_clear) then { T_CALLM0("intelPanelClear"); };
-		_lnb lnbSetColumnsPos [0, 0.3];
+		_lnb lnbSetColumnsPos [0, 0.6];
 
 		pr _comp = CALLM0(_garRecord, "getComposition");
 		OOP_INFO_1("Composition: %1", _comp);
@@ -976,7 +976,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 				pr _classes = _x; // Array with IDs of classes
 				if (count _classes > 0) then {
 					pr _name = T_NAMES#_catID#_subcatID;
-					_lnb lnbAddRow [str (count _classes), _name];
+					_lnb lnbAddRow [toUpper(_name), str (count _classes)];
 				};
 			} forEach _x;
 		} forEach _comp;
@@ -1023,18 +1023,20 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			if ( !(IS_NULL_OBJECT(_gameModeData)) && {IS_OOP_OBJECT(_gameModeData)}) then {
 				_nRecruits = CALLM0(_gameModeData, "getRecruitCount");
 			};
-			_lnb lnbAddRow ["RECRUITS:", str _nRecruits];
+			_lnb lnbAddRow ["RECRUITS", str _nRecruits];
 		} else {
 			// Add amount of recruits we can recruit at this place if it's not a city
 			pr _pos = CALLM0(_loc, "getPos");
 			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
 			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
-			_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
+			//_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
+			_lnb lnbAddRow ["AVAILABLE RECRUITS", str _nRecruits];
 		};
 
 		// Add inf capacity
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
-		_lnb lnbAddRow [format ["MAX INFANTRY %1", _capInf], "", ""];
+		//_lnb lnbAddRow [format ["MAX INFANTRY %1", _capInf], "", ""];
+		_lnb lnbAddRow ["MAX INFANTRY", str _capInf];
 
 		// Add unit data
 		pr _ua = GETV(_intel, "unitData");
@@ -1056,7 +1058,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 			} forEach _uaveh;
 		};
 
-		_lnb lnbSetColumnsPos [0, 0.5];
+		_lnb lnbSetColumnsPos [0, 0.6];
 	} ENDMETHOD;
 
 	METHOD("intelPanelClear") {
