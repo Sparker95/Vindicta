@@ -290,11 +290,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		switch(T_GETV("phase")) do {
 			case 0: {
+				#ifndef RELEASE_BUILD
 				systemChat "Moving to phase 1";
+				#endif
+
 				// Scenario just initialized so do setup
-				// Disable camp creation
-				//SET_STATIC_VAR("ClientMapUI", "campAllowed", false);
-				//PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
 				
 				// Set enemy commander strategy
 				private _strategy = NEW("Phase1CmdrStrategy", []);
@@ -302,22 +302,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				T_SETV("phase", 1);
 			};
 			/*
-			Phase 1 (fairly short)
-				Player can spawn at designated city only.
-				AAF Cmdr is passive. No outposts taken, limited QRF, no reinforcements.
-				Police are mildly annoying?
-				Missions relating to disruption and propaganda
-			Transition to Phase 2 once player has pushed a city into Revolt?
+			Locations are not taken, roadblocks are not deployed				
 			*/
 			case 1: {
-				// If player managed to push city to revolt then move to next phase
-				//if( (_activeCities findIf { GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_IN_REVOLT }) != -1 ) then {
-				if (_prog > 0.3) then {
-					"MOVING TO PHASE 2\nEnemy commander will respond to unrest." remoteExec ["hint"];
-
-					// Enable camp creation
-					//SET_STATIC_VAR("ClientMapUI", "campAllowed", true);
-					//PUBLIC_STATIC_VAR("ClientMapUI", "campAllowed");
+				// We want to start deploying roadblocks fairly early
+				if (_prog > 0.1) then {
+					#ifndef RELEASE_BUILD
+					"MOVING TO PHASE 2" remoteExec ["hint"];
+					#endif
 
 					// Set enemy commander strategy
 					private _strategy = NEW("Phase2CmdrStrategy", []);
@@ -325,26 +317,18 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 					T_SETV("phase", 2);
 				} else {
-					// update phase 1 stuff here
+					
 				};
 			};
 			/*
-			Phase 2 (should be fairly short)
-				Player can build a camp and recruit civilians.
-				HR is available to recruit units for squad.
-				AAF Cmdr will start responding to player activity, but otherwise remain passive.
-			Transition to Phase 3 once player has taken a city (liberated).
+			Phase 2
+			Roadblocks can be deployed. Only locations created by player are captured.
 			*/
 			case 2: {
-				// If player managed to push city to revolt then move to next phase
-				/*
-				if( _activeCities findIf {
-					CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
-					{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
-				then {
-				*/
-				if (_prog > 0.6) then {
-					"MOVING TO PHASE 3\nEnemy commander will be aggressive." remoteExec ["hint"];
+				if (_prog > 0.65) then {
+					#ifndef RELEASE_BUILD
+					"MOVING TO PHASE 3" remoteExec ["hint"];
+					#endif
 
 					// Set enemy commander strategy
 					private _strategy = NEW("Phase3CmdrStrategy", []);
@@ -352,51 +336,15 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 					T_SETV("phase", 3);
 				} else {
-					// update phase 2 stuff here
+					
 				};
 			};
 			/*
 			Phase 3 (long)
-				Player can create garrisons, occupy locations with them etc.
-				AAF Cmdr will start more proactive behaviours, occupying strategic outposts, building roadblocks etc.
-				NATO interaction available.
-			Transition to Phase 4 once player has taken some significant portion of the island, or maybe an AAF base?
+			All locations can be captured by commander.
 			*/
 			case 3: {
-				// // If player managed to push city to revolt then move to next phase
-				// private _cities = GET_STATIC_VAR("Location", "all") select { CALLM0(_x, "getType") == LOCATION_TYPE_CITY };
-				// if( GET_STATIC_VAR("Location", "all") findIf {
-				// 	CALLM0(_x, "getType") == LOCATION_TYPE_CITY and 
-				// 	{ GETV(GETV(_x, "gameModeData"), "state") >= CITY_STATE_LIBERATED }} != -1 ) 
-				// then {
-				// 	"MOVING TO PHASE 3\Creation of garrisons enabled.\nEnemy commander will be aggressive." remoteExec ["hint"];
-
-				// 	// // Set enemy commander strategy
-				// 	// private _strategy = NEW("Phase2CmdrStrategy", []);
-				// 	// CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
-
-				// 	T_SETV("phase", 3);
-				// } else {
-				// 	// update phase 2 stuff here
-				// };
-			};
-			/*
-			Phase 4 (not sure, medium?)
-				AAF get support from Russia (or whoever the other faction is).
-				Nature of NATO involvement changes somehow? Perhaps more powerful support? What makes sense here? Given we want to end with all factions in open war probably NATO involvement should increase on your side, but perhaps they also start doing their own missions without your involvement.
-			Transition to Phase 5 once NATO occupy a certain number of outposts?
-			*/
-			case 4: {
-
-			};
-			/*
-			Phase 5 (final phase)
-				NATO become enemy to player.
-				Russian involvement increases to counter NATO incursion.
-			How does it end?
-			*/
-			case 4: {
-
+				// Phase continues until the end...
 			};
 		}
 	} ENDMETHOD;
@@ -523,7 +471,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		params [P_THISOBJECT];
 		pr _casualties = T_GETV("casualties") max 0;
 		// https://www.desmos.com/calculator/t3ci9okkwk
-		pr _x = _casualties*0.01;
+		pr _x = _casualties*0.007;
 		_x/( sqrt(1 + _x^2) )
 	} ENDMETHOD;
 

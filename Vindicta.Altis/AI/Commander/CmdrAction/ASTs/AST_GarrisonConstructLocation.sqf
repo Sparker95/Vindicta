@@ -84,7 +84,9 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 
 			case WORLD_TYPE_REAL: {
 				// Create an actual location
-				private _newLoc = NEW_PUBLIC("Location", [T_GETV("locPos")]);
+				private _side = GETV(_garr, "side");
+				private _args = [T_GETV("locPos"), _side]; // Our side creates this location
+				private _newLoc = NEW_PUBLIC("Location", _args);
 				CALLM1(_newLoc, "setType", T_GETV("locType"));
 				CALLM2(_newLoc, "setBorder", "circle", 100);
 				pr _name = mapGridPosition T_GETV("locPos");

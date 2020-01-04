@@ -56,6 +56,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("respawnSides", [ATTR_SAVE]); 			// Sides for which player respawn is enabled
 				VARIABLE_ATTR("hasRadio", [ATTR_SAVE]); 				// Bool, means that this location has a radio
 	/* save */	VARIABLE_ATTR("wasOccupied", [ATTR_SAVE]); 				// Bool, false at start but sets to true when garrisons are attached here
+	/* save */	VARIABLE_ATTR("sideCreated", [ATTR_SAVE]);				// Side which has created this location dynamically. CIVILIAN if it was here on the map.
 
 	// Variables which are set up only for saving process
 	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);		// Array of [className, posWorld, vectorDir, vectorUp] of objects
@@ -71,7 +72,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	_pos - position of this location
 	*/
 	METHOD("new") {
-		params [P_THISOBJECT, ["_pos", [0,0,0], [[]]] ];
+		params [P_THISOBJECT, ["_pos", [0,0,0], [[]]], ["_createdBySide", CIVILIAN, [CIVILIAN]] ];
 
 		// Check existance of neccessary global objects
 		if (isNil "gTimerServiceMain") exitWith {"[MessageLoop] Error: global timer service doesn't exist!";};
@@ -113,6 +114,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		SET_VAR_PUBLIC(_thisObject, "wasOccupied", false);
 		T_SETV("wasOccupied", false);
 
+		T_SETV("sideCreated", _createdBySide);
 
 		// Setup basic border
 		CALLM2(_thisObject, "setBorder", "circle", [20]);

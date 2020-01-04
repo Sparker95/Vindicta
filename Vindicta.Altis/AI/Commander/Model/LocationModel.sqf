@@ -23,6 +23,8 @@ CLASS("LocationModel", "ModelBase")
 	VARIABLE("radius");
 	// Efficiency of enemy forces occupying this place
 	VARIABLE("efficiency");
+	// Side which has created this place, or CIVILIAN if it was there at the map initially.
+	VARIABLE("sideCreated");
 
 	METHOD("new") {
 		params [P_THISOBJECT, P_STRING("_world"), P_STRING("_actual")];
@@ -34,8 +36,18 @@ CLASS("LocationModel", "ModelBase")
 		T_SETV("staging", false);
 		T_SETV("radius", 0);
 		T_SETV("efficiency", +T_EFF_null);
+		T_SETV("sideCreated", CIVILIAN);
 
 		if(T_CALLM("isActual", [])) then {
+			// We initialize some variables only once to avoid wasting time
+			//  on each update because they never change
+			T_SETV("pos", CALLM(_actual, "getPos", []));
+			T_SETV("type", GETV(_actual, "type"));
+			private _radius = GETV(_actual, "boundingRadius");
+			T_SETV("radius", _radius);
+			T_SETV("sideCreated", GETV(_actual, "sideCreated"));
+
+			// The rest is synchronized initially through the usual "sync" method
 			T_CALLM("sync", []);
 			#ifdef OOP_DEBUG
 			OOP_DEBUG_MSG("LocationModel for %1 created in %2", [_actual ARG _world]);
@@ -71,6 +83,7 @@ CLASS("LocationModel", "ModelBase")
 		SETV(_copy, "staging", T_GETV("staging"));
 		SETV(_copy, "radius", T_GETV("radius"));
 		SETV(_copy, "efficiency", +T_GETV("efficiency"));
+		SETV(_copy, "sideCreated", T_GETV("sideCreated"));
 		_copy
 	} ENDMETHOD;
 	
@@ -85,8 +98,6 @@ CLASS("LocationModel", "ModelBase")
 
 		//OOP_DEBUG_1("Updating LocationModel from Location %1", _actual);
 
-		T_SETV("pos", CALLM(_actual, "getPos", []));
-		T_SETV("type", GETV(_actual, "type"));
 		private _side = GETV(_actual, "side");
 		T_SETV("side", _side);
 
@@ -104,8 +115,6 @@ CLASS("LocationModel", "ModelBase")
 		} foreach _garrisonActuals;
 		T_SETV("garrisonIds", _garrisonIds);
 
-		private _radius = GETV(_actual, "boundingRadius");
-		T_SETV("radius", _radius);
 
 		// Sync intel about enemy efficiency here
 		OOP_INFO_1("SYNC AICommander: %1", _AICommander);
