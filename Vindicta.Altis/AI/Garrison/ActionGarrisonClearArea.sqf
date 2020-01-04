@@ -152,7 +152,12 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		
 	} ENDMETHOD; 
 	
-	
+	METHOD("onGarrisonSpawned") {
+		params ["_thisObject"];
+
+		// Reset action state so that it reactivates
+		T_SETV("state", ACTION_STATE_INACTIVE);
+	} ENDMETHOD;
 	
 	// procedural preconditions
 	// POS world state property comes from action parameters
