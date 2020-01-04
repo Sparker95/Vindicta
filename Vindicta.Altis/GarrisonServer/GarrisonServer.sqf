@@ -377,8 +377,8 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Find an existing garrison here or create one
 		pr _gars = CALLM1(_loc, "getGarrisons", _side);
 		if ((count _gars) == 0) exitWith {
-			pr _args = [[], []];
-			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveWeapons", _args, _clientOwner, false);
+			pr _args = [[], [], 0];
+			REMOTE_EXEC_CALL_STATIC_METHOD("RecruitTab", "receiveData", _args, _clientOwner, false);
 		};
 		
 		// Find units which have arsenal

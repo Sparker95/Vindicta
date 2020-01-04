@@ -293,8 +293,7 @@
                 "--load",
                 ".",
                 "-i",
-                "${workspaceRoot}\\Vindicta.Altis\\Tests\\RunTests.sqf",
-                "--lint-private-var-usage"
+                "${workspaceRoot}\\Vindicta.Altis\\Tests\\RunTests.sqf"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Vindicta.Altis"

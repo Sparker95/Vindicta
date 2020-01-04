@@ -266,6 +266,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		params [P_THISOBJECT];
 		
 		T_CALLM("updatePhase", []);
+		T_CALLM("updateEndCondition", []);
 
 		T_PRVAR(lastUpdateTime);
 		private _dt = TIME_NOW - _lastUpdateTime;
@@ -400,6 +401,42 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		}
 	} ENDMETHOD;
 
+	METHOD("updateEndCondition") {
+		params [P_THISOBJECT];
+
+		pr _airports = CALLSM0("Location", "getAll") select {
+			CALLM0(_x, "getType") == LOCATION_TYPE_AIRPORT
+		};
+
+		OOP_INFO_1("Airports: %1", _airports);
+
+		pr _playerSide = T_CALLM0("getPlayerSide");
+		pr _nAirportsOwned = 0;
+
+		// Lock main thread since this thread doesn't own any garrisons
+		CALLM0(gMessageLoopMain, "lock");
+
+		{
+			pr _garrisons = CALLM1(_x, "getGarrisons", _playerSide);
+			if (count _garrisons > 0) then {
+				_nAirportsOwned = _nAirportsOwned + 1;
+				OOP_INFO_2("  Owned airport: %1, pos: %2", _x, CALLM0(_x, "getPos"));
+			};
+		} forEach _airports;
+
+		// Unlock the main thread
+		CALLM0(gMessageLoopMain, "unlock");
+
+		OOP_INFO_1("Owned airports: %1", _nAirportsOwned);
+
+		if ((count _airports) == _nAirportsOwned && _nAirportsOwned > 0) then {
+			// I dunno, spam in the chat maybe or make a notification?
+			// Just do nothing for now I guess :/
+			//"You won the game! Congratulations!" remoteExecCall ["systemChat", 0];
+		};
+
+	} ENDMETHOD;
+
 	// Overrides GameModeBase, we want to spawn missions etc in some locations
 	/* protected override */ METHOD("locationSpawned") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_location")];
@@ -488,6 +525,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// https://www.desmos.com/calculator/t3ci9okkwk
 		pr _x = _casualties*0.01;
 		_x/( sqrt(1 + _x^2) )
+	} ENDMETHOD;
+
+	/* public virtual override*/ METHOD("getPlayerSide") {
+		FRIENDLY_SIDE // from common.hpp
+	} ENDMETHOD;
+
+	/* public virtual */ METHOD("getEnemySide") {
+		ENEMY_SIDE
 	} ENDMETHOD;
 
 
@@ -760,15 +805,6 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			};
 		};
 	} ENDMETHOD;
-
-	/* public virtual override*/ METHOD("getPlayerSide") {
-		FRIENDLY_SIDE // from common.hpp
-	} ENDMETHOD;
-
-	/* public virtual */ METHOD("getEnemySide") {
-		ENEMY_SIDE
-	} ENDMETHOD;
-
 
 	// STORAGE
 
