@@ -17,10 +17,10 @@ CLASS("Phase2CmdrStrategy", "CmdrStrategy")
 		T_SETV("takeLocCityPriority", 0);					// 
 
 		// We don't want to capture anything if there is activity in the area
-		T_SETV("takeLocOutpostPriorityActivityCoeff", 0);	//
-		T_SETV("takeLocBasePriorityActivityCoeff", 0);		//
-		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);	//
-		T_SETV("takeLocCityPriorityActivityCoeff", 0);		//
+		T_SETV("takeLocOutpostCoeff", 0);	//
+		T_SETV("takeLocBaseCoeff", 0);		//
+		T_SETV("takeLocRoadBlockCoeff", 0);	//
+		T_SETV("takeLocCityCoeff", 0);		//
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getTakeLocationScore") {

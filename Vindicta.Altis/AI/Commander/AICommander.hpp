@@ -122,23 +122,6 @@
 #define EFF_FOOT_PATROL_EFF			[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 #define EFF_MOUNTED_PATROL_EFF		[8,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-// Enum: AI.CmdrAI.CMDR_PLANNING_PRIORITY
-// Cmdr planning constants
-// CMDR_PLANNING_PRIORITY_HIGH - highest priority, reserved for actions that need to respond to events quickly, i.e. QRFs.
-// CMDR_PLANNING_PRIORITY_NORMAL - normal priority, things like reinforcements
-// CMDR_PLANNING_PRIORITY_LOW - low priority, long term planning like taking new locations, resource shuffling etc.
-#define CMDR_PLANNING_PRIORITY_HIGH 0
-#define CMDR_PLANNING_PRIORITY_NORMAL 1
-#define CMDR_PLANNING_PRIORITY_LOW 2
-
-// PRIME NUMBERS > 1 only
-// Current settings give intervals of about [29.9401s high, 74.6269s normal, 131.579s low, 21.8818s none] when iteration is 10s.
-// Run Tests will output the current intervals in the CLASS create section next to CmdrAI.
-#define CMDR_PLANNING_RATIO_HIGH 3
-#define CMDR_PLANNING_RATIO_NORMAL 5
-#define CMDR_PLANNING_RATIO_LOW 11
-
-
 // Frequency of reinforcements, etc
 
 // How ofter commander will consider to import external reinforcements

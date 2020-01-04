@@ -297,7 +297,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				// Scenario just initialized so do setup
 				
 				// Set enemy commander strategy
-				private _strategy = NEW("Phase1CmdrStrategy", []);
+				private _strategy = NEW("Phase3CmdrStrategy", []); // Todo remove that!
 				CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
 				T_SETV("phase", 1);
 			};
