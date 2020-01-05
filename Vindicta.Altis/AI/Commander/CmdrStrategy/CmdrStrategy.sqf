@@ -96,7 +96,7 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		// Priority for locations created by enemy side dynamicly
 		// Typically players will create something around: camps, roadblocks, etc...
 		// we want to take it first of all no matter what
-		if (_createdBy != _side && _side != CIVILIAN) then {
+		if (_createdBy != _side && _createdBy != CIVILIAN) then {
 			_priorityGeneral = _priorityGeneral + T_GETV("takeLocDynamicEnemyPriority");
 		};
 
