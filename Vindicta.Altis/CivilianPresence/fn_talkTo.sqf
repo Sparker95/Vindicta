@@ -55,6 +55,20 @@ switch (_mode) do {
 		__SLEEP(_text);
 		if (__CHECK_EXIT_COND) exitWith {};
 
+		if (random 100 < 5) exitWith {
+			_text = selectRandom [	"I am nothing but a simulation on some computer.",
+									"This all is not real! This is a simulation! What shall we do now?",
+									"How can you prove that this world is real? It's all a simulation!",
+									"Me and you and this world, we are just a bunch of 1s and 0s!",
+									"Help! I don't remember what happened to me 3 minutes ago. I just appeared out of nowhere!!",
+									"What has happened? All my furniture is gone and I must sleep on the floor now.",
+									"I think therefore I am.",
+									"To be is to be perceived.",
+									"The only thing I know is that I know nothing",
+									"Nothing is enough for the man to whom enough is too little."];
+			[_civ, _text, player] call  Dialog_fnc_hud_createSentence;
+		};
+
 		if (count _locs == 0) then {
 			_text = "No, there aren't any within kilometers of this place.";
 			[_civ, _text,player] call  Dialog_fnc_hud_createSentence;
