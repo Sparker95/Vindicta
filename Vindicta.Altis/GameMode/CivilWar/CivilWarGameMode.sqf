@@ -266,7 +266,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		params [P_THISOBJECT];
 		
 		T_CALLM("updatePhase", []);
-		T_CALLM("updateEndCondition", []);
+		
+		//T_CALLM("updateEndCondition", []); // No need for it right now
 
 		T_PRVAR(lastUpdateTime);
 		private _dt = TIME_NOW - _lastUpdateTime;
@@ -297,7 +298,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				// Scenario just initialized so do setup
 				
 				// Set enemy commander strategy
-				private _strategy = NEW("Phase3CmdrStrategy", []); // Todo remove that!
+				private _strategy = NEW("Phase1CmdrStrategy", []);
 				CALL_STATIC_METHOD("AICommander", "setCmdrStrategyForSide", [ENEMY_SIDE ARG _strategy]);
 				T_SETV("phase", 1);
 			};
@@ -533,7 +534,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		// CivPresence civilians are being arrested too, so there is no need for it any more
 		//_ambientMissions pushBack (NEW("HarassedCiviliansAmbientMission", [_city ARG [CITY_STATE_STABLE]]));
-		
+
 		_ambientMissions pushBack (NEW("MilitantCiviliansAmbientMission", [_city ARG [CITY_STATE_AGITATED]]));
 
 		// It's quite confusing so I have disabled it for now, sorry
