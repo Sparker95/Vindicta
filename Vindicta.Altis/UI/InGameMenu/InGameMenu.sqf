@@ -29,7 +29,7 @@ CLASS("InGameMenu", "DialogBase")
 			T_CALLM1("setHintText", "Load a previously saved game or create a new campaign.");
 		} else {
 			//T_CALLM2("addTab", "DialogTabBase", "Mission");
-			T_CALLM2("addTab", "InGameMenuTabCommander", "Commander");
+			T_CALLM2("addTab", "InGameMenuTabCommander", "Strategic");
 			//T_CALLM2("addTab", "DialogTabBase", "Admin");
 			T_CALLM2("addTab", "InGameMenuTabNotes", "Notes");
 			T_CALLM2("addTab", "InGameMenuTabSave", "Savegames");

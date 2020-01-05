@@ -37,7 +37,8 @@ CLASS("InGameMenuTabTutorial", "DialogTabBase")
 			// _forEachIndex + 1: ignore base class
 			pr _objClassName = (configName (("true" configClasses (missionConfigFile >> "TutorialPages")) select (_forEachIndex + 1))); 
 			_listnbox lnbAddRow [(getText (missionConfigFile >> "TutorialPages" >> _objClassName >> "textHeadline"))]; 
-		} forEach ("true" configClasses (missionConfigFile >> "TutorialPages"));
+		} forEach("configName (inheritsFrom _x) == 'TutBasePage'" configClasses (missionConfigFile >> "TutorialPages"));
+		// We must omit the base class
 
 		_listnbox lnbSetCurSelRow 0;
 

@@ -51,7 +51,7 @@ class MUI_DIALOG_BASE
 			w = 0.05;
 			h = 0.04;
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO;
-			text = "a3\3DEN\Data\ControlsGroups\Tutorial\close_ca.paa";
+			text = "\z\vindicta\addons\ui\pictures\close_ca.paa";
 			colorText[] = MUIC_BLACK;
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorFocused[] = MUIC_TRANSPARENT;
@@ -69,7 +69,7 @@ class MUI_DIALOG_BASE
 			w = 0.05;
 			h = 0.04;
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
-			text = "a3\ui_f\data\IGUI\Cfg\simpleTasks\types\unknown_ca.paa";
+			text = "\z\vindicta\addons\ui\pictures\unknown_ca.paa"
 			colorText[] = MUIC_BLACK;
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorFocused[] = MUIC_TRANSPARENT;

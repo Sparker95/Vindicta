@@ -18,7 +18,7 @@ class TAB_TUTORIAL : MUI_GROUP
 			y = 0.036; 
 			w = 0.416; 
 			h = 0.277;
-			text = "UI\Images\tut_image_default.paa";
+			text = "\z\vindicta\addons\ui\pictures\tut_image_default.paa";
 			style = ST_PICTURE; 
 
 		};
