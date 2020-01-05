@@ -327,13 +327,16 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		pr _loc = CALL_STATIC_METHOD("Location", "getLocationAtPos", [_pos]); // It will return the lowermost location, so if it's a police station in a city, it will return police station, not a city.
 				 		if (_loc != "") then { 	
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
-								_bInAllowedArea = true; _hintKeys pushback HK_ALLOWEDAREA;
+								_bInAllowedArea = true;
+                _hintKeys pushback HK_ALLOWEDAREA;
+                OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
 								pr _multiplier = 1+2*_progress;
 								_suspicionArr pushBack [_multiplier*SUSP_MIL_LOCATION, "In military area"];
 								_hintKeys pushBack HK_MILAREA;
+								OOP_INFO_0("In military area.");
 							};
 				 		};
 
