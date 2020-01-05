@@ -379,6 +379,10 @@ CLASS("Storage", "")
 			// We are loading a variable
 			// Parse it back and and return value
 			pr _string = T_CALLM1("loadString", _ref);
+			if (isNil "_string") exitWith {
+				OOP_ERROR_1("[Storage] Failed to load: %1", _ref);
+				nil
+			};
 			#ifdef _SQF_VM
 			pr _array = call compile _string;
 			#else

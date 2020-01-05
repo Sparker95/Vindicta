@@ -63,8 +63,10 @@ CLASS("AICommander", "AI")
 
 	// Ported from CmdrAI
 	/* save */	VARIABLE_ATTR("activeActions", [ATTR_SAVE]);
-				VARIABLE("planningCycle");
-				VARIABLE("planningEnabled");	// Bool, if true, when active commander will perform AI planning
+	VARIABLE("planActionGenerators");	// Array of method name strings to generate actions
+	VARIABLE("planPhase");				// Number, 0 to (count planningGenerators - 1), increases on every plan and overflows
+	VARIABLE("planActionGeneratorIDs");	// Array of numbers, IDs of next generator to be run in each array of planGenerators
+	VARIABLE("planningEnabled");		// Bool, true enables planning
 
 	METHOD("new") {
 		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
@@ -118,6 +120,9 @@ CLASS("AICommander", "AI")
 		
 		// Create sensors
 		T_CALLM0("_initSensors");
+
+		// Initialize the plan generator arrays
+		T_CALLM0("_initPlanActionGenerators");
 		
 		T_SETV_REF("cmdrStrategy", gCmdrStrategyDefault);
 		
@@ -126,7 +131,6 @@ CLASS("AICommander", "AI")
 
 		// Ported from CmdrAI
 		T_SETV("activeActions", []);
-		T_SETV("planningCycle", 0);
 
 		// Initialize the radio keys
 		//T_SETV("enemyRadioKeys", ["123" ARG "abc"]);
@@ -156,6 +160,25 @@ CLASS("AICommander", "AI")
 		CALLM1(_thisObject, "addSensor", _sensorTargets);
 		pr _sensorCasualties = NEW("SensorCommanderCasualties", [_thisObject]);
 		CALLM(_thisObject, "addSensor", [_sensorCasualties]);
+	} ENDMETHOD;
+
+	METHOD("_initPlanActionGenerators") {
+		params [P_THISOBJECT];
+
+		pr _value = [
+			// High priority
+			["generateAttackActions"],
+			// Low priority
+			[
+			"generateConstructRoadblockActions",
+			"generatePatrolActions",
+			"generateReinforceActions",
+			"generateTakeOutpostActions"
+			]
+		];
+		T_SETV("planActionGenerators", _value);
+		T_SETV("planActionGeneratorIDs", [0 ARG 0]);
+		T_SETV("planPhase", 0);
 	} ENDMETHOD;
 
 /*
@@ -1693,7 +1716,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=ACTIONS
 		};
 
 		// Create the location
-		pr _loc = NEW_PUBLIC("Location", [_pos]);
+		pr _args = [_pos, T_GETV("side")]; // Our side is creating this location
+		pr _loc = NEW_PUBLIC("Location", _args);
 		CALLM2(_loc, "setBorder", "circle", 50);
 		CALLM1(_loc, "setType", _locType);
 		CALLM1(_loc, "setName", _locName);
@@ -1792,19 +1816,23 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	METHOD("plan") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_world")];
 		
-		T_PRVAR(planningCycle);
-		T_SETV("planningCycle", _planningCycle + 1);
+		pr _phase = T_GETV("planPhase");
+		pr _generators = T_GETV("planActionGenerators");	// Array of arrays of method names
+		pr _generatorIDs = T_GETV("planActionGeneratorIDs");// Array of IDs
+		
+		pr _ID = _generatorIDs select _phase;				// ID of next method name in the array of current phase
+		pr _generatorsArray = _generators select _phase;	// Array of method names
+		pr _generator = _generatorsArray select _ID;		// String, method name
 
-		private _priority = switch true do {
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { CMDR_PLANNING_PRIORITY_HIGH };
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { CMDR_PLANNING_PRIORITY_NORMAL };
-			case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { CMDR_PLANNING_PRIORITY_LOW };
-			default { -1 };
-		};
+		T_CALLM("_plan", [_world ARG _generator]);
 
-		if(_priority != -1) then {
-			T_CALLM("_plan", [_world ARG _priority]);
-		};
+		// Increase generator phase
+		_ID = (_ID + 1) mod (count _generatorsArray);
+		_generatorIDs set [_phase, _ID];
+		_phase = (_phase + 1) mod (count _generators);
+		T_SETV("planPhase", _phase);
+
+
 	} ENDMETHOD;
 
 	/*
@@ -2170,6 +2198,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		//OOP_INFO_1("  Existing patrol actions: %1", _count);
 		if (_count > CMDR_MAX_CONSTRUCT_ACTIONS) exitWith {[]};
 
+		OOP_INFO_0("GENERATE CONSTRUCT ROADBLOCK ACTIONS: start. Searching source garrisons.");
+
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
 			private _potentialSrcGarr = _x;
@@ -2193,6 +2223,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			}
 		};
 
+		OOP_INFO_0("GENERATE CONSTRUCT ROADBLOCK ACTIONS: selecting potential positions");
+
 		// Take potential location positions from the future
 		// In the future there must be no location around these places
 		pr _potentialPositions = T_GETV("newRoadblockPositions");
@@ -2200,6 +2232,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			pr _locs = CALLM4(_worldFuture, "getNearestLocations", _x, 200, [], []);
 			count _locs == 0 // There are no locations nearby in the future
 		};
+
+		OOP_INFO_0("GENERATE CONSTRUCT ROADBLOCK ACTIONS: iterating positions and source garrisons");
 
 		private _strategy = T_GETV("cmdrStrategy");
 		private _actions = [];
@@ -2209,6 +2243,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _srcPos = GETV(_x, "pos");
 			{
 				private _locPos = _x;
+				OOP_INFO_2("  Analyzing construct location: %1 -> %2", _srcID, _locPos);
 				private _locType = LOCATION_TYPE_ROADBLOCK;
 				// Check strategy
 				// We only want to create those where it makes sense to create them
@@ -2516,6 +2551,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_newActions = _newActions + T_CALLM(_x, [_simWorldNow ARG _simWorldFuture]);
 		} forEach _actionFuncs;
 
+		OOP_INFO_2("SELECT ACTIONS: generated %1 actions from generators: %2", count _newActions, _actionFuncs);
+
 		private _newActionCount = 0;
 		while {(count _newActions > 0) and _newActionCount < _maxNewActions} do {
 
@@ -2591,12 +2628,12 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	
 	Parameters:
 		_world - <Model.WorldModel>, real world model (see <Model.WorldModel> or <WORLD_TYPE> for details) the actions should apply to.
-		_priority - Number, the priority of action types that should be considered.
+		_generatorMethodName - string, method name of the generator which will generate actions
 	*/
 	/* private */ METHOD("_plan") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_NUMBER("_priority")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_world"), P_STRING("_generatorMethodName")];
 
-		OOP_DEBUG_MSG("- - - - - P L A N N I N G (priority %1) - - - - -", [_priority]);
+		OOP_DEBUG_MSG("- - - - - P L A N N I N G (generator %1) - - - - -", [_generatorMethodName]);
 
 		// Sync before planning
 		CALLM(_world, "sync", [_thisObject]);
@@ -2624,28 +2661,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		OOP_DEBUG_MSG("Generating new actions", []);
 
 		private _maxNewActions = 2;
-		#ifndef CMDR_AI_TESTING
-		private _generators = switch(_priority) do {
-			case CMDR_PLANNING_PRIORITY_HIGH: {
-				["generateAttackActions"]
-			};
-			case CMDR_PLANNING_PRIORITY_NORMAL: {
-				["generateReinforceActions", "generatePatrolActions"]
-			};
-			case CMDR_PLANNING_PRIORITY_LOW: {
-				["generateTakeOutpostActions", "generateConstructRoadblockActions"]
-			};
-		};
-		#else
-		// We will plan the shit ouf of this world model
-		private _generators = [	"generateAttackActions",
-								"generateReinforceActions",
-								"generatePatrolActions",
-								"generateTakeOutpostActions",
-								"generateConstructRoadblockActions"];
-		#endif
-
-		T_CALLM("selectActions", [_generators ARG _maxNewActions ARG _world ARG _simWorldNow ARG _simWorldFuture]);
+		
+		T_CALLM("selectActions", [[_generatorMethodName] ARG _maxNewActions ARG _world ARG _simWorldNow ARG _simWorldFuture]);
 
 		DELETE(_simWorldNow);
 		DELETE(_simWorldFuture);
@@ -2963,6 +2980,9 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		// Restore sensors
 		T_CALLM0("_initSensors");
 
+		// Initialize the plan generator arrays
+		T_CALLM0("_initPlanActionGenerators");
+
 		#ifdef DEBUG_COMMANDER
 		T_SETV("state", "none");
 		T_SETV("stateStart", 0);
@@ -3031,25 +3051,3 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	} ENDMETHOD;
 
 ENDCLASS;
-
-
-#ifdef _SQF_VM
-
-private _plans = [0,0,0,0];
-for "_planningCycle" from 0 to 1000 do {
-	private _priority = 0;
-	switch true do {
-		case (round (_planningCycle mod CMDR_PLANNING_RATIO_HIGH) == 0): { _priority = CMDR_PLANNING_PRIORITY_HIGH; };
-		case (round (_planningCycle mod CMDR_PLANNING_RATIO_NORMAL) == 0): { _priority = CMDR_PLANNING_PRIORITY_NORMAL; };
-		case (round (_planningCycle mod CMDR_PLANNING_RATIO_LOW) == 0): { _priority = CMDR_PLANNING_PRIORITY_LOW;  };
-		default { _priority = 3; };
-	};
-	
-	_plans set [_priority, (_plans#_priority) + 1];
-};
-
-// diag_log str _plans;
-diag_log format (["Planning ratios: [%1 high, %2 normal, %3 low, %4 none]"] + (_plans apply { _x / 1000 }));
-diag_log format (["Predicted planning intervals [%1s high, %2s normal, %3s low, %4s none]"] + (_plans apply { 10000 / _x }));
-
-#endif

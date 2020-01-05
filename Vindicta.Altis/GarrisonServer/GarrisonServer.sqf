@@ -210,6 +210,10 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 				P_STRING("_catCfgClassNameStr"), P_STRING("_objCfgClassNameStr"),
 				P_POSITION("_pos"), P_NUMBER("_dir"), P_BOOL("_checkGarrisonBuildRes")];
 		
+		// Sanity checks
+		if (_catCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Category config class name is empty. _this: %1", _this); };
+		if (_objCfgClassNameStr == "") exitWith { OOP_ERROR_1("BuildFromGarrison: Object class name is empty. _this: %1", _this);};
+
 		// Bail if the garrison isn't registered any more
 		if (!(_gar in T_GETV("objects"))) exitWith {
 			"We can't build here any more" remoteExecCall ["systemChat", _clientOwner];
@@ -220,6 +224,9 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		// Get data from config
 		pr _objClass = missionConfigFile >> "BuildObjects" >> "Categories" >> _catCfgClassNameStr >> _objCfgClassNameStr;
 		pr _className = getText (_objClass >> "className");
+		if (_className == "") exitWith { // Bail if data is incorrect
+			OOP_ERROR_1("BuildFromGarrison: class name is empty. _this: %1", _this);
+		};
 		pr _cost = getNumber (_objClass >> "buildResource");
 		pr _catID = getNumber (_objClass >> "templateCatID");
 		pr _subcatID = getNumber (_objClass >> "templateSubcatID");
@@ -244,11 +251,14 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		if (_catID != -1) then {
 			pr _args = [[], _catID, _subcatID, -1, "", _hO];
 			pr _unit = NEW("Unit", _args);
-			CALLM1(_gar, "addUnit", _unit);
+			pr _isValid = CALLM0(_unit, "isValid");
+			if (_isValid) then {
+				CALLM1(_gar, "addUnit", _unit);
 
-			// If it's a cargo box, initialize the limited arsenal on it
-			if (_catID == T_CARGO) then {
-				CALLM1(_unit, "limitedArsenalEnable", true);
+				// If it's a cargo box, initialize the limited arsenal on it
+				if (_catID == T_CARGO) then {
+					CALLM1(_unit, "limitedArsenalEnable", true);
+				};
 			};
 		};
 

@@ -120,6 +120,11 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 
 		OOP_INFO_1("ADD UNIT: %1", _unit);
 
+		// Make sure a valid unit is added
+		if (!CALLM0(_unit, "isValid")) exitWith {
+			OOP_ERROR_1("Attempt to add invalid unit: %1", _unit);
+		};
+
 		private _data = GET_VAR(_thisObject, "data");
 
 		pr _unitIsSpawned = CALLM0(_unit, "isSpawned");

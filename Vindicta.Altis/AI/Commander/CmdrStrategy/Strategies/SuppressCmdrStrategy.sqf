@@ -9,13 +9,13 @@ CLASS("SuppressCmdrStrategy", "CmdrStrategy")
 		params [P_THISOBJECT];
 		// Take outposts in areas with activity
 		T_SETV("takeLocOutpostPriority", 0);
-		T_SETV("takeLocOutpostPriorityActivityCoeff", 1);
+		T_SETV("takeLocOutpostCoeff", 1);
 		// Do not take bases
 		T_SETV("takeLocBasePriority", 0);
-		T_SETV("takeLocBasePriorityActivityCoeff", 0);
+		T_SETV("takeLocBaseCoeff", 0);
 		// Take roadblocks in areas with activity
 		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
+		T_SETV("takeLocRoadBlockCoeff", 2);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getQRFScore") {

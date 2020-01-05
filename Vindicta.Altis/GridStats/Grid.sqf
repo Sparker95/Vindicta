@@ -354,6 +354,10 @@ CLASS("Grid", "Storable");
 	/*
 	Method: getMaxValueCircle
 	Gets max value found within the circle
+
+	! ! WARNING It's slow, extremely slow, consider using alternative functions instead ! !
+	For example, getMaxValueSquareNumber
+
 	
 	Parameters: _center, _radius
 	
@@ -386,6 +390,33 @@ CLASS("Grid", "Storable");
 			T_CALLM("applyCircle", [_center ARG _radius ARG _fnMax]);
 			_maxVal
 		};
+	} ENDMETHOD;
+
+	// Gets max value at square area centered at _pos as having full width of 2*_halfSize
+	METHOD("getMaxValueSquareNumber") {
+		params [P_THISOBJECT, P_POSITION("_pos"), P_NUMBER("_halfSize")];
+		
+		_pos params ["_x", "_y"];
+
+		pr _array = T_GETV("gridArray");
+		pr _cellSize = T_GETV("cellSize");
+
+		pr _xID = floor(_x / _cellSize);
+		pr _yID = floor(_y / _cellSize);
+		pr _nCells = round (_halfSize/_cellSize);	// Nubmer of cells to capture on each side
+		pr _xIDStart = (_xID - _nCells) max 0;
+		pr _yIDStart = (_yID - _nCells) max 0;
+		pr _nCellsSelect = 1 + 2 * _nCells;
+
+		pr _maxx = [];
+		{
+			pr _col = _x;
+			pr _max = selectMax (_col select [_yIDStart, _nCellsSelect]);
+			_maxx pushBack _max;
+		} forEach (_array select [_xIDStart, _nCellsSelect]);
+
+		selectMax _maxx
+
 	} ENDMETHOD;
 
 	/*
@@ -880,6 +911,16 @@ ENDCLASS;
 	//private _grid = CALLM(_grid, "getGridArray", []);
 	private _m = CALLM(_grid, "getMaxValueCircle", [[0 ARG 0 ARG 0] ARG 500]);
 	["Value correct", _m isEqualTo [0,1,2,3]] call test_Assert;
+}] call test_AddTest;
+
+["Grid.getMaxValueSquareNumber", {
+	private _grid = NEW("Grid", [500, 0]);
+	CALLM(_grid, "setValue", [[5000 ARG 3000] ARG 66]);
+	//private _grid = CALLM(_grid, "getGridArray", []);
+	private _m = CALLM(_grid, "getMaxValueSquareNumber", [[6000 ARG 4000 ARG 0] ARG 2000]);
+	["Value correct", _m == 66] call test_Assert;
+	private _m = CALLM(_grid, "getMaxValueSquareNumber", [[9000 ARG 7000 ARG 0] ARG 2000]);
+	["Value correct", _m == 0] call test_Assert;
 }] call test_AddTest;
 
 #endif
