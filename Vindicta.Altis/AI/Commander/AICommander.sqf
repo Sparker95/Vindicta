@@ -66,6 +66,7 @@ CLASS("AICommander", "AI")
 	VARIABLE("planActionGenerators");	// Array of method name strings to generate actions
 	VARIABLE("planPhase");				// Number, 0 to (count planningGenerators - 1), increases on every plan and overflows
 	VARIABLE("planActionGeneratorIDs");	// Array of numbers, IDs of next generator to be run in each array of planGenerators
+	VARIABLE("planningEnabled");		// Bool, true enables planning
 
 	METHOD("new") {
 		params [P_THISOBJECT, ["_agent", "", [""]], ["_side", WEST, [WEST]], ["_msgLoop", "", [""]]];
