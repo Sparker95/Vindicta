@@ -398,14 +398,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _vehicles = _previousObject call misc_fnc_getVehiclesInBuilding;
 				{
 					if ((getMass _x) < 1000) then {
-						diag_log format ["Destroying %1", _x];
+						diag_log format ["Building was destroyed. Destroying behicle: %1", _x];
 						_x setDamage 1;
 					};
 				} forEach _vehicles;
 			};
 		}];
 		#endif
-	};
+	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
 	// |                  V I R T U A L   F U N C T I O N S                    |
