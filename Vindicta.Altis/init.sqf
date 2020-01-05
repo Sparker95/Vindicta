@@ -2,6 +2,11 @@
 #define OOP_DEBUG
 #include "OOP_Light\OOP_Light.h"
 
+// End mission if we are running it in singleplayer
+if (!isMultiplayer) exitWith {
+	endMission "End1";
+};
+
 // Bail if game mode init is disabled
 #ifdef GAME_MODE_DISABLE
 if (true) exitWith {

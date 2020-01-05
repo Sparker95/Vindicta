@@ -62,11 +62,16 @@ class CfgIdentities
 
 class CfgDebriefing
 {
-	// Used when all players die in MP
 	class OOP_ERROR_DEBRIEFING_CLASS_NAME
 	{
 		title = "OOP: critical error";
 		description = "A critical OOP error has happened. See 'OOP error' section.";
+	};
+
+	class End1
+	{
+		title = "Please run in multiplayer";
+		description = "Arma has no respawn in singleplayer. Please run the mission is multiplayer. You can self-host it from the multiplayer menu.";
 	};
 };
 
