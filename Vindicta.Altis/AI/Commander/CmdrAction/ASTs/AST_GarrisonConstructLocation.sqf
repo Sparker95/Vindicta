@@ -89,7 +89,10 @@ CLASS("AST_GarrisonConstructLocation", "ActionStateTransition")
 				private _newLoc = NEW_PUBLIC("Location", _args);
 				CALLM1(_newLoc, "setType", T_GETV("locType"));
 				CALLM2(_newLoc, "setBorder", "circle", 100);
-				pr _name = mapGridPosition T_GETV("locPos");
+				pr _gridpos = mapGridPosition T_GETV("locPos");
+				pr _type = T_GETV("locType");
+				pr _typeName = CALLSM1("Location", "getTypeString", _type);
+				pr _name = format ["%1 %2", _typeName, _gridPos];
 				CALLM1(_newLoc, "setName", _name);
 
 				// Register the location with the model
