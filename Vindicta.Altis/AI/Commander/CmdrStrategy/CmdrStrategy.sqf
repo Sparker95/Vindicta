@@ -1,5 +1,9 @@
 #include "../common.hpp"
 
+// Activity function common between different methods
+// Maps activity at area to a priority multiplier
+#define __ACTIVITY_FUNCTION(rawActivity) (log (0.09 * rawActivity + 1))
+
 /*
 Class: AI.CmdrAI.CmdrStrategy.CmdrStrategy
 
@@ -25,14 +29,19 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	// is applied as a multiplier to the activity in the area of the location being
 	// evaluated. So if there is local activity and the multipler is non zero then 
 	// the commander will desire the location to that degree.
-	VARIABLE("takeLocOutpostPriorityActivityCoeff");
 	VARIABLE("takeLocBasePriority");
-	VARIABLE("takeLocBasePriorityActivityCoeff");
-	VARIABLE("takeLocRoadBlockPriority");
-	VARIABLE("takeLocRoadBlockPriorityActivityCoeff");
+	VARIABLE("takeLocAirportPriority");
 	VARIABLE("takeLocCityPriority");
-	VARIABLE("takeLocCityPriorityActivityCoeff");
-	VARIABLE("takeLocPlayerCreatedCoeff");
+	VARIABLE("takeLocRoadBlockPriority");
+	VARIABLE("takeLocDynamicEnemyPriority");	// Priority of locations created dynamicly by another side
+	VARIABLE("takeLocOutpostCoeff");
+	VARIABLE("takeLocBaseCoeff");
+	VARIABLE("takeLocAirportCoeff");
+	VARIABLE("takeLocRoadBlockCoeff");
+	VARIABLE("takeLocCityCoeff");
+
+	VARIABLE("constructLocRoadblockPriority");
+	VARIABLE("constructLocRoadblockCoeff");
 
 	/*
 	Constructor: new
@@ -41,15 +50,21 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	METHOD("new") {
 		params [P_THISOBJECT];
 
-		T_SETV("takeLocOutpostPriority", 0.5);
-		T_SETV("takeLocOutpostPriorityActivityCoeff", 1);
+		T_SETV("takeLocOutpostPriority", 0);
 		T_SETV("takeLocBasePriority", 2);
-		T_SETV("takeLocBasePriorityActivityCoeff", 0);
+		T_SETV("takeLocAirportPriority", 6);				// We want them very much since we bring reinforcements through them
+		T_SETV("takeLocDynamicEnemyPriority", 4);			// Big priority for everything created by players or enemies dynamicly
 		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 2);
-		T_SETV("takeLocCityPriority", 0);
-		T_SETV("takeLocCityPriorityActivityCoeff", 1);
-		T_SETV("takeLocPlayerCreatedCoeff", 2);			// Scaling coefficient for locations created dynamicly by player
+		T_SETV("takeLocCityPriority", 0);					// 
+
+		T_SETV("takeLocOutpostCoeff", 1);	//
+		T_SETV("takeLocBaseCoeff", 0);		//
+		T_SETV("takeLocAirportCoeff", 0);	//
+		T_SETV("takeLocRoadBlockCoeff", 2);	// These stand on the road so they must be cleared
+		T_SETV("takeLocCityCoeff", 0.5);	//
+
+		T_SETV("constructLocRoadblockPriority", 0);	// Generally it makes no sense to make them everywhere
+		T_SETV("constructLocRoadblockCoeff", 1.5);	// Higher priority than constructing outpost
 	} ENDMETHOD;
 
 	/*
@@ -70,55 +85,60 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 		ASSERT_OBJECT_CLASS(_loc, "LocationModel");
 
 		private _locPos = GETV(_loc, "pos");
-		private _activity = log (0.09 * CALLM(_worldNow, "getActivity", [_locPos ARG 2000]) + 1);
+		private _rawActivity = CALLM(_worldNow, "getActivity", [_locPos ARG 2000]);
+		private _activityMult = __ACTIVITY_FUNCTION(_rawActivity);
+		private _createdBy = GETV(_loc, "sideCreated");
 
-		private _priority = 1;
+		private _priority = 0;
+
+		// Evaluate different general prioritites
+		private _priorityGeneral = 0;
+		// Priority for locations created by enemy side dynamicly
+		// Typically players will create something around: camps, roadblocks, etc...
+		// we want to take it first of all no matter what
+		if (_createdBy != _side && _createdBy != CIVILIAN) then {
+			_priorityGeneral = _priorityGeneral + T_GETV("takeLocDynamicEnemyPriority");
+		};
+
+		//
 		switch(GETV(_loc, "type")) do {
 			case LOCATION_TYPE_OUTPOST: {
 				// We want these a bit, but more if there is activity in the area
-				_priority = T_GETV("takeLocOutpostPriority") + T_GETV("takeLocOutpostPriorityActivityCoeff") * _activity;
+				_priority = T_GETV("takeLocOutpostPriority") +
+					T_GETV("takeLocOutpostCoeff") * _activityMult;
 			};
 			case LOCATION_TYPE_AIRPORT: {
-				// We want them a lot since we use them to bring reinforcements
-				_priority = 4*T_GETV("takeLocBasePriority") + T_GETV("takeLocBasePriorityActivityCoeff") * _activity;
+				// We want them a lot all the time since we use them to bring reinforcements
+				_priority = T_GETV("takeLocAirportPriority") +
+					T_GETV("takeLocAirportCoeff") * _activityMult;
 			};
 			case LOCATION_TYPE_BASE: { 
 				// We want these a normal amount but are willing to go further to capture them.
 				// TODO: work out how to weight taking bases vs other stuff? 
 				// Probably high priority when we are losing? This is a gameplay question.
-				_priority = T_GETV("takeLocBasePriority") + T_GETV("takeLocBasePriorityActivityCoeff") * _activity;
+				_priority = T_GETV("takeLocBasePriority") +
+					T_GETV("takeLocBaseCoeff") * _activityMult;
 			};
 			case LOCATION_TYPE_ROADBLOCK: {
 				// We want these if there is local activity.
 				_priority = T_GETV("takeLocRoadBlockPriority") +
-					T_GETV("takeLocRoadBlockPriorityActivityCoeff") * _activity;
-
-				if(_priority > 0) then {
-					private _locs = CALLM(_worldNow, "getNearestLocations", [_locPos ARG 2000 ARG [LOCATION_TYPE_BASE ARG LOCATION_TYPE_OUTPOST]]) select {
-						_x params ["_dist", "_loc"];
-						!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
-					};
-					// We build these quick if we have an outpost or base nearby, prioritized by distance
-					if(count _locs > 0) then {
-						private _distF = 0.0004 * (_locs#0#0);
-						private _distCoeff = 1 / (1 + (_distF * _distF));
-						_priority = _priority * 2 * _distCoeff;
-					} else {
-						_priority = 0;
-					};
-				};
+					T_GETV("takeLocRoadBlockCoeff") * _activityMult;
 			};
 			case LOCATION_TYPE_CITY: { 
-				_priority = T_GETV("takeLocCityPriority") + T_GETV("takeLocCityPriorityActivityCoeff") * _activity;
+				_priority = T_GETV("takeLocCityPriority") +
+					T_GETV("takeLocCityCoeff") * _activityMult;
 			};
 			case LOCATION_TYPE_CAMP: {
-				// We want these A LOT because only players can build them
-				_priority = 3 * T_GETV("takeLocPlayerCreatedCoeff")
+				// Same as outpost
+				_priority = T_GETV("takeLocOutpostPriority") +
+					T_GETV("takeLocOutpostCoeff") * _activityMult;
 			};
 			// No other locations taken by default
 			default { _priority = 0 };
 		};
-		_priority
+
+		// Sum up calculated priority and other priority boosts
+		_priority + _priorityGeneral
 	} ENDMETHOD;
 
 	/*
@@ -137,23 +157,18 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 	/* virtual */ METHOD("getConstructLocationDesirability") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_POSITION("_locPos"), P_DYNAMIC("_locType"), P_SIDE("_side")];
 
+		// Same as for taking locations
 		private _rawActivity = CALLM(_worldNow, "getActivity", [_locPos ARG 3500]);
 		//OOP_DEBUG_1(" WorldNow activity: %1", _rawActivity);
-		private _activity = log (0.09 * _rawActivity + 1);
+		private _activityMult = __ACTIVITY_FUNCTION(_rawActivity);
 
-		private _priority = 1;
+		private _priority = 0;
 		switch(_locType) do {
-			// outposts are kind of harder to construct
-			case LOCATION_TYPE_OUTPOST: {
-				if (_rawActivity > 20) then {
-					_priority = 1;
-				};
-			};
 
-			// Roadblock shuld be constructed very fast, so we construct them first of all
 			case LOCATION_TYPE_ROADBLOCK: {
-				if (_rawActivity > 3) then {
-					_priority = 4;
+				if (_rawActivity > 4) then {
+					_priority = T_GETV("constructLocRoadblockPriority") +
+								T_GETV("constructLocRoadblockCoeff") * _activityMult;
 				};
 			};
 
@@ -161,11 +176,29 @@ CLASS("CmdrStrategy", ["RefCounted" ARG "Storable"])
 			default { _priority = 0 };
 		};
 
-		if (_rawActivity > 1) then {
-			_activity*_priority
-		} else {
-			0
+		// Old code to sort positions by priority
+		/*
+				if(_priority > 0) then {
+			pr _args = [_locPos,
+						2000,
+						[LOCATION_TYPE_BASE, LOCATION_TYPE_OUTPOST, LOCATION_TYPE_CITY, LOCATION_TYPE_AIRPORT]];
+			private _locs = CALLM(_worldNow, "getNearestLocations", _args) select {
+				_x params ["_dist", "_loc"];
+				!IS_NULL_OBJECT(CALLM(_loc, "getGarrison", [_side]))
+			};
+			// We build these quick around outposts, bases, cities, and airports, prioritized by distance
+			if(count _locs > 0) then {
+				private _distF = 0.0004 * (_locs#0#0);
+				private _distCoeff = 1 / (1 + (_distF * _distF));
+				_priority = _priority * 2 * _distCoeff;
+			} else {
+				_priority = 0;
+			};
 		};
+		*/
+
+		_priority
+
 	} ENDMETHOD;
 
 	/*

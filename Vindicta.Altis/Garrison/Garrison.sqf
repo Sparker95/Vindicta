@@ -1236,6 +1236,11 @@ CLASS("Garrison", "MessageReceiverEx");
 		params[P_THISOBJECT, P_OOP_OBJECT("_unit")];
 		ASSERT_OBJECT_CLASS(_unit, "Unit");
 
+		// Assert that the unit is valid
+		if (!CALLM0(_unit, "isValid")) exitWith {
+			OOP_ERROR_1("Attempt to add an invalid unit: %1", _unit);
+		};
+
 		__MUTEX_LOCK;
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {

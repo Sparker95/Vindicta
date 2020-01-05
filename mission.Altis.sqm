@@ -8,7 +8,7 @@ class EditorData
 	toggles=585;
 	class ItemIDProvider
 	{
-		nextID=1850;
+		nextID=1861;
 	};
 	class MarkerIDProvider
 	{
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=214;
+		nextID=215;
 	};
 	class Camera
 	{
-		pos[]={12847.845,210.73846,16542.609};
-		dir[]={-0.041229468,-0.62194854,0.78198713};
-		up[]={-0.032746706,0.78305572,0.62109238};
-		aside[]={0.99862361,1.2335659e-007,0.052654725};
+		pos[]={14904.166,66.162926,10976.26};
+		dir[]={-0.097414866,-0.52921748,0.84291577};
+		up[]={-0.060758762,0.8484773,0.52573574};
+		aside[]={0.99342334,3.1827949e-007,0.11480906};
 	};
 };
 binarizationWanted=0;
@@ -362,7 +362,7 @@ class Mission
 	};
 	class Entities
 	{
-		items=763;
+		items=774;
 		class Item0
 		{
 			dataType="Object";
@@ -16789,7 +16789,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="city";
+							value="outpost";
 						};
 					};
 				};
@@ -16846,7 +16846,7 @@ class Mission
 									"STRING"
 								};
 							};
-							value="Faronaki";
+							value="Faronaki Outpost";
 						};
 					};
 				};
@@ -25411,6 +25411,192 @@ class Mission
 			id=1849;
 			type="B_Truck_01_transport_F";
 			atlOffset=-0.00034332275;
+		};
+		class Item763
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14910.487,12.143255,11040.41};
+				angles[]={0.10230836,5.5494614,0.038646095};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1850;
+			type="B_Truck_01_transport_F";
+			atlOffset=-0.0001077652;
+		};
+		class Item764
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14915.929,12.111655,11042.378};
+				angles[]={0.17162789,5.5494614,6.2511969};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1851;
+			type="B_Truck_01_transport_F";
+		};
+		class Item765
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14920.301,11.485523,11046.315};
+				angles[]={0.11153574,5.6043758,0.069222413};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1852;
+			type="B_Truck_01_transport_F";
+			atlOffset=2.0980835e-005;
+		};
+		class Item766
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14924.29,11.476823,11051.798};
+				angles[]={0.039979152,5.5494614,0.038647637};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1853;
+			type="B_Truck_01_transport_F";
+			atlOffset=4.0054321e-005;
+		};
+		class Item767
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14928.871,11.269009,11057.105};
+				angles[]={0.038646095,5.5494614,6.276526};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1854;
+			type="B_Truck_01_transport_F";
+			atlOffset=4.6730042e-005;
+		};
+		class Item768
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14880.974,11.719113,11055.691};
+				angles[]={0.046633169,2.3279388,6.247201};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1855;
+			type="B_Truck_01_transport_F";
+			atlOffset=5.4359436e-005;
+		};
+		class Item769
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14863.635,11.196398,11054.9};
+				angles[]={0.012000273,2.0089958,0.029324362};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1856;
+			type="B_Truck_01_transport_F";
+			atlOffset=-3.0517578e-005;
+		};
+		class Item770
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14855.133,10.859068,11050.597};
+				angles[]={6.2791886,1.8939911,0.059927464};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1857;
+			type="B_Truck_01_transport_F";
+			atlOffset=-8.9645386e-005;
+		};
+		class Item771
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14891.502,10.116487,11072.39};
+				angles[]={0.014664836,4.2718449,6.2805333};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1858;
+			type="B_Slingload_01_Cargo_F";
+			atlOffset=2.8610229e-005;
+		};
+		class Item772
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14905.148,10.045024,11084.43};
+				angles[]={6.272521,5.3502889,6.2791886};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1859;
+			type="B_Slingload_01_Cargo_F";
+			atlOffset=7.6293945e-006;
+		};
+		class Item773
+		{
+			dataType="Object";
+			class PositionInfo
+			{
+				position[]={14909.638,9.9655638,11066.624};
+				angles[]={0.029324362,3.9862821,6.272521};
+			};
+			side="Empty";
+			flags=4;
+			class Attributes
+			{
+			};
+			id=1860;
+			type="B_Slingload_01_Cargo_F";
+			atlOffset=3.0517578e-005;
 		};
 	};
 	class Connections

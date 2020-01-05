@@ -12,16 +12,16 @@ CLASS("PassiveCmdrStrategy", "CmdrStrategy")
 		params [P_THISOBJECT];
 		// Do not take outposts
 		T_SETV("takeLocOutpostPriority", 0);
-		T_SETV("takeLocOutpostPriorityActivityCoeff", 0);
+		T_SETV("takeLocOutpostCoeff", 0);
 		// Do not take bases
 		T_SETV("takeLocBasePriority", 0);
-		T_SETV("takeLocBasePriorityActivityCoeff", 0);
+		T_SETV("takeLocBaseCoeff", 0);
 		// Do not take roadblocks
 		T_SETV("takeLocRoadBlockPriority", 0);
-		T_SETV("takeLocRoadBlockPriorityActivityCoeff", 0);
+		T_SETV("takeLocRoadBlockCoeff", 0);
 		// Do not take cities
 		T_SETV("takeLocCityPriority", 0);
-		T_SETV("takeLocCityPriorityActivityCoeff", 0);
+		T_SETV("takeLocCityCoeff", 0);
 	} ENDMETHOD;
 
 	/* virtual */ METHOD("getQRFScore") {

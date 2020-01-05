@@ -169,23 +169,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// todo load it from profile namespace or whatever
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
-			// todo we can also notify the nearby location about that event, because the building might belong to the location?
-			#ifndef _SQF_VM
-			addMissionEventHandler ["BuildingChanged", { 
-				params ["_previousObject", "_newObject", "_isRuin"];
-				diag_log format ["BuildingChanged EH: %1", _this];
-				if (_isRuin) then {
-					// Iterate all vehicles within the building, destroy them
-					private _vehicles = _previousObject call misc_fnc_getVehiclesInBuilding;
-					{
-						if ((getMass _x) < 1000) then {
-							diag_log format ["Destroying %1", _x];
-							_x setDamage 1;
-						};
-					} forEach _vehicles;
-				};
-			}];
-			#endif
+			T_CALLM0("_initMissionEventHandlers");
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -398,6 +382,29 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
+	} ENDMETHOD;
+
+	METHOD("_initMissionEventHandlers") {
+		params [P_THISOBJECT];
+
+		// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
+		// todo we can also notify the nearby location about that event, because the building might belong to the location?
+		#ifndef _SQF_VM
+		addMissionEventHandler ["BuildingChanged", { 
+			params ["_previousObject", "_newObject", "_isRuin"];
+			diag_log format ["BuildingChanged EH: %1", _this];
+			if (_isRuin) then {
+				// Iterate all vehicles within the building, destroy them
+				private _vehicles = _previousObject call misc_fnc_getVehiclesInBuilding;
+				{
+					if ((getMass _x) < 1000) then {
+						diag_log format ["Building was destroyed. Destroying behicle: %1", _x];
+						_x setDamage 1;
+					};
+				} forEach _vehicles;
+			};
+		}];
+		#endif
 	} ENDMETHOD;
 
 	// -------------------------------------------------------------------------
@@ -716,7 +723,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			};
 
 			// Create a new location
-			private _loc = NEW_PUBLIC("Location", [_locSectorPos]);
+			private _args = [_locSectorPos, CIVILIAN]; // Location created by noone
+			private _loc = NEW_PUBLIC("Location", _args);
 			CALLM1(_loc, "initFromEditor", _locSector);
 			CALLM1(_loc, "setName", _locName);
 			CALLM1(_loc, "setSide", _side);
@@ -735,7 +743,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 				if ((count _possiblePoliceBuildings) > 0) then {
 					private _policeStationBuilding = selectRandom _possiblePoliceBuildings;
-					private _policeStation = NEW_PUBLIC("Location", [getPos _policeStationBuilding]);
+					private _args = [getPos _policeStationBuilding, CIVILIAN]; // Location created by noone
+					private _policeStation = NEW_PUBLIC("Location", _args);
 					CALLM2(_policeStation, "setBorder", "circle", 10);
 					CALLM1(_policeStation, "processObjectsInArea", "House"); // We must add buildings to the array
 					CALLM0(_policeStation, "addSpawnPosFromBuildings");
@@ -790,22 +799,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			OOP_INFO_2("Roadblock positions around %1 : %2", _pos, _positionsAroundLocation);
 			// Iterate all positions and remove those which are very close to each other
 			private _i = 0;
-
-			/*
-			_allRoadBlocks = _allRoadBlocks + _roadBlocks;
-			{	
-				_x params ["_roadblockPos", "_roadblockDir"];
-				private _roadblockLoc = NEW_PUBLIC("Location", [_roadblockPos]);
-				CALLM1(_roadblockLoc, "setName", _roadblockLoc);
-				CALLM1(_roadblockLoc, "setSide", _side);
-				CALLM2(_roadblockLoc, "setBorder", "rectangle", [10 ARG 10 ARG _roadblockDir]);
-				CALLM1(_roadblockLoc, "setCapacityInf", 20);
-				CALLM1(_roadblockLoc, "setCapacityCiv", 0);
-				// Do setType last cos it will update the debug marker for us
-				CALLM1(_roadblockLoc, "setType", LOCATION_TYPE_ROADBLOCK);
-			} forEach _roadBlocks;
-			*/
-
 		} forEach _locationsForRoadblocks;
 
 		// Iterate created positions
@@ -1249,7 +1242,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							];
 		{
 			private _msgLoop = T_GETV(_x);
-			diag_log format ["Locking message loop: %1", _x];
+			private _text = format ["Locking message loop: %1", _x];
+			diag_log _text;
+			[_text] remoteExec ["systemChat"];
 			CALLM0(_msgLoop, "lock");
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
@@ -1378,6 +1373,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Finish message loop setup
 		T_CALLM0("_setupMessageLoops");
+
+		// Initialize mission event handlers
+		T_CALLM0("_initMissionEventHandlers");
 
 		// Create other global objects
 

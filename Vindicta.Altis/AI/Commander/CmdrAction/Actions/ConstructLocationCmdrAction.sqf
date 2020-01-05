@@ -242,7 +242,7 @@ CLASS("ConstructLocationCmdrAction", "CmdrAction")
 		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
 
 		// Same as in takeLocation, but we generally want to build less than to occupy existing pre-defined places
-		private _scorePriority = 0.7 * CALLM(_strategy, "getConstructLocationDesirability", [_worldNow ARG _tgtLocPos ARG _tgtLocType ARG _side]);
+		private _scorePriority = CALLM(_strategy, "getConstructLocationDesirability", [_worldNow ARG _tgtLocPos ARG _tgtLocType ARG _side]);
 
 		OOP_DEBUG_1("ScorePriority: %1", _scorePriority);
 
