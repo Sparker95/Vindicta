@@ -33,7 +33,7 @@ class TutorialPages
 	class TutPage_campaignProgress : TutBasePage
 	{
 		textHeadline = "Campaign Progress";
-		text = "Enemy will dynamicly react to your actions, and the reaction will depend on the current war state. At the start of the game, however, everything is relatively calm and enemy occupation is not full. Expect enemy to bring reinforcements to their airfields as a reaction to your actions.";
+		text = "Enemy will dynamicly react to your actions, and the reaction will depend on the current war state. At the start of the game, however, everything is relatively calm and enemy occupation is not full.\n\nExpect enemy to bring reinforcements to their airfields as a reaction to your actions.";
 	};
 
 	class TutPage1 : TutBasePage
@@ -55,7 +55,7 @@ class TutorialPages
 	class TutPage3 : TutBasePage
 	{
 		textHeadline = "Intel: Activities";
-		text = "Intel does not always inform you about locations. Some intel instead informs you about orders received by enemy squads. Gaining this type of intel is the key to finding out about patrols and supply convoys, which you can then attack. Look at the map UIs intel panel to show and select currently known intel. Most intel is represented on the map with a start point and a destination. For example, if you select a patrol on the map interface, the start time will tell you the time the patrol is going to leave, and the destination informs you about where the patrol is headed.";
+		text = "Intel does not always inform you about locations. Some intel instead informs you about orders received by enemy squads.\n\nGaining this type of intel is the key to finding out about patrols and supply convoys, which you can then attack. Look at the map UIs intel panel to show and select currently known intel.\n\nMost intel is represented on the map with a start point and a destination.";
 		imagePath = __TUT_IMAGE(tut_civis.paa);
 	};
 
