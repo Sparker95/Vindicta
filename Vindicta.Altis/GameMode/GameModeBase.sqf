@@ -169,23 +169,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// todo load it from profile namespace or whatever
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
-			// todo we can also notify the nearby location about that event, because the building might belong to the location?
-			#ifndef _SQF_VM
-			addMissionEventHandler ["BuildingChanged", { 
-				params ["_previousObject", "_newObject", "_isRuin"];
-				diag_log format ["BuildingChanged EH: %1", _this];
-				if (_isRuin) then {
-					// Iterate all vehicles within the building, destroy them
-					private _vehicles = _previousObject call misc_fnc_getVehiclesInBuilding;
-					{
-						if ((getMass _x) < 1000) then {
-							diag_log format ["Destroying %1", _x];
-							_x setDamage 1;
-						};
-					} forEach _vehicles;
-				};
-			}];
-			#endif
+			T_CALLM0("_initMissionEventHandlers");
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -399,6 +383,29 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 
 	} ENDMETHOD;
+
+	METHOD("_initMissionEventHandlers") {
+		params [P_THISOBJECT];
+
+		// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
+		// todo we can also notify the nearby location about that event, because the building might belong to the location?
+		#ifndef _SQF_VM
+		addMissionEventHandler ["BuildingChanged", { 
+			params ["_previousObject", "_newObject", "_isRuin"];
+			diag_log format ["BuildingChanged EH: %1", _this];
+			if (_isRuin) then {
+				// Iterate all vehicles within the building, destroy them
+				private _vehicles = _previousObject call misc_fnc_getVehiclesInBuilding;
+				{
+					if ((getMass _x) < 1000) then {
+						diag_log format ["Destroying %1", _x];
+						_x setDamage 1;
+					};
+				} forEach _vehicles;
+			};
+		}];
+		#endif
+	};
 
 	// -------------------------------------------------------------------------
 	// |                  V I R T U A L   F U N C T I O N S                    |
@@ -1366,6 +1373,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Finish message loop setup
 		T_CALLM0("_setupMessageLoops");
+
+		// Initialize mission event handlers
+		T_CALLM0("_initMissionEventHandlers");
 
 		// Create other global objects
 

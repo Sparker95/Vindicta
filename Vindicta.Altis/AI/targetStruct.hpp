@@ -6,4 +6,4 @@
 #define TARGET_ID_DATE_NUMBER	3
 #define TARGET_ID_EFFICIENCY	4
 
-#define TARGET_NEW(unit, knows, pos, time, eff) [unit, knows, pos, time, eff]
+#define TARGET_NEW(unit, knows, pos, dateNumber, eff) [unit, knows, pos, dateNumber, eff]
