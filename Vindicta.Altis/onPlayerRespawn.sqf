@@ -31,7 +31,23 @@ if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
 		waitUntil {!isNull (findDisplay 46)};
     	CALLSM1("NotificationFactory", "createSystem", "Wait until game mode finishes its initialization...");
 	};
-    //_newUnit setDamage 1;
+    _newUnit spawn {
+        sleep 3;
+        _this setDamage 1;
+    };
+};
+
+// Bail if player has joined one of the not supported sides
+private _isAdmin = false; //call misc_fnc_isAdminLocal;
+if (! (CALLM0(gGameMode, "getPlayerSide") == playerSide) && !_isAdmin) exitWith {
+    0 spawn {
+		waitUntil {!isNull (findDisplay 46)};
+    	CALLSM1("NotificationFactory", "createSystem", "This player slot is meant for debug and can be used by administration only.");
+	};
+    _newUnit spawn {
+        sleep 3;
+        _this setDamage 1;
+    };
 };
 
 diag_log format ["------- onPlayerRespawn %1", _this];

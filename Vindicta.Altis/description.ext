@@ -2,12 +2,17 @@
 
 #include "config\global_config.hpp"
 
-author="Sparker, Jeroen, Marvis, Sen, Billw";
+author="Vindicta Team";
 OnLoadName = "Vindicta";
 OnLoadMission = "Vindicta";
 
 allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
+
+briefingName = "Vindicta"; // Name of the mission in the mission selection listbox
+overviewPicture = "\z\vindicta\addons\ui\pictures\VindictaLogo.paa";
+overviewText = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
+overviewTextLocked = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
 
 // Enable debug console
 #ifdef EDITOR_PREVIEW
@@ -31,20 +36,9 @@ respawnDelay = 2; // Default: ?
 DisabledAI = 1;
 respawnTemplates[] = {"MenuPosition"};
 
-/*
-class CfgTaskEnhancements
-    {
-    enable       = 1;            //0: disable new task features (default), 1: enable new task features & add new task markers and task widgets into the map
-    3d           = 1;            //0: do not use new 3D markers (default), 1: replace task waypoints with new 3D markers
-    3dDrawDist   = 3500;        //3d marker draw distance (default: 2000)
-    share        = 1;            //0: do not count assigned players (default), 1: count how many players have the task assigned
-    propagate    = 1;            //0: do not propagate (default), 1: propagate shared tasks to subordinates
-    };
-*/
-
 class Header
 {
-    gameType = COOP;
+    gameType = COOP; // I want my own game type plz :3
     minplayers=1;
     maxplayers=50;
 };
