@@ -337,7 +337,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					CALLM0(_thisObject, "applyInfantryWeapons");
 
 					// Set unit skill
-					_objectHandle setSkill 1.0; // todo improve this
+					_objectHandle setSkill ["aimingAccuracy", 0.6];	// Aiming and precision
+					_objectHandle setSkill ["aimingShake", 0.6];
+					_objectHandle setSkill ["aimingSpeed", 0.8];
+					_objectHandle setSkill ["commanding", 1];		// Everything else
+					_objectHandle setSkill ["courage", 0.5];
+					//_objectHandle setSkill ["endurance", 0.8];
+					_objectHandle setSkill ["general", 1];
+					_objectHandle setSkill ["reloadSpeed", 0.5];
+					_objectHandle setSkill ["spotDistance", 1];
+					_objectHandle setSkill ["spotTime", 1];
 				};
 				case T_VEH: {
 
