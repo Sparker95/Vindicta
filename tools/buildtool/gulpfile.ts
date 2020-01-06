@@ -54,7 +54,6 @@ let taskNamesZip: string[] = [];
 for (let preset of presets) {
     const mission = new MissionPaths(preset, paths, strVersion);
     const taskName = [preset.missionName, preset.map].join('.');
-    const strVersion1 = "1.2.3";
 
     taskNames.push('mission_' + taskName);
 

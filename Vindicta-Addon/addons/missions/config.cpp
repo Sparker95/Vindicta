@@ -18,8 +18,9 @@ class CfgMissions
     // Multiplayer missions
     class MPMissions
     {
-        class Vindicta_Altis_v0_21_102
+        class Vindicta_Altis_v0_21_102 // Must match to directory!
         {
+            briefingName = "Vindicta 0.21.102"
             directory = "z\vindicta\addons\missions\Vindicta_Altis_v0_21_102.Altis";
         };
     };
