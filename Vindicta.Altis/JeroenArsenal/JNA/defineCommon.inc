@@ -9,10 +9,10 @@
 #define STR_ACTION_ICON_ARSENAL "\A3\ui_f\data\GUI\Rsc\RscDisplayArsenal\spaceArsenal_ca.paa"
 #define STR_ACTION_TEXT_ARSENAL localize "STR_JNA_ACT_OPEN"
 
-#define STR_ACTION_ICON_ARSENAL_CONTAINER "JeroenArsenal\Icons\JN_loadVehicle2.paa"
+#define STR_ACTION_ICON_ARSENAL_CONTAINER "JeroenArsenal\Icons\JN_unloadVehicle.paa"  
 #define STR_ACTION_TEXT_ARSENAL_CONTAINER localize "STR_JNA_ACT_CONTAINER_OPEN"
 
-#define STR_ACTION_ICON_ARSENAL_UNLOAD "JeroenArsenal\Icons\JN_unloadVehicle.paa"
+#define STR_ACTION_ICON_ARSENAL_UNLOAD "JeroenArsenal\Icons\JN_loadVehicle2.paa"
 #define STR_ACTION_TEXT_ARSENAL_UNLOAD localize "STR_JNA_ACT_UNLOAD"
 
 #define INITTYPES\
