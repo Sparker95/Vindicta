@@ -28,7 +28,7 @@ export class MissionPaths {
     public getFullName(): string {
         //console.log('getFullName: ');
         //console.log(this.version);
-        return [this.getName() + '_v' + this.version, this.getMap()].join('.');
+        return [this.getName() + '_' + this.getMap() + '_v' + this.version, this.getMap()].join('.');
     }
 
     public getWorkDir(): string {

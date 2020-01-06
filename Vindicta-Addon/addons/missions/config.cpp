@@ -12,3 +12,15 @@ class CfgPatches {
         VERSION_CONFIG;
     };
 };
+
+class CfgMissions
+{
+    // Multiplayer missions
+    class MPMissions
+    {
+        class Vindicta_Altis_v0_21_102
+        {
+            directory = "z\vindicta\addons\missions\Vindicta_Altis_v0_21_102.Altis";
+        };
+    };
+};
