@@ -1,1 +1,1 @@
-briefingName = "Vindicta 0.20.94";
+briefingName = "Vindicta 0.20.98";
