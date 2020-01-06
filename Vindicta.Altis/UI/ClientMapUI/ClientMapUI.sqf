@@ -230,10 +230,10 @@ CLASS(CLASS_NAME, "")
 				CALLM1(_thisObject, "garActionLBOnButtonClick", buttonStr); \
 			}]
 
-		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "MOVE");
-		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_ATTACK, "ATTACK");
-		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "REINFORCE");
-		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "CLOSE");
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_MOVE, "move");				// This text is not displayed
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_ATTACK, "attack");			// It is for another function to check it
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_REINFORCE, "reinforce");	// Marvis please don't touch it!
+		__GAR_ACTION_BUTTON_CLICK_EH(IDC_GCOM_ACTION_MENU_BUTTON_CLOSE, "close");			//
 
 		// = = = = = = = = = = = = = = = Create the selected garrison menu = = = = = = = = = = = 
 		// It appears when we have selected a garrison
@@ -636,7 +636,7 @@ Methods for the action listbox appears when we click on something to send some g
 		if (!T_GETV("garActionLBShown")) exitWith {};
 		if (T_GETV("garActionTargetType") == TARGET_TYPE_INVALID) exitWith {};
 
-		switch (_action) do {
+		switch (toLower _action) do {
 			case "move" : {
 				pr _AI = CALLSM("AICommander", "getAICommander", [playerSide]);
 				// Although it's on another machine, messageReceiver class will route the message for us
@@ -659,14 +659,14 @@ Methods for the action listbox appears when we click on something to send some g
 				systemChat "Giving a REINFORCE order to garrison";
 			};
 			case "patrol" : {
-				OOP_INFO_1("  %1 garrison action is not implemented", _lbData);
+				OOP_INFO_1("  %1 garrison action is not implemented", _action);
 				systemChat "This garrison order is not yet implemented";
 			};
 			case "close" : {
 				// Do nothing, it will just close itself
 			};
 			default {
-				OOP_ERROR_1("unknown garrison action: %1", _lbData);
+				OOP_ERROR_1("unknown garrison action: %1", _action);
 			};
 		};
 
@@ -1114,8 +1114,8 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					pr _numberDiff = (_dateDeparture call misc_fnc_dateToNumber) - (date call misc_fnc_dateToNumber);
 					pr _intelState = GETV(_intel, "state");
 					pr _stateStr = switch (_intelState) do {
-						case INTEL_ACTION_STATE_ACTIVE: {"ENDED"};
-						case INTEL_ACTION_STATE_INACTIVE: {"ENDED"};
+						case INTEL_ACTION_STATE_ACTIVE: {"ACTIVE"};
+						case INTEL_ACTION_STATE_INACTIVE: {"INACTIVE"};
 						case INTEL_ACTION_STATE_END: {"ENDED"};
 						default {"error"};
 					};

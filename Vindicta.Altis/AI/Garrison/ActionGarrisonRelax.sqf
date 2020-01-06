@@ -38,18 +38,38 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		// Order to some groups to occupy buildings
 		pr _i = 0;
 		pr _nGroupsPatrolReserve = 0;
+		pr _atPoliceStation = false;
+		pr _atRoadblock = false;
 		// We absolutely want at least some bots inside police stations
 		if (_loc != "") then { // If garrison is at location...
-			if (CALLM0(_loc, "getType") == LOCATION_TYPE_POLICE_STATION) then {
-				// First of all assign groups to guard the police station
-				// If there are more groups, they will be on patrol
-				_nGroupsPatrolReserve = 0;
+			switch (CALLM0(_loc, "getType")) do {
+				case LOCATION_TYPE_POLICE_STATION: {
+					_atPoliceStation = true;
+				};
+				case LOCATION_TYPE_ROADBLOCK: {
+					_atRoadblock = true;
+				};
+			};
+		};
+
+		
+		if (_atPoliceStation) then {
+			// First of all assign groups to guard the police station
+			// If there are more groups, they will be on patrol
+			_nGroupsPatrolReserve = 0;
+		} else {
+			if (_atRoadblock) then {
+				// At roadblock we want all groups to patrol if possible
+				// Otherwise they will stand inside not being able to detect anything
+				_nGroupsPatrolReserve = 100;
 			} else {
 				// For non-police stations, we must reserve at least 1...2 groups to perform patrol
 				// Otherwise they all will stay in houses
 				_nGroupsPatrolReserve = (1 + ceil (random 1)); // Reserve some groups for patrol
 			};
 		};
+
+		// Give orders to some groups to get into building
 		while {(count _groupsInf > _nGroupsPatrolReserve) && (count _buildings > 0)} do {
 			pr _group = _groupsInf#0;
 			pr _groupAI = CALLM0(_group, "getAI");
@@ -87,11 +107,21 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					};
 					
 					case GROUP_TYPE_VEH_STATIC: {
-						_args = ["GoalGroupRelax", 0, [], _AI];
+						if (_atRoadblock) then {
+							// Get into vehicles at roadblocks
+							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [], _AI];
+						} else {
+							_args = ["GoalGroupRelax", 0, [], _AI];
+						};
 					};
 					
 					case GROUP_TYPE_VEH_NON_STATIC: {
-						_args = ["GoalGroupPatrol", 0, [], _AI]; // They will patrol next to their vehicles
+						if (_atRoadblock) then {
+							// Get into vehicles at roadblocks
+							_args = ["GoalGroupGetInVehiclesAsCrew", 0, [["onlyCombat", true]], _AI]; // Occupy only combat vehicles
+						} else {
+							_args = ["GoalGroupPatrol", 0, [], _AI]; // They will patrol next to their vehicles
+						};
 					};
 					
 					case GROUP_TYPE_PATROL: {

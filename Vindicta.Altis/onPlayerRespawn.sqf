@@ -38,7 +38,7 @@ if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
 };
 
 // Bail if player has joined one of the not supported sides
-private _isAdmin = false; //call misc_fnc_isAdminLocal;
+private _isAdmin = call misc_fnc_isAdminLocal;
 if (! (CALLM0(gGameMode, "getPlayerSide") == playerSide) && !_isAdmin) exitWith {
     0 spawn {
 		waitUntil {!isNull (findDisplay 46)};
