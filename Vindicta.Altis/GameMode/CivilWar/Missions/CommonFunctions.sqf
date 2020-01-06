@@ -2,7 +2,7 @@
 pr0_fnc_CivieRunAway = {
 	// Cleaning old orders by moving group
 	private _oldGrp = group _this;
-	private _grp = createGroup [FRIENDLY_SIDE, true];
+	private _grp = createGroup [west, true];
 	[_this] joinSilent _grp;
 	deleteGroup _oldGrp;
 	// WAYPOINT - run away!

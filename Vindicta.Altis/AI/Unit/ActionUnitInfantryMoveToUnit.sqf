@@ -40,8 +40,20 @@ CLASS("ActionUnitInfantryMoveToUnit", "ActionUnitInfantryMoveBase")
 	METHOD("process") {
 		params [["_thisObject", "", [""]]];
 		
+		// Bail if dest unit is destroyed or whatever
+		pr _destUnit = T_GETV("destUnit");
+		if (!IS_OOP_OBJECT(_destUnit)) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+
+		pr _hDest = CALLM0(_destUnit, "getObjectHandle");
+		if (! alive _hDest) exitWith {
+			T_SETV("state", ACTION_STATE_FAILED);
+			ACTION_STATE_FAILED
+		};
+
 		// Check if the other unit has moved a lot so we need to update the position
-		pr _hDest = CALLM0(T_GETV("destUnit"), "getObjectHandle");
 		pr _pos = T_GETV("pos");
 		if ((_pos distance2D _hDest) > 1.0) then {
 			T_SETV("pos", ASLToAGL (getPosASL _hDest));
