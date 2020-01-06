@@ -1,0 +1,1 @@
+briefingName = "Vindicta 0.20.94";

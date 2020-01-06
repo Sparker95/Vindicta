@@ -35,9 +35,14 @@ var strMinor = fs.readFileSync(resolve(paths.configDir, "minorVersion.hpp"), 'ut
 var strBuild = fs.readFileSync(resolve(paths.configDir, "buildVersion.hpp"), 'utf8'); // Damn windows is adding a new line there...
 var intBuild = parseInt(strBuild, 10);
 strBuild = intBuild.toString();
-var strVersion = strMajor + "-" + strMinor + "-" + strBuild;
+var strVersion = " " + strMajor + "-" + strMinor + "-" + strBuild;
 console.log('Building mission version:');
 console.log(strVersion);
+
+// Make a file which contains description.ext briefingName entry
+var strBriefingName = 'briefingName = "Vindicta ' + strMajor + "." + strMinor + "." + strBuild + '";';
+fs.writeFileSync(resolve(paths.configDir, "briefingName.hpp"), strBriefingName,  'utf8');
+
 
 /**
  * Create gulp tasks

@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=215;
+		nextID=216;
 	};
 	class Camera
 	{
-		pos[]={14904.166,66.162926,10976.26};
-		dir[]={-0.097414866,-0.52921748,0.84291577};
-		up[]={-0.060758762,0.8484773,0.52573574};
-		aside[]={0.99342334,3.1827949e-007,0.11480906};
+		pos[]={14879.97,113.43767,11008.918};
+		dir[]={0.047610015,-0.8229956,0.56615102};
+		up[]={0.06896843,0.56803262,0.82011533};
+		aside[]={0.9965378,1.1459633e-009,-0.083803743};
 	};
 };
 binarizationWanted=0;
@@ -340,7 +340,6 @@ class Mission
 {
 	class Intel
 	{
-		briefingName="Vindicta";
 		resistanceWest=0;
 		timeOfChanges=1800.0002;
 		startWeather=0.30000001;
@@ -25427,7 +25426,7 @@ class Mission
 			};
 			id=1850;
 			type="B_Truck_01_transport_F";
-			atlOffset=-0.0001077652;
+			atlOffset=-0.011569023;
 		};
 		class Item764
 		{
@@ -25444,6 +25443,7 @@ class Mission
 			};
 			id=1851;
 			type="B_Truck_01_transport_F";
+			atlOffset=-0.015436172;
 		};
 		class Item765
 		{
@@ -25460,7 +25460,7 @@ class Mission
 			};
 			id=1852;
 			type="B_Truck_01_transport_F";
-			atlOffset=2.0980835e-005;
+			atlOffset=-0.015384674;
 		};
 		class Item766
 		{
@@ -25477,7 +25477,7 @@ class Mission
 			};
 			id=1853;
 			type="B_Truck_01_transport_F";
-			atlOffset=4.0054321e-005;
+			atlOffset=-0.002040863;
 		};
 		class Item767
 		{
@@ -25494,7 +25494,7 @@ class Mission
 			};
 			id=1854;
 			type="B_Truck_01_transport_F";
-			atlOffset=4.6730042e-005;
+			atlOffset=-0.00026321411;
 		};
 		class Item768
 		{
@@ -25511,7 +25511,7 @@ class Mission
 			};
 			id=1855;
 			type="B_Truck_01_transport_F";
-			atlOffset=5.4359436e-005;
+			atlOffset=-0.0021505356;
 		};
 		class Item769
 		{
@@ -25528,7 +25528,7 @@ class Mission
 			};
 			id=1856;
 			type="B_Truck_01_transport_F";
-			atlOffset=-3.0517578e-005;
+			atlOffset=-0.00067329407;
 		};
 		class Item770
 		{
@@ -25545,7 +25545,7 @@ class Mission
 			};
 			id=1857;
 			type="B_Truck_01_transport_F";
-			atlOffset=-8.9645386e-005;
+			atlOffset=-0.0001039505;
 		};
 		class Item771
 		{
@@ -25579,7 +25579,7 @@ class Mission
 			};
 			id=1859;
 			type="B_Slingload_01_Cargo_F";
-			atlOffset=7.6293945e-006;
+			atlOffset=-0.00043487549;
 		};
 		class Item773
 		{
@@ -25596,7 +25596,7 @@ class Mission
 			};
 			id=1860;
 			type="B_Slingload_01_Cargo_F";
-			atlOffset=3.0517578e-005;
+			atlOffset=-2.1934509e-005;
 		};
 	};
 	class Connections
