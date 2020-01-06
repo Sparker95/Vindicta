@@ -2,12 +2,20 @@
 
 #include "config\global_config.hpp"
 
-author="Sparker, Jeroen, Marvis, Sen, Billw";
+author="Vindicta Team";
 OnLoadName = "Vindicta";
 OnLoadMission = "Vindicta";
 
 allowFunctionsRecompile = 1;
 allowFunctionsLog = 1;
+
+// Name of the mission in the mission selection listbox
+// It has version in it so we generate it with teh build tool
+//#include "config\briefingName.hpp"
+
+overviewPicture = "\z\vindicta\addons\ui\pictures\VindictaLogo.paa";
+overviewText = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
+overviewTextLocked = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
 
 // Enable debug console
 #ifdef EDITOR_PREVIEW
@@ -31,20 +39,9 @@ respawnDelay = 2; // Default: ?
 DisabledAI = 1;
 respawnTemplates[] = {"MenuPosition"};
 
-/*
-class CfgTaskEnhancements
-    {
-    enable       = 1;            //0: disable new task features (default), 1: enable new task features & add new task markers and task widgets into the map
-    3d           = 1;            //0: do not use new 3D markers (default), 1: replace task waypoints with new 3D markers
-    3dDrawDist   = 3500;        //3d marker draw distance (default: 2000)
-    share        = 1;            //0: do not count assigned players (default), 1: count how many players have the task assigned
-    propagate    = 1;            //0: do not propagate (default), 1: propagate shared tasks to subordinates
-    };
-*/
-
 class Header
 {
-    gameType = COOP;
+    gameType = COOP; // I want my own game type plz :3
     minplayers=1;
     maxplayers=50;
 };
@@ -194,32 +191,11 @@ wreckRemovalMaxTime = 7200; // seconds. Default: 36000 (10 hours)
 // The minimum distance between corpse or wreck and nearest player before the corpse or wreck is allowed to be removed by the garbage collector.
 minPlayerDistance = 100; // meters. Default: 0
 
-// Test adding stuff to standard displays
+// Custom loading display
 class Extended_DisplayLoad_EventHandlers {
     class RscDisplayLoading {
         Mission_customLoadingScreen = "if (hasInterface) then {_this call compile preprocessFileLineNumbers 'loadDisplay.sqf';};";
     };
-    /*
-    class RscDisplayLoadCustom {
-        Mission_customLoadingScreen = "diag_log format [' >>> DisplayLoadCustom: %1', _this];";
-    };
-
-    class RscDisplayLoadingBlack {
-        Mission_customLoadingScreen = "diag_log format [' >>> DisplayLoadingBlack: %1', _this];";
-    };
-
-    class RscDisplayLoadMission {
-        Mission_customLoadingScreen = "diag_log format [' >>> DisplayLoadMission: %1', _this];";
-    };
-
-    class RscDisplayMission {
-        Mission_customLoadingScreen = "diag_log format [' >>> DisplayMission: %1', _this];";
-    };
-
-     class RscDisplayMultiplayerSetup {
-        Mission_customLoadingScreen = "diag_log format [' >>> DisplayMission: %1', _this];";
-    };
-    */
 };
 
 // Build UI

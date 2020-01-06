@@ -7,18 +7,20 @@
             "configs/dev/global_config.hpp",
             "configs/majorVersion.hpp",
             "configs/minorVersion.hpp",
-            "configs/buildVersion.hpp"
+            "configs/buildVersion.hpp",
+            "configs/briefingName.hpp"
         ]
     },
     {
         "sourceFolder": "Vindicta.Altis",
-        "missionName": "Vindicta-release",
+        "missionName": "Vindicta",
         "map": "Altis",
         "configFiles": [
             "configs/release/global_config.hpp",
             "configs/majorVersion.hpp",
             "configs/minorVersion.hpp",
-            "configs/buildVersion.hpp"
+            "configs/buildVersion.hpp",
+            "configs/briefingName.hpp"
         ]
     }
 ]
