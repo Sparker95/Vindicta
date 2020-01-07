@@ -32,7 +32,7 @@ Macros for user-defined GUI colors
 #define MUIC_WHITE {1, 1, 1, 1}
 #define MUIC_TXT_DISABLED {0.3, 0.3, 0.3, 1}
 #define MUIC_MISSION {1, 0.682, 0, 1}
-#define MUIC_LOGO {0.7, 0, 0, 1}
+#define MUIC_LOGO {0.663, 0.153, 0.149, 1}
 
 // Base colors for SQF
 #define MUIC_COLOR_TRANSPARENT [0, 0, 0, 0]
