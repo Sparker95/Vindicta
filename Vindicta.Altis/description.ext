@@ -13,7 +13,7 @@ allowFunctionsLog = 1;
 // It has version in it so we generate it with teh build tool
 //#include "config\briefingName.hpp"
 
-overviewPicture = "\z\vindicta\addons\ui\pictures\VindictaLogo.paa";
+overviewPicture = "\z\vindicta\addons\ui\pictures\overviewPicture.paa";
 overviewText = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
 overviewTextLocked = "Start from zero and liberate the territory from enemy occupation by using any means possible.";
 

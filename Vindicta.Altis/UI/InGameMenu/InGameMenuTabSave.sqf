@@ -251,9 +251,16 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Check if versions match
 		OOP_INFO_1(" checking record data: %1", _selRecordData);
-		if (INCOMPATIBLE_SAVE_VERSION in _errors) exitWith {
+		if (GETV(_header,"saveVersion") != (call misc_fnc_getSaveVersion)) exitWith {
 			pr _dialogObj = T_CALLM0("getDialogObject");
 			pr _text = format ["Error: version is incompatible: save: %1, current: %2", GETV(_header,"saveVersion"), call misc_fnc_getSaveVersion];
+			CALLM1(_dialogObj, "setHintText", _text);
+		};
+
+		// Check if maps match
+		if ( (toLower GETV(_header,"worldName")) != (toLower worldName)) exitWith {
+			pr _dialogObj = T_CALLM0("getDialogObject");
+			pr _text = format ["Error: maps are incompatible: save: %1, current: %2", GETV(_header,"worldName"), worldName];
 			CALLM1(_dialogObj, "setHintText", _text);
 		};
 
