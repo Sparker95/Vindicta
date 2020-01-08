@@ -11,7 +11,8 @@ var fs = require('fs');
 import { resolve } from "path";
 
 import { MissionPaths } from "./src";
-import { Preset, FolderStructureInfo } from "./src";
+import { Preset, FolderStructureInfo} from "./src";
+import { ConfigCppGenerator } from "./src/ConfigCppGenerator"
 
 const ROOT_DIR = resolve('../..');
 
@@ -35,13 +36,27 @@ var strMinor = fs.readFileSync(resolve(paths.configDir, "minorVersion.hpp"), 'ut
 var strBuild = fs.readFileSync(resolve(paths.configDir, "buildVersion.hpp"), 'utf8'); // Damn windows is adding a new line there...
 var intBuild = parseInt(strBuild, 10);
 strBuild = intBuild.toString();
-var strVersion = strMajor + "-" + strMinor + "-" + strBuild;
+var strVersionUnderscores = strMajor + "_" + strMinor + "_" + strBuild;
+var strVersionDots = strMajor + "." + strMinor + "." + strBuild;
 console.log('Building mission version:');
-console.log(strVersion);
+console.log(strVersionDots);
 
 // Make a file which contains description.ext briefingName entry
 var strBriefingName = 'briefingName = "Vindicta ' + strMajor + "." + strMinor + "." + strBuild + '";';
 fs.writeFileSync(resolve(paths.configDir, "briefingName.hpp"), strBriefingName,  'utf8');
+
+// Store values of addon path
+// I know the 4 lines of code below are a clustrfuck and make little sense... I'm a noob at this
+var missionTemp = new MissionPaths(presets[0], paths,
+                    strVersionUnderscores, strVersionDots);
+var missionAddonDir = missionTemp.getAddonDir();
+var missionNameVersion = missionTemp.getNameVersion();
+var missionBriefingName = strBriefingName;
+var missionWorkDir = missionTemp.getWorkDir();
+
+// Init config.cpp generator
+var configCppGenerator = new ConfigCppGenerator(missionNameVersion);
+//console.log(configCppGenerator.getOutput());
 
 
 /**
@@ -52,9 +67,15 @@ let taskNamesPbo: string[] = [];
 let taskNamesZip: string[] = [];
 
 for (let preset of presets) {
-    const mission = new MissionPaths(preset, paths, strVersion);
+    const mission = new MissionPaths(preset, paths, strVersionUnderscores, strVersionDots);
     const taskName = [preset.missionName, preset.map].join('.');
-    const strVersion1 = "1.2.3";
+
+    // Call config.cpp generator
+    configCppGenerator.addMission(
+        mission.getNameMapVersion(),
+        mission.getMap(),
+        mission.getBriefingName()
+    );
 
     taskNames.push('mission_' + taskName);
 
@@ -77,6 +98,13 @@ for (let preset of presets) {
             return gulp.src(mission.getMissionConfigFilePaths())
                 .pipe(gulp.dest(resolve(mission.getOutputDir(), 'config')));
         },
+
+        /** Make a copy for packing all missions into one addon **/
+        function copyFrameworkAddon() {
+            return gulp.src(mission.getOutputDir().concat('/**/*'))
+                .pipe(gulp.dest(mission.getOutputAddonDir()));
+        }
+
         // /** Replace variables values in configuration file */
         // function replaceVariables() {
         //     let src = gulp.src(mission.getMissionConfigFilePath());
@@ -103,7 +131,7 @@ for (let preset of presets) {
     gulp.task('pack_' + taskName, () => {
         return gulp.src(mission.getOutputDir() + '/**/*')
             .pipe(gulpPbo({
-                fileName: mission.getFullName() + '.pbo',
+                fileName: mission.getNameMapVersionMap() + '.pbo',
                 progress: false,
                 verbose: false,
                 // Do not compress (SLOW)
@@ -129,14 +157,42 @@ for (let preset of presets) {
                 base: ROOT_DIR // Change base dir to have correct relative paths in ZIP
             })
             .pipe(gulp.src(
-                    resolve(mission.getWorkDir(), 'pbo', mission.getFullName() + '.pbo'), 
+                    resolve(mission.getWorkDir(), 'pbo', mission.getNameMapVersionMap() + '.pbo'), 
                     {
                         base: resolve(mission.getWorkDir(), 'pbo') // Change base dir to have correct relative paths in ZIP
                     }))
-            .pipe(gulpZip(mission.getFullName() + '.zip'))
+            .pipe(gulpZip(mission.getNameMapVersionMap() + '.zip'))
             .pipe(gulp.dest(mission.getWorkDir()))
     });
 }
+
+// Add task to make a pbo of all missions as single pbo
+taskNamesPbo.push('pack_missions_to_addon');
+
+gulp.task('pack_missions_to_addon', () => {
+    // Write config.cpp
+    fs.writeFileSync(resolve(missionAddonDir, 'config.cpp'), configCppGenerator.getOutput(),  'utf8');
+
+    // Write proprefix
+    // No use for it since the gulp-armapbo does not care about it
+    //fs.writeFileSync(resolve(missionAddonDir, '$PBOPREFIX$'), 'z\\vindicta\\addons\\missions',  'utf8');
+
+    return gulp.src(missionAddonDir + '/**/*')
+        .pipe(gulpPbo({
+            // Addon pbo must be lowercase, or linux admins will to hate us
+            // !!! Must match to the prefix in MPMissions/..../directory !!!
+            fileName: (missionNameVersion + '.pbo').toLowerCase(),
+            progress: false,
+            verbose: false,
+            // Do not compress (SLOW)
+            compress: true ? [] : [
+                '**/*.sqf',
+                'mission.sqm',
+                'description.ext'
+            ]
+        }))
+        .pipe(gulp.dest(paths.workDir + '/pbo'));
+});
 
 // Main tasks
 gulp.task('clean', () => {
@@ -154,6 +210,7 @@ gulp.task('zip', gulp.series(taskNamesZip));
 
 gulp.task('default',
     gulp.series(
+        gulp.task('clean'),
         gulp.task('build'),
         gulp.task('pbo'),
         //gulp.task('zip'),

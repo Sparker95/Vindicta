@@ -347,6 +347,12 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					_objectHandle setSkill ["reloadSpeed", 0.5];
 					_objectHandle setSkill ["spotDistance", 1];
 					_objectHandle setSkill ["spotTime", 1];
+
+					// Set unit insignia
+					// todo find a better way to handle this?
+					if ( (side _groupHandle) == CALLM0(gGameMode, "getPlayerSide")) then {
+						[_objectHandle, "Vindicta"] call BIS_fnc_setUnitInsignia;
+					};
 				};
 				case T_VEH: {
 

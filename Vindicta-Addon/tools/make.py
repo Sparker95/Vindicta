@@ -922,6 +922,7 @@ See the make.cfg file for additional build options.
         module_root = cfg.get(make_target, "module_root", fallback=os.path.join(make_root_parent, "addons"))
         optionals_root = os.path.join(module_root_parent, "optionals")
         extensions_root = os.path.join(module_root_parent, "extensions")
+        missions_root = os.path.join(module_root_parent, "missions")
 
         if (os.path.isdir(module_root)):
             os.chdir(module_root)
@@ -1416,6 +1417,13 @@ See the make.cfg file for additional build options.
                 shutil.copytree(os.path.join(module_root, release_dir, project), os.path.join(a3_path, project))
             except:
                 print_error("Could not copy files. Is Arma 3 running?")
+
+    # Copy missions folder to addons
+    print_blue("\nCopying missions to addons")
+    for file in os.listdir(missions_root):
+        if (file.endswith(".pbo")):
+            print("Copying file {}".format(file))
+            shutil.copy(os.path.join(missions_root, file), os.path.join(release_dir, project, "addons"))
 
     if len(failedBuilds) > 0 or len(missingFiles) > 0:
         if len(failedBuilds) > 0:

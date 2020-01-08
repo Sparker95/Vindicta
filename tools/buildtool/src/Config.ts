@@ -19,6 +19,8 @@ export interface Preset {
     */
     readonly missionName: string;
 
+    readonly missionNameBase: string;
+
     /** 
      * Map name
     */
