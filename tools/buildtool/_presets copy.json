@@ -1,11 +1,11 @@
 [
     {
         "sourceFolder": "Vindicta.Altis",
-        "missionName": "Vindicta",
+        "missionName": "Vindicta-dev",
         "missionNameBase": "Vindicta",
         "map": "Altis",
         "configFiles": [
-            "configs/release/global_config.hpp",
+            "configs/dev/global_config.hpp",
             "configs/majorVersion.hpp",
             "configs/minorVersion.hpp",
             "configs/buildVersion.hpp",
@@ -16,7 +16,7 @@
         "sourceFolder": "Vindicta.Altis",
         "missionName": "Vindicta",
         "missionNameBase": "Vindicta",
-        "map": "Enoch",
+        "map": "Altis",
         "configFiles": [
             "configs/release/global_config.hpp",
             "configs/majorVersion.hpp",
