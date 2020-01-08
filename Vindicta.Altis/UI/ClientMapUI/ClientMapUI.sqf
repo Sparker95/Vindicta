@@ -1137,6 +1137,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 					} else {
 						format ["%1M", _m]
 					};
+					
+					if (_futureEvent) then {
+						_timeDiffStr = "In " + _timeDiffStr;
+					} else {
+						_timeDiffStr = _timeDiffStr + " ago";
+					};
 
 					// Make a string representation of side
 					pr _side = GETV(_intel, "side");
