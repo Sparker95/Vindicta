@@ -1418,7 +1418,7 @@ See the make.cfg file for additional build options.
             except:
                 print_error("Could not copy files. Is Arma 3 running?")
 
-    # copy the missions folder to addons
+    # Copy missions folder to addons
     print_blue("\nCopying missions to addons")
     for file in os.listdir(missions_root):
         if (file.endswith(".pbo")):
