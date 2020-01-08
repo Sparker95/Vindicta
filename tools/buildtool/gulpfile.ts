@@ -174,11 +174,14 @@ gulp.task('pack_missions_to_addon', () => {
     fs.writeFileSync(resolve(missionAddonDir, 'config.cpp'), configCppGenerator.getOutput(),  'utf8');
 
     // Write proprefix
-    fs.writeFileSync(resolve(missionAddonDir, '$PBOPREFIX$'), 'z\\vindicta\\addons\\missions',  'utf8');
+    // No use for it since the gulp-armapbo does not care about it
+    //fs.writeFileSync(resolve(missionAddonDir, '$PBOPREFIX$'), 'z\\vindicta\\addons\\missions',  'utf8');
 
     return gulp.src(missionAddonDir + '/**/*')
         .pipe(gulpPbo({
-            fileName: (missionNameVersion + '.pbo').toLowerCase(), // Addon pbo must be lowercase, or linux admins will to hate us
+            // Addon pbo must be lowercase, or linux admins will to hate us
+            // !!! Must match to the prefix in MPMissions/..../directory !!!
+            fileName: (missionNameVersion + '.pbo').toLowerCase(),
             progress: false,
             verbose: false,
             // Do not compress (SLOW)
