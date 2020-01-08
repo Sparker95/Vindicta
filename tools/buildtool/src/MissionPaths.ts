@@ -9,12 +9,17 @@ export class MissionPaths {
 
     private folderStructure: FolderStructureInfo;
 
-    private version: string;
+    private versionUnderscores: string;
+    private versionDots: string;
 
-    constructor(preset: Preset, folderStructure: FolderStructureInfo, version: string) {
+    constructor(preset: Preset,
+        folderStructure: FolderStructureInfo,
+        versionUnderscores: string,
+        versionDots: string) {
         this.preset = preset;
         this.folderStructure = folderStructure;
-        this.version = version;
+        this.versionUnderscores = versionUnderscores;
+        this.versionDots = versionDots;
     }
 
     public getMap(): string {
@@ -25,10 +30,29 @@ export class MissionPaths {
         return this.preset.missionName;
     }
 
-    public getFullName(): string {
-        //console.log('getFullName: ');
-        //console.log(this.version);
-        return [this.getName() + '-' + this.version, this.getMap()].join('.');
+    // Vindicta
+    // Common to all missions, regardless of dev or release build or whatever
+    public getNameBase(): string {
+        return this.preset.missionNameBase;
+    }
+
+    // Vindicta_Altis_v1_2_3
+    public getNameMapVersion(): string {
+        return (this.getName() + '_' + this.getMap() + '_v' + this.versionUnderscores);
+    }
+
+    // Vindicta_Altis_v1_2_3.Altis
+    public getNameMapVersionMap(): string {
+        return this.getName() + '_' + this.getMap() + '_v' + this.versionUnderscores + '.' + this.getMap();
+    }
+
+    // Vindicta_v1
+    public getNameVersion(): string {
+        return (this.getNameBase() + '_v' + this.versionUnderscores);
+    }
+
+    public getBriefingName(): string {
+        return (this.getNameBase() + " " + this.versionDots);
     }
 
     public getWorkDir(): string {
@@ -58,8 +82,26 @@ export class MissionPaths {
     public getOutputDir(): string {
         return path.resolve(
             this.folderStructure.workDir,
-            this.getFullName()
+            this.getNameMapVersionMap()
         );
+    }
+
+    public getAddonDir(): string {
+        return path.resolve(
+            this.folderStructure.workDir,
+            'missions_' + this.getNameVersion()
+        );
+    }
+
+    /*
+    Get path to folder within folder which will later be packed into an addon with multiple missions
+    */
+   public getOutputAddonDir(): string {
+       var retval = path.resolve(
+            this.getAddonDir(),
+            this.getNameMapVersionMap()
+        );
+        return retval;
     }
 
     /** 

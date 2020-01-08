@@ -12,7 +12,7 @@ class CfgPatches {
             "cba_jr"
 		};
         author = "";
-        authors[] = {"Vindicta Team", "ACE Team (template)"};
+        authors[] = {"Vindicta Team"};
         authorUrl = "";
         VERSION_CONFIG;
     };
