@@ -108,9 +108,9 @@ CLASS(CLASS_NAME, "")
 		T_SETV("locSelMenuEnabled", false);
 		T_SETV("locationCurrent", "");
 
-		T_SETV("showIntelInactive", true);
-		T_SETV("showIntelActive", true);
-		T_SETV("showIntelEnded", true);
+		T_SETV("showIntelInactive", false);
+		T_SETV("showIntelActive", false);
+		T_SETV("showIntelEnded", false);
 		T_SETV("showLocations", true);
 		T_SETV("showEnemies", true);
 		T_SETV("showIntelPanel", true);
@@ -159,15 +159,15 @@ CLASS(CLASS_NAME, "")
 		 ! ! ! ! !  ! ! ! ! ! ! ! ! ! */
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_INACTIVE"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelInactive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ACTIVE"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelActive", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_INTEL_ENDED"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowIntelEnded", _this); }];
-		[_ctrl, true, false] call ui_fnc_buttonCheckboxSetState;
+		[_ctrl, false, false] call ui_fnc_buttonCheckboxSetState;
 
 		pr _ctrl = ([_mapDisplay, "CMUI_BUTTON_LOC"] call ui_fnc_findCheckboxButton);
 		_ctrl ctrlAddEventHandler ["ButtonDown", { CALLM(gClientMapUI, "onButtonClickShowLocations", _this); }];
