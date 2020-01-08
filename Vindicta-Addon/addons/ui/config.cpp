@@ -139,3 +139,14 @@ class CfgMarkers {
 	};
 
 };
+
+class CfgUnitInsignia
+{
+	class Vindicta
+	{
+		displayName = "Vindicta";
+		author = "Vindicta Team";
+		texture = QPATHTOF(pictures\insignia_v.paa);
+		textureVehicle = "";
+	};
+};

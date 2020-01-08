@@ -35,6 +35,7 @@ Vindicta.Altis/mission.sqm
 
 #Vindicta-Addon
 Vindicta-Addon/addons/*.pbo
+Vindicta-Addon/release
 
 Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/config.cpp
