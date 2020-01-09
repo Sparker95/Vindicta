@@ -1424,6 +1424,8 @@ See the make.cfg file for additional build options.
         if (file.endswith(".pbo")):
             print("Copying file {}".format(file))
             shutil.copy(os.path.join(missions_root, file), os.path.join(release_dir, project, "addons"))
+            print("Signing file {}".format(file))
+            subprocess.call([dssignfile, key, os.path.join(release_dir, project, "addons", file)])
 
     if len(failedBuilds) > 0 or len(missingFiles) > 0:
         if len(failedBuilds) > 0:
