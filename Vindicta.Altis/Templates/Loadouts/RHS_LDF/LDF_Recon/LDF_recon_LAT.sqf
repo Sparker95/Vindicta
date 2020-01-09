@@ -30,8 +30,7 @@ this addItemToUniform "rhssaf_mag_br_m75";
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7U1_AK";};
 for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_AK";};
 this addItemToBackpack "rhs_rpg7_TBG7V_mag";
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7V_mag";};
-
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7VM_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "rhs_1PN138";
