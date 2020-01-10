@@ -17,7 +17,8 @@ Initializes the build menu UI, handles opening and closing, and handles the buil
 sound place: 
 playSound ["3DEN_notificationDefault", false];
 
-Author: Marvis
+Author: Billw, 
+Additional authors: Marvis, Sparker
 */
 
 #define pr private
