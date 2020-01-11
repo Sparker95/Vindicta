@@ -189,8 +189,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
 				// Only give boost if we are accessing military containers/vehicles
 				if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
-					pr _boost = T_GETV("suspicionBoost");
-					T_SETV("suspicionBoost", _boost + SUSP_INV_TAKE_PUT_BOOST);
+					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
 		}];
@@ -206,8 +205,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _sideNum = getNumber (configFile >> "CfgVehicles" >> _type >> "side");
 				// Only give boost if we are accessing military containers/vehicles
 				if (_type isKindOf "ThingX" || _sideNum in [0, 1, 2]) then {
-					pr _boost = T_GETV("suspicionBoost");
-					T_SETV("suspicionBoost", _boost + SUSP_INV_TAKE_PUT_BOOST);
+					CALLSM2("undercoverMonitor", "boostSuspicion", player, SUSP_INV_TAKE_PUT_BOOST);
 				};
 			};
 		}];
@@ -265,6 +263,16 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 					T_SETV("bSeen", false);
 					_timeSeen = -1;
 					T_SETV("timeSeen", _timeSeen);
+				};
+
+				// get distance to nearestEnemy
+				pr _distance = -1;
+				if !(isNull _nearestEnemy) then { 
+					_distance = (position _nearestEnemy) distance (position _unit); 
+
+					if (behaviour _nearestEnemy == "COMBAT" && _distance < 30) then {
+						CALLSM2("undercoverMonitor", "boostSuspicion", player, 0.3);
+					};
 				};
 
 				// check if unit is in vehicle
@@ -396,12 +404,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 									_suspicionArr pushBack [1, "Military vehicle"];
 									_hintKeys pushback HK_MILVEH;
 								}; // if in military vehicle
-
-								// get distance to nearestEnemy
-								pr _distance = -1;
-								if !(isNull _nearestEnemy) then { 
-									_distance = (position _nearestEnemy) distance (position _unit); 
-								};
 								
 								#ifdef DEBUG_UNDERCOVER_MONITOR 
 									_unit setVariable ["distance", _distance];
@@ -417,8 +419,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 										};
 									} forEach (crew vehicle _unit);
 								};
-
-								if (!(currentWeapon _unit in g_UM_civWeapons) && _bodyExposure > 0.7) then {  };
 
 								/*  Suspiciousness in a civilian vehicle, based on distance to the nearest enemy who sees player unit */
 								if (_distance != -1 && _suspGearVeh >= SUSPICIOUS) then {
