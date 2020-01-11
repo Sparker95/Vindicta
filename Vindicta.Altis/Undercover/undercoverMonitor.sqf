@@ -47,6 +47,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("suspicionBoost");												// A one-time suspicion increment active for the current time interval
 	VARIABLE("timeSeen");														
 	VARIABLE("timeHostility");												// greater than current mission time if player recently fired a weapon
+	VARIABLE("timeBoost");	
 	VARIABLE("eyePosOld");													
 	VARIABLE("eyePosOldVeh");
 	VARIABLE("nearestEnemyDist");
@@ -64,7 +65,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("timer");														// Timer which will send SMON_MESSAGE_PROCESS message every second or so
 	VARIABLE("inventoryOpen");												// Bool, set from event handlers
 	VARIABLE("inventoryContainer");											// Object handle, current inventory container we are accessing
-	VARIABLE("eventHandlers");										// Array with inventory EH IDs
+	VARIABLE("eventHandlers");												// Array with inventory EH IDs
 
 	// ------------ N E W ------------
 
@@ -85,6 +86,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("incrementSusp", 0);
 		T_SETV("timeSeen", 0);
 		T_SETV("timeHostility", 0);
+		T_SETV("timeBoost", 0);
 		T_SETV("eyePosOld", [0 ARG 0 ARG 0]);
 		T_SETV("eyePosOldVeh", [0 ARG 0 ARG 0]);
 		T_SETV("nearestEnemyDist", -1);
@@ -127,6 +129,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			SETV(_uM, "timeHostility", (time +TIME_HOSTILITY));
 		}];
 		T_SETV("EHFiredMan", _EH_firedMan);
+
 
 		// event handler for deleting this undercover monitor
 		_unit addEventHandler ["Killed", {
@@ -229,34 +232,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			_unit removeEventHandler _x;
 		} forEach (T_GETV("eventHandlers"));
 
-		/*
-		// No need to set them to nil manually, it gets cleared on its own by OOP light
-		// Let it be here like a monument
-		T_SETV("EHLoadout", nil);
-		T_SETV("EHFiredMan", nil);
-		T_SETV("unit", nil);
-		T_SETV("state", nil);
-		T_SETV("prevState", nil);
-		T_SETV("stateChanged", nil);
-		T_SETV("suspicion", nil);
-		T_SETV("incrementSusp", nil);
-		T_SETV("timeSeen", nil);
-		T_SETV("timeHostility", nil);
-		T_SETV("eyePosOld", nil);
-		T_SETV("eyePosOldVeh", nil);
-		T_SETV("nearestEnemyDist", nil);
-		T_SETV("nearestEnemy", nil);
-		T_SETV("bSeen", nil);
-		T_SETV("suspGear", nil);
-		T_SETV("suspGearVeh", nil);
-		T_SETV("bodyExposure", nil);
-		T_SETV("timeCompromised", nil);
-		T_SETV("bCaptive", nil);
-		T_SETV("camoCoeff", nil);
-		T_SETV("bGhillie", nil);
-		T_SETV("timer", nil);
-		*/
-
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {
@@ -282,7 +257,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				pr _suspicionArr = [[0, "default"]];			
 				pr _hintKeys = [];									// UI keys for displaying hints
 				pr _nearestEnemy = T_GETV("nearestEnemy");
-				pr _camoCoeffMod = 0;								// percentage by which camouflage coefficient is modified each interval							
+				pr _camoCoeffMod = 0;								// percentage by which camouflage coefficient is modified each interval								
 
 				// reset "seen by enemy" variable
 				pr _timeSeen = T_GETV("timeSeen");
@@ -321,6 +296,17 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 
 						pr _timeHostility = T_GETV("timeHostility");
 						if (time < _timeHostility) exitWith { _suspicionArr pushBack [1, "Hostility"]; _hintKeys pushback HK_HOSTILITY; };
+
+						// apply suspicion boosts
+						pr _timeBoost = T_GETV("timeBoost");
+						if (time < _timeBoost) then { 
+							pr _suspBoost = T_GETV("timeBoost");
+							_suspicionArr pushBack [(T_GETV("suspicionBoost")), "Suspicion boost"];
+							systemchat format["%1", (T_GETV("suspicionBoost"))];
+							systemchat format["%1", (_timeBoost - time)];
+						} else {
+							T_SETV("suspicionBoost", 0);
+						};
 	
 						// check if unit is in allowed area
 						pr _pos = getPos _unit;
@@ -328,8 +314,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				 		if (_loc != "") then { 	
 							if ( CALLM1(_loc, "isInAllowedArea", vehicle _unit) ) then { // Will always return true for city or roadblock on road, regardless of actual allowed area marker area
 								_bInAllowedArea = true;
-                _hintKeys pushback HK_ALLOWEDAREA;
-                OOP_INFO_0("In allowed area");
+                				_hintKeys pushback HK_ALLOWEDAREA;
+               					 OOP_INFO_0("In allowed area");
 							} else {
 								// Suspiciousness for being in a military area depends on the campaign progress
 								pr _progress = CALLM0(gGameModeServer, "getCampaignProgress"); // 0..1
@@ -790,10 +776,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			};
 		} forEach _suspicionArr;
 
-		// Aply the temporary boost
-		_suspicion = _suspicion + T_GETV("suspicionBoost");
-		T_SETV("suspicionBoost", 0); // It only lasts for this interval
-
 		if (_suspicion >= 1) then { 
 			_unit setVariable [UNDERCOVER_SUSPICIOUS, false, true];
 			_unit setCaptive false;
@@ -902,7 +884,20 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		if (_thisObject != "") then {
 			pr _boost = T_GETV("suspicionBoost");
 			T_SETV("suspicionBoost", _boost + _value);
+			T_SETV("timeBoost", (time + TIME_BOOST));
 		};
+	} ENDMETHOD;
+
+	// Called once on mission start
+	STATIC_METHOD("staticInit") {
+		params [P_THISCLASS];
+
+		["ace_treatmentSucceded", {
+			params ["_caller", "_target", "_selectionName", "_className"];
+			if ((side _caller != side _target) && (side _target != civilian)) then {
+				CALLSM2("undercoverMonitor", "boostSuspicion", _caller, 2.0);
+			};
+    	}] call CBA_fnc_addEventHandler;
 	} ENDMETHOD;
 
 ENDCLASS;
