@@ -95,7 +95,7 @@ CLASS("ActionUnitInfantryMoveBase", "ActionUnit")
 				pr _ETA = T_GETV("ETA");
 				// Teleport the unit if ETA is exceeded and teleportation is allowed
 				if ((time > _ETA) && T_GETV("teleport")) then {
-					OOP_INFO_2("MOVE FAILED for infantry unit: %1, position: %2", _thisObject, _pos);
+					OOP_WARNING_2("MOVE FAILED for infantry unit: %1, position: %2", _thisObject, _pos);
 				
 					// Should we teleport him or someone will blame AI for cheating??
 					_ho setPos _pos;

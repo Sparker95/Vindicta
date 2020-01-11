@@ -230,6 +230,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set 'active' flag
 		T_SETV("active", true);
 
+		// Enable automatic spawning
+		T_CALLM1("enableAutoSpawn", true);
+		
 		T_SETV("outdated", true);
 
 		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
