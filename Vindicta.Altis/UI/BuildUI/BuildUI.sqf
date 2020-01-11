@@ -17,7 +17,7 @@ Initializes the build menu UI, handles opening and closing, and handles the buil
 sound place: 
 playSound ["3DEN_notificationDefault", false];
 
-Author: Billw, 
+Author: Billw
 Additional authors: Marvis, Sparker
 */
 
@@ -372,7 +372,7 @@ CLASS("BuildUI", "")
 
 			case DIK_DELETE: { 
 
-				CALLSM0("BuildUI", "delActiveObject");
+				//CALLSM0("BuildUI", "demolishActiveObject");
 				true; // disables default control 
 			};
 		};
@@ -1075,6 +1075,16 @@ CLASS("BuildUI", "")
 		T_SETV("isMovingObjects", false);
 
 		T_CALLM0("enterMoveMode");
+
+	} ENDMETHOD;
+
+	// deletes object and returns construction points
+	STATIC_METHOD("demolishActiveObject") {
+		params [P_THISOBJECT];
+
+		if !(T_GETV("isMovingObjects")) exitWith {};
+
+		
 
 	} ENDMETHOD;
 
