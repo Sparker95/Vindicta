@@ -1,0 +1,1 @@
+force ace_map_mapIllumination = false;
