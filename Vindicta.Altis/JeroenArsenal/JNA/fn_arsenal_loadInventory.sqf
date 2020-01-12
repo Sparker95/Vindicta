@@ -377,7 +377,7 @@ pr _invCallArray = [
 						_container addItemCargo [_item, 1];
 					};
 
-					if (_amountAvailable > _amount) then {
+					if (_amountAvailable >= _amount) then {
 						_container addItemCargo [_item,_amount];
 						[_arrayTaken,_index,_item,_amount] call _addToArray;
 						[_availableItems,_index,_item,_amount] call _removeFromArray;
