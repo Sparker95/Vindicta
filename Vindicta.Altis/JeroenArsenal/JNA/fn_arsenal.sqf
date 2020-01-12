@@ -1474,7 +1474,7 @@ switch _mode do {
 
                 };
                 _lastCargoListSelected = uiNamespace getVariable ["jna_lastCargoListSelected", IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG];
-                ['TabSelectRight',[_display,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG]] call jn_fnc_arsenal;
+                //['TabSelectRight',[_display,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG]] call jn_fnc_arsenal;
             };
             case IDC_RSCDISPLAYARSENAL_TAB_HEADGEAR: {
                 _oldItem = headgear player;
@@ -1657,7 +1657,7 @@ switch _mode do {
                         if(_idcList != -1)then{[_object, _idcList, _x] call jn_fnc_arsenal_removeItem};
                     }foreach _newAttachments - _oldAttachments;
 
-                    ['TabSelectRight',[_display,IDC_RSCDISPLAYARSENAL_TAB_ITEMOPTIC]] call jn_fnc_arsenal;
+                    //['TabSelectRight',[_display,IDC_RSCDISPLAYARSENAL_TAB_ITEMOPTIC]] call jn_fnc_arsenal;
                 };
             };
             case IDC_RSCDISPLAYARSENAL_TAB_MAP;
