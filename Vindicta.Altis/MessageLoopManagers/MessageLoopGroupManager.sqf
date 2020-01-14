@@ -23,6 +23,18 @@ CLASS("MessageLoopGroupManager", "MessageReceiverEx");
 		} else {
 			OOP_ERROR_1("deleteObject: invalid object ref: %1", _objectRef);
 		};
+		0
+	} ENDMETHOD;
+
+	METHOD("stopAIobject") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_objectRef")];
+
+		if (IS_OOP_OBJECT(_objectRef)) then {
+			CALLM0(_objectRef, "stop");
+		} else {
+			OOP_ERROR_1("stopAIObject: invalid object ref: %1", _objectRef);
+		};
+		0
 	} ENDMETHOD;
 
 	METHOD("getMessageLoop") {

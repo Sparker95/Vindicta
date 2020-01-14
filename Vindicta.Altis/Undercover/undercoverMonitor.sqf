@@ -310,8 +310,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						if (time < _timeBoost) then { 
 							pr _suspBoost = T_GETV("timeBoost");
 							_suspicionArr pushBack [(T_GETV("suspicionBoost")), "Suspicion boost"];
-							systemchat format["%1", (T_GETV("suspicionBoost"))];
-							systemchat format["%1", (_timeBoost - time)];
+							//systemchat format["%1", (T_GETV("suspicionBoost"))];
+							//systemchat format["%1", (_timeBoost - time)];
 						} else {
 							T_SETV("suspicionBoost", 0);
 						};
