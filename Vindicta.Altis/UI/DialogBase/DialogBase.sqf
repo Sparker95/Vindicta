@@ -258,12 +258,12 @@ CLASS("DialogBase", "")
 		pr _hintx = 0;
 		pr _hintw = _fullw;
 		if (_multiTab) then {
-			_hintx = DIALOG_BASE_GROUP_TAB_BUTTONS_W;
-			_hintw = _hintw - DIALOG_BASE_GROUP_TAB_BUTTONS_W;
+			_hintx = DIALOG_BASE_GROUP_TAB_BUTTONS_W - 0.005;
+			_hintw = _hintw - DIALOG_BASE_GROUP_TAB_BUTTONS_W  + 0.005;
 		};
 		pr _hinty = _fullh - DIALOG_BASE_STATIC_HINTS_H;
 		pr _ctrl = _display displayCtrl IDC_DIALOG_BASE_STATIC_HINTS;
-		_ctrl ctrlSetPosition [_ox + _hintx - 0.005, _oy + _hinty, _hintw + 0.005, DIALOG_BASE_STATIC_HINTS_H];
+		_ctrl ctrlSetPosition [_ox + _hintx, _oy + _hinty, _hintw, DIALOG_BASE_STATIC_HINTS_H];
 		_ctrl ctrlCommit 0;
 
 		// Group of tab buttons and its BG

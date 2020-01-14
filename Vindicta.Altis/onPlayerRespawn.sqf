@@ -140,7 +140,7 @@ pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
     && {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
 };
 
-_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '##FFFFFF'/>") + ("<t size='1' color = '##FFFFFF'> Talk</t>")), // title
+_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
                  "[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  9000, // Priority
@@ -166,7 +166,7 @@ _newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.
                  "", //selection
                  ""]; //memoryPoint
 
-_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '##FFFFFF'/>") + ("<t size='1' color = '##FFFFFF'> Recruit</t>")), // title
+_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
                  "[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
                  0, // Arguments
                  8998, // Priority

@@ -208,6 +208,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			//#endif
 
 			T_CALLM("initClientOnly", []);
+
+			CALLSM0("undercoverMonitor", "staticInit");
 		};
 		T_CALLM("postInitAll", []);
 		
