@@ -55,7 +55,7 @@ _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
 
-_veh set [T_VEH_car_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo",]];
+_veh set [T_VEH_car_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1", "LIB_Kfz1_camo", "LIB_Kfz1_Hood_sernyt", "LIB_Kfz1_Hood", "LIB_Kfz1_Hood_camo"]];
 _veh set [T_VEH_car_armed, ["LIB_DAK_Scout_M3", "LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
 /*
 _veh set [T_VEH_MRAP_unarmed, ["LIB_Kfz1_MG42_sernyt", "LIB_Kfz1_MG42", "LIB_Kfz1_MG42_camo"]];
