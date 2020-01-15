@@ -20,7 +20,7 @@ _inf set [T_INF_marksman, ["LIB_GER_scout_sniper", "LNRD_Luftwaffe_sniper"]];
 _inf set [T_INF_sniper, ["LIB_GER_scout_sniper", "LNRD_Luftwaffe_sniper"]];
 _inf set [T_INF_exp, ["LIB_GER_sapper_gefr", "LIB_GER_sapper"]];
 _inf set [T_INF_LAT, ["LIB_GER_LAT_Rifleman", "LNRD_Luftwaffe_LAT_rifleman", "LIB_GER_AT_grenadier", "LNRD_Luftwaffe_AT_grenadier"]];
-_inf set [T_INF_AT, ["LIB_GER_AT_soldier", "LNRD_Luftwaffe_AT_soldier]];
+_inf set [T_INF_AT, ["LIB_GER_AT_soldier", "LNRD_Luftwaffe_AT_soldier"]];
 _inf set [T_INF_LMG, ["LIB_GER_mgunner2", "LNRD_Luftwaffe_mgunner"]];
 _inf set [T_INF_HMG, ["LIB_GER_mgunner", "LNRD_Luftwaffe_mgunner2"]];
 _inf set [T_INF_medic, ["LIB_GER_medic", "LNRD_Luftwaffe_medic"]];
