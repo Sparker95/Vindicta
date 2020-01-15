@@ -136,7 +136,7 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_LDF"];
+_array set [T_NAME, "tIFA3_UK"];
 
 
-_array // End template
+_array 
