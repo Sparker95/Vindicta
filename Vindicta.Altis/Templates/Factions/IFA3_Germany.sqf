@@ -13,7 +13,7 @@ _inf set [T_INF_DEFAULT, ["LIB_GER_Soldier3"]];
 
 _inf set [T_INF_SL, ["LIB_GER_unterofficer", "LIB_GER_gun_unterofficer", "LIB_GER_scout_unterofficer"]];
 _inf set [T_INF_TL, ["LIB_GER_smgunner", "LIB_GER_scout_smgunner", "LNRD_Luftwaffe_smgunner"]];
-_inf set [T_INF_officer, ["LIB_GER_oberst", "LIB_GER_hauptmann", "LIB_GER_ober_lieutenant", "LIB_GER_scout_lieutenant", "LIB_GER_lieutenant", "LIB_GER_gun_lieutenant",]];
+_inf set [T_INF_officer, ["LIB_GER_oberst", "LIB_GER_hauptmann", "LIB_GER_ober_lieutenant", "LIB_GER_scout_lieutenant", "LIB_GER_lieutenant", "LIB_GER_gun_lieutenant"]];
 _inf set [T_INF_GL, ["LIB_GER_ober_grenadier", "LIB_GER_scout_ober_grenadier"]];
 _inf set [T_INF_rifleman, ["LIB_GER_unequip", "LIB_GER_ober_rifleman", "LIB_GER_scout_ober_rifleman", "LNRD_Luftwaffe_ober_rifleman", "LIB_GER_soldier_camo_base", "LIB_GER_soldier_camo2_base", "LIB_GER_Soldier2", "LIB_GER_Soldier3", "LNRD_Luftwaffe_rifleman", "LIB_GER_soldier_camo4_base", "LIB_GER_soldier_camo3_base", "LIB_GER_rifleman", "LIB_GER_soldier_camo5_base", "LIB_GER_scout_rifleman", "LIB_GER_radioman", "LNRD_Luftwaffe_radioman", "LIB_GER_stggunner", "LNRD_Luftwaffe_stggunner"]];
 _inf set [T_INF_marksman, ["LIB_GER_scout_sniper", "LNRD_Luftwaffe_sniper"]];
