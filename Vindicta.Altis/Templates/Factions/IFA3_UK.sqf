@@ -110,19 +110,18 @@ _veh set [T_VEH_truck_fuel, ["LIB_US_GMC_Fuel"]];
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 //_drone set [T_DRONE_DEFAULT, [""]];
-
-
-//_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
-//_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
-//_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_plane_unarmed, ["B_UAV_02_dynamicLoadout_F"]];
-//_drone set [T_DRONE_heli_attack, ["B_T_UAV_03_dynamicLoadout_F"]];
-//_drone set [T_DRONE_quadcopter, ["B_UAV_01_F"]];
-//_drone set [T_DRONE_designator, ["B_Static_Designator_01_F"]];
-//_drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
-//_drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
-//_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
-
+/*
+_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
+_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
+_drone set [T_DRONE_plane_attack, ["B_UAV_02_dynamicLoadout_F"]];
+_drone set [T_DRONE_plane_unarmed, ["B_UAV_02_dynamicLoadout_F"]];
+_drone set [T_DRONE_heli_attack, ["B_T_UAV_03_dynamicLoadout_F"]];
+_drone set [T_DRONE_quadcopter, ["B_UAV_01_F"]];
+_drone set [T_DRONE_designator, ["B_Static_Designator_01_F"]];
+_drone set [T_DRONE_stat_HMG_low, ["B_HMG_01_A_F"]];
+_drone set [T_DRONE_stat_GMG_low, ["B_GMG_01_A_F"]];
+_drone set [T_DRONE_stat_AA, ["B_SAM_System_03_F"]];
+*/
 //==== Cargo ====
 _cargo = +(tDefault select T_CARGO);
 
