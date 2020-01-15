@@ -13,7 +13,7 @@ _inf set [T_INF_DEFAULT, ["LIB_UK_Rifleman"]];					//Default infantry if nothing
 
 _inf set [T_INF_SL, ["LIB_UK_Sergeant"]];
 _inf set [T_INF_TL, ["LIB_UK_Corporal"]];
-_inf set [T_INF_officer, ["LIB_UK_Officer",]];
+_inf set [T_INF_officer, ["LIB_UK_Officer"]];
 _inf set [T_INF_GL, ["LIB_UK_Grenadier"]];
 _inf set [T_INF_rifleman, ["LIB_UK_Rifleman"]];
 _inf set [T_INF_marksman, ["LIB_UK_Sniper"]];
