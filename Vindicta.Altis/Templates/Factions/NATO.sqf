@@ -11,7 +11,6 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT,  ["B_Soldier_F"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_default, ["B_Soldier_F"]];
 _inf set [T_INF_SL, ["B_Soldier_SL_F"]];
 _inf set [T_INF_TL, ["B_Soldier_TL_F"]];
 _inf set [T_INF_officer, ["B_officer_F"]];
