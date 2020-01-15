@@ -14,7 +14,7 @@
 ["Templates\Factions\RHS_USAF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_ranger.sqf"]	call t_fnc_initializeTemplateFromFile;
-["Templates\Factions\RHS_RHS_HIDF.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_HIDF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\IFA3_Germany.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\IFA3_Germany_police.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\IFA3_UK.sqf"]	call t_fnc_initializeTemplateFromFile;
