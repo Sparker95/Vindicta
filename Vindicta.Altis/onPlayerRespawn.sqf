@@ -20,6 +20,16 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
 
+// Set player's position to default respawn position
+// "respawn_default" marker should be present
+private _pos = getMarkerPos "respawn_default";
+if (_pos isEqualTo [0, 0, 0]) then {
+    private _text = "[Vindicta] Error: respawn_default marker does not exist, player is respawned at [0, 0, 0]";
+    diag_log _text;
+    systemChat _text;
+};
+_newUnit setPos _pos;
+
 // Bail instantly if game mode init is disabled
 #ifdef GAME_MODE_DISABLE
 if (true) exitWith {};
@@ -27,6 +37,7 @@ if (true) exitWith {};
 
 // Bail if game mode was not initialized yet
 if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
+    /*
     0 spawn {
 		waitUntil {!isNull (findDisplay 46)};
     	CALLSM1("NotificationFactory", "createSystem", "Wait until game mode finishes its initialization...");
@@ -35,6 +46,7 @@ if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
         sleep 3;
         _this setDamage 1;
     };
+    */
 };
 
 // Bail if player has joined one of the not supported sides

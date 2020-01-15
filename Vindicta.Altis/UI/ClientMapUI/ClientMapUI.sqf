@@ -1883,6 +1883,21 @@ Gets called from "onMapDraw"
 		};
 	} ENDMETHOD;
 
+
+	// Respawn button functionality
+
+	METHOD("respawnButtonEnable") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+
+		pr _ctrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlShow _enable;
+	} ENDMETHOD;
+
+	METHOD("onButtonClickRespawn") {
+		params [P_THISOBJECT];
+	} ENDMETHOD;
+
+
 	// Adds some random intel to debug the intel panel
 	// You can use this in the debug console:
 	// call ClientMapUI_fnc_addDummyIntel;

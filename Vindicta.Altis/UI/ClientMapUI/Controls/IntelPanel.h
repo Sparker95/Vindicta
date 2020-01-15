@@ -127,6 +127,16 @@ class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
+class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT 
+{
+    IDC = -1; 
+    x = safeZoneX + safeZoneW * 0.353; 
+    y = safeZoneY + safeZoneH * 0.822; 
+    w = safeZoneW * 0.292; 
+    h = safeZoneH * 0.075; 
+    text = "RESPAWN"; 
+};
+
 class CMUI_INTEL_BTNGRP : MUI_GROUP {
 
 	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;
