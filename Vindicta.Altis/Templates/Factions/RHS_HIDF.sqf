@@ -101,7 +101,7 @@ _veh set [T_VEH_truck_inf, ["rhs_zil131_msv", "RHS_Ural_MSV_01", "rhs_gaz66_msv"
 _veh set [T_VEH_truck_cargo, ["rhs_zil131_flatbed_cover_msv", "RHS_Ural_Flat_MSV_01", "rhs_gaz66_flat_msv", "rhsusf_M1084A1P2_B_WD_fmtv_usarmy", "rhsusf_M977A4_BKIT_usarmy_wd"]];
 _veh set [T_VEH_truck_ammo, ["rhsusf_M977A4_AMMO_usarmy_wd", "rhs_gaz66_ammo_msv"]];
 _veh set [T_VEH_truck_repair, ["rhsusf_M977A4_REPAIR_usarmy_wd", "rhs_Ural_Repair_MSV_01"]];
-_veh set [T_VEH_truck_medical , ["rhsusf_M1085A1P2_B_WB_Medical_fmtv_usarmy", rhs_zil131_flatbed_cover_msv", "RHS_Ural_Flat_MSV_01", "rhs_gaz66_flat_msv"]];
+_veh set [T_VEH_truck_medical , ["rhsusf_M1085A1P2_B_WB_Medical_fmtv_usarmy", "rhs_zil131_flatbed_cover_msv", "RHS_Ural_Flat_MSV_01", "rhs_gaz66_flat_msv"]];
 _veh set [T_VEH_truck_fuel, ["rhsusf_M977A4_usarmy_wd", "RHS_Ural_Fuel_MSV_01"]];
 
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
@@ -110,7 +110,6 @@ _veh set [T_VEH_truck_fuel, ["rhsusf_M977A4_usarmy_wd", "RHS_Ural_Fuel_MSV_01"]]
 _drone = +(tDefault select T_DRONE);
 _drone set [T_DRONE_SIZE-1, nil];
 _drone set [T_DRONE_DEFAULT, ["rhs_pchela1t_vvsc"]];
-
 
 //_drone set [T_DRONE_UGV_unarmed, ["B_UGV_01_F"]];
 //_drone set [T_DRONE_UGV_armed, ["B_UGV_01_rcws_F"]];
