@@ -28,10 +28,10 @@ _inf set [T_INF_LMG, ["CUP_O_TK_Soldier_AR"]];
 _inf set [T_INF_HMG, ["CUP_O_TK_Soldier_MG"]];
 _inf set [T_INF_medic, ["CUP_O_TK_Medic"]];
 _inf set [T_INF_engineer, ["CUP_O_TK_Engineer"]];
-_inf set [T_INF_crew, ["RHS_LDF_crew"]];
-_inf set [T_INF_crew_heli, ["RHS_LDF_helicrew"]];
-_inf set [T_INF_pilot, ["RHS_LDF_pilot"]];
-_inf set [T_INF_pilot_heli, ["RHS_LDF_helipilot"]];
+_inf set [T_INF_crew, ["CUP_O_TK_Crew"]];
+_inf set [T_INF_crew_heli, ["CUP_O_TK_Pilot"]];
+_inf set [T_INF_pilot, ["CUP_O_TK_Pilot"]];
+_inf set [T_INF_pilot_heli, ["CUP_O_TK_Pilot"]];
 //_inf set [T_INF_survivor, ["CUP_O_sla_Soldier"]];
 //_inf set [T_INF_unarmed, ["CUP_O_sla_Soldier"]];
 
@@ -57,28 +57,28 @@ _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["CUP_O_LR_MG_TKM"]];
 
-_veh set [T_VEH_car_unarmed, ["rhsgref_cdf_reg_uaz", "rhsgref_cdf_reg_uaz_open"]];
-_veh set [T_VEH_car_armed, ["CUP_O_LR_MG_TKM", "CUP_O_UAZ_MG_TKA", "CUP_O_UAZ_AGS30_TKA"]];
+_veh set [T_VEH_car_unarmed, ["CUP_O_LR_Transport_TKA","CUP_O_UAZ_Open_TKA"]];
+_veh set [T_VEH_car_armed, ["CUP_O_LR_MG_TKA","CUP_O_LR_SPG9_TKA","CUP_O_UAZ_METIS_TKA","CUP_O_UAZ_MG_TKA","CUP_O_UAZ_AGS30_TKA","CUP_O_UAZ_SPG9_TKA"]];
 
-_veh set [T_VEH_MRAP_unarmed, ["CUP_O_LR_Transport_TKA"]];
+_veh set [T_VEH_MRAP_unarmed, ["CUP_O_MTLB_pk_TKA"]];
 _veh set [T_VEH_MRAP_HMG, ["CUP_O_LR_MG_TKA", "CUP_O_BMP1P_TKA"]];
 _veh set [T_VEH_MRAP_GMG, ["CUP_O_BMP2_TKA"]];
 
 _veh set [T_VEH_IFV, ["CUP_O_BMP1_TKA", "CUP_O_BMP1P_TKA", "CUP_O_BMP2_TKA", "CUP_O_BMP2_ZU_TKA"]];
 _veh set [T_VEH_APC, ["CUP_O_M113_TKA", "CUP_O_BMP2_TKA"]];
 _veh set [T_VEH_MBT, ["CUP_O_T34_TKA", "CUP_O_T55_TK", "CUP_O_T72_TKA"]];
-_veh set [T_VEH_MRLS, ["rhsgref_cdf_reg_BM21"]];
+_veh set [T_VEH_MRLS, ["CUP_O_BM21_TKA"]];
 _veh set [T_VEH_SPA, ["rhsgref_cdf_2s1"]];
-_veh set [T_VEH_SPAA, ["CUP_O_Ural_ZU23_TKA", "CUP_O_Ural_ZU23_TKA"]];
+_veh set [T_VEH_SPAA, ["CUP_O_ZSU23_Afghan_TK","CUP_O_Ural_ZU23_TKA"]];
 
-_veh set [T_VEH_stat_HMG_high, ["rhsgref_nat_DSHKM"]];
+_veh set [T_VEH_stat_HMG_high, ["CUP_O_KORD_high_TK"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
-_veh set [T_VEH_stat_HMG_low, ["RHS_NSV_TriPod_MSV", "rhsgref_nat_DSHKM_Mini_TriPod"]];
-_veh set [T_VEH_stat_GMG_low, ["RHS_AGS30_TriPod_MSV"]];
-_veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_msv", "RHS_ZU23_MSV"]];
+_veh set [T_VEH_stat_HMG_low, ["CUP_O_KORD_TK", "rhsgref_nat_DSHKM_Mini_TriPod"]];
+_veh set [T_VEH_stat_GMG_low, ["CUP_O_AGS_TK"]];
+_veh set [T_VEH_stat_AA, ["CUP_O_Igla_AA_pod_TK", "CUP_O_ZU23_TK"]];
 _veh set [T_VEH_stat_AT, ["rhs_Kornet_9M133_2_msv", "rhs_Metis_9k115_2_msv", "rhsgref_cdf_SPG9M", "rhsgref_cdf_SPG9"]];
 
-_veh set [T_VEH_stat_mortar_light, ["rhs_2b14_82mm_msv"]];
+_veh set [T_VEH_stat_mortar_light, ["CUP_O_2b14_82mm_TK"]];
 _veh set [T_VEH_stat_mortar_heavy, ["rhs_D30_msv"]];
 
 _veh set [T_VEH_heli_light, ["CUP_O_UH1H_TKA"]];
@@ -98,10 +98,10 @@ _veh set [T_VEH_boat_unarmed, ["B_Boat_Transport_01_F", "I_C_Boat_Transport_02_F
 _veh set [T_VEH_personal, ["B_Quadbike_01_F"]];
 
 _veh set [T_VEH_truck_inf, ["CUP_O_Ural_TKA", "rhsgref_cdf_zil131_open", "rhsgref_cdf_gaz66", "rhsgref_cdf_gaz66o"]];
-_veh set [T_VEH_truck_cargo, ["rhsgref_cdf_zil131_flatbed", "rhsgref_cdf_zil131_flatbed_cover", "rhsgref_cdf_gaz66_flat", "rhsgref_cdf_gaz66o_flat"]];
+_veh set [T_VEH_truck_cargo, ["CUP_O_V3S_Open_TKA","CUP_O_V3S_Covered_TKA","CUP_O_Ural_Open_TKA","CUP_O_Ural_TKA"]];
 _veh set [T_VEH_truck_ammo, ["CUP_O_Ural_Reammo_TKA"]];
-_veh set [T_VEH_truck_repair, ["rhsgref_cdf_gaz66_repair"]];
-_veh set [T_VEH_truck_medical , ["rhsgref_cdf_gaz66_repair"]];
+_veh set [T_VEH_truck_repair, ["CUP_O_Ural_Repair_TKA"]];
+_veh set [T_VEH_truck_medical , ["CUP_O_LR_Ambulance_TKA"]];
 _veh set [T_VEH_truck_fuel, ["CUP_O_Ural_Refuel_TKA"]];
 
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
