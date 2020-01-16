@@ -1235,19 +1235,24 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Lock all message loops in specific order
 		private _msgLoops = [
-								"messageLoopGameMode",
-								"messageLoopCommanderEast",
-								"messageLoopCommanderWest",
-								"messageLoopCommanderInd",
-								"messageLoopMain",
-								"messageLoopGroupAI"
+								["messageLoopGameMode", 10],
+								["messageLoopCommanderEast", 120],
+								["messageLoopCommanderWest", 120],
+								["messageLoopCommanderInd", 120],
+								["messageLoopMain", 10],
+								["messageLoopGroupAI", 10]
 							];
 		{
-			private _msgLoop = T_GETV(_x);
-			private _text = format ["Locking message loop: %1", _x];
+			_x params ["_loopName", "_timeout"];
+			private _msgLoop = T_GETV(_loopName);
+			private _text = format ["Locking message loop %1, this could take up to %2 seconds -- be patient", _loopName, _timeout];
 			diag_log _text;
 			[_text] remoteExec ["systemChat"];
-			CALLM0(_msgLoop, "lock");
+			if(!CALLM1(_msgLoop, "try_lock_timeout", _timeout)) then {
+				private _text = format ["Warning: failed to lock message loop %1 in reasonable time, saving anyway.", _loopName];
+				diag_log _text;
+				[_text] remoteExec ["systemChat"];
+			};
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
 		// Start loading screen
