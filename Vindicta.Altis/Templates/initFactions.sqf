@@ -14,3 +14,4 @@
 ["Templates\Factions\RHS_USAF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_ranger.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\CUP_TKA.sqf"]	call t_fnc_initializeTemplateFromFile;
