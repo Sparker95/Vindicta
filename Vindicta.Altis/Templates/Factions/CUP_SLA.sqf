@@ -1,5 +1,5 @@
 /*
-custom Livonian Defence Forces templates for ARMA III (RHS)
+CUP Sahrani Liberation Army
 */
 
 _array = [];
