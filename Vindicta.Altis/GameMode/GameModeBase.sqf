@@ -1236,10 +1236,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Lock all message loops in specific order
 		private _msgLoops = [
 								["messageLoopGameMode", 10],
-								["messageLoopCommanderEast", 120],
-								["messageLoopCommanderWest", 120],
-								["messageLoopCommanderInd", 120],
-								["messageLoopMain", 10],
+								["messageLoopCommanderEast", 150],
+								["messageLoopCommanderWest", 150],
+								["messageLoopCommanderInd", 150],
+								["messageLoopMain", 30],
 								["messageLoopGroupAI", 10]
 							];
 		{
