@@ -65,7 +65,7 @@ _veh set [T_VEH_car_armed, ["LIB_UK_Willys_MB_M1919"]];
 //_veh set [T_VEH_MRAP_GMG, [""]];
 
 //_veh set [T_VEH_IFV, [""]];
-_veh set [T_VEH_APC, ["LIB_UniversalCarrier", "LIB_UK_M3Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
+_veh set [T_VEH_APC, ["LIB_UniversalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
 _veh set [T_VEH_MBT, ["LIB_Churchill_Mk7", "LIB_Churchill_Mk7_AVRE", "LIB_Churchill_Mk7_Crocodile", "LIB_Crusader_Mk3", "LIB_M4A3_75", "LIB_M4A4_FIREFLY"]];
 //_veh set [T_VEH_MRLS, [""]];
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];

@@ -58,7 +58,7 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_G_Offroad_01_F"]];
 
 _veh set [T_VEH_car_unarmed, ["B_G_Offroad_01_F", "rhsgref_hidf_m1025", "rhsgref_hidf_m998_2dr_fulltop", "rhsgref_hidf_m998_2dr_halftop", "rhsgref_hidf_m998_2dr", "rhsgref_hidf_m998_4dr_fulltop", "rhsgref_hidf_m998_4dr_halftop", "rhsgref_hidf_m998_4dr"]];
-_veh set [T_VEH_car_armed, ["B_G_Offroad_01_armed_F", "B_G_Offroad_01_AT_F", "rhsgref_hidf_m1025_m2", "rhsgref_hidf_m1025_mk19", "rhsgref_cdf_reg_uaz_spg9"]];
+_veh set [T_VEH_car_armed, ["B_G_Offroad_01_armed_F", "B_G_Offroad_01_AT_F", "rhsgref_hidf_m1025_m2", "rhsgref_hidf_m1025_mk19"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsgref_BRDM2UM_msv", "rhsusf_m1240a1_usarmy_wd"]];
 _veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ_msv", "rhsgref_BRDM2_msv", "rhsusf_m1240a1_m240_usarmy_wd", "rhsusf_m1240a1_m2_usarmy_wd", "rhsusf_m1240a1_m2crows_usarmy_wd", "rhsusf_M1117_W"]];
