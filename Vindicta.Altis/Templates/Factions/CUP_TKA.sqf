@@ -1,5 +1,5 @@
 /*
-CUP Sahrani Liberation Army
+CUP Takistani Army
 */
 
 _array = [];
