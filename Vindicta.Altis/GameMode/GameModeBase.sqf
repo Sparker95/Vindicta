@@ -1248,7 +1248,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _text = format ["Locking message loop %1, this could take up to %2 seconds -- be patient", _loopName, _timeout];
 			diag_log _text;
 			[_text] remoteExec ["systemChat"];
-			if(!CALLM1(_msgLoop, "try_lock_timeout", _timeout)) then {
+			if(!CALLM1(_msgLoop, "tryLockTimeout", _timeout)) then {
 				private _text = format ["Warning: failed to lock message loop %1 in reasonable time, saving anyway.", _loopName];
 				diag_log _text;
 				[_text] remoteExec ["systemChat"];
