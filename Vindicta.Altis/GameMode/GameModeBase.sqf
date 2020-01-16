@@ -1245,7 +1245,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		{
 			_x params ["_loopName", "_timeout"];
 			private _msgLoop = T_GETV(_loopName);
-			private _text = format ["Locking message loop %1, this could take up to %2 seconds -- be patient", _loopName, _timeout];
+			private _text = format ["Locking thread %1, this could take up to %2 seconds -- be patient", _loopName, _timeout];
 			diag_log _text;
 			[_text] remoteExec ["systemChat"];
 			if(!CALLM1(_msgLoop, "tryLockTimeout", _timeout)) then {
