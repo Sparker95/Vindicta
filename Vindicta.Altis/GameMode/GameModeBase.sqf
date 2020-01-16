@@ -1260,8 +1260,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Save message loops
 		{
-			private _msgLoop = T_GETV(_x);
-			diag_log format ["Saving message loop: %1", _x];
+			_x params ["_loopName", "_timeout"];
+			private _msgLoop = T_GETV(_loopName);
+			diag_log format ["Saving thread: %1", _loopName];
 			CALLM1(_storage, "save", _msgLoop);
 		} forEach _msgLoops;
 
