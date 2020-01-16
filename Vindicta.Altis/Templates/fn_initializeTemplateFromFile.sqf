@@ -6,7 +6,7 @@
 #define IS_SERVER isServer
 #endif
 
-params [["_filePath", "", [""]]];
+params [["_filePath", "", [""]], "_factionType"];
 
 // Call compile the file as usual...
 _t = call compile preprocessFileLineNumbers _filePath;
@@ -23,7 +23,7 @@ diag_log "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 diag_log format ["[Template] Initializing template from file: %1", _filePath];
 
 // Check for errors, inexistent class names or loadouts, etc
-private _errorCount = [_t] call t_fnc_validateTemplate;
+private _errorCount = [_t, _factionType] call t_fnc_validateTemplate;
 if (_errorCount > 0) exitWith {
 	_t = []; // Break it completely so that whole scenario fails horribly and we can see the errors in RPT
 	missionNamespace setVariable [_tName, _t];

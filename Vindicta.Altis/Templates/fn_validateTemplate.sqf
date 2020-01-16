@@ -2,7 +2,7 @@
 Validates that specified class names are not wrong in a template array
 */
 
-params ["_t"];
+params ["_t", "_factionType"];
 
 private _errorCount = 0;
 
@@ -19,11 +19,14 @@ _validateArray = {
 				_errors = _errors + ([_x, _path0, _warnOrError] call _validateArray);
 			};
 		} else {
+			([_path0] call fnc_get_T_metadata) params ["_catName", "_entryName", "_required"];
 			if (_warnOrError) then {
-				diag_log format ["validateTemplate: error: value is nil, path: %1", _path0];
+				diag_log format ["validateTemplate: error: value is nil, category: %1, id: %2, required: %3", _catName, _entryName, str _required ];
 				_errors = _errors + 1;
 			} else {
-				diag_log format ["validateTemplate: warning: value is nil, path: %1", _path0];
+				if(({_x == _factionType} count _required) > 0) then {
+					diag_log format ["validateTemplate: warning: value is nil, category: %1, id: %2", _catName, _entryName ];
+				};
 			};
 		};
 	} forEach _array;
