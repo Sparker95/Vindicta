@@ -25,7 +25,7 @@ _validateArray = {
 				_errors = _errors + 1;
 			} else {
 				if(({_x == _factionType} count _required) > 0) then {
-					diag_log format ["validateTemplate: warning: value is nil, category: %1, id: %2", _catName, _entryName ];
+					diag_log format ["validateTemplate: warning: value is nil, category: %1, id: %2, required: %3", _catName, _entryName, str _required ];
 				};
 			};
 		};

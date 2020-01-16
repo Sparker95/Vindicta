@@ -17,9 +17,6 @@ if (isNil "_tName") exitWith {
 	diag_log format ["[Template] error: tempalte name was not specified for %1", _filePath];
 };
 
-diag_log "";
-diag_log "";
-diag_log "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 diag_log format ["[Template] Initializing template from file: %1", _filePath];
 
 // Check for errors, inexistent class names or loadouts, etc
@@ -34,8 +31,6 @@ if (_errorCount > 0) exitWith {
 	exitcode__ _errorCount;
 	#endif
 };
-
-diag_log format ["[Template] File %1 seems correct!", _filePath];
 
 #ifndef _SQF_VM
 // Convert class names to numbers, so that t_fnc_numberToClassName can work later
