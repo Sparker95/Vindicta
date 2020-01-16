@@ -57,7 +57,7 @@ _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["B_G_Offroad_01_F"]];
 
-_veh set [T_VEH_car_unarmed, ["B_G_Offroad_01_F", "rhsgref_hidf_m1025", "rhsgref_cdf_hidf_m998_2dr_fulltop", "rhsgref_cdf_hidf_m998_2dr_halftop", "rhsgref_cdf_hidf_m998_2dr", "rhsgref_cdf_hidf_m998_4dr_fulltop", "rhsgref_cdf_hidf_m998_4dr_halftop", "rhsgref_cdf_hidf_m998_4dr"]];
+_veh set [T_VEH_car_unarmed, ["B_G_Offroad_01_F", "rhsgref_hidf_m1025", "rhsgref_hidf_m998_2dr_fulltop", "rhsgref_hidf_m998_2dr_halftop", "rhsgref_hidf_m998_2dr", "rhsgref_hidf_m998_4dr_fulltop", "rhsgref_hidf_m998_4dr_halftop", "rhsgref_hidf_m998_4dr"]];
 _veh set [T_VEH_car_armed, ["B_G_Offroad_01_armed_F", "B_G_Offroad_01_AT_F", "rhsgref_hidf_m1025_m2", "rhsgref_hidf_m1025_mk19", "rhsgref_cdf_reg_uaz_spg9"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsgref_BRDM2UM_msv", "rhsusf_m1240a1_usarmy_wd"]];
@@ -69,27 +69,27 @@ _veh set [T_VEH_APC, ["rhs_btr60_msv", "rhs_btr70_msv", "rhsgref_hidf_m113a3_una
 _veh set [T_VEH_MBT, ["rhs_t72ba_tv", "rhs_t72bb_tv", "rhs_t72bc_tv", "rhs_t80", "rhs_t80a"]];
 _veh set [T_VEH_MRLS, ["RHS_BM21_MSV_01", "rhsusf_M142_usarmy_wd"]];
 _veh set [T_VEH_SPA, ["rhs_2s1_tv"]];
-_veh set [T_VEH_SPAA, ["rhs_zsu234_aa", "rhs_gaz66_zu23_msv", "RHS_Ural6_Zu23_MSV_01"]];
+_veh set [T_VEH_SPAA, ["rhs_zsu234_aa", "rhs_gaz66_zu23_msv", "RHS_Ural_Zu23_MSV_01"]];
 
 _veh set [T_VEH_stat_HMG_high, ["rhsgref_hidf_m2_static"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
 _veh set [T_VEH_stat_HMG_low, ["rhsgref_hidf_m2_static_minitripod"]];
 _veh set [T_VEH_stat_GMG_low, ["rhsgref_hidf_mk19_static"]];
 _veh set [T_VEH_stat_AA, ["rhs_Igla_AA_pod_msv", "RHS_ZU23_MSV"]];
-_veh set [T_VEH_stat_AT, ["rhs_Kornet_9M133_2_msv", "rhs_Metis_9k115_2_msv", "rhs_SPG9_MSV"]];
+_veh set [T_VEH_stat_AT, ["rhs_Kornet_9M133_2_msv", "rhs_Metis_9k115_2_msv", "rhs_SPG9M_MSV"]];
 
 _veh set [T_VEH_stat_mortar_light, ["RHS_M252_WD"]];
 _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_WD", "rhs_D30_msv"]];
 
-_veh set [T_VEH_heli_light, ["B_Heli_Light_01_F","RHS_Mi8AMT_vss", "rhs_uh1h_hidf_unarmed", "rhs_uh1h_hidf", "RHS_UH60M2"]];
-_veh set [T_VEH_heli_heavy, ["RHS_Mi8MTV3_heavy_vss", "rhs_uh1h_hidf_gunship", "RHS_UH60M"]];
-_veh set [T_VEH_heli_cargo, ["RHS_Mi8mt_cargo_vss"]];
-_veh set [T_VEH_heli_attack, ["B_Heli_Light_01_dynamicLoadout_F", "RHS_Mi24V_vss", "RHS_Mi24P_vss"]];
+_veh set [T_VEH_heli_light, ["B_Heli_Light_01_F", "rhs_uh1h_hidf_unarmed", "rhs_uh1h_hidf", "RHS_UH60M2"]];
+_veh set [T_VEH_heli_heavy, ["RHS_UH60M","RHS_Mi8mt_vdv"]];
+_veh set [T_VEH_heli_cargo, ["RHS_Mi8mt_Cargo_vdv"]];
+_veh set [T_VEH_heli_attack, ["B_Heli_Light_01_dynamicLoadout_F", "rhs_uh1h_hidf_gunship", "RHS_Mi24V_vdv"]];
 
-_veh set [T_VEH_plane_attack, ["RHSGREAF_A29B_HIDF", "rhs_l39_cdf"]];
-_veh set [T_VEH_plane_fighter, ["RHS_Su25SM_vss"]];
+_veh set [T_VEH_plane_attack, ["RHSGREF_A29B_HIDF"]];
+_veh set [T_VEH_plane_fighter, ["RHSGREF_A29B_HIDF"]];
 //_veh set [T_VEH_plane_cargo, [""]];
-_veh set [T_VEH_plane_unarmed, ["rhsgref_hidf_cessna_o3a"]];
+_veh set [T_VEH_plane_unarmed, ["rhsgred_hidf_cessna_o3a"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
 _veh set [T_VEH_boat_unarmed, ["rhsgref_hidf_assault_boat", "rhsgref_hidf_rhib", "rhsgref_hidf_canoe"]];
@@ -101,7 +101,7 @@ _veh set [T_VEH_truck_inf, ["rhs_zil131_msv", "RHS_Ural_MSV_01", "rhs_gaz66_msv"
 _veh set [T_VEH_truck_cargo, ["rhs_zil131_flatbed_cover_msv", "RHS_Ural_Flat_MSV_01", "rhs_gaz66_flat_msv", "rhsusf_M1084A1P2_B_WD_fmtv_usarmy", "rhsusf_M977A4_BKIT_usarmy_wd"]];
 _veh set [T_VEH_truck_ammo, ["rhsusf_M977A4_AMMO_usarmy_wd", "rhs_gaz66_ammo_msv"]];
 _veh set [T_VEH_truck_repair, ["rhsusf_M977A4_REPAIR_usarmy_wd", "rhs_Ural_Repair_MSV_01"]];
-_veh set [T_VEH_truck_medical , ["rhsusf_M1085A1P2_B_WB_Medical_fmtv_usarmy", "rhs_zil131_flatbed_cover_msv", "RHS_Ural_Flat_MSV_01", "rhs_gaz66_flat_msv"]];
+_veh set [T_VEH_truck_medical , ["rhs_zil131_msv", "RHS_Ural_MSV_01", "rhs_gaz66_msv"]];
 _veh set [T_VEH_truck_fuel, ["rhsusf_M977A4_usarmy_wd", "RHS_Ural_Fuel_MSV_01"]];
 
 //_veh set [T_VEH_submarine, ["B_SDV_01_F"]];
