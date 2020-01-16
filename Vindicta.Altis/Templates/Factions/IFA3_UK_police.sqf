@@ -1,6 +1,3 @@
-/*
-POLICE templates for ARMA III
-*/
 
 _array = [];
 
