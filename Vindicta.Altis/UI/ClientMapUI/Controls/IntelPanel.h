@@ -137,6 +137,16 @@ class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT
     text = "RESPAWN"; 
 };
 
+class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
+{
+	IDC = -1;
+	x = safeZoneX + safeZoneW * 0.353; 
+    y = safeZoneY + safeZoneH * 0.9; 
+    w = safeZoneW * 0.292; 
+    h = safeZoneH * 0.04; 
+    text = "RESPAWN";
+};
+
 class CMUI_INTEL_BTNGRP : MUI_GROUP {
 
 	IDC = IDC_LOCP_LISTNBOX_BUTTONS_GROUP;

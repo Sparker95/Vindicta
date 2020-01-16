@@ -30,9 +30,6 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("selectedGarrisonMarkers");
 	VARIABLE("selectedLocationMarkers");
 
-	// todo maybe redo THIS_ACTION_NAME
-	STATIC_VARIABLE("campAllowed");
-
 	// Position where the action listbox is going to be attached to
 	VARIABLE("garActionPos");
 	// True if the garrison action listbox is shown
@@ -78,6 +75,9 @@ CLASS(CLASS_NAME, "")
 	// Int, IDC of the control under the cursor, or -1
 	VARIABLE("currentControlIDC");
 
+	// Respawn panel
+	VARIABLE("respawnPanelEnabled");
+
 	// initialize UI event handlers
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
@@ -117,6 +117,9 @@ CLASS(CLASS_NAME, "")
 		T_SETV("intelPanelSortInverse", false);
 		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
+
+		// Respawn panel
+		T_SETV("respawnPanelEnabled", false);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -185,6 +188,8 @@ CLASS(CLASS_NAME, "")
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
+
+		([_mapDisplay, "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRespawn", _this); }];
 
 		// = = = = = = Initialize default text = = = = = =
 
@@ -1406,6 +1411,8 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			};
 		};
 
+
+
 		if (count _markersUnderCursor == 0) then {
 			// We are definitely not clicking on any map marker
 			T_CALLM0("onMouseClickElsewhere");
@@ -1796,6 +1803,9 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Redraw the drawArrow on the map if we are currently giving order to something
 		T_CALLM0("garOrderUpdateArrow");
 
+		// Update state of respawn panel thing
+		T_CALLM0("respawnPanelOnDraw");
+
 	} ENDMETHOD;
 
 	/*
@@ -1884,19 +1894,50 @@ Gets called from "onMapDraw"
 	} ENDMETHOD;
 
 
-	// Respawn button functionality
+	// //////////////////////////////////////////////////////////////////////////////////
+	// //  R E S P A W N   B U T T O N
+	// //////////////////////////////////////////////////////////////////////////////////
 
-	METHOD("respawnButtonEnable") {
+	METHOD("respawnPanelEnable") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
 		pr _ctrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
 		_ctrl ctrlShow _enable;
+		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlShow _enable;
+
+		T_SETV("respawnPanelEnabled", _enable);
+	} ENDMETHOD;
+
+	METHOD("respawnPanelEnabled") {
+		params [P_THISOBJECT];
+		T_GETV("respawnPanelEnabled");
 	} ENDMETHOD;
 
 	METHOD("onButtonClickRespawn") {
 		params [P_THISOBJECT];
 	} ENDMETHOD;
 
+	METHOD("respawnPanelSetText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+
+		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlSetText _text;
+	} ENDMETHOD;
+
+	METHOD("respawnPanelOnDraw") {
+		params [P_THISOBJECT];
+
+		if (T_GETV("respawnPanelEnabled")) then {
+			
+		};
+	} ENDMETHOD;
+
+
+
+
+
+	
 
 	// Adds some random intel to debug the intel panel
 	// You can use this in the debug console:
@@ -1931,6 +1972,3 @@ Gets called from "onMapDraw"
 	} ENDMETHOD;
 
 ENDCLASS;
-
-SET_STATIC_VAR(CLASS_NAME, "campAllowed", true);
-PUBLIC_STATIC_VAR(CLASS_NAME, "campAllowed");
