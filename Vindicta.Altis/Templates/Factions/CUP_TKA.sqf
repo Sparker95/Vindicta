@@ -9,16 +9,16 @@ _array set [T_SIZE-1, nil];									//Make an array having the size equal to the
 //==== Infantry ====
 _inf = +(tDefault select T_INF);
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
-_inf set [T_INF_DEFAULT, ["I_E_Soldier_F"]];
+_inf set [T_INF_DEFAULT, ["CUP_O_TK_Soldier_Backpack"]];
 
 _inf set [T_INF_SL, ["CUP_O_TK_Soldier_SL"]];
 _inf set [T_INF_TL, ["CUP_O_TK_Soldier_SL"]];
-_inf set [T_INF_officer, ["CUP_O_TK_Officer"]];
+_inf set [T_INF_officer, ["CUP_O_TK_Story_Aziz"]];
 _inf set [T_INF_GL, ["CUP_O_TK_Soldier_GL"]];
 _inf set [T_INF_rifleman, ["CUP_O_TK_Soldier_Backpack"]];
 _inf set [T_INF_marksman, ["CUP_O_TK_Sniper"]];
 _inf set [T_INF_sniper, ["CUP_O_TK_Sniper_KSVK"]];
-_inf set [T_INF_spotter, ["CUP_O_sla_Soldier"]];
+_inf set [T_INF_spotter, ["CUP_O_TK_Spotter"]];
 _inf set [T_INF_exp, ["CUP_O_sla_Engineer"]];
 _inf set [T_INF_ammo, ["RHS_LDF_MG_2", "RHS_LDF_AT_2"]];
 _inf set [T_INF_LAT, ["CUP_O_TK_Soldier_AT"]];
@@ -36,13 +36,13 @@ _inf set [T_INF_pilot_heli, ["CUP_O_TK_Pilot"]];
 //_inf set [T_INF_unarmed, ["CUP_O_sla_Soldier"]];
 
 // Recon
-_inf set [T_INF_recon_TL, ["CUP_O_TK_INS_Soldier_TL"]];
-_inf set [T_INF_recon_rifleman, ["CUP_O_TK_INS_Soldier"]];
-_inf set [T_INF_recon_medic, ["CUP_O_TK_INS_Guerilla_Medic"]];
-_inf set [T_INF_recon_exp, ["CUP_O_sla_Engineer_militia"]];
-_inf set [T_INF_recon_LAT, ["CUP_O_TK_INS_Soldier_AT"]];
-_inf set [T_INF_recon_marksman, ["CUP_O_TK_INS_Sniper"]];
-_inf set [T_INF_recon_JTAC, ["CUP_O_TK_INS_Mechanic"]];
+_inf set [T_INF_recon_TL, ["CUP_O_TK_SpecOps_TL"]];
+_inf set [T_INF_recon_rifleman, ["CUP_O_TK_SpecOps"]];
+_inf set [T_INF_recon_medic, ["CUP_O_TK_Medic"]];
+_inf set [T_INF_recon_exp, ["CUP_O_TK_Soldier_Backpack"]];
+_inf set [T_INF_recon_LAT, ["CUP_O_TK_Soldier_AT"]];
+_inf set [T_INF_recon_marksman, ["CUP_O_TK_Sniper_KSVK"]];
+_inf set [T_INF_recon_JTAC, ["CUP_O_TK_SpecOps"]];
 
 
 // Divers, still vanilla
