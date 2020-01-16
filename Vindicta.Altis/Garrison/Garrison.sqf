@@ -2069,6 +2069,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_WARNING_1("Not enough resources to add units from composition: %1", _garSrc);
 			OOP_WARNING_1("  Other garrison's composition: %1", _compositionNumbers);
 			OOP_WARNING_1("  Required         composition: %1", _comp);
+			__MUTEX_UNLOCK;
 			false
 		};
 
