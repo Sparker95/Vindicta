@@ -55,9 +55,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["RHS, AAF2017 - Altis Armed Forces",	"tRHS_AAF2017_elite"],
 			["RHS - Russian Armed Forces", 		"tRHS_AFRF"],
 			["RHS - US Army", 		"tRHS_USAF"],
-			["RHS - Livonian Defence Forces", 		"tRHS_LDF"]
-			["RHS - HIDF",	"tRHS_HIDF"]
-			["IFA3 - Germany",	"tIFA3_Germany"]
+			["RHS - Livonian Defence Forces", 		"tRHS_LDF"],
+			["RHS - HIDF",	"tRHS_HIDF"],
+			["IFA3 - Germany",	"tIFA3_Germany"],
 			["IFA3 - UK",	"tIFA3_UK"]//,
 			//["Test: must error", "test_error"]
 		];
@@ -72,8 +72,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _data = [
 			["Arma 3 - Police", "tPolice"],
 			["RHS, AAF2017 - Altian Police", "tRHS_AAF2017_police"],
-			["RHS - Livonian Forest Rangers ", "tRHS_LDF_ranger"]
-			["IFA3 - Germany (Police)", "tIFA3_Germany_police"]
+			["RHS - Livonian Forest Rangers ", "tRHS_LDF_ranger"],
+			["IFA3 - Germany (Police)", "tIFA3_Germany_police"],
 			["IFA3 - UK (Police)", "tIFA3_UK_police"]
 		];
 		{
