@@ -6,7 +6,7 @@
 #define IS_SERVER isServer
 #endif
 
-params [["_filePath", "", [""]]];
+params [["_filePath", "", [""]], "_factionType"];
 
 // Call compile the file as usual...
 _t = call compile preprocessFileLineNumbers _filePath;
@@ -17,13 +17,10 @@ if (isNil "_tName") exitWith {
 	diag_log format ["[Template] error: tempalte name was not specified for %1", _filePath];
 };
 
-diag_log "";
-diag_log "";
-diag_log "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -";
 diag_log format ["[Template] Initializing template from file: %1", _filePath];
 
 // Check for errors, inexistent class names or loadouts, etc
-private _errorCount = [_t] call t_fnc_validateTemplate;
+private _errorCount = [_t, _factionType] call t_fnc_validateTemplate;
 if (_errorCount > 0) exitWith {
 	_t = []; // Break it completely so that whole scenario fails horribly and we can see the errors in RPT
 	missionNamespace setVariable [_tName, _t];
@@ -34,8 +31,6 @@ if (_errorCount > 0) exitWith {
 	exitcode__ _errorCount;
 	#endif
 };
-
-diag_log format ["[Template] File %1 seems correct!", _filePath];
 
 #ifndef _SQF_VM
 // Convert class names to numbers, so that t_fnc_numberToClassName can work later
