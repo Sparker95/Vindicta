@@ -41,7 +41,7 @@ Returns: true if successful, false if the mutex has already been locked
         _locked = false; \
         waitUntil { \
             _locked = (mutex pushBackUnique 0) == 0; \
-            _locked || diag_tickTime > _timer + timeout \
+            _locked || (diag_tickTime > (_timer + timeout)) \
         }; \
         _locked \
     }
