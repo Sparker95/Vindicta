@@ -38,8 +38,8 @@ _inf set [T_INF_spotter, [""]];
 */
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
-_veh set [T_VEH_car_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
+_veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt", "LIB_OpelBlitz_Tent_Y_Camo", "LIB_OpelBlitz_Open_Y_Camo"]];
+_veh set [T_VEH_car_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt", "LIB_OpelBlitz_Tent_Y_Camo", "LIB_OpelBlitz_Open_Y_Camo"]];
 
 
 //==== Drones ====

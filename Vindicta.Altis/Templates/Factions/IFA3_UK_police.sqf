@@ -36,8 +36,8 @@ _inf set [T_INF_unarmed, [""]];
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
-_veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
+_veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood", "LIB_AustinK5_Tent", "LIB_AustinK5_Open"]];
+_veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood", "LIB_AustinK5_Tent", "LIB_AustinK5_Open"]];
 
 
 //==== Drones ====
