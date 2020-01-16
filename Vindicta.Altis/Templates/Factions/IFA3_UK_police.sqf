@@ -11,30 +11,31 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["LIB_UK_Rifleman"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["LIB_UK_Sergeant"]];
-_inf set [T_INF_TL, ["LIB_UK_Corporal"]];
-_inf set [T_INF_officer, ["LIB_UK_Officer"]];
-_inf set [T_INF_GL, ["LIB_UK_Grenadier"]];
-_inf set [T_INF_rifleman, ["LIB_UK_Rifleman"]];
-_inf set [T_INF_marksman, ["LIB_UK_Sniper"]];
-_inf set [T_INF_sniper, ["LIB_UK_Sniper"]];
-//_inf set [T_INF_spotter, [""]];
-_inf set [T_INF_exp, ["LIB_UK_Engineer"]];
-//_inf set [T_INF_ammo, [""]];
-_inf set [T_INF_LAT, ["LIB_UK_AT_Soldier"]];
-//_inf set [T_INF_AT, [""]];
-//_inf set [T_INF_AA, [""]];
-_inf set [T_INF_LMG, ["LIB_UK_LanceCorporal"]];
-//_inf set [T_INF_HMG, [""]];
-_inf set [T_INF_medic, ["LIB_UK_Medic"]];
-_inf set [T_INF_engineer, ["LIB_UK_Engineer"]];
-_inf set [T_INF_crew, ["LIB_UK_Tank_Commander", "LIB_UK_Tank_Crew"]];
-//_inf set [T_INF_crew_heli, [""]];
-_inf set [T_INF_pilot, ["LIB_US_Pilot"]];
-//_inf set [T_INF_pilot_heli, [""]];
-//_inf set [T_INF_survivor, [""]];
-//_inf set [T_INF_unarmed, [""]];
-
+_inf set [T_INF_SL, ["LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Officer", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Sniper", "LIB_UK_Engineer", "LIB_UK_AT_Soldier", "LIB_UK_LanceCorporal", "LIB_UK_Medic", "LIB_UK_Engineer"]];
+_inf set [T_INF_TL, ["LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Officer", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Sniper", "LIB_UK_Engineer", "LIB_UK_AT_Soldier", "LIB_UK_LanceCorporal", "LIB_UK_Medic", "LIB_UK_Engineer"]];
+_inf set [T_INF_officer, ["LIB_UK_Sergeant", "LIB_UK_Corporal", "LIB_UK_Officer", "LIB_UK_Grenadier", "LIB_UK_Rifleman", "LIB_UK_Sniper", "LIB_UK_Engineer", "LIB_UK_AT_Soldier", "LIB_UK_LanceCorporal", "LIB_UK_Medic", "LIB_UK_Engineer"]];
+/*
+_inf set [T_INF_GL, [""]];
+_inf set [T_INF_rifleman, [""]];
+_inf set [T_INF_marksman, []];
+_inf set [T_INF_sniper, [""]];
+_inf set [T_INF_spotter, [""]];
+_inf set [T_INF_exp, [""]];
+_inf set [T_INF_ammo, [""]];
+_inf set [T_INF_LAT, [""]];
+_inf set [T_INF_AT, [""]];
+_inf set [T_INF_AA, [""]];
+_inf set [T_INF_LMG, [""]];
+_inf set [T_INF_HMG, [""]];
+_inf set [T_INF_medic, [""]];
+_inf set [T_INF_engineer, [""]];
+_inf set [T_INF_crew, [""]];
+_inf set [T_INF_crew_heli, [""]];
+_inf set [T_INF_pilot, [""]];
+_inf set [T_INF_pilot_heli, [""]];
+_inf set [T_INF_survivor, [""]];
+_inf set [T_INF_unarmed, [""]];
+*/
 
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);

@@ -11,20 +11,20 @@ _inf = []; _inf resize T_INF_size;
 _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["SG_sturmtrooper_rifleman"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_SL, ["SG_sturmtrooper_unterofficer"]];
-_inf set [T_INF_TL, ["SG_sturmtrooper_smgunner"]];
-_inf set [T_INF_officer, ["SG_sturmtrooper_lieutenant"]];
-_inf set [T_INF_GL, ["SG_sturmtrooper_ober_grenadier"]];
-_inf set [T_INF_rifleman, ["SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner"]];
-_inf set [T_INF_marksman, ["SG_sturmtrooper_sniper"]];
-_inf set [T_INF_sniper, ["SG_sturmtrooper_sniper"]];
-_inf set [T_INF_exp, ["SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper"]];
-_inf set [T_INF_LAT, ["SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier"]];
-_inf set [T_INF_AT, ["SG_sturmtrooper_AT_soldier"]];
-_inf set [T_INF_LMG, ["SG_sturmtrooper_mgunner"]];
-_inf set [T_INF_HMG, ["SG_sturmtrooper_mgunner"]];
-_inf set [T_INF_medic, ["SG_sturmtrooper_medic"]];
+_inf set [T_INF_SL, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner", "SG_sturmtrooper_sniper", "SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier", "SG_sturmtrooper_AT_soldier", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_TL, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner", "SG_sturmtrooper_sniper", "SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier", "SG_sturmtrooper_AT_soldier", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_medic"]];
+_inf set [T_INF_officer, ["SG_sturmtrooper_unterofficer", "SG_sturmtrooper_smgunner", "SG_sturmtrooper_lieutenant", "SG_sturmtrooper_ober_grenadier", "SG_sturmtrooper_ober_rifleman", "SG_sturmtrooper_rifleman", "SG_sturmtrooper_stggunner", "SG_sturmtrooper_sniper", "SG_sturmtrooper_sapper_gefr", "SG_sturmtrooper_sapper", "SG_sturmtrooper_LAT_rifleman", "SG_sturmtrooper_AT_grenadier", "SG_sturmtrooper_AT_soldier", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_mgunner", "SG_sturmtrooper_medic"]];
 /*
+_inf set [T_INF_GL, [""]];
+_inf set [T_INF_rifleman, [""]];
+_inf set [T_INF_marksman, []];
+_inf set [T_INF_sniper, [""]];
+_inf set [T_INF_exp, [""]];
+_inf set [T_INF_LAT, [""]];
+_inf set [T_INF_AT, [""]];
+_inf set [T_INF_LMG, [""]];
+_inf set [T_INF_HMG, [""]];
+_inf set [T_INF_medic, [""]];
 _inf set [T_INF_engineer, [""]];
 _inf set [T_INF_crew, [""]];
 _inf set [T_INF_crew_heli, [""]];
