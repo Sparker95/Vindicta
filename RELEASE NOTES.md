@@ -8,3 +8,7 @@
 - Fixed AI 'move' action not returning success state
 - Fixed AI repair action not working (as consequence of above fix)
 - Fixed damange event handlers being added to player, while should be added to AI only
+
+# 0.24
+- Added: new respawn screen to replace the BI respawn screen
+- Fixed: U-menu not showing up in some cases
