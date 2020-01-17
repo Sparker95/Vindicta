@@ -178,19 +178,24 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			CALLM0(_gmdata, "updatePlayerRespawn");
 			_spawnPoints pushBack [_citySpawn, CALLM0(_citySpawn, "getPos")];
 
-			// Create a dummy tiny city here
+			// Create a dummy tiny location here
 			private _locPos = CALLM0(_citySpawn, "getPlayerRespawnPos");
-			private _dummyCity = NEW_PUBLIC("Location", [_locPos]);
-			CALLM1(_dummyCity, "setType", LOCATION_TYPE_CITY);
-			CALLM2(_dummyCity, "setBorder", "circle", 0.1);
-			{ CALLM2(_dummyCity, "enablePlayerRespawn",_x, true); } forEach [WEST, EAST, INDEPENDENT];
-			// Reveal that city to commanders
+			private _respawnLoc = NEW_PUBLIC("Location", [_locPos]);
+			CALLM1(_respawnLoc, "setName", "Initial Respawn Point");
+			CALLM1(_respawnLoc, "setType", LOCATION_TYPE_RESPAWN);
+			CALLM2(_respawnLoc, "setBorder", "circle", 0.1);
+			{ CALLM2(_respawnLoc, "enablePlayerRespawn",_x, true); } forEach [WEST, EAST, INDEPENDENT];
+
+			// Reveal that location to commanders
 			{
 				if (!IS_NULL_OBJECT(_x)) then {
 					OOP_INFO_1("  revealing to commander: %1", _sideCommander);
-					CALLM2(_x, "postMethodAsync", "updateLocationData", [_dummyCity ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+					CALLM2(_x, "postMethodAsync", "updateLocationData", [_respawnLoc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 				};
 			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+
+			// Register the location here
+			T_CALLM1("registerLocation", _respawnLoc);
 		};
 		T_SETV("spawnPoints", _spawnPoints);
 
@@ -270,8 +275,6 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
 
-		systemChat "1111111";
-
 		// Bail if player has joined one of the not supported sides
 		private _isAdmin = call misc_fnc_isAdminLocal;
 		if (! (T_CALLM0("getPlayerSide") == playerSide) && !_isAdmin) exitWith {
@@ -285,19 +288,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			};
 		};
 
-		systemChat "222222";
-
 		// Call the base class method
 		CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay]);
-
-		systemChat "333333";
 
 		// Always spawn with a random civi kit and pistol.
 		_newUnit call fnc_selectPlayerSpawnLoadout;
 		// Holster pistol
 		_newUnit action ["SWITCHWEAPON", player, player, -1];
 
-		systemChat "444444";
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("update") {

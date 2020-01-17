@@ -33,3 +33,4 @@
 #define LOCATION_TYPE_AIRPORT "airport"
 #define LOCATION_TYPE_ROADBLOCK "roadblock"
 #define LOCATION_TYPE_OBSERVATION_POST "obsPost"
+#define LOCATION_TYPE_RESPAWN "respawn"

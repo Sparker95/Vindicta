@@ -505,6 +505,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
 			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
 			case LOCATION_TYPE_AIRPORT: {"Airport"};
+			case LOCATION_TYPE_RESPAWN: {"Respawn"};
 			default {"ERROR LOC TYPE"};
 		};
 	} ENDMETHOD;
