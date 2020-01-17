@@ -1903,6 +1903,7 @@ Gets called from "onMapDraw"
 
 		pr _ctrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
 		_ctrl ctrlShow _enable;
+		_ctrl ctrlEnable false; // Disable the button initially
 		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
 		_ctrl ctrlShow _enable;
 
@@ -1929,7 +1930,31 @@ Gets called from "onMapDraw"
 		params [P_THISOBJECT];
 
 		if (T_GETV("respawnPanelEnabled")) then {
-			
+			pr _locMarkers = T_GETV("selectedLocationMarkers");
+
+			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+
+			if (count _locMarkers != 1) then {
+				T_CALLM1("respawnPanelSetText", "Select one respawn point");
+			} else {
+				// Only one location is selected
+				pr _locMarker = _locMarkers#0;				// Get the location from marker
+				pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+				pr _loc = GETV(_intel, "location");			//
+				if (!IS_NULL_OBJECT(_loc)) then {			// Because who knows...
+					if(CALLM1(_loc, "playerRespawnEnabled", playerSide)) then {
+						// Check if there are enemies occupying this place, etc...
+						pr _canRespawn = true;
+						T_CALLM1("respawnPanelSetText", "You can respawn here");
+
+						// Enable/disable the button
+						_ctrlButton ctrlEnable _canRespawn;
+					} else {
+						// Respawn is disabled here through location's methods
+						T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
+					};
+				};
+			};
 		};
 	} ENDMETHOD;
 

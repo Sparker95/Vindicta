@@ -25,7 +25,10 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 		gMessageLoopGameMode
 	} ENDMETHOD;
 
-
+	METHOD("getRecruitCount") { // For common interface
+		params [P_THISOBJECT, P_ARRAY("_cities")];
+		0
+	} ENDMETHOD;
 
 	// STORAGE
 	/* override */ METHOD("postDeserialize") {
