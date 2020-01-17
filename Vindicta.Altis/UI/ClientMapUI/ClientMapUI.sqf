@@ -1947,6 +1947,10 @@ Gets called from "onMapDraw"
 
 			// Close the map
 			openMap [false, false];
+
+			// Show a message to everyone
+			pr _text = format ["%1 has respawned at %2", name player, CALLM0(_loc, "getDisplayName")];
+			[_text] remoteExecCall ["systemChat"];
 		} else {
 			OOP_ERROR_1("Location object does not exist: %1", _loc);
 		};
