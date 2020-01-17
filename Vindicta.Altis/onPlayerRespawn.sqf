@@ -11,6 +11,7 @@ This is an event script.
 https://community.bistudio.com/wiki/Event_Scripts
 
 Executed locally when player respawns in a multiplayer mission.
+Currently player respawns right after death, later we enable the respawn screen to let him choose where to spawn.
 This event script will also fire at the beginning of a mission if respawnOnStart is 0 or 1,
 oldUnit will be objNull in this instance.
 This script will not fire at mission start if respawnOnStart equals -1.
@@ -20,7 +21,7 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
 
-// Set player's position to default respawn position
+// Set player's position to default respawn position, until player chooses otherwise.
 // "respawn_default" marker should be present
 private _pos = getMarkerPos "respawn_default";
 if (_pos isEqualTo [0, 0, 0]) then {
@@ -35,37 +36,10 @@ _newUnit setPos _pos;
 if (true) exitWith {};
 #endif
 
-// Bail if game mode was not initialized yet
-if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
-    /*
-    0 spawn {
-		waitUntil {!isNull (findDisplay 46)};
-    	CALLSM1("NotificationFactory", "createSystem", "Wait until game mode finishes its initialization...");
-	};
-    _newUnit spawn {
-        sleep 3;
-        _this setDamage 1;
-    };
-    */
-};
-
-// Bail if player has joined one of the not supported sides
-private _isAdmin = call misc_fnc_isAdminLocal;
-if (! (CALLM0(gGameMode, "getPlayerSide") == playerSide) && !_isAdmin) exitWith {
-    0 spawn {
-		waitUntil {!isNull (findDisplay 46)};
-    	CALLSM1("NotificationFactory", "createSystem", "This player slot is meant for debug and can be used by administration only.");
-	};
-    _newUnit spawn {
-        sleep 3;
-        _this setDamage 1;
-    };
-};
+// Remove player's weapons
+removeAllWeapons player;
 
 diag_log format ["------- onPlayerRespawn %1", _this];
-
-// Execute script on the server
-_this remoteExec ["fnc_onPlayerRespawnServer", 2, false];
 
 //waitUntil {!((finddisplay 12) isEqualTo displayNull)};
 
@@ -141,122 +115,6 @@ _newUnit addEventHandler ["AnimChanged", {
     };
 };
 */
-	
-// Create a suspiciousness monitor for player
-NEW("UndercoverMonitor", [_newUnit]);
-
-// Create scroll menu to talk to civilians
-pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
-    private _civ = cursorObject;
-    (!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
-    && {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
-};
-
-_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
-                 "[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
-                 0, // Arguments
-                 9000, // Priority
-                 true, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "call pr0_fnc_talkCond", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
-_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
-                 "[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
-                 0, // Arguments
-                 8999, // Priority
-                 true, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "call pr0_fnc_talkCond", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
-_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
-                 "[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
-                 0, // Arguments
-                 8998, // Priority
-                 true, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "call pr0_fnc_talkCond", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
-// Init the UnitIntel on player
-CALLSM0("UnitIntel", "initPlayer");
-
-// Init the Location Visibility Monitor on player
-gPlayerMonitor = NEW("PlayerMonitor", [_newUnit]);
-NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this self-deletes, it will unref the player monitor
-
-// Init the Sound Monitor on player
-NEW("SoundMonitor", [_newUnit]);
-
-CALLM(gGameMode, "playerSpawn", _this);
-
-
-// Action to start building stuff
-_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
-                 {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
-                 0, // Arguments
-                 0, // Priority
-                 false, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "(vehicle player == player) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation)", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
-
-// Action to start building stuff
-_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from inventory"], // title
-                 {isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
-                 0, // Arguments
-                 -1, // Priority
-                 false, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "(vehicle player == player) && (((['', player] call unit_fnc_getInfantryBuildResources) > 0) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
-
-// Action to attach units to garrison
-pr0_fnc_attachUnitCond = {
-    _co = cursorObject;
-    (vehicle player == player)                                              // Player must be on foot
-    && {_co distance player < 7}                                            // Player must be close to object
-    && {! (_co isKindOf "Man")}                                               // Object must not be infantry
-    && {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}       // Player must be at a friendly location
-    && {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}   // Object must be a valid unit OOP object (no shit spawned by zeus for now)
-    && {alive cursorObject}                                                 // Object must be alive
-};
-_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
-                 {isNil {NEW("AttachToGarrisonDialog", [cursorObject])}}, // Open the UI dialog
-                 0, // Arguments
-                 0.1, // Priority
-                 false, // ShowWindow
-                 false, //hideOnUse
-                 "", //shortcut
-                 "call pr0_fnc_attachUnitCond", //condition
-                 2, //radius
-                 false, //unconscious
-                 "", //selection
-                 ""]; //memoryPoint
-
 
 // If it's first respawn, show a hint
 if (isNil {vin_bRespawned}) then {
@@ -266,6 +124,10 @@ if (isNil {vin_bRespawned}) then {
     private _picture = ""; // Default picture for now
     private _duration = 10;
     private _hint = "Check map for more info"; // Override hint!
-    private _args = [_picture, "CONTROLS", "Press [U] to open the in-game menu", "It is very important (and nice)", _duration, _sound];
+    private _args = [_picture, "CONTROLS", "Press [U] to open the in-game menu", "Make sure to check tutorial", _duration, _sound];
     CALLSM("Notification", "createNotification", _args);
 };
+
+// Open our beautiful map, enable respawn panel
+openMap [true, false];  // Let's not force it... who knows if arma UI locks up again
+CALLM1(gClientMapUI, "respawnPanelEnable", true);

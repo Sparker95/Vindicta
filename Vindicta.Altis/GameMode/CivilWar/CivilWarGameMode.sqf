@@ -256,10 +256,34 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
 
+		systemChat "1111111";
+
+		// Bail if player has joined one of the not supported sides
+		private _isAdmin = call misc_fnc_isAdminLocal;
+		if (! (T_CALLM0("getPlayerSide") == playerSide) && !_isAdmin) exitWith {
+			0 spawn {
+				waitUntil {!isNull (findDisplay 46)};
+				CALLSM1("NotificationFactory", "createSystem", "This player slot is meant for debug and can be used by administration only.");
+			};
+			_newUnit spawn {
+				sleep 1.5;
+				_this setDamage 1;
+			};
+		};
+
+		systemChat "222222";
+
+		// Call the base class method
+		CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay]);
+
+		systemChat "333333";
+
 		// Always spawn with a random civi kit and pistol.
-		player call fnc_selectPlayerSpawnLoadout;
+		_newUnit call fnc_selectPlayerSpawnLoadout;
 		// Holster pistol
-		player action ["SWITCHWEAPON", player, player, -1];
+		_newUnit action ["SWITCHWEAPON", player, player, -1];
+
+		systemChat "444444";
 	} ENDMETHOD;
 
 	/* protected override */ METHOD("update") {

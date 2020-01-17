@@ -59,7 +59,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("sideCreated", [ATTR_SAVE]);				// Side which has created this location dynamically. CIVILIAN if it was here on the map.
 
 	// Variables which are set up only for saving process
-	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);		// Array of [className, posWorld, vectorDir, vectorUp] of objects
+	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);				// Array of [className, posWorld, vectorDir, vectorUp] of objects
+
+				VARIABLE("playerRespawnPos");							// Position for player to respawn
 
 	STATIC_VARIABLE("all");
 
@@ -104,7 +106,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("buildingsOpen", []);
 		T_SETV("objects", []);
 
-		T_SETV("respawnSides", []);
+		SET_VAR_PUBLIC(_thisObject, "respawnSides", []);
+		SET_VAR_PUBLIC(_thisObject, "playerRespawnPos", _pos);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -1011,14 +1014,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_pos = _spawnPos;
 			};
 
-			createMarker [_markName + _thisObject, _pos];
+			SET_VAR_PUBLIC(_thisObject, "playerRespawnPos", _pos);	// Broadcast the new pos
 
 			_respawnSides pushBackUnique _side;
 		} else {
-			deleteMarker (_markName + _thisObject);
 
 			_respawnSides deleteAt (_respawnSides find _side);
 		};
+		PUBLIC_VAR(_thisObject, "respawnSides"); // Broadcast the sides which can respawn
 	} ENDMETHOD;
 
 	/*
@@ -1031,6 +1034,17 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("playerRespawnEnabled") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 		_side in T_GETV("respawnSides")
+	} ENDMETHOD;
+
+	/*
+	Method: getPlayerRespawnPos
+
+	Returns respawn pos for players
+	*/
+	METHOD("getPlayerRespawnPos") {
+		params [P_THISOBJECT];
+
+		T_GETV("playerRespawnPos");
 	} ENDMETHOD;
 
 	/*
@@ -1390,6 +1404,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		PUBLIC_VAR(_thisObject, "type");
 		PUBLIC_VAR(_thisObject, "wasOccupied");
 		PUBLIC_VAR(_thisObject, "parent");
+		PUBLIC_VAR(_thisObject, "respawnSides");
+		PUBLIC_VAR(_thisObject, "playerRespawnPos");
 
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;
