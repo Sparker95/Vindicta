@@ -177,6 +177,20 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			CALLM1(_gmdata, "forceEnablePlayerRespawn", true);
 			CALLM0(_gmdata, "updatePlayerRespawn");
 			_spawnPoints pushBack [_citySpawn, CALLM0(_citySpawn, "getPos")];
+
+			// Create a dummy tiny city here
+			private _locPos = CALLM0(_citySpawn, "getPlayerRespawnPos");
+			private _dummyCity = NEW_PUBLIC("Location", [_locPos]);
+			CALLM1(_dummyCity, "setType", LOCATION_TYPE_CITY);
+			CALLM2(_dummyCity, "setBorder", "circle", 0.1);
+			{ CALLM2(_dummyCity, "enablePlayerRespawn",_x, true); } forEach [WEST, EAST, INDEPENDENT];
+			// Reveal that city to commanders
+			{
+				if (!IS_NULL_OBJECT(_x)) then {
+					OOP_INFO_1("  revealing to commander: %1", _sideCommander);
+					CALLM2(_x, "postMethodAsync", "updateLocationData", [_dummyCity ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
+				};
+			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
 		};
 		T_SETV("spawnPoints", _spawnPoints);
 

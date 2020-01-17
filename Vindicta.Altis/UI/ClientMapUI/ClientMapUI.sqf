@@ -1933,7 +1933,7 @@ Gets called from "onMapDraw"
 
 			// Teleport player
 			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
-			player setPos _respawnPos;
+			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
 
 			// Call gameMode method
 			pr _args = [player, objNull, "", 0];
@@ -2008,7 +2008,7 @@ Gets called from "onMapDraw"
 			// Check enemies in area
 			// todo: might not want to check that on each frame maybe... maybe once in a few frames instead
 			pr _index = (allUnits select {(side group _x) in _enemySides}) findIf {	// Find all enemy units...
-				((_x distance _locPos) < 200) ||									// Which are very close
+				// ((_x distance _locPos) < 200) ||									// Which are very close
 				(_x inArea _locBorderArea)											// Or inside the area
 			};
 
