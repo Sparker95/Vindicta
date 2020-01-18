@@ -243,7 +243,7 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		CALLM1(_gar, "removeBuildResources", _cost);
 
 		// Create a unit or just a plain object
-		pr _hO = _className createVehicle _pos;
+		pr _hO = createVehicle [_className, _pos, [], 0, "CAN_COLLIDE"];
 		pr _surfaceVectorUp = surfaceNormal _pos;
 
 		// Remove exec it so that it updates instantly on all computers
