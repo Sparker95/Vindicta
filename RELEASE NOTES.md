@@ -1,6 +1,7 @@
 # 0.24
 - Added: new respawn screen to replace the BI respawn screen
 - Fixed: U-menu not showing up in some cases
+- Tweaked: objects built with the build menu are synchronized better now for clients
 
 # 0.23
 - Added a quick fix for being unable to save. Might have to wait for a while if SQF errors have happened in game.
