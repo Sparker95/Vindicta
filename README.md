@@ -23,7 +23,9 @@ The project is in 'Alpha' stage. Most of the features are implemented.
 
 ## Links
 Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+
 BI Forum thread:https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
+
 Our Discord: https://discord.gg/rDhxKBp
 
 ## Technical implementation
