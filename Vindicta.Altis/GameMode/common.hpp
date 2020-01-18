@@ -3,10 +3,8 @@
 #define OOP_ERROR
 #define OOP_WARNING
 #define OOP_ASSERT
-#define OFSTREAM_FILE "GameMode.rpt"
 
-//#define OOP_PROFILE
-//#define OOP_PROFILE_MIN_T 0.001
+#define OFSTREAM_FILE "GameMode.rpt"
 
 #include "..\OOP_Light\OOP_Light.h"
 #include "..\Message\Message.hpp"
@@ -24,4 +22,3 @@
 #define CITY_STATE_IN_REVOLT 2
 #define CITY_STATE_SUPPRESSED 3
 #define CITY_STATE_LIBERATED 4
-
