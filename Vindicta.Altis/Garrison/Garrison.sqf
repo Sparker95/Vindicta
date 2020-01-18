@@ -230,6 +230,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Set 'active' flag
 		T_SETV("active", true);
 
+		// Enable automatic spawning
+		T_CALLM1("enableAutoSpawn", true);
+		
 		T_SETV("outdated", true);
 
 		CALL_STATIC_METHOD("AICommander", "registerGarrisonOutOfThread", [_thisObject]);
@@ -2066,6 +2069,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_WARNING_1("Not enough resources to add units from composition: %1", _garSrc);
 			OOP_WARNING_1("  Other garrison's composition: %1", _compositionNumbers);
 			OOP_WARNING_1("  Required         composition: %1", _comp);
+			__MUTEX_UNLOCK;
 			false
 		};
 

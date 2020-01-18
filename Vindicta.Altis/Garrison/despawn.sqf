@@ -35,6 +35,21 @@ private _units = GET_VAR(_thisObject, "units");
 private _groups = (GET_VAR(_thisObject, "groups"));
 private _groupsCopy = +_groups;
 
+// Stop group AIs, but don't delete them
+/*
+// Very weird, somehow it hangs here, will have to investigate more later.
+OOP_INFO_1("Stopping AI of groups: %1", _groups);
+private _i = 0;
+while {_i < count _groups} do
+{
+	private _group = _groups select _i;
+	private _AI = CALLM0(_group, "getAI");
+	if (!IS_NULL_OBJECT(_AI)) then {
+		CALLM2(gMessageLoopGroupManager, "postMethodSync", "stopAIobject", [_AI]);
+	};
+};
+*/
+
 // Despawn groups, delete empty groups
 OOP_INFO_1("Despawning groups: %1", _groups);
 private _i = 0;

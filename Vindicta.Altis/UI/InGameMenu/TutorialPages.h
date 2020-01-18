@@ -14,7 +14,7 @@ class TutorialPages
 	class TutPage0_0 : TutBasePage
 	{
 		textHeadline = "Introduction";
-		text = "If you are reading this, congratulations! You have navigated to the mission's in-game menu and you have opened the Tutorial. There are no other keyboard keys you need to know about to play this mission.\n\nVINDICTA is a sandbox scenario where your main goal is to liberate the island from enemy occupation. There is no strict end end condition and no end screen, but you may consider the mission finished when you take all airfields under your control, because then enemy will not be able to bring more reinforcements.";
+		text = "If you are reading this, congratulations! You have navigated to the mission's in-game menu and you have opened the Tutorial. There are no other keyboard keys you need to know about to play this mission.\n\nVINDICTA is a sandbox scenario where your main goal is to liberate the island from enemy occupation. There is no strict end condition and no end screen, but you may consider the mission finished when you take all airfields under your control, because then enemy will not be able to bring more reinforcements.";
 		imagePath = __TUT_IMAGE(tut_scenario.paa);
 	};
 

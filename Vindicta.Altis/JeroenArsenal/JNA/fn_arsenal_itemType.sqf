@@ -15,7 +15,8 @@
 #include "\A3\ui_f\hpp\defineDIKCodes.inc"
 #include "\A3\Ui_f\hpp\defineResinclDesign.inc"
 
-params ["_item"];
+params [["_item","",[""]]];
+if(_item isEqualTo "")exitWith{diag_log "JNA Warning: empty item received in fnc_arsenal_itemType"};
 
 // Try to perform lookup in hashmap first
 pr _hm = missionNamespace getVariable ["jna_itemTypeHashmap", locationNull];

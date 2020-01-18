@@ -13,7 +13,6 @@ Vindicta.Altis/.vscode/ipch/*
 _build
 tools/_build
 tools/_buildID.txt
-configs/buildVersion.hpp
 
 
 #TEMP
@@ -30,6 +29,7 @@ mission.sqm.backup.at*
 Vindicta.Altis/out/linecount.txt
 Vindicta.Altis/out/linecount.json
 Vindicta.Altis/mission.sqm
+Vindicta.Enoch/
 
 #ADDON
 
@@ -42,3 +42,7 @@ Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/$PBOPREFIX$
 ~Vindicta-Addon/addons/missions/script_component.hpp
 configs/briefingName.hpp
+
+tools/buildtool/dist/
+
+tools/buildtool/package-lock.json

@@ -29,7 +29,7 @@
 //#define CMDR_AI_TESTING
 
 // Disables planning for cmdr ai, in case we want to test something
-//#define CMDR_AI_NO_PLAN
+#define CMDR_AI_NO_PLAN
 
 // Profiling
 //#define OOP_PROFILE

@@ -49,7 +49,7 @@ CLASS("ActionUnitSurrender", "ActionUnit")
 		[_hO, {
 			if (!hasInterface) exitWith {};
 			params ["_hO"];
-			private _id = _hO addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '##FFFFFF'/>") + ("<t size='1' color = '##FFFFFF'> Recruit</t>")), "SideStat\askSurrenderedUnitToJoin.sqf", "", 1, true, true];
+			private _id = _hO addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), "SideStat\askSurrenderedUnitToJoin.sqf", "", 1, true, true];
 		}] remoteExec ["spawn", 0, false];
 	} ENDMETHOD;
 	

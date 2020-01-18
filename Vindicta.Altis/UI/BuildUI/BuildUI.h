@@ -91,7 +91,7 @@ class BuildUI
 			type = 0;
 			idc = IDC_TEXTC;
 			x = safeZoneX + safeZoneW * 0.46041667;
-			y = safeZoneY + safeZoneH * 0.75;
+			y = safeZoneY + safeZoneH * 0.749;
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
@@ -106,7 +106,7 @@ class BuildUI
 			type = 0;
 			idc = IDC_TEXTL2;
 			x = safeZoneX + safeZoneW * 0.2953125;
-			y = safeZoneY + safeZoneH * 0.75;
+			y = safeZoneY + safeZoneH * 0.749;
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
@@ -122,7 +122,7 @@ class BuildUI
 			type = 0;
 			idc = IDC_TEXTL1;
 			x = safeZoneX + safeZoneW * 0.378125;
-			y = safeZoneY + safeZoneH * 0.75;
+			y = safeZoneY + safeZoneH * 0.749;
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
@@ -138,7 +138,7 @@ class BuildUI
 			type = 0;
 			idc = IDC_TEXTR1;
 			x = safeZoneX + safeZoneW * 0.54270834;
-			y = safeZoneY + safeZoneH * 0.75;
+			y = safeZoneY + safeZoneH * 0.749;
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
@@ -154,7 +154,7 @@ class BuildUI
 			type = 0;
 			idc = IDC_TEXTR2;
 			x = safeZoneX + safeZoneW * 0.62552084;
-			y = safeZoneY + safeZoneH * 0.75;
+			y = safeZoneY + safeZoneH * 0.749;
 			w = safeZoneW * 0.07916667;
 			h = safeZoneH * 0.02222223;
 			style = 2;
