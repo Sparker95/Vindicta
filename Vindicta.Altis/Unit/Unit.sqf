@@ -803,6 +803,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							_x params ["_itemName", "_itemCount"];
 							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
 						} forEach _classNames;
+					};
 
 					// Add ACRE Radios
 					if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
@@ -823,8 +824,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							_x params ["_itemName", "_itemCount"];
 							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
 						} forEach _ACREclassNames;
-
-
 					};
 
 					// Add ADV medical items
