@@ -17,7 +17,7 @@ _inf set [T_INF_officer, ["RHS_AAF2017_elite_officer"]];
 _inf set [T_INF_GL, ["RHS_AAF2017_elite_grenadier"]];
 _inf set [T_INF_rifleman, ["RHS_AAF2017_elite_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_AAF2017_elite_marksman"]];
-_inf set [T_INF_sniper, ["RHS_AAF2017_elite_sniper"]];
+_inf set [T_INF_sniper, ["RHS_AAF2017_elite_sniper", "RHS_AAF2017_elite_sniper_2"]];
 _inf set [T_INF_spotter, ["RHS_AAF2017_elite_spotter"]];
 _inf set [T_INF_exp, ["RHS_AAF2017_elite_explosives"]];
 _inf set [T_INF_ammo, ["RHS_AAF2017_elite_MG_2", "RHS_AAF2017_elite_AT_2"]];
@@ -84,9 +84,8 @@ _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 _veh set [T_VEH_heli_light, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M"]];
 _veh set [T_VEH_heli_heavy, ["FGN_AAF_KA60_dynamicLoadout","rhs_uh1h_hidf_gunship", "RHS_MELB_AH6M"]];
 _veh set [T_VEH_heli_cargo, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf_unarmed"]];
-_veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]]; //TODO add dynamic loadout variants for more variety
+_veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]];
 
-//TODO add dynamic loadout variants for more variety
 _veh set [T_VEH_plane_attack, ["FGN_AAF_L159_dynamicLoadout"]];
 _veh set [T_VEH_plane_fighter, ["FGN_AAF_L159_dynamicLoadout"]];
 //_veh set [T_VEH_plane_cargo, [""]];

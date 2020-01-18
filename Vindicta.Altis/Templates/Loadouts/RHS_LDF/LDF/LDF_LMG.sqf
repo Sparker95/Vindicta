@@ -13,14 +13,14 @@ _RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli","rhsusf_shemag
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital";
-this addWeapon "rhssaf_zrak_rd7j";
+this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_svds";
-this addPrimaryWeaponItem "rhs_acc_pso1m2";
-this addPrimaryWeaponItem "rhs_10Rnd_762x54mmR_7N1";
+this addWeapon "rhs_weap_m84";
+this addPrimaryWeaponItem "rhs_100Rnd_762x54mmR_green";
 
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "rhs_acc_1pn93_1";
-for "_i" from 1 to 8 do {this addItemToVest "rhs_10Rnd_762x54mmR_7N1";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
+for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_rgd5";};
+this addItemToVest "rhs_100Rnd_762x54mmR";
+this addItemToBackpack "rhs_100Rnd_762x54mmR_green";
+this addItemToBackpack "rhs_100Rnd_762x54mmR";
 this linkItem "ItemWatch";

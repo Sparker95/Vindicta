@@ -40,7 +40,7 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_DEFAULT, ["B_GEN_Offroad_01_gen_F"]];
-_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F"]];
+_veh set [T_VEH_car_unarmed, ["B_GEN_Offroad_01_gen_F", "B_GEN_Offroad_01_comms_F", "B_GEN_Offroad_01_covered_F", "B_GEN_Van_02_vehicle_F", "B_GEN_Van_02_transport_F"]];
 
 
 //==== Drones ====

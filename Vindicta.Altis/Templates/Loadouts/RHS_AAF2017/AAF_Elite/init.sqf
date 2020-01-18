@@ -20,5 +20,6 @@ ADD_LOADOUT("RHS_AAF2017_elite_pilot",		"RHS_AAF2017\AAF_Elite\AAF_elite_pilot.s
 ADD_LOADOUT("RHS_AAF2017_elite_rifleman",	"RHS_AAF2017\AAF_Elite\AAF_elite_rifleman.sqf")
 ADD_LOADOUT("RHS_AAF2017_elite_SL",			"RHS_AAF2017\AAF_Elite\AAF_elite_SL.sqf")
 ADD_LOADOUT("RHS_AAF2017_elite_sniper",		"RHS_AAF2017\AAF_Elite\AAF_elite_sniper.sqf")
+ADD_LOADOUT("RHS_AAF2017_elite_sniper_2",		"RHS_AAF2017\AAF_Elite\AAF_elite_sniper_2.sqf")
 ADD_LOADOUT("RHS_AAF2017_elite_spotter",	"RHS_AAF2017\AAF_Elite\AAF_elite_spotter.sqf")
 ADD_LOADOUT("RHS_AAF2017_elite_TL",			"RHS_AAF2017\AAF_Elite\AAF_elite_TL.sqf")
