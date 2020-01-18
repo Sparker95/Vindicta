@@ -13,7 +13,7 @@ _inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is 
 
 _inf set [T_INF_officer, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
 _inf set [T_INF_rifleman, ["RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
-_inf set [T_INF_SL, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun"]];
+_inf set [T_INF_SL, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
 /*
 _inf set [T_INF_TL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_SL, ["B_GEN_Soldier_F"]];
