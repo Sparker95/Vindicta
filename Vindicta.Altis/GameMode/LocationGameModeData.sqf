@@ -25,7 +25,11 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 		gMessageLoopGameMode
 	} ENDMETHOD;
 
-
+	// Returns intel entries for display on the client map UI
+	/* public virtual */ METHOD("getMapInfoEntries") {
+		params [P_THISOBJECT];
+		[]
+	} ENDMETHOD;
 
 	// STORAGE
 	/* override */ METHOD("postDeserialize") {
@@ -36,5 +40,6 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 
 		true
 	} ENDMETHOD;
+
 
 ENDCLASS;
