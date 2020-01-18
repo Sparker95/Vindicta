@@ -12,13 +12,13 @@ _inf set [T_INF_SIZE-1, nil]; 								//Make an array full of nil
 _inf set [T_INF_DEFAULT, ["I_E_Soldier_F"]];
 
 _inf set [T_INF_SL, ["RHS_LDF_SL"]];
-_inf set [T_INF_TL, ["RHS_LDF_TL"]];
+_inf set [T_INF_TL, ["RHS_LDF_TL", "RHS_LDF_TL_2"]];
 _inf set [T_INF_officer, ["RHS_LDF_officer"]];
-_inf set [T_INF_GL, ["RHS_LDF_grenadier"]];
+_inf set [T_INF_GL, ["RHS_LDF_grenadier", "RHS_LDF_grenadier_2"]];
 _inf set [T_INF_rifleman, ["RHS_LDF_rifleman"]];
 _inf set [T_INF_marksman, ["RHS_LDF_marksman"]];
-_inf set [T_INF_sniper, ["RHS_LDF_sniper"]];
-_inf set [T_INF_spotter, ["RHS_LDF_spotter"]];
+_inf set [T_INF_sniper, ["RHS_LDF_sniper", "RHS_LDF_sniper_2"]];
+_inf set [T_INF_spotter, ["RHS_LDF_spotter", "RHS_LDF_spotter_2"]];
 _inf set [T_INF_exp, ["RHS_LDF_explosives"]];
 _inf set [T_INF_ammo, ["RHS_LDF_MG_2", "RHS_LDF_AT_2"]];
 _inf set [T_INF_LAT, ["RHS_LDF_LAT"]];
@@ -37,7 +37,7 @@ _inf set [T_INF_pilot_heli, ["RHS_LDF_helipilot"]];
 
 // Recon
 _inf set [T_INF_recon_TL, ["RHS_LDF_recon_TL"]];
-_inf set [T_INF_recon_rifleman, ["RHS_LDF_recon_LAT"]];
+_inf set [T_INF_recon_rifleman, ["RHS_LDF_recon_rifleman"]];
 _inf set [T_INF_recon_medic, ["RHS_LDF_recon_medic"]];
 _inf set [T_INF_recon_exp, ["RHS_LDF_recon_explosives"]];
 _inf set [T_INF_recon_LAT, ["RHS_LDF_recon_LAT"]];

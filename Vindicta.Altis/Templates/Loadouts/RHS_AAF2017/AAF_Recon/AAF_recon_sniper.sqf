@@ -14,9 +14,9 @@ this addGoggles _RandomGoggles;
 this forceAddUniform "rhs_uniform_gorka_1_a";
 this addVest "FGN_AAF_CIRAS_MM";
 
-this addWeapon "rhs_weap_m24sws";
-this addPrimaryWeaponItem "rhsusf_acc_m24_silencer_black";
-this addPrimaryWeaponItem "rhsusf_acc_M8541_low";
+this addWeapon "rhs_weap_m24sws_d";
+this addPrimaryWeaponItem "rhsusf_acc_m24_silencer_d";
+this addPrimaryWeaponItem "rhsusf_acc_M8541_low_d";
 this addPrimaryWeaponItem "rhsusf_5Rnd_762x51_m118_special_Mag";
 this addPrimaryWeaponItem "rhsusf_acc_harris_swivel";
 this addWeapon "rhsusf_weap_glock17g4";
