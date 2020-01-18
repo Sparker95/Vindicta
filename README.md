@@ -19,7 +19,12 @@ https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
 * Undercover system which takes into account player's loadout, actions, exposure in vehicle 
 
 ## Current state of development
-Most of the framework is finished. Mosft of the features are fully or partially implemented. Remaining work is concentrated on playtests and finishing the non-framework parts of the project.
+The project is in 'Alpha' stage. Most of the features are implemented.
+
+## Links
+Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+BI Forum thread:https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
+Our Discord: https://discord.gg/rDhxKBp
 
 ## Technical implementation
 * Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
@@ -38,7 +43,3 @@ BI's tool support for their SQF language is non-existant. We are using these too
 * GPS by AmouryD (https://github.com/AmauryD/A3GPS)
 * KP Liberation builder (https://github.com/KillahPotatoes/KP-Liberation/tree/master/_tools)
 * Arma3 AddOn Project template by ACE team (https://github.com/KillahPotatoes/KP-Liberation/tree/master/_tools)
-
-## Our Discord
-If you have ideas or questions or you want to contribute, join our Discord server:
-https://discord.gg/rDhxKBp
