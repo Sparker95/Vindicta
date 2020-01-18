@@ -14,27 +14,21 @@ this addHeadgear _RandomHeadgear;
 _RandomGoggles = ["G_Bandanna_khk", "G_Bandanna_oli", "G_Balaclava_oli", "" ] call BIS_fnc_selectRandom;
 this addGoggles _RandomGoggles;
 this addVest "rhssaf_vest_md12_m70_rifleman";
-this addBackpack "B_LegStrapBag_coyote_F";
+this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_ak103_gp25";
+this addWeapon "rhs_weap_ak103";
 this addPrimaryWeaponItem "rhs_acc_dtk4screws";
-this addPrimaryWeaponItem "rhs_VOG25";
-this addPrimaryWeaponItem "rhs_acc_ekp8_02";
-this addPrimaryWeaponItem "rhs_30Rnd_762x39mm_polymer";
+this addPrimaryWeaponItem "rhs_acc_perst1ik";
+this addPrimaryWeaponItem "rhs_30Rnd_762x39mm";
+this addWeapon "rhs_weap_rpg26";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_zarya2";};
-this addItemToUniform "rhssaf_mag_br_m84";
-this addItemToUniform "rhssaf_mag_br_m75";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_762x39mm_polymer_U";};
-for "_i" from 1 to 3 do {this addItemToVest "rhs_30Rnd_762x39mm_polymer";};
-for "_i" from 1 to 6 do {this addItemToBackpack "rhs_VG40TB";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VG40MD";};
-for "_i" from 1 to 6 do {this addItemToBackpack "rhs_VOG25";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VOG25P";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_VG40SZ";};
-this addItemToBackpack "rhs_VG40OP_white";
-
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_zarya2";};
+this addItemToVest "rhssaf_mag_br_m84";
+this addItemToVest "rhssaf_mag_br_m75";
+this addItemToVest "I_E_IR_Grenade";
+for "_i" from 1 to 3 do {this addItemToBackpack "rhs_75Rnd_762x39mm_tracer";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-this linkItem "rhs_1PN138";
+this linkItem "NVGoggles_OPFOR";
