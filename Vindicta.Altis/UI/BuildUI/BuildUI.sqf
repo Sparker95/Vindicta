@@ -7,6 +7,7 @@
 #include "BuildUI_Macros.h"
 #include "..\..\defineCommon.inc"
 #include "..\defineddikcodes.inc"
+#include "..\..\Location\Location.hpp"
 
 #define TIME_FADE_TT 0.84
 
@@ -919,15 +920,14 @@ CLASS("BuildUI", "")
 		T_PRVAR(selectedObjects);
 		T_PRVAR(rotation);
 
-		// Exit move mode so it doesn't interfere (it will clear activeObject, but we already took a copy above)
-		T_CALLM0("exitMoveMode");
-
 		pr _movingObjects = +_selectedObjects;
 		if (count _activeObject > 0) then {
 			CALL_STATIC_METHOD_2("BuildUI", "addSelection", _movingObjects, _activeObject);
 		};
 		if (count _movingObjects == 0) exitWith { false };
 
+		// Exit move mode so it doesn't interfere (it will clear activeObject, but we already took a copy above)
+		T_CALLM0("exitMoveMode");
 		T_SETV("isMovingObjects", true);
 
 		private _movingObjectGhosts = [];
@@ -1090,12 +1090,12 @@ CLASS("BuildUI", "")
 
 	STATIC_METHOD("setObjectMovable") {
 		params [P_THISCLASS, P_OBJECT("_obj"), P_BOOL("_set")];
-		_obj setVariable ["build_ui_allowMove", _set, true];
+		_obj setVariable [BUILDUI_OBJECT_TAG, _set, true];
 	} ENDMETHOD;
 
 	STATIC_METHOD("isObjectMovable") {
 		params [P_THISCLASS, P_OBJECT("_obj")];
-		_obj getVariable ["build_ui_allowMove", false]
+		_obj getVariable [BUILDUI_OBJECT_TAG, false]
 	} ENDMETHOD;
 
 	STATIC_METHOD("addSelection") {
