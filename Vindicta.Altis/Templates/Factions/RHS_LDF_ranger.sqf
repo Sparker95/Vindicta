@@ -41,7 +41,7 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_DEFAULT, ["I_E_Offroad_01_F"]]; //TODO: change skin to forest ranger
-_veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F"]];
+_veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E_Offroad_01_covered_F"]];
 
 //==== Drones ====
 /*

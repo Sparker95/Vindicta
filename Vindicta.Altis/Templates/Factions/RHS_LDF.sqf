@@ -24,7 +24,7 @@ _inf set [T_INF_ammo, ["RHS_LDF_MG_2", "RHS_LDF_AT_2"]];
 _inf set [T_INF_LAT, ["RHS_LDF_LAT"]];
 _inf set [T_INF_AT, ["RHS_LDF_AT"]];
 _inf set [T_INF_AA, ["RHS_LDF_AA"]];
-_inf set [T_INF_LMG, ["RHS_LDF_MG"]];
+_inf set [T_INF_LMG, ["RHS_LDF_LMG"]];
 _inf set [T_INF_HMG, ["RHS_LDF_MG"]];
 _inf set [T_INF_medic, ["RHS_LDF_medic"]];
 _inf set [T_INF_engineer, ["RHS_LDF_engineer"]];
@@ -61,8 +61,8 @@ _veh set [T_VEH_car_unarmed, ["rhsgref_cdf_reg_uaz", "rhsgref_cdf_reg_uaz_open"]
 _veh set [T_VEH_car_armed, ["rhsgref_cdf_reg_uaz_ags", "rhsgref_cdf_reg_uaz_dshkm", "rhsgref_cdf_reg_uaz_spg9"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsgref_BRDM2UM"]];
-_veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ", "rhsgref_BRDM2"]];
-_veh set [T_VEH_MRAP_GMG, ["rhsgref_BRDM2_ATGM"]];
+_veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ"]];
+_veh set [T_VEH_MRAP_GMG, ["rhsgref_BRDM2"]];
 
 _veh set [T_VEH_IFV, ["rhsgref_cdf_bmd1p", "rhsgref_cdf_bmd1pk", "rhsgref_cdf_bmd2", "rhsgref_cdf_bmd2k", "rhsgref_cdf_bmp1p", "rhsgref_cdf_bmp2e", "rhsgref_cdf_bmp2k"]];
 _veh set [T_VEH_APC, ["rhsgref_cdf_btr60", "rhsgref_cdf_btr70"]];
@@ -84,7 +84,7 @@ _veh set [T_VEH_stat_mortar_heavy, ["rhs_D30_msv"]];
 _veh set [T_VEH_heli_light, ["rhsgref_cdf_reg_Mi8amt"]];
 _veh set [T_VEH_heli_heavy, ["rhsgref_cdf_reg_Mi17Sh"]];
 //_veh set [T_VEH_heli_cargo, [""]];
-_veh set [T_VEH_heli_attack, ["rhsgref_cdf_Mi24D", "rhsgref_cdf_Mi35","rhsgref_mi24g_CAS"]];
+_veh set [T_VEH_heli_attack, ["rhsgref_cdf_Mi24D", "rhsgref_cdf_Mi35"]];
 
 _veh set [T_VEH_plane_attack, ["rhsgref_cdf_su25", "rhs_l39_cdf"]];
 _veh set [T_VEH_plane_fighter, ["rhsgref_cdf_mig29s"]];

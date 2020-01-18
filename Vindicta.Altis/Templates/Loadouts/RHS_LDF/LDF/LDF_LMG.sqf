@@ -15,13 +15,12 @@ this forceAddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital";
 this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_pkp";
-this addPrimaryWeaponItem "rhs_acc_1p78";
+this addWeapon "rhs_weap_m84";
 this addPrimaryWeaponItem "rhs_100Rnd_762x54mmR_green";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_rgd5";};
-this addItemToVest "rhs_100Rnd_762x54mmR_green";
-this addItemToBackpack "rhs_100Rnd_762x54mmR_7BZ3";
+this addItemToVest "rhs_100Rnd_762x54mmR";
 this addItemToBackpack "rhs_100Rnd_762x54mmR_green";
+this addItemToBackpack "rhs_100Rnd_762x54mmR";
 this linkItem "ItemWatch";
