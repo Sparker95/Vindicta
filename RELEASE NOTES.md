@@ -1,3 +1,7 @@
+# 0.23
+- Added a quick fix for being unable to save. Might have to wait for a while if SQF errors have happened in game.
+- Removed keys temporarily until they are fixed.
+
 # 0.22
 - Improved undercover system.
 - Added CBA cba_setting.sqf file to force-disable the ACE map illumination, since it makes the map totally black on respawn screen.

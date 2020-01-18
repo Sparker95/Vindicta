@@ -25,7 +25,7 @@ const presets: Preset[] = require('./_presets.json');
 const paths: FolderStructureInfo = {
     frameworkFolder: resolve(ROOT_DIR, 'Vindicta.Altis'),
     missionsFolder: resolve(ROOT_DIR),
-    workDir: resolve("../", "_build"),
+    workDir: resolve(ROOT_DIR, "_build"),
     configDir: resolve(ROOT_DIR, "configs")
 };
 
@@ -196,9 +196,9 @@ gulp.task('pack_missions_to_addon', () => {
 
 // Main tasks
 gulp.task('clean', () => {
-    return gulp.src(paths.workDir)
-        .pipe(vinylPaths(function (paths: string[]) {
-            return del(paths,  {force: true});
+    return gulp.src(paths.workDir, { allowEmpty: true })
+        .pipe(vinylPaths(function (path: string) {
+            return del(path,  {force: true});
         }));
 });
 
