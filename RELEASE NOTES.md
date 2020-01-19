@@ -1,5 +1,6 @@
 # 0.24
 - Added: new respawn screen to replace the BI respawn screen
+- Added: SP support (possible with the new respawn screen).
 - Added: flashlights attachments to default handguns when you respawn so that you are not lost at night
 - Fixed: U-menu not showing up in some cases
 - Tweaked: position and rotation of objects built with the build menu is synchronized better now for clients

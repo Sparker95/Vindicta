@@ -22,7 +22,7 @@ This script will not fire at mission start if respawnOnStart equals -1.
 
 params ["_newUnit", "_oldUnit", "_respawn", "_respawnDelay"];
 
-"gamemode.rpt" ofstream_write (format ["--- onPlayerRespawn.sqf: %1", _this]);
+//"gamemode.rpt" ofstream_write (format ["--- onPlayerRespawn.sqf: %1", _this]);
 
 // Set player's position to default respawn position, until player chooses a respawn point.
 // "respawn_default" marker should be present
