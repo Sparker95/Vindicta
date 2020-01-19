@@ -131,7 +131,7 @@ for (let preset of presets) {
     gulp.task('pack_' + taskName, () => {
         return gulp.src(mission.getOutputDir() + '/**/*')
             .pipe(gulpPbo({
-                fileName: mission.getNameMapVersionMap() + '.pbo',
+                fileName: (mission.getNameMapVersionMap() + '.pbo').toLowerCase(),
                 progress: false,
                 verbose: false,
                 // Do not compress (SLOW)
@@ -181,7 +181,7 @@ gulp.task('pack_missions_to_addon', () => {
         .pipe(gulpPbo({
             // Addon pbo must be lowercase, or linux admins will to hate us
             // !!! Must match to the prefix in MPMissions/..../directory !!!
-            fileName: (missionNameVersion + '.pbo').toLowerCase(),
+            fileName: (missionNameVersion.toLowerCase() + '.pbo').toLowerCase(),
             progress: false,
             verbose: false,
             // Do not compress (SLOW)

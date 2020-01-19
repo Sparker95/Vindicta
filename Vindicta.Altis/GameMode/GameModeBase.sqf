@@ -502,8 +502,152 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	// Override this to do stuff when player spawns
+	// Call the method of base class(that is, this class)
 	/* protected virtual */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
+
+		OOP_INFO_1("PLAYER SPAWN: %1", _this);
+
+		// Single player specific setup
+		if(!IS_MULTIPLAYER) then {
+			// We need to catch player death so we can "respawn" them fakely
+			OOP_INFO_1("Added killed EH to %1", _newUnit);
+			_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerKilled", [_this select 0]) }];
+		};
+
+		// Create a suspiciousness monitor for player
+		NEW("UndercoverMonitor", [_newUnit]);
+
+		// Create scroll menu to talk to civilians
+		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
+			private _civ = cursorObject;
+			(!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
+			&& {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
+		};
+
+		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
+						"[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
+						0, // Arguments
+						9000, // Priority
+						true, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_talkCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
+						"[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
+						0, // Arguments
+						8999, // Priority
+						true, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_talkCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
+						"[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
+						0, // Arguments
+						8998, // Priority
+						true, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_talkCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		// Init the UnitIntel on player
+		CALLSM0("UnitIntel", "initPlayer");
+
+		// Init the Location Visibility Monitor on player
+		gPlayerMonitor = NEW("PlayerMonitor", [_newUnit]);
+		NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this self-deletes, it will unref the player monitor
+
+		// Init the Sound Monitor on player
+		NEW("SoundMonitor", [_newUnit]);
+
+
+		// Action to start building stuff
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
+						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
+						0, // Arguments
+						0, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"(vehicle player == player) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation)", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+
+		// Action to start building stuff
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from inventory"], // title
+						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
+						0, // Arguments
+						-1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"(vehicle player == player) && (((['', player] call unit_fnc_getInfantryBuildResources) > 0) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+
+		// Action to attach units to garrison
+		pr0_fnc_attachUnitCond = {
+			_co = cursorObject;
+			(vehicle player == player)                                              // Player must be on foot
+			&& {_co distance player < 7}                                            // Player must be close to object
+			&& {! (_co isKindOf "Man")}                                               // Object must not be infantry
+			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}       // Player must be at a friendly location
+			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}   // Object must be a valid unit OOP object (no shit spawned by zeus for now)
+			&& {alive cursorObject}                                                 // Object must be alive
+		};
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
+						{isNil {NEW("AttachToGarrisonDialog", [cursorObject])}}, // Open the UI dialog
+						0, // Arguments
+						0.1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_attachUnitCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+	} ENDMETHOD;
+
+	// Player death event handler in SP
+	// SP is special in this regard, because there is no respawn, so we must make it ourselves, yay \o/
+	/* protected virtual */ METHOD("singlePlayerKilled") {
+		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+
+		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
+
+		// Create a unit and give player control of it.
+		private _tmpGroup = createGroup (side group _oldUnit);
+		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, [0,0,0], [], 0, "NONE"];
+		[_newUnit] joinSilent (group _oldUnit);
+		deleteGroup _tmpGroup;
+		_newUnit setName (name _oldUnit);
+		selectPlayer _newUnit;
+		//unassignCurator zeus1;		zeus1 is nil anyway? I think we can use ACE now to add zeus
+		//player assignCurator zeus1;
+
+		// Standard player respawn handler script like in MP
+		[player, _oldUnit, "", 0, "GameModeBase singlePlayerKilled"] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
 	} ENDMETHOD;
 
 	// Override this to perform periodic game mode updates

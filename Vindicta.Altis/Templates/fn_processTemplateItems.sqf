@@ -43,6 +43,8 @@ pr _backpacks = [];
 // Each element is an array describing loadout weapons of a specific unit subcategory
 pr _loadoutWeapons = [ [[], []] ];
 
+//#define DEBUG
+
 while {_subCatID < _catSize} do {
 	pr _classArray = _t#_catID#_subCatID;
 	pr _primaryWeaponsThisSubcat = [];		// Primary and secondary weapons of this subcategory
@@ -53,9 +55,9 @@ while {_subCatID < _catSize} do {
 			pr _isLoadout = [_classOrLoadout] call t_fnc_isLoadout;
 			
 			if (_isLoadout) then {
-				//diag_log format ["LOADOUT: %1", _classOrLoadout];
+				diag_log format ["LOADOUT: %1", _classOrLoadout];
 			} else {
-				//diag_log format ["CLASS:   %1", _classOrLoadout];
+				diag_log format ["CLASS:   %1", _classOrLoadout];
 			};
 
 			// Create a unit from which we will read data
@@ -74,16 +76,41 @@ while {_subCatID < _catSize} do {
 
 			
 			pr _unitMags = magazines _hO;
+			diag_log format			["  Unit mags: %1", _unitMags];
+
+			/*
+			// Grabs mags for all muzzles
+			                _usableMagazines = [];
+_cfgWeapon = configfile >> "cfgweapons" >> (primaryweapon player); 
+                { 
+                    _cfgMuzzle = if (_x == "this") then {_cfgWeapon} else {_cfgWeapon >> _x}; 
+                    { 
+                        _usableMagazines pushBackUnique _x; 
+                    } foreach getarray (_cfgMuzzle >> "magazines"); 
+                } foreach getarray (_cfgWeapon >> "muzzles");
+_usableMagazines
+			*/
 
 			// Process primary weapon
 			pr _weap = primaryWeapon _hO;
 			if (_weap != "") then {
 				_weap = _weap call bis_fnc_baseWeapon;
+				diag_log format 	["  Weapon:			%1", _weap];
 				if (! (_weap in _primaryWeapons)) then {
 					pr _items = primaryWeaponItems _hO;
 					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					diag_log format	["  Weapon mags:	%1", _mags];
+					pr _magsIntersect = _mags arrayIntersect _unitMags;
+					diag_log format	["  Mags intersect:	%1", _magsIntersect];
 					_primaryWeapons pushBack _weap;
-					_primaryWeaponMagazines pushBack (_mags arrayIntersect _unitMags); // We need mags compatible with unit's weapon, but only those which are compatible with the weapon 
+					if (count _magsIntersect == 0) then {
+						_primaryWeaponMagazines pushBack _mags;				// Some configs are incomplete and point at base magazine item, just grab all magazines available in config then
+						diag_log format ["   Add to array: %1", _mags];
+					} else {
+						_primaryWeaponMagazines pushBack _magsIntersect;	// We need mags compatible with unit's weapon, but only those which are compatible with the weapon
+						diag_log format ["   Add to array: %1", _magsIntersect];
+					};
+					
 					{ if (_x != "") then {_primaryWeaponItems pushBackUnique _x} } forEach _items;
 				};
 				_primaryWeaponsThisSubcat pushBackunique _weap;
@@ -96,8 +123,13 @@ while {_subCatID < _catSize} do {
 				if (! (_weap in _secondaryWeapons)) then {
 					pr _items = secondaryWeaponItems _hO;
 					pr _mags = getArray (configfile >> "CfgWeapons" >> _weap >> "magazines");
+					pr _magsIntersect = _mags arrayIntersect _unitMags;
 					_secondaryWeapons pushBack _weap;
-					_secondaryWeaponMagazines pushBack (_mags arrayIntersect _unitMags);
+					if (count _magsIntersect == 0) then {
+						_secondaryWeaponMagazines pushBack _mags;
+					} else {
+						_secondaryWeaponMagazines pushBack _magsIntersect;
+					};
 					{ if (_x != "") then {_secondaryWeaponItems pushBackUnique _x} } forEach _items;
 				};
 				_secondaryWeaponsThisSubcat pushBackUnique _weap;
