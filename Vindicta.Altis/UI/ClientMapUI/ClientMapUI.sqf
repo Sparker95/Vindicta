@@ -30,9 +30,6 @@ CLASS(CLASS_NAME, "")
 	VARIABLE("selectedGarrisonMarkers");
 	VARIABLE("selectedLocationMarkers");
 
-	// todo maybe redo THIS_ACTION_NAME
-	STATIC_VARIABLE("campAllowed");
-
 	// Position where the action listbox is going to be attached to
 	VARIABLE("garActionPos");
 	// True if the garrison action listbox is shown
@@ -78,6 +75,9 @@ CLASS(CLASS_NAME, "")
 	// Int, IDC of the control under the cursor, or -1
 	VARIABLE("currentControlIDC");
 
+	// Respawn panel
+	VARIABLE("respawnPanelEnabled");
+
 	// initialize UI event handlers
 	METHOD("new") {
 		params [["_thisObject", "", [""]]];
@@ -117,6 +117,9 @@ CLASS(CLASS_NAME, "")
 		T_SETV("intelPanelSortInverse", false);
 		T_SETV("intelPanelSortCategory", "side");
 		T_SETV("currentControlIDC", -1);
+
+		// Respawn panel
+		T_SETV("respawnPanelEnabled", false);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -185,6 +188,8 @@ CLASS(CLASS_NAME, "")
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
+
+		([_mapDisplay, "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRespawn", _this); }];
 
 		// = = = = = = Initialize default text = = = = = =
 
@@ -293,7 +298,9 @@ CLASS(CLASS_NAME, "")
 			}];
 		};
 
-		
+
+		// Disable the respawn panel initially
+		T_CALLM1("respawnPanelEnable", false);		
 
 
 		// Mouse moving
@@ -1414,6 +1421,8 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			};
 		};
 
+
+
 		if (count _markersUnderCursor == 0) then {
 			// We are definitely not clicking on any map marker
 			T_CALLM0("onMouseClickElsewhere");
@@ -1804,6 +1813,9 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		// Redraw the drawArrow on the map if we are currently giving order to something
 		T_CALLM0("garOrderUpdateArrow");
 
+		// Update state of respawn panel thing
+		T_CALLM0("respawnPanelOnDraw");
+
 	} ENDMETHOD;
 
 	/*
@@ -1891,6 +1903,145 @@ Gets called from "onMapDraw"
 		};
 	} ENDMETHOD;
 
+
+	// //////////////////////////////////////////////////////////////////////////////////
+	// //  R E S P A W N   B U T T O N
+	// //////////////////////////////////////////////////////////////////////////////////
+
+	METHOD("respawnPanelEnable") {
+		params [P_THISOBJECT, P_BOOL("_enable")];
+
+		pr _ctrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlShow _enable;
+		_ctrl ctrlEnable false; // Disable the button initially, it will re-enable itself later
+		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlShow _enable;
+
+		T_SETV("respawnPanelEnabled", _enable);
+	} ENDMETHOD;
+
+	METHOD("respawnPanelEnabled") {
+		params [P_THISOBJECT];
+		T_GETV("respawnPanelEnabled");
+	} ENDMETHOD;
+
+	METHOD("onButtonClickRespawn") {
+		params [P_THISOBJECT];
+
+		// If player has clicked this button, then it must be enabled
+		// If it's enabled, then respawn is possible here
+
+		pr _locMarkers = T_GETV("selectedLocationMarkers");
+		if (count _locMarkers == 0) exitWith {};	// Anything can happen...
+		pr _locMarker = _locMarkers#0;				// Get the location from marker
+		pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+		pr _loc = GETV(_intel, "location");			//
+
+		if (IS_OOP_OBJECT(_loc)) then {				// We want to be super sure that all is ok
+
+			// Teleport player
+			pr _respawnPos = CALLM0(_loc, "getPlayerRespawnPos");
+			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
+
+			// Call gameMode method
+			pr _args = [player, objNull, "", 0];
+			CALLM(gGameMode, "playerSpawn", _args);
+
+			// Execute script on the server
+			_args remoteExec ["fnc_onPlayerRespawnServer", 2, false];
+
+			// Disable this panel
+			T_CALLM1("respawnPanelEnable", false);
+
+			// Close the map
+			openMap [false, false];
+
+			// Show a message to everyone
+			pr _text = format ["%1 has respawned at %2", name player, CALLM0(_loc, "getDisplayName")];
+			[_text] remoteExecCall ["systemChat"];
+		} else {
+			OOP_ERROR_1("Location object does not exist: %1", _loc);
+		};
+
+	} ENDMETHOD;
+
+	// Sets text on the respawn panel
+	METHOD("respawnPanelSetText") {
+		params [P_THISOBJECT, P_STRING("_text")];
+
+		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_ctrl ctrlSetText _text;
+	} ENDMETHOD;
+
+	// Gets called on each draw event of map (on each frame when map is open)
+	METHOD("respawnPanelOnDraw") {
+		params [P_THISOBJECT];
+
+		if (T_GETV("respawnPanelEnabled")) then {
+			pr _locMarkers = T_GETV("selectedLocationMarkers");
+
+			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+
+			// Bail if game mode is not initialized
+			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
+				T_CALLM1("respawnPanelSetText", "You can't respawn because game mode is not initialized yet");
+				_ctrlButton ctrlEnable false;
+			};
+			
+			// Bail if no markers are selected
+			if (count _locMarkers != 1) exitWith {
+				T_CALLM1("respawnPanelSetText", "Select a respawn point");
+				_ctrlButton ctrlEnable false;
+			};
+
+			pr _locMarker = _locMarkers#0;				// Get the location from marker
+			pr _intel = CALLM0(_locMarker, "getIntel");	// marker->intel->location
+			pr _loc = GETV(_intel, "location");			//
+			pr _locBorderArea = CALLM0(_loc, "getBorder");
+			pr _locPos = CALLM0(_loc, "getPos");
+
+			// Only one location is selected
+			
+			// Bail if location object is wrong (why??)
+			if (IS_NULL_OBJECT(_loc)) exitWith {};		// Because who knows...
+
+			// Bail if respawn is disabled
+			if (!CALLM1(_loc, "playerRespawnEnabled", playerSide)) exitWith {
+				// Respawn is disabled here through location's methods
+				T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
+				_ctrlButton ctrlEnable false;
+			};
+
+
+			// Check if there are enemies occupying this place, etc...
+
+			pr _enemySides = [EAST, WEST, INDEPENDENT] - [playerSide];
+
+			// Check enemies in area
+			// todo: might not want to check that on each frame maybe... maybe once in a few frames instead
+			pr _index = (allUnits select {(side group _x) in _enemySides}) findIf {	// Find all enemy units...
+				// ((_x distance _locPos) < 200) ||									// Which are very close
+				(_x inArea _locBorderArea)											// Or inside the area
+			};
+
+			// Bail if there are enemies in area
+			if (_index != -1) exitWith {
+				T_CALLM1("respawnPanelSetText", "You can't respawn here because there are enemies nearby");
+				_ctrlButton ctrlEnable false;
+			};
+
+			// No enemies found there
+			T_CALLM1("respawnPanelSetText", "You can respawn here");
+			_ctrlButton ctrlEnable true;
+		};
+	} ENDMETHOD;
+
+
+
+
+
+	
+
 	// Adds some random intel to debug the intel panel
 	// You can use this in the debug console:
 	// call ClientMapUI_fnc_addDummyIntel;
@@ -1924,6 +2075,3 @@ Gets called from "onMapDraw"
 	} ENDMETHOD;
 
 ENDCLASS;
-
-SET_STATIC_VAR(CLASS_NAME, "campAllowed", true);
-PUBLIC_STATIC_VAR(CLASS_NAME, "campAllowed");

@@ -15,8 +15,7 @@
                 ".",
                 "-i",
                 "${file}",
-                "--disable-macro-warnings",
-                "--lint-private-var-usage"
+                "--disable-macro-warnings"
             ],
             "options": {
                 "cwd": "${workspaceRoot}/Vindicta.Altis"

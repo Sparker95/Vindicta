@@ -40,7 +40,7 @@ class Vin_InGameUI
 			y = safeZoneY + safeZoneH * 0.023; 
 			w = safeZoneW * 0.149; 
 			h = safeZoneH * 0.020;    
-			text = "Camp Really F**king Long  Name"; 
+			text = "UI Not Initialized"; 
 			font = "PuristaMedium";
 			sizeEx = TEXTSIZE_MED;
 			style = ST_LEFT;
