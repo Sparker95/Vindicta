@@ -213,8 +213,8 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 			};
 			CALLM1(gInGameUI, "setBuildResourcesAmount", _buildRes);
 		} else {
-			CALLM2(gInGameUI, "setLocationText", "");
-			CALLM2(gInGameUI, "setBuildResourcesAmount", -1);
+			CALLM1(gInGameUI, "setLocationText", "");
+			CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
 		};
 	} ENDMETHOD;
 
