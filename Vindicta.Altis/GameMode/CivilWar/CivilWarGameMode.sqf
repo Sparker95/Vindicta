@@ -46,7 +46,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		T_SETV("activeCities", []);
 		T_SETV("casualties", 0);
 		if (IS_SERVER) then {	// Makes no sense for client
-			PUBLIC_VAR(_thisObject, "casualties");
+			T_PUBLIC_VAR("casualties");
 		};
 	} ENDMETHOD;
 
@@ -510,7 +510,12 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		T_SETV("state", CITY_STATE_STABLE);
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
-		SET_VAR_PUBLIC(_thisObject, "nRecruits", 0);
+		T_SETV("nRecruits", 0);
+		if (IS_SERVER) then {	// Makes no sense for client
+			T_PUBLIC_VAR("state");
+			T_PUBLIC_VAR("instability");
+			T_PUBLIC_VAR("nRecruits");
+		};
 	} ENDMETHOD;
 
 	METHOD("spawned") {
@@ -572,7 +577,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// Instability is activity / radius
 			// TODO: add other interesting factors here to the instability rate.
 			private _instability = _activity * 1000 / _cityRadius;
-			T_SETV("instability", _instability);
+			T_SETV_PUBLIC("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
 				case (_instability > 100): { _state = CITY_STATE_IN_REVOLT; };
@@ -594,7 +599,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 				};
 			};
 		};
-		T_SETV("state", _state);
+
+		T_SETV_PUBLIC("state", _state);
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 		private _mrk = GETV(_city, "name") + "_gamemode_data";
@@ -668,6 +674,27 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	} ENDMETHOD;
 
 
+	/* virtual override */ METHOD("getMapInfoEntries") {
+		private _return = [];
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			private _status = switch(T_GETV("state")) do {
+				case CITY_STATE_STABLE: {["STATUS", "Stable"]};
+				case CITY_STATE_AGITATED: {["STATUS", "Agitated", [1.0, 0.96, 0.6, 1.0]]};
+				case CITY_STATE_IN_REVOLT: {["STATUS", "In Revolt!", [1.0, 0.62, 0.28, 1.0]]};
+				case CITY_STATE_SUPPRESSED: {["STATUS", "Suppressed", [1.0, 0.28, 0.28, 1.0]]};
+				case CITY_STATE_LIBERATED: {["STATUS", "Liberated!", [0.44, 1.0, 0.28, 1.0]]};
+			};
+			_return = [
+				["RECRUITS", str floor T_GETV("nRecruits")],
+#ifdef DEBUG_CIVIL_WAR_GAME_MODE
+				["INSTABILITY", str T_GETV("instability")],
+#endif // DEBUG_CIVIL_WAR_GAME_MODE
+				_status
+			];
+		};
+		_return
+	} ENDMETHOD;
 
 	// STORAGE
 
@@ -680,7 +707,9 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		T_SETV("ambientMissions", []);
 
 		// Broadcast public variables
-		PUBLIC_VAR(_thisObject, "nRecruits");
+		T_PUBLIC_VAR("nRecruits");
+		T_PUBLIC_VAR("instability");
+		T_PUBLIC_VAR("state");
 
 		true
 	} ENDMETHOD;

@@ -18,20 +18,20 @@ this addBackpack "rhs_rpg_empty";
 
 this addWeapon "rhs_weap_aks74un";
 this addPrimaryWeaponItem "rhs_acc_pbs4";
-this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_AK";
+this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N22_plum_AK";
 this addWeapon "rhs_weap_rpg7";
 this addSecondaryWeaponItem "rhs_acc_pgo7v3";
 this addSecondaryWeaponItem "rhs_rpg7_TBG7V_mag";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_zarya2";};
-this addItemToUniform "rhssaf_mag_br_m84";
-this addItemToUniform "rhssaf_mag_br_m75";
-for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7U1_AK";};
-for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N10_AK";};
+this addItemToUniform "rhs_acc_1pn93_2";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_zarya2";};
+this addItemToVest "rhssaf_mag_br_m84";
+this addItemToVest "rhssaf_mag_br_m75";
+this addItemToVest "I_E_IR_Grenade";
+for "_i" from 1 to 8 do {this addItemToVest "rhs_30Rnd_545x39_7N22_plum_AK";};
 this addItemToBackpack "rhs_rpg7_TBG7V_mag";
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7V_mag";};
-
+for "_i" from 1 to 2 do {this addItemToBackpack "rhs_rpg7_PG7VM_mag";};
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
-this linkItem "rhs_1PN138";
+this linkItem "NVGoggles_OPFOR";

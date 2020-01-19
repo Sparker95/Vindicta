@@ -34,3 +34,7 @@
 #define LOCATION_TYPE_ROADBLOCK "roadblock"
 #define LOCATION_TYPE_OBSERVATION_POST "obsPost"
 #define LOCATION_TYPE_RESPAWN "respawn"
+
+#define BUILDUI_OBJECT_TAG "build_ui_allowMove"
+
+#define SAVED_OBJECT_TAGS [BUILDUI_OBJECT_TAG]
