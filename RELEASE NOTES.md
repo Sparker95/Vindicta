@@ -3,6 +3,7 @@
 - Added: SP support (possible with the new respawn screen).
 - Added: flashlights attachments to default handguns when you respawn so that you are not lost at night
 - Fixed: U-menu not showing up in some cases
+- Fixed: magazines for some weapons were missing in enemy ammo boxes
 - Tweaked: position and rotation of objects built with the build menu is synchronized better now for clients
 
 # 0.23
