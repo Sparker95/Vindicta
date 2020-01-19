@@ -5,7 +5,7 @@ class EditorData
 	angleGridStep=0.2617994;
 	scaleGridStep=1;
 	autoGroupingDist=10;
-	toggles=585;
+	toggles=713;
 	class ItemIDProvider
 	{
 		nextID=2184;
@@ -16,14 +16,14 @@ class EditorData
 	};
 	class LayerIndexProvider
 	{
-		nextID=228;
+		nextID=229;
 	};
 	class Camera
 	{
-		pos[]={13502.192,25,11760.599};
-		dir[]={0.1358804,-0.096104197,0.98606163};
-		up[]={0.013119999,0.99536788,0.095211491};
-		aside[]={0.99064547,9.1560651e-008,-0.1365113};
+		pos[]={13511.977,18.080559,11831.596};
+		dir[]={0.13587849,-0.096103378,0.98605335};
+		up[]={0.013118858,0.9953714,0.095203757};
+		aside[]={0.99063873,2.477318e-007,-0.13651033};
 	};
 };
 binarizationWanted=0;
@@ -333,6 +333,30 @@ class CustomAttributes
 			};
 		};
 		nAttributes=4;
+	};
+	class Category1
+	{
+		name="Scenario";
+		class Attribute0
+		{
+			property="cba_settings_hasSettingsFile";
+			expression="false";
+			class Value
+			{
+				class data
+				{
+					class type
+					{
+						type[]=
+						{
+							"BOOL"
+						};
+					};
+					value=1;
+				};
+			};
+		};
+		nAttributes=1;
 	};
 };
 class Mission
@@ -734,13 +758,14 @@ class Mission
 					class PositionInfo
 					{
 						position[]={1086,275.44107,11412.05};
-						angles[]={0,0.078689247,0};
+						angles[]={0,0.078696892,0};
 					};
 					side="West";
 					flags=7;
 					class Attributes
 					{
 						name="player1";
+						isPlayer=1;
 						isPlayable=1;
 					};
 					id=1700;
@@ -8658,7 +8683,6 @@ class Mission
 			};
 			id=2139;
 			type="B_Slingload_01_Cargo_F";
-			atlOffset=0.10119629;
 		};
 		class Item218
 		{

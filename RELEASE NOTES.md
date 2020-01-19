@@ -1,9 +1,11 @@
 # 0.24
 - Added: new respawn screen to replace the BI respawn screen
-- Added: SP support (possible with the new respawn screen).
+- Added: singleplayer support (possible with the new respawn screen)
 - Added: flashlights attachments to default handguns when you respawn so that you are not lost at night
+- Added: city revolt state is now shown in intel panel
 - Fixed: U-menu not showing up in some cases
 - Fixed: magazines for some weapons were missing in enemy ammo boxes
+- Fixed: built objects were not movable after game was loaded
 - Tweaked: position and rotation of objects built with the build menu is synchronized better now for clients
 
 # 0.23
