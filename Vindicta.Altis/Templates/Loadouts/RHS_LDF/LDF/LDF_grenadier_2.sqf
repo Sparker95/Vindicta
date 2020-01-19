@@ -13,16 +13,21 @@ _RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli","rhsusf_shemag
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhssaf_uniform_m10_digital_summer";
 this addVest "rhssaf_vest_md99_digital_rifleman";
-this addBackpack "rhs_sidor";
+this addBackpack "B_LegStrapBag_olive_F";
 
-this addWeapon "rhs_weap_aks74n";
+this addWeapon "rhs_weap_ak74n_2_gp25";
 this addPrimaryWeaponItem "rhs_acc_dtk1983";
-this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N6M_AK";
-this addWeapon "rhs_weap_igla";
+this addPrimaryWeaponItem "rhs_VOG25";
+this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N10_plum_AK";
 
 this addItemToUniform "FirstAidKit";
 for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
-for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N6M_AK";};
-this addItemToBackpack "rhs_mag_9k38_rocket";
+for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_7N10_2mag_plum_AK";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_30Rnd_545x39_7N10_plum_AK";};
+this addItemToBackpack "rhs_VG40OP_red";
+for "_i" from 1 to 4 do {this addItemToBackpack "rhs_VG40MD";};
+this addItemToBackpack "rhs_VG40OP_green";
+for "_i" from 1 to 5 do {this addItemToBackpack "rhs_VG40OP_white";};
+for "_i" from 1 to 4 do {this addItemToBackpack "rhs_VOG25";};
+for "_i" from 1 to 4 do {this addItemToBackpack "rhs_VG40TB";};
 this linkItem "ItemWatch";

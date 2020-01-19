@@ -368,6 +368,8 @@
 // Getting/setting variables of _thisObject
 #define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
 #define T_SETV_REF(varNameStr, varValue) SET_VAR_REF(_thisObject, varNameStr, varValue)
+#define T_PUBLIC_VAR(varNameStr) PUBLIC_VAR(_thisObject, varNameStr)
+#define T_SETV_PUBLIC(varNameStr, varValue) SET_VAR_PUBLIC(_thisObject, varNameStr, varValue)
 #define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
 
 // Unpacking a _thisObject variable into a private _variable

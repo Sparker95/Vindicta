@@ -1858,6 +1858,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			// Initialize the limited arsenal
 			[_hO, _dataList] call jn_fnc_arsenal_initPersistent;
+
+			// Make the object movable again for the Build UI
+			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
 		};
 	} ENDMETHOD;
 

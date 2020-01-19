@@ -42,3 +42,7 @@ Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/$PBOPREFIX$
 ~Vindicta-Addon/addons/missions/script_component.hpp
 configs/briefingName.hpp
+
+tools/buildtool/dist/
+
+tools/buildtool/package-lock.json

@@ -12,17 +12,15 @@ this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["G_Bandanna_oli","G_Balaclava_oli","rhsusf_shemagh_od","rhsusf_shemagh2_od","","",""];
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhssaf_uniform_m10_digital_summer";
-this addVest "rhssaf_vest_md99_digital_rifleman";
+this addVest "rhssaf_vest_md99_digital";
 this addBackpack "rhs_sidor";
 
-this addWeapon "rhs_weap_aks74n";
-this addPrimaryWeaponItem "rhs_acc_dtk1983";
-this addPrimaryWeaponItem "rhs_acc_2dpZenit";
-this addPrimaryWeaponItem "rhs_30Rnd_545x39_7N6M_AK";
-this addWeapon "rhs_weap_igla";
+this addWeapon "rhs_weap_m84";
+this addPrimaryWeaponItem "rhs_100Rnd_762x54mmR_green";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_rgd5";};
-for "_i" from 1 to 4 do {this addItemToVest "rhs_30Rnd_545x39_7N6M_AK";};
-this addItemToBackpack "rhs_mag_9k38_rocket";
+for "_i" from 1 to 2 do {this addItemToUniform "rhs_mag_rgd5";};
+this addItemToVest "rhs_100Rnd_762x54mmR";
+this addItemToBackpack "rhs_100Rnd_762x54mmR_green";
+this addItemToBackpack "rhs_100Rnd_762x54mmR";
 this linkItem "ItemWatch";

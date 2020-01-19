@@ -958,8 +958,12 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	http://patorjk.com/software/taag/#p=display&f=O8&t=INTEL%20PANEL
 	*/
 
+	// Flags for the function behavior use like: [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]
+	#define INTEL_PANEL_CLEAR 0
+	#define INTEL_PANEL_SHOW_COMPOSITION 1
+
 	METHOD("intelPanelUpdateFromGarrisonRecord") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), ["_clear", true]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_garRecord"), P_ARRAY("_flags")];
 
 		private _mapDisplay = findDisplay 12;
 
@@ -971,7 +975,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 		_lnb lnbSetColumnsPos [0, 0.6];
 
 		pr _comp = CALLM0(_garRecord, "getComposition");
@@ -990,7 +994,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	} ENDMETHOD;
 
 	METHOD("intelPanelUpdateFromLocationIntel") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), ["_clear", true], ["_showComposition", true]];
+		params [P_THISOBJECT, P_OOP_OBJECT("_intel"), P_ARRAY("_flags")];
 
 		private _mapDisplay = findDisplay 12;
 
@@ -1002,7 +1006,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		};
 
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		if (_clear) then { T_CALLM0("intelPanelClear"); };
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };
 		
 
 		pr _typeText = "";
@@ -1024,21 +1028,25 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		// Add amount of recruits if it's a city
 		pr _loc = GETV(_intel, "location");
-		if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
-			pr _gameModeData = GETV(_loc, "gameModeData");
-			pr _nRecruits = -666;
-			if ( !(IS_NULL_OBJECT(_gameModeData)) && {IS_OOP_OBJECT(_gameModeData)}) then {
-				_nRecruits = CALLM0(_gameModeData, "getRecruitCount");
-			};
-			_lnb lnbAddRow ["RECRUITS", str _nRecruits];
-		} else {
-			// Add amount of recruits we can recruit at this place if it's not a city
-			pr _pos = CALLM0(_loc, "getPos");
-			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
-			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
-			//_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
-			_lnb lnbAddRow ["AVAILABLE RECRUITS", str _nRecruits];
+		pr _gameModeData = GETV(_loc, "gameModeData");
+		if ( !(IS_NULL_OBJECT(_gameModeData)) && {IS_OOP_OBJECT(_gameModeData)}) then {
+			{
+				private _rowIdx = _lnb lnbAddRow [_x#0, _x#1];
+				if(count _x > 2) then {
+					_lnb lnbSetColor [[_rowIdx, 1], _x#2];
+				};
+			} forEach CALLM0(_gameModeData, "getMapInfoEntries");
 		};
+
+		// if (CALLM0(_loc, "getType") == LOCATION_TYPE_CITY) then {
+		// } else {
+		// 	// Add amount of recruits we can recruit at this place if it's not a city
+		// 	pr _pos = CALLM0(_loc, "getPos");
+		// 	pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+		// 	pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+		// 	//_lnb lnbAddRow [format ["AVAILABLE RECRUITS %1", _nRecruits], "", ""];
+		// 	_lnb lnbAddRow ["AVAILABLE RECRUITS", str _nRecruits];
+		// };
 
 		// Add inf capacity
 		pr _capinf = CALLM0(_loc, "getCapacityInf");
@@ -1047,7 +1055,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 
 		// Add unit data
 		pr _ua = GETV(_intel, "unitData");
-		if (count _ua > 0 && _showComposition) then {
+		if (count _ua > 0 && {INTEL_PANEL_SHOW_COMPOSITION in _flags}) then {
 			_compositionText = "";
 			// Amount of infrantry
 			{_soldierCount = _soldierCount + _x;} forEach (_ua select T_INF);
@@ -1083,7 +1091,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 	} ENDMETHOD;
 
 	METHOD("intelPanelUpdateFromIntel") {
-		params [P_THISOBJECT, ["_clear", true]];
+		params [P_THISOBJECT, P_ARRAY("_flags")];
 		
 		private _mapDisplay = findDisplay 12;
 
@@ -1091,7 +1099,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
 		_lnb lnbSetColumnsPos [0, 0.3, 0.7];
-		if (_clear) then { T_CALLM0("intelPanelClear"); };		
+		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
 
 		// Read some variables...
 		private _showInactive = T_GETV("showIntelInactive");
@@ -1463,20 +1471,20 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 				// If we have selected both a garrison and a location
 				pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
 				pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-				T_CALLM3("intelPanelUpdateFromLocationIntel", _intel, true, false); // clear
-				T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, false); // don't clear
+				T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR]);
+				T_CALLM1("intelPanelUpdateFromGarrisonRecord", _garRecord);
 				//T_CALLM1("intelPanelShowButtons", false);
 			} else {
 				// If one garrison was clicked, update the panel from its record
 				if (count _garrisonsUnderCursor == 1) then {
 					pr _garRecord = CALLM0(_garrisonsUnderCursor#0, "getGarrisonRecord");
-					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, true); // clear
+					T_CALLM2("intelPanelUpdateFromGarrisonRecord", _garRecord, [INTEL_PANEL_CLEAR]); // clear
 					//T_CALLM1("intelPanelShowButtons", false);
 				} else {
 					// If one location was clicked, update panel from the location intel
 					if (count _locationsUnderCursor == 1) then {
 						pr _intel = CALLM0(_locationsUnderCursor#0, "getIntel");
-						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, true); // clear
+						T_CALLM2("intelPanelUpdateFromLocationIntel", _intel, [INTEL_PANEL_CLEAR] + [INTEL_PANEL_SHOW_COMPOSITION]);
 						//T_CALLM1("intelPanelShowButtons", false);
 					};
 				};
@@ -1535,7 +1543,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 		//T_CALLM0("intelPanelClear");
 
 		// Fill the intel panel from intel
-		T_CALLM1("intelPanelUpdateFromIntel", true);
+		T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 		T_CALLM0("intelPanelDeselect");
 		T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
@@ -1554,7 +1562,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 			// todo if we have something currently selected, we should select the old item, etc, etc, probably don't care much for that now ... 
 
 			// Fill the intel panel from intel
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 
@@ -1621,7 +1629,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
@@ -1635,7 +1643,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};
@@ -1649,7 +1657,7 @@ o888   888o 8888o  88        8888o   888   888    888       888    88o o888   88
 
 		// If nothing is selected on the map, update the intel panel too
 		if ( (count T_GETV("selectedLocationMarkers") == 0) && (count T_GETV("selectedGarrisonMarkers") == 0) ) then {
-			T_CALLM1("intelPanelUpdateFromIntel", true);
+			T_CALLM1("intelPanelUpdateFromIntel", [INTEL_PANEL_CLEAR]);
 			T_CALLM0("intelPanelDeselect");
 			T_CALLM2("intelPanelSortIntel", T_GETV("intelPanelSortCategory"), T_GETV("intelPanelSortInverse"));
 		};

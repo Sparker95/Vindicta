@@ -14,14 +14,15 @@ this addHeadgear _RandomHeadgear;
 _RandomGoggles = selectRandom ["FGN_AAF_Shemag_tan","FGN_AAF_Shemag","rhs_scarf","rhsusf_oakley_goggles_blk","",""];
 this addGoggles _RandomGoggles;
 this forceAddUniform "rhs_uniform_gorka_1_a";
-this addBackpack "FGN_AAF_Bergen_Type07";
+this addBackpack "FGN_AAF_UMTBS_Type07";
 
 this addWeapon "rhs_weap_m249_light_L";
+this addWeapon "rhs_weap_m249_pip_S_vfg1";
 this addPrimaryWeaponItem "rhsusf_acc_SF3P556";
 this addPrimaryWeaponItem "rhsusf_acc_anpeq15side_bk";
-this addPrimaryWeaponItem "rhsusf_acc_elcan_3d";
+this addPrimaryWeaponItem "rhsusf_acc_ELCAN";
 this addPrimaryWeaponItem "rhsusf_100Rnd_556x45_mixed_soft_pouch_coyote";
-this addPrimaryWeaponItem "rhsusf_acc_grip4_bipod";
+this addPrimaryWeaponItem "rhsusf_acc_grip1";
 this addWeapon "rhsusf_weap_glock17g4";
 this addHandgunItem "rhsusf_acc_omega9k";
 this addHandgunItem "acc_flashlight_pistol";
@@ -37,6 +38,3 @@ for "_i" from 1 to 2 do {this addItemToBackpack "rhsusf_200Rnd_556x45_mixed_soft
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";
-
-
-
