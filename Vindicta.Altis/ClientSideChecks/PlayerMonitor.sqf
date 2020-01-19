@@ -196,13 +196,14 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 		pr _locs = T_GETV("currentLocations");
 		pr _loc = T_GETV("currentLocation");
 		pr _garRecord = T_GETV("currentGarrisonRecord");
-		if (_loc != "" && _garRecord != "") then {
+		if (_loc != "") then {
 			// Set current location text
-			pr _text = CALLM0(_loc, "getDisplayName");
-			CALLM1(gInGameUI, "setLocationText", _text);
+			pr _locDispName = CALLM0(_loc, "getDisplayName");
+			pr _locDispColor = CALLM0(_loc, "getDisplayColor");
+			CALLM2(gInGameUI, "setLocationText", _locDispName, _locDispColor);
 
 			// Check if the location has any garrisons we know about
-			pr _buildRes = 0;
+			pr _buildRes = -1;
 			CRITICAL_SECTION { // We want a critical section here because garrison record can be easily deleted at any point
 				if (_garRecord != "") then {
 					if (IS_OOP_OBJECT(_garRecord)) then {
@@ -211,13 +212,9 @@ CLASS("PlayerMonitor", "MessageReceiverEx") ;
 				};
 			};
 			CALLM1(gInGameUI, "setBuildResourcesAmount", _buildRes);
-			//CALLM1(gInGameUI, "setLocationCapacityInf", CALLM0(_loc, "getCapacityInf"));
-			CALLM1(gInGameUI, "enableLocationPanel", true);
 		} else {
-			//CALLM1(gInGameUI, "setLocationText", "");
-			//CALLM1(gInGameUI, "setBuildResourcesAmount", -1);
-			//CALLM1(gInGameUI, "setLocationCapacityInf", -1);
-			CALLM1(gInGameUI, "enableLocationPanel", false);
+			CALLM2(gInGameUI, "setLocationText", "");
+			CALLM2(gInGameUI, "setBuildResourcesAmount", -1);
 		};
 	} ENDMETHOD;
 

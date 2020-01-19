@@ -11,12 +11,12 @@ https://docs.google.com/document/d/1DeFhqNpsT49aIXdgI70GI3GIR95LR2NnJ5cpAYYl3hE/
 #define DEBUG_CIVIL_WAR_GAME_MODE
 #endif
 
-gCityStateNames = [
-	"STABLE",
-	"AGITATED",
-	"IN_REVOLT",
-	"SUPPRESSED",
-	"LIBERATED"
+gCityStateData = [
+	["Stable",     [1.0 , 1.0 , 1.0 , 1.0], "#FFFFFF"], /* CITY_STATE_STABLE */
+	["Agitated",   [1.0 , 0.96, 0.6 , 1.0], "#FFF599"], /* CITY_STATE_AGITATED */
+	["In Revolt!", [1.0 , 0.62, 0.28, 1.0], "#FF9e47"], /* CITY_STATE_IN_REVOLT */
+	["Suppressed", [1.0 , 0.28, 0.28, 1.0], "#FF4747"], /* CITY_STATE_SUPPRESSED */
+	["Liberated!", [0.44, 1.0 , 0.28, 1.0], "#70FF47"]  /* CITY_STATE_LIBERATED */
 ];
 
 /*
@@ -217,7 +217,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 				private _activity = CALLM(_enemyCmdr, "getActivity", [_playerPos ARG 500]);
 				// Callback to client with the result
-				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];				
+				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];
 			}] remoteExec ["spawn", 0];
 		}] call pr0_fnc_addDebugMenuItem;
 
@@ -616,7 +616,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		createMarker [_mrk, CALLM0(_city, "getPos") vectorAdd [0, 100, 0]];
 		_mrk setMarkerType "mil_marker";
 		_mrk setMarkerColor "ColorBlue";
-		_mrk setMarkerText (format ["%1 (%2)", gCityStateNames select _state, T_GETV("instability")]);
+		_mrk setMarkerText (format ["%1 (%2)", gCityStateData#_state#0, T_GETV("instability")]);
 		_mrk setMarkerAlpha 1;
 #endif
 		// Update police stations (spawning reinforcements etc)
@@ -682,18 +682,12 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		} forEach [WEST, EAST, INDEPENDENT];
 	} ENDMETHOD;
 
-
 	/* virtual override */ METHOD("getMapInfoEntries") {
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
-			private _status = switch(T_GETV("state")) do {
-				case CITY_STATE_STABLE: {["STATUS", "Stable"]};
-				case CITY_STATE_AGITATED: {["STATUS", "Agitated", [1.0, 0.96, 0.6, 1.0]]};
-				case CITY_STATE_IN_REVOLT: {["STATUS", "In Revolt!", [1.0, 0.62, 0.28, 1.0]]};
-				case CITY_STATE_SUPPRESSED: {["STATUS", "Suppressed", [1.0, 0.28, 0.28, 1.0]]};
-				case CITY_STATE_LIBERATED: {["STATUS", "Liberated!", [0.44, 1.0, 0.28, 1.0]]};
-			};
+			private _stateData = gCityStateData#(T_GETV("state"));
+			private _status = ["STATUS", _stateData#0, _stateData#1];
 			_return = [
 				["RECRUITS", str floor T_GETV("nRecruits")],
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
@@ -705,6 +699,31 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		_return
 	} ENDMETHOD;
 
+	// Overrides the location name
+	/* virtual override */ METHOD("getDisplayName") {
+		private _return = objNull;
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			pr _loc = T_GETV("location");
+			private _stateData = gCityStateData#(T_GETV("state"));
+			private _baseName = CALLM0(_loc, "getName");
+			// format["%1 [%2]", _baseName, _stateData#1]
+			_return = format["%1 (%2)", _baseName, _stateData#0];
+		};
+		_return
+	} ENDMETHOD;
+
+	// Overrides the location color
+	/* virtual override */ METHOD("getDisplayColor") {
+		private _return = [1,1,1,1];
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			pr _loc = T_GETV("location");
+			private _stateData = gCityStateData#(T_GETV("state"));
+			_return = _stateData#1;
+		};
+		_return
+	} ENDMETHOD;
 	// STORAGE
 
 	METHOD("postDeserialize") {
@@ -757,19 +776,25 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			// We need some way to reinforce police generally probably?
 			private _garrisons = CALLM1(_policeStation, "getGarrisons", ENEMY_SIDE);
 			// We only want to reinforce police stations still under our control
-			if (  (count _garrisons > 0) and  { CALLM(_garrisons select 0, "countInfantryUnits", []) <= 4 } ) then {
+			//if (  (count _garrisons > 0) and  { CALLM(_garrisons select 0, "countInfantryUnits", []) <= 4 } ) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
-				// Check how much inf and veh we want based on the location
-				private _cInf = (CALLM0(_policeStation, "getCapacityInf") min 16) max 6;
-				private _cVehGround = CALLM(_policeStation, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
+				// We will use a fixed response size -- police are coming from outside town so town size isn't really relavent
+				private _cVehGround = 2;
+				private _cInf = _cVehGround * 4;
+
 				// Work out where to start the garrison, we don't want to be near to active players as it will appear out of nowhere
 				private _locPos = CALLM0(_policeStation, "getPos");
 				private _playerBlacklistAreas = playableUnits apply { [getPos _x, 1000] };
-				private _spawnInPos = [_locPos, 1000, 4000, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
-				// This function returns 2D vector for some reason
-				if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
+				private _maxDistance = 2500;
+				private _spawnInPos = +_locPos;
+				while{(_spawnInPos distance2D _locPos <= 900) && _maxDistance <= 4500} do {
+					_spawnInPos = [_locPos, 1000, _maxDistance, 0, 0, 1, 0, _playerBlacklistAreas, _locPos] call BIS_fnc_findSafePos;
+					// This function returns 2D vector for some reason
+					if(count _spawnInPos == 2) then { _spawnInPos pushBack 0; };
+					_maxDistance = _maxDistance + 500;
+				};
 
 				// Ensure that the found position is far enough from the location which is being reinforced
 				if (_spawnInPos distance2D _locPos > 900) then {
@@ -781,10 +806,10 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 					CALLM(_newGarrison, "activateOutOfThread", []);
 					private _AI = CALLM(_newGarrison, "getAI", []);
 					// Send the garrison to join the police station location
-					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation]], _thisObject];
+					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 30]], _thisObject];
 					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
 				};
-			};
+			//};
 		};
 	} ENDMETHOD;
 

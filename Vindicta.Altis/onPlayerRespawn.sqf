@@ -215,7 +215,7 @@ _newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDis
                  false, // ShowWindow
                  false, //hideOnUse
                  "", //shortcut
-                 "(vehicle player == player) && (((['', player] call unit_fnc_getInfantryBuildResources) > 0) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
+                 "(vehicle player == player) && ((((['', player] call unit_fnc_getInfantryBuildResources) > 0) || (!isDamageAllowed player)) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
                  2, //radius
                  false, //unconscious
                  "", //selection

@@ -371,7 +371,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getPlayerSides
 	Returns array of sides of players within this location.
 
-	Returns: Bool
+	Returns: array<Side>
 	*/
 	METHOD("getPlayerSides") {
 		params [P_THISOBJECT];
@@ -458,6 +458,15 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	} ENDMETHOD;
 	
+	METHOD("hasGarrisons") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		
+		if (_side == CIVILIAN) then {
+			(count T_GETV("garrisons")) > 0
+		} else {
+			(count (T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side})) > 0
+		};
+	} ENDMETHOD;
 	
 	METHOD("getGarrisonsRecursive") {
 		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
@@ -523,10 +532,21 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("getDisplayName") {
 		params [P_THISOBJECT];
-		pr _name = T_GETV("name");
-		_name
+		pr _gmdata = T_GETV("gameModeData");
+		CALLM0(_gmdata, "getDisplayName")
 	} ENDMETHOD;
-	
+
+	/*
+	Method: getDisplayColor
+
+	Returns a display color to show in UIs. Format is: [r,g,b,a].
+	*/
+	METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		pr _gmdata = T_GETV("gameModeData");
+		CALLM0(_gmdata, "getDisplayColor")
+	} ENDMETHOD;
+
 	/*
 	Method: getSide
 	Returns side of the garrison that controls this location.

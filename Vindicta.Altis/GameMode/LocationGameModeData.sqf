@@ -31,6 +31,24 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 		[]
 	} ENDMETHOD;
 
+	// Overrides the location name
+	/* public virtual */ METHOD("getDisplayName") {
+		params [P_THISOBJECT];
+		private _loc = T_GETV("location");
+		CALLM0(_loc, "getName")
+	} ENDMETHOD;
+
+	// Overrides the location name
+	/* public virtual */ METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		private _loc = T_GETV("location");
+		if(CALLM1(_loc, "hasGarrisons", side player)) then {
+			[side player, false] call BIS_fnc_sideColor
+		} else {
+			[1,1,1,1]
+		};
+	} ENDMETHOD;
+
 	// STORAGE
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
