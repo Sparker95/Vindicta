@@ -506,6 +506,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	/* protected virtual */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
 
+		OOP_INFO_1("PLAYER SPAWN: %1", _this);
+
+		// Single player specific setup
+		if(!IS_MULTIPLAYER) then {
+			// We need to catch player death so we can "respawn" them fakely
+			OOP_INFO_1("Added killed EH to %1", _newUnit);
+			_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerKilled", [_this select 0]) }];
+		};
+
 		// Create a suspiciousness monitor for player
 		NEW("UndercoverMonitor", [_newUnit]);
 
@@ -618,6 +627,27 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
+	} ENDMETHOD;
+
+	// Player death event handler in SP
+	// SP is special in this regard, because there is no respawn, so we must make it ourselves, yay \o/
+	/* protected virtual */ METHOD("singlePlayerKilled") {
+		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+
+		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
+
+		// Create a unit and give player control of it.
+		private _tmpGroup = createGroup (side group _oldUnit);
+		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, [0,0,0], [], 0, "NONE"];
+		[_newUnit] joinSilent (group _oldUnit);
+		deleteGroup _tmpGroup;
+		_newUnit setName (name _oldUnit);
+		selectPlayer _newUnit;
+		//unassignCurator zeus1;		zeus1 is nil anyway? I think we can use ACE now to add zeus
+		//player assignCurator zeus1;
+
+		// Standard player respawn handler script like in MP
+		[player, _oldUnit, "", 0, "GameModeBase singlePlayerKilled"] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
 	} ENDMETHOD;
 
 	// Override this to perform periodic game mode updates

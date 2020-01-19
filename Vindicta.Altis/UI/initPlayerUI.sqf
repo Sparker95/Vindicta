@@ -56,3 +56,5 @@ gBuildUI = NEW("BuildUI", []);
 
 // Update player markers
 [true] call ui_fnc_enablePlayerMarkers;
+
+gPlayerUIInitialized = true;

@@ -199,22 +199,6 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 		T_SETV("spawnPoints", _spawnPoints);
 
-#ifndef _SQF_VM
-		//ASSERT_MSG(count _spawnPoints > 0, "Couldn't create any spawn points, no police stations found? Check your map setup!");
-
-		// Single player specific setup
-		if(!IS_MULTIPLAYER) then {
-			// Cleanup the extra MP playables
-			{
-				deleteVehicle _x;
-			} forEach units spawnGroup1 + units spawnGroup2 - [player];
-			// We need to catch player death so we can "respawn" them fakely
-			player addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
-			// Move player to a random spawn point to start with
-			player setPosATL ((selectRandom _spawnPoints)#1);
-			T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
-		};
-#endif
 	} ENDMETHOD;
 
 	// Overrides GameModeBase, we want to add some debug menu items on the clients
@@ -240,35 +224,6 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			}] remoteExec ["spawn", 0];
 		}] call pr0_fnc_addDebugMenuItem;
 
-	} ENDMETHOD;
-	
-	// Overrides GameModeBase, we want to add some debug menu items on the clients
-	/* private */ METHOD("singlePlayerRespawn") {
-		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
-		T_PRVAR(spawnPoints);
-
-		// Select a random spawn point, create a unit and give player control of it.
-		private _respawnLoc = selectRandom _spawnPoints;
-		private _tmpGroup = createGroup (side group _oldUnit);
-		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, _respawnLoc#1, [], 0, "NONE"];
-		[_newUnit] joinSilent (group _oldUnit);
-		deleteGroup _tmpGroup;
-		_newUnit setName name _oldUnit;
-		selectPlayer _newUnit;
-		unassignCurator zeus1;
-		player assignCurator zeus1;
-		// Call the general MP player spawn function
-		T_CALLM("playerSpawn", [player ARG objNull ARG 0 ARG 0]);
-		// Need to call this manually as well
-		[_newUnit, _oldUnit, 0, 0] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
-		[_oldUnit] joinSilent grpNull;
-		_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerRespawn", [_this select 0]) }];
-		// Show a quick cutscene
-		(_respawnLoc#0) spawn {
-			cutText [format["<t color='#ffffff' size='3'>You died!<br/>But you were born again in %1!</t>", _this], "BLACK IN", 10, true, true];
-			BIS_DeathBlur ppEffectAdjust [0.0];
-			BIS_DeathBlur ppEffectCommit 0.0;
-		};
 	} ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
