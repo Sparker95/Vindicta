@@ -58,7 +58,7 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["rhsgref_cdf_reg_uaz"]];
 
 _veh set [T_VEH_car_unarmed, ["rhsgref_cdf_reg_uaz", "rhsgref_cdf_reg_uaz_open", "rhsgref_hidf_m1025"]];
-_veh set [T_VEH_car_armed, ["rhsgref_hidf_m1025_m2", "rhsgref_hidf_m1025_mk19"; "rhsgref_cdf_reg_uaz_dshkm", "rhsgref_cdf_reg_uaz_spg9"]];
+_veh set [T_VEH_car_armed, ["rhsgref_hidf_m1025_m2", "rhsgref_hidf_m1025_mk19", "rhsgref_cdf_reg_uaz_dshkm", "rhsgref_cdf_reg_uaz_spg9"]];
 
 _veh set [T_VEH_MRAP_unarmed, ["rhsgref_BRDM2UM"]];
 _veh set [T_VEH_MRAP_HMG, ["rhsgref_BRDM2_HQ"]];
