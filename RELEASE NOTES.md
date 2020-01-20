@@ -1,3 +1,9 @@
+# 0.25
+- Fixed: virtual route script crash
+- Fixed: respawn: after some time game might start complaining about lack of respawn_default marker, even though first respawn was successful
+- Fixed: respawn: after some time respawn at the default respawn point might become disabled
+- Fixed: respawn: sometimes the mission spawns AI into player's squad in singleplayer when player dies
+
 # 0.24
 - Added: new respawn screen to replace the BI respawn screen
 - Added: singleplayer support (possible with the new respawn screen)
