@@ -636,6 +636,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
 
+		// Bail if this has already been handled for this unit
+		// I have no idea why, killed event handler gets called twice if player dies after laying on the ground after taking too much ACE damage
+		private _handledPreviously = _oldUnit getVariable ["vin_killed_handled", false];
+		OOP_INFO_1("  handled previously: %1", _handledPreviously);
+		if (_handledPreviously) exitWith {
+			OOP_INFO_0("  handled previously, ignoring this call");
+		};
+		_oldUnit setVariable ["vin_killed_handled", true];
+
 		// Create a unit and give player control of it.
 		private _tmpGroup = createGroup (side group _oldUnit);
 		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, [0,0,0], [], 0, "NONE"];
