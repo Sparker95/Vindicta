@@ -14,3 +14,5 @@
 ["Templates\Factions\RHS_USAF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF.sqf"]	call t_fnc_initializeTemplateFromFile;
 ["Templates\Factions\RHS_LDF_ranger.sqf"]	call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LDF_NATO_police.sqf"] call t_fnc_initializeTemplateFromFile;
+["Templates\Factions\RHS_LDF_NATO.sqf"] call t_fnc_initializeTemplateFromFile;
