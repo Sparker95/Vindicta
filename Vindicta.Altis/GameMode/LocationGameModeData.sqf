@@ -25,7 +25,17 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 		gMessageLoopGameMode
 	} ENDMETHOD;
 
+	METHOD("getRecruitCount") { // For common interface
+		params [P_THISOBJECT, P_ARRAY("_cities")];
+		0
+  } ENDMETHOD;
 
+	// Returns intel entries for display on the client map UI
+	/* public virtual */ METHOD("getMapInfoEntries") {
+		params [P_THISOBJECT];
+		[]
+
+	} ENDMETHOD;
 
 	// STORAGE
 	/* override */ METHOD("postDeserialize") {
@@ -36,5 +46,6 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 
 		true
 	} ENDMETHOD;
+
 
 ENDCLASS;

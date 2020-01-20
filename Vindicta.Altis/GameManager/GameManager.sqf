@@ -76,11 +76,22 @@ CLASS("GameManager", "MessageReceiverEx")
 			// Initialize notification system
 			CALLSM0("Notification", "staticInit");
 
-			// Main UI initialization sequence
-			// But we must wait until UI exists on client
+			// Main initialization sequence
 			0 spawn {
+				// Wait until we have UI
 				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+
+				// Show notification
+				CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+
+				// Exception for SP, we must wait till player spawns, then do more init, because onPlayerRespawn.sqf does not work there
+				if (!isMultiplayer) then {
+					waitUntil {!(isNull player) && (count allUnits > 1)}; // We are waiting till player and all the other units for MP slots are there
+
+					// Destroy other MP playable units
+					{deleteVehicle _x} forEach (allUnits) - [player];
+				};
 			};
 
 

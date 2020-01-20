@@ -277,6 +277,15 @@
 		],
 		"sqflint.exclude": [
 			"OOP_light/OOP_light.hpp"
-		]
+		],
+		"todo-tree.highlights.defaultHighlight": {
+			"icon": "tasklist",
+			"type": "text",
+			"foreground": "gray",
+			"background": "blue",
+			"opacity": 40,
+			"iconColour": "white"
+		},
+		"todo-tree.tree.showTagsFromOpenFilesOnly": false
 	}
 }

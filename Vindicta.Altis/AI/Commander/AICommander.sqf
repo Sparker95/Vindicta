@@ -3008,8 +3008,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			};
 		};
 		#endif
-		
-		T_SETV("planningCycle", 0);
 
 		// Set process interval
 		T_CALLM1("setProcessInterval", PROCESS_INTERVAL);

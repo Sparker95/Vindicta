@@ -1,3 +1,15 @@
+# 0.24
+- Added: new respawn screen to replace the BI respawn screen
+- Added: singleplayer support (possible with the new respawn screen)
+- Added: flashlights attachments to default handguns when you respawn so that you are not lost at night
+- Added: city revolt state is now shown in intel panel
+- Added: more loadouts for RHS 2017 and RHS-LDF factions
+- Fixed: U-menu not showing up in some cases
+- Fixed: magazines for some weapons were missing in enemy ammo boxes
+- Fixed: built objects were not movable after game was loaded
+- Fixed: server keys are not broken now, temporary. Can get broken again in next releases until we make a new build script.
+- Tweaked: position and rotation of objects built with the build menu is synchronized better now for clients
+
 # 0.23
 - Added a quick fix for being unable to save. Might have to wait for a while if SQF errors have happened in game.
 - Removed keys temporarily until they are fixed.
