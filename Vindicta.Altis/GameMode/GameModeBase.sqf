@@ -31,11 +31,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE_ATTR("messageLoopCommanderInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopCommanderWest", [ATTR_SAVE]);
 	VARIABLE_ATTR("messageLoopCommanderEast", [ATTR_SAVE]);
+	VARIABLE_ATTR("messageLoopCommanderCiv", [ATTR_SAVE]);
 
 	// Commanders AI objects
 	VARIABLE_ATTR("AICommanderInd", [ATTR_SAVE]);
 	VARIABLE_ATTR("AICommanderWest", [ATTR_SAVE]);
 	VARIABLE_ATTR("AICommanderEast", [ATTR_SAVE]);
+	VARIABLE_ATTR("AICommanderCiv", [ATTR_SAVE]);
 
 	// Locations
 	VARIABLE_ATTR("locations", [ATTR_SAVE]);
@@ -69,9 +71,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("messageLoopCommanderInd", NULL_OBJECT);
 		T_SETV("messageLoopCommanderWest", NULL_OBJECT);
 		T_SETV("messageLoopCommanderEast", NULL_OBJECT);
+		T_SETV("messageLoopCommanderCiv", NULL_OBJECT);
 		T_SETV("AICommanderInd", NULL_OBJECT);
 		T_SETV("AICommanderWest", NULL_OBJECT);
 		T_SETV("AICommanderEast", NULL_OBJECT);
+		T_SETV("AICommanderCiv", NULL_OBJECT);
 
 		// Default template names
 		T_SETV("tNameMilWest", "tNATO");
@@ -352,6 +356,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			if (isNil "gMessageLoopCommanderEast") then {
 				gMessageLoopCommanderEast = NEW("MessageLoop", ["EAST Commander Thread"]);
 				T_SETV("messageLoopCommanderEast", gMessageLoopCommanderEast);
+			};
+			
+			if (isNil "gMessageLoopCommanderCiv") then {
+				gMessageLoopCommanderCiv = NEW("MessageLoop", ["CIV Commander Thread"]);
+				T_SETV("messageLoopCommanderCiv", gMessageLoopCommanderCiv);
 			};
 		};
 
@@ -741,6 +750,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gAICommanderEast = NEW_PUBLIC("AICommander", _args);
 		T_SETV("AICommanderEast", gAICommanderEast);
 		PUBLIC_VARIABLE "gAICommanderEast";
+		
+		// Civilian
+		gCommanderCiv = NEW("Commander", []);
+		private _args = [gCommanderCiv, CIVILIAN, gMessageLoopCommanderCiv];
+		gCommanderCiv = NEW_PUBLIC("AICommander", _args);
+		T_SETV("AICommanderEast", gCommanderCiv);
+		PUBLIC_VARIABLE "gCommanderCiv";
 	} ENDMETHOD;
 
 	METHOD("_createSpecialGarrisons") {
@@ -975,7 +991,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _commanders = [];
 		{
 			if (!IS_NULL_OBJECT(T_GETV(_x))) then {_commanders pushBack T_GETV(_x)};
-		} forEach ["AICommanderWest", "AICommanderEast", "AICommanderInd"];
+		} forEach ["AICommanderWest", "AICommanderEast", "AICommanderInd", "AICommanderCiv"];
 		
 		{ // foreach _roadblockPositionsFinal			
 			private _pos = _x;
@@ -1383,6 +1399,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 								["messageLoopCommanderEast", 150],
 								["messageLoopCommanderWest", 150],
 								["messageLoopCommanderInd", 150],
+								["messageLoopCommanderCiv", 30],
 								["messageLoopMain", 30],
 								["messageLoopGroupAI", 10]
 							];
@@ -1416,7 +1433,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _ai = T_GETV(_x);
 			diag_log format ["Saving Commander AI: %1", _x];
 			CALLM1(_storage, "save", _ai);
-		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast", "AICommanderCiv"];
 
 		// Save locations
 		{
@@ -1439,6 +1456,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 								"messageLoopCommanderEast",
 								"messageLoopCommanderWest",
 								"messageLoopCommanderInd",
+								"messageLoopCommanderCiv",
 								"messageLoopMain",
 								"messageLoopGroupAI"
 							];
@@ -1499,6 +1517,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"messageLoopCommanderEast",
 						"messageLoopCommanderWest",
 						"messageLoopCommanderInd",
+						"messageLoopCommanderCiv",
 						"messageLoopMain",
 						"messageLoopGroupAI"
 					];
@@ -1517,7 +1536,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGameMode = T_GETV("messageLoopGameMode");
 		gMessageLoopCommanderInd = T_GETV("messageLoopCommanderInd");
 		gMessageLoopCommanderWest = T_GETV("messageLoopCommanderWest");
-		gMessageLoopCommanderEast = T_GETV("messageLoopCommanderWest");
+		gMessageLoopCommanderEast = T_GETV("messageLoopCommanderEast");
+		gMessageLoopCommanderCiv = T_GETV("messageLoopCommanderCiv");
 
 		// Create message loops we have not created yet
 		// It will not create message loops which we have loaded before
@@ -1578,6 +1598,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		PUBLIC_VARIABLE("gAICommanderWest");
 		gAICommanderEast = T_GETV("AICommanderEast");
 		PUBLIC_VARIABLE("gAICommanderEast");
+		gAICommanderCiv = T_GETV("AICommanderCiv");
+		PUBLIC_VARIABLE("gAICommanderCiv");
 
 		// Unlock all message loops
 		{
