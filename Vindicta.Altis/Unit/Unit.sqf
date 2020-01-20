@@ -1240,11 +1240,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _data = T_GETV("data");
 		pr _AI = _data select UNIT_DATA_ID_AI;
 		if (_AI != "") then {
-			pr _msg = MESSAGE_NEW();
-			MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);
-			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-			CALLM1(_AI, "waitUntilMessageDone", _msgID);
-
+			CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
 			_data set [UNIT_DATA_ID_AI, ""];
 		};
 
