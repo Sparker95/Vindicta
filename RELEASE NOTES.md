@@ -1,3 +1,7 @@
+# 0.25
+- Fixed: virtual route script crash
+- Fixed: after some point game might start complaining about lack of respawn_default marker, even though first respawn was successful
+
 # 0.24
 - Added: new respawn screen to replace the BI respawn screen
 - Added: singleplayer support (possible with the new respawn screen)
