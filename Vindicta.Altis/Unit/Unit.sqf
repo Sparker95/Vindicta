@@ -872,10 +872,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
 			if (_AI != "") then {
-				pr _msg = MESSAGE_NEW();
-				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);
-				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
 				_data set [UNIT_DATA_ID_AI, ""];
 			};
 
