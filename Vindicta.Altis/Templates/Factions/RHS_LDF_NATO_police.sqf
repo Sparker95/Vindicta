@@ -11,9 +11,9 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_officer, ["RHS_LDF_police_TL_SMG","RHS_LDF_police_TL_rifle","RHS_LDF_police_TL_shotgun","RHS_LDF_police_SMG","RHS_LDF_police_shotgun","RHS_LDF_police_rifle"]];
-_inf set [T_INF_rifleman, ["RHS_LDF_police_SMG","RHS_LDF_police_shotgun","RHS_LDF_police_rifle"]];
-_inf set [T_INF_SL, ["RHS_LDF_police_TL_SMG","RHS_LDF_police_TL_rifle","RHS_LDF_police_TL_shotgun","RHS_LDF_police_SMG","RHS_LDF_police_shotgun","RHS_LDF_police_rifle"]];
+_inf set [T_INF_officer, ["RHS_LDF_NATO_police_TL_SMG","RHS_LDF_NATO_police_TL_rifle","RHS_LDF_NATO_police_TL_shotgun","RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
+_inf set [T_INF_rifleman, ["RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
+_inf set [T_INF_SL, ["RHS_LDF_NATO_police_TL_SMG","RHS_LDF_NATO_police_TL_rifle","RHS_LDF_NATO_police_TL_shotgun","RHS_LDF_NATO_police_SMG","RHS_LDF_NATO_police_shotgun","RHS_LDF_NATO_police_rifle"]];
 /*
 _inf set [T_INF_TL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_SL, ["B_GEN_Soldier_F"]];
@@ -74,6 +74,6 @@ _array set [T_VEH, _veh];
 //_array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tRHS_LDF_police"];
+_array set [T_NAME, "tRHS_LDF_NATO_police"];
 
 _array
