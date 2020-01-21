@@ -96,6 +96,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "none");
 		T_SETV("stateStart", 0);
 		[_thisObject, _side] spawn {
+			scriptName "Commander Debug";
 			params ["_thisObject", "_side"];
 			private _pos = switch (_side) do {
 				case WEST: { [0, -1000, 0 ] };
