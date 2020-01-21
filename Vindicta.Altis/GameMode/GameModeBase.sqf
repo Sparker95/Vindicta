@@ -432,7 +432,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Format text
 		private _text = "Threads have crashed: ";
 		{ _text = _text + GETV(_x, "name") + " "; } forEach _crashedMsgLoops;
-		_text = _text + "Restart the mission after saving is over, send the .RPT to devs";
+		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
 
 		// Broadcast notification
 		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], 0, false);
