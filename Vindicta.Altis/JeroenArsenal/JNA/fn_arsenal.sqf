@@ -1977,6 +1977,14 @@ switch _mode do {
     case "mergeFromOther": {
         params ["_arsenalFrom", "_arsenalTo"];
 
+        if(hasInterface) then {
+            // Kick player out of the arsenal
+            private _display = uiNamespace getVariable "arsanalDisplay";
+            if (!isNil "_display") then {
+                ["buttonClose",[uiNamespace getVariable "arsanalDisplay"]] spawn jn_fnc_arsenal;
+            };
+        };
+
         //update datalist
         private _fromDataList = _arsenalFrom getVariable "jna_dataList";
         private _toDataList = _arsenalTo getVariable "jna_dataList";
