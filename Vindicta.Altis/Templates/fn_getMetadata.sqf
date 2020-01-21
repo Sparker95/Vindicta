@@ -1,3 +1,5 @@
+// Get faction template entry metadata
+// _path - path to the template entry in the form of array [catID, groupID, entryID]
 params ["_path"];
 
 if(count _path > 2 &&

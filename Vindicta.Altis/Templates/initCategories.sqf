@@ -13,10 +13,25 @@ selectRandom (template_NATO select T_INF select T_INF_rifleman)
 OR it could be done through a get-function
 Author: Sparker 08.2017
 */
+
+// Declare a faction template category
 #define T_DECLARE_CATEGORY(category, index, size) category = index; category##_SIZE = size; T_metadata set [index, [ #category , []]];
+// Declare an optional faction template entry
 #define T_DECLARE_ENTRY_OPT(category, id, index) id = index; (T_metadata select category select 1) set [index, [#id, []] ];
+// Declare a required faction template entry, see below for examples
 #define T_DECLARE_ENTRY_REQ(category, id, index) id = index; (T_metadata select category select 1) set [index, [#id, []] ]; (T_metadata select category select 1 select index select 1) append
-T_metadata = []; //Category metadata
+// Category metadata
+// This contains extra info about a faction template category and its entries. 
+// Currently it has the form:
+//	[
+//		[
+//			"category name",
+//			[
+//				["entry name", [<factions this is required for>]], ...
+//			]
+//		], ...
+//	]
+T_metadata = [];
 
 // Faction classes
 T_FACTION_None = -1;
@@ -35,6 +50,7 @@ T_metadata resize T_SIZE;
 T_DECLARE_CATEGORY(T_INF, 0, 34);// ID 0, size 34 
  
 //Main infantry
+//				Category   Entry						Index	Factions this entry is required for, if any
 T_DECLARE_ENTRY_REQ(T_INF, T_INF_default, 				 0)		[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police];	//Default if nothing found
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_SL, 					 1);	/*Squad leader*/
 T_DECLARE_ENTRY_OPT(T_INF, T_INF_TL, 					 2);	//Team leader
