@@ -59,7 +59,12 @@ _drone set [T_DRONE_stat_GMG_low, ["O_GMG_01_A_F"]];
 _drone set [T_DRONE_stat_AA, ["O_SAM_System_04_F"]];
 */
 //==== Cargo ====
-_cargo = +(tDefault select T_CARGO);
+_cargo = [];
+
+_cargo set [T_CARGO_default,	["LIB_BasicAmmunitionBox_GER"]];
+_cargo set [T_CARGO_box_small,	["LIB_BasicAmmunitionBox_GER"]];
+_cargo set [T_CARGO_box_medium,	["LIB_BasicWeaponsBox_GER"]];
+_cargo set [T_CARGO_box_big,	["LIB_WeaponsBox_Big_GER"]];
 
 //==== Groups ====
 _group = +(tDefault select T_GROUP);
