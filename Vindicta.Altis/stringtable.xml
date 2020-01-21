@@ -34,6 +34,9 @@
 				<Original>External Inventory to Arsenal</Original>
 				<German>Fahrzeug entladen</German>
 			</Key>
+			<Key ID="STR_JNA_ACT_MERGE">
+				<Original>Merge from another Arsenal</Original>
+			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
 			</Key>
@@ -44,6 +47,12 @@
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
 				<Original>Object does not have any inventory</Original>
 				<German>Objekt hat kein Inventar</German>
+			</Key>
+			<Key ID="STR_JNA_ACT_ARSENAL_SELECTERROR1">
+				<Original>Object is not an Arsenal</Original>
+			</Key>
+			<Key ID="STR_JNA_ACT_ARSENAL_SELECTERROR2">
+				<Original>Must select a different Arsenal as merge source</Original>
 			</Key>
 		</Container>
 	</Package>

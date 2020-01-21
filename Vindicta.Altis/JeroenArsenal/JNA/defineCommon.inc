@@ -15,6 +15,9 @@
 #define STR_ACTION_ICON_ARSENAL_UNLOAD "JeroenArsenal\Icons\JN_loadVehicle2.paa"
 #define STR_ACTION_TEXT_ARSENAL_UNLOAD localize "STR_JNA_ACT_UNLOAD"
 
+#define STR_ACTION_ICON_ARSENAL_MERGE "JeroenArsenal\Icons\JN_loadVehicle2.paa"
+#define STR_ACTION_TEXT_ARSENAL_MERGE localize "STR_JNA_ACT_MERGE"
+
 #define INITTYPES\
 		private _types = [];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_UNIFORM,["Uniform"]];\

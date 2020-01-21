@@ -1974,6 +1974,19 @@ switch _mode do {
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////
+    case "mergeFromOther": {
+        params ["_arsenalFrom", "_arsenalTo"];
+
+        //update datalist
+        private _fromDataList = _arsenalFrom getVariable "jna_dataList";
+        private _toDataList = _arsenalTo getVariable "jna_dataList";
+        {
+            _toDataList set [_forEachIndex, [_toDataList#_forEachIndex, _x] call jn_fnc_common_array_add];
+            _fromDataList set [_forEachIndex, [_fromDataList#_forEachIndex, _x] call jn_fnc_common_array_remove];
+        } forEach _fromDataList;
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
     case "showMessage": {
         if !(isnil {missionnamespace getvariable "BIS_fnc_arsenal_message"}) then {terminate (missionnamespace getvariable "BIS_fnc_arsenal_message")};
 

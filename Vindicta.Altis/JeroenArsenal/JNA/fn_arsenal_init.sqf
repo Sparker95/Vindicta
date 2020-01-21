@@ -263,7 +263,50 @@ if(hasInterface)then{
 			
     ];
 	//ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_UNLOAD, STR_ACTION_ICON_ARSENAL_UNLOAD);
-		
+
+	//add Action to merge arsenals
+	_id = _object addaction [
+		(format ["<img image='%1' size='1' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_MERGE] + format["<t size='1'>   %1</t>", STR_ACTION_TEXT_ARSENAL_MERGE]),
+		{
+			pr _object = _this select 0;
+
+			pr _script =  {
+				params ["_object"];//object action was attached to
+				
+				//check if player is looking at some object
+				if(isnull cursorObject)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
+
+				//check if object is in range
+				if(_object distance cursorObject > 10)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
+
+				//check if object is an arsenal
+				if(!(cursorObject getVariable ["jna_init", false]))exitWith{hint localize "STR_JNA_ACT_ARSENAL_SELECTERROR1";};
+
+				//check if object isn't THIS arsenal
+				if(cursorObject == _object)exitWith{hint localize "STR_JNA_ACT_ARSENAL_SELECTERROR2";};
+
+				[cursorObject,_object] call jn_fnc_arsenal_arsenalToArsenal;
+			};
+			pr _conditionActive = {
+				params ["_object"];
+				alive player;
+			};
+			pr _conditionColor = {
+				params ["_object"];
+				!isnull cursorObject
+				&& {_object distance cursorObject < 10}
+				&& {cursorObject getVariable ["jna_init", false]}
+				&& {cursorObject != _object} //return
+			};
+			[_script,_conditionActive,_conditionColor,_object] call jn_fnc_common_addActionSelect;
+		},
+		[],
+		6,
+		true,
+		false,
+		"",
+		"alive _target && {_target distance _this < 5} && {vehicle player == player}"
+	];
 
     if(missionNamespace getVariable ["jna_first_init",true])then{
 
