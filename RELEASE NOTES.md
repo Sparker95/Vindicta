@@ -1,3 +1,9 @@
+# 0.26
+- Added: Scenario will actively check crashed scripts, on critical error it will perform an emergency save and promt to restart .
+- Changed: Amount of guns per car/box was reduced by 50%
+- Changed: Build resources removed from patrol/convoy/reinforcement vehicles founr outside of bases
+- Changed: At campaign start enemies will no longer have armored tanks, APCs, IFVs, MRAPs with weapons
+
 # 0.25
 - Fixed: virtual route script crash
 - Fixed: respawn: after some time game might start complaining about lack of respawn_default marker, even though first respawn was successful
