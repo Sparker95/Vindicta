@@ -21,14 +21,11 @@ this addPrimaryWeaponItem "rhssaf_30rnd_556x45_EPR_G36";
 this addPrimaryWeaponItem "rhs_acc_grip_rk6";
 
 this addItemToUniform "FirstAidKit";
-this addItemToVest "ACE_microDAGR";
-for "_i" from 1 to 6 do {this addItemToVest "rhssaf_30rnd_556x45_EPR_G36";};
-for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_f1";};
-for "_i" from 1 to 2 do {this addItemToVest "ACE_Chemlight_IR";};
-this addItemToVest "ACE_HandFlare_Yellow";
-this addItemToVest "ACE_HandFlare_Green";
-this addItemToVest "ACE_HandFlare_Red";
-this addItemToVest "ACE_HandFlare_White";
+for "_i" from 1 to 4 do {this addItemToVest "rhssaf_30rnd_556x45_EPR_G36";};
+for "_i" from 1 to 2 do {this addItemToVest "rhs_mag_an_m8hc";};
+this addItemToVest "rhs_mag_f1";
+this addItemToVest "rhs_mag_m18_purple";
+this addItemToVest "rhs_mag_m18_red";
 
 this linkItem "ItemMap";
 this linkItem "ItemCompass";
