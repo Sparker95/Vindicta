@@ -17,6 +17,9 @@ _module setVariable ["#running",true];
 _spawnPoints = _module getVariable ["#modulesUnit",[]];
 
 _module spawn{
+
+	scriptName "Civilian Presence";
+
 	private _module = _this;
 
 	private _units = _module getVariable ["#units",[]];

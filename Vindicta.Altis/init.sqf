@@ -7,6 +7,7 @@
 // Code which adds all objects to be edited by zeus
 if (isServer) then {  
     [] spawn { 
+        scriptName "Add Curator Objects";
         sleep 5;  
         while {true} do {  
             {  

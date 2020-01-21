@@ -350,7 +350,7 @@ CLASS("GarrisonModel", "ModelBase")
 		};
 
 		// WIP temporary fix to give resources to convoys
-		CALLM2(_newGarrActual, "postMethodAsync", "addBuildResources", [120]);
+		//CALLM2(_newGarrActual, "postMethodAsync", "addBuildResources", [120]);
 
 		// Copy intel and radio keys from the old garrison into the new one
 		CALLM2(_newGarrActual, "postMethodAsync", "copyIntelFrom", [_actual]);
