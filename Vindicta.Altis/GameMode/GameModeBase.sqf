@@ -399,6 +399,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _msgLoop = T_GETV(_x);
 			if (!IS_NULL_OBJECT(_msgLoop)) then {
 				if(CALLM0(_msgLoop, "isNotRunning")) then {	// If it is not running, something bad has happened
+					CALLM0(_msgLoop, "unlock");				// Unlock it by force, it cant unlock itself anyway
 					_crashedMsgLoops pushBack _msgLoop;
 					OOP_ERROR_0("");
 					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
