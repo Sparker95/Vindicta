@@ -95,9 +95,15 @@ if (T_GETV("type") == LOCATION_TYPE_ROADBLOCK) exitWith {
 	
 	// Add all the objects to the location
 	// Enable their dynamic simulation
+	// Broadcast to all clients so that they rotate the objects
 	{
 		T_CALLM1("addObject", _x);
 		_x enableDynamicSimulation true;
+		private _posWorld = getPosWorld _x;
+		private _vdir = vectorDir _x;
+		private _vup = vectorUp _x;
+		[_x, _posWorld] remoteExec ["setPosWorld"];
+		[_x, [_vdir, _vup]] remoteExec ["setVectorDirAndUp"];
 	} forEach _objects;
 
 	// The End!

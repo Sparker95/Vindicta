@@ -25,7 +25,7 @@ const presets: Preset[] = require('./_presets.json');
 const paths: FolderStructureInfo = {
     frameworkFolder: resolve(ROOT_DIR, 'Vindicta.Altis'),
     missionsFolder: resolve(ROOT_DIR),
-    workDir: resolve("../", "_build"),
+    workDir: resolve(ROOT_DIR, "_build"),
     configDir: resolve(ROOT_DIR, "configs")
 };
 
@@ -131,7 +131,7 @@ for (let preset of presets) {
     gulp.task('pack_' + taskName, () => {
         return gulp.src(mission.getOutputDir() + '/**/*')
             .pipe(gulpPbo({
-                fileName: mission.getNameMapVersionMap() + '.pbo',
+                fileName: (mission.getNameMapVersionMap() + '.pbo').toLowerCase(),
                 progress: false,
                 verbose: false,
                 // Do not compress (SLOW)
@@ -181,7 +181,7 @@ gulp.task('pack_missions_to_addon', () => {
         .pipe(gulpPbo({
             // Addon pbo must be lowercase, or linux admins will to hate us
             // !!! Must match to the prefix in MPMissions/..../directory !!!
-            fileName: (missionNameVersion + '.pbo').toLowerCase(),
+            fileName: (missionNameVersion.toLowerCase() + '.pbo').toLowerCase(),
             progress: false,
             verbose: false,
             // Do not compress (SLOW)
@@ -196,9 +196,9 @@ gulp.task('pack_missions_to_addon', () => {
 
 // Main tasks
 gulp.task('clean', () => {
-    return gulp.src(paths.workDir)
-        .pipe(vinylPaths(function (paths: string[]) {
-            return del(paths,  {force: true});
+    return gulp.src(paths.workDir, { allowEmpty: true })
+        .pipe(vinylPaths(function (path: string) {
+            return del(path,  {force: true});
         }));
 });
 

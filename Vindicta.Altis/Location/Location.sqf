@@ -59,7 +59,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	/* save */	VARIABLE_ATTR("sideCreated", [ATTR_SAVE]);				// Side which has created this location dynamically. CIVILIAN if it was here on the map.
 
 	// Variables which are set up only for saving process
-	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);		// Array of [className, posWorld, vectorDir, vectorUp] of objects
+	/* save */	VARIABLE_ATTR("savedObjects", [ATTR_SAVE]);				// Array of [className, posWorld, vectorDir, vectorUp] of objects
+
+				VARIABLE("playerRespawnPos");							// Position for player to respawn
 
 	STATIC_VARIABLE("all");
 
@@ -104,7 +106,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		T_SETV("buildingsOpen", []);
 		T_SETV("objects", []);
 
-		T_SETV("respawnSides", []);
+		SET_VAR_PUBLIC(_thisObject, "respawnSides", []);
+		SET_VAR_PUBLIC(_thisObject, "playerRespawnPos", _pos);
 
 		SET_VAR_PUBLIC(_thisObject, "allowedAreas", []);
 		SET_VAR_PUBLIC(_thisObject, "type", LOCATION_TYPE_UNKNOWN);
@@ -502,6 +505,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			case LOCATION_TYPE_ROADBLOCK: {"Roadblock"};
 			case LOCATION_TYPE_POLICE_STATION: {"Police Station"};
 			case LOCATION_TYPE_AIRPORT: {"Airport"};
+			case LOCATION_TYPE_RESPAWN: {"Respawn"};
 			default {"ERROR LOC TYPE"};
 		};
 	} ENDMETHOD;
@@ -1011,14 +1015,14 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_pos = _spawnPos;
 			};
 
-			createMarker [_markName + _thisObject, _pos];
+			SET_VAR_PUBLIC(_thisObject, "playerRespawnPos", _pos);	// Broadcast the new pos
 
 			_respawnSides pushBackUnique _side;
 		} else {
-			deleteMarker (_markName + _thisObject);
 
 			_respawnSides deleteAt (_respawnSides find _side);
 		};
+		PUBLIC_VAR(_thisObject, "respawnSides"); // Broadcast the sides which can respawn
 	} ENDMETHOD;
 
 	/*
@@ -1031,6 +1035,17 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("playerRespawnEnabled") {
 		params [P_THISOBJECT, P_SIDE("_side")];
 		_side in T_GETV("respawnSides")
+	} ENDMETHOD;
+
+	/*
+	Method: getPlayerRespawnPos
+
+	Returns respawn pos for players
+	*/
+	METHOD("getPlayerRespawnPos") {
+		params [P_THISOBJECT];
+
+		T_GETV("playerRespawnPos");
 	} ENDMETHOD;
 
 	/*
@@ -1287,13 +1302,18 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 		// Convert our objects to an array
 		pr _savedObjects = ( T_GETV("objects") + T_GETV("buildingsOpen") ) apply {
+			private _obj = _x;
+			private _tags = SAVED_OBJECT_TAGS apply { [_x, _obj getVariable [_x, nil]] } select { !isNil { _x#1 } };
 			[
-				typeOf _x,
-				getPosWorld _x,
-				vectorDir _x,
-				vectorUp _x
+				typeOf _obj,
+				getPosWorld _obj,
+				vectorDir _obj,
+				vectorUp _obj,
+				_tags
 			]
 		};
+		diag_log _savedObjects;
+
 		T_SETV("savedObjects", _savedObjects);
 
 		// Save all garrisons attached here
@@ -1349,9 +1369,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 			CALLM1(_storage, "load", _gar);
 		} forEach T_GETV("garrisons");
 
+		diag_log T_GETV("savedObjects");
 		// Rebuild the objects which have been constructed here
 		{ // forEach T_GETV("savedObjects");
-			_x params ["_type", "_posWorld", "_vDir", "_vUp"];
+			_x params ["_type", "_posWorld", "_vDir", "_vUp", ["_tags", nil]];
 			// Check if there is such an object here already
 			pr _objs = nearestObjects [_posWorld, [_type], 0.01, true];
 			pr _hO = objNull;
@@ -1362,6 +1383,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 				_hO enableDynamicSimulation true;
 			} else {
 				_hO = _objs#0;
+			};
+			if(!isNil {_tags}) then {
+				{
+					_hO setVariable _x;
+				} forEach _tags;
 			};
 			T_CALLM2("addObject", _hO, false); // Don't add spawn position, it's saved separately
 		} forEach T_GETV("savedObjects");
@@ -1390,6 +1416,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		PUBLIC_VAR(_thisObject, "type");
 		PUBLIC_VAR(_thisObject, "wasOccupied");
 		PUBLIC_VAR(_thisObject, "parent");
+		PUBLIC_VAR(_thisObject, "respawnSides");
+		PUBLIC_VAR(_thisObject, "playerRespawnPos");
 
 		//Push the new object into the array with all locations
 		GETSV("Location", "all") pushBackUnique _thisObject;

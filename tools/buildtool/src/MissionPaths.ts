@@ -89,7 +89,7 @@ export class MissionPaths {
     public getAddonDir(): string {
         return path.resolve(
             this.folderStructure.workDir,
-            'missions_' + this.getNameVersion()
+            this.getNameVersion().toLowerCase()
         );
     }
 

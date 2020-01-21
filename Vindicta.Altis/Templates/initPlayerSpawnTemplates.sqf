@@ -21,11 +21,12 @@ T_SpawnPlayerVariants = [
 
 		comment "Add containers";
 		_this forceAddUniform "U_C_Poloshirt_blue";
-		for "_i" from 1 to 2 do {_this addItemToUniform "11Rnd_45ACP_Mag";};
+		for "_i" from 1 to 10 do {_this addItemToUniform "11Rnd_45ACP_Mag";};
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
 		_this addWeapon "hgun_Pistol_heavy_01_F";
+		_this addHandgunItem "acc_flashlight_pistol";
 
 		comment "Add items";
 		_this linkItem "ItemMap";
@@ -53,11 +54,12 @@ T_SpawnPlayerVariants = [
 
 		comment "Add containers";
 		_this forceAddUniform "U_C_Poloshirt_redwhite";
-		for "_i" from 1 to 3 do {_this addItemToUniform "9Rnd_45ACP_Mag";};
+		for "_i" from 1 to 10 do {_this addItemToUniform "9Rnd_45ACP_Mag";};
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
 		_this addWeapon "hgun_ACPC2_F";
+		_this addHandgunItem "acc_flashlight_pistol";
 
 		comment "Add items";
 		_this linkItem "ItemMap";
@@ -85,11 +87,12 @@ T_SpawnPlayerVariants = [
 
 		comment "Add containers";
 		_this forceAddUniform "U_C_HunterBody_grn";
-		for "_i" from 1 to 5 do {_this addItemToUniform "16Rnd_9x21_Mag";};
+		for "_i" from 1 to 10 do {_this addItemToUniform "9Rnd_45ACP_Mag";};
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
-		_this addWeapon "hgun_P07_F";
+		_this addWeapon "hgun_ACPC2_F";
+		_this addHandgunItem "acc_flashlight_pistol";
 
 		comment "Add items";
 		_this linkItem "ItemMap";
@@ -117,11 +120,13 @@ T_SpawnPlayerVariants = [
 
 		comment "Add containers";
 		_this forceAddUniform "U_OrestesBody";
-		for "_i" from 1 to 3 do {_this addItemToUniform "16Rnd_9x21_Mag";};
+		for "_i" from 1 to 10 do {_this addItemToUniform "9Rnd_45ACP_Mag";};
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
-		_this addWeapon "hgun_Rook40_F";
+		_this addWeapon "hgun_ACPC2_F";
+		_this addHandgunItem "acc_flashlight_pistol";
+		_this addHandgunItem "9Rnd_45ACP_Mag";
 
 		comment "Add items";
 		_this linkItem "ItemMap";
@@ -149,11 +154,12 @@ T_SpawnPlayerVariants = [
 
 		comment "Add containers";
 		_this forceAddUniform "U_Marshal";
-		for "_i" from 1 to 5 do {_this addItemToUniform "6Rnd_45ACP_Cylinder";};
+		for "_i" from 1 to 10 do {_this addItemToUniform "6Rnd_45ACP_Cylinder";};
 		_this addHeadgear "H_Bandanna_gry";
 
 		comment "Add weapons";
 		_this addWeapon "hgun_Pistol_heavy_02_F";
+		_this addHandgunItem "acc_flashlight_pistol";
 
 		comment "Add items";
 		_this linkItem "ItemMap";
@@ -164,3 +170,4 @@ T_SpawnPlayerVariants = [
 		//[_this,"Default","male01gre"] call BIS_fnc_setIdentity;
 	}
 ];
+

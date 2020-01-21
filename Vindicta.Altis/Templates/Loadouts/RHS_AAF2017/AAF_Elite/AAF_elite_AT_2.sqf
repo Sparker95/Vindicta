@@ -24,7 +24,9 @@ this addItemToUniform "FirstAidKit";
 this addItemToUniform "FGN_AAF_PatrolCap_Type07";
 for "_i" from 1 to 4 do {this addItemToVest "rhsgref_30rnd_556x45_m21";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
-for "_i" from 1 to 2 do {this addItemToBackpack "rhs_mag_maaws_HE";};
+this addItemToBackpack "rhs_mag_maaws_HE";
 this addItemToBackpack "rhs_mag_maaws_HEDP";
+this addItemToBackpack "rhs_mag_maaws_HEAT";;
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
+

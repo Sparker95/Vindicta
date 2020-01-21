@@ -288,6 +288,12 @@ CLASS("MessageLoop", "Storable");
 		MUTEX_LOCK(_mutex);
 	} ENDMETHOD;
 
+	METHOD("tryLockTimeout") {
+		params [P_THISOBJECT, P_NUMBER("_timeout")];
+		pr _mutex = T_GETV("mutex");
+		MUTEX_TRY_LOCK_TIMEOUT(_mutex, _timeout);
+	} ENDMETHOD;
+
 	METHOD("unlock") {
 		params [P_THISOBJECT];
 		pr _mutex = T_GETV("mutex");
