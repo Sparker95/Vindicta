@@ -165,17 +165,29 @@ CLASS("AICommander", "AI")
 	METHOD("_initPlanActionGenerators") {
 		params [P_THISOBJECT];
 
-		pr _value = [
-			// High priority
-			["generateAttackActions"],
-			// Low priority
+		T_PRVAR(side);
+		
+		pr _value = if(_side == CIVILIAN) then {
 			[
-			"generateConstructRoadblockActions",
-			"generatePatrolActions",
-			"generateReinforceActions",
-			"generateTakeOutpostActions"
+				// High priority
+				[],
+				// Low priority
+				["generateCivConvoyActions"]
 			]
-		];
+		} else {
+			[
+				// High priority
+				["generateAttackActions"],
+				// Low priority
+				[
+				"generateConstructRoadblockActions",
+				"generatePatrolActions",
+				"generateReinforceActions",
+				"generateTakeOutpostActions"
+				]
+			]
+		};
+
 		T_SETV("planActionGenerators", _value);
 		T_SETV("planActionGeneratorIDs", [0 ARG 0]);
 		T_SETV("planPhase", 0);
@@ -304,6 +316,9 @@ CLASS("AICommander", "AI")
 			};
 			case INDEPENDENT: {
 				if(!isNil "gAICommanderInd") then { _cmdr = gAICommanderInd };
+			};
+			case CIVILIAN: {
+				if(!isNil "gAICommanderCiv") then { _cmdr = gAICommanderCiv };
 			};
 			default {
 				OOP_WARNING_1("AICommander of side %1 does not exist", _side);
@@ -2262,6 +2277,65 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		#ifdef OOP_INFO
 		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""ConstructLocation"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_positions"": %4}}", _side, count _actions, count _srcGarrisons, count _potentialPositions];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
+		_actions
+	} ENDMETHOD;
+
+	/*
+	Method: (private) generateCivConvoyActions
+	Generate a list of civilian convoy actions, these just randomly criscross the map from city to city.
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+
+	Returns: Array of <CmdrAction.Actions.CivConvoyCmdrAction>
+	*/
+	/* private */ METHOD("generateCivConvoyActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
+		T_PRVAR(activeActions);
+		T_PRVAR(side);
+
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+			private _potentialSrcGarr = _x;
+			// Must be at a location
+			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			// Must not be source of too many other inprogress take location missions
+			{ 
+				T_PRVAR(activeActions);
+				{
+					GET_OBJECT_CLASS(_x) == "CivConvoyCmdrAction" and
+					{ GETV(_x, "srcGarrId") == GETV(_potentialSrcGarr, "id") }
+				} count _activeActions < CMDR_MAX_CIV_ACTIONS_PER_CITY
+			}
+		};
+
+		// Take tgt locations from future, so we take into account all in progress actions.
+		private _tgtLocations = CALLM(_worldFuture, "getLocations", []);
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcPos = GETV(_x, "pos");
+			{
+				private _tgtId = GETV(_x, "id");
+				private _tgtPos = GETV(_x, "pos");
+				private _tgtType = GETV(_x, "type");
+				private _dist = _srcPos distance _tgtPos;
+				if(_dist < 4000) then {
+					private _params = [_srcId, _tgtId];
+					_actions pushBack (NEW("CivConvoyCmdrAction", _params));
+				};
+			} forEach _tgtLocations;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 CivConvoy actions from %2 garrisons to %3 locations", [count _actions ARG count _srcGarrisons ARG count _tgtLocations]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""CivConvoy"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_locations"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtLocations];
 		OOP_INFO_MSG(_str, []);
 		#endif
 

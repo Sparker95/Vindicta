@@ -134,6 +134,8 @@
 #define CMDR_MAX_PATROL_ACTIONS 6
 #define CMDR_MAX_CONSTRUCT_ACTIONS 3
 
+#define CMDR_MAX_CIV_ACTIONS_PER_CITY 5
+
 // Max amount of units at airfields
 #define CMDR_MAX_INF_AIRFIELD 80
 #define CMDR_MAX_VEH_AIRFIELD 15

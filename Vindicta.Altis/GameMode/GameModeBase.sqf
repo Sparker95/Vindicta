@@ -265,14 +265,14 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				};
 			};
 
-			private _type = GETV(_loc, "type");
-			private _radius = GETV(_loc, "boundingRadius");
+			//private _type = GETV(_loc, "type");
+			//private _radius = GETV(_loc, "boundingRadius");
 
-			// Create vehicles in civilian area for player to steal
-			if(_type == LOCATION_TYPE_CITY && (_side isEqualTo CIVILIAN)) then {
-				T_CALLM1("populateCity", _loc);
-				// CALLM0(_gar, "activate");
-			};
+			// // Create vehicles in civilian area for player to steal
+			// if(_type == LOCATION_TYPE_CITY && (_side isEqualTo CIVILIAN)) then {
+			// 	T_CALLM1("populateCity", _loc);
+			// 	// CALLM0(_gar, "activate");
+			// };
 
 			// Send intel to commanders
 			private _playerSide = T_CALLM0("getPlayerSide");
@@ -296,7 +296,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						};
 					};
 				};
-			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd"), T_GETV("AICommanderCiv")];
 		} forEach GET_STATIC_VAR("Location", "all");
 	} ENDMETHOD;
 
@@ -314,9 +314,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _newUnit = NEW("Unit", [_template ARG T_VEH ARG T_VEH_DEFAULT ARG -1 ARG ""]);
 			CALLM(_gar, "addUnit", [_newUnit]);
 		};
-		CALLM1(_gar, "setLocation", _loc);
-		CALLM1(_loc, "registerGarrison", _gar);
-		CALLM1(_gar, "enableAutoSpawn", true);
+		_gar
 	} ENDMETHOD;
 
 	// Creates message loops
@@ -505,6 +503,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 				T_CALLM("createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+			};
+			case LOCATION_TYPE_CITY: {
+				if(_side == CIVILIAN) then {
+					T_CALLM1("populateCity", _loc);
+				} else {
+					NULL_OBJECT
+				}
 			};
 			default { NULL_OBJECT };
 		};
@@ -720,7 +725,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				CALLM1(T_GETV(_x), "enablePlanning", true);
 				// We postMethodAsync them, because we don't want to start processing right after mission start
 				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
-			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast", "AICommanderCiv"];
 		};
 	} ENDMETHOD;
 
@@ -755,7 +760,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gCommanderCiv = NEW("Commander", []);
 		private _args = [gCommanderCiv, CIVILIAN, gMessageLoopCommanderCiv];
 		gCommanderCiv = NEW_PUBLIC("AICommander", _args);
-		T_SETV("AICommanderEast", gCommanderCiv);
+		T_SETV("AICommanderCiv", gCommanderCiv);
 		PUBLIC_VARIABLE "gCommanderCiv";
 	} ENDMETHOD;
 
@@ -1589,7 +1594,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			private _ai = T_GETV(_x);
 			diag_log format ["Loading Commander AI: %1", _x];
 			CALLM1(_storage, "load", _ai);
-		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+		} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast", "AICommanderCiv"];
 
 		// Set global variables
 		gAICommanderInd = T_GETV("AICommanderInd");

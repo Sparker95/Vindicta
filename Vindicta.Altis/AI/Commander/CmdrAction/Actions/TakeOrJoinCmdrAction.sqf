@@ -87,7 +87,7 @@ CLASS("TakeOrJoinCmdrAction", "CmdrAction")
 				CMDR_ACTION_STATE_SPLIT, 			// State change if successful
 				CMDR_ACTION_STATE_END, 				// State change if failed (go straight to end of action)
 				_srcGarrIdVar, 						// Garrison to split (constant)
-				_detachmentCompVar,					// COmposition of detachment
+				_detachmentCompVar,					// Composition of detachment
 				_detachmentEffVar, 					// Efficiency we want the detachment to have (constant)
 				_splitGarrIdVar]; 					// variable to recieve Id of the garrison after it is split
 		private _splitAST = NEW("AST_SplitGarrison", _splitAST_Args);

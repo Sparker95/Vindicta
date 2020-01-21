@@ -63,10 +63,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 			CALLM1(T_GETV("AICommanderInd"), "enablePlanning", true);
 			CALLM1(T_GETV("AICommanderWest"), "enablePlanning", false);
 			CALLM1(T_GETV("AICommanderEast"), "enablePlanning", false);
+			CALLM1(T_GETV("AICommanderCiv"), "enablePlanning", true);
 			{
 				// We postMethodAsync them, because we don't want to start processing right after mission start
 				CALLM2(T_GETV(_x), "postMethodAsync", "start", []);
-			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast"];
+			} forEach ["AICommanderInd", "AICommanderWest", "AICommanderEast", "AICommanderCiv"];
 		};
 	} ENDMETHOD;
 
@@ -192,7 +193,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 					OOP_INFO_1("  revealing to commander: %1", _sideCommander);
 					CALLM2(_x, "postMethodAsync", "updateLocationData", [_respawnLoc ARG CLD_UPDATE_LEVEL_TYPE ARG sideUnknown ARG false ARG false]);
 				};
-			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd")];
+			} forEach [T_GETV("AICommanderWest"), T_GETV("AICommanderEast"), T_GETV("AICommanderInd"), T_GETV("AICommanderCiv")];
 
 			// Register the location here
 			T_CALLM1("registerLocation", _respawnLoc);
