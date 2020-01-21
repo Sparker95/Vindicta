@@ -19,7 +19,7 @@ _validateArray = {
 				_errors = _errors + ([_x, _path0, _warnOrError] call _validateArray);
 			};
 		} else {
-			([_path0] call fnc_get_T_metadata) params ["_catName", "_entryName", "_required"];
+			([_path0] call t_fnc_getMetadata) params ["_catName", "_entryName", "_required"];
 			if (_warnOrError) then {
 				diag_log format ["validateTemplate: error: value is nil, category: %1, id: %2, required: %3", _catName, _entryName, str _required ];
 				_errors = _errors + 1;
