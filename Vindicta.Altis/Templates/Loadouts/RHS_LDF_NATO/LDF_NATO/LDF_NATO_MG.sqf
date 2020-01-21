@@ -18,9 +18,8 @@ this addBackpack "rhssaf_kitbag_digital";
 this addWeapon "rhs_weap_m240G";
 this addPrimaryWeaponItem "rhsusf_50Rnd_762x51";
 
-comment "Add items to containers";
 this addItemToUniform "FirstAidKit";
-this addItemToVest "rhs_mag_rgn";
+this addItemToVest "rhs_mag_f1";
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_50Rnd_762x51";};
 for "_i" from 1 to 5 do {this addItemToBackpack "rhsusf_50Rnd_762x51";};
 this linkItem "ItemWatch";

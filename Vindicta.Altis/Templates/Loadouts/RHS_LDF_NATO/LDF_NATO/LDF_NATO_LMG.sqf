@@ -21,8 +21,7 @@ this addPrimaryWeaponItem "rhsusf_acc_saw_bipod";
 
 comment "Add items to containers";
 this addItemToUniform "FirstAidKit";
-this addItemToUniform "rhs_mag_rgn";
-this addItemToVest "rhs_mag_rgn";
+this addItemToVest "rhs_mag_f1";
 for "_i" from 1 to 2 do {this addItemToVest "rhsusf_100Rnd_556x45_mixed_soft_pouch";};
 for "_i" from 1 to 6 do {this addItemToBackpack "rhsusf_100Rnd_556x45_mixed_soft_pouch";};
 this linkItem "ItemWatch";
