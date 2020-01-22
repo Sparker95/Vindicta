@@ -89,7 +89,7 @@ _mode = [_this,0,"Open",[displaynull,""]] call bis_fnc_param;
 _this = [_this,1,[]] call bis_fnc_param;
 
 
-if!(_mode in ["draw3D","KeyDown","ListCurSel"])then{
+if!(_mode in ["draw3D","KeyDown","KeyUp","ListCurSel"])then{
     diag_log format["JNA mode: %1 %2", _mode, _this];
 };
 
@@ -212,8 +212,9 @@ switch _mode do {
 
         //Keys
         _display displayRemoveAllEventHandlers "keydown";
-        _display displayAddEventHandler ["keydown",{['KeyDown',_this] call jn_fnc_arsenal;}];
-
+        _display displayRemoveAllEventHandlers "keyup";
+		_display displayAddEventHandler ["keydown",{['KeyDown',_this] call jn_fnc_arsenal;}];
+		_display displayAddEventHandler ["keyup",{['KeyUp',_this] call jn_fnc_arsenal;}];
         //--- UI event handlers
         _ctrlButtonClose = _display displayctrl (getnumber (configfile >> "RscDisplayArsenal" >> "Controls" >> "ControlBar" >> "controls" >> "ButtonClose" >> "idc"));
         _ctrlButtonClose ctrlRemoveAllEventHandlers "buttonclick";
@@ -1869,6 +1870,7 @@ switch _mode do {
 
         //remove or add
         _count = 1;
+
         if(((_amount > 0 || _amount == -1) || _add < 0) && (_add != 0))then{
 
             if (_add > 0) then {//add
@@ -1878,7 +1880,7 @@ switch _mode do {
                 };
                 if(_index in [IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG,IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL])then{//magazines are handeld by bullet count
                     //check if full mag can be optaind
-                    _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
+                    _count =  getNumber (configfile >> "CfgMagazines" >> _item >> "count");
                     if(_amount != -1)then{
                         if(_amount<_count)then{_count = _amount};
                     };
@@ -2330,7 +2332,18 @@ switch _mode do {
             case (_key == DIK_TAB): {
             };
 
-
+			case (_key == DIK_LSHIFT): {
+				uiNamespace setVariable ["arsenalShift", true];
+				_return = true;
+			};
+			case (_key == DIK_LCONTROL): {
+				uiNamespace setVariable ["arsenalCtrl", true];
+				_return = true;
+			};
+			case (_key == DIK_LALT): {
+				uiNamespace setVariable ["arsenalAlt", true];
+				_return = true;
+			};
 
             //--- Save
             case (_key == DIK_S): {
@@ -2370,6 +2383,26 @@ switch _mode do {
         };
         _return
     };
+
+    /////////////////////////////////////////////////////////////////////////////////////////// event
+ 	case "KeyUp": {
+		params["_display","_key","_shift","_ctrl","_alt"];
+		switch true do {
+			case (_key == DIK_LSHIFT): {
+				uiNamespace setVariable ["arsenalShift", false];
+				_return = true;
+			};
+			case (_key == DIK_LCONTROL): {
+				uiNamespace setVariable ["arsenalCtrl", false];
+				_return = true;
+			};
+			case (_key == DIK_LALT): {
+				uiNamespace setVariable ["arsenalAlt", false];
+				_return = true;
+			};
+		};
+		_return
+	};
 
     /////////////////////////////////////////////////////////////////////////////////////////// event
     case "buttonClose": {
