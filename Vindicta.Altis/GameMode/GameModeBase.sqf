@@ -384,6 +384,68 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
+		// Start a periodic check which will restart message loops if needed
+		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+
+	} ENDMETHOD;
+
+	METHOD("_checkMessageLoops") {
+		params [P_THISOBJECT];
+
+		private _recovery = false;
+		private _crashedMsgLoops = [];
+
+		{													// Check all message loops created
+			private _msgLoop = T_GETV(_x);
+			if (!IS_NULL_OBJECT(_msgLoop)) then {
+				if(CALLM0(_msgLoop, "isNotRunning")) then {	// If it is not running, something bad has happened
+					CALLM0(_msgLoop, "unlock");				// Unlock it by force, it cant unlock itself anyway
+					_crashedMsgLoops pushBack _msgLoop;
+					OOP_ERROR_0("");
+					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
+					OOP_ERROR_1("! ! ! THREAD IS NOT RUNNING: %1", GETV(_msgLoop, "name"));
+					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
+					OOP_ERROR_0("");
+					_recovery = true;
+				};
+			};
+		} forEach ["messageLoopMain", "messageLoopGroupAI", "messageLoopGameMode",
+					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
+
+		if (!_recovery) then {
+			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
+			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+		} else {
+			// Broadcast notification
+			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
+
+			// Send msg to game manager to perform emergency saving
+			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
+		};
+	} ENDMETHOD;
+
+	METHOD("_broadcastCrashNotification") {
+		params [P_THISOBJECT, P_ARRAY("_crashedMsgLoops")];
+
+		// Report crashed threads, initiate emergency save
+
+		// Format text
+		private _text = "Threads have crashed: ";
+		{ _text = _text + GETV(_x, "name") + " "; } forEach _crashedMsgLoops;
+		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
+
+		// Broadcast notification
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], 0, false);
+
+		// Broadcast it to system chat too
+		["CRITICAL MISSION ERROR:"] remoteExec ["systemChat"];
+		[_text] remoteExec ["systemChat"];
+
+		// todo: send emails, deploy pigeons
+
+		// Do it once in a while
+		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
+
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -635,6 +697,15 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
 
 		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
+
+		// Bail if this has already been handled for this unit
+		// I have no idea why, killed event handler gets called twice if player dies after laying on the ground after taking too much ACE damage
+		private _handledPreviously = _oldUnit getVariable ["vin_killed_handled", false];
+		OOP_INFO_1("  handled previously: %1", _handledPreviously);
+		if (_handledPreviously) exitWith {
+			OOP_INFO_0("  handled previously, ignoring this call");
+		};
+		_oldUnit setVariable ["vin_killed_handled", true];
 
 		// Create a unit and give player control of it.
 		private _tmpGroup = createGroup (side group _oldUnit);
@@ -1000,8 +1071,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
-	#define ADD_ARMED_MRAPS
-	#define ADD_ARMOR
+	//#define ADD_ARMED_MRAPS
+	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
 		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];

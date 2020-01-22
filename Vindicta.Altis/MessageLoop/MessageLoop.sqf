@@ -300,7 +300,21 @@ CLASS("MessageLoop", "Storable");
 		MUTEX_UNLOCK(_mutex);
 	} ENDMETHOD;
 
+	// Returns true if message loop is running
+	// That is, it has not crashed
+	METHOD("isRunning") {
+		params [P_THISOBJECT];
+		pr _scriptHandle = T_GETV("scriptHandle");
+		!(scriptDone _scriptHandle)
+	} ENDMETHOD;
 
+	// Same as above, inverted
+	// Returns true if it has crashed
+	METHOD("isNotRunning") {
+		params [P_THISOBJECT];
+		pr _scriptHandle = T_GETV("scriptHandle");
+		(scriptDone _scriptHandle)
+	} ENDMETHOD;
 
 
 	// STORAGE

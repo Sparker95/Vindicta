@@ -1054,6 +1054,10 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("playerRespawnEnabled") {
 		params [P_THISOBJECT, P_SIDE("_side")];
+
+		// Always true for respawn type of location
+		if (T_GETV("type") == LOCATION_TYPE_RESPAWN) exitWith { true };
+
 		_side in T_GETV("respawnSides")
 	} ENDMETHOD;
 

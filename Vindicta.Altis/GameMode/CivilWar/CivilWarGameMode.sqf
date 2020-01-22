@@ -135,13 +135,6 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected override */ METHOD("initServerOnly") {
 		params [P_THISOBJECT];
 
-		// Delete all existing spawns
-		// WTF it doesn't work on dedicated???
-		{
-			deleteMarker _x;
-			OOP_INFO_1("Deleted respawn marker: %1", _x);
-		} forEach (allMapMarkers select { _x find "respawn" == 0});
-
 		// Select the cities we will consider for civil war activities
 		private _activeCities = GET_STATIC_VAR("Location", "all") select { 
 			// If it is a city with a police station

@@ -75,5 +75,6 @@ _array set [T_VEH, _veh];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tRHS_LDF_ranger"];
+_array set [T_FACTION, T_FACTION_Police];
 
 _array
