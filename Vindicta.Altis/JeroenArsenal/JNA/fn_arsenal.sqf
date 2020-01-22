@@ -2410,6 +2410,8 @@ switch _mode do {
 
         //remove missing item message
         titleText["", "PLAIN"];
+        //remove hint message
+        "arsenal_usage_hint" cutFadeOut 0;
 
         _display closedisplay 2;
         ["#(argb,8,8,3)color(0,0,0,1)",false,nil,0,[0,0.5]] call bis_fnc_textTiles;

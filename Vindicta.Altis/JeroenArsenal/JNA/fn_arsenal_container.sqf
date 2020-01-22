@@ -113,7 +113,11 @@ switch _mode do {
 		["customEvents",[_display]] call jn_fnc_arsenal_container;
 		["ColorTabs",[_display]] call jn_fnc_arsenal_container;
 
-		['showMessage',[_display,"Inventory selected object"]] call jn_fnc_arsenal;
+		pr _object_name =  getText (configfile >> "CfgVehicles" >> typeOf _object_selected >> "displayName");
+		//['showMessage',[_display, format[STR_HINT_ARSENAL_TARGET, _object_name]]] call jn_fnc_arsenal;
+		"arsenal_usage_hint" cutText [format["<t color='#FFFF00' size='1.5'>%1</t><br/><t color='#CCCCCC' size='1.25'>%2</t>", format[STR_HINT_ARSENAL_TARGET, _object_name], STR_HINT_ARSENAL_USAGE], "PLAIN DOWN", -1, false, true];
+		"arsenal_usage_hint" cutFadeOut 300;
+
 		["jn_fnc_arsenal"] call BIS_fnc_endLoadingScreen;
 	};
 

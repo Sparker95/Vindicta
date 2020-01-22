@@ -122,9 +122,14 @@ if(hasInterface)then{
         {
 			pr _object = _this select 0;
 			
+			"arsenal_hint" cutText [format["<t size='2'>%1</t>", STR_ACTION_DESC_ARSENAL_CONTAINER], "PLAIN DOWN", -1, false, true];
+			"arsenal_hint" cutFadeOut 60;
+
 			pr _script =  {
 				params ["_object"];
 				
+				"arsenal_hint" cutFadeOut 0;
+
 				//check if player is looking at some object
 				_object_selected = cursorObject;
 				if(isnull _object_selected)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
@@ -210,12 +215,14 @@ if(hasInterface)then{
         {
 			pr _object = _this select 0;
 
-			"arsenal_hint" cutText ["Please select an object with an inventory, or another Arsenal to load from","PLAIN DOWN"];
-			"arsenal_hint" cutFadeOut 10;
+			"arsenal_hint" cutText [format["<t size='2'>%1</t>", STR_ACTION_DESC_ARSENAL_UNLOAD], "PLAIN DOWN", -1, false, true];
+			"arsenal_hint" cutFadeOut 60;
 
 			pr _script =  {
 				params ["_object"];//object action was attached to
-				
+
+				"arsenal_hint" cutFadeOut 0;
+
 				//check if player is looking at some object
 				_object_selected = cursorObject;//selected object
 
