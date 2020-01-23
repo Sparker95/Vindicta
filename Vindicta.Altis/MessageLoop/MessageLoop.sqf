@@ -42,6 +42,8 @@ CLASS("MessageLoop", "Storable");
 				VARIABLE("nMessagesInSeries");
 	// Sleep interval
 				VARIABLE_ATTR("sleepInterval", [ATTR_SAVE]);
+	// Last processed object (through message queue or process categories)
+				VARIABLE_ATTR("lastObject");
 
 	//Constructor
 	//Spawn a script which will be checking messages
@@ -69,6 +71,7 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", _nMessagesInSeries);
 		T_SETV("sleepInterval", _sleepInterval);
+		T_SETV("lastObject", NULL_OBJECT);
 		
 		private _scriptHandle = [_thisObject] spawn MessageLoop_fnc_threadFunc;
 		T_SETV("scriptHandle", _scriptHandle);
@@ -328,6 +331,7 @@ CLASS("MessageLoop", "Storable");
 		T_SETV("processCategories", []);
 		T_SETV("updateFrequencyFractions", []);
 		T_SETV("nMessagesInSeries", N_MESSAGES_IN_SERIES_DEFAULT);
+		T_SETV("lastObject", NULL_OBJECT);
 
 		true
 	} ENDMETHOD;

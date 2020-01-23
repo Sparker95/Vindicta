@@ -130,7 +130,14 @@ while {true} do {
 				private _profileTimeStart = diag_tickTime;
 				#endif
 
+				// Set last handled object
+				// If it crashes now, we will read this value, and make a memory dump
+				T_SETV("lastObject", _dest);
+
 				pr _result = CALL_METHOD(_dest, "handleMessage", [_msg]);
+
+				// Reset last handled object
+				T_SETV("lastObject", NULL_OBJECT);
 
 				#ifdef PROFILE_MESSAGE_JSON
 				private _profileTime = diag_tickTime - _profileTimeStart;
@@ -244,7 +251,16 @@ while {true} do {
 					pr _object = _objectArray#0;
 					pr _objectLastProcessTimestamp = _objectArray#1;
 					pr _timeStart = PROCESS_CATEGORY_TIME;
+
+					// Set last handled object
+					// If it crashes now, we will read this value, and make a memory dump
+					T_SETV("lastObject", _dest);
+
 					CALLM0(_object, "process");
+
+					// Reset last object
+					T_SETV("lastObject", NULL_OBJECT);
+
 					pr _timeEnd = PROCESS_CATEGORY_TIME;
 					// Update summary time of this category
 					//_execTime = _timeEnd - _timeStart;

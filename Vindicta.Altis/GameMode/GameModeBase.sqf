@@ -406,6 +406,21 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_ERROR_1("! ! ! THREAD IS NOT RUNNING: %1", GETV(_msgLoop, "name"));
 					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
 					OOP_ERROR_0("");
+
+					// Make a recursive dump of the last processed object
+					private _lastObject = GETV(_msgLoop, "lastObject");
+					if (IS_NULL_OBJECT(_lastObject)) then {
+						OOP_ERROR_0("Last processed object is null");
+					} else {
+						OOP_ERROR_1("Last processed object: %1", _lastObject);
+						if (!IS_OOP_OBJECT(_lastObject)) then {
+							OOP_ERROR_1("  %1 is not an OOP object", _lastObject);
+						} else {
+							OOP_ERROR_1("  Initiating a memory dump of %1", _lastObject);
+							[_lastObject] call OOP_dumpAllVariablesRecursive;	// Let's hope it's not 10 megabytes
+						};
+					};
+
 					_recovery = true;
 				};
 			};
