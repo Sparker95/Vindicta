@@ -2,6 +2,8 @@
 
 #define SABOTEUR_CIVILIANS_TESTING
 
+#define SABOTEUR_TRIGGERED
+
 fnc_createBombWPs = {
 	params ["_civie", "_tgtPos"];
 
@@ -22,20 +24,27 @@ fnc_createBombWPs = {
 	_wp setWaypointStatements ["true", 
 		format["
 			this fire ['DemoChargeMuzzle', 'DemoChargeMuzzle', 'IEDUrbanSmall_Remote_Mag'];
-			this setVariable ['planted', true];
+			this setVariable ['%1', true];
 			[this] remoteExec ['removeAllActions', 0, this];
 			",
 			UNDERCOVER_SUSPICIOUS]
 	];
 
 	// WAYPOINT 2 - hide
-	private _hidePos = [_tgtPos, 50, 75] call BIS_fnc_findSafePos;
+	private _hidePos = [0,0,0];
+	private _range = 10;
+	while{count _hidePos == 3 and _range < 200} do {
+		_hidePos = [_tgtPos, _range, _range * 2] call BIS_fnc_findSafePos;
+		_range = _range * 2;
+	};
+	if(count _hidePos == 3) then {
+		_hidePos = _tgtPos vectorAdd [15,15,0]; 
+	};
 	private _wp = _grp addWaypoint [_hidePos, 0];
 	_wp setWaypointType "MOVE";
 	_wp setWaypointBehaviour "COMBAT";
 	_wp setWaypointSpeed "FULL";
-	// Enemy can shoot on sight!
-	_wp setWaypointStatements ["true", ""];
+	_wp setWaypointStatements ["true", "this setVariable ['ready_to_bomb', true];"];
 
 	// WAYPOINT 3 - wait
 	// Wait until blowed up the bomb
@@ -60,16 +69,47 @@ fnc_createBombWPs = {
 		_trigger = createTrigger ["EmptyDetector", _tgtPos];
 		_civie setVariable["_trigger", _trigger];
 	};
-	_trigger setTriggerArea  [5, 5, 0, false];
+	_trigger setTriggerArea  [50, 50, 0, false];
 	_trigger setTriggerActivation ["ANY", "PRESENT", true];
 	_trigger setVariable ["owner", _civie];
 	
-	_trigger setTriggerStatements ["
+#ifdef SABOTEUR_TRIGGERED
+	_trigger setTriggerStatements [
+		// "
+		// private _owner = thisTrigger getVariable 'owner';
+		// alive _owner && {
+		// 	getVariable ['ready_to_bomb', false] 
+		// } && {
+		// 	({side _x == INDEPENDENT} count thisList) > 0 &&
+		// 	({side _x != INDEPENDENT} count thisList) == 0
+		// }
+		// ",
+		"
 		private _owner = thisTrigger getVariable 'owner';
 		alive _owner && {
-			({side _x == INDEPENDENT} count thisList) > 0 &&
-			({side _x != INDEPENDENT} count thisList) == 0
+			_owner getVariable ['ready_to_bomb', false] 
+		} && {
+			({side _x == INDEPENDENT} count thisList) > 0
 		}
+		",
+		"
+		private _owner = thisTrigger getVariable 'owner'; 
+		if(alive _owner) then {
+			systemChat format['Vindicta!', _owner];
+			_owner action ['TOUCHOFF', _owner];
+			_owner setVariable ['bombed', true];
+			_owner setCaptive false;
+		} else {
+			systemChat format['No Vindicta :(', _owner];
+		};
+		deleteVehicle thisTrigger;
+		[INDEPENDENT, getPos thisTrigger, 5 + random 10] call AI_fnc_addActivity;
+		",
+		"true"];
+#else
+	_trigger setTriggerStatements ["
+		({side _x == INDEPENDENT} count thisList) > 0 &&
+		({side _x != INDEPENDENT} count thisList) == 0
 		",
 		"
 		private _owner = thisTrigger getVariable 'owner'; 
@@ -83,6 +123,7 @@ fnc_createBombWPs = {
 		[INDEPENDENT, getPos thisTrigger, 5 + random 10] call AI_fnc_addActivity;
 		",
 		"true"];
+#endif
 		// _trigger setTriggerStatements ["
 		// true
 		// ",
