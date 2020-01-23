@@ -478,16 +478,85 @@ OOP_dumpAllVariables = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	diag_log format ["DEBUG: Dumping all variables of %1: %2", _thisObject, _memList];
+	diag_log format ["[OOP]: Basic variable dump of %1: %2", _thisObject, _memList];
 	{
 		_x params ["_memName", "_memAttr"];
 		private _varValue = GETV(_thisObject, _memName);
 		if (isNil "_varValue") then {
-			diag_log format ["DEBUG: %1.%2: %3", _thisObject, _memName, "<null>"];
+			diag_log format ["  %1.%2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
 		} else {
-			diag_log format ["DEBUG: %1.%2: %3", _thisObject, _memName, _varValue];
+			diag_log format ["  %1.%2: %3", _thisObject, _memName, _varValue];
 		};
 	} forEach _memList;
+};
+
+// Dumps all variables recursively
+// It inspects arrays
+// It inspects variables which are refs to objects
+OOP_dumpAllVariablesRecursive = {
+	params [P_THISOBJECT, P_NUMBER("_indentNum"), ["_objsDumpedAlready", []]];
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	// String with indentations
+	private _strIndent = "";
+	for "_i" from 0 to (_indentNum-1) do {
+		_strIndent = _strIndent + "|  ";
+	};
+	diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1: %2", _thisObject, _memList]));
+	{
+		_x params ["_memName", "_memAttr"];
+		private _varValue = GETV(_thisObject, _memName);
+		[_thisObject, _memName, _varValue, _indentNum, _objsDumpedAlready, -1] call OOP_dumpObjectVariable;
+	} forEach _memList;
+};
+
+// Used for recursive variable dump
+OOP_dumpObjectVariable = {
+	params ["_thisObject", "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID"];
+	private _strIndent = "";
+	if (_indentNum > 0) then {
+		for "_i" from 0 to (_indentNum-1) do {
+			_strIndent = _strIndent + "|  ";
+		};
+	};
+	// Header of the line, printed after indents
+	private _header = if (_elementID != -1) then {
+		format ["element %1", _elementID];
+	} else {
+		_memName;
+	};
+
+	if (isNil "_varValue") then {
+		diag_log (_strIndent + format ["%1: %2", _header, "<nil> (isNil = true)"]);
+	} else {
+		// Resolve specific type
+		switch (typeName _varValue) do {
+			case "STRING": {
+				if(IS_OOP_OBJECT(_varValue)) then {
+					if ((toLower _varValue) in _objsDumpedAlready) then {
+						diag_log (_strIndent + format ["%1: (OOP Object): %2 (dumped already)", _header, _varValue]);
+					} else {
+						diag_log (_strIndent + format ["%1: (OOP Object): %2", _header, _varValue]);
+						_objsDumpedAlready pushBack (toLower _varValue);
+						[_varValue, _indentNum + 1, _objsDumpedAlready] call OOP_dumpAllVariablesRecursive;
+					};
+				} else {
+					diag_log (_strIndent + format ["%1: %2", _header, _varValue]);
+				};
+			};
+			case "ARRAY": {
+				diag_log (_strIndent + format ["%1: array of %2 elements:", _header, count _varValue]);
+				{
+					[_thisObject, _header, _x, _indentNum + 1, _objsDumpedAlready, _forEachIndex] call OOP_dumpObjectVariable;
+				} forEach _varValue;
+			};
+			default {
+				diag_log (_strIndent + format ["%1: %2", _header, _varValue]);
+			};
+		};
+	};
 };
 
 #ifdef OFSTREAM_ENABLE
