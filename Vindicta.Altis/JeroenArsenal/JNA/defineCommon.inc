@@ -11,9 +11,17 @@
 
 #define STR_ACTION_ICON_ARSENAL_CONTAINER "JeroenArsenal\Icons\JN_unloadVehicle.paa"  
 #define STR_ACTION_TEXT_ARSENAL_CONTAINER localize "STR_JNA_ACT_CONTAINER_OPEN"
+#define STR_ACTION_DESC_ARSENAL_CONTAINER localize "STR_JNA_ACT_CONTAINER_OPEN_DESC"
 
 #define STR_ACTION_ICON_ARSENAL_UNLOAD "JeroenArsenal\Icons\JN_loadVehicle2.paa"
 #define STR_ACTION_TEXT_ARSENAL_UNLOAD localize "STR_JNA_ACT_UNLOAD"
+
+#define STR_ACTION_DESC_ARSENAL_UNLOAD localize "STR_JNA_ACT_UNLOAD_DESC"
+
+//STRINGS OTHER
+#define STR_HINT_ARSENAL_USAGE localize "STR_JNC_MODIFIER_HINT"
+#define STR_HINT_ARSENAL_TARGET localize "STR_JNC_TARGET_HINT"
+
 
 #define INITTYPES\
 		private _types = [];\
@@ -45,3 +53,4 @@
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOPUT,[/*"Mine","MineBounding","MineDirectional"*/]];\
 		_types set [IDC_RSCDISPLAYARSENAL_TAB_CARGOMISC,["FirstAidKit","Medikit","MineDetector","Toolkit"]];
 
+#define ARSENAL_ACTION_RANGE 20
