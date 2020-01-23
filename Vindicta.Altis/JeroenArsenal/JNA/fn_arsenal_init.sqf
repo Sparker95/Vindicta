@@ -135,7 +135,7 @@ if(hasInterface)then{
 				if(isnull _object_selected)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
 
 				//check if object is in range
-				if(_object distance cursorObject > 10)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
+				if(_object distance cursorObject > ARSENAL_ACTION_RANGE)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
 
 				//check if object has inventory
 				pr _className = typeOf _object_selected;
@@ -185,7 +185,7 @@ if(hasInterface)then{
 				
 				!isnull cursorObject
 				&&{
-					_object distance cursorObject < 10;
+					_object distance cursorObject <= ARSENAL_ACTION_RANGE;
 				}&&{
 					//check if object has inventory
 					pr _className = typeOf cursorObject;
@@ -229,7 +229,7 @@ if(hasInterface)then{
 				if (isnull _object_selected)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
 
 				//check if object is in range
-				if (_object distance _object_selected > 10)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
+				if (_object distance _object_selected > ARSENAL_ACTION_RANGE)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
 
 				//checks if object is a valid source for this command (either an arsenal and/or has an inventory)
 				if !(
@@ -257,7 +257,7 @@ if(hasInterface)then{
 				
 				!isnull cursorObject
 				&&{
-					_object distance cursorObject <= 10;
+					_object distance cursorObject <= ARSENAL_ACTION_RANGE;
 				}&&{
 					(cursorObject getVariable ["jna_init", false] && cursorObject != _object)
 					|| {
