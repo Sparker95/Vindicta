@@ -573,8 +573,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			T_SETV_PUBLIC("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
-				case (_instability > 100): { _state = CITY_STATE_IN_REVOLT; };
-				case (_instability > 50): { _state = CITY_STATE_AGITATED; };
+				case (_instability > CITY_INSTABILITY_MAX): { _state = CITY_STATE_IN_REVOLT; };
+				case (_instability > (CITY_INSTABILITY_MAX * 0.5)): { _state = CITY_STATE_AGITATED; };
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {

@@ -3050,3 +3050,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 	} ENDMETHOD;
 
 ENDCLASS;
+
+AI_fnc_addActivity = {
+	CALLSM("AICommander", "addActivity", _this);
+};

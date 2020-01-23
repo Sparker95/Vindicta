@@ -6,3 +6,5 @@
 
 // Distance from a location to a city which will cause the city to activate player respawn
 #define CITY_PLAYER_RESPAWN_ACTIVATION_RADIUS 2000
+
+#define CITY_INSTABILITY_MAX 200

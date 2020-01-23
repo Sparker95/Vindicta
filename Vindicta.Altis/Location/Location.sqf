@@ -537,7 +537,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("getDisplayName") {
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
-		CALLM0(_gmdata, "getDisplayName")
+		if(_gmdata != NULL_OBJECT) then {
+			CALLM0(_gmdata, "getDisplayName")
+		} else {
+			T_GETV("name")
+		};
 	} ENDMETHOD;
 
 	/*
@@ -548,7 +552,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("getDisplayColor") {
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
-		CALLM0(_gmdata, "getDisplayColor")
+		if(_gmdata != NULL_OBJECT) then {
+			CALLM0(_gmdata, "getDisplayColor")
+		} else {
+			[1,1,1,1]
+		};
 	} ENDMETHOD;
 
 	/*
