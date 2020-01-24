@@ -565,16 +565,15 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
 
-			// For now we will just have instability directly related to activity (activity fades over time just
+			// For now we will just have instability directly related to activity and inversely related to city radius (activity fades over time just
 			// as we want instability to)
-			// Instability is activity / radius
 			// TODO: add other interesting factors here to the instability rate.
-			private _instability = _activity * 1000 / _cityRadius;
+			private _instability = _activity * 900 / (_cityRadius * _cityRadius);
 			T_SETV_PUBLIC("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
-				case (_instability > CITY_INSTABILITY_MAX): { _state = CITY_STATE_IN_REVOLT; };
-				case (_instability > (CITY_INSTABILITY_MAX * 0.5)): { _state = CITY_STATE_AGITATED; };
+				case (_instability > 1): { _state = CITY_STATE_IN_REVOLT; };
+				case (_instability > 0.5): { _state = CITY_STATE_AGITATED; };
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {

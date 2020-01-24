@@ -1,16 +1,34 @@
 #include "..\common.hpp"
 
-#define SABOTEUR_CIVILIANS_TESTING
+#ifndef RELEASE_BUILD
+// #define SABOTEUR_CIVILIANS_TESTING
+#endif
 
-#define SABOTEUR_TRIGGERED
-
-fnc_createBombWPs = {
-	params ["_civie", "_tgtPos"];
+#ifdef SABOTEUR_CIVILIANS_TESTING
+Saboteur_fnc_drawDebugMarkers = 
+{
+	params ["_positions", "_name", "_color"];
+	{
+		private _mrk = format["SabTgt %1 #%2", _name, _forEachIndex];
+		deleteMarker _mrk;
+		createMarker[_mrk, _x];
+		_mrk setMarkerPos _x;
+		_mrk setMarkerText _mrk;
+		_mrk setMarkerShape "ICON";
+		_mrk setMarkerType "hd_dot";
+		_mrk setMarkerColor _color;
+		_mrk setMarkerAlpha 0.7;
+	} forEach _positions;
+};
+#endif
+Saboteur_fnc_createBombWPs = {
+	params ["_civie", "_tgtPos", "_immediateDetonate"];
 
 	// Cleaning old orders by moving group
 	private _oldGrp = group _civie;
 	private _grp = createGroup [west, true];
 	[_civie] joinSilent _grp;
+	_grp allowFleeing 0;
 	deleteGroup _oldGrp;
 
 	// No enemy attacking them for now
@@ -24,25 +42,25 @@ fnc_createBombWPs = {
 	_wp setWaypointStatements ["true", 
 		format["
 			this fire ['DemoChargeMuzzle', 'DemoChargeMuzzle', 'IEDUrbanSmall_Remote_Mag'];
-			this setVariable ['%1', true];
 			[this] remoteExec ['removeAllActions', 0, this];
 			",
+			//[this] spawn { sleep 10; _this setVariable ['%1', true]; };
 			UNDERCOVER_SUSPICIOUS]
 	];
 
 	// WAYPOINT 2 - hide
-	private _hidePos = [0,0,0];
-	private _range = 10;
-	while{count _hidePos == 3 and _range < 200} do {
-		_hidePos = [_tgtPos, _range, _range * 2] call BIS_fnc_findSafePos;
-		_range = _range * 2;
-	};
+	private _hidePos = [_tgtPos, 10, 50] call BIS_fnc_findSafePos;
+	// private _range = 10;
+	// while{count _hidePos == 3 and _range < 200} do {
+	// 	_hidePos = [_tgtPos, _range, _range * 2] call BIS_fnc_findSafePos;
+	// 	_range = _range * 2;
+	// };
 	if(count _hidePos == 3) then {
 		_hidePos = _tgtPos vectorAdd [15,15,0]; 
 	};
 	private _wp = _grp addWaypoint [_hidePos, 0];
 	_wp setWaypointType "MOVE";
-	_wp setWaypointBehaviour "COMBAT";
+	_wp setWaypointBehaviour "DANGER";
 	_wp setWaypointSpeed "FULL";
 	_wp setWaypointStatements ["true", "this setVariable ['ready_to_bomb', true];"];
 
@@ -58,7 +76,7 @@ fnc_createBombWPs = {
 	// Run far away!
 	private _wp = _grp addWaypoint [[_tgtPos, 1000, 2000] call BIS_fnc_findSafePos, 0];
 	_wp setWaypointType "MOVE";
-	_wp setWaypointBehaviour "AWARE";
+	_wp setWaypointBehaviour "DANGER";
 	_wp setWaypointSpeed "FULL";
 	_wp setWaypointStatements ["true", "deleteVehicle this;"];
 
@@ -69,52 +87,35 @@ fnc_createBombWPs = {
 		_trigger = createTrigger ["EmptyDetector", _tgtPos];
 		_civie setVariable["_trigger", _trigger];
 	};
-	_trigger setTriggerArea  [50, 50, 0, false];
+	_trigger setTriggerArea  [10, 10, 0, false];
 	_trigger setTriggerActivation ["ANY", "PRESENT", true];
 	_trigger setVariable ["owner", _civie];
 	
-#ifdef SABOTEUR_TRIGGERED
-	_trigger setTriggerStatements [
-		// "
-		// private _owner = thisTrigger getVariable 'owner';
-		// alive _owner && {
-		// 	getVariable ['ready_to_bomb', false] 
-		// } && {
-		// 	({side _x == INDEPENDENT} count thisList) > 0 &&
-		// 	({side _x != INDEPENDENT} count thisList) == 0
-		// }
-		// ",
+	private _triggerCond = if(!_immediateDetonate) then {
 		"
 		private _owner = thisTrigger getVariable 'owner';
 		alive _owner && {
 			_owner getVariable ['ready_to_bomb', false] 
 		} && {
-			({side _x == INDEPENDENT} count thisList) > 0
+			({side _x == INDEPENDENT} count thisList) > 0 && 
+			({side _x != INDEPENDENT} count thisList) == 0
 		}
-		",
+		"
+	} else {
+		"
+		private _owner = thisTrigger getVariable 'owner';
+		alive _owner && {
+			_owner getVariable ['ready_to_bomb', false] 
+		}
+		"
+	};
+
+	_trigger setTriggerStatements [
+		_triggerCond,
 		"
 		private _owner = thisTrigger getVariable 'owner'; 
 		if(alive _owner) then {
-			systemChat format['Vindicta!', _owner];
-			_owner action ['TOUCHOFF', _owner];
-			_owner setVariable ['bombed', true];
-			_owner setCaptive false;
-		} else {
-			systemChat format['No Vindicta :(', _owner];
-		};
-		deleteVehicle thisTrigger;
-		[INDEPENDENT, getPos thisTrigger, 5 + random 10] call AI_fnc_addActivity;
-		",
-		"true"];
-#else
-	_trigger setTriggerStatements ["
-		({side _x == INDEPENDENT} count thisList) > 0 &&
-		({side _x != INDEPENDENT} count thisList) == 0
-		",
-		"
-		private _owner = thisTrigger getVariable 'owner'; 
-		if(alive _owner) then {
-			systemChat format['Vindicta!', _owner];
+			systemChat format['%1: Vindicta!', name _owner];
 			_owner action ['TOUCHOFF', _owner];
 			_owner setVariable ['bombed', true];
 			_owner setCaptive false;
@@ -123,23 +124,11 @@ fnc_createBombWPs = {
 		[INDEPENDENT, getPos thisTrigger, 5 + random 10] call AI_fnc_addActivity;
 		",
 		"true"];
-#endif
-		// _trigger setTriggerStatements ["
-		// true
-		// ",
-		// "private _owner = thisTrigger getVariable 'owner'; 
-		// if(alive _owner) then {
-		// 	systemChat format['%1 is alive, detonating now!', _owner];
-		// 	_owner action ['TOUCHOFF', _owner];
-		// 	_owner setVariable ['bombed', true];
-		// };
-		// deleteVehicle thisTrigger;",
-		// "true"];
 	_trigger
 };
 
 // This sets up a saboteur with appropriate gear
-fnc_initSaboteur =
+Saboteur_fnc_initSaboteur =
 {
 	comment "Exported from Arsenal by billw";
 
@@ -180,7 +169,7 @@ fnc_initSaboteur =
 // Called when player interacts with the saboteur. 
 // They can take the explosives.
 // Called on players client.
-pr0_fnc_SaboteurPlayer = {
+Saboteur_fnc_playerTakesBomb = {
 	params ["_target", "_caller", "_actionId", "_arguments"];
 
 	// Remove the action on all the clients
@@ -271,7 +260,7 @@ pr0_fnc_SaboteurPlayer = {
 // Called when player interacts with the saboteur to reroute them. 
 // Player can ask bomber to target a road with a proximity mine.
 // Called on players client.
-pr0_fnc_SaboteurSelectTargetPlayer = {
+Saboteur_fnc_playerSelectsTarget = {
 	params ["_target", "_caller", "_actionId", "_arguments"];
 
 	// Remove the action on all the clients
@@ -315,7 +304,7 @@ pr0_fnc_SaboteurSelectTargetPlayer = {
 
 		// Open player map so you can click where the bomber should go
 		openMap true;
-		"bomber_map_text" cutText ["<t size='3'>Shift Click to select a target.<br/>Close the map to confirm the selection.</t>", "PLAIN DOWN", -1, true, true];
+		"bomber_map_text" cutText ["<t size='3'>Shift Click to select a target.<br/>Close the map to confirm the selection.<br/>Alt Click to clear the target.</t>", "PLAIN DOWN", -1, true, true];
 		gBomberTarget = [];
 		onMapSingleClick {
 			if (_shift) then {
@@ -324,6 +313,11 @@ pr0_fnc_SaboteurSelectTargetPlayer = {
 				"Bomber Target" setMarkerColor "ColorRed";
 				"Bomber Target" setMarkerShape "ICON";
 				"Bomber Target" setMarkerType "hd_destroy";
+			} else {
+				if(_alt) then {
+					gBomberTarget = [];
+					deleteMarker "Bomber Target";
+				};
 			};
 			_shift
 		};
@@ -358,14 +352,14 @@ pr0_fnc_SaboteurSelectTargetPlayer = {
 			[[_target, _caller], { 
 				params ["_target", "_caller"];
 
-				if (random 1 > 0.5) then {
+				if (random 10 > 5) then {
 					// Do the unit actions on the server
 					_target lookAt _caller;
 					_target action ["Salute", _target];
 					sleep 2;
 				};
 
-				[_target, gBomberTarget] call fnc_createBombWPs;
+				[_target, gBomberTarget, false] call Saboteur_fnc_createBombWPs;
 			}] remoteExec ["spawn", 2];
 
 			// Clear actions on this civie
@@ -374,7 +368,8 @@ pr0_fnc_SaboteurSelectTargetPlayer = {
 	};
 };
 
-fnc_getTargetVehiclePositions = {
+// Returns positions of valid target vehicles (enemy and empty)
+Saboteur_fnc_getTargetVehiclePositions = {
 	params ["_city"];
 
 	private _enemyGarrisons = CALLM1(_city, "getGarrisonsRecursive", ENEMY_SIDE);
@@ -394,6 +389,52 @@ fnc_getTargetVehiclePositions = {
 	// };
 };
 
+// Returns a few positions of valid road side bombs (bigger road is better, not too close together)
+Saboteur_fnc_findRoadSideBombPositions = {
+	params [P_POSITION("_pos"), P_NUMBER("_radius"), P_NUMBER("_amount")];
+
+	private _validPositions = [];
+
+	// Get near roads and sort them far to near, taking width into account
+	private _roads_remaining = ((_pos nearRoads _radius) select {
+		//private _roadPos = getPosASL _x;
+		//(_roadPos distance _pos > _radius) &&	// Pos is far enough
+		(count (roadsConnectedTo _x) >= 2) // Connected to two roads, we don't need end road elements
+	}) apply {
+		private _width = [_x, 1, 20] call misc_fnc_getRoadWidth;
+		// We value wide roads more, also we value roads further away more
+		[_width, _x]
+	};
+
+	// Randomize road order to remove location coherence that we might get from above algorithm
+	_roads_remaining = _roads_remaining call BIS_fnc_arrayShuffle;
+
+	// Sort roads by their width
+	_roads_remaining sort DESCENDING;
+	private _itr = 0;
+	private _minDist = (_radius * 0.2) max 50;
+	while {count _roads_remaining > 0 && _itr < _amount} do {
+		(_roads_remaining#0) params ["_width", "_road"];
+		_roads_remaining deleteAt 0;
+
+		private _roadscon = roadsConnectedto _road;
+
+		// Determine a road side location from the road
+		private _roadcon = _roadscon#0;
+		private _dir = _roadcon getDir _road;
+		private _targetPos = [getPos _road, _width * 0.5, _dir + 90] call BIS_Fnc_relPos;
+		_validPositions pushBack _targetPos;
+
+		// Remove all the nearby roads so we select fairly separated targets
+		_roads_remaining = _roads_remaining select {
+			(getPos _road) distance (getPos (_x#1)) > _minDist
+		};
+		_itr = _itr + 1;
+	};
+
+	_validPositions
+};
+
 /*
 Class: SaboteurCiviliansAmbientMission
 This mission spawns a number of civilians with IEDs who will try and blow up various buildings near the police station.
@@ -404,6 +445,8 @@ TODO:
 CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 	// Selection of target buildings remaining.
 	VARIABLE("targetBuildings");
+	// Selection of target roads remaining
+	VARIABLE("targetRoads");
 	// Max number of saboteurs that can be active at one time.
 	VARIABLE("maxActive");
 	// The active saboteurs.
@@ -431,13 +474,33 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 		if(_targetBuildings isEqualTo []) then {
 			_targetBuildings = _pos nearObjects ["House", _radius];
 		};
-		// We still couldn't find a nearby building? Where the hell is this police station?
-		if(_targetBuildings isEqualTo []) exitWith {
-			OOP_ERROR_MSG("Couldn't find any targets for saboteurs in %1", [_city]);
-		};
-		T_SETV("targetBuildings", _targetBuildings);
+		_targetBuildings = _targetBuildings call BIS_fnc_arrayShuffle;
 
-		diag_log format ["Target buildings: %1", _targetBuildings];
+		// Density of 1 blown up building every 50m^2 or so
+		private _maxBuildings = 3 max (_radius * _radius / 2500);
+		_targetBuildings resize (count _targetBuildings min _maxBuildings);
+
+		private _targetBuildingPositions = _targetBuildings apply {
+			_x buildingPos -1
+		} select {
+			count _x > 0
+		} apply {
+			_x#0
+		};
+		T_SETV("targetBuildings", _targetBuildingPositions);
+		diag_log format ["Target buildings: %1", _targetBuildingPositions];
+
+		#ifdef SABOTEUR_CIVILIANS_TESTING
+		[_targetBuildings, "Bld", "ColorBlue"] call Saboteur_fnc_drawDebugMarkers;
+		#endif
+
+		private _targetRoads = [_pos, _radius * 0.75, 10] call Saboteur_fnc_findRoadSideBombPositions;
+		T_SETV("targetRoads", _targetRoads);
+		diag_log format ["Target roads: %1", _targetRoads];
+
+		#ifdef SABOTEUR_CIVILIANS_TESTING
+		[_targetRoads, "Rd", "ColorRed"] call Saboteur_fnc_drawDebugMarkers;
+		#endif
 
 		// Calculate some target roads for mines
 #ifdef SABOTEUR_CIVILIANS_TESTING
@@ -507,14 +570,19 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 			private _radius = GETV(_city, "boundingRadius");
 
 			T_PRVAR(targetBuildings);
-			private _targetVics = [_city] call fnc_getTargetVehiclePositions;
+			T_PRVAR(targetRoads);
+
+			private _targetVics = [_city] call Saboteur_fnc_getTargetVehiclePositions;
+			diag_log format ["Target vics: %1", _targetVics];
+
+			#ifdef SABOTEUR_CIVILIANS_TESTING
+			[_targetVics, "Vic", "ColorPink"] call Saboteur_fnc_drawDebugMarkers;
+			#endif
 
 			// createMarker ["Bomber Target", _pos];
 			// _marker setMarkerColor "ColorRed";
 			// _marker setMarkerShape "ICON";
 			// _marker setMarkerType "hd_destroy";
-
-			diag_log format ["Target vics: %1", _targetVics];
 
 			// Use the civ types specified in the presence module
 			private _civTypes = missionNameSpace getVariable ["CivPresence_unitTypes", []];
@@ -523,16 +591,29 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 
 				// Find a target
 				private _tgtPos = [];
+				private _immediateDetonate = false;
 
-				if(count _targetVics > 0 &&  random 2 <= 1) then {
-					_tgtPos = (_targetVics call BIS_fnc_arrayShuffle) select 0;
-				} else {
-					{
-						private _positions = _x buildingPos -1;
-						if(count _positions > 0) exitWith {
-							_tgtPos = _positions#0;
-						};
-					} forEach (_targetBuildings call BIS_fnc_arrayShuffle);
+				private _sel = random 3;
+
+				switch true do {
+					case (count _targetVics > 0 && _sel < 1): { 
+						private _idx = _targetVics call BIS_fnc_randomIndex;
+						_tgtPos = _targetVics#_idx;
+						_targetVics deleteAt _idx;
+						_immediateDetonate = true;
+					};
+					case (count _targetRoads > 0 && _sel > 1.5): { 
+						private _idx = _targetRoads call BIS_fnc_randomIndex;
+						_tgtPos = _targetRoads#_idx;
+						_targetRoads deleteAt _idx;
+						_immediateDetonate = false;
+					};
+					case (count _targetBuildings > 0): {
+						private _idx = _targetBuildings call BIS_fnc_randomIndex;
+						_tgtPos = _targetBuildings#_idx;
+						_targetBuildings deleteAt _idx;
+						_immediateDetonate = true;
+					};
 				};
 
 				if(_tgtPos isEqualTo []) exitWith {
@@ -545,22 +626,23 @@ CLASS("SaboteurCiviliansAmbientMission", "AmbientMission")
 				private _civie = _tmpGroup createUnit [(selectRandom _civTypes), _rndpos, [], 0, "NONE"];
 				private _grp = createGroup [FRIENDLY_SIDE, true];
 				[_civie] joinSilent _grp;
+				_grp allowFleeing 0;
 				deleteGroup _tmpGroup;
-				_civie call fnc_initSaboteur;
+				_civie call Saboteur_fnc_initSaboteur;
 				_civie setVariable ["_owner", _thisObject];
 
 				// Add action to recruit them to your squad
 				[
 					_civie,
-					["Can I borrow that?", pr0_fnc_SaboteurPlayer, [], 1.5, false, true, "", "true", 10]
+					["Can I borrow that?", Saboteur_fnc_playerTakesBomb, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
 
 				[
 					_civie,
-					["I have a suggestion!", pr0_fnc_SaboteurSelectTargetPlayer, [], 1.5, false, true, "", "true", 10]
+					["I have a suggestion!", Saboteur_fnc_playerSelectsTarget, [], 1.5, false, true, "", "true", 10]
 				] remoteExec ["addAction", 0, _civie];
 
-				private _trigger = [_civie, _tgtPos] call fnc_createBombWPs;
+				private _trigger = [_civie, _tgtPos, _immediateDetonate] call Saboteur_fnc_createBombWPs;
 				_activeCivs pushBack [_civie, _trigger];
 
 				// "_ied = (nearestObject [thisTrigger, ""IEDLandSmall_Remote_Ammo""]); _ied setDamage 1;"
