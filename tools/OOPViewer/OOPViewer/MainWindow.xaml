@@ -8,15 +8,19 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:TestModel, IsDesignTimeCreatable=True}"
         Title="MainWindow" Height="450" Width="800">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open" Executed="CommandLoad_Executed"/>
+    </Window.CommandBindings>
+    
     <DockPanel LastChildFill="True" DataContext="{Binding}">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Load"/>
-                <MenuItem Header="_Export">
+                <MenuItem Header="_Load" Command="ApplicationCommands.Open"/>
+                <!--<MenuItem Header="_Export">
                     <MenuItem Header="_Json"/>
                     <MenuItem Header="_Xml"/>
                     <MenuItem Header="_SQF"/>
-                </MenuItem>
+                </MenuItem>-->
             </MenuItem>
         </Menu>
         <ListBox x:Name="ObjectList"  DockPanel.Dock="Left" ItemsSource="{Binding Objects}" SelectionMode="Single" DisplayMemberPath="Key"/>

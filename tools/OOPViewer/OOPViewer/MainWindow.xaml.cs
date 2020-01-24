@@ -1,29 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Win32;
+using PropertyChanged;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OOPViewer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [AddINotifyPropertyChangedInterface]
     public partial class MainWindow : Window
     {
 #if RELEASE
-        public ModelView.OOPModel Model = new ModelView.OOPModel();
+        public ModelView.OOPModel Model { get; set; } = new ModelView.OOPModel();
 #else
-        public ModelView.OOPModel Model = new TestModel();
+        public ModelView.OOPModel Model { get; set; } = new TestModel();
 #endif
 
         public MainWindow()
@@ -31,6 +22,16 @@ namespace OOPViewer
             InitializeComponent();
 
             this.DataContext = Model;
+        }
+
+        private void CommandLoad_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog { DefaultExt = ".rpt" };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                Model = ModelView.OOPModel.LoadFromJson(openFileDialog.FileName);
+                this.DataContext = Model;
+            }
         }
     }
 }

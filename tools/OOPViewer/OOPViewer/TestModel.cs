@@ -26,16 +26,16 @@ namespace OOPViewer
             }
             ModelView.Types.OOPObject AddObject(ModelView.Types.OOPObject obj)
             {
-                Objects.Add(obj.ObjectName, obj);
+                Objects.Add(obj.ID, obj);
                 return obj;
             }
 
             var unit1 = AddObject(new ModelView.Types.OOPObject
             {
-                ObjectName = "unit1",
-                ClassType = "UnitModel",
                 Properties = new Dictionary<string, ModelView.Types.OOPVariable>
                 {
+                    { "_id", new ModelView.Types.OOPString{Value = "unit1"} },
+                    { "oop_parent", new ModelView.Types.OOPString{Value = "UnitModel"} },
                     { "Name", new ModelView.Types.OOPString{Value = "Alpha1-1"} },
                     { "Dammage", new ModelView.Types.OOPNumber{Value = 0.5} },
                     { "Position", MakePos() },
@@ -44,10 +44,10 @@ namespace OOPViewer
             });
             AddObject(new ModelView.Types.OOPObject
             {
-                ObjectName = "unit2",
-                ClassType = "UnitModel",
                 Properties = new Dictionary<string, ModelView.Types.OOPVariable>
                 {
+                    { "_id", new ModelView.Types.OOPString{Value = "unit2"} },
+                    { "oop_parent", new ModelView.Types.OOPString{Value = "UnitModel"} },
                     { "Name", new ModelView.Types.OOPString{Value = "Alpha1-2"} },
                     { "Dammage", new ModelView.Types.OOPNumber{Value = 0.75} },
                     { "Position", MakePos() },
@@ -55,8 +55,6 @@ namespace OOPViewer
                     { "TargetPosition", MakePos() }
                 }
             });
-
-            SelectedObject = unit1;
         }
     }
 }

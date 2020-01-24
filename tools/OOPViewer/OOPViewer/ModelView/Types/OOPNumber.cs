@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OOPViewer.ModelView.Types
+﻿namespace OOPViewer.ModelView.Types
 {
     public class OOPNumber : OOPVariable
     {
