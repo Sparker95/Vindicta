@@ -21,6 +21,47 @@ Saboteur_fnc_drawDebugMarkers =
 	} forEach _positions;
 };
 #endif
+
+// This sets up a saboteur with appropriate gear
+Saboteur_fnc_initSaboteur =
+{
+	comment "Exported from Arsenal by billw";
+
+	comment "[!] UNIT MUST BE LOCAL [!]";
+	if (!local _this) exitWith {};
+
+	comment "Remove existing items";
+	removeAllWeapons _this;
+	removeAllItems _this;
+	removeAllAssignedItems _this;
+	removeUniform _this;
+	removeVest _this;
+	removeBackpack _this;
+	removeHeadgear _this;
+	removeGoggles _this;
+
+	comment "Add containers";
+	_this forceAddUniform "U_C_Poloshirt_salmon";
+	_this addBackpack "B_AssaultPack_blk";
+	_this addItemToBackpack "IEDLandSmall_Remote_Mag";
+	_this addItemToBackpack "IEDUrbanSmall_Remote_Mag";
+	_this addHeadgear "H_Bandanna_gry";
+
+	comment "Add weapons";
+
+	comment "Add items";
+	_this linkItem "ItemMap";
+	_this linkItem "ItemCompass";
+	_this linkItem "ItemWatch";
+	_this linkItem "ItemRadio";
+
+	comment "Set identity";
+	[_this,"GreekHead_A3_09","male02gre"] call BIS_fnc_setIdentity;
+
+	_this allowFleeing 0; // brave?
+};
+
+// Creates a set of waypoints for our saboteur
 Saboteur_fnc_createBombWPs = {
 	params ["_civie", "_tgtPos", "_immediateDetonate"];
 
@@ -87,8 +128,9 @@ Saboteur_fnc_createBombWPs = {
 		_trigger = createTrigger ["EmptyDetector", _tgtPos];
 		_civie setVariable["_trigger", _trigger];
 	};
-	_trigger setTriggerArea  [10, 10, 0, false];
+	_trigger setTriggerArea  [8, 8, 0, false];
 	_trigger setTriggerActivation ["ANY", "PRESENT", true];
+	// _trigger setTriggerInterval 5;
 	_trigger setVariable ["owner", _civie];
 	
 	private _triggerCond = if(!_immediateDetonate) then {
@@ -98,7 +140,7 @@ Saboteur_fnc_createBombWPs = {
 			_owner getVariable ['ready_to_bomb', false] 
 		} && {
 			({side _x == INDEPENDENT} count thisList) > 0 && 
-			({side _x != INDEPENDENT} count thisList) == 0
+			({(_x isKindOf['Man']) && (side _x != INDEPENDENT)} count thisList) == 0
 		}
 		"
 	} else {
@@ -125,45 +167,6 @@ Saboteur_fnc_createBombWPs = {
 		",
 		"true"];
 	_trigger
-};
-
-// This sets up a saboteur with appropriate gear
-Saboteur_fnc_initSaboteur =
-{
-	comment "Exported from Arsenal by billw";
-
-	comment "[!] UNIT MUST BE LOCAL [!]";
-	if (!local _this) exitWith {};
-
-	comment "Remove existing items";
-	removeAllWeapons _this;
-	removeAllItems _this;
-	removeAllAssignedItems _this;
-	removeUniform _this;
-	removeVest _this;
-	removeBackpack _this;
-	removeHeadgear _this;
-	removeGoggles _this;
-
-	comment "Add containers";
-	_this forceAddUniform "U_C_Poloshirt_salmon";
-	_this addBackpack "B_AssaultPack_blk";
-	_this addItemToBackpack "IEDLandSmall_Remote_Mag";
-	_this addItemToBackpack "IEDUrbanSmall_Remote_Mag";
-	_this addHeadgear "H_Bandanna_gry";
-
-	comment "Add weapons";
-
-	comment "Add items";
-	_this linkItem "ItemMap";
-	_this linkItem "ItemCompass";
-	_this linkItem "ItemWatch";
-	_this linkItem "ItemRadio";
-
-	comment "Set identity";
-	[_this,"GreekHead_A3_09","male02gre"] call BIS_fnc_setIdentity;
-
-	_this allowFleeing 0; // brave?
 };
 
 // Called when player interacts with the saboteur. 

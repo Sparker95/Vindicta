@@ -261,7 +261,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		{
 			private _city = _x;
 			private _cityData = GETV(_city, "gameModeData");
-			CALLM(_cityData, "update", [_city]);
+			CALLM(_cityData, "update", [_city ARG _dt]);
 		} forEach T_GETV("activeCities");
 
 	} ENDMETHOD;
@@ -544,44 +544,37 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	} ENDMETHOD;
 
 	METHOD("update") {
-		params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+		params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_NUMBER("_dt")];
 		ASSERT_OBJECT_CLASS(_city, "Location");
 		T_PRVAR(state);
+		T_PRVAR(instability);
 
 		private _cityPos = CALLM0(_city, "getPos");
 		private _cityRadius = (300 max GETV(_city, "boundingRadius")) min 700;
-
-		// Increase recruit count from instability
-		private _inst = T_GETV("instability");
-		private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
-		private _nRecruits = T_GETV("nRecruits");
-		if (_nRecruits < _nRecruitsMax) then {
-			private _recruitIncome = _inst / 12; // todo scale this properly
-			T_CALLM1("addRecruits", _recruitIncome);
-		};
+		private _cityCivCap = CALLM0(_city, "getCapacityCiv");
 
 		// If City is stable or agitated then instability is a factor
 		if(_state in [CITY_STATE_STABLE, CITY_STATE_AGITATED]) then {
 			private _enemyCmdr = CALL_STATIC_METHOD("AICommander", "getAICommander", [ENEMY_SIDE]);
 			private _activity = CALLM(_enemyCmdr, "getActivity", [_cityPos ARG _cityRadius]);
-
 			// For now we will just have instability directly related to activity and inversely related to city radius (activity fades over time just
 			// as we want instability to)
 			// TODO: add other interesting factors here to the instability rate.
-			private _instability = _activity * 900 / (_cityRadius * _cityRadius);
+			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
+			_instability = 1 max (_activity * 900 / (_cityRadius * _cityRadius));
 			T_SETV_PUBLIC("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
-				case (_instability > 1): { _state = CITY_STATE_IN_REVOLT; };
+				case (_instability >= 1): { _state = CITY_STATE_IN_REVOLT; };
 				case (_instability > 0.5): { _state = CITY_STATE_AGITATED; };
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {
-			// If there is a military garrison occupying the city then it is suppressed
+			// If there is an enemy garrison occupying the city then it is suppressed
 			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
 				_state = CITY_STATE_SUPPRESSED;
 			} else {
-				// If the location is spawned and there is more friendly than enemy units then it is liberated
+				// If the location is spawned and there are twice as many friendly as enemy units then it is liberated
 				if(CALLM(_city, "isSpawned", [])) then {
 					private _enemyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [FRIENDLY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
 					private _friendlyCount = count (CALL_METHOD(gLUAP, "getUnitArray", [ENEMY_SIDE]) select {_x distance _cityPos < _cityRadius * 1.5});
@@ -590,6 +583,16 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 					};
 				};
 			};
+		};
+
+		// Increase recruit count from instability, garrisoned
+		private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
+		private _nRecruitsMax = _cityCivCap; // It gives a quite good estimate for now
+		private _nRecruits = T_GETV("nRecruits");
+		if (_nRecruits < _nRecruitsMax && _instability > 0) then {
+			// Recruits is filled up in 4 hour when city is at liberated
+			private _recruitIncome = _dt * _instability * _nRecruitsMax * _garrisonedMult / (4 * 3600);
+			T_CALLM1("addRecruits", _recruitIncome);
 		};
 
 		T_SETV_PUBLIC("state", _state);
@@ -759,7 +762,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 			// We need some way to reinforce police generally probably?
 			private _garrisons = CALLM1(_policeStation, "getGarrisons", ENEMY_SIDE);
 			// We only want to reinforce police stations still under our control
-			//if (  (count _garrisons > 0) and  { CALLM(_garrisons select 0, "countInfantryUnits", []) <= 4 } ) then {
+			if (  (count _garrisons > 0) and  { CALLM(_garrisons select 0, "countInfantryUnits", []) <= 4 } ) then {
 				OOP_INFO_MSG("Spawning police reinforcements for %1 as the garrison is dead", [_policeStation]);
 				// If we liberated the city then we spawn police on our own side!
 				private _side = if(_cityState != CITY_STATE_LIBERATED) then { ENEMY_SIDE } else { FRIENDLY_SIDE };
@@ -792,7 +795,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 					private _args = ["GoalGarrisonJoinLocation", 0, [[TAG_LOCATION, _policeStation], [TAG_MOVE_RADIUS, 30]], _thisObject];
 					CALLM2(_AI, "postMethodAsync", "addExternalGoal", _args);
 				};
-			//};
+			};
 		};
 	} ENDMETHOD;
 

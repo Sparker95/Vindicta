@@ -579,7 +579,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getCapacityInf
-	Returns type of this location
+	Returns infantry capacity of this location -- how many infantry can be stationed here
 
 	Returns: Integer
 	*/
@@ -590,7 +590,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getCapacityCiv
-	Returns type of this location
+	Returns civ capacity of this location -- how many civilians this location can have
 
 	Returns: Integer
 	*/
@@ -829,7 +829,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					// Failed to find a position here, increase the radius
 					_searchRadius = _searchRadius * 3;
 				};
-			};			
+			};
 		};
 
 		_return
