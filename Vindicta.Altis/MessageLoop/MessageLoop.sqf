@@ -43,7 +43,7 @@ CLASS("MessageLoop", "Storable");
 	// Sleep interval
 				VARIABLE_ATTR("sleepInterval", [ATTR_SAVE]);
 	// Last processed object (through message queue or process categories)
-				VARIABLE_ATTR("lastObject");
+				VARIABLE("lastObject");
 
 	//Constructor
 	//Spawn a script which will be checking messages

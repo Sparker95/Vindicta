@@ -417,7 +417,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							OOP_ERROR_1("  %1 is not an OOP object", _lastObject);
 						} else {
 							OOP_ERROR_1("  Initiating a memory dump of %1", _lastObject);
-							[_lastObject] call OOP_dumpAllVariablesRecursive;	// Let's hope it's not 10 megabytes
+							// Max three levels deep
+							[_lastObject, 6] call OOP_dumpAllVariablesRecursive;	// Let's hope it's not 10 megabytes
 						};
 					};
 
@@ -429,7 +430,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		if (!_recovery) then {
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
-			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
 		} else {
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);

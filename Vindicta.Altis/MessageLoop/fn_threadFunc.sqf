@@ -254,7 +254,7 @@ while {true} do {
 
 					// Set last handled object
 					// If it crashes now, we will read this value, and make a memory dump
-					T_SETV("lastObject", _dest);
+					T_SETV("lastObject", _object);
 
 					CALLM0(_object, "process");
 

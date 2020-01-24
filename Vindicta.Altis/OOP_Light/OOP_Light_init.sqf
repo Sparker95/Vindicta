@@ -494,28 +494,44 @@ OOP_dumpAllVariables = {
 // It inspects arrays
 // It inspects variables which are refs to objects
 OOP_dumpAllVariablesRecursive = {
-	params [P_THISOBJECT, P_NUMBER("_indentNum"), ["_objsDumpedAlready", []]];
+	params [P_THISOBJECT, ["_maxDepth", 100], P_NUMBER("_indentNum"), ["_objsDumpedAlready", []]];
+
+	//diag_log format ["---- dumpAllVariablesRecursive: %1", _this];
+
+	// First of all, make sure we don't dump ourselves
+	_objsDumpedAlready pushBack _thisObject;
+
+	// String with indentations
+	private _strIndent = format ["L-%1 ", (str _indentNum)];
+	if (_indentNum > 0) then {
+		for "_i" from 0 to (_indentNum-1) do {
+			_strIndent = _strIndent + "|  ";
+		};
+	};
+
+	// Bail if we've went too deep
+	if (_indentNum > _maxDepth) exitWith {
+		//diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1 ignored, max depth reached", _thisObject]));
+	};
+
 	// Get object's class
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+
 	//Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	// String with indentations
-	private _strIndent = "";
-	for "_i" from 0 to (_indentNum-1) do {
-		_strIndent = _strIndent + "|  ";
-	};
+
 	diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1: %2", _thisObject, _memList]));
 	{
 		_x params ["_memName", "_memAttr"];
 		private _varValue = GETV(_thisObject, _memName);
-		[_thisObject, _memName, _varValue, _indentNum, _objsDumpedAlready, -1] call OOP_dumpObjectVariable;
+		[_thisObject, _memName, _varValue, _indentNum, _objsDumpedAlready, -1, _maxDepth] call OOP_dumpObjectVariable;
 	} forEach _memList;
 };
 
 // Used for recursive variable dump
 OOP_dumpObjectVariable = {
-	params ["_thisObject", "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID"];
-	private _strIndent = "";
+	params ["_thisObject", "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID", "_maxDepth"];
+	private _strIndent = format ["L-%1 ", (str _indentNum)];
 	if (_indentNum > 0) then {
 		for "_i" from 0 to (_indentNum-1) do {
 			_strIndent = _strIndent + "|  ";
@@ -532,28 +548,34 @@ OOP_dumpObjectVariable = {
 		diag_log (_strIndent + format ["%1: %2", _header, "<nil> (isNil = true)"]);
 	} else {
 		// Resolve specific type
-		switch (typeName _varValue) do {
+		private _typeName = typeName _varValue;
+		switch (_typeName) do {
 			case "STRING": {
 				if(IS_OOP_OBJECT(_varValue)) then {
 					if ((toLower _varValue) in _objsDumpedAlready) then {
 						diag_log (_strIndent + format ["%1: (OOP Object): %2 (dumped already)", _header, _varValue]);
 					} else {
-						diag_log (_strIndent + format ["%1: (OOP Object): %2", _header, _varValue]);
-						_objsDumpedAlready pushBack (toLower _varValue);
-						[_varValue, _indentNum + 1, _objsDumpedAlready] call OOP_dumpAllVariablesRecursive;
+						if (_indentNum + 1 > _maxDepth) then {
+						 	// We've gone too far, man.... time to stop
+							diag_log (_strIndent + format ["%1: (OOP Object): %2 (ignored, max depth reached)", _header, _varValue]);
+						} else {
+							diag_log (_strIndent + format ["%1: (OOP Object): %2", _header, _varValue]);
+							_objsDumpedAlready pushBack (toLower _varValue);
+							[_varValue, _maxDepth, _indentNum + 1, _objsDumpedAlready] call OOP_dumpAllVariablesRecursive;
+						};
 					};
 				} else {
-					diag_log (_strIndent + format ["%1: %2", _header, _varValue]);
+					diag_log (_strIndent + format ["%1: (%2) %3", _header, _typeName, _varValue]);
 				};
 			};
 			case "ARRAY": {
 				diag_log (_strIndent + format ["%1: array of %2 elements:", _header, count _varValue]);
 				{
-					[_thisObject, _header, _x, _indentNum + 1, _objsDumpedAlready, _forEachIndex] call OOP_dumpObjectVariable;
+					[_thisObject, _header, _x, _indentNum + 1, _objsDumpedAlready, _forEachIndex, _maxDepth] call OOP_dumpObjectVariable;
 				} forEach _varValue;
 			};
 			default {
-				diag_log (_strIndent + format ["%1: %2", _header, _varValue]);
+				diag_log (_strIndent + format ["%1: (%2) %3", _header, _typeName, _varValue]);
 			};
 		};
 	};
