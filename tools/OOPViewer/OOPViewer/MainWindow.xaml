@@ -1,0 +1,28 @@
+﻿<Window x:Class="OOPViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OOPViewer"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:TestModel, IsDesignTimeCreatable=True}"
+        Title="MainWindow" Height="450" Width="800">
+    <DockPanel LastChildFill="True" DataContext="{Binding}">
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Load"/>
+                <MenuItem Header="_Export">
+                    <MenuItem Header="_Json"/>
+                    <MenuItem Header="_Xml"/>
+                    <MenuItem Header="_SQF"/>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <ListBox x:Name="ObjectList"  DockPanel.Dock="Left" ItemsSource="{Binding Objects}" SelectionMode="Single" DisplayMemberPath="Key"/>
+
+        <xctk:PropertyGrid SelectedObject="{Binding SelectedItem.Value, ElementName=ObjectList}">
+            
+        </xctk:PropertyGrid>
+    </DockPanel>
+</Window>

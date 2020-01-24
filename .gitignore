@@ -31,6 +31,14 @@ Vindicta.Altis/out/linecount.json
 Vindicta.Altis/mission.sqm
 Vindicta.Enoch/
 
+#TOOLS
+tools/buildtool/dist/
+tools/buildtool/package-lock.json
+tools/OOPViewer/.vs
+tools/OOPViewer/OOPViewer/bin/
+tools/OOPViewer/OOPViewer/obj/
+tools/OOPViewer/packages/
+
 #ADDON
 
 #Vindicta-Addon
@@ -42,9 +50,5 @@ Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/$PBOPREFIX$
 ~Vindicta-Addon/addons/missions/script_component.hpp
 configs/briefingName.hpp
-
-tools/buildtool/dist/
-
-tools/buildtool/package-lock.json
 
 Vindicta.Altis/config/user_local_config.hpp
