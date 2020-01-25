@@ -87,51 +87,29 @@ comp_fnc_applyEfficiencyMasks = {
 
 	_CREATE_PROFILE_SCOPE("comp_fnc_applyMasks");
 
-	params ["_comp", "_whiteListMasks", "_blackistMsks", "_unitWhitelists", "_unitBlackLists"];
+	params ["_comp", "_whiteListMasks", "_blackistMasks", "_unitWhitelists", "_unitBlackLists"];
 	for "_catID" from 0 to ((count _comp) - 1) do {
 		pr _a = _comp#_catID;
 		for "_subcatID" from 0 to ((count _a) - 1) do {
 			pr _eff = (T_efficiency#_catID#_subcatID);
-			pr _allocateThisUnit = true;
-			
-			// Check against unit blacklists
-			{
-				if ([_catID, _subcatID] in _x) exitWith {
-					_allocateThisUnit = false;
-				};
-			} forEach _unitBlacklists;
 
-			// Check against whitelists masks
-			if (_allocateThisUnit) then {
-				// Result is an OR between results of applying every mask
-				pr _allowTake = false;
-				{
-					_allowTake = _allowTake || ([_eff, _x] call eff_fnc_matchesMask);
-				} forEach _whiteListMasks;
-				_allocateThisUnit = _allowTake;
-			};
-
-			// Check against blacklist masks
-			if (_allocateThisUnit) then {
-				// Any match to a blacklist will forbid taking this unit
-				{
-					if (([_eff, _x] call eff_fnc_matchesMask)) exitWith { _allocateThisUnit = false; };
-				} forEach _blackistMsks;
-			};
-			
-			// Check if this unit is in whitelist
-			{
-				if ([_catID, _subcatID] in _x) exitWith {
-					_allocateThisUnit = true;
-				};
-			} forEach _unitWhitelists;
+			pr _allowed = 
+					// Check if this unit is in whitelist
+					((_unitWhitelists findIf { [_catID, _subcatID] in _x }) != NOT_FOUND)
+					// Check against whitelists masks
+				||	{(_whiteListMasks findIf { [_eff, _x] call eff_fnc_matchesMask }) != NOT_FOUND}
+				||	{
+						// Check against unit blacklists
+						{(_unitBlacklists findIf { [_catID, _subcatID] in _x }) == NOT_FOUND} 
+						&&
+						// Check against blacklist masks
+						{(_blackistMasks findIf { [_eff, _x] call eff_fnc_matchesMask }) == NOT_FOUND} 
+					}
+				;
 
 			// If we are not taking this unit type, set counter of this unit type to zero
-			if (!_allocateThisUnit) then {
-
-				if (!_allocateThisUnit) then {
-					_a set [_subcatID, 0];
-				};
+			if (!_allowed) then {
+				_a set [_subcatID, 0];
 			};
 		};
 	};
