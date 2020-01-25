@@ -582,42 +582,71 @@ OOP_dumpObjectVariable = {
 };
 
 #ifdef OFSTREAM_ENABLE
+// Dump to ofstream
+
+gCommaNewLine = "," + toString [10];
+#define COMMA_NL gCommaNewLine
+
 #define CLEAR() (ofstream_clear "dumped.json")
 #define DUMP(string) ("dumped.json" ofstream_dump (string))
-#define DUMP_STR(string) ("dumped.json" ofstream_dump ("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")
-gCommaNewLine = "," + toString [10];
-#define COMMA gCommaNewLine
+#define DUMP_STR(string) ("dumped.json" ofstream_dump (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """"))
+
+#else
+// Dump to diag_log
+
+gCommaNewLine = ",";
+#define COMMA_NL gCommaNewLine
+
+#define CLEAR() 
+#define DUMP(string) (diag_log ("_json_line_ " + string))
+#define DUMP_STR(string) (diag_log ("_json_line_ " + (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
+
+#endif
+
+
+
+
 
 // Serializes a variable to json
 OOP_dumpVariableToJson = {
-	params [P_DYNAMIC("_variable"), P_BOOL("_recursive"), P_NUMBER("_depth")];
+	params [P_DYNAMIC("_value"), P_BOOL("_recursive"), P_NUMBER("_depth"), P_ARRAY("_objectsDumped")];
 	
-	switch (typeName _variable) do {
+	switch (typeName _value) do {
 		case "STRING": {
-			if(_variable find "o_" == 0) then {
-				[_variable, _recursive, _depth + 1] call OOP_objectToJson;
+			if(IS_OOP_OBJECT(_value)) then {
+				// Check if we have dumped it already
+				if ((tolower _value) in _objectsDumped) then {
+					// We have dumped it already
+					DUMP_STR(_value);
+				} else {
+					_objectsDumped pushBack (tolower _value); // Add ref to array so that we don't dump it again
+					[_value, _recursive, _depth + 1, _objectsDumped] call OOP_objectToJson;
+				};
 			} else {
-				DUMP_STR(_variable);
+				DUMP_STR(_value);
 			};
 		};
 		case "ARRAY": {
 			DUMP("[");
 			{ 
-				if(_forEachIndex != 0) then { DUMP(COMMA) };
+				if(_forEachIndex != 0) then { DUMP(COMMA_NL) };
 				[_x, _recursive, _depth] call OOP_dumpVariableToJson;
-			} forEach _variable;
+			} forEach _value;
 			DUMP("]");
 		};
 		case "SCALAR";
-		case "BOOL": { DUMP(str _variable) };
+		case "BOOL": { DUMP(str _value) };
 		// Other types we convert to a string (we need to do it twice because we want to wrap it in quotes, not just make it an sqf string)
-		default { DUMP_STR(str _variable) };
+		default { DUMP_STR(str _value) };
 	};
 };
 
 // Serializes all variables of an object to json
 OOP_objectToJson = {
-	params [P_THISOBJECT, P_BOOL("_recursive"), P_NUMBER("_depth")];
+	params [P_THISOBJECT, P_BOOL("_recursive"), P_NUMBER("_depth"), P_ARRAY("_objectsDumped")];
+
+	// Add ourselves to the array of dumped objects
+	_objectsDumped pushBack (tolower _thisObject);
 
 	if(_depth > 3) exitWith { DUMP(str "!recursion limit reached!") };
 
@@ -627,12 +656,16 @@ OOP_objectToJson = {
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	
 	DUMP("{");
+
+	// Dump self reference
 	private _str = format ['"_id": "%1"', _thisObject];
 	DUMP(_str);
+
+	// Iterate all object members/variables
 	{
 		_x params ["_memName", "_memAttr"];
 		
-		DUMP(COMMA);
+		DUMP(COMMA_NL);
 
 		private _varValue = GETV(_thisObject, _memName);
 		if (isNil "_varValue") then {
@@ -641,7 +674,7 @@ OOP_objectToJson = {
 		} else {
 			private _str = format['"%1":', _memName];
 			DUMP(_str);
-			[_varValue, _recursive, _depth] call OOP_dumpVariableToJson;
+			[_varValue, _recursive, _depth, _objectsDumped] call OOP_dumpVariableToJson;
 			// _json = _json + format ['"%1": %2', _memName, _valJson];
 		};
 	} forEach _memList;
@@ -657,7 +690,97 @@ OOP_dumpAsJson = {
 	DUMP(endl + endl + endl);
 };
 
-#endif
+
+
+
+
+// Dumps to JSON, but always to diag_log
+
+
+#define CLEAR() 
+#define DUMP(string) (diag_log ("_json_line_ " + string))
+#define DUMP_STR(string) (diag_log ("_json_line_ " + (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
+
+// Serializes a variable to json
+OOP_dumpVariableToJson_diagLog = {
+	params [P_DYNAMIC("_value"), P_NUMBER("_depth"), P_NUMBER("_maxDepth"), P_ARRAY("_objectsDumped")];
+	
+	switch (typeName _value) do {
+		case "STRING": {
+			if(IS_OOP_OBJECT(_value)) then {
+				// Check if we have dumped it already
+				if (((tolower _value) in _objectsDumped) || (_depth > (_maxDepth-1))) then {
+					// We have dumped it already
+					DUMP_STR(_value);
+				} else {
+					_objectsDumped pushBack (tolower _value); // Add ref to array so that we don't dump it again
+					[_value, _depth + 1, _maxDepth, _objectsDumped] call OOP_objectToJson_diagLog;
+				};
+			} else {
+				DUMP_STR(_value);
+			};
+		};
+		case "ARRAY": {
+			DUMP("[");
+			{ 
+				if(_forEachIndex != 0) then { DUMP(",") };
+				[_x, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
+			} forEach _value;
+			DUMP("]");
+		};
+		case "SCALAR";
+		case "BOOL": { DUMP(str _value) };
+		// Other types we convert to a string (we need to do it twice because we want to wrap it in quotes, not just make it an sqf string)
+		default { DUMP_STR(str _value) };
+	};
+};
+
+// Serializes all variables of an object to json
+OOP_objectToJson_diagLog = {
+	params [P_THISOBJECT, P_NUMBER("_depth"), P_NUMBER("_maxDepth"), P_ARRAY("_objectsDumped")];
+
+	// Add ourselves to the array of dumped objects
+	_objectsDumped pushBack (tolower _thisObject);
+
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	
+	DUMP("{");
+
+	// Dump self reference
+	private _str = format ['"_id": "%1"', _thisObject];
+	DUMP(_str);
+
+	// Iterate all object members/variables
+	{
+		_x params ["_memName", "_memAttr"];
+		
+		DUMP(",");
+
+		private _varValue = GETV(_thisObject, _memName);
+		if (isNil "_varValue") then {
+			private _str = format['"%1": "<nil>"', _memName];
+			DUMP(_str);
+		} else {
+			private _str = format['"%1":', _memName];
+			DUMP(_str);
+			[_varValue, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
+			// _json = _json + format ['"%1": %2', _memName, _valJson];
+		};
+	} forEach _memList;
+
+	DUMP("}");
+};
+
+
+
+
+
+
+
+
 
 // ---- Remote execution ----
 // A remote code wants to execute something on this machine
