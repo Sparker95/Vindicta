@@ -114,7 +114,7 @@ class BuildObjects
 			__BUILD_OBJECT_CLASS(Defense4,Land_SandbagBarricade_01_hole_F, 10)
 			__BUILD_OBJECT_CLASS(Defense5,Land_SandbagBarricade_01_F, 10)
 			__BUILD_OBJECT_CLASS(Defense6,Land_SandbagBarricade_01_half_F, 10)
-			__BUILD_OBJECT_CLASS(Defense7,Land_Barricade_01_10m_F, 15)
+			__BUILD_OBJECT_CLASS(Defense7,Land_Barricade_01_10m_F, 20)
 
 			// dirt mound
 			__BUILD_OBJECT_CLASS(Defense8,Dirthump_1_F, 20)
