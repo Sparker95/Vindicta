@@ -417,8 +417,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 							OOP_ERROR_1("  %1 is not an OOP object", _lastObject);
 						} else {
 							OOP_ERROR_1("  Initiating a memory dump of %1", _lastObject);
-							// Max three levels deep
-							[_lastObject, 6] call OOP_dumpAllVariablesRecursive;	// Let's hope it's not 10 megabytes
+							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
 						};
 					};
 

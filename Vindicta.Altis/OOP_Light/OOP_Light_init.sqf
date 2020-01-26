@@ -782,7 +782,7 @@ OOP_objectToJson_diagLog = {
 
 // Does a proper object crash dump, which we can later analyze with our tool
 OOP_objectCrashDump = {
-	params [P_THISOBJECT];
+	params [P_THISOBJECT, P_NUMBER("_madDepth")];
 
 	// Critical section, we don't want to mix these diag_logs with others from other threads
 	_nul = isNil {
@@ -797,7 +797,7 @@ OOP_objectCrashDump = {
 			diag_log "_json_line_ [";
 
 			// Perform the actual json object dump
-			[_thisObject, 0, 5] call OOP_objectToJson_diagLog; // Note the max depth
+			[_thisObject, 0, _madDepth] call OOP_objectToJson_diagLog; // Note the max depth
 
 			// Wrap into array
 			diag_log "_json_line_ ]";
