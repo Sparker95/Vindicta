@@ -98,10 +98,10 @@ class CMUI_HINTS : MUI_BG_TRANSPARENT {
 	IDC = -1; 
 	x = safeZoneX + safeZoneW * 0.184; 
 	y = safeZoneY + safeZoneH * 0.043; 
-	w = safeZoneW * 0.631; 
-	h = safeZoneH * 0.022; 
+	w = safeZoneW * 0.58; 
+	h = safeZoneH * 0.026;
 	text = ""; // Don't really need hints any more I think? 
-	colorBackground[] = MUIC_TRANSPARENT; 
+	colorBackground[] = MUIC_BLACKTRANSP; 
 
 };
 
@@ -133,17 +133,21 @@ class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT
     x = safeZoneX + safeZoneW * 0.353; 
     y = safeZoneY + safeZoneH * 0.822; 
     w = safeZoneW * 0.292; 
-    h = safeZoneH * 0.075; 
+    h = safeZoneH * 0.065; 
     text = "RESPAWN"; 
+
+	colorBackground[] = {0.2, 0.60, 0, 1};
+	colorBackgroundActive[] = MUIC_WHITE;
+	colorBackgroundDisabled[] = {0.7, 0.1, 0, 1};
 };
 
 class CMUI_STATIC_RESPAWN : MUI_BG_BLACKSOLID
 {
 	IDC = -1;
 	x = safeZoneX + safeZoneW * 0.353; 
-    y = safeZoneY + safeZoneH * 0.9; 
+    y = safeZoneY + safeZoneH * 0.889; 
     w = safeZoneW * 0.292; 
-    h = safeZoneH * 0.04; 
+    h = safeZoneH * 0.035; 
     text = "RESPAWN";
 };
 

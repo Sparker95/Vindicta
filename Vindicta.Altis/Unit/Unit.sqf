@@ -1812,7 +1812,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_UM_civHeadgear + g_UM_civUniforms);
+			} forEach (g_UM_civHeadgear + g_UM_civUniforms + g_UM_civFacewear + g_UM_civBackpacks);
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
