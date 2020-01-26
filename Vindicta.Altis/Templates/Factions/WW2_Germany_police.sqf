@@ -38,8 +38,8 @@ _inf set [T_INF_spotter, [""]];
 */
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
-_veh set [T_VEH_DEFAULT, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
-_veh set [T_VEH_car_unarmed, ["LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
+_veh set [T_VEH_DEFAULT, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
+_veh set [T_VEH_car_unarmed, ["ifa3_gaz55_ger", "LIB_GER_GazM1", "LIB_Kfz1_sernyt", "LIB_Kfz1_Hood_sernyt"]];
 
 
 //==== Drones ====
@@ -76,6 +76,6 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tIFA3_Germany_police"];
+_array set [T_NAME, "tWW2_Germany_police"];
 
 _array

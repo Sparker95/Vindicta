@@ -74,6 +74,6 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tIFA3_UK_police"];
+_array set [T_NAME, "tWW2_UK_police"];
 
 _array
