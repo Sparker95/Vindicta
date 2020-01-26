@@ -1,5 +1,6 @@
 /*
-POLICE templates for ARMA III
+	name = "Heer (Police)";
+		author = "MatrikSky";
 */
 
 _array = [];
@@ -76,6 +77,6 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tWW2_Germany_police"];
+_array set [T_NAME, "tWW2_Heer_police"];
 
 _array

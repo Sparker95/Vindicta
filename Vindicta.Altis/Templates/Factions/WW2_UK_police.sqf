@@ -1,3 +1,7 @@
+/*
+	name = "UK Army (Police)";
+		author = "MatrikSky";
+*/
 
 _array = [];
 

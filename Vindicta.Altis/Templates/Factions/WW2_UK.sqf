@@ -1,5 +1,6 @@
 /*
-custom UK templates for ARMA III (IFA3)
+	name = "UK Army";
+		author = "MatrikSky";
 */
 
 _array = [];

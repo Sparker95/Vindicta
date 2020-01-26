@@ -1,6 +1,9 @@
 /*
-custom Horizon Islands Defence Forces templates for ARMA III (RHS)
+	name = "Horizon Islands Defence Forces";
+		author = "MatrikSky";
 */
+
+//Broken
 
 _array = [];
 

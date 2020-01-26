@@ -1,5 +1,6 @@
 /*
-custom Germany templates for ARMA III (IFA3)
+	name = "Heer";
+		author = "MatrikSky";
 */
 
 _array = [];
@@ -139,7 +140,7 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tWW2_Germany"];
+_array set [T_NAME, "tWW2_Heer"];
 
 
 _array 

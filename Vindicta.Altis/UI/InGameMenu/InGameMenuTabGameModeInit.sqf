@@ -57,7 +57,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["RHS - US Army", 		"tRHS_USAF"],
 			["RHS - Livonian Defence Forces", 		"tRHS_LDF"],
 			["RHS - HIDF",	"tRHS_HIDF"],
-			["WW2 - Germany",	"tWW2_Germany"],
+			["WW2 - Heer",	"tWW2_Heer"],
 			["WW2 - UK",	"tWW2_UK"]//,
 			//["Test: must error", "test_error"]
 		];
@@ -73,7 +73,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["Arma 3 - Police", "tPolice"],
 			["RHS, AAF2017 - Altian Police", "tRHS_AAF2017_police"],
 			["RHS - Livonian Forest Rangers ", "tRHS_LDF_ranger"],
-			["WW2 - Germany (Police)", "tWW2_Germany_police"],
+			["WW2 - Heer (Police)", "tWW2_Heer_police"],
 			["WW2 - UK (Police)", "tWW2_UK_police"]
 		];
 		{
