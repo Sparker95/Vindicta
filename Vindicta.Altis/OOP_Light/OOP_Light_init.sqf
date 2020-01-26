@@ -13,9 +13,15 @@ OOP_Light_initialized = true;
 // Initialize the global session ID value
 // Session ID is needed to avoid number overflow errors when generating unique IDs for new objects
 // Session ID is incremented on every game save
+#ifndef _SQF_VM
 if(isNil {OOP_GVAR(sessionID)} ) then {
 	OOP_GVAR(sessionID) = 0;
 };
+#else
+if(isNil OOP_GVAR_STR(sessionID)) then {
+	OOP_GVAR(sessionID) = 0;
+};
+#endif
 
 // Prints an error message with supplied text, file and line number
 OOP_error = {

@@ -758,7 +758,7 @@ CLASS("CivilWarPoliceStationData", "CivilWarLocationData")
 				// Ensure that the found position is far enough from the location which is being reinforced
 				if (_spawnInPos distance2D _locPos > 900) then {
 					// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-					private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
+					private _newGarrison = CALLM(gGameMode, "createGarrison", ["police" ARG LOCATION_TYPE_POLICE_STATION ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 0]);
 					T_SETV_REF("reinfGarrison", _newGarrison);
 
 					CALLM2(_newGarrison, "postMethodAsync", "setPos", [_spawnInPos]);

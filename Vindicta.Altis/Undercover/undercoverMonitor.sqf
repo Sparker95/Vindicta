@@ -114,6 +114,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		CALLM0(_thisObject, "calcGearSuspicion");							// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
+#ifndef _SQF_VM
 		// CBA event handler for checking player unit's equipment suspiciousness
 		pr _EH_loadout = ["loadout", {
 			params ["_unit", "_newLoadout"];
@@ -121,6 +122,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
     	}] call CBA_fnc_addPlayerEventHandler;
 		T_SETV("EHLoadout", _EH_loadout);
+#endif
 
     	// event handler to check if unit fired weapon
     	pr _EH_firedMan = _unit addEventHandler ["FiredMan", {
@@ -679,7 +681,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			case SMON_MESSAGE_DELETE: {
 				// remove CBA loadout event handler
 				pr _EH_loadout = T_GETV("EHLoadout");
+#ifndef _SQF_VM
 		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
+#endif
 
 				// remove vanilla fired event handler
 				pr _unit = T_GETV("unit");
@@ -892,12 +896,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	STATIC_METHOD("staticInit") {
 		params [P_THISCLASS];
 
+#ifndef _SQF_VM
 		["ace_treatmentSucceded", {
 			params ["_caller", "_target", "_selectionName", "_className"];
 			if ((side _caller != side _target) && (side _target != civilian)) then {
 				CALLSM2("undercoverMonitor", "boostSuspicion", _caller, 2.0);
 			};
     	}] call CBA_fnc_addEventHandler;
+#endif
 	} ENDMETHOD;
 
 ENDCLASS;

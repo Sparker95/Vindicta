@@ -515,7 +515,7 @@ CLASS("IntelCommanderAction", "Intel")
 			_d = _d - 1; // Because day counting starts with 1
 
 			OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
-			
+
 			// Make a string representation of time difference
 			pr _timeDiffStr = if (_h > 0) then {
 				format ["%1H, %2M", _h, round _m]
@@ -658,7 +658,8 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 
 	//  
 	METHOD("getShortName") {
-		"Reinforce"
+		params [P_THISOBJECT];
+		T_GETV("type");
 	} ENDMETHOD;
 ENDCLASS;
 

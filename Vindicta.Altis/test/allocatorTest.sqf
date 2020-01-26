@@ -95,12 +95,16 @@ allocatorTest = {
 	pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 
 	pr _transportBlacklistMask = [];
+	pr _requiredComp = [
+		[T_INF, T_INF_officer, 3]
+	];
 
 	pr _args = [_effExt, _allocationFlags, _comp, _srcGarrEff,
-					_payloadWhitelistMask, _payloadBlacklistMask,
-					_transportWhitelistMask, _transportBlacklistMask];
+				_payloadWhitelistMask, _payloadBlacklistMask,
+				_transportWhitelistMask, _transportBlacklistMask,
+				_requiredComp];
 	private _allocResult = CALLSM("GarrisonModel", "allocateUnits", _args);
-
+	diag_log _allocResult;
 
 };
 
