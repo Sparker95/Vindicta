@@ -1,12 +1,11 @@
 #define OOP_ASSERT
 #include "..\OOP_Light\OOP_Light.h"
 
+#ifdef _SQF_VM
 call compile preprocessFileLineNumbers "Tests\initTests.sqf";
+#endif
 
-if (isNil "OOP_Light_initialized") then {
-	OOP_Light_initialized = true;
-	call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
-};
+call compile preprocessFileLineNumbers "OOP_Light\OOP_Light_init.sqf"; 
 
 CLASS("ClassA", "")
 
@@ -73,12 +72,16 @@ diag_log "";
 CLASS("Bot", "")
 	VARIABLE("AI");
 	VARIABLE("health");
+	VARIABLE("numArray");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
 
 		private _ai = NEW("AIBot", [_thisObject]);
 		T_SETV("AI", _ai);
+
+		private _array = [0, 1, 2, "3"];
+		T_SETV("numArray", _array);
 	} ENDMETHOD;
 
 ENDCLASS;
@@ -106,4 +109,4 @@ diag_log "";
 diag_log "";
 diag_log "";
 private _objA = NEW("ClassA", []);
-[_bot0, 0, 0] call OOP_objectToJson_diagLog;
+[_bot0] call OOP_objectCrashDump;

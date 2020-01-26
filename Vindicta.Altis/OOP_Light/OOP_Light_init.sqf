@@ -696,10 +696,16 @@ OOP_dumpAsJson = {
 
 // Dumps to JSON, but always to diag_log
 
+#ifdef _SQF_VM
+#define __TEXT
+#else
+#define __TEXT text
+#endif
 
+gComma = toString [44];
 #define CLEAR() 
-#define DUMP(string) (diag_log ("_json_line_ " + string))
-#define DUMP_STR(string) (diag_log ("_json_line_ " + (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
+#define DUMP_DIAGLOG(string) (diag_log __TEXT ("_json_line_ " + string))
+#define DUMP_STR_DIAGLOG(string) (diag_log __TEXT ("_json_line_ " + (("""" + (((((string select [0, 1024]) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
 
 // Serializes a variable to json
 OOP_dumpVariableToJson_diagLog = {
@@ -711,27 +717,27 @@ OOP_dumpVariableToJson_diagLog = {
 				// Check if we have dumped it already
 				if (((tolower _value) in _objectsDumped) || (_depth > (_maxDepth-1))) then {
 					// We have dumped it already
-					DUMP_STR(_value);
+					DUMP_STR_DIAGLOG(_value);
 				} else {
 					_objectsDumped pushBack (tolower _value); // Add ref to array so that we don't dump it again
 					[_value, _depth + 1, _maxDepth, _objectsDumped] call OOP_objectToJson_diagLog;
 				};
 			} else {
-				DUMP_STR(_value);
+				DUMP_STR_DIAGLOG(_value);
 			};
 		};
 		case "ARRAY": {
-			DUMP("[");
+			DUMP_DIAGLOG("[");
 			{ 
-				if(_forEachIndex != 0) then { DUMP(",") };
+				if(_forEachIndex != 0) then { DUMP_DIAGLOG(gComma) };
 				[_x, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
 			} forEach _value;
-			DUMP("]");
+			DUMP_DIAGLOG("]");
 		};
 		case "SCALAR";
-		case "BOOL": { DUMP(str _value) };
+		case "BOOL": { DUMP_DIAGLOG(str _value) };
 		// Other types we convert to a string (we need to do it twice because we want to wrap it in quotes, not just make it an sqf string)
-		default { DUMP_STR(str _value) };
+		default { DUMP_STR_DIAGLOG(str _value) };
 	};
 };
 
@@ -747,34 +753,62 @@ OOP_objectToJson_diagLog = {
 	//Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	
-	DUMP("{");
+	DUMP_DIAGLOG("{");
 
 	// Dump self reference
 	private _str = format ['"_id": "%1"', _thisObject];
-	DUMP(_str);
+	DUMP_DIAGLOG(_str);
 
 	// Iterate all object members/variables
 	{
 		_x params ["_memName", "_memAttr"];
 		
-		DUMP(",");
+		DUMP_DIAGLOG(gComma);
 
 		private _varValue = GETV(_thisObject, _memName);
 		if (isNil "_varValue") then {
 			private _str = format['"%1": "<nil>"', _memName];
-			DUMP(_str);
+			DUMP_DIAGLOG(_str);
 		} else {
 			private _str = format['"%1":', _memName];
-			DUMP(_str);
+			DUMP_DIAGLOG(_str);
 			[_varValue, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
 			// _json = _json + format ['"%1": %2', _memName, _valJson];
 		};
 	} forEach _memList;
 
-	DUMP("}");
+	DUMP_DIAGLOG("}");
 };
 
+// Does a proper object crash dump, which we can later analyze with our tool
+OOP_objectCrashDump = {
+	params [P_THISOBJECT];
 
+	// Critical section, we don't want to mix these diag_logs with others from other threads
+	_nul = isNil {
+		diag_log format ["[OOP] Starting object crash dump of: %1", _thisObject];
+
+		// Check if it's even an object
+		if (IS_OOP_OBJECT(_thisObject)) then {
+			// Mark JSON start
+			diag_log "_json_line_ _json_start_";
+
+			// Wrap into array
+			diag_log "_json_line_ [";
+
+			// Perform the actual json object dump
+			[_thisObject, 0, 5] call OOP_objectToJson_diagLog; // Note the max depth
+
+			// Wrap into array
+			diag_log "_json_line_ ]";
+
+			// Mark JSON end
+			diag_log "_json_line_ _json_end_";
+		} else {
+			diag_log format ["[OOP] Error: %1 is not an object", _thisObject];
+		};
+	};
+};
 
 
 
