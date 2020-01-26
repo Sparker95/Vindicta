@@ -99,7 +99,7 @@ class CMUI_HINTS : MUI_BG_TRANSPARENT {
 	x = safeZoneX + safeZoneW * 0.184; 
 	y = safeZoneY + safeZoneH * 0.043; 
 	w = safeZoneW * 0.58; 
-	h = safeZoneH * 0.022; 
+	h = safeZoneH * 0.026;
 	text = ""; // Don't really need hints any more I think? 
 	colorBackground[] = MUIC_BLACKTRANSP; 
 

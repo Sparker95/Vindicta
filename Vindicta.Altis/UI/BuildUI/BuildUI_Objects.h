@@ -98,8 +98,7 @@ class BuildObjects
 			// Lights
 			__BUILD_OBJECT_CLASS(Light0,Land_TentLamp_01_standing_F, 10)
 			__BUILD_OBJECT_CLASS(Light1,Land_LampShabby_F, 20)
-			__BUILD_OBJECT_CLASS(Light2,Campfire_burning_F, 5)
-
+			__BUILD_OBJECT_CLASS(Light2,Campfire_burning_F, 10)
 			
 		};
 
@@ -114,7 +113,7 @@ class BuildObjects
 			// cheap makeshift barriers
 			__BUILD_OBJECT_CLASS(Defense4,Land_SandbagBarricade_01_hole_F, 10)
 			__BUILD_OBJECT_CLASS(Defense5,Land_SandbagBarricade_01_F, 10)
-			__BUILD_OBJECT_CLASS(Defense6,Land_SandbagBarricade_01_half_F, 5)
+			__BUILD_OBJECT_CLASS(Defense6,Land_SandbagBarricade_01_half_F, 10)
 			__BUILD_OBJECT_CLASS(Defense7,Land_Barricade_01_10m_F, 15)
 
 			// dirt mound

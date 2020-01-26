@@ -351,7 +351,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								if (animationState _unit == "ainvpknlmstpsnonwnondnon_medic1" || animationState _unit == "ainvppnemstpslaywnondnon_medicother" || animationState _unit == "ainvpknlmstpslaywnondnon_medicother") exitWith {
 									pr _nearUnits = nearestObjects [_unit, ["Man"], 12];
 									if (count _nearUnits > 1) then {
-										if (((side (_nearUnits#1)) != (side _unit)) && (side (_nearUnits#1)) != civilian) then {
+										if (((side group (_nearUnits#1)) != (side group _unit)) && (side group (_nearUnits#1)) != civilian) then {
 											_suspicionArr pushBack [1, "Attempting to inject enemy some morphine?"]; _hintKeys pushback HK_MORPHINE;
 										};
 									};
