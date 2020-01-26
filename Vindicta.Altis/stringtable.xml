@@ -177,6 +177,12 @@
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
 			</Key>
+			<Key ID="STR_UM_HINT_MORPHINE">
+				<Original>INJECTING SOME MORPHINE?</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ILLEGAL">
+				<Original>DO NOT DO THAT!</Original>
+			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>
 			</Key>																
