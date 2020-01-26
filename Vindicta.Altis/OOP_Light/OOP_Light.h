@@ -181,6 +181,7 @@
 #define P_THISCLASS ["_thisClass", "", [""]]
 #define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
@@ -188,6 +189,7 @@
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_COLOR(paramNameStr) [paramNameStr, [1,1,1,1]]
 #define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]

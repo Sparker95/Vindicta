@@ -1018,8 +1018,15 @@ CLASS("BuildUI", "")
 						// Send the request to server
 						CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
 					} else {
-						// Show error message
-						systemChat format ["Not enough build resources in your inventory: %1 (%2 required)", _playerBuildRes, _buildRes];
+						// God mode
+						if(!isDamageAllowed player) then {
+							pr _args = [clientOwner, _gar, _catConfigClassNameStr, _objConfigClassNameStr, _pos, _dir, false];
+							// Send the request to server
+							CALLM2(gGarrisonServer, "postMethodAsync", "buildFromGarrison", _args);
+						} else {
+							// Show error message
+							systemChat format ["Not enough build resources in your inventory: %1 (%2 required)", _playerBuildRes, _buildRes];
+						};
 					};
 					
 				} else {

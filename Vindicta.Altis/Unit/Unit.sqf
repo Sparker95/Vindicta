@@ -1767,7 +1767,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} forEach _crewData;
 	} ENDMETHOD;
 
-	
+	//                             I S   E M P T Y
+	/*
+	Method: isEmpty
+	Returns true if there are no units in this vehicle or it is not a vehicle
+
+	Returns: bool
+	*/
+	METHOD("isEmpty") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		(count fullCrew _oh) == 0
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               L I M I T E D   A R S E N A L
