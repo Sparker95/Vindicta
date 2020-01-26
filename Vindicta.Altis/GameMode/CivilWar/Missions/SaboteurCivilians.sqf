@@ -75,18 +75,20 @@ Saboteur_fnc_createBombWPs = {
 	// No enemy attacking them for now
 	_civie setCaptive true;
 
+	// Make them just do what we damn well tell them
+	_civie disableAI "AUTOCOMBAT";
+	_civie disableAI "CHECKVISIBLE";
+
 	// WAYPOINT 1 - plant bomb
 	private _wp = _grp addWaypoint [_tgtPos, 0];
 	_wp setWaypointType "MOVE";
 	_wp setWaypointBehaviour "STEALTH";
 	_wp setWaypointSpeed "LIMITED";
 	_wp setWaypointStatements ["true", 
-		format["
+		"
 			this fire ['DemoChargeMuzzle', 'DemoChargeMuzzle', 'IEDUrbanSmall_Remote_Mag'];
 			[this] remoteExec ['removeAllActions', 0, this];
-			",
-			//[this] spawn { sleep 10; _this setVariable ['%1', true]; };
-			UNDERCOVER_SUSPICIOUS]
+		"
 	];
 
 	// WAYPOINT 2 - hide
@@ -132,7 +134,6 @@ Saboteur_fnc_createBombWPs = {
 	_trigger setTriggerActivation ["ANY", "PRESENT", true];
 	// _trigger setTriggerInterval 5;
 	_trigger setVariable ["owner", _civie];
-	
 	private _triggerCond = if(!_immediateDetonate) then {
 		"
 		private _owner = thisTrigger getVariable 'owner';
@@ -140,7 +141,7 @@ Saboteur_fnc_createBombWPs = {
 			_owner getVariable ['ready_to_bomb', false] 
 		} && {
 			({side _x == INDEPENDENT} count thisList) > 0 && 
-			({(_x isKindOf['Man']) && (side _x != INDEPENDENT)} count thisList) == 0
+			({(_x isKindOf 'Man') && (side _x != INDEPENDENT)} count thisList) == 0
 		}
 		"
 	} else {
