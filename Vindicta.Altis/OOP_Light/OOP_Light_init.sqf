@@ -478,55 +478,175 @@ OOP_dumpAllVariables = {
 	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
 	//Get member list of this class
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
-	diag_log format ["DEBUG: Dumping all variables of %1: %2", _thisObject, _memList];
+	diag_log format ["[OOP]: Basic variable dump of %1: %2", _thisObject, _memList];
 	{
 		_x params ["_memName", "_memAttr"];
 		private _varValue = GETV(_thisObject, _memName);
 		if (isNil "_varValue") then {
-			diag_log format ["DEBUG: %1.%2: %3", _thisObject, _memName, "<null>"];
+			diag_log format ["  %1.%2: %3", _thisObject, _memName, "<nil> (isNil = true)"];
 		} else {
-			diag_log format ["DEBUG: %1.%2: %3", _thisObject, _memName, _varValue];
+			diag_log format ["  %1.%2: %3", _thisObject, _memName, _varValue];
 		};
 	} forEach _memList;
 };
 
+// Dumps all variables recursively
+// It inspects arrays
+// It inspects variables which are refs to objects
+OOP_dumpAllVariablesRecursive = {
+	params [P_THISOBJECT, ["_maxDepth", 100], P_NUMBER("_indentNum"), ["_objsDumpedAlready", []]];
+
+	//diag_log format ["---- dumpAllVariablesRecursive: %1", _this];
+
+	// First of all, make sure we don't dump ourselves
+	_objsDumpedAlready pushBack _thisObject;
+
+	// String with indentations
+	private _strIndent = format ["L-%1 ", (str _indentNum)];
+	if (_indentNum > 0) then {
+		for "_i" from 0 to (_indentNum-1) do {
+			_strIndent = _strIndent + "|  ";
+		};
+	};
+
+	// Bail if we've went too deep
+	if (_indentNum > _maxDepth) exitWith {
+		//diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1 ignored, max depth reached", _thisObject]));
+	};
+
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+
+	diag_log (_strIndent + (format ["[OOP]: Recursive variable dump of %1: %2", _thisObject, _memList]));
+	{
+		_x params ["_memName", "_memAttr"];
+		private _varValue = GETV(_thisObject, _memName);
+		[_thisObject, _memName, _varValue, _indentNum, _objsDumpedAlready, -1, _maxDepth] call OOP_dumpObjectVariable;
+	} forEach _memList;
+};
+
+// Used for recursive variable dump
+OOP_dumpObjectVariable = {
+	params ["_thisObject", "_memName", "_varValue", "_indentNum", "_objsDumpedAlready", "_elementID", "_maxDepth"];
+	private _strIndent = format ["L-%1 ", (str _indentNum)];
+	if (_indentNum > 0) then {
+		for "_i" from 0 to (_indentNum-1) do {
+			_strIndent = _strIndent + "|  ";
+		};
+	};
+	// Header of the line, printed after indents
+	private _header = if (_elementID != -1) then {
+		format ["element %1", _elementID];
+	} else {
+		_memName;
+	};
+
+	if (isNil "_varValue") then {
+		diag_log (_strIndent + format ["%1: %2", _header, "<nil> (isNil = true)"]);
+	} else {
+		// Resolve specific type
+		private _typeName = typeName _varValue;
+		switch (_typeName) do {
+			case "STRING": {
+				if(IS_OOP_OBJECT(_varValue)) then {
+					if ((toLower _varValue) in _objsDumpedAlready) then {
+						diag_log (_strIndent + format ["%1: (OOP Object): %2 (dumped already)", _header, _varValue]);
+					} else {
+						if (_indentNum + 1 > _maxDepth) then {
+						 	// We've gone too far, man.... time to stop
+							diag_log (_strIndent + format ["%1: (OOP Object): %2 (ignored, max depth reached)", _header, _varValue]);
+						} else {
+							diag_log (_strIndent + format ["%1: (OOP Object): %2", _header, _varValue]);
+							_objsDumpedAlready pushBack (toLower _varValue);
+							[_varValue, _maxDepth, _indentNum + 1, _objsDumpedAlready] call OOP_dumpAllVariablesRecursive;
+						};
+					};
+				} else {
+					diag_log (_strIndent + format ["%1: (%2) %3", _header, _typeName, _varValue]);
+				};
+			};
+			case "ARRAY": {
+				diag_log (_strIndent + format ["%1: array of %2 elements:", _header, count _varValue]);
+				{
+					[_thisObject, _header, _x, _indentNum + 1, _objsDumpedAlready, _forEachIndex, _maxDepth] call OOP_dumpObjectVariable;
+				} forEach _varValue;
+			};
+			default {
+				diag_log (_strIndent + format ["%1: (%2) %3", _header, _typeName, _varValue]);
+			};
+		};
+	};
+};
+
 #ifdef OFSTREAM_ENABLE
+// Dump to ofstream
+
+gCommaNewLine = "," + toString [10];
+#define COMMA_NL gCommaNewLine
+
 #define CLEAR() (ofstream_clear "dumped.json")
 #define DUMP(string) ("dumped.json" ofstream_dump (string))
-#define DUMP_STR(string) ("dumped.json" ofstream_dump ("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")
-gCommaNewLine = "," + toString [10];
-#define COMMA gCommaNewLine
+#define DUMP_STR(string) ("dumped.json" ofstream_dump (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """"))
+
+#else
+// Dump to diag_log
+
+gCommaNewLine = ",";
+#define COMMA_NL gCommaNewLine
+
+#define CLEAR() 
+#define DUMP(string) (diag_log ("_json_line_ " + string))
+#define DUMP_STR(string) (diag_log ("_json_line_ " + (("""" + (((((string) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
+
+#endif
+
+
+
+
 
 // Serializes a variable to json
 OOP_dumpVariableToJson = {
-	params [P_DYNAMIC("_variable"), P_BOOL("_recursive"), P_NUMBER("_depth")];
+	params [P_DYNAMIC("_value"), P_BOOL("_recursive"), P_NUMBER("_depth"), P_ARRAY("_objectsDumped")];
 	
-	switch (typeName _variable) do {
+	switch (typeName _value) do {
 		case "STRING": {
-			if(_variable find "o_" == 0) then {
-				[_variable, _recursive, _depth + 1] call OOP_objectToJson;
+			if(IS_OOP_OBJECT(_value)) then {
+				// Check if we have dumped it already
+				if ((tolower _value) in _objectsDumped) then {
+					// We have dumped it already
+					DUMP_STR(_value);
+				} else {
+					_objectsDumped pushBack (tolower _value); // Add ref to array so that we don't dump it again
+					[_value, _recursive, _depth + 1, _objectsDumped] call OOP_objectToJson;
+				};
 			} else {
-				DUMP_STR(_variable);
+				DUMP_STR(_value);
 			};
 		};
 		case "ARRAY": {
 			DUMP("[");
 			{ 
-				if(_forEachIndex != 0) then { DUMP(COMMA) };
+				if(_forEachIndex != 0) then { DUMP(COMMA_NL) };
 				[_x, _recursive, _depth] call OOP_dumpVariableToJson;
-			} forEach _variable;
+			} forEach _value;
 			DUMP("]");
 		};
 		case "SCALAR";
-		case "BOOL": { DUMP(str _variable) };
+		case "BOOL": { DUMP(str _value) };
 		// Other types we convert to a string (we need to do it twice because we want to wrap it in quotes, not just make it an sqf string)
-		default { DUMP_STR(str _variable) };
+		default { DUMP_STR(str _value) };
 	};
 };
 
 // Serializes all variables of an object to json
 OOP_objectToJson = {
-	params [P_THISOBJECT, P_BOOL("_recursive"), P_NUMBER("_depth")];
+	params [P_THISOBJECT, P_BOOL("_recursive"), P_NUMBER("_depth"), P_ARRAY("_objectsDumped")];
+
+	// Add ourselves to the array of dumped objects
+	_objectsDumped pushBack (tolower _thisObject);
 
 	if(_depth > 3) exitWith { DUMP(str "!recursion limit reached!") };
 
@@ -536,12 +656,16 @@ OOP_objectToJson = {
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	
 	DUMP("{");
+
+	// Dump self reference
 	private _str = format ['"_id": "%1"', _thisObject];
 	DUMP(_str);
+
+	// Iterate all object members/variables
 	{
 		_x params ["_memName", "_memAttr"];
 		
-		DUMP(COMMA);
+		DUMP(COMMA_NL);
 
 		private _varValue = GETV(_thisObject, _memName);
 		if (isNil "_varValue") then {
@@ -550,7 +674,7 @@ OOP_objectToJson = {
 		} else {
 			private _str = format['"%1":', _memName];
 			DUMP(_str);
-			[_varValue, _recursive, _depth] call OOP_dumpVariableToJson;
+			[_varValue, _recursive, _depth, _objectsDumped] call OOP_dumpVariableToJson;
 			// _json = _json + format ['"%1": %2', _memName, _valJson];
 		};
 	} forEach _memList;
@@ -566,7 +690,131 @@ OOP_dumpAsJson = {
 	DUMP(endl + endl + endl);
 };
 
+
+
+
+
+// Dumps to JSON, but always to diag_log
+
+#ifdef _SQF_VM
+#define __TEXT
+#else
+#define __TEXT text
 #endif
+
+gComma = toString [44];
+#define CLEAR() 
+#define DUMP_DIAGLOG(string) (diag_log __TEXT ("_json_line_ " + string))
+#define DUMP_STR_DIAGLOG(string) (diag_log __TEXT ("_json_line_ " + (("""" + (((((string select [0, 1024]) splitString "\") joinString "\\") splitString '"') joinString '\"')) + """")))
+
+// Serializes a variable to json
+OOP_dumpVariableToJson_diagLog = {
+	params [P_DYNAMIC("_value"), P_NUMBER("_depth"), P_NUMBER("_maxDepth"), P_ARRAY("_objectsDumped")];
+	
+	switch (typeName _value) do {
+		case "STRING": {
+			if(IS_OOP_OBJECT(_value)) then {
+				// Check if we have dumped it already
+				if (((tolower _value) in _objectsDumped) || (_depth > (_maxDepth-1))) then {
+					// We have dumped it already
+					DUMP_STR_DIAGLOG(_value);
+				} else {
+					_objectsDumped pushBack (tolower _value); // Add ref to array so that we don't dump it again
+					[_value, _depth + 1, _maxDepth, _objectsDumped] call OOP_objectToJson_diagLog;
+				};
+			} else {
+				DUMP_STR_DIAGLOG(_value);
+			};
+		};
+		case "ARRAY": {
+			DUMP_DIAGLOG("[");
+			{ 
+				if(_forEachIndex != 0) then { DUMP_DIAGLOG(gComma) };
+				[_x, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
+			} forEach _value;
+			DUMP_DIAGLOG("]");
+		};
+		case "SCALAR";
+		case "BOOL": { DUMP_DIAGLOG(str _value) };
+		// Other types we convert to a string (we need to do it twice because we want to wrap it in quotes, not just make it an sqf string)
+		default { DUMP_STR_DIAGLOG(str _value) };
+	};
+};
+
+// Serializes all variables of an object to json
+OOP_objectToJson_diagLog = {
+	params [P_THISOBJECT, P_NUMBER("_depth"), P_NUMBER("_maxDepth"), P_ARRAY("_objectsDumped")];
+
+	// Add ourselves to the array of dumped objects
+	_objectsDumped pushBack (tolower _thisObject);
+
+	// Get object's class
+	private _classNameStr = OBJECT_PARENT_CLASS_STR(_thisObject);
+	//Get member list of this class
+	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
+	
+	DUMP_DIAGLOG("{");
+
+	// Dump self reference
+	private _str = format ['"_id": "%1"', _thisObject];
+	DUMP_DIAGLOG(_str);
+
+	// Iterate all object members/variables
+	{
+		_x params ["_memName", "_memAttr"];
+		
+		DUMP_DIAGLOG(gComma);
+
+		private _varValue = GETV(_thisObject, _memName);
+		if (isNil "_varValue") then {
+			private _str = format['"%1": "<nil>"', _memName];
+			DUMP_DIAGLOG(_str);
+		} else {
+			private _str = format['"%1":', _memName];
+			DUMP_DIAGLOG(_str);
+			[_varValue, _depth, _maxDepth, _objectsDumped] call OOP_dumpVariableToJson_diagLog;
+			// _json = _json + format ['"%1": %2', _memName, _valJson];
+		};
+	} forEach _memList;
+
+	DUMP_DIAGLOG("}");
+};
+
+// Does a proper object crash dump, which we can later analyze with our tool
+OOP_objectCrashDump = {
+	params [P_THISOBJECT, P_NUMBER("_madDepth")];
+
+	// Critical section, we don't want to mix these diag_logs with others from other threads
+	_nul = isNil {
+		diag_log format ["[OOP] Starting object crash dump of: %1", _thisObject];
+
+		// Check if it's even an object
+		if (IS_OOP_OBJECT(_thisObject)) then {
+			// Mark JSON start
+			diag_log "_json_line_ _json_start_";
+
+			// Wrap into array
+			diag_log "_json_line_ [";
+
+			// Perform the actual json object dump
+			[_thisObject, 0, _madDepth] call OOP_objectToJson_diagLog; // Note the max depth
+
+			// Wrap into array
+			diag_log "_json_line_ ]";
+
+			// Mark JSON end
+			diag_log "_json_line_ _json_end_";
+		} else {
+			diag_log format ["[OOP] Error: %1 is not an object", _thisObject];
+		};
+	};
+};
+
+
+
+
+
+
 
 // ---- Remote execution ----
 // A remote code wants to execute something on this machine
