@@ -1,3 +1,15 @@
+# 0.27
+- Added: Improved interactions with civilian saboteurs
+- Added: Ctrl and shift serve as x5, x10 and x100 modifier keys for Arsenal
+- Added: 'External inventory to arsenal' action will also merge arsenals
+- Added: Added more buildable objects to Build UI
+- Added: Added basic backpacks and basic facewear to Arsenal
+- Added: On critical error the mission will create a crash dump of the object which caused error
+- Changed: improved police counterattack behavior
+- Changed: Arsenal transfer range increased to 20 meters
+- Changed: Changed calculations for city instability
+- Fixed: crash due to a missing include for UNDERCOVER_MONITOR
+
 # 0.26
 - Added: Scenario will actively check crashed scripts, on critical error it will perform an emergency save and prompt to restart.
 - Changed: Amount of guns per car/box was reduced by 50%
