@@ -244,11 +244,6 @@ g_UM_civBackpacks = [
     "ACE_TacticalLadder_Pack",
 	"B_Messenger_Black_F",
     "B_Messenger_Coyote_F",
-    "B_Messenger_Gray_F",
-    "B_Messenger_Gray_Medical_F",
-    "B_Messenger_IDAP_F",
-    "B_Messenger_IDAP_Medical_F",
-    "B_Messenger_IDAP_TrainingMines_F",
     "B_Messenger_Olive_F"
 ];
 
