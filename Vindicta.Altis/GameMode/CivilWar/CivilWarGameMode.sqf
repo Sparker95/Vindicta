@@ -433,7 +433,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		// Get nearby cities
 		private _cities = ( CALLSM2("Location", "nearLocations", _pos, _radius) select {CALLM0(_x, "getType") == LOCATION_TYPE_CITY} ) select {
 			private _gmdata = GETV(_x, "gameModeData");
-			CALLM0(_gmData, "getRecruitCount") > 0
+			CALLM0(_gmdata, "getRecruitCount") > 0
 		};
 
 		_cities
@@ -446,7 +446,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		private _sum = 0;
 		{
 			private _gmdata = GETV(_x, "gameModeData");
-			_sum = _sum + CALLM0(_gmData, "getRecruitCount");
+			_sum = _sum + CALLM0(_gmdata, "getRecruitCount");
 		} forEach _cities;
 
 		_sum
@@ -563,7 +563,6 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
 			_instability = 1 min (_activity * 2700 / (_cityRadius * _cityRadius));
 			diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
-			T_SETV_PUBLIC("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
 				case (_instability >= 1): { _state = CITY_STATE_IN_REVOLT; };
@@ -574,6 +573,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// If there is an enemy garrison occupying the city then it is suppressed
 			if(count CALLM(_city, "getGarrisons", [ENEMY_SIDE]) > 0) then {
 				_state = CITY_STATE_SUPPRESSED;
+				_instability = 0;
 			} else {
 				// If the location is spawned and there are twice as many friendly as enemy units then it is liberated
 				if(CALLM(_city, "isSpawned", [])) then {
@@ -583,20 +583,18 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 						_state = CITY_STATE_LIBERATED;
 					};
 				};
+				_instability = 1;
 			};
 		};
 
-		// Increase recruit count from instability, garrisoned
-		private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
-		private _nRecruitsMax = _cityCivCap; // It gives a quite good estimate for now
-		private _nRecruits = T_GETV("nRecruits");
-		if (_nRecruits < _nRecruitsMax && _instability > 0) then {
-			// Recruits is filled up in 4 hour when city is at liberated
-			private _recruitIncome = _dt * _instability * _nRecruitsMax * _garrisonedMult / (4 * 3600);
-			T_CALLM1("addRecruits", _recruitIncome);
-		};
-
+		T_SETV_PUBLIC("instability", _instability);
 		T_SETV_PUBLIC("state", _state);
+
+		// Add passive recruits
+		private _ratePerHour = T_CALLM1("getRecruitmentRate", _city);
+		private _recruitIncome = _dt * _ratePerHour * 3600;
+		T_CALLM2("addRecruits", _city, _recruitIncome);
+
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 		private _mrk = GETV(_city, "name") + "_gamemode_data";
@@ -621,15 +619,30 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		} forEach _ambientMissions;
 	} ENDMETHOD;
 
-	// Add/remove recruits
+	// Get the recruitment rate per hour
+	METHOD("getRecruitmentRate") {
+		private _rate = 0;
+		CRITICAL_SECTION {
+			params [P_THISOBJECT, P_OOP_OBJECT("_city")];
+			ASSERT_OBJECT_CLASS(_city, "Location");
+			T_PRVAR(instability);
 
+			private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
+			private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
+			// Recruits is filled up in 4 hour when city is at liberated
+			_rate = _instability * _nRecruitsMax * _garrisonedMult / 4;
+		};
+		_rate
+	} ENDMETHOD;
+
+	// Add/remove recruits
 	METHOD("addRecruits") {
 		CRITICAL_SECTION {
-			params [P_THISOBJECT, P_NUMBER("_amount")];
-
+			params [P_THISOBJECT, P_OOP_OBJECT("_city"), P_NUMBER("_amount")];
 			private _n = T_GETV("nRecruits");
-			_n = (_n + _amount) max 0;
-			SET_VAR_PUBLIC(_thisObject, "nRecruits", _n);
+			private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
+			_n = ((_n + _amount) max 0) min _nRecruitsMax;
+			T_SETV_PUBLIC("nRecruits", _n);
 		};
 	} ENDMETHOD;
 
@@ -639,7 +652,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 			private _n = T_GETV("nRecruits");
 			_n = (_n - _amount) max 0;
-			SET_VAR_PUBLIC(_thisObject, "nRecruits", _n);
+			T_SETV_PUBLIC("nRecruits", _n);
 		};
 	} ENDMETHOD;
 

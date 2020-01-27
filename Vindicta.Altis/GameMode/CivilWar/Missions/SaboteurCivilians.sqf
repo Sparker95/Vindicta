@@ -103,7 +103,7 @@ Saboteur_fnc_createBombWPs = {
 	};
 	private _wp = _grp addWaypoint [_hidePos, 0];
 	_wp setWaypointType "MOVE";
-	_wp setWaypointBehaviour "DANGER";
+	_wp setWaypointBehaviour "COMBAT";
 	_wp setWaypointSpeed "FULL";
 	_wp setWaypointStatements ["true", "this setVariable ['ready_to_bomb', true];"];
 
@@ -119,7 +119,7 @@ Saboteur_fnc_createBombWPs = {
 	// Run far away!
 	private _wp = _grp addWaypoint [[_tgtPos, 1000, 2000] call BIS_fnc_findSafePos, 0];
 	_wp setWaypointType "MOVE";
-	_wp setWaypointBehaviour "DANGER";
+	_wp setWaypointBehaviour "COMBAT";
 	_wp setWaypointSpeed "FULL";
 	_wp setWaypointStatements ["true", "deleteVehicle this;"];
 
