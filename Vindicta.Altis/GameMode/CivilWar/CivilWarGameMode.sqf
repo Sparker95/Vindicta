@@ -267,7 +267,7 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		//T_CALLM("updateEndCondition", []); // No need for it right now
 
 		T_PRVAR(lastUpdateTime);
-		private _dt = TIME_NOW - _lastUpdateTime;
+		private _dt = 0 max (TIME_NOW - _lastUpdateTime) min 120; // It can be negative at start??
 		T_SETV("lastUpdateTime", TIME_NOW);
 
 		// Update city stability and state
@@ -609,14 +609,14 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 		// Add passive recruits
 		private _ratePerHour = T_CALLM1("getRecruitmentRate", _city);
-		private _recruitIncome = _dt * _ratePerHour * 3600;
+		private _recruitIncome = _dt * _ratePerHour / 3600;
 		T_CALLM2("addRecruits", _city, _recruitIncome);
 
 		private _stateData = gCityStateData#_state;
 		private _status = ["STATUS", _stateData#0, _stateData#1];
 		private _mapUIInfo = [
 			["RECRUITS", str floor T_GETV("nRecruits")],
-			["  PER HOUR", str _recruitIncome],
+			["  PER HOUR", str _ratePerHour],
 			["INSTABILITY", str _instability],
 			_status
 		];
@@ -655,8 +655,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 
 			private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
 			private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
-			// Recruits is filled up in 4 hour when city is at liberated
-			_rate = 0 max (_instability * _nRecruitsMax * _garrisonedMult / 4);
+			// Recruits is filled up in 2 hours when city is at liberated
+			_rate = 0 max (_instability * _nRecruitsMax * _garrisonedMult / 2);
 		};
 		_rate
 	} ENDMETHOD;
