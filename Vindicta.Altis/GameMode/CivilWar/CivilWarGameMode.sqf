@@ -561,12 +561,13 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			// as we want instability to)
 			// TODO: add other interesting factors here to the instability rate.
 			// This equation makes required instability relative to area, and means you need ~100 activity at radius 300m and ~600 at radius 750m
-			_instability = 1 min (_activity * 900 / (_cityRadius * _cityRadius));
+			_instability = 1 min (_activity * 2700 / (_cityRadius * _cityRadius));
+			diag_log [GETV(_city, "name"), _instability, _activity, _cityRadius];
 			T_SETV_PUBLIC("instability", _instability);
 			// TODO: scale the instability limits using settings
 			switch true do {
 				case (_instability >= 1): { _state = CITY_STATE_IN_REVOLT; };
-				case (_instability > 0.5): { _state = CITY_STATE_AGITATED; };
+				case (_instability > 0.1): { _state = CITY_STATE_AGITATED; };
 				default { _state = CITY_STATE_STABLE; };
 			};
 		} else {
