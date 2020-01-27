@@ -36,6 +36,12 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("campaignStartDate", date);
 		T_SETV("gameModeClassName", "_noname_");
 
+		#ifndef RELEASE_BUILD
+		if(HAS_INTERFACE) then {
+			[] call pr0_fnc_initDebugMenu;
+		};
+		#endif
+
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
 	} ENDMETHOD;
@@ -230,7 +236,11 @@ CLASS("GameManager", "MessageReceiverEx")
 					T_GETV("saveID"),
 					date call misc_fnc_dateToISO8601];
 		};
+#ifdef RELEASE_BUILD
 		pr _recordNameFinal = _recordNameBase;
+#else
+		pr _recordNameFinal = format["DEV %1", _recordNameBase];
+#endif
 		pr _i = 1;
 		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
 			_recordNameFinal = format ["%1 %2", _recordNameBase, _i];

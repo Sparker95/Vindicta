@@ -198,11 +198,19 @@ CLASS("CivilWarGameMode", "GameModeBase")
 	/* protected virtual */ METHOD("initClientOnly") {
 		params [P_THISOBJECT];
 
-		["Game Mode", "Add activity here", {
+		["Game Mode", "Add 10 activity here", {
 			// Call to server to add the activity
 			[[getPos player], {
 				params ["_playerPos"];
 				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 10]);
+			}] remoteExec ["call", 0];
+		}] call pr0_fnc_addDebugMenuItem;
+
+		["Game Mode", "Add 50 activity here", {
+			// Call to server to add the activity
+			[[getPos player], {
+				params ["_playerPos"];
+				CALL_STATIC_METHOD("AICommander", "addActivity", [ENEMY_SIDE ARG _playerPos ARG 50]);
 			}] remoteExec ["call", 0];
 		}] call pr0_fnc_addDebugMenuItem;
 
@@ -215,6 +223,11 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				// Callback to client with the result
 				[format["Phase %1, local activity %2", GETV(gGameMode, "phase"), _activity]] remoteExec ["systemChat", _clientOwner];
 			}] remoteExec ["spawn", 0];
+		}] call pr0_fnc_addDebugMenuItem;
+
+		["Game Mode", "Update game mode now", {
+			// Call to server to get the info
+			REMOTE_EXEC_CALL_METHOD(gGameMode, "update", [], 0);
 		}] call pr0_fnc_addDebugMenuItem;
 
 	} ENDMETHOD;
@@ -497,6 +510,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 	VARIABLE("ambientMissions");
 	// Amount of available recruits
 	VARIABLE_ATTR("nRecruits", [ATTR_SAVE]);
+	// Map UI info
+	VARIABLE("mapUIInfo");
 
 	METHOD("new") {
 		params [P_THISOBJECT];
@@ -504,10 +519,12 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		T_SETV("instability", 0);
 		T_SETV("ambientMissions", []);
 		T_SETV("nRecruits", 0);
+		T_SETV("mapUIInfo", []);
 		if (IS_SERVER) then {	// Makes no sense for client
 			T_PUBLIC_VAR("state");
 			T_PUBLIC_VAR("instability");
 			T_PUBLIC_VAR("nRecruits");
+			T_PUBLIC_VAR("mapUIInfo");
 		};
 	} ENDMETHOD;
 
@@ -595,6 +612,15 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _recruitIncome = _dt * _ratePerHour * 3600;
 		T_CALLM2("addRecruits", _city, _recruitIncome);
 
+		private _stateData = gCityStateData#_state;
+		private _status = ["STATUS", _stateData#0, _stateData#1];
+		private _mapUIInfo = [
+			["RECRUITS", str floor T_GETV("nRecruits")],
+			["  PER HOUR", str _recruitIncome],
+			["INSTABILITY", str _instability],
+			_status
+		];
+		T_SETV_PUBLIC("mapUIInfo", _mapUIInfo);
 
 #ifdef DEBUG_CIVIL_WAR_GAME_MODE
 		private _mrk = GETV(_city, "name") + "_gamemode_data";
@@ -630,7 +656,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 			private _garrisonedMult = if(count CALLM(_city, "getGarrisons", [FRIENDLY_SIDE]) > 0) then { 1.5 } else { 1 };
 			private _nRecruitsMax = CALLM0(_city, "getCapacityCiv"); // It gives a quite good estimate for now
 			// Recruits is filled up in 4 hour when city is at liberated
-			_rate = _instability * _nRecruitsMax * _garrisonedMult / 4;
+			_rate = 0 max (_instability * _nRecruitsMax * _garrisonedMult / 4);
 		};
 		_rate
 	} ENDMETHOD;
@@ -686,15 +712,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _return = [];
 		CRITICAL_SECTION {
 			params [P_THISOBJECT];
-			private _stateData = gCityStateData#(T_GETV("state"));
-			private _status = ["STATUS", _stateData#0, _stateData#1];
-			_return = [
-				["RECRUITS", str floor T_GETV("nRecruits")],
-#ifdef DEBUG_CIVIL_WAR_GAME_MODE
-				["INSTABILITY", str T_GETV("instability")],
-#endif // DEBUG_CIVIL_WAR_GAME_MODE
-				_status
-			];
+			T_PRVAR(mapUIInfo);
+			_return = +_mapUIInfo;
 		};
 		_return
 	} ENDMETHOD;
@@ -733,6 +752,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		CALL_CLASS_METHOD("CivilWarLocationData", _thisObject, "postDeserialize", [_storage]);
 
 		T_SETV("ambientMissions", []);
+		T_SETV("mapUIInfo", []);
 
 		// Broadcast public variables
 		T_PUBLIC_VAR("nRecruits");

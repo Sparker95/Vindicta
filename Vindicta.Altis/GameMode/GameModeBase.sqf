@@ -200,10 +200,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
 
-			#ifndef RELEASE_BUILD
-			[] call pr0_fnc_initDebugMenu;
-			#endif
-
 			// Hide the allowed area markers
 			//#ifdef RELEASE_BUILD
 			CALLSM0("Location", "deleteEditorAllowedAreaMarkers");
