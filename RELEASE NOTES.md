@@ -8,7 +8,7 @@
 - Changed: improved police counterattack behavior
 - Changed: Arsenal transfer range increased to 20 meters
 - Changed: Changed calculations for city instability
-- Fixed: crash due to a missing include for UNDERCOVER_MONITOR
+- Fixed: critical crash due to a missing include for UNDERCOVER_MONITOR
 
 # 0.26
 - Added: Scenario will actively check crashed scripts, on critical error it will perform an emergency save and prompt to restart.
