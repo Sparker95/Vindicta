@@ -758,7 +758,7 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		T_PUBLIC_VAR("nRecruits");
 		T_PUBLIC_VAR("instability");
 		T_PUBLIC_VAR("state");
-		T_PUBLIC_VAR("mapUIInfo", []);
+		T_PUBLIC_VAR("mapUIInfo");
 
 		true
 	} ENDMETHOD;
