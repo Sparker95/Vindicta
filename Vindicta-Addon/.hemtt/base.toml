@@ -1,0 +1,8 @@
+name = "vindicta"
+prefix = "vindicta"
+author = "Vindicta Team"
+template = "cba"
+mainprefix = "z"
+files = ["mod.cpp"]
+folder_optionals = true
+sig_version = 3
