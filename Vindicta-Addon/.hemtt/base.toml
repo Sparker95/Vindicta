@@ -3,6 +3,17 @@ prefix = "vindicta"
 author = "Vindicta Team"
 template = "cba"
 mainprefix = "z"
-files = ["mod.cpp"]
 folder_optionals = true
 sig_version = 3
+
+files = [
+    "mod.cpp",
+    "logo_vindicta.paa"
+]
+
+keyname = "{{prefix}}_{{version}}"
+signame = "{{prefix}}_{{version}}-{{git \"id 8\"}}"
+
+releasebuild = [
+    "@zip vindicta_{{semver.major}}.{{semver.minor}}.{{semver.patch}}"
+]
