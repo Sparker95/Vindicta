@@ -80,12 +80,12 @@ CLASS("CivilWarGameMode", "GameModeBase")
 				SETV(_loc, "gameModeData", _cityData);
 			};
 			case LOCATION_TYPE_POLICE_STATION : {
-				private _data = NEW("CivilWarPoliceStationData", [_loc]);
+				private _data = NEW_PUBLIC("CivilWarPoliceStationData", [_loc]);
 				SETV(_loc, "gameModeData", _data);
 			};
 			default {
 				// Other locations get generic location game mode data
-				private _data = NEW("CivilWarLocationData", [_loc]);
+				private _data = NEW_PUBLIC("CivilWarLocationData", [_loc]);
 				SETV(_loc, "gameModeData", _data);
 			};
 		};

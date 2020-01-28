@@ -48,10 +48,14 @@ CLASS("LocationGameModeData", "MessageReceiverEx")
 	/* public virtual */ METHOD("getDisplayColor") {
 		params [P_THISOBJECT];
 		private _loc = T_GETV("location");
-		if(CALLM1(_loc, "hasGarrisons", side player)) then {
-			[side player, false] call BIS_fnc_sideColor
+		if(CALLM1(_loc, "hasGarrisons", FRIENDLY_SIDE)) then {
+			[FRIENDLY_SIDE, false] call BIS_fnc_sideColor
 		} else {
-			[1,1,1,1]
+			if(CALLM1(_loc, "hasGarrisons", ENEMY_SIDE)) then {
+				[ENEMY_SIDE, false] call BIS_fnc_sideColor
+			} else {
+				[1,1,1,1]
+			};
 		};
 	} ENDMETHOD;
 

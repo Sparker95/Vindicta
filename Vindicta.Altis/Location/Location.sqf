@@ -537,7 +537,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("getDisplayName") {
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
-		if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REPLACE >>>
+		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
+		// SAVEBREAK WITH
+		// if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REMOVE <<<
 			CALLM0(_gmdata, "getDisplayName")
 		} else {
 			T_GETV("name")
@@ -552,7 +556,11 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	METHOD("getDisplayColor") {
 		params [P_THISOBJECT];
 		pr _gmdata = T_GETV("gameModeData");
-		if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REPLACE >>>
+		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
+		// SAVEBREAK WITH
+		// if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REMOVE <<<
 			CALLM0(_gmdata, "getDisplayColor")
 		} else {
 			[1,1,1,1]
