@@ -616,8 +616,8 @@ CLASS("CivilWarCityData", "CivilWarLocationData")
 		private _status = ["STATUS", _stateData#0, _stateData#1];
 		private _mapUIInfo = [
 			["RECRUITS", str floor T_GETV("nRecruits")],
-			["  PER HOUR", str _ratePerHour],
-			["INSTABILITY", str _instability],
+			["  PER HOUR", _ratePerHour toFixed 1],
+			["INSTABILITY", format["%1%2", (_instability * 100) toFixed 0, "%"]],
 			_status
 		];
 		T_SETV_PUBLIC("mapUIInfo", _mapUIInfo);
