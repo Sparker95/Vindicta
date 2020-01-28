@@ -1,3 +1,6 @@
+# 0.29
+- Fixed: Error which results in wrong location name to be shown
+
 # 0.28
 - Fixed: Crashes caused by civilian saboteur scripts
 - Fixed: 'Any' shown instead of location name
