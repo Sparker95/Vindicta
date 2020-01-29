@@ -4,6 +4,12 @@ author = "Vindicta Team"
 template = "cba"
 mainprefix = "z"
 include = ["./include"]
-files = ["mod.cpp"]
+files = [
+    "mod.cpp",
+    "README.md",
+    "AUTHORS.txt",
+    "LICENSE",
+    "logo_vindicta.paa"
+]
 folder_optionals = true
 sig_version = 3
