@@ -35,7 +35,8 @@ Vindicta.Enoch/
 
 #Vindicta-Addon
 Vindicta-Addon/addons/*.pbo
-Vindicta-Addon/release
+Vindicta-Addon/releases
+Vindicta-Addon/keys
 
 Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/config.cpp
