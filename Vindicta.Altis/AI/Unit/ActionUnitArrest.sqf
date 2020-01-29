@@ -204,7 +204,7 @@ CLASS("ActionUnitArrest", "Action")
 							_pos_search = getpos _target;
 
 							// play animation if close enough, finishing the script
-							if (getPos _captor distance getPos _target < 1) then {
+							if (getPosVisual _captor distance getPosVisual _target < 1) then {
 								pr _currentWeapon = currentWeapon _captor;
 								pr _animation = call {
 									if(_currentWeapon isequalto primaryWeapon _captor) exitWith {
@@ -228,6 +228,7 @@ CLASS("ActionUnitArrest", "Action")
 								// WTF why do we have waitUntil here @Sen ?? :O
 								waitUntil {animationState _captor == _animation};
 								waitUntil {animationState _captor != _animation};
+								_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
 								
 								CALLSM1("ActionUnitArrest", "performArrest", _target);
 							};
@@ -285,7 +286,6 @@ CLASS("ActionUnitArrest", "Action")
 			[_target, true] call CivPresence_fnc_arrestUnit;
 		} else {
 			// Otherwise it's a player
-			_target playMoveNow "acts_aidlpsitmstpssurwnondnon01"; // sitting down and tied up
 
 			if (!isPlayer _target) then {
 				// Some inspiration from https://forums.bohemia.net/forums/topic/193304-hostage-script-using-holdaction-function-download/
@@ -297,7 +297,6 @@ CLASS("ActionUnitArrest", "Action")
 			};
 		
 			_target setVariable ["timeArrested", time+10];
-
 			REMOTE_EXEC_CALL_STATIC_METHOD("UndercoverMonitor", "onUnitArrested", [_target], _target, false);
 		};
 	} ENDMETHOD;
