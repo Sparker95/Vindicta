@@ -714,35 +714,48 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 		};
 
-		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
-
-			// addWeaponCargoGlobal, addItemCargoGlobal, addMagazineAmmoCargo, addBackpackCargoGlobal
-			private _savedInventory = [[],[],[],[]];
+		private _fn_loadInv = {
+			params ["_hO", "_inventoryArray"];
+			
 			private _weapItems = weaponsItemsCargo _hO;
 			{
 				_x params ["_weapon", "_muzzle", "_flashlight", "_optics", "_primaryMuzzleMagazine", "_secondaryMuzzleMagazine", "_bipod"];
 				if(!(_weapon isEqualTo "")) then {
-					[_savedInventory#0, _weapon, 1] call _fn_addToArray;
+					[_inventoryArray#0, _weapon, 1] call _fn_addToArray;
 				};
 				{
-					[_savedInventory#1, _x, 1] call _fn_addToArray;
+					[_inventoryArray#1, _x, 1] call _fn_addToArray;
 				} forEach ([_muzzle, _flashlight, _optics, _bipod] select {!(_x isEqualTo "")});
 				{
-					[_savedInventory#2, _x#0, _x#1] call _fn_addToArray;
+					[_inventoryArray#2, _x#0, _x#1] call _fn_addToArray;
 				} forEach ([_primaryMuzzleMagazine, _secondaryMuzzleMagazine] select {!(_x isEqualTo [])});
 			} foreach _weapItems;
 
 			{
-				[_savedInventory#2, _x#0, _x#1] call _fn_addToArray;
+				[_inventoryArray#2, _x#0, _x#1] call _fn_addToArray;
 			} forEach (magazinesAmmoCargo _hO);
 
 			{
-				[_savedInventory#1, _x, 1] call _fn_addToArray;
+				[_inventoryArray#1, _x, 1] call _fn_addToArray;
 			} forEach (itemCargo _hO);
 
 			{
-				[_savedInventory#3, _x, 1] call _fn_addToArray;
-			} forEach (backpackCargo _hO);			
+				[_inventoryArray#3, _x, 1] call _fn_addToArray;
+			} forEach (backpackCargo _hO);
+
+			// recurse into items that have their own inventories
+			{
+				_x params ["_type", "_h"];
+				[_h, _inventoryArray] call _fn_loadInv;
+			} forEach (everyContainer _hO);
+		};
+
+		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
+
+			// addWeaponCargoGlobal, addItemCargoGlobal, addMagazineAmmoCargo, addBackpackCargoGlobal
+			// ((everyContainer cursorObject)#0#1)
+			private _savedInventory = [[],[],[],[]];
+			[_hO, _savedInventory] call _fn_loadInv;
 			diag_log format["SAVED INV: %1", _savedInventory];
 			_data set [UNIT_DATA_ID_INVENTORY, _savedInventory];
 		};
