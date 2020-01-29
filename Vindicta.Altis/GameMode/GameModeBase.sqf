@@ -49,6 +49,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
+	VARIABLE_ATTR("playerSave", [ATTR_SAVE_VER(11)]);
+
 	METHOD("new") {
 		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
 								P_NUMBER("_enemyForcePercent")];
@@ -90,6 +92,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		T_SETV("enemyForceMultiplier", _enemyForcePercent/100);
 
 		T_SETV("locations", []);
+
+		T_SETV("playerSave", []);
 
 	} ENDMETHOD;
 

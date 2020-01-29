@@ -165,16 +165,16 @@ CLASS("GameManager", "MessageReceiverEx")
 		// Process all headers and check if these files can be loaded
 		pr _return = []; // Array with server's response
 		OOP_INFO_1("Checking %1 headers:", count _recordNamesAndHeaders);
-		pr _saveVersion = call misc_fnc_getSaveVersion;
+		pr _saveVersion = parseNumber (call misc_fnc_getSaveVersion);
 		{
 			_x params ["_recordName", "_header"];
 			OOP_INFO_2("  checking header: %1 of record: %2", _header, _recordName);
 
 			pr _errors = [];
-
-			if (GETV(_header, "saveVersion") != _saveVersion) then {
+			pr _headerSaveVersion = parseNumber GETV(_header, "saveVersion");
+			if (_headerSaveVersion > _saveVersion) then {
 				_errors pushBack INCOMPATIBLE_SAVE_VERSION;
-				OOP_INFO_2("  incompatible save version: %1, current: %2", GETV(_header, "saveVersion"), _saveVersion);
+				OOP_INFO_2("  incompatible save version: %1, current: %2", _headerSaveVersion, _saveVersion);
 				// No point checking further
 			} else {
 				if ((toLower GETV(_header, "worldName")) != (tolower worldName)) then {

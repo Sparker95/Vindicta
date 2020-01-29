@@ -1030,8 +1030,11 @@ OOP_serialize_attr = { // todo implement namespace
 	private _memList = GET_SPECIAL_MEM(_classNameStr, MEM_LIST_STR);
 	if (!_serializeAllVariables) then {
 		_memList = _memList select {
-			//_x params ["_varName", "_attributes"];
-			_attr in (_x#1)
+			_x params ["_varName", "_attributes"];
+			_attributes findIf {
+				(_x isEqualType 0 && {_x == _attr}) ||
+				{_x isEqualType [] && {_x#0 == _attr}}
+			} != NOT_FOUND
 		};
 	};
 
@@ -1059,17 +1062,30 @@ OOP_deserialize = { // todo implement namespace
 
 	private _memList = GET_SPECIAL_MEM(_classNameStr, SERIAL_MEM_LIST_STR);
 
-	private _iVarName = 0;
 
-	for "_i" from 2 to ((count _array) - 1) do {
-		private _value = _array select _i;
-		(_memList select _iVarName) params ["_varName"];
-		if (!(isNil "_value")) then {
-			FORCE_SET_MEM(_objNameStr, _varName, _value);
+	private _saveVersion = parseNumber (call misc_fnc_getSaveVersion);
+
+	private _savedVarIdx = 2;
+	for "_i" from 0 to count _memList - 1 do {
+		private _value = _array#_savedVarIdx;
+
+		//((count _array) - 1)
+		(_memList#_i) params ["_varName", "_attr"];
+		private _shouldLoad = (_attr findIf {
+			{_x isEqualTo ATTR_SAVE} 
+			|| {_x isEqualType [] && {_x#0 == ATTR_SAVE && _x#1 >= _saveVersion} }
+		} != NOT_FOUND);
+
+		if(_shouldLoad) then {
+			if (!(isNil "_value")) then {
+				FORCE_SET_MEM(_objNameStr, _varName, _value);
+			} else {
+				FORCE_SET_MEM(_objNameStr, _varName, nil);
+			};
+			_savedVarIdx = _savedVarIdx + 1;
 		} else {
 			FORCE_SET_MEM(_objNameStr, _varName, nil);
 		};
-		_iVarName = _iVarName + 1;
 	};
 };
 

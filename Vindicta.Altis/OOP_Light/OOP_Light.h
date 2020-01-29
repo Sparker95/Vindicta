@@ -471,6 +471,7 @@
 
 // For serialization when saving
 #define ATTR_SAVE			7
+#define ATTR_SAVE_VER(ver)	[7,ver]
 
 #define ATTR_USERBASE 1000
 
