@@ -42,8 +42,6 @@
 #define SUSP_FACEWEAR 0.05							// Suspiciousness gained for mil facewear
 #define SUSP_BACKPACK 0.1							// Suspiciousness gained for mil backpack
 
-
-
 // DO NOT MODIFY BELOW THIS LINE
 #define SUSP_VEH_DIST 300							// Distance at which suspiciousness starts increasing based on SUSP_VEH_DIST_MULT 
 #define SUSP_VEH_DIST_MIN 15						// Distance at which player is too close to be captive with suspicious gear in a vehicle
