@@ -836,6 +836,18 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	// |                         G E T  O F F I C E R  U N I T S
+	/*
+	Method: getOfficerUnits
+	Returns only officer units.
+
+	Returns: Array of officers.
+	*/
+	METHOD("getOfficerUnits") {
+		params [P_THISOBJECT];
+		T_CALLM1("findUnits", [[T_INF ARG T_INF_officer]]);
+	} ENDMETHOD;
+
 	// |                         G E T   V E H I C L E   U N I T S
 	/*
 	Method: getVehiucleUnits
@@ -2737,7 +2749,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach _query;
 
 		__MUTEX_UNLOCK;
-		_return		
+		_return
 	} ENDMETHOD;
 	
 	/*
@@ -2768,6 +2780,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("countInfantryUnits") {
 		params [P_THISOBJECT];
 		T_GETV("countInf")
+	} ENDMETHOD;
+
+	/*
+	Method: countOfficers
+	Returns the amount of officers
+
+	Returns: Number
+	*/
+	METHOD("countOfficers") {
+		params [P_THISOBJECT];
+		count T_CALLM0("getOfficerUnits");
 	} ENDMETHOD;
 
 	/*

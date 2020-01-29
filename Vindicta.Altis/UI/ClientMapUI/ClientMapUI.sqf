@@ -282,7 +282,7 @@ CLASS(CLASS_NAME, "")
 		if (isNull _ctrlGroup) then {
 			OOP_ERROR_0("Listbox button group was not found!");
 		} else {
-			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.25, 0.75], true] call ui_fnc_createButtonsInGroup;
+			pr _btns = [(finddisplay 12), "MUI_BUTTON_TXT", IDC_LOCP_LISTNBOX_BUTTONS_0, _ctrlGroup, [0.0, 0.2, 0.8], true] call ui_fnc_createButtonsInGroup;
 			_btns#0 ctrlSetText "Side";
 			_btns#1 ctrlSetText "Type";
 			_btns#2 ctrlSetText "Time";
@@ -1098,7 +1098,7 @@ http://patorjk.com/software/taag/#p=author&f=O8&t=GARRISON%0ASELECTED%0AMENU
 		private _allIntels = CALLM0(gIntelDatabaseClient, "getAllIntel");
 		OOP_INFO_1("ALL INTEL: %1", _allIntels);
 		pr _lnb = ([_mapDisplay, "CMUI_INTEL_LISTBOX"] call ui_fnc_findControl);
-		_lnb lnbSetColumnsPos [0, 0.3, 0.7];
+		_lnb lnbSetColumnsPos [0, 0.2, 0.8];
 		if (INTEL_PANEL_CLEAR in _flags) then { T_CALLM0("intelPanelClear"); };		
 
 		// Read some variables...
