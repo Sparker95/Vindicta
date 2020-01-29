@@ -727,6 +727,28 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					_hO addItemCargoGlobal [_x, 4 + ( ceil random 10)];
 				} forEach ["ItemMap", "ItemCompass", "ItemRadio" ];
 
+				// Add ACRE Radios
+				// We probably want them in all vehicles, not only in boxes
+				if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
+					// Array with item class name, count
+					pr _ACREclassNames = [
+										["ACRE_SEM52SL",2],
+										["ACRE_SEM70",4],
+										["ACRE_PRC77",1],
+										["ACRE_PRC343",6],
+										["ACRE_PRC152",3],
+										["ACRE_PRC148",3],
+										["ACRE_PRC117F",1],
+										["ACRE_VHF30108SPIKE",1],
+										["ACRE_VHF30108",3],
+										["ACRE_VHF30108MAST",1]
+									];
+					{
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+					} forEach _ACREclassNames;
+				};
+
 				// Add special items to cargo containers
 				if (_catID == T_CARGO) then {
 					// Add ACE medical items
@@ -803,27 +825,6 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 							_x params ["_itemName", "_itemCount"];
 							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
 						} forEach _classNames;
-					};
-
-					// Add ACRE Radios
-					if (isClass (configfile >> "CfgPatches" >> "acre_main")) then {
-						// Array with item class name, count
-						pr _ACREclassNames = [
-											["ACRE_SEM52SL",2],
-											["ACRE_SEM70",4],
-											["ACRE_PRC77",1],
-											["ACRE_PRC343",6],
-											["ACRE_PRC152",3],
-											["ACRE_PRC148",3],
-											["ACRE_PRC117F",1],
-											["ACRE_VHF30108SPIKE",1],
-											["ACRE_VHF30108",3],
-											["ACRE_VHF30108MAST",1]
-										];
-						{
-							_x params ["_itemName", "_itemCount"];
-							_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
-						} forEach _ACREclassNames;
 					};
 
 					// Add ADV medical items
