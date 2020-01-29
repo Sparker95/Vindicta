@@ -430,7 +430,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 	#define __MRK_DEST "_dst"
 	// Draws or undraws a route for a given array of positions
 	STATIC_METHOD("drawRoute") {
-		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]] ];
+		params ["_thisClass", ["_posArray", [], [[]]], "_uniqueString", ["_enable", false, [false]], ["_cycle", false, [false]], ["_drawSrcDest", false, [false]], ["_color", "ColorRed"] ];
 
 		//OOP_INFO_1("DRAW ROUTE: %1", _this);
 
@@ -463,8 +463,8 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 					_x params ["_name", "_pos", "_type", "_text"];
 					private _mrk = createMarkerLocal [_name, _pos];
 					_mrk setMarkerTypeLocal _type;
-					_mrk setMarkerColorLocal "ColorRed";
-					_mrk setMarkerAlphaLocal 1;
+					_mrk setMarkerColorLocal _color;
+					_mrk setMarkerAlphaLocal 0.7;
 					_mrk setMarkerTextLocal _text;
 					_markers pushBack _name; 
 				} forEach [[_uniqueString+__MRK_ROUTE+__MRK_SOURCE, _posSrc, "mil_start", "Source"], [_uniqueString+__MRK_ROUTE+__MRK_DEST, _posDst, "mil_end", "Destination"]];
@@ -475,7 +475,7 @@ http://patorjk.com/software/taag/#p=display&f=O8&t=DRAW%20ROUTE
 				pr _mrkName = _uniqueString + __MRK_ROUTE + (str _i);
 				pr _pos0 = _positions#_i;
 				pr _pos1 = _positions#(_i+1);
-				[_pos0, _pos1, "ColorRed", 20, _mrkName] call misc_fnc_mapDrawLineLocal;
+				[_pos0, _pos1, _color, 20, _mrkName] call misc_fnc_mapDrawLineLocal;
 				_markers pushBack _mrkName;
 			};
 		};
