@@ -140,14 +140,14 @@ T_DECLARE_ENTRY_REQ(T_VEH, T_VEH_truck_fuel,			37)		[T_FACTION_Guer, T_FACTION_M
 T_DECLARE_ENTRY_OPT(T_VEH, T_VEH_submarine,				38);	//Submarine
 
 //Vehicle subcategories sorted by required crew
-T_VEH_need_basic_crew = [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG, T_VEH_boat_armed]; //Vehicles that need a driver and a gunner, like MRAPs or boats
-T_VEH_need_crew = [T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MRLS, T_VEH_SPA, T_VEH_SPAA]; //Vehicles that need crew like T_INF_crew
-T_VEH_need_heli_crew = [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack]; //Vehicles that need crew like T_INF_pilot_heli and T_INF_crew_heli
-T_VEH_need_plane_crew = [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo]; //Vehicles that need crew like T_INF_pilot
-T_VEH_static = [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
+T_VEH_need_basic_crew 	= [T_VEH_MRAP_HMG, T_VEH_MRAP_GMG, T_VEH_boat_armed]; //Vehicles that need a driver and a gunner, like MRAPs or boats
+T_VEH_need_crew 		= [T_VEH_IFV, T_VEH_APC, T_VEH_MBT, T_VEH_MRLS, T_VEH_SPA, T_VEH_SPAA]; //Vehicles that need crew like T_INF_crew
+T_VEH_need_heli_crew 	= [T_VEH_heli_light, T_VEH_heli_heavy, T_VEH_heli_cargo, T_VEH_heli_attack]; //Vehicles that need crew like T_INF_pilot_heli and T_INF_crew_heli
+T_VEH_need_plane_crew 	= [T_VEH_plane_attack, T_VEH_plane_fighter, T_VEH_plane_cargo]; //Vehicles that need crew like T_INF_pilot
+T_VEH_static 			= [T_VEH_stat_HMG_high, T_VEH_stat_GMG_high, T_VEH_stat_HMG_low, T_VEH_stat_GMG_low, T_VEH_stat_AA, T_VEH_stat_AT, T_VEH_stat_mortar_light, T_VEH_stat_mortar_heavy]; //Static weapons
 
 // Vehicles which should be occupied when in combat
-T_VEH_combat = T_VEH_need_basic_crew + T_VEH_need_crew;
+T_VEH_combat 			= T_VEH_need_basic_crew + T_VEH_need_crew;
 
 // Ground vehicles with potential infantry transport capability
 T_VEH_ground_infantry_cargo =
@@ -227,7 +227,7 @@ T_DECLARE_ENTRY_REQ(T_CARGO, T_CARGO_box_big,			 3)		[T_FACTION_Civ, T_FACTION_G
 // = = = = = = = = = = G R O U P S = = = = = = = = = = 
 
 //Groups
-T_DECLARE_CATEGORY(T_GROUP, 4, 13);// ID 4, size 13
+T_DECLARE_CATEGORY(T_GROUP, 4, 14);// ID 4, size 13
 
 T_DECLARE_ENTRY_REQ(T_GROUP, T_GROUP_default,			 0)	[T_FACTION_Civ, T_FACTION_Guer, T_FACTION_Military, T_FACTION_Police]; //Default group if group is not specified
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_AA_team,		 1);
@@ -242,6 +242,7 @@ T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_recon_squad,	 9);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_recon_team,	10);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_sentry,		11);
 T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_sniper_team,	12);
+T_DECLARE_ENTRY_OPT(T_GROUP, T_GROUP_inf_officer,		13);
 
 
 
@@ -307,11 +308,12 @@ T_PL_planes = //Planes including drones
 	[T_DRONE, T_DRONE_plane_unarmed]
 ];
 
-T_PL_inf_main = //Main infantry (excluding recon and divers)
+// Main infantry -- excluding officers, recon, and divers
+// 
+T_PL_inf_main =
 [
 	[T_INF, T_INF_SL],
 	[T_INF, T_INF_TL],
-	[T_INF, T_INF_officer],
 	[T_INF, T_INF_GL],
 	[T_INF, T_INF_rifleman],
 	[T_INF, T_INF_marksman],
@@ -332,6 +334,25 @@ T_PL_inf_main = //Main infantry (excluding recon and divers)
 	[T_INF, T_INF_pilot_heli],
 	[T_INF, T_INF_survivor],
 	[T_INF, T_INF_unarmed]
+];
+
+// Special infantry -- officers, recon, and divers
+// These will not be sent places without explicit orders
+T_PL_inf_special = 
+[
+	[T_INF, T_INF_officer],
+
+	[T_INF, T_INF_recon_TL],
+	[T_INF, T_INF_recon_rifleman],
+	[T_INF, T_INF_recon_medic],
+	[T_INF, T_INF_recon_exp],
+	[T_INF, T_INF_recon_LAT],
+	[T_INF, T_INF_recon_marksman],
+	[T_INF, T_INF_recon_JTAC],
+
+	[T_INF, T_INF_diver_TL],
+	[T_INF, T_INF_diver_rifleman],
+	[T_INF, T_INF_diver_exp]
 ];
 
 // Cargo boxes

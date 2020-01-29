@@ -31,7 +31,7 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 		_buildings = _buildings apply {[abs ((boundingBoxReal _x) select 1 select 2), _x]};
 		_buildings sort false;
 		pr _groups = +CALLM0(_gar, "getGroups");
-		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
+		pr _groupsInf = _groups select { CALLM0(_x, "getType") in [GROUP_TYPE_BUILDING_SENTRY, GROUP_TYPE_IDLE, GROUP_TYPE_PATROL]};
 
 		// Order to some groups to occupy buildings
 		// This is obviously ignored if the garrison is not at a location
@@ -70,6 +70,10 @@ CLASS(THIS_ACTION_NAME, "ActionGarrisonBehaviour")
 					
 					case GROUP_TYPE_PATROL: {
 						_args = ["GoalGroupRegroup", 0, [["combatMode", "RED"]], _AI];
+					};
+					
+					case GROUP_TYPE_BUILDING_SENTRY: {
+						_args = ["GoalGroupRegroup", 0, [], _AI];
 					};
 				};
 				
