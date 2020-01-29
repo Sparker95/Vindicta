@@ -121,6 +121,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_data set [UNIT_DATA_ID_GROUP, ""];
 		_data set [UNIT_DATA_ID_LOADOUT, _loadout];
 		_data set [UNIT_DATA_ID_WEAPONS, _weapons];
+		_data set [UNIT_DATA_ID_INVENTORY, []];
 		if (!isNull _hO) then {
 			_data set [UNIT_DATA_ID_OBJECT_HANDLE, _hO];
 		};
@@ -143,6 +144,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			CALLM0(_thisObject, "initObjectDynamicSimulation");
 			CALLM0(_thisObject, "applyInfantryWeapons");
 		};
+
 	} ENDMETHOD;
 
 
@@ -474,8 +476,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			CRITICAL_SECTION_END
 			// !! Functions below might need to lock the garrison mutex, so we release the critical section
 
-			// Initialize cargo if there is no limited arsenal
-			CALLM0(_thisObject, "initObjectInventory");
+			// Try and restore saved inventory, otherwise generate one
+			if(!T_CALLM0("restoreInventory")) then {
+				// Initialize cargo if there is no limited arsenal
+				CALLM0(_thisObject, "initObjectInventory");
+			};
 
 			// Set build resources
 			if (_buildResources > 0 && {T_CALLM0("canHaveBuildResources")}) then {
@@ -632,6 +637,114 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_hO triggerDynamicSimulation false;
 				_hO enableDynamicSimulation false;
 			};
+		};
+	} ENDMETHOD;
+
+	METHOD("restoreInventory") {
+		params [P_THISOBJECT];
+		T_PRVAR(data);
+
+		// Bail if not spawned
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {};
+
+		pr _catid = _data select UNIT_DATA_ID_CAT;
+
+		pr _savedInventory = if(count _data > UNIT_DATA_ID_INVENTORY) then {
+			_data#UNIT_DATA_ID_INVENTORY
+		} else {
+			[]
+		};
+		if (_catID in [T_VEH, T_DRONE, T_CARGO] && count _savedInventory == 4) then {
+			diag_log format["RESTORING INV: %1", _savedInventory];
+			// Clear cargo
+			clearWeaponCargoGlobal _hO;
+			clearItemCargoGlobal _hO;
+			clearMagazineCargoGlobal _hO;
+			clearBackpackCargoGlobal _hO;
+			//weapons
+			{
+				_hO addWeaponCargoGlobal _x;
+			} forEach _savedInventory#0;
+			//items
+			{
+				_hO addItemCargoGlobal _x;
+			} forEach _savedInventory#1;
+			//magazines
+			{
+				_x params ["_item", "_amount"];
+				private _count = getNumber (configfile >> "CfgMagazines" >> _item >> "count");
+				private _full = floor (_amount / _count);
+				if(_full > 0) then {
+					_hO addMagazineAmmoCargo [_item, _full, _count];
+				};
+				private _remainder = floor(_amount % _count);
+				if(_remainder > 0) then {
+					_hO addMagazineAmmoCargo [_item, 1, _remainder];
+				};
+			} forEach _savedInventory#2;
+			//backpack
+			{
+				_hO addBackpackCargoGlobal _x;
+			} forEach _savedInventory#3;
+
+			true
+		} else {
+			false
+		}
+	} ENDMETHOD;
+
+	METHOD("saveInventory") {
+		params [P_THISOBJECT];
+		T_PRVAR(data);
+		
+		// Bail if not spawned
+		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
+		if (isNull _hO) exitWith {};
+
+		pr _catid = _data select UNIT_DATA_ID_CAT;
+
+		private _fn_addToArray = {
+			params ["_array", "_item", "_count"];
+			private _existing = _array findIf { _x#0 isEqualTo _item };
+			if(_existing != NOT_FOUND) then {
+				_array#_existing set [1, _array#_existing#1 + _count];
+			} else {
+				_array pushBack [_item, _count];
+			};
+		};
+
+		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
+
+			// addWeaponCargoGlobal, addItemCargoGlobal, addMagazineAmmoCargo, addBackpackCargoGlobal
+			private _savedInventory = [[],[],[],[]];
+			private _weapItems = weaponsItemsCargo _hO;
+			{
+				_x params ["_weapon", "_muzzle", "_flashlight", "_optics", "_primaryMuzzleMagazine", "_secondaryMuzzleMagazine", "_bipod"];
+				if(!(_weapon isEqualTo "")) then {
+					[_savedInventory#0, _weapon, 1] call _fn_addToArray;
+				};
+				{
+					[_savedInventory#1, _x, 1] call _fn_addToArray;
+				} forEach ([_muzzle, _flashlight, _optics, _bipod] select {!(_x isEqualTo "")});
+				{
+					[_savedInventory#2, _x#0, _x#1] call _fn_addToArray;
+				} forEach ([_primaryMuzzleMagazine, _secondaryMuzzleMagazine] select {!(_x isEqualTo [])});
+			} foreach _weapItems;
+
+			{
+				[_savedInventory#2, _x#0, _x#1] call _fn_addToArray;
+			} forEach (magazinesAmmoCargo _hO);
+
+			{
+				[_savedInventory#1, _x, 1] call _fn_addToArray;
+			} forEach (itemCargo _hO);
+
+			{
+				[_savedInventory#3, _x, 1] call _fn_addToArray;
+			} forEach (backpackCargo _hO);			
+			diag_log format["SAVED INV: %1", _savedInventory];
+			_data set [UNIT_DATA_ID_INVENTORY, _savedInventory];
 		};
 	} ENDMETHOD;
 
@@ -884,6 +997,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				_buildResources = T_CALLM0("_getBuildResourcesSpawned");
 				_data set [UNIT_DATA_ID_BUILD_RESOURCE, _buildResources];
 			};
+
+			// Save the inventory (for cargo and vics)
+			T_CALLM0("saveInventory");
 
 			// Deinitialize the limited arsenal
 			T_CALLM0("limitedArsenalOnDespawn");
@@ -1939,6 +2055,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _spawned = T_CALLM0("isSpawned");
 
 		if (_spawned) then {
+			// Save the inventory (for cargo and vics)
+			T_CALLM0("saveInventory");
+
 			T_CALLM0("limitedArsenalSyncToUnit");
 		};
 
@@ -1969,6 +2088,11 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		_serial set [UNIT_DATA_ID_MUTEX, MUTEX_NEW()];
 		_serial set [UNIT_DATA_ID_OBJECT_HANDLE, objNull];
 		_serial set [UNIT_DATA_ID_AI, ""];
+		// SAVEBREAK DELETE >>> 
+		if(count _serial < UNIT_DATA_SIZE) then {
+			_serial set[UNIT_DATA_ID_INVENTORY, []];
+		};
+		// SAVEBREAK DELETE <<<
 		T_SETV("data", _serial);
 		true
 	} ENDMETHOD;
