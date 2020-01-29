@@ -61,7 +61,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 
 		// If the detachment died then we return the appropriate state
 		if(CALLM(_fromGarr, "isDead", [])) exitWith { 
-			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't merge to target", [_world]+[_action]+[LABEL(_fromGarr)]);
+			OOP_WARNING_MSG("[w %1 a %2] Garrison %3 is dead so can't merge to target", [_world ARG _action ARG LABEL(_fromGarr)]);
 			T_GETV("fromGarrDeadState")
 		};
 
@@ -77,15 +77,19 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 				ASSERT_OBJECT(_toGarr);
 				// Check if the target garrison is dead
 				_targetDead = if(CALLM(_toGarr, "isDead", []) && (IS_NULL_OBJECT(CALLM0(_toGarr, "getLocation"))) ) then {
-					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]);
+					OOP_WARNING_MSG("[w %1 a %2] Garrison %3 can't merge to dead garrison %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr)]);
 					true
 				} else {
 					// If target is alive then do the merge
 					if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
+						OOP_INFO_MSG("[w %1 a %2] %3 comp %4", [_world ARG _action ARG LABEL(_fromGarr) ARG GETV(_fromGarr, "composition")]);
+						OOP_INFO_MSG("[w %1 a %2] %3 before comp %4", [_world ARG _action ARG LABEL(_toGarr) ARG GETV(_toGarr, "composition")]);
 						CALLM(_fromGarr, "mergeSim", [_toGarr]);
+						OOP_INFO_MSG("[w %1 a %2] %3 after comp %4", [_world ARG _action ARG LABEL(_toGarr) ARG GETV(_toGarr, "composition")]);
 					} else {
 						CALLM(_fromGarr, "mergeActual", [_toGarr]);
 					};
+					OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr)]);
 					false
 				};
 			};
@@ -105,7 +109,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 					} else {
 						CALLM(_fromGarr, "mergeActual", [_toGarr]);
 					};
-					OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4 (at %5)", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_toGarr)]+[LABEL(_loc)]);
+					OOP_INFO_MSG("[w %1 a %2] Merged %3 to %4 (at %5)", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_toGarr) ARG LABEL(_loc)]);
 				} else {
 					// Otherwise we join the location ourselves
 					if(GETV(_world, "type") != WORLD_TYPE_REAL) then {
@@ -113,7 +117,7 @@ CLASS("AST_MergeOrJoinTarget", "ActionStateTransition")
 					} else {
 						CALLM(_fromGarr, "joinLocationActual", [_loc]);
 					};
-					OOP_INFO_MSG("[w %1 a %2] Joined %3 to %4", [_world]+[_action]+[LABEL(_fromGarr)]+[LABEL(_loc)]);
+					OOP_INFO_MSG("[w %1 a %2] Joined %3 to %4", [_world ARG _action ARG LABEL(_fromGarr) ARG LABEL(_loc)]);
 				};
 			};
 			default {
@@ -167,8 +171,7 @@ AST_MergeOrJoinTarget_test_fn = {
 ["AST_MergeOrJoinTarget.apply(sim, garrison=dead)", {
 	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_FUTURE]);
 	private _garrison = NEW("GarrisonModel", [_world ARG "<undefined>"]);
-	#define TARGEt_POS [1, 2, 3]
-	private _endState = [_world, _garrison, [TARGET_TYPE_POSITION, TARGET_POS]] call AST_MergeOrJoinTarget_test_fn;
+	private _endState = [_world, _garrison, [TARGET_TYPE_POSITION, [1, 2, 3]]] call AST_MergeOrJoinTarget_test_fn;
 	["State after apply is correct", _endState == CMDR_ACTION_STATE_FAILED_GARRISON_DEAD] call test_Assert;
 }] call test_AddTest;
 

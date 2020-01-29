@@ -8,10 +8,6 @@ Author: Bill 2018 (CmdrAI logic, planning, world model, action generation, etc)
 Sparker 12.11.2018 (initial file)
 */
 
-#ifndef RELEASE_BUILD
-#define DEBUG_COMMANDER
-#endif
-
 // Ported from CmdrAI
 #define ACTION_SCORE_CUTOFF 0.001
 #define REINF_MAX_DIST 4000
@@ -166,6 +162,12 @@ CLASS("AICommander", "AI")
 	METHOD("_initPlanActionGenerators") {
 		params [P_THISOBJECT];
 
+#ifdef REINFORCEMENT_TESTING
+		pr _value = [
+			// High priority
+			["generateOfficerAssignmentActions"]
+		];
+#else
 		pr _value = [
 			// High priority
 			["generateAttackActions"],
@@ -174,9 +176,11 @@ CLASS("AICommander", "AI")
 			"generateConstructRoadblockActions",
 			"generatePatrolActions",
 			"generateReinforceActions",
+			"generateOfficerAssignmentActions",
 			"generateTakeOutpostActions"
 			]
 		];
+#endif
 		T_SETV("planActionGenerators", _value);
 		T_SETV("planActionGeneratorIDs", [0 ARG 0]);
 		T_SETV("planPhase", 0);
@@ -238,7 +242,7 @@ CLASS("AICommander", "AI")
 		T_SETV("state", "model planning");
 		T_SETV("stateStart", TIME_NOW);
 		#endif
-		
+
 		#ifndef CMDR_AI_NO_PLAN
 		if(T_GETV("planningEnabled")) then {
 			T_CALLM("plan", [_worldModel]);
@@ -270,7 +274,7 @@ CLASS("AICommander", "AI")
 	// ----------------------------------------------------------------------
 	// |                    G E T   M E S S A G E   L O O P
 	// ----------------------------------------------------------------------
-	
+
 	METHOD("getMessageLoop") {
 		params [P_THISOBJECT];
 		
@@ -327,7 +331,7 @@ CLASS("AICommander", "AI")
 		params [P_THISCLASS, P_SIDE("_side")];
 		private _thisObject = CALL_STATIC_METHOD("AICommander", "getAICommander", [_side]);
 		if(!IS_NULL_OBJECT(_thisObject)) then {
-			ASSERT_THREAD;
+			ASSERT_THREAD(_thisObject);
 			GETV(_thisObject, "cmdrStrategy")
 		} else {
 			gCmdrStrategyDefault
@@ -345,7 +349,7 @@ CLASS("AICommander", "AI")
 	METHOD("setCmdrStrategy") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_strategy")];
 		ASSERT_OBJECT_CLASS(_strategy, "CmdrStrategy");
-		ASSERT_THREAD;
+		ASSERT_THREAD(_thisObject);
 		T_SETV_REF("cmdrStrategy", _strategy)
 	} ENDMETHOD;
 
@@ -1903,18 +1907,13 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
 			// Must be on our side and not involved in another action
 			// TODO: We should be able to redirect for QRFs. Perhaps it 
-			if((GETV(_x, "side") != _side) or { CALLM(_x, "isBusy", []) }) then {
-				false
-			} else {
-				// Not involved in another reinforce action
-				//private _action = CALLM(_x, "getAction", []);
-				//if(!IS_NULL_OBJECT(_action) and { OBJECT_PARENT_CLASS_STR(_action) == "ReinforceCmdrAction" }) exitWith {false};
-
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
-
+			(GETV(_x, "side") == _side) and
+			{ !CALLM(_x, "isBusy", []) } and
+			// Need officers for offensive actions
+			{ CALLM0(_x, "countOfficers") >= 1 } and 
+			{
 				// Must have at least a minimum strength of twice min efficiency
-				//private _eff = GETV(_x, "efficiency");
-				// !CALLM(_x, "isDepleted", []) and 
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
 				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
 			}
 		};
@@ -1967,15 +1966,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			GETV(_x, "side") == _side and 
 			{ !CALLM(_x, "isBusy", []) } and
 			{
-				// Not involved in another reinforce action
-				//private _action = CALLM(_x, "getAction", []);
-				//if(!IS_NULL_OBJECT(_action) and { OBJECT_PARENT_CLASS_STR(_action) == "ReinforceCmdrAction" }) exitWith {false};
-
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
-
 				// Must have at least a minimum strength of twice min efficiency
-				//private _eff = GETV(_x, "efficiency");
-				// !CALLM(_x, "isDepleted", []) and 
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
 				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
 			}
 		};
@@ -1991,7 +1983,6 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			} and 
 			{
 				// Must be under desired efficiency by at least min reinforcement size
-				// private _eff = GETV(_x, "efficiency");
 				private _overDesiredEff = CALLM(_worldFuture, "getOverDesiredEff", [_x]);
 				!EFF_GT(_overDesiredEff, EFF_MUL_SCALAR(EFF_MIN_EFF, -1))
 			}
@@ -2026,6 +2017,83 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		_actions
 	} ENDMETHOD;
 
+
+	/*
+	Method: (private) generateOfficerAssignmentActions
+	Generate a list of officer assignments required (from aifields to outposts without officers)
+	
+	Parameters:
+		_worldNow - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+		_worldFuture - <Model.WorldModel>, now sim world (see <Model.WorldModel> for details)
+
+	Returns: Array of <CmdrAction.Actions.ReinforceCmdrAction>
+	*/
+	/* private */ METHOD("generateOfficerAssignmentActions") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_worldNow"), P_OOP_OBJECT("_worldFuture")];
+		T_PRVAR(side);
+
+		// Limit amount of concurrent actions
+		T_PRVAR(activeActions);
+		pr _count = {GET_OBJECT_CLASS(_x) == "ReinforceCmdrAction"} count _activeActions;
+		//if (_count >= CMDR_MAX_REINFORCE_ACTIONS) exitWith {[]};
+
+		// Take src garrisons from now, we don't want to consider future resource availability, only current.
+		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", []) select { 
+			// Must be on our side and not involved in another action
+			(GETV(_x, "side") == _side) and 
+			{ !CALLM0(_x, "isBusy") } and
+			// Has a spare officer
+			{ CALLM0(_x, "countOfficers") > 1 } and
+			// At a fixed location
+			{ CALLM0(_x, "getLocation") != NULL_OBJECT } and
+			// Has some forces to spare for escort
+			{
+				// Must have at least a minimum strength of twice min efficiency
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
+				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
+			};
+		};
+
+		// Take tgt garrisons from future, so we take into account all in progress reinforcement actions.
+		private _tgtGarrisons = CALLM(_worldFuture, "getAliveGarrisons", []) select { 
+			// Must be on our side
+			(GETV(_x, "side") == _side) and 
+			// At a fixed outpost location
+			{ 
+				private _loc = CALLM0(_x, "getLocation");
+				(_loc != NULL_OBJECT) and 
+				{
+					GETV(_loc, "type") in [LOCATION_TYPE_BASE, LOCATION_TYPE_AIRPORT, LOCATION_TYPE_OUTPOST]
+				}
+			} and
+			// And have no officers
+			{ CALLM0(_x, "countOfficers") == 0 }
+		};
+
+		private _actions = [];
+		{
+			private _srcId = GETV(_x, "id");
+			private _srcFac = GETV(_x, "faction");
+			{
+				private _tgtId = GETV(_x, "id");
+				private _tgtFac = GETV(_x, "faction");
+				if(_srcId != _tgtId and {_srcFac == _tgtFac}) then {
+					private _params = [_srcId, _tgtId];
+					_actions pushBack (NEW("ReinforceCmdrAction", _params));
+				};
+			} forEach _tgtGarrisons;
+		} forEach _srcGarrisons;
+
+		OOP_INFO_MSG("Considering %1 Officer Assignment actions from %2 garrisons to %3 garrisons", [count _actions ARG count _srcGarrisons ARG count _tgtGarrisons]);
+
+		#ifdef OOP_INFO
+		private _str = format ["{""cmdrai"": {""side"": ""%1"", ""action_name"": ""Officer Assignment"", ""potential_action_count"": %2, ""src_garrisons"": %3, ""tgt_garrisons"": %4}}", _side, count _actions, count _srcGarrisons, count _tgtGarrisons];
+		OOP_INFO_MSG(_str, []);
+		#endif
+
+		_actions
+	} ENDMETHOD;
+
 	/*
 	Method: (private) generateTakeOutpostActions
 	Generate a list of possible/reasonable take outpost actions that could be performed. It will exclude ones that 
@@ -2050,13 +2118,15 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 
 		// Take src garrisons from now, we don't want to consider future resource availability, only current.
 		private _srcGarrisons = CALLM(_worldNow, "getAliveGarrisons", [["military"]]) select { 
-			private _potentialSrcGarr = _x;
 			// Must be not already busy 
-			!CALLM(_potentialSrcGarr, "isBusy", []) and 
+			!CALLM(_x, "isBusy", []) and 
+			// Must have an officer for an offensive action
+			{ CALLM0(_x, "countOfficers") >= 1 } and 
 			// Must be at a location
-			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
+			{ !IS_NULL_OBJECT(CALLM(_x, "getLocation", [])) } and 
 			// Must not be source of another inprogress take location mission
 			{ 
+				private _potentialSrcGarr = _x;
 				T_PRVAR(activeActions);
 				_activeActions findIf {
 					GET_OBJECT_CLASS(_x) == "TakeLocationCmdrAction" and
@@ -2065,8 +2135,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			} and
 			// Must have minimum efficiency available
 			{
-				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_potentialSrcGarr]);
 				// Must have at least a minimum available eff
+				private _overDesiredEff = CALLM(_worldNow, "getOverDesiredEff", [_x]);
 				EFF_GTE(_overDesiredEff, EFF_MIN_EFF)
 			}
 		};
@@ -2206,6 +2276,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			private _potentialSrcGarr = _x;
 			// Must be not already busy 
 			!CALLM(_potentialSrcGarr, "isBusy", []) and 
+			// Must have an officer
+			{ CALLM0(_x, "countOfficers") >= 1 } and 
 			// Must be at a location
 			{ !IS_NULL_OBJECT(CALLM(_potentialSrcGarr, "getLocation", [])) } and 
 			// Must not be source of another mission
@@ -2280,8 +2352,11 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _datePrevReinf = T_GETV("datePrevExtReinf");
 		pr _dateNextReinf = +_datePrevReinf;
 		_dateNextReinf set [4, _dateNextReinf#4 + CMDR_EXT_REINF_INTERVAL_MINUTES];
+
+		#ifndef REINFORCEMENT_TESTING
 		if ( (dateToNumber date) < (dateToNumber _dateNextReinf) ) exitWith {
 		};
+		#endif
 
 		OOP_INFO_0("UPDATE EXTERNAL REINFORCEMENT");
 
@@ -2291,10 +2366,10 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _reinfLocations = CALLM(_model, "getLocations", []) select {
 			pr _garModel = CALLM(_x, "getGarrison", [_side]);
 
-			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT) &&
-			{!IS_NULL_OBJECT(_garModel)} &&
-			{pr _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")} &&
-			{pr _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < CMDR_MAX_INF_AIRFIELD} // todo find a better limit?
+			(GETV(_x, "type") == LOCATION_TYPE_AIRPORT)
+			&& {!IS_NULL_OBJECT(_garModel)}
+			&& {pr _actual = GETV(_garModel, "actual"); !CALLM0(_actual, "isSpawned")}
+			//&& {pr _actual = GETV(_garModel, "actual"); CALLM0(_actual, "countInfantryUnits") < CMDR_MAX_INF_AIRFIELD} // todo find a better limit?
 		};
 
 		// Bail if we can't bring reinforcements anywhere
@@ -2336,13 +2411,8 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 			_effRequiredAll set [T_EFF_crew, _maxInfOnMap];
 		};
 
-		// Sum up efficiency of all garrisons
+		// Sum up efficiency of all garrisons and guess how many officers we want
 		pr _effAll = +T_EFF_null;
-		{
-			if (!CALLM0(_x, "isDestroyed")) then {
-				[_effAll, CALLM0(_x, "getEfficiencyTotal")] call eff_fnc_acc_add;
-			};
-		} forEach T_GETV("garrisons");
 
 		OOP_INFO_1("  All required eff: %1", _effRequiredAll);
 		OOP_INFO_1("  All current  eff: %1", _effAll);
@@ -2385,6 +2455,7 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 		pr _templateName = CALLM2(gGameMode, "getTemplateName", T_GETV("side"), "military");
 		pr _t = [_templateName] call t_fnc_getTemplate;
 		if (_infMoreRequired > 0) then {
+			pr _squadTypes = [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
 			OOP_INFO_0("  Trying to add more infantry...");
 			{
 				pr _locModel = _x;
@@ -2392,16 +2463,17 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
 				pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
 				if (!IS_NULL_OBJECT(_garModel)) then {
+
 					pr _gar = GETV(_garModel, "actual");
 					pr _nInf = CALLM0(_gar, "countInfantryUnits");
 					pr _nInfMax = CMDR_MAX_INF_AIRFIELD;	// Max inf at airfields
 					if (_nInf < _nInfMax) then {
-						pr _nInfToAdd = _nInfMax - _nInf;
+						pr _nInfToAdd = _infMoreRequired max (_nInfMax - _nInf);
 						OOP_INFO_2("  Adding %1 infantry to location %2", _nInfToAdd, CALLM0(_loc, "getDisplayName"));
 
 						while {_nInfToAdd > 0} do {
 							// Select a random group type
-							pr _subcatID = selectRandom [T_GROUP_inf_assault_squad, T_GROUP_inf_rifle_squad];
+							pr _subcatID = selectRandom _squadTypes;
 							pr _countInfInGroup = count (_t#T_GROUP#_subcatID#0); // Amount of units
 
 							// Create a group
@@ -2420,6 +2492,28 @@ http://patorjk.com/software/taag/#p=display&f=Univers&t=CMDR%20AI
 				};
 			} forEach _reinfLocations;
 		};
+
+		// Spawn in more officers
+		{
+			pr _locModel = _x;
+			pr _loc = GETV(_locModel, "actual");
+			OOP_INFO_1("    Considering location: %1", CALLM0(_loc, "getDisplayName"));
+			pr _garModel = CALLM(_locModel, "getGarrison", [_side]);
+			if (!IS_NULL_OBJECT(_garModel)) then {
+				pr _gar = GETV(_garModel, "actual");
+				pr _nOfficers = CALLM0(_gar, "countOfficers");
+				while { _nOfficers < 2 } do {
+					OOP_INFO_1("  Adding an officer to location %1", CALLM0(_loc, "getDisplayName"));
+					
+					// Create an officer group
+					pr _group = NEW("Group", [_side ARG GROUP_TYPE_BUILDING_SENTRY]);
+					CALLM2(_group, "createUnitsFromTemplate", _t, T_GROUP_inf_officer);
+					CALLM2(_gar, "postMethodAsync", "addGroup", [_group]);
+
+					_nOfficers = _nOfficers + 1;
+				};
+			};
+		} forEach _reinfLocations;
 
 		// Try to spawn more transport
 		if (_transportMoreRequired > 0) then {

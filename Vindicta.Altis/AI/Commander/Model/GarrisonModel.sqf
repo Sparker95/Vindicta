@@ -281,6 +281,36 @@ CLASS("GarrisonModel", "ModelBase")
 		NULL_OBJECT
 	} ENDMETHOD;
 
+	/*
+	Method: countUnits
+	Counts the number of units with specified category and subcategory
+
+	Parameters: _query
+
+	_query - array of [_catID, _subcatID].
+
+	Returns: Count of units matching query
+	*/
+	METHOD("countUnits") {
+		params [P_THISOBJECT, P_ARRAY("_query")];
+		T_PRVAR(composition);
+		private _return = 0;
+		{// for each _query
+			_x params ["_catID", "_subcatID"];
+			_return = _return + _composition#_catID#_subcatID;
+		} forEach _query;
+		_return
+	} ENDMETHOD;
+
+	/*
+	Method: countOfficers
+	Returns: the number of officers in the Garrison
+	*/
+	METHOD("countOfficers") {
+		params [P_THISOBJECT, P_ARRAY("_query")];
+		T_CALLM1("countUnits", [[T_INF ARG T_INF_officer]])
+	} ENDMETHOD;
+
 	// -------------------- S I M  /  A C T U A L   M E T H O D   P A I R S -------------------
 	// Does this make sense? Could the sim/actual split be handled in a single functions
 	// instead? Need the concept of operations that take time, and they only apply to 
@@ -301,7 +331,8 @@ CLASS("GarrisonModel", "ModelBase")
 		[_composition, _compToDetach] call comp_fnc_diffAccumulate;
 		_efficiency = EFF_DIFF(_efficiency, _effToDetach);
 
-		T_SETV("composition", _composition);
+		// Don't need to set composition again we modified it directly
+
 		T_SETV("efficiency", _efficiency);
 		
 		T_PRVAR(world);
@@ -342,12 +373,15 @@ CLASS("GarrisonModel", "ModelBase")
 		//CALLM(_newGarrActual, "spawn", []);
 
 		// Try to move the units
+		OOP_INFO_1("Composition before split: %1", GETV(_actual, "compositionNumbers"));
+		OOP_INFO_1("Split composition: %1", _compToDetach);
 		private _args = [_actual, _compToDetach];
 		private _moveSuccess = CALLM(_newGarrActual, "postMethodSync", ["addUnitsFromCompositionNumbers" ARG _args]);
 		if (!_moveSuccess) exitWith {
 			OOP_WARNING_MSG("Couldn't move units to new garrison", []);
 			NULL_OBJECT
 		};
+		OOP_INFO_1("Composition after split: %1", GETV(_actual, "compositionNumbers"));
 
 		// WIP temporary fix to give resources to convoys
 		//CALLM2(_newGarrActual, "postMethodAsync", "addBuildResources", [120]);
@@ -422,8 +456,8 @@ CLASS("GarrisonModel", "ModelBase")
 		T_PRVAR(efficiency);
 		T_PRVAR(composition);
 		private _otherComp = GETV(_otherGarr, "composition");
-		private _newOtherComp = +_otherComp;
-		[_newOtherComp, _composition] call comp_fnc_addAccumulate;
+		[_otherComp, _composition] call comp_fnc_addAccumulate;
+
 		private _otherEff = GETV(_otherGarr, "efficiency");
 		private _newOtherEff = EFF_ADD(_efficiency, _otherEff);
 		SETV(_otherGarr, "efficiency", _newOtherEff);
@@ -533,17 +567,19 @@ CLASS("GarrisonModel", "ModelBase")
 	// } ENDMETHOD;
 
 	// Unit allocation algorithm
-	// Allocates units from composition while tryint to satisfy _effExt (external efficiency)
+	// Allocates units from composition while trying to satisfy _effExt (external efficiency)
 	STATIC_METHOD("allocateUnits") {
 		params [P_THISCLASS,
-				P_ARRAY("_effExt"),					// External efficiency requirement we must fullfill
-				P_ARRAY("_constraintFlags"),		// Array of flags for constraint verification
-				P_ARRAY("_comp"),					// Composition array: [[1, 2, 3], [4, 5], [6, 7]]: 1 unit of cat:0,subcat:0, 2x(0, 1), 3x(0, 2), etc
-				P_ARRAY("_eff"),					// Efficiency which corresponds to composition
+				P_ARRAY("_effExt"),						// External efficiency requirement we must fullfill
+				P_ARRAY("_constraintFlags"),			// Array of flags for constraint verification
+				P_ARRAY("_comp"),						// Composition array: [[1, 2, 3], [4, 5], [6, 7]]: 1 unit of cat:0,subcat:0, 2x(0, 1), 3x(0, 2), etc
+				P_ARRAY("_eff"),						// Efficiency which corresponds to composition
 				P_ARRAY("_compPayloadWhitelistMask"),	// Whitelist mask for payload or []
 				P_ARRAY("_compPayloadBlacklistMask"),	// Blacklist mask for payload or []
 				P_ARRAY("_compTransportWhitelistMask"),	// Whitelist mask for transport or []
-				P_ARRAY("_compTransportBlacklistMask")];// Blacklist mask for transport or []
+				P_ARRAY("_compTransportBlacklistMask"), // Blacklist mask for transport or []
+				P_ARRAY("_requiredComp")				// Any specifically required composition or []
+		];
 
 		// Perform lookup in hash map
 		pr _hashMap = GETSV("GarrisonModel", "allocatorCache");
@@ -579,13 +615,32 @@ CLASS("GarrisonModel", "ModelBase")
 
 		// Select units we can allocate for payload
 		pr _compPayload = +_comp;
+
 		// Apply masks if they are provided...
 		if (count _compPayloadWhitelistMask > 0) then {
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format["_compPayloadWhitelistMask: %1", str _compPayloadWhitelistMask];
+			diag_log format["_compPayload before: %1", str _compPayload];
+			#endif
 			[_compPayload, _compPayloadWhitelistMask] call comp_fnc_applyWhitelistMask;
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format["_compPayload after: %1", str _compPayload];
+			#endif
 		};
+
 		if (count _compPayloadBlacklistMask > 0) then {
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format["_compPayloadBlacklistMask: %1", str _compPayloadBlacklistMask];
+			diag_log format["_compPayload before: %1", str _compPayload];
+			#endif
 			[_compPayload, _compPayloadBlacklistMask] call comp_fnc_applyBlacklistMask;
+			#ifdef UNIT_ALLOCATOR_DEBUG
+			diag_log format["_compPayload after: %1", str _compPayload];
+			#endif
 		};
+
+		// Exclude special inf from allocation unless they are in the requiredComp
+		[_compPayload, T_PL_inf_special] call comp_fnc_applyBlacklist;
 
 		// Select units we can allocate for transport
 		pr _compTransport = +_comp;
@@ -595,6 +650,9 @@ CLASS("GarrisonModel", "ModelBase")
 		if (count _compTransportBlacklistMask > 0) then {
 			[_compTransport, _compTransportBlacklistMask] call comp_fnc_applyBlacklistMask;
 		};
+
+		// Exclude special inf from allocation unless they are in the requiredComp
+		[_compTransport, T_PL_inf_special] call comp_fnc_applyBlacklist;
 
 		#ifdef UNIT_ALLOCATOR_DEBUG
 		diag_log "- - - - - -";
@@ -612,11 +670,39 @@ CLASS("GarrisonModel", "ModelBase")
 		pr _nIteration = 0;
 		pr _effSorted = T_efficiencySorted;
 
+		// Attempt to satisfy the composition requirements if they are specified
+		{
+			_x params ["_catID", "_subcatID", "_required"];
+
+			// Do we have enough of this type available?
+			pr _avail = _compRemaining#_catID#_subcatID;
+			if(_avail < _required) exitWith {
+				#ifdef UNIT_ALLOCATOR_DEBUG
+				([[_catID, 0, _subcatID]] call t_fnc_getMetadata) params ["_catName", "_entryName", "_required"];
+				diag_log format ["  Failed to satisfy comp requirement %1 %2 %3", _catName, _entryName, _required];
+				#endif
+				// If we fail to satisfy composition requirements then we can fail immediately
+				// Still complete the function to set the cache value for later though
+				_failedToAllocate = true;
+			};
+
+			// Update.
+			pr _effToAdd = [T_efficiency#_catID#_subcatID, _required] call eff_fnc_mul_scalar;
+			[_effAllocated, _effToAdd] call eff_fnc_acc_add;	// Add with accumulation
+			[_effRemaining, _effToAdd] call eff_fnc_acc_diff;	// Substract with accumulation
+			// Substract from payload and transport, it we are satisfying the constraint for both when 
+			// we satisfy it for either.
+			[_compPayload, _catID, _subcatID, -_required] call comp_fnc_addValue;	
+			[_compTransport, _catID, _subcatID, -_required] call comp_fnc_addValue;
+			// Adjust the running totals.
+			[_compRemaining, _catID, _subcatID, -_required] call comp_fnc_addValue;
+			[_compAllocated, _catID, _subcatID, _required] call comp_fnc_addValue;
+		} forEach _requiredComp;
+
 		// Start the allocation iterations
 		while {!_allocated && !_failedToAllocate && (_nIteration < 100)} do { // Should we limit amount of iterations??
 
 			_CREATE_PROFILE_SCOPE("ALLOCATE UNITS - iteration");
-
 
 			#ifdef UNIT_ALLOCATOR_DEBUG
 			diag_log "";
@@ -638,6 +724,7 @@ CLASS("GarrisonModel", "ModelBase")
 				_unsatisfied append _newConstraints;
 				if (count _newConstraints > 0) exitWith {}; // Bail on occurance of first unsatisfied constraint
 			};
+
 			#ifdef UNIT_ALLOCATOR_DEBUG
 			diag_log format ["  Unsatisfied constraints: %1", _unsatisfied];
 			#endif
@@ -670,7 +757,6 @@ CLASS("GarrisonModel", "ModelBase")
 						(_compPayload#(_x#1)#(_x#2)) > 0
 					};
 				};
-
 
 				#ifdef UNIT_ALLOCATOR_DEBUG
 				diag_log format ["  Potential units: %1", _potentialUnits];
@@ -803,14 +889,6 @@ CLASS("GarrisonModel", "ModelBase")
 		_eff#T_EFF_reqTransport
 	} ENDMETHOD;
 
-	// _eff - efficiency of this garrison (after a theoretical allocation for instance)
-	METHOD("transportationScore") {
-		params [P_THISOBJECT, P_ARRAY("_eff")];
-		pr _diff = ((_eff#T_EFF_transport) - (_eff#T_EFF_reqTransport));
-		if (_diff <= 0) exitWith {0};
-		ln (_diff*0.3 + 1) // https://www.desmos.com/calculator/035vk4u9p2
-	} ENDMETHOD;
-
 	// ------------------------- Intel -----------------------------------
 	// Adds known friendly locations closer that _radius from the _pos
 	METHOD("addKnownFriendlyLocationsActual") {
@@ -918,11 +996,14 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 		pr _payloadBlacklistMask = T_comp_static_mask;					// Don't take static weapons under any conditions
 		pr _transportWhitelistMask = T_comp_ground_or_infantry_mask;	// Take ground units, take any infantry to satisfy crew requirements
 		pr _transportBlacklistMask = [];
+		pr _requiredComp = [
+			[T_INF, T_INF_officer, 1]
+		];
 
 		pr _args = [_effExt, _validationFlags, _comp, _eff,
 					_payloadWhitelistMask, _payloadBlacklistMask,
-					_transportWhitelistMask, _transportBlacklistMask];
-
+					_transportWhitelistMask, _transportBlacklistMask,
+					_requiredComp];
 		pr _result = CALLSM("GarrisonModel", "allocateUnits", _args);
 
 		_result params ["_compAllocated", "_effAllocated", "_compRemaining", "_effRemaining"];
@@ -939,6 +1020,8 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 		pr _c1 = +_compAllocated;
 		[_c1, _compRemaining] call comp_fnc_addAccumulate;
 		["Compositions match", _c1 isEqualTo _comp] call test_Assert;
+
+		["Required composition present", _compAllocated#T_INF#T_INF_officer == 1] call test_Assert;
 
 		["Efficiencies match", EFF_ADD(_effAllocated, _effRemaining) isEqualTo _eff] call test_Assert;
 
@@ -966,6 +1049,31 @@ CALLSM0("GarrisonModel", "initUnitAllocatorCache");
 	["Orig comp", GETV(_garrison, "composition") isEqualTo _compResult] call test_Assert;
 	["Split eff", GETV(_splitGarr, "efficiency") isEqualTo _eff1] call test_Assert;
 	["Split comp", GETV(_splitGarr, "composition") isEqualTo _comp1] call test_Assert;
+}] call test_AddTest;
+
+
+["GarrisonModel.mergeSim", {
+	private _world = NEW("WorldModel", [WORLD_TYPE_SIM_NOW]);
+
+	private _garrison0 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
+	private _comp0 = [10] call comp_fnc_new;
+	private _eff0 = [_comp0] call comp_fnc_getEfficiency;
+	SETV(_garrison0, "efficiency", _eff0);
+	SETV(_garrison0, "composition", _comp0);
+
+	private _garrison1 = NEW("GarrisonModel", [_world ARG "<undefined>"]);
+	private _comp1 = [2] call comp_fnc_new;
+	private _eff1 = [_comp1] call comp_fnc_getEfficiency;
+	SETV(_garrison1, "efficiency", _eff1);
+	SETV(_garrison1, "composition", _comp1);
+
+	private _compResult = [10+2] call comp_fnc_new;
+	private _effResult = [_compResult] call comp_fnc_getEfficiency;
+
+	CALLM(_garrison0, "mergeSim", [_garrison1]);
+
+	["Merge eff", GETV(_garrison1, "efficiency") isEqualTo _effResult] call test_Assert;
+	["Merge comp", GETV(_garrison1, "composition") isEqualTo _compResult] call test_Assert;
 }] call test_AddTest;
 
 Test_group_args = [WEST, 0]; // Side, group type

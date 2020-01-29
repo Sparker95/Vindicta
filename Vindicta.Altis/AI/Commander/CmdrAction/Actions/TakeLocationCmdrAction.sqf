@@ -97,7 +97,6 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_PRVAR(srcGarrId);
 		T_PRVAR(tgtLocId);
 
-
 		private _srcGarr = CALLM(_worldNow, "getGarrison", [_srcGarrId]);
 		private _srcGarrPos = GETV(_srcGarr, "pos");
 		private _srcGarrEff = GETV(_srcGarr, "efficiency");
@@ -203,21 +202,12 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 
 		// How much to scale the score for distance to target
 		private _distCoeff = CALLSM("CmdrAction", "calcDistanceFalloff", [_srcGarrPos ARG _tgtLocPos]);
-		// How much to scale the score for transport requirements
-		private _transportationScore = if(_dist < TAKE_LOCATION_NO_TRANSPORT_DISTANCE_MAX) then {
-			// If we are less than 1500m then we don't need transport so set the transport score to 1
-			// (we "fullfilled" the transport requirements of not needing transport)
-			1
-		} else {
-			// We will force transport on top of scoring if we need to.
-			CALLM1(_srcGarr, "transportationScore", _effRemaining);
-		};
 
 		private _detachEffStrength = CALLSM1("CmdrAction", "getDetachmentStrength", _effAllocated);				// A number
 
 		private _strategy = CALL_STATIC_METHOD("AICommander", "getCmdrStrategy", [_side]);
 		
-		private _scoreResource = _detachEffStrength * _distCoeff * _transportationScore;
+		private _scoreResource = _detachEffStrength * _distCoeff;
 		private _scorePriority = CALLM(_strategy, "getLocationDesirability", [_worldNow ARG _tgtLoc ARG _side]);
 
 		// CALCULATE START DATE
@@ -238,9 +228,9 @@ CLASS("TakeLocationCmdrAction", "TakeOrJoinCmdrAction")
 		T_SET_AST_VAR("startDateVar", _startDate);
 
 		// Uncomment for some more debug logging
-		 OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8, _transportationScore = %9",
+		 OOP_DEBUG_MSG("[w %1 a %2] %3 take %4 Score %5, _detachEff = %6, _detachEffStrength = %7, _distCoeff = %8",
 		 	[_worldNow ARG _thisObject ARG LABEL(_srcGarr) ARG LABEL(_tgtLoc) ARG [_scorePriority ARG _scoreResource] 
-		 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff ARG _transportationScore]);
+		 	ARG _effAllocated ARG _detachEffStrength ARG _distCoeff]);
 
 		// APPLY STRATEGY
 		// Get our Cmdr strategy implementation and apply it

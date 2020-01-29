@@ -147,7 +147,7 @@ CLASS("Storage", "")
 				};
 				// Check if it's a special string
 				if (_x isEqualType "") then {
-					private _prefix = _x select [0, SPECIAL_PREFIX_LENGTH];
+					private _prefix = if(count _x > SPECIAL_PREFIX_LENGTH + 1) then { _x select [0, SPECIAL_PREFIX_LENGTH] } else { "" };
 					//diag_log format ["Prefix: %1", _prefix];
 					if (_prefix == SPECIAL_PREFIX) then {
 						private _prefixChar = _x select [SPECIAL_PREFIX_LENGTH, 1];

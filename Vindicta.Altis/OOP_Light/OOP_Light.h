@@ -93,6 +93,7 @@
 
 #define PROFILE_NAME "Satan"
 #define SCRIPT_NULL objNull
+#define saveProfileNamespace
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -235,6 +236,7 @@
 
 //Macro for global OOP variables
 #define OOP_GVAR(var) o_##var
+#define OOP_GVAR_STR(var) format["o_%1", #var]
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"
