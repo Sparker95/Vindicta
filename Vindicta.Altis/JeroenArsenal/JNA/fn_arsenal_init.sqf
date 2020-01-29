@@ -196,8 +196,10 @@ if(hasInterface)then{
 				
 				}//return
 			};
-						
-			[_script,_conditionActive,_conditionColor,_object] call jn_fnc_common_addActionSelect;
+			pr _removeScript = {
+				"arsenal_hint" cutFadeOut 0;
+			};
+			[_script,_conditionActive,_conditionColor,_object, true, 10, _removeScript] call jn_fnc_common_addActionSelect;
 		},
         [],
         6,
@@ -268,8 +270,10 @@ if(hasInterface)then{
 					}
 				}//return
 			};
-						
-			[_script,_conditionActive,_conditionColor,_object] call jn_fnc_common_addActionSelect;
+			pr _removeScript = {
+				"arsenal_hint" cutFadeOut 0;
+			};
+			[_script,_conditionActive,_conditionColor,_object, true, 10, _removeScript] call jn_fnc_common_addActionSelect;
 		},
         [],
         6,

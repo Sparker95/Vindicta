@@ -50,6 +50,21 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		T_SETV("forceEnablePlayerRespawn", _enable);
 	} ENDMETHOD;
 
+	// Overrides the location name
+	/* public virtual */ METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		private _loc = T_GETV("location");
+		if(CALLM1(_loc, "hasGarrisons", FRIENDLY_SIDE)) then {
+			[FRIENDLY_SIDE, false] call BIS_fnc_sideColor
+		} else {
+			if(CALLM1(_loc, "hasGarrisons", ENEMY_SIDE)) then {
+				[ENEMY_SIDE, false] call BIS_fnc_sideColor
+			} else {
+				[1,1,1,1]
+			};
+		};
+	} ENDMETHOD;
+
 	/* virtual override */ METHOD("getMapInfoEntries") {
 		private _return = [];
 		CRITICAL_SECTION {

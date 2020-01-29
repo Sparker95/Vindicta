@@ -374,7 +374,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	Method: getPlayerSides
 	Returns array of sides of players within this location.
 
-	Returns: Bool
+	Returns: array<Side>
 	*/
 	METHOD("getPlayerSides") {
 		params [P_THISOBJECT];
@@ -461,6 +461,15 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 		};
 	} ENDMETHOD;
 	
+	METHOD("hasGarrisons") {
+		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		
+		if (_side == CIVILIAN) then {
+			(count T_GETV("garrisons")) > 0
+		} else {
+			(count (T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side})) > 0
+		};
+	} ENDMETHOD;
 	
 	METHOD("getGarrisonsRecursive") {
 		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
@@ -527,10 +536,37 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	*/
 	METHOD("getDisplayName") {
 		params [P_THISOBJECT];
-		pr _name = T_GETV("name");
-		_name
+		pr _gmdata = T_GETV("gameModeData");
+		// SAVEBREAK REPLACE >>>
+		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
+		// SAVEBREAK WITH
+		// if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REMOVE <<<
+			CALLM0(_gmdata, "getDisplayName")
+		} else {
+			T_GETV("name")
+		};
 	} ENDMETHOD;
-	
+
+	/*
+	Method: getDisplayColor
+
+	Returns a display color to show in UIs. Format is: [r,g,b,a].
+	*/
+	METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		pr _gmdata = T_GETV("gameModeData");
+		// SAVEBREAK REPLACE >>>
+		if(IS_OOP_OBJECT(_gmdata) && _gmdata != NULL_OBJECT) then {
+		// SAVEBREAK WITH
+		// if(_gmdata != NULL_OBJECT) then {
+		// SAVEBREAK REMOVE <<<
+			CALLM0(_gmdata, "getDisplayColor")
+		} else {
+			[1,1,1,1]
+		};
+	} ENDMETHOD;
+
 	/*
 	Method: getSide
 	Returns side of the garrison that controls this location.
@@ -551,7 +587,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getCapacityInf
-	Returns type of this location
+	Returns infantry capacity of this location -- how many infantry can be stationed here
 
 	Returns: Integer
 	*/
@@ -562,7 +598,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 
 	/*
 	Method: getCapacityCiv
-	Returns type of this location
+	Returns civ capacity of this location -- how many civilians this location can have
 
 	Returns: Integer
 	*/
@@ -801,7 +837,7 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 					// Failed to find a position here, increase the radius
 					_searchRadius = _searchRadius * 3;
 				};
-			};			
+			};
 		};
 
 		_return

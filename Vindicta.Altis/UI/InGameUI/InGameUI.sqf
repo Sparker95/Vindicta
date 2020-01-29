@@ -43,9 +43,17 @@ CLASS("InGameUI", "")
 	} ENDMETHOD;
 
 	METHOD("setLocationText") {
-		params [P_THISOBJECT, P_STRING("_text")];
+		params [P_THISOBJECT, P_STRING("_text"), P_COLOR("_color")];
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
-		(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlSetText _text;
+		if(_text == "") then {
+			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlShow false;
+			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME_DESCR) ctrlShow false;
+		} else {
+			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlShow true;
+			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME_DESCR) ctrlShow true;
+			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlSetText _text;
+			(_display displayCtrl IDC_INGAME_STATIC_LOCATION_NAME) ctrlSetTextColor _color;
+		};
 	} ENDMETHOD;
 
 	METHOD("setBuildResourcesAmount") {
@@ -53,10 +61,13 @@ CLASS("InGameUI", "")
 		pr _display = uiNamespace getVariable "p0_InGameUI_display";
 
 		if (_value < 0) then {
-			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText "";
+			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlShow false;
+			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR) ctrlShow false;
+			// (_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText "";
 		} else {
-			pr _text = format ["%1", _value];
-			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText _text;
+			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlShow true;
+			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR) ctrlShow true;
+			(_display displayCtrl IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES) ctrlSetText format ["%1", _value];
 		};
 	} ENDMETHOD;
 
@@ -72,18 +83,5 @@ CLASS("InGameUI", "")
 		};
 	} ENDMETHOD;
 */
-
-	METHOD("enableLocationPanel") {
-		params [P_THISOBJECT, P_BOOL("_enable")];
-
-		pr _display = uiNamespace getVariable "p0_InGameUI_display";
-		{
-			pr _ctrl = _display displayCtrl _x;
-			_ctrl ctrlShow _enable;
-		} forEach [	IDC_INGAME_STATIC_LOCATION_NAME,
-					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES,
-					IDC_INGAME_STATIC_CONSTRUCTION_RESOURCES_DESCR,
-					IDC_INGAME_STATIC_LOCATION_NAME_DESCR]
-	} ENDMETHOD;
 
 ENDCLASS;

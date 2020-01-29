@@ -170,6 +170,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
 			T_CALLM0("_initMissionEventHandlers");
+
+			missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -197,10 +199,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
-
-			#ifndef RELEASE_BUILD
-			[] call pr0_fnc_initDebugMenu;
-			#endif
 
 			// Hide the allowed area markers
 			//#ifdef RELEASE_BUILD
@@ -408,6 +406,21 @@ CLASS("GameModeBase", "MessageReceiverEx")
 					OOP_ERROR_1("! ! ! THREAD IS NOT RUNNING: %1", GETV(_msgLoop, "name"));
 					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
 					OOP_ERROR_0("");
+
+					// Make a recursive dump of the last processed object
+					private _lastObject = GETV(_msgLoop, "lastObject");
+					if (IS_NULL_OBJECT(_lastObject)) then {
+						OOP_ERROR_0("Last processed object is null");
+					} else {
+						OOP_ERROR_1("Last processed object: %1", _lastObject);
+						if (!IS_OOP_OBJECT(_lastObject)) then {
+							OOP_ERROR_1("  %1 is not an OOP object", _lastObject);
+						} else {
+							OOP_ERROR_1("  Initiating a memory dump of %1", _lastObject);
+							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
+						};
+					};
+
 					_recovery = true;
 				};
 			};
@@ -417,7 +430,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if (!_recovery) then {
 #ifndef _SQF_VM
 			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
-			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
 #endif
 		} else {
 			// Broadcast notification

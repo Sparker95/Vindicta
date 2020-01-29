@@ -1,5 +1,26 @@
+# 0.29
+- Fixed: Error which results in wrong location name to be shown
+
+# 0.28
+- Fixed: Crashes caused by civilian saboteur scripts
+- Fixed: 'Any' shown instead of location name
+- Fixed: Wrong default backpacks in arsenal
+- Fixed: Fixed wrong values of civilian instability and recruit count
+
+# 0.27
+- Added: Improved interactions with civilian saboteurs
+- Added: Ctrl and shift serve as x5, x10 and x100 modifier keys for Arsenal
+- Added: 'External inventory to arsenal' action will also merge arsenals
+- Added: Added more buildable objects to Build UI
+- Added: Added basic backpacks and basic facewear to Arsenal
+- Added: On critical error the mission will create a crash dump of the object which caused error
+- Changed: improved police counterattack behavior
+- Changed: Arsenal transfer range increased to 20 meters
+- Changed: Changed calculations for city instability
+- Fixed: critical crash due to a missing include for UNDERCOVER_MONITOR
+
 # 0.26
-- Added: Scenario will actively check crashed scripts, on critical error it will perform an emergency save and promt to restart .
+- Added: Scenario will actively check crashed scripts, on critical error it will perform an emergency save and prompt to restart.
 - Changed: Amount of guns per car/box was reduced by 50%
 - Changed: Build resources removed from patrol/convoy/reinforcement vehicles founr outside of bases
 - Changed: At campaign start enemies will no longer have armored tanks, APCs, IFVs, MRAPs with weapons

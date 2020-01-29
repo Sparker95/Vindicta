@@ -1767,7 +1767,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} forEach _crewData;
 	} ENDMETHOD;
 
-	
+	//                             I S   E M P T Y
+	/*
+	Method: isEmpty
+	Returns true if there are no units in this vehicle or it is not a vehicle
+
+	Returns: bool
+	*/
+	METHOD("isEmpty") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		(count fullCrew _oh) == 0
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               L I M I T E D   A R S E N A L
@@ -1800,7 +1812,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_UM_civHeadgear + g_UM_civUniforms);
+			} forEach (g_UM_civHeadgear + g_UM_civUniforms + g_UM_civFacewear + g_UM_civBackpacks);
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {

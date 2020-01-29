@@ -400,12 +400,19 @@ CLASS("DialogBase", "")
 		T_GETV("currentTabObj");
 	} ENDMETHOD;
 
+	METHOD("close") {
+		params [P_THISOBJECT];
+		OOP_INFO_0("CLOSING");
+		T_CALLM0("deleteOnNextFrame");
+		// DELETE(_thisObject);
+	} ENDMETHOD;
+
 	// Overridable methods
 	// Derived classes can override these
 	METHOD("onButtonClose") {
 		params [P_THISOBJECT];
 		OOP_INFO_0("ON BUTTON CLOSE");
-		DELETE(_thisObject);
+		T_CALLM0("close");
 	} ENDMETHOD;
 
 	METHOD("onButtonQuestion") {

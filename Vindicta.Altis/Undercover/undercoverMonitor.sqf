@@ -312,8 +312,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						if (time < _timeBoost) then { 
 							pr _suspBoost = T_GETV("timeBoost");
 							_suspicionArr pushBack [(T_GETV("suspicionBoost")), "Suspicion boost"];
-							//systemchat format["%1", (T_GETV("suspicionBoost"))];
-							//systemchat format["%1", (_timeBoost - time)];
 						} else {
 							T_SETV("suspicionBoost", 0);
 						};
@@ -345,6 +343,21 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								_unit setVariable [UNDERCOVER_EXPOSED, true, true];	
 
 								if (animationState _unit in g_UM_undercoverAnims) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
+
+								// suspiciousness for specific animations
+								//if (animationState _unit == "acts_carfixingwheel") then {
+									//_suspicionArr pushBack [0.6, "Removing wheel from enemy vehicle?"]; _hintKeys pushback HK_ILLEGAL;
+								//};
+								
+								// disallow player using morphine on enemies 
+								if (animationState _unit == "ainvpknlmstpsnonwnondnon_medic1" || animationState _unit == "ainvppnemstpslaywnondnon_medicother" || animationState _unit == "ainvpknlmstpslaywnondnon_medicother") exitWith {
+									pr _nearUnits = nearestObjects [_unit, ["Man"], 12];
+									if (count _nearUnits > 1) then {
+										if (((side group (_nearUnits#1)) != (side group _unit)) && (side group (_nearUnits#1)) != civilian) then {
+											_suspicionArr pushBack [1, "Attempting to inject enemy some morphine?"]; _hintKeys pushback HK_MORPHINE;
+										};
+									};
+								};
 
 								pr _suspGear = T_GETV("suspGear");
 								if (_suspGear > 0) then { _hintKeys pushback HK_SUSPGEAR; };
@@ -897,11 +910,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		params [P_THISCLASS];
 
 #ifndef _SQF_VM
-		["ace_treatmentSucceded", {
-			params ["_caller", "_target", "_selectionName", "_className"];
-			if ((side _caller != side _target) && (side _target != civilian)) then {
-				CALLSM2("undercoverMonitor", "boostSuspicion", _caller, 2.0);
-			};
+		["ace_throwableThrown", { 
+   			params ["_unit", "_activeThrowable"]; 
+			CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 3.0);
     	}] call CBA_fnc_addEventHandler;
 #endif
 	} ENDMETHOD;
