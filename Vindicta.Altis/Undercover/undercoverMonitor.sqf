@@ -56,7 +56,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	VARIABLE("suspGear");
 	VARIABLE("suspGearVeh");
 	VARIABLE("bodyExposure");
-	VARIABLE("arrestActionID");												// ID of the untie self arrest action									
 	VARIABLE("timeCompromised");
 	VARIABLE("bCaptive");													// true if unit is in arrested state, must be false to leave arrested state
 	VARIABLE("camoCoeff"); 													// modified vanilla camouflage coefficient, see: community.bistudio.com/wiki/setUnitTrait
@@ -96,7 +95,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_SETV("suspGear", 0);
 		T_SETV("suspGearVeh", 0);
 		T_SETV("bodyExposure", 1);
-		T_SETV("arrestActionID", objNull);
 		T_SETV("timeCompromised", -1);
 		T_SETV("bCaptive", false);
 		pr _camoCoeff = _unit getUnitTrait "camouflageCoef";
@@ -552,37 +550,22 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable [UNDERCOVER_EXPOSED, false, true]; // prevent unit being picked up by SensorGroupTargets again
 							deleteMarkerLocal "markerWanted";
 							T_SETV("bCaptive", true);
-
+							// TODO: Sparker hide/show action behavior
 							pr _addAction = [_unit] call fnc_UM_addActionUntieLocal;
-							T_SETV("arrestActionID", _addAction);
-
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
-						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01") {
-							T_SETV("bCaptive", false);
-							OOP_INFO_0("Player appears to have glitched out of arrest animation.");
-						}
-
 						// exit arrested state
 						if !(T_GETV("bCaptive")) then {
-							_unit playMoveNow "acts_aidlpsitmstpssurwnondnon_out";
+							player playMoveNow "acts_aidlpsitmstpssurwnondnon_out";
 							T_CALLM("setState", [sUNDERCOVER]);
 							_unit setVariable [UNDERCOVER_TARGET, false, true];
-
-							// In case you glitched your way out of arrest:
-							if (!isNull T_GETV("arrestActionID")) then {
-								_unit removeAction T_GETV("arrestActionID");
-								T_SETV("arrestActionID", objNull);
-
-								OOP_INFO_0("Removing arrest action.");
-							};
 						};
 
 						_suspicionArr pushBack [-1, "ARRESTED STATE"];
 						_hintKeys pushBack HK_ARRESTED;
 
-					}; // end state "ARRESTED"
+					}; // state "ARRESTED" end
 
 					/*
 					--------------------------------------------------------------------------------------------------------------------------------------------
@@ -608,16 +591,18 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							OOP_INFO_0("lifeState _unit == 'HEALTHY', leaving state sINCAPACITATED");
 						};*/
 
-					}; // end state "INCAPACITATED"
+					}; // state "INCAPACITATED" end
 
 				}; // end FSM
 
 				//OOP_INFO_1("hintKeys: %1", _hintKeys);
+
 				
 				// set captive status of unit
 				pr _args = [_suspicionArr, _state];
 				T_CALLM("calcCaptive", _args);
 
+				pr _suspicion = T_GETV("suspicion");
 				// compromise other players in vehicle
 				/*
 				if (_bInVeh && _suspicion >= 1) then {
@@ -631,7 +616,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 				};
 				*/
 
-				pr _suspicion = T_GETV("suspicion");
 				// set new camouflage coeffcient 
 				pr _camoCoeff =  T_GETV("camoCoeff"); // initial unit-based value
 				if (T_GETV("bGhillie")) then { _camoCoeffMod = _camoCoeffMod + CAMO_GHILLIE; };
@@ -925,12 +909,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
    			params ["_unit", "_activeThrowable"]; 
 			CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 3.0);
     	}] call CBA_fnc_addEventHandler;
-
-		["vehicle", {  
-     	params ["_vehicle", "_role", "_unit", "_turret"]; 
-          _unit action ["SwitchWeapon", _unit, _unit, 299];
-		systemchat "get out";
-     	}] call CBA_fnc_addPlayerEventHandler;
 		
 	} ENDMETHOD;
 
