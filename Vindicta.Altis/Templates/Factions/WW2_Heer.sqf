@@ -91,8 +91,15 @@ _veh set [T_VEH_plane_cargo, ["sab_w34", "LIB_Ju52"]];
 _veh set [T_VEH_plane_unarmed, ["sab_w34", "sab_ju388", "LIB_Ju52"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
-_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o", "sab_boat_freighter_o"]];
-_veh set [T_VEH_boat_armed, ["sab_boat_s38_o", "sab_boat_torpedo_o", "sab_boat_u7", "sab_boat_destroyer_o", "sab_boat_cruiser_o", "sab_boat_battleship_o"]];
+_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
+_veh set [T_VEH_boat_armed, ["sab_boat_torpedo_o", "sab_boat_subchaser_o"]];
+
+//Not working yet
+
+//_veh set [T_VEH_ship_transport, [""]];
+//_veh set [T_VEH_ship_cargo, ["sab_boat_freighter_o"]];
+//_veh set [T_VEH_ship_small, ["sab_boat_destroyer_rn"]];
+//_veh set [T_VEH_ship_big, ["sab_boat_cruiser_o", "sab_boat_battleship_o"]];
 
 _veh set [T_VEH_personal, ["LIB_Kfz1_sernyt"]];
 
@@ -103,7 +110,7 @@ _veh set [T_VEH_truck_repair, ["LIB_OpelBlitz_Parm"]];
 _veh set [T_VEH_truck_medical , ["LIB_ger_SdKfz251IFL_medical", "LIB_ger_opelblitz_medical", "LIB_GER_M3_Halftrack_medical", "LIB_GER_Kubel_Medical", "LIB_GER_KubelGreyHood_Medical", "LIB_GER_KubelBeigeiHood_Medical", "LIB_GER_KubelKhakiHood_Medical", "LIB_OpelBlitz_Ambulance"]];
 _veh set [T_VEH_truck_fuel, ["LIB_OpelBlitz_Fuel"]];
 
-//_veh set [T_VEH_submarine, [""]];
+_veh set [T_VEH_submarine, ["sab_boat_u7"]];
 
 //==== Drones ====
 _drone = +(tDefault select T_DRONE);

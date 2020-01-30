@@ -59,25 +59,25 @@ _veh set [T_VEH_SIZE-1, nil];
 _veh set [T_VEH_DEFAULT, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 
 _veh set [T_VEH_car_unarmed, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
-_veh set [T_VEH_car_armed, ["LIB_UK_Willys_MB_M1919"]];
+_veh set [T_VEH_car_armed, ["LIB_UK_Willys_MB_M1919", "LIB_usa_M3_Scout_FFV"]];
 
 //_veh set [T_VEH_MRAP_unarmed, [""]];
 //_veh set [T_VEH_MRAP_HMG, [""]];
 //_veh set [T_VEH_MRAP_GMG, [""]];
 
 //_veh set [T_VEH_IFV, [""]];
-_veh set [T_VEH_APC, ["LIB_UniversalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
-_veh set [T_VEH_MBT, ["LIB_Churchill_Mk7", "LIB_Churchill_Mk7_AVRE", "LIB_Churchill_Mk7_Crocodile", "LIB_Crusader_Mk3", "LIB_M4A3_75", "LIB_M4A4_FIREFLY"]];
+_veh set [T_VEH_APC, ["fow_v_universalCarrier", "LIB_UK_M3_Halftrack", "LIB_SdKfz251", "LIB_SdKfz251_FFV"]];
+_veh set [T_VEH_MBT, ["fow_v_cromwell_uk", "LIB_Churchill_Mk7", "LIB_Churchill_Mk7_AVRE", "LIB_Churchill_Mk7_Crocodile", "LIB_Crusader_Mk3", "LIB_M4A3_75"]];
 //_veh set [T_VEH_MRLS, [""]];
 _veh set [T_VEH_SPA, ["LIB_Churchill_Mk7_Howitzer"]];
 _veh set [T_VEH_SPAA, ["LIB_Crusader_Mk1AA"]];
 	
-//_veh set [T_VEH_stat_HMG_high, [""]];
+_veh set [T_VEH_stat_HMG_high, ["LIB_GER_SearchLight"]];
 //_veh set [T_VEH_stat_GMG_high, [""]];
-_veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2"]];
+_veh set [T_VEH_stat_HMG_low, ["LIB_M1919_m2", "fow_w_vickers_uk"]];
 //_veh set [T_VEH_stat_GMG_low, [""]];
-//_veh set [T_VEH_stat_AA, [""]];
-//_veh set [T_VEH_stat_AT, [""]];
+_veh set [T_VEH_stat_AA, ["sab_static_aa", "sab_small_static_2xaa", "sab_small_static_aa"]];
+_veh set [T_VEH_stat_AT, ["fow_w_6Pounder_uk"]];
 
 _veh set [T_VEH_stat_mortar_light, ["LIB_m2_60"]];
 //_veh set [T_VEH_stat_mortar_heavy, [""]];
@@ -88,13 +88,20 @@ _veh set [T_VEH_stat_mortar_light, ["LIB_m2_60"]];
 //_veh set [T_VEH_heli_attack, [""]];
 
 _veh set [T_VEH_plane_attack, ["LIB_RAF_P39"]];
-_veh set [T_VEH_plane_fighter, ["LIB_RAF_P39"]];
+_veh set [T_VEH_plane_fighter, ["sab_ca12bo", "LIB_RAF_P39", "sab_gladiator", "sab_mb5"]];
 _veh set [T_VEH_plane_cargo, ["LIB_C47_RAF"]];
 _veh set [T_VEH_plane_unarmed, ["LIB_HORSA_RAF", "LIB_MKI_HADRIAN", "LIB_MKI_HADRIAN_raf2", "LIB_MKI_HADRIAN_raf3"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
-//_veh set [T_VEH_boat_unarmed, ["LIB_UK_LCA"]];
-//_veh set [T_VEH_boat_armed, ["LIB_UK_LCI", "LIB_LCVP", "LIB_LCM3_Armed"]];
+_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
+_veh set [T_VEH_boat_armed, ["sab_boat_torpedo_rn", "sab_boat_subchaser_rn"]];
+
+//Not working yet
+
+//_veh set [T_VEH_ship_transport, ["LIB_UK_LCA", "LIB_UK_LCI"]];
+//_veh set [T_VEH_ship_cargo, ["sab_boat_liberty_rn"]];
+//_veh set [T_VEH_ship_small, ["sab_boat_destroyer_rn"]];
+//_veh set [T_VEH_ship_big, ["sab_boat_cruiser_rn", "sab_boat_battleship_rn"]];
 
 _veh set [T_VEH_personal, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 
