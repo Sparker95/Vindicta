@@ -170,7 +170,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 		T_GETV("eventHandlers") pushBack ["InventoryClosed", _ID];
 
-		pr _ID = _unit addEventHandler ["InventoryOpened", {
+		_ID = _unit addEventHandler ["InventoryOpened", {
 			params ["_unit", "_container"];
 			pr _thisObject = _unit getVariable ["undercoverMonitor", ""];
 			if (_thisObject != "") then {
@@ -181,7 +181,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		T_GETV("eventHandlers") pushBack ["InventoryOpened", _ID];
 
 		// Take/put event handlers
-		private _ehid = player addEventHandler ["Take", 
+		_ID = _unit addEventHandler ["Take", 
 		{
 			params ["_unit", "_container", "_item"];
 
@@ -197,7 +197,8 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 		T_GETV("eventHandlers") pushBack ["Take", _ID];
 
-		private _ehid = player addEventHandler ["Put", 
+		// suspicion for planting explosives (?)
+		_ID = _unit addEventHandler ["Put", 
 		{
 			params ["_unit", "_container", "_item"];
 
@@ -213,6 +214,15 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		}];
 		T_GETV("eventHandlers") pushBack ["Put", _ID];
 
+		// Holsters weapon when leaving a vehicle, if your only weapon is a pistol
+		_ID = ["vehicle", {  
+     	params ["_vehicle", "_role", "_unit", "_turret"];
+			if (primaryWeapon _unit == "" && secondaryWeapon _unit == "") then {
+				_unit action ["SwitchWeapon", _unit, _unit, 299];	
+				systemchat "Holstering weapon.";
+			};		
+     	}] call CBA_fnc_addPlayerEventHandler;
+		T_GETV("eventHandlers") pushBack ["vehicle", _ID];
 
 	} ENDMETHOD;
 
@@ -227,8 +237,14 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		pr _unit = T_GETV("unit");
 		_unit setVariable ["undercoverMonitor", nil];
 
+		// Print out event handlers to check if all get deleted
+		{
+			OOP_INFO_1("%1", _x);
+		} forEach (T_GETV("eventHandlers"));
+
 		// Delete event handlers
 		{
+			OOP_INFO_1("%1", _x);
 			_unit removeEventHandler _x;
 		} forEach (T_GETV("eventHandlers"));
 
@@ -559,10 +575,10 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 							_unit setVariable ["timeArrested", time+10, true];
 						}; // do once when state changed
 
-						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01") {
+						if (animationState _unit != "acts_aidlpsitmstpssurwnondnon01") then {
 							T_SETV("bCaptive", false);
 							OOP_INFO_0("Player appears to have glitched out of arrest animation.");
-						}
+						};
 
 						// exit arrested state
 						if !(T_GETV("bCaptive")) then {
@@ -925,12 +941,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
    			params ["_unit", "_activeThrowable"]; 
 			CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 3.0);
     	}] call CBA_fnc_addEventHandler;
-
-		["vehicle", {  
-     	params ["_vehicle", "_role", "_unit", "_turret"]; 
-          _unit action ["SwitchWeapon", _unit, _unit, 299];
-		systemchat "get out";
-     	}] call CBA_fnc_addPlayerEventHandler;
 		
 	} ENDMETHOD;
 
