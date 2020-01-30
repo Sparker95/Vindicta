@@ -328,7 +328,9 @@ CLASS("GameManager", "MessageReceiverEx")
 					pr _header = CALLM2(_storage, "load", _headerRef, true); // Create a new object
 					
 					// Check if save version is compatible
-					if (GETV(_header, "saveVersion") == call misc_fnc_getSaveVersion) then {
+					pr _headerVer = parseNumber GETV(_header,"saveVersion");
+					pr _currVer = parseNumber (call misc_fnc_getSaveVersion);
+					if (_headerVer <= _currVer) then {
 						// Read other data from the header
 						T_SETV("campaignName", GETV(_header, "campaignName"));
 						T_SETV("saveID", GETV(_header, "saveID") + 1);
@@ -345,8 +347,8 @@ CLASS("GameManager", "MessageReceiverEx")
 						pr _text = "Game load is in progress...";
 						REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createSystem", [_text], 0, false);
 
-						pr _gameModeRef = CALLM1(_storage, "load", "gameMode");
-						CALLM1(_storage, "load", _gameModeRef);
+						pr _gameModeRef = CALLM3(_storage, "load", "gameMode", false, _headerVer);
+						CALLM3(_storage, "load", _gameModeRef, false, _headerVer);
 						gGameMode = _gameModeRef;
 						gGameModeServer = _gameModeRef;
 						PUBLIC_VARIABLE "gGameModeServer";

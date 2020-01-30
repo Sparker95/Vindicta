@@ -250,12 +250,13 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 
 		// Call the base class method
-		CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay]);
-
-		// Always spawn with a random civi kit and pistol.
-		_newUnit call fnc_selectPlayerSpawnLoadout;
-		// Holster pistol
-		_newUnit action ["SWITCHWEAPON", player, player, -1];
+		private _loaded = CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay]);
+		if(!_loaded) then {
+			// Always spawn with a random civi kit and pistol.
+			_newUnit call fnc_selectPlayerSpawnLoadout;
+			// Holster pistol
+			_newUnit action ["SWITCHWEAPON", player, player, -1];
+		};
 
 	} ENDMETHOD;
 

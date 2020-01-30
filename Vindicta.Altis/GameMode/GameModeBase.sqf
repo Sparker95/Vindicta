@@ -49,7 +49,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Other values
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
-	VARIABLE_ATTR("playerSave", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("playerInfoArray", [ATTR_SAVE_VER(11)]);
 
 	METHOD("new") {
 		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
@@ -93,7 +93,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		T_SETV("locations", []);
 
-		T_SETV("playerSave", []);
+		T_SETV("playerInfoArray", []);
 
 	} ENDMETHOD;
 
@@ -491,6 +491,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				} forEach _vehicles;
 			};
 		}];
+		addMissionEventHandler ["HandleDisconnect", {
+			params ["_unit", "_id", "_uid", "_name"];
+			CALLM3(gGameMode, "savePlayerInfo", _uid, _unit, _name);
+			false;
+		}];
 		#endif
 	} ENDMETHOD;
 
@@ -712,6 +717,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						false, //unconscious
 						"", //selection
 						""]; //memoryPoint
+
+		T_CALLM1("loadPlayerInfo", _newUnit);
 	} ENDMETHOD;
 
 	// Player death event handler in SP
@@ -1462,10 +1469,81 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGameMode;
 	} ENDMETHOD;
 
+	// -------------------------------------------------------------------------
+	// |                         P L A Y E R  S A V E                          |
+	// -------------------------------------------------------------------------
 
+	GameMode_fnc_getPlayerInfo = {
+		params [P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
 
+		private _inventoryObj = ["new", _unit] call OO_INVENTORY;
+		private _inv = "getInventory" call _inventoryObj;
+		["delete", _inventoryObj] call OO_INVENTORY;
 
-	// STORAGE
+		[
+			_uid,
+			_name,
+			getPosASL _unit,
+			_inv
+		]
+	};
+
+	GameMode_fnc_restorePlayerInfo = {
+		params [P_OBJECT("_player"), P_ARRAY("_arr")];
+
+		//_player setName _arr#1;
+		_player setPosASL _arr#2;
+
+		private _inventoryObj = ["new", _player] call OO_INVENTORY;
+		["setInventory", _arr#3] call _inventoryObj;
+		["delete", _inventoryObj] call OO_INVENTORY;
+	};
+	
+	METHOD("savePlayerInfo") {
+		params [P_THISOBJECT, P_STRING("_uid"), P_OBJECT("_unit"), P_STRING("_name")];
+		T_PRVAR(playerInfoArray);
+		private _obj = [_uid, _unit, _name] call GameMode_fnc_getPlayerInfo;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing == NOT_FOUND) then {
+			_playerInfoArray pushBack _obj;
+		} else {
+			_playerInfoArray set [_existing, _obj];
+		};
+	} ENDMETHOD;
+
+	METHOD("loadPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			private _playerInfo = _playerInfoArray#_existing;
+			[_player, _playerInfo] call GameMode_fnc_restorePlayerInfo;
+			_playerInfoArray deleteAt _existing;
+			true
+		} else {
+			false
+		}
+	} ENDMETHOD;
+
+	METHOD("clearPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			_playerInfoArray deleteAt _existing;
+		};
+	} ENDMETHOD;
+	// -------------------------------------------------------------------------
+	// |                             S T O R A G E                             |
+	// -------------------------------------------------------------------------
 
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
@@ -1483,6 +1561,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM1("Location", "saveStaticVariables", _storage);
 		CALLSM1("Unit", "saveStaticVariables", _storage);
 		CALLSM1("MessageReceiver", "saveStaticVariables", _storage);
+
+		// Update player info for alive players
+		{
+			T_CALLM3("savePlayerInfo", getPlayerUID _x, _x, name _x);
+		} forEach (allPlayers select { alive _x });
 
 		// Lock all message loops in specific order
 		private _msgLoops = [
@@ -1567,7 +1650,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		true
 	} ENDMETHOD;
 
-
 	/* override */ METHOD("postDeserialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 
@@ -1588,6 +1670,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Call method of all base classes
 		CALL_CLASS_METHOD("MessageReceiverEx", _thisObject, "postDeserialize", [_storage]);
+
+		// Set default values if they weren't loaded due to older save version
+		if(isNil{T_GETV("playerInfoArray")}) then {
+			T_SETV("playerInfoArray", []);
+		};
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution

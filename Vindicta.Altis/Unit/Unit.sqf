@@ -697,7 +697,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	METHOD("saveInventory") {
 		params [P_THISOBJECT];
 		T_PRVAR(data);
-		
+
 		// Bail if not spawned
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 		if (isNull _hO) exitWith {};
@@ -716,7 +716,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 		private _fn_loadInv = {
 			params ["_hO", "_inventoryArray"];
-			
+
 			private _weapItems = weaponsItemsCargo _hO;
 			{
 				_x params ["_weapon", "_muzzle", "_flashlight", "_optics", "_primaryMuzzleMagazine", "_secondaryMuzzleMagazine", "_bipod"];
