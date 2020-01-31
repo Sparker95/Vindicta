@@ -452,9 +452,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	
 	
 	METHOD("getGarrisons") {
-		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		params ["_thisObject", ["_side", 0]];
 		
-		if (_side == CIVILIAN) then {
+		if (_side isEqualType 0) then {
 			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}
@@ -462,9 +462,9 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 	
 	METHOD("hasGarrisons") {
-		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
+		params ["_thisObject", ["_side", 0]];
 		
-		if (_side == CIVILIAN) then {
+		if (_side isEqualType 0) then {
 			(count T_GETV("garrisons")) > 0
 		} else {
 			(count (T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side})) > 0
@@ -472,8 +472,8 @@ CLASS("Location", ["MessageReceiverEx" ARG "Storable"])
 	} ENDMETHOD;
 	
 	METHOD("getGarrisonsRecursive") {
-		params ["_thisObject", ["_side", CIVILIAN, [CIVILIAN]]];
-		private _myGarrisons = if (_side == CIVILIAN) then {
+		params ["_thisObject", ["_side", 0]];
+		private _myGarrisons = if (_side isEqualType 0) then {
 			+T_GETV("garrisons")
 		} else {
 			T_GETV("garrisons") select {CALLM0(_x, "getSide") == _side}

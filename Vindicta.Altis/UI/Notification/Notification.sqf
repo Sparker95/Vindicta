@@ -35,7 +35,7 @@ CLASS("Notification", "")
 	STATIC_VARIABLE("queue");		// Queue into which requests to create notifications are pushed
 
 	METHOD("new") {
-		params [P_THISOBJECT, P_STRING("_imagePath"), P_STRING("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration")];
+		params [P_THISOBJECT, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration")];
 
 		pr _group = (findDisplay 46) ctrlCreate ["NOTIFICATION_GROUP", -1];
 
@@ -43,19 +43,36 @@ CLASS("Notification", "")
 		OOP_INFO_1("  control: %1", _group);
 
 		// Set text of controls
-		pr _ctrl = uiNamespace getVariable "vin_not_icon";
+		pr _iconCtrl = uiNamespace getVariable "vin_not_icon";
 		if (_imagePath != "") then {
-			_ctrl ctrlSetText _imagePath;
+			_iconCtrl ctrlSetText _imagePath;
 		};
 
-		pr _ctrl = uiNamespace getVariable "vin_not_category";
-		_ctrl ctrlSetText _category;
+		pr _categoryCtrl = uiNamespace getVariable "vin_not_category";
+		pr _categoryBGCtrl = uiNamespace getVariable "vin_not_categorybg";
+		if(_category isEqualType []) then {
+			_category params ["_categoryText", "_categoryFG", "_categoryBG"];
+			_categoryCtrl ctrlSetText _categoryText;
+			_categoryCtrl ctrlSetTextColor _categoryFG;
+			_categoryBGCtrl ctrlSetTextColor _categoryBG;
+		} else {
+			if(_category != "") then {
+				_categoryCtrl ctrlSetText _category;
+			} else {
+				_categoryCtrl ctrlSetBackgroundColor [0,0,0,0];
+				_categoryBGCtrl ctrlSetTextColor [0,0,0,0];
+			};
+		};
 
-		pr _ctrl = uiNamespace getVariable "vin_not_text";
-		_ctrl ctrlSetText _text;
+		pr _textCtrl = uiNamespace getVariable "vin_not_text";
+		_textCtrl ctrlSetText _text;
 
-		pr _ctrl = uiNamespace getVariable "vin_not_hint";
-		_ctrl ctrlSetText _hint;
+		pr _hintCtrl = uiNamespace getVariable "vin_not_hint";
+		if(_hint != "") then {
+			_hintCtrl ctrlSetText _hint;
+		} else {
+			_hintCtrl ctrlSetBackgroundColor [0,0,0,0];
+		};
 
 		#ifndef _SQF_VM
 		_group ctrlSetPositionX safeZoneX;
@@ -139,7 +156,7 @@ CLASS("Notification", "")
 	Parameters: (string)_category, (string)_text, (string)_hint, (number)_duration (in seconds)
 	*/
 	STATIC_METHOD("createNotification") {
-		params [P_THISCLASS, P_STRING("_imagePath"), P_STRING("_category"), P_STRING("_text"), P_STRING("_hint"), P_NUMBER("_duration"), P_STRING("_sound")];
+		params [P_THISCLASS, P_STRING("_imagePath"), P_DYNAMIC("_category"), P_STRING("_text"), P_DYNAMIC("_hint"), P_NUMBER("_duration"), P_STRING("_sound")];
 
 		// Bail if not initialized
 		if (isNil {GETSV(_thisClass, "initDone")}) exitWith {

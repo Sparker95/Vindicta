@@ -23,6 +23,7 @@ Author: Sparker
 Unit_fnc_EH_Killed = compile preprocessFileLineNumbers "Unit\EH_Killed.sqf";
 Unit_fnc_EH_handleDamageInfantry = compile preprocessFileLineNumbers "Unit\EH_handleDamageInfantry.sqf";
 Unit_fnc_EH_GetIn = compile preprocessFileLineNumbers "Unit\EH_GetIn.sqf";
+Unit_fnc_EH_GetOut = compile preprocessFileLineNumbers "Unit\EH_GetOut.sqf";
 Unit_fnc_EH_aceCargoLoaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoLoaded.sqf";
 Unit_fnc_EH_aceCargoUnloaded = compile preprocessFileLineNumbers "Unit\EH_aceCargoUnloaded.sqf";
 
@@ -607,6 +608,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		// GetIn, if it's a vehicle
 		if (_catID == T_VEH) then {
 			_hO addEventHandler ["GetIn", Unit_fnc_EH_GetIn];
+			_hO addEventHandler ["GetOut", Unit_fnc_EH_GetOut];
 		};
 	} ENDMETHOD;
 

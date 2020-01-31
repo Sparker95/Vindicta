@@ -54,8 +54,8 @@ class NOTIFICATION_GROUP : MUI_GROUP_ABS
 			text = "UI\Images\gradient_LtoR.paa";
 
 			colorText[] = MUIC_MISSION;
-			//colorBackground[] = MUIC_MISSION;
-
+			// colorBackground[] = MUIC_MISSION;
+			onLoad = "uiNamespace setVariable ['vin_not_categorybg', _this#0]";
 		};
 
 		class NOTIFICATION_ICON

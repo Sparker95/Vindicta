@@ -535,7 +535,7 @@ CLASS("IntelCommanderAction", "Intel")
 				"INTEL INTERCEPTED BY RADIO"
 			};
 			pr _text = format ["%1 %2", _actionName, _timeStr];
-			pr _args = [_categoryText, _text, ""];
+			pr _args = [_categoryText, _text];
 			CALLSM("NotificationFactory", "createIntelCommanderAction", _args);
 		};
 
@@ -654,6 +654,7 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 		The source garrison that sent the reinforcements. Probably players have no use to this.
 	*/
 	VARIABLE_ATTR("srcGarrison", [ATTR_SERIALIZABLE]);
+
 	/* 
 		variable: tgtGarrison
 		The destination garrison that will be reinforced. Probably players have no use to this.

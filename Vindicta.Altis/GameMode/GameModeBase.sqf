@@ -440,8 +440,10 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			// Broadcast notification
 			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
 
+#ifdef RELEASE_BUILD
 			// Send msg to game manager to perform emergency saving
 			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
+#endif
 		};
 	} ENDMETHOD;
 
