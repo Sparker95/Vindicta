@@ -3,10 +3,12 @@ export class ConfigCppGenerator {
     // String which we will output to the config.cpp file
     private strCfgPatches : string;
     private strMPMissionsContent : string;
+    private strMissionsContent : string;
     private strMissionNameVersion : string;
 
     constructor(missionNameVersion : string) {
         this.strMPMissionsContent = "";
+        this.strMissionsContent = "";
         this.strMissionNameVersion = missionNameVersion;
 
         var s:string = "";
@@ -34,6 +36,7 @@ export class ConfigCppGenerator {
             map : string,           // Altis
             briefingName : string)  // Vindicta 1.2.3
     {
+        // Add MPMissions entries
         var s:string = this.strMPMissionsContent;
         s = s + '  class ' + name + '\n';
         s = s + '  {\n';
@@ -41,6 +44,15 @@ export class ConfigCppGenerator {
         s = s + '   directory = "' + this.strMissionNameVersion.toLowerCase() + '\\' + name + '.' + map + '";\n';
         s = s + '  };\n';
         this.strMPMissionsContent = s;
+
+        // Add Missions entries
+        var s:string = this.strMissionsContent;
+        s = s + '  class ' + name + '\n';
+        s = s + '  {\n';
+        s = s + '   briefingName = "' + briefingName + " " + map + '";\n';
+        s = s + '   directory = "' + this.strMissionNameVersion.toLowerCase() + '\\' + name + '.' + map + '";\n';
+        s = s + '  };\n';
+        this.strMissionsContent = s;
     }
 
     public getOutput() : string {
@@ -53,10 +65,21 @@ export class ConfigCppGenerator {
         strOut = strOut + '\n\n';
         strOut = strOut + 'class CfgMissions\n';
         strOut = strOut + '{\n';
+
         strOut = strOut + ' class MPMissions\n';
         strOut = strOut + ' {\n';
         strOut = strOut +   this.strMPMissionsContent;
         strOut = strOut + ' };\n';
+
+        strOut = strOut + ' class Missions\n';
+        strOut = strOut + ' {\n';
+        strOut = strOut + '  class ' + this.strMissionNameVersion + '\n';
+        strOut = strOut + '  {\n';
+        strOut = strOut + '  briefingName = "' + this.strMissionNameVersion + '";\n';
+        strOut = strOut +    this.strMissionsContent;
+        strOut = strOut + '  };\n';
+        strOut = strOut + ' };\n';
+
         strOut = strOut + '};\n';
 
         return strOut;
