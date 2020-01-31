@@ -56,7 +56,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["RHS - Russian Armed Forces", 		"tRHS_AFRF"],
 			["RHS - US Army", 		"tRHS_USAF"],
 			["RHS - Livonian Defence Forces", 		"tRHS_LDF"],
-			["RHS - HIDF",	"tRHS_HIDF"],
 			["WW2 - Heer",	"tWW2_Heer"],
 			["WW2 - UK",	"tWW2_UK"]//,
 			//["Test: must error", "test_error"]
@@ -151,8 +150,6 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName, _templatesVerify];
 		CALLM2(gGameManagerServer, "postMethodAsync", "initCampaignServer", _args);
 
-		// Close in game menu after creating
-		CALLM0(gInGameMenu, "close");
 	} ENDMETHOD;
 
 ENDCLASS;
