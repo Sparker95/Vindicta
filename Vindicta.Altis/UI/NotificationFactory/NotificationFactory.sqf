@@ -62,7 +62,7 @@ CLASS("NotificationFactory", "")
 
 		private _sound = "defaultNotification";
 		private _picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infoNews_ca.paa";
-		private _duration = 10;
+		private _duration = 5;
 		private _args = [_picture, [_category, RESOURCE_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;

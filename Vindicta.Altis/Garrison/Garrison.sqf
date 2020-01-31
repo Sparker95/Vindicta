@@ -1269,26 +1269,26 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		// Check if the unit is already in a garrison
-		private _unitGarrison = CALL_METHOD(_unit, "getGarrison", []);
+		private _unitGarrison = CALLM0(_unit, "getGarrison");
 		OOP_INFO_1("  unit's garrison: %1", _unitGarrison);
-		if(_unitGarrison != "") then {
+		if(_unitGarrison != NULL_OBJECT) then {
 			// Remove unit from its previous garrison
 			CALLM1(_unitGarrison, "removeUnit", _unit);
 
 			/*
 			diag_log format ["[Garrison::addUnit] Error: can't add a unit which is already in a garrison, garrison: %1, unit: %2: %3",
-				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
+				GET_VAR(_thisObject, "name"), _unit, CALLM0(_unit, "getData")];
 				*/
 		};
 
 		// Check if the unit is in a group
-		private _unitGroup = CALL_METHOD(_unit, "getGroup", []);
-		if (_unitGroup != "") then {
+		private _unitGroup = CALLM0(_unit, "getGroup");
+		if (_unitGroup != NULL_OBJECT) then {
 			diag_log format ["[Garrison::addUnit] Warning: adding a unit assigned to a group, garrison : %1, unit: %2: %3",
-				GET_VAR(_thisObject, "name"), _unit, CALL_METHOD(_unit, "getData", [])];
+				T_GETV("name"), _unit, CALLM0(_unit, "getData")];
 		};
 
-		private _units = GET_VAR(_thisObject, "units");
+		private _units = T_GETV("units");
 		_units pushBackUnique _unit;
 
 		// Spawn or despawn the unit if needed
@@ -1296,13 +1296,13 @@ CLASS("Garrison", "MessageReceiverEx");
 			pr _unitIsSpawned = CALLM0(_unit, "isSpawned");
 			if (!_unitIsSpawned) then {
 				pr _loc = T_GETV("location");
-				if (_loc == "") then {
-					pr _pos = CALLM0(_thisObject, "getPos");
+				if (_loc == NULL_OBJECT) then {
+					pr _pos = T_CALLM0("getPos");
 					pr _className = CALLM0(_unit, "getClassName");
 					pr _posAndDir = CALLSM2("Location", "findSafeSpawnPos", _className, _pos);
 					CALL_METHOD(_unit, "spawn", _posAndDir);
 				} else {
-					pr _unitData = CALL_METHOD(_unit, "getMainData", []);
+					pr _unitData = CALLM0(_unit, "getMainData");
 					pr _group = CALLM0(_unit, "getGroup");
 					pr _groupType = if (_group != "") then {
 						CALLM0(_group, "getType")
@@ -1310,8 +1310,8 @@ CLASS("Garrison", "MessageReceiverEx");
 						GROUP_TYPE_IDLE
 					};
 					pr _args = _unitData + [_groupType]; // ["_catID", 0, [0]], ["_subcatID", 0, [0]], ["_className", "", [""]], ["_groupType", "", [""]]
-					pr _posAndDir = CALL_METHOD(_loc, "getSpawnPos", _args);
-					CALL_METHOD(_unit, "spawn", _posAndDir);
+					pr _posAndDir = CALLM(_loc, "getSpawnPos", _args);
+					CALLM(_unit, "spawn", _posAndDir);
 				};
 			};
 		} else {
@@ -1333,7 +1333,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Add to the efficiency vector
 		CALLM0(_unit, "getMainData") params ["_catID", "_subcatID", "_className"];
-		CALLM3(_thisObject, "increaseCounters", _catID, _subcatID, _className);
+		T_CALLM3("increaseCounters", _catID, _subcatID, _className);
  
 		// Move all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
@@ -1440,7 +1440,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		
 		// Notify AI of the garrison about unit removal
 		pr _AI = T_GETV("AI");
-		if (_AI != "") then {
+		if (_AI != NULL_OBJECT) then {
 			CALLM1(_AI, "handleUnitsRemoved", [_unit]);
 		};
 		
@@ -1461,7 +1461,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 		// Remove all cargo of this unit too!
 		pr _unitAI = CALLM0(_unit, "getAI");
-		if (_unitAI != "") then {
+		if (_unitAI != NULL_OBJECT) then {
 			pr _unitCargo = CALLM0(_unitAI, "getCargoUnits");
 			{
 				T_CALLM1("removeUnit", _x);
@@ -2609,24 +2609,31 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		__MUTEX_LOCK;
+
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
+		// Get the inf handle, we only auto detach vics (which is all this function does) by player action
+		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
+			__MUTEX_UNLOCK;
+		};
+
 		// Get garrison of the unit that entered the vehicle
 		pr _garDest = CALLM0(_unitInf, "getGarrison");
-		if (_garDest == "") then {
+		if (_garDest == NULL_OBJECT) then {
+			// Shouldn't be possible...
 			_garDest = gGarrisonAmbient;
-			OOP_ERROR_2("handleGetInVehicle: infantry unit has no garrison: %1, %2", _unitInf, CALLM0(_unitInf, "getData"));
 		};
 
 		// Check garrison of the unit that entered this vehicle
 		if (_garDest != _thisObject) then {
 			// Remove the vehicle from its group
 			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
-			if (_vehGroup != "") then {
+			if (_vehGroup != NULL_OBJECT) then {
 				CALLM1(_vehGroup, "removeUnit", _unitVeh);
 			};
 
@@ -2637,23 +2644,18 @@ CLASS("Garrison", "MessageReceiverEx");
 
 			pr _location = T_CALLM0("getLocation");
 			pr _msg = if(_location != NULL_OBJECT) then {
-				format["%1 was automatically deatached from garrison at %2", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
+				format["%1 was automatically detached from garrison at %2", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"), CALLM0(_location, "getDisplayName")]
 			} else {
-				format["%1 was automatically deatached from garrison", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
+				format["%1 was automatically detached from garrison", getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")]
 			};
+
+			private _ourSide = T_CALLM0("getSide");
 
 			// Notify nearby players of what happened
-			pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
-			if(!isNull _infHandle && {isPlayer _infHandle}) then {
-				pr _nearbyClients = allPlayers select {_x distance _vicHandle < 100} apply { owner _x };
-				private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
-				REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
-				OOP_INFO_0(_msg);
-			};
-
-			// [parseText format["<t size='2.0'><t color='#0000ff'>%1</t> was auto <t color='#ff0000'>deattached</t> from garrison", 
-			// 	getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName")
-			// ]] remoteExec ["hintSilent", _nearbyClients, false];
+			pr _nearbyClients = allPlayers select {side group _x == _ourSide && (_x distance _vicHandle) < 100} apply { owner _x };
+			private _args = ["VEHICLE DETACHED", _msg, "It will be no longer be saved here"];
+			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
+			OOP_INFO_0(_msg);
 		};
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -2681,56 +2683,60 @@ CLASS("Garrison", "MessageReceiverEx");
 		ASSERT_THREAD(_thisObject);
 
 		__MUTEX_LOCK;
+
 		// Call this INSIDE the lock so we don't have race conditions
 		if(IS_GARRISON_DESTROYED(_thisObject)) exitWith {
 			WARN_GARRISON_DESTROYED;
 			__MUTEX_UNLOCK;
 		};
 
+		// Get the inf handle, we only auto attach vics (which is all this function does) by player action
+		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
+		if(isNull _infHandle or {!isPlayer _infHandle}) exitWith {
+			__MUTEX_UNLOCK;
+		};
+
 		// If the unit is the last one to leave the vehicle then we might
 		// assign the vehicle to the nearest locations garrison, if we are 
 		// at a location
-
 		pr _vicHandle = CALLM0(_unitVeh, "getObjectHandle");
 		if(isNull _vicHandle) exitWith {
-			OOP_ERROR_2("handleGetOutVehicle: vehicle unit doesn't have valid arma handle: %1, %2", _unitVeh, CALLM0(_unitVeh, "getData"));
+			__MUTEX_UNLOCK; 
+			pr _data = CALLM0(_unitVeh, "getData");
+			OOP_ERROR_2("handleGetOutVehicle: vehicle unit doesn't have valid arma handle: %1, %2", _unitVeh, _data);
 		};
-		// Crew remains in the vehicle so we don't change the owner
-		if (count (crew _vicHandle) != 0) exitWith {};
+
+		// Players remain in the vehicle so we don't change the owner
+		if ({ isPlayer _x } count (crew _vicHandle) != 0) exitWith { __MUTEX_UNLOCK; };
+
+		private _infSide = side group _infHandle;
 
 		// Find nearest appropriate garrison
 		// Use the side of the inf unit not the garrison, as the garrison isn't necessarily the same side as the unit
-		pr _infHandle = CALLM0(_unitInf, "getObjectHandle");
-		pr _infSide = if(!isNull _infHandle) then {
-			side _infHandle
-		} else {
-			pr _infGarrison = CALLM0(_unitInf, "getGarrison");
-			GETV(_infGarrison, "getSide")
-		};
-		hint str _infSide;
-
 		pr _ourLocs = CALLSM1("Location", "getLocationsAtPos", getPos _vicHandle) apply {
 			[getPos _vicHandle distance CALLM0(_x, "getPos"), _x, CALLM1(_x, "getGarrisons", _infSide)]
 		} select {
+			// garrisons exist
 			count (_x#2) > 0
 		};
 
 		// No friendly location found
-		if(count _ourLocs == 0) exitWith {};
+		if(count _ourLocs == 0) exitWith { 
+			__MUTEX_UNLOCK;
+		};
 
+		// Get closest one
 		_ourLocs sort ASCENDING;
 		_ourLocs#0 params ["_dist", "_nearestLocation", "_ourGarrisons"];
 
-		// pr _size = GETV(_nearestLocation, "boundingRadius");
-
-		// Get garrison of the unit that left the vehicle
+		// Get garrison of the location
 		pr _garDest = _ourGarrisons#0;
 
-		// Check garrison of the unit that left this vehicle
+		// This can't really happen if _thisObject is always the ambient garrison, but may as well check
 		if (_garDest != _thisObject) then {
 			// Remove the vehicle from its group
 			pr _vehGroup = CALLM0(_unitVeh, "getGroup");
-			if (_vehGroup != "") then {
+			if (_vehGroup != NULL_OBJECT) then {
 				CALLM1(_vehGroup, "removeUnit", _unitVeh);
 			};
 
@@ -2739,7 +2745,7 @@ CLASS("Garrison", "MessageReceiverEx");
 
 			// Find nearest appropriate garrison
 			// Notify nearby players of what happened if its on player side
-			pr _nearbyClients = allPlayers select {side _x == _infSide && _x distance _vicHandle < 100} apply { owner _x };
+			pr _nearbyClients = allPlayers select {side group _x == _infSide && (_x distance _vicHandle) < 100} apply { owner _x };
 
 			private _args = ["VEHICLE ATTACHED", format["%1 was automatically attached to garrison at %2", 
 				getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"),
@@ -2747,11 +2753,6 @@ CLASS("Garrison", "MessageReceiverEx");
 			], "It will be saved here"];
 			REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createResourceNotification", _args, _nearbyClients, false);
 			OOP_INFO_0(_msg);
-			// CALLSM("NotificationFactory", "createHint", _args);
-			// [parseText format["<t size='2.0'><t color='#0000ff'>%1</t> was autoattached to garrison at <t color='#ffff00'>%2</t></t>", 
-			// 	getText (configFile >> "cfgVehicles" >> typeOf _vicHandle >> "displayName"),
-			// 	CALLM0(_nearestLocation, "getDisplayName")
-			// ]] remoteExec ["hintSilent", _nearbyClients, false];
 		};
 		__MUTEX_UNLOCK;
 	} ENDMETHOD;
@@ -2769,7 +2770,6 @@ CLASS("Garrison", "MessageReceiverEx");
 
 	Returns: nil
 	*/
-
 	METHOD("handleCargoLoaded") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_unitCargo"), P_OOP_OBJECT("_unitVeh")];
 
