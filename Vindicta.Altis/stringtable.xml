@@ -18,6 +18,12 @@
 				<Original>Not looking at anything</Original>
 				<German>Nichts ausgewählt</German>
 			</Key>
+			<Key ID="STR_JNC_TARGET_HINT">
+				<Original>Loading to inventory in %1</Original>
+			</Key>
+			<Key ID="STR_JNC_MODIFIER_HINT">
+				<Original>Shift and Ctrl keys change how many items you move at once</Original>
+			</Key>
 		</Container>
 	</Package>
 	<Package name="Arsenal">
@@ -30,9 +36,15 @@
 				<Original>Arsenal to external Inventory</Original>
 				<German>In Fahrzeug laden</German>
 			</Key>
+			<Key ID="STR_JNA_ACT_CONTAINER_OPEN_DESC">
+				<Original>Select something with an inventory to load into</Original>
+			</Key>
 			<Key ID="STR_JNA_ACT_UNLOAD">
 				<Original>External Inventory to Arsenal</Original>
 				<German>Fahrzeug entladen</German>
+			</Key>
+			<Key ID="STR_JNA_ACT_UNLOAD_DESC">
+				<Original>Please select an object with an inventory, or another Arsenal to load from</Original>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR1">
 				<Original>Not looking at an object</Original>
@@ -42,8 +54,8 @@
 				<German>Objekt zu weit entfernt</German>
 			</Key>
 			<Key ID="STR_JNA_ACT_CONTAINER_SELECTERROR3">
-				<Original>Object does not have any inventory</Original>
-				<German>Objekt hat kein Inventar</German>
+				<Original>Object does not have any inventory or Arsenal</Original>
+				<German>Objekt hat kein Inventar oder Fahrzeug</German>
 			</Key>
 		</Container>
 	</Package>
@@ -164,6 +176,12 @@
 			</Key>
 			<Key ID="STR_UM_HINT_ARRESTED">
 				<Original>CAPTIVE</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_MORPHINE">
+				<Original>INJECTING SOME MORPHINE?</Original>
+			</Key>
+			<Key ID="STR_UM_HINT_ILLEGAL">
+				<Original>DO NOT DO THAT!</Original>
 			</Key>
 			<Key ID="STR_UM_HINT_INVENTORY">
 				<Original>ACCESSING INVENTORY</Original>

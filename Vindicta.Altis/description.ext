@@ -32,12 +32,12 @@ saving = 0;
 unsafeCVL = 1;
 
 // ---- Respawn ----
-respawn = 3;
+respawn = 2; // 2 - instant
 respawnButton = 1; // 0: disabled - 1: enabled. Default: 1
 respawnDelay = 2; // Default: ?
 // respawnOnStart = 1;
 DisabledAI = 1;
-respawnTemplates[] = {"MenuPosition"};
+respawnTemplates[] = {"Counter"};
 
 class Header
 {

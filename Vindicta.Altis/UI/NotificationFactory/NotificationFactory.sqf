@@ -64,6 +64,19 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
+	// Critical notification
+	STATIC_METHOD("createCritical") {
+		params [P_THISOBJECT, P_STRING("_text")];
+
+		private _sound = "defaultNotification";
+		private _picture = ""; // Default picture for now
+		private _duration = 15;
+		private _category = "CRITICAL MISSION ERROR";
+		private _hint = ""; // Override hint!
+		private _args = [_picture, _category, _text, _hint, _duration, _sound];
+		CALLSM("Notification", "createNotification", _args);
+	} ENDMETHOD;
+
 	// Basic UI notification
 	STATIC_METHOD("createBasicUI") {
 		params [P_THISOBJECT, P_NUMBER("_type"), P_STRING("_text"), P_STRING("_hint")];
@@ -77,9 +90,9 @@ CLASS("NotificationFactory", "")
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
 
+	// Intel about us spotting something
 	STATIC_METHOD("createSpottedTargets") {
 		params [P_THISOBJECT, P_POSITION("_pos")];
-
 		private _sound = "defaultNotification";
 		private _picture = ""; // Default picture for now
 		private _duration = 30;

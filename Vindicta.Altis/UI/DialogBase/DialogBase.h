@@ -69,7 +69,7 @@ class MUI_DIALOG_BASE
 			w = 0.05;
 			h = 0.04;
 			style = ST_PICTURE + ST_KEEP_ASPECT_RATIO; 
-			text = "\z\vindicta\addons\ui\pictures\unknown_ca.paa"
+			text = "\z\vindicta\addons\ui\pictures\unknown_ca.paa";
 			colorText[] = MUIC_BLACK;
 			colorBackground[] = MUIC_TRANSPARENT;
 			colorFocused[] = MUIC_TRANSPARENT;

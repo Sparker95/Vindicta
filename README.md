@@ -4,7 +4,10 @@
 It is a multiplayer Co-Op mission for ARMA III. The goal of this project is to make a guerrilla warfare scenario for ARMA III, hugely influenced by a similar mission by Barbolani: Antistasi (http://www.a3antistasi.enjin.com/).
 
 ## How do I run it??
-It's not on steam yet, but you can try to play it already. Grab the .pbo file from the Releases bar above. Also you will to load some mods. Instructions are here: https://github.com/Sparker95/Vindicta/wiki/Setup-mission
+You should download the mission from steam workshop. **The GitHub releases are severely outdated.**
+https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+
+**For running on your dedicated server, install the folder you download from Workshop as a mod.**
 
 ## Key features
 * Multi-level AI (commander, garrison, group, unit level) which can plan ahead and execute different tasks (attacks on spotted targets/locations, sending reinforcements, dispatching patrols, managing its logistics)
@@ -16,7 +19,14 @@ It's not on steam yet, but you can try to play it already. Grab the .pbo file fr
 * Undercover system which takes into account player's loadout, actions, exposure in vehicle 
 
 ## Current state of development
-Most of the framework is finished. Mosft of the features are fully or partially implemented. Remaining work is concentrated on playtests and finishing the non-framework parts of the project.
+The project is in 'Alpha' stage. Most of the features are implemented.
+
+## Links
+Steam WorkShop download: https://steamcommunity.com/sharedfiles/filedetails/?id=1964186045
+
+BI Forum thread:https://forums.bohemia.net/forums/topic/227302-mpcoop-vindicta-alpha/
+
+Our Discord: https://discord.gg/rDhxKBp
 
 ## Technical implementation
 * Most of the code is being developed with OOP-Light (https://github.com/Sparker95/OOP-Light), a custom OOP implementation for SQF.
@@ -35,7 +45,3 @@ BI's tool support for their SQF language is non-existant. We are using these too
 * GPS by AmouryD (https://github.com/AmauryD/A3GPS)
 * KP Liberation builder (https://github.com/KillahPotatoes/KP-Liberation/tree/master/_tools)
 * Arma3 AddOn Project template by ACE team (https://github.com/KillahPotatoes/KP-Liberation/tree/master/_tools)
-
-## Our Discord
-If you have ideas or questions or you want to contribute, join our Discord server:
-https://discord.gg/rDhxKBp

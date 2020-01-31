@@ -36,6 +36,12 @@ CLASS("GameManager", "MessageReceiverEx")
 		T_SETV("campaignStartDate", date);
 		T_SETV("gameModeClassName", "_noname_");
 
+		#ifndef RELEASE_BUILD
+		if(HAS_INTERFACE) then {
+			[] call pr0_fnc_initDebugMenu;
+		};
+		#endif
+
 		// Create a message loop for ourselves
 		gMessageLoopGameManager = NEW("MessageLoop", ["Game Mode Manager Thread" ARG 10 ARG 0.2]); // 0.2s sleep interval, this thread doesn't need to run fast anyway
 	} ENDMETHOD;
@@ -76,11 +82,22 @@ CLASS("GameManager", "MessageReceiverEx")
 			// Initialize notification system
 			CALLSM0("Notification", "staticInit");
 
-			// Main UI initialization sequence
-			// But we must wait until UI exists on client
+			// Main initialization sequence
 			0 spawn {
+				// Wait until we have UI
 				waitUntil {!(isNull (finddisplay 12)) && !(isNull (findDisplay 46))};
 				call compile preprocessfilelinenumbers "UI\initPlayerUI.sqf";
+
+				// Show notification
+				CALLSM1("NotificationFactory", "createSystem", "Press [U] to setup the mission or load a saved game");
+
+				// Exception for SP, we must wait till player spawns, then do more init, because onPlayerRespawn.sqf does not work there
+				if (!isMultiplayer) then {
+					waitUntil {!(isNull player) && (count allUnits > 1)}; // We are waiting till player and all the other units for MP slots are there
+
+					// Destroy other MP playable units
+					{deleteVehicle _x} forEach (allUnits) - [player];
+				};
 			};
 
 
@@ -181,7 +198,7 @@ CLASS("GameManager", "MessageReceiverEx")
 	} ENDMETHOD;
 
 	METHOD("saveGame") {
-		params [P_THISOBJECT];
+		params [P_THISOBJECT, P_BOOL("_recovery")];
 
 		// Bail if we are not server
 		if (!isServer) exitWith {
@@ -208,11 +225,22 @@ CLASS("GameManager", "MessageReceiverEx")
 		SETV(_header, "templates", []); // todo NYI
 
 		// Generate a unique record name
-		pr _recordNameBase = format ["%1 #%2 %3",
+		pr _recordNameBase = if (!_recovery) then {			// Normal save name
+					format ["%1 #%2 %3",
 					T_GETV("campaignName"),
 					T_GETV("saveID"),
 					date call misc_fnc_dateToISO8601];
+		} else {
+					format ["[RECOVERY] %1 #%2 %3",			// Save name in case of recovery
+					T_GETV("campaignName"),
+					T_GETV("saveID"),
+					date call misc_fnc_dateToISO8601];
+		};
+#ifdef RELEASE_BUILD
 		pr _recordNameFinal = _recordNameBase;
+#else
+		pr _recordNameFinal = format["DEV %1", _recordNameBase];
+#endif
 		pr _i = 1;
 		while {CALLM1(_storage, "recordExists", _recordNameFinal)} do {
 			_recordNameFinal = format ["%1 %2", _recordNameBase, _i];
@@ -412,6 +440,11 @@ CLASS("GameManager", "MessageReceiverEx")
 		params [P_THISOBJECT, P_NUMBER("_clientOwner")];
 		T_CALLM0("saveGame");
 		T_CALLM1("clientRequestAllSavedGames", _clientOwner);	// Send updated saved game list to client
+	} ENDMETHOD;
+
+	METHOD("serverSaveGameRecovery") {
+		params [P_THISOBJECT];
+		T_CALLM1("saveGame", true);
 	} ENDMETHOD;
 
 	METHOD("clientOverwriteSavedGame") {
