@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@master
     - name: Validate SQF with SQF-VM
       run: | 
-        Start-Process -FilePath $Env:ComSpec -ArgumentList '/c devsetup.bat'
+        .\devsetup.bat
         cd Vindicta.Altis
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
 
