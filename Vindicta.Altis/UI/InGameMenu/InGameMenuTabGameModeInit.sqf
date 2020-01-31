@@ -56,6 +56,7 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 			["RHS - Russian Armed Forces", 		"tRHS_AFRF"],
 			["RHS - US Army", 		"tRHS_USAF"],
 			["RHS - Livonian Defence Forces", 		"tRHS_LDF"],
+			["RHS - HIDF",	"tRHS_HIDF"],
 			["WW2 - Heer",	"tWW2_Heer"],
 			["WW2 - UK",	"tWW2_UK"]//,
 			//["Test: must error", "test_error"]
