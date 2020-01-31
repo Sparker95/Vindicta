@@ -21,7 +21,8 @@ jobs:
     - name: Checkout the source code
       uses: actions/checkout@master
     - name: Validate SQF with SQF-VM
-      run: |
+      run: | 
+        call devsetup.bat
         cd Vindicta.Altis
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
 
