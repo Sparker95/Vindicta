@@ -20,7 +20,7 @@ if(typeName (_this select 1) isEqualTo "SCALAR")then{//[_index, _item] and [_ind
 
 		if!(_item isEqualTo "")then{
 
-			if(_index == -1)exitWith{["ERROR in additemarsenal: %1", _this] call BIS_fnc_error};
+			if(_index == -1)exitWith{["ERROR in removeitemarsenal: %1", _this] call BIS_fnc_error};
 			if(_index == IDC_RSCDISPLAYARSENAL_TAB_CARGOMAG)then{_index = IDC_RSCDISPLAYARSENAL_TAB_CARGOMAGALL};
 
 			//update

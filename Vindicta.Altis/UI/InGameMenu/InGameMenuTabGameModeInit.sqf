@@ -151,6 +151,8 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		pr _args = [clientOwner, _gameModeClassName, _gameModeParams, _campaignName, _templatesVerify];
 		CALLM2(gGameManagerServer, "postMethodAsync", "initCampaignServer", _args);
 
+		// Close in game menu after creating
+		CALLM0(gInGameMenu, "close");
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -3,6 +3,7 @@
 *.sqdev
 .settings
 node_modules
+package-lock.json
 
 #VSCODE
 .vscode/ipch/*
@@ -42,3 +43,7 @@ Vindicta-Addon/addons/missions/*
 ~Vindicta-Addon/addons/missions/$PBOPREFIX$
 ~Vindicta-Addon/addons/missions/script_component.hpp
 configs/briefingName.hpp
+
+tools/buildtool/dist/
+
+Vindicta.Altis/config/user_local_config.hpp

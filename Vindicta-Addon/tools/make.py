@@ -668,7 +668,7 @@ def get_private_keyname(commitID,module="main"):
     global pbo_name_prefix
     global project_version
 
-    keyName = str("{prefix}{version}-{commit_id}".format(prefix=pbo_name_prefix,version=project_version,commit_id=commitID))
+    keyName = pbo_name_prefix
     return keyName
 
 
@@ -932,7 +932,8 @@ See the make.cfg file for additional build options.
 
         commit_id = get_commit_ID()
         get_project_version(version_increments)
-        key_name = versionStamp = get_private_keyname(commit_id)
+        key_name = "vindicta"
+        versionStamp = get_private_keyname(commit_id)
         print_green ("module_root: {}".format(module_root))
 
         if (os.path.isdir(optionals_root)):

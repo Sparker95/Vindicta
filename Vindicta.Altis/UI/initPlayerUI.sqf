@@ -39,9 +39,15 @@ gBuildUI = NEW("BuildUI", []);
 	params ["_displayorcontrol", "_key", "_shift", "_ctrl", "_alt"];
 	//diag_log format ["KeyDown: %1", _this];
 	if (_key == DIK_U) then { // U key
-		if (isNil "gInGameMenu" || {!IS_OOP_OBJECT(gInGameMenu)}) then {
-			gInGameMenu = NEW("InGameMenu", []);
+		// Close previous menu
+		if (!(isNil "gInGameMenu")) then {
+			if (IS_OOP_OBJECT(gInGameMenu)) then {
+				DELETE(gInGameMenu);
+			};
 		};
+
+		// Create the menu again
+		gInGameMenu = NEW("InGameMenu", []);
 		true
 	} else {
 		false
@@ -50,3 +56,5 @@ gBuildUI = NEW("BuildUI", []);
 
 // Update player markers
 [true] call ui_fnc_enablePlayerMarkers;
+
+gPlayerUIInitialized = true;

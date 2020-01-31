@@ -50,6 +50,36 @@ CLASS("CivilWarLocationData", "LocationGameModeData")
 		T_SETV("forceEnablePlayerRespawn", _enable);
 	} ENDMETHOD;
 
+	// Overrides the location name
+	/* public virtual */ METHOD("getDisplayColor") {
+		params [P_THISOBJECT];
+		private _loc = T_GETV("location");
+		if(CALLM1(_loc, "hasGarrisons", FRIENDLY_SIDE)) then {
+			[FRIENDLY_SIDE, false] call BIS_fnc_sideColor
+		} else {
+			if(CALLM1(_loc, "hasGarrisons", ENEMY_SIDE)) then {
+				[ENEMY_SIDE, false] call BIS_fnc_sideColor
+			} else {
+				[1,1,1,1]
+			};
+		};
+	} ENDMETHOD;
+
+	/* virtual override */ METHOD("getMapInfoEntries") {
+		private _return = [];
+		CRITICAL_SECTION {
+			params [P_THISOBJECT];
+			// By default get the amount of recruits we can recruit at this place
+			pr _loc = T_GETV("location");
+			pr _pos = CALLM0(_loc, "getPos");
+			pr _cities = CALLM1(gGameMode, "getRecruitCities", _pos);
+			pr _nRecruits = CALLM1(gGameMode, "getRecruitCount", _cities);
+			_return = [
+				["AVAILABLE RECRUITS", str _nRecruits]
+			];
+		};
+		_return
+	} ENDMETHOD;
 
 	// STORAGE
 	/* override */ METHOD("postDeserialize") {

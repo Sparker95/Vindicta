@@ -24,7 +24,7 @@ this addHandgunItem "rhsusf_mag_17Rnd_9x19_JHP";
 this addWeapon "rhssaf_zrak_rd7j";
 
 this addItemToUniform "FirstAidKit";
-for "_i" from 1 to 10 do {this addItemToVest "rhs_5Rnd_338lapua_t5000";};
+for "_i" from 1 to 8 do {this addItemToVest "rhs_5Rnd_338lapua_t5000";};
 for "_i" from 1 to 3 do {this addItemToVest "rhsusf_mag_17Rnd_9x19_JHP";};
 for "_i" from 1 to 2 do {this addItemToVest "rhs_grenade_mkii_mag";};
 this addItemToVest "rhs_grenade_mki_mag";
@@ -34,5 +34,3 @@ this linkItem "ItemCompass";
 this linkItem "ItemWatch";
 this linkItem "ItemRadio";
 this linkItem "NVGoggles_OPFOR";
-
-

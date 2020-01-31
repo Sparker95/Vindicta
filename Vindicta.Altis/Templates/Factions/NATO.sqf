@@ -125,6 +125,7 @@ _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tNATO"];
+_array set [T_FACTION, T_FACTION_Military];
 
 
 _array // End template

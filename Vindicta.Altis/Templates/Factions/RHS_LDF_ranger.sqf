@@ -11,9 +11,9 @@ _inf = [];
 _inf resize T_INF_SIZE;
 _inf set [T_INF_DEFAULT, ["I_soldier_F"]];					//Default infantry if nothing is found
 
-_inf set [T_INF_officer, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun"]];
+_inf set [T_INF_officer, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
 _inf set [T_INF_rifleman, ["RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
-_inf set [T_INF_SL, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun"]];
+_inf set [T_INF_SL, ["RHS_LDF_ranger_TL_SMG","RHS_LDF_ranger_TL_rifle","RHS_LDF_ranger_TL_shotgun","RHS_LDF_ranger_SMG","RHS_LDF_ranger_shotgun","RHS_LDF_ranger_rifle"]];
 /*
 _inf set [T_INF_TL, ["B_GEN_Soldier_F"]];
 _inf set [T_INF_SL, ["B_GEN_Soldier_F"]];
@@ -41,7 +41,7 @@ _inf set [T_INF_unarmed, ["B_GEN_Soldier_F"]];
 //==== Vehicles ====
 _veh = +(tDefault select T_VEH);
 _veh set [T_VEH_DEFAULT, ["I_E_Offroad_01_F"]]; //TODO: change skin to forest ranger
-_veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F"]];
+_veh set [T_VEH_car_unarmed, ["I_E_Offroad_01_F", "I_E_Offroad_01_comms_F", "I_E_Offroad_01_covered_F"]];
 
 //==== Drones ====
 /*
@@ -71,9 +71,10 @@ _group set [T_GROUP_DEFAULT, [[[T_INF, T_INF_officer], [T_INF, T_INF_rifleman]]]
 //==== Set arrays ====
 _array set [T_INF, _inf];
 _array set [T_VEH, _veh];
-_array set [T_DRONE, _drone];
+//_array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tRHS_LDF_ranger"];
+_array set [T_FACTION, T_FACTION_Police];
 
 _array

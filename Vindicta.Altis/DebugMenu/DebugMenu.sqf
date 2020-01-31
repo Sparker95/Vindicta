@@ -58,6 +58,10 @@ pr0_fnc_initDebugMenu = {
 	};
 }] call pr0_fnc_addDebugMenuItem;
 
+["Player", "Open Infinite Arsenal", {
+	["Open", true] call bis_fnc_arsenal;
+}] call pr0_fnc_addDebugMenuItem;
+
 if(isServer) then {
 	gLocationMarkersOn = true;
 	gGarrisonMarkersOn = true;

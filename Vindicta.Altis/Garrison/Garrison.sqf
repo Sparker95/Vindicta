@@ -836,6 +836,18 @@ CLASS("Garrison", "MessageReceiverEx");
 		_return
 	} ENDMETHOD;
 
+	// |                         G E T  O F F I C E R  U N I T S
+	/*
+	Method: getOfficerUnits
+	Returns only officer units.
+
+	Returns: Array of officers.
+	*/
+	METHOD("getOfficerUnits") {
+		params [P_THISOBJECT];
+		T_CALLM1("findUnits", [[T_INF ARG T_INF_officer]]);
+	} ENDMETHOD;
+
 	// |                         G E T   V E H I C L E   U N I T S
 	/*
 	Method: getVehiucleUnits
@@ -2069,6 +2081,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			OOP_WARNING_1("Not enough resources to add units from composition: %1", _garSrc);
 			OOP_WARNING_1("  Other garrison's composition: %1", _compositionNumbers);
 			OOP_WARNING_1("  Required         composition: %1", _comp);
+			__MUTEX_UNLOCK;
 			false
 		};
 
@@ -2736,7 +2749,7 @@ CLASS("Garrison", "MessageReceiverEx");
 		} forEach _query;
 
 		__MUTEX_UNLOCK;
-		_return		
+		_return
 	} ENDMETHOD;
 	
 	/*
@@ -2767,6 +2780,17 @@ CLASS("Garrison", "MessageReceiverEx");
 	METHOD("countInfantryUnits") {
 		params [P_THISOBJECT];
 		T_GETV("countInf")
+	} ENDMETHOD;
+
+	/*
+	Method: countOfficers
+	Returns the amount of officers
+
+	Returns: Number
+	*/
+	METHOD("countOfficers") {
+		params [P_THISOBJECT];
+		count T_CALLM0("getOfficerUnits");
 	} ENDMETHOD;
 
 	/*
@@ -2885,8 +2909,8 @@ CLASS("Garrison", "MessageReceiverEx");
 		pr _gars = GETSV("Garrison", "all");
 		pr _garsToCheck = _gars select {
 			if (CALLM0(_x, "isAlive")) then {
-				pr _pos = CALLM0(_x, "getPos");
-				((_pos distance2D _pos) < 1500) && // todo arbitrary number for now
+				pr _garPos = CALLM0(_x, "getPos");
+				((_garPos distance2D _pos) < 1500) && // todo arbitrary number for now
 				((_pos distance2D [0, 0, 0]) > 1) // Ignore garrisons with default pos at [0, 0, 0]
 			} else {
 				false

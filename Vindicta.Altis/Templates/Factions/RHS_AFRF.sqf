@@ -63,7 +63,7 @@ _veh set [T_VEH_car_armed, ["rhsgref_nat_uaz_spg9", "rhsgref_nat_uaz_dshkm", "rh
 
 _veh set [T_VEH_MRAP_unarmed, ["rhs_tigr_msv", "rhs_tigr_m_msv", "rhsgref_BRDM2UM_msv"]];
 _veh set [T_VEH_MRAP_HMG, ["rhs_tigr_sts_msv", "rhsgref_BRDM2_msv", "rhsgref_BRDM2_HQ_msv"]];
-_veh set [T_VEH_MRAP_GMG, ["rhs_tigr_sts_msv", "rhsgref_BRDM2_ATGM_msv"]];
+_veh set [T_VEH_MRAP_GMG, ["rhs_tigr_sts_msv"]];
 
 _veh set [T_VEH_IFV, ["rhs_bmp2_tv", "rhs_bmp2k_tv", "rhs_bmp3_msv", "rhs_bmp3_late_msv"]];
 _veh set [T_VEH_APC, ["rhs_btr80_msv", "rhs_btr80a_msv"]];
@@ -137,6 +137,6 @@ _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tRHS_AFRF"];
-
+_array set [T_FACTION, T_FACTION_Military];
 
 _array // End template

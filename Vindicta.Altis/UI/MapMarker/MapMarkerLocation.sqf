@@ -284,6 +284,8 @@ CLASS(CLASS_NAME, "MapMarker")
 
 			case LOCATION_TYPE_UNKNOWN: { "mil_unknown"; };
 
+			case LOCATION_TYPE_RESPAWN: { "respawn_unknown" };
+
 			// The rest are military places
 			default {
 				"vin_location_outpost";
