@@ -596,7 +596,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	// Override this to do stuff when player spawns
 	// Call the method of base class(that is, this class)
 	/* protected virtual */METHOD("playerSpawn") {
-		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
+		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		OOP_INFO_1("PLAYER SPAWN: %1", _this);
 
@@ -666,7 +666,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Init the Sound Monitor on player
 		NEW("SoundMonitor", [_newUnit]);
 
-
 		// Action to start building stuff
 		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
 						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
@@ -720,7 +719,13 @@ CLASS("GameModeBase", "MessageReceiverEx")
 						"", //selection
 						""]; //memoryPoint
 
-		T_CALLM1("loadPlayerInfo", _newUnit);
+		if(!(_restoreData isEqualTo [])) then {
+			[player, _restoreData, _restorePosition] call GameMode_fnc_restorePlayerInfo;
+			REMOTE_EXEC_CALL_METHOD(gGameMode, "clearPlayerInfo", [player], ON_SERVER);
+			true
+		} else {
+			false
+		}
 	} ENDMETHOD;
 
 	// Player death event handler in SP
@@ -1491,10 +1496,12 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	};
 
 	GameMode_fnc_restorePlayerInfo = {
-		params [P_OBJECT("_player"), P_ARRAY("_arr")];
+		params [P_OBJECT("_player"), P_ARRAY("_arr"), P_BOOL("_positionAsWell")];
 
 		//_player setName _arr#1;
-		_player setPosASL _arr#2;
+		if(_positionAsWell) then {
+			_player setPosASL _arr#2;
+		};
 
 		private _inventoryObj = ["new", _player] call OO_INVENTORY;
 		["setInventory", _arr#3] call _inventoryObj;
@@ -1513,23 +1520,25 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} else {
 			_playerInfoArray set [_existing, _obj];
 		};
+		diag_log format["Saving player info for %1: %2", name _unit, _obj];
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_obj], owner _unit, false);
 	} ENDMETHOD;
 
-	METHOD("loadPlayerInfo") {
+
+	METHOD("syncPlayerInfo") {
 		params [P_THISOBJECT, P_OBJECT("_player")];
 		T_PRVAR(playerInfoArray);
 		private _uid = getPlayerUID _player;
 		private _existing = _playerInfoArray findIf {
 			_x#0 isEqualTo _uid
 		};
-		if(_existing != NOT_FOUND) then {
-			private _playerInfo = _playerInfoArray#_existing;
-			[_player, _playerInfo] call GameMode_fnc_restorePlayerInfo;
-			_playerInfoArray deleteAt _existing;
-			true
+		private _playerInfo = if(_existing != NOT_FOUND) then {
+			_playerInfoArray#_existing;
 		} else {
-			false
-		}
+			[]
+		};
+		diag_log format["Syncing player info for %1: %2", name _player, _playerInfo];
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [_playerInfo], owner _player, NO_JIP);
 	} ENDMETHOD;
 
 	METHOD("clearPlayerInfo") {
@@ -1542,7 +1551,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(_existing != NOT_FOUND) then {
 			_playerInfoArray deleteAt _existing;
 		};
+		REMOTE_EXEC_CALL_STATIC_METHOD("ClientMapUI", "setPlayerRestoreData", [[]], owner _player, false);
 	} ENDMETHOD;
+
+	METHOD("getPlayerInfo") {
+		params [P_THISOBJECT, P_OBJECT("_player")];
+		T_PRVAR(playerInfoArray);
+		private _uid = getPlayerUID _player;
+		private _existing = _playerInfoArray findIf {
+			_x#0 isEqualTo _uid
+		};
+		if(_existing != NOT_FOUND) then {
+			_playerInfoArray#_existing
+		} else {
+			[]
+		}
+	} ENDMETHOD;
+
 	// -------------------------------------------------------------------------
 	// |                             S T O R A G E                             |
 	// -------------------------------------------------------------------------
@@ -1677,6 +1702,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		if(isNil{T_GETV("playerInfoArray")}) then {
 			T_SETV("playerInfoArray", []);
 		};
+
+		// Send players their restore points from this save, if they have any
+		{
+			T_CALLM1("syncPlayerInfo", _x);
+		} forEach allPlayers;
 
 		// Create timer service
 		gTimerServiceMain = NEW("TimerService", [TIMER_SERVICE_RESOLUTION]); // timer resolution

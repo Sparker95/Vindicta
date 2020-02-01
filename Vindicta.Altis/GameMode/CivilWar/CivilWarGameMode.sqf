@@ -227,14 +227,14 @@ CLASS("CivilWarGameMode", "GameModeBase")
 
 		["Game Mode", "Update game mode now", {
 			// Call to server to get the info
-			REMOTE_EXEC_CALL_METHOD(gGameMode, "update", [], 0);
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "update", [], ON_SERVER);
 		}] call pr0_fnc_addDebugMenuItem;
 
 	} ENDMETHOD;
 
 	// Overrides GameModeBase, we want to give the player some starter gear and holster their weapon for them.
 	/* protected override */ METHOD("playerSpawn") {
-		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
+		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay", P_ARRAY("_restoreData"), P_BOOL("_restorePosition")];
 
 		// Bail if player has joined one of the not supported sides
 		private _isAdmin = call misc_fnc_isAdminLocal;
@@ -250,8 +250,8 @@ CLASS("CivilWarGameMode", "GameModeBase")
 		};
 
 		// Call the base class method
-		private _loaded = CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay]);
-		if(!_loaded) then {
+		CALL_CLASS_METHOD("GameModeBase", _thisObject, "playerSpawn", [_newUnit ARG _oldUnit ARG _respawn ARG _respawnDelay ARG _restoreData ARG _restorePosition]);
+		if(!_restorePosition) then {
 			// Always spawn with a random civi kit and pistol.
 			_newUnit call fnc_selectPlayerSpawnLoadout;
 			// Holster pistol

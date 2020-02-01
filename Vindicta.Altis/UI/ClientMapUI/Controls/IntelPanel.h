@@ -126,6 +126,20 @@ class CMUI_BUTTON_PLAYERS : MUI_BUTTON_TXT_CHECKBOX_LIKE {
 
 };
 
+class CMUI_BUTTON_RESTORE : MUI_BUTTON_TXT 
+{
+    IDC = -1; 
+    x = safeZoneX + safeZoneW * 0.353; 
+    y = safeZoneY + safeZoneH * 0.757; 
+    w = safeZoneW * 0.292; 
+    h = safeZoneH * 0.065; 
+    text = "RESTORE"; 
+
+	colorBackground[] = {0.2, 0, 0.60, 1};
+	colorBackgroundActive[] = MUIC_WHITE;
+	colorBackgroundDisabled[] = {0.7, 0.1, 0, 1};
+};
+
 class CMUI_BUTTON_RESPAWN : MUI_BUTTON_TXT 
 {
     IDC = -1; 

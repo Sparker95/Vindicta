@@ -68,10 +68,11 @@ CLASS("Notification", "")
 		_textCtrl ctrlSetText _text;
 
 		pr _hintCtrl = uiNamespace getVariable "vin_not_hint";
-		if(_hint != "") then {
-			_hintCtrl ctrlSetText _hint;
-		} else {
-			_hintCtrl ctrlSetBackgroundColor [0,0,0,0];
+		
+		_hintCtrl ctrlSetText _hint;
+		if(_hint == "") then {
+			pr _hintBG = uiNamespace getVariable "vin_not_hint";
+			_hintBG ctrlSetBackgroundColor [0,0,0,0.6];
 		};
 
 		#ifndef _SQF_VM

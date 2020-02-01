@@ -1142,3 +1142,8 @@ diag_log format ["[REF/UNREF]: UNREF: %1, %2, %3", objNameStr, __FILE__, __LINE_
 // Value to assign to an object handle to indicate it is deliberately invalid.
 #define NULL_OBJECT ""
 #define OOP_OBJECT_TYPE ""
+
+#define ON_ALL 		0
+#define ON_SERVER 	2
+#define ON_CLIENTS -2
+#define NO_JIP 		false

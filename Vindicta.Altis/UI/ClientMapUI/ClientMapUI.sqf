@@ -77,6 +77,8 @@ CLASS(CLASS_NAME, "")
 
 	// Respawn panel
 	VARIABLE("respawnPanelEnabled");
+	// If a restore point is available for the player
+	VARIABLE("playerRestoreData");
 
 	// initialize UI event handlers
 	METHOD("new") {
@@ -120,6 +122,7 @@ CLASS(CLASS_NAME, "")
 
 		// Respawn panel
 		T_SETV("respawnPanelEnabled", false);
+		T_SETV("playerRestoreData", []);
 
 		pr _mapDisplay = findDisplay 12;
 
@@ -188,14 +191,13 @@ CLASS(CLASS_NAME, "")
 		//([_mapDisplay, "CMUI_BUTTON_SHOW_ENEMIES"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowEnemies", _this); }];
 		//(_mapDisplay displayCtrl IDC_BPANEL_BUTTON_SHOW_INTEL) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickShowIntel", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_NOTIF"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickClearNotifications", _this); }];
-
+		([_mapDisplay, "CMUI_BUTTON_RESTORE"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRestore", _this); }];
 		([_mapDisplay, "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl) ctrlAddEventHandler ["ButtonClick", { CALLM(gClientMapUI, "onButtonClickRespawn", _this); }];
 
 		// = = = = = = Initialize default text = = = = = =
 
 		// init headline text and color
 		([_mapDisplay, "CMUI_INTEL_HEADLINE"] call ui_fnc_findControl) ctrlSetText format ["%1", (toUpper worldName)];
-
 
 		//  = = = = = = = = Add event handlers to the map = = = = = = = = 
 
@@ -298,10 +300,8 @@ CLASS(CLASS_NAME, "")
 			}];
 		};
 
-
 		// Disable the respawn panel initially
-		T_CALLM1("respawnPanelEnable", false);		
-
+		T_CALLM1("respawnPanelEnable", false);
 
 		// Mouse moving
 		// Probably we don't need it now
@@ -344,6 +344,11 @@ CLASS(CLASS_NAME, "")
 88     `8'     88  88   "Y88888P"     `"Y8888Y"'   
 http://patorjk.com/software/taag/#p=display&f=Univers&t=MISC
 	*/
+
+	STATIC_METHOD("setPlayerRestoreData") {
+		params ["_thisClass", "_playerRestoreData"];
+		SETV(gClientMapUI, "playerRestoreData", _playerRestoreData);
+	} ENDMETHOD;
 
 	/*
 		Method: toggleButtonEnabled
@@ -1911,11 +1916,21 @@ Gets called from "onMapDraw"
 	METHOD("respawnPanelEnable") {
 		params [P_THISOBJECT, P_BOOL("_enable")];
 
-		pr _ctrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
-		_ctrl ctrlShow _enable;
-		_ctrl ctrlEnable false; // Disable the button initially, it will re-enable itself later
-		pr _ctrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
-		_ctrl ctrlShow _enable;
+		pr _respawnCtrl = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+		_respawnCtrl ctrlShow _enable;
+		_respawnCtrl ctrlEnable false; // Disable the button initially, it will re-enable itself later
+
+		pr _respawnStaticCtrl = [(finddisplay 12), "CMUI_STATIC_RESPAWN"] call ui_fnc_findControl;
+		_respawnStaticCtrl ctrlShow _enable;
+
+		pr _restoreCtrl = [(finddisplay 12), "CMUI_BUTTON_RESTORE"] call ui_fnc_findControl;
+		_restoreCtrl ctrlShow _enable;
+
+		// Might not be loaded yet
+		if(!isNil "gGameModeServer") then {
+			// Request update on players restore point from server
+			REMOTE_EXEC_CALL_METHOD(gGameModeServer, "syncPlayerInfo", [player], ON_SERVER);
+		};
 
 		T_SETV("respawnPanelEnabled", _enable);
 	} ENDMETHOD;
@@ -1944,11 +1959,11 @@ Gets called from "onMapDraw"
 			player setPos [_respawnPos#0 + random 1, _respawnPos#1 + random 1, _respawnPos#2];
 
 			// Call gameMode method
-			pr _args = [player, objNull, "", 0];
+			pr _args = [player, objNull, "", 0, T_GETV("playerRestoreData"), false];
 			CALLM(gGameMode, "playerSpawn", _args);
 
 			// Execute script on the server
-			_args remoteExec ["fnc_onPlayerRespawnServer", 2, false];
+			_args remoteExec ["fnc_onPlayerRespawnServer", ON_SERVER, NO_JIP];
 
 			// Disable this panel
 			T_CALLM1("respawnPanelEnable", false);
@@ -1965,6 +1980,29 @@ Gets called from "onMapDraw"
 
 	} ENDMETHOD;
 
+	METHOD("onButtonClickRestore") {
+		params [P_THISOBJECT];
+
+		// If player has clicked this button, then it must be enabled
+		// If it's enabled, then restore data exists
+
+		// Call gameMode method
+		pr _args = [player, objNull, "", 0, T_GETV("playerRestoreData"), true];
+		CALLM(gGameMode, "playerSpawn", _args);
+
+		// Execute script on the server
+		_args remoteExec ["fnc_onPlayerRespawnServer", ON_SERVER, NO_JIP];
+
+		// Disable this panel
+		T_CALLM1("respawnPanelEnable", false);
+
+		// Close the map
+		openMap [false, false];
+
+		// Show a message to everyone
+		pr _text = format ["%1 has restored to their last saved positon at %2", name player, mapGridPosition player];
+		[_text] remoteExecCall ["systemChat"];
+	} ENDMETHOD;
 	// Sets text on the respawn panel
 	METHOD("respawnPanelSetText") {
 		params [P_THISOBJECT, P_STRING("_text")];
@@ -1981,13 +2019,17 @@ Gets called from "onMapDraw"
 			pr _locMarkers = T_GETV("selectedLocationMarkers");
 
 			pr _ctrlButton = [(finddisplay 12), "CMUI_BUTTON_RESPAWN"] call ui_fnc_findControl;
+			pr _restoreCtrl = [(finddisplay 12), "CMUI_BUTTON_RESTORE"] call ui_fnc_findControl;
 
 			// Bail if game mode is not initialized
 			if (!CALLM0(gGameManager, "isGameModeInitialized")) exitWith {
 				T_CALLM1("respawnPanelSetText", "You can't respawn because game mode is not initialized yet");
 				_ctrlButton ctrlEnable false;
+				_restoreCtrl ctrlShow false;
 			};
-			
+
+			_restoreCtrl ctrlShow !(T_GETV("playerRestoreData") isEqualTo []);
+
 			// Bail if no markers are selected
 			if (count _locMarkers != 1) exitWith {
 				T_CALLM1("respawnPanelSetText", "Select a respawn point");
@@ -2011,7 +2053,6 @@ Gets called from "onMapDraw"
 				T_CALLM1("respawnPanelSetText", "Respawn is disabled here");
 				_ctrlButton ctrlEnable false;
 			};
-
 
 			// Check if there are enemies occupying this place, etc...
 

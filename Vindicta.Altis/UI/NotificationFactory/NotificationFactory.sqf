@@ -89,6 +89,9 @@ CLASS("NotificationFactory", "")
 		private _duration = 15;
 		private _category = "SYSTEM";
 		private _hint = ""; // Override hint!
+		if(_picture isEqualTo "") then {
+			_picture = "\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa"
+		};
 		private _args = [_picture, [_category, SYSTEM_COLORS], _text, _hint, _duration, _sound];
 		CALLSM("Notification", "createNotification", _args);
 	} ENDMETHOD;
