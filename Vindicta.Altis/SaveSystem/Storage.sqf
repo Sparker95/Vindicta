@@ -62,7 +62,7 @@ CLASS("Storage", "")
 #ifndef _SQF_VM
 		T_SETV("version", (parseNumber call misc_fnc_getVersion));
 #else
-		T_SETV("version", 0);
+		T_SETV("version", 666);
 #endif
 	} ENDMETHOD;
 
