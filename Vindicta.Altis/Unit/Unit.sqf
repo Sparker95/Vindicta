@@ -749,6 +749,40 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 					} forEach _ACREclassNames;
 				};
 
+				// Add TFAR Radios (0.9.12)
+				if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
+					// Array with item class name, count
+					pr _TFARclassNames = [
+										//["tf_fadak",2], //"Belongs" to Opfor
+										//["tf_pnr1000a",1], //"Belongs" to Opfor
+										//["tf_anprc154",2], //"Belongs" to INDEP
+										//["tf_anprc148jem",2] //"Belongs" to INDEP
+										["tf_rf7800str",4], //"Belongs" to BluFor
+										["tf_anprc152",2], //"Belongs" to BluFor
+									];
+					{
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+					} forEach _TFARclassNames;
+				};
+
+				// Add TFAR Radios (BETA)
+				if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
+					// Array with item class name, count
+					pr _TFARBetaclassNames = [
+										//["TFAR_fadak",2], //"Belongs" to Opfor
+										//["TFAR_pnr1000a",1], //"Belongs" to Opfor
+										//["TFAR_anprc154",2], //"Belongs" to INDEP
+										//["TFAR_anprc148jem",2] //"Belongs" to INDEP
+										["TFAR_rf7800str",4], //"Belongs" to BluFor
+										["TFAR_anprc152",2], //"Belongs" to BluFor
+									];
+					{
+						_x params ["_itemName", "_itemCount"];
+						_hO addItemCargoGlobal [_itemName, round (random [0.8*_itemCount, 1.4*_itemCount, 2*_itemCount])];
+					} forEach _TFARBetaclassNames;
+				};
+
 				// Add special items to cargo containers
 				if (_catID == T_CARGO) then {
 					// Add ACE medical items
@@ -854,6 +888,61 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			for "_i" from 0 to _nVests do {
 				_hO addBackpackCargoGlobal [selectRandom _backpacks, 1];
 			};
+
+			// Add TFAR (0.9.12) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
+			if (isClass (configfile >> "CfgPatches" >> "task_force_radio")) then {
+				// Array with backpack class name
+				pr _nTFARbackpack = [
+					["tf_rt1523g"], //"Belongs" to BluFor
+					["tf_rt1523g_big"], //"Belongs" to BluFor
+					["tf_rt1523g_black"], //"Belongs" to BluFor
+					["tf_rt1523g_fabric"], //"Belongs" to BluFor
+					["tf_rt1523g_green"], //"Belongs" to BluFor
+					["tf_rt1523g_rhs"], //"Belongs" to BluFor
+					["tf_rt1523g_sage"], //"Belongs" to BluFor	
+					["tf_rt1523g_big_rhs"], //"Belongs" to BluFor
+					["tf_anarc210"], //"Belongs" to BluFor
+					["tf_anprc152"] //"Belongs" to BluFor
+					//["tf_anprc155"], //"Belongs" to INDEP
+					//["tf_anprc155_coyote"], //"Belongs" to INDEP
+					//["tf_anarc164"], //"Belongs" to INDEP
+					//["tf_mr3000"], //"Belongs" to OPFOR
+					//["tf_mr3000_multicam"], //"Belongs" to OPFOR
+					//["tf_mr3000_rhs"], //"Belongs" to OPFOR
+					//["tf_mr6000l"] //"Belongs" to OPFOR
+				];
+				for "_i" from 0 to _nVests do {
+					_hO addBackpackCargoGlobal [selectRandom _nTFARbackpack, 1];
+				};
+			};
+
+			// Add TFAR (BETA) backpacks, excluding the ones that uses the BWMOD camos. Commented out some due to different factions. Do with it as you please :)
+			if (isClass (configfile >> "CfgPatches" >> "tfar_core")) then {
+				// Array with backpack class name
+				pr _TFARBETAbackpack = [
+					["TFAR_rt1523g"], //"Belongs" to BluFor
+					["TFAR_rt1523g_big"], //"Belongs" to BluFor
+					["TFAR_rt1523g_black"], //"Belongs" to BluFor
+					["TFAR_rt1523g_fabric"], //"Belongs" to BluFor
+					["TFAR_rt1523g_green"], //"Belongs" to BluFor
+					["TFAR_rt1523g_rhs"], //"Belongs" to BluFor
+					["TFAR_rt1523g_sage"], //"Belongs" to BluFor	
+					["TFAR_rt1523g_big_rhs"], //"Belongs" to BluFor
+					["TFAR_anarc210"], //"Belongs" to BluFor
+					["TFAR_anprc152"] //"Belongs" to BluFor
+					//["TFAR_anprc155"], //"Belongs" to INDEP
+					//["TFAR_anprc155_coyote"], //"Belongs" to INDEP
+					//["TFAR_anarc164"], //"Belongs" to INDEP
+					//["TFAR_mr3000"], //"Belongs" to OPFOR
+					//["TFAR_mr3000_multicam"], //"Belongs" to OPFOR
+					//["TFAR_mr3000_rhs"], //"Belongs" to OPFOR
+					//["TFAR_mr6000l"] //"Belongs" to OPFOR
+				];
+				for "_i" from 0 to _nVests do {
+					_hO addBackpackCargoGlobal [selectRandom _TFARBETAbackpack, 1];
+				};
+			};
+
 		} else {
 			if (random 100 <= 5) then {
 				_hO addItemToUniform "vin_pills";
