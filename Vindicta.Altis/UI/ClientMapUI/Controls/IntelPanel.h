@@ -135,7 +135,7 @@ class CMUI_BUTTON_RESTORE : MUI_BUTTON_TXT
     h = safeZoneH * 0.065; 
     text = "RESTORE"; 
 
-	colorBackground[] = {0.2, 0, 0.60, 1};
+	colorBackground[] = {0.2, 0.2, 0.60, 1};
 	colorBackgroundActive[] = MUIC_WHITE;
 	colorBackgroundDisabled[] = {0.7, 0.1, 0, 1};
 };
