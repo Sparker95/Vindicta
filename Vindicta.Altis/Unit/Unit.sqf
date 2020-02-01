@@ -758,7 +758,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 										//["tf_anprc154",2], //"Belongs" to INDEP
 										//["tf_anprc148jem",2] //"Belongs" to INDEP
 										["tf_rf7800str",4], //"Belongs" to BluFor
-										["tf_anprc152",2], //"Belongs" to BluFor
+										["tf_anprc152",2] //"Belongs" to BluFor
 									];
 					{
 						_x params ["_itemName", "_itemCount"];
@@ -775,7 +775,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 										//["TFAR_anprc154",2], //"Belongs" to INDEP
 										//["TFAR_anprc148jem",2] //"Belongs" to INDEP
 										["TFAR_rf7800str",4], //"Belongs" to BluFor
-										["TFAR_anprc152",2], //"Belongs" to BluFor
+										["TFAR_anprc152",2] //"Belongs" to BluFor
 									];
 					{
 						_x params ["_itemName", "_itemCount"];
