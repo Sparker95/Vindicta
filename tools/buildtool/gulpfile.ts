@@ -82,7 +82,11 @@ for (let preset of presets) {
     gulp.task('mission_' + taskName, gulp.series(
         /** Copy mission framework to output dir */
         function copyFramework() {
-            return gulp.src(mission.getFrameworkPath().concat('/**/*'))
+            return gulp.src(
+                [
+                    mission.getFrameworkPath().concat('/**/*'),
+                    '!' + mission.getFrameworkPath().concat('/**/*.sqm*')
+                ])
                 .pipe(gulp.dest(mission.getOutputDir()));
         },
 

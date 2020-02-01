@@ -1,10 +1,6 @@
 name: Arma Checks And Build
 
-on:
-  push:
-    branches:
-    - master
-  pull_request:
+on: [push, pull_request]
 
 jobs:
   validate:
@@ -25,23 +21,25 @@ jobs:
     - name: Checkout the source code
       uses: actions/checkout@master
     - name: Validate SQF with SQF-VM
-      run: |
+      run: | 
+        .\devsetup.bat
         cd Vindicta.Altis
         ..\tools\SQF-VM\sqfvm.exe -a --no-execute-print --disable-macro-warnings --load . -i D:\a\Vindicta\Vindicta\Vindicta.Altis\Tests\RunTests.sqf
 
-  build:
-    runs-on: windows-latest
-    needs: [validate, validate-with-sqf-vm]
-    steps:
-    - name: Checkout the source code
-      uses: actions/checkout@master
-    - uses: actions/setup-node@v1
-      with:
-        node-version: '10.x'
-    - name: Build
-      run: |
-        ./tools/setup_and_build.bat
-    - uses: actions/upload-artifact@v1
-      with:
-        name: pbos
-        path: _build/pbo
+  # Disable build for now, wip
+  # build:
+  #   runs-on: windows-latest
+  #   needs: [validate, validate-with-sqf-vm]
+  #   steps:
+  #   - name: Checkout the source code
+  #     uses: actions/checkout@master
+  #   - uses: actions/setup-node@v1
+  #     with:
+  #       node-version: '10.x'
+  #   - name: Build
+  #     run: |
+  #       ./tools/setup_and_build.bat
+  #   - uses: actions/upload-artifact@v1
+  #     with:
+  #       name: pbos
+  #       path: _build/pbo
