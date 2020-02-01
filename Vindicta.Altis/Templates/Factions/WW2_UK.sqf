@@ -93,15 +93,8 @@ _veh set [T_VEH_plane_cargo, ["LIB_C47_RAF"]];
 _veh set [T_VEH_plane_unarmed, ["LIB_HORSA_RAF", "LIB_MKI_HADRIAN", "LIB_MKI_HADRIAN_raf2", "LIB_MKI_HADRIAN_raf3"]];
 //_veh set [T_VEH_plane_VTOL, [""]];
 
-_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
-_veh set [T_VEH_boat_armed, ["sab_boat_torpedo_rn", "sab_boat_subchaser_rn"]];
-
-//Not working yet
-
-//_veh set [T_VEH_ship_transport, ["LIB_UK_LCA", "LIB_UK_LCI"]];
-//_veh set [T_VEH_ship_cargo, ["sab_boat_liberty_rn"]];
-//_veh set [T_VEH_ship_small, ["sab_boat_destroyer_rn"]];
-//_veh set [T_VEH_ship_big, ["sab_boat_cruiser_rn", "sab_boat_battleship_rn"]];
+//_veh set [T_VEH_boat_unarmed, ["sab_boat_sreighter_o"]];
+_veh set [T_VEH_boat_armed, ["LIB_UK_LCA", "LIB_UK_LCI", "sab_boat_destroyer_rn", "sab_boat_subchaser_rn"]];
 
 _veh set [T_VEH_personal, ["LIB_UK_Willys_MB", "LIB_UK_Willys_MB_Hood"]];
 
