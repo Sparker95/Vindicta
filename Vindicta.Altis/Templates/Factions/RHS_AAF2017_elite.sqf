@@ -16,15 +16,15 @@ _inf set [T_INF_TL, ["RHS_AAF2017_elite_TL"]];
 _inf set [T_INF_officer, ["RHS_AAF2017_elite_officer"]];
 _inf set [T_INF_GL, ["RHS_AAF2017_elite_grenadier"]];
 _inf set [T_INF_rifleman, ["RHS_AAF2017_elite_rifleman"]];
-_inf set [T_INF_marksman, ["RHS_AAF2017_elite_marksman"]];
-_inf set [T_INF_sniper, ["RHS_AAF2017_elite_sniper"]];
-_inf set [T_INF_spotter, ["RHS_AAF2017_elite_spotter"]];
+_inf set [T_INF_marksman, ["RHS_AAF2017_elite_marksman", "RHS_AAF2017_elite_marksman_2"]];
+_inf set [T_INF_sniper, ["RHS_AAF2017_elite_sniper", "RHS_AAF2017_elite_sniper_2", "RHS_AAF2017_elite_sniper_3"]];
+_inf set [T_INF_spotter, ["RHS_AAF2017_elite_spotter", "RHS_AAF2017_elite_spotter_2"]];
 _inf set [T_INF_exp, ["RHS_AAF2017_elite_explosives"]];
 _inf set [T_INF_ammo, ["RHS_AAF2017_elite_MG_2", "RHS_AAF2017_elite_AT_2"]];
 _inf set [T_INF_LAT, ["RHS_AAF2017_elite_LAT"]];
 _inf set [T_INF_AT, ["RHS_AAF2017_elite_AT"]];
 _inf set [T_INF_AA, ["RHS_AAF2017_elite_AA"]];
-_inf set [T_INF_LMG, ["RHS_AAF2017_elite_LMG"]];
+_inf set [T_INF_LMG, ["RHS_AAF2017_elite_LMG", "RHS_AAF2017_elite_LMG_2", "RHS_AAF2017_elite_LMG_3"]];
 _inf set [T_INF_HMG, ["RHS_AAF2017_elite_MG"]];
 _inf set [T_INF_medic, ["RHS_AAF2017_elite_medic"]];
 _inf set [T_INF_engineer, ["RHS_AAF2017_elite_engineer"]];
@@ -84,9 +84,8 @@ _veh set [T_VEH_stat_mortar_heavy, ["RHS_M119_D"]];
 _veh set [T_VEH_heli_light, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf", "RHS_MELB_H6M", "RHS_MELB_MH6M"]];
 _veh set [T_VEH_heli_heavy, ["FGN_AAF_KA60_dynamicLoadout","rhs_uh1h_hidf_gunship", "RHS_MELB_AH6M"]];
 _veh set [T_VEH_heli_cargo, ["FGN_AAF_KA60_unarmed","rhs_uh1h_hidf_unarmed"]];
-_veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]]; //TODO add dynamic loadout variants for more variety
+_veh set [T_VEH_heli_attack, ["rhsgref_mi24g_CAS"]];
 
-//TODO add dynamic loadout variants for more variety
 _veh set [T_VEH_plane_attack, ["FGN_AAF_L159_dynamicLoadout"]];
 _veh set [T_VEH_plane_fighter, ["FGN_AAF_L159_dynamicLoadout"]];
 //_veh set [T_VEH_plane_cargo, [""]];
@@ -138,5 +137,6 @@ _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tRHS_AAF2017_elite"];
+_array set [T_FACTION, T_FACTION_Military];
 
 _array // End template

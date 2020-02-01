@@ -1123,7 +1123,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 		// todo transfer the AI instead, or just transfer the goals and most important data?
 		pr _AI = _data select GROUP_DATA_ID_AI;
 		if (_AI != "") then {
-			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE);
+			pr _msg = MESSAGE_NEW_SHORT(_AI, AI_MESSAGE_DELETE); // if you ever look at it again, redo it!! with posting msg to group thread manager
 			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
 			//if (_msgID < 0) then {diag_log format ["--- Got wrong msg ID %1 %2 %3", _msgID, __FILE__, __LINE__];};
 			CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);
@@ -1135,7 +1135,7 @@ CLASS(GROUP_CLASS_NAME, "MessageReceiverEx");
 			pr _unitData = GETV(_x, "data");
 			pr _unitAI = _unitData select UNIT_DATA_ID_AI;
 			if (_unitAI != "") then {
-				pr _msg = MESSAGE_NEW_SHORT(_unitAI, AI_MESSAGE_DELETE);
+				pr _msg = MESSAGE_NEW_SHORT(_unitAI, AI_MESSAGE_DELETE); // if you ever look at it again, redo it!! with posting msg to group thread manager
 				pr _msgID = CALLM2(_unitAI, "postMessage", _msg, true);
 				//diag_log format ["--- Got msg ID %1 %2 %3 while deleting Unit's AI", _msgID, __FILE__, __LINE__];
 				CALLM(_thisObject, "waitUntilMessageDone", [_msgID]);

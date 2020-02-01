@@ -122,15 +122,20 @@ if(hasInterface)then{
         {
 			pr _object = _this select 0;
 			
+			"arsenal_hint" cutText [format["<t size='2'>%1</t>", STR_ACTION_DESC_ARSENAL_CONTAINER], "PLAIN DOWN", -1, false, true];
+			"arsenal_hint" cutFadeOut 60;
+
 			pr _script =  {
 				params ["_object"];
 				
+				"arsenal_hint" cutFadeOut 0;
+
 				//check if player is looking at some object
 				_object_selected = cursorObject;
 				if(isnull _object_selected)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
 
 				//check if object is in range
-				if(_object distance cursorObject > 10)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
+				if(_object distance cursorObject > ARSENAL_ACTION_RANGE)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
 
 				//check if object has inventory
 				pr _className = typeOf _object_selected;
@@ -180,7 +185,7 @@ if(hasInterface)then{
 				
 				!isnull cursorObject
 				&&{
-					_object distance cursorObject < 10;
+					_object distance cursorObject <= ARSENAL_ACTION_RANGE;
 				}&&{
 					//check if object has inventory
 					pr _className = typeOf cursorObject;
@@ -191,8 +196,10 @@ if(hasInterface)then{
 				
 				}//return
 			};
-						
-			[_script,_conditionActive,_conditionColor,_object] call jn_fnc_common_addActionSelect;
+			pr _removeScript = {
+				"arsenal_hint" cutFadeOut 0;
+			};
+			[_script,_conditionActive,_conditionColor,_object, true, 10, _removeScript] call jn_fnc_common_addActionSelect;
 		},
         [],
         6,
@@ -209,27 +216,39 @@ if(hasInterface)then{
 		(format ["<img image='%1' size='1' color='#ffffff'/>", STR_ACTION_ICON_ARSENAL_UNLOAD] + format["<t size='1'>   %1</t>", STR_ACTION_TEXT_ARSENAL_UNLOAD]),
         {
 			pr _object = _this select 0;
-			
+
+			"arsenal_hint" cutText [format["<t size='2'>%1</t>", STR_ACTION_DESC_ARSENAL_UNLOAD], "PLAIN DOWN", -1, false, true];
+			"arsenal_hint" cutFadeOut 60;
+
 			pr _script =  {
 				params ["_object"];//object action was attached to
-				
+
+				"arsenal_hint" cutFadeOut 0;
+
 				//check if player is looking at some object
 				_object_selected = cursorObject;//selected object
-				
-				if(isnull _object_selected)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
+
+				if (isnull _object_selected)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR1"; };
 
 				//check if object is in range
-				if(_object distance cursorObject > 10)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
+				if (_object distance _object_selected > ARSENAL_ACTION_RANGE)exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR2";};
 
-				//check if object has inventory
-				pr _className = typeOf _object_selected;
-				pr _tb = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxbackpacks");
-				pr _tm = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxmagazines");
-				pr _tw = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxweapons");
-				if !(_tb > 0  || _tm > 0 || _tw > 0) exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR3";};
+				//checks if object is a valid source for this command (either an arsenal and/or has an inventory)
+				if !(
+					(_object_selected getVariable ["jna_init", false] && _object_selected != _object)
+					|| {
+						pr _className = typeOf _object_selected;
+						getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxbackpacks") > 0
+						|| getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxmagazines") > 0
+						|| getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxweapons") > 0
+					}
+				) exitWith{hint localize "STR_JNA_ACT_CONTAINER_SELECTERROR3";};
 
-
-				[_object_selected,_object] call jn_fnc_arsenal_cargoToArsenal;
+				if(_object_selected getVariable ["jna_init", false] && _object_selected != _object) then {
+					[_object_selected,_object] call jn_fnc_arsenal_arsenalToArsenal;
+				} else {
+					[_object_selected,_object] call jn_fnc_arsenal_cargoToArsenal;
+				};
 			};
 			pr _conditionActive = {
 				params ["_object"];
@@ -240,19 +259,21 @@ if(hasInterface)then{
 				
 				!isnull cursorObject
 				&&{
-					_object distance cursorObject < 10;
+					_object distance cursorObject <= ARSENAL_ACTION_RANGE;
 				}&&{
-					//check if object has inventory
-					pr _className = typeOf cursorObject;
-					pr _tb = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxbackpacks");
-					pr _tm = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxmagazines");
-					pr _tw = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxweapons");
-					if (_tb > 0  || _tm > 0 || _tw > 0) then {true;} else {false;};
-				
+					(cursorObject getVariable ["jna_init", false] && cursorObject != _object)
+					|| {
+						pr _className = typeOf cursorObject;
+						getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxbackpacks") > 0
+						|| getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxmagazines") > 0
+						|| getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxweapons") > 0
+					}
 				}//return
 			};
-						
-			[_script,_conditionActive,_conditionColor,_object] call jn_fnc_common_addActionSelect;
+			pr _removeScript = {
+				"arsenal_hint" cutFadeOut 0;
+			};
+			[_script,_conditionActive,_conditionColor,_object, true, 10, _removeScript] call jn_fnc_common_addActionSelect;
 		},
         [],
         6,
@@ -263,7 +284,6 @@ if(hasInterface)then{
 			
     ];
 	//ACTION_SET_ICON_AND_TEXT(_object, _id, STR_ACTION_TEXT_ARSENAL_UNLOAD, STR_ACTION_ICON_ARSENAL_UNLOAD);
-		
 
     if(missionNamespace getVariable ["jna_first_init",true])then{
 

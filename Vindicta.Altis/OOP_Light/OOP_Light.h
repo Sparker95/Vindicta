@@ -93,6 +93,7 @@
 
 #define PROFILE_NAME "Satan"
 #define SCRIPT_NULL objNull
+#define saveProfileNamespace
 // ^^^ SQF-VM ^^^
 #else
 // ___ ARMA ___
@@ -181,6 +182,7 @@
 #define P_THISCLASS ["_thisClass", "", [""]]
 #define P_DEFAULT_STATIC_PARAMS params [["_thisObject", "", [""]]]
 #define P_STRING(paramNameStr) [paramNameStr, "", [""]]
+#define P_TEXT(paramNameStr) paramNameStr
 #define P_OBJECT(paramNameStr) [paramNameStr, objNull, [objNull]]
 #define P_NUMBER(paramNameStr) [paramNameStr, 0, [0]]
 #define P_NUMBER_DEFAULT(paramNameStr, defaultVal) [paramNameStr, defaultVal, [0]]
@@ -188,6 +190,7 @@
 #define P_BOOL(paramNameStr) [paramNameStr, false, [false]]
 #define P_BOOL_DEFAULT_TRUE(paramNameStr) [paramNameStr, true, [true]]
 #define P_ARRAY(paramNameStr) [paramNameStr, [], [[]]]
+#define P_COLOR(paramNameStr) [paramNameStr, [1,1,1,1]]
 #define P_POSITION(paramNameStr) [paramNameStr, [], [[]]]
 #define P_CODE(paramNameStr) [paramNameStr, {}, [{}]]
 #define P_DYNAMIC(paramNameStr) [paramNameStr, nil]
@@ -233,6 +236,7 @@
 
 //Macro for global OOP variables
 #define OOP_GVAR(var) o_##var
+#define OOP_GVAR_STR(var) format["o_%1", #var]
 
 // ==== Private special members
 #define NEXT_ID_STR "nextID"
@@ -368,6 +372,8 @@
 // Getting/setting variables of _thisObject
 #define T_SETV(varNameStr, varValue) SET_VAR(_thisObject, varNameStr, varValue)
 #define T_SETV_REF(varNameStr, varValue) SET_VAR_REF(_thisObject, varNameStr, varValue)
+#define T_PUBLIC_VAR(varNameStr) PUBLIC_VAR(_thisObject, varNameStr)
+#define T_SETV_PUBLIC(varNameStr, varValue) SET_VAR_PUBLIC(_thisObject, varNameStr, varValue)
 #define T_GETV(varNameStr) GET_VAR(_thisObject, varNameStr)
 
 // Unpacking a _thisObject variable into a private _variable

@@ -348,11 +348,15 @@ CLASS("IntelLocation", "Intel")
 		};
 		*/
 
-		pr _color = switch(_side) do { // See colors defined right above the class
-			case WEST: {[COLOR_WEST, "ColorWEST"]};
-			case EAST: {[COLOR_EAST, "ColorEAST"]};
-			case INDEPENDENT: {[COLOR_IND, "ColorGUER"]};
-			default {[COLOR_UNKNOWN, "ColorUNKNOWN"]}; // Purple color
+		pr _color = if (_type == LOCATION_TYPE_RESPAWN) then {	// Override for respawn marker, it must be very visible
+			[[1, 0, 0], "ColorRed"]
+		} else {
+			switch(_side) do { // See colors defined right above the class
+				case WEST: {[COLOR_WEST, "ColorWEST"]};
+				case EAST: {[COLOR_EAST, "ColorEAST"]};
+				case INDEPENDENT: {[COLOR_IND, "ColorGUER"]};
+				default {[COLOR_UNKNOWN, "ColorUNKNOWN"]}; // Purple color
+			};
 		};
 
 		//diag_log format ["--- Setting color: %1", _color];
@@ -511,7 +515,7 @@ CLASS("IntelCommanderAction", "Intel")
 			_d = _d - 1; // Because day counting starts with 1
 
 			OOP_INFO_3("  Intel: %1, departure date: %2, diff: %3", _intel, _dateDeparture, _dateDiff);
-			
+
 			// Make a string representation of time difference
 			pr _timeDiffStr = if (_h > 0) then {
 				format ["%1H, %2M", _h, round _m]
@@ -654,7 +658,8 @@ CLASS("IntelCommanderActionReinforce", "IntelCommanderAction")
 
 	//  
 	METHOD("getShortName") {
-		"Reinforce"
+		params [P_THISOBJECT];
+		T_GETV("type");
 	} ENDMETHOD;
 ENDCLASS;
 

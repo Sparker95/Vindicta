@@ -36,7 +36,6 @@ _inf set [T_INF_survivor, ["I_Survivor_F"]];
 _inf set [T_INF_unarmed, ["I_Soldier_unarmed_F"]];
 
 //Recon (FIA) 
-/*
 _inf set [T_INF_recon_TL, ["I_G_Soldier_TL_F"]];
 _inf set [T_INF_recon_rifleman, ["I_G_Soldier_F"]];
 _inf set [T_INF_recon_medic, ["I_G_medic_F"]];
@@ -44,7 +43,7 @@ _inf set [T_INF_recon_exp, ["I_G_Soldier_exp_F"]];
 _inf set [T_INF_recon_LAT, ["I_G_Soldier_LAT2_F"]];
 _inf set [T_INF_recon_marksman, ["I_G_Soldier_M_F"]];
 _inf set [T_INF_recon_JTAC, ["I_G_Soldier_lite_F"]];
-*/
+
 
 //Divers
 _inf set [T_INF_diver_TL, ["I_diver_TL_F"]];
@@ -127,6 +126,6 @@ _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
 _array set [T_NAME, "tAAF"];
-
+_array set [T_FACTION, T_FACTION_Military];
 
 _array // End template

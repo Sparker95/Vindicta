@@ -170,6 +170,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 			// Add mission event handler to destroy vehicles in destroyed houses, gets triggered when house is destroyed
 			T_CALLM0("_initMissionEventHandlers");
+
+			missionNamespace setVariable["ACE_maxWeightDrag", 10000, true]; // fix loot crates being undraggable
 		};
 		if (HAS_INTERFACE || IS_HEADLESSCLIENT) then {
 			T_CALLM("initClientOrHCOnly", []);
@@ -197,10 +199,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		};
 		if(HAS_INTERFACE) then {
 			diag_log "----- Player detected!";
-
-			#ifndef RELEASE_BUILD
-			[] call pr0_fnc_initDebugMenu;
-			#endif
 
 			// Hide the allowed area markers
 			//#ifdef RELEASE_BUILD
@@ -384,6 +382,89 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			CALLM2(gMessageLoopGameMode, "addProcessCategoryObject", "GameModeProcess", _thisObject);
 		};
 
+#ifndef _SQF_VM
+		// Start a periodic check which will restart message loops if needed
+		[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 2] call CBA_fnc_waitAndExecute;
+#endif
+
+	} ENDMETHOD;
+
+	METHOD("_checkMessageLoops") {
+		params [P_THISOBJECT];
+
+		private _recovery = false;
+		private _crashedMsgLoops = [];
+
+		{													// Check all message loops created
+			private _msgLoop = T_GETV(_x);
+			if (!IS_NULL_OBJECT(_msgLoop)) then {
+				if(CALLM0(_msgLoop, "isNotRunning")) then {	// If it is not running, something bad has happened
+					CALLM0(_msgLoop, "unlock");				// Unlock it by force, it cant unlock itself anyway
+					_crashedMsgLoops pushBack _msgLoop;
+					OOP_ERROR_0("");
+					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
+					OOP_ERROR_1("! ! ! THREAD IS NOT RUNNING: %1", GETV(_msgLoop, "name"));
+					OOP_ERROR_0("! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !");
+					OOP_ERROR_0("");
+
+					// Make a recursive dump of the last processed object
+					private _lastObject = GETV(_msgLoop, "lastObject");
+					if (IS_NULL_OBJECT(_lastObject)) then {
+						OOP_ERROR_0("Last processed object is null");
+					} else {
+						OOP_ERROR_1("Last processed object: %1", _lastObject);
+						if (!IS_OOP_OBJECT(_lastObject)) then {
+							OOP_ERROR_1("  %1 is not an OOP object", _lastObject);
+						} else {
+							OOP_ERROR_1("  Initiating a memory dump of %1", _lastObject);
+							[_lastObject, 6] call OOP_objectCrashDump;	// 6 is max depth
+						};
+					};
+
+					_recovery = true;
+				};
+			};
+		} forEach ["messageLoopMain", "messageLoopGroupAI", "messageLoopGameMode",
+					"messageLoopCommanderInd", "messageLoopCommanderWest", "messageLoopCommanderEast"];
+
+		if (!_recovery) then {
+#ifndef _SQF_VM
+			// If we have not initiated recovery, then it's fine, check same message loops after a few more seconds
+			[{CALLM0(_this#0, "_checkMessageLoops")}, [_thisObject], 0.5] call CBA_fnc_waitAndExecute;
+#endif
+		} else {
+			// Broadcast notification
+			T_CALLM1("_broadcastCrashNotification", _crashedMsgLoops);
+
+			// Send msg to game manager to perform emergency saving
+			CALLM2(gGameManager, "postMethodAsync", "serverSaveGameRecovery", []);
+		};
+	} ENDMETHOD;
+
+	METHOD("_broadcastCrashNotification") {
+		params [P_THISOBJECT, P_ARRAY("_crashedMsgLoops")];
+
+		// Report crashed threads, initiate emergency save
+
+		// Format text
+		private _text = "Threads have crashed: ";
+		{ _text = _text + GETV(_x, "name") + " "; } forEach _crashedMsgLoops;
+		_text = _text + ". Restart the mission after saving is over, send the .RPT to devs";
+
+		// Broadcast notification
+		REMOTE_EXEC_CALL_STATIC_METHOD("NotificationFactory", "createCritical", [_text], 0, false);
+
+		// Broadcast it to system chat too
+		["CRITICAL MISSION ERROR:"] remoteExec ["systemChat"];
+		[_text] remoteExec ["systemChat"];
+
+		// todo: send emails, deploy pigeons
+
+#ifndef _SQF_VM
+		// Do it once in a while
+		[{CALLM1(_this#0, "_broadcastCrashNotification", _this#1)}, [_thisObject, _crashedMsgLoops], 20] call CBA_fnc_waitAndExecute;
+#endif
+
 	} ENDMETHOD;
 
 	METHOD("_initMissionEventHandlers") {
@@ -489,21 +570,174 @@ CLASS("GameModeBase", "MessageReceiverEx")
 				private _cBuildingSentry = 0;
 				private _cCargoBoxes = 2;
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["military" ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
+				T_CALLM("createGarrison", ["military" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry ARG _cCargoBoxes])
 			};
 			case LOCATION_TYPE_POLICE_STATION: {
 				private _cInf = (T_GETV("enemyForceMultiplier")*(CALLM0(_loc, "getCapacityInf") min 16)) max 6;
 				private _cVehGround = CALLM(_loc, "getUnitCapacity", [T_PL_tracked_wheeled ARG GROUP_TYPE_ALL]);
 				// [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
-				T_CALLM("createGarrison", ["police" ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
+				T_CALLM("createGarrison", ["police" ARG _type ARG _side ARG _cInf ARG _cVehGround ARG 0 ARG 0 ARG 2])
 			};
 			default { NULL_OBJECT };
 		};
 	} ENDMETHOD;
 
 	// Override this to do stuff when player spawns
+	// Call the method of base class(that is, this class)
 	/* protected virtual */METHOD("playerSpawn") {
 		params [P_THISOBJECT, P_OBJECT("_newUnit"), P_OBJECT("_oldUnit"), "_respawn", "_respawnDelay"];
+
+		OOP_INFO_1("PLAYER SPAWN: %1", _this);
+
+		// Single player specific setup
+		if(!IS_MULTIPLAYER) then {
+			// We need to catch player death so we can "respawn" them fakely
+			OOP_INFO_1("Added killed EH to %1", _newUnit);
+			_newUnit addEventHandler ["Killed", { CALLM(gGameMode, "singlePlayerKilled", [_this select 0]) }];
+		};
+
+		// Create a suspiciousness monitor for player
+		NEW("UndercoverMonitor", [_newUnit]);
+
+		// Create scroll menu to talk to civilians
+		pr0_fnc_talkCond = { // I know I overwrite it every time but who cares now :/
+			private _civ = cursorObject;
+			(!isNil {_civ getVariable CIVILIAN_PRESENCE_CIVILIAN_VAR_NAME}) && {(_target distance _civ) < 3}
+			&& {alive _civ} && {!(_civ getVariable [CP_VAR_IS_TALKING, false])}
+		};
+
+		_newUnit addAction [(("<img image='a3\ui_f\data\IGUI\Cfg\simpleTasks\types\talk_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Talk</t>")), // title
+						"[cursorObject, 'talk'] spawn CivPresence_fnc_talkTo", // Script
+						0, // Arguments
+						9000, // Priority
+						true, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_talkCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		_newUnit addAction [(("<img image='a3\ui_f\data\Map\Markers\Military\unknown_CA.paa' size='1' color = '#FFA300'/>") + ("<t size='1' color = '#FFA300'> Ask about intel</t>")), // title
+						"[cursorObject, 'intel'] spawn CivPresence_fnc_talkTo", // Script
+						0, // Arguments
+						8999, // Priority
+						true, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_talkCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		_newUnit addAction [(("<img image='a3\ui_f\data\GUI\Rsc\RscDisplayMain\profile_player_ca.paa' size='1' color = '#FFFFFF'/>") + ("<t size='1' color = '#FFFFFF'> Recruit</t>")), // title
+						"[cursorObject, 'agitate'] spawn CivPresence_fnc_talkTo", // Script
+						0, // Arguments
+						8998, // Priority
+						true, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_talkCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+		// Init the UnitIntel on player
+		CALLSM0("UnitIntel", "initPlayer");
+
+		// Init the Location Visibility Monitor on player
+		gPlayerMonitor = NEW("PlayerMonitor", [_newUnit]);
+		NEW("LocationVisibilityMonitor", [_newUnit ARG gPlayerMonitor]); // When this self-deletes, it will unref the player monitor
+
+		// Init the Sound Monitor on player
+		NEW("SoundMonitor", [_newUnit]);
+
+
+		// Action to start building stuff
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from location"], // title
+						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 0);}}, // 0 - build from location's resources
+						0, // Arguments
+						0, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"(vehicle player == player) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation)", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+
+		// Action to start building stuff
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\menu_options_ca.paa' />  %1", "Open Build Menu from inventory"], // title
+						{isNil {CALLSM1("BuildUI", "getInstanceOpenUI", 1);}}, // 1 - build from our own inventory
+						0, // Arguments
+						-1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"(vehicle player == player) && (((['', player] call unit_fnc_getInfantryBuildResources) > 0) && (['', player] call PlayerMonitor_fnc_canUnitBuildAtLocation))", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+
+
+		// Action to attach units to garrison
+		pr0_fnc_attachUnitCond = {
+			_co = cursorObject;
+			(vehicle player == player)                                              // Player must be on foot
+			&& {_co distance player < 7}                                            // Player must be close to object
+			&& {! (_co isKindOf "Man")}                                               // Object must not be infantry
+			&& {['', player] call PlayerMonitor_fnc_isUnitAtFriendlyLocation}       // Player must be at a friendly location
+			&& {(['', cursorObject] call unit_fnc_getUnitFromObjectHandle) != ''}   // Object must be a valid unit OOP object (no shit spawned by zeus for now)
+			&& {alive cursorObject}                                                 // Object must be alive
+		};
+		_newUnit addAction [format ["<img size='1.5' image='\A3\ui_f\data\GUI\Rsc\RscDisplayMain\infodlcsowned_ca.paa' />  %1", "Attach to garrison"], // title // pic: arrow pointing down
+						{isNil {NEW("AttachToGarrisonDialog", [cursorObject])}}, // Open the UI dialog
+						0, // Arguments
+						0.1, // Priority
+						false, // ShowWindow
+						false, //hideOnUse
+						"", //shortcut
+						"call pr0_fnc_attachUnitCond", //condition
+						2, //radius
+						false, //unconscious
+						"", //selection
+						""]; //memoryPoint
+	} ENDMETHOD;
+
+	// Player death event handler in SP
+	// SP is special in this regard, because there is no respawn, so we must make it ourselves, yay \o/
+	/* protected virtual */ METHOD("singlePlayerKilled") {
+		params [P_THISOBJECT, P_OBJECT("_oldUnit")];
+
+		OOP_INFO_1("SINGLE PLAYER KILLED: %1", _this);
+
+		// Bail if this has already been handled for this unit
+		// I have no idea why, killed event handler gets called twice if player dies after laying on the ground after taking too much ACE damage
+		private _handledPreviously = _oldUnit getVariable ["vin_killed_handled", false];
+		OOP_INFO_1("  handled previously: %1", _handledPreviously);
+		if (_handledPreviously) exitWith {
+			OOP_INFO_0("  handled previously, ignoring this call");
+		};
+		_oldUnit setVariable ["vin_killed_handled", true];
+
+		// Create a unit and give player control of it.
+		private _tmpGroup = createGroup (side group _oldUnit);
+		private _newUnit = _tmpGroup createUnit [typeOf _oldUnit, [0,0,0], [], 0, "NONE"];
+		[_newUnit] joinSilent (group _oldUnit);
+		deleteGroup _tmpGroup;
+		_newUnit setName (name _oldUnit);
+		selectPlayer _newUnit;
+		//unassignCurator zeus1;		zeus1 is nil anyway? I think we can use ACE now to add zeus
+		//player assignCurator zeus1;
+
+		// Standard player respawn handler script like in MP
+		[player, _oldUnit, "", 0, "GameModeBase singlePlayerKilled"] call compile preprocessFileLineNumbers "onPlayerRespawn.sqf";
 	} ENDMETHOD;
 
 	// Override this to perform periodic game mode updates
@@ -856,11 +1090,11 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 	#define ADD_TRUCKS
 	#define ADD_UNARMED_MRAPS
-	#define ADD_ARMED_MRAPS
-	#define ADD_ARMOR
+	//#define ADD_ARMED_MRAPS
+	//#define ADD_ARMOR
 	#define ADD_STATICS
 	METHOD("createGarrison") {
-		params [P_THISOBJECT, P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
+		params [P_THISOBJECT, P_STRING("_locationType"), P_STRING("_faction"), P_SIDE("_side"), P_NUMBER("_cInf"), P_NUMBER("_cVehGround"), P_NUMBER("_cHMGGMG"), P_NUMBER("_cBuildingSentry"), P_NUMBER("_cCargoBoxes")];
 
 		if (_faction == "police") exitWith {
 			
@@ -945,7 +1179,6 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		private _gar = NEW("Garrison", _args);
 
 		OOP_INFO_MSG("Creating garrison %1 for faction %2 for side %3, %4 inf, %5 veh, %6 hmg/gmg, %7 sentries", [_gar ARG _faction ARG _side ARG _cInf ARG _cVehGround ARG _cHMGGMG ARG _cBuildingSentry]);
-		
 
 		// Add default units to the garrison
 
@@ -955,9 +1188,23 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			//|    |Max groups of this type
 			//|    |    |Group template
 			//|	   |    |                          |Group behaviour
-			[  0,   3,   T_GROUP_inf_sentry,   		GROUP_TYPE_PATROL],
+			[  0,   3,   T_GROUP_inf_sentry,        GROUP_TYPE_PATROL],
 			[  0,  -1,   T_GROUP_inf_rifle_squad,   GROUP_TYPE_IDLE]
 		];
+		// Officers at airports and bases only
+		if(_locationType == LOCATION_TYPE_AIRPORT) then {
+			_infSpec =
+				  [  3,  -3,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY]
+				+ [  2,  -2,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				+ _infSpec;
+		};
+		// Officers at airports and bases only
+		if(_locationType == LOCATION_TYPE_BASE) then {
+			_infSpec =
+				  [  1,  -1,   T_GROUP_inf_officer,       GROUP_TYPE_BUILDING_SENTRY]
+				+ [  1,  -1,   T_GROUP_inf_recon_patrol,  GROUP_TYPE_IDLE]
+				+ _infSpec;
+		};
 
 		private _vehGroupSpec = [
 			//|Chance to spawn
@@ -1235,19 +1482,24 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Lock all message loops in specific order
 		private _msgLoops = [
-								"messageLoopGameMode",
-								"messageLoopCommanderEast",
-								"messageLoopCommanderWest",
-								"messageLoopCommanderInd",
-								"messageLoopMain",
-								"messageLoopGroupAI"
+								["messageLoopGameMode", 10],
+								["messageLoopCommanderEast", 150],
+								["messageLoopCommanderWest", 150],
+								["messageLoopCommanderInd", 150],
+								["messageLoopMain", 30],
+								["messageLoopGroupAI", 10]
 							];
 		{
-			private _msgLoop = T_GETV(_x);
-			private _text = format ["Locking message loop: %1", _x];
+			_x params ["_loopName", "_timeout"];
+			private _msgLoop = T_GETV(_loopName);
+			private _text = format ["Locking thread %1, this could take up to %2 seconds -- be patient", _loopName, _timeout];
 			diag_log _text;
 			[_text] remoteExec ["systemChat"];
-			CALLM0(_msgLoop, "lock");
+			if(!CALLM1(_msgLoop, "tryLockTimeout", _timeout)) then {
+				private _text = format ["Warning: failed to lock message loop %1 in reasonable time, saving anyway.", _loopName];
+				diag_log _text;
+				[_text] remoteExec ["systemChat"];
+			};
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
 		// Start loading screen
@@ -1255,8 +1507,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		// Save message loops
 		{
-			private _msgLoop = T_GETV(_x);
-			diag_log format ["Saving message loop: %1", _x];
+			_x params ["_loopName", "_timeout"];
+			private _msgLoop = T_GETV(_loopName);
+			diag_log format ["Saving thread: %1", _loopName];
 			CALLM1(_storage, "save", _msgLoop);
 		} forEach _msgLoops;
 

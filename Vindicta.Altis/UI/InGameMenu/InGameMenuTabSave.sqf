@@ -180,6 +180,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 
 		// Send request to server
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientSaveGame", [clientOwner]);
+
+		// Close in game menu after saving
+		CALLM0(gInGameMenu, "close");
 	} ENDMETHOD;
 
 	METHOD("onButtonNewSave") {
@@ -236,6 +239,9 @@ CLASS(__CLASS_NAME, "DialogTabBase")
 		OOP_INFO_1("Sending request to load saved game: %1", _recordName);
 		pr _args = [clientOwner, _recordName];
 		CALLM2(gGameManagerServer, "postMethodAsync", "clientLoadSavedGame", _args);
+
+		// Close in game menu after loading
+		CALLM0(gInGameMenu, "close");
 	} ENDMETHOD;
 
 	METHOD("onButtonLoadSavedGame") {

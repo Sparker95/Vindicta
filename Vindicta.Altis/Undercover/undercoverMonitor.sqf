@@ -114,6 +114,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 		CALLM0(_thisObject, "calcGearSuspicion");							// evaluate suspicion of unit's equipment
 		_unit setCaptive true;
 
+#ifndef _SQF_VM
 		// CBA event handler for checking player unit's equipment suspiciousness
 		pr _EH_loadout = ["loadout", {
 			params ["_unit", "_newLoadout"];
@@ -121,6 +122,7 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			if (_uM != "") then { CALLM0(_uM, "calcGearSuspicion"); };
     	}] call CBA_fnc_addPlayerEventHandler;
 		T_SETV("EHLoadout", _EH_loadout);
+#endif
 
     	// event handler to check if unit fired weapon
     	pr _EH_firedMan = _unit addEventHandler ["FiredMan", {
@@ -310,8 +312,6 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 						if (time < _timeBoost) then { 
 							pr _suspBoost = T_GETV("timeBoost");
 							_suspicionArr pushBack [(T_GETV("suspicionBoost")), "Suspicion boost"];
-							//systemchat format["%1", (T_GETV("suspicionBoost"))];
-							//systemchat format["%1", (_timeBoost - time)];
 						} else {
 							T_SETV("suspicionBoost", 0);
 						};
@@ -343,6 +343,21 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 								_unit setVariable [UNDERCOVER_EXPOSED, true, true];	
 
 								if (animationState _unit in g_UM_undercoverAnims) exitWith { _suspicionArr pushBack [-1, "Surrender"]; _hintKeys pushback HK_SURRENDER; }; // Hotfix for ACE surrendering
+
+								// suspiciousness for specific animations
+								//if (animationState _unit == "acts_carfixingwheel") then {
+									//_suspicionArr pushBack [0.6, "Removing wheel from enemy vehicle?"]; _hintKeys pushback HK_ILLEGAL;
+								//};
+								
+								// disallow player using morphine on enemies 
+								if (animationState _unit == "ainvpknlmstpsnonwnondnon_medic1" || animationState _unit == "ainvppnemstpslaywnondnon_medicother" || animationState _unit == "ainvpknlmstpslaywnondnon_medicother") exitWith {
+									pr _nearUnits = nearestObjects [_unit, ["Man"], 12];
+									if (count _nearUnits > 1) then {
+										if (((side group (_nearUnits#1)) != (side group _unit)) && (side group (_nearUnits#1)) != civilian) then {
+											_suspicionArr pushBack [1, "Attempting to inject enemy some morphine?"]; _hintKeys pushback HK_MORPHINE;
+										};
+									};
+								};
 
 								pr _suspGear = T_GETV("suspGear");
 								if (_suspGear > 0) then { _hintKeys pushback HK_SUSPGEAR; };
@@ -679,7 +694,9 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 			case SMON_MESSAGE_DELETE: {
 				// remove CBA loadout event handler
 				pr _EH_loadout = T_GETV("EHLoadout");
+#ifndef _SQF_VM
 		 		["loadout", _EH_loadout] call CBA_fnc_removePlayerEventHandler;
+#endif
 
 				// remove vanilla fired event handler
 				pr _unit = T_GETV("unit");
@@ -892,12 +909,12 @@ CLASS("UndercoverMonitor", "MessageReceiver");
 	STATIC_METHOD("staticInit") {
 		params [P_THISCLASS];
 
-		["ace_treatmentSucceded", {
-			params ["_caller", "_target", "_selectionName", "_className"];
-			if ((side _caller != side _target) && (side _target != civilian)) then {
-				CALLSM2("undercoverMonitor", "boostSuspicion", _caller, 2.0);
-			};
+#ifndef _SQF_VM
+		["ace_throwableThrown", { 
+   			params ["_unit", "_activeThrowable"]; 
+			CALLSM2("undercoverMonitor", "boostSuspicion", _unit, 3.0);
     	}] call CBA_fnc_addEventHandler;
+#endif
 	} ENDMETHOD;
 
 ENDCLASS;

@@ -16,6 +16,7 @@ this addVest "rhssaf_vest_md99_digital";
 this addBackpack "rhs_sidor";
 
 this addWeapon "rhs_weap_pkp";
+this addPrimaryWeaponItem "rhs_acc_1p78";
 this addPrimaryWeaponItem "rhs_100Rnd_762x54mmR_green";
 
 this addItemToUniform "FirstAidKit";
@@ -24,4 +25,3 @@ this addItemToVest "rhs_100Rnd_762x54mmR_green";
 this addItemToBackpack "rhs_100Rnd_762x54mmR_7BZ3";
 this addItemToBackpack "rhs_100Rnd_762x54mmR_green";
 this linkItem "ItemWatch";
-

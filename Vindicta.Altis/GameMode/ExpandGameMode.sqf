@@ -26,7 +26,7 @@ CLASS("ExpandGameMode", "GameModeBase")
 		}
 	} ENDMETHOD;
 
-		METHOD("getRecruitCount") {
+	METHOD("getRecruitCount") {
 		params [P_THISOBJECT, P_ARRAY("_cities")];
 		100
 	} ENDMETHOD;

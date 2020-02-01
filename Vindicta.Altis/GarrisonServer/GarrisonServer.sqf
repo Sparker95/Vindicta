@@ -243,11 +243,14 @@ CLASS("GarrisonServer", "MessageReceiverEx")
 		CALLM1(_gar, "removeBuildResources", _cost);
 
 		// Create a unit or just a plain object
-		pr _hO = _className createVehicle _pos;
-		_hO setPos _pos;
-		_hO setDir _dir;
+		pr _hO = createVehicle [_className, _pos, [], 0, "CAN_COLLIDE"];
 		pr _surfaceVectorUp = surfaceNormal _pos;
-		_hO setVectorUp _surfaceVectorUp;
+
+		// Remove exec it so that it updates instantly on all computers
+		[_hO, _pos] remoteExec ["setPos"];
+		[_hO, _dir] remoteExec ["setDir"];
+		[_hO, _surfaceVectorUp] remoteExec ["setVectorUp"];
+
 		if (_catID != -1) then {
 			pr _args = [[], _catID, _subcatID, -1, "", _hO];
 			pr _unit = NEW("Unit", _args);

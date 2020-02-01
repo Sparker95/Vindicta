@@ -670,7 +670,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _tInv = _t#T_INV;
 
 			// Some number which scales the amount of items in this box
-			pr _nGuns = 2 * _nInf / ((_nVeh + _nCargo) max 1);
+			pr _nGuns = 1 * _nInf / ((_nVeh + _nCargo) max 1);
 
 			// Modifier for cargo boxes
 			if (_catID == T_CARGO) then {
@@ -678,7 +678,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			};
 
 			// Add weapons and magazines
-			pr _arr = [[T_INV_primary, _nGuns, 15], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
+			pr _arr = [[T_INV_primary, _nGuns, 10], [T_INV_secondary, 0.4*_nGuns, 5], [T_INV_handgun, 0.1*_nGuns, 3]]; // [_subcatID, num. attempts]
 			{
 				_x params ["_subcatID", "_n", "_nMagsPerGun"];
 				if (count (_tInv#_subcatID) > 0) then { // If there are any weapons in this subcategory
@@ -894,10 +894,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			pr _AI = _data select UNIT_DATA_ID_AI;
 			// Some units are brainless. Check if the unit had a brain.
 			if (_AI != "") then {
-				pr _msg = MESSAGE_NEW();
-				MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);
-				pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-				CALLM(_AI, "waitUntilMessageDone", [_msgID]);
+				CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
 				_data set [UNIT_DATA_ID_AI, ""];
 			};
 
@@ -1265,11 +1262,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		pr _data = T_GETV("data");
 		pr _AI = _data select UNIT_DATA_ID_AI;
 		if (_AI != "") then {
-			pr _msg = MESSAGE_NEW();
-			MESSAGE_SET_TYPE(_msg, AI_MESSAGE_DELETE);
-			pr _msgID = CALLM2(_AI, "postMessage", _msg, true);
-			CALLM1(_AI, "waitUntilMessageDone", _msgID);
-
+			CALLM2(gMessageLoopGroupManager, "postMethodSync", "deleteObject", [_AI]);
 			_data set [UNIT_DATA_ID_AI, ""];
 		};
 
@@ -1796,7 +1789,19 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		} forEach _crewData;
 	} ENDMETHOD;
 
-	
+	//                             I S   E M P T Y
+	/*
+	Method: isEmpty
+	Returns true if there are no units in this vehicle or it is not a vehicle
+
+	Returns: bool
+	*/
+	METHOD("isEmpty") {
+		params [["_thisObject", "", [""]]];
+		private _data = GET_VAR(_thisObject, "data");
+		private _oh = _data select UNIT_DATA_ID_OBJECT_HANDLE;
+		(count fullCrew _oh) == 0
+	} ENDMETHOD;
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// |                               L I M I T E D   A R S E N A L
@@ -1829,7 +1834,7 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 				pr _className = _x;
 				pr _index = [_className] call jn_fnc_arsenal_itemType;
 				(_arsenalArray#_index) pushBack [_className, -1];
-			} forEach (g_UM_civHeadgear + g_UM_civUniforms);
+			} forEach (g_UM_civHeadgear + g_UM_civUniforms + g_UM_civFacewear + g_UM_civBackpacks);
 
 			_data set [UNIT_DATA_ID_LIMITED_ARSENAL, _arsenalArray]; // Limited Arsenal's empty array for items
 			if (isNull _hO) then {
@@ -1880,6 +1885,9 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 
 			// Initialize the limited arsenal
 			[_hO, _dataList] call jn_fnc_arsenal_initPersistent;
+
+			// Make the object movable again for the Build UI
+			CALL_STATIC_METHOD_2("BuildUI", "setObjectMovable", _hO, true);
 		};
 	} ENDMETHOD;
 
