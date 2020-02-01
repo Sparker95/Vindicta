@@ -50,6 +50,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 	VARIABLE_ATTR("enemyForceMultiplier", [ATTR_SAVE]);
 
 	VARIABLE_ATTR("playerInfoArray", [ATTR_SAVE_VER(11)]);
+	VARIABLE_ATTR("savedSpecialGarrisons", [ATTR_SAVE_VER(11)]);
 
 	METHOD("new") {
 		params [P_THISOBJECT,	P_STRING("_tNameEnemy"), P_STRING("_tNamePolice"),
@@ -95,6 +96,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 
 		T_SETV("playerInfoArray", []);
 
+		T_SETV("savedSpecialGarrisons", []);
 	} ENDMETHOD;
 
 	METHOD("delete") {
@@ -851,6 +853,49 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		PUBLIC_VARIABLE "gAICommanderEast";
 	} ENDMETHOD;
 
+	METHOD("_saveSpecialGarrisons") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+		diag_log "Saving special garrisons";
+		// Save the loaded data to the garrisons
+		T_SETV("savedSpecialGarrisons", gSpecialGarrisons);
+		{
+			CALLM1(_storage, "save", _x);
+		} forEach gSpecialGarrisons;
+		diag_log "Special garrisons saved";
+	} ENDMETHOD;
+
+	METHOD("_loadSpecialGarrisons") {
+		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
+
+		// SAVEBREAK
+		if(GETV(_storage, "version") >= 11) then {
+			diag_log "Loading special garrisons";
+			gSpecialGarrisons = +T_GETV("savedSpecialGarrisons");
+
+			// Add the loaded data back to the garrisons
+			{
+				CALLM1(_storage, "load", _x);
+			} forEach gSpecialGarrisons;
+
+			// Garrison objects to track players and player owned vehicles
+			gGarrisonPlayersWest 		= gSpecialGarrisons#0;
+			gGarrisonPlayersEast 		= gSpecialGarrisons#1;
+			gGarrisonPlayersInd 		= gSpecialGarrisons#2;
+			gGarrisonPlayersCiv 		= gSpecialGarrisons#3;
+			gGarrisonAmbient 			= gSpecialGarrisons#4;
+			gGarrisonAbandonedVehicles 	= gSpecialGarrisons#5;
+
+			{
+				CALLM2(_x, "postMethodAsync", "spawn", [true]); // true == global spawn
+			} forEach gSpecialGarrisons;
+
+		} else {
+			diag_log "Creating special garrisons";
+			T_CALLM0("_createSpecialGarrisons");
+		};
+		diag_log "Special garrisons done";
+	} ENDMETHOD;
+
 	METHOD("_createSpecialGarrisons") {
 		params [P_THISOBJECT];
 
@@ -863,6 +908,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gGarrisonAbandonedVehicles = NEW("Garrison", [CIVILIAN]);
 
 		gSpecialGarrisons = [gGarrisonPlayersWest, gGarrisonPlayersEast, gGarrisonPlayersInd, gGarrisonPlayersCiv, gGarrisonAmbient, gGarrisonAbandonedVehicles];
+
 		{
 			CALLM2(_x, "postMethodAsync", "spawn", []);
 		} forEach gSpecialGarrisons;
@@ -1617,7 +1663,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		} forEach _msgLoops; //(_msgLoops - ["messageLoopGameMode"]); // If this is run in the game mode loop, then it's locked already
 
 		// Start loading screen
+#ifdef RELEASE_BUILD
 		startLoadingScreen ["Saving mission"];
+#endif
 
 		// Save message loops
 		{
@@ -1641,6 +1689,8 @@ CLASS("GameModeBase", "MessageReceiverEx")
 			diag_log format ["Saving location: %1", _loc];
 			CALLM1(_storage, "save", _loc);
 		} forEach T_GETV("locations");
+
+		T_CALLM1("_saveSpecialGarrisons", _storage);
 
 		true
 	} ENDMETHOD;
@@ -1689,7 +1739,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		CALLSM0("Location", "deleteEditorObjects");
 
 		// Start loading screen
+#ifdef RELEASE_BUILD
 		startLoadingScreen ["Loading the mission"];
+#endif
 
 		diag_log format [" - - - - - - - - - - - - - - - - - - - - - - - - - -"];		
 		diag_log format [" LOADING GAME MODE: %1", _thisObject];
@@ -1701,6 +1753,9 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		// Set default values if they weren't loaded due to older save version
 		if(isNil{T_GETV("playerInfoArray")}) then {
 			T_SETV("playerInfoArray", []);
+		};
+		if(isNil{T_GETV("savedSpecialGarrisons")}) then {
+			T_SETV("savedSpecialGarrisons", []);
 		};
 
 		// Send players their restore points from this save, if they have any
@@ -1781,7 +1836,7 @@ CLASS("GameModeBase", "MessageReceiverEx")
 		gMessageLoopGroupManager = NEW("MessageLoopGroupManager", []);
 
 		// Special garrisons
-		T_CALLM0("_createSpecialGarrisons");
+		T_CALLM1("_loadSpecialGarrisons", _storage);
 
 		// Load locations
 		{

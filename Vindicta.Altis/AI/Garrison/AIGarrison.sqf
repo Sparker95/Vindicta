@@ -645,6 +645,9 @@ CLASS("AIGarrison", "AI_GOAP")
 		// Register at stimulus manager
 		CALLM1(gStimulusManagerGarrison, "addSensingAI", _thisObject);
 
+		// Refresh composition
+		T_CALLM0("updateComposition");
+
 		true
 	} ENDMETHOD;
 

@@ -25,6 +25,7 @@ CLASS("Garrison", "MessageReceiverEx");
 	// TODO: Add +[ATTR_THREAD_AFFINITY(MessageReceiver_getThread)] ? Currently it is accessed in group thread as well.
 	/* save */	VARIABLE_ATTR("AI", 		[ATTR_GET_ONLY ARG ATTR_SAVE]); // The AI brain of this garrison
 	/* save */	VARIABLE_ATTR("side", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
+	// SAVEBREAK units doesn't need to be saved any more
 	/* save */	VARIABLE_ATTR("units", 		[ATTR_PRIVATE ARG ATTR_SAVE]);
 	/* save */	VARIABLE_ATTR("groups", 	[ATTR_PRIVATE ARG ATTR_SAVE]);
 				VARIABLE_ATTR("spawned", 	[ATTR_PRIVATE]);
@@ -57,9 +58,9 @@ CLASS("Garrison", "MessageReceiverEx");
 	// It is set by various functions changing state of this garrison
 	// We use it to delay a large amount of big computations when many changes happen rapidly,
 	// which would otherwise cause a lot of computations on each change
-				VARIABLE_ATTR("outdated", [ATTR_PRIVATE]);
+				VARIABLE_ATTR("outdated", 	[ATTR_PRIVATE]);
 				VARIABLE("regAtServer"); // Bool, garrisonServer sets it to true to identify if this garrison is registered there
-
+	/* save */	VARIABLE_ATTR("savedUnits",	[ATTR_PRIVATE ARG ATTR_SAVE_VER(11)]);
 	// ----------------------------------------------------------------------
 	// |                              N E W                                 |
 	// ----------------------------------------------------------------------
@@ -2345,7 +2346,41 @@ CLASS("Garrison", "MessageReceiverEx");
 		[_compNumbers, _catID, _subcatID, 1] call comp_fnc_addValue;
 
 		__MUTEX_UNLOCK;
-	} ENDMETHOD;	
+	} ENDMETHOD;
+
+	/*
+	Method: _recalculateCounters
+	Recalculates efficiency vector and other counters from scratch,
+	used during loading.
+	
+	Private use!
+	
+	Returns: nil
+	*/
+	METHOD("_recalculateCounters") {
+		params [P_THISOBJECT];
+		T_SETV("effTotal", +T_EFF_null);
+		T_SETV("effMobile", +T_EFF_null);
+		T_SETV("countInf", 0);
+		T_SETV("countVeh", 0);
+		T_SETV("countDrone", 0);
+		T_SETV("countCargo", 0);
+
+		pr _comp = [];
+		{
+			pr _tempArray = [];
+			_tempArray resize _x;
+			_comp pushBack (_tempArray apply {[]});
+		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
+		T_SETV("compositionClassNames", _comp);
+		T_SETV("compositionNumbers", +T_comp_null);
+
+		{
+			// Add to the efficiency vector
+			CALLM0(_x, "getMainData") params ["_catID", "_subcatID", "_className"];
+			T_CALLM3("increaseCounters", _catID, _subcatID, _className);
+		} forEach T_GETV("units");
+	} ENDMETHOD;
 	
 	/*
 	Method: subEfficiency
@@ -3048,15 +3083,19 @@ CLASS("Garrison", "MessageReceiverEx");
 	} ENDMETHOD;
 
 	// - - - - - STORAGE - - - - -
-
 	/* override */ METHOD("preSerialize") {
 		params [P_THISOBJECT, P_OOP_OBJECT("_storage")];
 		
-		// Save all units
+		// Save all units (except players)
+		pr _savedUnits = T_GETV("units") select {
+			// Don't save players
+			!CALLM0(_x, "isPlayer")
+		};
+		T_SETV("savedUnits", _savedUnits);
 		{
 			private _unit = _x;
 			CALLM1(_storage, "save", _unit);
-		} forEach T_GETV("units");
+		} forEach _savedUnits;
 
 		// Save our groups
 		{
@@ -3085,11 +3124,20 @@ CLASS("Garrison", "MessageReceiverEx");
 		// Load all our units
 		// We don't care that groups will try to restore them as well
 		// Storage class will not load same object twice anyway
+		private _savedUnits = if(GETV(_storage, "version") >= 11) then {
+			T_GETV("savedUnits")
+		} else {
+			T_GETV("units")
+		};
+
 		{
 			private _unit = _x;
 			//diag_log format ["Loading unit: %1", _unit];
 			CALLM1(_storage, "load", _unit);
-		} forEach T_GETV("units");
+		} forEach _savedUnits;
+
+		T_SETV("units", _savedUnits);
+		T_SETV("savedUnits", []);
 
 		// Load groups
 		{
@@ -3111,21 +3159,9 @@ CLASS("Garrison", "MessageReceiverEx");
 		T_SETV("outdated", true);
 		T_SETV("regAtServer", false);
 
-		// Restore composition class names
-		// Since we convert class names to numbers...
-		pr _comp = [];
-		{
-			pr _tempArray = [];
-			_tempArray resize _x;
-			_comp pushBack (_tempArray apply {[]});
-		} forEach [T_INF_SIZE, T_VEH_SIZE, T_DRONE_SIZE, T_CARGO_SIZE];
-		{
-			pr _className = CALLM0(_x, "getClassName");
-			pr _catID = CALLM0(_x, "getCategory");
-			pr _subCatID = CALLM0(_x, "getSubcategory");
-			(_comp#_catID#_subCatID) pushBack ([_className] call t_fnc_classNameToNumber);
-		} forEach T_GETV("units");
-		T_SETV("compositionClassNames", _comp);
+		// SAVEBREAK -- we can remove these from the save entirely now, cached data shouldn't be saved anyway, it leads to fragility.
+		// Recalculate all the counters, efficiency, classnames etc.
+		T_CALLM0("_recalculateCounters");
 
 		// Load AI object
 		pr _AI = T_GETV("AI");
@@ -3134,6 +3170,7 @@ CLASS("Garrison", "MessageReceiverEx");
 			// Start AI object
 			CALLM(T_GETV("AI"), "start", ["AIGarrisonDespawned"]);
 		};
+
 
 		// Register at garrison server if active
 		if (T_GETV("active")) then {

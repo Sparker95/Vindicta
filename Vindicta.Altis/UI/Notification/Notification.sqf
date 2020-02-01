@@ -71,7 +71,7 @@ CLASS("Notification", "")
 		
 		_hintCtrl ctrlSetText _hint;
 		if(_hint == "") then {
-			pr _hintBG = uiNamespace getVariable "vin_not_hint";
+			pr _hintBG = uiNamespace getVariable "vin_not_hintbg";
 			_hintBG ctrlSetBackgroundColor [0,0,0,0.6];
 		};
 

@@ -501,8 +501,7 @@
 		PUBLIC FUNCTION("array","setInventory") {
 			DEBUG(#, "OO_INVENTORY::setInventory")
 			private _array = _this;
-			private _unit = MEMBER("unit", nil);
-			MEMBER("clearInventory", _unit);
+			MEMBER("clearInventory", nil);
 			private _headgear = _array select 0;
 			private _goggles = _array select 1;
 			private _uniform = _array select 2;
@@ -520,6 +519,7 @@
 			private _handgunweaponitems = _array select 14;
 			private _assigneditems = _array select 15;
 
+			private _unit = MEMBER("unit", nil);
 			_unit addHeadgear _headgear;
 			_unit forceAddUniform _uniform;
 			_unit addGoggles _goggles;
