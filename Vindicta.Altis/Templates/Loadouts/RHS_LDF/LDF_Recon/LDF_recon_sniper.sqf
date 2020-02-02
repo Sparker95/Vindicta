@@ -13,7 +13,6 @@ _RandomHeadgear = ["rhssaf_booniehat_digital", "rhssaf_booniehat_digital", "rhss
 this addHeadgear _RandomHeadgear;
 _RandomGoggles = ["G_Bandanna_khk", "G_Bandanna_oli", "G_Balaclava_oli", "" ];
 this addGoggles _RandomGoggles;
-this forceAddUniform "U_O_R_Gorka_01_F";
 this addVest "rhssaf_vest_md98_digital";
 
 this addWeapon "rhs_weap_svdp_wd";
