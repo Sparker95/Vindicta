@@ -1,5 +1,5 @@
-title: Vindicta Player Guide.
-description: Vindicta Player Guide.
+title: Vindicta Player Guide
+description: The player guide for the Arma 3 modification Vindicta: Guerrilla Warfare.
 remote_theme: carlosperate/jekyll-theme-rtd
 
 # Theme settings:
@@ -7,6 +7,8 @@ site_author: Vindicta Team
 repo_url: "https://github.com/Sparker95/Vindicta"
 edit_on_github: true
 github_docs_folder: true
+logo: 'https://user-images.githubusercontent.com/1453936/73614082-d9b35700-45f3-11ea-936e-f8419b5e68e2.png'
+# site_favicon: 'https://your.url/here.ico'
 sticky_navigation: true
 prev_next_buttons_location: bottom
 search_enabled: true
