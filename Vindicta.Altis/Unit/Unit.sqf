@@ -649,23 +649,30 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 		};
 	} ENDMETHOD;
 
+	Unit_fnc_hasInventory = {
+		//check if object has inventory
+		pr _className = typeOf _this;
+		pr _tb = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxbackpacks");
+		pr _tm = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxmagazines");
+		pr _tw = getNumber (configFile >> "CfgVehicles" >> _className >> "transportmaxweapons");
+		(_tb > 0  || _tm > 0 || _tw > 0)
+	};
+
 	METHOD("restoreInventory") {
 		params [P_THISOBJECT];
 		T_PRVAR(data);
 
 		// Bail if not spawned
 		pr _hO = _data#UNIT_DATA_ID_OBJECT_HANDLE;
-		if (isNull _hO) exitWith {};
-
-		pr _catid = _data select UNIT_DATA_ID_CAT;
+		if (isNull _hO) exitWith { false };
 
 		pr _savedInventory = if(count _data > UNIT_DATA_ID_INVENTORY) then {
 			_data#UNIT_DATA_ID_INVENTORY
 		} else {
 			[]
 		};
-		if (_catID in [T_VEH, T_DRONE, T_CARGO] && count _savedInventory == 4) then {
-			diag_log format["RESTORING INV: %1", _savedInventory];
+		if ((_hO call Unit_fnc_hasInventory) && count _savedInventory == 4) then {
+			diag_log format["RESTORING INV FOR %1: %2", _hO, _savedInventory];
 			// Clear cargo
 			clearWeaponCargoGlobal _hO;
 			clearItemCargoGlobal _hO;
@@ -759,13 +766,13 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 			} forEach (everyContainer _hO);
 		};
 
-		if (_catID in [T_VEH, T_DRONE, T_CARGO]) then {
-
+		// Don't save unless we have an inventory
+		if (_hO call Unit_fnc_hasInventory) then {
 			// addWeaponCargoGlobal, addItemCargoGlobal, addMagazineAmmoCargo, addBackpackCargoGlobal
 			// ((everyContainer cursorObject)#0#1)
 			private _savedInventory = [[],[],[],[]];
 			[_hO, _savedInventory] call _fn_loadInv;
-			diag_log format["SAVED INV: %1", _savedInventory];
+			diag_log format["SAVED INV FOR %1: %2", _hO, _savedInventory];
 			_data set [UNIT_DATA_ID_INVENTORY, _savedInventory];
 		};
 	} ENDMETHOD;
@@ -2101,13 +2108,16 @@ CLASS(UNIT_CLASS_NAME, "Storable")
 	/* override */ METHOD("serializeForStorage") {
 		params [P_THISOBJECT];
 
-		pr _data = +T_GETV("data");
-
+		// Need to do this before copying "data"
 		if (T_CALLM0("isSpawned")) then {
 			// Save the inventory (for cargo and vics)
 			T_CALLM0("saveInventory");
 			T_CALLM0("limitedArsenalSyncToUnit");
+		};
 
+		pr _data = +T_GETV("data");
+
+		if (T_CALLM0("isSpawned")) then {
 			// Set the pos, vector dir and up, location
 			pr _objectHandle = _data#UNIT_DATA_ID_OBJECT_HANDLE;
 			pr _posATL = getPosATL _objectHandle;
