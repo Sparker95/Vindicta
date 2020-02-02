@@ -1,3 +1,4 @@
+// !! Currently only called on server !!
 // Initialize factions
 // This variable is necessary for other factions to initialize!
 ["Templates\Factions\default.sqf", T_FACTION_None]					call t_fnc_initializeTemplateFromFile;

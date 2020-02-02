@@ -4,6 +4,13 @@ NATO templates for ARMA III
 
 _array = [];
 
+// Name, description, faction, addons, etc
+_array set [T_NAME, "tDefault"];
+_array set [T_DESCRIPTION, "Default template."];
+_array set [T_FACTION, T_FACTION_Military];
+_array set [T_REQUIRED_ADDONS, ["A3_Characters_F"]];
+
+
 _array set [T_SIZE-1, nil];									//Make an array having the size equal to the number of categories first
 
 //==== Infantry ====
@@ -114,7 +121,6 @@ _array set [T_VEH, _veh];
 _array set [T_DRONE, _drone];
 _array set [T_CARGO, _cargo];
 _array set [T_GROUP, _group];
-_array set [T_NAME, "tDefault"];
 
 
 _array // End template
