@@ -1,6 +1,7 @@
 title: Vindicta Player Guide
 description: "The player guide for the Arma 3 modification Vindicta: Guerrilla Warfare."
-remote_theme: carlosperate/jekyll-theme-rtd
+remote_theme: pmarsceill/just-the-docs
+color_scheme: "dark"
 
 # Theme settings:
 site_author: Vindicta Team
